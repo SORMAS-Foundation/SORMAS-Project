@@ -79,7 +79,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 	private String communityUUID;
 
 	//@formatter:off
-    private static final String HTML_LAYOUT =
+    private static final String HTML_LAYOUT = 
             loc(PERSON_DATA_HEADING_LOC) +
                     fluidRowLocs(UserDto.FIRST_NAME, UserDto.LAST_NAME) +
                     fluidRowLocs(UserDto.USER_EMAIL, UserDto.PHONE) +
@@ -184,6 +184,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         
         addField(UserDto.USER_ROLES, OptionGroup.class).addValidator(new UserRolesValidator());
         OptionGroup userRoles = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
+        //userRoles.removeItem(UserRole.IMPORT_USER); 
         userRoles.setMultiSelect(true); 
                
      
@@ -290,7 +291,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 		final OptionGroup community = (OptionGroup) getFieldGroup().getField(UserDto.COMMUNITY);
 		community.setVisible(useCommunity);
 		setRequired(useCommunity, UserDto.COMMUNITY);
-	//	System.out.println("))))))))))))))))))(((((((((((((((( : "+useCommunity);
+
 		
 		if (useCommunity) {
 			community.clear();

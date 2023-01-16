@@ -5,6 +5,7 @@ import java.util.EnumSet;
 import java.util.Set;
 
 public enum FormAccess {
+
 	ICM,
 	PCA,
 	REPORT,

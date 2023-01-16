@@ -8635,18 +8635,66 @@ INSERT INTO schema_version (version_number, comment) VALUES (430, 'add openandCl
 
 --Adding the Modality category to the forms #279
 ALTER TABLE campaignformmeta ADD COLUMN modality character varying(50);
-
 ALTER TABLE campaignformmeta ADD COLUMN expiry_day_capaign character varying(50);
 
 INSERT INTO schema_version (version_number, comment) VALUES (431, 'Adding the Modality category to the forms #279');
 
+<<<<<<< HEAD
 --Refactoring User Formaccess Enum #301
 UPDATE users_formaccess u  SET user_id = u.user_id, formaccess = 'FLW' FROM users_formaccess WHERE  u.formaccess = 'PRE';
 UPDATE campaignformmeta SET formcategory = 'FLW' WHERE  formcategory = 'PRE';
 
 INSERT INTO schema_version (version_number, comment) VALUES (432, 'Change PRE formacess to FLW #301');
 
+=======
+CREATE TABLE campaign_area(
+                                campaign_id bigint NOT NULL,
+                                area_id bigint NOT NULL,
+);
+ALTER TABLE campaign_area OWNER TO sormas_user;
+ALTER TABLE ONLY campaign_area ADD CONSTRAINT unq_campaign_area_0 UNIQUE (campaign_id, area_id);
+ALTER TABLE ONLY campaign_area ADD CONSTRAINT fk_campaign_area_campaign_id FOREIGN KEY (campaign_id) REFERENCES campaigns(id);
+ALTER TABLE ONLY campaign_area ADD CONSTRAINT fk_campaign_area_meta_id FOREIGN KEY (area_id) REFERENCES areas(id);
+>>>>>>> branch 'dev_io' of https://github.com/xlg8/APMIS-Project.git
 
+INSERT INTO schema_version (version_number, comment) VALUES (432, 'Adding campaign_area schema #164');
+
+CREATE TABLE campaign_region(
+                                campaign_id bigint NOT NULL,
+                                region_id bigint NOT NULL,
+);
+ALTER TABLE campaign_region OWNER TO sormas_user;
+ALTER TABLE ONLY campaign_region ADD CONSTRAINT unq_campaign_region_0 UNIQUE (campaign_id, region_id);
+ALTER TABLE ONLY campaign_region ADD CONSTRAINT fk_campaign_region_campaign_id FOREIGN KEY (campaign_id) REFERENCES campaigns(id);
+ALTER TABLE ONLY campaign_region ADD CONSTRAINT fk_campaign_region_region_id FOREIGN KEY (region_id) REFERENCES region(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (433, 'Adding campaign_region schema #164');
+
+CREATE TABLE campaign_district(
+                                campaign_id bigint NOT NULL,
+                                district_id bigint NOT NULL,
+);
+ALTER TABLE campaign_district OWNER TO sormas_user;
+ALTER TABLE ONLY campaign_district ADD CONSTRAINT unq_campaign_district_0 UNIQUE (campaign_id, district_id);
+ALTER TABLE ONLY campaign_district ADD CONSTRAINT fk_campaign_district_campaign_id FOREIGN KEY (campaign_id) REFERENCES campaigns(id);
+ALTER TABLE ONLY campaign_district ADD CONSTRAINT fk_campaign_district_district_id FOREIGN KEY (district_id) REFERENCES district(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (434, 'Adding campaign_district schema #164');
+
+CREATE TABLE campaign_community(
+                                campaign_id bigint NOT NULL,
+                                community_id bigint NOT NULL,
+);
+ALTER TABLE campaign_community OWNER TO sormas_user;
+ALTER TABLE ONLY campaign_community ADD CONSTRAINT unq_campaign_community_0 UNIQUE (campaign_id, community_id);
+ALTER TABLE ONLY campaign_community ADD CONSTRAINT fk_campaign_community_campaign_id FOREIGN KEY (campaign_id) REFERENCES campaigns(id);
+ALTER TABLE ONLY campaign_community ADD CONSTRAINT fk_campaign_community_community_id FOREIGN KEY (community_id) REFERENCES community(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (435, 'Adding campaign_community schema #164');
+
+UPDATE users_formaccess u  SET user_id = u.user_id, formaccess = 'FLW' FROM users_formaccess WHERE  u.formaccess = 'PRE';
+
+INSERT INTO schema_version (version_number, comment) VALUES (436, 'Change PRE formacess to FLW #301');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
 
 

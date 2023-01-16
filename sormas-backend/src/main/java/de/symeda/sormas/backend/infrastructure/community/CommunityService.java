@@ -177,6 +177,11 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Community.ARCHIVED), true));
 			}
 		}
+		
+		if(this.getCurrentUser().getArea() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter,
+					cb.equal(area.get(Area.UUID), this.getCurrentUser().getArea().getUuid()));
+		}
 		return filter;
 	}
 

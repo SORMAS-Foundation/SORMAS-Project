@@ -19,8 +19,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -419,6 +421,16 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 		dto.setExternalId(entity.getExternalId());
 
 		return dto;
+	}
+	
+	public static Set<DistrictReferenceDto> toReferenceDto(HashSet<District> districts) {
+		Set<DistrictReferenceDto> dtos = new HashSet<DistrictReferenceDto>();
+		for(District district : districts) {	
+			DistrictReferenceDto districtDto = new DistrictReferenceDto(district.getUuid(), district.toString(), district.getExternalId());	
+			dtos.add(districtDto);
+		}
+		
+		return dtos;
 	}
 
 	public DistrictIndexDto toIndexDto(District entity) {

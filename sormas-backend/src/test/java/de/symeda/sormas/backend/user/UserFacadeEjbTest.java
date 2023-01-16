@@ -3,7 +3,7 @@
 //import static de.symeda.sormas.api.user.UserRole.ADMIN;
 //import static de.symeda.sormas.api.user.UserRole.CASE_OFFICER;
 //import static de.symeda.sormas.api.user.UserRole.CASE_SUPERVISOR;
-//import static de.symeda.sormas.api.user.UserRole.COMMUNITY_INFORMANT; //
+////import static de.symeda.sormas.api.user.UserRole.COMMUNITY_INFORMANT;
 //import static de.symeda.sormas.api.user.UserRole.COMMUNITY_OFFICER;
 //import static de.symeda.sormas.api.user.UserRole.CONTACT_OFFICER;
 //import static de.symeda.sormas.api.user.UserRole.CONTACT_SUPERVISOR;
@@ -155,11 +155,11 @@
 //
 //		// Jurisdiction Community
 //		UserReferenceDto userC1 =
-//			creator.createUserRef(region1.getUuid(), district1_1.getUuid(), community1_1.getUuid(), null, "Blixa", "Bargeld", COMMUNITY_INFORMANT);
+//			creator.createUserRef(region1.getUuid(), district1_1.getUuid(), community1_1.getUuid(), null, "Blixa", "Bargeld", COMMUNITY_OFFICER);
 //		UserReferenceDto userC2 =
 //			creator.createUserRef(region1.getUuid(), district1_1.getUuid(), community1_2.getUuid(), null, "Jaki", "Liebezeit", COMMUNITY_OFFICER);
 //		UserReferenceDto userC3 =
-//			creator.createUserRef(region1.getUuid(), district2.getUuid(), community2.getUuid(), null, "Holger", "Czukay", COMMUNITY_INFORMANT);
+//			creator.createUserRef(region1.getUuid(), district2.getUuid(), community2.getUuid(), null, "Holger", "Czukay", COMMUNITY_OFFICER);
 //
 //		// Jurisdiction Nation
 //		UserReferenceDto userN1 = creator.createUserRef(null, null, null, null, "Fred", "Cole", NATIONAL_USER);
@@ -178,7 +178,7 @@
 //		assertThat(getUserFacade().getUsersByRegionAndRoles(region1, COMMUNITY_OFFICER, SURVEILLANCE_OFFICER), containsInAnyOrder(userD2, userC2));
 //		assertThat(
 //			getUserFacade()
-//				.getUsersByRegionsAndRoles(Arrays.asList(region1, region2), COMMUNITY_INFORMANT, CASE_OFFICER, CONTACT_OFFICER, STATE_OBSERVER),
+//				.getUsersByRegionsAndRoles(Arrays.asList(region1, region2), COMMUNITY_OFFICER, CASE_OFFICER, CONTACT_OFFICER, STATE_OBSERVER),
 //			containsInAnyOrder(userR2, userD1, userD3, userC1, userC3));
 //
 //		assertThat(
@@ -186,7 +186,7 @@
 //			containsInAnyOrder(userD1, userC2));
 //		assertThat(
 //			getUserFacade()
-//				.getUserRefsByDistricts(Arrays.asList(district1_1, district2), false, SURVEILLANCE_OFFICER, CONTACT_OFFICER, COMMUNITY_INFORMANT),
+//				.getUserRefsByDistricts(Arrays.asList(district1_1, district2), false, SURVEILLANCE_OFFICER, CONTACT_OFFICER, COMMUNITY_OFFICER),
 //			containsInAnyOrder(userD3, userC1, userC3));
 //
 //		assertThat(getUserFacade().getUserRefsByDistrict(district1_1, true, CASE_OFFICER), containsInAnyOrder(userD1, userS1, userS2, userS3));
@@ -302,3 +302,4 @@
 //
 //	}
 //}
+//

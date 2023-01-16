@@ -65,11 +65,14 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 			navigator.addView(OutbreaksView.VIEW_NAME, OutbreaksView.class);
 		}
 
-		boolean isCaseSurveillanceEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE);
+		boolean isCaseSurveillanceEnabled = FacadeProvider.getFeatureConfigurationFacade()
+				.isFeatureEnabled(FeatureType.CASE_SURVEILANCE);
 		boolean isAnySurveillanceEnabled = FacadeProvider.getFeatureConfigurationFacade().isAnySurveillanceEnabled();
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
-			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
+			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)
+					&& (UserProvider.getCurrent().hasAreaJurisdictionLevel()
+							|| UserProvider.getCurrent().hasNationalJurisdictionLevel())) {
 				navigator.addView(AreasView.VIEW_NAME, AreasView.class);
 			}
 			if (FacadeProvider.getFeatureConfigurationFacade().isCountryEnabled()) {
@@ -77,8 +80,17 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 				navigator.addView(SubcontinentsView.VIEW_NAME, SubcontinentsView.class);
 				navigator.addView(CountriesView.VIEW_NAME, CountriesView.class);
 			}
-			navigator.addView(RegionsView.VIEW_NAME, RegionsView.class);
-			navigator.addView(DistrictsView.VIEW_NAME, DistrictsView.class);
+			if (UserProvider.getCurrent().hasNationalJurisdictionLevel()
+					|| UserProvider.getCurrent().hasAreaJurisdictionLevel()
+					|| UserProvider.getCurrent().hasRegionJurisdictionLevel()) {
+				navigator.addView(RegionsView.VIEW_NAME, RegionsView.class);
+			}
+			if (UserProvider.getCurrent().hasNationalJurisdictionLevel()
+					|| UserProvider.getCurrent().hasAreaJurisdictionLevel()
+					|| UserProvider.getCurrent().hasRegionJurisdictionLevel()
+					|| UserProvider.getCurrent().hasDistrictJurisdictionLevel()) {
+				navigator.addView(DistrictsView.VIEW_NAME, DistrictsView.class);
+			}
 			navigator.addView(CommunitiesView.VIEW_NAME, CommunitiesView.class);
 			if (isAnySurveillanceEnabled) {
 				navigator.addView(FacilitiesView.VIEW_NAME, FacilitiesView.class);
@@ -92,15 +104,16 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 			}
 		}
 
-		//		if (LoginHelper.hasUserRight(UserRight.USER_RIGHTS_MANAGE)) {
-		//			navigator.addView(UserRightsView.VIEW_NAME, UserRightsView.class);
-		//		}
+		// if (LoginHelper.hasUserRight(UserRight.USER_RIGHTS_MANAGE)) {
+		// navigator.addView(UserRightsView.VIEW_NAME, UserRightsView.class);
+		// }
 
 		if (isCaseSurveillanceEnabled && UserProvider.getCurrent().hasUserRight(UserRight.LINE_LISTING_CONFIGURE)) {
 			navigator.addView(LineListingConfigurationView.VIEW_NAME, LineListingConfigurationView.class);
 		}
 
-		if (isAnySurveillanceEnabled && UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_TEMPLATE_MANAGEMENT)) {
+		if (isAnySurveillanceEnabled
+				&& UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_TEMPLATE_MANAGEMENT)) {
 			navigator.addView(DocumentTemplatesView.VIEW_NAME, DocumentTemplatesView.class);
 		}
 
@@ -114,109 +127,86 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 		menu.removeAllViews();
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS)) {
-			menu.addView(
-				OutbreaksView.VIEW_NAME,
-				I18nProperties.getPrefixCaption("View", OutbreaksView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
-				params);
+			menu.addView(OutbreaksView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
+					OutbreaksView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), params);
 		}
 
-		boolean isCaseSurveillanceEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE);
+		boolean isCaseSurveillanceEnabled = FacadeProvider.getFeatureConfigurationFacade()
+				.isFeatureEnabled(FeatureType.CASE_SURVEILANCE);
 		boolean isAnySurveillanceEnabled = FacadeProvider.getFeatureConfigurationFacade().isAnySurveillanceEnabled();
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
 			if (FacadeProvider.getFeatureConfigurationFacade().isCountryEnabled()) {
-				menu.addView(
-					ContinentsView.VIEW_NAME,
-					I18nProperties.getPrefixCaption("View", ContinentsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
-					null,
-					false);
-				menu.addView(
-					SubcontinentsView.VIEW_NAME,
-					I18nProperties.getPrefixCaption("View", SubcontinentsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
-					null,
-					false);
-				menu.addView(
-					CountriesView.VIEW_NAME,
-					I18nProperties.getPrefixCaption("View", CountriesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
-					null,
-					false);
+				menu.addView(ContinentsView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
+						ContinentsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
+				menu.addView(SubcontinentsView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
+						SubcontinentsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
+				menu.addView(CountriesView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
+						CountriesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
 			}
-			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
-				menu.addView(
-					AreasView.VIEW_NAME,
-					I18nProperties.getPrefixCaption("View", AreasView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
-					null,
-					false);
+			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)
+					&& (UserProvider.getCurrent().hasAreaJurisdictionLevel()
+							|| UserProvider.getCurrent().hasNationalJurisdictionLevel())) {
+				menu.addView(AreasView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
+						AreasView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
 			}
-			menu.addView(
-				RegionsView.VIEW_NAME,
-				I18nProperties.getPrefixCaption("View", RegionsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
-				null,
-				false);
-			menu.addView(
-				DistrictsView.VIEW_NAME,
-				I18nProperties.getPrefixCaption("View", DistrictsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
-				null,
-				false);
-			menu.addView(
-				CommunitiesView.VIEW_NAME,
-				I18nProperties.getPrefixCaption("View", CommunitiesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
-				null,
-				false);
+			if (UserProvider.getCurrent().hasNationalJurisdictionLevel()
+					|| UserProvider.getCurrent().hasRegionJurisdictionLevel()
+					|| UserProvider.getCurrent().hasAreaJurisdictionLevel()) {
+				menu.addView(RegionsView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
+						RegionsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
+			}
+			if (UserProvider.getCurrent().hasNationalJurisdictionLevel()
+					|| UserProvider.getCurrent().hasAreaJurisdictionLevel()
+					|| UserProvider.getCurrent().hasRegionJurisdictionLevel()
+					|| UserProvider.getCurrent().hasDistrictJurisdictionLevel()) {
+				menu.addView(DistrictsView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
+						DistrictsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
+			}
+			menu.addView(CommunitiesView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
+					CommunitiesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
 			if (isAnySurveillanceEnabled) {
-				menu.addView(
-					FacilitiesView.VIEW_NAME,
-					I18nProperties.getPrefixCaption("View", FacilitiesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
-					null,
-					false);
+				menu.addView(FacilitiesView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
+						FacilitiesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
 			}
 			if (isCaseSurveillanceEnabled) {
-				menu.addView(
-					PointsOfEntryView.VIEW_NAME,
-					I18nProperties.getPrefixCaption("View", PointsOfEntryView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
-					null,
-					false);
+				menu.addView(PointsOfEntryView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
+						PointsOfEntryView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
 			}
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.POPULATION_MANAGE)) {
-				menu.addView(
-					PopulationDataView.VIEW_NAME,
-					I18nProperties.getPrefixCaption("View", PopulationDataView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
-					null,
-					false);
+				menu.addView(PopulationDataView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
+						PopulationDataView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
 			}
 		}
 
-		//		if (LoginHelper.hasUserRight(UserRight.USER_RIGHTS_MANAGE)) {
-		//			menu.addView(UserRightsView.VIEW_NAME, I18nProperties.getPrefixFragment("View",
-		//					UserRightsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), params);
-		//		}
+		// if (LoginHelper.hasUserRight(UserRight.USER_RIGHTS_MANAGE)) {
+		// menu.addView(UserRightsView.VIEW_NAME,
+		// I18nProperties.getPrefixFragment("View",
+		// UserRightsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), params);
+		// }
 
 		if (isCaseSurveillanceEnabled && UserProvider.getCurrent().hasUserRight(UserRight.LINE_LISTING_CONFIGURE)) {
 			RegionReferenceDto region = UserProvider.getCurrent().getUser().getRegion();
-			menu.addView(
-				LineListingConfigurationView.VIEW_NAME,
-				I18nProperties.getPrefixCaption("View", LineListingConfigurationView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
-				region != null ? region.getUuid() : null,
-				false);
+			menu.addView(LineListingConfigurationView.VIEW_NAME,
+					I18nProperties.getPrefixCaption("View",
+							LineListingConfigurationView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+					region != null ? region.getUuid() : null, false);
 		}
-		if (isAnySurveillanceEnabled && UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_TEMPLATE_MANAGEMENT)) {
-			menu.addView(
-				DocumentTemplatesView.VIEW_NAME,
-				I18nProperties.getPrefixCaption("View", DocumentTemplatesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
-				null,
-				false);
+		if (isAnySurveillanceEnabled
+				&& UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_TEMPLATE_MANAGEMENT)) {
+			menu.addView(DocumentTemplatesView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
+					DocumentTemplatesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
 		}
 		if (FacadeProvider.getConfigFacade().isDevMode() && UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
-			menu.addView(
-				DevModeView.VIEW_NAME,
-				I18nProperties.getPrefixCaption("View", DevModeView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
-				null,
-				false);
+			menu.addView(DevModeView.VIEW_NAME,
+					I18nProperties.getPrefixCaption("View", DevModeView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+					null, false);
 		}
 	}
 
-	protected ComboBox addCountryFilter(Layout layout, Consumer<CountryReferenceDto> changeHandler, ComboBox regionFilter) {
+	protected ComboBox addCountryFilter(Layout layout, Consumer<CountryReferenceDto> changeHandler,
+			ComboBox regionFilter) {
 		ComboBox countryFilter = null;
 		if (FacadeProvider.getFeatureConfigurationFacade().isCountryEnabled()) {
 			countryFilter = new CountryCombo((country, isServerCountry) -> {
@@ -224,9 +214,11 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 
 				if (regionFilter != null) {
 					if (isServerCountry) {
-						FieldHelper.updateItems(regionFilter, FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
+						FieldHelper.updateItems(regionFilter,
+								FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 					} else {
-						FieldHelper.updateItems(regionFilter, FacadeProvider.getRegionFacade().getAllActiveByCountry(country.getUuid()));
+						FieldHelper.updateItems(regionFilter,
+								FacadeProvider.getRegionFacade().getAllActiveByCountry(country.getUuid()));
 					}
 				}
 			});

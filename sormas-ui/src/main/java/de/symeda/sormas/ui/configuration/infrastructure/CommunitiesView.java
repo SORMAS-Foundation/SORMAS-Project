@@ -46,6 +46,7 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -128,7 +129,7 @@ public class CommunitiesView extends AbstractConfigurationView {
 		}
 
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT) && UserProvider.getCurrent().hasAnyUserRole(UserRole.ADMIN)) {
 			Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.TABLE, null, ValoTheme.BUTTON_PRIMARY);
 			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			addHeaderComponent(exportButton);
@@ -204,7 +205,11 @@ public class CommunitiesView extends AbstractConfigurationView {
 		areaFilter.setId(RegionDto.AREA);
 		areaFilter.setWidth(140, Unit.PIXELS);
 		areaFilter.setCaption(I18nProperties.getPrefixCaption(RegionDto.I18N_PREFIX, RegionDto.AREA));
-		areaFilter.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
+		if(UserProvider.getCurrent().getUser().getArea() != null) {
+			areaFilter.addItems(UserProvider.getCurrent().getUser().getArea());
+		}else {
+			areaFilter.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
+		}
 		areaFilter.addValueChangeListener(e -> {
 			AreaReferenceDto area = (AreaReferenceDto) e.getProperty().getValue();
 			criteria.area(area);

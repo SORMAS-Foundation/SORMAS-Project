@@ -3,7 +3,9 @@ package de.symeda.sormas.backend.infrastructure.area;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -27,10 +29,13 @@ import de.symeda.sormas.api.infrastructure.area.AreaCriteria;
 import de.symeda.sormas.api.infrastructure.area.AreaDto;
 import de.symeda.sormas.api.infrastructure.area.AreaFacade;
 import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
+import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -230,5 +235,20 @@ public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaService> 
 		}
 	}
 
+
+	public static Set<AreaReferenceDto> toReferenceDto(HashSet<Area> areas) {
+		Set<AreaReferenceDto> dtos = new HashSet<AreaReferenceDto>();
+		for(Area area : areas) {	
+			AreaReferenceDto areaDto = new AreaReferenceDto(area.getUuid(), area.toString(), area.getExternalId());	
+			dtos.add(areaDto);
+		}
+		
+		return dtos;
+	}
 	
+	@Override
+	public AreaReferenceDto getAreaReferenceByUuid(String uuid) {
+		return toReferenceDto(areaService.getByUuid(uuid));
+	}
+
 }

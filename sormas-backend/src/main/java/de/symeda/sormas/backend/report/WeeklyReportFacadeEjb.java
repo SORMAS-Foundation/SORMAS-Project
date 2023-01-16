@@ -174,7 +174,8 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 			}
 
 			summaryDto.setOfficers(officers.intValue());
-			Long informants = userService.countByRegion(region, UserRole.HOSPITAL_INFORMANT);//, UserRole.COMMUNITY_INFORMANT
+			Long informants = userService.countByRegion(region, UserRole.HOSPITAL_INFORMANT, null);
+			
 			summaryDto.setInformants(informants.intValue());
 
 			regionReportCriteria.reportingUserRegion(summaryDto.getRegion());
@@ -226,7 +227,9 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 			}
 
 			{
-				Long informants = userService.countByAssignedOfficer(officer, UserRole.HOSPITAL_INFORMANT); //, UserRole.COMMUNITY_INFORMANT
+
+				Long informants = userService.countByAssignedOfficer(officer, UserRole.HOSPITAL_INFORMANT, null);
+
 				summaryDto.setInformants(informants.intValue());
 			}
 

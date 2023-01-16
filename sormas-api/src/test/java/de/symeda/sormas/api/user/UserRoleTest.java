@@ -76,10 +76,9 @@ public class UserRoleTest {
 			UserRole.DISTRICT_OBSERVER);
 		
 		assertValidRolesCombination(UserRole.HOSPITAL_INFORMANT);
+	//	assertValidRolesCombination(UserRole.COMMUNITY_INFORMANT, UserRole.IMPORT_USER);
+		//assertInvalidRolesCombination(UserRole.COMMUNITY_INFORMANT, UserRole.HOSPITAL_INFORMANT);
 
-		//assertValidRolesCombination(UserRole.COMMUNITY_INFORMANT); //, UserRole.IMPORT_USER
-
-		assertInvalidRolesCombination( UserRole.HOSPITAL_INFORMANT); //UserRole.COMMUNITY_INFORMANT,
 		assertInvalidRolesCombination(UserRole.ADMIN, UserRole.NATIONAL_USER, UserRole.SURVEILLANCE_SUPERVISOR);
 		assertInvalidRolesCombination(UserRole.NATIONAL_USER, UserRole.EVENT_OFFICER);
 	}

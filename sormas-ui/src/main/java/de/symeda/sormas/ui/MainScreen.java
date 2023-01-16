@@ -119,7 +119,6 @@ public class MainScreen extends HorizontalLayout {
 		viewContainer.setSizeFull();
 		viewContainer.addStyleName("sormas-content");
 		viewContainer.setId("sormas-oya");
-		
 
 		final Navigator navigator = new Navigator(ui, viewContainer);
 		navigator.setErrorProvider(new ViewProvider() {
@@ -129,7 +128,7 @@ public class MainScreen extends HorizontalLayout {
 				return viewAndParameters;
 			}
 
-			@Override //screen.css
+			@Override // screen.css
 			public View getView(String viewName) {
 				try {
 					Class<? extends View> errViewType;
@@ -220,12 +219,9 @@ public class MainScreen extends HorizontalLayout {
 			AbstractCampaignView.registerViews(navigator);
 			menu.addView(CampaignDataView.class, AbstractCampaignView.ROOT_VIEW_NAME,
 					I18nProperties.getCaption(Captions.mainMenuCampaigns), VaadinIcons.CLIPBOARD_CHECK);
-		
+			menu.addView(CampaignReportView.class, CampaignReportView.VIEW_NAME, I18nProperties.getCaption("Report"),
+					VaadinIcons.CHART);
 
-		 menu.addView(CampaignReportView.class, CampaignReportView.VIEW_NAME,
-		 I18nProperties.getCaption("Report"),
-		 VaadinIcons.CHART);
-			
 		}
 
 		if (permitted(FeatureType.WEEKLY_REPORTING, UserRight.WEEKLYREPORT_VIEW)) {
@@ -238,7 +234,7 @@ public class MainScreen extends HorizontalLayout {
 					I18nProperties.getCaption(Captions.mainMenuStatistics), VaadinIcons.BAR_CHART);
 		}
 		if (permitted(UserRight.CONFIGURATION_ACCESS)) {
-			if ((permitted(UserType.WHO_USER) ||  permitted(UserType.EOC_USER)) && permitted(UserRole.ADMIN)) {
+			if ((permitted(UserType.WHO_USER) || permitted(UserType.EOC_USER))) {
 				AbstractConfigurationView.registerViews(navigator);
 				menu.addView(
 						FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS)
@@ -248,10 +244,11 @@ public class MainScreen extends HorizontalLayout {
 						I18nProperties.getCaption(Captions.mainMenuConfiguration), VaadinIcons.COG_O);
 			}
 		}
-		if (permitted(UserRight.USER_VIEW)) {
-			if (permitted(UserType.WHO_USER) ||  permitted(UserType.EOC_USER) && permitted(UserRole.ADMIN)) {
+
+		if ((permitted(UserRole.ADMIN) || permitted(UserRole.AREA_ADMIN_SUPERVISOR)
+				|| permitted(UserRole.ADMIN_SUPERVISOR) || permitted(UserRole.COMMUNITY_INFORMANT))) {
 			menu.addView(UsersView.class, UsersView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuUsers),
-					VaadinIcons.USERS);}
+					VaadinIcons.USERS);
 		}
 
 		menu.createViewButtonx(Captions.actionSettings, I18nProperties.getCaption(Captions.language),
@@ -273,10 +270,9 @@ public class MainScreen extends HorizontalLayout {
 		menu.addView(LogoutView.class, LogoutView.VIEW_NAME,
 				I18nProperties.getCaption(Captions.actionLogout) + " | " + UserProvider.getCurrent().getUserName(),
 				VaadinIcons.POWER_OFF);
-		
+
 		menu.addViewx(LogoutTimeoutView.class, LogoutTimeoutView.VIEW_NAME);
-		
-		
+
 		/*
 		 * //trying to include a javascript from this method MainScreenAbstract dd = new
 		 * MainScreenAbstract(); menu.addComponent(dd);
@@ -357,42 +353,30 @@ public class MainScreen extends HorizontalLayout {
 		setSpacing(false);
 		setMargin(false);
 		setSizeFull();
-		
-		Page.getCurrent().getJavaScript().execute("\n"
-				+ "var timeleft = 1800;\n"
-				+ "\n"
+
+		Page.getCurrent().getJavaScript().execute("\n" + "var timeleft = 1800;\n" + "\n"
 				+ "        function resetTimer() {\n"
 				+ "            return timeleft = (1800 - timeleft) + timeleft; //reset back to 35 seconds \n"
-				+ "        }\n"
-				+ "\n"
-				+ "        function setupReset() {\n"
+				+ "        }\n" + "\n" + "        function setupReset() {\n"
 				+ "            document.addEventListener(\"mousedown\", resetTimer);\n"
 				+ "            document.addEventListener(\"keypress\", resetTimer);\n"
 				+ "            document.addEventListener(\"touchmove\", resetTimer);\n"
-				+ "            document.addEventListener(\"onscroll\", resetTimer);\n"
-				+ "            \n"
-				+ "        }\n"
-				+ "\n"
-								+ "        var pageTimer = setInterval(function () {\n"
-				+ "            timeleft --;\n"
-				+ "            setupReset();\n"
+				+ "            document.addEventListener(\"onscroll\", resetTimer);\n" + "            \n"
+				+ "        }\n" + "\n" + "        var pageTimer = setInterval(function () {\n"
+				+ "            timeleft --;\n" + "            setupReset();\n"
 
-				+ "            if (timeleft > 600) {\n"
-				+ "                \n"
+				+ "            if (timeleft > 600) {\n" + "                \n"
 				+ "            } else if (timeleft == 600) {\n"
-				
+
 				+ "               if (confirm(\"You've been idle for 20 minutes. Are you still working on the system? You will be logged out in 10 minutes after getting this message. Click OK to Logout now!\"))\n"
 				+ "              { window.location.href = window.location.origin + \"sormas-ui/#!logouttimer\"}\n"
-				+ "              else{window.location.reload();};\n"
-				+ "            } else if (timeleft ==5) {\n"
+				+ "              else{window.location.reload();};\n" + "            } else if (timeleft ==5) {\n"
 				+ "                alert(\"Logging you out.\");\n"
-				               
+
 				+ "            } else if (timeleft == 0) {\n"
-			
+
 				+ "                window.location.href = window.location.origin+\"/sormas-ui/#!logouttimer\";\n"
-				+ "            }\n"
-				+ "\n"
-				+ "        }, 1000);");
+				+ "            }\n" + "\n" + "        }, 1000);");
 	}
 
 	private void showSettingsPopup() {
@@ -411,7 +395,7 @@ public class MainScreen extends HorizontalLayout {
 	private static Set<String> initKnownViews() {
 		final Set<String> views = new HashSet<>(Arrays.asList(TasksView.VIEW_NAME, CasesView.VIEW_NAME,
 				ContactsView.VIEW_NAME, EventsView.VIEW_NAME, EventGroupDataView.VIEW_NAME, SamplesView.VIEW_NAME,
-				CampaignsView.VIEW_NAME, CampaignDataView.VIEW_NAME, //CampaignStatisticsView.VIEW_NAME,
+				CampaignsView.VIEW_NAME, CampaignDataView.VIEW_NAME, // CampaignStatisticsView.VIEW_NAME,
 				ReportsView.VIEW_NAME, StatisticsView.VIEW_NAME, PersonsView.VIEW_NAME, UsersView.VIEW_NAME,
 				OutbreaksView.VIEW_NAME, RegionsView.VIEW_NAME, DistrictsView.VIEW_NAME, CommunitiesView.VIEW_NAME,
 				FacilitiesView.VIEW_NAME, PointsOfEntryView.VIEW_NAME, ContinentsView.VIEW_NAME,

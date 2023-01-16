@@ -137,10 +137,7 @@
 			<artifactId>h2</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>info.novatec</groupId>
-			<artifactId>bean-test</artifactId>
-		</dependency>
+		
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-client</artifactId>

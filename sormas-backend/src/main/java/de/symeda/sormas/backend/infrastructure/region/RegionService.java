@@ -36,6 +36,7 @@ import com.vladmihalcea.hibernate.type.util.SQLExtractor;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionCriteria;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -141,6 +142,11 @@ System.out.println("####################################3 "+ext_id);
 			} else {
 				filter = CriteriaBuilderHelper.and(cb, filter, countryFilter);
 			}
+		}
+		
+		if(this.getCurrentUser().getArea() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter,
+					cb.equal(area.get(Area.UUID), this.getCurrentUser().getArea().getUuid()));
 		}
 
 		return filter;

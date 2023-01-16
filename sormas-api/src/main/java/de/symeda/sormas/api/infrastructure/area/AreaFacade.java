@@ -6,6 +6,7 @@ import java.util.List;
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.infrastructure.GeoLocationFacade;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 
 
 @Remote
@@ -18,6 +19,8 @@ public interface AreaFacade extends GeoLocationFacade<AreaDto, AreaDto, AreaRefe
 	List<AreaReferenceDto> getByName(String name, boolean includeArchived);
 	
 	List<AreaReferenceDto> getByExternalID(Long ext_id, boolean includeArchived);
-	
+
+	AreaReferenceDto getAreaReferenceByUuid(String uuid);
+
 	
 }

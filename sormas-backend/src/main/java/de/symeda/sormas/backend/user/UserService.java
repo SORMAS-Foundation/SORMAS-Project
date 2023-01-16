@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -33,6 +34,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaBuilder.In;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
@@ -490,7 +492,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 	}
 
 	public Predicate buildCriteriaFilter(UserCriteria userCriteria, CriteriaBuilder cb, Root<User> from) {
-
+		
 		Predicate filter = null;
 		if (userCriteria.getActive() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(User.ACTIVE), userCriteria.getActive()));
@@ -537,6 +539,33 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 			filter = CriteriaBuilderHelper.and(cb, filter,
 					cb.notEqual(from.get(User.USER_TYPE), UserType.EOC_USER));
 		}
+		
+	
+		
+		
+		if(this.getCurrentUser().hasAnyUserRole(UserRole.COMMUNITY_INFORMANT)) {
+			filter = CriteriaBuilderHelper.and(cb, filter,
+					cb.isMember(UserRole.REST_USER, from.get(User.USER_ROLES)));
+			filter = CriteriaBuilderHelper.and(cb, filter,
+					cb.isMember(UserRole.COMMUNITY_OFFICER, from.get(User.USER_ROLES)));
+		}
+		if(this.getCurrentUser().hasAnyUserRole(UserRole.AREA_ADMIN_SUPERVISOR)) {
+			filter = CriteriaBuilderHelper.and(cb, filter,
+					cb.isMember(UserRole.REST_USER, from.get(User.USER_ROLES)));
+			filter = CriteriaBuilderHelper.and(cb, filter,
+					cb.equal(from.get(User.AREA), this.getCurrentUser().getArea()));
+			filter = CriteriaBuilderHelper.and(cb, filter,
+					cb.isMember(UserRole.COMMUNITY_OFFICER, from.get(User.USER_ROLES)));
+		}
+		if(this.getCurrentUser().hasAnyUserRole(UserRole.ADMIN_SUPERVISOR)) {
+			filter = CriteriaBuilderHelper.and(cb, filter,
+					cb.isMember(UserRole.REST_USER, from.get(User.USER_ROLES)));
+			filter = CriteriaBuilderHelper.and(cb, filter,
+					cb.equal(from.get(User.REGION), this.getCurrentUser().getRegion()));
+			filter = CriteriaBuilderHelper.and(cb, filter,
+					cb.isMember(UserRole.COMMUNITY_OFFICER, from.get(User.USER_ROLES)));
+		}
+	
 		return filter;
 	}
 
