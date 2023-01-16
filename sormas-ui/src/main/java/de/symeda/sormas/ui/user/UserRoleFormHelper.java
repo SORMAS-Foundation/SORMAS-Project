@@ -81,7 +81,6 @@ public class UserRoleFormHelper {
 		templateItems.addAll(defaultUserRoles);
 
 		FieldHelper.updateItems(templateRoleCombo, templateItems);
-		templateItems.forEach(t -> templateRoleCombo.setItemCaption(t, t.getCaption()));
 	}
 
 	private static String defaultCaptionExtension() {
