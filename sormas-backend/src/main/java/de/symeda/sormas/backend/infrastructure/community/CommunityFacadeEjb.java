@@ -1,17 +1,3 @@
-/*
- * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
 package de.symeda.sormas.backend.infrastructure.community;
 
 import java.util.ArrayList;
@@ -42,11 +28,14 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.vladmihalcea.hibernate.type.util.SQLExtractor;
+
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityCriteriaNew;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityFacade;
@@ -59,6 +48,7 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
+import de.symeda.sormas.backend.infrastructure.area.Area;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
@@ -138,11 +128,66 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 			root.get(Community.EXTERNAL_ID),
 			root.get(Community.CLUSTER_NUMBER));
 	}
+	
+	
+
+	@Override
+	public long countReportGrid(CommunityCriteriaNew criteria) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Community> root = cq.from(Community.class);
+
+		Predicate filter = null;
+
+		if (criteria != null) {
+			filter = service.buildCriteriaFilter(criteria, cb, root);
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.select(cb.count(root));
+		System.out.println("DEBUGGER r567ujhgty8ijyu8dfrf COUNTERs  " + SQLExtractor.from(em.createQuery(cq)));
+		return em.createQuery(cq).getSingleResult();
+	}
+	
+
+	@Override
+	public List<CommunityUserReportModelDto> getAllActiveCommunitytoRerence(CommunityCriteriaNew criteria, Integer first, Integer max, List<SortProperty> sortProperties, boolean isCounter) {
+	//	System.out.println("22222222222222222222222222222 1.0.3 222222222222222222222222222222222222222222222222222222222222 "+criteria.getArea());
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Community> cq = cb.createQuery(Community.class);
+			Root<Community> community = cq.from(Community.class);
+			Join<Community, District> district = community.join(Community.DISTRICT, JoinType.LEFT);
+			Join<District, Region> region = district.join(District.REGION, JoinType.LEFT);
+	
+					
+			Predicate filter = null;
+			if (criteria != null) {
+				filter = service.buildCriteriaFilter(criteria, cb, community);
+			}
+
+			if (filter != null) {
+				cq.where(filter);
+			}
+			
+			cq.orderBy(cb.asc(region.get(Region.NAME)), cb.asc(district.get(District.NAME)), cb.asc(community.get(Community.NAME)));
+			
+			cq.select(community);
+
+			System.out.println("DEBUGGER r567ujhgty8ijyu8dfrf  " + SQLExtractor.from(em.createQuery(cq)));
+			//if(isCounter)
+			return QueryHelper.getResultList(em, cq, null, null, this::toDtoList).stream().filter(e -> e.getMessage() != "Correctly assigned").collect(Collectors.toList());
+		}
+	
+	
 
 	@Override
 	public List<CommunityDto> getIndexList(CommunityCriteriaNew criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		
-		System.out.println("22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222 "+criteria.getArea());
+		System.out.println("2222222222222222222222222444444444444444444442222222222222222222222222222 "+criteria.getArea());
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Community> cq = cb.createQuery(Community.class);
@@ -222,6 +267,8 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 		cq.select(cb.count(root));
 		return em.createQuery(cq).getSingleResult();
 	}
+	
+	
 
 	@Override
 	public List<String> getAllUuids() {
@@ -472,29 +519,4 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 		return dtos;
 	}
 
-	@Override
-	public List<CommunityUserReportModelDto> getAllActiveCommunitytoRerence() {
-		
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<Community> cq = cb.createQuery(Community.class);
-			Root<Community> community = cq.from(Community.class);
-			Join<Community, District> district = community.join(Community.DISTRICT, JoinType.LEFT);
-			Join<District, Region> region = district.join(District.REGION, JoinType.LEFT);
-
-			Predicate filter = cb.equal(community.get(Community.ARCHIVED), false);
-			
-			cq.where(filter);
-			
-			cq.orderBy(cb.asc(region.get(Region.NAME)), cb.asc(district.get(District.NAME)), cb.asc(community.get(Community.NAME)));
-			
-			cq.select(community);
-
-			//		cq.multiselect(community.get(Community.CREATION_DATE), community.get(Community.CHANGE_DATE),
-			//				community.get(Community.UUID), community.get(Community.NAME),
-			//				region.get(Region.UUID), region.get(Region.NAME),
-			//				district.get(District.UUID), district.get(District.NAME));
-
-			return QueryHelper.getResultList(em, cq, null, null, this::toDtoList);
-		}
-	
 }

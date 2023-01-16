@@ -40,7 +40,7 @@ public interface CommunityFacade extends GeoLocationFacade<CommunityDto, Communi
 
 	CommunityReferenceDto getCommunityReferenceById(long id);
 	
-	List<CommunityUserReportModelDto> getAllActiveCommunitytoRerence();
+	List<CommunityUserReportModelDto> getAllActiveCommunitytoRerence(CommunityCriteriaNew criteria, Integer first, Integer max, List<SortProperty> sortProperties, boolean isCounter);
 
 	// todo handle parent infra generically
 	List<CommunityReferenceDto> getByName(String name, DistrictReferenceDto districtRef, boolean includeArchivedEntities);
@@ -52,4 +52,6 @@ public interface CommunityFacade extends GeoLocationFacade<CommunityDto, Communi
 	boolean hasArchivedParentInfrastructure(Collection<String> communityUuids);
 
 	Map<String, String> getDistrictUuidsForCommunities(List<CommunityReferenceDto> communities);
+
+	long countReportGrid(CommunityCriteriaNew orElse);
 }

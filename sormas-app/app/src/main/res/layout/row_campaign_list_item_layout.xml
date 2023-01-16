@@ -119,6 +119,13 @@
                     android:textColor="@color/listActivityRowLeastText"
                     android:fontFamily="sans-serif"
                     app:value="@{data.community.name}" />
+                <ImageView
+                    android:id="@+id/imgSyncIcon"
+                    android:layout_width="@dimen/listGoToIconWidth"
+                    android:layout_height="@dimen/listGoToIconHeight"
+                    android:layout_gravity="center_vertical"
+                    android:scaleType="fitEnd"
+                    />
 
                 <ImageView
                     android:id="@+id/img_open_entry"

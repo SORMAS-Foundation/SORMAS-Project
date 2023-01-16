@@ -302,6 +302,7 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 
 	private void updateFiltersBasedOnArea(Object value) {
 		if (value != null) {
+			System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!! value = " +value);
 			regionFilter.removeAllItems();
 			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByArea(((AreaReferenceDto) value).getUuid()));
 			regionFilter.setEnabled(true);
@@ -309,6 +310,7 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 			campaignJurisdictionGroupByFilter.removeItem(COMMUNITY);
 			campaignJurisdictionGroupByFilter.addItems(AREA, REGION, DISTRICT);
 		} else {
+			System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!");
 			regionFilter.clear();
 			regionFilter.removeAllItems();
 			districtFilter.clear();

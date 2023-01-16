@@ -48,7 +48,7 @@ public class CampaignFormDataListFragment extends PagedBaseListFragment<Campaign
         linearLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
         recyclerViewForList = view.findViewById(R.id.recyclerViewForList);
         //view.getId()
-      //  recyclerViewForList.setBackgroundColor(Color.parseColor("#00FF00"));
+       // recyclerViewForList.setBackgroundColor(Color.parseColor("#00FF00"));
 
         return view;
     }

@@ -38,7 +38,7 @@
                 android:id="@+id/recyclerViewForList"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/listActivityRowBackground"
+                android:background="@color/formListSectionBackground0"
                 />
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
