@@ -25,4 +25,8 @@ public interface PointOfEntryFacade extends InfrastructureFacade<PointOfEntryDto
 	Page<PointOfEntryDto> getIndexPage(PointOfEntryCriteria criteria, Integer offset, Integer size, List<SortProperty> sortProperties);
 
 	boolean hasArchivedParentInfrastructure(Collection<String> pointOfEntryUuids);
+
+	PointOfEntryDto getByCaseUuid(String caseUuid);
+
+	boolean existsForCase(String caseUuid);
 }

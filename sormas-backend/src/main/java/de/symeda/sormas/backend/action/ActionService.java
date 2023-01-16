@@ -133,7 +133,6 @@ public class ActionService extends AdoServiceWithUserFilterAndJurisdiction<Actio
 		}
 
 		Predicate filter = cb.equal(joins.getCreator(), currentUser);
-
 		Predicate eventFilter = eventService.createUserFilter(new EventQueryContext(cb, cq, joins.getEventJoins()));
 		if (eventFilter != null) {
 			filter = cb.or(filter, eventFilter);
@@ -353,7 +352,10 @@ public class ActionService extends AdoServiceWithUserFilterAndJurisdiction<Actio
 			cb.lower(eventResponsibleUser.get(User.LAST_NAME)),
 			cb.selectCase()
 				.when(cb.isNotNull(action.get(Action.LAST_MODIFIED_BY)), cb.lower(lastModifiedBy.get(User.LAST_NAME)))
-				.otherwise(cb.lower(creatorUser.get(User.LAST_NAME))));
+				.otherwise(cb.lower(creatorUser.get(User.LAST_NAME))),
+			event.get(Event.CHANGE_DATE),
+			event.get(Event.DELETION_REASON),
+			event.get(Event.OTHER_DELETION_REASON));
 
 		cq.distinct(true);
 

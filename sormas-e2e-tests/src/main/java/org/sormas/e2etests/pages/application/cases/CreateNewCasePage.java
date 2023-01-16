@@ -100,9 +100,11 @@ public class CreateNewCasePage {
   public static final By CASE_DOCUMENT_EMPTY_TEXT =
       By.xpath("//div[@location='documents']//div[@class='v-label v-widget v-label-undef-w']");
   public static final By DOWNLOAD_LAST_UPDATED_CASE_DOCUMENT =
-      By.xpath("//div[@location='documents']//div[@class='v-button v-widget']");
+      By.xpath(
+          "//div[@location='documents']//div[@class='v-button v-widget caption-overflow-label v-button-caption-overflow-label']");
   public static final By DELETE_LAST_UPDATED_CASE_DOCUMENT =
-      By.xpath("(//div[@location='documents']//div[@class='v-button v-widget'])[2]");
+      By.xpath(
+          "(//div[@location='documents']//div[@class='v-button v-widget caption-overflow-label v-button-caption-overflow-label'])[2]");
   public static final By ACTION_CONFIRM_POPUP_BUTTON =
       By.cssSelector(".popupContent #actionConfirm");
   public static final By NICKNAME_ATTRIBUTE =

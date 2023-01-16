@@ -18,17 +18,17 @@ package de.symeda.sormas.app.backend.location;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
-import java.text.DecimalFormat;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-
-import org.apache.commons.lang3.StringUtils;
+import androidx.databinding.Bindable;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
-import androidx.databinding.Bindable;
+import org.apache.commons.lang3.StringUtils;
+
+import java.text.DecimalFormat;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
 
 import de.symeda.sormas.api.infrastructure.area.AreaType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
@@ -353,13 +353,13 @@ public class Location extends PseudonymizableAdo {
 			if (getCity() != null && !getCity().isEmpty()) {
 				sb.append(getCity());
 			} else if (getCommunity() != null) {
-				sb.append(getCommunity());
+				sb.append(getCommunity().buildCaption());
 			}
 			if (getDistrict() != null) {
 				if (sb.length() > 0) {
 					sb.append(", ");
 				}
-				sb.append(getDistrict());
+				sb.append(getDistrict().buildCaption());
 			}
 			if (getAreaType() != null) {
 				if (sb.length() > 0) {
@@ -443,7 +443,7 @@ public class Location extends PseudonymizableAdo {
 	}
 
 	@Override
-	public String toString() {
+	public String buildCaption() {
 		return getCompleteString();
 	}
 

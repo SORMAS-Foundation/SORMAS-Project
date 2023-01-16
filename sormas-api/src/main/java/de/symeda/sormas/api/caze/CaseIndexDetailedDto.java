@@ -3,6 +3,7 @@ package de.symeda.sormas.api.caze;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventStatus;
@@ -81,7 +82,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 								String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
 								Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex,
 								Date quarantineTo, Float completeness, FollowUpStatus followUpStatus, Date followUpUntil, SymptomJournalStatus symptomJournalStatus, VaccinationStatus vaccinationStatus, Date changeDate, Long facilityId,
-								String responsibleRegionUuid, String responsibleDistrictUuid, String responsibleDistrictName, boolean isInJurisdiction,
+								String responsibleRegionUuid, String responsibleDistrictUuid, String responsibleDistrictName, DeletionReason deletionReason, String otherDeleteReason, boolean isInJurisdiction,
 								//detailed fields
 								YesNoUnknown reInfection, String city, String street, String houseNumber, String additionalInformation, String postalCode, String phone,
 								String reportingUserUuid, String reportingUserFirstName, String reportingUserLastName, Date symptomOnsetDate,
@@ -94,7 +95,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 				healthFacilityName, healthFacilityDetails, pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails, surveillanceOfficerUuid, outcome,
 				age, ageType, birthdateDD, birthdateMM, birthdateYYYY, sex,
 				quarantineTo, completeness, followUpStatus, followUpUntil, symptomJournalStatus, vaccinationStatus, changeDate, facilityId,
-				responsibleRegionUuid, responsibleDistrictUuid, responsibleDistrictName, isInJurisdiction, visitCount, latestChangedDate);
+				responsibleRegionUuid, responsibleDistrictUuid, responsibleDistrictName, deletionReason, otherDeleteReason, isInJurisdiction, visitCount, latestChangedDate);
 		//@formatter:on
 
 		this.reInfection = reInfection;
@@ -113,6 +114,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 		this.responsibleCommunity = responsibleCommunity;
 	}
 
+	//@formatter:off
 	public CaseIndexDetailedDto(
 			long id, String uuid, String epidNumber, String externalID, String externalToken, String internalToken,
 			String personUuid, String personFirstName, String personLastName,
@@ -125,7 +127,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 			CaseOutcome outcome, Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY,
 			Sex sex, Date quarantineTo, Float completeness, FollowUpStatus followUpStatus, Date followUpUntil,
 			SymptomJournalStatus symptomJournalStatus, VaccinationStatus vaccinationStatus, Date changeDate, Long facilityId,
-			String responsibleRegionUuid, String responsibleDistrictUuid, String responsibleDistrictName, boolean isInJurisdiction,
+			String responsibleRegionUuid, String responsibleDistrictUuid, String responsibleDistrictName, DeletionReason deletionReason, String otherDeleteReason, boolean isInJurisdiction,
 			//detailed fields
 			YesNoUnknown reInfection, String city, String street, String houseNumber, String additionalInformation,
 			String postalCode, String phone, String reportingUserUuid, String reportingUserFirstName, String reportingUserLastName,
@@ -137,10 +139,11 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 				healthFacilityDetails, pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails, surveillanceOfficerUuid,
 				outcome, age, ageType, birthdateDD, birthdateMM, birthdateYYYY, sex, quarantineTo, completeness,
 				followUpStatus, followUpUntil, symptomJournalStatus, vaccinationStatus, changeDate, facilityId,
-				responsibleRegionUuid, responsibleDistrictUuid, responsibleDistrictName, isInJurisdiction, reInfection,
+				responsibleRegionUuid, responsibleDistrictUuid, responsibleDistrictName, deletionReason, otherDeleteReason, isInJurisdiction, reInfection,
 				city, street, houseNumber, additionalInformation, postalCode, phone, reportingUserUuid,
 				reportingUserFirstName, reportingUserLastName, symptomOnsetDate, responsibleRegion, responsibleCommunity,
 				visitCount, 0, latestSampleDateTime, sampleCount, latestChangedDate);
+		//@formatter:on
 	}
 
 	public YesNoUnknown getReInfection() {

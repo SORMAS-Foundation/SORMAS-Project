@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -34,6 +35,7 @@ import de.symeda.sormas.ui.UserProvider;
 public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 
 	public static final String ACTION_BTN_ID = "action";
+	public static final String DELETE_REASON_COLUMN = "deleteReasonCumulated";
 
 	private static final long serialVersionUID = 8116377533153377424L;
 
@@ -211,6 +213,15 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 	public void setColumns(String... columnIds) {
 		super.setColumns(columnIds);
 		getColumns().forEach(tColumn -> tColumn.setMaximumWidth(300));
+
+		Arrays.asList(columnIds).forEach(columnId -> {
+			if (!columnId.equals(ACTION_BTN_ID)) {
+				Column<?, ?> column = getColumn(columnId);
+				if (column.getRenderer() == null) {
+					column.setRenderer(new CaptionRenderer());
+				}
+			}
+		});
 	}
 
 	/**

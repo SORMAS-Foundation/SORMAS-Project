@@ -107,7 +107,6 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private ContactRelation relationToCase;
 	private Date lastContactDateFrom;
 	private Date lastContactDateTo;
-	private Boolean deleted = Boolean.FALSE;
 	private String contactOrCaseLike;
 	private EntityRelevanceStatus relevanceStatus;
 	private Boolean onlyHighPriorityContacts;
@@ -389,16 +388,6 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	@IgnoreForUrl
 	public EntityRelevanceStatus getRelevanceStatus() {
 		return relevanceStatus;
-	}
-
-	public ContactCriteria deleted(Boolean deleted) {
-		this.deleted = deleted;
-		return this;
-	}
-
-	@IgnoreForUrl
-	public Boolean getDeleted() {
-		return deleted;
 	}
 
 	/**

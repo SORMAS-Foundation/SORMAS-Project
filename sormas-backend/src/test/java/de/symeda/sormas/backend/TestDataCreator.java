@@ -217,7 +217,7 @@ public class TestDataCreator {
 		UserDto user = UserDto.build();
 		user.setFirstName("User");
 		user.setLastName(userRole.getCaption());
-		user.setUserName(userRole.toString());
+		user.setUserName(userRole.buildCaption());
 		user.setUserRoles(new HashSet(Arrays.asList(userRole)));
 		user.setRegion(rdcf.region);
 		user.setDistrict(rdcf.district);
@@ -1189,11 +1189,23 @@ public class TestDataCreator {
 		UserReferenceDto reportingUser,
 		ReportingType reportingType,
 		CaseReferenceDto caseReference) {
+		return createSurveillanceReport(reportingUser, reportingType, caseReference, null);
+	}
+
+	public SurveillanceReportDto createSurveillanceReport(
+		UserReferenceDto reportingUser,
+		ReportingType reportingType,
+		CaseReferenceDto caseReference,
+		Consumer<SurveillanceReportDto> extraConfig) {
 		SurveillanceReportDto surveillanceReport = SurveillanceReportDto.build(caseReference, reportingUser);
 		surveillanceReport.setReportingType(reportingType);
 		surveillanceReport.setReportDate(new Date());
 
-		surveillanceReport = beanTest.getSurveillanceReportFacade().saveSurveillanceReport(surveillanceReport);
+		if (extraConfig != null) {
+			extraConfig.accept(surveillanceReport);
+		}
+
+		surveillanceReport = beanTest.getSurveillanceReportFacade().save(surveillanceReport);
 
 		return surveillanceReport;
 	}

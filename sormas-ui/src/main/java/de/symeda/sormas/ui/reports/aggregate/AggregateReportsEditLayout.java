@@ -118,6 +118,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 
 		comboBoxRegion = new ComboBox<>();
 		comboBoxRegion.setWidth(250, Unit.PIXELS);
+		comboBoxRegion.setItemCaptionGenerator(item -> item.buildCaption());
 		comboBoxRegion.setCaption(I18nProperties.getPrefixCaption(AggregateReportDto.I18N_PREFIX, AggregateReportDto.REGION));
 		comboBoxRegion.setItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 		comboBoxRegion.setRequiredIndicatorVisible(true);
@@ -136,6 +137,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 		});
 
 		comboBoxDistrict = new ComboBox<>();
+		comboBoxDistrict.setItemCaptionGenerator(item -> item.buildCaption());
 		comboBoxDistrict.setWidth(250, Unit.PIXELS);
 		comboBoxDistrict.setCaption(I18nProperties.getPrefixCaption(AggregateReportDto.I18N_PREFIX, AggregateReportDto.DISTRICT));
 		comboBoxDistrict.setRequiredIndicatorVisible(true);
@@ -169,6 +171,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 		addComponent(new HorizontalLayout(comboBoxRegion, comboBoxDistrict));
 
 		comboBoxFacility = new ComboBox<>();
+		comboBoxFacility.setItemCaptionGenerator(item -> item.buildCaption());
 		comboBoxFacility.setWidth(250, Unit.PIXELS);
 		comboBoxFacility.setCaption(I18nProperties.getPrefixCaption(AggregateReportDto.I18N_PREFIX, AggregateReportDto.HEALTH_FACILITY));
 		comboBoxFacility.setEnabled(false);
@@ -180,6 +183,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 		});
 
 		comboBoxPoe = new ComboBox<>();
+		comboBoxPoe.setItemCaptionGenerator(item -> item.buildCaption());
 		comboBoxPoe.setWidth(250, Unit.PIXELS);
 		comboBoxPoe.setCaption(I18nProperties.getPrefixCaption(AggregateReportDto.I18N_PREFIX, AggregateReportDto.POINT_OF_ENTRY));
 		comboBoxPoe.setEnabled(false);

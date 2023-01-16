@@ -417,6 +417,19 @@ public class EditCaseSteps implements En {
           webDriverHelpers.waitUntilANumberOfElementsAreVisibleAndClickable(POPUPS_INPUTS, 5);
         });
     When(
+        "Sample name timestamp is correct in Create Quarantine Order form from Edit Case directory",
+        () -> {
+          String sampleFieldValue =
+              webDriverHelpers.getValueFromWebElement(QUARANTINE_ORDER_POPUP_SAMPLE_FIELD);
+          String sampleDate =
+              CreateNewSampleSteps.sample
+                  .getDateOfCollection()
+                  .format(DateTimeFormatter.ofPattern("M/d/yyyy"));
+          Assert.assertTrue(
+              sampleFieldValue.startsWith(sampleDate),
+              "Sample field date doesn't start with " + sampleDate);
+        });
+    When(
         "I select {string} Quarantine Order in Create Quarantine Order form in Case directory",
         (String name) -> {
           webDriverHelpers.selectFromCombobox(QUARANTINE_ORDER_COMBOBOX, name);
@@ -1941,7 +1954,7 @@ public class EditCaseSteps implements En {
           softly.assertEquals(
               webDriverHelpers.getValueFromWebElement(POINT_OF_ENTRY_DETAILS),
               "Automated test dummy description "
-                  + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-M-dd")),
+                  + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
               "Point of entry details are not correct");
 
           softly.assertAll();

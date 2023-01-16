@@ -431,6 +431,31 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 	}
 
 	@Test
+	public void testIsSharedEvent() throws ExternalSurveillanceToolException {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator
+			.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN), creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto person = creator.createPerson();
+		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf, c -> c.setDontShareWithReportingTool(true));
+
+		EventDto event1 = creator.createEvent(user.toReference(), caze.getDisease());
+		EventDto event2 = creator.createEvent(user.toReference(), caze.getDisease());
+
+		stubFor(
+			post(urlEqualTo("/export")).withRequestBody(containing(event1.getUuid()))
+				.withRequestBody(containing("eventUuids"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+
+		getExternalSurveillanceToolGatewayFacade().sendEvents(Arrays.asList(event1.getUuid()), false);
+
+		boolean shared = getExternalShareInfoFacade().isSharedEvent(event1.getUuid());
+		assertTrue(shared);
+
+		shared = getExternalShareInfoFacade().isSharedCase(event2.getUuid());
+		assertFalse(shared);
+	}
+
+	@Test
 	public void testArchiveAllArchivableCases_WithNotAllowedCaseToShareWithReportingTool(WireMockRuntimeInfo wireMockRuntime) {
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();

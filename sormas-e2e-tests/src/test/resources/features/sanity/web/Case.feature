@@ -1799,7 +1799,7 @@ Feature: Case end to end tests
       And I back to the cases list from edit case
       And I apply "Archived cases" to combobox on Case Directory Page
       And I check that number of displayed cases results is 1
-      And I apply "All cases" to combobox on Case Directory Page
+      And I apply "All active and archived cases" to combobox on Case Directory Page
       And I check that number of displayed cases results is 1
 
   @tmsLink=SORDEV-12441 @env_de
@@ -2083,3 +2083,21 @@ Feature: Case end to end tests
     And API: I check that POST call status code is 200
     Then I filter with first Case ID
     And I check that number of displayed cases results is 1
+
+  @env_main @#10418
+  Scenario: Verify sample timestamp pattern from Quarantine Order popup
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    Then I navigate to the last created case via the url
+    Then I click on New Sample
+    Then I create a new Sample with positive test result with Guinea Worm as disease
+    And I confirm popup window
+    Then I navigate to the last created case via the url
+    And I click on Create button in Document Templates box in Edit Case directory
+    Then I select "ExampleDocumentTemplateCases.docx" Quarantine Order in Create Quarantine Order form in Edit Case directory
+    And Sample name timestamp is correct in Create Quarantine Order form from Edit Case directory

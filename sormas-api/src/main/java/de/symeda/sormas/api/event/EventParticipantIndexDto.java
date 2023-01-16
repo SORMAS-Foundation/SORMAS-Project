@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.caze.VaccinationStatus;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -48,6 +49,9 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 
 	private VaccinationStatus vaccinationStatus;
 
+	private DeletionReason deletionReason;
+	private String otherDeletionReason;
+
 	private boolean isInJurisdiction;
 	private boolean isInJurisdictionOrOwned;
 
@@ -66,6 +70,8 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 		Date sampleDateTime,
 		VaccinationStatus vaccinationStatus,
 		String reportingUserUuid,
+		DeletionReason deletionReason,
+		String otherDeletionReason,
 		boolean isInJurisdiction,
 		boolean isInJurisdictionOrOwned) {
 
@@ -81,6 +87,8 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 		this.pathogenTestResult = pathogenTestResult;
 		this.sampleDateTime = sampleDateTime;
 		this.vaccinationStatus = vaccinationStatus;
+		this.deletionReason = deletionReason;
+		this.otherDeletionReason = otherDeletionReason;
 		this.isInJurisdiction = isInJurisdiction;
 		this.isInJurisdictionOrOwned = isInJurisdictionOrOwned;
 	}
@@ -191,5 +199,21 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 
 	public EventParticipantReferenceDto toReference() {
 		return new EventParticipantReferenceDto(getUuid(), firstName, lastName);
+	}
+
+	public DeletionReason getDeletionReason() {
+		return deletionReason;
+	}
+
+	public void setDeletionReason(DeletionReason deletionReason) {
+		this.deletionReason = deletionReason;
+	}
+
+	public String getOtherDeletionReason() {
+		return otherDeletionReason;
+	}
+
+	public void setOtherDeletionReason(String otherDeletionReason) {
+		this.otherDeletionReason = otherDeletionReason;
 	}
 }
