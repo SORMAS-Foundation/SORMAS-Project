@@ -15,6 +15,18 @@
 
 package de.symeda.sormas.app.backend.common;
 
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.databinding.BaseObservable;
+import androidx.recyclerview.widget.DiffUtil;
+
+import com.googlecode.openbeans.PropertyDescriptor;
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
@@ -24,22 +36,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
-import com.googlecode.openbeans.PropertyDescriptor;
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
-
-import android.util.Log;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.databinding.BaseObservable;
-import androidx.recyclerview.widget.DiffUtil;
-
-import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.HasCaption;
+import de.symeda.sormas.api.uuid.HasUuid;
 
 @MappedSuperclass
-public class AbstractDomainObject extends BaseObservable implements Serializable, Cloneable, HasUuid {
+public class AbstractDomainObject extends BaseObservable implements Serializable, Cloneable, HasUuid, HasCaption {
 
 	public static final String ID = "id";
 	public static final String UUID = "uuid";
@@ -281,6 +283,11 @@ public class AbstractDomainObject extends BaseObservable implements Serializable
 
 	@Override
 	public String toString() {
+		return getEntityName() + StringUtils.SPACE + this.getUuid();
+	}
+
+	@Override
+	public String buildCaption() {
 		return getEntityName();
 	}
 

@@ -32,7 +32,7 @@ public class LineListingRegionsLayout extends CssLayout {
 		this.regions = new TreeMap<>((r1, r2) -> regionNames.get(r1).compareTo(regionNames.get(r2)));
 
 		for (RegionReferenceDto region : FacadeProvider.getRegionFacade().getAllActiveByServerCountry()) {
-			regionNames.put(region.getUuid(), region.toString());
+			regionNames.put(region.getUuid(), region.buildCaption());
 			regions.put(region.getUuid(), new ArrayList<>());
 		}
 

@@ -19,10 +19,12 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.location.LocationReferenceDto;
 import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.HasCaption;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
 public class EventIndexDto extends PseudonymizableIndexDto {
@@ -116,6 +118,9 @@ public class EventIndexDto extends PseudonymizableIndexDto {
 	private Long surveillanceToolShareCount;
 	private ExternalShareStatus surveillanceToolStatus;
 
+	private DeletionReason deletionReason;
+	private String otherDeletionReason;
+
 	public EventIndexDto(
 		Long id,
 		String uuid,
@@ -159,7 +164,9 @@ public class EventIndexDto extends PseudonymizableIndexDto {
 		String responsibleUserLastName,
 		boolean isInJurisdictionOrOwned,
 		Date changeDate,
-		EventIdentificationSource eventIdentificationSource) {
+		EventIdentificationSource eventIdentificationSource,
+		DeletionReason deletionReason,
+		String otherDeletionReason) {
 
 		super(uuid);
 		this.id = id;
@@ -191,6 +198,8 @@ public class EventIndexDto extends PseudonymizableIndexDto {
 		this.isInJurisdictionOrOwned = isInJurisdictionOrOwned;
 		this.regionUuid = regionUuid;
 		this.eventIdentificationSource = eventIdentificationSource;
+		this.deletionReason = deletionReason;
+		this.otherDeletionReason = otherDeletionReason;
 	}
 
 	public EventIndexDto(String uuid) {
@@ -497,6 +506,22 @@ public class EventIndexDto extends PseudonymizableIndexDto {
 		this.eventIdentificationSource = eventIdentificationSource;
 	}
 
+	public DeletionReason getDeletionReason() {
+		return deletionReason;
+	}
+
+	public void setDeletionReason(DeletionReason deletionReason) {
+		this.deletionReason = deletionReason;
+	}
+
+	public String getOtherDeletionReason() {
+		return otherDeletionReason;
+	}
+
+	public void setOtherDeletionReason(String otherDeletionReason) {
+		this.otherDeletionReason = otherDeletionReason;
+	}
+
 	public EventReferenceDto toReference() {
 		return new EventReferenceDto(getUuid(), getDisease(), getDiseaseDetails(), getEventStatus(), getEventInvestigationStatus(), getStartDate());
 	}
@@ -529,7 +554,7 @@ public class EventIndexDto extends PseudonymizableIndexDto {
 		return isInJurisdictionOrOwned;
 	}
 
-	public static class EventIndexLocation implements Serializable {
+	public static class EventIndexLocation implements Serializable, HasCaption {
 
 		private String regionName;
 		private String districtName;
@@ -572,8 +597,7 @@ public class EventIndexDto extends PseudonymizableIndexDto {
 			return LocationReferenceDto.buildCaption(city, street, houseNumber, additionalInformation);
 		}
 
-		@Override
-		public String toString() {
+		public String buildCaption() {
 			return LocationReferenceDto.buildCaption(regionName, districtName, communityName, city, street, houseNumber, additionalInformation);
 		}
 	}

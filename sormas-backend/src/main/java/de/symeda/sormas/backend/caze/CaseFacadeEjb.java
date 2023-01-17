@@ -3747,9 +3747,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		// 9 Reports
 		List<SurveillanceReport> surveillanceReports = surveillanceReportService.getByCaseUuids(Collections.singletonList(otherCase.getUuid()));
 		surveillanceReports.forEach(surveillanceReport -> {
-			SurveillanceReportDto surveillanceReportDto = SurveillanceReportFacadeEjb.toDto(surveillanceReport);
+			SurveillanceReportDto surveillanceReportDto = surveillanceReportFacade.toDto(surveillanceReport);
 			surveillanceReportDto.setCaze(leadCase.toReference());
-			surveillanceReportFacade.saveSurveillanceReport(surveillanceReportDto);
+			surveillanceReportFacade.save(surveillanceReportDto);
 		});
 
 		// 10 Activity as case
@@ -3818,11 +3818,13 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Case> from = cq.from(Case.class);
 
+		CaseQueryContext qc = new CaseQueryContext(cb, cq, from);
+
 		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
 		cq.where(
 			cb.equal(from.get(Case.ARCHIVED), false),
 			cb.equal(from.get(Case.DELETED), false),
-			cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp, true)));
+			cb.not(service.createChangeDateFilter(cb, qc.getJoins(), notChangedTimestamp, true)));
 		cq.select(from.get(Case.UUID)).distinct(true);
 		List<String> caseUuids = em.createQuery(cq).getResultList();
 
@@ -4199,7 +4201,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	public List<CaseDataDto> getDuplicatesWithPathogenTest(@Valid CaseDataDto caseDataDto, PathogenTestDto pathogenTestDto) {
+	public List<CaseDataDto> getDuplicatesWithPathogenTest(@Valid PersonReferenceDto personReferenceDto, PathogenTestDto pathogenTestDto) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Case> cq = cb.createQuery(Case.class);
 		Root<Case> caseRoot = cq.from(Case.class);
@@ -4212,7 +4214,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		cq.select(caseRoot);
 		Predicate filter = cb.and(
 			cb.equal(caseRoot.get(Case.DISEASE), pathogenTestDto.getTestedDisease()),
-			cb.equal(personJoin.get(Person.UUID), caseDataDto.getPerson().getUuid()),
+			cb.equal(personJoin.get(Person.UUID), personReferenceDto.getUuid()),
 			cb.equal(caseRoot.get(Case.DISEASE), pathogenTestJoin.get(PathogenTest.TESTED_DISEASE)),
 			cb.exists(sampleService.exists(cb, cq, samplesJoin, pathogenTestDto.getSample().getUuid())));
 

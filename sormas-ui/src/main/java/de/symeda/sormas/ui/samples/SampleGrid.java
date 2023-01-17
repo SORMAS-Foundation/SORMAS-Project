@@ -104,6 +104,17 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 		lastPathogenTestColumn.setId(LAST_PATHOGEN_TEST);
 		lastPathogenTestColumn.setSortable(false);
 
+		Column<SampleIndexDto, String> deleteColumn = addColumn(entry -> {
+			if (entry.getDeletionReason() != null) {
+				return entry.getDeletionReason() + (entry.getOtherDeletionReason() != null ? ": " + entry.getOtherDeletionReason() : "");
+			} else {
+				return "-";
+			}
+		});
+		deleteColumn.setId(DELETE_REASON_COLUMN);
+		deleteColumn.setSortable(false);
+		deleteColumn.setCaption(I18nProperties.getCaption(Captions.deletionReason));
+
 		setColumns(
 			SampleIndexDto.UUID,
 			SampleIndexDto.LAB_SAMPLE_ID,
@@ -123,7 +134,8 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 			PATHOGEN_TEST_RESULT,
 			SampleIndexDto.ADDITIONAL_TESTING_STATUS,
 			LAST_PATHOGEN_TEST,
-			SampleIndexDto.PATHOGEN_TEST_COUNT);
+			SampleIndexDto.PATHOGEN_TEST_COUNT,
+			DELETE_REASON_COLUMN);
 
 		((Column<SampleIndexDto, Date>) getColumn(SampleIndexDto.SHIPMENT_DATE)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 		((Column<SampleIndexDto, Date>) getColumn(SampleIndexDto.RECEIVED_DATE)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));

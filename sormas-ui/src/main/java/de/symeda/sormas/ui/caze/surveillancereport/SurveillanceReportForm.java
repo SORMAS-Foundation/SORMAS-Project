@@ -45,7 +45,7 @@ public class SurveillanceReportForm extends AbstractEditForm<SurveillanceReportD
 
 	//@formatter:off
 	protected static final String HTML_LAYOUT =
-			fluidRowLocs(SurveillanceReportDto.UUID, SurveillanceReportDto.CREATING_USER) +
+			fluidRowLocs(SurveillanceReportDto.UUID, SurveillanceReportDto.REPORTING_USER) +
 			fluidRowLocs(SurveillanceReportDto.REPORTING_TYPE, SurveillanceReportDto.EXTERNAL_ID) +
 			fluidRowLocs(SurveillanceReportDto.REPORT_DATE, SurveillanceReportDto.DATE_OF_DIAGNOSIS) +
 			fluidRowLocs(SurveillanceReportDto.FACILITY_REGION, SurveillanceReportDto.FACILITY_DISTRICT) +
@@ -78,7 +78,7 @@ public class SurveillanceReportForm extends AbstractEditForm<SurveillanceReportD
 	@Override
 	protected void addFields() {
 		addField(SurveillanceReportDto.UUID).setReadOnly(true);
-		addField(SurveillanceReportDto.CREATING_USER).setReadOnly(true);
+		addField(SurveillanceReportDto.REPORTING_USER).setReadOnly(true);
 
 		addField(SurveillanceReportDto.REPORTING_TYPE).setRequired(true);
 		addField(SurveillanceReportDto.EXTERNAL_ID).setEnabled(false);

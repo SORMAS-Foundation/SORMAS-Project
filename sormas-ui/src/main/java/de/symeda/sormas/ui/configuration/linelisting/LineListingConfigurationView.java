@@ -65,7 +65,7 @@ public class LineListingConfigurationView extends AbstractConfigurationView {
 		}
 
 		if (region != null) {
-			getViewSubTitleLabel().setValue(region.toString());
+			getViewSubTitleLabel().setValue(region.buildCaption());
 		}
 
 		Label infoTextLabel;
@@ -215,7 +215,7 @@ public class LineListingConfigurationView extends AbstractConfigurationView {
 		LineListingConfigurationEditLayout editLayout = new LineListingConfigurationEditLayout(
 			FacadeProvider.getFeatureConfigurationFacade().getFeatureConfigurations(criteria, true),
 			disease,
-			region != null ? region.toString() : null);
+			region != null ? region.buildCaption() : null);
 
 		editLayout.setSaveCallback(() -> {
 			Notification.show(null, I18nProperties.getString(Strings.messageLineListingSaved), Type.TRAY_NOTIFICATION);
