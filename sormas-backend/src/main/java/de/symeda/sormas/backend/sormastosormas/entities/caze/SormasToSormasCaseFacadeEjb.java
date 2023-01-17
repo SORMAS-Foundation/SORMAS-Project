@@ -34,6 +34,7 @@ import javax.ejb.Stateless;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -118,6 +119,14 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 			|| (options.isWithSamples() && !userService.hasRight(UserRight.SAMPLE_EDIT))
 			|| (options.isWithImmunizations() && !userService.hasRight(UserRight.IMMUNIZATION_EDIT))) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorForbidden));
+		}
+
+		if (options.isWithSamples()) {
+			List<Sample> samples = sampleService.getByCaseUuids(entityUuids);
+			if (samples != null && samples.stream().anyMatch(s -> s.getAssociatedContact() != null)) {
+
+				throw SormasToSormasException.fromStringProperty(Strings.messageSormasToSormasSampleHasAssociatedContact);
+			}
 		}
 
 		super.share(entityUuids, options);

@@ -57,6 +57,7 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
+import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.AbstractSormasToSormasInterface;
 import de.symeda.sormas.backend.sormastosormas.share.incoming.SormasToSormasShareRequest;
@@ -115,6 +116,13 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 			|| (options.isWithSamples() && !userService.hasRight(UserRight.SAMPLE_EDIT))
 			|| (options.isWithImmunizations() && !userService.hasRight(UserRight.IMMUNIZATION_EDIT))) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorForbidden));
+		}
+
+		if (options.isWithSamples()) {
+			List<Sample> samples = sampleService.getByContactUuids(entityUuids);
+			if (samples != null && samples.stream().anyMatch(s -> s.getAssociatedCase() != null)) {
+				throw SormasToSormasException.fromStringProperty(Strings.messageSormasToSormasSampleHasAssociatedCase);
+			}
 		}
 
 		super.share(entityUuids, options);
