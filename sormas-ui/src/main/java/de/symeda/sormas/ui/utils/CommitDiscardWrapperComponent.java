@@ -600,10 +600,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 				htmlMsg.append(ex.getHtmlMessage());
 			} else {
 
-				InvalidValueException[] causes;
-				tempCauses = new ArrayList<>();
-				extractCauses(ex.getCauses());
-				causes = tempCauses.toArray(new InvalidValueException[] {});
+				InvalidValueException[] causes = getAllCauses(ex.getCauses());
 
 				if (causes != null) {
 
@@ -655,7 +652,12 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		}
 	}
 
-	public void extractCauses(InvalidValueException[] causes) {
+	public InvalidValueException[] getAllCauses(InvalidValueException[] causes) {
+		List<Validator.InvalidValueException> tempCauses = new ArrayList<>();
+		return extractCauses(causes, tempCauses);
+	}
+
+	public InvalidValueException[] extractCauses(InvalidValueException[] causes, List<Validator.InvalidValueException> tempCauses) {
 		for (InvalidValueException cause : causes) {
 			if (cause.getCauses().length > 1) {
 				extractCauses(cause.getCauses());
