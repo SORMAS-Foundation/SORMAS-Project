@@ -46,13 +46,12 @@ public class UserRoleFormHelper {
 			UserRoleDto.JURISDICTION_LEVEL,
 			Arrays.asList(JurisdictionLevel.COMMUNITY, JurisdictionLevel.HEALTH_FACILITY),
 			true);
-		FieldHelper
-			.setDisabledWhen(
-				fieldGroup,
-				UserRoleDto.JURISDICTION_LEVEL,
-				JurisdictionLevel.HEALTH_FACILITY,
-				UserRoleDto.HAS_OPTIONAL_HEALTH_FACILITY,
-				false);
+		FieldHelper.setDisabledWhen(
+			fieldGroup,
+			UserRoleDto.JURISDICTION_LEVEL,
+			JurisdictionLevel.HEALTH_FACILITY,
+			UserRoleDto.HAS_OPTIONAL_HEALTH_FACILITY,
+			false);
 		FieldHelper
 			.setDisabledWhen(fieldGroup, UserRoleDto.JURISDICTION_LEVEL, JurisdictionLevel.POINT_OF_ENTRY, UserRoleDto.PORT_HEALTH_USER, false);
 		fieldGroup.getField(UserRoleDto.JURISDICTION_LEVEL).addValueChangeListener(e -> {
@@ -66,8 +65,11 @@ public class UserRoleFormHelper {
 	}
 
 	public static void setTemplateRoleItems(ComboBox templateRoleCombo) {
-		List<UserRoleDto> existingUserRoles =
-			FacadeProvider.getUserRoleFacade().getAllActive().stream().sorted(Comparator.comparing(UserRoleDto::getCaption)).collect(Collectors.toList());
+		List<UserRoleDto> existingUserRoles = FacadeProvider.getUserRoleFacade()
+			.getAllActive()
+			.stream()
+			.sorted(Comparator.comparing(UserRoleDto::getCaption))
+			.collect(Collectors.toList());
 		List<UserRoleDto> defaultUserRoles = FacadeProvider.getUserRoleFacade()
 			.getDefaultUserRolesAsDto()
 			.stream()
@@ -79,7 +81,6 @@ public class UserRoleFormHelper {
 		templateItems.addAll(defaultUserRoles);
 
 		FieldHelper.updateItems(templateRoleCombo, templateItems);
-		templateItems.forEach(t -> templateRoleCombo.setItemCaption(t, t.getCaption()));
 	}
 
 	private static String defaultCaptionExtension() {

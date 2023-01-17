@@ -22,6 +22,7 @@ import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.renderers.HtmlRenderer;
+import com.vaadin.ui.renderers.TextRenderer;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -217,7 +218,7 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 		Arrays.asList(columnIds).forEach(columnId -> {
 			if (!columnId.equals(ACTION_BTN_ID)) {
 				Column<?, ?> column = getColumn(columnId);
-				if (column.getRenderer() == null) {
+				if (column.getRenderer() == null || TextRenderer.class.isAssignableFrom(column.getRenderer().getClass())) {
 					column.setRenderer(new CaptionRenderer());
 				}
 			}
