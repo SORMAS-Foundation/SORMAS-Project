@@ -594,37 +594,24 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		} catch (InvalidValueException ex) {
 			StringBuilder htmlMsg = new StringBuilder();
 			String message = ex.getMessage();
-			if (message != null && !message.isEmpty()) {
+			if (message != null && !message.isEmpty() && ex.getCauses().length == 0) {
 				htmlMsg.append(ex.getHtmlMessage());
 			} else {
 
-				InvalidValueException[] causes = getAllCauses(ex.getCauses());
+				List<InvalidValueException> causes = extractCauses(ex);
 
 				if (causes != null) {
 
-					InvalidValueException firstCause = null;
-					boolean multipleCausesFound = false;
-					for (int i = 0; i < causes.length; i++) {
-						if (!causes[i].isInvisible()) {
-							if (firstCause == null) {
-								firstCause = causes[i];
-							} else {
-								multipleCausesFound = true;
-								break;
-							}
-						}
-					}
-					if (multipleCausesFound) {
+					if (causes.size() > 1) {
 						htmlMsg.append("<ul>");
 						// All again
-						for (int i = 0; i < causes.length; i++) {
-							if (!causes[i].isInvisible()) {
-								htmlMsg.append("<li style=\"color: #FFF;\">").append(findHtmlMessage(causes[i])).append("</li>");
-							}
+						for (InvalidValueException cause : causes) {
+							htmlMsg.append("<li style=\"color: #FFF;\">").append(findHtmlMessage(cause)).append("</li>");
 						}
 						htmlMsg.append("</ul>");
-					} else if (firstCause != null) {
+					} else if (causes.size() > 0) {
 						htmlMsg.append("<ul>");
+						InvalidValueException firstCause = causes.get(0);
 						String info = findHtmlMessage(firstCause);
 						boolean validInfo = nonNull(info) && !info.isEmpty() && !info.equalsIgnoreCase("null");
 						if (validInfo) {
@@ -639,7 +626,6 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 							htmlMsg.append(findHtmlMessageDetails(firstCause));
 						}
 					}
-
 				}
 			}
 
@@ -650,20 +636,22 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		}
 	}
 
-	public InvalidValueException[] getAllCauses(InvalidValueException[] causes) {
+	public List<InvalidValueException> extractCauses(InvalidValueException cause) {
 		List<Validator.InvalidValueException> tempCauses = new ArrayList<>();
-		return extractCauses(causes, tempCauses);
-	}
 
-	public InvalidValueException[] extractCauses(InvalidValueException[] causes, List<Validator.InvalidValueException> tempCauses) {
-		for (InvalidValueException cause : causes) {
-			if (cause.getCauses().length > 0) {
-				extractCauses(cause.getCauses(), tempCauses);
-			} else {
-				tempCauses.add(cause);
-			}
+		if (cause.isInvisible()) {
+			return tempCauses;
 		}
-		return tempCauses.toArray(new InvalidValueException[] {});
+
+		if (cause.getCauses().length == 0) {
+			tempCauses.add(cause);
+		}
+
+		for (InvalidValueException childCause : cause.getCauses()) {
+			tempCauses.addAll(extractCauses(childCause));
+		}
+
+		return tempCauses;
 	}
 
 	@Override
