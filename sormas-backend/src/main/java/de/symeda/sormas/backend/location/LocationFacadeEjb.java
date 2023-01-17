@@ -172,7 +172,7 @@ public class LocationFacadeEjb implements LocationFacade {
 			return true;
 		}
 
-		if (Boolean.TRUE.equals(!DataHelper.equal(firstAddress.getFacilityType(), secondAddress.getFacilityType()))) {
+		if (!DataHelper.equal(firstAddress.getFacilityType(), secondAddress.getFacilityType())) {
 			return true;
 		}
 
@@ -180,11 +180,11 @@ public class LocationFacadeEjb implements LocationFacade {
 			Facility firstAddressFacilityDto = facilityService.getByUuid(firstAddress.getFacility().getUuid());
 			if (secondAddress.getCommunity() != null
 				&& firstAddressFacilityDto.getCommunity() != null
-				&& !firstAddressFacilityDto.getCommunity().getUuid().equals(secondAddress.getCommunity().getUuid())) {
+				&& !DataHelper.isSame(firstAddressFacilityDto.getCommunity(), secondAddress.getCommunity())) {
 				return true;
 			}
 			if (secondAddress.getFacility() != null) {
-				if (!DataHelper.equal(firstAddress.getFacility(), secondAddress.getFacility())) {
+				if (!DataHelper.isSame(firstAddress.getFacility(), secondAddress.getFacility())) {
 					return true;
 				} else {
 					if (!DataHelper.equal(firstAddress.getFacilityDetails(), secondAddress.getFacilityDetails())) {
