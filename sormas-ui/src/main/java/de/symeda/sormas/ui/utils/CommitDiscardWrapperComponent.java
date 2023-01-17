@@ -132,8 +132,6 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	private boolean shortcutsEnabled = false;
 	protected transient List<ClickShortcut> actions;
 
-	private List<Validator.InvalidValueException> tempCauses;
-
 	protected CommitDiscardWrapperComponent() {
 
 	}
@@ -659,12 +657,13 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 	public InvalidValueException[] extractCauses(InvalidValueException[] causes, List<Validator.InvalidValueException> tempCauses) {
 		for (InvalidValueException cause : causes) {
-			if (cause.getCauses().length > 1) {
-				extractCauses(cause.getCauses());
+			if (cause.getCauses().length > 0) {
+				extractCauses(cause.getCauses(), tempCauses);
 			} else {
 				tempCauses.add(cause);
 			}
 		}
+		return tempCauses.toArray(new InvalidValueException[] {});
 	}
 
 	@Override
