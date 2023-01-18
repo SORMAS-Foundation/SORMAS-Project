@@ -172,12 +172,25 @@ public class LocationFacadeEjb implements LocationFacade {
 			return true;
 		}
 
+		if (!DataHelper.equal(firstAddress.getFacilityType(), secondAddress.getFacilityType())) {
+			return true;
+		}
+
 		if (firstAddress.getFacility() != null) {
 			Facility firstAddressFacilityDto = facilityService.getByUuid(firstAddress.getFacility().getUuid());
 			if (secondAddress.getCommunity() != null
 				&& firstAddressFacilityDto.getCommunity() != null
-				&& !firstAddressFacilityDto.getCommunity().getUuid().equals(secondAddress.getCommunity().getUuid())) {
+				&& !DataHelper.isSame(firstAddressFacilityDto.getCommunity(), secondAddress.getCommunity())) {
 				return true;
+			}
+			if (secondAddress.getFacility() != null) {
+				if (!DataHelper.isSame(firstAddress.getFacility(), secondAddress.getFacility())) {
+					return true;
+				} else {
+					if (!DataHelper.equal(firstAddress.getFacilityDetails(), secondAddress.getFacilityDetails())) {
+						return true;
+					}
+				}
 			}
 		}
 
@@ -196,7 +209,7 @@ public class LocationFacadeEjb implements LocationFacade {
 				} else {
 					oneMatch = Boolean.TRUE;
 				}
-			} else if (addressTypePair.getElement1() != null) {
+			} else if (StringUtils.isNotBlank(addressTypePair.getElement1())) {
 				secondLocationHasAddressValues = Boolean.TRUE;
 			}
 		}
