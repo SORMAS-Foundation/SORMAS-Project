@@ -177,6 +177,7 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 
 		Predicate filter = service.buildCriteriaFilter(criteria, cb, root);
 		cq.where(filter);
+	//	System.out.println("DEBUGGER 5678ijhyuio _______TOtalpopulation____________________________ "+SQLExtractor.from(em.createQuery(cq)));
 
 		return em.createQuery(cq).getResultStream().map(populationData -> toDto(populationData)).collect(Collectors.toList());
 	}
@@ -289,6 +290,33 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 
 		cq.where(areaFilter, ageFilter);
 		cq.select(root.get(PopulationData.POPULATION));
+	
+		TypedQuery query = em.createQuery(cq);
+		try {
+			Integer totalPopulation = 0;
+			for (Object i : query.getResultList()) {
+				if (Objects.nonNull(i)) {
+					totalPopulation = totalPopulation + (Integer) i;
+				}
+			}
+			return totalPopulation;
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
+	
+	public Integer getAreaPopulationByUuid(String areaUuid, AgeGroup ageGroup) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Integer> cq = cb.createQuery(Integer.class);
+		Root<PopulationData> root = cq.from(PopulationData.class);
+		Join<PopulationData, Region> regionJoin = root.join(PopulationData.REGION);
+		Join<Region, Area> areaJoin = regionJoin.join(Region.AREA);
+
+		Predicate areaFilter = cb.equal(areaJoin.get(Area.UUID), areaUuid);
+		Predicate ageFilter = cb.and(cb.equal(root.get(PopulationData.AGE_GROUP), ageGroup));
+
+		cq.where(areaFilter, ageFilter);
+		cq.select(root.get(PopulationData.POPULATION));
 	//	System.out.println("DEBUGGER 5678ijhyuio _______TOtalpopulation____________________________ "+SQLExtractor.from(em.createQuery(cq)));
 
 		TypedQuery query = em.createQuery(cq);
@@ -305,6 +333,7 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 		}
 	}
 	
+	
 	public Integer getAreaPopulationParent(String areaUuid, AgeGroup ageGroup) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Integer> cq = cb.createQuery(Integer.class);
@@ -315,9 +344,9 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 		//Predicate areaFilter = cb.equal(areaJoin.get(Area.UUID), areaUuid);
 		Predicate ageFilter = cb.and(cb.equal(root.get(PopulationData.AGE_GROUP), ageGroup));
 
-		cq.where(/*areaFilter, */ageFilter);
+		cq.where(ageFilter);
 		cq.select(root.get(PopulationData.POPULATION));
-	//	System.out.println("DEBUGGER 5678ijhyuio _______TOtalpopulation____________________________ "+SQLExtractor.from(em.createQuery(cq)));
+		System.out.println("DEBUGGER 5678ijhyuio _______TOtalpopulation____________________________ "+SQLExtractor.from(em.createQuery(cq)));
 
 		TypedQuery query = em.createQuery(cq);
 		try {

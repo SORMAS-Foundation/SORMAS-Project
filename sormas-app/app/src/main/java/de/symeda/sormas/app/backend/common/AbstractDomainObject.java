@@ -267,6 +267,10 @@ public class AbstractDomainObject extends BaseObservable implements Serializable
 		return modified;
 	}
 
+	public String isModifiedList() {
+		return "@drawable/selector_list_activity_row_background"+modified;
+	}
+
 	public void setModified(boolean modified) {
 		this.modified = modified;
 	}

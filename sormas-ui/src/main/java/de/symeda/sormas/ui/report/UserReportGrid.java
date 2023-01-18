@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.report;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -13,6 +14,8 @@ import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.infrastructure.community.CommunityCriteriaNew;
+import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.report.CommunityUserReportModelDto;
 import de.symeda.sormas.api.report.UserReportModelDto;
@@ -28,15 +31,18 @@ import elemental.json.JsonValue;
 
 @SuppressWarnings("serial")
 @Component
-public class UserReportGrid extends FilteredGrid<CommunityUserReportModelDto, UserCriteria> {
+public class UserReportGrid extends FilteredGrid<CommunityUserReportModelDto, CommunityCriteriaNew> {
 
 	private static final long serialVersionUID = -1L;
 
 	@SuppressWarnings("unchecked")
-	public UserReportGrid() {
+	public UserReportGrid(CommunityCriteriaNew criteria) {
 		super(CommunityUserReportModelDto.class);
 		setSizeFull();
+		
+		//To Do enable other loader
 		setLazyDataProvider();
+		setCriteria(criteria);
 	
 		setColumns(
 				CommunityUserReportModelDto.AREA,
@@ -68,12 +74,36 @@ public class UserReportGrid extends FilteredGrid<CommunityUserReportModelDto, Us
 
 	public void setLazyDataProvider() {
 		System.out.println("sdafasdfasddfgsdfhsdfg");
-		DataProvider<CommunityUserReportModelDto, UserCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-			query -> FacadeProvider.getCommunityFacade().getAllActiveCommunitytoRerence()
-				.stream(),
-			query -> {
-				return (int) FacadeProvider.getUserFacade().count(query.getFilter().orElse(null));
-			});
+		
+		DataProvider<CommunityUserReportModelDto, CommunityCriteriaNew> dataProvider = DataProvider.fromFilteringCallbacks(
+				query -> FacadeProvider.getCommunityFacade()
+					.getAllActiveCommunitytoRerence(
+						query.getFilter().orElse(null),
+						query.getOffset(),
+						query.getLimit(),
+						query.getSortOrders()
+							.stream()
+							.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
+							.collect(Collectors.toList()), false)
+					.stream(),
+				query -> {
+					return (int) FacadeProvider.getCommunityFacade().getAllActiveCommunitytoRerence(
+							query.getFilter().orElse(null),
+							query.getOffset(),
+							query.getLimit(),
+							null,
+							true).size();
+				});
+		
+	//	List<CommunityUserReportModelDto> reportLists = FacadeProvider.getCommunityFacade().getAllActiveCommunitytoRerence(getCriteria());
+		
+	//	reportLists.removeIf(e -> e.getMessage().equals("Correctly assigned"));
+		
+	//	DataProvider<CommunityUserReportModelDto, UserCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
+	//		query -> reportLists.stream(),
+	//		query -> {
+	//			return (int) reportLists.size();
+	//		});
 		System.out.println("sdafasdfasdfgasdgvasdfgsdfhsdfg "+dataProvider);
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
@@ -93,6 +123,8 @@ public class UserReportGrid extends FilteredGrid<CommunityUserReportModelDto, Us
 
 		getDataProvider().refreshAll();
 	}
+	
+	
 
 	public static class ActiveRenderer extends HtmlRenderer {
 
@@ -105,4 +137,5 @@ public class UserReportGrid extends FilteredGrid<CommunityUserReportModelDto, Us
 			return super.encode(iconValue);
 		}
 	}
+	
 }

@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Toast;
 
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
@@ -204,10 +205,19 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity<Campaign
 
             showPreloader();
             pageMenu.hideAll();
-            setSetSubHeadingTitleForCampaign(model.getCriteria().getCampaign());
-            System.out.println("-----------------------"+model.getCriteria().getCampaign().getUuid());
-            DatabaseHelper.getCampaignDao().updateCampaignLastOpenedDate(model.getCriteria().getCampaign().getUuid());
-           // campaignDao.updateCampaignLastOpenedDate(model.getCriteria().getCampaign().getUuid());
+           // System.out.println("-----------------------"+model.getCriteria().getCampaign().getUuid());
+            if(model.getCriteria().getCampaign() != null){
+                DatabaseHelper.getCampaignDao().updateCampaignLastOpenedDate(model.getCriteria().getCampaign().getUuid());
+                // campaignDao.updateCampaignLastOpenedDate(model.getCriteria().getCampaign().getUuid());
+                setSetSubHeadingTitleForCampaign(model.getCriteria().getCampaign());
+            }else{
+                Context context = getApplicationContext();
+                CharSequence text = "You did not select any Campaign!";
+                int duration = Toast.LENGTH_LONG;
+
+                Toast toast = Toast.makeText(context, text, duration);
+                toast.show();
+            }
             model.notifyCriteriaUpdated();
         });
 
@@ -220,6 +230,9 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity<Campaign
             filterBinding.invalidateAll();
             filterBinding.executePendingBindings();
             setSetSubHeadingTitleForCampaign(lastCampaign);
+            if (getNewMenu() != null) {
+                getNewMenu().setVisible(false);
+            }
             model.notifyCriteriaUpdated();
         });
     }

@@ -1,12 +1,16 @@
 package de.symeda.sormas.app.campaign.list;
 
+import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.campaign.data.CampaignFormData;
+import de.symeda.sormas.app.backend.therapy.Treatment;
 import de.symeda.sormas.app.core.adapter.databinding.BindingPagedListAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.BindingViewHolder;
+import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
 import de.symeda.sormas.app.databinding.RowCampaignListItemLayoutBinding;
 import de.symeda.sormas.app.databinding.RowCaseListItemLayoutBinding;
 
@@ -20,24 +24,22 @@ public class CampaignFormDataListAdapter extends BindingPagedListAdapter<Campaig
         super.onBindViewHolder(holder, position);
 
         if (getItemViewType(position) == TYPE_ITEM) {
-            BindingViewHolder<CampaignFormData, RowCaseListItemLayoutBinding> pagedHolder = (BindingViewHolder) holder;
+            BindingViewHolder<CampaignFormData, RowCampaignListItemLayoutBinding> pagedHolder = (BindingViewHolder) holder;
             pagedHolder.setOnListItemClickListener(this.mOnListItemClickListener);
-                 //   updateUnreadIndicator(holder, position);
+            CampaignFormData item = getItem(position);
+
+            pagedHolder.setOnListItemClickListener(this.mOnListItemClickListener);
+
+            if (item.isModifiedOrChildModified()) {
+                pagedHolder.binding.imgSyncIcon.setVisibility(View.VISIBLE);
+                pagedHolder.binding.imgSyncIcon.setImageResource(R.drawable.ic_sync_blue_24dp);
+            } else {
+                pagedHolder.binding.imgSyncIcon.setVisibility(View.GONE);
+            }
         }
 
 
     }
-//
-//    public void updateUnreadIndicator(DataBoundViewHolder<RowSampleListItemLayoutBinding> holder, Sample item) {
-//        backgroundRowItem = (LayerDrawable) ContextCompat.getDrawable(holder.context, R.drawable.background_list_activity_row);
-//        unreadListItemIndicator = backgroundRowItem.findDrawableByLayerId(R.id.unreadListItemIndicator);
-//
-//        if (item != null) {
-//            if (item.isUnreadOrChildUnread()) {
-//                unreadListItemIndicator.setTint(holder.context.getResources().getColor(R.color.unreadIcon));
-//            } else {
-//                unreadListItemIndicator.setTint(holder.context.getResources().getColor(android.R.color.transparent));
-//            }
-//        }
+
 
 }

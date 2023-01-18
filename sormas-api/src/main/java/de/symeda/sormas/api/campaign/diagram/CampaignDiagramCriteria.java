@@ -51,6 +51,7 @@ public class CampaignDiagramCriteria extends BaseCriteria implements Serializabl
 	}
 
 	public RegionReferenceDto getRegion() {
+	//	System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!1111111111111111111111111111 region= " +region);
 		return region;
 	}
 
