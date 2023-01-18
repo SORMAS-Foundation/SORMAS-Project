@@ -17,11 +17,11 @@ package de.symeda.sormas.api.visit;
 
 import java.util.Date;
 import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
+import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.importexport.ExportGroup;
 import de.symeda.sormas.api.importexport.ExportGroupType;
@@ -280,6 +280,6 @@ public class VisitExportDto extends AbstractUuidDto {
 	}
 
 	public void setVisitUserRoles(Set<UserRoleReferenceDto> roles) {
-		this.visitUserRoles = StringUtils.join(roles, ", ");
+		this.visitUserRoles = roles.stream().map(ReferenceDto::buildCaption).collect(Collectors.joining(", "));;
 	}
 }
