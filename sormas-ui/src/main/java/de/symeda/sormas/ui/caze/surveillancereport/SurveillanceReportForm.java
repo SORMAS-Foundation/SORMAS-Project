@@ -17,31 +17,22 @@ package de.symeda.sormas.ui.caze.surveillancereport;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
-import com.vaadin.icons.VaadinIcons;
-import com.vaadin.ui.Button;
-import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextArea;
 
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
-import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
-import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
 
 public class SurveillanceReportForm extends AbstractEditForm<SurveillanceReportDto> {
 
 	private static final String FACILITY_TYPE_GROUP_LOC = "facilityTypeGroup";
-	private static final String VIEW_MESSAGE_LOC = "viewMessage";
 
 	//@formatter:off
 	protected static final String HTML_LAYOUT =
@@ -51,11 +42,8 @@ public class SurveillanceReportForm extends AbstractEditForm<SurveillanceReportD
 			fluidRowLocs(SurveillanceReportDto.FACILITY_REGION, SurveillanceReportDto.FACILITY_DISTRICT) +
 			fluidRowLocs(FACILITY_TYPE_GROUP_LOC, SurveillanceReportDto.FACILITY_TYPE) +
 			fluidRowLocs(SurveillanceReportDto.FACILITY, SurveillanceReportDto.FACILITY_DETAILS) +
-			fluidRowLocs(SurveillanceReportDto.NOTIFICATION_DETAILS) +
-			fluidRowLocs(VIEW_MESSAGE_LOC);
+			fluidRowLocs(SurveillanceReportDto.NOTIFICATION_DETAILS);
 	//@formatter:on
-
-	Button viewMessageButton;
 
 	protected SurveillanceReportForm(SurveillanceReportDto report) {
 		super(
@@ -98,18 +86,6 @@ public class SurveillanceReportForm extends AbstractEditForm<SurveillanceReportD
 
 		addField(SurveillanceReportDto.NOTIFICATION_DETAILS, TextArea.class).setRows(7);
 
-		viewMessageButton = ButtonHelper.createIconButton(
-			Captions.viewMessage,
-			VaadinIcons.EYE,
-			e -> ControllerProvider.getExternalMessageController()
-				.showExternalMessage(
-					FacadeProvider.getExternalMessageFacade().getForSurveillanceReport(getValue().toReference()).getUuid(),
-					false,
-					null));
-		getContent().addComponent(viewMessageButton, VIEW_MESSAGE_LOC);
-		viewMessageButton.setVisible(false);
-		CssStyles.style(viewMessageButton, CssStyles.ALIGN_RIGHT, CssStyles.VSPACE_3);
-
 		initializeAccessAndAllowedAccesses();
 	}
 
@@ -122,14 +98,5 @@ public class SurveillanceReportForm extends AbstractEditForm<SurveillanceReportD
 		getContent().addComponent(facilityTypeGroup, FACILITY_TYPE_GROUP_LOC);
 
 		return facilityTypeGroup;
-	}
-
-	@Override
-	public void setValue(SurveillanceReportDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
-		super.setValue(newFieldValue);
-		if (UserProvider.getCurrent().getUserRights().contains(UserRight.EXTERNAL_MESSAGE_VIEW)) {
-			getContent().getComponent(VIEW_MESSAGE_LOC)
-				.setVisible(FacadeProvider.getExternalMessageFacade().getForSurveillanceReport(newFieldValue.toReference()) != null ? true : false);
-		}
 	}
 }
