@@ -75,7 +75,7 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 				pathogenTestUuid,
 				e -> actionCallback.accept(
 					() -> ControllerProvider.getPathogenTestController()
-						.edit(pathogenTestUuid, SormasUI::refreshView, (pathogenTestDto, callback) -> callback.run(), isEditableAndHasEditRight)),
+						.edit(pathogenTestUuid, SormasUI::refreshView, isEditableAndHasEditRight)),
 				isEditableAndHasEditRight);
 			listEntry.setEnabled(isEditable);
 			listLayout.addComponent(listEntry);

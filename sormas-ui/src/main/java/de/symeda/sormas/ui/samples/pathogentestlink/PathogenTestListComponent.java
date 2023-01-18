@@ -37,7 +37,7 @@ public class PathogenTestListComponent extends SideComponent {
 		if (isEditAllowed) {
 			addCreateButton(
 				I18nProperties.getCaption(Captions.pathogenTestNewTest),
-				() -> ControllerProvider.getPathogenTestController().create(sampleRef, 0, (pathogenTest, callback) -> callback.run()),
+				() -> ControllerProvider.getPathogenTestController().create(sampleRef, 0),
 				UserRight.PATHOGEN_TEST_CREATE);
 		}
 

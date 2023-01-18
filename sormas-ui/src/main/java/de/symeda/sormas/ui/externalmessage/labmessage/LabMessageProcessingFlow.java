@@ -28,12 +28,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.function.Consumer;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.Registration;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
@@ -75,9 +75,9 @@ import de.symeda.sormas.ui.externalmessage.labmessage.processing.SampleAndPathog
 import de.symeda.sormas.ui.externalmessage.processing.EntrySelectionField;
 import de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper;
 import de.symeda.sormas.ui.externalmessage.processing.PickOrCreateEntryResult;
-import de.symeda.sormas.ui.samples.PathogenTestForm;
 import de.symeda.sormas.ui.samples.SampleController;
 import de.symeda.sormas.ui.samples.SampleCreateForm;
+import de.symeda.sormas.ui.samples.SampleEditPathogenTestListHandler;
 import de.symeda.sormas.ui.samples.SampleSelectionField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -144,19 +144,14 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		boolean lastSample,
 		HandlerCallback<SampleAndPathogenTests> callback) {
 
+		SampleEditPathogenTestListHandler pathogenTestHandler = new SampleEditPathogenTestListHandler();
 		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent =
-			getSampleCreateComponent(sample, lastSample, pathogenTests, labMessage, disease);
+			getSampleCreateComponent(sample, lastSample, pathogenTests, labMessage, disease, pathogenTestHandler::addPathogenTest);
 
-		sampleCreateComponent.addCommitListener(() -> {
-			List<PathogenTestDto> createdPathogenTests = new ArrayList<>();
-			for (int i = 0; i < sampleCreateComponent.getComponentCount(); i++) {
-				Component component = sampleCreateComponent.getComponent(i);
-				if (PathogenTestForm.class.isAssignableFrom(component.getClass())) {
-					createdPathogenTests.add(((PathogenTestForm) component).getValue());
-				}
-			}
+		sampleCreateComponent.setPostCommitListener(() -> {
+			pathogenTestHandler.saveAll(sample.toReference());
 
-			callback.done(new SampleAndPathogenTests(sampleCreateComponent.getWrappedComponent().getValue(), createdPathogenTests));
+			callback.done(new SampleAndPathogenTests(sampleCreateComponent.getWrappedComponent().getValue(), pathogenTestHandler.getPathogenTests()));
 		});
 		sampleCreateComponent.addDiscardListener(callback::cancel);
 
@@ -389,32 +384,33 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		boolean lastSample,
 		List<PathogenTestDto> pathogenTests,
 		ExternalMessageDto externalMessageDto,
-		Disease disease) {
+		Disease disease,
+		Consumer<PathogenTestDto> pathogenTestSaveHandler) {
 		SampleController sampleController = ControllerProvider.getSampleController();
 		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent = sampleController.getSampleCreateComponent(sample, disease, null);
 
 		// add pathogen test create components
-		addPathogenTests(pathogenTests, externalMessageDto, sampleCreateComponent);
+		List<PathogenTestDto> pathogenTestsToAdd = new ArrayList<>(pathogenTests);
+		// always build at least one PathogenTestDto
+		if (pathogenTestsToAdd.isEmpty()) {
+			pathogenTestsToAdd.add(LabMessageProcessingHelper.buildPathogenTest(null, externalMessageDto, sample, user));
+		}
+
+		ExternalMessageProcessingUIHelper.addNewPathogenTests(pathogenTestsToAdd, sampleCreateComponent, true, pathogenTestSaveHandler, null);
+
 		// add option to create additional pathogen tests
-		sampleController.addPathogenTestButton(sampleCreateComponent, true, null, null);
+		sampleController.addPathogenTestButton(sampleCreateComponent, true, null, null, pathogenTestSaveHandler);
 
 		LabMessageUiHelper.establishCommitButtons(sampleCreateComponent, lastSample);
 
 		return sampleCreateComponent;
 	}
 
-	public void addPathogenTests(
+	private void addPathogenTests(
 		List<PathogenTestDto> pathogenTests,
 		ExternalMessageDto labMessage,
-		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent) {
+		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent,
+		Consumer<PathogenTestDto> saveHandler) {
 
-		List<PathogenTestDto> pathogenTestsToAdd = new ArrayList<>(pathogenTests);
-		// always build at least one PathogenTestDto
-		if (pathogenTestsToAdd.isEmpty()) {
-			SampleDto sample = sampleCreateComponent.getWrappedComponent().getValue();
-			pathogenTestsToAdd.add(LabMessageProcessingHelper.buildPathogenTest(null, labMessage, sample, user));
-		}
-
-		ExternalMessageProcessingUIHelper.addNewPathogenTests(pathogenTestsToAdd, sampleCreateComponent, true, null);
 	}
 }
