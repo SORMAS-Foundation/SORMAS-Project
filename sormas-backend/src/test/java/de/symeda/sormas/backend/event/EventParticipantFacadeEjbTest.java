@@ -42,6 +42,7 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.caze.VaccinationStatus;
@@ -59,6 +60,8 @@ import de.symeda.sormas.api.event.EventParticipantIndexDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
@@ -72,6 +75,7 @@ import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -418,6 +422,65 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, eventParticipantIndexDtos.size());
 		assertEquals(PathogenTestResultType.NEGATIVE, eventParticipantIndexDtos.get(0).getPathogenTestResult());
 		assertEquals(calendarDay10.getTime(), eventParticipantIndexDtos.get(0).getSampleDateTime());
+	}
+
+	@Test
+	public void testEventParticipantWithArchivedEvent() {
+		RDCF rdcf = new RDCF(creator.createRDCFEntities());
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		EventDto event = creator.createEvent(user.toReference());
+		PersonDto person = creator.createPerson();
+
+		EventParticipantDto eventParticipant1 = creator.createEventParticipant(event.toReference(), person, user.toReference());
+		EventParticipantDto eventParticipant2 = creator.createEventParticipant(event.toReference(), person, user.toReference());
+
+		FeatureConfigurationIndexDto editArchivedFeatureConfiguration =
+			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
+		getFeatureConfigurationFacade().saveFeatureConfiguration(editArchivedFeatureConfiguration, FeatureType.EDIT_ARCHIVED_ENTITIES);
+
+		getEventFacade().archive(event.getUuid(), null);
+		getEventParticipantFacade().dearchive(Arrays.asList(eventParticipant1.getUuid()), null);
+
+		EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
+		eventParticipantCriteria.setEvent(event.toReference());
+		eventParticipantCriteria.relevanceStatus(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED);
+
+		List<EventParticipantIndexDto> eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
+		assertEquals(2, eventParticipantIndexDtos.size());
+		List<String> eventParticipantUuids = eventParticipantIndexDtos.stream().map(ev -> ev.getUuid()).collect(Collectors.toList());
+		assertTrue(eventParticipantUuids.contains(eventParticipant1.getUuid()));
+		assertTrue(eventParticipantUuids.contains(eventParticipant2.getUuid()));
+
+		eventParticipantCriteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
+		eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
+		assertEquals(1, eventParticipantIndexDtos.size());
+		assertEquals(eventParticipant1.getUuid(), eventParticipantIndexDtos.get(0).getUuid());
+
+		eventParticipantCriteria.relevanceStatus(EntityRelevanceStatus.ARCHIVED);
+		eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
+		assertEquals(1, eventParticipantIndexDtos.size());
+		assertEquals(eventParticipant2.getUuid(), eventParticipantIndexDtos.get(0).getUuid());
+
+		editArchivedFeatureConfiguration.setEnabled(false);
+		getFeatureConfigurationFacade().saveFeatureConfiguration(editArchivedFeatureConfiguration, FeatureType.EDIT_ARCHIVED_ENTITIES);
+
+		eventParticipantCriteria.relevanceStatus(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED);
+		eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
+		assertEquals(2, eventParticipantIndexDtos.size());
+		eventParticipantUuids = eventParticipantIndexDtos.stream().map(ev -> ev.getUuid()).collect(Collectors.toList());
+		assertTrue(eventParticipantUuids.contains(eventParticipant1.getUuid()));
+		assertTrue(eventParticipantUuids.contains(eventParticipant2.getUuid()));
+
+		eventParticipantCriteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
+		eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
+		assertEquals(0, eventParticipantIndexDtos.size());
+
+		eventParticipantCriteria.relevanceStatus(EntityRelevanceStatus.ARCHIVED);
+		eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
+		assertEquals(2, eventParticipantIndexDtos.size());
+		eventParticipantUuids = eventParticipantIndexDtos.stream().map(ev -> ev.getUuid()).collect(Collectors.toList());
+		assertTrue(eventParticipantUuids.contains(eventParticipant1.getUuid()));
+		assertTrue(eventParticipantUuids.contains(eventParticipant2.getUuid()));
 	}
 
 	@Test

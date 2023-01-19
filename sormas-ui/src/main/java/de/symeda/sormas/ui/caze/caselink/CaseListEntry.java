@@ -7,6 +7,7 @@ import com.vaadin.ui.Label;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseListEntryDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
@@ -14,6 +15,7 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentField;
 
 public class CaseListEntry extends SideComponentField {
 
+	private static final long serialVersionUID = -7072019489290707667L;
 	public static final String SEPARATOR = ": ";
 	private final CaseListEntryDto caseListEntryDto;
 
@@ -29,7 +31,7 @@ public class CaseListEntry extends SideComponentField {
 		uuidReportDateLayout.addComponent(caseUuidLabel);
 
 		Label reportDateLabel = new Label(
-			I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseListEntryDto.REPORT_DATE)
+			I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REPORT_DATE)
 				+ SEPARATOR
 				+ DateFormatHelper.formatDate(caseListEntryDto.getReportDate()));
 		uuidReportDateLayout.addComponent(reportDateLabel);
@@ -58,6 +60,20 @@ public class CaseListEntry extends SideComponentField {
 		diseaseClassificationLayout.setComponentAlignment(classificationLabel, Alignment.MIDDLE_RIGHT);
 		addComponentToField(diseaseClassificationLayout);
 
+		if (caseListEntryDto.getSymptomsOnsetDate() != null) {
+			HorizontalLayout symptomsOnsetDateLayout = new HorizontalLayout();
+			uuidReportDateLayout.setMargin(false);
+			uuidReportDateLayout.setSpacing(true);
+
+			Label symptomsOnsetDateLabel = new Label(
+				I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE)
+					+ SEPARATOR
+					+ DateFormatHelper.formatDate(caseListEntryDto.getSymptomsOnsetDate()));
+			symptomsOnsetDateLayout.addComponent(symptomsOnsetDateLabel);
+
+			symptomsOnsetDateLayout.setComponentAlignment(symptomsOnsetDateLabel, Alignment.MIDDLE_LEFT);
+			addComponentToField(symptomsOnsetDateLayout);
+		}
 	}
 
 	public CaseListEntryDto getCaseListEntryDto() {

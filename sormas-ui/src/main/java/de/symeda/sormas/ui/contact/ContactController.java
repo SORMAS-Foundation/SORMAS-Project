@@ -281,6 +281,14 @@ public class ContactController {
 		VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateNewContact));
 	}
 
+	public void create(PersonReferenceDto personRef) {
+		PersonDto person = FacadeProvider.getPersonFacade().getByUuid(personRef.getUuid());
+
+		CommitDiscardWrapperComponent<ContactCreateForm> createComponent = getContactCreateComponent(person);
+		createComponent.getWrappedComponent().getPersonCreateForm().setSearchedPerson(person);
+		VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateNewContact));
+	}
+
 	public void navigateToData(String contactUuid) {
 		navigateToData(contactUuid, false);
 	}
@@ -360,6 +368,14 @@ public class ContactController {
 
 	private ContactDto createNewContact(EventParticipantDto eventParticipant) {
 		ContactDto contact = ContactDto.build(eventParticipant);
+
+		setDefaults(contact);
+
+		return contact;
+	}
+
+	private ContactDto createNewContact(PersonDto person) {
+		ContactDto contact = ContactDto.build(person);
 
 		setDefaults(contact);
 
@@ -510,6 +526,39 @@ public class ContactController {
 		createForm.setPerson(eventParticipant.getPerson());
 		createForm.setPersonDetailsReadOnly();
 		createForm.setDiseaseReadOnly();
+
+		final CommitDiscardWrapperComponent<ContactCreateForm> createComponent = new CommitDiscardWrapperComponent<>(
+			createForm,
+			UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE),
+			createForm.getFieldGroup());
+
+		createComponent.addCommitListener(() -> {
+			if (!createForm.getFieldGroup().isModified()) {
+				final ContactDto dto = createForm.getValue();
+				PersonFacade personFacade = FacadeProvider.getPersonFacade();
+				PersonDto personDto = personFacade.getByUuid(dto.getPerson().getUuid());
+				transferDataToPerson(createForm, personDto);
+				personFacade.save(personDto);
+
+				selectOrCreateContact(dto, personDto, selectedContactUuid -> {
+					if (selectedContactUuid != null) {
+						editData(selectedContactUuid);
+					}
+				});
+
+			}
+		});
+
+		return createComponent;
+	}
+
+	public CommitDiscardWrapperComponent<ContactCreateForm> getContactCreateComponent(PersonDto person) {
+		final ContactCreateForm createForm;
+
+		createForm = new ContactCreateForm(null, false, false, true);
+		createForm.setValue(createNewContact(person));
+		createForm.setPerson(person);
+		createForm.setPersonDetailsReadOnly();
 
 		final CommitDiscardWrapperComponent<ContactCreateForm> createComponent = new CommitDiscardWrapperComponent<>(
 			createForm,
@@ -848,10 +897,8 @@ public class ContactController {
 			new EpiDataForm(contact.getDisease(), ContactDto.class, epiData.isPseudonymized(), epiData.isInJurisdiction(), null, isEditAllowed);
 		epiDataForm.setValue(epiData);
 
-		final CommitDiscardWrapperComponent<EpiDataForm> editView = new CommitDiscardWrapperComponent<EpiDataForm>(
-			epiDataForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT),
-			epiDataForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EpiDataForm> editView =
+			new CommitDiscardWrapperComponent<EpiDataForm>(epiDataForm, epiDataForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(contactUuid);

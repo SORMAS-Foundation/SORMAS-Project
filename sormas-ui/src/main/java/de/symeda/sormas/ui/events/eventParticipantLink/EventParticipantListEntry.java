@@ -8,17 +8,20 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantListEntryDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public class EventParticipantListEntry extends HorizontalLayout {
 
+	private static final long serialVersionUID = -124120232066365444L;
 	public static final String SEPARATOR = ": ";
 	private final EventParticipantListEntryDto eventParticipantListEntryDto;
 	private Button editButton;
@@ -80,7 +83,20 @@ public class EventParticipantListEntry extends HorizontalLayout {
 		titleLabel.setDescription(eventParticipantListEntryDto.getEventTitle());
 		mainLayout.addComponent(titleLabel);
 
-		mainLayout.addComponent(titleLabel);
+		if (eventParticipantListEntryDto.getEventStartDate() != null) {
+			Language userLanguage = I18nProperties.getUserLanguage();
+			String eventDate;
+			if (eventParticipantListEntryDto.getEventEndDate() == null) {
+				eventDate = DateHelper.formatLocalDate(eventParticipantListEntryDto.getEventStartDate(), userLanguage);
+			} else {
+				eventDate = String.format(
+					"%s - %s",
+					DateHelper.formatLocalDate(eventParticipantListEntryDto.getEventStartDate(), userLanguage),
+					DateHelper.formatLocalDate(eventParticipantListEntryDto.getEventEndDate(), userLanguage));
+			}
+			Label eventDateLabel = new Label(I18nProperties.getCaption(Captions.singleDayEventDate) + ": " + eventDate);
+			mainLayout.addComponent(eventDateLabel);
+		}
 	}
 
 	public void addEditListener(int rowIndex, Button.ClickListener editClickListener) {
@@ -99,6 +115,10 @@ public class EventParticipantListEntry extends HorizontalLayout {
 		}
 
 		editButton.addClickListener(editClickListener);
+	}
+
+	public void setActive() {
+		addStyleName(CssStyles.ACTIVE_SIDE_COMPONENT_ELEMENT);
 	}
 
 	public EventParticipantListEntryDto getEventParticipantListEntryDto() {

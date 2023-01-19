@@ -58,3 +58,42 @@ Feature: Facility end to end tests
     Then I set name, region and district in Facilities tab in Configuration
     And I set Facility Category to "Educational facility" and Facility Type to "Kindergarten/After school care" in Facilities tab in Configuration
     And I click on Save Button in new Facility form
+
+  @env_main @#7468
+  Scenario: Validate Facilities Configuration section
+    Given I log in as a Admin User
+    Then I click on the Configuration button from navbar
+    And I click on Facilities button in Configuration tab
+    Then I Verify the page elements are present in Facilities Configuration Page
+
+  @tmsLink=SORQA-707 @env_main @precon
+  Scenario: Check if Standard Einrichtung facility is available in the system
+    Given I log in as a Admin User
+    Then I click on the Configuration button from navbar
+    Then I click on Facilities button in Configuration tab
+    And I filter facility by "Standard Einrichtung"
+    Then I check that number of displayed Facilities results is 1
+
+  @tmsLink=SORQA-707 @env_main @precon
+  Scenario: Check if Voreingestelltes Labor facility is available in the system
+    Given I log in as a Admin User
+    Then I click on the Configuration button from navbar
+    Then I click on Facilities button in Configuration tab
+    And I filter facility by "Voreingestelltes Labor"
+    Then I check that number of displayed Facilities results is 1
+
+  @tmsLink=SORQA-707 @env_s2s_1 @precon
+  Scenario: Check if General Hospital facility is available in the system
+    Given I log in as a Admin User
+    Then I click on the Configuration button from navbar
+    Then I click on Facilities button in Configuration tab
+    And I filter facility by "General Hospital"
+    Then I check that number of displayed Facilities results is 1
+
+  @tmsLink=SORQA-707 @env_main @precon
+  Scenario: Check if Community111 facility is available in the system
+    Given I log in as a Admin User
+    Then I click on the Configuration button from navbar
+    Then I click on Facilities button in Configuration tab
+    And I filter facility by "Community111"
+    Then I check that number of displayed Facilities results is 1

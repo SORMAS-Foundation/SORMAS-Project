@@ -98,7 +98,8 @@ public class UsersView extends AbstractUserView {
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createActionsBar());
 
-		rowsCount = new RowCount(Strings.labelNumberOfUsers, grid.getItemCount());
+		rowsCount = new RowCount(Strings.labelNumberOfUsers, grid.getDataSize());
+		grid.addDataSizeChangeListener(e -> rowsCount.update(grid.getDataSize()));
 		gridLayout.addComponent(rowsCount);
 
 		gridLayout.addComponent(grid);
@@ -230,7 +231,7 @@ public class UsersView extends AbstractUserView {
 		searchField.addTextChangeListener(e -> {
 			criteria.freeText(e.getText());
 			grid.reload();
-			rowsCount.update(grid.getItemCount());
+			rowsCount.update(grid.getDataSize());
 		});
 		filterLayout.addComponent(searchField);
 
@@ -245,29 +246,29 @@ public class UsersView extends AbstractUserView {
 		statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
 		statusFilterLayout.addStyleName(CssStyles.VSPACE_3);
 
-		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
-		actionButtonsLayout.setSpacing(true);
-		{
-			// Bulk operation dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-				bulkOperationsDropdown = MenuBarHelper.createDropDown(
+		// Bulk operation dropdown
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			HorizontalLayout actionButtonsLayout = new HorizontalLayout();
+			actionButtonsLayout.setSpacing(true);
+
+			bulkOperationsDropdown = MenuBarHelper.createDropDown(
 					Captions.bulkActions,
 					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionEnable), VaadinIcons.CHECK_SQUARE_O, selectedItem -> {
 						ControllerProvider.getUserController()
-							.enableAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
+								.enableAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
 					}, true),
 					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDisable), VaadinIcons.THIN_SQUARE, selectedItem -> {
 						ControllerProvider.getUserController()
-							.disableAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
+								.disableAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
 					}, true));
 
-				bulkOperationsDropdown.setVisible(ViewModelProviders.of(UsersView.class).get(ViewConfiguration.class).isInEagerMode());
-				actionButtonsLayout.addComponent(bulkOperationsDropdown);
-			}
+			bulkOperationsDropdown.setVisible(ViewModelProviders.of(UsersView.class).get(ViewConfiguration.class).isInEagerMode());
+			actionButtonsLayout.addComponent(bulkOperationsDropdown);
+
+			statusFilterLayout.addComponent(actionButtonsLayout);
+			statusFilterLayout.setComponentAlignment(actionButtonsLayout, Alignment.TOP_RIGHT);
+			statusFilterLayout.setExpandRatio(actionButtonsLayout, 1);
 		}
-		statusFilterLayout.addComponent(actionButtonsLayout);
-		statusFilterLayout.setComponentAlignment(actionButtonsLayout, Alignment.TOP_RIGHT);
-		statusFilterLayout.setExpandRatio(actionButtonsLayout, 1);
 
 		return statusFilterLayout;
 	}

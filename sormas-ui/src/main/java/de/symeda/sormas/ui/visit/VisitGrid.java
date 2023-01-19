@@ -20,8 +20,6 @@ package de.symeda.sormas.ui.visit;
 import java.util.Date;
 import java.util.function.Consumer;
 
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.renderers.DateRenderer;
 
@@ -56,14 +54,11 @@ public class VisitGrid extends FilteredGrid<VisitIndexDto, VisitCriteria> {
 		Consumer<VisitIndexDto> visitIndexDtoConsumer = e -> ControllerProvider.getVisitController()
 			.editVisit(e.getUuid(), getCriteria().getContact(), getCriteria().getCaze(), r -> reload(), isEditAllowed);
 
-		if (isEditAllowed) {
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-				setSelectionMode(SelectionMode.MULTI);
-			} else {
-				setSelectionMode(SelectionMode.NONE);
-			}
+		if (isEditAllowed && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			setSelectionMode(SelectionMode.MULTI);
 			addEditColumn(visitIndexDtoConsumer);
 		} else {
+			setSelectionMode(SelectionMode.NONE);
 			addViewColumn(visitIndexDtoConsumer);
 		}
 
@@ -107,9 +102,8 @@ public class VisitGrid extends FilteredGrid<VisitIndexDto, VisitCriteria> {
 	}
 
 	public void setEagerDataProvider() {
-		ListDataProvider<VisitIndexDto> dataProvider =
-			DataProvider.fromStream(FacadeProvider.getVisitFacade().getIndexList(getCriteria(), null, null, null).stream());
-		setDataProvider(dataProvider);
+
+		setDataProvider(FacadeProvider.getVisitFacade().getIndexList(getCriteria(), null, null, null).stream());
 	}
 
 	public void reload() {
@@ -117,7 +111,7 @@ public class VisitGrid extends FilteredGrid<VisitIndexDto, VisitCriteria> {
 			deselectAll();
 		}
 
-		//getDataProvider().refreshAll(); // does not work for eager data providers
+		// getDataProvider().refreshAll() does not work for eager data providers
 		setEagerDataProvider();
 	}
 }

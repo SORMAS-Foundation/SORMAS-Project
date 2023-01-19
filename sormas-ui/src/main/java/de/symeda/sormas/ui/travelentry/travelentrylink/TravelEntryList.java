@@ -25,9 +25,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.travelentry.TravelEntryListCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryListEntryDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
 
 public class TravelEntryList extends PaginationList<TravelEntryListEntryDto> {
@@ -65,18 +63,22 @@ public class TravelEntryList extends PaginationList<TravelEntryListEntryDto> {
 	protected void drawDisplayedEntries() {
 		for (TravelEntryListEntryDto travelEntry : getDisplayedEntries()) {
 			TravelEntryListEntry listEntry = new TravelEntryListEntry(travelEntry);
-
-			addActionButton(listEntry);
+			boolean isActiveTravelEntry = travelEntry.getUuid().equals(getActiveUuid());
+			if (isActiveTravelEntry) {
+				listEntry.setActive();
+			}
+			if (!isActiveTravelEntry) {
+				addActionButton(listEntry);
+			}
 			listLayout.addComponent(listEntry);
 		}
 	}
 
 	private void addActionButton(TravelEntryListEntry listEntry) {
-		boolean isEditEntry = UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_EDIT) && isEditAllowed;
 		listEntry.addActionButton(
 			listEntry.getTravelEntry().getUuid(),
 			(Button.ClickListener) event -> ControllerProvider.getTravelEntryController().navigateToTravelEntry(listEntry.getTravelEntry().getUuid()),
-			isEditEntry);
-		listEntry.setEnabled(isEditEntry);
+			isEditAllowed);
+		listEntry.setEnabled(isEditAllowed);
 	}
 }

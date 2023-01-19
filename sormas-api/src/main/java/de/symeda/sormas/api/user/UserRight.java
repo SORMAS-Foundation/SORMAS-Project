@@ -110,6 +110,7 @@ public enum UserRight {
 	TASK_DELETE(UserRightGroup.TASK, UserRight._TASK_VIEW),
 	TASK_EXPORT(UserRightGroup.TASK, UserRight._TASK_VIEW),
 	TASK_ASSIGN(UserRightGroup.TASK, UserRight._TASK_EDIT),
+	TASK_ARCHIVE(UserRightGroup.TASK, UserRight._TASK_VIEW),
 
 	ACTION_CREATE(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
 	ACTION_DELETE(UserRightGroup.EVENT, UserRight._EVENT_VIEW, UserRight._DOCUMENT_DELETE),
@@ -317,6 +318,7 @@ public enum UserRight {
 	public static final String _TASK_ASSIGN = "TASK_ASSIGN";
 	public static final String _TASK_DELETE = "TASK_DELETE";
 	public static final String _TASK_EXPORT = "TASK_EXPORT";
+	public static final String _TASK_ARCHIVE = "TASK_ARCHIVE";
 	public static final String _ACTION_CREATE = "ACTION_CREATE";
 	public static final String _ACTION_DELETE = "ACTION_DELETE";
 	public static final String _ACTION_EDIT = "ACTION_EDIT";

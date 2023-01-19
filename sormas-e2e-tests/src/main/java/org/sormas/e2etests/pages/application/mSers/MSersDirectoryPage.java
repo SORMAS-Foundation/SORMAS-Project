@@ -16,7 +16,8 @@ public class MSersDirectoryPage {
   public static final By DISPLAY_ONLY_DUPLICATE_REPORTS_CHECKBOX =
       By.xpath("//label[text()=\"Display only duplicate reports\"]");
   public static final By DELETE_ICON = By.xpath("(//div[@class=\"component-wrap\"]//div)[1]");
-  public static final By EDIT_ICON = By.xpath("(//div[@class=\"component-wrap\"]//div)[1]");
+  public static final By THIRD_ROW_EDIT_ICON =
+      By.xpath("(//div[@class=\"component-wrap\"]//div)[3]");
   public static final By DISEASE_COMBOBOX = By.cssSelector("#disease div");
   public static final By POINT_OF_ENTRY_COMBOBOX = By.cssSelector("#pointOfEntry div");
   public static final By FACILITY_COMBOBOX = By.cssSelector("#healthFacility div");
@@ -31,7 +32,14 @@ public class MSersDirectoryPage {
   public static By getEditButtonByIndex(int idx) {
     return By.xpath(
         String.format(
-            "(//tr[contains(@class,'v-grid-row-has-data')]//td[1]//span[@class='v-button-wrap'])[%x]",
+            "(//tr[contains(@class,'v-grid-row-has-data')]//td[1]//span[@class='v-icon Vaadin-Icons'])[%x]",
+            idx));
+  }
+
+  public static By getDeleteButtonByIndex(int idx) {
+    return By.xpath(
+        String.format(
+            "(//tr[contains(@class,'v-grid-row-has-data')]//td[14]//span[@class='v-icon Vaadin-Icons'])[%x]",
             idx));
   }
 

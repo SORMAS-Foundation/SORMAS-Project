@@ -11,12 +11,13 @@ import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
+import de.symeda.sormas.backend.travelentry.TravelEntryJoins;
 import de.symeda.sormas.backend.travelentry.TravelEntryJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 
-public abstract class BaseTravelEntryService extends AbstractCoreAdoService<TravelEntry> {
+public abstract class BaseTravelEntryService extends AbstractCoreAdoService<TravelEntry, TravelEntryJoins> {
 
 	@EJB
 	protected UserService userService;
@@ -26,14 +27,14 @@ public abstract class BaseTravelEntryService extends AbstractCoreAdoService<Trav
 	}
 
 	@Override
-    public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, TravelEntry> from) {
+	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, TravelEntry> from) {
 		return inJurisdictionOrOwned(new TravelEntryQueryContext(cb, query, from));
 	}
 
 	public Predicate inJurisdictionOrOwned(TravelEntryQueryContext qc) {
 		return inJurisdictionOrOwned(qc, userService.getCurrentUser());
 	}
-	
+
 	public Predicate inJurisdictionOrOwned(TravelEntryQueryContext qc, User user) {
 		return TravelEntryJurisdictionPredicateValidator.of(qc, user).inJurisdictionOrOwned();
 	}
@@ -49,16 +50,28 @@ public abstract class BaseTravelEntryService extends AbstractCoreAdoService<Trav
 	}
 
 	public Predicate createUserFilter(TravelEntryQueryContext qc) {
+		return createUserFilter(qc, true);
+	}
+
+	public Predicate createUserFilter(TravelEntryQueryContext qc, boolean checkJurisdictionAndLimitedDisease) {
 		User currentUser = getCurrentUser();
 		if (currentUser == null) {
 			return null;
 		}
 		final CriteriaBuilder cb = qc.getCriteriaBuilder();
-		Predicate filter = inJurisdictionOrOwned(qc);
-		if (currentUser.getLimitedDisease() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(qc.getRoot().get(Contact.DISEASE), currentUser.getLimitedDisease()));
+		Predicate filter = null;
+		if (checkJurisdictionAndLimitedDisease) {
+			filter = inJurisdictionOrOwned(qc);
+			if (currentUser.getLimitedDisease() != null) {
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(qc.getRoot().get(Contact.DISEASE), currentUser.getLimitedDisease()));
+			}
 		}
 		return filter;
+	}
+
+	@Override
+	protected TravelEntryJoins toJoins(From<?, TravelEntry> adoPath) {
+		return new TravelEntryJoins(adoPath);
 	}
 
 	@Override
@@ -74,11 +87,8 @@ public abstract class BaseTravelEntryService extends AbstractCoreAdoService<Trav
 	}
 
 	@Override
-	protected <T extends ChangeDateBuilder<T>> T addChangeDates(
-		T builder,
-		From<?, TravelEntry> travelEntryFrom,
-		boolean includeExtendedChangeDateFilters) {
+	protected <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, TravelEntryJoins joins, boolean includeExtendedChangeDateFilters) {
 
-		return super.addChangeDates(builder, travelEntryFrom, includeExtendedChangeDateFilters);
+		return super.addChangeDates(builder, joins, includeExtendedChangeDateFilters);
 	}
 }

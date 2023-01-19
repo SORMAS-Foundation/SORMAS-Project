@@ -53,6 +53,7 @@ import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationEx
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageService;
@@ -145,7 +146,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	public void rejectRequest(ShareRequestDataType dataType, String uuid, String comment) throws SormasToSormasException {
 		SormasToSormasShareRequestDto shareRequest = shareRequestFacade.getShareRequestByUuid(uuid);
 
-		if (shareRequest.getStatus() != ShareRequestStatus.PENDING) {
+		if (shareRequest == null || shareRequest.getStatus() != ShareRequestStatus.PENDING) {
 			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasRequestProcessed);
 		}
 
@@ -275,6 +276,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			updateOriginInfoOnShareAccepted(s.getEvent(), s);
 			updateOriginInfoOnShareAccepted(s.getEventParticipant(), s);
 			updateSampleOnShareAccepted(s);
+			updateSurveillanceReportOnShareAccepted(s);
 			updateOriginInfoOnShareAccepted(s.getImmunization(), s);
 		});
 		shareRequestInfoService.ensurePersisted(requestInfo);
@@ -310,6 +312,15 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		if (sample != null) {
 			updateOriginInfoOnShareAccepted(sample, s);
 			sormasToSormasEntitiesHelper.updateSampleOnShare(s.getSample(), s);
+		}
+	}
+
+	private void updateSurveillanceReportOnShareAccepted(SormasToSormasShareInfo s) {
+		SurveillanceReport report = s.getSurveillanceReport();
+
+		if (report != null) {
+			updateOriginInfoOnShareAccepted(report, s);
+			sormasToSormasEntitiesHelper.updateSurveillanceReportOnShare(s.getSurveillanceReport(), s);
 		}
 	}
 

@@ -20,12 +20,7 @@ package de.symeda.sormas.ui.samples;
 import static java.util.Objects.nonNull;
 
 import java.util.Date;
-import java.util.stream.Collectors;
 
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.DataProviderListener;
-import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -41,7 +36,6 @@ import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -59,8 +53,6 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 	private static final String PATHOGEN_TEST_RESULT = Captions.Sample_pathogenTestResult;
 	private static final String DISEASE_SHORT = Captions.columnDiseaseShort;
 	private static final String LAST_PATHOGEN_TEST = Captions.columnLastPathogenTest;
-
-	private DataProviderListener<SampleIndexDto> dataProviderListener;
 
 	@SuppressWarnings("unchecked")
 	public SampleGrid(SampleCriteria criteria) {
@@ -112,6 +104,17 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 		lastPathogenTestColumn.setId(LAST_PATHOGEN_TEST);
 		lastPathogenTestColumn.setSortable(false);
 
+		Column<SampleIndexDto, String> deleteColumn = addColumn(entry -> {
+			if (entry.getDeletionReason() != null) {
+				return entry.getDeletionReason() + (entry.getOtherDeletionReason() != null ? ": " + entry.getOtherDeletionReason() : "");
+			} else {
+				return "-";
+			}
+		});
+		deleteColumn.setId(DELETE_REASON_COLUMN);
+		deleteColumn.setSortable(false);
+		deleteColumn.setCaption(I18nProperties.getCaption(Captions.deletionReason));
+
 		setColumns(
 			SampleIndexDto.UUID,
 			SampleIndexDto.LAB_SAMPLE_ID,
@@ -131,7 +134,8 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 			PATHOGEN_TEST_RESULT,
 			SampleIndexDto.ADDITIONAL_TESTING_STATUS,
 			LAST_PATHOGEN_TEST,
-			SampleIndexDto.PATHOGEN_TEST_COUNT);
+			SampleIndexDto.PATHOGEN_TEST_COUNT,
+			DELETE_REASON_COLUMN);
 
 		((Column<SampleIndexDto, Date>) getColumn(SampleIndexDto.SHIPMENT_DATE)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 		((Column<SampleIndexDto, Date>) getColumn(SampleIndexDto.RECEIVED_DATE)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
@@ -228,34 +232,12 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 	}
 
 	public void setLazyDataProvider() {
-		DataProvider<SampleIndexDto, SampleCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-			query -> FacadeProvider.getSampleFacade()
-				.getIndexList(
-					query.getFilter().orElse(null),
-					query.getOffset(),
-					query.getLimit(),
-					query.getSortOrders()
-						.stream()
-						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-						.collect(Collectors.toList()))
-				.stream(),
-			query -> (int) FacadeProvider.getSampleFacade().count(query.getFilter().orElse(null)));
-		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.NONE);
+
+		setLazyDataProvider(FacadeProvider.getSampleFacade()::getIndexList, FacadeProvider.getSampleFacade()::count);
 	}
 
 	public void setEagerDataProvider() {
-		ListDataProvider<SampleIndexDto> dataProvider =
-			DataProvider.fromStream(FacadeProvider.getSampleFacade().getIndexList(getCriteria(), null, null, null).stream());
-		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.MULTI);
 
-		if (dataProviderListener != null) {
-			dataProvider.addDataProviderListener(dataProviderListener);
-		}
-	}
-
-	public void setDataProviderListener(DataProviderListener<SampleIndexDto> dataProviderListener) {
-		this.dataProviderListener = dataProviderListener;
+		setEagerDataProvider(FacadeProvider.getSampleFacade()::getIndexList);
 	}
 }

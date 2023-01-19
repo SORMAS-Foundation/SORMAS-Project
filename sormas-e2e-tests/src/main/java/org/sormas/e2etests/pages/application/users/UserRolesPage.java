@@ -32,6 +32,7 @@ public class UserRolesPage {
   public static By ARCHIVE_CASES_CHECKBOX = By.xpath("//label[text()='Archive cases']");
   public static By ARCHIVE_CONTACTS_CHECKBOX = By.xpath("//label[text()='Archive contacts']");
   public static By SAVE_BUTTON = By.cssSelector("#commit");
+  public static By DISCARD_BUTTON = By.cssSelector("#discard");
   public static By USER_ROLE_LIST = By.cssSelector("#tab-user-userroles");
 
   public static By getUserRoleCaptionByText(String caption) {
@@ -46,5 +47,6 @@ public class UserRolesPage {
   public static By DELETE_CONFIRMATION_BUTTON = By.cssSelector(".popupContent #actionConfirm");
   public static By CANNOT_DELETE_USER_ROLE_POPUP =
       By.xpath("//div[contains(text(), 'Cannot delete user role')]");
+  public static By EXPORT_USER_ROLES_BUTTON = By.id("exportUserRoles");
   public static By CANNOT_DELETE_USER_ROLE_POPUP_OKAY_BUTTON = By.cssSelector("#actionOkay");
 }

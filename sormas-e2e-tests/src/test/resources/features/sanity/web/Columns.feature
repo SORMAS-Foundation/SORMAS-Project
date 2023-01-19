@@ -19,25 +19,11 @@ Scenario Outline: Sort column <col> alphabetically in Tasks directory
     |5 |
     |6 |
     |7 |
+    |10 |
     |11 |
     |12 |
     |13 |
     |14 |
-
-@env_main @tmsLink=SORDEV-5342 @Task
-Scenario Outline: Sort column <col> by last name in Tasks directory
-  Given I log in as a National User
-  And I click on the Tasks button from navbar
-  When I click the header of column <col>
-  Then I check that column <col> is sorted by last name in ascending order
-  And I check that an upwards arrow appears in the header of column <col>
-  When I click the header of column <col>
-  Then I check that column <col> is sorted by last name in descending order
-  And I check that a downwards arrow appears in the header of column <col>
-
-  Examples:
-    | col |
-    |10 |
 
 @env_main @tmsLink=SORDEV-5342 @Task
 Scenario Outline: Sort column <col> by date and time in Tasks directory
@@ -139,7 +125,7 @@ Scenario Outline: Sort column <col> by date and time in Cases directory
 
   Examples:
     | col |
-    |15 |
+#    |15 |
     |16 |
 
 @env_main @tmsLink=SORDEV-5342 @Case
@@ -155,6 +141,7 @@ Scenario Outline: Sort column <col> by date in Cases directory
 
   Examples:
     | col |
+    |15 |
     |18 |
 
 @env_main @tmsLink=SORDEV-5342 @Contacts

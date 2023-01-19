@@ -69,6 +69,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -125,6 +126,13 @@ public class EventController {
 
 	public EventDto createFromContactList(List<ContactReferenceDto> contactRefs) {
 		CommitDiscardWrapperComponent<EventDataForm> eventCreateComponent = getEventCreateComponentForContactList(contactRefs);
+		EventDto eventDto = eventCreateComponent.getWrappedComponent().getValue();
+		VaadinUiUtil.showModalPopupWindow(eventCreateComponent, I18nProperties.getString(Strings.headingCreateNewEvent));
+		return eventDto;
+	}
+
+	public EventDto create(PersonReferenceDto personReference) {
+		CommitDiscardWrapperComponent<EventDataForm> eventCreateComponent = getEventCreateComponent(personReference);
 		EventDto eventDto = eventCreateComponent.getWrappedComponent().getValue();
 		VaadinUiUtil.showModalPopupWindow(eventCreateComponent, I18nProperties.getString(Strings.headingCreateNewEvent));
 		return eventDto;
@@ -413,6 +421,44 @@ public class EventController {
 		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateEvent));
 	}
 
+	public void selectOrCreateEvent(PersonReferenceDto personReference) {
+
+		EventSelectionField eventSelect = new EventSelectionField(null, I18nProperties.getString(Strings.infoPickOrCreateEventForContact), null);
+		eventSelect.setWidth(1100, Sizeable.Unit.PIXELS);
+
+		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(eventSelect);
+		component.addCommitListener(() -> {
+			EventIndexDto selectedEvent = eventSelect.getValue();
+			if (selectedEvent != null) {
+
+				EventCriteria eventCriteria = new EventCriteria();
+				eventCriteria.setPerson(personReference);
+				eventCriteria.setUserFilterIncluded(false);
+				List<EventIndexDto> eventIndexDto = FacadeProvider.getEventFacade().getIndexList(eventCriteria, null, null, null);
+
+				EventReferenceDto eventReferenceDto = new EventReferenceDto(selectedEvent.getUuid());
+				if (!eventIndexDto.contains(selectedEvent)) {
+					createEventParticipantWithPerson(eventReferenceDto, personReference);
+				} else {
+					SormasUI.refreshView();
+					Notification notification =
+						new Notification(I18nProperties.getString(Strings.messageThisPersonAlreadyEventParticipant), "", Type.HUMANIZED_MESSAGE);
+					notification.setDelayMsec(10000);
+					notification.show(Page.getCurrent());
+				}
+			} else {
+				create(personReference);
+			}
+			SormasUI.refreshView();
+		});
+
+		eventSelect.setSelectionChangeCallback((commitAllowed) -> {
+			component.getCommitButton().setEnabled(commitAllowed);
+		});
+
+		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateEvent));
+	}
+
 	public void selectOrCreateSubordinateEvent(EventReferenceDto superordinateEventRef) {
 
 		Set<String> excludedUuids = new HashSet<>();
@@ -521,6 +567,14 @@ public class EventController {
 
 	public void createEventParticipantWithContact(EventReferenceDto eventReferenceDto, ContactDto contact) {
 		final PersonDto personDto = FacadeProvider.getPersonFacade().getByUuid(contact.getPerson().getUuid());
+		final EventParticipantDto eventParticipantDto =
+			new EventParticipantDto().buildFromPerson(personDto, eventReferenceDto, UserProvider.getCurrent().getUserReference());
+		ControllerProvider.getEventParticipantController().createEventParticipant(eventReferenceDto, r -> {
+		}, eventParticipantDto);
+	}
+
+	public void createEventParticipantWithPerson(EventReferenceDto eventReferenceDto, PersonReferenceDto personReference) {
+		final PersonDto personDto = FacadeProvider.getPersonFacade().getByUuid(personReference.getUuid());
 		final EventParticipantDto eventParticipantDto =
 			new EventParticipantDto().buildFromPerson(personDto, eventReferenceDto, UserProvider.getCurrent().getUserReference());
 		ControllerProvider.getEventParticipantController().createEventParticipant(eventReferenceDto, r -> {
@@ -672,6 +726,32 @@ public class EventController {
 				Notification.show(I18nProperties.getString(Strings.messageEventCreated), Type.WARNING_MESSAGE);
 
 				linkContactsToEvent(new EventReferenceDto(dto.getUuid()), finalContactDtos);
+			}
+		});
+
+		return editView;
+	}
+
+	public CommitDiscardWrapperComponent<EventDataForm> getEventCreateComponent(PersonReferenceDto personReference) {
+
+		EventDataForm eventCreateForm = new EventDataForm(true, false, true); // Valid because jurisdiction doesn't matter for entities that are about to be created
+		eventCreateForm.setValue(createNewEvent());
+
+		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<>(
+			eventCreateForm,
+			UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE),
+			eventCreateForm.getFieldGroup());
+
+		editView.addCommitListener(() -> {
+			if (!eventCreateForm.getFieldGroup().isModified()) {
+				EventDto dto = eventCreateForm.getValue();
+				FacadeProvider.getEventFacade().save(dto);
+				Notification.show(I18nProperties.getString(Strings.messageEventCreated), Type.TRAY_NOTIFICATION);
+
+				EventReferenceDto createdEvent = new EventReferenceDto(dto.getUuid());
+
+				createEventParticipantWithPerson(createdEvent, personReference);
+				SormasUI.refreshView();
 			}
 		});
 
@@ -917,6 +997,10 @@ public class EventController {
 			eventStatusChange,
 			eventInvestigationStatusChange,
 			eventManagementStatusChange);
+	}
+
+	public EventDto createNewEvent() {
+		return EventDto.build(FacadeProvider.getCountryFacade().getServerCountry(), UserProvider.getCurrent().getUser());
 	}
 
 	public EventDto createNewEvent(Disease disease) {

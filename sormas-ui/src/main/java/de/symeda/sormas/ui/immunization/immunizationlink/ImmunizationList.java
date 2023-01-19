@@ -48,14 +48,19 @@ public class ImmunizationList extends PaginationList<ImmunizationListEntryDto> {
 		UserProvider currentUser = UserProvider.getCurrent();
 		for (ImmunizationListEntryDto immunization : getDisplayedEntries()) {
 			ImmunizationListEntry listEntry = new ImmunizationListEntry(immunization);
-			if (currentUser != null && currentUser.hasUserRight(UserRight.IMMUNIZATION_EDIT)) {
+			boolean isActiveImmunization = immunization.getUuid().equals(getActiveUuid());
+			if (isActiveImmunization) {
+				listEntry.setActive();
+			}
+			if (currentUser != null && !isActiveImmunization) {
+				boolean isEditableAndHasEditRight = isEditAllowed && currentUser.hasUserRight(UserRight.IMMUNIZATION_EDIT);
 				listEntry.addActionButton(
 					listEntry.getImmunizationEntry().getUuid(),
 					(Button.ClickListener) event -> ControllerProvider.getImmunizationController()
 						.navigateToImmunization(listEntry.getImmunizationEntry().getUuid()),
-					isEditAllowed);
+					isEditableAndHasEditRight);
+				listEntry.setEnabled(isEditableAndHasEditRight);
 			}
-			listEntry.setEnabled(isEditAllowed);
 
 			listLayout.addComponent(listEntry);
 		}

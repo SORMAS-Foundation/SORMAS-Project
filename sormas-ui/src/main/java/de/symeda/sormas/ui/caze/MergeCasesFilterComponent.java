@@ -144,6 +144,8 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 
 		cbRegion = new ComboBox<>();
 		cbDistrict = new ComboBox<>();
+		cbRegion.setItemCaptionGenerator(item -> item.buildCaption());
+		cbDistrict.setItemCaptionGenerator(item -> item.buildCaption());
 
 		cbRegion.setId(CaseDataDto.REGION);
 		cbRegion.setWidth(200, Unit.PIXELS);

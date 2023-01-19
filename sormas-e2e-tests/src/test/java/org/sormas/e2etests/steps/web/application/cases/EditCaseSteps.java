@@ -198,7 +198,6 @@ import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPag
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.ACTION_CANCEL_POPUP;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.END_OF_PROCESSING_DATE_POPUP_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.FOLLOW_UP_UNTIL_DATE;
-import static org.sormas.e2etests.pages.application.contacts.EditContactPage.LINK_EVENT_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_FIRST_RESULT_OPTION;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
@@ -416,6 +415,19 @@ public class EditCaseSteps implements En {
         (String name) -> {
           webDriverHelpers.selectFromCombobox(QUARANTINE_ORDER_COMBOBOX, name);
           webDriverHelpers.waitUntilANumberOfElementsAreVisibleAndClickable(POPUPS_INPUTS, 5);
+        });
+    When(
+        "Sample name timestamp is correct in Create Quarantine Order form from Edit Case directory",
+        () -> {
+          String sampleFieldValue =
+              webDriverHelpers.getValueFromWebElement(QUARANTINE_ORDER_POPUP_SAMPLE_FIELD);
+          String sampleDate =
+              CreateNewSampleSteps.sample
+                  .getDateOfCollection()
+                  .format(DateTimeFormatter.ofPattern("M/d/yyyy"));
+          Assert.assertTrue(
+              sampleFieldValue.startsWith(sampleDate),
+              "Sample field date doesn't start with " + sampleDate);
         });
     When(
         "I select {string} Quarantine Order in Create Quarantine Order form in Case directory",
@@ -1942,7 +1954,7 @@ public class EditCaseSteps implements En {
           softly.assertEquals(
               webDriverHelpers.getValueFromWebElement(POINT_OF_ENTRY_DETAILS),
               "Automated test dummy description "
-                  + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-M-dd")),
+                  + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
               "Point of entry details are not correct");
 
           softly.assertAll();
@@ -1994,7 +2006,7 @@ public class EditCaseSteps implements En {
               true,
               "Facility type combobox is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
-              webDriverHelpers.isElementEnabled(EditEventPage.SAVE_BUTTON),
+              webDriverHelpers.isElementEnabled(EditEventPage.EDIT_EVENT_PAGE_SAVE_BUTTON),
               true,
               "Save button is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
@@ -2334,6 +2346,14 @@ public class EditCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_BUTTON_DE);
         });
 
+    Then(
+        "^I click Link Event button on Edit Case Page$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(LINK_EVENT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_BUTTON);
+        });
+
     And(
         "^I click SAVE in Add Event Participant form on Edit Case Page for DE$",
         () -> {
@@ -2349,13 +2369,6 @@ public class EditCaseSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
-        });
-
-    When(
-        "^I click Link Event button on Edit Case Page$",
-        () -> {
-          webDriverHelpers.scrollToElement(LINK_EVENT_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_BUTTON);
         });
 
     When(
@@ -2619,6 +2632,16 @@ public class EditCaseSteps implements En {
         "I check if element with text {string} is present in Case Edit",
         (String text) -> {
           Assert.assertTrue(webDriverHelpers.isElementPresent(checkIfTextExists(text)));
+        });
+    And(
+        "I validate last created via API Event data is displayed under Linked Events section",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LINKED_EVENT_TITLE);
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(LINKED_EVENT_TITLE),
+              apiState.getCreatedEvent().getEventTitle(),
+              "Event title is not correct");
+          softly.assertAll();
         });
   }
 

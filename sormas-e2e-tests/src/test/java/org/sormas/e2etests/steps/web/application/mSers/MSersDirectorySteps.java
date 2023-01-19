@@ -10,7 +10,6 @@ import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.DEL
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.DISPLAY_ONLY_DUPLICATE_REPORTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.DISTRICT_COMBOBOX;
-import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.EDIT_ICON;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.EPI_WEEK_FROM_COMOBOX;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.EPI_WEEK_TO_COMOBOX;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.FACILITY_COMBOBOX;
@@ -29,6 +28,7 @@ import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.YEA
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.YEAR_TO_INPUT;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.getAgeGroupByResultNumber;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.getColumnSelectorByName;
+import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.getDeleteButtonByIndex;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.getEditButtonByIndex;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.getNumberOfSuspectedCasesByIndex;
 import static org.sormas.e2etests.steps.web.application.mSers.CreateNewAggregateReportSteps.duplicateReportWithJurisdiction;
@@ -144,10 +144,10 @@ public class MSersDirectorySteps implements En {
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(70);
           softly.assertTrue(
-              webDriverHelpers.isElementVisibleWithTimeout(DELETE_ICON, 5),
+              webDriverHelpers.isElementPresent(getDeleteButtonByIndex(1)),
               "Delete icon is not visible");
           softly.assertTrue(
-              webDriverHelpers.isElementVisibleWithTimeout(EDIT_ICON, 5),
+              webDriverHelpers.isElementPresent(getEditButtonByIndex(1)),
               "Edit icon is not visible");
           softly.assertAll();
         });
@@ -169,6 +169,7 @@ public class MSersDirectorySteps implements En {
         "I set Epi week from filter to {string} in mSers directory page",
         (String year) -> {
           TimeUnit.SECONDS.sleep(1);
+          webDriverHelpers.selectFromCombobox(EPI_WEEK_FROM_COMOBOX, "");
           webDriverHelpers.selectFromCombobox(EPI_WEEK_FROM_COMOBOX, year);
         });
     When(
@@ -329,6 +330,9 @@ public class MSersDirectorySteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_AGGREGATE_REPORT_BUTTON);
           while (webDriverHelpers.getNumberOfElements(RESULT_IN_GRID) > 0) {
+            while (!webDriverHelpers.isElementVisibleWithTimeout(getEditButtonByIndex(1), 2)) {
+              webDriverHelpers.scrollInTable(5);
+            }
             webDriverHelpers.waitUntilIdentifiedElementIsPresent(getEditButtonByIndex(1));
             webDriverHelpers.doubleClickOnWebElementBySelector(getEditButtonByIndex(1));
             webDriverHelpers.clickOnWebElementBySelector(DELETE_AGGREGATED_REPORT_BUTTON);

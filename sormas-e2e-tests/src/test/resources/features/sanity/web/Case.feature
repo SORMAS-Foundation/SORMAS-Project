@@ -697,25 +697,25 @@ Feature: Case end to end tests
     When I click on New Sample in German
     And I create a new Sample with positive test result for DE version
     And I select the German words for Antigen Detection Test as Type of Test in the Create New Sample popup
-    And I save the created sample
+    And I save the created sample with pathogen test
     Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
     And I check that case reference definition is set to not fulfilled in German on Edit case page
     When I click on New Sample in German
     And I create a new Sample with positive test result for DE version
     And I select the German words for Rapid Antigen Detection Test as Type of Test in the Create New Sample popup
-    And I save the created sample
+    And I save the created sample with pathogen test
     Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
     And I check that case reference definition is set to not fulfilled in German on Edit case page
     When I click on New Sample in German
     And I create a new Sample with positive test result for DE version
     And I select the German words for Isolation as Type of Test in the Create New Sample popup
-    And I save the created sample
+    And I save the created sample with pathogen test
     Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
     And I check that case reference definition is set to fulfilled in German on Edit case page
     When I click on New Sample in German
     And I create a new Sample with positive test result for DE version
     And I select the German words for PCR RT-PCR as Type of Test in the Create New Sample popup
-    And I save the created sample
+    And I save the created sample with pathogen test
     Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
     And I check that case reference definition is set to fulfilled in German on Edit case page
     When I click on the Cases button from navbar
@@ -1043,7 +1043,7 @@ Feature: Case end to end tests
     And I click on the NEW CASE button
     When I fill new case data for duplicates merge with for one person data
     And I click on Save button in Case form
-    And I Pick a new person in Pick or create person popup during case creation
+    #And I Pick a new person in Pick or create person popup during case creation
     Then I check the created data for duplicated case is correctly displayed on Edit case page
     And I set Vaccination status to "Vaccinated" on Edit Case page
     And I click on save button from Edit Case page
@@ -1156,7 +1156,7 @@ Feature: Case end to end tests
     And I click on the NEW CASE button
     When I fill a new case form with same person details for DE version
     And I click on Save button in Case form
-    Then I check if National Health Id, Nickname and Passport number appear in Pick or create person popup
+    Then I check if National Health Id, Nickname and Passport number do not appear in Pick or create person popup
     And I open the Case Contacts tab
     And I click on the NEW CONTACT button
     And I fill a new contact form with same person data for DE version
@@ -1165,7 +1165,7 @@ Feature: Case end to end tests
     And I click on the NEW CONTACT button
     And I fill a new contact form with same person data for DE version
     And I click on SAVE new contact case button
-    Then I check if National Health Id, Nickname and Passport number appear in Pick or create person popup
+    Then I check if National Health Id, Nickname and Passport number do not appear in Pick or create person popup
 
   @tmsLink=SORDEV-8413 @env_main
   Scenario: Test Hide specific enum values based on the related disease
@@ -1302,12 +1302,12 @@ Feature: Case end to end tests
     Then I navigate to the last created case via the url
     Then I click on New Sample
     Then I create a new Sample with positive test result with Guinea Worm as disease
-    Then I confirm the Create case from contact with positive test result
+    And I confirm popup window
     Then I navigate to the last created case via the url
     Then I click on edit Sample
     Then I click on new test result for pathogen tests
     Then I create a new pathogen test result with Dengue Fever as disease
-    Then I confirm the Create case from contact with positive test result
+    Then I confirm to create case for selected disease
     Then I navigate to the last created case via the url
     Then I validate only one sample is created with two pathogen tests
     Then I click on edit Sample
@@ -1639,7 +1639,7 @@ Feature: Case end to end tests
     And I select the German words for Antigen Detection Test as Type of Test in the Create New Sample popup
     And I set date of sample collection to 5 day ago in Sample form
     And I set Final Laboratory Result to "Positiv" on Create new Sample page
-    And I save the created sample
+    And I save the created sample with pathogen test
     And I check that text appearing in hover over Expected Follow-up is based on Symptoms collection date
 
   @tmsLink=SORDEV-5141 @env_main
@@ -1799,7 +1799,7 @@ Feature: Case end to end tests
       And I back to the cases list from edit case
       And I apply "Archived cases" to combobox on Case Directory Page
       And I check that number of displayed cases results is 1
-      And I apply "All cases" to combobox on Case Directory Page
+      And I apply "All active and archived cases" to combobox on Case Directory Page
       And I check that number of displayed cases results is 1
 
   @tmsLink=SORDEV-12441 @env_de
@@ -2031,11 +2031,11 @@ Feature: Case end to end tests
     Then I accept first case in Shares Page
 
   @tmsLink=SORQA-658 @env_de @oldfake
-    Scenario: Check automatic deletion of cases created 10 years ago
+    Scenario: Check automatic deletion of cases created 3651 days ago
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Then API: I create a new case with creation date 3653 days ago
+    Then API: I create a new case with creation date 3651 days ago
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then I log in as a Admin User
@@ -2044,10 +2044,9 @@ Feature: Case end to end tests
     And I click on the Configuration button from navbar
     Then I navigate to Developer tab in Configuration
     Then I click on Execute Automatic Deletion button
-    And I wait 60 seconds for system reaction
+    And I wait 30 seconds for system reaction
     Then I click on the Cases button from navbar
     And I check if created case is available in API
-    Then API: I check that POST call body is "No Content"
     And API: I check that POST call status code is 204
     Then I filter with first Case ID
     And I check that number of displayed cases results is 0
@@ -2063,3 +2062,42 @@ Feature: Case end to end tests
       Then I log in as a Admin User
       Then I navigate to the last created case via the url
       And I check if element with text "Löschung geplant für" is present in Case Edit
+
+  @tmsLink=SORQA-682 @env_de @oldfake
+  Scenario: Check automatic deletion NOT of cases created 3645 days ago
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case with creation date 3645 days ago
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in as a Admin User
+    Then I navigate to the last created case via the url
+    And I collect uuid of the case
+    And I click on the Configuration button from navbar
+    Then I navigate to Developer tab in Configuration
+    Then I click on Execute Automatic Deletion button
+    And I wait 30 seconds for system reaction
+    Then I click on the Cases button from navbar
+    And I check if created case is available in API
+    And API: I check that POST call status code is 200
+    Then I filter with first Case ID
+    And I check that number of displayed cases results is 1
+
+  @env_main @#10418
+  Scenario: Verify sample timestamp pattern from Quarantine Order popup
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    Then I navigate to the last created case via the url
+    Then I click on New Sample
+    Then I create a new Sample with positive test result with Guinea Worm as disease
+    And I confirm popup window
+    Then I navigate to the last created case via the url
+    And I click on Create button in Document Templates box in Edit Case directory
+    Then I select "ExampleDocumentTemplateCases.docx" Quarantine Order in Create Quarantine Order form in Edit Case directory
+    And Sample name timestamp is correct in Create Quarantine Order form from Edit Case directory

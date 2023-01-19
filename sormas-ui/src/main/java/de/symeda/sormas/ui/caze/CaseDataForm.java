@@ -423,6 +423,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		if (FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()) {
 			CheckBox dontShareCheckbox = addField(CaseDataDto.DONT_SHARE_WITH_REPORTING_TOOL, CheckBox.class);
 			CaseFormHelper.addDontShareWithReportingTool(getContent(), () -> dontShareCheckbox, DONT_SHARE_WARNING_LOC);
+			if (FacadeProvider.getExternalShareInfoFacade().isSharedCase(this.caseUuid)) {
+				dontShareCheckbox.setEnabled(false);
+				dontShareCheckbox.setDescription(I18nProperties.getString(Strings.infoDontShareCheckboxAlreadyShared));
+			}
 		}
 
 		TextField externalTokenField = addField(CaseDataDto.EXTERNAL_TOKEN, TextField.class);
@@ -625,7 +629,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			addField(CaseDataDto.PREVIOUS_INFECTION_DATE);
 			ComboBox tfReinfectionStatus = addField(CaseDataDto.REINFECTION_STATUS, ComboBox.class);
 			tfReinfectionStatus.setReadOnly(true);
-			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.PREVIOUS_INFECTION_DATE, CaseDataDto.RE_INFECTION, YesNoUnknown.YES, true);
+			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.PREVIOUS_INFECTION_DATE, CaseDataDto.RE_INFECTION, YesNoUnknown.YES, false);
 			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.REINFECTION_STATUS, CaseDataDto.RE_INFECTION, YesNoUnknown.YES, false);
 
 			final Label reinfectionInfoLabel = new Label(VaadinIcons.EYE.getHtml(), ContentMode.HTML);
@@ -701,11 +705,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				} else {
 					reinfectionInfoLabel.setDescription(null);
 					reinfectionInfoLabel.setVisible(false);
-
-					for (CaseReinfectionCheckBoxTree reinfectionTree : reinfectionTrees.values()) {
-						reinfectionTree.clearCheckBoxTree();
-					}
-
 					reinfectionDetailsLeftLayout.setVisible(false);
 					reinfectionDetailsRightLayout.setVisible(false);
 				}
@@ -1312,6 +1311,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					setVisible(getValue().getPointOfEntry().isOtherPointOfEntry(), CaseDataDto.POINT_OF_ENTRY_DETAILS);
 					btnReferFromPointOfEntry
 						.setVisible(UserProvider.getCurrent().hasUserRight(UserRight.CASE_REFER_FROM_POE) && getValue().getHealthFacility() == null);
+				} else if (!isEditableAllowed(CaseDataDto.POINT_OF_ENTRY)) {
+					setVisible(false, CaseDataDto.POINT_OF_ENTRY_DETAILS);
+					btnReferFromPointOfEntry.setVisible(false);
 				}
 
 				if (getValue().getHealthFacility() == null) {

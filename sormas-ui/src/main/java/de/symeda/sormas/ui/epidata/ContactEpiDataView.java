@@ -18,7 +18,9 @@
 package de.symeda.sormas.ui.epidata;
 
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.contact.AbstractContactView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 
@@ -33,9 +35,9 @@ public class ContactEpiDataView extends AbstractContactView {
 
 	@Override
 	protected void initView(String params) {
-		CommitDiscardWrapperComponent<EpiDataForm> epidDataForm =
-			ControllerProvider.getContactController().getEpiDataComponent(getContactRef().getUuid(), isEditAllowed());
+		CommitDiscardWrapperComponent<EpiDataForm> epidDataForm = ControllerProvider.getContactController()
+			.getEpiDataComponent(getContactRef().getUuid(), isEditAllowed() && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT));
 		setSubComponent(epidDataForm);
-		setEditPermission(epidDataForm, EpiDataDto.EXPOSURES);
+		setEditPermission(epidDataForm, UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT), EpiDataDto.EXPOSURES);
 	}
 }

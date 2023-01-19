@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -38,13 +39,21 @@ import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.JournalPersonDto;
+import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonContactDetailType;
@@ -61,6 +70,8 @@ import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
@@ -74,6 +85,12 @@ import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.country.Country;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.user.User;
 
 public class PersonFacadeEjbTest extends AbstractBeanTest {
 
@@ -914,7 +931,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testMergePersonsAndRemoveDuplication(){
+	public void testMergePersonsAndRemoveDuplication() {
 
 		PersonDto leadPerson = creator.createPerson("John", "Doe", Sex.MALE, 1980, 1, 1, "000111222", null);
 		PersonDto otherPerson = creator.createPerson("James", "Smith", Sex.MALE, 1990, 1, 1, "444555666", "123456789");
@@ -923,8 +940,36 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		otherPerson.setPhone("+496211218491");
 		leadPerson.setEmailAddress("lead@hotmail.com");
 		otherPerson.setEmailAddress("other@yahoo.com");
-		leadPerson.setAddresses(Collections.singletonList(LocationDto.build()));
-		otherPerson.setAddresses(Collections.singletonList(LocationDto.build()));
+
+		TestDataCreator.RDCFEntities rdcf1 = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		TestDataCreator.RDCFEntities rdcf2 = creator.createRDCFEntities("Region2", "District2", "Community2", "Facility2");
+		TestDataCreator.RDCFEntities rdcf3 = creator.createRDCFEntities("Region3", "District3", "Community3", "Facility3");
+		TestDataCreator.RDCFEntities rdcf4 = creator.createRDCFEntities("Region4", "District4", "Community4", "Facility4");
+
+		LocationDto leadPersonAddress = leadPerson.getAddress();
+		leadPersonAddress.setRegion(new RegionReferenceDto(rdcf1.region.getUuid()));
+		leadPersonAddress.setDistrict(new DistrictReferenceDto(rdcf1.district.getUuid()));
+
+		LocationDto otherPersonAddress = otherPerson.getAddress();
+		otherPersonAddress.setRegion(new RegionReferenceDto(rdcf2.region.getUuid()));
+		otherPersonAddress.setDistrict(new DistrictReferenceDto(rdcf2.district.getUuid()));
+		otherPersonAddress.setCommunity(new CommunityReferenceDto(rdcf2.community.getUuid()));
+
+		List<LocationDto> leadAddresses = new ArrayList<>();
+		LocationDto leadAddresses1 = LocationDto.build();
+		leadAddresses1.setRegion(new RegionReferenceDto(rdcf3.region.getUuid()));
+		leadAddresses1.setDistrict(new DistrictReferenceDto(rdcf3.district.getUuid()));
+		leadAddresses1.setCommunity(new CommunityReferenceDto(rdcf3.community.getUuid()));
+		leadAddresses.add(leadAddresses1);
+
+		LocationDto leadAddresses2 = LocationDto.build();
+		leadAddresses2.setRegion(new RegionReferenceDto(rdcf4.region.getUuid()));
+		leadAddresses2.setDistrict(new DistrictReferenceDto(rdcf4.district.getUuid()));
+		leadAddresses.add(leadAddresses2);
+
+		leadPerson.setAddresses(leadAddresses);
+		leadPerson.setAddress(leadPersonAddress);
+		otherPerson.setAddress(otherPersonAddress);
 
 		leadPerson = getPersonFacade().save(leadPerson);
 		otherPerson = getPersonFacade().save(otherPerson);
@@ -957,7 +1002,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, getVisitService().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
 		assertEquals(1, leadPerson.getAllEmailAddresses().size());
 		assertEquals(1, leadPerson.getAllPhoneNumbers().size());
-		assertEquals(1, leadPerson.getAddresses().size());
+		assertEquals(2, leadPerson.getAddresses().size());
 		assertTrue(getPersonFacade().exists(otherPerson.getUuid()));
 
 		getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true);
@@ -976,7 +1021,323 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		List<String> leadPersonAllPhoneNumbers = leadPerson.getAllPhoneNumbers();
 		assertEquals(2, leadPersonAllPhoneNumbers.size());
 		assertEquals(1, leadPersonAllPhoneNumbers.stream().filter(s -> s.equals("+496211218490")).count());
+		assertEquals(rdcf1.region.getUuid(), leadPerson.getAddress().getRegion().getUuid());
+		assertNull(leadPerson.getAddress().getCommunity());
+		assertEquals(3, leadPerson.getAddresses().size());
+		assertEquals(1, leadPerson.getAddresses().stream().filter(field -> field.getUuid().equals(leadAddresses1.getUuid())).count());
+		assertEquals(1, leadPerson.getAddresses().stream().filter(field -> field.getUuid().equals(leadAddresses2.getUuid())).count());
+		assertEquals(1, leadPerson.getAddresses().stream().filter(field -> otherPersonAddress.getDistrict().equals(field.getDistrict())).count());
+		assertFalse(getPersonFacade().exists(otherPerson.getUuid()));
+	}
+
+	@Test
+	public void testMergePersonsSameMainAddress() {
+
+		PersonDto leadPerson = creator.createPerson("John", "Doe", Sex.MALE, 1980, 1, 1, "000111222", null);
+		PersonDto otherPerson = creator.createPerson("James", "Smith", Sex.MALE, 1990, 1, 1, "444555666", "123456789");
+
+		leadPerson.setPhone("+496211218490");
+		otherPerson.setPhone("+496211218491");
+		leadPerson.setEmailAddress("lead@hotmail.com");
+		otherPerson.setEmailAddress("other@yahoo.com");
+
+		TestDataCreator.RDCFEntities rdcf1 = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		TestDataCreator.RDCFEntities rdcf3 = creator.createRDCFEntities("Region3", "District3", "Community3", "Facility3");
+		TestDataCreator.RDCFEntities rdcf4 = creator.createRDCFEntities("Region4", "District4", "Community4", "Facility4");
+
+		LocationDto leadPersonAddress = leadPerson.getAddress();
+		leadPersonAddress.setRegion(new RegionReferenceDto(rdcf1.region.getUuid()));
+		leadPersonAddress.setDistrict(new DistrictReferenceDto(rdcf1.district.getUuid()));
+
+		Country country = creator.createCountry("Romania", "ROU", "642");
+		getCountryService().doFlush();
+		CountryReferenceDto countryReferenceDto = getCountryFacade().getReferenceByUuid(country.getUuid());
+		leadPersonAddress.setCountry(countryReferenceDto);
+
+		LocationDto otherPersonAddress = otherPerson.getAddress();
+		otherPersonAddress.setRegion(new RegionReferenceDto(rdcf1.region.getUuid()));
+		otherPersonAddress.setDistrict(new DistrictReferenceDto(rdcf1.district.getUuid()));
+		otherPersonAddress.setCommunity(new CommunityReferenceDto(rdcf1.community.getUuid()));
+
+		List<LocationDto> leadAddresses = new ArrayList<>();
+		LocationDto leadAddresses1 = LocationDto.build();
+		leadAddresses1.setRegion(new RegionReferenceDto(rdcf3.region.getUuid()));
+		leadAddresses1.setDistrict(new DistrictReferenceDto(rdcf3.district.getUuid()));
+		leadAddresses1.setCommunity(new CommunityReferenceDto(rdcf3.community.getUuid()));
+		leadAddresses.add(leadAddresses1);
+
+		LocationDto leadAddresses2 = LocationDto.build();
+		leadAddresses2.setRegion(new RegionReferenceDto(rdcf4.region.getUuid()));
+		leadAddresses2.setDistrict(new DistrictReferenceDto(rdcf4.district.getUuid()));
+		leadAddresses.add(leadAddresses2);
+
+		leadPerson.setAddresses(leadAddresses);
+		leadPerson.setAddress(leadPersonAddress);
+		otherPerson.setAddress(otherPersonAddress);
+
+		leadPerson = getPersonFacade().save(leadPerson);
+		otherPerson = getPersonFacade().save(otherPerson);
+
+		final PersonReferenceDto leadPersonRef = leadPerson.toReference();
+		final PersonReferenceDto otherPersonRef = otherPerson.toReference();
+		final UserReferenceDto natUserRef = nationalUser.toReference();
+
+		final CaseDataDto leadCase = creator.createCase(natUserRef, leadPersonRef, rdcfEntities);
+		creator.createContact(natUserRef, leadPersonRef);
+		final EventDto leadEvent = creator.createEvent(natUserRef);
+		creator.createEventParticipant(leadEvent.toReference(), leadPerson, natUserRef);
+		creator.createVisit(leadPersonRef);
+		creator.createImmunization(Disease.CORONAVIRUS, leadPersonRef, natUserRef, rdcf);
+		creator.createTravelEntry(leadPersonRef, natUserRef, rdcf, te -> te.setResultingCase(leadCase.toReference()));
+
+		final CaseDataDto otherCase = creator.createCase(natUserRef, otherPersonRef, rdcfEntities);
+		creator.createContact(natUserRef, otherPersonRef);
+		final EventDto otherEvent = creator.createEvent(natUserRef);
+		creator.createEventParticipant(otherEvent.toReference(), otherPerson, natUserRef);
+		creator.createVisit(otherPersonRef);
+		creator.createImmunization(Disease.CORONAVIRUS, otherPersonRef, natUserRef, rdcf);
+		creator.createTravelEntry(otherPersonRef, natUserRef, rdcf, te -> te.setResultingCase(otherCase.toReference()));
+
+		assertEquals(1, getCaseFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(1, getContactFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(1, getEventParticipantFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(1, getImmunizationFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(1, getTravelEntryFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(1, getVisitService().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(1, leadPerson.getAllEmailAddresses().size());
+		assertEquals(1, leadPerson.getAllPhoneNumbers().size());
 		assertEquals(2, leadPerson.getAddresses().size());
+		assertTrue(getPersonFacade().exists(otherPerson.getUuid()));
+		assertNull(leadPerson.getAddress().getCommunity());
+
+		getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true);
+
+		leadPerson = getPersonFacade().getByUuid(leadPerson.getUuid());
+
+		assertEquals(2, getCaseFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(2, getContactFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(2, getEventParticipantFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(2, getImmunizationFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(2, getTravelEntryFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(2, getVisitService().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+
+		assertNotNull(leadPerson.getAddress().getCommunity());
+		assertEquals(2, leadPerson.getAddresses().size());
+		assertFalse(getPersonFacade().exists(otherPerson.getUuid()));
+	}
+
+	@Test
+	public void testMergePersonsLeadPersonFacilityNotMatchInfrastructureDataFromOtherPerson() {
+		PersonDto leadPerson = creator.createPerson("John", "Doe", Sex.MALE, 1980, 1, 1, "000111222", null);
+		PersonDto otherPerson = creator.createPerson("James", "Smith", Sex.MALE, 1990, 1, 1, "444555666", "123456789");
+
+		leadPerson.setPhone("+496211218490");
+		otherPerson.setPhone("+496211218491");
+		leadPerson.setEmailAddress("lead@hotmail.com");
+		otherPerson.setEmailAddress("other@yahoo.com");
+
+		Region region = creator.createRegion("Region");
+		District district = creator.createDistrict("District", region);
+		Community community1 = creator.createCommunity("Community1", district);
+		Facility facility1 = creator.createFacility("Facility1", region, district, community1);
+		Community community2 = creator.createCommunity("Community2", district);
+		Facility facility2 = creator.createFacility("Facility2", region, district, community2);
+
+		TestDataCreator.RDCFEntities rdcf1 = new TestDataCreator.RDCFEntities(region, district, community1, facility1);
+		TestDataCreator.RDCFEntities rdcf2 = new TestDataCreator.RDCFEntities(region, district, community2, facility2);
+		TestDataCreator.RDCFEntities rdcf3 = creator.createRDCFEntities("Region3", "District3", "Community3", "Facility3");
+		TestDataCreator.RDCFEntities rdcf4 = creator.createRDCFEntities("Region4", "District4", "Community4", "Facility4");
+
+		LocationDto leadPersonAddress = leadPerson.getAddress();
+		leadPersonAddress.setRegion(new RegionReferenceDto(rdcf1.region.getUuid()));
+		leadPersonAddress.setDistrict(new DistrictReferenceDto(rdcf1.district.getUuid()));
+		leadPersonAddress.setFacility(new FacilityReferenceDto(rdcf1.facility.getUuid()));
+
+		LocationDto otherPersonAddress = otherPerson.getAddress();
+		otherPersonAddress.setRegion(new RegionReferenceDto(rdcf2.region.getUuid()));
+		otherPersonAddress.setDistrict(new DistrictReferenceDto(rdcf2.district.getUuid()));
+		otherPersonAddress.setCommunity(new CommunityReferenceDto(rdcf2.community.getUuid()));
+
+		List<LocationDto> leadAddresses = new ArrayList<>();
+		LocationDto leadAddresses1 = LocationDto.build();
+		leadAddresses1.setRegion(new RegionReferenceDto(rdcf3.region.getUuid()));
+		leadAddresses1.setDistrict(new DistrictReferenceDto(rdcf3.district.getUuid()));
+		leadAddresses1.setCommunity(new CommunityReferenceDto(rdcf3.community.getUuid()));
+		leadAddresses.add(leadAddresses1);
+
+		LocationDto leadAddresses2 = LocationDto.build();
+		leadAddresses2.setRegion(new RegionReferenceDto(rdcf4.region.getUuid()));
+		leadAddresses2.setDistrict(new DistrictReferenceDto(rdcf4.district.getUuid()));
+		leadAddresses.add(leadAddresses2);
+
+		leadPerson.setAddresses(leadAddresses);
+		leadPerson.setAddress(leadPersonAddress);
+		otherPerson.setAddress(otherPersonAddress);
+
+		leadPerson = getPersonFacade().save(leadPerson);
+		otherPerson = getPersonFacade().save(otherPerson);
+
+		assertEquals(1, leadPerson.getAllEmailAddresses().size());
+		assertEquals(1, leadPerson.getAllPhoneNumbers().size());
+		assertEquals(2, leadPerson.getAddresses().size());
+		assertTrue(getPersonFacade().exists(otherPerson.getUuid()));
+		assertNull(leadPerson.getAddress().getCommunity());
+
+		getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true);
+
+		leadPerson = getPersonFacade().getByUuid(leadPerson.getUuid());
+
+		assertEquals(3, leadPerson.getAddresses().size());
+		assertEquals(rdcf1.region.getUuid(), leadPerson.getAddress().getRegion().getUuid());
+		assertEquals(rdcf1.district.getUuid(), leadPerson.getAddress().getDistrict().getUuid());
+		assertNull(leadPerson.getAddress().getCommunity());
+		assertEquals(1, leadPerson.getAddresses().stream().filter(field -> field.getUuid().equals(leadAddresses1.getUuid())).count());
+		assertEquals(1, leadPerson.getAddresses().stream().filter(field -> field.getUuid().equals(leadAddresses2.getUuid())).count());
+		assertEquals(1, leadPerson.getAddresses().stream().filter(field -> otherPersonAddress.getCommunity().equals(field.getCommunity())).count());
+		assertEquals(
+			PersonAddressType.OTHER_ADDRESS,
+			leadPerson.getAddresses()
+				.stream()
+				.filter(field -> field.getUuid().equals(otherPersonAddress.getUuid()))
+				.findFirst()
+				.get()
+				.getAddressType());
+		assertEquals(
+			I18nProperties.getString(Strings.messagePersonMergedAddressDescription),
+			leadPerson.getAddresses()
+				.stream()
+				.filter(field -> field.getUuid().equals(otherPersonAddress.getUuid()))
+				.findFirst()
+				.get()
+				.getAddressTypeDetails());
+	}
+
+	@Test
+	public void testMergePersonsFacilityTypeDoesNotMatch() {
+
+		PersonDto leadPerson = creator.createPerson("John", "Doe", Sex.MALE, 1980, 1, 1, "000111222", null);
+		PersonDto otherPerson = creator.createPerson("James", "Smith", Sex.MALE, 1990, 1, 1, "444555666", "123456789");
+
+		TestDataCreator.RDCFEntities rdcf1 = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+
+		LocationDto leadPersonAddress = leadPerson.getAddress();
+		leadPersonAddress.setRegion(new RegionReferenceDto(rdcf1.region.getUuid()));
+		leadPersonAddress.setDistrict(new DistrictReferenceDto(rdcf1.district.getUuid()));
+		leadPersonAddress.setFacilityType(FacilityType.HOSPITAL);
+
+		LocationDto otherPersonAddress = otherPerson.getAddress();
+		otherPersonAddress.setRegion(new RegionReferenceDto(rdcf1.region.getUuid()));
+		otherPersonAddress.setDistrict(new DistrictReferenceDto(rdcf1.district.getUuid()));
+		otherPersonAddress.setFacilityType(FacilityType.BAR);
+
+		leadPerson.setAddress(leadPersonAddress);
+		otherPerson.setAddress(otherPersonAddress);
+
+		leadPerson = getPersonFacade().save(leadPerson);
+		otherPerson = getPersonFacade().save(otherPerson);
+
+		getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true);
+
+		leadPerson = getPersonFacade().getByUuid(leadPerson.getUuid());
+
+		assertEquals(rdcf1.region.getUuid(), leadPerson.getAddress().getRegion().getUuid());
+		assertNull(leadPerson.getAddress().getCommunity());
+		assertEquals(1, leadPerson.getAddresses().size());
+		assertEquals(
+			1,
+			leadPerson.getAddresses().stream().filter(field -> otherPersonAddress.getFacilityType().equals(field.getFacilityType())).count());
+		assertFalse(getPersonFacade().exists(otherPerson.getUuid()));
+	}
+
+	@Test
+	public void testMergePersonsSameFacilityTypeDifferentFacility() {
+
+		PersonDto leadPerson = creator.createPerson("John", "Doe", Sex.MALE, 1980, 1, 1, "000111222", null);
+		PersonDto otherPerson = creator.createPerson("James", "Smith", Sex.MALE, 1990, 1, 1, "444555666", "123456789");
+
+		Region region = creator.createRegion("Region");
+		District district = creator.createDistrict("District", region);
+
+		Facility facility1 = creator.createFacility("Facility1", FacilityType.HOSPITAL, region, district, null);
+		Facility facility2 = creator.createFacility("Facility2", FacilityType.HOSPITAL, region, district, null);
+
+		TestDataCreator.RDCFEntities rdcf1 = new TestDataCreator.RDCFEntities(region, district, null, facility1);
+
+		LocationDto leadPersonAddress = leadPerson.getAddress();
+		leadPersonAddress.setRegion(new RegionReferenceDto(rdcf1.region.getUuid()));
+		leadPersonAddress.setDistrict(new DistrictReferenceDto(rdcf1.district.getUuid()));
+		leadPersonAddress.setFacilityType(facility1.getType());
+		leadPersonAddress.setFacility(new FacilityReferenceDto(facility1.getUuid()));
+
+		LocationDto otherPersonAddress = otherPerson.getAddress();
+		otherPersonAddress.setRegion(new RegionReferenceDto(rdcf1.region.getUuid()));
+		otherPersonAddress.setDistrict(new DistrictReferenceDto(rdcf1.district.getUuid()));
+		otherPersonAddress.setFacilityType(facility2.getType());
+		otherPersonAddress.setFacility(new FacilityReferenceDto(facility2.getUuid()));
+
+		leadPerson.setAddress(leadPersonAddress);
+		otherPerson.setAddress(otherPersonAddress);
+
+		leadPerson = getPersonFacade().save(leadPerson);
+		otherPerson = getPersonFacade().save(otherPerson);
+
+		getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true);
+
+		leadPerson = getPersonFacade().getByUuid(leadPerson.getUuid());
+
+		assertEquals(rdcf1.region.getUuid(), leadPerson.getAddress().getRegion().getUuid());
+		assertNull(leadPerson.getAddress().getCommunity());
+		assertEquals(1, leadPerson.getAddresses().size());
+		assertEquals(
+			1,
+			leadPerson.getAddresses().stream().filter(field -> otherPersonAddress.getFacilityType().equals(field.getFacilityType())).count());
+		assertFalse(getPersonFacade().exists(otherPerson.getUuid()));
+	}
+
+	@Test
+	public void testMergePersonsSameOtherFacilityDifferentDescription() {
+
+		PersonDto leadPerson = creator.createPerson("John", "Doe", Sex.MALE, 1980, 1, 1, "000111222", null);
+		PersonDto otherPerson = creator.createPerson("James", "Smith", Sex.MALE, 1990, 1, 1, "444555666", "123456789");
+
+		Region region = creator.createRegion("Region");
+		District district = creator.createDistrict("District", region);
+		Community community = creator.createCommunity("Community", district);
+
+		Facility facility1 = creator.createFacility("Facility1", FacilityType.HOSPITAL, region, district, community);
+
+		TestDataCreator.RDCFEntities rdcf1 = new TestDataCreator.RDCFEntities(region, district, null, facility1);
+
+		LocationDto leadPersonAddress = leadPerson.getAddress();
+		leadPersonAddress.setRegion(new RegionReferenceDto(rdcf1.region.getUuid()));
+		leadPersonAddress.setDistrict(new DistrictReferenceDto(rdcf1.district.getUuid()));
+		leadPersonAddress.setFacilityType(facility1.getType());
+		leadPersonAddress.setFacility(new FacilityReferenceDto(facility1.getUuid()));
+		leadPersonAddress.setFacilityDetails("leadFacility");
+
+		LocationDto otherPersonAddress = otherPerson.getAddress();
+		otherPersonAddress.setRegion(new RegionReferenceDto(rdcf1.region.getUuid()));
+		otherPersonAddress.setDistrict(new DistrictReferenceDto(rdcf1.district.getUuid()));
+		otherPersonAddress.setFacilityType(facility1.getType());
+		otherPersonAddress.setFacility(new FacilityReferenceDto(facility1.getUuid()));
+		otherPersonAddress.setFacilityDetails("otherFacility");
+
+		leadPerson.setAddress(leadPersonAddress);
+		otherPerson.setAddress(otherPersonAddress);
+
+		leadPerson = getPersonFacade().save(leadPerson);
+		otherPerson = getPersonFacade().save(otherPerson);
+
+		getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true);
+
+		leadPerson = getPersonFacade().getByUuid(leadPerson.getUuid());
+		assertEquals(rdcf1.region.getUuid(), leadPerson.getAddress().getRegion().getUuid());
+		assertNull(leadPerson.getAddress().getCommunity());
+		assertEquals(1, leadPerson.getAddresses().size());
+		assertEquals(
+			1,
+			leadPerson.getAddresses().stream().filter(field -> otherPersonAddress.getFacilityType().equals(field.getFacilityType())).count());
+		assertEquals("otherFacility", leadPerson.getAddresses().get(0).getFacilityDetails());
 		assertFalse(getPersonFacade().exists(otherPerson.getUuid()));
 	}
 
@@ -1146,13 +1507,13 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testPersonAssociatedWithNullId() {
-		boolean isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(null);
+		boolean isAssociated = getPersonFacade().isEditAllowed(null);
 		assertFalse(isAssociated);
 	}
 
 	@Test
 	public void testPersonAssociatedWithUnexistingId() {
-		boolean isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(DataHelper.createUuid());
+		boolean isAssociated = getPersonFacade().isEditAllowed(DataHelper.createUuid());
 		assertFalse(isAssociated);
 	}
 
@@ -1169,11 +1530,11 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			new Date(),
 			rdcf);
 
-		boolean isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		boolean isAssociated = getPersonFacade().isEditAllowed(personDto.getUuid());
 		assertTrue(isAssociated);
 
 		getCaseFacade().delete(caseDataDto.getUuid(), new DeletionDetails());
-		isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		isAssociated = getPersonFacade().isEditAllowed(personDto.getUuid());
 		assertFalse(isAssociated);
 	}
 
@@ -1183,11 +1544,11 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		PersonDto personDto = creator.createPerson("Person", "Test");
 		ContactDto contactDto = creator.createContact(rdcf, userDto.toReference(), personDto.toReference());
 
-		boolean isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		boolean isAssociated = getPersonFacade().isEditAllowed(personDto.getUuid());
 		assertTrue(isAssociated);
 
 		getContactFacade().delete(contactDto.getUuid(), new DeletionDetails());
-		isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		isAssociated = getPersonFacade().isEditAllowed(personDto.getUuid());
 		assertFalse(isAssociated);
 	}
 
@@ -1197,11 +1558,11 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		PersonDto personDto = creator.createPerson("Person", "Test");
 		TravelEntryDto travelEntryDto = creator.createTravelEntry(personDto.toReference(), userDto.toReference(), rdcf, null);
 
-		boolean isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		boolean isAssociated = getPersonFacade().isEditAllowed(personDto.getUuid());
 		assertTrue(isAssociated);
 
 		getTravelEntryFacade().delete(travelEntryDto.getUuid(), new DeletionDetails());
-		isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		isAssociated = getPersonFacade().isEditAllowed(personDto.getUuid());
 		assertFalse(isAssociated);
 	}
 
@@ -1212,11 +1573,11 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		EventDto eventDto = creator.createEvent(userDto.toReference());
 		EventParticipantDto eventParticipantDto = creator.createEventParticipant(eventDto.toReference(), personDto, userDto.toReference());
 
-		boolean isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		boolean isAssociated = getPersonFacade().isEditAllowed(personDto.getUuid());
 		assertTrue(isAssociated);
 
 		getEventParticipantFacade().delete(eventParticipantDto.getUuid(), new DeletionDetails());
-		isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		isAssociated = getPersonFacade().isEditAllowed(personDto.getUuid());
 		assertFalse(isAssociated);
 	}
 
@@ -1226,11 +1587,11 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		PersonDto personDto = creator.createPerson("Person", "Test");
 		ImmunizationDto immunizationDto = creator.createImmunization(Disease.CORONAVIRUS, personDto.toReference(), userDto.toReference(), rdcf);
 
-		boolean isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		boolean isAssociated = getPersonFacade().isEditAllowed(personDto.getUuid());
 		assertTrue(isAssociated);
 
 		getImmunizationFacade().delete(immunizationDto.getUuid(), new DeletionDetails());
-		isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		isAssociated = getPersonFacade().isEditAllowed(personDto.getUuid());
 		assertFalse(isAssociated);
 	}
 
@@ -1340,5 +1701,480 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		personCriteria.setNameAddressPhoneEmailLike("detail2");
 		personIndexDtos = getPersonFacade().getIndexList(personCriteria, 0, 100, null);
 		assertEquals(0, personIndexDtos.size());
+	}
+
+	@Test
+	public void testIsEditAllowedLinkedToCase() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		User user = getUserService().getByUuid(userDto.getUuid());
+
+		PersonDto person = creator.createPerson();
+		creator.createCase(userDto.toReference(), person.toReference(), rdcf);
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// person case not yet shared
+		person = creator.createPerson();
+		creator.createCase(userDto.toReference(), person.toReference(), rdcf);
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// person of incoming case without ownership
+		person = creator.createPerson();
+		creator.createCase(userDto.toReference(), person.toReference(), rdcf, (c -> {
+			c.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", false, null));
+		}));
+
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// person of incoming case with ownership
+		person = creator.createPerson();
+		creator.createCase(userDto.toReference(), person.toReference(), rdcf, (c -> {
+			c.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", true, null));
+		}));
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		//person of case shared without ownership
+		person = creator.createPerson();
+		creator.createSharedCase(userDto.toReference(), person.toReference(), rdcf, false);
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		//person of case shared with ownership
+		person = creator.createPerson();
+		CaseDataDto handedOverCase = creator.createSharedCase(userDto.toReference(), person.toReference(), rdcf, true);
+
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		//person of case shared with ownership but pending
+		person = creator.createPerson();
+		CaseDataDto pendingShareCase = creator.createCase(userDto.toReference(), person.toReference(), rdcf);
+		creator.createShareRequestInfo(
+			ShareRequestDataType.CASE,
+			user,
+			"target_id",
+			true,
+			ShareRequestStatus.PENDING,
+			(s) -> s.setCaze(getCaseService().getByReferenceDto(pendingShareCase.toReference())));
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		//person of case shared with ownership but rejected
+		person = creator.createPerson();
+		CaseDataDto rejectedShareCase = creator.createCase(userDto.toReference(), person.toReference(), rdcf);
+		creator.createShareRequestInfo(
+			ShareRequestDataType.CASE,
+			user,
+			"target_id",
+			true,
+			ShareRequestStatus.REJECTED,
+			(s) -> s.setCaze(getCaseService().getByReferenceDto(rejectedShareCase.toReference())));
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		//person of case shared with ownership but revoked
+		person = creator.createPerson();
+		CaseDataDto revokedShareCase = creator.createCase(userDto.toReference(), person.toReference(), rdcf);
+		creator.createShareRequestInfo(
+			ShareRequestDataType.CASE,
+			user,
+			"target_id",
+			true,
+			ShareRequestStatus.REVOKED,
+			(s) -> s.setCaze(getCaseService().getByReferenceDto(revokedShareCase.toReference())));
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+	}
+
+	@Test
+	public void testIsEditAllowedLinkedToContact() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		User user = getUserService().getByUuid(userDto.getUuid());
+
+		// person of contact not yet shared
+		PersonDto person = creator.createPerson();
+		creator.createContact(userDto.toReference(), person.toReference(), Disease.CORONAVIRUS);
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// person of incoming contact without ownership
+		person = creator.createPerson();
+		creator.createContact(userDto.toReference(), person.toReference(), Disease.CORONAVIRUS, (c -> {
+			c.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", false, null));
+		}));
+
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// person of incoming contact with ownership
+		person = creator.createPerson();
+		creator.createContact(userDto.toReference(), person.toReference(), Disease.CORONAVIRUS, (c -> {
+			c.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", true, null));
+		}));
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		//person of contact shared without ownership
+		person = creator.createPerson();
+		creator.createSharedContact(userDto.toReference(), person.toReference(), false);
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		//person of contact shared with ownership
+		person = creator.createPerson();
+		ContactDto handedOverContact = creator.createSharedContact(userDto.toReference(), person.toReference(), true);
+
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
+	}
+
+	@Test
+	public void testIsEditAllowedLinkedToEventParticipant() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		User user = getUserService().getByUuid(userDto.getUuid());
+
+		// person of event participant not yet shared
+		PersonDto person = creator.createPerson();
+		creator.createEventParticipant(creator.createEvent(user.toReference()).toReference(), person, "Test event", userDto.toReference(), rdcf);
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// person of incoming event participant without ownership
+		person = creator.createPerson();
+		creator.createEventParticipant(creator.createEvent(user.toReference()).toReference(), person, "Test event", userDto.toReference(), e -> {
+			e.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", false, null));
+		}, rdcf);
+
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// person of incoming event participant with ownership
+		person = creator.createPerson();
+		creator.createEventParticipant(creator.createEvent(user.toReference()).toReference(), person, "Test event", userDto.toReference(), e -> {
+			e.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", true, null));
+		}, rdcf);
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		//person of event participant shared without ownership
+		person = creator.createPerson();
+		EventParticipantDto sharedEventParticipant =
+			creator.createEventParticipant(creator.createEvent(user.toReference()).toReference(), person, userDto.toReference());
+
+		creator.createShareRequestInfo(
+			ShareRequestDataType.EVENT,
+			user,
+			"target_id",
+			false,
+			ShareRequestStatus.ACCEPTED,
+			(s) -> s.setEventParticipant(getEventParticipantService().getByReferenceDto(sharedEventParticipant.toReference())));
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		//person of event participant shared with ownership
+		person = creator.createPerson();
+		EventParticipantDto handedOverEventParticipant =
+			creator.createEventParticipant(creator.createEvent(user.toReference()).toReference(), person, userDto.toReference());
+		creator.createShareRequestInfo(
+			ShareRequestDataType.EVENT,
+			user,
+			"target_id",
+			true,
+			ShareRequestStatus.ACCEPTED,
+			(s) -> s.setEventParticipant(getEventParticipantService().getByReferenceDto(handedOverEventParticipant.toReference())));
+
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
+	}
+
+	@Test
+	public void testIsEditAllowedLinkedToImmunization() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		User user = getUserService().getByUuid(userDto.getUuid());
+
+		// person of immunization not yet shared
+		PersonDto person = creator.createPerson();
+		creator.createImmunization(Disease.CORONAVIRUS, person.toReference(), userDto.toReference(), rdcf);
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// person of incoming immunization without ownership
+		person = creator.createPerson();
+		creator.createImmunization(Disease.CORONAVIRUS, person.toReference(), userDto.toReference(), rdcf, i -> {
+			i.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", false, null));
+		});
+
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// person of incoming immunization with ownership
+		person = creator.createPerson();
+		creator.createImmunization(Disease.CORONAVIRUS, person.toReference(), userDto.toReference(), rdcf, i -> {
+			i.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", true, null));
+		});
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		//person of immunization shared without ownership
+		person = creator.createPerson();
+		ImmunizationDto sharedImmuniztion = creator.createImmunization(Disease.CORONAVIRUS, person.toReference(), userDto.toReference(), rdcf);
+
+		creator.createShareRequestInfo(
+			ShareRequestDataType.CASE,
+			user,
+			"target_id",
+			false,
+			ShareRequestStatus.ACCEPTED,
+			(s) -> s.setImmunization(getImmunizationService().getByReferenceDto(sharedImmuniztion.toReference())));
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		//person of immunization shared with ownership
+		person = creator.createPerson();
+		ImmunizationDto handedOverImmunization = creator.createImmunization(Disease.CORONAVIRUS, person.toReference(), userDto.toReference(), rdcf);;
+		creator.createShareRequestInfo(
+			ShareRequestDataType.CASE,
+			user,
+			"target_id",
+			true,
+			ShareRequestStatus.ACCEPTED,
+			(s) -> s.setImmunization(getImmunizationService().getByReferenceDto(handedOverImmunization.toReference())));
+
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
+	}
+
+	@Test
+	public void testIseEditAllowedLinkedToTravelEntry() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+
+		PersonDto person = creator.createPerson();
+
+		// person of owned travel entry
+		creator.createTravelEntry(person.toReference(), userDto.toReference(), rdcf, null);
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// person of incoming readonly contact and owned travel entry
+		person = creator.createPerson();
+		creator.createContact(userDto.toReference(), person.toReference(), Disease.CORONAVIRUS, (c -> {
+			c.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", false, null));
+		}));
+		creator.createTravelEntry(person.toReference(), userDto.toReference(), rdcf, null);
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+	}
+
+	@Test
+	public void testIsEditAllowedLinkedToMultipleObjects() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		User user = getUserService().getByUuid(userDto.getUuid());
+
+		// person of incoming readonly case and owned contact
+		PersonDto person = creator.createPerson();
+		creator.createReceivedCase(userDto.toReference(), person.toReference(), rdcf, false);
+		creator.createContact(userDto.toReference(), person.toReference(), Disease.CORONAVIRUS);
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// person of handed over case and owned contact
+		person = creator.createPerson();
+		CaseDataDto handedOverCase2 = creator.createSharedCase(userDto.toReference(), person.toReference(), rdcf, true);
+
+		creator.createContact(userDto.toReference(), person.toReference(), Disease.CORONAVIRUS);
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// person of incoming readonly case and handed over contact
+		person = creator.createPerson();
+		creator.createReceivedCase(userDto.toReference(), person.toReference(), rdcf, false);
+
+		creator.createSharedContact(userDto.toReference(), person.toReference(), true);
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// person of readonly case, contact and owned event participant
+		person = creator.createPerson();
+		creator.createReceivedCase(userDto.toReference(), person.toReference(), rdcf, false);
+
+		creator.createReceivedContact(userDto.toReference(), person.toReference(), false);
+
+		creator.createEventParticipant(creator.createEvent(user.toReference()).toReference(), person, userDto.toReference());
+
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+	}
+
+	@Test
+	public void testIsEditAllowedLinkedToSharedAndDeletedObject() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		User user = getUserService().getByUuid(userDto.getUuid());
+
+		PersonDto person = creator.createPerson();
+
+		// share case with ownership
+		// then delete it
+		// ==> the person should not be editable
+		CaseDataDto caze = creator.createSharedCase(userDto.toReference(), person.toReference(), rdcf, true);
+		getCaseFacade().delete(caze.getUuid(), new DeletionDetails());
+
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// with deleted case but active contact should be editable
+		ContactDto contact = creator.createContact(rdcf, user.toReference(), person.toReference());
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		getContactFacade().delete(contact.getUuid(), new DeletionDetails());
+
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
+	}
+
+	@Test
+	public void testIsEditAllowedLinkedToNotOwnedCaseAndDeletedAssociatedObject() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		User user = getUserService().getByUuid(userDto.getUuid());
+
+		PersonDto person = creator.createPerson();
+		creator.createSharedCase(userDto.toReference(), person.toReference(), rdcf, true);
+
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// shared case but owned contact should allow person edit
+		ContactDto contact = creator.createContact(rdcf, user.toReference(), person.toReference());
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// shared case and deleted contact should not allow person edit
+		getContactFacade().delete(contact.getUuid(), new DeletionDetails());
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// shared case but owned event participant should allow person edit
+		EventParticipantDto eventParticipant =
+			creator.createEventParticipant(creator.createEvent(user.toReference()).toReference(), person, user.toReference());
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// shared case and deleted event participant should not allow person edit
+		getEventParticipantFacade().delete(eventParticipant.getUuid(), new DeletionDetails());
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// shared case but owned immunization should allow person edit
+		ImmunizationDto immunization = creator.createImmunization(Disease.CORONAVIRUS, person.toReference(), user.toReference(), rdcf);
+		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
+
+		// shared case and deleted immunization should not allow person edit
+		getImmunizationFacade().delete(immunization.getUuid(), new DeletionDetails());
+		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
+	}
+
+	@Test
+	public void testIsSharedOrReceived() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		User user = getUserService().getByUuid(userDto.getUuid());
+
+		PersonDto person = creator.createPerson();
+		CaseDataDto sharedCase = creator.createCase(userDto.toReference(), person.toReference(), rdcf, null);
+
+		assertFalse(getPersonFacade().isSharedOrReceived(person.getUuid()));
+
+		// shared case
+		creator.createShareRequestInfo(
+			ShareRequestDataType.CASE,
+			user,
+			"target_id",
+			false,
+			ShareRequestStatus.ACCEPTED,
+			(s) -> s.setCaze(getCaseService().getByReferenceDto(sharedCase.toReference())));
+
+		assertTrue(getPersonFacade().isSharedOrReceived(person.getUuid()));
+
+		// received case
+		person = creator.createPerson();
+		creator.createReceivedCase(userDto.toReference(), person.toReference(), rdcf, false);
+
+		assertTrue(getPersonFacade().isSharedOrReceived(person.getUuid()));
+
+		// shared contact
+		person = creator.createPerson();
+		ContactDto sharedContact = creator.createContact(rdcf, user.toReference(), person.toReference());
+
+		assertFalse(getPersonFacade().isSharedOrReceived(person.getUuid()));
+
+		creator.createShareRequestInfo(
+			ShareRequestDataType.CONTACT,
+			user,
+			"target_id",
+			false,
+			ShareRequestStatus.ACCEPTED,
+			(s) -> s.setContact(getContactService().getByReferenceDto(sharedContact.toReference())));
+
+		assertTrue(getPersonFacade().isSharedOrReceived(person.getUuid()));
+
+		// received contact
+		person = creator.createPerson();
+		creator.createReceivedContact(user.toReference(), person.toReference(), false);
+
+		assertTrue(getPersonFacade().isSharedOrReceived(person.getUuid()));
+
+		// shared event participant
+		person = creator.createPerson();
+		EventParticipantDto sharedEventParticipant =
+			creator.createEventParticipant(creator.createEvent(user.toReference()).toReference(), person, user.toReference());
+
+		assertFalse(getPersonFacade().isSharedOrReceived(person.getUuid()));
+
+		creator.createShareRequestInfo(
+			ShareRequestDataType.EVENT,
+			user,
+			"target_id",
+			false,
+			ShareRequestStatus.ACCEPTED,
+			(s) -> s.setEventParticipant(getEventParticipantService().getByReferenceDto(sharedEventParticipant.toReference())));
+
+		assertTrue(getPersonFacade().isSharedOrReceived(person.getUuid()));
+
+		// received event participant
+		person = creator.createPerson();
+		creator.createReceivedEventParticipant(person, userDto.toReference(), rdcf);
+
+		assertTrue(getPersonFacade().isSharedOrReceived(person.getUuid()));
+
+		// shared immunization
+		person = creator.createPerson();
+		ImmunizationDto sharedImmunization = creator.createImmunization(Disease.CORONAVIRUS, person.toReference(), user.toReference(), rdcf);
+
+		assertFalse(getPersonFacade().isSharedOrReceived(person.getUuid()));
+
+		creator.createShareRequestInfo(
+			ShareRequestDataType.CASE,
+			user,
+			"target_id",
+			false,
+			ShareRequestStatus.ACCEPTED,
+			(s) -> s.setImmunization(getImmunizationService().getByReferenceDto(sharedImmunization.toReference())));
+
+		assertTrue(getPersonFacade().isSharedOrReceived(person.getUuid()));
+
+		// received immunization
+		person = creator.createPerson();
+		creator.createReceivedImmunization(person.toReference(), userDto.toReference(), rdcf);
+
+		assertTrue(getPersonFacade().isSharedOrReceived(person.getUuid()));
+
+		// shared immunization and not shared contact
+		ContactDto contact = creator.createContact(rdcf, user.toReference(), person.toReference());
+
+		assertTrue(getPersonFacade().isSharedOrReceived(person.getUuid()));
+
+		// shared immunization and shared contact
+		creator.createShareRequestInfo(
+			ShareRequestDataType.CONTACT,
+			user,
+			"target_id",
+			false,
+			ShareRequestStatus.ACCEPTED,
+			(s) -> s.setContact(getContactService().getByReferenceDto(contact.toReference())));
+
+		assertTrue(getPersonFacade().isSharedOrReceived(person.getUuid()));
 	}
 }

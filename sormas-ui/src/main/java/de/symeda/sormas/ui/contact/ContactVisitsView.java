@@ -87,7 +87,7 @@ public class ContactVisitsView extends AbstractContactView {
 		topLayout.addStyleName(CssStyles.VSPACE_3);
 
 		if (isEditAllowed()) {
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			if (UserProvider.getCurrent().hasAllUserRights(UserRight.PERFORM_BULK_OPERATIONS, UserRight.CONTACT_EDIT, UserRight.VISIT_EDIT)) {
 				topLayout.setWidth(100, Unit.PERCENTAGE);
 
 				MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
@@ -147,7 +147,7 @@ public class ContactVisitsView extends AbstractContactView {
 				new FileDownloader(exportStreamResource).extend(exportButton);
 			}
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_CREATE)) {
+			if (UserProvider.getCurrent().hasAllUserRights(UserRight.VISIT_CREATE, UserRight.CONTACT_EDIT)) {
 				newButton = ButtonHelper.createIconButton(
 					Captions.visitNewVisit,
 					VaadinIcons.PLUS_CIRCLE,
@@ -160,6 +160,9 @@ public class ContactVisitsView extends AbstractContactView {
 				final ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(this.getContactRef().getUuid());
 				if (contactDto.getResultingCase() != null) {
 					newButton.setEnabled(false);
+					if (topLayout.getComponentCount() == 1) {
+						topLayout.setExpandRatio(newButton, 1);
+					}
 					final Label label = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
 					label.setDescription(I18nProperties.getString(Strings.infoContactAlreadyConvertedToCase));
 					topLayout.addComponent(label);
@@ -199,7 +202,8 @@ public class ContactVisitsView extends AbstractContactView {
 		criteria.contact(getContactRef());
 
 		if (grid == null) {
-			grid = new VisitGrid(criteria, isEditAllowed());
+			grid =
+				new VisitGrid(criteria, isEditAllowed() && UserProvider.getCurrent().hasAllUserRights(UserRight.CONTACT_EDIT, UserRight.VISIT_EDIT));
 			gridLayout = new DetailSubComponentWrapper(() -> null);
 			gridLayout.setSizeFull();
 			gridLayout.setMargin(true);

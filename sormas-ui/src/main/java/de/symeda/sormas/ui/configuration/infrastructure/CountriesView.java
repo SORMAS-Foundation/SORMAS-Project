@@ -96,6 +96,7 @@ public class CountriesView extends AbstractConfigurationView {
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		rowCount = new RowCount(Strings.labelNumberOfCountries, 0);
+		grid.addDataSizeChangeListener(e -> rowCount.update(grid.getDataSize()));
 		gridLayout.addComponent(rowCount);
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
@@ -110,14 +111,14 @@ public class CountriesView extends AbstractConfigurationView {
 			importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 				Window window = VaadinUiUtil.showPopupWindow(new InfrastructureImportLayout(InfrastructureType.COUNTRY));
 				window.setCaption(I18nProperties.getString(Strings.headingImportCountries));
-				window.addCloseListener(c -> grid.reload(true));
+				window.addCloseListener(c -> grid.reload());
 			}, ValoTheme.BUTTON_PRIMARY);
 			addHeaderComponent(importButton);
 
 			importDefaultCountriesButton = ButtonHelper.createIconButton(Captions.actionImportAllCountries, VaadinIcons.UPLOAD, e -> {
 				Window window = VaadinUiUtil.showPopupWindow(new ImportDefaultCountriesLayout());
 				window.setCaption(I18nProperties.getString(Strings.headingImportAllCountries));
-				window.addCloseListener(c -> grid.reload(true));
+				window.addCloseListener(c -> grid.reload());
 			}, ValoTheme.BUTTON_PRIMARY);
 			addHeaderComponent(importDefaultCountriesButton);
 		} else if (!infrastructureDataEditable) {
@@ -211,7 +212,7 @@ public class CountriesView extends AbstractConfigurationView {
 		subcontinentFilter.addItems(FacadeProvider.getSubcontinentFacade().getAllActiveAsReference());
 		subcontinentFilter.addValueChangeListener(e -> {
 			criteria.subcontinent((SubcontinentReferenceDto) e.getProperty().getValue());
-			navigateTo(criteria);
+			grid.reload();
 		});
 		filterLayout.addComponent(subcontinentFilter);
 
@@ -232,10 +233,11 @@ public class CountriesView extends AbstractConfigurationView {
 				relevanceStatusFilter.setId("relevanceStatus");
 				relevanceStatusFilter.setWidth(220, Unit.PERCENTAGE);
 				relevanceStatusFilter.setNullSelectionAllowed(false);
-				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
+				relevanceStatusFilter.addItems(EntityRelevanceStatus.getAllExceptDeleted());
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.countryActiveCountries));
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.countryArchivedCountries));
-				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.countryAllCountries));
+				relevanceStatusFilter
+					.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(Captions.countryAllCountries));
 				relevanceStatusFilter.addValueChangeListener(e -> {
 					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 					navigateTo(criteria);
@@ -294,7 +296,6 @@ public class CountriesView extends AbstractConfigurationView {
 		}
 		updateFilterComponents();
 		grid.reload();
-		rowCount.update(grid.getItemCount());
 	}
 
 	public void updateFilterComponents() {

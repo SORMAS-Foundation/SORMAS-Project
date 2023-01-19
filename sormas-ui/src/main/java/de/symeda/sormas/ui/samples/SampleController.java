@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
@@ -46,7 +48,6 @@ import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 
-import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -80,6 +81,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DateTimeField;
@@ -118,7 +120,7 @@ public class SampleController {
 	private void createSample(SampleDto sampleDto, Disease disease, Runnable callback) {
 		final CommitDiscardWrapperComponent<SampleCreateForm> editView = getSampleCreateComponent(sampleDto, disease, callback);
 		// add option to create additional pathogen tests
-		addPathogenTestButton(editView, false);
+		addPathogenTestButton(editView, false, null, null);
 		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreateNewSample));
 	}
 
@@ -130,20 +132,25 @@ public class SampleController {
 	 *
 	 * @param sampleComponent
 	 *            to add the pathogen test create component to.
-	 * @return the pathogen test create component added.
 	 */
-	public PathogenTestForm addPathogenTestComponent(CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleComponent) {
+	public CollapsiblePathogenTestForm addPathogenTestComponent(
+		CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleComponent,
+		boolean viaLims,
+		boolean deleteOnCancel,
+		boolean addSeparator) {
 
 		int caseSampleCount = caseSampleCountOf(sampleComponent.getWrappedComponent().getValue());
-		return addPathogenTestComponent(sampleComponent, null, caseSampleCount, SormasUI::refreshView, true);
+		return addPathogenTestComponent(sampleComponent, null, caseSampleCount, SormasUI::refreshView, true, viaLims, deleteOnCancel, addSeparator);
 	}
 
-	public PathogenTestForm addPathogenTestComponent(
+	public CollapsiblePathogenTestForm addPathogenTestComponent(
 		CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleComponent,
 		PathogenTestDto pathogenTest,
 		int caseSampleCount,
-		boolean isNew) {
-		return addPathogenTestComponent(sampleComponent, pathogenTest, caseSampleCount, null, isNew);
+		boolean isNew,
+		boolean viaLims,
+		boolean addSeparator) {
+		return addPathogenTestComponent(sampleComponent, pathogenTest, caseSampleCount, null, isNew, viaLims, false, addSeparator);
 	}
 
 	/**
@@ -162,16 +169,20 @@ public class SampleController {
 	 *            UserRight.PATHOGEN_TEST_DELETE permission.
 	 * @return the pathogen test create component added.
 	 */
-	public PathogenTestForm addPathogenTestComponent(
+	private CollapsiblePathogenTestForm addPathogenTestComponent(
 		CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleComponent,
 		PathogenTestDto pathogenTest,
 		int caseSampleCount,
 		Runnable callback,
-		boolean isNew) {
-		// add horizontal rule to clearly distinguish the component
-		Label horizontalRule = new Label("<br><hr /><br>", ContentMode.HTML);
-		horizontalRule.setWidth(100f, Unit.PERCENTAGE);
-		sampleComponent.addComponent(horizontalRule, sampleComponent.getComponentCount() - 1);
+		boolean isNew,
+		boolean viaLims,
+		boolean deleteOnCancel,
+		boolean addSeparator) {
+
+		Label separator = new Label("<br/><hr/><br/>", ContentMode.HTML);
+		separator.setWidth(100f, Unit.PERCENTAGE);
+		separator.setVisible(addSeparator);
+		sampleComponent.addComponent(separator, sampleComponent.getComponentCount() - 1);
 
 		PathogenTestForm pathogenTestForm =
 			new PathogenTestForm(sampleComponent.getWrappedComponent().getValue(), true, caseSampleCount, false, true);  // Valid because jurisdiction doesn't matter for entities that are about to be created
@@ -179,7 +190,7 @@ public class SampleController {
 		if (pathogenTest != null) {
 			pathogenTestForm.setValue(pathogenTest);
 			// show typingId field when it has a preset value
-			if (pathogenTest.getTypingId() != null && !"".equals(pathogenTest.getTypingId())) {
+			if (StringUtils.isNotBlank(pathogenTest.getTypingId())) {
 				pathogenTestForm.getField(PathogenTestDto.TYPING_ID).setVisible(true);
 			}
 		} else {
@@ -198,37 +209,10 @@ public class SampleController {
 		Runnable updateTestLabFieldRequired = () -> testLabField.setRequired(!SamplePurpose.INTERNAL.equals(samplePurposeField.getValue()));
 		updateTestLabFieldRequired.run();
 		samplePurposeField.addValueChangeListener(e -> updateTestLabFieldRequired.run());
+
 		// validate pathogen test create component before saving the sample
 		sampleComponent.addFieldGroups(pathogenTestForm.getFieldGroup());
-		CommitDiscardWrapperComponent.CommitListener savePathogenTest = () -> {
-			ControllerProvider.getPathogenTestController().savePathogenTest(pathogenTestForm.getValue(), null, true, true);
-			if (callback != null) {
-				callback.run();
-			}
-		};
-		sampleComponent.addCommitListener(savePathogenTest);
-		// Discard button configuration
-		if (isNew || isNull(pathogenTest) || UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_DELETE)) {
-			Button discardButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.pathogenTestRemove));
-			VerticalLayout buttonLayout = new VerticalLayout(discardButton);
-			buttonLayout.setComponentAlignment(discardButton, Alignment.TOP_LEFT);
-			// add the discard button above the overall discard and commit buttons
-			sampleComponent.addComponent(buttonLayout, sampleComponent.getComponentCount() - 1);
-			discardButton.addClickListener(o -> {
-				sampleComponent.removeComponent(horizontalRule);
-				sampleComponent.removeComponent(buttonLayout);
-				sampleComponent.removeComponent(pathogenTestForm);
-				sampleComponent.removeFieldGroups(pathogenTestForm.getFieldGroup());
-				sampleComponent.removeCommitListener(savePathogenTest);
-				pathogenTestForm.discard();
-			});
-		}
-		// Country specific configuration
-		boolean germanInstance = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY);
-		pathogenTestForm.getField(PathogenTestDto.REPORT_DATE).setVisible(germanInstance);
-		pathogenTestForm.getField(PathogenTestDto.EXTERNAL_ID).setVisible(germanInstance);
-		pathogenTestForm.getField(PathogenTestDto.EXTERNAL_ORDER_ID).setVisible(germanInstance);
-		pathogenTestForm.getField(PathogenTestDto.VIA_LIMS).setVisible(germanInstance);
+
 		// Sample creation specific configuration
 		final DateTimeField sampleDateField = sampleComponent.getWrappedComponent().getField(SampleDto.SAMPLE_DATE_TIME);
 		final DateTimeField testDateField = pathogenTestForm.getField(PathogenTestDto.TEST_DATE_TIME);
@@ -240,9 +224,39 @@ public class SampleController {
 				false,
 				I18nProperties.getValidationError(Validations.afterDate, testDateField.getCaption(), sampleDateField.getCaption())));
 
+		if (viaLims) {
+			setViaLimsFieldChecked(pathogenTestForm);
+		}
+
+		CollapsiblePathogenTestForm collapsibleForm =
+			new CollapsiblePathogenTestForm(pathogenTestForm, isNew || isNull(pathogenTest), deleteOnCancel);
+
+		// save pathogen test after saving sample
+		CommitDiscardWrapperComponent.CommitListener savePathogenTest = () -> {
+			ControllerProvider.getPathogenTestController().savePathogenTest(pathogenTestForm.getValue(), null, true, true);
+			if (callback != null) {
+				callback.run();
+			}
+		};
+		sampleComponent.addCommitListener(savePathogenTest);
+
+		// add delete if allowed
+		if (isNew || isNull(pathogenTest) || UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_DELETE)) {
+			collapsibleForm.setDeleteHandler(() -> {
+				sampleComponent.removeComponent(separator);
+				sampleComponent.removeComponent(collapsibleForm);
+				sampleComponent.removeFieldGroups(pathogenTestForm.getFieldGroup());
+				sampleComponent.removeCommitListener(savePathogenTest);
+				pathogenTestForm.discard();
+			});
+		}
+
 		// add the pathogenTestForm above the overall discard and commit buttons
-		sampleComponent.addComponent(pathogenTestForm, sampleComponent.getComponentCount() - 1);
-		return pathogenTestForm;
+		sampleComponent.addComponent(collapsibleForm, sampleComponent.getComponentCount() - 1);
+		// add space above the buttons bar
+		sampleComponent.getButtonsPanel().addStyleName(CssStyles.VSPACE_TOP_3);
+
+		return collapsibleForm;
 	}
 
 	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(SampleDto sampleDto, Disease disease, Runnable callback) {
@@ -250,7 +264,7 @@ public class SampleController {
 		return getSampleCreateComponent(sampleDto, disease, UserRight.SAMPLE_CREATE, callback);
 	}
 
-	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(
+	private CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(
 		SampleDto sampleDto,
 		Disease disease,
 		UserRight userRight,
@@ -273,7 +287,11 @@ public class SampleController {
 		return editView;
 	}
 
-	public void addPathogenTestButton(CommitDiscardWrapperComponent<? extends AbstractSampleForm> editView, boolean viaLims) {
+	public void addPathogenTestButton(
+		CommitDiscardWrapperComponent<? extends AbstractSampleForm> editView,
+		boolean viaLims,
+		Runnable addCallback,
+		Runnable deleteCallback) {
 
 		if (!UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_CREATE)) {
 			return;
@@ -281,9 +299,13 @@ public class SampleController {
 
 		Button addPathogenTestButton = new Button(I18nProperties.getCaption(Captions.pathogenTestAdd));
 		addPathogenTestButton.addClickListener((e) -> {
-			PathogenTestForm pathogenTestForm = addPathogenTestComponent(editView);
-			if (viaLims) {
-				setViaLimsFieldChecked(pathogenTestForm);
+			if (addCallback != null) {
+				addCallback.run();
+			}
+			CollapsiblePathogenTestForm pathogenTestForm = addPathogenTestComponent(editView, viaLims, true, true);
+
+			if (deleteCallback != null) {
+				pathogenTestForm.addDetachListener((de) -> deleteCallback.run());
 			}
 		});
 		editView.getButtonsPanel().addComponent(addPathogenTestButton, 0);
@@ -437,7 +459,7 @@ public class SampleController {
 			String referOrLinkToOtherLabButtonCaption = referredDtoLab == null
 				? I18nProperties.getCaption(Captions.sampleReferredToInternal) + " ("
 					+ DateFormatHelper.formatLocalDateTime(referredDto.getSampleDateTime()) + ")"
-				: I18nProperties.getCaption(Captions.sampleReferredTo) + " " + referredDtoLab.toString();
+				: I18nProperties.getCaption(Captions.sampleReferredTo) + " " + referredDtoLab.buildCaption();
 
 			referOrLinkToOtherLabButton = ButtonHelper.createButton("referOrLinkToOtherLab", referOrLinkToOtherLabButtonCaption, new ClickListener() {
 
@@ -472,7 +494,7 @@ public class SampleController {
 			String referredButtonCaption = referredFromLab == null
 				? I18nProperties.getCaption(Captions.sampleReferredFromInternal) + " ("
 					+ DateFormatHelper.formatLocalDateTime(referredFrom.getSampleDateTime()) + ")"
-				: I18nProperties.getCaption(Captions.sampleReferredFrom) + " " + referredFromLab.toString();
+				: I18nProperties.getCaption(Captions.sampleReferredFrom) + " " + referredFromLab.buildCaption();
 			Button referredButton = ButtonHelper
 				.createButton("referredFrom", referredButtonCaption, event -> navigation.accept(referredFrom), ValoTheme.BUTTON_LINK, VSPACE_NONE);
 			editForm.getWrappedComponent().addReferredFromButton(referredButton);

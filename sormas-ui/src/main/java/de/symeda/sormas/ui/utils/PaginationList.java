@@ -46,6 +46,7 @@ public abstract class PaginationList<T> extends VerticalLayout {
 	private List<T> entries;
 	private List<T> displayedEntries;
 	private int currentPage;
+	private String activeUuid;
 
 	// Pagination buttons
 	private Button firstPageButton;
@@ -213,4 +214,11 @@ public abstract class PaginationList<T> extends VerticalLayout {
 		return entries.isEmpty();
 	}
 
+	public String getActiveUuid() {
+		return activeUuid;
+	}
+
+	public void setActiveUuid(String activeUuid) {
+		this.activeUuid = activeUuid;
+	}
 }

@@ -50,7 +50,7 @@ import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
+import de.symeda.sormas.api.vaccination.VaccinationCriteria;
 import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
 import de.symeda.sormas.api.vaccination.VaccinationReferenceDto;
 import de.symeda.sormas.ui.document.DocumentListComponent;
@@ -70,7 +70,7 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 	public QuarantineOrderLayout(
 		DocumentWorkflow workflow,
 		@Nullable SampleCriteria sampleCriteria,
-		@Nullable VaccinationListCriteria vaccinationCriteria,
+		@Nullable VaccinationCriteria vaccinationCriteria,
 		DocumentListComponent documentListComponent,
 		DocumentStreamSupplier documentStreamSupplier,
 		Function<String, String> fileNameFunction) {
@@ -103,8 +103,10 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 		pathogenTestSelector.setWidth(100F, Unit.PERCENTAGE);
 		pathogenTestSelector.setItemCaptionGenerator(e -> e.buildCaption());
 		pathogenTestSelector.setEnabled(false);
+		pathogenTestSelector.setItemCaptionGenerator(item -> item.buildCaption());
 
 		sampleSelector = new ComboBox<>(I18nProperties.getCaption(Captions.Sample));
+		sampleSelector.setItemCaptionGenerator(item -> item.buildCaption());
 		sampleSelector.setWidth(100F, Unit.PERCENTAGE);
 		sampleSelector.setItemCaptionGenerator(e -> e.getCaption());
 		sampleSelector.setItems(samples);
@@ -130,7 +132,7 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 		additionalParametersComponent.addComponent(pathogenTestSelector);
 	}
 
-	protected void createVaccinationSelector(VaccinationListCriteria vaccinationCriteria) {
+	protected void createVaccinationSelector(VaccinationCriteria vaccinationCriteria) {
 		List<VaccinationListEntryDto> vaccinations = FacadeProvider.getVaccinationFacade()
 			.getEntriesList(vaccinationCriteria, 0, 20, Collections.singletonList(new SortProperty("vaccinationDate", false)));
 

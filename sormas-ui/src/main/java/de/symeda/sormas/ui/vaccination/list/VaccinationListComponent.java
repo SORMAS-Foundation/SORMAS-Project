@@ -26,7 +26,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
-import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
+import de.symeda.sormas.api.vaccination.VaccinationCriteria;
 import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
@@ -34,12 +34,17 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 public class VaccinationListComponent extends SideComponent {
 
-	public VaccinationListComponent(Supplier<VaccinationListCriteria> criteriaSupplier, Consumer<Runnable> actionCallback, boolean isEditAllowed) {
-		this(criteriaSupplier, actionCallback, true, isEditAllowed);
+	public VaccinationListComponent(
+		Supplier<VaccinationCriteria> criteriaSupplier,
+		String activeUuid,
+		Consumer<Runnable> actionCallback,
+		boolean isEditAllowed) {
+		this(criteriaSupplier, activeUuid, actionCallback, true, isEditAllowed);
 	}
 
 	public VaccinationListComponent(
-		Supplier<VaccinationListCriteria> criteriaSupplier,
+		Supplier<VaccinationCriteria> criteriaSupplier,
+		String activeUuid,
 		Consumer<Runnable> actionCallback,
 		boolean allowNewVaccine,
 		boolean isEditAllowed) {
@@ -47,7 +52,7 @@ public class VaccinationListComponent extends SideComponent {
 
 		if (allowNewVaccine && isEditAllowed) {
 			addCreateButton(I18nProperties.getCaption(Captions.vaccinationNewVaccination), () -> {
-				VaccinationListCriteria criteria = criteriaSupplier.get();
+				VaccinationCriteria criteria = criteriaSupplier.get();
 				ControllerProvider.getVaccinationController()
 					.create(
 						criteria.getRegion(),
@@ -61,7 +66,7 @@ public class VaccinationListComponent extends SideComponent {
 
 		Function<Integer, List<VaccinationListEntryDto>> entriesListSupplier;
 
-		VaccinationListCriteria criteria = criteriaSupplier.get();
+		VaccinationCriteria criteria = criteriaSupplier.get();
 
 		if (criteria.getVaccinationAssociationType() != null) {
 			switch (criteria.getVaccinationAssociationType()) {
@@ -85,6 +90,7 @@ public class VaccinationListComponent extends SideComponent {
 		}
 
 		VaccinationList vaccinationList = new VaccinationList(criteria.getDisease(), entriesListSupplier, actionCallback, isEditAllowed);
+		vaccinationList.setActiveUuid(activeUuid);
 		addComponent(vaccinationList);
 		vaccinationList.reload();
 	}

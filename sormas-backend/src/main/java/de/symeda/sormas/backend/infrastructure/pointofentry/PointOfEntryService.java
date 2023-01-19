@@ -8,6 +8,7 @@ import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
@@ -19,20 +20,20 @@ import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryCriteria;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryType;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseJoins;
 import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
-import de.symeda.sormas.backend.infrastructure.region.RegionService;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
 public class PointOfEntryService extends AbstractInfrastructureAdoService<PointOfEntry, PointOfEntryCriteria> {
 
-	@EJB
-	private RegionService regionService;
 	@EJB
 	private CountryFacadeEjbLocal countryFacade;
 
@@ -88,8 +89,46 @@ public class PointOfEntryService extends AbstractInfrastructureAdoService<PointO
 		return getByExternalId(externalId, PointOfEntry.EXTERNAL_ID, includeArchivedEntities);
 	}
 
+	public PointOfEntry getByCaseUuid(String caseUuid) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<PointOfEntry> cq = cb.createQuery(PointOfEntry.class);
+		Root<Case> root = cq.from(Case.class);
+		CaseJoins caseCaseJoins = new CaseJoins(root);
+		Join<Case, PointOfEntry> pointOfEntryJoin = caseCaseJoins.getPointOfEntry();
+
+		cq.select(pointOfEntryJoin);
+		cq.where(cb.equal(root.get(Case.UUID), caseUuid));
+		return QueryHelper.getSingleResult(em, cq);
+	}
+
+	public boolean existsForCase(String caseUuid) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
+		Root<Case> root = cq.from(Case.class);
+		CaseJoins caseCaseJoins = new CaseJoins(root);
+		Join<Case, PointOfEntry> pointOfEntryJoin = caseCaseJoins.getPointOfEntry();
+
+		cq.select(cb.literal(true));
+		cq.where(cb.and(cb.equal(root.get(Case.UUID), caseUuid), cb.isNotNull(pointOfEntryJoin.get(PointOfEntry.ID))));
+
+		return Boolean.TRUE.equals(QueryHelper.getSingleResult(em, cq));
+	}
+
 	@Override
-	public Predicate buildCriteriaFilter(PointOfEntryCriteria criteria, CriteriaBuilder cb, Root<PointOfEntry> pointOfEntry) {
+	public Predicate buildCriteriaFilter(PointOfEntryCriteria criteria, CriteriaBuilder cb, Root<PointOfEntry> root) {
+
+		// ignore Poe created at startup through createConstantPointsOfEntry
+		Predicate excludeConstantPoe = cb.and(
+			cb.notEqual(root.get(PointOfEntry.UUID), PointOfEntryDto.OTHER_AIRPORT_UUID),
+			cb.notEqual(root.get(PointOfEntry.UUID), PointOfEntryDto.OTHER_SEAPORT_UUID),
+			cb.notEqual(root.get(PointOfEntry.UUID), PointOfEntryDto.OTHER_GROUND_CROSSING_UUID),
+			cb.notEqual(root.get(PointOfEntry.UUID), PointOfEntryDto.OTHER_POE_UUID));
+
+		if (criteria == null) {
+			return excludeConstantPoe;
+		}
 
 		Predicate filter = null;
 
@@ -97,7 +136,7 @@ public class PointOfEntryService extends AbstractInfrastructureAdoService<PointO
 		if (country != null) {
 			CountryReferenceDto serverCountry = countryFacade.getServerCountry();
 
-			Path<Object> countryUuid = pointOfEntry.join(PointOfEntry.REGION, JoinType.LEFT).join(Region.COUNTRY, JoinType.LEFT).get(Country.UUID);
+			Path<Object> countryUuid = root.join(PointOfEntry.REGION, JoinType.LEFT).join(Region.COUNTRY, JoinType.LEFT).get(Country.UUID);
 			Predicate countryFilter = cb.equal(countryUuid, country.getUuid());
 
 			if (country.equals(serverCountry)) {
@@ -109,19 +148,17 @@ public class PointOfEntryService extends AbstractInfrastructureAdoService<PointO
 
 		if (criteria.getRegion() != null) {
 			filter = CriteriaBuilderHelper
-				.and(cb, filter, cb.equal(pointOfEntry.join(PointOfEntry.REGION, JoinType.LEFT).get(Region.UUID), criteria.getRegion().getUuid()));
+				.and(cb, filter, cb.equal(root.join(PointOfEntry.REGION, JoinType.LEFT).get(Region.UUID), criteria.getRegion().getUuid()));
 		}
 		if (criteria.getDistrict() != null) {
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.equal(pointOfEntry.join(PointOfEntry.DISTRICT, JoinType.LEFT).get(District.UUID), criteria.getDistrict().getUuid()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(root.join(PointOfEntry.DISTRICT, JoinType.LEFT).get(District.UUID), criteria.getDistrict().getUuid()));
 		}
 		if (criteria.getType() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(pointOfEntry.get(PointOfEntry.POINT_OF_ENTRY_TYPE), criteria.getType()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(root.get(PointOfEntry.POINT_OF_ENTRY_TYPE), criteria.getType()));
 		}
 		if (criteria.getActive() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(pointOfEntry.get(PointOfEntry.ACTIVE), criteria.getActive()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(root.get(PointOfEntry.ACTIVE), criteria.getActive()));
 		}
 		if (criteria.getNameLike() != null) {
 			String[] textFilters = criteria.getNameLike().split("\\s+");
@@ -130,22 +167,20 @@ public class PointOfEntryService extends AbstractInfrastructureAdoService<PointO
 					continue;
 				}
 
-				Predicate likeFilters = CriteriaBuilderHelper.unaccentedIlike(cb, pointOfEntry.get(PointOfEntry.NAME), textFilter);
+				Predicate likeFilters = CriteriaBuilderHelper.unaccentedIlike(cb, root.get(PointOfEntry.NAME), textFilter);
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
 		if (criteria.getRelevanceStatus() != null) {
 			if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
-				filter = CriteriaBuilderHelper.and(
-					cb,
-					filter,
-					cb.or(cb.equal(pointOfEntry.get(PointOfEntry.ARCHIVED), false), cb.isNull(pointOfEntry.get(PointOfEntry.ARCHIVED))));
+				filter = CriteriaBuilderHelper
+					.and(cb, filter, cb.or(cb.equal(root.get(PointOfEntry.ARCHIVED), false), cb.isNull(root.get(PointOfEntry.ARCHIVED))));
 			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(pointOfEntry.get(PointOfEntry.ARCHIVED), true));
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(root.get(PointOfEntry.ARCHIVED), true));
 			}
 		}
 
-		return filter;
+		return CriteriaBuilderHelper.and(cb, filter, excludeConstantPoe);
 	}
 
 	@SuppressWarnings("rawtypes")

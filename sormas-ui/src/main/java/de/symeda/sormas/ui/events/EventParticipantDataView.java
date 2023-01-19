@@ -37,7 +37,7 @@ import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.vaccination.VaccinationAssociationType;
-import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
+import de.symeda.sormas.api.vaccination.VaccinationCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
@@ -70,16 +70,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 	public static final String VACCINATIONS_LOC = "vaccinations";
 	public static final String SORMAS_TO_SORMAS_LOC = "sormasToSormas";
 
-//	public static final String HTML_LAYOUT = LayoutUtil.fluidRow(
-//		LayoutUtil.fluidColumnLoc(8, 0, 12, 0, EDIT_LOC),
-//		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC),
-//		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CONTACTS_LOC),
-//		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, IMMUNIZATION_LOC),
-//		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, VACCINATIONS_LOC),
-//		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, QUARANTINE_LOC),
-//		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SORMAS_TO_SORMAS_LOC));
-
-	private CommitDiscardWrapperComponent<?> editComponent;
+	private CommitDiscardWrapperComponent<EventParticipantEditForm> editComponent;
 
 	public EventParticipantDataView() {
 		super(VIEW_NAME);
@@ -176,8 +167,8 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			layout.addSidePanelComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
 		}
 
-		VaccinationListCriteria vaccinationCriteria =
-			new VaccinationListCriteria.Builder(eventParticipant.getPerson().toReference()).withDisease(event.getDisease()).build();
+		VaccinationCriteria vaccinationCriteria =
+			new VaccinationCriteria.Builder(eventParticipant.getPerson().toReference()).withDisease(event.getDisease()).build();
 		QuarantineOrderDocumentsComponent.addComponentToLayout(
 			layout,
 			eventParticipantRef,
@@ -195,6 +186,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 						new ImmunizationListComponent(
 							() -> new ImmunizationListCriteria.Builder(eventParticipant.getPerson().toReference()).withDisease(event.getDisease())
 								.build(),
+							null,
 							this::showUnsavedChangesPopup)),
 					IMMUNIZATION_LOC);
 			} else {
@@ -210,7 +202,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 						.eventParticipantReference(getReference())
 						.region(region)
 						.district(district);
-				}, this::showUnsavedChangesPopup, true)), VACCINATIONS_LOC);
+				}, null, this::showUnsavedChangesPopup, true)), VACCINATIONS_LOC);
 			}
 		}
 
@@ -222,6 +214,10 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
 		} else if (eventParticipantEditAllowed.equals(EditPermissionType.REFUSED)) {
 			layout.disable();
+		}
+
+		if (!FacadeProvider.getPersonFacade().isEditAllowed(eventParticipant.getPerson().getUuid())) {
+			editComponent.getWrappedComponent().enablePersonFields(false);
 		}
 	}
 

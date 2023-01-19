@@ -45,6 +45,9 @@ public class SharedInfoField extends CustomField<SharedInfoFieldDto> {
 		disease = new ComboBox<>(I18nProperties.getCaption(Captions.lineListingDiseaseOfSourceCase));
 		region = new ComboBox<>(I18nProperties.getCaption(Captions.Region));
 		district = new ComboBox<>(I18nProperties.getCaption(Captions.District));
+		region.setItemCaptionGenerator(item -> item.buildCaption());
+		district.setItemCaptionGenerator(item -> item.buildCaption());
+
 
 		this.initialDiseaseValue = initialDiseaseValue;
 	}

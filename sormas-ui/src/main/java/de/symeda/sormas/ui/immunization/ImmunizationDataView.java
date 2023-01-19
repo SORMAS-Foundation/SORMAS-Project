@@ -64,7 +64,7 @@ public class ImmunizationDataView extends AbstractImmunizationView {
 			sormasToSormasListComponent.addStyleNames(CssStyles.SIDE_COMPONENT);
 			sormasToSormasLocLayout.addComponent(sormasToSormasListComponent);
 
-			layout.addComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
+			layout.addSidePanelComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
 		}
 
 		final String uuid = immunization.getUuid();

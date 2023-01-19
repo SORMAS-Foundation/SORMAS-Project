@@ -73,12 +73,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DateFormatSymbols;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -277,6 +279,9 @@ public class CaseDirectorySteps implements En {
         "I click Enter Bulk Edit Mode on Case directory page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ENTER_BULK_EDIT_MODE);
+          if (webDriverHelpers.isElementVisibleWithTimeout(BULK_EDIT_INFORMATION, 10)) {
+            webDriverHelpers.clickOnWebElementBySelector(CONFIRM_POPUP);
+          }
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
         });
     When(
@@ -934,7 +939,9 @@ public class CaseDirectorySteps implements En {
     And(
         "I apply Month filter of Person attached to last created UI Case on Case directory page",
         () -> {
-          String month = Integer.toString(CreateNewCaseSteps.caze.getDateOfBirth().getMonthValue());
+          DateFormatSymbols dFs = new DateFormatSymbols(Locale.GERMAN);
+          String month =
+              dFs.getMonths()[CreateNewCaseSteps.caze.getDateOfBirth().getMonthValue() - 1];
           webDriverHelpers.selectFromCombobox(CASE_MONTH_FILTER, month);
         });
     And(
@@ -955,11 +962,10 @@ public class CaseDirectorySteps implements En {
     And(
         "I apply Month filter other than Person attached has to last created UI Case on Case directory page",
         () -> {
-          webDriverHelpers.selectFromCombobox(
-              CASE_MONTH_FILTER,
-              getRandomNumberForBirthDateDifferentThanCreated(
-                      CreateNewCaseSteps.caze.getDateOfBirth().getMonthValue(), 1, 12)
-                  .toString());
+          DateFormatSymbols dFs = new DateFormatSymbols(Locale.GERMAN);
+          String month =
+              dFs.getMonths()[CreateNewCaseSteps.caze.getDateOfBirth().getMonthValue() - 2];
+          webDriverHelpers.selectFromCombobox(CASE_MONTH_FILTER, month);
         });
     And(
         "I apply Day filter other than Person attached has to last created UI Case on Case directory page",
@@ -985,17 +991,18 @@ public class CaseDirectorySteps implements En {
 
     And(
         "I apply Month filter different than Person has on Case directory page",
-        () ->
-            webDriverHelpers.selectFromCombobox(
-                CASE_MONTH_FILTER,
-                getRandomNumberForBirthDateDifferentThanCreated(
-                        apiState.getLastCreatedPerson().getBirthdateMM(), 1, 12)
-                    .toString()));
+        () -> {
+          DateFormatSymbols dFs = new DateFormatSymbols();
+          String month = dFs.getMonths()[apiState.getLastCreatedPerson().getBirthdateMM() - 2];
+          webDriverHelpers.selectFromCombobox(CASE_MONTH_FILTER, month);
+        });
     And(
         "I apply Month filter of last api created Person on Case directory page",
-        () ->
-            webDriverHelpers.selectFromCombobox(
-                CASE_MONTH_FILTER, apiState.getLastCreatedPerson().getBirthdateMM().toString()));
+        () -> {
+          DateFormatSymbols dFs = new DateFormatSymbols();
+          String month = dFs.getMonths()[apiState.getLastCreatedPerson().getBirthdateMM() - 1];
+          webDriverHelpers.selectFromCombobox(CASE_MONTH_FILTER, month);
+        });
     And(
         "I apply Day filter different than Person has on Case directory page",
         () ->

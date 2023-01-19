@@ -140,7 +140,7 @@ public class JournalPersonDto extends AbstractUuidDto {
 	}
 
 	@Override
-	public String toString() {
+	public String buildCaption() {
 		return getUuid() + ' ' + firstName + ' ' + lastName;
 	}
 

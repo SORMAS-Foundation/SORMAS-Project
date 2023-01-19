@@ -18,11 +18,8 @@
 package de.symeda.sormas.ui.events;
 
 import java.util.Date;
-import java.util.stream.Collectors;
 
-import com.vaadin.data.provider.DataProvider;
 import com.vaadin.navigator.View;
-import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.DiseaseHelper;
@@ -33,9 +30,10 @@ import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventHelper;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
@@ -65,6 +63,8 @@ public class EventActionsGrid extends FilteredGrid<EventActionIndexDto, EventCri
 
 		Language userLanguage = I18nProperties.getUserLanguage();
 
+		createDeletionReasonColumn();
+
 		setColumns(
 			EventActionIndexDto.EVENT_UUID,
 			EventActionIndexDto.EVENT_TITLE,
@@ -85,7 +85,8 @@ public class EventActionsGrid extends FilteredGrid<EventActionIndexDto, EventCri
 			EventActionIndexDto.ACTION_DATE,
 			EventActionIndexDto.ACTION_STATUS,
 			EventActionIndexDto.ACTION_PRIORITY,
-			createLastModifiedByOrCreatorColumn(this));
+			createLastModifiedByOrCreatorColumn(this),
+			DELETE_REASON_COLUMN);
 
 		((Column<EventActionIndexDto, String>) getColumn(EventActionIndexDto.EVENT_UUID)).setRenderer(new UuidRenderer());
 		((Column<EventActionIndexDto, Date>) getColumn(EventActionIndexDto.ACTION_CREATION_DATE))
@@ -148,6 +149,21 @@ public class EventActionsGrid extends FilteredGrid<EventActionIndexDto, EventCri
 		return EVENT_EVOLUTION_DATE;
 	}
 
+	private void createDeletionReasonColumn() {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_DELETE)) {
+			Column<EventActionIndexDto, String> deleteColumn = addColumn(entry -> {
+				if (entry.getDeletionReason() != null) {
+					return entry.getDeletionReason() + (entry.getOtherDeletionReason() != null ? ": " + entry.getOtherDeletionReason() : "");
+				} else {
+					return "-";
+				}
+			});
+			deleteColumn.setId(DELETE_REASON_COLUMN);
+			deleteColumn.setSortable(false);
+			deleteColumn.setCaption(I18nProperties.getCaption(Captions.deletionReason));
+		}
+	}
+
 	public void reload() {
 
 		if (getSelectionModel().isUserSelectionAllowed()) {
@@ -159,19 +175,6 @@ public class EventActionsGrid extends FilteredGrid<EventActionIndexDto, EventCri
 
 	public void setLazyDataProvider() {
 
-		DataProvider<EventActionIndexDto, EventCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-			query -> FacadeProvider.getActionFacade()
-				.getEventActionList(
-					query.getFilter().orElse(null),
-					query.getOffset(),
-					query.getLimit(),
-					query.getSortOrders()
-						.stream()
-						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-						.collect(Collectors.toList()))
-				.stream(),
-			query -> (int) FacadeProvider.getActionFacade().countEventActions(query.getFilter().orElse(null)));
-		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.NONE);
+		setLazyDataProvider(FacadeProvider.getActionFacade()::getEventActionList, FacadeProvider.getActionFacade()::countEventActions);
 	}
 }

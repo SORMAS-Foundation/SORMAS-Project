@@ -20,3 +20,21 @@ Feature: Cases using Line Listing feature
     And I save the new contact using line listing feature
     Then I click on the Contacts button from navbar
     And I check that contact created from Line Listing is saved and displayed in results grid
+
+  @env_main @#7468
+  Scenario: Validate Line listing Configuration section
+    Given I log in as a Admin User
+    Then I click on the Configuration button from navbar
+    When I click on Line Listing button in Configuration tab
+    Then I Verify the page elements are present in Line Listing Configuration Page
+
+  @env_main @#7468
+  Scenario: Add line listing setup for specific disease
+    Given I log in as a Admin User
+    Then I click on the Configuration button from navbar
+    When I click on Line Listing button in Configuration tab
+    When I Select the disease Anthrax from the combo box in Line Listing Configuration Page
+    When I click on the Enable Line Listing for Disease button in Line Listing Configuration Page
+    Then I validate disease Anthrax configuration is enabled and displayed in Line Listing Configuration Page
+    When I click on Disable All Line Listing button in Line Listing Configuration Page
+    Then I validate the presence of the notification description confirming Line Listing is disabled in Line Listing Configuration Page

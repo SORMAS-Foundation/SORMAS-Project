@@ -17,6 +17,8 @@ package de.symeda.sormas.backend.externalmessage;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -27,15 +29,19 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.externalmessage.ExternalMessageCriteria;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.externalmessage.ExternalMessageIndexDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 
@@ -123,13 +129,13 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 		SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
 		assertFalse(getExternalMessageFacade().existsExternalMessageForEntity(caze.toReference()));
 
-		creator.createLabMessageWithTestReport(sample.toReference());
+		creator.createLabMessageWithTestReportAndSurveillanceReport(user.toReference(), caze.toReference(), sample.toReference());
 		assertTrue(getExternalMessageFacade().existsExternalMessageForEntity(caze.toReference()));
 
 		// create additional matches
-		creator.createLabMessageWithTestReport(sample.toReference());
+		creator.createLabMessageWithTestReportAndSurveillanceReport(user.toReference(), caze.toReference(), sample.toReference());
 		SampleDto sample2 = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
-		creator.createLabMessageWithTestReport(sample2.toReference());
+		creator.createLabMessageWithTestReportAndSurveillanceReport(user.toReference(), caze.toReference(), sample2.toReference());
 		assertTrue(getExternalMessageFacade().existsExternalMessageForEntity(caze.toReference()));
 	}
 
@@ -184,6 +190,66 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 		SampleDto sample2 = creator.createSample(eventParticipant.toReference(), user.toReference(), rdcf.facility);
 		creator.createLabMessageWithTestReport(sample2.toReference());
 		assertTrue(getExternalMessageFacade().existsExternalMessageForEntity(eventParticipant.toReference()));
+	}
+
+	@Test
+	public void testCountAndIndexListDoesNotReturnMessagesLinkedToDeletedEntities() {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto person = creator.createPerson();
+
+		CaseDataDto externalMessageCase = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		SampleDto externalMessageSample = creator.createSample(
+			creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf).toReference(),
+			user.toReference(),
+			rdcf.facility);
+
+		CaseDataDto caseWithSample = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		SampleDto caseSample = creator.createSample(caseWithSample.toReference(), user.toReference(), rdcf.facility);
+
+		ContactDto contactWithSample = creator.createContact(rdcf, user.toReference(), creator.createPerson().toReference());
+		SampleDto contactSample = creator.createSample(contactWithSample.toReference(), user.toReference(), rdcf.facility, null);
+
+		EventParticipantDto eventParticipantWithSample =
+			creator.createEventParticipant(creator.createEvent(user.toReference()).toReference(), creator.createPerson(), user.toReference());
+		SampleDto eventParticipantSample = creator.createSample(eventParticipantWithSample.toReference(), user.toReference(), rdcf.facility);
+
+		EventDto eventToDelete = creator.createEvent(user.toReference());
+		EventParticipantDto eventParticipantWithDeletedEvent =
+			creator.createEventParticipant(eventToDelete.toReference(), creator.createPerson(), user.toReference());
+		SampleDto eventParticipantSampleForDeletedEvent =
+			creator.createSample(eventParticipantWithDeletedEvent.toReference(), user.toReference(), rdcf.facility);
+
+		ExternalMessageDto messageWithCaseSample = creator.createLabMessageWithTestReport(externalMessageSample.toReference());
+		ExternalMessageDto messageWithSurveillanceReport =
+			creator.createLabMessageWithSurveillanceReport(user.toReference(), externalMessageCase.toReference());
+		ExternalMessageDto labMessageWithSurveillanceReportAndSample =
+			creator.createLabMessageWithTestReportAndSurveillanceReport(user.toReference(), caseWithSample.toReference(), caseSample.toReference());
+		ExternalMessageDto messageWithContactSample = creator.createLabMessageWithTestReport(contactSample.toReference());
+		ExternalMessageDto messageWithEventParticipantSample = creator.createLabMessageWithTestReport(eventParticipantSample.toReference());
+		ExternalMessageDto messageWithEvent = creator.createLabMessageWithTestReport(eventParticipantSampleForDeletedEvent.toReference());
+
+		assertThat(getExternalMessageFacade().count(new ExternalMessageCriteria()), is(6L));
+		List<ExternalMessageIndexDto> indexList = getExternalMessageFacade().getIndexList(new ExternalMessageCriteria(), null, null, null);
+		assertThat(indexList, hasSize(6));
+		assertThat(indexList.stream().filter(m -> DataHelper.isSame(m, messageWithCaseSample)).count(), is(1L));
+		assertThat(indexList.stream().filter(m -> DataHelper.isSame(m, messageWithSurveillanceReport)).count(), is(1L));
+		assertThat(indexList.stream().filter(m -> DataHelper.isSame(m, labMessageWithSurveillanceReportAndSample)).count(), is(1L));
+		assertThat(indexList.stream().filter(m -> DataHelper.isSame(m, messageWithContactSample)).count(), is(1L));
+		assertThat(indexList.stream().filter(m -> DataHelper.isSame(m, messageWithEventParticipantSample)).count(), is(1L));
+		assertThat(indexList.stream().filter(m -> DataHelper.isSame(m, messageWithEvent)).count(), is(1L));
+
+		getCaseFacade().delete(externalMessageCase.getUuid(), new DeletionDetails());
+		getSampleFacade().deleteSample(externalMessageSample.toReference(), new DeletionDetails());
+		getCaseFacade().delete(caseWithSample.getUuid(), new DeletionDetails());
+		getContactFacade().delete(contactWithSample.getUuid(), new DeletionDetails());
+		getEventParticipantFacade().delete(eventParticipantWithSample.getUuid(), new DeletionDetails());
+		getEventFacade().delete(eventToDelete.getUuid(), new DeletionDetails());
+
+		assertThat(getExternalMessageFacade().count(new ExternalMessageCriteria()), is(0L));
+		indexList = getExternalMessageFacade().getIndexList(new ExternalMessageCriteria(), null, null, null);
+		assertThat(indexList, hasSize(0));
+
 	}
 
 //	This test currently does not work because the bean tests used don't support @TransactionAttribute tags.

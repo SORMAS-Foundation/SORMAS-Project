@@ -49,7 +49,14 @@ public abstract class AbstractEditAllowedDetailView<R extends ReferenceDto> exte
 	}
 
 	protected void setEditPermission(CommitDiscardWrapperComponent<? extends AbstractEditForm> root, String... excludeFields) {
-		if (!isEditAllowed()) {
+		setEditPermission(root, true, excludeFields);
+	}
+
+	protected void setEditPermission(
+		CommitDiscardWrapperComponent<? extends AbstractEditForm> root,
+		boolean baseEntityEditRight,
+		String... excludeFields) {
+		if (!isEditAllowed() || !baseEntityEditRight) {
 			root.getWrappedComponent().getFieldGroup().setEnabled(false);
 			root.getButtonsPanel().setEnabled(false);
 			for (String singleExcludedField : excludeFields) {

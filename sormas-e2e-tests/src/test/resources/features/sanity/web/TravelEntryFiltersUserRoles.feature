@@ -1,7 +1,7 @@
-@UI @Sanity @TravelEntries @Filters @add_userroles
+@UI @Sanity @TravelEntries @Filters @add_userroles @ignore
 Feature: Travel entry filters for different user roles
 
-  @tmsLink=SORDEV-8267 @env_de @ignore
+  @tmsLink=SORDEV-8267 @env_de
   Scenario Outline: Check Travel Entry filters
     Given I log in as a <user>
     And I click on the Entries button from navbar

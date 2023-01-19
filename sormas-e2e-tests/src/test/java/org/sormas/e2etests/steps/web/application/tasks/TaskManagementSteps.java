@@ -18,10 +18,10 @@
 
 package org.sormas.e2etests.steps.web.application.tasks;
 
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.LEAVE_BULK_EDIT_MODE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.TOTAL_CASES_COUNTER;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.NOTIFICATION_MESSAGE_POPUP;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.POPUP_YES_BUTTON;
-import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.TRAVEL_ENTRY_DIRECTORY_PAGE_SHOW_MORE_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.APPLY_FILTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BULK_ACTIONS_EVENT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.RESET_FILTER;
@@ -57,6 +57,7 @@ import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.entities.pojo.web.Task;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.tasks.TaskManagementPage;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
@@ -89,29 +90,26 @@ public class TaskManagementSteps implements En {
     And(
         "I click on SHOW MORE FILTERS BUTTON on Task directory page",
         () -> {
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
-              TRAVEL_ENTRY_DIRECTORY_PAGE_SHOW_MORE_FILTERS_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(
-              TRAVEL_ENTRY_DIRECTORY_PAGE_SHOW_MORE_FILTERS_BUTTON);
+          TimeUnit.SECONDS.sleep(2); // weak performance
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SHOW_MORE_FILTERS);
+          webDriverHelpers.clickOnWebElementBySelector(SHOW_MORE_FILTERS);
           TimeUnit.SECONDS.sleep(4);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
     When(
         "^I open last created task from Tasks Directory$",
         () -> {
-          By lastTaskEditButton =
-              By.xpath(
-                  String.format(
-                      EDIT_BUTTON_XPATH_BY_TEXT, CreateNewTaskSteps.task.getCommentsOnExecution()));
           webDriverHelpers.clickOnWebElementBySelector(SHOW_MORE_FILTERS);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               ASSIGNED_USER_FILTER_INPUT);
           String assignedUser = CreateNewTaskSteps.task.getAssignedTo();
           webDriverHelpers.fillInWebElement(ASSIGNED_USER_FILTER_INPUT, assignedUser);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(lastTaskEditButton, 40);
-          webDriverHelpers.clickElementSeveralTimesUntilNextElementIsDisplayed(
-              lastTaskEditButton, TASK_STATUS_OPTIONS, 6);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
+          webDriverHelpers.clickOnWebElementBySelector(
+              getLastCreatedEditTaskButton(CreateNewTaskSteps.task.getCommentsOnExecution()));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
         });
     When(
         "^I filter out last created task from Tasks Directory$",
@@ -149,6 +147,28 @@ public class TaskManagementSteps implements En {
         });
 
     When(
+        "^I search task by last Case created via API UUID$",
+        () -> {
+          String lastCreatedCaseUUID = apiState.getCreatedCase().getUuid();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              GENERAL_SEARCH_INPUT, 50);
+          webDriverHelpers.fillAndSubmitInWebElement(GENERAL_SEARCH_INPUT, lastCreatedCaseUUID);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+
+          //                  By lastTaskEditButton =
+          //                          By.xpath(
+          //                                  String.format(
+          //                                          EDIT_BUTTON_XPATH_BY_TEXT,
+          // CreateNewTaskSteps.task.getCommentsOnTask()));
+          //
+          // webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(lastTaskEditButton,
+          // 20);
+          //                  webDriverHelpers.clickOnWebElementBySelector(lastTaskEditButton);
+          //                  webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+          //                          COMMENTS_ON_EXECUTION_TEXTAREA);
+        });
+
+    When(
         "^I am checking if the associated linked event appears in task management and click on it$",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(70);
@@ -180,6 +200,24 @@ public class TaskManagementSteps implements En {
               });
           softly.assertAll();
         });
+
+    When(
+        "^I check displayed tasks District and Region are taken from API created Case$",
+        () -> {
+          taskTableRows.forEach(
+              data -> {
+                softly.assertEquals(
+                    data.getRegion(),
+                    apiState.getCreatedCase().getRegion().getCaption(),
+                    "Task region is not the same with Case region");
+                softly.assertEquals(
+                    data.getDistrict(),
+                    apiState.getCreatedCase().getDistrict().getCaption(),
+                    "Task district is not the same with Case district");
+              });
+          softly.assertAll();
+        });
+
     When(
         "^I check displayed task's context of first result is ([^\"]*)$",
         (String taskContext) -> {
@@ -257,7 +295,9 @@ public class TaskManagementSteps implements En {
     When(
         "^I select first (\\d+) results in grid in Task Directory$",
         (Integer number) -> {
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              LEAVE_BULK_EDIT_MODE, 50);
           for (int i = 2; i <= number + 1; i++) {
             webDriverHelpers.waitUntilElementIsVisibleAndClickable(
                 getCheckboxByIndex(String.valueOf(i)));
@@ -583,6 +623,14 @@ public class TaskManagementSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(CUSTOM_TASK_EXPORT_DELETE_BUTTON);
           Assert.assertFalse(
               webDriverHelpers.isElementVisibleWithTimeout(getCustomExportByID(export_id), 1));
+        });
+
+    And(
+        "I click on edit task icon of the {int} displayed task on Task Directory page",
+        (Integer taskNumber) -> {
+          webDriverHelpers.clickOnWebElementBySelector(
+              TaskManagementPage.getEditTaskButtonByNumber(taskNumber));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
         });
   }
 

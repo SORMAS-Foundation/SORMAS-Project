@@ -17,20 +17,27 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+import com.vaadin.ui.CustomLayout;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.person.PersonEditForm;
+import de.symeda.sormas.ui.person.PersonSideComponentsElement;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 
 @SuppressWarnings("serial")
-public class CasePersonView extends AbstractCaseView {
+public class CasePersonView extends AbstractCaseView implements PersonSideComponentsElement {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/person";
-	CommitDiscardWrapperComponent<PersonEditForm> personEditComponent;
+
+	private PersonDto person;
 
 	public CasePersonView() {
 		super(VIEW_NAME, true);
@@ -40,17 +47,29 @@ public class CasePersonView extends AbstractCaseView {
 	protected void initView(String params) {
 
 		CaseDataDto caseData = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
-		CommitDiscardWrapperComponent<PersonEditForm> personEditComponent = ControllerProvider.getPersonController()
+		person = FacadeProvider.getPersonFacade().getByUuid(caseData.getPerson().getUuid());
+		CommitDiscardWrapperComponent<PersonEditForm> editComponent = ControllerProvider.getPersonController()
 			.getPersonEditComponent(
 				PersonContext.CASE,
-				caseData.getPerson().getUuid(),
+				person,
 				caseData.getDisease(),
 				caseData.getDiseaseDetails(),
 				UserRight.CASE_EDIT,
 				getViewMode(),
 				isEditAllowed());
+		DetailSubComponentWrapper componentWrapper = addComponentWrapper(editComponent);
+		CustomLayout layout = addPageLayout(componentWrapper, editComponent);
+		setSubComponent(componentWrapper);
+		addSideComponents(layout, CoreEntityType.CASE, caseData.getUuid(), person.toReference(), this::showUnsavedChangesPopup);
+		setEditPermission(
+			editComponent,
+			UserProvider.getCurrent().hasUserRight(UserRight.PERSON_EDIT),
+			PersonDto.ADDRESSES,
+			PersonDto.PERSON_CONTACT_DETAILS);
+	}
 
-		setSubComponent(personEditComponent);
-		setEditPermission(personEditComponent, PersonDto.ADDRESSES, PersonDto.PERSON_CONTACT_DETAILS);
+	@Override
+	protected boolean isEditAllowed() {
+		return FacadeProvider.getPersonFacade().isEditAllowed(person.getUuid());
 	}
 }

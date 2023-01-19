@@ -20,28 +20,21 @@ package de.symeda.sormas.ui.user;
 import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.HtmlRenderer;
 import com.vaadin.ui.renderers.TextRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
-import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
-import de.symeda.sormas.ui.utils.CaptionRenderer;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
@@ -84,7 +77,6 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 		userRolesColumn.setRenderer(new UserRolesRenderer());
 		userRolesColumn.setSortable(false);
 		((Column<UserDto, Boolean>) getColumn(UserDto.ACTIVE)).setRenderer(value -> String.valueOf(value), new ActiveRenderer());
-		((Column<UserDto, LocationDto>) getColumn(UserDto.ADDRESS)).setRenderer(new CaptionRenderer());
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
@@ -92,27 +84,13 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 	}
 
 	public void setLazyDataProvider() {
-		DataProvider<UserDto, UserCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-			query -> FacadeProvider.getUserFacade()
-				.getIndexList(
-					query.getFilter().orElse(null),
-					query.getOffset(),
-					query.getLimit(),
-					query.getSortOrders()
-						.stream()
-						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-						.collect(Collectors.toList()))
-				.stream(),
-			query -> (int) FacadeProvider.getUserFacade().count(query.getFilter().orElse(null)));
-		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.NONE);
+
+		setLazyDataProvider(FacadeProvider.getUserFacade()::getIndexList, FacadeProvider.getUserFacade()::count);
 	}
 
 	public void setEagerDataProvider() {
-		ListDataProvider<UserDto> dataProvider =
-			DataProvider.fromStream(FacadeProvider.getUserFacade().getIndexList(getCriteria(), null, null, null).stream());
-		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.MULTI);
+
+		setEagerDataProvider(FacadeProvider.getUserFacade()::getIndexList);
 	}
 
 	public void reload() {

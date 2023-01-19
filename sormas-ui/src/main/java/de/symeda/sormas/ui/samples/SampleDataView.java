@@ -149,7 +149,7 @@ public class SampleDataView extends AbstractSampleView {
 			sormasToSormasListComponent.addStyleNames(CssStyles.SIDE_COMPONENT);
 			sormasToSormasLocLayout.addComponent(sormasToSormasListComponent);
 
-			layout.addComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
+			layout.addSidePanelComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
 		}
 
 		final String uuid = sampleDto.getUuid();
@@ -165,7 +165,7 @@ public class SampleDataView extends AbstractSampleView {
 			disableComponentIfNotNull(layout.getComponent(SORMAS_TO_SORMAS_LOC));
 		}
 
-		editComponent.setEnabled(isEditAllowed());
+		editComponent.setEnabled(isEditAllowed() && UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT));
 	}
 
 	private AbstractInfoLayout<EntityDto> getDependentSideComponent(SampleDto sampleDto) {

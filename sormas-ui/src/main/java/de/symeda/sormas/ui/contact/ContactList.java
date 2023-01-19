@@ -65,6 +65,9 @@ public class ContactList extends PaginationList<ContactIndexDto> {
 		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
 			ContactIndexDto contact = displayedEntries.get(i);
 			ContactListEntry listEntry = new ContactListEntry(contact);
+			if (contact.getUuid().equals(getActiveUuid())) {
+				listEntry.setActive();
+			}
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_DELETE)) {
 				listEntry.addDeleteListener(

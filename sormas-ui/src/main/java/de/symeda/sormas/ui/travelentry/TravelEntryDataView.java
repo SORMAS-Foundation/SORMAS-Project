@@ -65,19 +65,26 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 
 		container.addComponent(layout);
 
+		UserProvider currentUser = UserProvider.getCurrent();
+		boolean caseButtonVisible = currentUser != null && currentUser.hasUserRight(UserRight.CASE_CREATE);
+
 		CaseReferenceDto resultingCase = travelEntryDto.getResultingCase();
-		if (resultingCase == null) {
+		if (resultingCase == null && caseButtonVisible) {
 			Button createCaseButton = ButtonHelper.createButton(
 				Captions.travelEntryCreateCase,
 				e -> showUnsavedChangesPopup(() -> ControllerProvider.getCaseController().createFromTravelEntry(travelEntryDto)),
 				ValoTheme.BUTTON_PRIMARY,
 				CssStyles.VSPACE_2);
 			layout.addSidePanelComponent(createCaseButton, CASE_LOC);
-		} else {
+		} else if (resultingCase != null) {
 			layout.addSidePanelComponent(createCaseInfoLayout(resultingCase.getUuid()), CASE_LOC);
 		}
 
+		final String uuid = travelEntryDto.getUuid();
+		final EditPermissionType travelEntryEditAllowed = FacadeProvider.getTravelEntryFacade().getEditPermissionType(uuid);
+		boolean editAllowed = isEditAllowed();
 		DocumentListComponent documentList = null;
+
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_VIEW)) {
 			documentList = new DocumentListComponent(
@@ -85,7 +92,8 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 				getReference(),
 				UserRight.TRAVEL_ENTRY_EDIT,
 				travelEntryDto.isPseudonymized(),
-				isEditAllowed());
+				editAllowed,
+				EditPermissionType.WITHOUT_OWNERSHIP.equals(travelEntryEditAllowed));
 			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
@@ -98,13 +106,11 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 				getTravelEntryRef(),
 				travelEntryDto.getDisease(),
 				this::showUnsavedChangesPopup,
-				isEditAllowed());
+				editAllowed);
 			taskList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addSidePanelComponent(taskList, TASKS_LOC);
 		}
 
-		final String uuid = travelEntryDto.getUuid();
-		final EditPermissionType travelEntryEditAllowed = FacadeProvider.getTravelEntryFacade().getEditPermissionType(uuid);
 		final boolean deleted = FacadeProvider.getTravelEntryFacade().isDeleted(uuid);
 
 		if (deleted) {

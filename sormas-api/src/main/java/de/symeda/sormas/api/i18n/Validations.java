@@ -73,6 +73,7 @@ public interface Validations {
 	String externalMessageFetchError = "externalMessageFetchError";
 	String externalMessageInitError = "externalMessageInitError";
 	String externalMessagePdfConversionError = "externalMessagePdfConversionError";
+	String externalMessageRefersToMultipleEntities = "externalMessageRefersToMultipleEntities";
 	String feverTemperatureAboveThreshold = "feverTemperatureAboveThreshold";
 	String feverTemperatureBelowThreshold = "feverTemperatureBelowThreshold";
 	String fileTooBig = "fileTooBig";
@@ -212,6 +213,7 @@ public interface Validations {
 	String sormasToSormasSenderNameMissing = "sormasToSormasSenderNameMissing";
 	String sormasToSormasShareInfoMissing = "sormasToSormasShareInfoMissing";
 	String sormasToSormasSubcontinent = "sormasToSormasSubcontinent";
+	String sormasToSormasSurveillanceReportExists = "sormasToSormasSurveillanceReportExists";
 	String specifyCaption = "specifyCaption";
 	String specifyEpiWeek = "specifyEpiWeek";
 	String specifyFirstName = "specifyFirstName";

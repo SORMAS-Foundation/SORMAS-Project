@@ -55,7 +55,7 @@ public class ProcessedImmunizationDataPersister extends ProcessedDataPersister<I
 	}
 
 	@Override
-	protected void persistSharedData(SormasToSormasImmunizationDto processedData, Immunization existingEntity)
+	protected void persistSharedData(SormasToSormasImmunizationDto processedData, Immunization existingEntity, boolean isSync)
 		throws SormasToSormasValidationException {
 		ImmunizationDto immunuzation = processedData.getEntity();
 

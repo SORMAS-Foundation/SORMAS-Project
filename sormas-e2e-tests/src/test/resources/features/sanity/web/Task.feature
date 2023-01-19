@@ -166,8 +166,8 @@ Feature: Tasks functionalities
     And I click on the Tasks button from navbar
     And I click on the NEW TASK button
     When I create a new task with specific data
-    And I click on the Tasks button from navbar
-    And I click on SHOW MORE FILTERS BUTTON on Task directory page
+#    And I click on the Tasks button from navbar
+ #   And I click on SHOW MORE FILTERS BUTTON on Task directory page
     And I filter out last created task from Tasks Directory
     And I click Export button in Task Directory
     When I click on the Detailed Task Export button
@@ -179,8 +179,8 @@ Feature: Tasks functionalities
     And I click on the Tasks button from navbar
     And I click on the NEW TASK button
     When I create a new task with specific data
-    And I click on the Tasks button from navbar
-    And I click on SHOW MORE FILTERS BUTTON on Task directory page
+ #   And I click on the Tasks button from navbar
+ #  And I click on SHOW MORE FILTERS BUTTON on Task directory page
     And I filter out last created task from Tasks Directory
     And I click Export button in Task Directory
     When I click on the Custom Event Export button
@@ -197,7 +197,7 @@ Feature: Tasks functionalities
     And I click on the Tasks button from navbar
     And I click on the NEW TASK button
     When I create a new task with specific data
-    And I click on the Tasks button from navbar
+  #  And I click on the Tasks button from navbar
     And I filter out last created task from Tasks Directory
     And I click Export button in Task Directory
     When I click on the Custom Event Export button
@@ -223,7 +223,7 @@ Feature: Tasks functionalities
     And I save Export Configuration for Custom Task Export
     And I delete last created custom task export config
 
-  @3384 @env_main
+  @8561 @env_main
   Scenario: Verify that Task assignee cannot be left empty via bulk edit mode
     Given I log in as a Admin User
     And I click on the Tasks button from navbar

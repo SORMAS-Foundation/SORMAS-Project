@@ -18,16 +18,14 @@ package de.symeda.sormas.api.caze.surveillancereport;
 import java.util.List;
 
 import javax.ejb.Remote;
-import javax.validation.Valid;
+
+import de.symeda.sormas.api.BaseFacade;
 
 @Remote
-public interface SurveillanceReportFacade {
+public interface SurveillanceReportFacade
+	extends BaseFacade<SurveillanceReportDto, SurveillanceReportDto, SurveillanceReportReferenceDto, SurveillanceReportCriteria> {
 
-	SurveillanceReportDto saveSurveillanceReport(@Valid SurveillanceReportDto dto);
-
-	void deleteSurveillanceReport(String surveillanceReportUuid);
-
-	List<SurveillanceReportDto> getIndexList(SurveillanceReportCriteria criteria, Integer first, Integer max);
+	void delete(String surveillanceReportUuid);
 
 	List<SurveillanceReportDto> getByCaseUuids(List<String> caseUuids);
 }

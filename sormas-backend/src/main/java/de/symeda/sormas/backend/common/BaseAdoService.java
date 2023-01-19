@@ -32,9 +32,9 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.ejb.EJB;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.inject.Inject;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
@@ -77,7 +77,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 
 	private final Class<ADO> elementClass;
 
-	@Inject
+	@EJB
 	private CurrentUserService currentUserService;
 
 	// protected to be used by implementations
@@ -392,6 +392,10 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, ADO> from, Timestamp date) {
 		return cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
+	}
+
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, QueryJoins<ADO> joins, Timestamp date) {
+		return cb.greaterThan(joins.getRoot().get(AbstractDomainObject.CHANGE_DATE), date);
 	}
 
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, ADO> from, Date date) {

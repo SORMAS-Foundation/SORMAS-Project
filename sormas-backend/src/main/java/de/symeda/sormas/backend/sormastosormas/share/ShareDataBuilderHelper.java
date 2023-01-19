@@ -25,6 +25,7 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
@@ -33,11 +34,14 @@ import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
+import de.symeda.sormas.api.sormastosormas.entities.externalmessage.SormasToSormasExternalMessageDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasPersonPreview;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.PersonalDataFieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.SensitiveDataFieldAccessChecker;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
+import de.symeda.sormas.backend.externalmessage.ExternalMessage;
+import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
@@ -58,6 +62,8 @@ public class ShareDataBuilderHelper {
 	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacade;
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
+	@EJB
+	private ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal externalMessageFacade;
 
 	public Pseudonymizer createPseudonymizer(ShareRequestInfo requestInfo) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefaultNoCheckers(false);
@@ -76,7 +82,6 @@ public class ShareDataBuilderHelper {
 		PersonDto personDto = personFacade.toPseudonymizedDto(person, pseudonymizer, true);
 
 		pseudonymizePerson(personDto, requestInfo);
-
 		clearIgnoredProperties(personDto);
 
 		return personDto;
@@ -104,6 +109,7 @@ public class ShareDataBuilderHelper {
 		sormasToSormasOriginInfo.setWithSamples(options.isWithSamples());
 		sormasToSormasOriginInfo.setWithEventParticipants(options.isWithEventParticipants());
 		sormasToSormasOriginInfo.setWithImmunizations(options.isWithImmunizations());
+		sormasToSormasOriginInfo.setWithSurveillanceReports(options.isWithSurveillanceReports());
 		sormasToSormasOriginInfo.setComment(options.getComment());
 		sormasToSormasOriginInfo.setPseudonymizedData(options.isPseudonymizeData());
 
@@ -133,6 +139,7 @@ public class ShareDataBuilderHelper {
 		options.setWithSamples(requestInfo.isWithSamples());
 		options.setWithEventParticipants(requestInfo.isWithEventParticipants());
 		options.setWithImmunizations(requestInfo.isWithImmunizations());
+		options.setWithSurveillanceReports(requestInfo.isWithSurveillanceReports());
 		options.setComment(requestInfo.getComment());
 		options.setPseudonymizeData(requestInfo.isPseudonymizedPersonalData() || requestInfo.isPseudonymizedSensitiveData());
 
@@ -149,6 +156,7 @@ public class ShareDataBuilderHelper {
 		options.setWithSamples(originInfo.isWithSamples());
 		options.setWithEventParticipants(originInfo.isWithEventParticipants());
 		options.setWithImmunizations(originInfo.isWithImmunizations());
+		options.setWithSurveillanceReports(originInfo.isWithSurveillanceReports());
 		options.setComment(originInfo.getComment());
 
 		return options;
@@ -172,5 +180,16 @@ public class ShareDataBuilderHelper {
 				}
 			}
 		}
+	}
+
+	public SormasToSormasExternalMessageDto getExternalMessageDto(ExternalMessage externalMessage, ShareRequestInfo requestInfo) {
+		ExternalMessageDto externalMessageDto = externalMessageFacade.toDto(externalMessage);
+		externalMessageDto.setAssignee(null);
+
+		if (!requestInfo.isWithSurveillanceReports()) {
+			externalMessageDto.setSurveillanceReport(null);
+		}
+
+		return new SormasToSormasExternalMessageDto(externalMessageDto);
 	}
 }

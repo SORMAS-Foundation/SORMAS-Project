@@ -60,7 +60,6 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 	private CaseReferenceDto caze;
 	private ContactReferenceDto contact;
 	private EventParticipantReferenceDto eventParticipant;
-	private Boolean deleted = Boolean.FALSE;
 	private String caseCodeIdLike;
 	private EntityRelevanceStatus relevanceStatus;
 	private SampleAssociationType sampleAssociationType;
@@ -247,16 +246,6 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 	@IgnoreForUrl
 	public EntityRelevanceStatus getRelevanceStatus() {
 		return relevanceStatus;
-	}
-
-	public SampleCriteria deleted(Boolean deleted) {
-		this.deleted = deleted;
-		return this;
-	}
-
-	@IgnoreForUrl
-	public Boolean getDeleted() {
-		return deleted;
 	}
 
 	/**

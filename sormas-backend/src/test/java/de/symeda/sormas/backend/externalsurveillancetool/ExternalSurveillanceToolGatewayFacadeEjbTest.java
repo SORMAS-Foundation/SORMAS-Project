@@ -19,13 +19,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.http.HttpStatus;
@@ -43,7 +43,9 @@ import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
@@ -397,6 +399,63 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 	}
 
 	@Test
+	public void testIsSharedCase() throws ExternalSurveillanceToolException {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserReferenceDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		CaseDataDto case1 = creator.createCase(user, rdcf, null);
+		CaseDataDto case2 = creator.createCase(user, rdcf, null);
+
+		stubFor(
+			post(urlEqualTo("/export")).withRequestBody(containing(case1.getUuid()))
+				.withRequestBody(containing("caseUuids"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+		stubFor(
+			post(urlEqualTo("/delete")).withRequestBody(containing(case1.getUuid()))
+				.withRequestBody(containing("cases"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+
+		getExternalSurveillanceToolGatewayFacade().sendCases(Arrays.asList(case1.getUuid()), false);
+
+		boolean shared = getExternalShareInfoFacade().isSharedCase(case1.getUuid());
+		assertTrue(shared);
+		shared = getExternalShareInfoFacade().isSharedCase(case2.getUuid());
+		assertFalse(shared);
+
+		getExternalSurveillanceToolGatewayFacade().deleteCases(Arrays.asList(case1));
+		shared = getExternalShareInfoFacade().isSharedCase(case1.getUuid());
+		assertFalse(shared);
+
+		getExternalSurveillanceToolGatewayFacade().sendCases(Arrays.asList(case1.getUuid()), false);
+		shared = getExternalShareInfoFacade().isSharedCase(case1.getUuid());
+		assertTrue(shared);
+	}
+
+	@Test
+	public void testIsSharedEvent() throws ExternalSurveillanceToolException {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator
+			.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN), creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto person = creator.createPerson();
+		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf, c -> c.setDontShareWithReportingTool(true));
+
+		EventDto event1 = creator.createEvent(user.toReference(), caze.getDisease());
+		EventDto event2 = creator.createEvent(user.toReference(), caze.getDisease());
+
+		stubFor(
+			post(urlEqualTo("/export")).withRequestBody(containing(event1.getUuid()))
+				.withRequestBody(containing("eventUuids"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+
+		getExternalSurveillanceToolGatewayFacade().sendEvents(Arrays.asList(event1.getUuid()), false);
+
+		boolean shared = getExternalShareInfoFacade().isSharedEvent(event1.getUuid());
+		assertTrue(shared);
+
+		shared = getExternalShareInfoFacade().isSharedCase(event2.getUuid());
+		assertFalse(shared);
+	}
+
+	@Test
 	public void testArchiveAllArchivableCases_WithNotAllowedCaseToShareWithReportingTool(WireMockRuntimeInfo wireMockRuntime) {
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
@@ -692,6 +751,61 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 		assertThat(shareInfoList.get(0).getTargetDescriptor().getId(), is(SECOND_SERVER_ID));
 		assertThat(shareInfoList.get(0).getSender().getCaption(), is("Surv OFF"));
 		assertThat(shareInfoList.get(0).getComment(), is("Test comment"));
+	}
+
+	@Test
+	public void testGetCasesWithExternalToolFilters() throws ExternalSurveillanceToolException {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserReferenceDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		CaseDataDto sharedCase1 = creator.createCase(user, rdcf, null);
+		CaseDataDto sharedCase2 = creator.createCase(user, rdcf, null);
+		CaseDataDto case3 = creator.createCase(user, rdcf, null);
+
+		stubFor(
+			post(urlEqualTo("/export")).withRequestBody(containing(sharedCase1.getUuid()))
+				.withRequestBody(containing(sharedCase2.getUuid()))
+				.withRequestBody(containing("caseUuids"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+
+		getExternalSurveillanceToolGatewayFacade().sendCases(Arrays.asList(sharedCase1.getUuid(), sharedCase2.getUuid()), false);
+
+		sharedCase2.setDontShareWithReportingTool(true);
+		getCaseFacade().save(sharedCase2);
+
+		//test filter "Only cases not yet shared with reporting tool"
+		CaseCriteria caseCriteria = new CaseCriteria();
+		caseCriteria.setOnlyEntitiesNotSharedWithExternalSurvTool(true);
+		List<CaseIndexDto> caseIndexDtos = getCaseFacade().getIndexList(caseCriteria, 0, 100, Collections.emptyList());
+		assertEquals(1, caseIndexDtos.size());
+		assertEquals(case3.getUuid(), caseIndexDtos.get(0).getUuid());
+
+		//test filter "Only cases already shared with reporting tool"
+		caseCriteria = new CaseCriteria();
+		caseCriteria.setOnlyEntitiesSharedWithExternalSurvTool(true);
+		caseIndexDtos = getCaseFacade().getIndexList(caseCriteria, 0, 100, Collections.emptyList());
+		assertEquals(2, caseIndexDtos.size());
+		List<String> casesUuids = caseIndexDtos.stream().map(c -> c.getUuid()).collect(Collectors.toList());
+		assertTrue(casesUuids.contains(sharedCase1.getUuid()));
+		assertTrue(casesUuids.contains(sharedCase2.getUuid()));
+
+		//test filter "Only cases changed since last shared with reporting tool"
+		sharedCase1.setFollowUpComment("new comment");
+		getCaseFacade().save(sharedCase1);
+		sharedCase2.setFollowUpComment("new comment");
+		getCaseFacade().save(sharedCase2);
+
+		caseCriteria = new CaseCriteria();
+		caseCriteria.setOnlyEntitiesChangedSinceLastSharedWithExternalSurvTool(true);
+		caseIndexDtos = getCaseFacade().getIndexList(caseCriteria, 0, 100, Collections.emptyList());
+		assertEquals(1, caseIndexDtos.size());
+		assertEquals(sharedCase1.getUuid(), caseIndexDtos.get(0).getUuid());
+
+		//test filter "Only cases marked with 'Don't share with reporting tool'"
+		caseCriteria = new CaseCriteria();
+		caseCriteria.setOnlyCasesWithDontShareWithExternalSurvTool(true);
+		caseIndexDtos = getCaseFacade().getIndexList(caseCriteria, 0, 100, Collections.emptyList());
+		assertEquals(1, caseIndexDtos.size());
+		assertEquals(sharedCase2.getUuid(), caseIndexDtos.get(0).getUuid());
 	}
 
 	private EventDto createEventDto(

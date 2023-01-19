@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui.visit;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.function.Consumer;
 
 import com.vaadin.server.Page;
@@ -31,8 +32,10 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -42,6 +45,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitIndexDto;
+import de.symeda.sormas.api.visit.VisitLogic;
 import de.symeda.sormas.api.visit.VisitReferenceDto;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -61,23 +65,41 @@ public class VisitController {
 		boolean isEditAllowed) {
 		VisitDto visit = FacadeProvider.getVisitFacade().getVisitByUuid(visitUuid);
 		VisitEditForm editForm;
+		Date startDate = null;
+		Date endDate = null;
 		if (contactRef != null) {
 			ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactRef.getUuid());
 			PersonDto visitPerson = FacadeProvider.getPersonFacade().getByUuid(visit.getPerson().getUuid());
 			editForm = new VisitEditForm(visit.getDisease(), contact, visitPerson, false);
+			startDate = ContactLogic.getStartDate(contact);
+			endDate = ContactLogic.getEndDate(contact);
 		} else if (caseRef != null) {
 			CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
 			PersonDto visitPerson = FacadeProvider.getPersonFacade().getByUuid(visit.getPerson().getUuid());
 			editForm = new VisitEditForm(visit.getDisease(), caze, visitPerson, false);
+			startDate = CaseLogic.getStartDate(caze);
+			endDate = CaseLogic.getEndDate(caze);
 		} else {
 			throw new IllegalArgumentException("Cannot edit a visit without contact nor case");
 		}
 		editForm.setValue(visit);
 		boolean canEdit = VisitOrigin.USER.equals(visit.getOrigin()) && isEditAllowed;
-		editVisit(editForm, visit.toReference(), doneConsumer, canEdit);
+		editVisit(
+			editForm,
+			visit.toReference(),
+			doneConsumer,
+			canEdit,
+			VisitLogic.getAllowedStartDate(startDate),
+			VisitLogic.getAllowedEndDate(endDate));
 	}
 
-	private void editVisit(VisitEditForm editForm, VisitReferenceDto visitRef, Consumer<VisitReferenceDto> doneConsumer, boolean canEdit) {
+	private void editVisit(
+		VisitEditForm editForm,
+		VisitReferenceDto visitRef,
+		Consumer<VisitReferenceDto> doneConsumer,
+		boolean canEdit,
+		Date allowedStartDate,
+		Date allowedEndDate) {
 
 		final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<>(
 			editForm,
@@ -99,7 +121,7 @@ public class VisitController {
 
 		editView.addCommitListener(() -> {
 			if (!editForm.getFieldGroup().isModified()) {
-				FacadeProvider.getVisitFacade().saveVisit(editForm.getValue());
+				FacadeProvider.getVisitFacade().saveVisit(editForm.getValue(), allowedStartDate, allowedEndDate);
 				if (doneConsumer != null) {
 					doneConsumer.accept(visitRef);
 				}
@@ -117,7 +139,7 @@ public class VisitController {
 		}
 	}
 
-	private void createVisit(VisitEditForm createForm, Consumer<VisitReferenceDto> doneConsumer) {
+	private void createVisit(VisitEditForm createForm, Consumer<VisitReferenceDto> doneConsumer, Date allowedStartDate, Date allowedEndDate) {
 		final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<VisitEditForm>(
 			createForm,
 			UserProvider.getCurrent().hasUserRight(UserRight.VISIT_CREATE),
@@ -126,7 +148,7 @@ public class VisitController {
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
 				VisitDto dto = createForm.getValue();
-				dto = FacadeProvider.getVisitFacade().saveVisit(dto);
+				dto = FacadeProvider.getVisitFacade().saveVisit(dto, allowedStartDate, allowedEndDate);
 				if (doneConsumer != null) {
 					doneConsumer.accept(dto.toReference());
 				}
@@ -146,7 +168,11 @@ public class VisitController {
 		VisitEditForm createForm = new VisitEditForm(visit.getDisease(), contact, contactPerson, true);
 		createForm.setValue(visit);
 
-		createVisit(createForm, doneConsumer);
+		createVisit(
+			createForm,
+			doneConsumer,
+			VisitLogic.getAllowedStartDate(ContactLogic.getStartDate(contact)),
+			VisitLogic.getAllowedEndDate(ContactLogic.getEndDate(contact)));
 	}
 
 	public void createVisit(CaseReferenceDto caseRef, Consumer<VisitReferenceDto> doneConsumer) {
@@ -156,7 +182,11 @@ public class VisitController {
 		VisitEditForm createForm = new VisitEditForm(visit.getDisease(), caze, person, true);
 		createForm.setValue(visit);
 
-		createVisit(createForm, doneConsumer);
+		createVisit(
+			createForm,
+			doneConsumer,
+			VisitLogic.getAllowedStartDate(CaseLogic.getStartDate(caze)),
+			VisitLogic.getAllowedEndDate(CaseLogic.getEndDate(caze)));
 	}
 
 	private VisitDto createNewVisit(PersonReferenceDto personRef, Disease disease) {

@@ -48,6 +48,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Buffered;
+import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.Validator.InvalidValueException;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.data.fieldgroup.FieldGroup.CommitException;
@@ -434,7 +435,10 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 			deleteButton = buildDeleteButton(() -> {
 				if (!deleted) {
 					DeletableUtils.showDeleteWithReasonPopup(
-						String.format(I18nProperties.getString(Strings.confirmationDeleteEntityWithDetails), entityName, details != null ? details : ""),
+						String.format(
+							I18nProperties.getString(Strings.confirmationDeleteEntityWithDetails),
+							entityName,
+							details != null ? details : ""),
 						this::onDeleteWithReason);
 				} else {
 					onDeleteWithReason(null);
@@ -590,43 +594,38 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		} catch (InvalidValueException ex) {
 			StringBuilder htmlMsg = new StringBuilder();
 			String message = ex.getMessage();
-			if (message != null && !message.isEmpty()) {
+			if (message != null && !message.isEmpty() && ex.getCauses().length == 0) {
 				htmlMsg.append(ex.getHtmlMessage());
 			} else {
 
-				InvalidValueException[] causes = ex.getCauses();
+				List<InvalidValueException> causes = extractCauses(ex);
+
 				if (causes != null) {
 
-					InvalidValueException firstCause = null;
-					boolean multipleCausesFound = false;
-					for (int i = 0; i < causes.length; i++) {
-						if (!causes[i].isInvisible()) {
-							if (firstCause == null) {
-								firstCause = causes[i];
-							} else {
-								multipleCausesFound = true;
-								break;
-							}
-						}
-					}
-					if (multipleCausesFound) {
+					if (causes.size() > 1) {
 						htmlMsg.append("<ul>");
 						// All again
-						for (int i = 0; i < causes.length; i++) {
-							if (!causes[i].isInvisible()) {
-								htmlMsg.append("<li style=\"color: #FFF;\">").append(findHtmlMessage(causes[i])).append("</li>");
-							}
+						for (InvalidValueException cause : causes) {
+							htmlMsg.append("<li style=\"color: #FFF;\">").append(findHtmlMessage(cause)).append("</li>");
 						}
 						htmlMsg.append("</ul>");
-					} else if (firstCause != null) {
-						htmlMsg.append(findHtmlMessage(firstCause));
+					} else if (causes.size() > 0) {
+						htmlMsg.append("<ul>");
+						InvalidValueException firstCause = causes.get(0);
+						String info = findHtmlMessage(firstCause);
+						boolean validInfo = nonNull(info) && !info.isEmpty() && !info.equalsIgnoreCase("null");
+						if (validInfo) {
+							htmlMsg.append("<li style=\"color: #FFF;\">").append(info).append("</li>");
+							htmlMsg.append("</ul>");
+						}
 						String additionalInfo = findHtmlMessageDetails(firstCause);
 						if (nonNull(additionalInfo) && !additionalInfo.isEmpty()) {
-							htmlMsg.append(" : ");
+							if (validInfo) {
+								htmlMsg.append(" : ");
+							}
 							htmlMsg.append(findHtmlMessageDetails(firstCause));
 						}
 					}
-
 				}
 			}
 
@@ -635,6 +634,24 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 			return false;
 		}
+	}
+
+	public List<InvalidValueException> extractCauses(InvalidValueException cause) {
+		List<Validator.InvalidValueException> tempCauses = new ArrayList<>();
+
+		if (cause.isInvisible()) {
+			return tempCauses;
+		}
+
+		if (cause.getCauses().length == 0) {
+			tempCauses.add(cause);
+		}
+
+		for (InvalidValueException childCause : cause.getCauses()) {
+			tempCauses.addAll(extractCauses(childCause));
+		}
+
+		return tempCauses;
 	}
 
 	@Override
