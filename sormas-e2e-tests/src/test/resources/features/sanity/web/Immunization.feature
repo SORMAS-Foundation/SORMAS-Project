@@ -247,7 +247,7 @@ Feature: Immunization end to end tests
     Then I check that Immunization data is displayed as read-only on Edit immunization page
 
   @tmsLink=SORDEV-8759 @env_de
-  Scenario: Test Reduced entry option for vaccinations
+  Scenario: Test Reduced entry option for vaccinations[1]
     Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
@@ -321,23 +321,23 @@ Feature: Immunization end to end tests
     And I click SAVE button on Edit Contact Page
     And I check that vaccination entry is greyed out in the vaccination card
     And I check the displayed message is correct after hovering over the Vaccination Card Info icon on Edit Contact Page for DE
-    Then I click Link Event button on Edit Case Page for DE
-    And I click on New Event option in Link to Event Form
-    And I click on SAVE button in Link Event form
+
+  @tmsLink=SORDEV-8759 @env_de
+  Scenario: Test Reduced entry option for vaccinations[2]
+    Given I log in as a National User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
     And I fill event Title field on Create New Event Page
     And I set event Date filed on Create New Event form to current date for DE
     And I click SAVE button on Create New Event form
-    And I click SAVE in Add Event Participant form on Edit Case Page for DE
-    And I click on the Edit Vaccination icon on vaccination card on Edit Case page
-    And I set the vaccination date to 7 days before the current day for DE
+    And I add a participant to the event in DE
+    And I click NEW VACCINATION button for DE
+    And I fill new vaccination data in new Vaccination form with vaccination date 7 days before the current day for DE
     And I click SAVE button in new Vaccination form
-    And I click on first Edit event button for in Events section
     And I click on the Event participant tab
     And I click Create Case for Event Participant
-    And I pick a new case in pick or create a case popup
     And I fill only mandatory fields for a new case form for DE
     And I save the new case
-    And I pick a new case in pick or create a case popup
     And I check that displayed vaccination card has correct vaccination date and name
     And I check if Vaccination Status is set to "Geimpft" on Edit Case page
     And I click on the Contacts button from navbar
