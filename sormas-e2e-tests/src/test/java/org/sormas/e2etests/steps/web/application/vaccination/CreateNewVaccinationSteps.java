@@ -197,7 +197,6 @@ public class CreateNewVaccinationSteps implements En {
         "I click SAVE button in new Vaccination form",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_VACCINATION_FORM_BUTTON);
-          //          TimeUnit.SECONDS.sleep(1); // wait for reaction
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
         });
 
