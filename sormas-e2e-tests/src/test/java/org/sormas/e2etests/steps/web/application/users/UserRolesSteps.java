@@ -220,8 +220,7 @@ public class UserRolesSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(USER_RIGHTS_INPUT);
           webDriverHelpers.scrollInTable(12);
 
-          if (webDriverHelpers.isElementVisibleWithTimeout(
-              getUserRoleCaptionByText("TestNatUser"), 5)) {
+          if (webDriverHelpers.isElementVisibleWithTimeout(getUserRoleCaptionByText(userRole), 5)) {
             webDriverHelpers.doubleClickOnWebElementBySelector(getUserRoleCaptionByText(userRole));
             webDriverHelpers.scrollToElement(DELETE_USER_ROLE_BUTTON);
             webDriverHelpers.clickOnWebElementBySelector(DELETE_USER_ROLE_BUTTON);
