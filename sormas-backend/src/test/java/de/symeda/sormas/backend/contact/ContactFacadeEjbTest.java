@@ -34,7 +34,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -96,6 +95,7 @@ import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonContactDetailType;
@@ -132,6 +132,7 @@ import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -143,18 +144,27 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 	public void testValidateWithNullReportingUser() {
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(
-				rdcf.region.getUuid(),
-				rdcf.district.getUuid(),
-				rdcf.facility.getUuid(),
-				"Surv",
-				"Sup",
-				creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		PersonDto cazePerson = creator.createPerson("Case", "Person", Sex.MALE, 1980, 1, 1);
-		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
+		CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
 
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
-		assertThrows(ValidationRuntimeException.class, () -> creator.createContact(null, null, contactPerson.toReference(), caze, new Date(), new Date(), null));
+		assertThrows(
+			ValidationRuntimeException.class,
+			() -> creator.createContact(null, null, contactPerson.toReference(), caze, new Date(), new Date(), null));
 	}
 
 	@Test
@@ -345,6 +355,46 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(ContactClassification.CONFIRMED, contact.getContactClassification());
 		assertEquals(ContactStatus.CONVERTED, contact.getContactStatus());
 		assertEquals(FollowUpStatus.CANCELED, contact.getFollowUpStatus());
+	}
+
+	@Test
+	public void testDeleteContactsOutsideJurisdiction() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto creatorUser = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+
+		Region region = creator.createRegion("Region");
+		District district1 = creator.createDistrict("District1", region);
+		Community community1 = creator.createCommunity("Community1", district1);
+		Facility facility1 = creator.createFacility("Facility1", FacilityType.HOSPITAL, region, district1, community1);
+
+		District district2 = creator.createDistrict("District2", region);
+		Community community2 = creator.createCommunity("Community2", district2);
+		Facility facility2 = creator.createFacility("Facility2", FacilityType.HOSPITAL, region, district2, community2);
+
+		TestDataCreator.RDCFEntities rdcf1 = new TestDataCreator.RDCFEntities(region, district1, community1, facility1);
+		TestDataCreator.RDCFEntities rdcf2 = new TestDataCreator.RDCFEntities(region, district2, community2, facility2);
+
+		PersonDto person1 = creator.createPerson();
+		PersonDto person2 = creator.createPerson();
+		ContactDto contact1 = creator.createContact(new RDCF(rdcf1), creatorUser.toReference(), person1.toReference());
+		ContactDto contact2 = creator.createContact(new RDCF(rdcf2), creatorUser.toReference(), person2.toReference());
+
+		assertEquals(2, getContactFacade().getAllActiveUuids().size());
+
+		List<String> contactUuidList = new ArrayList<>();
+		contactUuidList.add(contact1.getUuid());
+		contactUuidList.add(contact2.getUuid());
+
+		UserDto user = creator.createUser(rdcf1, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+		loginWith(user);
+		List<String> deleteUuids =
+			getContactFacade().deleteContacts(contactUuidList, new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
+		assertEquals(1, deleteUuids.size());
+		assertEquals(contact1.getUuid(), deleteUuids.get(0));
+
+		loginWith(creatorUser);
+		getContactFacade().deleteContacts(contactUuidList, new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
+		assertEquals(0, getContactFacade().getAllActiveUuids().size());
 	}
 
 	@Test
@@ -1925,11 +1975,10 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		otherVisit.getSymptoms().setAbdominalPain(SymptomState.YES);
 		getVisitFacade().saveVisit(otherVisit);
 
-		byte[] contentAsBytes =  ("%PDF-1.0\n1 0 obj<</Type/Catalog/Pages " +
-				"2 0 R>>endobj 2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj 3 0 obj<</Ty" +
-				"pe/Page/MediaBox[0 0 3 3]>>endobj\nxref\n0 4\n0000000000 65535 f\n000000001" +
-				"0 00000 n\n0000000053 00000 n\n0000000102 00000 n\ntrailer<</Size 4/Root 1 " +
-				"0 R>>\nstartxref\n149\n%EOF").getBytes();
+		byte[] contentAsBytes =
+			("%PDF-1.0\n1 0 obj<</Type/Catalog/Pages " + "2 0 R>>endobj 2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj 3 0 obj<</Ty"
+				+ "pe/Page/MediaBox[0 0 3 3]>>endobj\nxref\n0 4\n0000000000 65535 f\n000000001"
+				+ "0 00000 n\n0000000053 00000 n\n0000000102 00000 n\ntrailer<</Size 4/Root 1 " + "0 R>>\nstartxref\n149\n%EOF").getBytes();
 
 		DocumentDto document = creator.createDocument(
 			leadUserReference,
