@@ -211,12 +211,13 @@ public class StartupShutdownService {
 	@PostConstruct
 	public void startup() {
 		auditLogger.logApplicationStart();
+
 		checkDatabaseConfig(em);
+
+		createVersioningFunction(UpdateQueryTransactionWrapper.TargetDb.SORMAS);
 
 		logger.info("Initiating automatic database update of main database...");
 		updateDatabase(UpdateQueryTransactionWrapper.TargetDb.SORMAS, em, SORMAS_SCHEMA);
-
-		createVersioningFunction(UpdateQueryTransactionWrapper.TargetDb.SORMAS);
 
 		logger.info("Initiating automatic database update of audit database...");
 		updateDatabase(UpdateQueryTransactionWrapper.TargetDb.AUDIT, emAudit, AUDIT_SCHEMA);
@@ -749,7 +750,10 @@ public class StartupShutdownService {
 
 		final InputStream versioningFunctionStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(VERSIONING_FUNCTION);
 		try {
-			final String versioningFunction = IOUtils.toString(versioningFunctionStream, StandardCharsets.UTF_8);
+			String versioningFunction = IOUtils.toString(versioningFunctionStream, StandardCharsets.UTF_8);
+			// escape for hibernate
+			// note: This will also escape ':' in pure strings, where a replacement may cause problems
+			versioningFunction = versioningFunction.replaceAll(":", "\\\\:");
 			updateQueryTransactionWrapper.executeUpdate(db, versioningFunction);
 		}  catch (IOException e) {
 			logger.error("Could not load {} file. Create versioning function not performed.", VERSIONING_FUNCTION);

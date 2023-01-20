@@ -91,6 +91,7 @@ public class HistoryTablesTest extends AbstractBeanTest {
 		public SormasPostgresSQLContainer() {
 			super(
 				new ImageFromDockerfile().withFileFromClasspath("setup_sormas_db.sh", "testcontainers/setup_sormas_db.sh")
+					.withFileFromClasspath("versioning_function.sql", "sql/versioning_function.sql")
 					.withFileFromClasspath("sormas_schema.sql", "sql/sormas_schema.sql")
 					.withFileFromClasspath("Dockerfile", "testcontainers/Dockerfile"));
 			this.waitStrategy = new LogMessageWaitStrategy().withRegEx(".*database system is ready to accept connections.*\\s")

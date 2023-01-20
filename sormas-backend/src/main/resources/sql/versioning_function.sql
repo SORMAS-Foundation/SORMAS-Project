@@ -8,7 +8,7 @@ DECLARE
     manipulate jsonb;
     ignore_unchanged_values bool;
     commonColumns text[];
-    time_stamp_to_use timestamptz \:= current_timestamp;
+    time_stamp_to_use timestamptz := current_timestamp;
     range_lower timestamptz;
     transaction_info txid_snapshot;
     existing_range tstzrange;
@@ -35,9 +35,9 @@ BEGIN
             HINT = 'expected 3 or 4 parameters but got ' || TG_NARGS;
     END IF;
 
-    sys_period \:= TG_ARGV[0];
-    history_table \:= TG_ARGV[1];
-    ignore_unchanged_values \:= TG_ARGV[3];
+    sys_period := TG_ARGV[0];
+    history_table := TG_ARGV[1];
+    ignore_unchanged_values := TG_ARGV[3];
 
     -- check if sys_period exists on original table
     SELECT atttypid, attndims INTO holder FROM pg_attribute WHERE attrelid = TG_RELID AND attname = sys_period AND NOT attisdropped;
@@ -63,9 +63,9 @@ BEGIN
 
     IF TG_OP = 'UPDATE' OR TG_OP = 'DELETE' THEN
         -- Ignore rows already modified in this transaction
-        transaction_info \:= txid_current_snapshot();
-        IF OLD.xmin\:\:text >= (txid_snapshot_xmin(transaction_info) % (2^32)\:\:bigint)\:\:text
-            AND OLD.xmin\:\:text <= (txid_snapshot_xmax(transaction_info) % (2^32)\:\:bigint)\:\:text THEN
+        transaction_info := txid_current_snapshot();
+        IF OLD.xmin::text >= (txid_snapshot_xmin(transaction_info) % (2^32)::bigint)::text
+            AND OLD.xmin::text <= (txid_snapshot_xmax(transaction_info) % (2^32)::bigint)::text THEN
             IF TG_OP = 'DELETE' THEN
                 RETURN OLD;
             END IF;
@@ -73,13 +73,13 @@ BEGIN
             RETURN NEW;
         END IF;
 
-        SELECT current_setting('server_version_num')\:\:integer
+        SELECT current_setting('server_version_num')::integer
         INTO pg_version;
 
         -- to support postgres < 9.6
         IF pg_version < 90600 THEN
             -- check if history table exits
-            IF to_regclass(history_table\:\:cstring) IS NULL THEN
+            IF to_regclass(history_table::cstring) IS NULL THEN
                 RAISE 'relation "%" does not exist', history_table;
             END IF;
         ELSE
@@ -89,7 +89,7 @@ BEGIN
         END IF;
 
         -- check if history table has sys_period
-        IF NOT EXISTS(SELECT * FROM pg_attribute WHERE attrelid = history_table\:\:regclass AND attname = sys_period AND NOT attisdropped) THEN
+        IF NOT EXISTS(SELECT * FROM pg_attribute WHERE attrelid = history_table::regclass AND attname = sys_period AND NOT attisdropped) THEN
             RAISE 'history relation "%" does not contain system period column "%"', history_table, sys_period USING
                 HINT = 'history relation must contain system period column with the same name and data type as the versioned one';
         END IF;
@@ -109,16 +109,16 @@ BEGIN
 
         IF TG_ARGV[2] = 'true' THEN
             -- mitigate update conflicts
-            range_lower \:= lower(existing_range);
+            range_lower := lower(existing_range);
             IF range_lower >= time_stamp_to_use THEN
-                time_stamp_to_use \:= range_lower + interval '1 microseconds';
+                time_stamp_to_use := range_lower + interval '1 microseconds';
             END IF;
         END IF;
 
         WITH history AS
                  (SELECT attname, atttypid
                   FROM   pg_attribute
-                  WHERE  attrelid = history_table\:\:regclass
+                  WHERE  attrelid = history_table::regclass
                     AND    attnum > 0
                     AND    NOT attisdropped),
              main AS
@@ -148,7 +148,7 @@ BEGIN
         WITH history AS
                  (SELECT attname
                   FROM   pg_attribute
-                  WHERE  attrelid = history_table\:\:regclass
+                  WHERE  attrelid = history_table::regclass
                     AND    attnum > 0
                     AND    NOT attisdropped),
              main AS
@@ -187,7 +187,7 @@ BEGIN
     END IF;
 
     IF TG_OP = 'UPDATE' OR TG_OP = 'INSERT' THEN
-        manipulate \:= jsonb_set('{}'\:\:jsonb, ('{' || sys_period || '}')\:\:text[], to_jsonb(tstzrange(time_stamp_to_use, null, '[)')));
+        manipulate := jsonb_set('{}'::jsonb, ('{' || sys_period || '}')::text[], to_jsonb(tstzrange(time_stamp_to_use, null, '[)')));
 
         RETURN jsonb_populate_record(NEW, manipulate);
     END IF;

@@ -8,7 +8,7 @@ DECLARE
     manipulate jsonb;
     ignore_unchanged_values bool;
     commonColumns text[];
-    time_stamp_to_use timestamptz \:= current_timestamp;
+    time_stamp_to_use timestamptz := current_timestamp;
     range_lower timestamptz;
     transaction_info txid_snapshot;
     existing_range tstzrange;
@@ -16,16 +16,16 @@ DECLARE
     oldVersion record;
 BEGIN
 
-    sys_period \:= TG_ARGV[0];
-    history_table \:= TG_ARGV[1];
-    ignore_unchanged_values \:= TG_ARGV[3];
+    sys_period := TG_ARGV[0];
+    history_table := TG_ARGV[1];
+    ignore_unchanged_values := TG_ARGV[3];
 
 
     IF TG_OP = 'UPDATE' OR TG_OP = 'DELETE' THEN
         -- Ignore rows already modified in this transaction
-        transaction_info \:= txid_current_snapshot();
-        IF OLD.xmin\:\:text >= (txid_snapshot_xmin(transaction_info) % (2^32)\:\:bigint)\:\:text
-            AND OLD.xmin\:\:text <= (txid_snapshot_xmax(transaction_info) % (2^32)\:\:bigint)\:\:text THEN
+        transaction_info := txid_current_snapshot();
+        IF OLD.xmin::text >= (txid_snapshot_xmin(transaction_info) % (2^32)::bigint)::text
+            AND OLD.xmin::text <= (txid_snapshot_xmax(transaction_info) % (2^32)::bigint)::text THEN
             IF TG_OP = 'DELETE' THEN
                 RETURN OLD;
             END IF;
@@ -37,16 +37,16 @@ BEGIN
 
         IF TG_ARGV[2] = 'true' THEN
             -- mitigate update conflicts
-            range_lower \:= lower(existing_range);
+            range_lower := lower(existing_range);
             IF range_lower >= time_stamp_to_use THEN
-                time_stamp_to_use \:= range_lower + interval '1 microseconds';
+                time_stamp_to_use := range_lower + interval '1 microseconds';
             END IF;
         END IF;
 
         WITH history AS
                  (SELECT attname
                   FROM   pg_attribute
-                  WHERE  attrelid = history_table\:\:regclass
+                  WHERE  attrelid = history_table::regclass
                     AND    attnum > 0
                     AND    NOT attisdropped),
              main AS
@@ -84,7 +84,7 @@ BEGIN
     END IF;
 
     IF TG_OP = 'UPDATE' OR TG_OP = 'INSERT' THEN
-        manipulate \:= jsonb_set('{}'\:\:jsonb, ('{' || sys_period || '}')\:\:text[], to_jsonb(tstzrange(time_stamp_to_use, null, '[)')));
+        manipulate := jsonb_set('{}'::jsonb, ('{' || sys_period || '}')::text[], to_jsonb(tstzrange(time_stamp_to_use, null, '[)')));
 
         RETURN jsonb_populate_record(NEW, manipulate);
     END IF;
