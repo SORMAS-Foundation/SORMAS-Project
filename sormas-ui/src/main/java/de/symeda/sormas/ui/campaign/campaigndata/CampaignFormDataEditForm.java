@@ -125,7 +125,8 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		String[] innerSplit = queryParameters[1].split(",");
 		System.out.println(innerSplit[0]);
 		CampaignDto campaign = FacadeProvider.getCampaignFacade().getByUuid(innerSplit[0]);
-		if (!campaign.getAreas().isEmpty()) {
+		if(campaign != null) {
+		if (!campaign.getAreas().isEmpty() & area != null) {
 			cbArea.addItems(campaign.getAreas());
 
 			cbArea.addValueChangeListener(e -> {
@@ -239,7 +240,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		} else {
 			cbArea.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
 			addInfrastructureListenerx(cbArea, cbRegion, cbDistrict, cbCommunity);
-		}
+		}}
 
 		final UserDto currentUser = UserProvider.getCurrent().getUser();
 		final AreaReferenceDto currentUserArea = currentUser.getArea();
