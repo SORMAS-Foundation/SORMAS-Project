@@ -63,5 +63,6 @@ public class SymptomsTabPage {
   public static final By CASE_TAB = By.cssSelector("#tab-cases-data span");
   public static final By SAVE_BUTTON = By.cssSelector("#commit");
   public static final By NOTIFICATION_POPUP_DESCRIPTION =
-      By.cssSelector(".v-Notification-description");
+      By.xpath(
+          "//div[@class='popupContent']//li[text()='Date of symptom onset cannot be in the future']");
 }
