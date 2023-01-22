@@ -6,6 +6,7 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Resource;
 import com.vaadin.server.StreamResource;
+import com.vaadin.server.VaadinService;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
@@ -15,6 +16,8 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
+import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.VerticalLayout;
 
 import java.util.List;
@@ -33,6 +36,8 @@ import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.FormAccess;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -63,7 +68,7 @@ public class CampaignReportView extends AbstractView {
 
 	private UserReportGrid grid;
 	private Button syncButton;
-	
+	//check the diagram definition
 	// Filter
 		private SearchField searchField;
 		private ComboBox areaFilter;
@@ -73,7 +78,7 @@ public class CampaignReportView extends AbstractView {
 		private Button resetButton;
 
 		private HorizontalLayout filterLayout;
-	private VerticalLayout gridLayout;
+		private VerticalLayout gridLayout;
 	
 
 	private RowCount rowsCount;
@@ -98,25 +103,43 @@ public class CampaignReportView extends AbstractView {
 			if (criteria.getRelevanceStatus() == null) {
 				criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
 			}
-
-		
-		//Second TAB
-		gridLayout = new VerticalLayout();
 		
 		
-		grid = new UserReportGrid(criteria);
+		TabSheet tabsheetx = new TabSheet();
 		
-		rowsCount = new RowCount(Strings.labelNumberOfCommunities, grid.getItemCount());
-		gridLayout.addComponent(rowsCount);
+		FormAccess frms[] = FormAccess.values();
+		for(FormAccess lopper : frms) {
+			
+			gridLayout = new VerticalLayout();
+			grid = new UserReportGrid(criteria, lopper);		
+			gridLayout.addComponent(createFilterBar());
+			gridLayout.addComponent(grid);
+			
+			gridLayout.setMargin(true);
+			gridLayout.setSpacing(false);
+			gridLayout.setSizeFull();
+			gridLayout.setExpandRatio(grid, 1);
+			gridLayout.setStyleName("crud-main-layout");
+			tabsheetx.addTab(gridLayout, lopper.toString());
+			
+		}
 		
-		gridLayout.addComponent(createFilterBar());
-		gridLayout.addComponent(grid);
+		tabsheetx.setHeightFull();
 		
-		gridLayout.setMargin(true);
-		gridLayout.setSpacing(false);
-		gridLayout.setSizeFull();
-		gridLayout.setExpandRatio(grid, 1);
-		gridLayout.setStyleName("crud-main-layout");
+		tabsheet.addTab(tabsheetx, "User Analysis");
+		
+		tabsheet.addSelectedTabChangeListener(new SelectedTabChangeListener() {            
+            @Override
+            public void selectedTabChange(SelectedTabChangeEvent event) {
+                int position = tabsheet.getTabPosition(tabsheet.getTab(event.getTabSheet().getTabIndex()));
+                VaadinService.getCurrentRequest().getWrappedSession().setAttribute("indexTab", position);                
+            }
+        });
+		
+		if(VaadinService.getCurrentRequest().getWrappedSession().getAttribute("indexTab") != null){
+			tabsheet.setSelectedTab((int) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("indexTab"));
+		}
+		
 		
 		
 
@@ -129,23 +152,10 @@ public class CampaignReportView extends AbstractView {
 				ExportEntityName.USERS, UserReportGrid.EDIT_BTN_ID);
 		FileDownloader fileDownloaderx = new FileDownloader(streamResource);
 		fileDownloaderx.extend(exportButton);
-
 		
-
-	//	addComponent(gridLayout);
-	//	gridLayout = new VerticalLayout();
 		
-		gridLayout.setCaption("User Analysis");
-		tabsheet.addTab(gridLayout);
-		
-//		gridLayout = new VerticalLayout();
-//		gridLayout.setCaption("Pivot Table");
-//		tabsheet.addTab(gridLayout);
-		
-		// Create the first tab
 		gridLayout = new VerticalLayout();
 		tabsheet.addTab(gridLayout, "Aggregate Report");
-		
 		
 		
 		layt.setStyleName("backgroudBrown");
@@ -154,6 +164,12 @@ public class CampaignReportView extends AbstractView {
 	}
 
 	private HorizontalLayout createFilterBar() {
+		
+		final UserDto user = UserProvider.getCurrent().getUser();
+//		criteria.setArea(user.getArea());
+//		criteria.setRegion(user.getRegion());
+//		criteria.setDistrict(user.getDistrict());
+//		criteria.setCommunity(null); // set to null 
 
 		filterLayout = new HorizontalLayout();
 		filterLayout.setMargin(false);
@@ -172,11 +188,12 @@ public class CampaignReportView extends AbstractView {
 		areaFilter.setWidth(140, Unit.PIXELS);
 		areaFilter.setCaption(I18nProperties.getPrefixCaption(RegionDto.I18N_PREFIX, RegionDto.AREA));
 		areaFilter.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
-		//areaFilter.setValue("East");
+		//areaFilter.setValue("East"); 
 	
 		criteria.fromUrlParams("area=W5R34K-APYPCA-4GZXDO-IVJWKGIM");
 		
 		areaFilter.addValueChangeListener(e -> {
+			System.out.println(e.getProperty().getValue() + "khgfksuiihyikgivivciouvsiuvivkihvi");
 			AreaReferenceDto area = (AreaReferenceDto) e.getProperty().getValue();
 			criteria.area(area);
 			navigateTo(criteria);

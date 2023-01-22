@@ -64,6 +64,8 @@ import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "CommunityFacade")
 public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, CommunityService> implements CommunityFacade {
+	
+	private FormAccess frmsAccess;
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
@@ -132,15 +134,20 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 	
 
 	@Override
-	public long countReportGrid(CommunityCriteriaNew criteria) {
+	public long countReportGrid(CommunityCriteriaNew criteria, FormAccess formacc) {
 
+		System.out.println("zzzzzzzyyyyyyyejsrtykjstykstykstukszzzzzzzzzzzzzzzzzzzzzzzzz ");
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Community> root = cq.from(Community.class);
 
+		
 		Predicate filter = null;
-
 		if (criteria != null) {
+			
+			filter = service.buildCriteriaFilter(criteria, cb, root);
+		}else {
+			criteria.fromUrlParams("area=W5R34K-APYPCA-4GZXDO-IVJWKGIM");
 			filter = service.buildCriteriaFilter(criteria, cb, root);
 		}
 
@@ -155,9 +162,13 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 	
 
 	@Override
-	public List<CommunityUserReportModelDto> getAllActiveCommunitytoRerence(CommunityCriteriaNew criteria, Integer first, Integer max, List<SortProperty> sortProperties, boolean isCounter) {
-	//	System.out.println("22222222222222222222222222222 1.0.3 222222222222222222222222222222222222222222222222222222222222 "+criteria.getArea());
-			CriteriaBuilder cb = em.getCriteriaBuilder();
+	public List<CommunityUserReportModelDto> getAllActiveCommunitytoRerence(CommunityCriteriaNew criteria, Integer first, Integer max, List<SortProperty> sortProperties, FormAccess formacc) {
+	System.out.println("22222222222222222222222222222 1.0.3 222222222222222222222222222222222222222222222222222222222222 "+criteria.getArea().getUuid());
+		frmsAccess = formacc;
+		first = 1;
+		max = 100;
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<Community> cq = cb.createQuery(Community.class);
 			Root<Community> community = cq.from(Community.class);
 			Join<Community, District> district = community.join(Community.DISTRICT, JoinType.LEFT);
@@ -167,7 +178,7 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 			Predicate filter = null;
 			if (criteria != null) {
 				filter = service.buildCriteriaFilter(criteria, cb, community);
-			}
+			} 
 
 			if (filter != null) {
 				cq.where(filter);
@@ -179,7 +190,7 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 
 			System.out.println("DEBUGGER r567ujhgty8ijyu8dfrf  " + SQLExtractor.from(em.createQuery(cq)));
 			//if(isCounter)
-			return QueryHelper.getResultList(em, cq, null, null, this::toDtoList).stream().filter(e -> e.getMessage() != "Correctly assigned").collect(Collectors.toList());
+			return QueryHelper.getResultList(em, cq, null, null, this::toDtoList);//.stream().filter(e -> e.getMessage() != "Correctly assigned").collect(Collectors.toList());
 		}
 	
 	
@@ -439,6 +450,8 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 	
 	
 	private CommunityUserReportModelDto toDtoList(Community entity) {
+		
+//	System.out.println("22222222222222222222222222 "+frmsAccess);
 
 		if (entity == null) {
 			return null;
@@ -457,9 +470,11 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 		Set<FormAccess> formss = new HashSet<>();
 		
 		for(User usr : userService.getAllByCommunity()) {
+			if(usr.getFormAccess().contains(frmsAccess)) {
 			usr.getCommunity().stream().filter(ee -> ee.getUuid().equals(entity.getUuid())).findFirst().ifPresent(ef -> usersd.add(usr.getUserName()));
-			usr.getCommunity().stream().filter(ee -> ee.getUuid().equals(entity.getUuid())).findFirst().ifPresent(ef -> formss.addAll(usr.getFormAccess()));
+			usr.getCommunity().stream().filter(ee -> ee.getUuid().equals(entity.getUuid())).findFirst().ifPresent(ef -> formss.add(frmsAccess));
 		}
+			}
 		
 		if(usersd.isEmpty()) {
 			dto.setMessage("ClusterNumber: "+ entity.getClusterNumber()+" is not assigned to any user");
