@@ -115,7 +115,6 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	private Boolean withExtendedQuarantine;
 	private Boolean withReducedQuarantine;
 	private Boolean onlyQuarantineHelpNeeded;
-	private Boolean deleted = Boolean.FALSE;
 	private String caseLike;
 	private String eventLike;
 	private Boolean onlyCasesWithEvents = Boolean.FALSE;
@@ -450,16 +449,6 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	@IgnoreForUrl
 	public EntityRelevanceStatus getRelevanceStatus() {
 		return relevanceStatus;
-	}
-
-	public CaseCriteria deleted(Boolean deleted) {
-		this.deleted = deleted;
-		return this;
-	}
-
-	@IgnoreForUrl
-	public Boolean getDeleted() {
-		return deleted;
 	}
 
 	/**

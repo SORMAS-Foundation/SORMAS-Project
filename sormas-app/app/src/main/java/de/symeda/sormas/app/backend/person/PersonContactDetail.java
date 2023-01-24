@@ -82,7 +82,7 @@ public class PersonContactDetail extends PseudonymizableAdo {
 	}
 
 	public String getOwnerName() {
-		return isThirdParty() ? getThirdPartyName() : person.toString();
+		return isThirdParty() ? getThirdPartyName() : person.buildCaption();
 	}
 
     public Person getPerson() {

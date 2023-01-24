@@ -58,19 +58,19 @@
                 <de.symeda.sormas.app.component.controls.ControlLinkField
                     android:id="@+id/task_caze"
                     app:goneIfEmpty="@{data.caze}"
-                    app:value="@{data.caze.toString()}"
+                    app:value="@{data.caze.buildCaption()}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlLinkField
                     android:id="@+id/task_contact"
                     app:goneIfEmpty="@{data.contact}"
-                    app:value="@{data.contact.toString()}"
+                    app:value="@{data.contact.buildCaption()}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlLinkField
                     android:id="@+id/task_event"
                     app:goneIfEmpty="@{data.event}"
-                    app:value="@{data.event.toString()}"
+                    app:value="@{data.event.buildCaption()}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout

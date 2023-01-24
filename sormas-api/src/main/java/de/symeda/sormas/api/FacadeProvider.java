@@ -31,6 +31,7 @@ import de.symeda.sormas.api.caze.CaseStatisticsFacade;
 import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
 import de.symeda.sormas.api.caze.classification.CaseClassificationFacade;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryFacade;
+import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoFacade;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitFacade;
@@ -316,6 +317,10 @@ public class FacadeProvider {
 
 	public static PointOfEntryFacade getPointOfEntryFacade() {
 		return get().lookupEjbRemote(PointOfEntryFacade.class);
+	}
+
+	public static PortHealthInfoFacade getPortHealthInfoFacade() {
+		return get().lookupEjbRemote(PortHealthInfoFacade.class);
 	}
 
 	public static PopulationDataFacade getPopulationDataFacade() {

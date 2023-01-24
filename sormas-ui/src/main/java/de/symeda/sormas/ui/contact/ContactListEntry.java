@@ -122,6 +122,10 @@ public class ContactListEntry extends HorizontalLayout {
 		deleteButton.addClickListener(deleteClickListener);
 	}
 
+	public void setActive() {
+		addStyleName(CssStyles.ACTIVE_SIDE_COMPONENT_ELEMENT);
+	}
+
 	public ContactIndexDto getContact() {
 		return contact;
 	}

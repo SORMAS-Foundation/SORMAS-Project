@@ -232,6 +232,7 @@ public class TaskController {
 				}
 				if (form.getAssigneeCheckbox().getValue()) {
 					dto.setAssigneeUser(updatedBulkEditData.getTaskAssignee());
+					dto.setAssignedByUser(UserProvider.getCurrent().getUserReference());
 				}
 				if (form.getTaskStatusCheckbox().getValue()) {
 					dto.setTaskStatus(updatedBulkEditData.getTaskStatus());

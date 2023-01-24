@@ -148,6 +148,8 @@ public class MergeContactsFilterComponent extends VerticalLayout {
 
 		cbRegion = new ComboBox<>();
 		cbDistrict = new ComboBox<>();
+		cbRegion.setItemCaptionGenerator(item -> item.buildCaption());
+		cbDistrict.setItemCaptionGenerator(item -> item.buildCaption());
 
 		cbRegion.setId(ContactDto.REGION);
 		cbRegion.setWidth(200, Unit.PIXELS);

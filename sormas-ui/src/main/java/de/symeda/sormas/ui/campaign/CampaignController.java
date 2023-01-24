@@ -105,10 +105,10 @@ public class CampaignController {
 				window.close();
 				SormasUI.refreshView();
 				Notification
-					.show(String.format(I18nProperties.getString(Strings.messageCampaignFormSaved), campaignForm.toString()), Type.TRAY_NOTIFICATION);
+					.show(String.format(I18nProperties.getString(Strings.messageCampaignFormSaved), campaignForm.buildCaption()), Type.TRAY_NOTIFICATION);
 			}, window::close);
 
-		window.setCaption(String.format(I18nProperties.getString(Strings.headingCreateCampaignDataForm), campaignForm.toString()));
+		window.setCaption(String.format(I18nProperties.getString(Strings.headingCreateCampaignDataForm), campaignForm.buildCaption()));
 		window.setContent(component);
 		UI.getCurrent().addWindow(window);
 	}

@@ -1408,7 +1408,7 @@ public class ContactFacadeEjb
 		target = DtoHelper.fillOrBuildEntity(source, target, Contact::new, checkChangeDate);
 
 		if (targetWasNull) {
-			target.getEpiData().setUuid(source.getEpiData().getUuid());
+			FacadeHelper.setUuidIfDtoExists(target.getEpiData(), source.getEpiData());
 		}
 
 		target.setCaze(caseService.getByReferenceDto(source.getCaze()));

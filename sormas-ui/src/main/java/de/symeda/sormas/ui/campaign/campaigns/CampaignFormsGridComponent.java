@@ -2,7 +2,6 @@ package de.symeda.sormas.ui.campaign.campaigns;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import com.vaadin.data.Binder;
 import com.vaadin.ui.Button;

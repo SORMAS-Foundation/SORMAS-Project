@@ -17,9 +17,9 @@ package de.symeda.sormas.app.task.edit;
 
 import static android.view.View.GONE;
 
-import android.view.View;
-
 import java.util.List;
+
+import android.view.View;
 
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.task.TaskPriority;
@@ -98,7 +98,7 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
 
 	@Override
 	public boolean isShowSaveAction() {
-		return record != null && ConfigProvider.getUser().equals(record.getCreatorUser());
+		return record != null && ConfigProvider.getUser().equals(record.getCreatorUser()) && record.getTaskStatus() != TaskStatus.PENDING;
 	}
 
 	@Override
@@ -167,11 +167,8 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
 		if (!ConfigProvider.getUser().equals(record.getAssigneeUser())) {
 			contentBinding.taskAssigneeReply.setEnabled(false);
 			contentBinding.taskButtonPanel.setVisibility(GONE);
-		} else {
-			if (record.getTaskStatus() != TaskStatus.PENDING) {
-				getBaseEditActivity().getSaveMenu().setVisible(true);
-				contentBinding.taskButtonPanel.setVisibility(GONE);
-			}
+		} else if (record.getTaskStatus() != TaskStatus.PENDING) {
+			contentBinding.taskButtonPanel.setVisibility(GONE);
 		}
 
 		contentBinding.taskAssigneeUser.addValueChangedListener(v -> {

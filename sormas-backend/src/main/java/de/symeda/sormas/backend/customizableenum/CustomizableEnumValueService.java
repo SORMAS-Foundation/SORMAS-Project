@@ -37,4 +37,5 @@ public class CustomizableEnumValueService extends AdoServiceWithUserFilterAndJur
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, CustomizableEnumValue> from) {
 		return null;
 	}
+
 }

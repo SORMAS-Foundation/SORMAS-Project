@@ -35,6 +35,7 @@ import de.symeda.sormas.api.sormastosormas.entities.event.SormasToSormasEventDto
 import de.symeda.sormas.api.sormastosormas.entities.event.SormasToSormasEventParticipantDto;
 import de.symeda.sormas.api.sormastosormas.entities.immunization.SormasToSormasImmunizationDto;
 import de.symeda.sormas.api.sormastosormas.entities.sample.SormasToSormasSampleDto;
+import de.symeda.sormas.api.sormastosormas.entities.surveillancereport.SormasToSormasSurveillanceReportDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
@@ -46,6 +47,7 @@ import de.symeda.sormas.backend.sormastosormas.entities.event.ReceivedEventProce
 import de.symeda.sormas.backend.sormastosormas.entities.eventparticipant.ReceivedEventParticipantProcessor;
 import de.symeda.sormas.backend.sormastosormas.entities.immunization.ReceivedImmunizationProcessor;
 import de.symeda.sormas.backend.sormastosormas.entities.sample.ReceivedSampleProcessor;
+import de.symeda.sormas.backend.sormastosormas.entities.surveillancereport.ReceivedSurveillanceReportProcessor;
 import de.symeda.sormas.backend.sormastosormas.share.ShareRequestData;
 
 @Stateless
@@ -64,6 +66,8 @@ public class ReceivedEntitiesProcessor {
 	private ReceivedEventParticipantProcessor eventParticipantProcessor;
 	@EJB
 	private ReceivedImmunizationProcessor immunizationProcessor;
+	@EJB
+	private ReceivedSurveillanceReportProcessor surveillanceReportProcessor;
 
 	public List<ValidationErrors> processReceivedData(SormasToSormasDto receivedData, ShareDataExistingEntities existingEntities) {
 		List<ValidationErrors> validationErrors = new ArrayList<>();
@@ -148,6 +152,19 @@ public class ReceivedEntitiesProcessor {
 				if (immunizationErrors.hasError()) {
 					validationErrors
 						.add(new ValidationErrors(ValidationHelper.buildImmunizationValidationGroupName(s.getEntity()), immunizationErrors));
+				}
+			});
+		}
+
+		List<SormasToSormasSurveillanceReportDto> reports = receivedData.getSurveillanceReports();
+		if (CollectionUtils.isNotEmpty(reports)) {
+			reports.forEach(r -> {
+				ValidationErrors immunizationErrors = surveillanceReportProcessor
+					.processReceivedData(r, existingEntities.getSurveillanceReports().get(r.getEntity().getUuid()), originInfo);
+
+				if (immunizationErrors.hasError()) {
+					validationErrors
+						.add(new ValidationErrors(ValidationHelper.buildSurveillanceReportValidationGroupName(r.getEntity()), immunizationErrors));
 				}
 			});
 		}

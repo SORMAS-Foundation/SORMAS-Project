@@ -50,14 +50,21 @@ public abstract class BaseTravelEntryService extends AbstractCoreAdoService<Trav
 	}
 
 	public Predicate createUserFilter(TravelEntryQueryContext qc) {
+		return createUserFilter(qc, true);
+	}
+
+	public Predicate createUserFilter(TravelEntryQueryContext qc, boolean checkJurisdictionAndLimitedDisease) {
 		User currentUser = getCurrentUser();
 		if (currentUser == null) {
 			return null;
 		}
 		final CriteriaBuilder cb = qc.getCriteriaBuilder();
-		Predicate filter = inJurisdictionOrOwned(qc);
-		if (currentUser.getLimitedDisease() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(qc.getRoot().get(Contact.DISEASE), currentUser.getLimitedDisease()));
+		Predicate filter = null;
+		if (checkJurisdictionAndLimitedDisease) {
+			filter = inJurisdictionOrOwned(qc);
+			if (currentUser.getLimitedDisease() != null) {
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(qc.getRoot().get(Contact.DISEASE), currentUser.getLimitedDisease()));
+			}
 		}
 		return filter;
 	}

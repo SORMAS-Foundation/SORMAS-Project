@@ -94,10 +94,12 @@ public class LineListingLayout extends VerticalLayout {
 		disease.addValueChangeListener(event -> diseaseDetails.setVisible(Disease.OTHER.equals(disease.getValue())));
 
 		region = new ComboBox<>(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.RESPONSIBLE_REGION));
+		region.setItemCaptionGenerator(item -> item.buildCaption());
 		region.setId("lineListingRegion");
 		sharedInformationBar.addComponent(region);
 
 		district = new ComboBox<>(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.RESPONSIBLE_DISTRICT));
+		district.setItemCaptionGenerator(item -> item.buildCaption());
 		district.setId("lineListingDistrict");
 		district.addValueChangeListener(e -> setEpidNumberPrefixes());
 		sharedInformationBar.addComponent(district);
@@ -432,6 +434,7 @@ public class LineListingLayout extends VerticalLayout {
 			epidNumber.setWidth(160, Unit.PIXELS);
 			binder.forField(epidNumber).bind(CaseLineDto.EPID_NUMBER);
 			community = new ComboBox<>();
+			community.setItemCaptionGenerator(item -> item.buildCaption());
 			community.setId("lineListingCommunity_" + lineIndex);
 			community.addStyleName(CssStyles.SOFT_REQUIRED);
 			community.addValueChangeListener(e -> {
@@ -450,6 +453,7 @@ public class LineListingLayout extends VerticalLayout {
 			});
 			binder.forField(community).bind(CaseLineDto.COMMUNITY);
 			facility = new ComboBox<>();
+			facility.setItemCaptionGenerator(item -> item.buildCaption());
 			facility.setId("lineListingFacility_" + lineIndex);
 			facility.setWidth(364, Unit.PIXELS);
 			facility.addValueChangeListener(e -> updateFacilityFields(facility, facilityDetails));

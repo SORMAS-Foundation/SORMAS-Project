@@ -117,6 +117,10 @@ public class EventParticipantListEntry extends HorizontalLayout {
 		editButton.addClickListener(editClickListener);
 	}
 
+	public void setActive() {
+		addStyleName(CssStyles.ACTIVE_SIDE_COMPONENT_ELEMENT);
+	}
+
 	public EventParticipantListEntryDto getEventParticipantListEntryDto() {
 		return eventParticipantListEntryDto;
 	}

@@ -235,7 +235,7 @@ public class ContactDataView extends AbstractContactView {
 				layout.addSidePanelComponent(new SideComponentLayout(new ImmunizationListComponent(() -> {
 					ContactDto refreshedContact = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
 					return new ImmunizationListCriteria.Builder(refreshedContact.getPerson()).withDisease(refreshedContact.getDisease()).build();
-				}, this::showUnsavedChangesPopup, isEditAllowed())), IMMUNIZATION_LOC);
+				}, null, this::showUnsavedChangesPopup, isEditAllowed())), IMMUNIZATION_LOC);
 			} else {
 				layout.addSidePanelComponent(new SideComponentLayout(new VaccinationListComponent(() -> {
 					ContactDto refreshedContact = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
@@ -249,7 +249,7 @@ public class ContactDataView extends AbstractContactView {
 						.contactReference(getContactRef())
 						.region(refreshedContact.getRegion() != null ? refreshedContact.getRegion() : refreshedCase.getResponsibleRegion())
 						.district(refreshedContact.getDistrict() != null ? refreshedContact.getDistrict() : refreshedCase.getResponsibleDistrict());
-				}, this::showUnsavedChangesPopup, isEditAllowed())), VACCINATIONS_LOC);
+				}, null, this::showUnsavedChangesPopup, isEditAllowed())), VACCINATIONS_LOC);
 			}
 		}
 

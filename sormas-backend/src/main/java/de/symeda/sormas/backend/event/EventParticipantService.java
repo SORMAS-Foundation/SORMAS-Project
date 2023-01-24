@@ -234,10 +234,13 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 					archivedPredicate = cb.or(archivedPredicate, cb.equal(event.get(Event.ARCHIVED), true));
 				}
 				filter = CriteriaBuilderHelper.and(cb, filter, archivedPredicate);
+			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.DELETED) {
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(EventParticipant.DELETED), true));
 			}
 		}
-
-		filter = CriteriaBuilderHelper.and(cb, filter, createDefaultFilter(cb, from));
+		if (criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
+			filter = CriteriaBuilderHelper.and(cb, filter, createDefaultFilter(cb, from));
+		}
 
 		return filter;
 	}
@@ -292,7 +295,6 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		final CriteriaBuilder cb = epqc.getCriteriaBuilder();
 		final CriteriaQuery<?> cq = epqc.getQuery();
 		final EventParticipantJoins joins = epqc.getJoins();
-
 		return eventService.createUserFilter(new EventQueryContext(cb, cq, joins.getEventJoins()), eventUserFilterCriteria);
 	}
 

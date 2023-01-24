@@ -126,7 +126,7 @@ public class TreatmentService extends AdoServiceWithUserFilterAndJurisdiction<Tr
 		return caseService.createUserFilter(new CaseQueryContext(cb, cq, new CaseJoins(therapy.join(Therapy.CASE, JoinType.LEFT))));
 	}
 
-	public void unlinkPrescriptionFromTreatments(List<String> treatmentUuids){
+	public void unlinkPrescriptionFromTreatments(List<String> treatmentUuids) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaUpdate<Treatment> criteriaUpdate = cb.createCriteriaUpdate(getElementClass());
 		Root<Treatment> from = criteriaUpdate.from(getElementClass());

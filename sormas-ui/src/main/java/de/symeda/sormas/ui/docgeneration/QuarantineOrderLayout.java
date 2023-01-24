@@ -103,8 +103,10 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 		pathogenTestSelector.setWidth(100F, Unit.PERCENTAGE);
 		pathogenTestSelector.setItemCaptionGenerator(e -> e.buildCaption());
 		pathogenTestSelector.setEnabled(false);
+		pathogenTestSelector.setItemCaptionGenerator(item -> item.buildCaption());
 
 		sampleSelector = new ComboBox<>(I18nProperties.getCaption(Captions.Sample));
+		sampleSelector.setItemCaptionGenerator(item -> item.buildCaption());
 		sampleSelector.setWidth(100F, Unit.PERCENTAGE);
 		sampleSelector.setItemCaptionGenerator(e -> e.getCaption());
 		sampleSelector.setItems(samples);

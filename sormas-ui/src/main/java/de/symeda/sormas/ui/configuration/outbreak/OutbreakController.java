@@ -42,7 +42,7 @@ public class OutbreakController {
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(
 			configurationComponent,
 			disease.toShortString() + " " + I18nProperties.getString(Strings.headingOutbreakIn) + " "
-				+ diseaseOutbreakInformation.getRegion().toString());
+				+ diseaseOutbreakInformation.getRegion().buildCaption());
 
 		configurationComponent.addCommitListener(new CommitListener() {
 

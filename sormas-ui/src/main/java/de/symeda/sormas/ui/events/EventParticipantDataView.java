@@ -186,6 +186,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 						new ImmunizationListComponent(
 							() -> new ImmunizationListCriteria.Builder(eventParticipant.getPerson().toReference()).withDisease(event.getDisease())
 								.build(),
+							null,
 							this::showUnsavedChangesPopup)),
 					IMMUNIZATION_LOC);
 			} else {
@@ -201,7 +202,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 						.eventParticipantReference(getReference())
 						.region(region)
 						.district(district);
-				}, this::showUnsavedChangesPopup, true)), VACCINATIONS_LOC);
+				}, null, this::showUnsavedChangesPopup, true)), VACCINATIONS_LOC);
 			}
 		}
 

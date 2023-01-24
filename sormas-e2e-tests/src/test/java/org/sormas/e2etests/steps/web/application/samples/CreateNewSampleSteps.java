@@ -375,6 +375,7 @@ public class CreateNewSampleSteps implements En {
     When(
         "^I validate the existence of two pathogen tests",
         () -> {
+          TimeUnit.SECONDS.sleep(2);
           softly.assertEquals(
               webDriverHelpers.getNumberOfElements(EDIT_PATHOGEN_TEST),
               2,

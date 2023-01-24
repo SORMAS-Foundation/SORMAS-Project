@@ -32,6 +32,7 @@ import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.activityascase.ActivityAsCase;
 import de.symeda.sormas.backend.activityascase.ActivityAsCaseService;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
@@ -112,7 +113,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target = DtoHelper.fillOrBuildEntity(source, target, Exposure::new, checkChangeDate);
 
 		if (targetWasNull) {
-			target.getLocation().setUuid(source.getLocation().getUuid());
+			FacadeHelper.setUuidIfDtoExists(target.getLocation(), source.getLocation());
 		}
 
 		target.setAnimalCondition(source.getAnimalCondition());
@@ -181,7 +182,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target = DtoHelper.fillOrBuildEntity(source, target, ActivityAsCase::new, checkChangeDate);
 
 		if (targetWasNull) {
-			target.getLocation().setUuid(source.getLocation().getUuid());
+			FacadeHelper.setUuidIfDtoExists(target.getLocation(), source.getLocation());
 		}
 
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));

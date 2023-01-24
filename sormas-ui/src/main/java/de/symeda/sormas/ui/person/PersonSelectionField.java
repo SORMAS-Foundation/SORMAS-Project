@@ -137,14 +137,14 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 
 		addLabelIfVisible(
 			personDetailsLayout2,
-			referencePerson.getAddress().getDistrict() != null ? referencePerson.getAddress().getDistrict().toString() : "",
+			referencePerson.getAddress().getDistrict() != null ? referencePerson.getAddress().getDistrict().buildCaption() : "",
 			LocationDto.I18N_PREFIX,
 			LocationDto.DISTRICT,
 			LocationDto.class);
 
 		addLabelIfVisible(
 			personDetailsLayout2,
-			referencePerson.getAddress().getCommunity() != null ? referencePerson.getAddress().getCommunity().toString() : "",
+			referencePerson.getAddress().getCommunity() != null ? referencePerson.getAddress().getCommunity().buildCaption() : "",
 			LocationDto.I18N_PREFIX,
 			LocationDto.COMMUNITY,
 			LocationDto.class);

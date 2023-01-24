@@ -302,7 +302,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 			return null;
 		}
 		StringBuilder hospitalName = new StringBuilder();
-		hospitalName.append(healthFacility.toString());
+		hospitalName.append(healthFacility.buildCaption());
 		if (caze.getHealthFacilityDetails() != null && caze.getHealthFacilityDetails().trim().length() > 0) {
 			hospitalName.append(String.format(HOSPITAL_NAME_DETAIL, caze.getHealthFacilityDetails()));
 		}

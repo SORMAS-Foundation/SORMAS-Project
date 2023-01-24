@@ -97,7 +97,11 @@ public class ShareRequestGrid extends FilteredGrid<ShareRequestIndexDto, ShareRe
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(I18nProperties.getUserLanguage())));
 		getColumn(ShareRequestIndexDto.OWNERSHIP_HANDED_OVER).setRenderer(new BooleanRenderer());
 
-		getColumn(ShareRequestIndexDto.COMMENT).setDescriptionGenerator((DescriptionGenerator<ShareRequestIndexDto>) item -> item.getComment());
+		getColumn(COLUMN_ACTIONS).setWidth(250);
+
+		Column<ShareRequestIndexDto, ?> commentColumn = getColumn(ShareRequestIndexDto.COMMENT);
+		commentColumn.setDescriptionGenerator((DescriptionGenerator<ShareRequestIndexDto>) ShareRequestIndexDto::getComment);
+		commentColumn.setWidth(300);
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(

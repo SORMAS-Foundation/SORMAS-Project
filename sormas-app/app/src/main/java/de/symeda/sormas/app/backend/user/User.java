@@ -15,6 +15,9 @@
 
 package de.symeda.sormas.app.backend.user;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import java.util.Arrays;
 import java.util.Set;
 
@@ -22,9 +25,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
@@ -266,7 +266,7 @@ public class User extends AbstractDomainObject {
 	}
 
 	@Override
-	public String toString() {
+	public String buildCaption() {
 
 		StringBuilder result = new StringBuilder();
 		result.append(getFirstName()).append(" ").append(getLastName().toUpperCase());

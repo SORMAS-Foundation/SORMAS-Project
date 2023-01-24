@@ -182,12 +182,10 @@ public class VisitService extends AdoServiceWithUserFilterAndJurisdiction<Visit>
 		}
 
 		return getList((cb, cq, from) -> {
-
 			Predicate filter = createRelevantDataFilter(cb, cq, from);
 			if (since != null) {
 				filter = CriteriaBuilderHelper.and(cb, filter, createChangeDateFilter(cb, from, since, lastSynchronizedUuid));
 			}
-
 			return filter;
 		}, batchSize);
 	}

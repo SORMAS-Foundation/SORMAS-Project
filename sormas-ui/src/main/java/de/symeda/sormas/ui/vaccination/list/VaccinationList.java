@@ -74,20 +74,26 @@ public class VaccinationList extends PaginationList<VaccinationListEntryDto> {
 		boolean isEditableAndHasEditRight = isEditAllowed && UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_EDIT);
 		for (VaccinationListEntryDto entryDto : getDisplayedEntries()) {
 			VaccinationListEntry listEntry = new VaccinationListEntry(entryDto, disease == null);
-			listEntry.addActionButton(listEntry.getVaccination().getUuid(), e -> actionCallback.accept(() -> {
-				VaccinationListEntryDto vaccination = listEntry.getVaccination();
-				ControllerProvider.getVaccinationController()
-					.edit(
-						FacadeProvider.getVaccinationFacade().getByUuid(listEntry.getVaccination().getUuid()),
-						listEntry.getVaccination().getDisease(),
-						UiFieldAccessCheckers.forDataAccessLevel(
-							UserProvider.getCurrent().getPseudonymizableDataAccessLevel(vaccination.isInJurisdiction()),
-							vaccination.isPseudonymized()),
-						true,
-						v -> SormasUI.refreshView(),
-						deleteCallback(),
-						isEditableAndHasEditRight);
-			}), isEditableAndHasEditRight);
+			boolean isActiveVaccination = entryDto.getUuid().equals(getActiveUuid());
+			if (isActiveVaccination) {
+				listEntry.setActive();
+			}
+			if (!isActiveVaccination) {
+				listEntry.addActionButton(listEntry.getVaccination().getUuid(), e -> actionCallback.accept(() -> {
+					VaccinationListEntryDto vaccination = listEntry.getVaccination();
+					ControllerProvider.getVaccinationController()
+						.edit(
+							FacadeProvider.getVaccinationFacade().getByUuid(listEntry.getVaccination().getUuid()),
+							listEntry.getVaccination().getDisease(),
+							UiFieldAccessCheckers.forDataAccessLevel(
+								UserProvider.getCurrent().getPseudonymizableDataAccessLevel(vaccination.isInJurisdiction()),
+								vaccination.isPseudonymized()),
+							true,
+							v -> SormasUI.refreshView(),
+							deleteCallback(),
+							isEditableAndHasEditRight);
+				}), isEditableAndHasEditRight);
+			}
 
 			listEntry.setEnabled(isEditAllowed && entryDto.isRelevant());
 			listLayout.addComponent(listEntry);

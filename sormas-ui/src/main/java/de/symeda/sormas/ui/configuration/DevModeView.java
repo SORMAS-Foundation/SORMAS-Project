@@ -100,6 +100,7 @@ import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.visit.VisitDto;
+import de.symeda.sormas.api.visit.VisitLogic;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.configuration.generate.config.CaseGenerationConfig;
@@ -319,12 +320,14 @@ public class DevModeView extends AbstractConfigurationView {
 
 		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveByServerCountry();
 		ComboBox<RegionReferenceDto> regionField = new ComboBox<RegionReferenceDto>(null, regions);
+		regionField.setItemCaptionGenerator(item -> item.buildCaption());
 		regionField.setCaption(I18nProperties.getCaption(Captions.devModeCaseRegion));
 		caseGeneratorConfigBinder.bind(regionField, CaseGenerationConfig::getRegion, CaseGenerationConfig::setRegion);
 		caseOptionsLayout.addComponent(regionField);
 
 		ComboBox<DistrictReferenceDto> districtField = new ComboBox<DistrictReferenceDto>();
 		districtField.setCaption(I18nProperties.getCaption(Captions.devModeCaseDistrict));
+		districtField.setItemCaptionGenerator(item -> item.buildCaption());
 		caseGeneratorConfigBinder.bind(districtField, CaseGenerationConfig::getDistrict, CaseGenerationConfig::setDistrict);
 		caseOptionsLayout.addComponent(districtField);
 
@@ -391,10 +394,12 @@ public class DevModeView extends AbstractConfigurationView {
 		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveByServerCountry();
 		ComboBox<RegionReferenceDto> regionField = new ComboBox<RegionReferenceDto>(null, regions);
 		regionField.setCaption(I18nProperties.getCaption(Captions.devModeContactRegion));
+		regionField.setItemCaptionGenerator(item -> item.buildCaption());
 		contactGeneratorConfigBinder.bind(regionField, ContactGenerationConfig::getRegion, ContactGenerationConfig::setRegion);
 		contactOptionsFirstLineLayout.addComponent(regionField);
 
 		ComboBox<DistrictReferenceDto> districtField = new ComboBox<DistrictReferenceDto>();
+		districtField.setItemCaptionGenerator(item -> item.buildCaption());
 		districtField.setCaption(I18nProperties.getCaption(Captions.devModeContactDistrict));
 		contactGeneratorConfigBinder.bind(districtField, ContactGenerationConfig::getDistrict, ContactGenerationConfig::setDistrict);
 		contactOptionsFirstLineLayout.addComponent(districtField);
@@ -484,12 +489,14 @@ public class DevModeView extends AbstractConfigurationView {
 
 		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveAsReference();
 		ComboBox<RegionReferenceDto> regionField = new ComboBox<RegionReferenceDto>(null, regions);
+		regionField.setItemCaptionGenerator(item -> item.buildCaption());
 		regionField.setCaption(I18nProperties.getCaption(Captions.devModeEventRegion));
 		eventGeneratorConfigBinder.bind(regionField, EventGenerationConfig::getRegion, EventGenerationConfig::setRegion);
 		eventOptionsFirstLineLayout.addComponent(regionField);
 
 		ComboBox<DistrictReferenceDto> districtField = new ComboBox<DistrictReferenceDto>();
 		districtField.setCaption(I18nProperties.getCaption(Captions.devModeEventDistrict));
+		districtField.setItemCaptionGenerator(item -> item.buildCaption());
 		eventGeneratorConfigBinder.bind(districtField, EventGenerationConfig::getDistrict, EventGenerationConfig::setDistrict);
 		eventOptionsFirstLineLayout.addComponent(districtField);
 
@@ -598,11 +605,13 @@ public class DevModeView extends AbstractConfigurationView {
 		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveByServerCountry();
 		ComboBox<RegionReferenceDto> regionField = new ComboBox<>(null, regions);
 		regionField.setCaption(I18nProperties.getCaption(Captions.devModeSampleRegion));
+		regionField.setItemCaptionGenerator(item -> item.buildCaption());
 		sampleGeneratorConfigBinder.bind(regionField, SampleGenerationConfig::getRegion, SampleGenerationConfig::setRegion);
 		sampleOptionsFirstLineLayout.addComponent(regionField);
 
 		ComboBox<DistrictReferenceDto> districtField = new ComboBox<>();
 		districtField.setCaption(I18nProperties.getCaption(Captions.devModeSampleDistrict));
+		districtField.setItemCaptionGenerator(item -> item.buildCaption());
 		sampleGeneratorConfigBinder.bind(districtField, SampleGenerationConfig::getDistrict, SampleGenerationConfig::setDistrict);
 		sampleOptionsFirstLineLayout.addComponent(districtField);
 
@@ -630,6 +639,7 @@ public class DevModeView extends AbstractConfigurationView {
 		sampleOptionsSecondLineLayout.addComponent(sampleMaterial);
 
 		ComboBox<FacilityReferenceDto> laboratory = new ComboBox(null, FacadeProvider.getFacilityFacade().getAllActiveLaboratories(true));
+		laboratory.setItemCaptionGenerator(item -> item.buildCaption());
 		laboratory.setCaption(I18nProperties.getCaption(Captions.devModeSampleLaboratory));
 		sampleGeneratorConfigBinder.bind(laboratory, SampleGenerationConfig::getLaboratory, SampleGenerationConfig::setLaboratory);
 		laboratory.setRequiredIndicatorVisible(true);
@@ -948,7 +958,7 @@ public class DevModeView extends AbstractConfigurationView {
 
 		// just load some health facilities. Alphabetical order is not random, but the best we can get
 		List<FacilityIndexDto> healthFacilities = FacadeProvider.getFacilityFacade()
-				.getIndexList(facilityCriteria, 0, Math.min(config.getEntityCountAsNumber() * 2, 300), Arrays.asList(new SortProperty(FacilityDto.NAME)));
+			.getIndexList(facilityCriteria, 0, Math.min(config.getEntityCountAsNumber() * 2, 300), Arrays.asList(new SortProperty(FacilityDto.NAME)));
 
 		// Filter list, so that only health facilities meant for accomodation are selected
 		healthFacilities.removeIf(el -> (!el.getType().isAccommodation()));
@@ -1231,6 +1241,7 @@ public class DevModeView extends AbstractConfigurationView {
 			throw new ValidationRuntimeException(errorMessage.toString());
 		}
 	}
+
 	private void generateContacts(ContactGenerationConfig contactGenerationConfig) {
 		initializeRandomGenerator();
 
@@ -1270,15 +1281,15 @@ public class DevModeView extends AbstractConfigurationView {
 
 		for (int i = 0; i < contactGenerationConfig.getEntityCountAsNumber(); i++) {
 			fieldVisibilityCheckers =
-					FieldVisibilityCheckers.withDisease(disease).andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale());
+				FieldVisibilityCheckers.withDisease(disease).andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale());
 
 			LocalDateTime referenceDateTime = getReferenceDateTime(
-					i,
-					contactGenerationConfig.getEntityCountAsNumber(),
-					baseOffset,
-					disease,
-					contactGenerationConfig.getStartDate(),
-					daysBetween);
+				i,
+				contactGenerationConfig.getEntityCountAsNumber(),
+				baseOffset,
+				disease,
+				contactGenerationConfig.getStartDate(),
+				daysBetween);
 
 			PersonDto person;
 			if (contactGenerationConfig.isCreateMultipleContactsPerPerson() && !personUuids.isEmpty() && randomPercent(25)) {
@@ -1346,8 +1357,8 @@ public class DevModeView extends AbstractConfigurationView {
 
 			// Create visits
 			if (contactGenerationConfig.isCreateWithVisits()
-					&& FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(contact.getDisease())
-					&& FollowUpStatus.NO_FOLLOW_UP != contact.getFollowUpStatus()) {
+				&& FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(contact.getDisease())
+				&& FollowUpStatus.NO_FOLLOW_UP != contact.getFollowUpStatus()) {
 				Date latestFollowUpDate = contact.getFollowUpUntil().before(new Date()) ? contact.getFollowUpUntil() : new Date();
 				Date contactStartDate = ContactLogic.getStartDate(contact);
 				int followUpCount = random().nextInt(DateHelper.getDaysBetween(contactStartDate, latestFollowUpDate) + 1);
@@ -1356,7 +1367,7 @@ public class DevModeView extends AbstractConfigurationView {
 					List<LocalDateTime> followUpDates = new ArrayList<>();
 					for (int day : followUpDays) {
 						followUpDates
-								.add(UtilDate.toLocalDate(contactStartDate).atStartOfDay().plusDays(day - 1).plusMinutes(random().nextInt(60 * 24 + 1)));
+							.add(UtilDate.toLocalDate(contactStartDate).atStartOfDay().plusDays(day - 1).plusMinutes(random().nextInt(60 * 24 + 1)));
 					}
 
 					for (LocalDateTime date : followUpDates) {
@@ -1368,7 +1379,11 @@ public class DevModeView extends AbstractConfigurationView {
 						if (visit.getVisitStatus() == null) {
 							visit.setVisitStatus(VisitStatus.COOPERATIVE);
 						}
-						FacadeProvider.getVisitFacade().saveVisit(visit);
+						FacadeProvider.getVisitFacade()
+							.saveVisit(
+								visit,
+								VisitLogic.getAllowedStartDate(ContactLogic.getStartDate(contact)),
+								VisitLogic.getAllowedEndDate(ContactLogic.getEndDate(contact)));
 					}
 				}
 			}
@@ -1377,10 +1392,10 @@ public class DevModeView extends AbstractConfigurationView {
 		dt = System.nanoTime() - dt;
 		long perContact = dt / contactGenerationConfig.getEntityCountAsNumber();
 		String msg = String.format(
-				"Generating %,d contacts took %,d  ms (%,d ms per contact)",
-				contactGenerationConfig.getEntityCountAsNumber(),
-				dt / 1_000_000,
-				perContact / 1_000_000);
+			"Generating %,d contacts took %,d  ms (%,d ms per contact)",
+			contactGenerationConfig.getEntityCountAsNumber(),
+			dt / 1_000_000,
+			perContact / 1_000_000);
 		logger.info(msg);
 		Notification.show("", msg, Notification.Type.TRAY_NOTIFICATION);
 	}
@@ -1415,6 +1430,7 @@ public class DevModeView extends AbstractConfigurationView {
 			throw new ValidationRuntimeException(errorMessage.toString());
 		}
 	}
+
 	private void generateEvents(EventGenerationConfig eventGenerationConfig) {
 		initializeRandomGenerator();
 
@@ -1437,8 +1453,8 @@ public class DevModeView extends AbstractConfigurationView {
 		FacilityCriteria facilityCriteria = new FacilityCriteria();
 		facilityCriteria.region(eventGenerationConfig.getRegion());
 		facilityCriteria.district(eventGenerationConfig.getDistrict());
-		List<FacilityIndexDto> healthFacilities = FacadeProvider.getFacilityFacade()
-				.getIndexList(facilityCriteria, 0, (int) (maxContactsPerParticipant * percentageOfCases / 100), null);
+		List<FacilityIndexDto> healthFacilities =
+			FacadeProvider.getFacilityFacade().getIndexList(facilityCriteria, 0, (int) (maxContactsPerParticipant * percentageOfCases / 100), null);
 
 		// Filter list, so that only health facilities meant for accomodation are selected
 		healthFacilities.removeIf(el -> (!el.getType().isAccommodation()));
@@ -1456,13 +1472,25 @@ public class DevModeView extends AbstractConfigurationView {
 				if (event.getDisease() == Disease.OTHER) {
 					event.setDiseaseDetails("RD " + (random().nextInt(20) + 1));
 				}
-				referenceDateTime = getReferenceDateTime(i, eventGenerationConfig.getEntityCountAsNumber(), baseOffset, disease, eventGenerationConfig.getStartDate(), daysBetween);
+				referenceDateTime = getReferenceDateTime(
+					i,
+					eventGenerationConfig.getEntityCountAsNumber(),
+					baseOffset,
+					disease,
+					eventGenerationConfig.getStartDate(),
+					daysBetween);
 				fieldVisibilityCheckers =
-						FieldVisibilityCheckers.withDisease(disease).andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale());
+					FieldVisibilityCheckers.withDisease(disease).andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale());
 			} else {
-				referenceDateTime = getReferenceDateTime(i, eventGenerationConfig.getEntityCountAsNumber(), baseOffset, Disease.OTHER, eventGenerationConfig.getStartDate(), daysBetween);
+				referenceDateTime = getReferenceDateTime(
+					i,
+					eventGenerationConfig.getEntityCountAsNumber(),
+					baseOffset,
+					Disease.OTHER,
+					eventGenerationConfig.getStartDate(),
+					daysBetween);
 				fieldVisibilityCheckers =
-						FieldVisibilityCheckers.withDisease(Disease.OTHER).andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale());
+					FieldVisibilityCheckers.withDisease(Disease.OTHER).andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale());
 			}
 
 			// title

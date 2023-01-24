@@ -423,7 +423,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		if (FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()) {
 			CheckBox dontShareCheckbox = addField(CaseDataDto.DONT_SHARE_WITH_REPORTING_TOOL, CheckBox.class);
 			CaseFormHelper.addDontShareWithReportingTool(getContent(), () -> dontShareCheckbox, DONT_SHARE_WARNING_LOC);
-			if(FacadeProvider.getExternalShareInfoFacade().isSharedCase(this.caseUuid)){
+			if (FacadeProvider.getExternalShareInfoFacade().isSharedCase(this.caseUuid)) {
 				dontShareCheckbox.setEnabled(false);
 				dontShareCheckbox.setDescription(I18nProperties.getString(Strings.infoDontShareCheckboxAlreadyShared));
 			}
@@ -1311,6 +1311,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					setVisible(getValue().getPointOfEntry().isOtherPointOfEntry(), CaseDataDto.POINT_OF_ENTRY_DETAILS);
 					btnReferFromPointOfEntry
 						.setVisible(UserProvider.getCurrent().hasUserRight(UserRight.CASE_REFER_FROM_POE) && getValue().getHealthFacility() == null);
+				} else if (!isEditableAllowed(CaseDataDto.POINT_OF_ENTRY)) {
+					setVisible(false, CaseDataDto.POINT_OF_ENTRY_DETAILS);
+					btnReferFromPointOfEntry.setVisible(false);
 				}
 
 				if (getValue().getHealthFacility() == null) {

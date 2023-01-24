@@ -59,7 +59,7 @@ public class CampaignFormDataView extends AbstractCampaignDataView {
 				() -> {
 					SormasUI.refreshView();
 					Notification.show(
-						String.format(I18nProperties.getString(Strings.messageCampaignFormSaved), campaignFormData.getCampaignFormMeta().toString()),
+						String.format(I18nProperties.getString(Strings.messageCampaignFormSaved), campaignFormData.getCampaignFormMeta().buildCaption()),
 						TRAY_NOTIFICATION);
 				},
 				null);
@@ -71,6 +71,6 @@ public class CampaignFormDataView extends AbstractCampaignDataView {
 
 		container.addComponent(editComponent);
 
-		getViewTitleLabel().setValue(campaignFormData.getCampaignFormMeta().toString());
+		getViewTitleLabel().setValue(campaignFormData.getCampaignFormMeta().buildCaption());
 	}
 }

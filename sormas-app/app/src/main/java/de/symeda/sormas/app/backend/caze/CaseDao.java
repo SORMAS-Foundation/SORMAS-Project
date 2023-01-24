@@ -407,7 +407,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
 			Context context = DatabaseHelper.getContext();
 
 			StringBuilder content = new StringBuilder();
-			content.append("<b>").append(mergedCase.toString()).append("</b><br/>");
+			content.append("<b>").append(mergedCase.buildCaption()).append("</b><br/>");
 
 			Intent notificationIntent = new Intent(context, CaseReadActivity.class);
 			notificationIntent.putExtras(CaseReadActivity.buildBundle(mergedCase.getUuid(), false).get());

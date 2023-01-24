@@ -200,7 +200,7 @@ public class CampaignFormData extends PseudonymizableAdo {
     }
 
     @Override
-    public String toString() {
+    public String buildCaption() {
         return DataHelper.toStringNullable(getCampaign()) + " - "
                 + DataHelper.toStringNullable(getCampaignFormMeta())
                 + " - " + DataHelper.toStringNullable((getCommunity()))

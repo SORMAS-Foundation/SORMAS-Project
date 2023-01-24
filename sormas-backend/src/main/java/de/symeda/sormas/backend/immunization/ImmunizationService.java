@@ -199,10 +199,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 	}
 
 	@Override
-	protected <T extends ChangeDateBuilder<T>> T addChangeDates(
-		T builder,
-		ImmunizationJoins joins,
-		boolean includeExtendedChangeDateFilters) {
+	protected <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, ImmunizationJoins joins, boolean includeExtendedChangeDateFilters) {
 
 		From<?, Immunization> immunizationFrom = joins.getRoot();
 
@@ -626,5 +623,10 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 					false),
 				cb.exists(sharesQuery));
 		}
+	}
+
+	@Override
+	protected boolean hasLimitedChangeDateFilterImplementation() {
+		return true;
 	}
 }

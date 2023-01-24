@@ -24,7 +24,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
-import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -32,8 +31,6 @@ import de.symeda.sormas.api.sormastosormas.entities.externalmessage.SormasToSorm
 import de.symeda.sormas.api.sormastosormas.entities.sample.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.PreviewNotImplementedDto;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.backend.externalmessage.ExternalMessage;
-import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
 import de.symeda.sormas.backend.sample.Sample;
@@ -54,8 +51,6 @@ public class SampleShareDataBuilder
 	private PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal pathogenTestFacade;
 	@EJB
 	private AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal additionalTestFacade;
-	@EJB
-	private ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal externalMessageFacade;
 	@EJB
 	private ShareDataBuilderHelper dataBuilderHelper;
 
@@ -84,16 +79,11 @@ public class SampleShareDataBuilder
 
 		List<SormasToSormasExternalMessageDto> externalMessages = Collections.emptyList();
 		if (ownerShipHandedOver) {
-			externalMessages = sample.getSampleReports().stream().map(r -> {
-				ExternalMessage m = r.getLabMessage();
-				ExternalMessageDto externalMessageDto = externalMessageFacade.toDto(m);
-				externalMessageDto.setAssignee(null);
-				// Cleanup surveillance report link until sending reports are implemented by #10247
-				// TODO - remove this lie when implementing #10247
-				externalMessageDto.setSurveillanceReport(null);
-
-				return new SormasToSormasExternalMessageDto(externalMessageDto);
-			}).collect(Collectors.toList());
+			externalMessages =
+				sample.getSampleReports()
+					.stream()
+					.map(s -> dataBuilderHelper.getExternalMessageDto(s.getLabMessage(), requestInfo))
+					.collect(Collectors.toList());
 		}
 
 		return new SormasToSormasSampleDto(sampleDto, pathogenTests, additionalTests, externalMessages);

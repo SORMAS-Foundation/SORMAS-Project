@@ -144,6 +144,7 @@ public class PersonsView extends AbstractView {
 		} else {
 			criteria = new PersonCriteria();
 			grid = null;
+			associationFilterBar.setVisible(false);
 			noAccessLabel =
 				new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoNoAccessToPersonEntities), ContentMode.HTML);
 			gridLayout.addComponent(noAccessLabel);
@@ -261,7 +262,7 @@ public class PersonsView extends AbstractView {
 				activeAssociationButton = b;
 			}
 		});
-		if (activeAssociationButton != null) {
+		if (activeAssociationButton != null && grid != null) {
 			CssStyles.removeStyles(activeAssociationButton, CssStyles.BUTTON_FILTER_LIGHT);
 			activeAssociationButton.setCaption(
 				associationButtons.get(activeAssociationButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getDataSize())));

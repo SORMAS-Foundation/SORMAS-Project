@@ -160,7 +160,7 @@ public class CaseDataView extends AbstractCaseView {
 				layout.addSidePanelComponent(new SideComponentLayout(new ImmunizationListComponent(() -> {
 					CaseDataDto refreshedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
 					return new ImmunizationListCriteria.Builder(refreshedCase.getPerson()).withDisease(refreshedCase.getDisease()).build();
-				}, this::showUnsavedChangesPopup, isEditAllowed)), IMMUNIZATION_LOC);
+				}, null, this::showUnsavedChangesPopup, isEditAllowed)), IMMUNIZATION_LOC);
 			} else {
 				layout.addSidePanelComponent(new SideComponentLayout(new VaccinationListComponent(() -> {
 					CaseDataDto refreshedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
@@ -170,7 +170,7 @@ public class CaseDataView extends AbstractCaseView {
 						.caseReference(getCaseRef())
 						.region(refreshedCase.getResponsibleRegion())
 						.district(refreshedCase.getResponsibleDistrict());
-				}, this::showUnsavedChangesPopup, isEditAllowed)), VACCINATIONS_LOC);
+				}, null, this::showUnsavedChangesPopup, isEditAllowed)), VACCINATIONS_LOC);
 			}
 		}
 

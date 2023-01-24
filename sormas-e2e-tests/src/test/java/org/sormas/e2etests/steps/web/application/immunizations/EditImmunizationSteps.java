@@ -22,7 +22,6 @@ import static org.sormas.e2etests.pages.application.immunizations.EditImmunizati
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.MEANS_OF_IMMUNIZATIONS_INPUT;
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.NEW_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.NUMBER_OF_DOSES;
-import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.POPUP_MESSAGE;
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.RESPONSIBLE_COMMUNITY_INPUT;
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.RESPONSIBLE_DISTRICT_INPUT;
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.RESPONSIBLE_REGION_INPUT;
@@ -111,7 +110,7 @@ public class EditImmunizationSteps implements En {
           assertHelpers.assertWithPoll20Second(
               () ->
                   Assert.assertEquals(
-                      webDriverHelpers.getTextFromWebElement(POPUP_MESSAGE),
+                      webDriverHelpers.getTextFromWebElement(VACCINE_DOSE_POPUP),
                       "Vaccine dose should be a number between 1 and 10",
                       "Exceeded number of doses message is incorrect"));
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);

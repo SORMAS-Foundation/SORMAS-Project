@@ -23,6 +23,7 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.action.ActionPriority;
 import de.symeda.sormas.api.action.ActionStatus;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
@@ -79,6 +80,8 @@ public class EventActionIndexDto implements Serializable {
 	private ActionPriority actionPriority;
 	private UserReferenceDto actionLastModifiedBy;
 	private UserReferenceDto actionCreatorUser;
+	private DeletionReason deletionReason;
+	private String otherDeletionReason;
 
 	public EventActionIndexDto(
 		String eventUuid,
@@ -103,7 +106,9 @@ public class EventActionIndexDto implements Serializable {
 		ActionStatus actionStatus,
 		ActionPriority actionPriority,
 		UserReferenceDto actionLastModifiedBy,
-		UserReferenceDto actionCreatorUser) {
+		UserReferenceDto actionCreatorUser,
+		DeletionReason deletionReason,
+		String otherDeletionReason) {
 
 		this.eventUuid = eventUuid;
 		this.eventTitle = eventTitle;
@@ -128,6 +133,8 @@ public class EventActionIndexDto implements Serializable {
 		this.actionPriority = actionPriority;
 		this.actionLastModifiedBy = actionLastModifiedBy;
 		this.actionCreatorUser = actionCreatorUser;
+		this.deletionReason = deletionReason;
+		this.otherDeletionReason = otherDeletionReason;
 	}
 
 	public String getEventUuid() {
@@ -312,5 +319,21 @@ public class EventActionIndexDto implements Serializable {
 
 	public void setEventManagementStatus(EventManagementStatus eventManagementStatus) {
 		this.eventManagementStatus = eventManagementStatus;
+	}
+
+	public DeletionReason getDeletionReason() {
+		return deletionReason;
+	}
+
+	public void setDeletionReason(DeletionReason deletionReason) {
+		this.deletionReason = deletionReason;
+	}
+
+	public String getOtherDeletionReason() {
+		return otherDeletionReason;
+	}
+
+	public void setOtherDeletionReason(String otherDeletionReason) {
+		this.otherDeletionReason = otherDeletionReason;
 	}
 }

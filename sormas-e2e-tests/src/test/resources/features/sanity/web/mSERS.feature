@@ -62,6 +62,12 @@ Feature: mSERS functionalities
   Scenario:Test Add a view to list aggregate report data and to highlight duplicates
     Given I log in as a Surveillance Officer
     When I click on the mSERS button from navbar
+    And I navigate to Report data tab
+    And I set Epi Year from filter to "2004" in mSers directory page
+    Then I set Epi week from filter to "Wk 1-2004 (12/29 - 1/4)" in mSers directory page
+    And I click on the APPLY FILTERS button
+    And I check aggregate reports and delete them if they are listed
+    When I click on the mSERS button from navbar
     When I click on the NEW AGGREGATE REPORT button
     Then I click on SPECIFY Radiobutton in Create Aggregated Report form
     And I fill a new aggregate report with specific data for duplicates

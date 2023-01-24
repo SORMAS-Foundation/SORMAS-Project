@@ -65,11 +65,12 @@ public class UserRoleController {
 			if (!createForm.getFieldGroup().isModified()) {
 				UserRoleDto dto = createForm.getValue();
 				FacadeProvider.getUserRoleFacade().saveUserRole(dto);
-
-				Notification.show(
-					I18nProperties.getString(Strings.messageUserRoleSaved),
-					I18nProperties.getString(Strings.messageUserRoleHasNoRights),
-					Notification.Type.WARNING_MESSAGE);
+				if (dto.getUserRights().size() == 0) {
+					Notification.show(
+						I18nProperties.getString(Strings.messageUserRoleSaved),
+						I18nProperties.getString(Strings.messageUserRoleHasNoRights),
+						Notification.Type.WARNING_MESSAGE);
+				}
 				editData(dto.getUuid());
 			}
 		});

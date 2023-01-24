@@ -8,6 +8,7 @@ import com.vaadin.ui.renderers.TextRenderer;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationIndexDto;
@@ -28,6 +29,18 @@ public class ImmunizationGrid extends FilteredGrid<ImmunizationIndexDto, Immuniz
 		setSizeFull();
 		setLazyDataProvider();
 		setCriteria(criteria);
+
+		Column<ImmunizationIndexDto, String> deleteColumn = addColumn(entry -> {
+			if (entry.getDeletionReason() != null) {
+				return entry.getDeletionReason() + (entry.getOtherDeletionReason() != null ? ": " + entry.getOtherDeletionReason() : "");
+			} else {
+				return "-";
+			}
+		});
+		deleteColumn.setId(DELETE_REASON_COLUMN);
+		deleteColumn.setSortable(false);
+		deleteColumn.setCaption(I18nProperties.getCaption(Captions.deletionReason));
+
 		initColumns();
 		addItemClickListener(new ShowDetailsListener<>(ImmunizationIndexDto.PERSON_UUID, e -> {
 			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.PERSON_MANAGEMENT)) {
@@ -62,7 +75,8 @@ public class ImmunizationGrid extends FilteredGrid<ImmunizationIndexDto, Immuniz
 			ImmunizationIndexDto.START_DATE,
 			ImmunizationIndexDto.END_DATE,
 			ImmunizationIndexDto.LAST_VACCINE_TYPE,
-			ImmunizationIndexDto.RECOVERY_DATE);
+			ImmunizationIndexDto.RECOVERY_DATE,
+			DELETE_REASON_COLUMN);
 
 		((Column<ImmunizationIndexDto, String>) getColumn(ImmunizationIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<ImmunizationIndexDto, String>) getColumn(ImmunizationIndexDto.PERSON_UUID)).setRenderer(new UuidRenderer());

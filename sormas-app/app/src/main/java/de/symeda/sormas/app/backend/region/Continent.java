@@ -46,7 +46,7 @@ public class Continent extends InfrastructureAdo {
     }
 
     @Override
-    public String toString() {
+    public String buildCaption() {
         return getDefaultName();
     }
 
