@@ -337,7 +337,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 					String formuuid = FacadeProvider.getCampaignFormDataFacade().getByClusterDropDown(community,
 							campaignForm, campaign);
 
-					if (!formuuid.equals("nul")) {
+					if (!formuuid.equals("null")) {
 						// Page.getCurrent().get
 						ControllerProvider.getCampaignController().navigateToFormDataView(formuuid);
 					} else {

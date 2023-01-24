@@ -955,9 +955,11 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 				seriesDataQuery.setParameter("campaignFormDataId", series.getFieldId());
 			}
 			
+			System.out.println("seriesDataQuery = " +selectBuilder.toString() + " FROM " + CampaignFormData.TABLE_NAME + joinBuilder + whereBuilder + groupByBuilder);
+
+			
 			@SuppressWarnings("unchecked")
 			List<Object[]> resultList = seriesDataQuery.getResultList(); 
-			System.out.println("seriesDataQuery = " +selectBuilder.toString() + " FROM " + CampaignFormData.TABLE_NAME + joinBuilder + whereBuilder + groupByBuilder);
 			
 			
 

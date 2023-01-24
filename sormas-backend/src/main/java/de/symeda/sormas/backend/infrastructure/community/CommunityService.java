@@ -134,6 +134,7 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 			Predicate countryFilter = cb.equal(countryUuid, country.getUuid());
 
 			if (country.equals(serverCountry)) {
+				
 				filter = CriteriaBuilderHelper.and(cb, filter,
 						CriteriaBuilderHelper.or(cb, countryFilter, countryUuid.isNull()));
 			} else {
@@ -141,7 +142,7 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 			}
 		}
 
-		System.out.println("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz ");
+		System.out.println("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz "+criteria.getArea());
 
 		AreaReferenceDto aread = criteria.getArea();
 

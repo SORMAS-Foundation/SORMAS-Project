@@ -27,6 +27,7 @@ import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.infrastructure.GeoLocationFacade;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.report.CommunityUserReportModelDto;
+import de.symeda.sormas.api.user.FormAccess;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
@@ -40,7 +41,7 @@ public interface CommunityFacade extends GeoLocationFacade<CommunityDto, Communi
 
 	CommunityReferenceDto getCommunityReferenceById(long id);
 	
-	List<CommunityUserReportModelDto> getAllActiveCommunitytoRerence(CommunityCriteriaNew criteria, Integer first, Integer max, List<SortProperty> sortProperties, boolean isCounter);
+	List<CommunityUserReportModelDto> getAllActiveCommunitytoRerence(CommunityCriteriaNew criteria, Integer first, Integer max, List<SortProperty> sortProperties, FormAccess formacc);
 
 	// todo handle parent infra generically
 	List<CommunityReferenceDto> getByName(String name, DistrictReferenceDto districtRef, boolean includeArchivedEntities);
@@ -53,5 +54,5 @@ public interface CommunityFacade extends GeoLocationFacade<CommunityDto, Communi
 
 	Map<String, String> getDistrictUuidsForCommunities(List<CommunityReferenceDto> communities);
 
-	long countReportGrid(CommunityCriteriaNew orElse);
+	long countReportGrid(CommunityCriteriaNew criteria, FormAccess formacc);
 }
