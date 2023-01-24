@@ -215,35 +215,40 @@ public class SormasToSormasController {
 						request,
 						Strings.messageSormasToSormasSimilarCaseFound,
 						Captions.actionOkAndGoToMerge,
-						() -> ControllerProvider.getCaseController().navigateToMergeCasesView());
+						() -> ControllerProvider.getCaseController().navigateToMergeCasesView(),
+						callback);
 					break;
 				case CASE_CONVERTED:
 					confirmDuplicateFound(
 						request,
 						Strings.messageSormasToSormasSimilarConvertedCaseFound,
 						Captions.actionOkAndGoToMerge,
-						() -> ControllerProvider.getCaseController().navigateToMergeCasesView());
+						() -> ControllerProvider.getCaseController().navigateToMergeCasesView(),
+						callback);
 					break;
 				case CONTACT_TO_CASE:
 					confirmDuplicateFound(
 						request,
 						Strings.messageSormasToSormasSimilarContactToCaseFound,
 						Captions.actionOkAndGoToContactDirectory,
-						() -> ControllerProvider.getContactController().navigateToIndex());
+						() -> ControllerProvider.getContactController().navigateToIndex(),
+						callback);
 					break;
 				case CONTACT:
 					confirmDuplicateFound(
 						request,
 						Strings.messageSormasToSormasSimilarContactFound,
 						Captions.actionOkAndGoToMerge,
-						() -> ControllerProvider.getContactController().navigateToMergeContactsView());
+						() -> ControllerProvider.getContactController().navigateToMergeContactsView(),
+						callback);
 					break;
 				case CONTACT_CONVERTED:
 					confirmDuplicateFound(
 						request,
 						Strings.messageSormasToSormasSimilarConvertedContactFound,
 						Captions.actionOkAndGoToMerge,
-						() -> ControllerProvider.getContactController().navigateToMergeContactsView());
+						() -> ControllerProvider.getContactController().navigateToMergeContactsView(),
+						callback);
 					break;
 				case CASE_TO_CONTACT:
 					boolean isMultipleContacts = shareRequest.getContacts().size() > 1;
@@ -257,17 +262,23 @@ public class SormasToSormasController {
 							} else {
 								ControllerProvider.getContactController().navigateToData(shareRequest.getContacts().get(0).getUuid());
 							}
-						});
+						},
+						callback);
 					break;
 				case PERSON_ONLY:
 					confirmDuplicateFound(
 						request,
 						Strings.messageSormasToSormasSimilarPersonFound,
 						Captions.actionOkAndGoToPersonDirectory,
-						() -> ControllerProvider.getPersonController().navigateToPersons());
+						() -> ControllerProvider.getPersonController().navigateToPersons(),
+						callback);
 					break;
+
+				default:
+					callback.run();
 				}
-			}, callback);
+			}, () -> {
+			});
 		}
 	}
 
@@ -275,7 +286,8 @@ public class SormasToSormasController {
 		ShareRequestIndexDto request,
 		String messageI18nProperty,
 		String thirdActionI18nProperty,
-		Runnable navigateToMergeView) {
+		Runnable navigateToMergeView,
+		Runnable callback) {
 		VaadinUiUtil.showThreeOptionsPopup(
 			I18nProperties.getString(Strings.headingSormasToSormasDuplicateDetection),
 			new Label(I18nProperties.getString(messageI18nProperty), ContentMode.HTML),
@@ -291,8 +303,7 @@ public class SormasToSormasController {
 						if (response == VaadinUiUtil.PopupOption.OPTION3) {
 							navigateToMergeView.run();
 						}
-					}, () -> {
-					});
+					}, callback);
 				}
 			});
 	}
