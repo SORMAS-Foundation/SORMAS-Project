@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -121,13 +122,7 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorForbidden));
 		}
 
-		if (options.isWithSamples()) {
-			List<Sample> samples = sampleService.getByCaseUuids(entityUuids);
-			if (samples != null && samples.stream().anyMatch(s -> s.getAssociatedContact() != null)) {
 
-				throw SormasToSormasException.fromStringProperty(Strings.messageSormasToSormasSampleHasAssociatedContact);
-			}
-		}
 
 		super.share(entityUuids, options);
 	}
@@ -146,6 +141,7 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 	protected void validateEntitiesBeforeShareInner(
 		Case caze,
 		boolean handOverOwnership,
+		boolean isWithSamples,
 		String targetOrganizationId,
 		List<ValidationErrors> validationErrors) {
 		if (handOverOwnership && caze.getPerson().isEnrolledInExternalJournal()) {
@@ -154,6 +150,17 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 					buildCaseValidationGroupName(caze),
 					ValidationErrors
 						.create(new ValidationErrorGroup(Captions.CaseData), new ValidationErrorMessage(Validations.sormasToSormasPersonEnrolled))));
+		}
+
+		if (isWithSamples) {
+			Set<Sample> samples = caze.getSamples();
+			if (samples != null && samples.stream().anyMatch(s -> s.getAssociatedContact() != null)) {
+				validationErrors.add(
+						new ValidationErrors(
+								buildCaseValidationGroupName(caze),
+								ValidationErrors
+										.create(new ValidationErrorGroup(Captions.CaseData), new ValidationErrorMessage(Validations.sormasToSormasCaseSampleHasAssociatedContact))));
+			}
 		}
 
 	}
