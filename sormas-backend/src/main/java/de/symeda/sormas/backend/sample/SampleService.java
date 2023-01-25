@@ -181,7 +181,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		SampleJoins joins = sampleQueryContext.getJoins();
 
 		final Join<Sample, Case> caze = joins.getCaze();
-		final Join<Case, District> caseDistrict = joins.getCaseResponsibleDistrict();
+		Join<Case, District> caseDistrict = caze.get(Case.DISTRICT) != null ? joins.getCaseDistrict() : joins.getCaseResponsibleDistrict();
 
 		final Join<Sample, Contact> contact = joins.getContact();
 		final Join<Contact, District> contactDistrict = joins.getContactDistrict();
