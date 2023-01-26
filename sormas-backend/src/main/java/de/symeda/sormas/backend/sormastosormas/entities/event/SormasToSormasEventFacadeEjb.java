@@ -124,6 +124,7 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 	protected void validateEntitiesBeforeShareInner(
 		Event event,
 		boolean handOverOwnership,
+		boolean isWithSamples,
 		String targetOrganizationId,
 		List<ValidationErrors> validationErrors) {
 		// nothing to do besides the standard validation in super
