@@ -36,6 +36,13 @@ public class MSersDirectoryPage {
             idx));
   }
 
+  public static By getDeleteButtonByIndex(int idx) {
+    return By.xpath(
+        String.format(
+            "(//tr[contains(@class,'v-grid-row-has-data')]//td[14]//span[@class='v-icon Vaadin-Icons'])[%x]",
+            idx));
+  }
+
   public static final By REGION_FILTER_COMBOBOX = By.cssSelector("#region div");
   public static final By DISTRICT_FILTER_COMBOBOX = By.cssSelector("#district div");
   public static final By AGGREGATED_REPORT_APPLY_FILTER_BUTTON =

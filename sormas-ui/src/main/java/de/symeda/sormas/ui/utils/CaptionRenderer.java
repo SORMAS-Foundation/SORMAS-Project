@@ -33,7 +33,7 @@ public class CaptionRenderer extends TextRenderer {
 		}
 
 		if (!HasCaption.class.isAssignableFrom(value.getClass())) {
-			return super.encode(value.toString());
+			return super.encode(value);
 		}
 
 		return super.encode(((HasCaption) value).buildCaption());

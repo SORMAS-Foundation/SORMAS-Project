@@ -16,7 +16,6 @@
 package de.symeda.sormas.backend.sormastosormas.entities.surveillancereport;
 
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildSurveillanceReportValidationGroupName;
-import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildValidationGroupName;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.handleValidationError;
 
 import javax.ejb.EJB;
@@ -24,7 +23,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
-import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.sormastosormas.entities.surveillancereport.SormasToSormasSurveillanceReportDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
@@ -73,15 +71,6 @@ public class ProcessedSurveillanceReportDataPersister
 			Captions.Immunization,
 			buildSurveillanceReportValidationGroupName(report),
 			report);
-
-		if (processedData.getExternalMessage() != null) {
-			ExternalMessageDto externalMessage = processedData.getExternalMessage().getEntity();
-			handleValidationError(
-				() -> externalMessageFacade.save(externalMessage, false, false),
-				Captions.ExternalMessage,
-				buildValidationGroupName(Captions.ExternalMessage, externalMessage),
-				externalMessage);
-		}
 	}
 
 	@Override

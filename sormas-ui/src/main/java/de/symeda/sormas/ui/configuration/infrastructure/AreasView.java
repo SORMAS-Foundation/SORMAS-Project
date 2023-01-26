@@ -177,7 +177,7 @@ public class AreasView extends AbstractConfigurationView {
 				filterRelevanceStatus.setId("relevanceStatus");
 				filterRelevanceStatus.setWidth(220, Unit.PERCENTAGE);
 				filterRelevanceStatus.setEmptySelectionAllowed(false);
-				filterRelevanceStatus.setItems((EntityRelevanceStatus[]) EntityRelevanceStatus.getAllExceptDeleted());
+				filterRelevanceStatus.setItems(EntityRelevanceStatus.getAllExceptDeleted());
 				filterRelevanceStatus.setItemCaptionGenerator(status -> {
 					switch (status) {
 					case ACTIVE:
@@ -223,8 +223,7 @@ public class AreasView extends AbstractConfigurationView {
 							},
 							EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
-					dropdownBulkOperations
-						.setVisible(isBulkOperationsDropdownVisible());
+					dropdownBulkOperations.setVisible(isBulkOperationsDropdownVisible());
 					actionButtonsLayout.addComponent(dropdownBulkOperations);
 				}
 			}

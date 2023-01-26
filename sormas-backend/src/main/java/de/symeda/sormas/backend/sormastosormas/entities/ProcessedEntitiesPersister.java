@@ -15,6 +15,10 @@
 
 package de.symeda.sormas.backend.sormastosormas.entities;
 
+import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildValidationGroupName;
+import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.handleValidationError;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -23,6 +27,8 @@ import javax.ejb.Stateless;
 
 import org.apache.commons.collections.CollectionUtils;
 
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
@@ -31,6 +37,7 @@ import de.symeda.sormas.api.sormastosormas.entities.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.entities.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.entities.event.SormasToSormasEventDto;
 import de.symeda.sormas.api.sormastosormas.entities.event.SormasToSormasEventParticipantDto;
+import de.symeda.sormas.api.sormastosormas.entities.externalmessage.SormasToSormasExternalMessageDto;
 import de.symeda.sormas.api.sormastosormas.entities.immunization.SormasToSormasImmunizationDto;
 import de.symeda.sormas.api.sormastosormas.entities.sample.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.entities.surveillancereport.SormasToSormasSurveillanceReportDto;
@@ -38,6 +45,7 @@ import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationEx
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
+import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.entities.caze.ProcessedCaseDataPersister;
 import de.symeda.sormas.backend.sormastosormas.entities.contact.ProcessedContactDataPersister;
 import de.symeda.sormas.backend.sormastosormas.entities.event.ProcessedEventDataPersister;
@@ -71,6 +79,8 @@ public class ProcessedEntitiesPersister {
 	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacade;
 	@EJB
 	private EventFacadeEjb.EventFacadeEjbLocal eventFacade;
+	@EJB
+	private ExternalMessageFacadeEjbLocal externalMessageFacade;
 
 	public void persistSharedData(SormasToSormasDto processedData, SormasToSormasOriginInfoDto originInfo, ShareDataExistingEntities existingEntities)
 		throws SormasToSormasValidationException {
@@ -105,9 +115,13 @@ public class ProcessedEntitiesPersister {
 		}
 
 		List<SormasToSormasSampleDto> samples = processedData.getSamples();
+		List<SormasToSormasExternalMessageDto> externalMessages = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(samples)) {
 			for (SormasToSormasSampleDto s : samples) {
 				sampleDataPersister.persistSharedData(s, originInfo, existingEntities.getSamples().get(s.getEntity().getUuid()));
+				if (!CollectionUtils.isEmpty(s.getExternalMessages())) {
+					externalMessages.addAll(s.getExternalMessages());
+				}
 			}
 		}
 
@@ -123,8 +137,25 @@ public class ProcessedEntitiesPersister {
 			for (SormasToSormasSurveillanceReportDto r : reports) {
 				surveillanceReportDataPersister
 					.persistSharedData(r, originInfo, existingEntities.getSurveillanceReports().get(r.getEntity().getUuid()));
+
+				if (r.getExternalMessage() != null) {
+					externalMessages.add(r.getExternalMessage());
+				}
 			}
 		}
+
+		if (!externalMessages.isEmpty()) {
+			for (SormasToSormasExternalMessageDto s2sExternalMessage : externalMessages) {
+				ExternalMessageDto externalMessage = s2sExternalMessage.getEntity();
+
+				handleValidationError(
+					() -> externalMessageFacade.save(externalMessage, false, false),
+					Captions.ExternalMessage,
+					buildValidationGroupName(Captions.ExternalMessage, externalMessage),
+					externalMessage);
+			}
+		}
+
 	}
 
 	public DuplicateResult checkForSimilarEntities(SormasToSormasDto processedData, ShareDataExistingEntities existingEntities) {

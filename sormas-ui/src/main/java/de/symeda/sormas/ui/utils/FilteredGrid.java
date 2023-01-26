@@ -22,13 +22,12 @@ import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.renderers.HtmlRenderer;
+import com.vaadin.ui.renderers.TextRenderer;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.HasCaption;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
@@ -218,7 +217,10 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 
 		Arrays.asList(columnIds).forEach(columnId -> {
 			if (!columnId.equals(ACTION_BTN_ID)) {
-				((Column<UserDto, HasCaption>) getColumn(columnId)).setRenderer(new CaptionRenderer());
+				Column<?, ?> column = getColumn(columnId);
+				if (column.getRenderer() == null || TextRenderer.class.isAssignableFrom(column.getRenderer().getClass())) {
+					column.setRenderer(new CaptionRenderer());
+				}
 			}
 		});
 	}
