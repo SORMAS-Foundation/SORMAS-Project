@@ -60,10 +60,23 @@ jobs:
           key: ${{ runner.os }}-java-${{ env.JAVA }}-m2-${{ hashFiles('**/pom.xml', '**/*.pom') }}
           restore-keys: ${{ runner.os }}-java-${{ env.JAVA }}-m2
 
-      - name: Run mvn verify
+      - name: Cache SonarCloud packages
+        # Check if PR results from the repository: if yes, it is safe to cache dependencies.
+        # This is to keep us safe from cache poisoning through 3rd party PRs.
+        if: ${{ fromJSON(env.PRIVILEGED_RUN) }}
+        uses: actions/cache@v2
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: Run mvn verify and sonar analysis
         # FIXME(@JonasCir) see https://github.com/hzi-braunschweig/SORMAS-Project/issues/3730#issuecomment-745165678
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         working-directory: ./sormas-base
-        run: mvn verify -B -ntp
+        run: mvn -B -ntp verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=SORMAS-Project
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v1
