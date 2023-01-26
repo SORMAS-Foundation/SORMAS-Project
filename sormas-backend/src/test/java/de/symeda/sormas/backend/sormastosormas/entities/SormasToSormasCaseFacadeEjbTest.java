@@ -34,6 +34,7 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -218,10 +219,14 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 			dto.setClassificationUser(officer);
 		});
 
+		ContactDto caseSampleContact = creator.createContact(user.toReference(), person.toReference());
+
 		Date sampleDateTime = new Date();
+		// Sample gets saved with associatedContact
 		SampleDto caseSample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
 			s.setSampleDateTime(sampleDateTime);
 			s.setComment("Test case sample");
+			s.setAssociatedContact(caseSampleContact.toReference());
 		});
 
 		creator.createPathogenTest(caseSample.toReference(), caze);
@@ -268,6 +273,16 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 
 				return encryptShareData(new ShareRequestAcceptData(null, null));
 			});
+
+		// If caseSample has associatedContact, sharing is not allowed
+		Assertions.assertThrows(
+			SormasToSormasException.class,
+			() -> getSormasToSormasCaseFacade().share(Collections.singletonList(caze.getUuid()), options));
+
+		// Removing the associatedContact allows sharing
+		SampleDto savedCaseSample = getSampleFacade().getByCaseUuids(Collections.singletonList(caze.getUuid())).get(0);
+		savedCaseSample.setAssociatedContact(null);
+		getSampleFacade().saveSample(savedCaseSample);
 
 		getSormasToSormasCaseFacade().share(Collections.singletonList(caze.getUuid()), options);
 
