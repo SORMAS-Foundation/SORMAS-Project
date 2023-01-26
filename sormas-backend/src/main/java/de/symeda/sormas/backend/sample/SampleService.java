@@ -60,6 +60,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
@@ -88,6 +89,7 @@ import de.symeda.sormas.backend.common.JurisdictionFlagsService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantQueryContext;
@@ -129,6 +131,8 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 	private PathogenTestService pathogenTestService;
 	@EJB
 	private AdditionalTestService additionalTestService;
+	@EJB
+	private DocumentService documentService;
 	@EJB
 	private SormasToSormasShareInfoFacadeEjbLocal sormasToSormasShareInfoFacade;
 	@EJB
@@ -974,6 +978,9 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		for (AdditionalTest additionalTest : sample.getAdditionalTests()) {
 			additionalTestService.deletePermanent(additionalTest);
 		}
+
+		// Delete documents related to this sample
+		documentService.getRelatedToEntity(DocumentRelatedEntityType.SAMPLE, sample.getUuid()).forEach(d -> documentService.markAsDeleted(d));
 
 		// Remove the case from any S2S share info referencing it
 		sormasToSormasShareInfoService.getByAssociatedEntity(SormasToSormasShareInfo.SAMPLE, sample.getUuid()).forEach(s -> {

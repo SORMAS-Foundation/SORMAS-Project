@@ -26,6 +26,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
@@ -39,6 +40,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
 import de.symeda.sormas.ui.contact.ContactInfoLayout;
+import de.symeda.sormas.ui.document.DocumentListComponent;
 import de.symeda.sormas.ui.events.EventParticipantInfoLayout;
 import de.symeda.sormas.ui.samples.pathogentestlink.PathogenTestListComponent;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
@@ -60,6 +62,7 @@ public class SampleDataView extends AbstractSampleView {
 	public static final String EVENT_PARTICIPANT_LOC = "eventParticipant";
 	public static final String PATHOGEN_TESTS_LOC = "pathogenTests";
 	public static final String ADDITIONAL_TESTS_LOC = "additionalTests";
+	public static final String DOCUMENTS_LOC = "documents";
 	public static final String SORMAS_TO_SORMAS_LOC = "sormsToSormas";
 
 	private CommitDiscardWrapperComponent<SampleEditForm> editComponent;
@@ -107,6 +110,7 @@ public class SampleDataView extends AbstractSampleView {
 			EVENT_PARTICIPANT_LOC,
 			PATHOGEN_TESTS_LOC,
 			ADDITIONAL_TESTS_LOC,
+			DOCUMENTS_LOC,
 			SORMAS_TO_SORMAS_LOC);
 
 		container.addComponent(layout);
@@ -136,6 +140,27 @@ public class SampleDataView extends AbstractSampleView {
 			layout.addSidePanelComponent(additionalTestList, ADDITIONAL_TESTS_LOC);
 		}
 
+		//final EditPermissionType sampleEditAllowed = FacadeProvider.getSampleFacade().getEditPermissionType(uuid);
+		DocumentListComponent documentList = null;
+		if (UserProvider.getCurrent() != null
+			&& UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_VIEW)
+			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)) {
+
+			/*
+			 * boolean isDocumentDeleteAllowed =
+			 * EditPermissionType.ALLOWED.equals(sampleEditAllowed) || EditPermissionType.WITHOUT_OWNERSHIP.equals(sampleEditAllowed);
+			 */
+			documentList = new DocumentListComponent(
+				DocumentRelatedEntityType.SAMPLE,
+				getSampleRef(),
+				UserRight.SAMPLE_EDIT,
+				sampleDto.isPseudonymized(),
+				isEditAllowed(),
+				true);
+			//isDocumentDeleteAllowed);
+			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
+		}
+
 		if (FacadeProvider.getSormasToSormasFacade()
 			.isAnyFeatureConfigured(
 				FeatureType.SORMAS_TO_SORMAS_SHARE_CASES,
@@ -162,6 +187,7 @@ public class SampleDataView extends AbstractSampleView {
 			disableComponentIfNotNull(layout.getComponent(EVENT_PARTICIPANT_LOC));
 			disableComponentIfNotNull(layout.getComponent(PATHOGEN_TESTS_LOC));
 			disableComponentIfNotNull(layout.getComponent(ADDITIONAL_TESTS_LOC));
+			disableComponentIfNotNull(layout.getComponent(DOCUMENTS_LOC));
 			disableComponentIfNotNull(layout.getComponent(SORMAS_TO_SORMAS_LOC));
 		}
 

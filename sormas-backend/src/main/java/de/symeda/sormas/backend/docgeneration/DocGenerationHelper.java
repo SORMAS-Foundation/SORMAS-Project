@@ -15,6 +15,7 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
@@ -38,8 +39,10 @@ public class DocGenerationHelper {
 			return DocumentRelatedEntityType.ACTION;
 		} else if (rootEntityReference instanceof EventReferenceDto) {
 			return DocumentRelatedEntityType.EVENT;
-		} else {
+		} else if (rootEntityReference instanceof TravelEntryReferenceDto) {
 			return DocumentRelatedEntityType.TRAVEL_ENTRY;
+		} else {
+			return DocumentRelatedEntityType.SAMPLE;
 		}
 	}
 
