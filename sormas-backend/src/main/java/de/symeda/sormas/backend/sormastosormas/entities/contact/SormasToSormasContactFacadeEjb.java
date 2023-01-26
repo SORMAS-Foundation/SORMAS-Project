@@ -182,12 +182,13 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 
 		if (isWithSamples) {
 			Set<Sample> samples = contact.getSamples();
-			if (samples != null && samples.stream().anyMatch(s -> s.getAssociatedContact() != null)) {
+			if (samples != null && samples.stream().anyMatch(s -> s.getAssociatedCase() != null)) {
 				validationErrors.add(
-						new ValidationErrors(
-								buildCaseValidationGroupName(contact),
-								ValidationErrors
-										.create(new ValidationErrorGroup(Captions.Contact), new ValidationErrorMessage(Validations.sormasToSormasContactSampleHasAssociatedCase))));
+					new ValidationErrors(
+						buildCaseValidationGroupName(contact),
+						ValidationErrors.create(
+							new ValidationErrorGroup(Captions.Contact),
+							new ValidationErrorMessage(Validations.sormasToSormasContactSampleHasAssociatedCase))));
 			}
 		}
 	}
