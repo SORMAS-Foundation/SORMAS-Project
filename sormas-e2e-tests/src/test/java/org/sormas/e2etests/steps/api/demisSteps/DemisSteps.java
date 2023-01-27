@@ -26,14 +26,22 @@ import org.testng.Assert;
 @Slf4j
 public class DemisSteps implements En {
 
+  public static String loginToken;
+
   @Inject
   public DemisSteps(DemisApiService demisApiService) {
 
     Given(
         "API : Login to DEMIS server",
         () -> {
-          String loginToken = demisApiService.loginRequest();
+          loginToken = demisApiService.loginRequest();
           Assert.assertFalse(loginToken.isEmpty(), "DEMIS token wasn't received");
+        });
+
+    Given(
+        "Send lab message with {string}",
+        (String filename) -> {
+          Assert.assertTrue(demisApiService.sendLabRequest(filename, loginToken));
         });
   }
 }
