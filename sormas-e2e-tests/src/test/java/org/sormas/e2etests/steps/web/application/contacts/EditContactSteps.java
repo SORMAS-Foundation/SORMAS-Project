@@ -512,6 +512,14 @@ public class EditContactSteps implements En {
         "I accept first contact in Shares Page",
         () -> webDriverHelpers.clickOnWebElementBySelector(ACCEPT_BUTTON));
     When(
+        "I check if accept button does not appear in Shares Page",
+        () -> {
+          softly.assertFalse(
+            webDriverHelpers.isElementVisibleWithTimeout(ACCEPT_BUTTON, 3),
+            "Accept button is visible!");
+          softly.assertAll();
+        });
+    When(
         "I click to accept potential duplicate in Shares Page",
         () -> webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM));
 
