@@ -205,7 +205,7 @@ public class CampaignDataView extends AbstractCampaignView {
 			List<CampaignFormMetaReferenceDto> campagaignFormReferences =
 				FacadeProvider.getCampaignFormMetaFacade().getCampaignFormMetasAsReferencesByCampaign(campaignReferenceDto.getUuid());
 			for (CampaignFormMetaReferenceDto campaignForm : campagaignFormReferences) {
-				Button campaignFormButton = ButtonHelper.createButton(campaignForm.toString(), e -> {
+				Button campaignFormButton = ButtonHelper.createButton(campaignForm.buildCaption(), e -> {
 					importCampaignButton.setPopupVisible(false);
 					try {
 						Window popupWindow = VaadinUiUtil.showPopupWindow(new CampaignFormDataImportLayout(campaignForm, campaignReferenceDto));
@@ -236,7 +236,7 @@ public class CampaignDataView extends AbstractCampaignView {
 			List<CampaignFormMetaReferenceDto> campagaignFormReferences =
 				FacadeProvider.getCampaignFormMetaFacade().getCampaignFormMetasAsReferencesByCampaign(campaignReferenceDto.getUuid());
 			for (CampaignFormMetaReferenceDto campaignForm : campagaignFormReferences) {
-				Button campaignFormButton = ButtonHelper.createButton(campaignForm.toString(), e -> {
+				Button campaignFormButton = ButtonHelper.createButton(campaignForm.buildCaption(), e -> {
 					ControllerProvider.getCampaignController().createCampaignDataForm(criteria.getCampaign(), campaignForm);
 					newFormButton.setPopupVisible(false);
 				});

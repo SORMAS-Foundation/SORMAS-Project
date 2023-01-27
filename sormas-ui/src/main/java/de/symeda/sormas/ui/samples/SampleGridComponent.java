@@ -29,7 +29,6 @@ import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.i18n.Captions;
@@ -159,12 +158,20 @@ public class SampleGridComponent extends VerticalLayout {
 			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
 				relevanceStatusFilter = ComboBoxHelper.createComboBoxV7();
 				relevanceStatusFilter.setId("relevanceStatusFilter");
-				relevanceStatusFilter.setWidth(140, Unit.PERCENTAGE);
+				relevanceStatusFilter.setWidth(220, Unit.PIXELS);
 				relevanceStatusFilter.setNullSelectionAllowed(false);
 				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.sampleActiveSamples));
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.sampleArchivedSamples));
-				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.sampleAllSamples));
+				relevanceStatusFilter
+					.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(Captions.sampleAllActiveAndArchivedSamples));
+
+				if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_DELETE)) {
+					relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.DELETED, I18nProperties.getCaption(Captions.sampleDeletedSamples));
+				} else {
+					relevanceStatusFilter.removeItem(EntityRelevanceStatus.DELETED);
+				}
+
 				relevanceStatusFilter.addValueChangeListener(e -> {
 					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 					samplesView.navigateTo(criteria);
@@ -313,10 +320,6 @@ public class SampleGridComponent extends VerticalLayout {
 			activeStatusButton
 				.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getDataSize())));
 		}
-	}
-
-	public TextField getSearchField() {
-		return filterForm.getSearchField();
 	}
 
 	public MenuBar getBulkOperationsDropdown() {

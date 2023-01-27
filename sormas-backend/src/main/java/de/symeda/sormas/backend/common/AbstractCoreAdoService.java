@@ -40,7 +40,7 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.util.IterableHelper;
 
-public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends AbstractDeletableAdoService<ADO> {
+public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends QueryJoins<ADO>> extends AbstractDeletableAdoService<ADO> {
 
 	private static final int ARCHIVE_BATCH_SIZE = 1000;
 
@@ -93,8 +93,14 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 		return count > 0;
 	}
 
-	protected <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, From<?, ADO> adoPath, boolean includeExtendedChangeDateFilters) {
-		return builder.add(adoPath);
+	protected abstract J toJoins(From<?, ADO> adoPath);
+
+	private <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, From<?, ADO> adoPath, boolean includeExtendedChangeDateFilters) {
+		return addChangeDates(builder, toJoins(adoPath), includeExtendedChangeDateFilters);
+	}
+
+	protected <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, J joins, boolean includeExtendedChangeDateFilters) {
+		return builder.add(joins.getRoot());
 	}
 
 	public Map<String, Date> calculateEndOfProcessingDate(List<String> entityuuids) {

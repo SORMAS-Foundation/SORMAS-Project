@@ -17,20 +17,26 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+import com.vaadin.ui.CustomLayout;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.person.PersonEditForm;
+import de.symeda.sormas.ui.person.PersonSideComponentsElement;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 
 @SuppressWarnings("serial")
-public class CasePersonView extends AbstractCaseView {
+public class CasePersonView extends AbstractCaseView implements PersonSideComponentsElement {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/person";
+
 	private PersonDto person;
 
 	public CasePersonView() {
@@ -42,8 +48,7 @@ public class CasePersonView extends AbstractCaseView {
 
 		CaseDataDto caseData = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
 		person = FacadeProvider.getPersonFacade().getByUuid(caseData.getPerson().getUuid());
-
-		CommitDiscardWrapperComponent<PersonEditForm> personEditComponent = ControllerProvider.getPersonController()
+		CommitDiscardWrapperComponent<PersonEditForm> editComponent = ControllerProvider.getPersonController()
 			.getPersonEditComponent(
 				PersonContext.CASE,
 				person,
@@ -52,10 +57,12 @@ public class CasePersonView extends AbstractCaseView {
 				UserRight.CASE_EDIT,
 				getViewMode(),
 				isEditAllowed());
-
-		setSubComponent(personEditComponent);
+		DetailSubComponentWrapper componentWrapper = addComponentWrapper(editComponent);
+		CustomLayout layout = addPageLayout(componentWrapper, editComponent);
+		setSubComponent(componentWrapper);
+		addSideComponents(layout, CoreEntityType.CASE, caseData.getUuid(), person.toReference(), this::showUnsavedChangesPopup);
 		setEditPermission(
-			personEditComponent,
+			editComponent,
 			UserProvider.getCurrent().hasUserRight(UserRight.PERSON_EDIT),
 			PersonDto.ADDRESSES,
 			PersonDto.PERSON_CONTACT_DETAILS);

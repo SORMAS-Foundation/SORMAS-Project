@@ -70,7 +70,7 @@ import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
-public class EventParticipantService extends AbstractCoreAdoService<EventParticipant> {
+public class EventParticipantService extends AbstractCoreAdoService<EventParticipant, EventParticipantJoins> {
 
 	@EJB
 	private EventService eventService;
@@ -234,10 +234,13 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 					archivedPredicate = cb.or(archivedPredicate, cb.equal(event.get(Event.ARCHIVED), true));
 				}
 				filter = CriteriaBuilderHelper.and(cb, filter, archivedPredicate);
+			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.DELETED) {
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(EventParticipant.DELETED), true));
 			}
 		}
-
-		filter = CriteriaBuilderHelper.and(cb, filter, createDefaultFilter(cb, from));
+		if (criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
+			filter = CriteriaBuilderHelper.and(cb, filter, createDefaultFilter(cb, from));
+		}
 
 		return filter;
 	}
@@ -273,6 +276,11 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		return createUserFilter(new EventParticipantQueryContext(cb, cq, from));
 	}
 
+	@Override
+	protected EventParticipantJoins toJoins(From<?, EventParticipant> adoPath) {
+		return new EventParticipantJoins(adoPath);
+	}
+
 	public Predicate createUserFilter(EventParticipantQueryContext eventParticipantQueryContext) {
 
 		final EventUserFilterCriteria eventUserFilterCriteria = new EventUserFilterCriteria();
@@ -287,7 +295,6 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		final CriteriaBuilder cb = epqc.getCriteriaBuilder();
 		final CriteriaQuery<?> cq = epqc.getQuery();
 		final EventParticipantJoins joins = epqc.getJoins();
-
 		return eventService.createUserFilter(new EventQueryContext(cb, cq, joins.getEventJoins()), eventUserFilterCriteria);
 	}
 
@@ -488,22 +495,23 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, EventParticipant> from, Timestamp date) {
 		ChangeDateFilterBuilder changeDateFilterBuilder = new ChangeDateFilterBuilder(cb, date, from, null);
 
-		return addChangeDates(changeDateFilterBuilder, from, false).build();
-
+		return addChangeDates(changeDateFilterBuilder, toJoins(from), false).build();
 	}
 
 	@Override
 	protected <T extends ChangeDateBuilder<T>> T addChangeDates(
 		T builder,
-		From<?, EventParticipant> eventParticipantFrom,
+		EventParticipantJoins joins,
 		boolean includeExtendedChangeDateFilters) {
 
-		builder = super.addChangeDates(builder, eventParticipantFrom, includeExtendedChangeDateFilters)
+		From<?, EventParticipant> eventParticipantFrom = joins.getRoot();
+
+		builder = super.addChangeDates(builder, joins, includeExtendedChangeDateFilters)
 			.add(eventParticipantFrom, EventParticipant.SORMAS_TO_SORMAS_ORIGIN_INFO)
 			.add(eventParticipantFrom, EventParticipant.SORMAS_TO_SORMAS_SHARES);
 
 		if (includeExtendedChangeDateFilters) {
-			Join<EventParticipant, Sample> eventParticipantSampleJoin = eventParticipantFrom.join(EventParticipant.SAMPLES, JoinType.LEFT);
+			Join<EventParticipant, Sample> eventParticipantSampleJoin = joins.getSamples();
 			builder.add(eventParticipantSampleJoin).add(eventParticipantSampleJoin, Sample.PATHOGENTESTS);
 		}
 

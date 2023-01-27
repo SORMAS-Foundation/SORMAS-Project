@@ -61,6 +61,10 @@ public final class ContactLogic {
 		return FollowUpLogic.getFollowUpStartDate(reportDate, earliestSampleDate);
 	}
 
+	public static Date getEndDate(ContactDto contactDto) {
+		return getEndDate(contactDto.getLastContactDate(), contactDto.getReportDateTime(), contactDto.getFollowUpUntil());
+	}
+
 	public static Date getEndDate(Date lastContactDate, Date reportDate, Date followUpUntil) {
 		return followUpUntil != null ? followUpUntil : lastContactDate != null ? lastContactDate : reportDate;
 	}

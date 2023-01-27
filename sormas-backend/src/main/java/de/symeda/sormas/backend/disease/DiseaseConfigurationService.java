@@ -56,4 +56,5 @@ public class DiseaseConfigurationService extends AdoServiceWithUserFilterAndJuri
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, DiseaseConfiguration> from) {
 		return null;
 	}
+
 }

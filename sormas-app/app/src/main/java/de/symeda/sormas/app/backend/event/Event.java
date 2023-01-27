@@ -661,7 +661,7 @@ public class Event extends PseudonymizableAdo {
 	}
 
 	@Override
-	public String toString() {
+	public String buildCaption() {
 		return EventReferenceDto.buildCaption(getDisease(), getDiseaseDetails(), getEventStatus(), getEventInvestigationStatus(), getStartDate());
 	}
 

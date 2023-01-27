@@ -163,7 +163,7 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 			return UiFieldAccessCheckers.getDefault(!isInJurisdiction).hasRight();
 		}));
 
-		addItemClickListener(new ShowDetailsListener<>(TaskIndexDto.CONTEXT_REFERENCE, false, e -> navigateToData(e)));
+		addItemClickListener(new ShowDetailsListener<>(TaskIndexDto.CONTEXT_REFERENCE, false, this::navigateToData));
 	}
 
 	public void reload() {

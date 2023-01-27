@@ -41,7 +41,7 @@ public class ExposureDetailsService {
         .handlingSamples(YesNoUnknownOptions.YES.toString())
         .typeOfPlace("Home")
         .continent("Europe")
-        .subcontinent("Central Europe")
+        .subcontinent("Western Europe")
         .country("Austria")
         .exposureRegion("")
         .district("")

@@ -59,5 +59,5 @@ public class EditUserPage {
   public static final By DISCARD_BUTTON = By.id("discard");
   public static final By SAVE_BUTTON_EDIT_USER = By.id("commit");
   public static final By NOTIFICATION_CAPTION_EDIT_USER =
-      By.cssSelector("[class='v-Notification-description']");
+      By.xpath("//div[@class='popupContent']//*[text()='Please check the input data']");
 }

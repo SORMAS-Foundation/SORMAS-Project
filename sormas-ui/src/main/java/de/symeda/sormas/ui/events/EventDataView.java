@@ -132,7 +132,7 @@ public class EventDataView extends AbstractEventView {
 			&& UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_VIEW)) {
 
 			boolean isDocumentDeleteAllowed =
-				EditPermissionType.ALLOWED.equals(eventEditAllowed) || EditPermissionType.DOCUMENTS_ONLY.equals(eventEditAllowed);
+				EditPermissionType.ALLOWED.equals(eventEditAllowed) || EditPermissionType.WITHOUT_OWNERSHIP.equals(eventEditAllowed);
 			documentList = new DocumentListComponent(
 				DocumentRelatedEntityType.EVENT,
 				getEventRef(),

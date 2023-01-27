@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -72,6 +73,7 @@ public class ImmunizationCriteria extends BaseCriteria implements Serializable, 
 	private Date toDate;
 	private CaseReferenceDto relatedCase;
 	private PersonReferenceDto person;
+	private EntityRelevanceStatus relevanceStatus;
 
 	public Disease getDisease() {
 		return disease;
@@ -249,5 +251,13 @@ public class ImmunizationCriteria extends BaseCriteria implements Serializable, 
 	public ImmunizationCriteria person(PersonReferenceDto person) {
 		this.person = person;
 		return this;
+	}
+
+	public EntityRelevanceStatus getRelevanceStatus() {
+		return relevanceStatus;
+	}
+
+	public void relevanceStatus(EntityRelevanceStatus relevanceStatus) {
+		this.relevanceStatus = relevanceStatus;
 	}
 }

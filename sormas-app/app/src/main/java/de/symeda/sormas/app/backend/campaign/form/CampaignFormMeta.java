@@ -17,6 +17,10 @@ package de.symeda.sormas.app.backend.campaign.form;
 
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.j256.ormlite.table.DatabaseTable;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,10 +28,6 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
@@ -149,7 +149,7 @@ public class CampaignFormMeta extends PseudonymizableAdo {
 	}
 
 	@Override
-	public String toString() {
+	public String buildCaption() {
 		return getFormName();
 	}
 }

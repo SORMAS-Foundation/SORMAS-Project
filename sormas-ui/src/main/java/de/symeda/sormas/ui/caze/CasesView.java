@@ -169,21 +169,21 @@ public class CasesView extends AbstractView {
 
 		criteria = ViewModelProviders.of(CasesView.class).get(CaseCriteria.class, getDefaultCriteria());
 
-		if (CasesViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
+		if (isFollowUpVisitsOverviewType()) {
 			if (criteria.getFollowUpVisitsInterval() == null) {
 				criteria.setFollowUpVisitsInterval(followUpRangeInterval);
 			}
 			grid = new CaseFollowUpGrid(criteria, getClass());
 		} else {
 			criteria.followUpUntilFrom(null);
-			grid = CasesViewType.DETAILED.equals(viewConfiguration.getViewType()) ? new CaseGridDetailed(criteria) : new CaseGrid(criteria);
+			grid = isDetailedViewType() ? new CaseGridDetailed(criteria) : new CaseGrid(criteria);
 		}
 		final VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createStatusFilterBar());
 		gridLayout.addComponent(grid);
 
-		if (CasesViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
+		if (isFollowUpVisitsOverviewType()) {
 			gridLayout.addComponent(createFollowUpLegend());
 		}
 
@@ -445,7 +445,6 @@ public class CasesView extends AbstractView {
 				ViewModelProviders.of(CasesView.class).get(CasesViewConfiguration.class).setInEagerMode(false);
 				btnLeaveBulkEditMode.setVisible(false);
 				btnEnterBulkEditMode.setVisible(true);
-				this.filterForm.enableSearchAndReportingUser();
 				navigateTo(criteria);
 			}, ValoTheme.BUTTON_PRIMARY);
 			btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
@@ -550,8 +549,19 @@ public class CasesView extends AbstractView {
 		ViewModelProviders.of(CasesView.class).get(CasesViewConfiguration.class).setInEagerMode(true);
 		btnEnterBulkEditMode.setVisible(false);
 		btnLeaveBulkEditMode.setVisible(true);
-		filterForm.disableSearchAndReportingUser();
 		((AbstractCaseGrid<?>) grid).reload();
+	}
+
+	private boolean isDefaultViewType() {
+		return viewConfiguration.getViewType() == CasesViewType.DEFAULT;
+	}
+
+	private boolean isDetailedViewType() {
+		return viewConfiguration.getViewType() == CasesViewType.DETAILED;
+	}
+
+	private boolean isFollowUpVisitsOverviewType() {
+		return viewConfiguration.getViewType() == CasesViewType.FOLLOW_UP_VISITS_OVERVIEW;
 	}
 
 	public VerticalLayout createFilterBar() {
@@ -571,7 +581,7 @@ public class CasesView extends AbstractView {
 			navigateTo(null, true);
 		});
 		filterForm.addApplyHandler(e -> {
-			if (CasesViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
+			if (isFollowUpVisitsOverviewType()) {
 				((CaseFollowUpGrid) grid).reload();
 			} else {
 				((AbstractCaseGrid<?>) grid).reload();
@@ -580,7 +590,7 @@ public class CasesView extends AbstractView {
 		filterLayout.addComponent(filterForm);
 
 		// Follow-up overview scrolling
-		if (CasesViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
+		if (isFollowUpVisitsOverviewType()) {
 			HorizontalLayout actionButtonsLayout = new HorizontalLayout();
 			actionButtonsLayout.setSpacing(true);
 
@@ -673,12 +683,19 @@ public class CasesView extends AbstractView {
 				}
 				relevanceStatusFilter = ComboBoxHelper.createComboBoxV7();
 				relevanceStatusFilter.setId("relevanceStatus");
-				relevanceStatusFilter.setWidth(140, Unit.PIXELS);
+				relevanceStatusFilter.setWidth(210, Unit.PIXELS);
 				relevanceStatusFilter.setNullSelectionAllowed(false);
 				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.caseActiveCases));
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.caseArchivedCases));
-				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.caseAllCases));
+				relevanceStatusFilter
+					.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(Captions.caseAllActiveAndArchivedCases));
+
+				if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_DELETE)) {
+					relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.DELETED, I18nProperties.getCaption(Captions.caseDeletedCases));
+				} else {
+					relevanceStatusFilter.removeItem(EntityRelevanceStatus.DELETED);
+				}
 				relevanceStatusFilter.addValueChangeListener(e -> {
 					if (relevanceStatusInfoLabel != null) {
 						relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
@@ -825,12 +842,19 @@ public class CasesView extends AbstractView {
 			criteria.fromUrlParams(params);
 		}
 
-		if (viewConfiguration.isInEagerMode() && viewConfiguration.getViewType() != CasesViewType.FOLLOW_UP_VISITS_OVERVIEW) {
+		if (viewConfiguration.isInEagerMode() && !isFollowUpVisitsOverviewType()) {
 			AbstractCaseGrid<?> caseGrid = (AbstractCaseGrid<?>) this.grid;
 			caseGrid.setEagerDataProvider();
 		}
 
 		updateFilterComponents();
+		if (isDefaultViewType()) {
+			((CaseGrid) grid).reload();
+		} else if (isFollowUpVisitsOverviewType()) {
+			((CaseFollowUpGrid) grid).reload();
+		} else {
+			((CaseGridDetailed) grid).reload();
+		}
 	}
 
 	public List<CaseIndexDto> getSelectedCases(AbstractCaseGrid<?> caseGrid) {

@@ -168,7 +168,6 @@ public class UserRoleDto extends EntityDto {
 		return userRoles != null ? userRoles.stream().flatMap(role -> role.getUserRights().stream()).collect(Collectors.toSet()) : null;
 	}
 
-
 	public DefaultUserRole getLinkedDefaultUserRole() {
 		return linkedDefaultUserRole;
 	}
@@ -206,6 +205,11 @@ public class UserRoleDto extends EntityDto {
 	public void setNotificationTypes(NotificationTypes notificationTypes) {
 		this.smsNotificationTypes = notificationTypes.sms;
 		this.emailNotificationTypes = notificationTypes.email;
+	}
+
+	@Override
+	public String buildCaption() {
+		return caption;
 	}
 
 	@SuppressWarnings("serial")

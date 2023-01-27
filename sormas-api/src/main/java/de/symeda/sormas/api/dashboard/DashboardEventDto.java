@@ -156,7 +156,7 @@ public class DashboardEventDto extends AbstractUuidDto {
 	}
 
 	@Override
-	public String toString() {
+	public String buildCaption() {
 		return EventReferenceDto.buildCaption(getDisease(), getDiseaseDetails(), getEventStatus(), getEventInvestigationStatus(), getEventDate());
 	}
 

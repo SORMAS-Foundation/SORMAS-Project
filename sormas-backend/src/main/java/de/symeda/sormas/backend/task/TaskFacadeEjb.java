@@ -48,6 +48,7 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
@@ -1082,6 +1083,11 @@ public class TaskFacadeEjb implements TaskFacade {
 			uiUrlBuilder.append("/");
 		}
 		return uiUrlBuilder.append("#!").append(taskContext.getUrlPattern()).append("/data/").append(uuid).toString();
+	}
+
+	@Override
+	public EditPermissionType getEditPermissionType(String uuid) {
+		return taskService.getEditPermissionType(taskService.getByUuid(uuid));
 	}
 
 	@LocalBean

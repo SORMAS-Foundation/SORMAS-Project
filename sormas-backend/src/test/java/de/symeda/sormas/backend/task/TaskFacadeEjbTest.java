@@ -19,6 +19,7 @@ package de.symeda.sormas.backend.task;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -41,6 +42,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -52,8 +54,12 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskDto;
@@ -104,7 +110,8 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 
 		getCaseFacade().delete(caze.getUuid(), new DeletionDetails());
 
-		List<TaskIndexDto> tasks = getTaskFacade().getIndexList(new TaskCriteria().relevanceStatus(EntityRelevanceStatus.ALL), 0, 100, null);
+		List<TaskIndexDto> tasks =
+			getTaskFacade().getIndexList(new TaskCriteria().relevanceStatus(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED), 0, 100, null);
 		assertEquals(0, tasks.size());
 	}
 
@@ -236,12 +243,19 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		getCaseFacade().archive(caze.getUuid(), null);
 		getEventFacade().archive(event.getUuid(), null);
 
+		// getAllActiveTasks and getAllUuids should return length 3
+		assertEquals(3, getTaskFacade().getAllActiveTasksAfter(null).size());
+		assertEquals(3, getTaskFacade().getAllActiveUuids().size());
+
+		getContactFacade().archive(contact.getUuid(), null);
+
 		// getAllActiveTasks and getAllUuids should return length 1
 		assertEquals(1, getTaskFacade().getAllActiveTasksAfter(null).size());
 		assertEquals(1, getTaskFacade().getAllActiveUuids().size());
 
 		getCaseFacade().dearchive(Collections.singletonList(caze.getUuid()), null);
 		getEventFacade().dearchive(Collections.singletonList(event.getUuid()), null);
+		getContactFacade().dearchive(Collections.singletonList(contact.getUuid()), null);
 
 		// getAllActiveTasks and getAllUuids should return length 5 + 1 (contact investigation)
 		assertEquals(6, getTaskFacade().getAllActiveTasksAfter(null).size());
@@ -727,4 +741,216 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		assertFalse(tasksIds.contains(taskEvent1.getUuid()));
 		assertTrue(tasksIds.contains(taskEvent2.getUuid()));
 	}
+
+	@Test
+	public void testGetIndexListArchived() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+
+		TaskDto task =
+			creator.createTask(TaskContext.GENERAL, TaskType.ANIMAL_TESTING, TaskStatus.PENDING, null, null, null, new Date(), user.toReference());
+		getTaskFacade().updateArchived(task.getUuid(), true);
+
+		List<TaskIndexDto> archivedTasks =
+			getTaskFacade().getIndexList(new TaskCriteria().relevanceStatus(EntityRelevanceStatus.ARCHIVED), null, null, null);
+
+		assertThat(archivedTasks, hasSize(1));
+		assertThat(archivedTasks.stream().filter(t -> t.getUuid().equals(task.getUuid())).count(), is(1L));
+
+		CaseDataDto caze = creator.createCase(user.toReference(), rdcf, null);
+		TaskDto caseTask = creator.createTask(TaskContext.CASE, caze.toReference(), null);
+		getCaseFacade().archive(caze.getUuid(), new Date());
+
+		archivedTasks = getTaskFacade().getIndexList(new TaskCriteria().relevanceStatus(EntityRelevanceStatus.ARCHIVED), null, null, null);
+		assertThat(archivedTasks.stream().filter(t -> t.getUuid().equals(caseTask.getUuid())).count(), is(1L));
+
+		ContactDto contact = creator.createContact(rdcf, user.toReference(), creator.createPerson().toReference());
+		TaskDto contactTask = creator.createTask(TaskContext.CONTACT, contact.toReference(), null);
+		getContactFacade().archive(contact.getUuid(), new Date());
+
+		archivedTasks = getTaskFacade().getIndexList(new TaskCriteria().relevanceStatus(EntityRelevanceStatus.ARCHIVED), null, null, null);
+		assertThat(archivedTasks.stream().filter(t -> t.getUuid().equals(contactTask.getUuid())).count(), is(1L));
+
+		EventDto event = creator.createEvent(user.toReference());
+		TaskDto eventTask = creator.createTask(TaskContext.EVENT, event.toReference(), null);
+		getEventFacade().archive(event.getUuid(), new Date());
+
+		archivedTasks = getTaskFacade().getIndexList(new TaskCriteria().relevanceStatus(EntityRelevanceStatus.ARCHIVED), null, null, null);
+		assertThat(archivedTasks.stream().filter(t -> t.getUuid().equals(eventTask.getUuid())).count(), is(1L));
+
+		TravelEntryDto travelEntry = creator.createTravelEntry(creator.createPerson().toReference(), user.toReference(), rdcf, null);
+		TaskDto travelEntryTask = creator.createTask(TaskContext.TRAVEL_ENTRY, travelEntry.toReference(), null);
+		getTravelEntryFacade().archive(travelEntry.getUuid(), new Date());
+
+		archivedTasks = getTaskFacade().getIndexList(new TaskCriteria().relevanceStatus(EntityRelevanceStatus.ARCHIVED), null, null, null);
+		assertThat(archivedTasks.stream().filter(t -> t.getUuid().equals(travelEntryTask.getUuid())).count(), is(1L));
+	}
+
+	@Test
+	public void testGetEditPermissionTypeOnGenericTask() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+
+		TaskDto task =
+			creator.createTask(TaskContext.GENERAL, TaskType.ANIMAL_TESTING, TaskStatus.PENDING, null, null, null, new Date(), user.toReference());
+		assertThat(getTaskFacade().getEditPermissionType(task.getUuid()), is(EditPermissionType.ALLOWED));
+
+		getTaskFacade().updateArchived(task.getUuid(), true);
+		setEditArchiveFeature(true);
+		assertThat(getTaskFacade().getEditPermissionType(task.getUuid()), is(EditPermissionType.ALLOWED));
+		setEditArchiveFeature(false);
+		assertThat(getTaskFacade().getEditPermissionType(task.getUuid()), is(EditPermissionType.ARCHIVING_STATUS_ONLY));
+	}
+
+	@Test
+	public void testGetEditPermissionTypeOnCaseTask() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+
+		CaseDataDto caseToArchive = creator.createCase(user.toReference(), rdcf, null);
+		TaskDto task = creator.createTask(TaskContext.CASE, caseToArchive.toReference(), null);
+		assertThat(getTaskFacade().getEditPermissionType(task.getUuid()), is(EditPermissionType.ALLOWED));
+
+		getCaseFacade().archive(caseToArchive.getUuid(), new Date());
+
+		setEditArchiveFeature(true);
+		assertThat(getTaskFacade().getEditPermissionType(task.getUuid()), is(EditPermissionType.ALLOWED));
+
+		setEditArchiveFeature(false);
+		assertThat(getTaskFacade().getEditPermissionType(task.getUuid()), is(EditPermissionType.ARCHIVING_STATUS_ONLY));
+
+		// shared case
+		CaseDataDto caseToShare = creator.createCase(user.toReference(), rdcf, null);
+		task = creator.createTask(TaskContext.CASE, caseToShare.toReference(), null);
+
+		creator.createShareRequestInfo(
+			ShareRequestDataType.CASE,
+			getUserService().getByUuid(user.getUuid()),
+			"test-server",
+			true,
+			ShareRequestStatus.PENDING,
+			(s) -> s.setCaze(getCaseService().getByUuid(caseToShare.getUuid())));
+
+		assertThat(getTaskFacade().getEditPermissionType(task.getUuid()), is(EditPermissionType.ALLOWED));
+
+		creator.createShareRequestInfo(
+			ShareRequestDataType.CASE,
+			getUserService().getByUuid(user.getUuid()),
+			"test-server",
+			true,
+			ShareRequestStatus.ACCEPTED,
+			(s) -> s.setCaze(getCaseService().getByUuid(caseToShare.getUuid())));
+
+		assertThat(getTaskFacade().getEditPermissionType(task.getUuid()), is(EditPermissionType.ALLOWED));
+	}
+
+	@Test
+	public void testGetEditPermissionTypeOnContactTask() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+
+		ContactDto contactToArchive = creator.createContact(rdcf, user.toReference(), creator.createPerson().toReference());
+		TaskDto task = creator.createTask(TaskContext.CONTACT, contactToArchive.toReference(), null);
+		assertThat(getTaskFacade().getEditPermissionType(task.getUuid()), is(EditPermissionType.ALLOWED));
+
+		getContactFacade().archive(contactToArchive.getUuid(), new Date());
+
+		setEditArchiveFeature(true);
+		assertThat(getTaskFacade().getEditPermissionType(task.getUuid()), is(EditPermissionType.ALLOWED));
+
+		setEditArchiveFeature(false);
+		assertThat(getTaskFacade().getEditPermissionType(task.getUuid()), is(EditPermissionType.ARCHIVING_STATUS_ONLY));
+
+		// shared contact
+		ContactDto contactToShare = creator.createContact(rdcf, user.toReference(), creator.createPerson().toReference());
+		task = creator.createTask(TaskContext.CONTACT, contactToShare.toReference(), null);
+
+		creator.createShareRequestInfo(
+			ShareRequestDataType.CONTACT,
+			getUserService().getByUuid(user.getUuid()),
+			"test-server",
+			true,
+			ShareRequestStatus.PENDING,
+			(s) -> s.setContact(getContactService().getByUuid(contactToShare.getUuid())));
+
+		assertThat(getTaskFacade().getEditPermissionType(task.getUuid()), is(EditPermissionType.ALLOWED));
+
+		creator.createShareRequestInfo(
+			ShareRequestDataType.CONTACT,
+			getUserService().getByUuid(user.getUuid()),
+			"test-server",
+			true,
+			ShareRequestStatus.ACCEPTED,
+			(s) -> s.setContact(getContactService().getByUuid(contactToShare.getUuid())));
+
+		assertThat(getTaskFacade().getEditPermissionType(task.getUuid()), is(EditPermissionType.ALLOWED));
+	}
+
+	@Test
+	public void testGetEditPermissionTypeOnEventTask() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+
+		EventDto eventToArchive = creator.createEvent(user.toReference());
+		TaskDto task = creator.createTask(TaskContext.EVENT, eventToArchive.toReference(), null);
+		assertThat(getTaskFacade().getEditPermissionType(task.getUuid()), is(EditPermissionType.ALLOWED));
+
+		getEventFacade().archive(eventToArchive.getUuid(), new Date());
+
+		setEditArchiveFeature(true);
+		assertThat(getTaskFacade().getEditPermissionType(task.getUuid()), is(EditPermissionType.ALLOWED));
+
+		setEditArchiveFeature(false);
+		assertThat(getTaskFacade().getEditPermissionType(task.getUuid()), is(EditPermissionType.ARCHIVING_STATUS_ONLY));
+
+		// shared event
+		EventDto eventToShare = creator.createEvent(user.toReference());
+		task = creator.createTask(TaskContext.EVENT, eventToShare.toReference(), null);
+
+		creator.createShareRequestInfo(
+			ShareRequestDataType.EVENT,
+			getUserService().getByUuid(user.getUuid()),
+			"test-server",
+			true,
+			ShareRequestStatus.PENDING,
+			(s) -> s.setEvent(getEventService().getByUuid(eventToShare.getUuid())));
+
+		assertThat(getTaskFacade().getEditPermissionType(task.getUuid()), is(EditPermissionType.ALLOWED));
+
+		creator.createShareRequestInfo(
+			ShareRequestDataType.EVENT,
+			getUserService().getByUuid(user.getUuid()),
+			"test-server",
+			true,
+			ShareRequestStatus.ACCEPTED,
+			(s) -> s.setEvent(getEventService().getByUuid(eventToShare.getUuid())));
+
+		assertThat(getTaskFacade().getEditPermissionType(task.getUuid()), is(EditPermissionType.ALLOWED));
+	}
+
+	@Test
+	public void testGetEditPermissionTypeOnTravelEntryTask() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+
+		TravelEntryDto travelEntryToArchive = creator.createTravelEntry(creator.createPerson().toReference(), user.toReference(), rdcf, null);
+		TaskDto task = creator.createTask(TaskContext.TRAVEL_ENTRY, travelEntryToArchive.toReference(), null);
+		assertThat(getTaskFacade().getEditPermissionType(task.getUuid()), is(EditPermissionType.ALLOWED));
+
+		getTravelEntryFacade().archive(travelEntryToArchive.getUuid(), new Date());
+
+		setEditArchiveFeature(true);
+		assertThat(getTaskFacade().getEditPermissionType(task.getUuid()), is(EditPermissionType.ALLOWED));
+
+		setEditArchiveFeature(false);
+		assertThat(getTaskFacade().getEditPermissionType(task.getUuid()), is(EditPermissionType.ARCHIVING_STATUS_ONLY));
+	}
+
+	private void setEditArchiveFeature(boolean enabled) {
+		FeatureConfigurationIndexDto featureConfiguration =
+			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, enabled, null);
+		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.EDIT_ARCHIVED_ENTITIES);
+
+	}
+
 }

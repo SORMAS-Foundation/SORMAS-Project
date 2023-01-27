@@ -223,7 +223,7 @@ Feature: Tasks functionalities
     And I save Export Configuration for Custom Task Export
     And I delete last created custom task export config
 
-  @3384 @env_main
+  @8561 @env_main
   Scenario: Verify that Task assignee cannot be left empty via bulk edit mode
     Given I log in as a Admin User
     And I click on the Tasks button from navbar

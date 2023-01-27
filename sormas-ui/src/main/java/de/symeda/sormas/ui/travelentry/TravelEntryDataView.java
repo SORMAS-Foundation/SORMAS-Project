@@ -93,7 +93,7 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 				UserRight.TRAVEL_ENTRY_EDIT,
 				travelEntryDto.isPseudonymized(),
 				editAllowed,
-				editAllowed);
+				EditPermissionType.WITHOUT_OWNERSHIP.equals(travelEntryEditAllowed));
 			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 

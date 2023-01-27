@@ -97,4 +97,8 @@ public class SurveillanceReportService extends AdoServiceWithUserFilterAndJurisd
 
 		return caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, query, new CaseJoins(from.join(SurveillanceReport.CAZE))));
 	}
+
+	public boolean isEditAllowed(SurveillanceReport report) {
+		return caseService.isEditAllowed(report.getCaze());
+	}
 }

@@ -17,10 +17,10 @@ package de.symeda.sormas.api.contact;
 
 import java.util.Date;
 import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
+import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -1236,7 +1236,7 @@ public class ContactExportDto extends AbstractUuidDto {
 	}
 
 	public void setReportingUserRoles(Set<UserRoleReferenceDto> roles) {
-		this.reportingUserRoles = StringUtils.join(roles, ", ");
+		this.reportingUserRoles = roles.stream().map(ReferenceDto::buildCaption).collect(Collectors.joining(", "));;
 	}
 
 	@Order(177)
@@ -1264,7 +1264,7 @@ public class ContactExportDto extends AbstractUuidDto {
 	}
 
 	public void setFollowUpStatusChangeUserRoles(Set<UserRoleReferenceDto> roles) {
-		this.followUpStatusChangeUserRoles = StringUtils.join(roles, ", ");
+		this.followUpStatusChangeUserRoles = roles.stream().map(ReferenceDto::buildCaption).collect(Collectors.joining(", "));
 	}
 
 	public void setEventCount(Long eventCount) {

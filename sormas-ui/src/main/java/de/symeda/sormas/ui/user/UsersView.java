@@ -99,6 +99,7 @@ public class UsersView extends AbstractUserView {
 		gridLayout.addComponent(createActionsBar());
 
 		rowsCount = new RowCount(Strings.labelNumberOfUsers, grid.getDataSize());
+		grid.addDataSizeChangeListener(e -> rowsCount.update(grid.getDataSize()));
 		gridLayout.addComponent(rowsCount);
 
 		gridLayout.addComponent(grid);

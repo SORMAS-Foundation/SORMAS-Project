@@ -62,6 +62,12 @@ Feature: mSERS functionalities
   Scenario:Test Add a view to list aggregate report data and to highlight duplicates
     Given I log in as a Surveillance Officer
     When I click on the mSERS button from navbar
+    And I navigate to Report data tab
+    And I set Epi Year from filter to "2004" in mSers directory page
+    Then I set Epi week from filter to "Wk 1-2004 (12/29 - 1/4)" in mSers directory page
+    And I click on the APPLY FILTERS button
+    And I check aggregate reports and delete them if they are listed
+    When I click on the mSERS button from navbar
     When I click on the NEW AGGREGATE REPORT button
     Then I click on SPECIFY Radiobutton in Create Aggregated Report form
     And I fill a new aggregate report with specific data for duplicates
@@ -87,12 +93,14 @@ Feature: mSERS functionalities
   Scenario: Test Limited disease user property should not be applied to mSERS aggregated reporting
     Given I log in as a National User
     When I click on the mSERS button from navbar
+    Then I navigate to Report data tab
+    And I click on the APPLY FILTERS button
+    And I check aggregate reports and delete them if they are listed
     When I click on the NEW AGGREGATE REPORT button
     Then I set Region combobox to "Baden-Württemberg" in Create New Aggregate Report popup
     And I set District combobox to "LK Alb-Donau-Kreis" in Create New Aggregate Report popup
     And I fill a new aggregate report with specific data for one disease
     And I click to save aggregated report
-    And I navigate to Report data tab
     Then I select ARI (Acute Respiratory Infections) disease from Disease combobox in mSers directory page
     And I click on the APPLY FILTERS button
     And I check if there number of results in grid in mSers directory is 0

@@ -347,9 +347,11 @@ public class TravelEntryDirectorySteps implements En {
         "I apply the last epi week for week from combobox on Travel Entry directory page",
         () -> {
           int week =
-              CreateNewTravelEntrySteps.previousWeekDate.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR)
-                  + 1; // because weeks are counting since end of december previous year
-          String lastEpiWeek = "Wo " + week + "-" + LocalDate.now().getYear();
+              CreateNewTravelEntrySteps.previousWeekDate.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
+          //  + 1; // because weeks are counting since end of december previous year
+
+          LocalDate newYearSuprise = LocalDate.now().minusDays(7);
+          String lastEpiWeek = "Wo " + week + "-" + newYearSuprise.getYear();
           webDriverHelpers.selectFromCombobox(WEEK_FROM_OPTION_COMBOBOX, lastEpiWeek);
         });
 
@@ -359,6 +361,8 @@ public class TravelEntryDirectorySteps implements En {
           int week =
               CreateNewTravelEntrySteps.previousWeekDate.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR)
                   + 1; // because weeks are counting since end of december previous year
+          if (week == 53) week = 1;
+          LocalDate newYearSuprise = LocalDate.now().minusDays(7);
           String lastEpiWeek = "Wo " + week + "-" + LocalDate.now().getYear();
           webDriverHelpers.selectFromCombobox(WEEK_TO_OPTION_COMBOBOX, lastEpiWeek);
         });
@@ -367,7 +371,11 @@ public class TravelEntryDirectorySteps implements En {
         () -> {
           int week =
               CreateNewTravelEntrySteps.previousWeekDate.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
-          String lastEpiWeek = "Wo " + week + "-" + LocalDate.now().getYear();
+          if (week == 53) week = 1;
+
+          LocalDate newYearSuprise = LocalDate.now().minusDays(7);
+
+          String lastEpiWeek = "Wo " + week + "-" + newYearSuprise.getYear();
           webDriverHelpers.selectFromCombobox(WEEK_TO_OPTION_COMBOBOX, lastEpiWeek);
         });
 

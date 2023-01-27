@@ -5,6 +5,7 @@ import java.util.Date;
 import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
@@ -37,6 +38,17 @@ public class TravelEntryGrid extends FilteredGrid<TravelEntryIndexDto, TravelEnt
 			setCriteria(criteria);
 		}
 
+		Column<TravelEntryIndexDto, String> deleteColumn = addColumn(entry -> {
+			if (entry.getDeletionReason() != null) {
+				return entry.getDeletionReason() + (entry.getOtherDeletionReason() != null ? ": " + entry.getOtherDeletionReason() : "");
+			} else {
+				return "-";
+			}
+		});
+		deleteColumn.setId(DELETE_REASON_COLUMN);
+		deleteColumn.setSortable(false);
+		deleteColumn.setCaption(I18nProperties.getCaption(Captions.deletionReason));
+
 		setCriteria(criteria);
 		initColumns();
 		addItemClickListener(
@@ -56,7 +68,8 @@ public class TravelEntryGrid extends FilteredGrid<TravelEntryIndexDto, TravelEnt
 			TravelEntryIndexDto.RECOVERED,
 			TravelEntryIndexDto.VACCINATED,
 			TravelEntryIndexDto.TESTED_NEGATIVE,
-			TravelEntryIndexDto.QUARANTINE_TO);
+			TravelEntryIndexDto.QUARANTINE_TO,
+			DELETE_REASON_COLUMN);
 
 		((Column<TravelEntryIndexDto, String>) getColumn(TravelEntryIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<TravelEntryIndexDto, Boolean>) getColumn(TravelEntryIndexDto.RECOVERED)).setRenderer(new BooleanRenderer());
@@ -79,7 +92,6 @@ public class TravelEntryGrid extends FilteredGrid<TravelEntryIndexDto, TravelEnt
 	}
 
 	public void setEagerDataProvider() {
-
 		setEagerDataProvider(FacadeProvider.getTravelEntryFacade()::getIndexList);
 	}
 

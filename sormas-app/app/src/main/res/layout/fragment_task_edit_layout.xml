@@ -60,19 +60,19 @@
                     android:id="@+id/task_caze"
                     style="@style/ControlSingleColumnStyle"
                     app:goneIfEmpty="@{data.caze}"
-                    app:value="@{data.caze.toString()}" />
+                    app:value="@{data.caze.buildCaption()}" />
 
                 <de.symeda.sormas.app.component.controls.ControlLinkField
                     android:id="@+id/task_contact"
                     style="@style/ControlSingleColumnStyle"
                     app:goneIfEmpty="@{data.contact}"
-                    app:value="@{data.contact.toString()}" />
+                    app:value="@{data.contact.buildCaption()}" />
 
                 <de.symeda.sormas.app.component.controls.ControlLinkField
                     android:id="@+id/task_event"
                     style="@style/ControlSingleColumnStyle"
                     app:goneIfEmpty="@{data.event}"
-                    app:value="@{data.event.toString()}" />
+                    app:value="@{data.event.buildCaption()}" />
 
                 <de.symeda.sormas.app.component.controls.ControlDateTimeField
                     android:id="@+id/task_suggestedStart"

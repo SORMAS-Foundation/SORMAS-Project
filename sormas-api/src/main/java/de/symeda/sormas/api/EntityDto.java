@@ -29,6 +29,7 @@ import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.FieldConstraints;
+import de.symeda.sormas.api.utils.HasCaption;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.uuid.HasUuid;
 
@@ -43,7 +44,7 @@ import de.symeda.sormas.api.uuid.HasUuid;
  */
 @AuditedClass
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public abstract class EntityDto implements Serializable, Cloneable, HasUuid {
+public abstract class EntityDto implements Serializable, Cloneable, HasUuid, HasCaption {
 
 	private static final long serialVersionUID = -1L;
 

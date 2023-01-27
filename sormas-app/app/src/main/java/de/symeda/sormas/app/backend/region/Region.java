@@ -89,7 +89,7 @@ public class Region extends InfrastructureAdo {
 	}
 
 	@Override
-	public String toString() {
+	public String buildCaption() {
 		return getName();
 	}
 

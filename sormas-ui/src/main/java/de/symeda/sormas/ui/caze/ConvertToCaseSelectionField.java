@@ -94,12 +94,12 @@ public class ConvertToCaseSelectionField extends VerticalLayout {
 		lblLastName.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.LAST_NAME));
 		contactDetailsLayout.addComponent(lblLastName);
 
-		final Label lblRegion = new Label(caseDataDto.getResponsibleRegion().toString());
+		final Label lblRegion = new Label(caseDataDto.getResponsibleRegion().buildCaption());
 		lblRegion.setWidthUndefined();
 		lblRegion.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.RESPONSIBLE_REGION));
 		contactDetailsLayout.addComponent(lblRegion);
 
-		final Label lblDistrict = new Label(caseDataDto.getResponsibleDistrict().toString());
+		final Label lblDistrict = new Label(caseDataDto.getResponsibleDistrict().buildCaption());
 		lblDistrict.setWidthUndefined();
 		lblDistrict.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.RESPONSIBLE_DISTRICT));
 		contactDetailsLayout.addComponent(lblDistrict);

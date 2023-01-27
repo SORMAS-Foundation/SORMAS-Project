@@ -91,6 +91,10 @@ public class TaskCriteria extends BaseCriteria implements Serializable {
 		return taskType;
 	}
 
+	public void setTaskType(TaskType taskType) {
+		this.taskType = taskType;
+	}
+
 	public TaskCriteria assigneeUser(UserReferenceDto assigneeUser) {
 		this.assigneeUser = assigneeUser;
 		return this;

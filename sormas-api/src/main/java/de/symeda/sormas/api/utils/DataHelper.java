@@ -151,6 +151,11 @@ public final class DataHelper {
 		if (nullable == null) {
 			return "";
 		}
+
+		if (HasCaption.class.isAssignableFrom(nullable.getClass())) {
+			return ((HasCaption) nullable).buildCaption();
+		}
+
 		return nullable.toString();
 	}
 
@@ -421,6 +426,8 @@ public final class DataHelper {
 		} else if (value instanceof BirthDateDto) {
 			BirthDateDto birthDate = (BirthDateDto) value;
 			return DateFormatHelper.formatDate(birthDate.getDateOfBirthDD(), birthDate.getDateOfBirthMM(), birthDate.getDateOfBirthYYYY());
+		} else if (value instanceof HasCaption) {
+			return ((HasCaption) value).buildCaption();
 		} else {
 			return value.toString();
 		}

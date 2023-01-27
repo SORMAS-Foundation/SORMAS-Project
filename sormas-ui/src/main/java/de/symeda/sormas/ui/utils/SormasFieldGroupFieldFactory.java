@@ -112,6 +112,11 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			combo.setImmediate(true);
 
 			return (T) combo;
+		} else if (OptionGroup.class.isAssignableFrom(fieldType) || OptionGroupWithCaption.class.isAssignableFrom(fieldType)) {
+			OptionGroupWithCaption optionGroupWithCaption = new OptionGroupWithCaption();
+			optionGroupWithCaption.setImmediate(true);
+
+			return (T) optionGroupWithCaption;
 		} else if (AbstractSelect.class.isAssignableFrom(fieldType)) {
 			AbstractSelect field = createCompatibleSelect((Class<? extends AbstractSelect>) fieldType);
 			field.setNullSelectionAllowed(true);

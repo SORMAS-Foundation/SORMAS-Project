@@ -32,6 +32,7 @@ import de.symeda.sormas.api.sormastosormas.entities.event.SormasToSormasEventDto
 import de.symeda.sormas.api.sormastosormas.entities.event.SormasToSormasEventParticipantDto;
 import de.symeda.sormas.api.sormastosormas.entities.immunization.SormasToSormasImmunizationDto;
 import de.symeda.sormas.api.sormastosormas.entities.sample.SormasToSormasSampleDto;
+import de.symeda.sormas.api.sormastosormas.entities.surveillancereport.SormasToSormasSurveillanceReportDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasCasePreview;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasContactPreview;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasEventParticipantPreview;
@@ -44,6 +45,7 @@ import de.symeda.sormas.backend.sormastosormas.entities.event.EventShareDataBuil
 import de.symeda.sormas.backend.sormastosormas.entities.eventparticipant.EventParticipantShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.entities.immunization.ImmunizationShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.entities.sample.SampleShareDataBuilder;
+import de.symeda.sormas.backend.sormastosormas.entities.surveillancereport.SurveillanceReportShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
 import de.symeda.sormas.backend.sormastosormas.share.incoming.ShareRequestPreviews;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
@@ -66,6 +68,9 @@ public class ShareDataBuilder {
 	private EventParticipantShareDataBuilder eventParticipantShareDataBuilder;
 	@EJB
 	private ImmunizationShareDataBuilder immunizationShareDataBuilder;
+
+	@EJB
+	private SurveillanceReportShareDataBuilder surveillanceReportShareDataBuilder;
 	@EJB
 	private ShareDataBuilderHelper shareDataBuilderHelper;
 
@@ -87,6 +92,7 @@ public class ShareDataBuilder {
 		List<SormasToSormasEventDto> events = new ArrayList<>();
 		List<SormasToSormasEventParticipantDto> eventParticipants = new ArrayList<>();
 		List<SormasToSormasImmunizationDto> immunizations = new ArrayList<>();
+		List<SormasToSormasSurveillanceReportDto> reports = new ArrayList<>();
 
 		List<ValidationErrors> validationErrors = new ArrayList<>();
 
@@ -139,6 +145,14 @@ public class ShareDataBuilder {
 					validationErrors.addAll(e.getErrors());
 				}
 			}
+
+			if (s.getSurveillanceReport() != null) {
+				try {
+					reports.add(surveillanceReportShareDataBuilder.buildShareData(s.getSurveillanceReport(), requestInfo, s.isOwnershipHandedOver()));
+				} catch (SormasToSormasValidationException e) {
+					validationErrors.addAll(e.getErrors());
+				}
+			}
 		});
 
 		if (!validationErrors.isEmpty()) {
@@ -153,6 +167,7 @@ public class ShareDataBuilder {
 		dto.setEvents(events);
 		dto.setEventParticipants(eventParticipants);
 		dto.setImmunizations(immunizations);
+		dto.setSurveillanceReports(reports);
 
 		return dto;
 	}

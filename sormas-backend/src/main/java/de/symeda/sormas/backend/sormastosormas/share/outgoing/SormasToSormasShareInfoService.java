@@ -37,6 +37,7 @@ import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -112,6 +113,15 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilterAndJ
 				cb.equal(
 					from.join(SormasToSormasShareInfo.IMMUNIZATION, JoinType.LEFT).get(Immunization.UUID),
 					criteria.getImmunization().getUuid()));
+		}
+
+		if (criteria.getSurveillanceReport() != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.equal(
+					from.join(SormasToSormasShareInfo.SURVEILLANCE_REPORT, JoinType.LEFT).get(SurveillanceReport.UUID),
+					criteria.getSurveillanceReport().getUuid()));
 		}
 
 		return filter;
@@ -190,6 +200,10 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilterAndJ
 
 	public SormasToSormasShareInfo getByImmunizationAndOrganization(String immunizationUuid, String organizationId) {
 		return getByOrganization(SormasToSormasShareInfo.IMMUNIZATION, immunizationUuid, organizationId);
+	}
+
+	public SormasToSormasShareInfo getBySurveillanceReportAndOrganization(String surveillanceUuid, String organizationId) {
+		return getByOrganization(SormasToSormasShareInfo.SURVEILLANCE_REPORT, surveillanceUuid, organizationId);
 	}
 
 	public SormasToSormasShareInfo getByOrganization(String associatedObjectField, String associatedObjectUuid, String organizationId) {

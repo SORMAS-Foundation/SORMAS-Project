@@ -3,6 +3,7 @@ package de.symeda.sormas.api.travelentry;
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
@@ -38,6 +39,9 @@ public class TravelEntryIndexDto extends PseudonymizableIndexDto implements Seri
 	private boolean testedNegative;
 	private Date quarantineTo;
 
+	private DeletionReason deletionReason;
+	private String otherDeletionReason;
+
 	private boolean isInJurisdiction;
 
 	public TravelEntryIndexDto(
@@ -51,6 +55,8 @@ public class TravelEntryIndexDto extends PseudonymizableIndexDto implements Seri
 		boolean vaccinated,
 		boolean testedNegative,
 		Date quarantineTo,
+		DeletionReason deletionReason,
+		String otherDeletionReason,
 		boolean isInJurisdiction) {
 		super(uuid);
 		this.externalId = externalId;
@@ -62,6 +68,8 @@ public class TravelEntryIndexDto extends PseudonymizableIndexDto implements Seri
 		this.vaccinated = vaccinated;
 		this.testedNegative = testedNegative;
 		this.quarantineTo = quarantineTo;
+		this.deletionReason = deletionReason;
+		this.otherDeletionReason = otherDeletionReason;
 		this.isInJurisdiction = isInJurisdiction;
 	}
 
@@ -135,6 +143,22 @@ public class TravelEntryIndexDto extends PseudonymizableIndexDto implements Seri
 
 	public void setQuarantineTo(Date quarantineTo) {
 		this.quarantineTo = quarantineTo;
+	}
+
+	public DeletionReason getDeletionReason() {
+		return deletionReason;
+	}
+
+	public void setDeletionReason(DeletionReason deletionReason) {
+		this.deletionReason = deletionReason;
+	}
+
+	public String getOtherDeletionReason() {
+		return otherDeletionReason;
+	}
+
+	public void setOtherDeletionReason(String otherDeletionReason) {
+		this.otherDeletionReason = otherDeletionReason;
 	}
 
 	public boolean isInJurisdiction() {

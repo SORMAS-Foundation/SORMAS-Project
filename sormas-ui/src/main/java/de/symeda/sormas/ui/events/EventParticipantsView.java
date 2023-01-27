@@ -298,7 +298,7 @@ public class EventParticipantsView extends AbstractEventView {
 
 	private boolean shouldDisableButton() {
 		return FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.EDIT_ARCHIVED_ENTITIES)
-				&& FacadeProvider.getEventFacade().isArchived(getEventRef().getUuid());
+			&& FacadeProvider.getEventFacade().isArchived(getEventRef().getUuid());
 	}
 
 	private Set<String> getSelectedRows() {
@@ -379,7 +379,7 @@ public class EventParticipantsView extends AbstractEventView {
 			eventParticipantRelevanceStatusFilter = buildRelevanceStatusFilter(
 				Captions.eventParticipantActiveEventParticipants,
 				Captions.eventParticipantArchivedEventParticipants,
-				Captions.eventParticipantAllEventParticipants);
+				Captions.eventParticipantActiveAndArchivedEventParticipants);
 
 			eventParticipantRelevanceStatusFilter.addValueChangeListener(e -> {
 				if (relevanceStatusInfoLabel != null) {
@@ -418,7 +418,15 @@ public class EventParticipantsView extends AbstractEventView {
 		relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
 		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(eventParticipantActiveCaption));
 		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(eventParticipantArchivedCaption));
-		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(eventParticipantAllCaption));
+		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(eventParticipantAllCaption));
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
+			relevanceStatusFilter
+				.setItemCaption(EntityRelevanceStatus.DELETED, I18nProperties.getCaption(Captions.eventParticipantDeletedEventParticipants));
+		} else {
+			relevanceStatusFilter.removeItem(EntityRelevanceStatus.DELETED);
+		}
+
 		return relevanceStatusFilter;
 	}
 
@@ -433,7 +441,7 @@ public class EventParticipantsView extends AbstractEventView {
 			if (criteria.getRelevanceStatus() == null) {
 				criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
 				boolean archived = FacadeProvider.getEventFacade().isArchived(getEventRef().getUuid());
-				eventParticipantRelevanceStatusFilter.setValue(archived ? EntityRelevanceStatus.ALL : criteria.getRelevanceStatus());
+				eventParticipantRelevanceStatusFilter.setValue(archived ? EntityRelevanceStatus.ACTIVE_AND_ARCHIVED : criteria.getRelevanceStatus());
 			} else {
 				eventParticipantRelevanceStatusFilter.setValue(criteria.getRelevanceStatus());
 			}

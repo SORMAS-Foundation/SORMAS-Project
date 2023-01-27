@@ -191,8 +191,7 @@ public class MapContactDto extends AbstractUuidDto {
 	}
 
 	@Override
-	public String toString() {
-
+	public String buildCaption() {
 		StringBuilder builder = new StringBuilder();
 		builder.append(personFirstName).append(" ").append(personLastName.toUpperCase());
 		if (casePersonFirstName != null && casePersonLastName != null) {

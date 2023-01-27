@@ -82,7 +82,7 @@ public class District extends InfrastructureAdo {
 	}
 
 	@Override
-	public String toString() {
+	public String buildCaption() {
 		return getName();
 	}
 

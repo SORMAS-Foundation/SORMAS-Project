@@ -34,12 +34,17 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 public class VaccinationListComponent extends SideComponent {
 
-	public VaccinationListComponent(Supplier<VaccinationCriteria> criteriaSupplier, Consumer<Runnable> actionCallback, boolean isEditAllowed) {
-		this(criteriaSupplier, actionCallback, true, isEditAllowed);
+	public VaccinationListComponent(
+		Supplier<VaccinationCriteria> criteriaSupplier,
+		String activeUuid,
+		Consumer<Runnable> actionCallback,
+		boolean isEditAllowed) {
+		this(criteriaSupplier, activeUuid, actionCallback, true, isEditAllowed);
 	}
 
 	public VaccinationListComponent(
 		Supplier<VaccinationCriteria> criteriaSupplier,
+		String activeUuid,
 		Consumer<Runnable> actionCallback,
 		boolean allowNewVaccine,
 		boolean isEditAllowed) {
@@ -85,6 +90,7 @@ public class VaccinationListComponent extends SideComponent {
 		}
 
 		VaccinationList vaccinationList = new VaccinationList(criteria.getDisease(), entriesListSupplier, actionCallback, isEditAllowed);
+		vaccinationList.setActiveUuid(activeUuid);
 		addComponent(vaccinationList);
 		vaccinationList.reload();
 	}

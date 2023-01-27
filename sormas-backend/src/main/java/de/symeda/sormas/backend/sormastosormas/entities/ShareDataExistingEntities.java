@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.sormastosormas.entities;
 import java.util.Map;
 
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
@@ -32,6 +33,7 @@ public class ShareDataExistingEntities {
 	private final Map<String, EventParticipant> eventParticipants;
 	private final Map<String, Sample> samples;
 	private final Map<String, Immunization> immunizations;
+	private final Map<String, SurveillanceReport> surveillanceReports;
 
 	public ShareDataExistingEntities(
 		Map<String, Case> cases,
@@ -39,13 +41,15 @@ public class ShareDataExistingEntities {
 		Map<String, Event> events,
 		Map<String, EventParticipant> eventParticipants,
 		Map<String, Sample> samples,
-		Map<String, Immunization> immunizations) {
+		Map<String, Immunization> immunizations,
+		Map<String, SurveillanceReport> surveillanceReports) {
 		this.cases = cases;
 		this.contacts = contacts;
 		this.events = events;
 		this.eventParticipants = eventParticipants;
 		this.samples = samples;
 		this.immunizations = immunizations;
+		this.surveillanceReports = surveillanceReports;
 	}
 
 	public Map<String, Case> getCases() {
@@ -70,5 +74,9 @@ public class ShareDataExistingEntities {
 
 	public Map<String, Immunization> getImmunizations() {
 		return immunizations;
+	}
+
+	public Map<String, SurveillanceReport> getSurveillanceReports() {
+		return surveillanceReports;
 	}
 }

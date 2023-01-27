@@ -639,8 +639,8 @@ public class EditEventSteps implements En {
           fillTitle(collectedEvent.getTitle());
           selectSourceType(collectedEvent.getSourceType());
           selectTypeOfPlace(collectedEvent.getEventLocation());
-          webDriverHelpers.scrollToElement(SAVE_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.scrollToElement(EDIT_EVENT_PAGE_SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_EVENT_PAGE_SAVE_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EVENT_DATA_SAVED_MESSAGE);
         });
 
@@ -747,11 +747,12 @@ public class EditEventSteps implements En {
     When(
         "I click on save button in Add Participant form",
         () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAVE_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              EDIT_EVENT_PAGE_SAVE_BUTTON);
           TimeUnit.SECONDS.sleep(2); // needed for button to be available
           int attempts = 0;
           do {
-            webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+            webDriverHelpers.clickOnWebElementBySelector(EDIT_EVENT_PAGE_SAVE_BUTTON);
             attempts++;
           } while (attempts < 5
               && webDriverHelpers.isElementPresent(By.cssSelector(".v-window-wrap")));
@@ -1928,8 +1929,8 @@ public class EditEventSteps implements En {
               "Default option is not 'All event participants'");
           Assert.assertTrue(
               webDriverHelpers.checkIfElementExistsInCombobox(
-                  EVENT_PARTICIPANT_STATUS, "All event participants"),
-              "There is no 'All event participants' option in drop list.");
+                  EVENT_PARTICIPANT_STATUS, "Active and archived event participants"),
+              "There is no 'Active and archived event participants' option in drop list.");
           Assert.assertTrue(
               webDriverHelpers.checkIfElementExistsInCombobox(
                   EVENT_PARTICIPANT_STATUS, "Active event participants"),
@@ -1938,6 +1939,10 @@ public class EditEventSteps implements En {
               webDriverHelpers.checkIfElementExistsInCombobox(
                   EVENT_PARTICIPANT_STATUS, "Archived event participants"),
               "There is no 'Archived event participants' option in drop list.");
+          Assert.assertTrue(
+              webDriverHelpers.checkIfElementExistsInCombobox(
+                  EVENT_PARTICIPANT_STATUS, "Deleted event participants"),
+              "There is no 'Deleted event participants' option in drop list.");
         });
 
     And(
@@ -1945,12 +1950,12 @@ public class EditEventSteps implements En {
         () -> {
           Assert.assertEquals(
               webDriverHelpers.getValueFromCombobox(EVENT_PARTICIPANT_STATUS),
-              "All event participants",
-              "Default option is not 'All event participants'");
+              "Active and archived event participants",
+              "Default option is not 'Active and archived event participants'");
           Assert.assertTrue(
               webDriverHelpers.checkIfElementExistsInCombobox(
-                  EVENT_PARTICIPANT_STATUS, "All event participants"),
-              "There is no 'All event participants' option in drop list.");
+                  EVENT_PARTICIPANT_STATUS, "Active and archived event participants"),
+              "There is no 'Active and archived event participants' option in drop list.");
           Assert.assertTrue(
               webDriverHelpers.checkIfElementExistsInCombobox(
                   EVENT_PARTICIPANT_STATUS, "Active event participants"),
@@ -1959,6 +1964,10 @@ public class EditEventSteps implements En {
               webDriverHelpers.checkIfElementExistsInCombobox(
                   EVENT_PARTICIPANT_STATUS, "Archived event participants"),
               "There is no 'Archived event participants' option in drop list.");
+          Assert.assertTrue(
+              webDriverHelpers.checkIfElementExistsInCombobox(
+                  EVENT_PARTICIPANT_STATUS, "Deleted event participants"),
+              "There is no 'Deleted event participants' option in drop list.");
         });
 
     When(
@@ -1972,6 +1981,12 @@ public class EditEventSteps implements En {
         "I filter by last created event via api",
         () -> {
           webDriverHelpers.fillAndSubmitInWebElement(SEARCH_EVENT_BY_FREE_TEXT_INPUT, eventUUID);
+        });
+
+    And(
+        "^I save Add participant form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_FOR_POPUP_WINDOWS);
         });
   }
 

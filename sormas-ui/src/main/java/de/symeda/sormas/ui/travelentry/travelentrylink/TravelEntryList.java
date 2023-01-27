@@ -63,8 +63,13 @@ public class TravelEntryList extends PaginationList<TravelEntryListEntryDto> {
 	protected void drawDisplayedEntries() {
 		for (TravelEntryListEntryDto travelEntry : getDisplayedEntries()) {
 			TravelEntryListEntry listEntry = new TravelEntryListEntry(travelEntry);
-
-			addActionButton(listEntry);
+			boolean isActiveTravelEntry = travelEntry.getUuid().equals(getActiveUuid());
+			if (isActiveTravelEntry) {
+				listEntry.setActive();
+			}
+			if (!isActiveTravelEntry) {
+				addActionButton(listEntry);
+			}
 			listLayout.addComponent(listEntry);
 		}
 	}

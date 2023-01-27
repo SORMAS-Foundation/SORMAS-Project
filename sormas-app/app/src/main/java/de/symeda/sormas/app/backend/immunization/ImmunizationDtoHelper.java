@@ -215,7 +215,7 @@ public class ImmunizationDtoHelper extends PersonDependentDtoHelper<Immunization
 		if (ado == null) {
 			return null;
 		}
-		ImmunizationReferenceDto dto = new ImmunizationReferenceDto(ado.getUuid(), ado.toString(), ado.getExternalId());
+		ImmunizationReferenceDto dto = new ImmunizationReferenceDto(ado.getUuid(), ado.buildCaption(), ado.getExternalId());
 
 		return dto;
 	}

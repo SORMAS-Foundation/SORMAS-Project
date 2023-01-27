@@ -19,6 +19,7 @@ import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb;
@@ -150,6 +151,14 @@ public class SormasToSormasEntitiesHelper {
 				m.setStatus(ExternalMessageStatus.FORWARDED);
 				externalMessageService.ensurePersisted(m);
 			});
+		}
+	}
+
+	public void updateSurveillanceReportOnShare(SurveillanceReport surveillanceReport, SormasToSormasShareInfo sareInfo) {
+		if (sareInfo.isOwnershipHandedOver()) {
+			if (surveillanceReport.getExternalMessage() != null) {
+				surveillanceReport.getExternalMessage().setStatus(ExternalMessageStatus.FORWARDED);
+			}
 		}
 	}
 }

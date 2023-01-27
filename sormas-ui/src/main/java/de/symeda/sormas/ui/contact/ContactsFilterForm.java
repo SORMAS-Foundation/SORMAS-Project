@@ -555,11 +555,6 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		}
 	}
 
-	public void setSearchFieldEnabled(boolean enabled) {
-		this.getField(ContactCriteria.CONTACT_OR_CASE_LIKE).setEnabled(enabled);
-		this.getField(ContactCriteria.EVENT_LIKE).setEnabled(enabled);
-	}
-
 	private void populateContactResponsiblesForRegion(RegionReferenceDto regionReferenceDto) {
 		List<UserReferenceDto> items =
 			fetchContactResponsiblesByRegion(regionReferenceDto != null ? regionReferenceDto : currentUserDto().getRegion());

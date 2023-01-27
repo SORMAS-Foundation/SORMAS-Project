@@ -49,7 +49,11 @@ public class CaseList extends PaginationList<CaseListEntryDto> {
 		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
 			final CaseListEntryDto caze = displayedEntries.get(i);
 			final CaseListEntry listEntry = new CaseListEntry(caze);
-			if (currentUser != null && currentUser.hasUserRight(UserRight.CASE_EDIT)) {
+			final boolean isActiveCase = caze.getUuid().equals(getActiveUuid());
+			if (isActiveCase) {
+				listEntry.setActive();
+			}
+			if (currentUser != null && currentUser.hasUserRight(UserRight.CASE_EDIT) && !isActiveCase) {
 				listEntry.addEditButton(
 					"edit-case-" + i,
 					(Button.ClickListener) event -> ControllerProvider.getCaseController().navigateToCase(listEntry.getCaseListEntryDto().getUuid()));
