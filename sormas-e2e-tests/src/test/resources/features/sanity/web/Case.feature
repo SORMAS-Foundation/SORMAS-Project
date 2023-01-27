@@ -2028,7 +2028,7 @@ Feature: Case end to end tests
     Then I navigate to "s2s_2" environment
     Given I log in as a Admin User
     And I click on the Shares button from navbar
-    Then I accept first case in Shares Page
+    Then I check if accept button does not appear in Shares Page
 
   @tmsLink=SORQA-658 @env_de @oldfake
     Scenario: Check automatic deletion of cases created 3651 days ago
