@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.utils;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import com.vaadin.ui.Label;
@@ -20,25 +21,29 @@ public class BulkOperationHelper {
 	}
 
 	public static void doBulkOperation(
-		Function<List<? extends HasUuid>, BulkOperationResults> bulkOperationFunction,
+		Function<List<? extends HasUuid>, BulkOperationResults<?>> bulkOperationFunction,
 		List<? extends HasUuid> selectedEntries,
-		int initialEntryCount) {
+		int initialEntryCount,
+		Consumer<BulkOperationResults<?>> bulkOperationDoneCallback) {
 
-		BulkOperationResults bulkOperationResults = bulkOperationFunction.apply(selectedEntries);
-		BulkOperationHelper.handleBulkOperationResult(bulkOperationResults, bulkOperationFunction, selectedEntries, initialEntryCount);
+		BulkOperationResults<?> bulkOperationResults = bulkOperationFunction.apply(selectedEntries);
+		BulkOperationHelper
+			.handleBulkOperationResult(bulkOperationResults, bulkOperationFunction, selectedEntries, initialEntryCount, bulkOperationDoneCallback);
 	}
 
 	public static void handleBulkOperationResult(
-		BulkOperationResults bulkOperationResults,
-		Function<List<? extends HasUuid>, BulkOperationResults> bulkOperationFunction,
+		BulkOperationResults<?> bulkOperationResults,
+		Function<List<? extends HasUuid>, BulkOperationResults<?>> bulkOperationFunction,
 		List<? extends HasUuid> selectedEntries,
-		int initialEntryCount) {
+		int initialEntryCount,
+		Consumer<BulkOperationResults<?>> bulkOperationDoneCallback) {
 
 		if (bulkOperationResults.getRemainingEntries().isEmpty()) {
 			Notification.show(I18nProperties.getString(Strings.messageCasesEdited), Notification.Type.HUMANIZED_MESSAGE);
+			bulkOperationDoneCallback.accept(bulkOperationResults);
 		} else if (bulkOperationResults.hasExceededEntryLimit()) {
 			VaadinUiUtil.showChooseOptionPopup(
-				null,
+				I18nProperties.getString(Strings.headingBulkOperationProgress),
 				new Label(
 					String.format(
 						I18nProperties.getString(Strings.messageBulkOperationEntryLimitReached),
@@ -50,12 +55,14 @@ public class BulkOperationHelper {
 				confirmed -> {
 					if (Boolean.TRUE.equals(confirmed)) {
 						selectedEntries.removeIf(e -> !bulkOperationResults.getRemainingEntries().contains(e.getUuid()));
-						doBulkOperation(bulkOperationFunction, selectedEntries, initialEntryCount);
+						doBulkOperation(bulkOperationFunction, selectedEntries, initialEntryCount, bulkOperationDoneCallback);
+					} else {
+						bulkOperationDoneCallback.accept(bulkOperationResults);
 					}
 				});
 		} else if (bulkOperationResults.hasExceededTimeLimit()) {
 			VaadinUiUtil.showChooseOptionPopup(
-				null,
+				I18nProperties.getString(Strings.headingBulkOperationProgress),
 				new Label(
 					String.format(
 						I18nProperties.getString(Strings.messageBulkOperationTimeLimitReached),
@@ -68,7 +75,9 @@ public class BulkOperationHelper {
 				confirmed -> {
 					if (Boolean.TRUE.equals(confirmed)) {
 						selectedEntries.removeIf(e -> !bulkOperationResults.getRemainingEntries().contains(e.getUuid()));
-						doBulkOperation(bulkOperationFunction, selectedEntries, initialEntryCount);
+						doBulkOperation(bulkOperationFunction, selectedEntries, initialEntryCount, bulkOperationDoneCallback);
+					} else {
+						bulkOperationDoneCallback.accept(bulkOperationResults);
 					}
 				});
 		} else {
@@ -78,6 +87,7 @@ public class BulkOperationHelper {
 					initialEntryCount - bulkOperationResults.getRemainingEntries().size()),
 				Notification.Type.HUMANIZED_MESSAGE,
 				-1);
+			bulkOperationDoneCallback.accept(bulkOperationResults);
 		}
 	}
 

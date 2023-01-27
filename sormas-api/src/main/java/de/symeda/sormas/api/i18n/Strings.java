@@ -389,6 +389,7 @@ public interface Strings {
 	String headingArchiveTravelEntry = "headingArchiveTravelEntry";
 	String headingArchivingNotPossible = "headingArchivingNotPossible";
 	String headingAutomaticDeletionStarted = "headingAutomaticDeletionStarted";
+	String headingBulkOperationProgress = "headingBulkOperationProgress";
 	String headingBurialDetails = "headingBurialDetails";
 	String headingCampaignBasics = "headingCampaignBasics";
 	String headingCampaignDashboard = "headingCampaignDashboard";

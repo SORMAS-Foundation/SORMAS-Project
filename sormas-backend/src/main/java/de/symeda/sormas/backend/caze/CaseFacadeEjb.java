@@ -154,7 +154,6 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
-import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
@@ -1513,7 +1512,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		boolean surveillanceOfficerChange)
 		throws ValidationRuntimeException {
 
-		return BulkOperationHelper.executeWithLimits(caseUuidList, DataHelper.BULK_EDIT_TIME_LIMIT, DataHelper.BULK_EDIT_TIME_LIMIT, uuid -> {
+		return BulkOperationHelper.executeWithLimits(caseUuidList, DataHelper.BULK_EDIT_TIME_LIMIT, DataHelper.BULK_EDIT_ENTRY_LIMIT, uuid -> {
 			Case caze = service.getByUuid(uuid);
 
 			if (service.isEditAllowed(caze)) {
@@ -1536,7 +1535,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@RightsAllowed({
 		UserRight._CASE_EDIT })
-	public void saveBulkEditWithFacilities(
+	public BulkOperationResults<String> saveBulkEditWithFacilities(
 		List<String> caseUuidList,
 		@Valid CaseBulkEditData updatedCaseBulkEditData,
 		boolean diseaseChange,
@@ -1548,18 +1547,15 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		Region newRegion = regionService.getByUuid(updatedCaseBulkEditData.getRegion().getUuid());
 		District newDistrict = districtService.getByUuid(updatedCaseBulkEditData.getDistrict().getUuid());
-		CommunityReferenceDto communityDto = updatedCaseBulkEditData.getCommunity();
-		Community newCommunity = null;
-		if (communityDto != null) {
-			newCommunity = communityService.getByUuid(updatedCaseBulkEditData.getCommunity().getUuid());
-		}
+		Community newCommunity =
+			updatedCaseBulkEditData.getCommunity() != null ? communityService.getByUuid(updatedCaseBulkEditData.getCommunity().getUuid()) : null;
+		Facility newFacility = facilityService.getByUuid(updatedCaseBulkEditData.getHealthFacility().getUuid());
 
-		for (String caseUuid : caseUuidList) {
-			Case caze = service.getByUuid(caseUuid);
+		return BulkOperationHelper.executeWithLimits(caseUuidList, DataHelper.BULK_EDIT_TIME_LIMIT, DataHelper.BULK_EDIT_ENTRY_LIMIT, uuid -> {
+			Case caze = service.getByUuid(uuid);
 
 			if (service.isEditAllowed(caze)) {
 				CaseDataDto existingCaseDto = toDto(caze);
-
 				updateCaseWithBulkData(
 					updatedCaseBulkEditData,
 					caze,
@@ -1573,12 +1569,15 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				caze.setDistrict(newDistrict);
 				caze.setCommunity(newCommunity);
 				caze.setFacilityType(updatedCaseBulkEditData.getFacilityType());
-				caze.setHealthFacility(facilityService.getByUuid(updatedCaseBulkEditData.getHealthFacility().getUuid()));
+				caze.setHealthFacility(newFacility);
 				caze.setHealthFacilityDetails(updatedCaseBulkEditData.getHealthFacilityDetails());
 				CaseLogic.handleHospitalization(toDto(caze), existingCaseDto, doTransfer);
 				doSave(caze, true, existingCaseDto, true);
+				return true;
 			}
-		}
+
+			return false;
+		});
 	}
 
 	private void updateCaseWithBulkData(

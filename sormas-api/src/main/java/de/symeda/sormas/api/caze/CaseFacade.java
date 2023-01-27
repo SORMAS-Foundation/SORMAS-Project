@@ -183,7 +183,7 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	List<String> getUuidsNotShareableWithExternalReportingTools(List<String> caseUuids);
 
-	BulkOperationResults saveBulkCase(
+	BulkOperationResults<String> saveBulkCase(
 		List<String> caseUuidList,
 		@Valid CaseBulkEditData updatedCaseBulkEditData,
 		boolean diseaseChange,
@@ -192,7 +192,7 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 		boolean outcomeChange,
 		boolean surveillanceOfficerChange);
 
-	void saveBulkEditWithFacilities(
+	BulkOperationResults<String> saveBulkEditWithFacilities(
 		List<String> caseUuidList,
 		@Valid CaseBulkEditData updatedCaseBulkEditData,
 		boolean diseaseChange,
