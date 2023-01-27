@@ -244,7 +244,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 			ensureConsistentOptions(options);
 		}
 
-		validateEntitiesBeforeShare(entities, options.isHandOverOwnership(), options.getOrganization().getId(), false);
+		validateEntitiesBeforeShare(entities, options.isHandOverOwnership(), options.isWithSamples(), options.getOrganization().getId(), false);
 
 		String requestUuid = DataHelper.createUuid();
 
@@ -344,7 +344,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 		if (requestInfo == null) {
 			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasShare);
 		}
-		validateEntitiesBeforeSend(requestInfo.getShares());
+		validateEntitiesBeforeSend(requestInfo);
 
 		// update share request: add new samples, immunizations, etc.
 		requestInfo.extractSharedMainEntities().forEach((e) -> updateShareRequestInfo(requestInfo, currentUser, (ADO) e));
@@ -358,7 +358,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 		User currentUser = userService.getCurrentUser();
 		List<ADO> entities = getEntityService().getByUuids(entityUuids);
 
-		validateEntitiesBeforeShare(entities, options.isHandOverOwnership(), options.getOrganization().getId(), false);
+		validateEntitiesBeforeShare(entities, options.isHandOverOwnership(), options.isWithSamples(), options.getOrganization().getId(), false);
 		ensureConsistentOptions(options);
 
 		String requestUuid = DataHelper.createUuid();
@@ -630,6 +630,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 	protected void validateEntitiesBeforeShare(
 		List<ADO> entities,
 		boolean handOverOwnership,
+		boolean isWithSamples,
 		String targetOrganizationId,
 		boolean pendingRequestAllowed)
 		throws SormasToSormasException {
@@ -662,7 +663,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 			}
 
 			// run type specific S2S validation checks
-			validateEntitiesBeforeShareInner(ado, handOverOwnership, targetOrganizationId, validationErrors);
+			validateEntitiesBeforeShareInner(ado, handOverOwnership, isWithSamples, targetOrganizationId, validationErrors);
 		}
 
 		if (!validationErrors.isEmpty()) {
@@ -674,6 +675,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 	protected abstract void validateEntitiesBeforeShareInner(
 		ADO ado,
 		boolean handOverOwnership,
+		boolean isWithSamples,
 		String targetOrganizationId,
 		List<ValidationErrors> validationErrors);
 
@@ -681,10 +683,12 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 
 	protected abstract ValidationErrorGroup buildEntityValidationGroupNameForAdo(ADO ado);
 
-	protected void validateEntitiesBeforeSend(List<SormasToSormasShareInfo> shares) throws SormasToSormasException {
+	protected void validateEntitiesBeforeSend(ShareRequestInfo shareRequestInfo) throws SormasToSormasException {
+		List<SormasToSormasShareInfo> shares = shareRequestInfo.getShares();
 		validateEntitiesBeforeShare(
 			shares.stream().map(this::extractFromShareInfo).filter(Objects::nonNull).collect(Collectors.toList()),
 			shares.get(0).isOwnershipHandedOver(),
+			shareRequestInfo.isWithSamples(),
 			shares.get(0).getOrganizationId(),
 			true);
 	}

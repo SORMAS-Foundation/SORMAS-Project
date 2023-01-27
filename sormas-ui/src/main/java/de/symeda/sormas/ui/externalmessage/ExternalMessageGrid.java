@@ -20,6 +20,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.function.Consumer;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.data.provider.DataProviderListener;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FileDownloader;
@@ -91,9 +93,9 @@ public class ExternalMessageGrid extends FilteredGrid<ExternalMessageIndexDto, E
 			.setCaption(I18nProperties.getPrefixCaption(ExternalMessageDto.I18N_PREFIX, ExternalMessageDto.ASSIGNEE))
 			.setSortable(false);
 
-		addComponentColumn(this::buildProcessComponent).setId(COLUMN_PROCESS);
+		addComponentColumn(this::buildProcessComponent).setId(COLUMN_PROCESS).setSortable(false);
 
-		addComponentColumn(this::buildDownloadButton).setId(COLUMN_DOWNLOAD);
+		addComponentColumn(this::buildDownloadButton).setId(COLUMN_DOWNLOAD).setSortable(false);
 
 		setColumns(
 			SHOW_MESSAGE,
@@ -118,11 +120,11 @@ public class ExternalMessageGrid extends FilteredGrid<ExternalMessageIndexDto, E
 		((Column<ExternalMessageIndexDto, Date>) getColumn(ExternalMessageIndexDto.PERSON_BIRTH_DATE))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateFormat(I18nProperties.getUserLanguage())));
 
-		getColumn(COLUMN_PROCESS).setSortable(false);
-		getColumn(COLUMN_DOWNLOAD).setSortable(false);
-
 		for (Grid.Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(ExternalMessageIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
+			if (StringUtils.isBlank(column.getCaption())) {
+				column.setCaption("\uFEFF");
+			}
 		}
 	}
 

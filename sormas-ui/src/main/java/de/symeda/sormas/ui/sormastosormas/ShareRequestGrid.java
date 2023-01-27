@@ -42,6 +42,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.BooleanRenderer;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -107,7 +108,7 @@ public class ShareRequestGrid extends FilteredGrid<ShareRequestIndexDto, ShareRe
 			column.setCaption(
 				column.getId().equals(COLUMN_ACTIONS) || column.getId().equals(SHOW_MESSAGE)
 					? ""
-					: I18nProperties.findPrefixCaption(column.getId(), SormasToSormasShareRequestDto.I18N_PREFIX, ShareRequestIndexDto.I18N_PREFIX));
+					: I18nProperties.findPrefixCaption(column.getId(), ShareRequestIndexDto.I18N_PREFIX, SormasToSormasShareRequestDto.I18N_PREFIX));
 		}
 
 		setSortOrder(Collections.singletonList(new GridSortOrder<>(getColumn(ShareRequestIndexDto.CREATION_DATE), SortDirection.DESCENDING)));
@@ -121,14 +122,14 @@ public class ShareRequestGrid extends FilteredGrid<ShareRequestIndexDto, ShareRe
 		if (indexDto.getStatus() == ShareRequestStatus.PENDING) {
 			if (viewType == ShareRequestViewType.INCOMING) {
 				layout.addComponent(ButtonHelper.createButton(Captions.actionAccept, (e) -> {
-					ControllerProvider.getSormasToSormasController().acceptShareRequest(indexDto, this::reload);
+					ControllerProvider.getSormasToSormasController().acceptShareRequest(indexDto, SormasUI::refreshView);
 				}, ValoTheme.BUTTON_SMALL));
 				layout.addComponent(ButtonHelper.createButton(Captions.actionReject, (e) -> {
-					ControllerProvider.getSormasToSormasController().rejectShareRequest(indexDto, this::reload);
+					ControllerProvider.getSormasToSormasController().rejectShareRequest(indexDto, SormasUI::refreshView);
 				}, ValoTheme.BUTTON_SMALL));
 			} else if (UserProvider.getCurrent().hasUserRight(UserRight.SORMAS_TO_SORMAS_SHARE)) {
 				layout.addComponent(ButtonHelper.createButton(Captions.sormasToSormasRevokeShare, (e) -> {
-					ControllerProvider.getSormasToSormasController().revokeShareRequest(indexDto.getUuid(), this::reload);
+					ControllerProvider.getSormasToSormasController().revokeShareRequest(indexDto.getUuid(), SormasUI::refreshView);
 				}, ValoTheme.BUTTON_SMALL));
 			}
 		}
