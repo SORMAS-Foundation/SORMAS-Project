@@ -43,5 +43,11 @@ public class DemisSteps implements En {
         (String filename) -> {
           Assert.assertTrue(demisApiService.sendLabRequest(filename, loginToken));
         });
+
+    Given(
+        "Read json file",
+        () -> {
+          demisApiService.readJsonFile();
+        });
   }
 }

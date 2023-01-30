@@ -9,3 +9,7 @@ Feature: Check Demis functionalities
   Scenario: Send basic demis request
     Given API : Login to DEMIS server
     Then Send lab message with "testLabRequestFile.json"
+
+  @env_d2s @testIt
+  Scenario: Read Json
+    Given Read json file

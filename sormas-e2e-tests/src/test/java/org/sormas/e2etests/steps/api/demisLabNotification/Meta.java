@@ -1,0 +1,22 @@
+package org.sormas.e2etests.steps.api.demisLabNotification;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import java.util.ArrayList;
+import java.util.Date;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
+
+@Value
+@AllArgsConstructor
+@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
+@Builder(toBuilder = true, builderClassName = "builder")
+@Jacksonized
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class Meta {
+  public Date lastUpdated;
+  public ArrayList<String> profile;
+}

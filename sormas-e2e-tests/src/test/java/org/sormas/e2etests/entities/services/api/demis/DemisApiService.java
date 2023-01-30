@@ -19,6 +19,7 @@ package org.sormas.e2etests.entities.services.api.demis;
 
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.SocketTimeoutException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -31,6 +32,7 @@ import org.json.simple.JSONValue;
 import org.sormas.e2etests.envconfig.dto.demis.DemisData;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.api.demis.okhttpclient.SormasOkHttpClient;
+import org.sormas.e2etests.steps.api.demisLabNotification.Root;
 
 @Slf4j
 public class DemisApiService {
@@ -126,6 +128,23 @@ public class DemisApiService {
               "Unable to get response from Demis. Please make sure you are connected to VPN. [%s]",
               socketTimeoutException.getLocalizedMessage()));
     }
+  }
+
+  @SneakyThrows
+  public String readJsonFile() {
+
+    ObjectMapper mapper = new ObjectMapper();
+    //   Root tc = new Root();
+    //  Map<String,Object> map = mapper.readValue(Paths.get("book.json"), Map.class);
+    Root root =
+        mapper.readValue(Paths.get("./demisFiles/testLabRequestFile.json").toFile(), Root.class);
+    System.out.println(root);
+
+    //    String file = "./demisFiles/testLabRequestFile.json";
+    //    String json = readFileAsString(file);
+    // //   file = file.replaceAll("<postal_code_to_change>");
+    //    System.out.println(json);
+    return "abc";
   }
 
   /** Delete method once we start adding tests */
