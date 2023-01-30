@@ -52,7 +52,7 @@ public interface PersonFacade extends BaseFacade<PersonDto, PersonIndexDto, Pers
 	 * 
 	 * @return
 	 */
-	List<SimilarPersonDto> getSimilarPersonDtos(PersonSimilarityCriteria criteria);
+	List<SimilarPersonDto> getSimilarPersonDtos(PersonSimilarityCriteria... criteria);
 
 	boolean checkMatchingNameInDatabase(UserReferenceDto userRef, PersonSimilarityCriteria criteria);
 

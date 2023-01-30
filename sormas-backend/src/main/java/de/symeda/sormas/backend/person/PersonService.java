@@ -17,6 +17,7 @@ package de.symeda.sormas.backend.person;
 import static de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect.SIMILARITY_OPERATOR;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.and;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.andEquals;
+import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.andInValues;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -413,6 +414,7 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 		filter = andEquals(cb, () -> personJoins.getAddressJoins().getRegion(), filter, personCriteria.getRegion());
 		filter = andEquals(cb, () -> personJoins.getAddressJoins().getDistrict(), filter, personCriteria.getDistrict());
 		filter = andEquals(cb, () -> personJoins.getAddressJoins().getCommunity(), filter, personCriteria.getCommunity());
+		filter = andInValues(personCriteria.getUuids(), filter, cb, personFrom.get(Person.UUID));
 
 		return filter;
 	}
@@ -638,7 +640,7 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 		return q.getSingleResult() > 0;
 	}
 
-	public List<SimilarPersonDto> getSimilarPersonDtos(PersonSimilarityCriteria criteria, Integer limit) {
+	public List<SimilarPersonDto> getSimilarPersonDtos(Integer limit, PersonSimilarityCriteria... criteria) {
 
 		setSimilarityThresholdQuery();
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -647,7 +649,13 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 		final PersonQueryContext queryContext = new PersonQueryContext(cb, personQuery, personRoot);
 
 		// Find similar persons by permitted associations, optionally limited to active entries
-		Predicate personSimilarityFilter = buildSimilarityCriteriaFilter(criteria, cb, personRoot);
+		Predicate personSimilarityFilter = CriteriaBuilderHelper.or(
+			cb,
+			Arrays.stream(criteria)
+				.map(c -> buildSimilarityCriteriaFilter(c, cb, personRoot))
+				.collect(Collectors.toList())
+				.toArray(new Predicate[] {}));
+
 		Predicate associationFilter = buildAssociationFilter(queryContext, configFacade.isDuplicateChecksExcludePersonsOfArchivedEntries());
 		personQuery.where(and(cb, personSimilarityFilter, associationFilter));
 		personQuery.distinct(true);

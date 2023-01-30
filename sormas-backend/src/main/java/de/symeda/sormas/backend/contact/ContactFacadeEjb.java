@@ -2265,6 +2265,11 @@ public class ContactFacadeEjb
 		filter = cb.and(filter, creationDateFilter);
 		filter = cb.and(filter, cb.notEqual(root.get(Contact.ID), root2.get(Contact.ID)));
 
+		if (CollectionUtils.isNotEmpty(criteria.getContactUuidsForMerge())) {
+			Set<String> contactUuidsForMerge = criteria.getContactUuidsForMerge();
+			filter = cb.and(filter, cb.or(root.get(Contact.UUID).in(contactUuidsForMerge), root2.get(Contact.UUID).in(contactUuidsForMerge)));
+		}
+
 		cq.where(filter);
 		cq.multiselect(root.get(Contact.ID), root2.get(Contact.ID), root.get(Contact.CREATION_DATE));
 		cq.orderBy(cb.desc(root.get(Contact.CREATION_DATE)));

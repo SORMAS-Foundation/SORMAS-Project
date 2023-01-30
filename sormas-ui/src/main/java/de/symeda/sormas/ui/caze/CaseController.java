@@ -492,6 +492,14 @@ public class CaseController {
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 
+	public void navigateToMergeCasesView(CaseCriteria criteria) {
+		ViewModelProviders.of(MergeCasesView.class).remove(CaseCriteria.class);
+		ViewModelProviders.of(MergeCasesView.class).get(CaseCriteria.class, criteria);
+
+		String navigationState = AbstractView.buildNavigationState(MergeCasesView.VIEW_NAME, criteria);
+		SormasUI.get().getNavigator().navigateTo(navigationState);
+	}
+
 	public void navigateToCase(String caseUuid) {
 		navigateToView(CaseDataView.VIEW_NAME, caseUuid, null, false);
 	}
