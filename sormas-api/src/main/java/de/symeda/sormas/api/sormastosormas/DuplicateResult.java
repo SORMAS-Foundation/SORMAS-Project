@@ -19,8 +19,10 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.Set;
 
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.sormastosormas.entities.DuplicateResultType;
 
+@AuditedClass
 public class DuplicateResult implements Serializable {
 
 	private static final long serialVersionUID = 1647535939211815787L;

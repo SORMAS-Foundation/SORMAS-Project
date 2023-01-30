@@ -260,7 +260,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	}
 
 	@Override
-	public List<SimilarPersonDto> getSimilarPersonDtos(PersonSimilarityCriteria... criteria) {
+	public List<SimilarPersonDto> getSimilarPersonDtos(PersonSimilarityCriteria criteria) {
 
 		return service.getSimilarPersonDtos(null, criteria);
 	}

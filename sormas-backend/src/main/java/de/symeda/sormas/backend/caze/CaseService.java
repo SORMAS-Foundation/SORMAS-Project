@@ -1809,7 +1809,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		return q.getResultList().stream().findFirst().orElse(null);
 	}
 
-	public List<CaseSelectionDto> getSimilarCases(CaseSimilarityCriteria... criteria) {
+	public List<CaseSelectionDto> getSimilarCases(CaseSimilarityCriteria criteria) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> root = cq.from(Case.class);
@@ -1840,12 +1840,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 			root.get(Case.CHANGE_DATE));
 		cq.distinct(true);
 
-		Predicate filter = CriteriaBuilderHelper.or(
-			cb,
-			Arrays.stream(criteria)
-				.map(c -> getSimilarityFilters(c, cb, root, queryContext))
-				.collect(Collectors.toList())
-				.toArray(new Predicate[] {}));
+		Predicate filter = getSimilarityFilters(criteria, cb, root, queryContext);
 
 		cq.where(filter);
 

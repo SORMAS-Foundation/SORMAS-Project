@@ -640,7 +640,7 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 		return q.getSingleResult() > 0;
 	}
 
-	public List<SimilarPersonDto> getSimilarPersonDtos(Integer limit, PersonSimilarityCriteria... criteria) {
+	public List<SimilarPersonDto> getSimilarPersonDtos(Integer limit, PersonSimilarityCriteria criteria) {
 
 		setSimilarityThresholdQuery();
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -649,12 +649,7 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 		final PersonQueryContext queryContext = new PersonQueryContext(cb, personQuery, personRoot);
 
 		// Find similar persons by permitted associations, optionally limited to active entries
-		Predicate personSimilarityFilter = CriteriaBuilderHelper.or(
-			cb,
-			Arrays.stream(criteria)
-				.map(c -> buildSimilarityCriteriaFilter(c, cb, personRoot))
-				.collect(Collectors.toList())
-				.toArray(new Predicate[] {}));
+		Predicate personSimilarityFilter = buildSimilarityCriteriaFilter(criteria, cb, personRoot);
 
 		Predicate associationFilter = buildAssociationFilter(queryContext, configFacade.isDuplicateChecksExcludePersonsOfArchivedEntries());
 		personQuery.where(and(cb, personSimilarityFilter, associationFilter));

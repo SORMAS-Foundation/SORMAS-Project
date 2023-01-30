@@ -237,8 +237,8 @@ public class SormasToSormasController {
 						request,
 						Strings.messageSormasToSormasSimilarContactToCaseFound,
 						Captions.actionOkAndGoToContactDirectory,
-						() -> ControllerProvider.getContactController()
-							.navigateTo(new ContactCriteria().uuids(duplicateResult.getUuids(), callback)));
+						() -> ControllerProvider.getContactController().navigateTo(new ContactCriteria().uuids(duplicateResult.getUuids())),
+						callback);
 					break;
 				case CONTACT:
 					confirmDuplicateFound(
