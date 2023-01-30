@@ -1730,9 +1730,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			final Case caze = service.getByUuid(cazeRef.getUuid());
 			contact.getSamples().forEach(sample -> {
 				if (!sample.isDeleted()) {
-					if (sample.getAssociatedCase() == null) {
+					if (contact.getDisease() == caze.getDisease() && sample.getAssociatedCase() == null) {
 						sample.setAssociatedCase(caze);
-					} else if (!sample.getAssociatedCase().getUuid().equals(cazeRef.getUuid())) {
+					} else if (!DataHelper.isSame(sample.getAssociatedCase(), cazeRef)) {
 						sampleFacade.cloneSampleForCase(sample, caze);
 					}
 				}
