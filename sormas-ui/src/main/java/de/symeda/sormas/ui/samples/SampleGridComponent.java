@@ -29,7 +29,6 @@ import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.i18n.Captions;
@@ -321,10 +320,6 @@ public class SampleGridComponent extends VerticalLayout {
 			activeStatusButton
 				.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getDataSize())));
 		}
-	}
-
-	public TextField getSearchField() {
-		return filterForm.getSearchField();
 	}
 
 	public MenuBar getBulkOperationsDropdown() {

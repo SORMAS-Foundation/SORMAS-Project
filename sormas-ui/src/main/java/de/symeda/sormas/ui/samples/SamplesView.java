@@ -153,7 +153,6 @@ public class SamplesView extends AbstractView {
 				ViewModelProviders.of(SamplesView.class).get(ViewConfiguration.class).setInEagerMode(true);
 				btnEnterBulkEditMode.setVisible(false);
 				btnLeaveBulkEditMode.setVisible(true);
-				sampleListComponent.getSearchField().setEnabled(false);
 				sampleListComponent.getGrid().reload();
 			});
 			btnLeaveBulkEditMode.addClickListener(e -> {
@@ -161,7 +160,6 @@ public class SamplesView extends AbstractView {
 				ViewModelProviders.of(SamplesView.class).get(ViewConfiguration.class).setInEagerMode(false);
 				btnLeaveBulkEditMode.setVisible(false);
 				btnEnterBulkEditMode.setVisible(true);
-				sampleListComponent.getSearchField().setEnabled(true);
 				navigateTo(sampleListComponent.getCriteria());
 			});
 		}

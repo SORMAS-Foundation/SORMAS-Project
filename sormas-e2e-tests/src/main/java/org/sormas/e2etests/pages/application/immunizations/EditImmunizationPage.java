@@ -24,6 +24,9 @@ public class EditImmunizationPage {
   public static final By NEW_ENTRY_BUTTON = By.id("actionNewEntry");
   public static final By NUMBER_OF_DOSES = By.id("numberOfDoses");
   public static final By POPUP_MESSAGE = By.xpath("//div[@class='popupContent']//p");
+  public static final By VACCINE_DOSE_POPUP =
+      By.xpath(
+          "//div[@class='popupContent']//li[text()='Vaccine dose should be a number between 1 and 10']");
   public static final By BUTTONS_IN_VACCINATIONS_LOCATION =
       By.xpath("//div[contains(@location,\"vaccinations\")]//span[@class=\"v-button-wrap\"]");
   public static final By DELETE_VACCINATION_BUTTON =

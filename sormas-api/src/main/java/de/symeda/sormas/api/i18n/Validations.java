@@ -182,12 +182,14 @@ public interface Validations {
 	String sormasToSormasAcceptContactHasNoCase = "sormasToSormasAcceptContactHasNoCase";
 	String sormasToSormasAcceptContactWithoutCaseShared = "sormasToSormasAcceptContactWithoutCaseShared";
 	String sormasToSormasCaseExists = "sormasToSormasCaseExists";
+	String sormasToSormasCaseSampleHasAssociatedContact = "sormasToSormasCaseSampleHasAssociatedContact";
 	String sormasToSormasCommentMissing = "sormasToSormasCommentMissing";
 	String sormasToSormasCommunity = "sormasToSormasCommunity";
 	String sormasToSormasContactCaseNotExists = "sormasToSormasContactCaseNotExists";
 	String sormasToSormasContactCaseNotShared = "sormasToSormasContactCaseNotShared";
 	String sormasToSormasContactExists = "sormasToSormasContactExists";
 	String sormasToSormasContactHasNoCase = "sormasToSormasContactHasNoCase";
+	String sormasToSormasContactSampleHasAssociatedCase = "sormasToSormasContactSampleHasAssociatedCase";
 	String sormasToSormasContinent = "sormasToSormasContinent";
 	String sormasToSormasCountry = "sormasToSormasCountry";
 	String sormasToSormasDistrict = "sormasToSormasDistrict";
