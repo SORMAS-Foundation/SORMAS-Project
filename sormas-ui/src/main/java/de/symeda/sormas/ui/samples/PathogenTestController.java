@@ -265,10 +265,13 @@ public class PathogenTestController {
 			showChangeAssociatedSampleResultDialog(negativeWithSameDisease.get(), null);
 		}
 
-		testsByDisease.forEach((disease, tests) -> {
+		testsByDisease.keySet().stream().filter(disease -> disease != caze.getDisease()).forEach((disease) -> {
+			List<PathogenTestDto> tests = testsByDisease.get(disease);
+
 			Optional<PathogenTestDto> positiveWithOtherDisease =
 				tests.stream().filter(t -> t.getTestResult() == PathogenTestResultType.POSITIVE && t.getTestResultVerified()).findFirst();
-			if (disease != caze.getDisease() && positiveWithOtherDisease.isPresent()) {
+
+			if (positiveWithOtherDisease.isPresent()) {
 				List<CaseDataDto> duplicatedCases =
 					FacadeProvider.getCaseFacade().getDuplicatesWithPathogenTest(caze.getPerson(), positiveWithOtherDisease.get());
 				if (duplicatedCases == null || duplicatedCases.size() == 0) {
@@ -326,10 +329,12 @@ public class PathogenTestController {
 			showChangeAssociatedSampleResultDialog(negativeWithSameDisease.get(), null);
 		}
 
-		testsByDisease.forEach((disease, tests) -> {
+		testsByDisease.keySet().stream().filter(disease -> disease != contact.getDisease()).forEach((disease) -> {
+			List<PathogenTestDto> tests = testsByDisease.get(disease);
+
 			Optional<PathogenTestDto> positiveWithOtherDisease =
 				tests.stream().filter(t -> t.getTestResult() == PathogenTestResultType.POSITIVE && t.getTestResultVerified()).findFirst();
-			if (disease != contact.getDisease() && positiveWithOtherDisease.isPresent()) {
+			if (positiveWithOtherDisease.isPresent()) {
 				List<CaseDataDto> duplicatedCases =
 					FacadeProvider.getCaseFacade().getDuplicatesWithPathogenTest(contact.getPerson(), positiveWithOtherDisease.get());
 				if (CollectionUtils.isEmpty(duplicatedCases)) {
@@ -384,10 +389,12 @@ public class PathogenTestController {
 			showChangeAssociatedSampleResultDialog(negativeWithSameDisease.get(), null);
 		}
 
-		testsByDisease.forEach((disease, tests) -> {
+		testsByDisease.keySet().stream().filter(disease -> disease != eventDisease).forEach((disease) -> {
+			List<PathogenTestDto> tests = testsByDisease.get(disease);
+
 			Optional<PathogenTestDto> positiveWithOtherDisease =
 				tests.stream().filter(t -> t.getTestResult() == PathogenTestResultType.POSITIVE && t.getTestResultVerified()).findFirst();
-			if (disease != eventDisease && positiveWithOtherDisease.isPresent()) {
+			if (positiveWithOtherDisease.isPresent()) {
 				List<CaseDataDto> duplicatedCases = FacadeProvider.getCaseFacade()
 					.getDuplicatesWithPathogenTest(eventParticipant.getPerson().toReference(), positiveWithOtherDisease.get());
 				if (CollectionUtils.isEmpty(duplicatedCases)) {
