@@ -884,18 +884,23 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 			}
 		}
 
+		Predicate filterCaseUuids = null;
+		Predicate filterContactUuids = null;
+		Predicate filterEvPartUuids = null;
+
 		if (criteria.getCaseUuids() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, sample.get(Sample.ASSOCIATED_CASE).get(Case.UUID).in(criteria.getCaseUuids()));
+			filterCaseUuids = sample.get(Sample.ASSOCIATED_CASE).get(Case.UUID).in(criteria.getCaseUuids());
 		}
 
 		if (criteria.getContactUuids() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, sample.get(Sample.ASSOCIATED_CONTACT).get(Contact.UUID).in(criteria.getContactUuids()));
+			filterContactUuids = sample.get(Sample.ASSOCIATED_CONTACT).get(Contact.UUID).in(criteria.getContactUuids());
 		}
 
 		if (criteria.getEventParticipantUuids() != null) {
-			filter = CriteriaBuilderHelper
-				.and(cb, filter, sample.get(Sample.ASSOCIATED_EVENT_PARTICIPANT).get(EventParticipant.UUID).in(criteria.getEventParticipantUuids()));
+			filterEvPartUuids = sample.get(Sample.ASSOCIATED_EVENT_PARTICIPANT).get(EventParticipant.UUID).in(criteria.getEventParticipantUuids());
 		}
+
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.or(filterCaseUuids, filterContactUuids, filterEvPartUuids));
 
 		return filter;
 	}
@@ -920,6 +925,19 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		if (criteria.getEventParticipant() != null) {
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(joins.getEventParticipant().get(EventParticipant.UUID), criteria.getEventParticipant().getUuid()));
+		}
+
+		if (criteria.getCaseUuids() != null) {
+			filter = CriteriaBuilderHelper.or(cb, filter, joins.getCaze().get(Case.UUID).in(criteria.getCaseUuids()));
+		}
+
+		if (criteria.getContactUuids() != null) {
+			filter = CriteriaBuilderHelper.or(cb, filter, joins.getContact().get(Contact.UUID).in(criteria.getContactUuids()));
+		}
+
+		if (criteria.getEventParticipantUuids() != null) {
+			filter =
+				CriteriaBuilderHelper.or(cb, filter, joins.getEventParticipant().get(EventParticipant.UUID).in(criteria.getEventParticipantUuids()));
 		}
 
 		return filter;

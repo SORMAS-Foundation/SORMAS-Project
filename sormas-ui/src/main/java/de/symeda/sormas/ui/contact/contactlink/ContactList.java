@@ -21,6 +21,7 @@ public class ContactList extends PaginationList<ContactListEntryDto> {
 
 	private final String personUuid;
 	private final Label noContactLabel;
+	private List<ContactListEntryDto> displayedEntries;
 
 	public ContactList(PersonReferenceDto personReferenceDto) {
 		super(MAX_DISPLAYED_ENTRIES);
@@ -44,7 +45,7 @@ public class ContactList extends PaginationList<ContactListEntryDto> {
 
 	@Override
 	protected void drawDisplayedEntries() {
-		List<ContactListEntryDto> displayedEntries = getDisplayedEntries();
+		displayedEntries = getDisplayedEntries();
 		UserProvider currentUser = UserProvider.getCurrent();
 		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
 			final ContactListEntryDto contactListEntryDto = displayedEntries.get(i);
@@ -62,5 +63,9 @@ public class ContactList extends PaginationList<ContactListEntryDto> {
 
 			listLayout.addComponent(listEntry);
 		}
+	}
+
+	protected List<ContactListEntryDto> getDisplayEntries() {
+		return displayedEntries;
 	}
 }

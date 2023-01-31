@@ -17,13 +17,20 @@ package de.symeda.sormas.ui.samples.sampleLink;
 
 import java.util.function.Consumer;
 
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.themes.ValoTheme;
+
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 public class SampleListComponent extends SideComponent {
@@ -33,7 +40,7 @@ public class SampleListComponent extends SideComponent {
 
 		SampleList sampleList = new SampleList(sampleCriteria, isEditAllowed);
 
-		if (isEditAllowed) {
+		if (isEditAllowed && sampleCriteria.getSampleAssociationType() != SampleAssociationType.ALL) {
 			addCreateButton(I18nProperties.getCaption(Captions.sampleNewSample), () -> {
 				switch (sampleCriteria.getSampleAssociationType()) {
 				case CASE:
@@ -53,5 +60,12 @@ public class SampleListComponent extends SideComponent {
 		}
 		addComponent(sampleList);
 		sampleList.reload();
+		if (!sampleList.isEmpty()) {
+			final Button seeSamples = ButtonHelper.createButton(I18nProperties.getCaption(Captions.personLinkToSamples));
+			CssStyles.style(seeSamples, ValoTheme.BUTTON_PRIMARY);
+			seeSamples.addClickListener(clickEvent -> ControllerProvider.getSampleController().navigateTo(sampleCriteria));
+			addComponent(seeSamples);
+			setComponentAlignment(seeSamples, Alignment.MIDDLE_LEFT);
+		}
 	}
 }

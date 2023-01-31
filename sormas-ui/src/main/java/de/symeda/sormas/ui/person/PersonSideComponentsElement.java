@@ -1,17 +1,24 @@
 package de.symeda.sormas.ui.person;
 
+import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.CustomLayout;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseListEntryDto;
 import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.contact.ContactListEntryDto;
+import de.symeda.sormas.api.event.EventParticipantListEntryDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.sample.SampleAssociationType;
+import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryListCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.vaccination.VaccinationCriteria;
@@ -20,6 +27,8 @@ import de.symeda.sormas.ui.caze.caselink.CaseListComponent;
 import de.symeda.sormas.ui.contact.contactlink.ContactListComponent;
 import de.symeda.sormas.ui.events.eventParticipantLink.EventParticipantListComponent;
 import de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListComponent;
+import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
+import de.symeda.sormas.ui.samples.sampleLink.SampleListComponentLayout;
 import de.symeda.sormas.ui.travelentry.travelentrylink.TravelEntryListComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -33,6 +42,7 @@ public interface PersonSideComponentsElement {
 	String PERSON_LOC = "person";
 	String CASES_LOC = "cases";
 	String CONTACTS_LOC = "contacts";
+	String SAMPLES_LOC = "samples";
 	String EVENT_PARTICIPANTS_LOC = "events";
 	String TRAVEL_ENTRIES_LOC = "travelEntries";
 	String IMMUNIZATION_LOC = "immunizations";
@@ -43,6 +53,7 @@ public interface PersonSideComponentsElement {
 			LayoutUtil.fluidColumnLoc(8, 0, 12, 0, PERSON_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASES_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CONTACTS_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EVENT_PARTICIPANTS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TRAVEL_ENTRIES_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, IMMUNIZATION_LOC),
@@ -81,36 +92,61 @@ public interface PersonSideComponentsElement {
 		Consumer<Runnable> showUnsavedChangesPopup) {
 
 		UserProvider currentUser = UserProvider.getCurrent();
+		CaseListComponent caseListComponent = null;
+		ContactListComponent contactListComponent = null;
+		EventParticipantListComponent eventParticipantListComponent = null;
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)
 			&& currentUser != null
 			&& currentUser.hasUserRight(UserRight.CASE_VIEW)) {
-			layout.addComponent(
-				new SideComponentLayout(
-					new CaseListComponent(person, entityType == CoreEntityType.CASE ? entityUuid : null, showUnsavedChangesPopup)),
-				CASES_LOC);
+			caseListComponent = new CaseListComponent(person, entityType == CoreEntityType.CASE ? entityUuid : null, showUnsavedChangesPopup);
+			layout.addComponent(new SideComponentLayout(caseListComponent), CASES_LOC);
 		}
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CONTACT_TRACING)
 			&& currentUser != null
 			&& currentUser.hasUserRight(UserRight.CONTACT_VIEW)) {
-			layout.addComponent(
-				new SideComponentLayout(
-					new ContactListComponent(person, entityType == CoreEntityType.CONTACT ? entityUuid : null, showUnsavedChangesPopup)),
-				CONTACTS_LOC);
+			contactListComponent =
+				new ContactListComponent(person, entityType == CoreEntityType.CONTACT ? entityUuid : null, showUnsavedChangesPopup);
+			layout.addComponent(new SideComponentLayout(contactListComponent), CONTACTS_LOC);
 		}
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)
 			&& currentUser != null
 			&& currentUser.hasUserRight(UserRight.EVENT_VIEW)
 			&& currentUser.hasUserRight(UserRight.EVENTPARTICIPANT_VIEW)) {
-			layout.addComponent(
-				new SideComponentLayout(
-					new EventParticipantListComponent(
-						person,
-						entityType == CoreEntityType.EVENT_PARTICIPANT ? entityUuid : null,
-						showUnsavedChangesPopup)),
-				EVENT_PARTICIPANTS_LOC);
+			eventParticipantListComponent = new EventParticipantListComponent(
+				person,
+				entityType == CoreEntityType.EVENT_PARTICIPANT ? entityUuid : null,
+				showUnsavedChangesPopup);
+			layout.addComponent(new SideComponentLayout(eventParticipantListComponent), EVENT_PARTICIPANTS_LOC);
+		}
+
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SAMPLES_LAB)
+			&& currentUser != null
+			&& currentUser.hasUserRight(UserRight.SAMPLE_VIEW)) {
+
+			List<String> casePersonList = caseListComponent == null
+				? null
+				: caseListComponent.getEntries().stream().map(CaseListEntryDto::getUuid).collect(Collectors.toList());
+
+			List<String> contactPersonList = contactListComponent == null
+				? null
+				: contactListComponent.getEntries().stream().map(ContactListEntryDto::getUuid).collect(Collectors.toList());
+
+			List<String> eventParticipantPersonList = eventParticipantListComponent == null
+				? null
+				: eventParticipantListComponent.getEntries().stream().map(EventParticipantListEntryDto::getUuid).collect(Collectors.toList());
+
+			SampleCriteria sampleCriteria = new SampleCriteria();
+			sampleCriteria.caseUuids(casePersonList);
+			sampleCriteria.contactUuids(contactPersonList);
+			sampleCriteria.eventParticipantUuids(eventParticipantPersonList);
+			sampleCriteria.sampleAssociationType(SampleAssociationType.ALL);
+
+			SampleListComponent sampleList = new SampleListComponent(sampleCriteria, showUnsavedChangesPopup, true);
+			SampleListComponentLayout sampleListComponentLayout = new SampleListComponentLayout(sampleList, "");
+			layout.addComponent(sampleListComponentLayout, SAMPLES_LOC);
 		}
 
 		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)

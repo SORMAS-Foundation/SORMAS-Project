@@ -1764,6 +1764,7 @@ public interface Captions {
 	String personLinkToCases = "personLinkToCases";
 	String personLinkToContacts = "personLinkToContacts";
 	String personLinkToEvents = "personLinkToEvents";
+	String personLinkToSamples = "personLinkToSamples";
 	String personNoCaseLinkedToPerson = "personNoCaseLinkedToPerson";
 	String personNoContactLinkedToPerson = "personNoContactLinkedToPerson";
 	String personNoEventParticipantLinkedToPerson = "personNoEventParticipantLinkedToPerson";
