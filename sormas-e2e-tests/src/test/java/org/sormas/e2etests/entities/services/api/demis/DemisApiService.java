@@ -19,7 +19,7 @@ package org.sormas.e2etests.entities.services.api.demis;
 
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.FileNotFoundException;
 import java.net.SocketTimeoutException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -32,7 +32,6 @@ import org.json.simple.JSONValue;
 import org.sormas.e2etests.envconfig.dto.demis.DemisData;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.api.demis.okhttpclient.SormasOkHttpClient;
-import org.sormas.e2etests.steps.api.demisLabNotification.Root;
 
 @Slf4j
 public class DemisApiService {
@@ -96,7 +95,7 @@ public class DemisApiService {
   }
 
   @SneakyThrows
-  public Boolean sendLabRequest(String fileName, String loginToken) {
+  public Boolean sendLabRequest(String data, String loginToken) {
 
     DemisData demisData = runningConfiguration.getDemisData(locale);
 
@@ -104,7 +103,7 @@ public class DemisApiService {
         SormasOkHttpClient.getClient(
             demisData.getCertificatePath(), demisData.getCertificatePassword());
 
-    String json = readFileAsString("./demisFiles/" + fileName);
+    // String json = readFileAsString("./demisFiles/" + fileName);
 
     MediaType JSON = MediaType.parse(CONTENT_TYPE_APPLICATION_JSON + "; charset=utf-8");
 
@@ -114,7 +113,7 @@ public class DemisApiService {
             .addHeader(CACHE_CONTROL_HEADER, CACHE_CONTROL_NO_CACHE)
             .addHeader(AUTHORIZATION_HEADER, "Bearer " + loginToken)
             .addHeader(CONTENT_TYPE, CONTENT_TYPE_APPLICATION_JSON)
-            .post(RequestBody.create(json, JSON))
+            .post(RequestBody.create(data, JSON))
             .build();
     try {
       Response response = client.newCall(request).execute();
@@ -131,20 +130,18 @@ public class DemisApiService {
   }
 
   @SneakyThrows
-  public String readJsonFile() {
-
-    ObjectMapper mapper = new ObjectMapper();
-    //   Root tc = new Root();
-    //  Map<String,Object> map = mapper.readValue(Paths.get("book.json"), Map.class);
-    Root root =
-        mapper.readValue(Paths.get("./demisFiles/testLabRequestFile.json").toFile(), Root.class);
-    System.out.println(root);
-
-    //    String file = "./demisFiles/testLabRequestFile.json";
-    //    String json = readFileAsString(file);
-    // //   file = file.replaceAll("<postal_code_to_change>");
-    //    System.out.println(json);
-    return "abc";
+  public String prepareLabNotificationFile(String patientFirstName, String patientLastName) {
+    DemisData demisData = runningConfiguration.getDemisData(locale);
+    try {
+      String file = "./demisFiles/labNotificationTemplate.json";
+      String json = readFileAsString(file);
+      json = json.replace("\"<postal_code_to_change>\"", "\"" + demisData.getPostalCode() + "\"");
+      json = json.replace("\"<last_name_to_change>\"", "\"" + patientLastName + "\"");
+      json = json.replace("\"<first_name_to_change>\"", "\"" + patientFirstName + "\"");
+      return json;
+    } catch (FileNotFoundException fileNotFoundException) {
+      throw new Exception(String.format("Laboratory Notification Template file does not exists"));
+    }
   }
 
   /** Delete method once we start adding tests */
