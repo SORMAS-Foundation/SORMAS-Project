@@ -40,6 +40,7 @@
 		<archunit.version>0.22.0</archunit.version>
 		<hamcrest.version>2.2</hamcrest.version>
 		<apache-tika.version>2.6.0</apache-tika.version>
+		<temportal-tables.version>0.4.2</temportal-tables.version>
 
 		<!-- Attention: Compile dependencies with versions are maintained redundantly in sormas-app/app/build.gradle -->
 
@@ -570,6 +571,11 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
+
+			<!-- manual dependency
+				SQL function copied to sormas-backend/src/main/resources/sql/versioning_function.sql
+				https://github.com/nearform/temporal_tables/releases/tag/v0.4.2
+			-->
 
 			<dependency>
 				<groupId>org.slf4j</groupId>
@@ -1329,6 +1335,11 @@
 						</includeOnlyProperties>
 						<commitIdGenerationMode>full</commitIdGenerationMode>
 					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>com.googlecode.maven-download-plugin</groupId>
+					<artifactId>download-maven-plugin</artifactId>
+					<version>1.6.8</version>
 				</plugin>
 				<!-- *** Plugins for generate-reports END *** -->
 

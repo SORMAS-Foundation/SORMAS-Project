@@ -124,7 +124,7 @@ public class StartupShutdownService {
 
 	static final String SORMAS_SCHEMA = "sql/sormas_schema.sql";
 	static final String AUDIT_SCHEMA = "sql/sormas_audit_schema.sql";
-	static final String VERSIONING_FUNCTION = "sql/versioning_function.sql";
+	static final String VERSIONING_FUNCTION = "sql/temporal_tables/versioning_function.sql";
 	private static final Pattern SQL_COMMENT_PATTERN = Pattern.compile("^\\s*(--.*)?");
 	//@formatter:off
     private static final Pattern SCHEMA_VERSION_SQL_PATTERN = Pattern.compile(
@@ -694,7 +694,7 @@ public class StartupShutdownService {
 		logger.info("Starting automatic database update...");
 
 		boolean hasSchemaVersion =
-				!entityManager.createNativeQuery("SELECT 1 FROM information_schema.tables WHERE table_name = 'schema_version'").getResultList().isEmpty();
+			!entityManager.createNativeQuery("SELECT 1 FROM information_schema.tables WHERE table_name = 'schema_version'").getResultList().isEmpty();
 		Integer databaseVersion;
 		if (hasSchemaVersion) {
 			databaseVersion = (Integer) entityManager.createNativeQuery("SELECT MAX(version_number) FROM schema_version").getSingleResult();
@@ -703,7 +703,7 @@ public class StartupShutdownService {
 		}
 
 		try (InputStream schemaStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(schemaFileName);
-			 Scanner scanner = new Scanner(schemaStream, StandardCharsets.UTF_8.name())) {
+			Scanner scanner = new Scanner(schemaStream, StandardCharsets.UTF_8.name())) {
 			StringBuilder nextUpdateBuilder = new StringBuilder();
 			boolean currentVersionReached = databaseVersion == null;
 
@@ -755,7 +755,7 @@ public class StartupShutdownService {
 			// note: This will also escape ':' in pure strings, where a replacement may cause problems
 			versioningFunction = versioningFunction.replaceAll(":", "\\\\:");
 			updateQueryTransactionWrapper.executeUpdate(db, versioningFunction);
-		}  catch (IOException e) {
+		} catch (IOException e) {
 			logger.error("Could not load {} file. Create versioning function not performed.", VERSIONING_FUNCTION);
 			throw new UncheckedIOException(e);
 		} finally {
