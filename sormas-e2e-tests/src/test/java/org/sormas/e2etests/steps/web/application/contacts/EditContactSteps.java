@@ -515,8 +515,8 @@ public class EditContactSteps implements En {
         "I check if accept button does not appear in Shares Page",
         () -> {
           softly.assertFalse(
-            webDriverHelpers.isElementVisibleWithTimeout(ACCEPT_BUTTON, 3),
-            "Accept button is visible!");
+              webDriverHelpers.isElementVisibleWithTimeout(ACCEPT_BUTTON, 3),
+              "Accept button is visible!");
           softly.assertAll();
         });
     When(
