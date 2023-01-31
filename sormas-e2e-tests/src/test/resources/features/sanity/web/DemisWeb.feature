@@ -1,7 +1,7 @@
 @UI @Sanity @DEMIS
-Feature: Dashboard counters
+Feature: Demis UI Tests
 
-@env_d2s @LoginKeycloak @testIt
+@env_d2s @LoginKeycloak
 Scenario: Create and send laboratory request via Demis
   Given API : Login to DEMIS server
   Then I create and send Laboratory Notification
