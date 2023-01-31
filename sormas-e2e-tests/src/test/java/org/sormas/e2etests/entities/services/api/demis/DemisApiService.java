@@ -103,8 +103,6 @@ public class DemisApiService {
         SormasOkHttpClient.getClient(
             demisData.getCertificatePath(), demisData.getCertificatePassword());
 
-    // String json = readFileAsString("./demisFiles/" + fileName);
-
     MediaType JSON = MediaType.parse(CONTENT_TYPE_APPLICATION_JSON + "; charset=utf-8");
 
     Request request =
