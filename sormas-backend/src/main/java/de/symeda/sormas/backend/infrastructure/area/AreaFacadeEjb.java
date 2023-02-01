@@ -216,6 +216,13 @@ public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaService> 
 		}
 		return new AreaReferenceDto(entity.getUuid(), entity.toString());
 	}
+	
+	public static AreaReferenceDto toReferenceDtox(Area entity) {
+		if (entity == null) {
+			return null;
+		}
+		return new AreaReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalId());
+	}
 
 	@Override
 	public List<AreaReferenceDto> getReferencesByName(String name, boolean includeArchived) {

@@ -199,8 +199,10 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionSer
 					expression = region.get(sortProperty.propertyName);
 					break;
 				case Region.AREA:
+				case RegionIndexDto.REGION_EXTERNAL_ID:
 					expression = area.get(Area.NAME);
 					break;
+				
 				case RegionIndexDto.COUNTRY:
 					expression = country.get(Country.DEFAULT_NAME);
 					break;
@@ -337,7 +339,8 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionSer
 		dto.setPopulation(populationDataFacade.getRegionPopulation(dto.getUuid()));
 		dto.setGrowthRate(entity.getGrowthRate());
 		dto.setExternalId(entity.getExternalId());
-		dto.setArea(AreaFacadeEjb.toReferenceDto(entity.getArea()));
+		dto.setArea(AreaFacadeEjb.toReferenceDtox(entity.getArea()));
+		dto.setArea(entity.getArea().getExternalId());
 		dto.setCountry(CountryFacadeEjb.toReferenceDto(entity.getCountry()));
 
 		return dto;

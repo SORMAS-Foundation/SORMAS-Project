@@ -59,7 +59,10 @@ public class DistrictsGrid extends FilteredGrid<DistrictIndexDto, DistrictCriter
 		}
 
 		setColumns(
+				DistrictIndexDto.AREA_NAME,
+				DistrictIndexDto.AREA_EXTERNAL_ID,
 			DistrictIndexDto.REGION,
+			DistrictIndexDto.REGION_EXTERNALID,
 			DistrictIndexDto.NAME,
 			//DistrictIndexDto.EPID_CODE,
 			DistrictIndexDto.EXTERNAL_ID,

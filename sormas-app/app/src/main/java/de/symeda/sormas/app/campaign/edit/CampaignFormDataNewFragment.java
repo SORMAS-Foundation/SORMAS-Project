@@ -899,7 +899,6 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
 
                     final String expressionString = campaignFormElement.getExpression();
                     if (expressionString != null) {
-                        System.out.println(">>>>>>>>>>>>>>>>>ONFOCUSSS>>>");
                         CampaignFormDataFragmentUtils.handleExpression(expressionParser, formValues, type, dynamicField, expressionString, ignoreDisable);
                         expressionMap.put(campaignFormElement, dynamicField);
                     }

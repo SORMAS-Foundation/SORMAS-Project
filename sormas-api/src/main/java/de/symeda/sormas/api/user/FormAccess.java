@@ -8,7 +8,7 @@ public enum FormAccess {
 
 	ICM,
 	PCA,
-	REPORT,
+	ARCHIVE,
 	FLW,
 	ADMIN,
 	FMS,

@@ -227,9 +227,13 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 					expression = community.get(sortProperty.propertyName);
 					break;
 				case District.REGION:
+				case CommunityDto.REGION_EXTERNALID:
+				case CommunityDto.AREA_NAME:
+				case CommunityDto.AREA_EXTERNAL_ID:
 					expression = region.get(Region.NAME);
 					break;
 				case Community.DISTRICT:
+				case CommunityDto.DISTRICT_EXTERNALID:
 					expression = district.get(District.NAME);
 					break;
 				default:
@@ -440,10 +444,14 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 		dto.setName(entity.getName());
 		dto.setGrowthRate(entity.getGrowthRate());
 		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
+		dto.setDistrictexternalId(entity.getDistrict().getExternalId());
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getDistrict().getRegion()));
+		dto.setRegionexternalId(entity.getDistrict().getRegion().getExternalId());
 		dto.setArchived(entity.isArchived());
 		dto.setExternalId(entity.getExternalId());
 		dto.setClusterNumber(entity.getClusterNumber());
+		dto.setAreaname(entity.getDistrict().getRegion().getArea().getName());
+		dto.setAreaexternalId(entity.getDistrict().getRegion().getArea().getExternalId());
 
 		return dto;
 	}
