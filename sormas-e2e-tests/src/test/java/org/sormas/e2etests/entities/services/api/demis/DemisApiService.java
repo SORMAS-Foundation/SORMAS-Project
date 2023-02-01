@@ -19,6 +19,7 @@ package org.sormas.e2etests.entities.services.api.demis;
 
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
+import java.io.FileNotFoundException;
 import java.net.SocketTimeoutException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -94,15 +95,13 @@ public class DemisApiService {
   }
 
   @SneakyThrows
-  public Boolean sendLabRequest(String fileName, String loginToken) {
+  public Boolean sendLabRequest(String data, String loginToken) {
 
     DemisData demisData = runningConfiguration.getDemisData(locale);
 
     OkHttpClient client =
         SormasOkHttpClient.getClient(
             demisData.getCertificatePath(), demisData.getCertificatePassword());
-
-    String json = readFileAsString("./demisFiles/" + fileName);
 
     MediaType JSON = MediaType.parse(CONTENT_TYPE_APPLICATION_JSON + "; charset=utf-8");
 
@@ -112,7 +111,7 @@ public class DemisApiService {
             .addHeader(CACHE_CONTROL_HEADER, CACHE_CONTROL_NO_CACHE)
             .addHeader(AUTHORIZATION_HEADER, "Bearer " + loginToken)
             .addHeader(CONTENT_TYPE, CONTENT_TYPE_APPLICATION_JSON)
-            .post(RequestBody.create(json, JSON))
+            .post(RequestBody.create(data, JSON))
             .build();
     try {
       Response response = client.newCall(request).execute();
@@ -125,6 +124,21 @@ public class DemisApiService {
           String.format(
               "Unable to get response from Demis. Please make sure you are connected to VPN. [%s]",
               socketTimeoutException.getLocalizedMessage()));
+    }
+  }
+
+  @SneakyThrows
+  public String prepareLabNotificationFile(String patientFirstName, String patientLastName) {
+    DemisData demisData = runningConfiguration.getDemisData(locale);
+    try {
+      String file = "./demisFiles/labNotificationTemplate.json";
+      String json = readFileAsString(file);
+      json = json.replace("\"<postal_code_to_change>\"", "\"" + demisData.getPostalCode() + "\"");
+      json = json.replace("\"<last_name_to_change>\"", "\"" + patientLastName + "\"");
+      json = json.replace("\"<first_name_to_change>\"", "\"" + patientFirstName + "\"");
+      return json;
+    } catch (FileNotFoundException fileNotFoundException) {
+      throw new Exception(String.format("Laboratory Notification Template file does not exists"));
     }
   }
 
