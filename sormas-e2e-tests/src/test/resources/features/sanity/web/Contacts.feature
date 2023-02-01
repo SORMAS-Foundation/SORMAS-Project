@@ -1397,7 +1397,6 @@ Feature: Contacts end to end tests
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     Then I navigate to the last created case via the url
-    And I collect uuid of the case
     Then I click on share case button
     And I select organization to share with "s2s_2"
     And I fill comment in share popup with "shared with automated test"
@@ -1418,7 +1417,8 @@ Feature: Contacts end to end tests
     And I click on Yes option in Confirm deletion popup
     Then I navigate to "s2s_2" environment
     And I click on the Shares button from navbar
-    Then I check if accept button does not appear in Shares Page
+    And I click on the The Eye Icon located in the Shares Page
+    And I check that first shared result has different id then deleted shared contact
 
   @tmsLink=SORDEV-12446 @env_s2s_1
   Scenario: Hide share action in bulk mode for contacts
