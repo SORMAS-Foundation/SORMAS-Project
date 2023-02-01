@@ -436,7 +436,6 @@ Feature: Case filter functionality
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
-    And I click on the Cases button from navbar
     And I open the last created Case via API
     And I set case vaccination status to <status>
     And I click on the Cases button from navbar

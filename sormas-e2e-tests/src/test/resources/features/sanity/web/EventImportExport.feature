@@ -49,7 +49,6 @@ Given I log in as a Admin User
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
-    And I click on the Events button from navbar
     Then I open the last created event via api
     And I navigate to EVENT PARTICIPANT from edit event page
     And I click on the Import button from Event Participants directory
