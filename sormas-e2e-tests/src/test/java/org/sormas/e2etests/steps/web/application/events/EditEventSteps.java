@@ -1260,6 +1260,8 @@ public class EditEventSteps implements En {
                   + "/sormas-webdriver/#!events/data/"
                   + apiState.getCreatedEvent().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_EVENT_URL);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              EditEventPage.UUID_INPUT);
         });
 
     When(

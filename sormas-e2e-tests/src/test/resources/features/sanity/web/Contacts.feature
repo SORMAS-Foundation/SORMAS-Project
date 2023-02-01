@@ -35,10 +35,9 @@ Feature: Contacts end to end tests
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
-    When I click on the Contacts button from navbar
-    Then I search after last created contact via API by UUID and open
+    Then I open the last created contact via API
     And I change all contact fields and save
-    And I navigate to the last created contact via the url
+    And I open the last created contact via API
     Then I check the edited data is correctly displayed on Edit Contact page after editing
 
   @tmsLink=SORDEV-5476 @env_main
@@ -79,7 +78,7 @@ Feature: Contacts end to end tests
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
-    And I navigate to the last created contact via the url
+    And I open the last created contact via API
     And I click on the CHOOSE SOURCE CASE button from CONTACT page
     And I click yes on the DISCARD UNSAVED CHANGES popup from CONTACT page
     And I search for the last case uuid in the CHOOSE SOURCE window
@@ -103,7 +102,7 @@ Feature: Contacts end to end tests
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
-    And I navigate to the last created contact via the url
+    And I open the last created contact via API
     And I click on the CHOOSE SOURCE CASE button from CONTACT page
     And I click yes on the DISCARD UNSAVED CHANGES popup from CONTACT page
     And I search for the last case uuid in the CHOOSE SOURCE window
@@ -117,7 +116,7 @@ Feature: Contacts end to end tests
     Given API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    When I navigate to the last created contact via the url
+    When I open the last created contact via API
     And I click on the CHANGE CASE button
     And I click yes on the DISCARD UNSAVED CHANGES popup from CONTACT page
     And I search for the last case uuid in the CHOOSE SOURCE window
@@ -215,8 +214,7 @@ Feature: Contacts end to end tests
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
-    When I click on the Contacts button from navbar
-    Then I search after last created contact via API by UUID and open
+    Then I open the last created contact via API
     And I click on the Epidemiological Data button tab in Contact form
     And I click on Exposure details known with UNKNOWN option
     And I click on Exposure details known with NO option
@@ -316,8 +314,7 @@ Feature: Contacts end to end tests
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
-    When I click on the Contacts button from navbar
-    Then I open the last created contact
+    Then I open the last created contact via API
     Then I click on the Epidemiological Data button tab in Contact form
     And I fill all the data in Exposure for Epidemiological data tab in Contacts
     And I click on save button from Epidemiological Data
@@ -338,8 +335,7 @@ Feature: Contacts end to end tests
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then I log in as a National User
-    When I click on the Contacts button from navbar
-    Then I open the last created contact
+    Then I open the last created contact via API
     And I click on the Epidemiological Data navbar field
     And I click on Exposure details known with NO option
     And I click on Exposure details known with UNKNOWN option
@@ -411,13 +407,12 @@ Feature: Contacts end to end tests
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
-    When I click on the Contacts button from navbar
-    Then I navigate to the last created contact via the url
+    Then I open the last created contact via API
     Then I click on Create button in Document Templates box in Edit Contact directory
     And I click on checkbox to upload generated document to entity in Create Quarantine Order form in Edit Contact directory
     And I select "ExampleDocumentTemplateContacts.docx" Quarantine Order in Create Quarantine Order form in Edit Contact directory
     And I click on Create button in Create Quarantine Order form
-    Then I navigate to the last created contact via the url
+    Then I open the last created contact via API
     And I check if downloaded file is correct for "ExampleDocumentTemplateContacts.docx" Quarantine Order in Edit Contact directory
     And I check if generated document based on "ExampleDocumentTemplateContacts.docx" appeared in Documents tab in Edit Contact directory
     And I delete downloaded file created from "ExampleDocumentTemplateContacts.docx" Document Template for Contact
@@ -452,7 +447,7 @@ Feature: Contacts end to end tests
     Then I click Leave Bulk Edit Mode on Contact directory page
     Then I navigate to the last created UI contact via the url
     And I check if generated document based on "ExampleDocumentTemplateContacts.docx" appeared in Documents tab for UI created contact in Edit Contact directory
-    And I navigate to the last created contact via the url
+    And I open the last created contact via API
     And I check if generated document based on "ExampleDocumentTemplateContacts.docx" appeared in Documents tab in Edit Contact directory
 
   @tmsLink=SORDEV-8048 @env_de
@@ -486,7 +481,6 @@ Feature: Contacts end to end tests
     And I open the first found result in the popup of Select Person window
     And I click on SAVE new contact button
     Then I check the created data for existing person is correctly displayed on Edit Contact page
-    When I click on the Persons button from navbar
     And I open the last created Person via API
     And I check that SEE CONTACTS FOR THIS PERSON button appears on Edit Person page
 
@@ -593,8 +587,7 @@ Feature: Contacts end to end tests
       Then API: I check that POST call body is "OK"
       And API: I check that POST call status code is 200
       Given I log in as a Admin User
-      When I click on the Contacts button from navbar
-      Then I search after last created contact via API by UUID and open
+      Then I open the last created contact via API
       Then I click on the Archive contact button
       And I check if Archive contact popup is displayed correctly
       Then I check the end of processing date in the archive popup
@@ -613,8 +606,7 @@ Feature: Contacts end to end tests
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
-    When I click on the Contacts button from navbar
-    Then I search after last created contact via API by UUID and open
+    Then I open the last created contact via API
     And I check that the value selected from Disease combobox is "COVID-19" on Edit Contact page
     Then I click on New Sample
     And I check if value "Urine p.m" is unavailable in Type of Sample combobox on Create new Sample page
@@ -668,8 +660,7 @@ Feature: Contacts end to end tests
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
-    When I click on the Contacts button from navbar
-    Then I open the last created contact
+    Then I open the last created contact via API
     Then I click on the Epidemiological Data button tab in Contact form
     And I click on Exposure details known with YES option
     Then I click on New Entry in Exposure Details Known
@@ -724,7 +715,6 @@ Feature: Contacts end to end tests
     When I open the Case Contacts tab of the created case via api
     Then I click on new contact button from Case Contacts tab
     Then I create a new contact from Cases Contacts tab
-    And I click on the Cases button from navbar
     And I open the last created Case via API
     Then I click on the Archive case button
     Then I check the end of processing date in the archive popup and not select Archive contacts checkbox
@@ -1086,7 +1076,7 @@ Feature: Contacts end to end tests
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
-    Then I navigate to the last created contact via the url
+    Then I open the last created contact via API
     And I check that text appearing in hover over Expected Follow-up is based on Report date on Edit Contact Page
     Then I change the date of last contact to 5 days ago for DE version
     And I click SAVE button on Edit Contact Page
@@ -1166,7 +1156,7 @@ Feature: Contacts end to end tests
     Then I click Leave Bulk Edit Mode on Contact directory page
     Then I navigate to the last created UI contact via the url
     And I check if generated document based on "ExampleDocumentTemplateContacts.docx" appeared in Documents tab for UI created contact in Edit Contact directory for DE
-    And I navigate to the last created contact via the url
+    And I open the last created contact via API
     And I check if generated document based on "ExampleDocumentTemplateContacts.docx" appeared in Documents tab in Edit Contact directory for DE
 
   @tmsLink=SORDEV-12133 @env_de @LanguageRisk
@@ -1191,7 +1181,7 @@ Feature: Contacts end to end tests
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
-    And I navigate to the last created contact via the url
+    And I open the last created contact via API
     Then I open Contact Person tab
     Then I check that Citizenship is not visible in Contact Information section for DE version
     And I check that Country of birth is not visible in Contact Information section for DE version
@@ -1219,7 +1209,7 @@ Feature: Contacts end to end tests
     And I click on the Shares button from navbar
     Then I accept first case in Shares Page
     Then I navigate to "s2s_1" environment
-    Then I navigate to the last created contact via the url
+    Then I open the last created contact via API
     Then I click on share contact button
     And I click to hand over the ownership of the contact in Share popup
     And I select organization to share with "s2s_2"
@@ -1242,8 +1232,7 @@ Feature: Contacts end to end tests
     And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
     And I click on Yes option in Confirm deletion popup
     Then I navigate to "s2s_2" environment
-    And I click on the Contacts button from navbar
-    And I search after last created contact via API by UUID and open
+    Then I open the last created contact via API
 
   @tmsLink=SORDEV-12087 @env_s2s_1
   Scenario: Delete a contact in target system with handing ownership
@@ -1268,7 +1257,7 @@ Feature: Contacts end to end tests
     And I click on the Shares button from navbar
     Then I accept first case in Shares Page
     Then I navigate to "s2s_1" environment
-    Then I navigate to the last created contact via the url
+    Then I open the last created contact via API
     Then I click on share contact button
     And I click to hand over the ownership of the contact in Share popup
     And I select organization to share with "s2s_2"
@@ -1278,8 +1267,7 @@ Feature: Contacts end to end tests
     And I click on the Shares button from navbar
     Then I accept first contact in Shares Page
     And I click to accept potential duplicate in Shares Page
-    And I click on the Contacts button from navbar
-    And I search after last created contact via API by UUID and open
+    Then I open the last created contact via API
     Then I click on Delete button from contact
     And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
     And I click on Yes option in Confirm deletion popup
@@ -1314,7 +1302,7 @@ Feature: Contacts end to end tests
     And I click on the Shares button from navbar
     Then I accept first case in Shares Page
     Then I navigate to "s2s_1" environment
-    Then I navigate to the last created contact via the url
+    Then I open the last created contact via API
     Then I click on share contact button
     And I select organization to share with "s2s_2"
     And I fill comment in share popup with "shared with automated test"
@@ -1324,8 +1312,7 @@ Feature: Contacts end to end tests
     Then I accept first contact in Shares Page
     And I click to accept potential duplicate in Shares Page
     And I navigate to "s2s_1" environment
-    And I click on the Contacts button from navbar
-    And I search after last created contact via API by UUID and open
+    Then I open the last created contact via API
     Then I click on Delete button from contact
     And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
     And I click on Yes option in Confirm deletion popup
@@ -1360,7 +1347,7 @@ Feature: Contacts end to end tests
     And I click on the Shares button from navbar
     Then I accept first case in Shares Page
     Then I navigate to "s2s_1" environment
-    Then I navigate to the last created contact via the url
+    Then I open the last created contact via API
     Then I click on share contact button
     And I select organization to share with "s2s_2"
     And I fill comment in share popup with "shared with automated test"
@@ -1381,8 +1368,7 @@ Feature: Contacts end to end tests
     And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
     And I click on Yes option in Confirm deletion popup
     Then I navigate to "s2s_1" environment
-    And I click on the Contacts button from navbar
-    And I search after last created contact via API by UUID and open
+    Then I open the last created contact via API
 
   @tmsLink=SORDEV-12087 @env_s2s_1
   Scenario: Delete a contact in source system with handing ownership before acceptance
@@ -1407,7 +1393,7 @@ Feature: Contacts end to end tests
     And I click on the Shares button from navbar
     Then I accept first case in Shares Page
     Then I navigate to "s2s_1" environment
-    Then I navigate to the last created contact via the url
+    Then I open the last created contact via API
     Then I click on share contact button
     And I select organization to share with "s2s_2"
     And I click to hand over the ownership of the contact in Share popup

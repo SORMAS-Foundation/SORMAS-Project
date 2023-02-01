@@ -106,7 +106,6 @@ Feature: Sample Functionalities
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
-    When I click on the Sample button from navbar
     Then I open the last created sample via API
     Then I delete the sample
     Then I search after the last created Sample via API
@@ -180,21 +179,21 @@ Feature: Sample Functionalities
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     When I log in as a National User
-    Then I navigate to the last created contact via the url
+    Then I open the last created contact via API
     Then I click on New Sample
     Then I collect the sample UUID displayed on create new sample page
     Then I create a new Sample with positive test result with COVID-19 as disease
     Then I confirm the Create case from contact with positive test result
     Then I create a new case with specific data for positive pathogen test result
     Then I save the new case
-    Then I navigate to the last created contact via the url
+    Then I open the last created contact via API
     Then I click on edit Sample
     Then I click on new test result for pathogen tests
     Then I create a new pathogen test result with Anthrax as disease
     Then I confirm the Create case from contact with positive test result
     Then I create a new case with specific data for positive pathogen test result
     Then I save the new case
-    Then I navigate to the last created contact via the url
+    Then I open the last created contact via API
     Then I validate only one sample is created with two pathogen tests
     Then I click on edit Sample
     Then I validate the existence of two pathogen tests
@@ -208,12 +207,12 @@ Feature: Sample Functionalities
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     When I log in as a National User
-    Then I navigate to the last created contact via the url
+    Then I open the last created contact via API
     Then I click on New Sample
     Then I collect the sample UUID displayed on create new sample page
     Then I create a new Sample with positive test result with COVID-19 as disease
     Then I confirm creating a new case
-    Then I navigate to the last created contact via the url
+    Then I open the last created contact via API
     Then I validate date and time is present on sample card
 
   @tmsLink=SORDEV-5669 @env_main
@@ -272,7 +271,6 @@ Feature: Sample Functionalities
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
-    And I click on the Cases button from navbar
     And I open the last created Case via API
     Then I click on New Sample in German
     And I select Sent dispatched checkbox in new sample page

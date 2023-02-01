@@ -106,7 +106,6 @@ Feature: Create events
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
-    And I click on the Events button from navbar
     Then I open the last created event via api
     And I click on New Action button from Event tab
     Then I create New Action from event tab
@@ -247,7 +246,6 @@ Feature: Create events
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
-    And I click on the Events button from navbar
     Then I open the last created event via api
     And I click on link event group
     And I choose select event group Radiobutton
@@ -268,7 +266,6 @@ Feature: Create events
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
-    And I click on the Events button from navbar
     Then I open the last created event via api
     And I click on link event group
     And I create a new event group
@@ -498,7 +495,6 @@ Feature: Create events
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
-    And I click on the Events button from navbar
     Then I open the last created event via api
     And I check CLUSTER option on edit Event page
     And I select "Hauptsächlich von Mensch zu Mensch" option from Primary Mode Of Transmission Combobox on edit Event page
@@ -551,7 +547,6 @@ Feature: Create events
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     And I log in as a National User
-    And I click on the Events button from navbar
     Then I open the last created event via api
     And I navigate to Event Participants tab in Edit case page
     And I add participant responsible region and responsible district only
@@ -569,7 +564,6 @@ Feature: Create events
 #    And I confirm navigation popup
     Then I click on Apply filters button in event participant list
     Then I check if filtered participant for existing person appears in the event participants list
-    When I click on the Persons button from navbar
     And I open the last created Person via API
     And I check that SEE EVENTS FOR THIS PERSON button appears on Edit Person page
 
@@ -688,7 +682,6 @@ Feature: Create events
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
-    And I click on the Events button from navbar
     Then I open the last created event via api
     And I check that the value selected from Disease combobox is "COVID-19" on Edit Event page
     And I navigate to Event Participants tab in Edit case page
@@ -741,7 +734,6 @@ Feature: Create events
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
-    And I click on the Events button from navbar
     Then I open the last created event via api
     Then I click on the Event participant tab
     And I add only required data for event participant creation
@@ -797,7 +789,6 @@ Feature: Create events
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
-    And I click on the Events button from navbar
     When I open the last created event via api
     Then I navigate to EVENT PARTICIPANT from edit event page
     Then I click on ADD PARTICIPANT button
@@ -1305,7 +1296,6 @@ Feature: Create events
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
-    And I click on the Events button from navbar
     When I open the last created event via api
     When I click on the Event participant tab
     When I add a participant to the event
@@ -1441,7 +1431,6 @@ Feature: Create events
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
-    And I click on the Cases button from navbar
     And I open the last created Case via API
     Then I click Link Event button on Edit Case Page
     And I fill Event Id filter in Link to Event form with last created via API Event uuid
