@@ -1397,7 +1397,6 @@ Feature: Contacts end to end tests
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     Then I navigate to the last created case via the url
-    And I collect uuid of the case
     Then I click on share case button
     And I select organization to share with "s2s_2"
     And I fill comment in share popup with "shared with automated test"
