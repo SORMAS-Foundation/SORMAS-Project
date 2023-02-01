@@ -1418,7 +1418,8 @@ Feature: Contacts end to end tests
     And I click on Yes option in Confirm deletion popup
     Then I navigate to "s2s_2" environment
     And I click on the Shares button from navbar
-    Then I check if accept button does not appear in Shares Page
+    And I click on the The Eye Icon located in the Shares Page
+    And I check that first shared result has different id then deleted shared contact
 
   @tmsLink=SORDEV-12446 @env_s2s_1
   Scenario: Hide share action in bulk mode for contacts
