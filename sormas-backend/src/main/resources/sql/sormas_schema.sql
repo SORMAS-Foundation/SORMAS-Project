@@ -8699,6 +8699,11 @@ ALTER TABLE ONLY campaign_community ADD CONSTRAINT fk_campaign_community_communi
 
 INSERT INTO schema_version (version_number, comment) VALUES (436, 'Adding campaign_community schema #164');
 
+
+UPDATE users_formaccess  SET formaccess  = 'ARCHIVE' WHERE formaccess = 'REPORT';
+UPDATE campaignformmeta SET formcategory = 'ARCHIVE' WHERE formcategory = 'REPORT';
+
+INSERT INTO schema_version (version_number, comment) VALUES (437, 'renaming Report to Archive in form category');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
 
 
