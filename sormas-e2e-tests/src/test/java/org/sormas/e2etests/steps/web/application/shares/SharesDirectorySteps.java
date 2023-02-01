@@ -22,6 +22,8 @@ import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.SH
 import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.SHARE_UUID_CASE_TITLE;
 
 import cucumber.api.java8.En;
+import java.util.ArrayList;
+import java.util.List;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
@@ -32,6 +34,7 @@ import org.testng.asserts.SoftAssert;
 public class SharesDirectorySteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
+  public static List<String> casesUUID = new ArrayList<>();
 
   @Inject
   public SharesDirectorySteps(
@@ -42,6 +45,16 @@ public class SharesDirectorySteps implements En {
         "I click on the The Eye Icon located in the Shares Page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SHARE_FIRST_EYE_ICON);
+        });
+
+    And(
+        "^I check that first shared result has different id then deleted shared case$",
+        () -> {
+          softly.assertNotEquals(
+              webDriverHelpers.getTextFromWebElement(SHARE_UUID_CASE_TITLE),
+              apiState.getCreatedCase().getUuid().substring(0, 6).toUpperCase(),
+              "UUIDs are equal!");
+          softly.assertAll();
         });
 
     And(
