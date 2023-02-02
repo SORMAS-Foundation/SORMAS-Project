@@ -80,6 +80,7 @@ import de.symeda.sormas.ui.map.MarkerIcon;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
+import de.symeda.sormas.ui.utils.ComboBoxWithPlaceholder;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
@@ -117,7 +118,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 	private MapPopupView leafletMapPopup;
 	private ComboBox addressType;
-	private ComboBox facilityTypeGroup;
+	private ComboBoxWithPlaceholder facilityTypeGroup;
 	private ComboBox facilityType;
 	private ComboBox facility;
 	private TextField facilityDetails;
@@ -199,7 +200,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		facilityTypeGroup.setWidth(100, Unit.PERCENTAGE);
 		facilityTypeGroup.addItems(FacilityTypeGroup.values());
 		getContent().addComponent(facilityTypeGroup, FACILITY_TYPE_GROUP_LOC);
-		facilityType = addField(LocationDto.FACILITY_TYPE);
+		facilityType = addField(LocationDto.FACILITY_TYPE, ComboBoxWithPlaceholder.class);
 		facility = addInfrastructureField(LocationDto.FACILITY);
 		facility.setImmediate(true);
 		facilityDetails = addField(LocationDto.FACILITY_DETAILS, TextField.class);
@@ -265,8 +266,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		}
 		if (!isEditableAllowed(LocationDto.FACILITY)) {
 			setEnabled(false, LocationDto.FACILITY_TYPE, LocationDto.FACILITY_DETAILS);
-			facilityTypeGroup.setEnabled(false);
-
+			FieldHelper.setComboInaccessible(facilityTypeGroup);
 		}
 
 		ValueChangeListener continentValueListener = e -> {

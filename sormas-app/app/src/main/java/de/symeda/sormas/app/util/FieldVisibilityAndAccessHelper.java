@@ -53,7 +53,7 @@ public class FieldVisibilityAndAccessHelper {
 		}
 	}
 
-	private static void setFieldInaccessibleValue(View child) {
+	public static void setFieldInaccessibleValue(View child) {
 		child.setEnabled(false);
 		if (child instanceof ControlPropertyEditField) {
 			((ControlPropertyEditField) child).setHint(I18nProperties.getCaption(Captions.inaccessibleValue));
