@@ -3,6 +3,9 @@ package org.sormas.e2etests.steps.api.demisSteps;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGES_DETAILED_COLUMN_HEADERS;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGES_DETAILED_TABLE_ROWS;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGES_TABLE_DATA;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGE_EYE_ICON;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGE_POPUP_HEADER;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGE_UUID_TEXT;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
@@ -77,6 +80,23 @@ public class DemisSteps implements En {
               messagesTable.get(MessagesTableViewHeaders.NACHNAME.toString()),
               patientLastName,
               "Last name is not correct");
+          softly.assertAll();
+        });
+
+    Given(
+        "I click on the eye icon next for the first fetched message",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(MESSAGE_EYE_ICON);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(MESSAGE_POPUP_HEADER);
+        });
+
+    Given(
+        "I check if fetched message has UUID field",
+        () -> {
+          ;
+          softly.assertFalse(
+              webDriverHelpers.getValueFromWebElement(MESSAGE_UUID_TEXT).isEmpty(),
+              "UUID is empty!");
           softly.assertAll();
         });
   }
