@@ -21,7 +21,7 @@ import android.util.Log;
 import com.j256.ormlite.logger.Logger;
 import com.j256.ormlite.logger.LoggerFactory;
 
-import org.springframework.util.CollectionUtils;
+import org.apache.commons.collections.CollectionUtils;
 
 import java.io.IOException;
 import java.sql.SQLException;

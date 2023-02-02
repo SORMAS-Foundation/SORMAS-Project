@@ -930,8 +930,7 @@
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-context</artifactId>
-				<version>4.3.30.RELEASE</version>
-				<!-- downgraded because of missing support in android api 24-->
+				<version>5.3.25</version>
 			</dependency>
 
 			<dependency>
