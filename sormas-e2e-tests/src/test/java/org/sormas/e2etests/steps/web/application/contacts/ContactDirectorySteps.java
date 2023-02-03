@@ -252,6 +252,16 @@ public class ContactDirectorySteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
         });
     When(
+        "^I navigate to the last created UI contact via the url$",
+        () -> {
+          String LAST_CREATED_CONTACT_URL =
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
+                  + "/sormas-webdriver/#!contacts/data/"
+                  + collectedContact.getUuid();
+          webDriverHelpers.accessWebSite(LAST_CREATED_CONTACT_URL);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
+        });
+    When(
         "I apply Id of last created Contact on Contact Directory Page",
         () -> {
           String contactUuid = collectedContact.getUuid();
