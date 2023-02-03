@@ -23,12 +23,19 @@ import java.io.FileNotFoundException;
 import java.net.SocketTimeoutException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import javax.inject.Inject;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+import org.sormas.e2etests.entities.pojo.demis.LaboratoryNotification;
+import org.sormas.e2etests.entities.pojo.demis.labNotificationsChunks.*;
 import org.sormas.e2etests.envconfig.dto.demis.DemisData;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.api.demis.okhttpclient.SormasOkHttpClient;
@@ -129,17 +136,41 @@ public class DemisApiService {
 
   @SneakyThrows
   public String prepareLabNotificationFile(String patientFirstName, String patientLastName) {
+
+    ArrayList<Parameter> parameters = new ArrayList<>();
+    parameters.add(Parameter.builder()
+            .name("content")
+            .resource(Resource.builder().resourceType("Bundle")
+                    .meta(Meta.builder().lastUpdated("2020-08-03T23:32:32.527+02:00")
+                            .profile(new ArrayList<>(Arrays.asList("https://demis.rki.de/fhir/StructureDefinition/NotificationBundleLaboratory"))))
+                    .identifier(Identifier.builder().system("http://demis.rki.de/fhir/todo/bundleIdentifier").value("7bb100f2-ccc5-4d2c-842a-be47c8bb2ce").build())
+                    .type("document")
+                    .timestamp("2020-08-03T23:32:32.525+02:00")
+                    .entry(new ArrayList<>(Arrays.asList(
+                            Entry.builder().fullUrl("https://demis.rki.de/fhir/Composition/37bde9c8-13a2-4249-9f16-2f8f2bb0ee0e")
+                                    .resource(Resource.builder().resourceType("Composition").id("37bde9c8-13a2-4249-9f16-2f8f2bb0ee0e")
+                                            .status("preliminary")
+                                            .date("2020-08-03T23:32:32+02:00")
+                                            .title("SARS-CoV-2 Labormeldung")
+                                            .meta(Meta.builder()
+                                                    .profile(new ArrayList<>(Arrays.asList("https://demis.rki.de/fhir/StructureDefinition/NotificationLaboratorySARSCoV2")))
+                                                    .build())
+                                            .type()
+                                            .build())
+                                    .build() // )))
+                    .build())
+            .build());
+
+    LaboratoryNotification laboratoryNotification = LaboratoryNotification.builder()
+            .resourceType("Parameters").parameter(parameters).build();
+
     DemisData demisData = runningConfiguration.getDemisData(locale);
-    try {
-      String file = "./demisFiles/labNotificationTemplate.json";
-      String json = readFileAsString(file);
-      json = json.replace("\"<postal_code_to_change>\"", "\"" + demisData.getPostalCode() + "\"");
-      json = json.replace("\"<last_name_to_change>\"", "\"" + patientLastName + "\"");
-      json = json.replace("\"<first_name_to_change>\"", "\"" + patientFirstName + "\"");
-      return json;
-    } catch (FileNotFoundException fileNotFoundException) {
-      throw new Exception(String.format("Laboratory Notification Template file does not exists"));
-    }
+    String file = "./demisFiles/labNotificationTemplate.json";
+    String json = readFileAsString(file);
+    json = json.replace("\"<postal_code_to_change>\"", "\"" + demisData.getPostalCode() + "\"");
+    json = json.replace("\"<last_name_to_change>\"", "\"" + patientLastName + "\"");
+    json = json.replace("\"<first_name_to_change>\"", "\"" + patientFirstName + "\"");
+    return json;
   }
 
   /** Delete method once we start adding tests */
@@ -149,7 +180,7 @@ public class DemisApiService {
   }
 
   @SneakyThrows
-  public static String readFileAsString(String file) throws Exception {
+  public static String readFileAsString(String file) {
     return new String(Files.readAllBytes(Paths.get(file)));
   }
 }

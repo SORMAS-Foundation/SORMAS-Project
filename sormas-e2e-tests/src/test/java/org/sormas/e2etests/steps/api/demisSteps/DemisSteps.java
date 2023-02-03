@@ -51,7 +51,7 @@ public class DemisSteps implements En {
     Given(
         "Send lab message with {string}",
         (String filename) -> {
-          Assert.assertTrue(demisApiService.sendLabRequest(filename, loginToken));
+          Assert.assertTrue(demisApiService.sendLabRequest(filename, loginToken), "Failed to send laboratory request");
         });
 
     Given(
@@ -61,7 +61,7 @@ public class DemisSteps implements En {
           patientLastName = faker.name().lastName();
           String json =
               demisApiService.prepareLabNotificationFile(patientFirstName, patientLastName);
-          Assert.assertTrue(demisApiService.sendLabRequest(json, loginToken));
+          Assert.assertTrue(demisApiService.sendLabRequest(json, loginToken), "Failed to send laboratory request");
         });
 
     Given(
