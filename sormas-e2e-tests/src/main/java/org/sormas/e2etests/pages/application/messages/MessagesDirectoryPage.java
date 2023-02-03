@@ -9,4 +9,7 @@ public class MessagesDirectoryPage {
       By.cssSelector("thead .v-grid-column-default-header-content");
   public static final By MESSAGES_DETAILED_TABLE_ROWS =
       By.cssSelector("div.v-grid-tablewrapper tbody tr");
+  public static By getProcessMessageButtonByIndex(int index) {
+    return By.xpath(String.format("//table/tbody[1]/tr[%s]/td[14]", index));
+  }
 }

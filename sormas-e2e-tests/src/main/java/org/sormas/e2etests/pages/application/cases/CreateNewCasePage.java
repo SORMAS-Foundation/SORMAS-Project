@@ -133,4 +133,6 @@ public class CreateNewCasePage {
   public static final By PLACE_OF_STAY_REGION_COMBOBOX = By.cssSelector(".v-window #region div");
   public static final By PLACE_OF_STAY_DISTRICT_COMBOBOX =
       By.cssSelector(".v-window #district div");
+  public static final By CREATE_NEW_CASE_CONFIRMATION_BUTTON =
+          By.xpath("//*[text()='Create new case']");
 }

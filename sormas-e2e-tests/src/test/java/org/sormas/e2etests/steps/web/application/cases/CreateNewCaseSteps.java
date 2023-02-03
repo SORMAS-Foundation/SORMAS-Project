@@ -35,6 +35,7 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CONF
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CONTACT_CASE_POPUP_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CREATE_A_NEW_CASE_CONFIRMATION_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CREATE_A_NEW_PERSON_CONFIRMATION_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CREATE_NEW_CASE_CONFIRMATION_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_BIRTH_DAY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_BIRTH_MONTH_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_BIRTH_YEAR_COMBOBOX;
@@ -1339,6 +1340,13 @@ public class CreateNewCaseSteps implements En {
     When(
         "I accept first case in Shares Page",
         () -> webDriverHelpers.clickOnWebElementBySelector(ACCEPT_BUTTON));
+
+    And(
+        "^I choose create new case in Pick or create entry form$",
+        () -> {
+            webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_CASE_CONFIRMATION_BUTTON);
+            webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON_POPUP);
+        });
   }
 
   private void selectPlaceOfStayDistrict(String placeOfStayDistrict) {
