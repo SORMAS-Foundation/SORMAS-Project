@@ -125,28 +125,29 @@ public interface PersonSideComponentsElement {
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SAMPLES_LAB)
 			&& currentUser != null
 			&& currentUser.hasUserRight(UserRight.SAMPLE_VIEW)
+			//restricts the sample component to be shown only on Person View
 			&& getClass().equals(PersonDataView.class)) {
 
-			List<String> casePersonList = caseListComponent == null
+			List<String> caseList = caseListComponent == null
 				? null
 				: caseListComponent.getEntries().stream().map(CaseListEntryDto::getUuid).collect(Collectors.toList());
 
-			List<String> contactPersonList = contactListComponent == null
+			List<String> contactList = contactListComponent == null
 				? null
 				: contactListComponent.getEntries().stream().map(ContactListEntryDto::getUuid).collect(Collectors.toList());
 
-			List<String> eventParticipantPersonList = eventParticipantListComponent == null
+			List<String> eventParticipantList = eventParticipantListComponent == null
 				? null
 				: eventParticipantListComponent.getEntries().stream().map(EventParticipantListEntryDto::getUuid).collect(Collectors.toList());
 
 			SampleCriteria sampleCriteria = new SampleCriteria();
-			sampleCriteria.caseUuids(casePersonList);
-			sampleCriteria.contactUuids(contactPersonList);
-			sampleCriteria.eventParticipantUuids(eventParticipantPersonList);
-			sampleCriteria.sampleAssociationType(SampleAssociationType.ALL);
+			sampleCriteria.caseUuids(caseList)
+				.contactUuids(contactList)
+				.eventParticipantUuids(eventParticipantList)
+				.sampleAssociationType(SampleAssociationType.ALL);
 
 			SampleListComponent sampleList = new SampleListComponent(sampleCriteria, showUnsavedChangesPopup, true);
-			SampleListComponentLayout sampleListComponentLayout = new SampleListComponentLayout(true, sampleList, "");
+			SampleListComponentLayout sampleListComponentLayout = new SampleListComponentLayout(sampleList, null);
 			layout.addComponent(sampleListComponentLayout, SAMPLES_LOC);
 		}
 

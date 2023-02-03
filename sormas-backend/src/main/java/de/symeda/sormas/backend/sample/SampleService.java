@@ -900,7 +900,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 			filterEvPartUuids = sample.get(Sample.ASSOCIATED_EVENT_PARTICIPANT).get(EventParticipant.UUID).in(criteria.getEventParticipantUuids());
 		}
 
-		filter = CriteriaBuilderHelper.and(cb, filter, cb.or(filterCaseUuids, filterContactUuids, filterEvPartUuids));
+		filter = CriteriaBuilderHelper.and(cb, filter, CriteriaBuilderHelper.or(cb, filterCaseUuids, filterContactUuids, filterEvPartUuids));
 
 		return filter;
 	}

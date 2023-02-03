@@ -21,7 +21,6 @@ public class CaseList extends PaginationList<CaseListEntryDto> {
 
 	private final String personUuid;
 	private final Label noCaseLabel;
-	private List<CaseListEntryDto> displayedEntries;
 
 	public CaseList(PersonReferenceDto personReferenceDto) {
 		super(MAX_DISPLAYED_ENTRIES);
@@ -46,7 +45,7 @@ public class CaseList extends PaginationList<CaseListEntryDto> {
 	@Override
 	protected void drawDisplayedEntries() {
 		UserProvider currentUser = UserProvider.getCurrent();
-		displayedEntries = getDisplayedEntries();
+		List<CaseListEntryDto> displayedEntries = getDisplayedEntries();
 		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
 			final CaseListEntryDto caze = displayedEntries.get(i);
 			final CaseListEntry listEntry = new CaseListEntry(caze);

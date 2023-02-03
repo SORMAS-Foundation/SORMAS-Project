@@ -20,7 +20,6 @@ public class EventParticipantList extends PaginationList<EventParticipantListEnt
 
 	private final EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
 	private final Label noEventParticipantLabel;
-	private List<EventParticipantListEntryDto> displayedEntries;
 
 	public EventParticipantList(PersonReferenceDto personRef) {
 		super(5);
@@ -45,7 +44,7 @@ public class EventParticipantList extends PaginationList<EventParticipantListEnt
 
 	@Override
 	protected void drawDisplayedEntries() {
-		displayedEntries = getDisplayedEntries();
+		List<EventParticipantListEntryDto> displayedEntries = getDisplayedEntries();
 		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
 			final EventParticipantListEntryDto eventParticipant = displayedEntries.get(i);
 			final EventParticipantListEntry listEntry = new EventParticipantListEntry(eventParticipant);
@@ -62,9 +61,5 @@ public class EventParticipantList extends PaginationList<EventParticipantListEnt
 
 			listLayout.addComponent(listEntry);
 		}
-	}
-
-	protected List<EventParticipantListEntryDto> getDisplayEntries() {
-		return displayedEntries;
 	}
 }

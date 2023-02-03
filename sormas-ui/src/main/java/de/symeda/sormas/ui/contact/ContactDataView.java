@@ -211,7 +211,7 @@ public class ContactDataView extends AbstractContactView {
 				this::showUnsavedChangesPopup,
 				isEditAllowed());
 			SampleListComponentLayout sampleListComponentLayout =
-				new SampleListComponentLayout(false, sampleList, I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesContact));
+				new SampleListComponentLayout(sampleList, I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesContact));
 			layout.addSidePanelComponent(sampleListComponentLayout, SAMPLES_LOC);
 		}
 
