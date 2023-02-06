@@ -69,7 +69,16 @@ jobs:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
-
+      - name: comment
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'Thanks for reporting!'
+            })
       - name: Run mvn verify and sonar analysis
         # FIXME(@JonasCir) see https://github.com/hzi-braunschweig/SORMAS-Project/issues/3730#issuecomment-745165678
         env:
