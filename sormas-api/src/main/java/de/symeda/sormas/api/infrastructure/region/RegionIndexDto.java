@@ -102,7 +102,7 @@ public class RegionIndexDto extends EntityDto {
 		return areaexternalId;
 	}
 	
-	public void setArea(Long areaexternalId) {
+	public void setAreaexternalId(Long areaexternalId) {
 		this.areaexternalId = areaexternalId;
 	}
 

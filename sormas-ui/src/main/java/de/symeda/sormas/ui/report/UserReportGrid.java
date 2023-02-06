@@ -89,11 +89,21 @@ System.out.println("ddddddddddddddddddddddddddddddddddddddd "+formacc.toString()
 							.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
 							.collect(Collectors.toList()), formacc)
 					.stream(),
-				query -> {
+				query -> FacadeProvider.getCommunityFacade()
+					.getAllActiveCommunitytoRerence(
+						query.getFilter().orElse(null),
+						query.getOffset(),
+						query.getLimit(),
+						query.getSortOrders()
+							.stream()
+							.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
+							.collect(Collectors.toList()), formacc).size());
+				
+			//	{
 //					return (int) FacadeProvider.getCommunityFacade().countReportGrid(
 //							query.getFilter().orElse(null), formacc);
-					return 100;
-				});
+				//	return 100;
+			//	});
 		
 	//	List<CommunityUserReportModelDto> reportLists = FacadeProvider.getCommunityFacade().getAllActiveCommunitytoRerence(getCriteria());
 		
