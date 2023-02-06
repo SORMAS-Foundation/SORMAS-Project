@@ -69,16 +69,6 @@ jobs:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
-      - name: comment
-        uses: actions/github-script@v6
-        with:
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: 'Thanks for reporting!'
-            })
       - name: Run mvn verify and sonar analysis
         # FIXME(@JonasCir) see https://github.com/hzi-braunschweig/SORMAS-Project/issues/3730#issuecomment-745165678
         env:
@@ -86,6 +76,18 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         working-directory: ./sormas-base
         run: mvn -B -ntp verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=SORMAS-Project
+
+      - name: Comment with SonarCloud analysis
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.SORMAS_VITAGROUP_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `SonarCloud analysis: Please find the results at https://sonarcloud.io/dashboard?id=SORMAS-Project&pullRequest=${{ github.event.pull_request.number }}`
+            })
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v1
