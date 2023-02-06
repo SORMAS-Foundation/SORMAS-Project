@@ -89,6 +89,8 @@ public class CreateNewCasePage {
       By.xpath("//*[text()='Pick an existing case']");
   public static final By CREATE_A_NEW_PERSON_CONFIRMATION_BUTTON =
       By.xpath("//*[text()='Create a new person']");
+  public static final By CREATE_A_NEW_PERSON_CONFIRMATION_BUTTON_DE =
+      By.xpath("//*[text()='Eine neue Person anlegen']");
   public static final By SELECT_PERSON_WINDOW_CONFIRM_BUTTON =
       By.xpath("(//div[@class='popupContent']//div[@id='commit'])[2]");
   public static final By PERSON_CASE_WINDOW_SEARCH_FIRST_RESULT_OPTION =
@@ -133,6 +135,6 @@ public class CreateNewCasePage {
   public static final By PLACE_OF_STAY_REGION_COMBOBOX = By.cssSelector(".v-window #region div");
   public static final By PLACE_OF_STAY_DISTRICT_COMBOBOX =
       By.cssSelector(".v-window #district div");
-  public static final By CREATE_NEW_CASE_CONFIRMATION_BUTTON =
-          By.xpath("//*[text()='Create new case']");
+  public static final By CREATE_NEW_CASE_CONFIRMATION_BUTTON_DE =
+      By.xpath("//*[text()='Neuen Fall erstellen']");
 }

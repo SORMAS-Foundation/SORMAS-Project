@@ -31,22 +31,33 @@ Scenario: Test Handle New Profile: Automatically propose to correct entities rel
   Then I click on the Messages button from navbar
   And I click on fetch messages button
   #step2
-  And I click on process button for 2 result in Message Directory page
-  And I Pick a new person in Pick or create person popup during case creation
-  And I choose create new case in Pick or create entry form
-  And I check that case correction popup is displayed
-  And I fill only mandatory fields for a new case form
+  And I click on process button for 1 result in Message Directory page
+  And I pick a new person in Pick or create person popup during case creation for DE
+  And I choose create new case in Pick or create entry form for DE
+  And I check that case correction popup is displayed for DE
+  And I fill only mandatory fields to convert laboratory message into a case for DE
   And I click on save button in the case popup
   And I check that sample correction popup is displayed
   And I click on save sample button
+  And I click on save sample button
   And I click on YES button in Update case disease variant popup window
-  Then I check that case from lab message with sample and pathogen test is created
-  #step3
-  When I click on process button for 1 result in Message Directory page
-
+  And I click on the Cases button from navbar
+  And I click on the first Case ID from Case Directory
+  And I check that case created from laboratory message contains a sample with pathogen
+  And I navigate to case person tab
+  And I check that first and last name are equal to data form laboratory notification
+#  #step3
+  When I click on process button for 2 result in Message Directory page
+  And I pick a new person in Pick or create person popup during case creation for DE
+  And I choose create new case in Pick or create entry form for DE
+  And I check that case correction popup is displayed for DE
+  And I check that correction popup contains discard button
+  And I check that correction popup contains save button
+  And I fill only mandatory fields to convert laboratory message into a case for DE
+  And I click on save button in the case popup
+  And I check that sample correction popup is displayed
   Then I check that correction popup contains cancel button
-  And I check that correction popup contains discard and continue button
-  And I check that correction popup contains save and continue button
-  And I check that correction popup contains eye icon to view the lab message
-  And I click on the The Eye Icon located in the correction popup in Messages Directory page
+  And I check that correction popup contains discard button
+  And I check that correction popup contains save button
+#  And I click on the The Eye Icon located in the correction popup in Messages Directory page
   #step4

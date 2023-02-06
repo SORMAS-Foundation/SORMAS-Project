@@ -373,6 +373,20 @@ public class CreateNewSampleSteps implements En {
         });
 
     When(
+        "^I check that case created from laboratory message contains a sample with pathogen",
+        () -> {
+          softly.assertEquals(
+              webDriverHelpers.getNumberOfElements(EDIT_SAMPLE_BUTTON),
+              1,
+              "Number of samples is not correct");
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(NUMBER_OF_TESTS_IN_SAMPLES),
+              "Number of tests: 1",
+              "Number of tests is correct!");
+          softly.assertAll();
+        });
+
+    When(
         "^I validate the existence of two pathogen tests",
         () -> {
           TimeUnit.SECONDS.sleep(2);
