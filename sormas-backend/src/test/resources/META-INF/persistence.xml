@@ -100,7 +100,8 @@
 	    	<property name="javax.persistence.jdbc.user" value="sa" />
 	    	<property name="javax.persistence.jdbc.password" value="" />
 
-      		<property name="hibernate.hbm2ddl.auto" value="create-drop" />
+			<!-- Database schema is created before each test by TestDatabaseCleaner class -->
+      		<property name="hibernate.hbm2ddl.auto" value="none" />
 			<property name="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>
 			<property name="hibernate.show_sql" value="false" />
 			<property name="hibernate.format_sql" value="false" />

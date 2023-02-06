@@ -24,10 +24,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
@@ -35,6 +38,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import de.hilling.junit.cdi.CdiTestJunitExtension;
+import de.hilling.junit.cdi.ContextControlWrapper;
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
@@ -147,8 +152,8 @@ import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipant
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
-import de.symeda.sormas.backend.externalmessage.ExternalMessageService;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal;
+import de.symeda.sormas.backend.externalmessage.ExternalMessageService;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportService;
 import de.symeda.sormas.backend.externalmessage.labmessage.TestReportFacadeEjb;
@@ -245,20 +250,29 @@ import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
 import de.symeda.sormas.backend.vaccination.VaccinationService;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.VisitService;
-import info.novatec.beantest.api.BaseBeanTest;
-import info.novatec.beantest.api.BeanProviderHelper;
 
+@ExtendWith(CdiTestJunitExtension.class)
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public abstract class AbstractBeanTest extends BaseBeanTest {
+public abstract class AbstractBeanTest {
 
 	protected final TestDataCreator creator = new TestDataCreator(this);
 	public static final String CONFIDENTIAL = "Confidential";
+
+	@BeforeAll
+	public static void beforeAll() {
+
+	}
 
 	@BeforeEach
 	public void beforeEach() {
 		// so we can override init
 		init();
+	}
+
+	@AfterEach
+	public void afterEach() {
+
 	}
 
 	/**
@@ -267,12 +281,18 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 	 */
 	public void init() {
 
-		super.initilaize();
+		initH2Functions();
 
 		MockProducer.resetMocks();
-		initH2Functions();
+
 		// this is used to provide the current user to the ADO Listener taking care of updating the last change user
 		System.setProperty("java.naming.factory.initial", MockProducer.class.getCanonicalName());
+		try {
+			when(InitialContext.doLookup("java:global/sormas-ear/sormas-backend/CurrentUserService")).thenReturn(getCurrentUserService());
+		} catch (NamingException e) {
+			e.printStackTrace();
+		}
+
 		UserDto user = creator.createTestUser();
 
 		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName());
@@ -291,14 +311,8 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		createDiseaseConfigurations();
 	}
 
-	@AfterEach
-	public void cleanUp() {
-		super.cleanUp();
-	}
-
 	protected void initH2Functions() {
 		EntityManager em = getEntityManager();
-		em.getTransaction().begin();
 		Query nativeQuery = em.createNativeQuery("CREATE ALIAS similarity FOR \"de.symeda.sormas.backend.H2Function.similarity\"");
 		nativeQuery.executeUpdate();
 		nativeQuery = em.createNativeQuery("CREATE ALIAS date_part FOR \"de.symeda.sormas.backend.H2Function.date_part\"");
@@ -318,7 +332,6 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		nativeQuery.executeUpdate();
 		nativeQuery = em.createNativeQuery("CREATE ALIAS at_end_of_day FOR \"de.symeda.sormas.backend.H2Function.at_end_of_day\"");
 		nativeQuery.executeUpdate();
-		em.getTransaction().commit();
 	}
 
 	private void createDiseaseConfigurations() {
@@ -330,11 +343,12 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		});
 	}
 
-	/**
-	 * Use Case: Static methods when a bean test is already running.
-	 */
-	public static <T> T getBeanStatic(Class<T> beanClass, Annotation... qualifiers) {
-		return BeanProviderHelper.getInstance().getBean(beanClass, qualifiers);
+	protected <T> T getBean(Class<T> beanClass, Annotation... qualifiers) {
+		return ContextControlWrapper.getInstance().getContextualReference(beanClass, qualifiers);
+	}
+
+	public EntityManager getEntityManager() {
+		return getBean(EntityManager.class);
 	}
 
 	/**
@@ -343,11 +357,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 	 */
 	@SuppressWarnings("unchecked")
 	public <E extends AbstractDomainObject> E getEntityAttached(E entity) {
-		return (E) QueryHelper.simpleSingleQuery(
-			getBeanStatic(EntityManagerWrapper.class).getEntityManager(),
-			entity.getClass(),
-			AbstractDomainObject.UUID,
-			entity.getUuid());
+		return (E) QueryHelper.simpleSingleQuery(getEntityManager(), entity.getClass(), AbstractDomainObject.UUID, entity.getUuid());
 	}
 
 	public UserRole getEagerUserRole(String uuid) {
@@ -388,10 +398,6 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		DeletionConfigurationService deletionConfigurationService = getBean(DeletionConfigurationService.class);
 		deletionConfigurationService.ensurePersisted(DeletionConfiguration.build(coreEntityType, DeletionReference.CREATION, 3650));
 		deletionConfigurationService.ensurePersisted(DeletionConfiguration.build(coreEntityType, DeletionReference.MANUAL_DELETION, 90));
-	}
-
-	public EntityManager getEntityManager() {
-		return getBean(EntityManagerWrapper.class).getEntityManager();
 	}
 
 	public ConfigFacade getConfigFacade() {

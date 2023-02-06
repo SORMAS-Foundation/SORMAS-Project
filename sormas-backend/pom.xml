@@ -121,20 +121,28 @@
 		</dependency>
 
 		<dependency>
-			<groupId>info.novatec</groupId>
-			<artifactId>bean-test</artifactId>
+			<groupId>de.hilling.junit.cdi</groupId>
+			<artifactId>cdi-test-core</artifactId>
+			<version>3.4.0</version>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>junit-jupiter-api</artifactId>
+					<groupId>org.junit.jupiter</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>org.jboss.weld.se</groupId>
-			<artifactId>weld-se</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.deltaspike.core</groupId>
-			<artifactId>deltaspike-core-impl</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.deltaspike.cdictrl</groupId>
-			<artifactId>deltaspike-cdictrl-weld</artifactId>
+			<groupId>de.hilling.junit.cdi</groupId>
+			<artifactId>cdi-test-jee</artifactId>
+			<version>3.4.0</version>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>junit-jupiter-api</artifactId>
+					<groupId>org.junit.jupiter</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
