@@ -41,8 +41,11 @@
 		<hamcrest.version>2.2</hamcrest.version>
 		<apache-tika.version>2.6.0</apache-tika.version>
 
-		<!-- Attention: Compile dependencies with versions are maintained redundantly in sormas-app/app/build.gradle -->
+		<!--SONAR GitHub Actions scanner -->
+		<sonar.organization>sormas</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 
+		<!-- Attention: Compile dependencies with versions are maintained redundantly in sormas-app/app/build.gradle -->
 	</properties>
 
 	<distributionManagement>
