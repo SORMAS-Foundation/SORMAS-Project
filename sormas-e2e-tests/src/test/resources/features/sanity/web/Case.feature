@@ -156,6 +156,7 @@ Feature: Case end to end tests
     Given I log in as a National User
     And I open the last created Case via API
     And I delete the case
+    And I filter by CaseID on Case directory page
     Then I check that number of displayed cases results is 0
 
   @tmsLink=SORDEV-5530 @env_main
