@@ -145,7 +145,7 @@ Feature: Case end to end tests
     And I click on save button from Edit Case page with current hospitalization
     Then I check if the specific data is correctly displayed
 
-  @env_main
+  @env_main @checkTest
   Scenario: Delete created case
     When API: I create a new person
     Then API: I check that POST call body is "OK"
