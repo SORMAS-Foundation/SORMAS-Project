@@ -52,6 +52,7 @@ public class MessagesDirectorySteps implements En {
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               UPDATE_CASE_DISEASE_VARIANT_CONFIRM_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(UPDATE_CASE_DISEASE_VARIANT_CONFIRM_BUTTON);
         });
 
     Then(
