@@ -34,10 +34,12 @@ public class MergeCasesView extends AbstractView {
 	private final MergeCasesGrid grid;
 	private final MergeCasesFilterComponent filterComponent;
 
+	private final boolean criteriaUninitialized;
+
 	public MergeCasesView() {
 		super(VIEW_NAME);
 
-		boolean criteriaUninitialized = !ViewModelProviders.of(MergeCasesView.class).has(CaseCriteria.class);
+		criteriaUninitialized = !ViewModelProviders.of(MergeCasesView.class).has(CaseCriteria.class);
 
 		CaseCriteria criteria = ViewModelProviders.of(MergeCasesView.class).get(CaseCriteria.class);
 		if (criteriaUninitialized) {
@@ -53,8 +55,7 @@ public class MergeCasesView extends AbstractView {
 		filterComponent = new MergeCasesFilterComponent(criteria);
 		filterComponent.setFiltersUpdatedCallback(() -> {
 			if (ViewModelProviders.of(MergeCasesView.class).has(CaseCriteria.class)) {
-				grid.reload();
-				filterComponent.updateDuplicateCountLabel(grid.getTreeData().getRootItems().size());
+				reloadAndUpdateDuplicateCount();
 			} else {
 				navigateTo(null);
 			}
@@ -85,6 +86,15 @@ public class MergeCasesView extends AbstractView {
 			ValoTheme.BUTTON_PRIMARY);
 
 		addHeaderComponent(btnBack);
+
+		if (!criteriaUninitialized) {
+			reloadAndUpdateDuplicateCount();
+		}
+	}
+
+	private void reloadAndUpdateDuplicateCount() {
+		grid.reload();
+		filterComponent.updateDuplicateCountLabel(grid.getTreeData().getRootItems().size());
 	}
 
 	private void buildAndOpenMergeInstructions() {
@@ -112,10 +122,13 @@ public class MergeCasesView extends AbstractView {
 	@Override
 	public void enter(ViewChangeEvent event) {
 		filterComponent.updateDuplicateCountLabel(0);
-		VaadinUiUtil.showSimplePopupWindow(
-			I18nProperties.getString(Strings.headingCaution),
-			I18nProperties.getString(Strings.infoMergeFiltersHint),
-			ContentMode.HTML,
-			640);
+
+		if (criteriaUninitialized) {
+			VaadinUiUtil.showSimplePopupWindow(
+				I18nProperties.getString(Strings.headingCaution),
+				I18nProperties.getString(Strings.infoMergeFiltersHint),
+				ContentMode.HTML,
+				640);
+		}
 	}
 }

@@ -18,8 +18,7 @@ Feature: Vaccination tests
     And I confirm the document template overwrite popup
     Then I check that an upload success notification appears
     And I click to close UPLOAD TEMPLATE popup
-    When I click on the Contacts button from navbar
-    Then I search after last created contact via API by UUID and open
+    Then I open the last created contact via API
     And I click NEW VACCINATION button for DE
     And I fill new vaccination data in new Vaccination form for DE
     And I click SAVE button in new Vaccination form
@@ -47,7 +46,6 @@ Feature: Vaccination tests
     And I confirm the document template overwrite popup
     Then I check that an upload success notification appears
     And I click to close UPLOAD TEMPLATE popup
-    And I click on the Cases button from navbar
     And I open the last created Case via API
     And I click NEW VACCINATION button for DE
     And I fill new vaccination data in new Vaccination form for DE
@@ -73,7 +71,6 @@ Feature: Vaccination tests
     And I confirm the document template overwrite popup
     Then I check that an upload success notification appears
     And I click to close UPLOAD TEMPLATE popup
-    And I click on the Events button from navbar
     And I open the last created event via api
     And I navigate to EVENT PARTICIPANT from edit event page
     Then I add only required data for event participant creation for DE

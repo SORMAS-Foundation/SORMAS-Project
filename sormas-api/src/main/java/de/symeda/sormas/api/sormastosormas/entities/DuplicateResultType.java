@@ -15,7 +15,7 @@
 
 package de.symeda.sormas.api.sormastosormas.entities;
 
-public enum DuplicateResult {
+public enum DuplicateResultType {
 	CASE,
 	CASE_CONVERTED,
 	CASE_TO_CONTACT,

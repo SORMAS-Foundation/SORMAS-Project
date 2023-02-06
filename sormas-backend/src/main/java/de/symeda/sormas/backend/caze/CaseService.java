@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -51,6 +52,7 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -2006,6 +2008,11 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		filter = cb.and(filter, onsetDateFilter);
 		filter = cb.and(filter, creationDateFilter);
 		filter = cb.and(filter, cb.notEqual(root.get(Case.ID), root2.get(Case.ID)));
+
+		if (CollectionUtils.isNotEmpty(criteria.getCaseUuidsForMerge())) {
+			Set<String> caseUuidsForMerge = criteria.getCaseUuidsForMerge();
+			filter = cb.and(filter, cb.or(root.get(Case.UUID).in(caseUuidsForMerge), root2.get(Case.UUID).in(caseUuidsForMerge)));
+		}
 
 		cq.where(filter);
 		cq.multiselect(root.get(Case.ID), root2.get(Case.ID), root.get(Case.CREATION_DATE));

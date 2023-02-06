@@ -19,6 +19,7 @@ import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCase
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.handleValidationError;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -30,13 +31,15 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
+import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.SimilarPersonDto;
-import de.symeda.sormas.api.sormastosormas.entities.DuplicateResult;
+import de.symeda.sormas.api.sormastosormas.DuplicateResult;
+import de.symeda.sormas.api.sormastosormas.entities.DuplicateResultType;
 import de.symeda.sormas.api.sormastosormas.entities.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
@@ -96,12 +99,12 @@ public class ProcessedCaseDataPersister extends ProcessedDataPersister<CaseDataD
 	public DuplicateResult checkForSimilarEntities(SormasToSormasCaseDto processedData) {
 		List<SimilarPersonDto> similarPersons = personFacade.getSimilarPersonDtos(PersonSimilarityCriteria.forPerson(processedData.getPerson()));
 		if (similarPersons.isEmpty()) {
-			return DuplicateResult.NONE;
+			return DuplicateResult.none();
 		}
 
-		List<CaseSelectionDto> similarCases = caseService.getSimilarCases(
-			CaseSimilarityCriteria
-				.forCase(processedData.getEntity(), similarPersons.stream().map(AbstractUuidDto::getUuid).collect(Collectors.toList())));
+		Set<String> similarPersonUuids = similarPersons.stream().map(AbstractUuidDto::getUuid).collect(Collectors.toSet());
+		List<CaseSelectionDto> similarCases =
+			caseService.getSimilarCases(CaseSimilarityCriteria.forCase(processedData.getEntity(), similarPersonUuids));
 
 		if (!similarCases.isEmpty()) {
 			boolean foundCasesConverted = caseService.exists(
@@ -109,20 +112,27 @@ public class ProcessedCaseDataPersister extends ProcessedDataPersister<CaseDataD
 					root.get(Case.UUID).in(similarCases.stream().map(AbstractUuidDto::getUuid).collect(Collectors.toList())),
 					cb.isNotNull(root.join(Case.CONVERTED_FROM_CONTACT, JoinType.LEFT)))));
 
-			return foundCasesConverted ? DuplicateResult.CASE_CONVERTED : DuplicateResult.CASE;
+			Set<String> similarCaseUuids = similarCases.stream().map(AbstractUuidDto::getUuid).collect(Collectors.toSet());
+			return foundCasesConverted
+				? new DuplicateResult(DuplicateResultType.CASE_CONVERTED, similarCaseUuids)
+				: new DuplicateResult(DuplicateResultType.CASE, similarCaseUuids);
 		}
 
 		DistrictReferenceDto district = sormasToSormasEntitiesHelper.getS2SDistrictReference()
 			.map(DistrictDto::toReference)
 			.orElse(processedData.getEntity().getResponsibleDistrict());
 
-		boolean foundSimilarContacts = contactFacade.hasSimilarContacts(
+		List<SimilarContactDto> similarContacts = contactFacade.getMatchingContacts(
 			new ContactSimilarityCriteria().withPersons(similarPersons.stream().map(SimilarPersonDto::toReference).collect(Collectors.toList()))
 				.withNoResultingCase(true)
 				.withDistrict(district)
 				.withDisease(processedData.getEntity().getDisease()));
 
-		return foundSimilarContacts ? DuplicateResult.CONTACT_TO_CASE : DuplicateResult.PERSON_ONLY;
+		return !similarContacts.isEmpty()
+			? new DuplicateResult(
+				DuplicateResultType.CONTACT_TO_CASE,
+				similarContacts.stream().map(AbstractUuidDto::getUuid).collect(Collectors.toSet()))
+			: new DuplicateResult(DuplicateResultType.PERSON_ONLY, similarPersonUuids);
 	}
 
 	private void persistProcessedData(SormasToSormasCaseDto caseData, boolean isCreate, boolean isSync) throws SormasToSormasValidationException {

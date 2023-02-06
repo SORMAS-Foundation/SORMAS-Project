@@ -312,6 +312,8 @@ public class ContactController {
 
 	public void navigateTo(ContactCriteria contactCriteria) {
 		ViewModelProviders.of(ContactsView.class).remove(ContactCriteria.class);
+		ViewModelProviders.of(ContactsView.class).get(ContactCriteria.class, contactCriteria);
+
 		String navigationState = AbstractView.buildNavigationState(ContactsView.VIEW_NAME, contactCriteria);
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
@@ -323,6 +325,14 @@ public class ContactController {
 
 	public void navigateToMergeContactsView() {
 		String navigationState = MergeContactsView.VIEW_NAME;
+		SormasUI.get().getNavigator().navigateTo(navigationState);
+	}
+
+	public void navigateToMergeContactsView(ContactCriteria criteria) {
+		ViewModelProviders.of(MergeContactsView.class).remove(ContactCriteria.class);
+		ViewModelProviders.of(MergeContactsView.class).get(ContactCriteria.class, criteria);
+
+		String navigationState = AbstractView.buildNavigationState(MergeContactsView.VIEW_NAME, criteria);
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 

@@ -106,7 +106,6 @@ Feature: Sample Functionalities
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
-    When I click on the Sample button from navbar
     Then I open the last created sample via API
     Then I delete the sample
     Then I search after the last created Sample via API
@@ -180,21 +179,21 @@ Feature: Sample Functionalities
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     When I log in as a National User
-    Then I navigate to the last created contact via the url
+    Then I open the last created contact via API
     Then I click on New Sample
     Then I collect the sample UUID displayed on create new sample page
     Then I create a new Sample with positive test result with COVID-19 as disease
     Then I confirm the Create case from contact with positive test result
     Then I create a new case with specific data for positive pathogen test result
     Then I save the new case
-    Then I navigate to the last created contact via the url
+    Then I open the last created contact via API
     Then I click on edit Sample
     Then I click on new test result for pathogen tests
     Then I create a new pathogen test result with Anthrax as disease
     Then I confirm the Create case from contact with positive test result
     Then I create a new case with specific data for positive pathogen test result
     Then I save the new case
-    Then I navigate to the last created contact via the url
+    Then I open the last created contact via API
     Then I validate only one sample is created with two pathogen tests
     Then I click on edit Sample
     Then I validate the existence of two pathogen tests
@@ -208,12 +207,12 @@ Feature: Sample Functionalities
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     When I log in as a National User
-    Then I navigate to the last created contact via the url
+    Then I open the last created contact via API
     Then I click on New Sample
     Then I collect the sample UUID displayed on create new sample page
     Then I create a new Sample with positive test result with COVID-19 as disease
     Then I confirm creating a new case
-    Then I navigate to the last created contact via the url
+    Then I open the last created contact via API
     Then I validate date and time is present on sample card
 
   @tmsLink=SORDEV-5669 @env_main
@@ -272,7 +271,6 @@ Feature: Sample Functionalities
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
-    And I click on the Cases button from navbar
     And I open the last created Case via API
     Then I click on New Sample in German
     And I select Sent dispatched checkbox in new sample page
@@ -297,6 +295,10 @@ Feature: Sample Functionalities
     When I collect the sample UUID displayed on create new sample page
     Then I create sample with "Voreingestelltes Labor" as a Laboratory
     And I save the created sample
+    Then I navigate to Contacts tab in Edit case page
+    And I click on new contact button from Case Contacts tab
+    And I fill a mandatory fields for a new contact form
+    And I click on SAVE new contact button
     And I click on logout button from navbar
     Given I log in as a Laboratory Officer
     Then I check if "Cases" tab is available
@@ -308,13 +310,10 @@ Feature: Sample Functionalities
     Then I navigate to case person tab
     And I check if first and last person name for case person tab is correct
     Then I navigate to Contacts tab in Edit case page
-    And I click on new contact button from Case Contacts tab
-    Then I click on discard button from new task
-    And I click on the Sample button from navbar
-    And I search for Sample using Sample UUID from the created Sample
-    When I open created Sample
-    Then I set type of sample to "Sera" on Sample Edit page
-    Then I set date sample was collected to yesterday on Sample Edit page
+    And I open the first contact from contacts list
+    And I set Vaccination status to "Vaccinated" on Edit Contact page
+    And I click on save Contact button
+    Then I check if Vaccination Status is set to "Vaccinated" on Edit Contact page
 
   @tmsLink=SORDEV-10588 @env_main
   Scenario: Test "Specimen condition" should not be mandatory for sample added to case
