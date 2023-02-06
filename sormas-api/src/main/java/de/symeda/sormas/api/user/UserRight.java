@@ -477,6 +477,14 @@ public enum UserRight {
 		return userRights.stream().map(UserRight::getRequiredUserRights).flatMap(Collection::stream).collect(Collectors.toSet());
 	}
 
+	/**
+	 * Appends the required user rights. The result also includes the passed user rights.
+	 */
+	public static Set<UserRight> getWithRequiredUserRights(UserRight... userRights) {
+		return Stream.concat(Arrays.stream(userRights), Arrays.stream(userRights).map(UserRight::getRequiredUserRights).flatMap(Collection::stream))
+			.collect(Collectors.toSet());
+	}
+
 	public Set<UserRight> getRequiredUserRights() {
 		return userRightDependencies.get(this);
 	}
@@ -485,6 +493,9 @@ public enum UserRight {
 		return Arrays.stream(values()).filter(userRight -> userRight.getUserRightGroup() == userRightGroup).collect(Collectors.toSet());
 	}
 
+	/**
+	 * Get which required user rights are not already in the passed set.
+	 */
 	public static Set<UserRight> requiredRightFromUserRights(UserRight userRight, Set<UserRight> userRights) {
 
 		Set<UserRight> requiredRights = new HashSet<>();
