@@ -19,7 +19,6 @@ package org.sormas.e2etests.entities.services.api.demis;
 
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
-import java.io.FileNotFoundException;
 import java.net.SocketTimeoutException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -130,16 +129,12 @@ public class DemisApiService {
   @SneakyThrows
   public String prepareLabNotificationFile(String patientFirstName, String patientLastName) {
     DemisData demisData = runningConfiguration.getDemisData(locale);
-    try {
-      String file = "./demisFiles/labNotificationTemplate.json";
-      String json = readFileAsString(file);
-      json = json.replace("\"<postal_code_to_change>\"", "\"" + demisData.getPostalCode() + "\"");
-      json = json.replace("\"<last_name_to_change>\"", "\"" + patientLastName + "\"");
-      json = json.replace("\"<first_name_to_change>\"", "\"" + patientFirstName + "\"");
-      return json;
-    } catch (FileNotFoundException fileNotFoundException) {
-      throw new Exception(String.format("Laboratory Notification Template file does not exists"));
-    }
+    String file = "src/main/resources/demisJsonTemplates/labNotificationTemplate.json";
+    String json = readFileAsString(file);
+    json = json.replace("\"<postal_code_to_change>\"", "\"" + demisData.getPostalCode() + "\"");
+    json = json.replace("\"<last_name_to_change>\"", "\"" + patientLastName + "\"");
+    json = json.replace("\"<first_name_to_change>\"", "\"" + patientFirstName + "\"");
+    return json;
   }
 
   /** Delete method once we start adding tests */
@@ -149,7 +144,7 @@ public class DemisApiService {
   }
 
   @SneakyThrows
-  public static String readFileAsString(String file) throws Exception {
+  public static String readFileAsString(String file) {
     return new String(Files.readAllBytes(Paths.get(file)));
   }
 }
