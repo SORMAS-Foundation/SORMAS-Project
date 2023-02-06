@@ -1022,7 +1022,6 @@ public interface Strings {
 	String messageContactOutsideJurisdictionDeletionDenied = "messageContactOutsideJurisdictionDeletionDenied";
 	String messageContactSaved = "messageContactSaved";
 	String messageContactsDeleted = "messageContactsDeleted";
-	String messageContactsEdited = "messageContactsEdited";
 	String messageContactsMerged = "messageContactsMerged";
 	String messageContactToCaseConfirmationRequired = "messageContactToCaseConfirmationRequired";
 	String messageContinentArchived = "messageContinentArchived";
