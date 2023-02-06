@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 
@@ -39,7 +40,7 @@ public class BulkOperationHelper {
 		Consumer<BulkOperationResults<?>> bulkOperationDoneCallback) {
 
 		if (bulkOperationResults.getRemainingEntries().isEmpty()) {
-			Notification.show(I18nProperties.getString(Strings.messageCasesEdited), Notification.Type.HUMANIZED_MESSAGE);
+			Notification.show(I18nProperties.getString(Strings.messageEntriesEdited), Notification.Type.HUMANIZED_MESSAGE);
 			bulkOperationDoneCallback.accept(bulkOperationResults);
 		} else if (bulkOperationResults.hasExceededEntryLimit()) {
 			VaadinUiUtil.showChooseOptionPopup(
@@ -48,7 +49,8 @@ public class BulkOperationHelper {
 					String.format(
 						I18nProperties.getString(Strings.messageBulkOperationEntryLimitReached),
 						DataHelper.BULK_EDIT_ENTRY_LIMIT,
-						bulkOperationResults.getRemainingEntries().size())),
+						bulkOperationResults.getRemainingEntries().size()),
+					ContentMode.HTML),
 				I18nProperties.getCaption(Captions.actionYes),
 				I18nProperties.getCaption(Captions.actionNo),
 				640,
@@ -68,7 +70,8 @@ public class BulkOperationHelper {
 						I18nProperties.getString(Strings.messageBulkOperationTimeLimitReached),
 						DataHelper.BULK_EDIT_TIME_LIMIT / 1000,
 						initialEntryCount - bulkOperationResults.getRemainingEntries().size(),
-						bulkOperationResults.getRemainingEntries().size())),
+						bulkOperationResults.getRemainingEntries().size()),
+					ContentMode.HTML),
 				I18nProperties.getCaption(Captions.actionYes),
 				I18nProperties.getCaption(Captions.actionNo),
 				640,
@@ -83,7 +86,7 @@ public class BulkOperationHelper {
 		} else {
 			NotificationHelper.showNotification(
 				String.format(
-					I18nProperties.getString(Strings.messageCasesEditedExceptArchived),
+					I18nProperties.getString(Strings.messageEntriesEditedExceptArchived),
 					initialEntryCount - bulkOperationResults.getRemainingEntries().size()),
 				Notification.Type.HUMANIZED_MESSAGE,
 				-1);

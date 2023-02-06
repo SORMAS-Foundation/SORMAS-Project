@@ -9,29 +9,28 @@ public class TaskBulkEditData extends EntityDto {
 
 	private static final long serialVersionUID = -7234609753914205675L;
 
-	public static final String TASK_ASSIGNEE = "taskAssignee";
-	public static final String TASK_PRIORITY = "taskPriority";
+	public static final String ASSIGNEE_USER = "assigneeUser";
+	public static final String PRIORITY = "priority";
 	public static final String TASK_STATUS = "taskStatus";
 
-
-	private UserReferenceDto taskAssignee;
-	private TaskPriority taskPriority;
+	private UserReferenceDto assigneeUser;
+	private TaskPriority priority;
 	private TaskStatus taskStatus;
 
-	public UserReferenceDto getTaskAssignee() {
-		return taskAssignee;
+	public UserReferenceDto getAssigneeUser() {
+		return assigneeUser;
 	}
 
-	public void setTaskAssignee(UserReferenceDto taskAssignee) {
-		this.taskAssignee = taskAssignee;
+	public void setAssigneeUser(UserReferenceDto assigneeUser) {
+		this.assigneeUser = assigneeUser;
 	}
 
-	public TaskPriority getTaskPriority() {
-		return taskPriority;
+	public TaskPriority getPriority() {
+		return priority;
 	}
 
-	public void setTaskPriority(TaskPriority taskPriority) {
-		this.taskPriority = taskPriority;
+	public void setPriority(TaskPriority priority) {
+		this.priority = priority;
 	}
 
 	public TaskStatus getTaskStatus() {

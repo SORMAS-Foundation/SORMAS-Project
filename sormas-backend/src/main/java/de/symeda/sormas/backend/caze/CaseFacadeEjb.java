@@ -1512,7 +1512,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		boolean surveillanceOfficerChange)
 		throws ValidationRuntimeException {
 
-		return BulkOperationHelper.executeWithLimits(caseUuidList, DataHelper.BULK_EDIT_TIME_LIMIT, DataHelper.BULK_EDIT_ENTRY_LIMIT, uuid -> {
+		return BulkOperationHelper.executeWithLimits(caseUuidList, uuid -> {
 			Case caze = service.getByUuid(uuid);
 
 			if (service.isEditAllowed(caze)) {
@@ -1551,7 +1551,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			updatedCaseBulkEditData.getCommunity() != null ? communityService.getByUuid(updatedCaseBulkEditData.getCommunity().getUuid()) : null;
 		Facility newFacility = facilityService.getByUuid(updatedCaseBulkEditData.getHealthFacility().getUuid());
 
-		return BulkOperationHelper.executeWithLimits(caseUuidList, DataHelper.BULK_EDIT_TIME_LIMIT, DataHelper.BULK_EDIT_ENTRY_LIMIT, uuid -> {
+		return BulkOperationHelper.executeWithLimits(caseUuidList, uuid -> {
 			Case caze = service.getByUuid(uuid);
 
 			if (service.isEditAllowed(caze)) {

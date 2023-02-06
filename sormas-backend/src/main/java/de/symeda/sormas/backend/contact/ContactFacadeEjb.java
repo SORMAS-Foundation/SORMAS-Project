@@ -134,6 +134,7 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
+import de.symeda.sormas.api.utils.BulkOperationResults;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -202,6 +203,7 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserReference;
 import de.symeda.sormas.backend.user.UserRoleFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.BulkOperationHelper;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -2330,16 +2332,15 @@ public class ContactFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._CONTACT_EDIT)
-	public int saveBulkContacts(
-		List<String> contactUuidlist,
+	public BulkOperationResults<String> saveBulkContacts(
+		List<String> contactUuidList,
 		ContactBulkEditData updatedContactBulkEditData,
 		boolean classificationChange,
 		boolean contactOfficerChange)
 		throws ValidationRuntimeException {
 
-		int changedContacts = 0;
-		for (String contactUuid : contactUuidlist) {
-			Contact contact = service.getByUuid(contactUuid);
+		return BulkOperationHelper.executeWithLimits(contactUuidList, uuid -> {
+			Contact contact = service.getByUuid(uuid);
 
 			if (service.isEditAllowed(contact)) {
 				ContactDto existingContactDto = toDto(contact);
@@ -2352,10 +2353,11 @@ public class ContactFacadeEjb
 				}
 
 				save(existingContactDto);
-				changedContacts++;
+				return true;
 			}
-		}
-		return changedContacts;
+
+			return false;
+		});
 	}
 
 	@Override

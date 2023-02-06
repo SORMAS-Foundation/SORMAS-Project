@@ -3,6 +3,9 @@ package de.symeda.sormas.api.utils;
 import java.io.Serializable;
 import java.util.List;
 
+import de.symeda.sormas.api.audit.AuditedClass;
+
+@AuditedClass
 public class BulkOperationResults<E> implements Serializable {
 
 	private final int processedEntries;
