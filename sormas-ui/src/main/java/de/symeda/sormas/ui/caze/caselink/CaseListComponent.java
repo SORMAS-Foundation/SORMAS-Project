@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.caze.caselink;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 import com.vaadin.ui.Alignment;
@@ -7,6 +8,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.CaseListEntryDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -19,6 +21,8 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 public class CaseListComponent extends SideComponent {
 
+	private CaseList caseList;
+
 	public CaseListComponent(PersonReferenceDto personReferenceDto, String activeUuid, Consumer<Runnable> actionCallback) {
 
 		super(I18nProperties.getString(Strings.entityCases), actionCallback);
@@ -27,7 +31,7 @@ public class CaseListComponent extends SideComponent {
 			ControllerProvider.getCaseController().createFromPersonReference(personReferenceDto);
 		}, UserRight.CASE_CREATE);
 
-		CaseList caseList = new CaseList(personReferenceDto);
+		caseList = new CaseList(personReferenceDto);
 		caseList.setActiveUuid(activeUuid);
 		addComponent(caseList);
 		caseList.reload();
@@ -40,5 +44,9 @@ public class CaseListComponent extends SideComponent {
 			addComponent(seeCases);
 			setComponentAlignment(seeCases, Alignment.MIDDLE_LEFT);
 		}
+	}
+
+	public List<CaseListEntryDto> getEntries() {
+		return caseList.getEntries();
 	}
 }
