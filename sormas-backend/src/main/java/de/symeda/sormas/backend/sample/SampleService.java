@@ -884,16 +884,17 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 			}
 		}
 
-		filter = getCaseContactEventParticipantSamplePredicate(criteria, cb, sample, filter);
+		filter = addCaseContactEventParticipantSamplePredicate(criteria, cb, sample, filter);
 
 		return filter;
 	}
 
-	private Predicate getCaseContactEventParticipantSamplePredicate(
+	private Predicate addCaseContactEventParticipantSamplePredicate(
 		SampleCriteria criteria,
 		CriteriaBuilder cb,
 		From<?, ?> sample,
 		Predicate filter) {
+
 		Predicate filterCaseUuids = null;
 		Predicate filterContactUuids = null;
 		Predicate filterEvPartUuids = null;
@@ -936,7 +937,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 				.and(cb, filter, cb.equal(joins.getEventParticipant().get(EventParticipant.UUID), criteria.getEventParticipant().getUuid()));
 		}
 
-		filter = getCaseContactEventParticipantSamplePredicate(criteria, cb, sample, filter);
+		filter = addCaseContactEventParticipantSamplePredicate(criteria, cb, sample, filter);
 
 		return filter;
 	}
