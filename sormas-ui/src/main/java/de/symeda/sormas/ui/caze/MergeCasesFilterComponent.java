@@ -248,7 +248,7 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		cbResultLimit.setId(QueryDetails.RESULT_LIMIT);
 		cbResultLimit.setWidth(200, Unit.PIXELS);
 		cbResultLimit.setPlaceholder(I18nProperties.getString(Strings.none));
-		cbResultLimit.setCaption("Limit result count");
+		cbResultLimit.setCaption(I18nProperties.getCaption(Captions.QueryDetails_resultLimit));
 		cbResultLimit.setItems(50, 100, 500, 1000);
 		cbResultLimit.setEmptySelectionAllowed(true);
 		queryDetailsBinder.bind(cbResultLimit, QueryDetails.RESULT_LIMIT);
