@@ -25,6 +25,7 @@ import java.util.Random;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -148,7 +149,10 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	List<CaseSelectionDto> getSimilarCases(CaseSimilarityCriteria criteria);
 
-	List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, boolean showDuplicatesWithDifferentRegion);
+	/**
+	 * @param limit null: no limit
+	 */
+	List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, @Min(1) Integer limit, boolean showDuplicatesWithDifferentRegion);
 
 	void updateCompleteness(String caseUuid);
 

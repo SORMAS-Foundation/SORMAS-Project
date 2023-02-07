@@ -80,7 +80,7 @@ public class MergeCasesGrid extends AbstractMergeGrid<CaseIndexDto, CaseCriteria
 
 	@Override
 	protected List<CaseIndexDto[]> getItemForDuplicateMerging() {
-		return FacadeProvider.getCaseFacade().getCasesForDuplicateMerging(criteria, ignoreRegion);
+		return FacadeProvider.getCaseFacade().getCasesForDuplicateMerging(criteria, queryDetails.getResultLimit(), ignoreRegion);
 	}
 
 	@Override

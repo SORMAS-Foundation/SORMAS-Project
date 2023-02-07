@@ -307,9 +307,9 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcf);
 
 		final List<CaseIndexDto[]> casesForDuplicateMergingToday =
-			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), true);
+			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), 100, true);
 		final List<CaseIndexDto[]> casesForDuplicateMergingThreeDaysAgo =
-			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(threeDaysAgo).creationDateTo(threeDaysAgo), true);
+			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(threeDaysAgo).creationDateTo(threeDaysAgo), 100, true);
 		assertEquals(1, casesForDuplicateMergingToday.size());
 		assertEquals(1, casesForDuplicateMergingThreeDaysAgo.size());
 	}
@@ -347,7 +347,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			DateUtils.addMinutes(today, -3),
 			rdcf);
 
-		assertEquals(0, getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), true).size());
+		assertEquals(0, getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), 100, true).size());
 	}
 
 	@Test
@@ -383,7 +383,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			DateUtils.addMinutes(today, -3),
 			rdcf);
 
-		assertEquals(0, getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), true).size());
+		assertEquals(0, getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), 100, true).size());
 	}
 
 	@Test
@@ -419,7 +419,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			DateUtils.addMinutes(today, -3),
 			rdcf);
 
-		assertEquals(1, getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), true).size());
+		assertEquals(1, getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), 100, true).size());
 	}
 
 	@Test
