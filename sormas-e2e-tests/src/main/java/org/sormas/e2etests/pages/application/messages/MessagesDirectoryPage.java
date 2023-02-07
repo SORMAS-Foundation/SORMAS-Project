@@ -29,12 +29,11 @@ public class MessagesDirectoryPage {
       By.xpath("//div[@class= 'v-window-header'][text()='Neue Probe erstellen']");
   public static final By UPDATE_CASE_DISEASE_VARIANT_CONFIRM_BUTTON =
       By.cssSelector(".popupContent #actionConfirm");
-  public static final By POPUP_WINDOW_CANCEL_BUTTON =
-      By.xpath("//div[@class='popupContent']//div[@id='discard']//span[text()='Cancel']");
-  public static final By POPUP_WINDOW_DISCARD_BUTTON =
-      By.xpath("//div[@class='popupContent']//div[@id='discard']//span[text()='Discard']");
-  public static final By POPUP_WINDOW_SAVE_BUTTON =
-      By.xpath("//div[@class='popupContent']//div[@id='save']//span[text()='Save']");
+  public static final By POPUP_WINDOW_CANCEL_BUTTON = By.xpath("(//*[@id='discard'])[1]");
+  public static final By POPUP_WINDOW_SAVE_AND_OPEN_CASE_BUTTON =
+      By.cssSelector("#saveAndOpenEntryButton");
+  public static final By POPUP_WINDOW_DISCARD_BUTTON = By.xpath("(//*[@id='discard'])[2]");
+  public static final By POPUP_WINDOW_SAVE_BUTTON = By.cssSelector("#commit");
   public static final By MESSAGE_DIRECTORY_HEADER_DE =
       By.xpath("//div[@class='v-slot v-slot-view-header']//div[text()='Meldungsverzeichnis']");
   public static final By PATHOGEN_DETECTION_REPORTING_PROCESS_HEADER_DE =

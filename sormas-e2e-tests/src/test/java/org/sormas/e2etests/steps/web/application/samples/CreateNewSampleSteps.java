@@ -381,7 +381,7 @@ public class CreateNewSampleSteps implements En {
               "Number of samples is not correct");
           softly.assertEquals(
               webDriverHelpers.getTextFromWebElement(NUMBER_OF_TESTS_IN_SAMPLES),
-              "Number of tests: 1",
+              "Anzahl der Tests: 1",
               "Number of tests is correct!");
           softly.assertAll();
         });
