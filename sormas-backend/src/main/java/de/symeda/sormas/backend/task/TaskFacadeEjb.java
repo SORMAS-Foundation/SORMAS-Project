@@ -607,8 +607,8 @@ public class TaskFacadeEjb implements TaskFacade {
 		List<Selection<?>> selections = new ArrayList<>();
 		selections.add(task.get(Task.ID));
 
-		List<Expression<?>> sortColumns =
-			getOrderList(sortProperties, taskQueryContext).stream().map(Order::getExpression).collect(Collectors.toList());
+		List<Order> orderList = getOrderList(sortProperties, taskQueryContext);
+		List<Expression<?>> sortColumns = orderList.stream().map(Order::getExpression).collect(Collectors.toList());
 		selections.addAll(sortColumns);
 
 		cq.multiselect(selections);
@@ -625,6 +625,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		}
 
 		cq.distinct(true);
+		cq.orderBy(orderList);
 
 		return QueryHelper.getResultList(em, cq, first, max).stream().map(t -> t.get(0, Long.class)).collect(Collectors.toList());
 	}

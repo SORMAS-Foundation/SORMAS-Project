@@ -394,8 +394,8 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		List<Selection<?>> selections = new ArrayList<>();
 		selections.add(externalMessage.get(ExternalMessage.ID));
 
-		List<Expression<?>> sortColumns =
-			getOrderList(sortProperties, cb, externalMessage).stream().map(Order::getExpression).collect(Collectors.toList());
+		List<Order> orderList = getOrderList(sortProperties, cb, externalMessage);
+		List<Expression<?>> sortColumns = orderList.stream().map(Order::getExpression).collect(Collectors.toList());
 		selections.addAll(sortColumns);
 
 		cq.multiselect(selections);
@@ -412,6 +412,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 		// Distinct is necessary here to avoid duplicate results due to the user role join in taskService.createAssigneeFilter
 		cq.distinct(true);
+		cq.orderBy(orderList);
 
 		return QueryHelper.getResultList(em, cq, first, max).stream().map(t -> t.get(0, Long.class)).collect(Collectors.toList());
 	}

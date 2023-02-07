@@ -325,8 +325,8 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		List<Selection<?>> selections = new ArrayList<>();
 		selections.add(sample.get(Sample.ID));
 
-		List<Expression<?>> sortColumns =
-			getOrderList(sortProperties, sampleQueryContext).stream().map(Order::getExpression).collect(Collectors.toList());
+		List<Order> orderList = getOrderList(sortProperties, sampleQueryContext);
+		List<Expression<?>> sortColumns = orderList.stream().map(Order::getExpression).collect(Collectors.toList());
 		selections.addAll(sortColumns);
 
 		cq.multiselect(selections);
@@ -343,6 +343,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		}
 
 		cq.distinct(true);
+		cq.orderBy(orderList);
 
 		return QueryHelper.getResultList(em, cq, first, max).stream().map(t -> t.get(0, Long.class)).collect(Collectors.toList());
 	}

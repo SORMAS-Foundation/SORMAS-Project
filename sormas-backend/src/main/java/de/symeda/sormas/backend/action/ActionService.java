@@ -380,7 +380,8 @@ public class ActionService extends AdoServiceWithUserFilterAndJurisdiction<Actio
 		List<Selection<?>> selections = new ArrayList<>();
 		selections.add(action.get(Sample.ID));
 
-		List<Expression<?>> sortColumns = getOrderList(sortProperties, queryContext).stream().map(Order::getExpression).collect(Collectors.toList());
+		List<Order> orderList = getOrderList(sortProperties, queryContext);
+		List<Expression<?>> sortColumns = orderList.stream().map(Order::getExpression).collect(Collectors.toList());
 		selections.addAll(sortColumns);
 
 		cq.multiselect(selections);
@@ -398,6 +399,7 @@ public class ActionService extends AdoServiceWithUserFilterAndJurisdiction<Actio
 		}
 
 		cq.distinct(true);
+		cq.orderBy(orderList);
 
 		return QueryHelper.getResultList(em, cq, first, max).stream().map(t -> t.get(0, Long.class)).collect(Collectors.toList());
 	}
