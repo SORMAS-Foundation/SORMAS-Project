@@ -51,6 +51,7 @@ Scenario: Test Handle New Profile: Automatically propose to correct entities rel
   And I navigate to case person tab
   And I check that first and last name are equal to data form 1 result in laboratory notification
 #  #step3
+  And I click on the Messages button from navbar
   When I click on process button for 2 result in Message Directory page
   And I pick a new person in Pick or create person popup during case creation for DE
   And I choose create new case in Pick or create entry form for DE
