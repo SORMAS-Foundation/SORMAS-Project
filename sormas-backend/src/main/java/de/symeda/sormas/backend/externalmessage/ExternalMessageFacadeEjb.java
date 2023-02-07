@@ -18,6 +18,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -26,6 +27,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -75,6 +77,7 @@ import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.util.RightsAllowed;
@@ -345,33 +348,62 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		Integer first,
 		Integer max,
 		List<SortProperty> sortProperties) {
+		List<Long> indexListIds = getIndexListIds(criteria, first, max, sortProperties);
+
+		List<ExternalMessageIndexDto> messages = new ArrayList<>();
+
+		IterableHelper.executeBatched(indexListIds, ModelConstants.PARAMETER_LIMIT, batchedIds -> {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ExternalMessageIndexDto> cq = cb.createQuery(ExternalMessageIndexDto.class);
+			Root<ExternalMessage> externalMessage = cq.from(ExternalMessage.class);
+			Join<ExternalMessage, User> userJoin = externalMessage.join(ExternalMessage.ASSIGNEE, JoinType.LEFT);
+
+			cq.multiselect(
+				externalMessage.get(ExternalMessage.UUID),
+				externalMessage.get(ExternalMessage.TYPE),
+				externalMessage.get(ExternalMessage.MESSAGE_DATE_TIME),
+				externalMessage.get(ExternalMessage.REPORTER_NAME),
+				externalMessage.get(ExternalMessage.REPORTER_POSTAL_CODE),
+				externalMessage.get(ExternalMessage.DISEASE),
+				externalMessage.get(ExternalMessage.PERSON_FIRST_NAME),
+				externalMessage.get(ExternalMessage.PERSON_LAST_NAME),
+				externalMessage.get(ExternalMessage.PERSON_BIRTH_DATE_YYYY),
+				externalMessage.get(ExternalMessage.PERSON_BIRTH_DATE_MM),
+				externalMessage.get(ExternalMessage.PERSON_BIRTH_DATE_DD),
+				externalMessage.get(ExternalMessage.PERSON_POSTAL_CODE),
+				externalMessage.get(ExternalMessage.STATUS),
+				userJoin.get(User.UUID),
+				userJoin.get(User.FIRST_NAME),
+				userJoin.get(User.LAST_NAME));
+
+			cq.where(externalMessage.get(ExternalMessage.ID).in(batchedIds));
+
+			cq.orderBy(getOrderList(sortProperties, cb, externalMessage));
+
+			messages.addAll(QueryHelper.getResultList(em, cq, null, null));
+		});
+
+		return messages;
+	}
+
+	public List<Long> getIndexListIds(ExternalMessageCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<ExternalMessageIndexDto> cq = cb.createQuery(ExternalMessageIndexDto.class);
-		Root<ExternalMessage> labMessage = cq.from(ExternalMessage.class);
-		Join<ExternalMessage, User> userJoin = labMessage.join(ExternalMessage.ASSIGNEE, JoinType.LEFT);
+		CriteriaQuery<Tuple> cq = cb.createTupleQuery();
+		Root<ExternalMessage> externalMessage = cq.from(ExternalMessage.class);
 
-		cq.multiselect(
-			labMessage.get(ExternalMessage.UUID),
-			labMessage.get(ExternalMessage.TYPE),
-			labMessage.get(ExternalMessage.MESSAGE_DATE_TIME),
-			labMessage.get(ExternalMessage.REPORTER_NAME),
-			labMessage.get(ExternalMessage.REPORTER_POSTAL_CODE),
-			labMessage.get(ExternalMessage.DISEASE),
-			labMessage.get(ExternalMessage.PERSON_FIRST_NAME),
-			labMessage.get(ExternalMessage.PERSON_LAST_NAME),
-			labMessage.get(ExternalMessage.PERSON_BIRTH_DATE_YYYY),
-			labMessage.get(ExternalMessage.PERSON_BIRTH_DATE_MM),
-			labMessage.get(ExternalMessage.PERSON_BIRTH_DATE_DD),
-			labMessage.get(ExternalMessage.PERSON_POSTAL_CODE),
-			labMessage.get(ExternalMessage.STATUS),
-			userJoin.get(User.UUID),
-			userJoin.get(User.FIRST_NAME),
-			userJoin.get(User.LAST_NAME));
+		List<Selection<?>> selections = new ArrayList<>();
+		selections.add(externalMessage.get(ExternalMessage.ID));
 
-		Predicate filter = externalMessageService.createDefaultFilter(cb, labMessage);
+		List<Expression<?>> sortColumns =
+			getOrderList(sortProperties, cb, externalMessage).stream().map(Order::getExpression).collect(Collectors.toList());
+		selections.addAll(sortColumns);
+
+		cq.multiselect(selections);
+
+		Predicate filter = externalMessageService.createDefaultFilter(cb, externalMessage);
 
 		if (criteria != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, externalMessageService.buildCriteriaFilter(cb, labMessage, criteria));
+			filter = CriteriaBuilderHelper.and(cb, filter, externalMessageService.buildCriteriaFilter(cb, externalMessage, criteria));
 		}
 
 		if (filter != null) {
@@ -381,28 +413,31 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		// Distinct is necessary here to avoid duplicate results due to the user role join in taskService.createAssigneeFilter
 		cq.distinct(true);
 
+		return QueryHelper.getResultList(em, cq, first, max).stream().map(t -> t.get(0, Long.class)).collect(Collectors.toList());
+	}
+
+	private List<Order> getOrderList(List<SortProperty> sortProperties, CriteriaBuilder cb, Root<ExternalMessage> externalMessageRoot) {
 		List<Order> order = new ArrayList<>();
 
 		if (!CollectionUtils.isEmpty(sortProperties)) {
 			for (SortProperty sortProperty : sortProperties) {
 				if (ExternalMessageIndexDto.PERSON_BIRTH_DATE.equals(sortProperty.propertyName)) {
-					Expression<?> birthdateYYYY = labMessage.get(ExternalMessage.PERSON_BIRTH_DATE_YYYY);
+					Expression<?> birthdateYYYY = externalMessageRoot.get(ExternalMessage.PERSON_BIRTH_DATE_YYYY);
 					order.add(sortProperty.ascending ? cb.asc(birthdateYYYY) : cb.desc(birthdateYYYY));
-					Expression<?> birthdateMM = labMessage.get(ExternalMessage.PERSON_BIRTH_DATE_MM);
+					Expression<?> birthdateMM = externalMessageRoot.get(ExternalMessage.PERSON_BIRTH_DATE_MM);
 					order.add(sortProperty.ascending ? cb.asc(birthdateMM) : cb.desc(birthdateMM));
-					Expression<?> birthdateDD = labMessage.get(ExternalMessage.PERSON_BIRTH_DATE_DD);
+					Expression<?> birthdateDD = externalMessageRoot.get(ExternalMessage.PERSON_BIRTH_DATE_DD);
 					order.add(sortProperty.ascending ? cb.asc(birthdateDD) : cb.desc(birthdateDD));
 				} else if (VALID_SORT_PROPERTY_NAMES.contains(sortProperty.propertyName)) {
-					Expression<?> expression = labMessage.get(sortProperty.propertyName);
+					Expression<?> expression = externalMessageRoot.get(sortProperty.propertyName);
 					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 				}
 			}
 		}
 
-		order.add(cb.desc(labMessage.get(ExternalMessage.MESSAGE_DATE_TIME)));
-		cq.orderBy(order);
+		order.add(cb.desc(externalMessageRoot.get(ExternalMessage.MESSAGE_DATE_TIME)));
 
-		return QueryHelper.getResultList(em, cq, first, max);
+		return order;
 	}
 
 	public Page<ExternalMessageIndexDto> getIndexPage(

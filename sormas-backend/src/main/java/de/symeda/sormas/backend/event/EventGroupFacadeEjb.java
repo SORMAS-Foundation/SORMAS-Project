@@ -31,14 +31,17 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -75,6 +78,7 @@ import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -164,25 +168,56 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 		Integer max,
 		List<SortProperty> sortProperties) {
 
+		List<Long> indexListIds = getIndexListIds(eventGroupCriteria, first, max, sortProperties);
+
+		List<EventGroupIndexDto> eventGroups = new ArrayList<>();
+		IterableHelper.executeBatched(indexListIds, ModelConstants.PARAMETER_LIMIT, batchedIds -> {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<EventGroupIndexDto> cq = cb.createQuery(EventGroupIndexDto.class);
+			Root<EventGroup> eventGroup = cq.from(EventGroup.class);
+			EventGroupQueryContext queryContext = new EventGroupQueryContext(cb, cq, eventGroup);
+
+			Subquery<Long> eventCountSubquery = cq.subquery(Long.class);
+			Root<EventGroup> eventGroupSubQuery = eventCountSubquery.from(EventGroup.class);
+			Join<EventGroup, Event> eventSubQueryJoin = eventGroupSubQuery.join(EventGroup.EVENTS, JoinType.LEFT);
+			eventCountSubquery.select(cb.countDistinct(eventSubQueryJoin.get(Event.ID)));
+			eventCountSubquery.where(
+				cb.and(
+					cb.equal(eventGroupSubQuery.get(EventGroup.ID), eventGroup.get(EventGroup.ID)),
+					eventService.createDefaultFilter(cb, eventSubQueryJoin)));
+			eventCountSubquery.groupBy(eventGroupSubQuery.get(EventGroup.ID));
+
+			cq.multiselect(
+				eventGroup.get(EventGroup.UUID),
+				eventGroup.get(EventGroup.NAME),
+				eventGroup.get(EventGroup.CHANGE_DATE),
+				eventCountSubquery.getSelection());
+
+			cq.where(eventGroup.get(EventGroup.ID).in(batchedIds));
+
+			cq.orderBy(getOrderList(sortProperties, queryContext));
+
+			eventGroups.addAll(QueryHelper.getResultList(em, cq, first, max));
+		});
+
+		return eventGroups;
+	}
+
+	private List<Long> getIndexListIds(EventGroupCriteria eventGroupCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<EventGroupIndexDto> cq = cb.createQuery(EventGroupIndexDto.class);
+		CriteriaQuery<Tuple> cq = cb.createTupleQuery();
 		Root<EventGroup> eventGroup = cq.from(EventGroup.class);
 
-		Subquery<Long> eventCountSubquery = cq.subquery(Long.class);
-		Root<EventGroup> eventGroupSubQuery = eventCountSubquery.from(EventGroup.class);
-		Join<EventGroup, Event> eventSubQueryJoin = eventGroupSubQuery.join(EventGroup.EVENTS, JoinType.LEFT);
-		eventCountSubquery.select(cb.countDistinct(eventSubQueryJoin.get(Event.ID)));
-		eventCountSubquery.where(
-			cb.and(
-				cb.equal(eventGroupSubQuery.get(EventGroup.ID), eventGroup.get(EventGroup.ID)),
-				eventService.createDefaultFilter(cb, eventSubQueryJoin)));
-		eventCountSubquery.groupBy(eventGroupSubQuery.get(EventGroup.ID));
+		EventGroupQueryContext queryContext = new EventGroupQueryContext(cb, cq, eventGroup);
 
-		cq.multiselect(
-			eventGroup.get(EventGroup.UUID),
-			eventGroup.get(EventGroup.NAME),
-			eventGroup.get(EventGroup.CHANGE_DATE),
-			eventCountSubquery.getSelection());
+		List<Selection<?>> selections = new ArrayList<>();
+		selections.add(eventGroup.get(Sample.ID));
+
+		List<Expression<?>> sortColumns = getOrderList(sortProperties, queryContext).stream().map(Order::getExpression).collect(Collectors.toList());
+		selections.addAll(sortColumns);
+
+		cq.multiselect(selections);
 
 		Predicate filter = null;
 
@@ -199,28 +234,36 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 			cq.where(filter);
 		}
 
+		cq.distinct(true);
+
+		return QueryHelper.getResultList(em, cq, first, max).stream().map(t -> t.get(0, Long.class)).collect(Collectors.toList());
+	}
+
+	private List<Order> getOrderList(List<SortProperty> sortProperties, EventGroupQueryContext queryContext) {
+		List<Order> orderList = new ArrayList<>();
+
+		CriteriaBuilder cb = queryContext.getCriteriaBuilder();
+		From<?, EventGroup> eventGroupRoot = queryContext.getRoot();
+
 		if (sortProperties != null && sortProperties.size() > 0) {
-			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
 				case EventGroupIndexDto.UUID:
 				case EventGroupIndexDto.NAME:
-					expression = eventGroup.get(sortProperty.propertyName);
+					expression = eventGroupRoot.get(sortProperty.propertyName);
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
 				}
-				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+
+				orderList.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 			}
-			cq.orderBy(order);
 		} else {
-			cq.orderBy(cb.desc(eventGroup.get(EventGroup.CHANGE_DATE)));
+			orderList.add(cb.desc(eventGroupRoot.get(EventGroup.CHANGE_DATE)));
 		}
 
-		cq.distinct(true);
-
-		return QueryHelper.getResultList(em, cq, first, max);
+		return orderList;
 	}
 
 	@Override
