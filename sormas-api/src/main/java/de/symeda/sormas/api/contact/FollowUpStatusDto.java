@@ -15,17 +15,24 @@
 
 package de.symeda.sormas.api.contact;
 
-import de.symeda.sormas.api.uuid.AbstractUuidDto;
-
-public class FollowUpStatusDto extends AbstractUuidDto {
+public class FollowUpStatusDto {
 
 	private static final long serialVersionUID = 6075542609471404489L;
 
+	private String personUuid;
 	private FollowUpStatus followUpStatus;
 
-	public FollowUpStatusDto(String uuid, FollowUpStatus followUpStatus) {
-		super(uuid);
+	public FollowUpStatusDto(String personUuid, FollowUpStatus followUpStatus) {
+		this.personUuid = personUuid;
 		this.followUpStatus = followUpStatus;
+	}
+
+	public String getPersonUuid() {
+		return personUuid;
+	}
+
+	public void setPersonUuid(String personUuid) {
+		this.personUuid = personUuid;
 	}
 
 	public FollowUpStatus getFollowUpStatus() {
