@@ -477,6 +477,7 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 		this.eventLike = eventLike;
 	}
 
+	@IgnoreForUrl
 	public String getEventLike() {
 		return eventLike;
 	}
