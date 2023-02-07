@@ -33,6 +33,8 @@ public class DemisSteps implements En {
   public static String patientLastName;
   private final WebDriverHelpers webDriverHelpers;
   private final BaseSteps baseSteps;
+  public static List<String> firstNames = new ArrayList<>();
+  public static List<String> lastNames = new ArrayList<>();
 
   @Inject
   public DemisSteps(
@@ -102,6 +104,13 @@ public class DemisSteps implements En {
               webDriverHelpers.getValueFromWebElement(MESSAGE_UUID_TEXT).isEmpty(),
               "UUID is empty!");
           softly.assertAll();
+        });
+
+    And(
+        "^I collect first and last name of the person from Laboratory Notification$",
+        () -> {
+          firstNames.add(patientFirstName);
+          lastNames.add(patientLastName);
         });
   }
 

@@ -105,7 +105,6 @@ import org.sormas.e2etests.pages.application.cases.EditCasePage;
 import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
-import org.sormas.e2etests.steps.api.demisSteps.DemisSteps;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 

@@ -19,13 +19,25 @@ public class MessagesDirectoryPage {
     return By.xpath(String.format("//table/tbody[1]/tr[%s]/td[14]", index));
   }
 
+  public static By getProcessStatusByIndex(int index) {
+    return By.xpath(String.format("//table/tbody[1]/tr[%s]/td[12]", index));
+  }
+
   public static final By CREATE_NEW_CASE_POPUP_WINDOW_DE =
       By.xpath("//div[@class= 'v-window-header'][text()='Neuen Fall erstellen']");
   public static final By CREATE_NEW_SAMPLE_POPUP_WINDOW_DE =
       By.xpath("//div[@class= 'v-window-header'][text()='Neue Probe erstellen']");
   public static final By UPDATE_CASE_DISEASE_VARIANT_CONFIRM_BUTTON =
       By.cssSelector(".popupContent #actionConfirm");
-  public static final By POPUP_WINDOW_CANCEL_BUTTON = By.xpath("//div[@class='popupContent']//div[@id='discard']//span[text()='Cancel']");
-  public static final By POPUP_WINDOW_DISCARD_BUTTON = By.xpath("//div[@class='popupContent']//div[@id='discard']//span[text()='Discard']");
-  public static final By POPUP_WINDOW_SAVE_BUTTON = By.xpath("//div[@class='popupContent']//div[@id='save']//span[text()='Save']");
+  public static final By POPUP_WINDOW_CANCEL_BUTTON =
+      By.xpath("//div[@class='popupContent']//div[@id='discard']//span[text()='Cancel']");
+  public static final By POPUP_WINDOW_DISCARD_BUTTON =
+      By.xpath("//div[@class='popupContent']//div[@id='discard']//span[text()='Discard']");
+  public static final By POPUP_WINDOW_SAVE_BUTTON =
+      By.xpath("//div[@class='popupContent']//div[@id='save']//span[text()='Save']");
+  public static final By MESSAGE_DIRECTORY_HEADER_DE =
+      By.xpath("//div[@class='v-slot v-slot-view-header']//div[text()='Meldungsverzeichnis']");
+  public static final By PATHOGEN_DETECTION_REPORTING_PROCESS_HEADER_DE =
+      By.xpath(
+          "//div[@location='externalMessageDetails']//h1[text()='Erregernachweismeldevorgang']");
 }

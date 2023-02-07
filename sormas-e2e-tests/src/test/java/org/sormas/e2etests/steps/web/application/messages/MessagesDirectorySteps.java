@@ -3,23 +3,27 @@ package org.sormas.e2etests.steps.web.application.messages;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CREATE_NEW_CASE_POPUP_WINDOW_DE;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CREATE_NEW_SAMPLE_POPUP_WINDOW_DE;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FETCH_MESSAGES_BUTTON;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGE_DIRECTORY_HEADER_DE;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.PATHOGEN_DETECTION_REPORTING_PROCESS_HEADER_DE;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_WINDOW_CANCEL_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_WINDOW_DISCARD_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_WINDOW_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.UPDATE_CASE_DISEASE_VARIANT_CONFIRM_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.getProcessMessageButtonByIndex;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.getProcessStatusByIndex;
 
 import cucumber.api.java8.En;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.testng.asserts.SoftAssert;
 
 @Slf4j
 public class MessagesDirectorySteps implements En {
 
   @Inject
-  public MessagesDirectorySteps(WebDriverHelpers webDriverHelpers) {
+  public MessagesDirectorySteps(WebDriverHelpers webDriverHelpers, SoftAssert softly) {
 
     When(
         "I click on fetch messages button",
@@ -36,9 +40,11 @@ public class MessagesDirectorySteps implements En {
         });
 
     And(
-        "^I check that case correction popup is displayed for DE$",
+        "^I check that create new case form with pathogen detection reporting process is displayed for DE$",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(CREATE_NEW_CASE_POPUP_WINDOW_DE);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              PATHOGEN_DETECTION_REPORTING_PROCESS_HEADER_DE);
         });
 
     And(
@@ -56,21 +62,54 @@ public class MessagesDirectorySteps implements En {
         });
 
     Then(
-        "^I check that correction popup contains cancel button$",
-        () -> {
-            webDriverHelpers.waitUntilElementIsVisibleAndClickable(POPUP_WINDOW_CANCEL_BUTTON);
+        "I check that popup window contains {string} button",
+        (String option) -> {
+          switch (option) {
+            case "cancel":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(POPUP_WINDOW_CANCEL_BUTTON);
+              break;
+            case "save":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(POPUP_WINDOW_SAVE_BUTTON);
+              break;
+            case "discard":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(POPUP_WINDOW_DISCARD_BUTTON);
+              break;
+          }
         });
 
     And(
-        "^I check that correction popup contains discard button$",
+        "I click on {string} button in sample correction popup",
+        (String option) -> {
+          switch (option) {
+            case "save and open case":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(POPUP_WINDOW_CANCEL_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(POPUP_WINDOW_CANCEL_BUTTON);
+              break;
+            case "discard":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(POPUP_WINDOW_DISCARD_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(POPUP_WINDOW_DISCARD_BUTTON);
+              break;
+            case "save":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(POPUP_WINDOW_SAVE_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(POPUP_WINDOW_SAVE_BUTTON);
+              break;
+          }
+        });
+
+    Then(
+        "^I back to message directory$",
         () -> {
-            webDriverHelpers.waitUntilElementIsVisibleAndClickable(POPUP_WINDOW_DISCARD_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(MESSAGE_DIRECTORY_HEADER_DE);
         });
 
     And(
-        "^I check that correction popup contains save button$",
-            () -> {
-            webDriverHelpers.waitUntilElementIsVisibleAndClickable(POPUP_WINDOW_SAVE_BUTTON);
+        "^I verify that status for result (\\d+) is set to processed in Message Directory page$",
+        (Integer resultNumber) -> {
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(getProcessStatusByIndex(resultNumber)),
+              "Verarbeitet",
+              "This message is not processed!");
+          softly.assertAll();
         });
   }
 }
