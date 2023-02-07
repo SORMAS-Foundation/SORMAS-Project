@@ -244,18 +244,18 @@ public class CampaignDataView extends AbstractCampaignView {
 				newFormButton.setEnabled(true);
 				UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria",
 						criteria.toUrlParams().toString());
-				System.out.println("333333333333333333333 " + criteria.toUrlParams().toString());
+			//	System.out.println("333333333333333333333 " + criteria.toUrlParams().toString());
 			} else {
 				importCampaignButton.setEnabled(false);
 				newFormButton.setEnabled(false);
 				UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria",
 						criteria.toUrlParams().toString());
-				System.out.println("44444444444444444 " + criteria.toUrlParams().toString());
+		//		System.out.println("44444444444444444 " + criteria.toUrlParams().toString());
 			}
 			criteria.setCampaignFormMeta(null);
 			filterForm.setValue(criteria);
 			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
-			System.out.println("5555555555555555 " + criteria.toUrlParams().toString());
+	//		System.out.println("5555555555555555 " + criteria.toUrlParams().toString());
 		});
 
 		campaignFormPhaseSelector.addValueChangeListener(e -> {
@@ -271,7 +271,7 @@ public class CampaignDataView extends AbstractCampaignView {
 			filterForm.setPhaseFilterContent(e.getValue().toString());
 			filterForm.setValue(criteria);
 			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
-			System.out.println("777777777777777777777 " + criteria.toUrlParams().toString());
+		//	System.out.println("777777777777777777777 " + criteria.toUrlParams().toString());
 			grid.reload();
 		});
 
@@ -353,7 +353,7 @@ public class CampaignDataView extends AbstractCampaignView {
 
 		((VerticalLayout) containerPanel.getContent()).removeAllComponents();
 
-		System.out.println(phase + " #############################");
+	//	System.out.println(phase + " #############################");
 
 		if (phase != null && campaignReferenceDtx != null) {
 			List<CampaignFormMetaReferenceDto> campagaignFormReferences = FacadeProvider.getCampaignFormMetaFacade()
@@ -365,9 +365,9 @@ public class CampaignDataView extends AbstractCampaignView {
 			for (CampaignFormMetaReferenceDto campaignForm : campagaignFormReferences) {
 				Button campaignFormButton = ButtonHelper.createButton(campaignForm.toString(), el -> {
 
-					System.out.println(campaignReferenceDtx.getUuid()
-							+ " ####################################################################"
-							+ campaignForm.getUuid());
+//					System.out.println(campaignReferenceDtx.getUuid()
+//							+ " ####################################################################"
+//							+ campaignForm.getUuid());
 
 					ControllerProvider.getCampaignController().navigateToFormDataView(campaignReferenceDtx.getUuid(),
 							campaignForm.getUuid());

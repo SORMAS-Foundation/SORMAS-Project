@@ -7,6 +7,7 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
+import com.vaadin.server.Page;
 import com.vaadin.server.Resource;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.VaadinService;
@@ -23,6 +24,7 @@ import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.VerticalLayout;
 
+import java.net.URI;
 import java.util.List;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
@@ -92,11 +94,12 @@ public class CampaignReportTabSheets extends VerticalLayout implements View {
 	private CommunityCriteriaNew criteria;
 	
 	public CampaignReportTabSheets(CommunityCriteriaNew criteriax, FormAccess formAccess) {
-		System.out.println("Qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq "+formAccess.toString());
+	//	System.out.println("Qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq "+formAccess.toString());
 			criteria = criteriax;
 			//gridLayout = new VerticalLayout();
 			grid = new UserReportGrid(criteriax, formAccess);		
 			this.addComponent(createFilterBar());
+			extractUrl();
 			this.addComponent(grid);
 			this.setHeightFull();
 			this.setMargin(false);
@@ -145,9 +148,10 @@ public class CampaignReportTabSheets extends VerticalLayout implements View {
 		areaFilter.setCaption(I18nProperties.getPrefixCaption(RegionDto.I18N_PREFIX, RegionDto.AREA));
 		areaFilter.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
 		//areaFilter.setValue("East"); 
-	
+	System.out.println(" +++++++ = "+criteria.getArea() == null);
+	if(criteria.getArea() == null) {
 		criteria.fromUrlParams("area=W5R34K-APYPCA-4GZXDO-IVJWKGIM");
-		
+	}
 		areaFilter.addValueChangeListener(e -> {
 			System.out.println(e.getProperty().getValue() + "khgfksuiihyikgivivciouvsiuvivkihvi");
 			AreaReferenceDto area = (AreaReferenceDto) e.getProperty().getValue();
@@ -230,12 +234,12 @@ public class CampaignReportTabSheets extends VerticalLayout implements View {
 			return new V7GridExportStreamResource( lst,  fln);
 		}
 
-	@Override
-	public void enter(ViewChangeEvent event) {
-		
-System.out.println("33333333333333333333333333333333333333333333333333333ppppppppppppppppppppppppppppppppppppp");
-	//	super.enter(event);
-		String params = event.getParameters().trim();
+	//@Override
+	public void extractUrl() {
+		URI location = Page.getCurrent().getLocation();
+		String uri = location.toString();
+
+		String params = uri.trim();
 		if (params.startsWith("?")) {
 			params = params.substring(1);
 			criteria.fromUrlParams(params);

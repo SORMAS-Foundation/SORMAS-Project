@@ -38,9 +38,6 @@ public class UserReportGrid extends FilteredGrid<CommunityUserReportModelDto, Co
 	@SuppressWarnings("unchecked")
 	public UserReportGrid(CommunityCriteriaNew criteria, FormAccess formacc) {
 		super(CommunityUserReportModelDto.class);
-System.out.println("ddddddddddddddddddddddddddddddddddddddd "+formacc.toString());		
-		
-		
 		setSizeFull();
 		
 		//To Do enable other loader
