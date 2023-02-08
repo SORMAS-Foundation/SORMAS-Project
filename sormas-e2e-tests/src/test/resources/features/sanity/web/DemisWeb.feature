@@ -58,7 +58,6 @@ Scenario: Create and send laboratory request via Demis
 @tmsLink=SORDEV-8689 @env_d2s @LoginKeycloak
 Scenario: Test Handle New Profile: Process entities related to the same reportId
   Given API : Login to DEMIS server
-#  #step1
   Then I create and send Laboratory Notification
   And I collect first and last name of the person from Laboratory Notification
   And I create and send Laboratory Notification
@@ -68,7 +67,6 @@ Scenario: Test Handle New Profile: Process entities related to the same reportId
   And I log in as a National User
   Then I click on the Messages button from navbar
   And I click on fetch messages button
-#  #step2
   And I click on process button for 3 result in Message Directory page
   And I pick a new person in Pick or create person popup during case creation for DE
   And I choose create new case in Pick or create entry form for DE
@@ -84,7 +82,6 @@ Scenario: Test Handle New Profile: Process entities related to the same reportId
   And I check that case created from laboratory message contains a sample with one test
   And I navigate to case person tab
   And I check that first and last name are equal to data form 1 result in laboratory notification
-#  #step3
   And I click on the Messages button from navbar
   When I click on process button for 2 result in Message Directory page
   And I pick a new person in Pick or create person popup during case creation for DE
