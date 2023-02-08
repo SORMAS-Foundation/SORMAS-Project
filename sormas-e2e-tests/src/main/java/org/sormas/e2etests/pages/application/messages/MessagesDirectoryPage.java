@@ -14,6 +14,33 @@ public class MessagesDirectoryPage {
   public static final By MESSAGE_UUID_TEXT = By.id("uuid");
   public static final By MESSAGE_POPUP_HEADER =
       By.xpath("//div[@class='popupContent']//div[@class='v-window-header' and text()='Meldung']");
+  public static final By SEARCH_MESSAGE_INPUT = By.id("searchFieldLike");
+  public static final By VERARBEITEN_BUTTON = By.id("externalMessageProcess");
+
+  public static final By RELATED_FORWARDED_MESSAGE_HEADER =
+      By.xpath("//*[contains(text(),'Zugeh\u00F6rige weitergeleitete Meldung(en) gefunden')]");
+  public static final By POPUP_CONFIRM_BUTTON = By.cssSelector(".popupContent #actionConfirm");
+  public static final By CHOOSE_OR_CREATE_ENTRY_HEADER =
+      By.xpath("//*[contains(text(),'Eintrag ausw\u00E4hlen oder erstellen')]");
+  public static final By UPDATE_THE_DISEASE_VARIANT_HEADER =
+      By.xpath("//*[contains(text(),'Krankheitsvariante des Falls aktualisieren')]");
+  public static final By SAVE_POPUP_CONTENT_FIRST_BUTTON =
+      By.xpath("(//div[@class='popupContent']//div[@id='commit'])[1]");
+  public static final By SAVE_POPUP_CONTENT_SECOND_BUTTON =
+      By.xpath("(//div[@class='popupContent']//div[@id='commit'])[2]");
+  public static final By NO_NEW_REPORTS_POPUP =
+      By.xpath("//*[contains(text(),'Keine neuen Meldungen verf\u00FCgbar')]");
+  public static final By CLOSE_POPUP = By.xpath("//div[@class='v-window-closebox']");
+
+  public static final By GET_NEW_MESSAGES_POPUP =
+      By.xpath("//*[contains(text(),'Neue Meldungen abrufen')]");
+
+  public static By checkMappedValueSelector(String value) {
+    return By.xpath(
+        String.format(
+            "//div[@class='v-label v-widget bold v-label-bold uppercase v-label-uppercase v-label-undef-w' and contains(text(), '%s')]",
+            value));
+  }
 
   public static By getProcessMessageButtonByIndex(int index) {
     return By.xpath(String.format("//table/tbody[1]/tr[%s]/td[14]", index));

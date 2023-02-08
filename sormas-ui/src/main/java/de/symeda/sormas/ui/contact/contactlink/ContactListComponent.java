@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.contact.contactlink;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 import com.vaadin.ui.Alignment;
@@ -7,6 +8,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.contact.ContactCriteria;
+import de.symeda.sormas.api.contact.ContactListEntryDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -19,6 +21,8 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 public class ContactListComponent extends SideComponent {
 
+	private ContactList contactList;
+
 	public ContactListComponent(PersonReferenceDto personReferenceDto, String activeUuid, Consumer<Runnable> actionCallback) {
 		super(I18nProperties.getString(Strings.entityContacts), actionCallback);
 
@@ -26,7 +30,7 @@ public class ContactListComponent extends SideComponent {
 			ControllerProvider.getContactController().create(personReferenceDto);
 		}, UserRight.CONTACT_CREATE);
 
-		ContactList contactList = new ContactList(personReferenceDto);
+		contactList = new ContactList(personReferenceDto);
 		contactList.setActiveUuid(activeUuid);
 		addComponent(contactList);
 		contactList.reload();
@@ -39,5 +43,9 @@ public class ContactListComponent extends SideComponent {
 			addComponent(seeContacts);
 			setComponentAlignment(seeContacts, Alignment.MIDDLE_LEFT);
 		}
+	}
+
+	public List<ContactListEntryDto> getEntries() {
+		return contactList.getEntries();
 	}
 }
