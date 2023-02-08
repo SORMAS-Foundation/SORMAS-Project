@@ -135,6 +135,7 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CheckBoxTree;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
+import de.symeda.sormas.ui.utils.ComboBoxWithPlaceholder;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
@@ -302,8 +303,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private ComboBox districtCombo;
 	private ComboBox communityCombo;
 	private OptionGroup facilityOrHome;
-	private ComboBox facilityTypeGroup;
-	private ComboBox facilityTypeCombo;
+	private ComboBoxWithPlaceholder facilityTypeGroup;
+	private ComboBoxWithPlaceholder facilityTypeCombo;
 	private ComboBox facilityCombo;
 	private TextField facilityDetails;
 	private boolean quarantineChangedByFollowUpUntilChange = false;
@@ -775,11 +776,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		differentPlaceOfStayJurisdiction = addCustomField(DIFFERENT_PLACE_OF_STAY_JURISDICTION, Boolean.class, CheckBox.class);
 		differentPlaceOfStayJurisdiction.addStyleName(VSPACE_3);
 
-		if (UserProvider.getCurrent().getJurisdictionLevel() == JurisdictionLevel.HEALTH_FACILITY) {
-			differentPlaceOfStayJurisdiction.setEnabled(false);
-			differentPlaceOfStayJurisdiction.setVisible(false);
-		}
-
 		ComboBox regionCombo = addInfrastructureField(CaseDataDto.REGION);
 		districtCombo = addInfrastructureField(CaseDataDto.DISTRICT);
 		communityCombo = addInfrastructureField(CaseDataDto.COMMUNITY);
@@ -816,7 +812,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		facilityTypeGroup.addItems(FacilityTypeGroup.getAccomodationGroups());
 		facilityTypeGroup.setVisible(false);
 		getContent().addComponent(facilityTypeGroup, TYPE_GROUP_LOC);
-		facilityTypeCombo = addField(CaseDataDto.FACILITY_TYPE);
+		facilityTypeCombo = addField(CaseDataDto.FACILITY_TYPE, ComboBoxWithPlaceholder.class);
 		facilityCombo = addInfrastructureField(CaseDataDto.HEALTH_FACILITY);
 		facilityCombo.setImmediate(true);
 		facilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
@@ -1113,6 +1109,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			setEnabled(false, CaseDataDto.RESPONSIBLE_REGION, CaseDataDto.RESPONSIBLE_DISTRICT);
 		}
 
+		if (UserProvider.getCurrent().getJurisdictionLevel() == JurisdictionLevel.HEALTH_FACILITY || !isEditableAllowed(CaseDataDto.COMMUNITY)) {
+			differentPlaceOfStayJurisdiction.setEnabled(false);
+			differentPlaceOfStayJurisdiction.setVisible(false);
+		}
+
 		FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.TRIMESTER, CaseDataDto.PREGNANT, Arrays.asList(YesNoUnknown.YES), true);
 
 		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> {
@@ -1334,10 +1335,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				btnReferFromPointOfEntry.setVisible(false);
 			}
 
-			// take over the value that has been set based on access rights
-			facilityTypeGroup.setReadOnly(facilityTypeCombo.isReadOnly());
-			facilityOrHome.setReadOnly(facilityTypeCombo.isReadOnly());
-
 			// Hide case origin from port health users
 			if (UserProvider.getCurrent().isPortHealthUser()) {
 				setVisible(false, CaseDataDto.CASE_ORIGIN);
@@ -1438,6 +1435,15 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 			facilityOrHome.setReadOnly(facilityOrHomeReadOnly);
 			facilityTypeGroup.setReadOnly(facilityTypeGroupReadOnly);
+		} else if (getValue().isPseudonymized()) {
+			facilityOrHome.setValue(null);
+			facilityOrHome.setReadOnly(true);
+
+			facilityTypeGroup.setVisible(true);
+			FieldHelper.setComboInaccessible(facilityTypeGroup);
+
+			setVisible(true, facilityTypeCombo, facilityCombo);
+			FieldHelper.setComboInaccessible(facilityTypeCombo);
 		} else {
 			facilityOrHome.setVisible(false);
 		}

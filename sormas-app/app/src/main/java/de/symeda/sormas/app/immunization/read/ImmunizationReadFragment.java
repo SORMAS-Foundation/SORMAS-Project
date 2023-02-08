@@ -20,12 +20,14 @@ import static android.view.View.GONE;
 import android.os.Bundle;
 import android.view.View;
 
+import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
+import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -64,6 +66,7 @@ public class ImmunizationReadFragment extends BaseReadFragment<FragmentImmunizat
 
 	@Override
 	public void onAfterLayoutBinding(FragmentImmunizationReadLayoutBinding contentBinding) {
+		setFieldVisibilitiesAndAccesses(ImmunizationDto.class, contentBinding.mainContent);
 
 		if (record.getHealthFacility() == null || FacilityDto.NONE_FACILITY_UUID.equals(record.getHealthFacility().getUuid())) {
 			contentBinding.facilityTypeFieldsLayout.setVisibility(GONE);
