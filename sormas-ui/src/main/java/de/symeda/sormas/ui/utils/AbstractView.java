@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.utils;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.vaadin.hene.popupbutton.PopupButton;
 
@@ -74,8 +75,8 @@ public abstract class AbstractView extends VerticalLayout implements View {
 			viewTitleLayout.setMargin(false);
 
 			// note: splitting title and subtitle into labels does not work with the css
-			String viewTitle = I18nProperties.getPrefixCaption("View", viewName.replaceAll("/", "."));
-			String viewSubTitle = I18nProperties.getPrefixCaption("View", viewName.replaceAll("/", ".") + ".sub", "");
+			String viewTitle = I18nProperties.getPrefixCaption("View", viewName.replace("/", "."));
+			String viewSubTitle = I18nProperties.getPrefixCaption("View", viewName.replace("/", ".") + ".sub", "");
 			viewTitleLabel = new Label(viewTitle);
 			viewTitleLabel.setSizeUndefined();
 			CssStyles.style(viewTitleLabel, CssStyles.H1, CssStyles.VSPACE_NONE);
@@ -118,8 +119,30 @@ public abstract class AbstractView extends VerticalLayout implements View {
 		return viewSubTitleLabel;
 	}
 
-	public boolean navigateTo(BaseCriteria criteria) {
-		return navigateTo(criteria, true);
+	public boolean navigateTo(BaseCriteria... criteriaList) {
+		return navigateTo(true, criteriaList);
+	}
+
+	public boolean navigateTo(boolean force, BaseCriteria... criteriaList) {
+		if (applyingCriteria) {
+			return false;
+		}
+		applyingCriteria = true;
+
+		Navigator navigator = SormasUI.get().getNavigator();
+
+		String state = navigator.getState();
+		String newState = buildNavigationState(state, criteriaList);
+
+		boolean didNavigate = false;
+		if (!newState.equals(state) || force) {
+			navigator.navigateTo(newState);
+
+			didNavigate = true;
+		}
+		applyingCriteria = false;
+
+		return didNavigate;
 	}
 
 	public boolean navigateTo(BaseCriteria criteria, boolean force) {
@@ -144,7 +167,7 @@ public abstract class AbstractView extends VerticalLayout implements View {
 		return didNavigate;
 	}
 
-	public static String buildNavigationState(String currentState, BaseCriteria criteria) {
+	public static String buildNavigationState(String currentState, BaseCriteria... criteriaList) {
 
 		String newState = currentState;
 		int paramsIndex = newState.lastIndexOf('?');
@@ -152,15 +175,17 @@ public abstract class AbstractView extends VerticalLayout implements View {
 			newState = newState.substring(0, paramsIndex);
 		}
 
-		if (criteria != null) {
-			String params = criteria.toUrlParams();
-			if (!DataHelper.isNullOrEmpty(params)) {
-				if (newState.charAt(newState.length() - 1) != '/') {
-					newState += "/";
-				}
+		String urlParams = Arrays.stream(criteriaList)
+				.filter(Objects::nonNull)
+				.map(BaseCriteria::toUrlParams)
+				.filter(params -> !DataHelper.isNullOrEmpty(params))
+				.collect(Collectors.joining("&"));
 
-				newState += "?" + params;
+		if (urlParams.length() > 0) {
+			if (newState.charAt(newState.length() - 1) != '/') {
+				newState += "/";
 			}
+			newState += "?" + urlParams;
 		}
 
 		return newState;
