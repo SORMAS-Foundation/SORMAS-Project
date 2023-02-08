@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.utils;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.vaadin.hene.popupbutton.PopupButton;
 
@@ -74,8 +75,8 @@ public abstract class AbstractView extends VerticalLayout implements View {
 			viewTitleLayout.setMargin(false);
 
 			// note: splitting title and subtitle into labels does not work with the css
-			String viewTitle = I18nProperties.getPrefixCaption("View", viewName.replaceAll("/", "."));
-			String viewSubTitle = I18nProperties.getPrefixCaption("View", viewName.replaceAll("/", ".") + ".sub", "");
+			String viewTitle = I18nProperties.getPrefixCaption("View", viewName.replace("/", "."));
+			String viewSubTitle = I18nProperties.getPrefixCaption("View", viewName.replace("/", ".") + ".sub", "");
 			viewTitleLabel = new Label(viewTitle);
 			viewTitleLabel.setSizeUndefined();
 			CssStyles.style(viewTitleLabel, CssStyles.H1, CssStyles.VSPACE_NONE);
@@ -174,26 +175,17 @@ public abstract class AbstractView extends VerticalLayout implements View {
 			newState = newState.substring(0, paramsIndex);
 		}
 
-		StringBuilder urlParams = new StringBuilder();
-		if (criteriaList != null) {
-			for (BaseCriteria criteria : criteriaList) {
-				if (criteria != null) {
-					String params = criteria.toUrlParams();
-					if (!DataHelper.isNullOrEmpty(params))
-						if (urlParams.length() > 0) {
-							urlParams.append('&');
-						}
-					urlParams.append(params);
-				}
-			}
-		}
+		String urlParams = Arrays.stream(criteriaList)
+				.filter(Objects::nonNull)
+				.map(BaseCriteria::toUrlParams)
+				.filter(params -> !DataHelper.isNullOrEmpty(params))
+				.collect(Collectors.joining("&"));
 
 		if (urlParams.length() > 0) {
 			if (newState.charAt(newState.length() - 1) != '/') {
 				newState += "/";
 			}
-
-			newState += "?" + urlParams.toString();
+			newState += "?" + urlParams;
 		}
 
 		return newState;

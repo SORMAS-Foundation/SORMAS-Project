@@ -19,6 +19,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
@@ -51,7 +52,6 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 	private ComboBox<RegionReferenceDto> cbRegion;
 	private ComboBox<DistrictReferenceDto> cbDistrict;
 	private ComboBox<NewCaseDateType> cbNewCaseDateType;
-	private ComboBox<Integer> cbResultLimit;
 	private DateField dfNewCaseDateFrom;
 	private DateField dfNewCaseDateTo;
 	private Button btnConfirmFilters;
@@ -158,8 +158,8 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 
 		cbRegion = new ComboBox<>();
 		cbDistrict = new ComboBox<>();
-		cbRegion.setItemCaptionGenerator(item -> item.buildCaption());
-		cbDistrict.setItemCaptionGenerator(item -> item.buildCaption());
+		cbRegion.setItemCaptionGenerator(ReferenceDto::buildCaption);
+		cbDistrict.setItemCaptionGenerator(ReferenceDto::buildCaption);
 
 		cbRegion.setId(CaseDataDto.REGION);
 		cbRegion.setWidth(200, Unit.PIXELS);
@@ -193,9 +193,7 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		cbIgnoreRegion.setId(Captions.caseFilterWithDifferentRegion);
 		CssStyles.style(cbIgnoreRegion, CssStyles.CHECKBOX_FILTER_INLINE);
 		cbIgnoreRegion.setCaption(I18nProperties.getCaption(Captions.caseFilterWithDifferentRegion));
-		cbIgnoreRegion.addValueChangeListener(e -> {
-			ignoreRegionCallback.accept(e.getValue());
-		});
+		cbIgnoreRegion.addValueChangeListener(e -> ignoreRegionCallback.accept(e.getValue()));
 		secondRowLayout.addComponent(cbIgnoreRegion);
 		secondRowLayout.setComponentAlignment(cbIgnoreRegion, Alignment.MIDDLE_LEFT);
 		secondRowLayout.setExpandRatio(cbIgnoreRegion, 1);
@@ -211,7 +209,7 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		cbNewCaseDateType = new ComboBox<>();
 		dfNewCaseDateFrom = new DateField();
 		dfNewCaseDateTo = new DateField();
-		cbResultLimit = new ComboBox<>();
+		ComboBox<Integer> cbResultLimit = new ComboBox<>();
 
 		cbNewCaseDateType.setId(CaseCriteria.NEW_CASE_DATE_TYPE);
 		cbNewCaseDateType.setWidth(200, Unit.PIXELS);

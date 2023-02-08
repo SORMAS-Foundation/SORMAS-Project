@@ -1954,9 +1954,6 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		Predicate nameSimilarityFilter =
 			cb.gt(cb.function("similarity", double.class, nameSimilarityExpr, nameSimilarityExpr2), nameSimilarityThreshold);
 		Predicate diseaseFilter = cb.equal(root.get(Case.DISEASE), root2.get(Case.DISEASE));
-		Predicate regionFilter = cb.and(
-			cb.equal(root.get(Case.RESPONSIBLE_REGION), root2.get(Case.RESPONSIBLE_REGION)),
-			cb.or(cb.and(cb.isNull(root.get(Case.REGION))), cb.equal(root.get(Case.REGION), root2.get(Case.REGION))));
 		Predicate reportDateFilter = cb.lessThanOrEqualTo(
 			cb.abs(
 				cb.diff(
@@ -1999,31 +1996,25 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 				cb.lessThanOrEqualTo(root2.get(Case.CREATION_DATE), DateHelper.getStartOfDay(criteria.getCreationDateFrom())),
 				cb.greaterThanOrEqualTo(root2.get(Case.CREATION_DATE), DateHelper.getEndOfDay(criteria.getCreationDateTo()))));
 
-		Predicate filter = cb.and(createDefaultFilter(cb, root), createDefaultFilter(cb, root2));
-		if (userFilter != null) {
-			filter = cb.and(filter, userFilter);
-		}
-		if (filter != null) {
-			filter = cb.and(filter, criteriaFilter);
-		} else {
-			filter = criteriaFilter;
-		}
-		if (filter != null) {
-			filter = cb.and(filter, nameSimilarityFilter);
-		} else {
-			filter = nameSimilarityFilter;
-		}
-		filter = cb.and(filter, diseaseFilter);
+		Predicate filter = CriteriaBuilderHelper
+			.and(cb, createDefaultFilter(cb, root), createDefaultFilter(cb, root2), userFilter, criteriaFilter, nameSimilarityFilter, diseaseFilter);
 
 		if (!showDuplicatesWithDifferentRegion) {
-			filter = cb.and(filter, regionFilter);
+			Predicate regionFilter = cb.and(
+				cb.equal(root.get(Case.RESPONSIBLE_REGION), root2.get(Case.RESPONSIBLE_REGION)),
+				cb.or(cb.and(cb.isNull(root.get(Case.REGION))), cb.equal(root.get(Case.REGION), root2.get(Case.REGION))));
+			filter = CriteriaBuilderHelper.and(cb, filter, regionFilter);
 		}
 
-		filter = cb.and(filter, reportDateFilter);
-		filter = cb.and(filter, cb.and(sexFilter, birthDateFilter));
-		filter = cb.and(filter, onsetDateFilter);
-		filter = cb.and(filter, creationDateFilter);
-		filter = cb.and(filter, cb.notEqual(root.get(Case.ID), root2.get(Case.ID)));
+		filter = CriteriaBuilderHelper.and(
+			cb,
+			filter,
+			reportDateFilter,
+			sexFilter,
+			birthDateFilter,
+			onsetDateFilter,
+			creationDateFilter,
+			cb.notEqual(root.get(Case.ID), root2.get(Case.ID)));
 
 		if (CollectionUtils.isNotEmpty(criteria.getCaseUuidsForMerge())) {
 			Set<String> caseUuidsForMerge = criteria.getCaseUuidsForMerge();
