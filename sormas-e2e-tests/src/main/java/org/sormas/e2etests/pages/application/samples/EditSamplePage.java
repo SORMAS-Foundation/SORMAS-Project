@@ -22,6 +22,7 @@ import org.openqa.selenium.By;
 
 public class EditSamplePage {
 
+  public static final By UUID_FIELD = By.id("uuid");
   public static final By PATHOGEN_NEW_TEST_RESULT_BUTTON = By.cssSelector("[id='New test result']");
   public static final By ADDIITONAL_NEW_TEST_RESULT_BUTTON =
       By.cssSelector("[location='additionalTests'] [id='New test result']");
@@ -67,7 +68,6 @@ public class EditSamplePage {
   public static final By DELETE_SAMPLE_BUTTON = By.cssSelector("#deleteUndelete");
   public static final By DELETE_PATHOGEN_TEST_RESULT =
       By.cssSelector("[class='popupContent'] [id='deleteUndelete']");
-  public static final By SAMPLE_DELETION_POPUP = By.cssSelector(".v-window .popupContent");
   public static final By SAMPLE_DELETION_POPUP_YES_BUTTON = By.id("actionConfirm");
   public static final By SAVE_SAMPLE_BUTTON = By.id("commit");
   public static final By DELETE_SAMPLE_REASON_POPUP =

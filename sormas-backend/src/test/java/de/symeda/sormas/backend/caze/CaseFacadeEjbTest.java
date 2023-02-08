@@ -51,6 +51,8 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.MatcherAssert;
 import org.hibernate.internal.SessionImpl;
@@ -1667,11 +1669,10 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			t.setResultingCase(otherCaseReference);
 		});
 
-		byte[] contentAsBytes =  ("%PDF-1.0\n1 0 obj<</Type/Catalog/Pages " +
-				"2 0 R>>endobj 2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj 3 0 obj<</Ty" +
-				"pe/Page/MediaBox[0 0 3 3]>>endobj\nxref\n0 4\n0000000000 65535 f\n000000001" +
-				"0 00000 n\n0000000053 00000 n\n0000000102 00000 n\ntrailer<</Size 4/Root 1 " +
-				"0 R>>\nstartxref\n149\n%EOF").getBytes();
+		byte[] contentAsBytes =
+			("%PDF-1.0\n1 0 obj<</Type/Catalog/Pages " + "2 0 R>>endobj 2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj 3 0 obj<</Ty"
+				+ "pe/Page/MediaBox[0 0 3 3]>>endobj\nxref\n0 4\n0000000000 65535 f\n000000001"
+				+ "0 00000 n\n0000000053 00000 n\n0000000102 00000 n\ntrailer<</Size 4/Root 1 " + "0 R>>\nstartxref\n149\n%EOF").getBytes();
 
 		DocumentDto document = creator.createDocument(
 			leadUserReference,
@@ -2883,6 +2884,47 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(0, getContactFacade().getAllActiveUuids().size());
 		assertEquals(DeletionReason.OTHER_REASON, getCaseFacade().getByUuid(caze.getUuid()).getDeletionReason());
 		assertEquals("test reason", getCaseFacade().getByUuid(caze.getUuid()).getOtherDeletionReason());
+	}
+
+	@Test
+	public void testDeleteCasesOutsideJurisdiction() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto creatorUser = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+
+		Region region = creator.createRegion("Region");
+		District district1 = creator.createDistrict("District1", region);
+		Community community1 = creator.createCommunity("Community1", district1);
+		Facility facility1 = creator.createFacility("Facility1", FacilityType.HOSPITAL, region, district1, community1);
+
+		District district2 = creator.createDistrict("District2", region);
+		Community community2 = creator.createCommunity("Community2", district2);
+		Facility facility2 = creator.createFacility("Facility2", FacilityType.HOSPITAL, region, district2, community2);
+
+		TestDataCreator.RDCFEntities rdcf1 = new TestDataCreator.RDCFEntities(region, district1, community1, facility1);
+		TestDataCreator.RDCFEntities rdcf2 = new TestDataCreator.RDCFEntities(region, district2, community2, facility2);
+
+		PersonDto person1 = creator.createPerson();
+		PersonDto person2 = creator.createPerson();
+		CaseDataDto caze1 = creator.createCase(creatorUser.toReference(), person1.toReference(), rdcf1);
+		CaseDataDto caze2 = creator.createCase(creatorUser.toReference(), person2.toReference(), rdcf2);
+
+		assertEquals(2, getCaseFacade().getAllActiveUuids().size());
+
+		List<String> caseUuidList = new ArrayList<>();
+		caseUuidList.add(caze1.getUuid());
+		caseUuidList.add(caze2.getUuid());
+
+		UserDto user = creator.createUser(rdcf1, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+		loginWith(user);
+
+		List<String> deleteUuids = getCaseFacade().deleteCases(caseUuidList, new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
+
+		assertEquals(1, deleteUuids.size());
+		assertEquals(caze1.getUuid(), deleteUuids.get(0));
+
+		loginWith(creatorUser);
+		getCaseFacade().deleteCases(caseUuidList, new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
+		assertEquals(0, getCaseFacade().getAllActiveUuids().size());
 	}
 
 	@Test

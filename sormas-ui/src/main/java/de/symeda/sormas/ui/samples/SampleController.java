@@ -78,6 +78,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
@@ -103,6 +104,12 @@ public class SampleController {
 	public void navigateToData(String sampleUuid) {
 		String navigationState = SampleDataView.VIEW_NAME + "/" + sampleUuid;
 		SormasUI.get().getNavigator().navigateTo(navigationState);
+	}
+
+	public void navigateTo(SampleCriteria sampleCriteria) {
+		ViewModelProviders.of(SamplesView.class).remove(SampleCriteria.class);
+		ViewModelProviders.of(SamplesView.class).get(SampleCriteria.class, sampleCriteria);
+		SormasUI.get().getNavigator().navigateTo(SamplesView.VIEW_NAME);
 	}
 
 	public void create(CaseReferenceDto caseRef, Disease disease, Runnable callback) {

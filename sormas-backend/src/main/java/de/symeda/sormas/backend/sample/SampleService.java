@@ -436,7 +436,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		cq.multiselect(selections);
 
 		Predicate filter = CriteriaBuilderHelper.and(cb, createDefaultFilter(cb, sample), createUserFilter(sampleQueryContext, sampleCriteria));
-		Predicate criteriaFilter = buildSampleListCriteriaFilter(sampleCriteria, cb, joins);
+		Predicate criteriaFilter = buildSampleListCriteriaFilter(sampleCriteria, cb, joins, sample);
 		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 
 		if (filter != null) {
@@ -884,23 +884,38 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 			}
 		}
 
-		if (criteria.getCaseUuids() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, sample.get(Sample.ASSOCIATED_CASE).get(Case.UUID).in(criteria.getCaseUuids()));
-		}
-
-		if (criteria.getContactUuids() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, sample.get(Sample.ASSOCIATED_CONTACT).get(Contact.UUID).in(criteria.getContactUuids()));
-		}
-
-		if (criteria.getEventParticipantUuids() != null) {
-			filter = CriteriaBuilderHelper
-				.and(cb, filter, sample.get(Sample.ASSOCIATED_EVENT_PARTICIPANT).get(EventParticipant.UUID).in(criteria.getEventParticipantUuids()));
-		}
+		filter = addCaseContactEventParticipantSamplePredicate(criteria, cb, sample, filter);
 
 		return filter;
 	}
 
-	private Predicate buildSampleListCriteriaFilter(SampleCriteria criteria, CriteriaBuilder cb, SampleJoins joins) {
+	private Predicate addCaseContactEventParticipantSamplePredicate(
+		SampleCriteria criteria,
+		CriteriaBuilder cb,
+		From<?, ?> sample,
+		Predicate filter) {
+
+		Predicate filterCaseUuids = null;
+		Predicate filterContactUuids = null;
+		Predicate filterEvPartUuids = null;
+
+		if (criteria.getCaseUuids() != null) {
+			filterCaseUuids = sample.get(Sample.ASSOCIATED_CASE).get(Case.UUID).in(criteria.getCaseUuids());
+		}
+
+		if (criteria.getContactUuids() != null) {
+			filterContactUuids = sample.get(Sample.ASSOCIATED_CONTACT).get(Contact.UUID).in(criteria.getContactUuids());
+		}
+
+		if (criteria.getEventParticipantUuids() != null) {
+			filterEvPartUuids = sample.get(Sample.ASSOCIATED_EVENT_PARTICIPANT).get(EventParticipant.UUID).in(criteria.getEventParticipantUuids());
+		}
+
+		filter = CriteriaBuilderHelper.and(cb, filter, CriteriaBuilderHelper.or(cb, filterCaseUuids, filterContactUuids, filterEvPartUuids));
+		return filter;
+	}
+
+	private Predicate buildSampleListCriteriaFilter(SampleCriteria criteria, CriteriaBuilder cb, SampleJoins joins, From<?, ?> sample) {
 		Predicate filter = null;
 		final SampleAssociationType sampleAssociationType = criteria.getSampleAssociationType();
 		if (sampleAssociationType == SampleAssociationType.CASE) {
@@ -921,6 +936,8 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(joins.getEventParticipant().get(EventParticipant.UUID), criteria.getEventParticipant().getUuid()));
 		}
+
+		filter = addCaseContactEventParticipantSamplePredicate(criteria, cb, sample, filter);
 
 		return filter;
 	}

@@ -23,7 +23,7 @@ import static org.sormas.e2etests.pages.application.users.EditUserPage.*;
 
 import cucumber.api.java8.En;
 import javax.inject.Inject;
-import org.sormas.e2etests.entities.pojo.User;
+import org.sormas.e2etests.entities.pojo.common.User;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 

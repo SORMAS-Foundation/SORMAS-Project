@@ -52,6 +52,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sormastosormas.DuplicateResult;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
@@ -61,7 +62,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareTree;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
-import de.symeda.sormas.api.sormastosormas.entities.DuplicateResult;
+import de.symeda.sormas.api.sormastosormas.entities.DuplicateResultType;
 import de.symeda.sormas.api.sormastosormas.entities.SormasToSormasEntityDto;
 import de.symeda.sormas.api.sormastosormas.entities.SormasToSormasEntityInterface;
 import de.symeda.sormas.api.sormastosormas.entities.SyncDataDto;
@@ -303,20 +304,20 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 			sormasToSormasRestClient.post(organizationId, requestGetDataEndpoint, requestUuid, SormasToSormasEncryptedDataDto.class);
 
 		DuplicateResult duplicateCheckResult = decryptAndPersist(encryptedData, (data, existingData) -> {
-			DuplicateResult duplicateResult = DuplicateResult.NONE;
+			DuplicateResult duplicateResult = DuplicateResult.none();
 
 			if (checkDuplicates && !data.getOriginInfo().isPseudonymizedData()) {
 				duplicateResult = processedEntitiesPersister.checkForSimilarEntities(data, existingData);
 			}
 
-			if (duplicateResult == DuplicateResult.NONE) {
+			if (duplicateResult.getType() == DuplicateResultType.NONE) {
 				processedEntitiesPersister.persistSharedData(data, shareRequest.getOriginInfo(), existingData);
 			}
 
 			return duplicateResult;
 		});
 
-		if (duplicateCheckResult == DuplicateResult.NONE) {
+		if (duplicateCheckResult.getType() == DuplicateResultType.NONE) {
 			// notify the sender that the request has been accepted
 			sormasToSormasRestClient.post(
 				organizationId,

@@ -65,6 +65,7 @@ import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.utils.jurisdiction.JurisdictionValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -555,6 +556,10 @@ public class ContactFacadeEjb
 	}
 
 	private void deleteContact(Contact contact, DeletionDetails deletionDetails) {
+
+		if (!contactService.inJurisdictionOrOwned(contact)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.messageContactOutsideJurisdictionDeletionDenied));
+		}
 		externalJournalService.handleExternalJournalPersonUpdateAsync(contact.getPerson().toReference());
 		try {
 			sormasToSormasFacade.revokePendingShareRequests(contact.getSormasToSormasShares(), true);
@@ -575,8 +580,12 @@ public class ContactFacadeEjb
 		if (contactsToBeDeleted != null) {
 			contactsToBeDeleted.forEach(contactToBeDeleted -> {
 				if (!contactToBeDeleted.isDeleted()) {
-					deleteContact(contactToBeDeleted, deletionDetails);
-					deletedContactUuids.add(contactToBeDeleted.getUuid());
+					try {
+						deleteContact(contactToBeDeleted, deletionDetails);
+						deletedContactUuids.add(contactToBeDeleted.getUuid());
+					} catch (AccessDeniedException e) {
+						logger.error("The contact with uuid {} could not be deleted", contactToBeDeleted.getUuid(), e);
+					}
 				}
 			});
 		}
@@ -2264,6 +2273,11 @@ public class ContactFacadeEjb
 		filter = cb.and(filter, cb.and(sexFilter, birthDateFilter));
 		filter = cb.and(filter, creationDateFilter);
 		filter = cb.and(filter, cb.notEqual(root.get(Contact.ID), root2.get(Contact.ID)));
+
+		if (CollectionUtils.isNotEmpty(criteria.getContactUuidsForMerge())) {
+			Set<String> contactUuidsForMerge = criteria.getContactUuidsForMerge();
+			filter = cb.and(filter, cb.or(root.get(Contact.UUID).in(contactUuidsForMerge), root2.get(Contact.UUID).in(contactUuidsForMerge)));
+		}
 
 		cq.where(filter);
 		cq.multiselect(root.get(Contact.ID), root2.get(Contact.ID), root.get(Contact.CREATION_DATE));

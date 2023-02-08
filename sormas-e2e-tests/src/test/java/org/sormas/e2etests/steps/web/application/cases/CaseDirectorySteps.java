@@ -101,6 +101,7 @@ import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.helpers.files.FilesHelper;
+import org.sormas.e2etests.pages.application.cases.EditCasePage;
 import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
@@ -408,14 +409,12 @@ public class CaseDirectorySteps implements En {
     When(
         "^I open the last created Case via API",
         () -> {
-          String caseUUID = apiState.getCreatedCase().getUuid();
-          webDriverHelpers.fillAndSubmitInWebElement(NAME_UUID_EPID_NUMBER_LIKE_INPUT, caseUUID);
-          TimeUnit.SECONDS.sleep(2); // wait for system reaction
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              getCaseResultsUuidLocator(caseUUID));
-          TimeUnit.SECONDS.sleep(1); // wait for system reaction
-          webDriverHelpers.doubleClickOnWebElementBySelector(getCaseResultsUuidLocator(caseUUID));
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
+          String LAST_CREATED_CASE_URL =
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
+                  + "/sormas-webdriver/#!cases/data/"
+                  + apiState.getCreatedCase().getUuid();
+          webDriverHelpers.accessWebSite(LAST_CREATED_CASE_URL);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(EditCasePage.UUID_INPUT);
         });
 
     Then(

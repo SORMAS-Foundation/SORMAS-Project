@@ -381,5 +381,13 @@ public class NavBarSteps implements En {
               break;
           }
         });
+    When(
+        "^I click on the Messages button from navbar$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.MESSAGES_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
+        });
   }
 }

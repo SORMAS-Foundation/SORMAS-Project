@@ -407,6 +407,7 @@ public class EventDirectorySteps implements En {
           TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(EVENTS_RADIO_BUTTON);
           webDriverHelpers.clickWebElementByText(EVENTS_RADIO_BUTTON, buttonName);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
         });
 
     When(
@@ -902,7 +903,7 @@ public class EventDirectorySteps implements En {
         "I apply on the APPLY FILTERS button from Event",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              APPLY_FILTERS_BUTTON, 30);
+              APPLY_FILTERS_BUTTON, 60);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
           TimeUnit.SECONDS.sleep(3);
         });
