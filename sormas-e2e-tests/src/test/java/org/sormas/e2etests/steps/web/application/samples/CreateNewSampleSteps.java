@@ -840,6 +840,10 @@ public class CreateNewSampleSteps implements En {
           selectSampleType(sample.getSampleType());
           selectLaboratory(sample.getLaboratory());
         });
+
+    When(
+        "I click on edit pathogen button",
+        () -> webDriverHelpers.clickOnWebElementBySelector(EDIT_PATHOGEN_TEST_BUTTON));
   }
 
   private void selectPurposeOfSample(String samplePurpose, By element) {
