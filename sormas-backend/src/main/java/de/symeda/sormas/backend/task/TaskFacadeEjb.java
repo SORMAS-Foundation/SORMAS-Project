@@ -542,8 +542,8 @@ public class TaskFacadeEjb implements TaskFacade {
 			cq.multiselect(selections);
 
 			cq.where(task.get(Task.ID).in(batchedIds));
-
 			cq.orderBy(getOrderList(sortProperties, taskQueryContext));
+			cq.distinct(true);
 
 			tasks.addAll(QueryHelper.getResultList(em, cq, null, null));
 		});

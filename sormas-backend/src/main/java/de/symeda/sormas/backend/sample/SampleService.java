@@ -241,8 +241,8 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 			cq.multiselect(selections);
 
 			cq.where(sample.get(Sample.ID).in(batchedIds));
-
 			cq.orderBy(getOrderList(sortProperties, sampleQueryContext));
+			cq.distinct(true);
 
 			samples.addAll(QueryHelper.getResultList(em, cq, null, null));
 		});

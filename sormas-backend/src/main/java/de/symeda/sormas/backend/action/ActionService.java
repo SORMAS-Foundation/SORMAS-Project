@@ -308,6 +308,7 @@ public class ActionService extends AdoServiceWithUserFilterAndJurisdiction<Actio
 			Join<Event, User> eventResponsibleUser = actionJoins.getEventJoins().getResponsibleUser();
 
 			cq.multiselect(
+				action.get(Action.UUID),
 				event.get(Event.UUID),
 				event.get(Event.EVENT_TITLE),
 				event.get(Event.DISEASE),
@@ -356,8 +357,8 @@ public class ActionService extends AdoServiceWithUserFilterAndJurisdiction<Actio
 				event.get(Event.OTHER_DELETION_REASON));
 
 			cq.where(action.get(Sample.ID).in(batchedIds));
-
 			cq.orderBy(getOrderList(sortProperties, queryContext));
+			cq.distinct(true);
 
 			//noinspection unchecked
 			actions.addAll(

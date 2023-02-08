@@ -194,8 +194,8 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 				eventCountSubquery.getSelection());
 
 			cq.where(eventGroup.get(EventGroup.ID).in(batchedIds));
-
 			cq.orderBy(getOrderList(sortProperties, queryContext));
+			cq.distinct(true);
 
 			eventGroups.addAll(QueryHelper.getResultList(em, cq, first, max));
 		});

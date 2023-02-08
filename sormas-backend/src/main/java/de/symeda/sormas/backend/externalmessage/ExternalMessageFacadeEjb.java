@@ -377,8 +377,8 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 				userJoin.get(User.LAST_NAME));
 
 			cq.where(externalMessage.get(ExternalMessage.ID).in(batchedIds));
-
 			cq.orderBy(getOrderList(sortProperties, cb, externalMessage));
+			cq.distinct(true);
 
 			messages.addAll(QueryHelper.getResultList(em, cq, null, null));
 		});
