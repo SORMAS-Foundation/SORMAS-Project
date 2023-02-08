@@ -275,14 +275,14 @@ public class NavBarSteps implements En {
         });
 
     Then(
-        "I Verify Users Navigation link is not present in the navigation bar",
+        "I Verify Users Directory is not present in the navigation bar",
         () -> {
           assertHelpers.assertWithPoll(
               () ->
                   Assert.assertFalse(
                       webDriverHelpers.isElementPresent(NavBarPage.USERS_BUTTON),
                       "Users Button is displayed for wrong User type"),
-              10);
+              3);
         });
 
     When(
