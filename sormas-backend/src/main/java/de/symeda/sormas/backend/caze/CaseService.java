@@ -1904,10 +1904,16 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 	}
 
 	/**
-	 *
-	 * @param limit null: no limit
+	 * Performance: May be slow when there are 10000s of cases with similar report date in the same region.
+	 * 
+	 * @param limit
+	 *            null: no limit
 	 */
-	public List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, @Min(1) Integer limit, boolean showDuplicatesWithDifferentRegion, double nameSimilarityThreshold) {
+	public List<CaseIndexDto[]> getCasesForDuplicateMerging(
+		CaseCriteria criteria,
+		@Min(1) Integer limit,
+		boolean showDuplicatesWithDifferentRegion,
+		double nameSimilarityThreshold) {
 
 		if (hasAnyToManyJoin(criteria)) {
 			// otherwise we would need to introduce a 'distinct' into the query
@@ -2029,7 +2035,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		cq.orderBy(cb.desc(root.get(Case.CREATION_DATE)));
 
 		TypedQuery<Object[]> typedQuery = em.createQuery(cq).setParameter("date_type", "epoch");
-		if (limit !=  null) {
+		if (limit != null) {
 			typedQuery.setMaxResults(limit);
 		}
 

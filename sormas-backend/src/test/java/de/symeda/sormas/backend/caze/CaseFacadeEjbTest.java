@@ -51,8 +51,6 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
-import de.symeda.sormas.backend.infrastructure.community.Community;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.MatcherAssert;
 import org.hibernate.internal.SessionImpl;
@@ -70,6 +68,7 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.CaseExportType;
+import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseLogic;
@@ -169,7 +168,9 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
+import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -306,10 +307,14 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			DateUtils.addMinutes(today, -3),
 			rdcf);
 
-		final List<CaseIndexDto[]> casesForDuplicateMergingToday =
-			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), 100, true);
-		final List<CaseIndexDto[]> casesForDuplicateMergingThreeDaysAgo =
-			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(threeDaysAgo).creationDateTo(threeDaysAgo), 100, true);
+		final List<CaseIndexDto[]> casesForDuplicateMergingToday = getCaseFacade().getCasesForDuplicateMerging(
+			new CaseCriteria().creationDateFrom(today).creationDateTo(today),
+			CaseFacade.DUPLICATE_MERGING_LIMIT_DEFAULT,
+			true);
+		final List<CaseIndexDto[]> casesForDuplicateMergingThreeDaysAgo = getCaseFacade().getCasesForDuplicateMerging(
+			new CaseCriteria().creationDateFrom(threeDaysAgo).creationDateTo(threeDaysAgo),
+			CaseFacade.DUPLICATE_MERGING_LIMIT_DEFAULT,
+			true);
 		assertEquals(1, casesForDuplicateMergingToday.size());
 		assertEquals(1, casesForDuplicateMergingThreeDaysAgo.size());
 	}
@@ -347,7 +352,14 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			DateUtils.addMinutes(today, -3),
 			rdcf);
 
-		assertEquals(0, getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), 100, true).size());
+		assertEquals(
+			0,
+			getCaseFacade()
+				.getCasesForDuplicateMerging(
+					new CaseCriteria().creationDateFrom(today).creationDateTo(today),
+					CaseFacade.DUPLICATE_MERGING_LIMIT_DEFAULT,
+					true)
+				.size());
 	}
 
 	@Test
@@ -383,7 +395,14 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			DateUtils.addMinutes(today, -3),
 			rdcf);
 
-		assertEquals(0, getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), 100, true).size());
+		assertEquals(
+			0,
+			getCaseFacade()
+				.getCasesForDuplicateMerging(
+					new CaseCriteria().creationDateFrom(today).creationDateTo(today),
+					CaseFacade.DUPLICATE_MERGING_LIMIT_DEFAULT,
+					true)
+				.size());
 	}
 
 	@Test
@@ -419,7 +438,14 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			DateUtils.addMinutes(today, -3),
 			rdcf);
 
-		assertEquals(1, getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), 100, true).size());
+		assertEquals(
+			1,
+			getCaseFacade()
+				.getCasesForDuplicateMerging(
+					new CaseCriteria().creationDateFrom(today).creationDateTo(today),
+					CaseFacade.DUPLICATE_MERGING_LIMIT_DEFAULT,
+					true)
+				.size());
 	}
 
 	@Test

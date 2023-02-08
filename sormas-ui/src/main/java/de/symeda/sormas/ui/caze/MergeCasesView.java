@@ -15,6 +15,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -50,8 +51,8 @@ public class MergeCasesView extends AbstractView {
 
 		boolean queryDetailsUninitialized = !ViewModelProviders.of(MergeCasesView.class).has(QueryDetails.class);
 		QueryDetails queryDetails = ViewModelProviders.of(MergeCasesView.class).get(QueryDetails.class);
-		if (queryDetailsUninitialized) {
-			queryDetails.setResultLimit(100);
+		if (queryDetailsUninitialized || queryDetails.getResultLimit() == null) {
+			queryDetails.setResultLimit(CaseFacade.DUPLICATE_MERGING_LIMIT_DEFAULT);
 		}
 
 		grid = new MergeCasesGrid();
@@ -64,7 +65,7 @@ public class MergeCasesView extends AbstractView {
 			if (ViewModelProviders.of(MergeCasesView.class).has(CaseCriteria.class)) {
 				navigateTo(criteria, queryDetails);
 			} else {
-				navigateTo(null);
+				navigateTo();
 			}
 		});
 		filterComponent.setIgnoreRegionCallback(grid::reload);
@@ -93,10 +94,6 @@ public class MergeCasesView extends AbstractView {
 			ValoTheme.BUTTON_PRIMARY);
 
 		addHeaderComponent(btnBack);
-
-		if (!criteriaUninitialized) {
-			reloadAndUpdateDuplicateCount();
-		}
 	}
 
 	private void reloadAndUpdateDuplicateCount() {
@@ -138,10 +135,13 @@ public class MergeCasesView extends AbstractView {
 			QueryDetails queryDetails = ViewModelProviders.of(MergeCasesView.class).get(QueryDetails.class);
 			queryDetails.fromUrlParams(params);
 
+			queryDetails.setResultLimit(
+				queryDetails.getResultLimit() != null
+					? Math.max(1, Math.min(queryDetails.getResultLimit().intValue(), CaseFacade.DUPLICATE_MERGING_LIMIT_MAX))
+					: CaseFacade.DUPLICATE_MERGING_LIMIT_DEFAULT);
+
 			filterComponent.setValue(criteria, queryDetails);
 		}
-
-		filterComponent.updateDuplicateCountLabel(grid.getTreeData().getRootItems().size());
 
 		if (criteriaUninitialized) {
 			VaadinUiUtil.showSimplePopupWindow(
@@ -149,6 +149,8 @@ public class MergeCasesView extends AbstractView {
 				I18nProperties.getString(Strings.infoMergeFiltersHint),
 				ContentMode.HTML,
 				640);
+		} else {
+			reloadAndUpdateDuplicateCount();
 		}
 	}
 }
