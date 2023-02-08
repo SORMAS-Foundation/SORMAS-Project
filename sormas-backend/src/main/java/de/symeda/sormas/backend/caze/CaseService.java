@@ -858,8 +858,8 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 						.unaccentedIlike(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_EMAIL_SUBQUERY), textFilter),
 					CriteriaBuilderHelper
 						.unaccentedIlike(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PRIMARY_OTHER_SUBQUERY), textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getPerson().get(Location.CITY), textFilter),
-					CriteriaBuilderHelper.ilike(cb, joins.getPerson().get(Location.POSTAL_CODE), textFilter)));
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getPersonAddress().get(Location.CITY), textFilter),
+					CriteriaBuilderHelper.ilike(cb, joins.getPersonAddress().get(Location.POSTAL_CODE), textFilter)));
 
 			filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 		}
