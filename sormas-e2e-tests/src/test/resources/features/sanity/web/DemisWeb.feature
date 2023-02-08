@@ -54,7 +54,3 @@ Scenario: Create and send laboratory request via Demis
     | 94506-3            | IgM Serum Antikörper                                    |                                             |
     | 95410-7            | Antikörper-Neutralisationstest                          |                                             |
     | 97097-0            | Antigen-Nachweistest                                    |                                             |
-
-
-
-
