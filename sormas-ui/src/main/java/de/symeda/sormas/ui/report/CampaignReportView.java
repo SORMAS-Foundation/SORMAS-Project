@@ -1,5 +1,8 @@
 package de.symeda.sormas.ui.report;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.VaadinService;
 import com.vaadin.ui.HorizontalLayout;
@@ -15,6 +18,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.community.CommunityCriteriaNew;
 import de.symeda.sormas.api.user.FormAccess;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.campaign.components.CampaignFormPhaseSelector;
 import de.symeda.sormas.ui.configuration.infrastructure.CommunitiesView;
 import de.symeda.sormas.ui.utils.AbstractView;
 
@@ -67,6 +71,25 @@ public class CampaignReportView extends AbstractView {
 		tabsheetx.setHeightFull();
 
 		tabsheet.addTab(tabsheetx, "User Analysis");
+
+		TabSheet tabsheetxr = new TabSheet();
+		FormAccess frmss[] = FormAccess.values();
+		for (FormAccess lopper : frmss) {
+
+			gridLayout = new VerticalLayout();
+			gridLayout.setHeightFull();
+			CompletionAnalysisTabSheets compAnalysis = new CompletionAnalysisTabSheets(criteria, lopper);// CampaignReportTabSheets
+																								// sheet = new
+																								// CampaignReportTabSheets(criteria,
+																								// lopper);
+			gridLayout.addComponent(compAnalysis);
+			tabsheetxr.addTab(gridLayout, lopper.toString());
+
+		}
+
+		tabsheetxr.setHeightFull();
+
+		tabsheet.addTab(tabsheetxr, "Completion Analysis");
 
 		tabsheet.addSelectedTabChangeListener(new SelectedTabChangeListener() {
 			@Override

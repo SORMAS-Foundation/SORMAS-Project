@@ -90,6 +90,15 @@ public class DistrictsGrid extends FilteredGrid<DistrictIndexDto, DistrictCriter
 			if(column.getCaption().equalsIgnoreCase("External ID")) {
 				column.setCaption("DCode");
 			}
+			if(column.getCaption().equalsIgnoreCase("Areaname")) { 
+				column.setCaption("Region");
+			}
+			if(column.getCaption().equalsIgnoreCase("Areaexternal Id")) { 
+				column.setCaption("RCode");
+			}
+			if(column.getCaption().equalsIgnoreCase("Regionexternal Id")) { 
+				column.setCaption("PCode");
+			}
 		}
 	}
 

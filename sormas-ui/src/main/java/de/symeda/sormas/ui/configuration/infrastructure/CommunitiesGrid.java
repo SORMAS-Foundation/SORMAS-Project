@@ -84,6 +84,18 @@ public class CommunitiesGrid extends FilteredGrid<CommunityDto, CommunityCriteri
 			if(column.getCaption().equalsIgnoreCase("External ID")) { 
 				column.setCaption("CCode");
 			}
+			if(column.getCaption().equalsIgnoreCase("Areaname")) { 
+				column.setCaption("Region");
+			}
+			if(column.getCaption().equalsIgnoreCase("Areaexternal Id")) { 
+				column.setCaption("RCode");
+			}
+			if(column.getCaption().equalsIgnoreCase("Regionexternal Id")) { 
+				column.setCaption("PCode");
+			}
+			if(column.getCaption().equalsIgnoreCase("Districtexternal Id")) { 
+				column.setCaption("DCode");
+			}
 
 		}
 	}

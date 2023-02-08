@@ -56,6 +56,7 @@ public class AreasGrid extends FilteredGrid<AreaDto, AreaCriteria> {
 			if(column.getCaption().equalsIgnoreCase("Name")) {
 				column.setCaption(I18nProperties.getCaption(Captions.region));
 			}
+			
 			//write an if statement that checks if the column.getcaption = name and set it to region
 		}
 	}

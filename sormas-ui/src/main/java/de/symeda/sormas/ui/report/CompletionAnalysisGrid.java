@@ -13,6 +13,8 @@ import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.community.CommunityCriteriaNew;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;
@@ -31,12 +33,12 @@ import elemental.json.JsonValue;
 
 @SuppressWarnings("serial")
 @Component
-public class UserReportGrid extends FilteredGrid<CommunityUserReportModelDto, CommunityCriteriaNew> {
+public class CompletionAnalysisGrid extends FilteredGrid<CommunityUserReportModelDto, CommunityCriteriaNew> {
 
 	private static final long serialVersionUID = -1L;
 
 	@SuppressWarnings("unchecked")
-	public UserReportGrid(CommunityCriteriaNew criteria, FormAccess formacc) {
+	public CompletionAnalysisGrid(CommunityCriteriaNew criteria, FormAccess formacc) {
 		super(CommunityUserReportModelDto.class);
 		setSizeFull();
 		
@@ -49,7 +51,9 @@ public class UserReportGrid extends FilteredGrid<CommunityUserReportModelDto, Co
 				CommunityUserReportModelDto.REGION,
 				CommunityUserReportModelDto.DISTRICT,
 				CommunityUserReportModelDto.REP_FORMACCESS,
+				CommunityUserReportModelDto.COMMUNITY,
 				CommunityUserReportModelDto.REP_CLUSTERNO,
+				CommunityUserReportModelDto.CCODE,
 				CommunityUserReportModelDto.REP_USERNAME,
 				CommunityUserReportModelDto.REP_MESSAGE
 					);
@@ -62,10 +66,10 @@ public class UserReportGrid extends FilteredGrid<CommunityUserReportModelDto, Co
 			column.setDescriptionGenerator(CommunityUserReportModelDto -> column.getCaption());
 			//System.out.println(column.getId() +" dcolumn.getId() ");
 			if(column.getId().toString().equals("community")) {
-				column.setCaption(I18nProperties.getPrefixCaption(UserReportModelDto.I18N_PREFIX, column.getId().toString(),
+				column.setCaption(I18nProperties.getPrefixCaption(CommunityUserReportModelDto.I18N_PREFIX, column.getId().toString(),
 						column.getCaption()));
 			}else {
-			column.setCaption(I18nProperties.getPrefixCaption(UserReportModelDto.I18N_PREFIX, column.getId().toString(),
+			column.setCaption(I18nProperties.getPrefixCaption(CommunityUserReportModelDto.I18N_PREFIX, column.getId().toString(),
 					column.getCaption()));
 			}
 		}
@@ -95,40 +99,41 @@ public class UserReportGrid extends FilteredGrid<CommunityUserReportModelDto, Co
 						query.getSortOrders()
 							.stream()
 							.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-							.collect(Collectors.toList()), formacc).size());
+							.collect(Collectors.toList()), formacc).size()
+					);
 				
-			//	{
-//					return (int) FacadeProvider.getCommunityFacade().countReportGrid(
-//							query.getFilter().orElse(null), formacc);
-				//	return 100;
-			//	});
-		
-	//	List<CommunityUserReportModelDto> reportLists = FacadeProvider.getCommunityFacade().getAllActiveCommunitytoRerence(getCriteria());
-		
-	//	reportLists.removeIf(e -> e.getMessage().equals("Correctly assigned"));
-		
-	//	DataProvider<CommunityUserReportModelDto, UserCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-	//		query -> reportLists.stream(),
-	//		query -> {
-	//			return (int) reportLists.size();
-	//		});
+
 		System.out.println("sdafasdfasdfgasdgvasdfgsdfhsdfg "+dataProvider);
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
 	}
 	
+//	public void addCustomColumn(String property, String caption) {
+//		if (!property.toString().contains("readonly")) {
+//
+//			Column<CommunityUserReportModelDto, CampaignFormDataCriteria> newColumn = addColumn(
+//					e -> e.getFormType().stream().filter(v -> v.getFormType().equals(property)).findFirst().orElse(null));// .toString().stream().filter(v -> v.getId().equals(property)).findFirst().orElse(null));
+//			newColumn.setSortable(false);
+//			newColumn.setCaption(caption);
+//			newColumn.setId(property);
+//			newColumn.setWidth(240.0);
+//			newColumn.setDescriptionGenerator(CampaignFormDataIndexDto -> newColumn.getCaption());// set the
+//																									// description
+//																									// of default
+//																									// columns
+//																									// #94-iyanuu
+//
+//		}
+//
+//	}
+//	
 	public void reload() {
 
 		if (getSelectionModel().isUserSelectionAllowed()) {
 			deselectAll();
 		}
 
-		// ViewConfiguration viewConfiguration =
-		// ViewModelProviders.of(UsersView.class).get(ViewConfiguration.class);
-//			if (viewConfiguration.isInEagerMode()) {
-//				setEagerDataProvider();
-//			}
-
+	
 		getDataProvider().refreshAll();
 	}
 	

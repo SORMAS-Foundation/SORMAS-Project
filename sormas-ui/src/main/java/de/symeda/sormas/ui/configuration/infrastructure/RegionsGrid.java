@@ -103,6 +103,9 @@ public class RegionsGrid extends FilteredGrid<RegionIndexDto, RegionCriteria> {
 			if(column.getCaption().equalsIgnoreCase("External ID")) { 
 				column.setCaption("PCode");
 			}
+			if(column.getCaption().equalsIgnoreCase("Areaexternal Id")) { 
+				column.setCaption("RCode");
+			}
 
 		}
 	}
