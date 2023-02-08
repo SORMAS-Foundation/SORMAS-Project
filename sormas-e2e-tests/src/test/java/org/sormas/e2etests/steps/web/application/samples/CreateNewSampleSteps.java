@@ -29,6 +29,7 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.NUM
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_ACTIONS_COLUMN_HEADERS;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_ACTIONS_TABLE_DATA;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_ACTIONS_TABLE_ROW;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.ONE_TEST_IN_SAMPLES_DE;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.ADD_PATHOGEN_TEST;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.ADD_PATHOGEN_TEST_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.ANTIGEN_DETECTION_TEST_OPTION_BUTTON;
@@ -370,6 +371,16 @@ public class CreateNewSampleSteps implements En {
               "Number of tests: 2",
               "Number of tests is correct!");
           softly.assertAll();
+        });
+
+    When(
+        "^I check that case created from laboratory message contains a sample with one test",
+        () -> {
+          softly.assertEquals(
+              webDriverHelpers.getNumberOfElements(EDIT_SAMPLE_BUTTON),
+              1,
+              "Number of samples is not correct");
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(ONE_TEST_IN_SAMPLES_DE);
         });
 
     When(
