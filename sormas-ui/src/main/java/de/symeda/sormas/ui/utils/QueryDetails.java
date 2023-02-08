@@ -6,7 +6,7 @@ public class QueryDetails extends BaseCriteria {
 
     public static final String RESULT_LIMIT = "resultLimit";
 
-    protected Integer resultLimit;
+    private Integer resultLimit;
 
     public Integer getResultLimit() {
         return resultLimit;
