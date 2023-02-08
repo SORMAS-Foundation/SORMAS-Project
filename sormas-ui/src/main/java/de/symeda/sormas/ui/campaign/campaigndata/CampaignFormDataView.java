@@ -85,12 +85,17 @@ public class CampaignFormDataView extends AbstractCampaignDataView {
 			+ "$('.v-verticallayout.v-layout.v-vertical.v-widget.v-has-width.v-has-height.v-margin-top.v-margin-right.v-margin-bottom.v-margin-left').hide();"
 			+"});"
 					);
-
+			System.out.println("??????????????????????????????????????????????????????????????222222222222222222 "+ getReference().getUuid());
 		} else {
 			CampaignFormDataDto campaignFormData = FacadeProvider.getCampaignFormDataFacade()
 					.getCampaignFormDataByUuid(getReference().getUuid());
+			System.out.println("??????????????????????????????????????????????????????????????1111 "+ getReference().getUuid());
 			editComponent = ControllerProvider.getCampaignController().getCampaignFormDataComponent(campaignFormData,
-					campaignFormData.getCampaign(), campaignFormData.getCampaignFormMeta(), true, true, () -> {
+					campaignFormData.getCampaign(), 
+					campaignFormData.getCampaignFormMeta(), 
+					true, 
+					true, 
+					() -> {
 						SormasUI.refreshView();
 						Notification.show(String.format(I18nProperties.getString(Strings.messageCampaignFormSaved),
 								campaignFormData.getCampaignFormMeta().toString()), TRAY_NOTIFICATION);
@@ -104,7 +109,6 @@ public class CampaignFormDataView extends AbstractCampaignDataView {
 			container.addComponent(editComponent);
 
 			getViewTitleLabel().setValue(campaignFormData.getCampaignFormMeta().toString());
-
 		}
 	}
 }

@@ -90,6 +90,7 @@ public class UsersView extends AbstractView {
 	private UserCriteria criteria;
 
 	private UserGrid grid;
+	private UserExportGrid exportgrid;
 	private Button createButton;
 	private Button syncButton;
 
@@ -112,7 +113,8 @@ public class UsersView extends AbstractView {
 		super(VIEW_NAME);
 
 		criteria = ViewModelProviders.of(UsersView.class).get(UserCriteria.class);
-
+		
+		exportgrid = new UserExportGrid();
 		grid = new UserGrid();
 		grid.setCriteria(criteria);
 		gridLayout = new VerticalLayout();
@@ -128,6 +130,8 @@ public class UsersView extends AbstractView {
 		gridLayout.setSizeFull();
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setStyleName("crud-main-layout");
+		
+		
 
 		addComponent(gridLayout);
 
@@ -166,8 +170,8 @@ public class UsersView extends AbstractView {
 			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			addHeaderComponent(exportButton);
 
-			StreamResource streamResource = GridExportStreamResource.createStreamResource("", "", grid,
-					ExportEntityName.USERS, UserGrid.EDIT_BTN_ID);
+			StreamResource streamResource = GridExportStreamResource.createStreamResource("", "", exportgrid,
+					ExportEntityName.USERS, UserExportGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 		}
