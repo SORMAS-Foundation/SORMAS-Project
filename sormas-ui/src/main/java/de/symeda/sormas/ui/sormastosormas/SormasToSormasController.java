@@ -126,7 +126,7 @@ public class SormasToSormasController {
 			SormasToSormasOptionsForm.forEvent(event, currentShares));
 	}
 
-	public void shareLabMessage(ExternalMessageDto labMessage, Runnable callback) {
+	public void shareExternalMessage(ExternalMessageDto labMessage, Runnable callback) {
 		handleShareWithOptions(
 			options -> FacadeProvider.getSormasToSormasLabMessageFacade()
 				.sendExternalMessages(Collections.singletonList(labMessage.getUuid()), options),
