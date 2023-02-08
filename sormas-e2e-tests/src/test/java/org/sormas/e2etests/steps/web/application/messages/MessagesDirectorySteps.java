@@ -49,7 +49,7 @@ public class MessagesDirectorySteps implements En {
         });
 
     And(
-        "^I check that sample correction popup is displayed$",
+        "^I check that new sample form with pathogen detection reporting process is displayed$",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(CREATE_NEW_SAMPLE_POPUP_WINDOW_DE);
         });
@@ -63,7 +63,7 @@ public class MessagesDirectorySteps implements En {
         });
 
     And(
-        "I click on {string} button in sample correction popup",
+        "I click on {string} button in new sample form with pathogen detection reporting process",
         (String option) -> {
           switch (option) {
             case "save and open case":
