@@ -115,7 +115,7 @@ Scenario: Create and send laboratory request via Demis
     And I navigate to case person tab
     And I check that first and last name are equal to data form 3 result in laboratory notification
 
-  @tmsLink=SORDEV-8689 @env_d2s @LoginKeycloak
+  @tmsLink=SORDEV-5588 @env_d2s @LoginKeycloak
   Scenario: Test delete option in Lab Messages
     Given API : Login to DEMIS server
     Then I create and send Laboratory Notification
