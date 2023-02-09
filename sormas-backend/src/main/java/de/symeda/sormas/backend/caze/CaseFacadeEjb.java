@@ -1440,9 +1440,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	public List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, boolean ignoreRegion) {
-
-		return service.getCasesForDuplicateMerging(criteria, ignoreRegion, configFacade.getNameSimilarityThreshold());
+	public List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, int limit, boolean showDuplicatesWithDifferentRegion) {
+		return service.getCasesForDuplicateMerging(criteria, limit, showDuplicatesWithDifferentRegion, configFacade.getNameSimilarityThreshold());
 	}
 
 	@RightsAllowed(UserRight._CASE_EDIT)

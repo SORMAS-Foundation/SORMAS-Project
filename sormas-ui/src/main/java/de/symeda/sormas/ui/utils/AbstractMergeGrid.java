@@ -49,6 +49,9 @@ public abstract class AbstractMergeGrid<T1 extends MergeableIndexDto, T2 extends
 	private static final String COMPLETENESS = "completeness";
 
 	protected T2 criteria;
+
+	protected QueryDetails queryDetails;
+
 	protected boolean ignoreRegion;
 
 	protected List<String[]> hiddenUuidPairs;
@@ -240,5 +243,13 @@ public abstract class AbstractMergeGrid<T1 extends MergeableIndexDto, T2 extends
 
 	public void setCriteria(T2 criteria) {
 		this.criteria = criteria;
+	}
+
+	public QueryDetails getQueryDetails() {
+		return queryDetails;
+	}
+
+	public void setQueryDetails(QueryDetails queryDetails) {
+		this.queryDetails = queryDetails;
 	}
 }
