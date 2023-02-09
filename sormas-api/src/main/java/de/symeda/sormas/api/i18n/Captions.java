@@ -1840,6 +1840,7 @@ public interface Captions {
 	String prescriptionNewPrescription = "prescriptionNewPrescription";
 	String prescriptionWithTreatment = "prescriptionWithTreatment";
 	String prescriptionWithTreatmentTitleDelete = "prescriptionWithTreatmentTitleDelete";
+	String QueryDetails_resultLimit = "QueryDetails.resultLimit";
 	String Region = "Region";
 	String Region_archived = "Region.archived";
 	String Region_country = "Region.country";
