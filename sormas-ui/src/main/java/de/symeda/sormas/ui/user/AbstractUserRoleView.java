@@ -57,6 +57,10 @@ public abstract class AbstractUserRoleView extends AbstractDetailView<UserRoleRe
 					});
 			});
 
+			if (!UserProvider.getCurrent().getUserRights().contains(UserRight.USER_ROLE_EDIT)) {
+				applyUserRoleTemplate.setEnabled(false);
+			}
+
 			addHeaderComponent(applyUserRoleTemplate);
 		}
 	}
