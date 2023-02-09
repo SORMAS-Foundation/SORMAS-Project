@@ -175,17 +175,20 @@ public abstract class AbstractView extends VerticalLayout implements View {
 			newState = newState.substring(0, paramsIndex);
 		}
 
-		String urlParams = Arrays.stream(criteriaList)
-				.filter(Objects::nonNull)
-				.map(BaseCriteria::toUrlParams)
-				.filter(params -> !DataHelper.isNullOrEmpty(params))
-				.collect(Collectors.joining("&"));
+		if (criteriaList != null)
+		{
+			String urlParams = Arrays.stream(criteriaList)
+					.filter(Objects::nonNull)
+					.map(BaseCriteria::toUrlParams)
+					.filter(params -> !DataHelper.isNullOrEmpty(params))
+					.collect(Collectors.joining("&"));
 
-		if (urlParams.length() > 0) {
-			if (newState.charAt(newState.length() - 1) != '/') {
-				newState += "/";
+			if (urlParams.length() > 0) {
+				if (newState.charAt(newState.length() - 1) != '/') {
+					newState += "/";
+				}
+				newState += "?" + urlParams;
 			}
-			newState += "?" + urlParams;
 		}
 
 		return newState;
