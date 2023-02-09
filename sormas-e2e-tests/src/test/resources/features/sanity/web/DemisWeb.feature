@@ -114,3 +114,17 @@ Scenario: Create and send laboratory request via Demis
     And I check that case created from laboratory message contains a sample with one test
     And I navigate to case person tab
     And I check that first and last name are equal to data form 3 result in laboratory notification
+
+  @tmsLink=SORDEV-8689 @env_d2s @LoginKeycloak
+  Scenario: Test delete option in Lab Messages
+    Given API : Login to DEMIS server
+    Then I create and send Laboratory Notification
+    When I log in as a National User
+    And I click on the Messages button from navbar
+    And I click on fetch messages button
+    Then I click on the eye icon next for the first fetched message
+    And I collect message uuid
+    Then I click Delete button in Message form
+    And I confirm message deletion
+    And I filter last deleted message
+    And I check that number of displayed messages results is 0

@@ -66,5 +66,8 @@ public class MessagesDirectoryPage {
   public static final By PATHOGEN_DETECTION_REPORTING_PROCESS_HEADER_DE =
       By.xpath(
           "//div[@location='externalMessageDetails']//h1[text()='Erregernachweismeldevorgang']");
-  public static final By ONE_TEST_IN_SAMPLES_DE = By.xpath("//div[@location='samples']//div[text()='Anzahl der Tests: 1']");
+  public static final By ONE_TEST_IN_SAMPLES_DE =
+      By.xpath("//div[@location='samples']//div[text()='Anzahl der Tests: 1']");
+  public static final By MESSAGE_DELETE_BUTTON = By.cssSelector("#actionDelete");
+  public static final By TOTAL_MESSAGE_COUNTER = By.cssSelector("#Alle");
 }
