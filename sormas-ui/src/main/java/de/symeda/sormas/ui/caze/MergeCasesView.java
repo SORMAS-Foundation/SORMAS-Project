@@ -36,12 +36,12 @@ public class MergeCasesView extends AbstractView {
 	private final MergeCasesGrid grid;
 	private final MergeCasesFilterComponent filterComponent;
 
-	private final boolean criteriaUninitialized;
-
 	public MergeCasesView() {
 		super(VIEW_NAME);
 
-		criteriaUninitialized = !ViewModelProviders.of(MergeCasesView.class).has(CaseCriteria.class);
+		MergeCasesViewConfiguration viewConfiguration = ViewModelProviders.of(MergeCasesView.class).get(MergeCasesViewConfiguration.class);
+
+		boolean criteriaUninitialized = !ViewModelProviders.of(MergeCasesView.class).has(CaseCriteria.class);
 		CaseCriteria criteria = ViewModelProviders.of(MergeCasesView.class).get(CaseCriteria.class);
 		if (criteriaUninitialized) {
 			criteria.creationDateFrom(DateHelper.subtractDays(new Date(), 30))
@@ -94,11 +94,16 @@ public class MergeCasesView extends AbstractView {
 			ValoTheme.BUTTON_PRIMARY);
 
 		addHeaderComponent(btnBack);
+
+		if (viewConfiguration.isFirstLoadDone()) {
+			reloadAndUpdateDuplicateCount();
+		}
 	}
 
 	private void reloadAndUpdateDuplicateCount() {
 		grid.reload();
 		filterComponent.updateDuplicateCountLabel(grid.getTreeData().getRootItems().size());
+		ViewModelProviders.of(MergeCasesView.class).get(MergeCasesViewConfiguration.class).setFirstLoadDone(true);
 	}
 
 	private void buildAndOpenMergeInstructions() {
@@ -143,7 +148,7 @@ public class MergeCasesView extends AbstractView {
 			filterComponent.setValue(criteria, queryDetails);
 		}
 
-		if (criteriaUninitialized) {
+		if (!ViewModelProviders.of(MergeCasesView.class).get(MergeCasesViewConfiguration.class).isFirstLoadDone()) {
 			VaadinUiUtil.showSimplePopupWindow(
 				I18nProperties.getString(Strings.headingCaution),
 				I18nProperties.getString(Strings.infoMergeFiltersHint),
