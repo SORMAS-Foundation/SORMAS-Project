@@ -119,6 +119,7 @@ Scenario: Create and send laboratory request via Demis
   Scenario: Test delete option in Lab Messages
     Given API : Login to DEMIS server
     Then I create and send Laboratory Notification
+    Then I create and send Laboratory Notification
     When I log in as a National User
     And I click on the Messages button from navbar
     And I click on fetch messages button
@@ -128,3 +129,8 @@ Scenario: Create and send laboratory request via Demis
     And I confirm message deletion
     And I filter last deleted message
     And I check that number of displayed messages results is 0
+    And I click on reset filters button from Message Directory
+    And I click on process button for 1 result in Message Directory page
+    Then I create a new person and a new case from received message
+    Then I click on the eye icon next for the first fetched message
+    And I check that the Delete button is not available

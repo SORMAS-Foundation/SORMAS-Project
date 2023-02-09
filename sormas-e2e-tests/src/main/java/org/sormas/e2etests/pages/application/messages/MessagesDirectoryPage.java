@@ -70,4 +70,5 @@ public class MessagesDirectoryPage {
       By.xpath("//div[@location='samples']//div[text()='Anzahl der Tests: 1']");
   public static final By MESSAGE_DELETE_BUTTON = By.cssSelector("#actionDelete");
   public static final By TOTAL_MESSAGE_COUNTER = By.cssSelector("#Alle");
+  public static final By RESET_FILTER_BUTTON = By.cssSelector("#actionResetFilters");
 }

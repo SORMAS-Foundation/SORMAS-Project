@@ -15,6 +15,7 @@ import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPa
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_WINDOW_DISCARD_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_WINDOW_SAVE_AND_OPEN_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_WINDOW_SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.RESET_FILTER_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.SAVE_POPUP_CONTENT_FIRST_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.SEARCH_MESSAGE_INPUT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.TOTAL_MESSAGE_COUNTER;
@@ -136,11 +137,7 @@ public class MessagesDirectorySteps implements En {
     And(
         "^I collect message uuid$",
         () -> {
-          System.out.println(
-              "Message uuid z web elementu: "
-                  + webDriverHelpers.getTextFromWebElement(MESSAGE_UUID_TEXT));
-          uuids.add(webDriverHelpers.getTextFromWebElement(MESSAGE_UUID_TEXT));
-          System.out.println("UUID: " + uuids.get(0));
+          uuids.add(webDriverHelpers.getValueFromWebElement(MESSAGE_UUID_TEXT));
         });
 
     Then(
@@ -170,15 +167,29 @@ public class MessagesDirectorySteps implements En {
         "^I check that number of displayed messages results is (\\d+)$",
         (Integer number) -> {
           String textFromCounter =
-              webDriverHelpers.getTextFromPresentWebElement(TOTAL_MESSAGE_COUNTER);
-          String textCut = textFromCounter.substring(4);
-          System.out.println("Total message number: " + textCut);
+              webDriverHelpers.getTextFromPresentWebElement(TOTAL_MESSAGE_COUNTER).substring(4);
           assertHelpers.assertWithPoll20Second(
               () ->
                   Assert.assertEquals(
-                      Integer.parseInt(textCut),
+                      Integer.parseInt(textFromCounter),
                       number.intValue(),
                       "Number of displayed messages is not correct"));
+        });
+
+    And(
+        "^I check that the Delete button is not available$",
+        () -> {
+          softly.assertFalse(
+              webDriverHelpers.isElementVisibleWithTimeout(MESSAGE_DELETE_BUTTON, 2),
+              "Delete message button is visible!");
+          softly.assertAll();
+        });
+
+    And(
+        "^I click on reset filters button from Message Directory$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(RESET_FILTER_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
   }
 }
