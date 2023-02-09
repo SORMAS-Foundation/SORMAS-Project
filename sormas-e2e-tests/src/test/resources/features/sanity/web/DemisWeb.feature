@@ -115,6 +115,32 @@ Scenario: Create and send laboratory request via Demis
     And I navigate to case person tab
     And I check that first and last name are equal to data form 3 result in laboratory notification
 
+  @tmsLink=SORDEV-8862 @env_d2s @LoginKeycloak
+  Scenario: Test [DEMIS2SORMAS] Add filters and columns to the lab message directory
+    Given API : Login to DEMIS server
+    Then I create and send Laboratory Notification
+    And I log in as a National User
+    Then I click on the Messages button from navbar
+    And I click on fetch messages button
+    Then I filter by last created person via API in Messages Directory
+    And I collect message data from searched record in Messages directory
+    Then I click on the RESET FILTERS button for Messages
+    And I search created message by UUID
+    Then I check if searched message has correct UUID
+    And I check that number of displayed messages results is 1
+    Then I click on the RESET FILTERS button for Messages
+    And I search created message by laboratory name
+    Then I check if searched message has correct laboratory name
+    Then I click on the RESET FILTERS button for Messages
+    And I search created message by laboratory postal code
+    And I check if searched message has correct laboratory postal code
+    Then I click on the RESET FILTERS button for Messages
+    And I search created message by date and time
+    Then I check if searched message has correct date and time
+    Then I click on the RESET FILTERS button for Messages
+    And I search created message by birthday date
+    Then I check if searched message has correct birthday date
+
   @tmsLink=SORDEV-5588 @env_d2s @LoginKeycloak
   Scenario: Test delete option in Lab Messages
     Given API : Login to DEMIS server

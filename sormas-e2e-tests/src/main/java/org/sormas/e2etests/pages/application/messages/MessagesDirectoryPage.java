@@ -71,4 +71,11 @@ public class MessagesDirectoryPage {
   public static final By MESSAGE_DELETE_BUTTON = By.cssSelector("#actionDelete");
   public static final By TOTAL_MESSAGE_COUNTER = By.cssSelector("#Alle");
   public static final By RESET_FILTER_BUTTON = By.cssSelector("#actionResetFilters");
+  public static final By MESSAGE_DATE_FROM_INPUT = By.cssSelector("#messageDateFrom_date input");
+  public static final By MESSAGE_TIME_FROM_COMBOBOX = By.cssSelector("#messageDateFrom_time div");
+  public static final By APPLY_FILTER_MESSAGE = By.id("actionApplyFilters");
+  public static final By PATIENT_BIRTHDAY_FROM_INPUT =
+      By.xpath("//div[@location='birthDateFrom']//div[@id='birthDateFrom']//input");
+  public static final By PATIENT_BIRTHDAY_TO_INPUT =
+      By.xpath("//div[@location='birthDateTo']//div[@id='birthDateTo']//input");
 }
