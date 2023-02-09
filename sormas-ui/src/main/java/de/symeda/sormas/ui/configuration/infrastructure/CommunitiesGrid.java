@@ -76,6 +76,7 @@ public class CommunitiesGrid extends FilteredGrid<CommunityDto, CommunityCriteri
 		}
 
 		for (Column<?, ?> column : getColumns()) {
+			column.setDescriptionGenerator(CommunityDto -> column.getCaption());
 			column.setCaption(I18nProperties.getPrefixCaption(CommunityDto.I18N_PREFIX, column.getId(), column.getCaption()));
 			if(column.getCaption().equalsIgnoreCase("Name")) {
 				column.setCaption("Cluster");

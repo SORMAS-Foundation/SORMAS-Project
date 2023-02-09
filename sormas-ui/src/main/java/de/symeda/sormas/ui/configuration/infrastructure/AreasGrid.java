@@ -51,6 +51,7 @@ public class AreasGrid extends FilteredGrid<AreaDto, AreaCriteria> {
 		}
 
 		for (Column<?, ?> column : getColumns()) {
+			column.setDescriptionGenerator(AreaDto -> column.getCaption());
 			
 			column.setCaption(I18nProperties.getPrefixCaption(AreaDto.I18N_PREFIX, column.getId(), column.getCaption()));
 			if(column.getCaption().equalsIgnoreCase("Name")) {

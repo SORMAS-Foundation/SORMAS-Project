@@ -83,6 +83,7 @@ public class DistrictsGrid extends FilteredGrid<DistrictIndexDto, DistrictCriter
 		}
 
 		for (Column<?, ?> column : getColumns()) {
+			column.setDescriptionGenerator(DistrictIndexDto -> column.getCaption());
 			column.setCaption(I18nProperties.getPrefixCaption(DistrictIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
 			if(column.getCaption().equalsIgnoreCase("Name")) {
 				column.setCaption("District");

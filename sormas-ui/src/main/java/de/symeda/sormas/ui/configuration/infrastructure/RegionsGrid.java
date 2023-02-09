@@ -96,6 +96,7 @@ public class RegionsGrid extends FilteredGrid<RegionIndexDto, RegionCriteria> {
 		}
 
 		for (Column<?, ?> column : getColumns()) {
+			column.setDescriptionGenerator(RegionIndexDto -> column.getCaption());
 			column.setCaption(I18nProperties.getPrefixCaption(RegionIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
 			if(column.getCaption().equalsIgnoreCase("Name")) {
 				column.setCaption("Province");
