@@ -78,4 +78,9 @@ public class MessagesDirectoryPage {
       By.xpath("//div[@location='birthDateFrom']//div[@id='birthDateFrom']//input");
   public static final By PATIENT_BIRTHDAY_TO_INPUT =
       By.xpath("//div[@location='birthDateTo']//div[@id='birthDateTo']//input");
+  public static final By MARK_AS_UNCLEAR_BUTTON = By.cssSelector("#actionUnclearLabMessage");
+  public static final By UNCLEAR_MESSAGE_COUNTER = By.cssSelector("#Unklar");
+  public static final By MARK_AS_FORWARDED_BUTTON =
+      By.cssSelector("#actionManualForwardLabMessage");
+  public static final By FORWARDED_MESSAGE_COUNTER = By.cssSelector("#Weitergeleitet");
 }

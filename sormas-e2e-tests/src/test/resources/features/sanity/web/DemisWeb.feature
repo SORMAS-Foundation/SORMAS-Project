@@ -153,10 +153,33 @@ Scenario: Create and send laboratory request via Demis
     And I collect message uuid
     Then I click Delete button in Message form
     And I confirm message deletion
-    And I filter last deleted message
+    And I filter messages by collected uuid
     And I check that number of displayed messages results is 0
     And I click on reset filters button from Message Directory
     And I click on process button for 1 result in Message Directory page
     Then I create a new person and a new case from received message
     Then I click on the eye icon next for the first fetched message
     And I check that the Delete button is not available
+
+  @tmsLink=SORDEV-5590 @env_d2s @LoginKeycloak
+  Scenario: [DEMIS Interface] Introduce option to reject lab messages
+    Given API : Login to DEMIS server
+    Then I create and send Laboratory Notification
+    When I log in as a National User
+    And I click on the Messages button from navbar
+    And I click on fetch messages button
+    Then I click on the eye icon next for the first fetched message
+    And I collect message uuid
+    And I click on the Mark as unclear button
+    And I confirm popup window
+    And I filter messages by "Unclear" in Message Directory
+    And I filter messages by collected uuid
+    And I check that number of displayed messages results for Unklar is 1
+    And I click on reset filters button from Message Directory
+    Then I click on the eye icon next for the first fetched message
+    And I click on the Mark as a forwarded button
+    And I confirm popup window
+    Then I filter messages by "Forwarded" in Message Directory
+    And I filter messages by collected uuid
+    And I check that number of displayed messages results for Weitergeleitet is 1
+    Then I click on reset filters button from Message Directory
