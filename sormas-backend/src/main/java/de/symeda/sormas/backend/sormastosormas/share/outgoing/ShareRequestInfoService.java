@@ -27,7 +27,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.springframework.util.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.sormastosormas.share.ShareRequestCriteria;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;

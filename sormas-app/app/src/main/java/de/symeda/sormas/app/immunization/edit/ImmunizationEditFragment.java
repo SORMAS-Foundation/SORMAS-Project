@@ -28,6 +28,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
@@ -58,6 +59,7 @@ import de.symeda.sormas.app.immunization.read.ImmunizationSearchCaseDialog;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
+import de.symeda.sormas.app.util.FieldVisibilityAndAccessHelper;
 import de.symeda.sormas.app.util.InfrastructureDaoHelper;
 import de.symeda.sormas.app.util.InfrastructureFieldsDependencyHandler;
 
@@ -171,6 +173,7 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 
 	@Override
 	public void onAfterLayoutBinding(final FragmentImmunizationEditLayoutBinding contentBinding) {
+		setFieldVisibilitiesAndAccesses(ImmunizationDto.class, contentBinding.mainContent);
 
 		InfrastructureDaoHelper.initializeHealthFacilityDetailsFieldVisibility(
 			contentBinding.immunizationHealthFacility,
@@ -247,6 +250,10 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 			contentBinding.immunizationRecoveryLayout.setVisibility(View.GONE);
 			contentBinding.linkCase.setVisibility(View.GONE);
 			contentBinding.openLinkedCase.setVisibility(View.GONE);
+		}
+
+		if(!isFieldAccessible(ImmunizationDto.class, contentBinding.immunizationHealthFacility)){
+			FieldVisibilityAndAccessHelper.setFieldInaccessibleValue(contentBinding.facilityTypeGroup);
 		}
 	}
 

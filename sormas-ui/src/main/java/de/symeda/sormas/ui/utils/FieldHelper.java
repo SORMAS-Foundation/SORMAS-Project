@@ -44,6 +44,8 @@ import com.vaadin.v7.ui.Field;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -825,6 +827,12 @@ public final class FieldHelper {
 		FieldHelper.updateItems(
 			officerField,
 			officerDistricts.size() > 0 ? FacadeProvider.getUserFacade().getUserRefsByDistricts(officerDistricts, caze.getDisease(), right) : null);
+
+	}
+
+	public static void setComboInaccessible(ComboBoxWithPlaceholder combo) {
+		combo.setEnabled(false);
+		combo.setPlaceholder(I18nProperties.getCaption(Captions.inaccessibleValue));
 
 	}
 }

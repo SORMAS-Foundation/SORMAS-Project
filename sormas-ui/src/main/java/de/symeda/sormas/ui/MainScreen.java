@@ -381,33 +381,6 @@ public class MainScreen extends HorizontalLayout {
 		@Override
 		public boolean beforeViewChange(ViewChangeEvent event) {
 
-			// Would be better to do this check BEFORE the view is created, but the Navigator can't be extended that way
-
-			if (!event.getParameters().contains("?")) {
-				StringBuilder urlParams = new StringBuilder();
-				Collection<Object> viewModels = ViewModelProviders.of(event.getNewView().getClass()).getAll();
-				for (Object viewModel : viewModels) {
-					if (viewModel instanceof BaseCriteria) {
-						if (urlParams.length() > 0) {
-							urlParams.append('&');
-						}
-						urlParams.append(((BaseCriteria) viewModel).toUrlParams());
-						if (urlParams.length() > 0 && urlParams.charAt(urlParams.length() - 1) == '&') {
-							urlParams.deleteCharAt(urlParams.length() - 1);
-						}
-					}
-				}
-				if (urlParams.length() > 0) {
-					String url = event.getViewName() + "/";
-					if (!DataHelper.isNullOrEmpty(event.getParameters())) {
-						url += event.getParameters();
-					}
-					url += "?" + urlParams;
-					SormasUI.get().getNavigator().navigateTo(url);
-					return false;
-				}
-			}
-
 			if (event.getViewName().isEmpty()) {
 				// redirect to default view
 				String defaultView;
@@ -434,6 +407,31 @@ public class MainScreen extends HorizontalLayout {
 		@Override
 		public void afterViewChange(ViewChangeEvent event) {
 			menu.setActiveView(event.getViewName());
+
+			if (!event.getParameters().contains("?")) {
+				StringBuilder urlParams = new StringBuilder();
+				Collection<Object> viewModels = ViewModelProviders.of(event.getNewView().getClass()).getAll();
+				for (Object viewModel : viewModels) {
+					if (viewModel instanceof BaseCriteria) {
+						if (urlParams.length() > 0) {
+							urlParams.append('&');
+						}
+						urlParams.append(((BaseCriteria) viewModel).toUrlParams());
+						if (urlParams.length() > 0 && urlParams.charAt(urlParams.length() - 1) == '&') {
+							urlParams.deleteCharAt(urlParams.length() - 1);
+						}
+					}
+				}
+				if (urlParams.length() > 0) {
+					String url = event.getViewName() + "/";
+					if (!DataHelper.isNullOrEmpty(event.getParameters())) {
+						url += event.getParameters();
+					}
+					url += "?" + urlParams;
+
+					SormasUI.get().getPage().setUriFragment("!" + url, false);
+				}
+			}
 		}
 	};
 

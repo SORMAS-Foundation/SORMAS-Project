@@ -39,7 +39,7 @@ public abstract class AbstractUserRoleView extends AbstractDetailView<UserRoleRe
 	protected AbstractUserRoleView(String viewName) {
 		super(viewName);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.USER_ROLE_EDIT)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.USER_ROLE_EDIT) || UserProvider.getCurrent().hasUserRight(UserRight.USER_ROLE_VIEW)) {
 			userRoleTemplateSelectionField = new UserRoleTemplateSelectionField();
 
 			applyUserRoleTemplate = ButtonHelper.createButton(Captions.userrole_applyUserRoleTemplate, e -> {

@@ -102,9 +102,9 @@ public class UserRolesView extends AbstractUserView {
 				VaadinIcons.PLUS_CIRCLE,
 				e -> ControllerProvider.getUserRoleController().create(),
 				ValoTheme.BUTTON_PRIMARY);
-		}
 
-		addHeaderComponent(createButton);
+			addHeaderComponent(createButton);
+		}
 	}
 
 	public HorizontalLayout createStatusFilterBar() {

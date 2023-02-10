@@ -1764,6 +1764,7 @@ public interface Captions {
 	String personLinkToCases = "personLinkToCases";
 	String personLinkToContacts = "personLinkToContacts";
 	String personLinkToEvents = "personLinkToEvents";
+	String personLinkToSamples = "personLinkToSamples";
 	String personNoCaseLinkedToPerson = "personNoCaseLinkedToPerson";
 	String personNoContactLinkedToPerson = "personNoContactLinkedToPerson";
 	String personNoEventParticipantLinkedToPerson = "personNoEventParticipantLinkedToPerson";
@@ -1839,6 +1840,7 @@ public interface Captions {
 	String prescriptionNewPrescription = "prescriptionNewPrescription";
 	String prescriptionWithTreatment = "prescriptionWithTreatment";
 	String prescriptionWithTreatmentTitleDelete = "prescriptionWithTreatmentTitleDelete";
+	String QueryDetails_resultLimit = "QueryDetails.resultLimit";
 	String Region = "Region";
 	String Region_archived = "Region.archived";
 	String Region_country = "Region.country";
@@ -1989,6 +1991,7 @@ public interface Captions {
 	String sampleNoSamplesForCase = "sampleNoSamplesForCase";
 	String sampleNoSamplesForContact = "sampleNoSamplesForContact";
 	String sampleNoSamplesForEventParticipant = "sampleNoSamplesForEventParticipant";
+	String sampleNoSamplesForPerson = "sampleNoSamplesForPerson";
 	String sampleNotShipped = "sampleNotShipped";
 	String sampleNotShippedLong = "sampleNotShippedLong";
 	String samplePending = "samplePending";

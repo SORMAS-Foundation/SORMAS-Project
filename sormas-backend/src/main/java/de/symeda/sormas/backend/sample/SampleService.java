@@ -38,6 +38,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
@@ -97,7 +98,6 @@ import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureCon
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
-import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sample.transformers.SampleListEntryDtoResultTransformer;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
@@ -107,6 +107,7 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 
@@ -173,158 +174,81 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 	}
 
 	public List<SampleIndexDto> getIndexList(SampleCriteria sampleCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
-		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<SampleIndexDto> cq = cb.createQuery(SampleIndexDto.class);
-		final Root<Sample> sample = cq.from(Sample.class);
+		List<Long> indexListIds = getIndexListIds(sampleCriteria, first, max, sortProperties);
 
-		SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, sample);
-		SampleJoins joins = sampleQueryContext.getJoins();
+		List<SampleIndexDto> samples = new ArrayList<>();
+		IterableHelper.executeBatched(indexListIds, ModelConstants.PARAMETER_LIMIT, batchedIds -> {
+			final CriteriaBuilder cb = em.getCriteriaBuilder();
+			final CriteriaQuery<SampleIndexDto> cq = cb.createQuery(SampleIndexDto.class);
+			final Root<Sample> sample = cq.from(Sample.class);
 
-		final Join<Sample, Case> caze = joins.getCaze();
-		Join<Case, District> caseDistrict = joins.getCaseResponsibleDistrict();
+			SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, sample);
+			SampleJoins joins = sampleQueryContext.getJoins();
 
-		final Join<Sample, Contact> contact = joins.getContact();
-		final Join<Contact, District> contactDistrict = joins.getContactDistrict();
-		final Join<Case, District> contactCaseDistrict = joins.getContactCaseResponsibleDistrict();
+			final Join<Sample, Case> caze = joins.getCaze();
+			final Join<Sample, Contact> contact = joins.getContact();
+			final Join<EventParticipant, Event> event = joins.getEvent();
 
-		final Join<EventParticipant, Event> event = joins.getEvent();
-		final Join<Location, District> eventDistrict = joins.getEventDistrict();
+			Expression<Object> diseaseDetailsSelect = cb.selectCase()
+				.when(cb.isNotNull(caze), caze.get(Case.DISEASE_DETAILS))
+				.otherwise(
+					cb.selectCase().when(cb.isNotNull(contact), contact.get(Contact.DISEASE_DETAILS)).otherwise(event.get(Event.DISEASE_DETAILS)));
 
-		Expression<Object> diseaseSelect = cb.selectCase()
-			.when(cb.isNotNull(caze), caze.get(Case.DISEASE))
-			.otherwise(cb.selectCase().when(cb.isNotNull(contact), contact.get(Contact.DISEASE)).otherwise(event.get(Event.DISEASE)));
-		Expression<Object> diseaseDetailsSelect = cb.selectCase()
-			.when(cb.isNotNull(caze), caze.get(Case.DISEASE_DETAILS))
-			.otherwise(cb.selectCase().when(cb.isNotNull(contact), contact.get(Contact.DISEASE_DETAILS)).otherwise(event.get(Event.DISEASE_DETAILS)));
+			List<Selection<?>> selections = new ArrayList<>(
+				Arrays.asList(
+					sample.get(Sample.UUID),
+					caze.get(Case.EPID_NUMBER),
+					sample.get(Sample.LAB_SAMPLE_ID),
+					sample.get(Sample.SAMPLE_DATE_TIME),
+					sample.get(Sample.SHIPPED),
+					sample.get(Sample.SHIPMENT_DATE),
+					sample.get(Sample.RECEIVED),
+					sample.get(Sample.RECEIVED_DATE),
+					sample.get(Sample.SAMPLE_MATERIAL),
+					sample.get(Sample.SAMPLE_PURPOSE),
+					sample.get(Sample.SPECIMEN_CONDITION),
+					joins.getLab().get(Facility.NAME),
+					joins.getReferredSample().get(Sample.UUID),
+					sample.get(Sample.SAMPLING_REASON),
+					sample.get(Sample.SAMPLING_REASON_DETAILS),
+					caze.get(Case.UUID),
+					joins.getCasePerson().get(Person.FIRST_NAME),
+					joins.getCasePerson().get(Person.LAST_NAME),
+					joins.getContact().get(Contact.UUID),
+					joins.getContactPerson().get(Person.FIRST_NAME),
+					joins.getContactPerson().get(Person.LAST_NAME),
+					joins.getEventParticipant().get(EventParticipant.UUID),
+					joins.getEventParticipantPerson().get(Person.FIRST_NAME),
+					joins.getEventParticipantPerson().get(Person.LAST_NAME),
+					sampleQueryContext.getDiseaseExpression(),
+					diseaseDetailsSelect,
+					sample.get(Sample.PATHOGEN_TEST_RESULT),
+					sample.get(Sample.ADDITIONAL_TESTING_REQUESTED),
+					cb.isNotEmpty(sample.get(Sample.ADDITIONAL_TESTS)),
+					sampleQueryContext.getDistrictNameExpression(),
+					joins.getLab().get(Facility.UUID),
+					sample.get(Sample.DELETION_REASON),
+					sample.get(Sample.OTHER_DELETION_REASON)));
 
-		Expression<Object> districtSelect = cb.selectCase()
-			.when(cb.isNotNull(caseDistrict), caseDistrict.get(District.NAME))
-			.otherwise(
-				cb.selectCase()
-					.when(cb.isNotNull(contactDistrict), contactDistrict.get(District.NAME))
-					.otherwise(
-						cb.selectCase()
-							.when(cb.isNotNull(contactCaseDistrict), contactCaseDistrict.get(District.NAME))
-							.otherwise(eventDistrict.get(District.NAME))));
+			// Tests count subquery
+			Subquery<Long> testCountSq = cq.subquery(Long.class);
+			Root<PathogenTest> testCountRoot = testCountSq.from(PathogenTest.class);
+			testCountSq.where(cb.equal(testCountRoot.get(PathogenTest.SAMPLE), sample), cb.isFalse(testCountRoot.get(PathogenTest.DELETED)));
+			testCountSq.select(cb.countDistinct(testCountRoot.get(PathogenTest.ID)));
+			selections.add(testCountSq.getSelection());
 
-		cq.distinct(true);
+			selections.addAll(getJurisdictionSelections(sampleQueryContext));
+			cq.multiselect(selections);
 
-		List<Selection<?>> selections = new ArrayList<>(
-			Arrays.asList(
-				sample.get(Sample.UUID),
-				caze.get(Case.EPID_NUMBER),
-				sample.get(Sample.LAB_SAMPLE_ID),
-				sample.get(Sample.SAMPLE_DATE_TIME),
-				sample.get(Sample.SHIPPED),
-				sample.get(Sample.SHIPMENT_DATE),
-				sample.get(Sample.RECEIVED),
-				sample.get(Sample.RECEIVED_DATE),
-				sample.get(Sample.SAMPLE_MATERIAL),
-				sample.get(Sample.SAMPLE_PURPOSE),
-				sample.get(Sample.SPECIMEN_CONDITION),
-				joins.getLab().get(Facility.NAME),
-				joins.getReferredSample().get(Sample.UUID),
-				sample.get(Sample.SAMPLING_REASON),
-				sample.get(Sample.SAMPLING_REASON_DETAILS),
-				caze.get(Case.UUID),
-				joins.getCasePerson().get(Person.FIRST_NAME),
-				joins.getCasePerson().get(Person.LAST_NAME),
-				joins.getContact().get(Contact.UUID),
-				joins.getContactPerson().get(Person.FIRST_NAME),
-				joins.getContactPerson().get(Person.LAST_NAME),
-				joins.getEventParticipant().get(EventParticipant.UUID),
-				joins.getEventParticipantPerson().get(Person.FIRST_NAME),
-				joins.getEventParticipantPerson().get(Person.LAST_NAME),
-				diseaseSelect,
-				diseaseDetailsSelect,
-				sample.get(Sample.PATHOGEN_TEST_RESULT),
-				sample.get(Sample.ADDITIONAL_TESTING_REQUESTED),
-				cb.isNotEmpty(sample.get(Sample.ADDITIONAL_TESTS)),
-				districtSelect,
-				joins.getLab().get(Facility.UUID),
-				sample.get(Sample.DELETION_REASON),
-				sample.get(Sample.OTHER_DELETION_REASON)));
+			cq.where(sample.get(Sample.ID).in(batchedIds));
+			cq.orderBy(getOrderList(sortProperties, sampleQueryContext));
+			cq.distinct(true);
 
-		// Tests count subquery
-		Subquery<Long> testCountSq = cq.subquery(Long.class);
-		Root<PathogenTest> testCountRoot = testCountSq.from(PathogenTest.class);
-		testCountSq.where(cb.equal(testCountRoot.get(PathogenTest.SAMPLE), sample), cb.isFalse(testCountRoot.get(PathogenTest.DELETED)));
-		testCountSq.select(cb.countDistinct(testCountRoot.get(PathogenTest.ID)));
-		selections.add(testCountSq.getSelection());
-
-		selections.addAll(getJurisdictionSelections(sampleQueryContext));
-		cq.multiselect(selections);
-
-		Predicate filter = createUserFilter(sampleQueryContext, sampleCriteria);
-
-		if (sampleCriteria != null) {
-			Predicate criteriaFilter = buildCriteriaFilter(sampleCriteria, sampleQueryContext);
-			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
-		}
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		if (sortProperties != null && sortProperties.size() > 0) {
-			List<Order> order = new ArrayList<>(sortProperties.size());
-			for (SortProperty sortProperty : sortProperties) {
-				Expression<?> expression;
-				switch (sortProperty.propertyName) {
-				case SampleIndexDto.UUID:
-				case SampleIndexDto.LAB_SAMPLE_ID:
-				case SampleIndexDto.SHIPPED:
-				case SampleIndexDto.RECEIVED:
-				case SampleIndexDto.REFERRED:
-				case SampleIndexDto.SAMPLE_DATE_TIME:
-				case SampleIndexDto.SHIPMENT_DATE:
-				case SampleIndexDto.RECEIVED_DATE:
-				case SampleIndexDto.SAMPLE_MATERIAL:
-				case SampleIndexDto.SAMPLE_PURPOSE:
-				case SampleIndexDto.PATHOGEN_TEST_RESULT:
-				case SampleIndexDto.ADDITIONAL_TESTING_STATUS:
-					expression = sample.get(sortProperty.propertyName);
-					break;
-				case SampleIndexDto.DISEASE:
-					expression = diseaseSelect;
-					break;
-				case SampleIndexDto.EPID_NUMBER:
-					expression = caze.get(Case.EPID_NUMBER);
-					break;
-				case SampleIndexDto.ASSOCIATED_CASE:
-					expression = joins.getCasePerson().get(Person.LAST_NAME);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					expression = joins.getCasePerson().get(Person.FIRST_NAME);
-					break;
-				case SampleIndexDto.ASSOCIATED_CONTACT:
-					expression = joins.getContactPerson().get(Person.LAST_NAME);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					expression = joins.getContactPerson().get(Person.FIRST_NAME);
-					break;
-				case SampleIndexDto.ASSOCIATED_EVENT_PARTICIPANT:
-					expression = joins.getEventParticipantPerson().get(Person.LAST_NAME);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					expression = joins.getEventParticipantPerson().get(Person.FIRST_NAME);
-					break;
-				case SampleIndexDto.DISTRICT:
-					expression = districtSelect;
-					break;
-				case SampleIndexDto.LAB:
-					expression = joins.getLab().get(Facility.NAME);
-					break;
-				default:
-					throw new IllegalArgumentException(sortProperty.propertyName);
-				}
-				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-			}
-			cq.orderBy(order);
-		} else {
-			cq.orderBy(cb.desc(sample.get(Sample.SAMPLE_DATE_TIME)));
-		}
-
-		List<SampleIndexDto> samples = QueryHelper.getResultList(em, cq, first, max);
+			samples.addAll(QueryHelper.getResultList(em, cq, null, null));
+		});
 
 		if (!samples.isEmpty()) {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<Object[]> testCq = cb.createQuery(Object[].class);
 			Root<PathogenTest> testRoot = testCq.from(PathogenTest.class);
 			Expression<String> sampleIdExpr = testRoot.get(PathogenTest.SAMPLE).get(Sample.UUID);
@@ -391,6 +315,104 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		return samples;
 	}
 
+	public List<Long> getIndexListIds(SampleCriteria sampleCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Tuple> cq = cb.createTupleQuery();
+		final Root<Sample> sample = cq.from(Sample.class);
+
+		SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, sample);
+
+		List<Selection<?>> selections = new ArrayList<>();
+		selections.add(sample.get(Sample.ID));
+
+		List<Order> orderList = getOrderList(sortProperties, sampleQueryContext);
+		List<Expression<?>> sortColumns = orderList.stream().map(Order::getExpression).collect(Collectors.toList());
+		selections.addAll(sortColumns);
+
+		cq.multiselect(selections);
+
+		Predicate filter = createUserFilter(sampleQueryContext, sampleCriteria);
+
+		if (sampleCriteria != null) {
+			Predicate criteriaFilter = buildCriteriaFilter(sampleCriteria, sampleQueryContext);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.distinct(true);
+		cq.orderBy(orderList);
+
+		return QueryHelper.getResultList(em, cq, first, max).stream().map(t -> t.get(0, Long.class)).collect(Collectors.toList());
+	}
+
+	private List<Order> getOrderList(List<SortProperty> sortProperties, SampleQueryContext sampleQueryContext) {
+		From<?, Sample> sample = sampleQueryContext.getRoot();
+		CriteriaBuilder cb = sampleQueryContext.getCriteriaBuilder();
+		SampleJoins joins = sampleQueryContext.getJoins();
+
+		List<Order> orderList = new ArrayList<>();
+
+		if (CollectionUtils.isNotEmpty(sortProperties)) {
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+				switch (sortProperty.propertyName) {
+				case SampleIndexDto.UUID:
+				case SampleIndexDto.LAB_SAMPLE_ID:
+				case SampleIndexDto.SHIPPED:
+				case SampleIndexDto.RECEIVED:
+				case SampleIndexDto.REFERRED:
+				case SampleIndexDto.SAMPLE_DATE_TIME:
+				case SampleIndexDto.SHIPMENT_DATE:
+				case SampleIndexDto.RECEIVED_DATE:
+				case SampleIndexDto.SAMPLE_MATERIAL:
+				case SampleIndexDto.SAMPLE_PURPOSE:
+				case SampleIndexDto.PATHOGEN_TEST_RESULT:
+				case SampleIndexDto.ADDITIONAL_TESTING_STATUS:
+					expression = sample.get(sortProperty.propertyName);
+					break;
+				case SampleIndexDto.DISEASE:
+					expression = sampleQueryContext.getDiseaseExpression();
+					break;
+				case SampleIndexDto.EPID_NUMBER:
+					expression = joins.getCaze().get(Case.EPID_NUMBER);
+					break;
+				case SampleIndexDto.ASSOCIATED_CASE:
+					expression = joins.getCasePerson().get(Person.LAST_NAME);
+					orderList.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = joins.getCasePerson().get(Person.FIRST_NAME);
+					break;
+				case SampleIndexDto.ASSOCIATED_CONTACT:
+					expression = joins.getContactPerson().get(Person.LAST_NAME);
+					orderList.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = joins.getContactPerson().get(Person.FIRST_NAME);
+					break;
+				case SampleIndexDto.ASSOCIATED_EVENT_PARTICIPANT:
+					expression = joins.getEventParticipantPerson().get(Person.LAST_NAME);
+					orderList.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = joins.getEventParticipantPerson().get(Person.FIRST_NAME);
+					break;
+				case SampleIndexDto.DISTRICT:
+					expression = sampleQueryContext.getDistrictNameExpression();
+					break;
+				case SampleIndexDto.LAB:
+					expression = joins.getLab().get(Facility.NAME);
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+
+				orderList.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+			}
+		} else {
+			orderList.add(cb.desc(sample.get(Sample.SAMPLE_DATE_TIME)));
+		}
+
+		return orderList;
+	}
+
 	public List<SampleListEntryDto> getEntriesList(SampleCriteria sampleCriteria, Integer first, Integer max) {
 		if (sampleCriteria == null) {
 			return Collections.emptyList();
@@ -436,7 +458,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		cq.multiselect(selections);
 
 		Predicate filter = CriteriaBuilderHelper.and(cb, createDefaultFilter(cb, sample), createUserFilter(sampleQueryContext, sampleCriteria));
-		Predicate criteriaFilter = buildSampleListCriteriaFilter(sampleCriteria, cb, joins);
+		Predicate criteriaFilter = buildSampleListCriteriaFilter(sampleCriteria, cb, joins, sample);
 		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 
 		if (filter != null) {
@@ -884,23 +906,38 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 			}
 		}
 
-		if (criteria.getCaseUuids() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, sample.get(Sample.ASSOCIATED_CASE).get(Case.UUID).in(criteria.getCaseUuids()));
-		}
-
-		if (criteria.getContactUuids() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, sample.get(Sample.ASSOCIATED_CONTACT).get(Contact.UUID).in(criteria.getContactUuids()));
-		}
-
-		if (criteria.getEventParticipantUuids() != null) {
-			filter = CriteriaBuilderHelper
-				.and(cb, filter, sample.get(Sample.ASSOCIATED_EVENT_PARTICIPANT).get(EventParticipant.UUID).in(criteria.getEventParticipantUuids()));
-		}
+		filter = addCaseContactEventParticipantSamplePredicate(criteria, cb, sample, filter);
 
 		return filter;
 	}
 
-	private Predicate buildSampleListCriteriaFilter(SampleCriteria criteria, CriteriaBuilder cb, SampleJoins joins) {
+	private Predicate addCaseContactEventParticipantSamplePredicate(
+		SampleCriteria criteria,
+		CriteriaBuilder cb,
+		From<?, ?> sample,
+		Predicate filter) {
+
+		Predicate filterCaseUuids = null;
+		Predicate filterContactUuids = null;
+		Predicate filterEvPartUuids = null;
+
+		if (criteria.getCaseUuids() != null) {
+			filterCaseUuids = sample.get(Sample.ASSOCIATED_CASE).get(Case.UUID).in(criteria.getCaseUuids());
+		}
+
+		if (criteria.getContactUuids() != null) {
+			filterContactUuids = sample.get(Sample.ASSOCIATED_CONTACT).get(Contact.UUID).in(criteria.getContactUuids());
+		}
+
+		if (criteria.getEventParticipantUuids() != null) {
+			filterEvPartUuids = sample.get(Sample.ASSOCIATED_EVENT_PARTICIPANT).get(EventParticipant.UUID).in(criteria.getEventParticipantUuids());
+		}
+
+		filter = CriteriaBuilderHelper.and(cb, filter, CriteriaBuilderHelper.or(cb, filterCaseUuids, filterContactUuids, filterEvPartUuids));
+		return filter;
+	}
+
+	private Predicate buildSampleListCriteriaFilter(SampleCriteria criteria, CriteriaBuilder cb, SampleJoins joins, From<?, ?> sample) {
 		Predicate filter = null;
 		final SampleAssociationType sampleAssociationType = criteria.getSampleAssociationType();
 		if (sampleAssociationType == SampleAssociationType.CASE) {
@@ -921,6 +958,8 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(joins.getEventParticipant().get(EventParticipant.UUID), criteria.getEventParticipant().getUuid()));
 		}
+
+		filter = addCaseContactEventParticipantSamplePredicate(criteria, cb, sample, filter);
 
 		return filter;
 	}

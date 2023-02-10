@@ -1184,6 +1184,7 @@ public interface Strings {
 	String messagePathogenTestSaved = "messagePathogenTestSaved";
 	String messagePathogenTestSavedShort = "messagePathogenTestSavedShort";
 	String messagePathogenTestsDeleted = "messagePathogenTestsDeleted";
+	String messagePathogenTestsSavedShort = "messagePathogenTestsSavedShort";
 	String messagePersonAddedAsEventParticipant = "messagePersonAddedAsEventParticipant";
 	String messagePersonAlreadyCaseInEvent = "messagePersonAlreadyCaseInEvent";
 	String messagePersonAlreadyEventParticipant = "messagePersonAlreadyEventParticipant";

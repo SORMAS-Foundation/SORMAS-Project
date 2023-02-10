@@ -19,11 +19,25 @@ Feature: User actions based on their rights
     And I pick "Active" value for Active filter in User Directory
     And I check that all Users are changed Active field value to opposite
 
-    #TODO implement rest of the user roles!
   @#7470 @env_main
-  Scenario: Validate that non-admin users can't access users directory
-    Given I log in as a National User
-    Then I Verify Users Navigation link is not present in the navigation bar
+  Scenario Outline: Validate that non-admin user <user> can't access users directory
+    Given I log in as a <user>
+    Then I Verify Users Directory is not present in the navigation bar
+
+    Examples:
+      | user                          |
+      | National User                 |
+      | Contact Supervisor            |
+      | Surveillance Officer          |
+      | Surveillance Supervisor       |
+      | Laboratory Officer            |
+      | Point of Entry Supervisor     |
+      | Rest AUTOMATION               |
+      | Admin Surveillance Supervisor |
+      | Contact Officer               |
+      | Community Officer             |
+      | Hospital Informant            |
+      | Clinician                     |
 
   @#8564 @env_main
   Scenario Outline: Check user <user> can see batch edit mode button for event participants

@@ -77,4 +77,6 @@ public class EditSamplePage {
       By.cssSelector(".v-align-right.v-slot.v-slot-compact.v-slot-link > div[role='button']");
   public static final By TESTED_DISEASE_VARIANT =
       By.cssSelector(".popupContent [id='testedDiseaseVariant'] div");
+  public static final By PCR_TEST_SPECIFICATION_INPUT =
+      By.cssSelector("[class='popupContent'] [id='pcrTestSpecification'] input");
 }

@@ -74,6 +74,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
+import de.symeda.sormas.ui.utils.ComboBoxWithPlaceholder;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -124,7 +125,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 	private boolean ignoreMeansOfImmunizationChange = false;
 	private MeansOfImmunization previousMeansOfImmunization;
 	private CheckBox overwriteImmunizationManagementStatus;
-	private ComboBox facilityTypeGroup;
+	private ComboBoxWithPlaceholder facilityTypeGroup;
 	private final Consumer<Runnable> actionCallback;
 
 	public ImmunizationDataForm(boolean isPseudonymized, boolean inJurisdiction, CaseReferenceDto relatedCase, Consumer<Runnable> actionCallback) {
@@ -205,7 +206,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		facilityTypeGroup.setWidth(100, Unit.PERCENTAGE);
 		facilityTypeGroup.addItems(FacilityTypeGroup.values());
 		getContent().addComponent(facilityTypeGroup, FACILITY_TYPE_GROUP_LOC);
-		ComboBox facilityType = addField(ImmunizationDto.FACILITY_TYPE);
+		ComboBox facilityType = addField(ImmunizationDto.FACILITY_TYPE, ComboBoxWithPlaceholder.class);
 		ComboBox facilityCombo = addInfrastructureField(ImmunizationDto.HEALTH_FACILITY);
 		facilityCombo.setImmediate(true);
 		TextField facilityDetails = addField(ImmunizationDto.HEALTH_FACILITY_DETAILS, TextField.class);
@@ -289,7 +290,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 
 		if (!isEditableAllowed(ImmunizationDto.HEALTH_FACILITY)) {
 			setEnabled(false, ImmunizationDto.FACILITY_TYPE, ImmunizationDto.HEALTH_FACILITY_DETAILS);
-			facilityTypeGroup.setEnabled(false);
+			FieldHelper.setComboInaccessible(facilityTypeGroup);
 		}
 
 		setRequired(true, ImmunizationDto.REPORT_DATE, ImmunizationDto.DISEASE, ImmunizationDto.MEANS_OF_IMMUNIZATION);
