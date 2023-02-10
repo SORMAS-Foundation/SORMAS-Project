@@ -43,18 +43,18 @@ public class UserExportGrid extends FilteredGrid<UserDto, UserCriteria> {
 			setCriteria(getCriteria());
 		}
 
-		setColumns(UserDto.AREA, UserDto.REGION, UserDto.DISTRICT, UserDto.FIRST_NAME, UserDto.LAST_NAME,
+		setColumns(UserDto.RCODE, UserDto.PCODE, UserDto.DCODE, UserDto.FIRST_NAME, UserDto.LAST_NAME,
 				UserDto.USER_EMAIL, UserDto.PHONE, UserDto.USER_POSITION, UserDto.USER_ORGANISATION, UserDto.USER_NAME,
-				UserDto.FORM_ACCESS, UserDto.USER_ROLES, UserDto.COMMUNITY);
+				UserDto.FORM_ACCESS, UserDto.USER_ROLES, UserDto.COMMUNITY_NOS);
 
 		((Column<UserDto, Set<UserRole>>) getColumn(UserDto.USER_ROLES))
 				.setRenderer(new CollectionValueProvider<Set<UserRole>>(), new HtmlRenderer());
 		((Column<UserDto, Set<UserRole>>) getColumn(UserDto.USER_ROLES)).setSortable(false);
 
 
-		((Column<UserDto, Set<UserRole>>) getColumn(UserDto.COMMUNITY))
-				.setRenderer(new CollectionValueProvider<Set<UserRole>>(), new HtmlRenderer());
-		((Column<UserDto, Set<UserRole>>) getColumn(UserDto.COMMUNITY)).setSortable(false);
+//		((Column<UserDto, Set<UserRole>>) getColumn(UserDto.COMMUNITY))
+//				.setRenderer(new CollectionValueProvider<Set<UserRole>>(), new HtmlRenderer());
+//		((Column<UserDto, Set<UserRole>>) getColumn(UserDto.COMMUNITY)).setSortable(false);
 
 
 		for (Column<?, ?> column : getColumns()) {
