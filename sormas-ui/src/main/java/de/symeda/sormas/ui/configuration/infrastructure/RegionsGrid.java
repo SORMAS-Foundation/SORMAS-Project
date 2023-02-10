@@ -64,7 +64,8 @@ public class RegionsGrid extends FilteredGrid<RegionIndexDto, RegionCriteria> {
 		}
 
 		String[] columns = new String[] {
-			RegionIndexDto.AREA };
+			RegionIndexDto.AREA,
+			RegionIndexDto.REGION_EXTERNAL_ID};
 		if (FacadeProvider.getFeatureConfigurationFacade().isCountryEnabled()) {
 			columns = ArrayUtils.add(columns, RegionIndexDto.COUNTRY);
 		}

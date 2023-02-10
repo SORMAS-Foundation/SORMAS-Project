@@ -333,7 +333,6 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 onChangeData = charSequence+"";
-               // System.out.println(isExpression +" isExpression XXXXXXXXXXXX isRequired = "+isRequired+"XXXXXXXXXXXXX onChangeData = "+onChangeData+"XXXXXXXXXXXx beforeData = " +beforeData+" PPPPPP isRange"+isRange);
 
                 /*if (isRange && isExpression && isRequired){
                     System.out.println((onChangeData.length() == 0) +" =XXXXXXXXXXX ENTERSSSSS XXXXXXXX =" +(beforeData.length() > 0));
@@ -352,7 +351,6 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
                     inverseBindingListener.onChange();
                 }
                 onValueChanged();
-              //  System.out.println(isExpression +" isExpression XXXXXXXXXXXX isRequired = "+isRequired+"XXXXXXXXXXXXX onChangeData = "+onChangeData+"XXXXXXXXXXXx beforeData = " +beforeData+" PPPPPP isRange"+isRange);
 
                 if (isRange && minValue != null && maxValue != null) {
             //        System.out.println(minValue + "--------%%%11%%%------------" + maxValue);

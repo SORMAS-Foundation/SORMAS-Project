@@ -540,22 +540,121 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 					// System.out.println(totalValuesMap.size()+ " ______________
 					// "+seriesData.size());
 
-					if (showPercentages && totalValuesMap != null) {
+					
+					if ((showPercentages && totalValuesMap != null) && cardChart) {
 
 						for (Object axisKeddy : totalValuesMap.keySet()) {
 							System.out.println(totalValuesMap.get(axisKey));
 						}
 
-						System.out.println(seriesData.get(axisKey).getValueSum() + "_____check point 1_________"
+						System.out.println(seriesData.get(axisKey).getValueSum() + "_____check point 1a_________"
 								+ totalValuesWithoutStacks + " 0000 " + series.getStack());
 						System.out.println(seriesData.get(axisKey).getFieldCaption());
 						System.out.println(seriesData.get(axisKey).getFormId());
+						Double valxx = 0.0d;
+							for (Map.Entry<CampaignDashboardTotalsReference, Double> entry : totalValuesMap.entrySet()) {
+								valxx = entry.getValue();
+								System.out.println(entry.getValue()+"   ____________   	"+valxx);
+						    }
+						
+						Double totalValue = valxx;
+//								totalValuesMap
+//								.get(new CampaignDashboardTotalsReference(seriesData.get(axisKey).getGroupingKey(),
+//										totalValuesWithoutStacks ? null : series.getStack()));
+
+						System.out.println(seriesData.get(axisKey).getValueSum().toString() + " ======== "
+								+ series.getStack() + " _____check point 2__++_______" + totalValue);
+						if (totalValue == null) {
+							System.out.println("totalValueyyyyyyyyyyyyyyyyyyyyyy" + totalValue);
+							if (!ignoreTotalsError) {
+								Notification.show(String.format(
+										I18nProperties.getString(Strings.errorCampaignDiagramTotalsCalculationError),
+										getDiagramCaption()), ERROR_MESSAGE);
+								ignoreTotalsError = true; // only show once
+							}
+						} else if (totalValue > 0) {
+
+							final double originalValue = seriesData.get(axisKey).getValueSum().doubleValue()
+									/ totalValue * 100;
+							final double scaledValue = BigDecimal.valueOf(originalValue)
+									.setScale(originalValue < 2 ? 1 : 0, RoundingMode.HALF_UP).doubleValue();
+
+							//@formatter:off
+							hcjs.append("var options = { \n"
+									+ " chart: {\n"
+									+ "        backgroundColor: 'white',\n"
+									+ "        borderRadius: '1',\n"
+									+ "        borderWidth: '1',\n"
+									+ "        spacing: [20, 20, 20, 20],\n"
+									+ "    },\n"
+									+ "    credits: {\n"
+									+ "        enabled: false\n"
+									+ "    },\n"
+									+ " exporting: { enabled: false },"
+									+ " series: [{\n"
+									+ "        type: 'wordcloud',\n"
+									+ "        data: data = ['"+scaledValue+""+perce+"'].reduce((arr, word) => {\n"
+									+ "        let obj = Highcharts.find(arr, obj => obj.name === word);\n"
+									+ "        if (obj) {\n"
+									+ "            obj.weight += 1;\n"
+									+ "        } else {\n"
+									+ "            obj = {\n"
+									+ "                name: word,\n"
+									+ "                weight: 1\n"
+									+ "            };\n"
+									+ "            arr.push(obj);\n"
+									+ "        }\n"
+									+ "        return arr;\n"
+									+ "    }, []),\n"
+									+ "        name: '"+series.getStack()+"'\n"
+									+ "    }],\n"
+									+ "    title: {\n"
+									+ "        text: '"+series.getStack()+"',\n"
+									+ "    style: {\n"
+									+ "                color: '#0C090A',\n"
+									+ "                fontWeight: 'normal',\n"
+									+ "                 fontSize: '12px' \n"
+									+ "            } }"
+									);
+							//@formatter:on
+
+						} else {
+							hcjs.append("var options = { \n" + " chart: {\n" + "        backgroundColor: 'white',\n"
+									+ "        borderRadius: '1',\n" + "        borderWidth: '1',\n"
+									+ "        spacing: [20, 20, 20, 20],\n" + "    },\n" + "    credits: {\n"
+									+ "        enabled: false\n" + "    },\n" + " exporting: { enabled: false },"
+									+ " series: [{\n" + "        type: 'wordcloud',\n" + "        data: data = ['0"
+									+ perce + "', ' '].reduce((arr, word) => {\n"
+									+ "        let obj = Highcharts.find(arr, obj => obj.name === word);\n"
+									+ "        if (obj) {\n" + "            obj.weight += 1;\n" + "        } else {\n"
+									+ "            obj = {\n" + "                name: word,\n"
+									+ "                weight: 1\n" + "            };\n"
+									+ "            arr.push(obj);\n" + "        }\n" + "        return arr;\n"
+									+ "    }, []),\n" + "        name: '" + series.getStack() + "'\n" + "    }],\n"
+									+ "    title: {\n" + "        text: '" + series.getStack() + "',\n"
+									+ "    style: {\n" + "                color: '#0C090A',\n"
+									+ "                fontWeight: 'normal',\n" + "                 fontSize: '12px' \n"
+									+ "            } }");
+							//@formatter:on
+						}
+					} else if (showPercentages && totalValuesMap != null) {
+
+						for (Object axisKeddy : totalValuesMap.keySet()) {
+							System.out.println(totalValuesMap.get(axisKey));
+						}
+
+						System.out.println(seriesData.get(axisKey).getValueSum() + "_____check point 1a_________"
+								+ totalValuesWithoutStacks + " 0000 " + series.getStack());
+						System.out.println(seriesData.get(axisKey).getFieldCaption());
+						System.out.println(seriesData.get(axisKey).getFormId());
+						
+						
 						Double totalValue = totalValuesMap
 								.get(new CampaignDashboardTotalsReference(seriesData.get(axisKey).getGroupingKey(),
 										totalValuesWithoutStacks ? null : series.getStack()));
 
 						System.out.println(seriesData.get(axisKey).getValueSum().toString() + " ======== "
-								+ series.getStack() + " _____check point 2_________" + totalValue);
+								+ series.getStack() + " _____check point 2__++_______" + totalValue);
 						if (totalValue == null) {
 							System.out.println("totalValueyyyyyyyyyyyyyyyyyyyyyy" + totalValue);
 							if (!ignoreTotalsError) {
@@ -641,9 +740,18 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
 						Double totalValue = 0.0;
 						if (totalValuesMap != null) {
-							totalValue = totalValuesMap
-									.get(new CampaignDashboardTotalsReference(seriesData.get(axisKey).getGroupingKey(),
-											totalValuesWithoutStacks ? null : series.getStack()));
+							
+							Double valxx = 0.0d;
+							for (Map.Entry<CampaignDashboardTotalsReference, Double> entry : totalValuesMap.entrySet()) {
+								valxx = entry.getValue();
+								System.out.println(entry.getValue()+"   ____Card without total________   	"+valxx);
+						    }
+						
+						totalValue = valxx;
+						
+//							totalValue = totalValuesMap
+//									.get(new CampaignDashboardTotalsReference(seriesData.get(axisKey).getGroupingKey(),
+//											totalValuesWithoutStacks ? null : series.getStack()));
 
 							System.out.println(seriesData.get(axisKey).getValueSum().toString() + " ======== "
 									+ series.getStack() + " _____check point 2_________" + totalValue);

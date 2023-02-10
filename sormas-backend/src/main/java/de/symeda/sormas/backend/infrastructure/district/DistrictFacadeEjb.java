@@ -188,7 +188,11 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 				case District.EXTERNAL_ID:
 					expression = district.get(sortProperty.propertyName);
 					break;
+					
 				case District.REGION:
+				case DistrictIndexDto.REGION_EXTERNALID:
+				case DistrictIndexDto.AREA_EXTERNAL_ID:
+				case DistrictIndexDto.AREA_NAME:
 					expression = region.get(Region.NAME);
 					break;
 				default:
@@ -447,7 +451,11 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 		dto.setRisk(entity.getRisk());
 		dto.setGrowthRate(entity.getGrowthRate());
 		dto.setPopulation(populationDataFacade.getDistrictPopulation(dto.getUuid()));
+		dto.setAreaexternalId(entity.getRegion().getArea().getExternalId());
+		dto.setAreaname(entity.getRegion().getArea().getName());
+		dto.setRegionexternalId(entity.getRegion().getExternalId());
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
+		
 		dto.setExternalId(entity.getExternalId());
 
 		return dto;

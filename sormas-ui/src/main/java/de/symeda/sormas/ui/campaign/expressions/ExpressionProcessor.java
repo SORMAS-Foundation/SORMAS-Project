@@ -41,7 +41,7 @@ public class ExpressionProcessor {
 
 	public ExpressionProcessor(CampaignFormBuilder campaignFormBuilder) {
 		this.campaignFormBuilder = campaignFormBuilder;
-		checkExpression();
+		checkExpression(false);
 	}
 
 	public void disableExpressionFieldsForEditing() {
@@ -51,7 +51,7 @@ public class ExpressionProcessor {
 			.filter(formElement -> formElement.getExpression() != null)
 			.filter(formElement -> fields.get(formElement.getId()) != null)
 			.filter(formElement -> !formElement.getType().equals("range"))
-			//.filter(formElement -> !formElement.isIgnoredisable())
+			.filter(formElement -> !formElement.isIgnoredisable())
 			.forEach(formElement -> fields.get(formElement.getId()).setEnabled(false));
 		
 	}
@@ -61,9 +61,20 @@ public class ExpressionProcessor {
 		final List<CampaignFormElement> formElements = campaignFormBuilder.getFormElements();
 		formElements.stream()
 			//.filter(formElement -> formElement.getExpression() == null)
+		//.filter(formElement -> !formElement.isIgnoredisable())
 			.filter(formElement -> fields.get(formElement.getId()) != null)
 			.forEach(formElement -> {
-				fields.get(formElement.getId()).addValueChangeListener((Property.ValueChangeListener) valueChangeEvent -> checkExpression());
+				fields.get(formElement.getId()).addValueChangeListener((Property.ValueChangeListener) valueChangeEvent -> checkExpression(false));
+			});
+	}
+	
+	public void addExpressionListenerIgnorable() {
+		final Map<String, Field<?>> fields = campaignFormBuilder.getFields();
+		final List<CampaignFormElement> formElements = campaignFormBuilder.getFormElements();
+		formElements.stream()
+			.filter(formElement -> formElement.isIgnoredisable())
+			.forEach(formElement -> {
+				fields.get(formElement.getId()).addValueChangeListener((Property.ValueChangeListener) valueChangeEvent -> checkExpression(true));
 			});
 	}
 
@@ -90,7 +101,7 @@ public class ExpressionProcessor {
 		field.setDescription(String.format("%s: %s", I18nProperties.getDescription(Descriptions.Campaign_calculatedBasedOn), StringUtils.join(fieldNamesInExpression, ", ")));
 	}
 
-	private void checkExpression() {
+	private void checkExpression(boolean isIgnorable) {
 //		for(CampaignFormDataEntry dfv : campaignFormBuilder.getFormValues()) {
 //		System.out.println(dfv.getId() +" ===== "+dfv.getValue());
 //		}
@@ -109,7 +120,8 @@ public class ExpressionProcessor {
 				//final List <String> opt = null;
 			//	System.out.println(value + "| range? "+e.getType().toString().equals("range")+ " value:  "+expression.getValue(context) +" == "+e.getCaption());
 				String valuex = value +"";
-			
+				System.out.println(value+" +++++++++++++++++++++++++============================ "+e.getType().toString());
+				
 				if(!valuex.isBlank() && value != null) {
 				if(e.getType().toString().equals("range")) {
 					System.out.println(value + "| range? "+e.getType().toString().equals("range")+ " value:  "+expression.getValue(context) +" == "+e.getCaption());
@@ -145,14 +157,22 @@ public class ExpressionProcessor {
 							!Double.isFinite((double) value) ? 0 : value.toString().endsWith(".0") ? value.toString().replace(".0", "") : Precision.round((double) value, 2),
 									null, null, false, e.getErrormessage() != null ? e.getCaption() +" : "+e.getErrormessage() : null);
 			//	return;
+				} else if(e.getType().toString().equals("yes-no")) {
+					
+					if(!isIgnorable) {
+						campaignFormBuilder
+						.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
+								CampaignFormElementType.fromString(e.getType()), value,
+										null, null, false, e.getErrormessage() != null ? e.getCaption() +" : "+e.getErrormessage() : null);
+					}
 				} else if(valueType.isAssignableFrom(Boolean.class)) {
+					
 					campaignFormBuilder
 					.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
 							CampaignFormElementType.fromString(e.getType()), value,
 									null, null, false, e.getErrormessage() != null ? e.getCaption() +" : "+e.getErrormessage() : null);
-				//	return;
-				//	
-				} else {
+			
+				}else {
 					
 					campaignFormBuilder
 					.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 

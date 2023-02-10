@@ -1,4 +1,5 @@
-/* SORMAS® - Surveillance Outbreak Response Management & Analysis System
+
+ /* SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -367,6 +368,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		expressionProcessor.disableExpressionFieldsForEditing();
 		expressionProcessor.configureExpressionFieldsWithTooltip();
 		expressionProcessor.addExpressionListener();
+		expressionProcessor.addExpressionListenerIgnorable();
 
 		getContent().addComponent(campaignFormLayout, CAMPAIGN_FORM_LOC);
 	}

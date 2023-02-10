@@ -34,7 +34,10 @@ public class DistrictIndexDto extends EntityDto {
 	public static final String POPULATION = "population";
 	public static final String GROWTH_RATE = "growthRate";
 	public static final String REGION = "region";
+	public static final String REGION_EXTERNALID = "regionexternalId";
 	public static final String EXTERNAL_ID = "externalId";
+	public static final String AREA_EXTERNAL_ID = "areaexternalId";
+	public static final String AREA_NAME = "areaname";
 
 	private String name;
 	private String epidCode;
@@ -43,6 +46,9 @@ public class DistrictIndexDto extends EntityDto {
 	private Float growthRate;
 	private RegionReferenceDto region;
 	private Long externalId;
+	private Long regionexternalId;
+	private Long areaexternalId;
+	private String areaname;
 
 	public DistrictIndexDto() {
 		super();
@@ -104,9 +110,35 @@ public class DistrictIndexDto extends EntityDto {
 	public Long getExternalId() {
 		return externalId;
 	}
-
+	
 	public void setExternalId(Long externalId) {
 		this.externalId = externalId;
+	}
+
+	
+	
+	public Long getRegionexternalId() {
+		return regionexternalId;
+	}
+
+	public void setRegionexternalId(Long regionexternalId) {
+		this.regionexternalId = regionexternalId;
+	}
+
+	public Long getAreaexternalId() {
+		return areaexternalId;
+	}
+
+	public void setAreaexternalId(Long areaexternalId) {
+		this.areaexternalId = areaexternalId;
+	}
+
+	public String getAreaname() {
+		return areaname;
+	}
+
+	public void setAreaname(String areaname) {
+		this.areaname = areaname;
 	}
 
 	public DistrictReferenceDto toReference() {

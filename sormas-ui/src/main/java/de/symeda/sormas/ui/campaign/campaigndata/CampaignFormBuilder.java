@@ -599,11 +599,13 @@ public class CampaignFormBuilder {
 
 		switch (type) {
 		case YES_NO:
+			System.out.println(field.getId() +"@@@@@@@@@@555555555555@@@@@@@@@@@@@@@@@@@@2 "+value);
 			if (value != null) {
 				value = value.toString().equalsIgnoreCase("YES") ? true
 						: value.toString().equalsIgnoreCase("NO") ? false : value;
 
 			}
+			System.out.println(Sets.newHashSet(value)+"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@2 "+value);
 			((NullableOptionGroup) field).setValue(Sets.newHashSet(value));
 			break;
 		case TEXT:

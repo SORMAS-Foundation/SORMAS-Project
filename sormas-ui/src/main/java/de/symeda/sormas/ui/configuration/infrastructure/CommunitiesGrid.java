@@ -58,7 +58,7 @@ public class CommunitiesGrid extends FilteredGrid<CommunityDto, CommunityCriteri
 			setCriteria(criteria);
 		}
 
-		setColumns(CommunityDto.REGION, CommunityDto.DISTRICT, CommunityDto.NAME, CommunityDto.CLUSTER_NUMBER, CommunityDto.EXTERNAL_ID);
+		setColumns(CommunityDto.AREA_NAME, CommunityDto.AREA_EXTERNAL_ID,CommunityDto.REGION, CommunityDto.REGION_EXTERNALID,  CommunityDto.DISTRICT, CommunityDto.DISTRICT_EXTERNALID, CommunityDto.NAME, CommunityDto.CLUSTER_NUMBER, CommunityDto.EXTERNAL_ID);
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
