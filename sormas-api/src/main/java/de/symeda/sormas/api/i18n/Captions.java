@@ -1991,6 +1991,7 @@ public interface Captions {
 	String sampleNoSamplesForCase = "sampleNoSamplesForCase";
 	String sampleNoSamplesForContact = "sampleNoSamplesForContact";
 	String sampleNoSamplesForEventParticipant = "sampleNoSamplesForEventParticipant";
+	String sampleNoSamplesForPerson = "sampleNoSamplesForPerson";
 	String sampleNotShipped = "sampleNotShipped";
 	String sampleNotShippedLong = "sampleNotShippedLong";
 	String samplePending = "samplePending";

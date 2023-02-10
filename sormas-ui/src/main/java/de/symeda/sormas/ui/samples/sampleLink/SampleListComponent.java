@@ -40,7 +40,7 @@ public class SampleListComponent extends SideComponent {
 
 		SampleList sampleList = new SampleList(sampleCriteria, isEditAllowed);
 
-		if (isEditAllowed && sampleCriteria.getSampleAssociationType() != SampleAssociationType.ALL) {
+		if (isEditAllowed && sampleCriteria.getSampleAssociationType() != SampleAssociationType.PERSON) {
 			addCreateButton(I18nProperties.getCaption(Captions.sampleNewSample), () -> {
 				switch (sampleCriteria.getSampleAssociationType()) {
 				case CASE:

@@ -53,8 +53,8 @@ public interface PersonSideComponentsElement {
 			LayoutUtil.fluidColumnLoc(8, 0, 12, 0, PERSON_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASES_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CONTACTS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EVENT_PARTICIPANTS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EVENT_PARTICIPANTS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TRAVEL_ENTRIES_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, IMMUNIZATION_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, VACCINATIONS_LOC));
@@ -144,7 +144,7 @@ public interface PersonSideComponentsElement {
 			sampleCriteria.caseUuids(caseList)
 				.contactUuids(contactList)
 				.eventParticipantUuids(eventParticipantList)
-				.sampleAssociationType(SampleAssociationType.ALL);
+				.sampleAssociationType(SampleAssociationType.PERSON);
 
 			SampleListComponent sampleList = new SampleListComponent(sampleCriteria, showUnsavedChangesPopup, true);
 			SampleListComponentLayout sampleListComponentLayout = new SampleListComponentLayout(sampleList, null);

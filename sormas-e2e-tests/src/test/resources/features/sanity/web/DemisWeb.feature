@@ -114,3 +114,49 @@ Scenario: Create and send laboratory request via Demis
     And I check that case created from laboratory message contains a sample with one test
     And I navigate to case person tab
     And I check that first and last name are equal to data form 3 result in laboratory notification
+
+  @tmsLink=SORDEV-8862 @env_d2s @LoginKeycloak
+  Scenario: Test [DEMIS2SORMAS] Add filters and columns to the lab message directory
+    Given API : Login to DEMIS server
+    Then I create and send Laboratory Notification
+    And I log in as a National User
+    Then I click on the Messages button from navbar
+    And I click on fetch messages button
+    Then I filter by last created person via API in Messages Directory
+    And I collect message data from searched record in Messages directory
+    Then I click on the RESET FILTERS button for Messages
+    And I search created message by UUID
+    Then I check if searched message has correct UUID
+    And I check that number of displayed messages results is 1
+    Then I click on the RESET FILTERS button for Messages
+    And I search created message by laboratory name
+    Then I check if searched message has correct laboratory name
+    Then I click on the RESET FILTERS button for Messages
+    And I search created message by laboratory postal code
+    And I check if searched message has correct laboratory postal code
+    Then I click on the RESET FILTERS button for Messages
+    And I search created message by date and time
+    Then I check if searched message has correct date and time
+    Then I click on the RESET FILTERS button for Messages
+    And I search created message by birthday date
+    Then I check if searched message has correct birthday date
+
+  @tmsLink=SORDEV-5588 @env_d2s @LoginKeycloak
+  Scenario: Test delete option in Lab Messages
+    Given API : Login to DEMIS server
+    Then I create and send Laboratory Notification
+    Then I create and send Laboratory Notification
+    When I log in as a National User
+    And I click on the Messages button from navbar
+    And I click on fetch messages button
+    Then I click on the eye icon next for the first fetched message
+    And I collect message uuid
+    Then I click Delete button in Message form
+    And I confirm message deletion
+    And I filter last deleted message
+    And I check that number of displayed messages results is 0
+    And I click on reset filters button from Message Directory
+    And I click on process button for 1 result in Message Directory page
+    Then I create a new person and a new case from received message
+    Then I click on the eye icon next for the first fetched message
+    And I check that the Delete button is not available
