@@ -725,6 +725,8 @@ public class CaseDirectorySteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(By.id("actionConfirmFilters"));
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(500);
+          if (webDriverHelpers.isElementVisibleWithTimeout(POPUP_ACHTUNG_HEADER, 1))
+            webDriverHelpers.clickOnWebElementBySelector(POPUP_ACTION_OKAY);
         });
     And(
         "I click on Merge button of leading case in Merge Duplicate Cases page",
