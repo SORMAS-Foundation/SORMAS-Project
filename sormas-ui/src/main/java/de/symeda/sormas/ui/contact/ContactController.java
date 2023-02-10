@@ -76,6 +76,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -751,7 +752,7 @@ public class ContactController {
 			List<ContactIndexDto> selectedContactsCpy = new ArrayList<>(selectedContacts);
 			BulkOperationHelper.doBulkOperation(
 				selectedEntries -> contactFacade.saveBulkContacts(
-					selectedContacts.stream().map(ContactIndexDto::getUuid).collect(Collectors.toList()),
+					selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
 					updatedBulkEditData,
 					classificationChange,
 					contactOfficerChange),

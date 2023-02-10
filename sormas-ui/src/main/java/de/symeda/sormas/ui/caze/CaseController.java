@@ -1032,7 +1032,7 @@ public class CaseController {
 					500,
 					e -> BulkOperationHelper.doBulkOperation(
 						selectedEntries -> caseFacade.saveBulkEditWithFacilities(
-							selectedCases.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList()),
+							selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
 							updatedBulkEditData,
 							diseaseChange,
 							classificationChange,

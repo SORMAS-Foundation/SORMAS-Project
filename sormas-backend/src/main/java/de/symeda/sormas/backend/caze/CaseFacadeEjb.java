@@ -1525,10 +1525,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					outcomeChange,
 					surveillanceOfficerChange);
 				doSave(caze, true, existingCaseDto, true);
-				return true;
 			}
-
-			return false;
 		});
 	}
 
@@ -1572,10 +1569,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				caze.setHealthFacilityDetails(updatedCaseBulkEditData.getHealthFacilityDetails());
 				CaseLogic.handleHospitalization(toDto(caze), existingCaseDto, doTransfer);
 				doSave(caze, true, existingCaseDto, true);
-				return true;
 			}
-
-			return false;
 		});
 	}
 

@@ -65,7 +65,6 @@ import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.utils.jurisdiction.JurisdictionValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -2367,10 +2366,7 @@ public class ContactFacadeEjb
 				}
 
 				save(existingContactDto);
-				return true;
 			}
-
-			return false;
 		});
 	}
 

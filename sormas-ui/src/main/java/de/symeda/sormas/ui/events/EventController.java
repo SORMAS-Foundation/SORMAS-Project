@@ -75,6 +75,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.BulkOperationResults;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.HtmlHelper;
+import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -956,7 +957,7 @@ public class EventController {
 			List<EventIndexDto> selectedEventsCpy = new ArrayList<>(selectedEvents);
 			BulkOperationHelper.doBulkOperation(
 				selectedEntries -> eventFacade.saveBulkEvents(
-					selectedEvents.stream().map(EventIndexDto::getUuid).collect(Collectors.toList()),
+					selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
 					updatedTempEvent,
 					eventStatusChange,
 					eventInvestigationStatusChange,

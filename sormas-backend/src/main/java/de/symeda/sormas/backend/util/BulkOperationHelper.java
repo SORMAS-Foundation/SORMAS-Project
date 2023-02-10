@@ -4,7 +4,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 import de.symeda.sormas.api.utils.BulkOperationResults;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -15,7 +15,7 @@ public class BulkOperationHelper {
 
 	}
 
-	public static <E> BulkOperationResults<E> executeWithLimits(List<E> entries, Function<E, Boolean> batchFunction) {
+	public static <E> BulkOperationResults<E> executeWithLimits(List<E> entries, Consumer<E> batchFunction) {
 
 		List<E> remainingEntries = new ArrayList<>(entries);
 		int processedEntries = 0;
@@ -23,11 +23,9 @@ public class BulkOperationHelper {
 		Instant executionStart = Instant.now();
 
 		for (E entry : entries) {
-			boolean processed = batchFunction.apply(entry);
-			if (processed) {
-				processedEntries++;
-				remainingEntries.remove(entry);
-			}
+			batchFunction.accept(entry);
+			processedEntries++;
+			remainingEntries.remove(entry);
 			elapsedTime = Duration.between(executionStart, Instant.now()).toMillis();
 
 			if (processedEntries >= DataHelper.BULK_EDIT_ENTRY_LIMIT || elapsedTime >= DataHelper.BULK_EDIT_TIME_LIMIT) {

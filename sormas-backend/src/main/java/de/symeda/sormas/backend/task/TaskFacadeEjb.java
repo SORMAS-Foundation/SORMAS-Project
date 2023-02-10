@@ -388,7 +388,6 @@ public class TaskFacadeEjb implements TaskFacade {
 			}
 
 			saveTask(taskDto);
-			return true;
 		});
 	}
 

@@ -49,6 +49,7 @@ import de.symeda.sormas.api.task.TaskIndexDto;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.BulkOperationResults;
+import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ArchivingController;
@@ -237,7 +238,7 @@ public class TaskController {
 			List<TaskIndexDto> selectedTasksCpy = new ArrayList<>(selectedTasks);
 			BulkOperationHelper.doBulkOperation(
 				selectedEntries -> taskFacade.saveBulkTasks(
-					selectedTasks.stream().map(TaskIndexDto::getUuid).collect(Collectors.toList()),
+					selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
 					updatedTempTask,
 					form.getPriorityCheckbox().getValue(),
 					form.getAssigneeCheckbox().getValue(),

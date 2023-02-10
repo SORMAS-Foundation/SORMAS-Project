@@ -1451,10 +1451,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 				}
 
 				save(eventDto);
-				return true;
 			}
-
-			return false;
 		});
 
 	}
