@@ -95,7 +95,7 @@ public class MergeCasesView extends AbstractView {
 
 		addHeaderComponent(btnBack);
 
-		if (viewConfiguration.isFirstLoadDone()) {
+		if (viewConfiguration.isFiltersApplied()) {
 			reloadAndUpdateDuplicateCount();
 		}
 	}
@@ -103,7 +103,6 @@ public class MergeCasesView extends AbstractView {
 	private void reloadAndUpdateDuplicateCount() {
 		grid.reload();
 		filterComponent.updateDuplicateCountLabel(grid.getTreeData().getRootItems().size());
-		ViewModelProviders.of(MergeCasesView.class).get(MergeCasesViewConfiguration.class).setFirstLoadDone(true);
 	}
 
 	private void buildAndOpenMergeInstructions() {
@@ -148,12 +147,13 @@ public class MergeCasesView extends AbstractView {
 			filterComponent.setValue(criteria, queryDetails);
 		}
 
-		if (!ViewModelProviders.of(MergeCasesView.class).get(MergeCasesViewConfiguration.class).isFirstLoadDone()) {
+		if (!ViewModelProviders.of(MergeCasesView.class).get(MergeCasesViewConfiguration.class).isFiltersApplied()) {
 			VaadinUiUtil.showSimplePopupWindow(
 				I18nProperties.getString(Strings.headingCaution),
 				I18nProperties.getString(Strings.infoMergeFiltersHint),
 				ContentMode.HTML,
 				640);
+			ViewModelProviders.of(MergeCasesView.class).get(MergeCasesViewConfiguration.class).setFiltersApplied(true);
 		} else {
 			reloadAndUpdateDuplicateCount();
 		}

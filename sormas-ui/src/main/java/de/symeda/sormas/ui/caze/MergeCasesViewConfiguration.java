@@ -21,20 +21,20 @@ public class MergeCasesViewConfiguration {
 	 * Used to block the initial loading of the duplicates and show a warning message
 	 * until the user edits the filters and loads the list of cases
 	 */
-	private boolean firstLoadDone;
+	private boolean filtersApplied;
 
 	public MergeCasesViewConfiguration() {
 	}
 
-	public MergeCasesViewConfiguration(boolean firstLoadDone) {
-		this.firstLoadDone = firstLoadDone;
+	public MergeCasesViewConfiguration(boolean filtersApplied) {
+		this.filtersApplied = filtersApplied;
 	}
 
-	public boolean isFirstLoadDone() {
-		return firstLoadDone;
+	public boolean isFiltersApplied() {
+		return filtersApplied;
 	}
 
-	public void setFirstLoadDone(boolean firstLoadDone) {
-		this.firstLoadDone = firstLoadDone;
+	public void setFiltersApplied(boolean filtersApplied) {
+		this.filtersApplied = filtersApplied;
 	}
 }
