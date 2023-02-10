@@ -4,7 +4,10 @@ import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPa
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CREATE_NEW_CASE_POPUP_WINDOW_DE;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CREATE_NEW_SAMPLE_POPUP_WINDOW_DE;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FETCH_MESSAGES_BUTTON;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FORWARDED_MESSAGE_COUNTER;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.GET_NEW_MESSAGES_POPUP;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MARK_AS_FORWARDED_BUTTON;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MARK_AS_UNCLEAR_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGE_DELETE_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGE_DIRECTORY_HEADER_DE;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGE_UUID_TEXT;
@@ -19,6 +22,7 @@ import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPa
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.SAVE_POPUP_CONTENT_FIRST_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.SEARCH_MESSAGE_INPUT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.TOTAL_MESSAGE_COUNTER;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.UNCLEAR_MESSAGE_COUNTER;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.UPDATE_CASE_DISEASE_VARIANT_CONFIRM_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.getProcessMessageButtonByIndex;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.getProcessStatusByIndex;
@@ -155,7 +159,7 @@ public class MessagesDirectorySteps implements En {
         });
 
     And(
-        "^I filter last deleted message$",
+        "^I filter messages by collected uuid$",
         () -> {
           System.out.println("UUID: " + uuids.get(0));
           webDriverHelpers.fillAndSubmitInWebElement(SEARCH_MESSAGE_INPUT, uuids.get(0));
@@ -190,6 +194,63 @@ public class MessagesDirectorySteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(RESET_FILTER_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    And(
+        "^I click on the Mark as unclear button$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(MARK_AS_UNCLEAR_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(MARK_AS_UNCLEAR_BUTTON);
+        });
+
+    And(
+        "I filter messages by {string} in Message Directory",
+        (String option) -> {
+          switch (option) {
+            case "Unclear":
+              webDriverHelpers.clickOnWebElementBySelector(UNCLEAR_MESSAGE_COUNTER);
+              webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+              break;
+            case "Forwarded":
+              webDriverHelpers.clickOnWebElementBySelector(FORWARDED_MESSAGE_COUNTER);
+              webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+              break;
+          }
+        });
+
+    And(
+        "^I check that number of displayed messages results for Unklar is (\\d+)$",
+        (Integer number) -> {
+          String textFromCounter =
+              webDriverHelpers.getTextFromPresentWebElement(UNCLEAR_MESSAGE_COUNTER).substring(6);
+          assertHelpers.assertWithPoll20Second(
+              () ->
+                  Assert.assertEquals(
+                      Integer.parseInt(textFromCounter),
+                      number.intValue(),
+                      "Number of displayed messages is not correct"));
+        });
+
+    And(
+        "^I click on the Mark as a forwarded button$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(MARK_AS_FORWARDED_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    And(
+        "^I check that number of displayed messages results for Weitergeleitet is (\\d+)$",
+        (Integer number) -> {
+          String textFromCounter =
+              webDriverHelpers
+                  .getTextFromPresentWebElement(FORWARDED_MESSAGE_COUNTER)
+                  .substring(14);
+          assertHelpers.assertWithPoll20Second(
+              () ->
+                  Assert.assertEquals(
+                      Integer.parseInt(textFromCounter),
+                      number.intValue(),
+                      "Number of displayed messages is not correct"));
         });
   }
 }
