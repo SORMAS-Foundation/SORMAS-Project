@@ -127,7 +127,13 @@ public class SampleController {
 	private void createSample(SampleDto sampleDto, Disease disease, Runnable callback) {
 		final CommitDiscardWrapperComponent<SampleCreateForm> editView = getSampleCreateComponent(sampleDto, disease, callback);
 		// add option to create additional pathogen tests
-		addPathogenTestButton(editView, false, null, null);
+		SampleEditPathogenTestListHandler pathogenTestHandler = new SampleEditPathogenTestListHandler();
+		addPathogenTestButton(editView, false, null, null, pathogenTestHandler::addPathogenTest);
+
+		editView.setPostCommitListener(() -> {
+			pathogenTestHandler.saveAll(sampleDto.toReference());
+		});
+
 		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreateNewSample));
 	}
 
@@ -144,20 +150,22 @@ public class SampleController {
 		CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleComponent,
 		boolean viaLims,
 		boolean deleteOnCancel,
-		boolean addSeparator) {
+		boolean addSeparator,
+		Consumer<PathogenTestDto> saveHandler) {
 
 		int caseSampleCount = caseSampleCountOf(sampleComponent.getWrappedComponent().getValue());
-		return addPathogenTestComponent(sampleComponent, null, caseSampleCount, SormasUI::refreshView, true, viaLims, deleteOnCancel, addSeparator);
+		return addPathogenTestComponent(sampleComponent, null, caseSampleCount, saveHandler, true, viaLims, deleteOnCancel, addSeparator);
 	}
 
 	public CollapsiblePathogenTestForm addPathogenTestComponent(
 		CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleComponent,
 		PathogenTestDto pathogenTest,
+		Consumer<PathogenTestDto> saveHandler,
 		int caseSampleCount,
 		boolean isNew,
 		boolean viaLims,
 		boolean addSeparator) {
-		return addPathogenTestComponent(sampleComponent, pathogenTest, caseSampleCount, null, isNew, viaLims, false, addSeparator);
+		return addPathogenTestComponent(sampleComponent, pathogenTest, caseSampleCount, saveHandler, isNew, viaLims, false, addSeparator);
 	}
 
 	/**
@@ -169,8 +177,8 @@ public class SampleController {
 	 * @param caseSampleCount
 	 *            describes how many samples already exist for a case related to the pathogen test's sample (if a case exists, otherwise 0
 	 *            is valid).
-	 * @param callback
-	 *            use it to define additional actions that need to be taken after the pathogen test is saved (e.g. refresh the UI)
+	 * @param saveHandler
+	 *            used to do the save individual pathogen tests when the user clicks save/commit on the parent form
 	 * @param isNew
 	 *            for existing pathogen tests, the 'remove this pathogen test' button is hidden for users without
 	 *            UserRight.PATHOGEN_TEST_DELETE permission.
@@ -180,7 +188,7 @@ public class SampleController {
 		CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleComponent,
 		PathogenTestDto pathogenTest,
 		int caseSampleCount,
-		Runnable callback,
+		Consumer<PathogenTestDto> saveHandler,
 		boolean isNew,
 		boolean viaLims,
 		boolean deleteOnCancel,
@@ -240,10 +248,7 @@ public class SampleController {
 
 		// save pathogen test after saving sample
 		CommitDiscardWrapperComponent.CommitListener savePathogenTest = () -> {
-			ControllerProvider.getPathogenTestController().savePathogenTest(pathogenTestForm.getValue(), null, true, true);
-			if (callback != null) {
-				callback.run();
-			}
+			saveHandler.accept(pathogenTestForm.getValue());
 		};
 		sampleComponent.addCommitListener(savePathogenTest);
 
@@ -298,7 +303,8 @@ public class SampleController {
 		CommitDiscardWrapperComponent<? extends AbstractSampleForm> editView,
 		boolean viaLims,
 		Runnable addCallback,
-		Runnable deleteCallback) {
+		Runnable deleteCallback,
+		Consumer<PathogenTestDto> saveHandler) {
 
 		if (!UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_CREATE)) {
 			return;
@@ -309,7 +315,7 @@ public class SampleController {
 			if (addCallback != null) {
 				addCallback.run();
 			}
-			CollapsiblePathogenTestForm pathogenTestForm = addPathogenTestComponent(editView, viaLims, true, true);
+			CollapsiblePathogenTestForm pathogenTestForm = addPathogenTestComponent(editView, viaLims, true, true, saveHandler);
 
 			if (deleteCallback != null) {
 				pathogenTestForm.addDetachListener((de) -> deleteCallback.run());

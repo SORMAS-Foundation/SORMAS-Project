@@ -660,7 +660,7 @@ public class CaseController {
 		} else if (convertedEventParticipant != null) {
 			EventDto event = FacadeProvider.getEventFacade().getEventByUuid(convertedEventParticipant.getEvent().getUuid(), false);
 			symptoms = null;
-			person = convertedEventParticipant.getPerson();
+			person = FacadeProvider.getPersonFacade().getByUuid(convertedEventParticipant.getPerson().getUuid());
 			if (unrelatedDisease == null) {
 				caze = CaseDataDto.buildFromEventParticipant(convertedEventParticipant, person, event.getDisease());
 			} else {
