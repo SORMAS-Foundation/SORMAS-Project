@@ -85,6 +85,7 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 import de.symeda.sormas.backend.util.XssfHelper;
 
 @Stateless(name = "UserRoleFacade")
@@ -143,6 +144,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 	}
 
 	@Override
+	@RightsAllowed(UserRight._USER_ROLE_EDIT)
 	public UserRoleDto saveUserRole(@Valid UserRoleDto dto) {
 		validate(dto);
 
@@ -233,6 +235,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 	}
 
 	@Override
+	@RightsAllowed(UserRight._USER_ROLE_DELETE)
 	public void deleteUserRole(UserRoleReferenceDto dto) {
 
 		UserRole entity = userRoleService.getByUuid(dto.getUuid());
