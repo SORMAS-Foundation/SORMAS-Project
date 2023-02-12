@@ -131,14 +131,6 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
-                        <Button
-                            android:id="@+id/btn_login_default_user"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentStart="true"
-                            android:text="@string/action_login_default_user"
-                            style="@style/PrimaryButtonStyle"
-                            android:onClick="loginDefaultUser" />
 
                         <Button
                             android:id="@+id/btn_change_settings"

@@ -289,28 +289,6 @@ public class UsersView extends AbstractView {
 		
 		districtFilter = ComboBoxHelper.createComboBoxV7();
 		districtFilter.setId(CaseDataDto.DISTRICT);
-/*
-		if (user.getDistrict() == null) {
-			districtFilter.setWidth(140, Unit.PIXELS);
-			districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
-			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionFilter.getId()));
-			districtFilter.addValueChangeListener(e -> {
-				DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
-				criteria.district(district);
-				navigateTo(criteria);
-				
-				if (!DataHelper.equal(district, criteria.getDistrict())) {
-					criteria.district(null);
-				}
-
-				criteria.district(district);
-				navigateTo(criteria);
-			});
-			filterLayout.addComponent(districtFilter);
-		}
-		
-		*/
-		
 		districtFilter = ComboBoxHelper.createComboBoxV7();
 		districtFilter.setId(CaseDataDto.DISTRICT);
 		districtFilter.setCaption(I18nProperties.getCaption(Captions.district));

@@ -59,6 +59,7 @@ public class UserReportGrid extends FilteredGrid<CommunityUserReportModelDto, Co
 			
 
 		for (Column<?, ?> column : getColumns()) {
+			column.setDescriptionGenerator(CommunityUserReportModelDto -> column.getCaption());
 			//System.out.println(column.getId() +" dcolumn.getId() ");
 			if(column.getId().toString().equals("community")) {
 				column.setCaption(I18nProperties.getPrefixCaption(UserReportModelDto.I18N_PREFIX, column.getId().toString(),

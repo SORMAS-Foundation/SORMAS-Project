@@ -93,6 +93,7 @@ public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteri
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(CampaignIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
+			column.setDescriptionGenerator(CampaignIndexDto -> column.getCaption());
 		}
 		//getColumn(navigateToCampaignColumnId).setWidth(100).setStyleGenerator(item -> CssStyles.GRID_CELL_LINK);
 	}

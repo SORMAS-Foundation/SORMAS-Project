@@ -64,7 +64,7 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 
 	public String phaseFilterContent;
 
-	protected CampaignFormDataFilterForm() {
+	public CampaignFormDataFilterForm() {
 
 		super(CampaignFormDataCriteria.class, CampaignFormDataDto.I18N_PREFIX);
 		formActionButtonsComponent.style(CssStyles.FORCE_CAPTION);

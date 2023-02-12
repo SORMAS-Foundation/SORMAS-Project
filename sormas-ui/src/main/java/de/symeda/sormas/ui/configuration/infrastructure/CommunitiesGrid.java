@@ -76,6 +76,7 @@ public class CommunitiesGrid extends FilteredGrid<CommunityDto, CommunityCriteri
 		}
 
 		for (Column<?, ?> column : getColumns()) {
+			column.setDescriptionGenerator(CommunityDto -> column.getCaption());
 			column.setCaption(I18nProperties.getPrefixCaption(CommunityDto.I18N_PREFIX, column.getId(), column.getCaption()));
 			if(column.getCaption().equalsIgnoreCase("Name")) {
 				column.setCaption("Cluster");
@@ -83,6 +84,18 @@ public class CommunitiesGrid extends FilteredGrid<CommunityDto, CommunityCriteri
 			//this is a bit hacky
 			if(column.getCaption().equalsIgnoreCase("External ID")) { 
 				column.setCaption("CCode");
+			}
+			if(column.getCaption().equalsIgnoreCase("Areaname")) { 
+				column.setCaption("Region");
+			}
+			if(column.getCaption().equalsIgnoreCase("Areaexternal Id")) { 
+				column.setCaption("RCode");
+			}
+			if(column.getCaption().equalsIgnoreCase("Regionexternal Id")) { 
+				column.setCaption("PCode");
+			}
+			if(column.getCaption().equalsIgnoreCase("Districtexternal Id")) { 
+				column.setCaption("DCode");
 			}
 
 		}
