@@ -1,3 +1,4 @@
+
  /* SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify

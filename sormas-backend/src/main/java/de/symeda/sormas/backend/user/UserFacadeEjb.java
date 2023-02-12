@@ -167,8 +167,6 @@ public class UserFacadeEjb implements UserFacade {
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
 		target.setCommunity(CommunityFacadeEjb.toReferenceDto(new HashSet<Community>(source.getCommunity())));
-		//// System.out.println(source.getDistrict()+" :@@@@@@@@@@@@@@@@@@@@@@@@@@ area:
-		//// "+source.getArea()+" @@##########@@@@@@@@@@@@@@@"+source.getCommunity());
 		target.setHealthFacility(FacilityFacadeEjb.toReferenceDto(source.getHealthFacility()));
 		target.setAssociatedOfficer(toReferenceDto(source.getAssociatedOfficer()));
 		target.setLaboratory(FacilityFacadeEjb.toReferenceDto(source.getLaboratory()));
@@ -184,6 +182,25 @@ public class UserFacadeEjb implements UserFacade {
 		target.setFormAccess(new HashSet<FormAccess>(source.getFormAccess()));
 
 		target.setUsertype(source.getUsertype());
+		
+		if(source.getArea() != null && source.getArea().getExternalId() != null) {
+		target.setPcode(source.getArea().getExternalId().toString());
+		}
+		if(source.getDistrict() != null && source.getDistrict().getExternalId() != null) {
+		target.setDcode(source.getDistrict().getExternalId().toString());
+		}
+		if(source.getRegion() != null && source.getRegion().getExternalId() != null) {
+		target.setRcode(source.getRegion().getExternalId().toString());
+		}
+		if(source.getCommunity() != null && !source.getCommunity().isEmpty()) {
+			Set<String> communitynos = new HashSet<>();
+			for(Community c : source.getCommunity()) {
+				if(c.getClusterNumber() != null && c != null) {
+					communitynos.add(c.getClusterNumber().toString());
+				}
+			}
+			target.setCommunitynos(communitynos);
+		}
 		return target;
 	}
 

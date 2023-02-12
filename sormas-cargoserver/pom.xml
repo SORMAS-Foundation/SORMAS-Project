@@ -16,7 +16,6 @@
     </properties>
 
     <dependencies>
-    
         <dependency>
             <groupId>de.symeda.sormas</groupId>
             <artifactId>sormas-serverlibs</artifactId>

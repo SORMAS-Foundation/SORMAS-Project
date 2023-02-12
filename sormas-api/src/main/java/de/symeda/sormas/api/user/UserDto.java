@@ -77,6 +77,13 @@ public class UserDto extends EntityDto {
 	public static final String LANGUAGE = "language";
 	public static final String HAS_CONSENTED_TO_GDPR = "hasConsentedToGdpr";
 
+	
+	public static final String PCODE = "pcode";
+	public static final String DCODE = "dcode";
+	public static final String RCODE = "rcode";
+	public static final String COMMUNITY_NOS = "communitynos";
+	//public static final String COMMUNITY_NO = "clusterno";
+	
 	private boolean active = true;
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
@@ -120,6 +127,12 @@ public class UserDto extends EntityDto {
 	private Language language;
 
 	private boolean hasConsentedToGdpr;
+	
+	private String pcode;
+	private String dcode;
+	private String rcode;
+	private Set<String> communitynos;
+	//private String clusterno;
 
 	public static UserDto build() {
 		UserDto user = new UserDto();
@@ -298,6 +311,38 @@ public class UserDto extends EntityDto {
 		this.pointOfEntry = pointOfEntry;
 	}
 
+	public String getPcode() {
+		return pcode;
+	}
+
+	public void setPcode(String pcode) {
+		this.pcode = pcode;
+	}
+
+	public String getDcode() {
+		return dcode;
+	}
+
+	public void setDcode(String dcode) {
+		this.dcode = dcode;
+	}
+
+	public String getRcode() {
+		return rcode;
+	}
+
+	public void setRcode(String rcode) {
+		this.rcode = rcode;
+	}
+
+	public Set<String> getCommunitynos() {
+		return communitynos;
+	}
+
+	public void setCommunitynos(Set<String> communitynos) {
+		this.communitynos = communitynos;
+	}
+
 	public UserReferenceDto toReference() {
 		return new UserReferenceDto(getUuid(), getFirstName(), getLastName(), getUserRoles(), getFormAccess(), getUsertype());
 	}
@@ -325,4 +370,6 @@ public class UserDto extends EntityDto {
 	public void setHasConsentedToGdpr(boolean hasConsentedToGdpr) {
 		this.hasConsentedToGdpr = hasConsentedToGdpr;
 	}
+	
+	
 }

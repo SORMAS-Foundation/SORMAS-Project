@@ -136,6 +136,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 	private CampaignDashboardElementsGridComponent campaignDashboardGridComponent_2;
 
 	private Tree<? super InfrastructureDataReferenceDto> tree = new Tree<>();
+	private TreeData<? super InfrastructureDataReferenceDto> treeData = new TreeData<>();
 
 	public CampaignEditForm(CampaignDto campaignDto) {
 
@@ -152,6 +153,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 		statusChangeLayout.setMargin(false);
 		getContent().addComponent(statusChangeLayout, STATUS_CHANGE);
 
+		tree.setSelectionMode(SelectionMode.MULTI);
 		addFields();
 	}
 
@@ -164,6 +166,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 			return;
 		}
 
+		// tree.asMultiSelect();
 		Label campaignBasicHeadingLabel = new Label(I18nProperties.getString(Strings.headingCampaignBasics));
 		campaignBasicHeadingLabel.addStyleName(H3);
 		getContent().addComponent(campaignBasicHeadingLabel, CAMPAIGN_BASIC_HEADING_LOC);
@@ -317,7 +320,9 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 		parentTab3.addComponent(layoutPost);
 		parentTab3.setCaption("Intra-Campaign Phase");
 
-		if(UserProvider.getCurrent().hasUserType(UserType.EOC_USER) || UserProvider.getCurrent().hasUserType(UserType.WHO_USER) || UserProvider.getCurrent().hasUserType(UserType.COMMON_USER) ) {
+		if (UserProvider.getCurrent().hasUserType(UserType.EOC_USER)
+				|| UserProvider.getCurrent().hasUserType(UserType.WHO_USER)
+				|| UserProvider.getCurrent().hasUserType(UserType.COMMON_USER)) {
 			tabsheetParent.addTab(parentTab3);
 		}
 		// tabsheetParent.addTab(parentTab3);
@@ -376,10 +381,6 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 
 		tree.setWidthFull();
 		tree.setHeightFull();
-		tree.setSelectionMode(SelectionMode.MULTI);
-		tree.asMultiSelect();
-
-		TreeData<? super InfrastructureDataReferenceDto> treeData = new TreeData<>();
 
 		// Items with hierarchy
 		List<AreaReferenceDto> areas = FacadeProvider.getAreaFacade().getAllActiveAsReference();
@@ -397,9 +398,11 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 		}
 		tree.setDataProvider(new TreeDataProvider(treeData));
 
-		if (campaignDto != null && !campaignDto.getAreas().isEmpty() && campaignDto.getAreas() != null) {
+		if (campaignDto != null && !campaignDto.getAreas().isEmpty() && campaignDto.getAreas() != null
+				&& campaignDto.getAreas().size() > 0) {
 			for (int i = 0; i <= campaignDto.getAreas().size() - 1; i++) {
 				tree.select((InfrastructureDataReferenceDto) campaignDto.getAreas().toArray()[i]);
+				System.out.println("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
 			}
 		}
 		if (campaignDto != null && !campaignDto.getRegion().isEmpty() && campaignDto.getAreas() != null) {
@@ -418,40 +421,51 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 			}
 		}
 
-		// check class of selection and cast to the appropriate class
+		// check class of selection and cast to the appropriate class v-tree8-expander collapsed .v-tree .v-tree .sormas .v-tree-expander
 		tree.addSelectionListener(event -> {
-			for (int i = 0; i <= tree.getSelectedItems().size() - 1; i++) {
-				if (tree.getSelectedItems().toArray()[i].getClass() == AreaReferenceDto.class) {
+			areass.clear();
+			region.clear();
+			districts.clear();
+			community.clear();
+			System.out.println("jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj");
+			for (int i = 0; i < event.getAllSelectedItems().size(); i++) {
+				System.out.println("iiiiiiiiiiiiiiiiiiiiiiiiiiiii " + i);
+				System.out.println("pppppppppppppppppppppppppppp " + event.getAllSelectedItems().size());
+				if (event.getAllSelectedItems().toArray()[i].getClass() == AreaReferenceDto.class) {
 					AreaReferenceDto selectedArea = FacadeProvider.getAreaFacade().getAreaReferenceByUuid(
-							((AreaReferenceDto) tree.getSelectedItems().toArray()[i]).getUuid());
+							((AreaReferenceDto) event.getAllSelectedItems().toArray()[i]).getUuid());
 					areass.add(selectedArea);
+					tree.getTreeData()
+							.getChildren((InfrastructureDataReferenceDto) event.getAllSelectedItems().toArray()[i])
+							.forEach(ee -> tree.select((InfrastructureDataReferenceDto) ee));
 				}
-				if (tree.getSelectedItems().toArray()[i].getClass() == RegionReferenceDto.class) {
+				if (event.getAllSelectedItems().toArray()[i].getClass() == RegionReferenceDto.class) {
 					RegionReferenceDto selectedRegion = FacadeProvider.getRegionFacade().getRegionReferenceByUuid(
-							((RegionReferenceDto) tree.getSelectedItems().toArray()[i]).getUuid());
+							((RegionReferenceDto) event.getAllSelectedItems().toArray()[i]).getUuid());
 					region.add(selectedRegion);
 				}
-				if (tree.getSelectedItems().toArray()[i].getClass() == DistrictReferenceDto.class) {
+				if (event.getAllSelectedItems().toArray()[i].getClass() == DistrictReferenceDto.class) {
 					DistrictReferenceDto selectedDistrict = FacadeProvider.getDistrictFacade()
 							.getDistrictReferenceByUuid(
-									((DistrictReferenceDto) tree.getSelectedItems().toArray()[i]).getUuid());
+									((DistrictReferenceDto) event.getAllSelectedItems().toArray()[i]).getUuid());
 					districts.add(selectedDistrict);
 				}
-				if (tree.getSelectedItems().toArray()[i].getClass() == CommunityReferenceDto.class) {
-					CommunityReferenceDto selectedCommunity = FacadeProvider.getCommunityFacade()
-							.getCommunityReferenceByUuid(
-									((CommunityReferenceDto) tree.getSelectedItems().toArray()[i]).getUuid());
-					community.add(selectedCommunity);
-				}
+//				if (event.getAllSelectedItems().toArray()[i].getClass() == CommunityReferenceDto.class) {
+//					CommunityReferenceDto selectedCommunity = FacadeProvider.getCommunityFacade()
+//							.getCommunityReferenceByUuid(
+//									((CommunityReferenceDto) event.getAllSelectedItems().toArray()[i]).getUuid());
+//					community.add(selectedCommunity);
+//
+//				}
+
+			}
+			if (campaignDto != null) {
+				campaignDto.setAreas((Set<AreaReferenceDto>) areass);
+				campaignDto.setRegion((Set<RegionReferenceDto>) region);
+				campaignDto.setDistricts((Set<DistrictReferenceDto>) districts);
+				campaignDto.setCommunity((Set<CommunityReferenceDto>) community);
 			}
 		});
-
-		if (campaignDto != null) {
-			campaignDto.setAreas((Set<AreaReferenceDto>) areass);
-			campaignDto.setRegion((Set<RegionReferenceDto>) region);
-			campaignDto.setDistricts((Set<DistrictReferenceDto>) districts);
-			campaignDto.setCommunity((Set<CommunityReferenceDto>) community);
-		}
 		VerticalLayout layout5 = new VerticalLayout(tree);
 		layout.setMargin(true);
 		layout.setSpacing(true);
