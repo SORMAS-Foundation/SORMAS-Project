@@ -72,10 +72,13 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.PopulationDataCriteria;
 import de.symeda.sormas.api.infrastructure.PopulationDataDto;
 import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityCriteriaNew;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.report.CommunityUserReportModelDto;
+import de.symeda.sormas.api.report.CompletionAnalysisModelDto;
 import de.symeda.sormas.api.user.FormAccess;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -116,6 +119,8 @@ import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless(name = "CampaignFormDataFacade")
 public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
+	
+	private FormAccess frmsAccess;
 	
 	private Integer popAddiontions = 0;
 
@@ -301,6 +306,108 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 
 	@Override
 	public List<CampaignFormDataIndexDto> getIndexList(CampaignFormDataCriteria criteria, Integer first, Integer max,
+			List<SortProperty> sortProperties) {
+
+		////System.out.println(criteria.getCampaignFormMeta().getUuid()+"sdddddddddddddfdsyu876456uiuytrertyuyttyukldsssssssssssssssss formValues"+sortProperties.get(1));
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<CampaignFormDataIndexDto> cq = cb.createQuery(CampaignFormDataIndexDto.class);
+		Root<CampaignFormData> root = cq.from(CampaignFormData.class);
+		Join<CampaignFormData, Campaign> campaignJoin = root.join(CampaignFormData.CAMPAIGN, JoinType.LEFT);
+		Join<CampaignFormData, CampaignFormMeta> campaignFormMetaJoin = root.join(CampaignFormData.CAMPAIGN_FORM_META,
+				JoinType.LEFT);
+		Join<CampaignFormData, Area> areaJoin = root.join(CampaignFormData.AREA, JoinType.LEFT);
+		Join<CampaignFormData, Region> regionJoin = root.join(CampaignFormData.REGION, JoinType.LEFT);
+		Join<CampaignFormData, District> districtJoin = root.join(CampaignFormData.DISTRICT, JoinType.LEFT);
+		Join<CampaignFormData, Community> communityJoin = root.join(CampaignFormData.COMMUNITY, JoinType.LEFT);
+		
+		cq.multiselect(root.get(CampaignFormData.UUID), campaignJoin.get(Campaign.NAME),
+				campaignFormMetaJoin.get(CampaignFormMeta.FORM_NAME),
+				criteria.getCampaignFormMeta() != null ? root.get(CampaignFormData.FORM_VALUES)
+						: cb.nullLiteral(String.class),
+						areaJoin.get(Area.NAME), areaJoin.get(Area.EXTERNAL_ID),
+						regionJoin.get(Region.NAME), regionJoin.get(Region.EXTERNAL_ID),
+						districtJoin.get(District.NAME), districtJoin.get(District.EXTERNAL_ID),
+						communityJoin.get(Community.NAME), communityJoin.get(Community.CLUSTER_NUMBER), communityJoin.get(Community.EXTERNAL_ID),
+						root.get(CampaignFormData.FORM_DATE),
+				campaignFormMetaJoin.get(CampaignFormMeta.FORM_TYPE));
+
+		
+		Predicate filter = CriteriaBuilderHelper.and(cb,
+				campaignFormDataService.createCriteriaFilter(criteria, cb, root),
+				campaignFormDataService.createUserFilter(cb, cq, root));
+
+
+
+		if (filter != null) {
+			cq.where(filter);
+			//cq.where(typeClause); //can write another filter to remove if archive is true
+		} else {
+			////System.out.println("DEBUGGER ASDHFUASDFHAS: Filter is null");
+		}
+
+		if (sortProperties != null && sortProperties.size() > 0) {
+			List<Order> order = new ArrayList<>(sortProperties.size());
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+				switch (sortProperty.propertyName) {
+				case CampaignFormDataIndexDto.UUID:
+				case CampaignFormDataIndexDto.FORM_DATE:
+					expression = root.get(sortProperty.propertyName);
+					break;
+				case CampaignFormDataIndexDto.CAMPAIGN:
+					expression = campaignJoin.get(Campaign.NAME);
+					break;
+				case CampaignFormDataIndexDto.FORM:
+					expression = campaignFormMetaJoin.get(CampaignFormMeta.FORM_NAME);
+					break;
+				case CampaignFormDataIndexDto.REGION:
+					expression = regionJoin.get(Region.NAME);
+					break;
+				case CampaignFormDataIndexDto.PCODE:
+					expression = regionJoin.get(Region.EXTERNAL_ID);
+					break;
+				case CampaignFormDataIndexDto.AREA:
+					expression = areaJoin.get(Area.NAME);
+					break;
+				case CampaignFormDataIndexDto.RCODE:
+					expression = areaJoin.get(Area.EXTERNAL_ID);
+					break;
+				case CampaignFormDataIndexDto.DISTRICT:
+					expression = districtJoin.get(District.NAME);
+					break;
+				case CampaignFormDataIndexDto.DCODE:
+					expression = districtJoin.get(District.EXTERNAL_ID);
+					break;
+				case CampaignFormDataIndexDto.COMMUNITY:
+					expression = communityJoin.get(Community.NAME);
+					break;
+				case CampaignFormDataIndexDto.COMMUNITYNUMBER:
+					expression = communityJoin.get(Community.CLUSTER_NUMBER);
+					break;
+				case CampaignFormDataIndexDto.CCODE:
+					expression = communityJoin.get(Community.EXTERNAL_ID);
+					break;
+				case CampaignFormDataIndexDto.FORM_TYPE:
+					expression = campaignFormMetaJoin.get(CampaignFormMeta.FORM_TYPE);
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+			}
+			cq.orderBy(order);
+		} else {
+			cq.orderBy(cb.desc(root.get(CampaignFormData.CHANGE_DATE)));
+		}
+		
+		//Can add where clause to compare boolean for archive
+	//	//System.out.println("DEBUGGER r567ujhgty8ijyu8dfrf  " + SQLExtractor.from(em.createQuery(cq)));
+		return QueryHelper.getResultList(em, cq, first, max);
+	}
+	
+	@Override
+	public List<CampaignFormDataIndexDto> getByCompletionAnalysis(CampaignFormDataCriteria criteria, Integer first, Integer max,
 			List<SortProperty> sortProperties) {
 
 		////System.out.println(criteria.getCampaignFormMeta().getUuid()+"sdddddddddddddfdsyu876456uiuytrertyuyttyukldsssssssssssssssss formValues"+sortProperties.get(1));

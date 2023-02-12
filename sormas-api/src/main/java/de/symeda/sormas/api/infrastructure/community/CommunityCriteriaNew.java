@@ -53,6 +53,10 @@ public class CommunityCriteriaNew extends BaseCriteria implements Serializable, 
 		return this;
 	}
 
+	public void setArea(AreaReferenceDto area) {
+		this.area = area;
+	}
+
 	public AreaReferenceDto getArea() {
 		return area;
 	}

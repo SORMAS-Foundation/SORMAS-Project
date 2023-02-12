@@ -29,6 +29,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -125,9 +126,9 @@ public class CampaignReportTabSheets extends VerticalLayout implements View {
 	private HorizontalLayout createFilterBar() {
 		
 		final UserDto user = UserProvider.getCurrent().getUser();
-//		criteria.setArea(user.getArea());
-//		criteria.setRegion(user.getRegion());
-//		criteria.setDistrict(user.getDistrict());
+		criteria.area(user.getArea());// .setArea(user.getArea());
+		criteria.region(user.getRegion());// .setRegion(user.getRegion());
+		criteria.district(user.getDistrict()); // .setDistrict(user.getDistrict());
 //		criteria.setCommunity(null); // set to null 
 
 		filterLayout = new HorizontalLayout();
@@ -142,50 +143,103 @@ public class CampaignReportTabSheets extends VerticalLayout implements View {
 		});
 		filterLayout.addComponent(searchField);
 		
+		
 		areaFilter = ComboBoxHelper.createComboBoxV7();
 		areaFilter.setId(RegionDto.AREA);
+		
+		
+//		
+	if(criteria.getArea() == null) {
+//		areaFilter.setWidth(140, Unit.PIXELS);
+//		areaFilter.setCaption(I18nProperties.getPrefixCaption(RegionDto.I18N_PREFIX, RegionDto.AREA));
+//		areaFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.AREA));
+//		areaFilter.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
+			criteria.fromUrlParams("area=R7HFRA-KEQ6EI-Z776T6-5DMYCPTM");
+//			areaFilter.addValueChangeListener(e -> {
+//
+//				AreaReferenceDto area = (AreaReferenceDto) e.getProperty().getValue();
+//				
+//				if (!DataHelper.equal(area, criteria.getArea())) {
+//				
+//				criteria.area(area);
+//				navigateTo(criteria.area(area));
+//				FieldHelper
+//					.updateItems(regionFilter, area != null ? FacadeProvider.getRegionFacade().getAllActiveByArea(area.getUuid()) : null);
+////				
+//				//grid.reload();
+//				}});
+
+		}
+		if (user.getArea() == null) {
+		
 		areaFilter.setWidth(140, Unit.PIXELS);
 		areaFilter.setCaption(I18nProperties.getPrefixCaption(RegionDto.I18N_PREFIX, RegionDto.AREA));
+		areaFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.AREA));
 		areaFilter.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
-		//areaFilter.setValue("East"); 
-	System.out.println(" +++++++ = "+criteria.getArea() == null);
-	if(criteria.getArea() == null) {
-		criteria.fromUrlParams("area=W5R34K-APYPCA-4GZXDO-IVJWKGIM");
-	}
 		areaFilter.addValueChangeListener(e -> {
-			System.out.println(e.getProperty().getValue() + "khgfksuiihyikgivivciouvsiuvivkihvi");
+
 			AreaReferenceDto area = (AreaReferenceDto) e.getProperty().getValue();
+		
+			if (!DataHelper.equal(area, criteria.getArea())) {
+				criteria.region(null);
+				criteria.area(area);
+			}
 			criteria.area(area);
 			navigateTo(criteria);
 			FieldHelper
 				.updateItems(regionFilter, area != null ? FacadeProvider.getRegionFacade().getAllActiveByArea(area.getUuid()) : null);
-			
-			//grid.reload();
+
 		});
+	
+		
 		filterLayout.addComponent(areaFilter);
+		}
+
+//	if(criteria.getArea() == null) {
+//		criteria.fromUrlParams("area=W5R34K-APYPCA-4GZXDO-IVJWKGIM");
+//	}
 
 		regionFilter = ComboBoxHelper.createComboBoxV7();
 		regionFilter.setId(DistrictDto.REGION);
+		if (user.getRegion() == null) {
 		regionFilter.setWidth(140, Unit.PIXELS);
+		regionFilter.setInputPrompt(I18nProperties.getCaption(Captions.region));
 		regionFilter.setCaption(I18nProperties.getPrefixCaption(DistrictDto.I18N_PREFIX, DistrictDto.REGION));
 		regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 		regionFilter.addValueChangeListener(e -> {
 			RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
+//			criteria.region(region);
+//			navigateTo(criteria);
+//			FieldHelper
+//				.updateItems(districtFilter, region != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()) : null);
+//			//grid.reload();
+//		});
+//		filterLayout.addComponent(regionFilter);
+//		
+//		
+			if (!DataHelper.equal(region, criteria.getRegion())) {
+				criteria.district(null);
+			}
+
 			criteria.region(region);
 			navigateTo(criteria);
-			FieldHelper
-				.updateItems(districtFilter, region != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()) : null);
-			//grid.reload();
 		});
 		filterLayout.addComponent(regionFilter);
+	}
+		
+		
 
 		districtFilter = ComboBoxHelper.createComboBoxV7();
 		districtFilter.setId(CommunityDto.DISTRICT);
 		districtFilter.setWidth(140, Unit.PIXELS);
+		districtFilter.setInputPrompt(I18nProperties.getCaption(Captions.district));
 		districtFilter.setCaption(I18nProperties.getPrefixCaption(CommunityDto.I18N_PREFIX, CommunityDto.DISTRICT));
 		districtFilter.addValueChangeListener(e -> {
-			criteria.district((DistrictReferenceDto) e.getProperty().getValue());
-			grid.reload();
+			DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
+			criteria.district(district);
+			navigateTo(criteria);
+//			criteria.district((DistrictReferenceDto) e.getProperty().getValue());
+//			grid.reload();
 		});
 		filterLayout.addComponent(districtFilter);
 

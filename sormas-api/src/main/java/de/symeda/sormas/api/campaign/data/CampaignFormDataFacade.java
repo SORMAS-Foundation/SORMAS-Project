@@ -58,6 +58,8 @@ public interface CampaignFormDataFacade {
 
 	List<CampaignFormDataIndexDto> getIndexList(CampaignFormDataCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
+	List<CampaignFormDataIndexDto> getByCompletionAnalysis(CampaignFormDataCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
+
 	CampaignFormDataDto getExistingData(CampaignFormDataCriteria criteria);
 
 	long count(CampaignFormDataCriteria criteria);

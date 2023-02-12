@@ -78,7 +78,7 @@ public class CampaignReportView extends AbstractView {
 
 			gridLayout = new VerticalLayout();
 			gridLayout.setHeightFull();
-			CompletionAnalysisTabSheets compAnalysis = new CompletionAnalysisTabSheets(criteria, lopper);// CampaignReportTabSheets
+			CompletionAnalysisTabSheets compAnalysis = new CompletionAnalysisTabSheets(lopper);// CampaignReportTabSheets
 																								// sheet = new
 																								// CampaignReportTabSheets(criteria,
 																								// lopper);
