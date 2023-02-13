@@ -1625,15 +1625,12 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 	@Override
 	public EditPermissionType getEditPermissionType(Case caze) {
 
-		if (caze.getSormasToSormasOriginInfo() != null && !caze.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
-			return EditPermissionType.REFUSED;
-		}
-
 		if (!inJurisdictionOrOwned(caze)) {
 			return EditPermissionType.REFUSED;
 		}
 
-		if (sormasToSormasShareInfoService.isCaseOwnershipHandedOver(caze)) {
+		if (sormasToSormasShareInfoService.isCaseOwnershipHandedOver(caze)
+			|| (caze.getSormasToSormasOriginInfo() != null && !caze.getSormasToSormasOriginInfo().isOwnershipHandedOver())) {
 			return EditPermissionType.WITHOUT_OWNERSHIP;
 		}
 
