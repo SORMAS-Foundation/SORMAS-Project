@@ -1,6 +1,9 @@
 # 3rd Party License Acknowledgement
 
-Country flags in `sormas-ui/src/main/webapp/VAADIN/themes/sormas/img/flag-icons/` are licensed under MIT:
+Nearform **temporal tables** postgres function is licensed under MIT:
+sormas-backend/src/main/resources/sql/temporal_tables/LICENSE
+
+**Country flags** in `sormas-ui/src/main/webapp/VAADIN/themes/sormas/img/flag-icons/` are licensed under MIT:
 ```text
 Copyright (c) 2017 Go Squared Ltd. http://www.gosquared.com/
 
