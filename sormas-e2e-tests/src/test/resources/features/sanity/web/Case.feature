@@ -693,6 +693,7 @@ Feature: Case end to end tests
     And I create a new Sample with positive test result for DE version
     And I select the German words for Antigen Detection Test as Type of Test in the Create New Sample popup
     And I save the created sample with pathogen test
+    And I confirm case with positive test result
     Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
     And I check that case reference definition is set to not fulfilled in German on Edit case page
     When I click on New Sample in German
@@ -701,18 +702,21 @@ Feature: Case end to end tests
     And I save the created sample with pathogen test
     Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
     And I check that case reference definition is set to not fulfilled in German on Edit case page
+    And I confirm case with positive test result
     When I click on New Sample in German
     And I create a new Sample with positive test result for DE version
     And I select the German words for Isolation as Type of Test in the Create New Sample popup
     And I save the created sample with pathogen test
+    And I confirm case with positive test result
+    When I click on New Sample in German
     Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
     And I check that case reference definition is set to fulfilled in German on Edit case page
-    When I click on New Sample in German
     And I create a new Sample with positive test result for DE version
     And I select the German words for PCR RT-PCR as Type of Test in the Create New Sample popup
     And I save the created sample with pathogen test
     Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
     And I check that case reference definition is set to fulfilled in German on Edit case page
+    And I confirm case with positive test result
     When I click on the Cases button from navbar
     And I click SHOW MORE FILTERS button on Case directory page
     And I click Only cases with fulfilled reference definition checkbox in Cases directory additional filters
