@@ -12279,5 +12279,11 @@ UPDATE featureconfiguration SET properties = properties::jsonb || json_build_obj
 
 INSERT INTO schema_version (version_number, comment) VALUES (506, 'Add max change date period property to limited synchronization feature #7305');
 
+-- 2023-02-07 Improve performance or case duplicate merging lists #9054
+CREATE INDEX IF NOT EXISTS idx_cases_creationdate_desc ON cases USING btree (creationdate DESC);
+
+INSERT INTO schema_version (version_number, comment) VALUES (507, 'Add index to improve performance or case duplicate merging lists #9054');
+
+
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

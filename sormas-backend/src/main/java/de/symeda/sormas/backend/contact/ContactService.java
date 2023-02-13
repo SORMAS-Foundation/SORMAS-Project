@@ -85,7 +85,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.caze.CaseJoins;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
@@ -1137,7 +1136,6 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 
 		Predicate filter = null;
 		Join<Contact, Case> caze = joins.getCaze();
-		CaseJoins caseJoins = joins.getCaseJoins();
 		Join<Contact, Case> resultingCase = joins.getResultingCase();
 
 		PersonQueryContext personQueryContext = new PersonQueryContext(cb, cqc.getQuery(), joins.getPersonJoins());
@@ -1458,6 +1456,8 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, createOwnershipPredicate(Boolean.TRUE.equals(contactCriteria.getWithOwnership()), from, cb, cqc.getQuery()));
 		}
+
+		filter = CriteriaBuilderHelper.andInValues(contactCriteria.getUuids(), filter, cb, from.get(Person.UUID));
 
 		return filter;
 	}

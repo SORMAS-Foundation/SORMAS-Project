@@ -423,10 +423,6 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 				}
 			});
 
-			TextArea comment = addField(SormasToSormasOptionsDto.COMMENT, TextArea.class);
-			comment.setRequired(true);
-			comment.setRows(3);
-
 			if (customFieldDependencies != null) {
 				customFieldDependencies.accept(this);
 			}
@@ -437,6 +433,10 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 				getField(allowedCustomOptions.get(allowedCustomOptions.size() - 1)).addStyleNames(CssStyles.VSPACE_3);
 			}
 		}
+
+		TextArea comment = addField(SormasToSormasOptionsDto.COMMENT, TextArea.class);
+		comment.setRequired(true);
+		comment.setRows(3);
 	}
 
 	private List<String> filterOptionsByFeatureProperty(FeatureType featureType, List<String> options) {

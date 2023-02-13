@@ -91,7 +91,6 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.BULK_ACTIONS_CONTACT_VALUES;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.BULK_CREATE_QUARANTINE_ORDER;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.BULK_DELETE_BUTTON_CONTACT_PAGE;
-import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_COLUMN_HEADERS;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_FROM_OTHER_INSTANCES_CHECKBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_ONLY_HIGH_PRIOROTY_CHECKBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_WITH_EXTENDED_QUARANTINE_CHECKBOX;
@@ -243,7 +242,7 @@ public class ContactDirectorySteps implements En {
     this.faker = faker;
 
     When(
-        "^I navigate to the last created contact via the url$",
+        "^I open the last created contact via API$",
         () -> {
           String LAST_CREATED_CONTACT_URL =
               runningConfiguration.getEnvironmentUrlForMarket(locale)
@@ -365,14 +364,6 @@ public class ContactDirectorySteps implements En {
               MULTIPLE_OPTIONS_SEARCH_INPUT, apiState.getCreatedCase().getUuid());
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
         });
-    When(
-        "I open the last created contact",
-        () -> {
-          searchAfterContactByMultipleOptions(apiState.getCreatedContact().getUuid());
-          webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(CONTACTS_COLUMN_HEADERS);
-          openContactFromResultsByUUID(apiState.getCreatedContact().getUuid());
-        });
-
     When(
         "I click on the DETAILED radiobutton from Contact directory",
         () -> {
@@ -1053,14 +1044,6 @@ public class ContactDirectorySteps implements En {
         });
 
     When(
-        "I search after last created contact via API by UUID and open",
-        () -> {
-          searchAfterContactByMultipleOptions(apiState.getCreatedContact().getUuid());
-          TimeUnit.SECONDS.sleep(2);
-          openContactFromResultsByUUID(apiState.getCreatedContact().getUuid());
-        });
-
-    When(
         "I am checking all Location data in Exposure are saved and displayed",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EDIT_SAVED_EXPOSURE_BUTTON);
@@ -1371,12 +1354,6 @@ public class ContactDirectorySteps implements En {
     } catch (IOException e) {
       log.error("IOException csvWriter: ", e);
     }
-  }
-
-  private void searchAfterContactByMultipleOptions(String idPhoneNameEmail) {
-    webDriverHelpers.waitUntilElementIsVisibleAndClickable(APPLY_FILTERS_BUTTON);
-    webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, idPhoneNameEmail);
-    webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
   }
 
   private void openContactFromResultsByUUID(String uuid) {

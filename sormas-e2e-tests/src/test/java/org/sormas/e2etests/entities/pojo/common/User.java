@@ -16,7 +16,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.entities.pojo;
+package org.sormas.e2etests.entities.pojo.common;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;

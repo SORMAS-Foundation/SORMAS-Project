@@ -196,10 +196,8 @@ public class ActivityAsCaseForm extends AbstractEditForm<ActivityAsCaseDto> {
 					} else {
 						throw new IllegalArgumentException(type.toString());
 					}
-					for (FacilityType value : list) {
-						Item item = facilityType.addItem(value);
-						item.getItemProperty(CAPTION_PROPERTY_ID).setValue(value.toString());
-					}
+
+					facilityType.addItems(list);
 				}
 			});
 		}

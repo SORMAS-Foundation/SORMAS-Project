@@ -113,6 +113,7 @@ import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.ViewModelProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.components.linelisting.LineListingLayout;
 import de.symeda.sormas.ui.caze.maternalhistory.MaternalHistoryForm;
@@ -492,6 +493,21 @@ public class CaseController {
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 
+	public void navigateToMergeCasesView(CaseCriteria criteria) {
+		ViewModelProvider viewModelProvider = ViewModelProviders.of(MergeCasesView.class);
+
+		// update the current criteria
+		viewModelProvider.remove(CaseCriteria.class);
+		viewModelProvider.get(CaseCriteria.class, criteria);
+
+		// force the grid to load as it is filtered, so it should not take too long to load
+		viewModelProvider.remove(MergeCasesViewConfiguration.class);
+		viewModelProvider.get(MergeCasesViewConfiguration.class, new MergeCasesViewConfiguration(true));
+
+		String navigationState = AbstractView.buildNavigationState(MergeCasesView.VIEW_NAME, criteria);
+		SormasUI.get().getNavigator().navigateTo(navigationState);
+	}
+
 	public void navigateToCase(String caseUuid) {
 		navigateToView(CaseDataView.VIEW_NAME, caseUuid, null, false);
 	}
@@ -644,7 +660,7 @@ public class CaseController {
 		} else if (convertedEventParticipant != null) {
 			EventDto event = FacadeProvider.getEventFacade().getEventByUuid(convertedEventParticipant.getEvent().getUuid(), false);
 			symptoms = null;
-			person = convertedEventParticipant.getPerson();
+			person = FacadeProvider.getPersonFacade().getByUuid(convertedEventParticipant.getPerson().getUuid());
 			if (unrelatedDisease == null) {
 				caze = CaseDataDto.buildFromEventParticipant(convertedEventParticipant, person, event.getDisease());
 			} else {
@@ -1628,10 +1644,8 @@ public class CaseController {
 				false).show(Page.getCurrent());
 		} else {
 			DeletableUtils.showDeleteWithReasonPopup(
-				String.format(
-					I18nProperties.getString(Strings.confirmationDeleteCases),
-					selectedRows.size()) + "<br/>" +
-					getDeleteConfirmationDetails(selectedRows.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList())),
+				String.format(I18nProperties.getString(Strings.confirmationDeleteCases), selectedRows.size()) + "<br/>"
+					+ getDeleteConfirmationDetails(selectedRows.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList())),
 				(deleteDetails) -> {
 					int countNotDeletedCases = 0;
 					StringBuilder nonDeletableCases = new StringBuilder();

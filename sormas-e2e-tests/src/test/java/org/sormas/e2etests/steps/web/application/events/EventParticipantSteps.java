@@ -16,11 +16,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.steps.api;
+package org.sormas.e2etests.steps.web.application.events;
 
 import static org.sormas.e2etests.constants.api.Endpoints.EVENT_PARTICIPANTS_PATH;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_PARTICIPANTS_TAB;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.ENTER_BULK_EDIT_MODE_BUTTON;
 
 import cucumber.api.java8.En;
 import io.restassured.http.Method;
@@ -99,6 +100,15 @@ public class EventParticipantSteps implements En {
         "I check if created event participant is available in API",
         () -> {
           getEventParticipantByUUID(apiState.getCreatedEventParticipant().getUuid());
+        });
+
+    When(
+        "I check if Enter Bulk Edit mode button is present in Event Participants Tab",
+        () -> {
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(ENTER_BULK_EDIT_MODE_BUTTON),
+              "Enter bulk edit mode button is not displayed");
+          softly.assertAll();
         });
   }
 

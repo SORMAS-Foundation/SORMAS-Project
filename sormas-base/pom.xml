@@ -5,7 +5,7 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.79.0-SNAPSHOT</version>
+	<version>1.80.0-SNAPSHOT</version>
 
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -42,8 +42,11 @@
 		<apache-tika.version>2.6.0</apache-tika.version>
 		<temportal-tables.version>0.4.2</temportal-tables.version>
 
-		<!-- Attention: Compile dependencies with versions are maintained redundantly in sormas-app/app/build.gradle -->
+		<!--SONAR GitHub Actions scanner -->
+		<sonar.organization>sormas</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 
+		<!-- Attention: Compile dependencies with versions are maintained redundantly in sormas-app/app/build.gradle -->
 	</properties>
 
 	<distributionManagement>
@@ -936,8 +939,17 @@
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-context</artifactId>
-				<version>4.3.30.RELEASE</version>
-				<!-- downgraded because of missing support in android api 24-->
+				<version>5.3.25</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.springframework</groupId>
+						<artifactId>spring-aop</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.springframework</groupId>
+						<artifactId>spring-beans</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 
 			<dependency>

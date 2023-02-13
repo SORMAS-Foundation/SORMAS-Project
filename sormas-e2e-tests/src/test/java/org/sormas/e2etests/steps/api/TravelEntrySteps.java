@@ -19,6 +19,7 @@
 package org.sormas.e2etests.steps.api;
 
 import static org.sormas.e2etests.constants.api.Endpoints.TRAVEL_ENTRIES;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.PERSON_FILTER_INPUT;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
@@ -73,6 +74,7 @@ public class TravelEntrySteps implements En {
                   + "/sormas-webdriver/#!travelEntries/data/"
                   + apiState.getCreatedTravelEntry().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_TRAVEL_ENTRY_URL);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
         });
 
     When(

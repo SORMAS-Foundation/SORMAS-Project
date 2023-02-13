@@ -260,6 +260,7 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 		return caseCodeIdLike;
 	}
 
+	@IgnoreForUrl
 	public List<String> getCaseUuids() {
 		return caseUuids;
 	}
@@ -270,6 +271,7 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 		return this;
 	}
 
+	@IgnoreForUrl
 	public List<String> getContactUuids() {
 		return contactUuids;
 	}
@@ -280,6 +282,7 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 		return this;
 	}
 
+	@IgnoreForUrl
 	public List<String> getEventParticipantUuids() {
 		return eventParticipantUuids;
 	}

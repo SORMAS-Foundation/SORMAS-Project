@@ -25,6 +25,8 @@ import java.util.Random;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -56,6 +58,9 @@ import de.symeda.sormas.api.vaccination.VaccinationDto;
 
 @Remote
 public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseReferenceDto, CaseCriteria> {
+
+	int DUPLICATE_MERGING_LIMIT_DEFAULT = 100;
+	int DUPLICATE_MERGING_LIMIT_MAX = 1000;
 
 	long count(CaseCriteria caseCriteria, boolean ignoreUserFilter);
 
@@ -148,7 +153,7 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	List<CaseSelectionDto> getSimilarCases(CaseSimilarityCriteria criteria);
 
-	List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, boolean showDuplicatesWithDifferentRegion);
+	List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, @Min(1) @Max(DUPLICATE_MERGING_LIMIT_MAX) int limit, boolean showDuplicatesWithDifferentRegion);
 
 	void updateCompleteness(String caseUuid);
 
