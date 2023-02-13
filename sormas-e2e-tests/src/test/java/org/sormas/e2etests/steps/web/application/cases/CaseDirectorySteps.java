@@ -26,6 +26,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CA
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_RELATED_CONTACTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BACK_TO_CASES_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_NEW_CASE_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXTRA_COMMENT_INPUT_SHARE_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_CREATE_CASE_POPUP_HEADER;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_CREATE_PERSON_POPUP_HEADER;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFERENCE_DEFINITION_TEXT;
@@ -54,6 +55,7 @@ import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.IMPO
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.SELECT_ANOTHER_PERSON_DE;
 import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.BULK_DELETE_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
+import static org.sormas.e2etests.steps.web.application.contacts.ContactDirectorySteps.faker;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -128,6 +130,8 @@ public class CaseDirectorySteps implements En {
   public static String caseUUIDFromCSV;
   private static String firstName;
   private static String lastName;
+  private static String receivedCaseUUID;
+  private static String generatedRandomString;
 
   @Inject
   public CaseDirectorySteps(
@@ -1290,6 +1294,33 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.fillAndSubmitInWebElement(PERSON_LIKE_SEARCH_INPUT, firstAndLastName);
           TimeUnit.SECONDS.sleep(2); // wait for reaction
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    And(
+        "I fill comment in share popup with random string",
+        () -> {
+          generatedRandomString = faker.beer().name();
+          webDriverHelpers.fillInWebElement(EXTRA_COMMENT_INPUT_SHARE_POPUP, generatedRandomString);
+        });
+
+    When(
+        "I click on reject shared case button with copied case description",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              getActionRejectButtonByCaseDescription(generatedRandomString));
+          webDriverHelpers.clickOnWebElementBySelector(
+              getActionRejectButtonByCaseDescription(generatedRandomString));
+        });
+
+    When(
+        "I fill comment field in Reject share request popup and click confirm",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(REJECT_SHARED_CASE_HEADER_DE);
+          webDriverHelpers.clickOnWebElementBySelector(REJECT_SHARED_CASE_POPUP_TEXT_AREA);
+          webDriverHelpers.fillInWebElement(
+              REJECT_SHARED_CASE_POPUP_TEXT_AREA, faker.book().title());
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_POPUP);
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
         });
   }
 

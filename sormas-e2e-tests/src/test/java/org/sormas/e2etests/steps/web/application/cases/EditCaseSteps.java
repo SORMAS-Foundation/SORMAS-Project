@@ -2643,6 +2643,12 @@ public class EditCaseSteps implements En {
               "Event title is not correct");
           softly.assertAll();
         });
+    When(
+        "I check if reject share case button in Edit Case is unavailable",
+        () -> {
+          softly.assertFalse(webDriverHelpers.isElementPresent(REJECT_SHARED_CASE_BUTTON));
+          softly.assertAll();
+        });
   }
 
   private Vaccination collectVaccinationData() {
