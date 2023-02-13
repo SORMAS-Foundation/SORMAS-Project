@@ -855,6 +855,14 @@ public class CreateNewSampleSteps implements En {
     When(
         "I click on edit pathogen button",
         () -> webDriverHelpers.clickOnWebElementBySelector(EDIT_PATHOGEN_TEST_BUTTON));
+
+    And(
+        "^I click on yes in Confirm case popup window$",
+        () -> {
+          TimeUnit.SECONDS.sleep(2); // wait for popup to load
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CONFIRM_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
+        });
   }
 
   private void selectPurposeOfSample(String samplePurpose, By element) {
