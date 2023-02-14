@@ -397,8 +397,11 @@ public class InfrastructureFieldsDependencyHandler {
 					}
 				} else if (TypeOfPlace.FACILITY.equals(selectedType)) {
 					typeGroupField.setSpinnerData(typeGroups);
-					facilityDetailsField.setValue(null);
-					facilityDetailsField.setVisibility(GONE);
+					if (facilityField.getValue() != null
+						&& !FacilityDto.OTHER_FACILITY_UUID.equals(((Facility) facilityField.getValue()).getUuid())) {
+						facilityDetailsField.setValue(null);
+						facilityDetailsField.setVisibility(GONE);
+					}
 				}
 			});
 		}
