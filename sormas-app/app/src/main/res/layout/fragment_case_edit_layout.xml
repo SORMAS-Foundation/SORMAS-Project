@@ -500,6 +500,7 @@
                     android:id="@+id/caseData_healthFacilityDetails"
                     app:value="@={data.healthFacilityDetails}"
                     app:userEditRight="@{UserRight.CASE_TRANSFER}"
+                    app:softRequired="true"
                     style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout
