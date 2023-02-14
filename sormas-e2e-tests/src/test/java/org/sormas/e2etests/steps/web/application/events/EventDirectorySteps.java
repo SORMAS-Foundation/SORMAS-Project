@@ -202,10 +202,10 @@ public class EventDirectorySteps implements En {
     When(
         "I fill EVENT ID filter by API",
         () -> {
+          TimeUnit.SECONDS.sleep(5); //waiting time for filters to load
           String eventUuid = apiState.getCreatedEvent().getUuid();
-          webDriverHelpers.fillInWebElement(
-              SEARCH_EVENT_BY_FREE_TEXT,
-              dataOperations.getPartialUuidFromAssociatedLink(eventUuid));
+          String partialEventUuid = dataOperations.getPartialUuidFromAssociatedLink(eventUuid);
+          webDriverHelpers.fillAndSubmitInWebElement(SEARCH_EVENT_BY_FREE_TEXT, partialEventUuid);
         });
 
     When(
