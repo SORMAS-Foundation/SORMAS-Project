@@ -220,7 +220,9 @@ public class SormasToSormasController {
 						Strings.messageSormasToSormasSimilarCaseFound,
 						Captions.actionOkAndGoToMerge,
 						() -> ControllerProvider.getCaseController()
-							.navigateToMergeCasesView(new CaseCriteria().caseUuidsForMerge(duplicateResult.getUuids())),
+							.navigateToMergeCasesView(
+								new CaseCriteria()
+									.caseUuidsForMerge(shareRequest.getCases().stream().map(EntityDto::getUuid).collect(Collectors.toSet()))),
 						callback);
 					break;
 				case CASE_CONVERTED:
@@ -229,7 +231,9 @@ public class SormasToSormasController {
 						Strings.messageSormasToSormasSimilarConvertedCaseFound,
 						Captions.actionOkAndGoToMerge,
 						() -> ControllerProvider.getCaseController()
-							.navigateToMergeCasesView(new CaseCriteria().caseUuidsForMerge(duplicateResult.getUuids())),
+							.navigateToMergeCasesView(
+								new CaseCriteria()
+									.caseUuidsForMerge(shareRequest.getCases().stream().map(EntityDto::getUuid).collect(Collectors.toSet()))),
 						callback);
 					break;
 				case CONTACT_TO_CASE:
@@ -246,7 +250,9 @@ public class SormasToSormasController {
 						Strings.messageSormasToSormasSimilarContactFound,
 						Captions.actionOkAndGoToMerge,
 						() -> ControllerProvider.getContactController()
-							.navigateToMergeContactsView(new ContactCriteria().contactUuidsForMerge(duplicateResult.getUuids())),
+							.navigateToMergeContactsView(
+								new ContactCriteria()
+									.contactUuidsForMerge(shareRequest.getContacts().stream().map(EntityDto::getUuid).collect(Collectors.toSet()))),
 						callback);
 					break;
 				case CONTACT_CONVERTED:
@@ -255,7 +261,9 @@ public class SormasToSormasController {
 						Strings.messageSormasToSormasSimilarConvertedContactFound,
 						Captions.actionOkAndGoToMerge,
 						() -> ControllerProvider.getContactController()
-							.navigateToMergeContactsView(new ContactCriteria().contactUuidsForMerge(duplicateResult.getUuids())),
+							.navigateToMergeContactsView(
+								new ContactCriteria()
+									.contactUuidsForMerge(shareRequest.getContacts().stream().map(EntityDto::getUuid).collect(Collectors.toSet()))),
 						callback);
 					break;
 				case CASE_TO_CONTACT:
