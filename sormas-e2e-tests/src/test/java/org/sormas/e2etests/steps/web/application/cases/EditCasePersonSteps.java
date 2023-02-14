@@ -364,12 +364,6 @@ public class EditCasePersonSteps implements En {
     And(
         "I check that first and last name are equal to data form {int} result in laboratory notification",
         (Integer resultNumber) -> {
-          String imie = webDriverHelpers.getValueFromWebElement(FIRST_NAME_INPUT);
-          String nazwisko = webDriverHelpers.getValueFromWebElement(LAST_NAME_INPUT);
-          System.out.println("Imie Demisa: " + DemisSteps.firstNames.get(resultNumber - 1));
-          System.out.println("Nazwisko Demisa: " + DemisSteps.lastNames.get(resultNumber - 1));
-          System.out.println("Imie Case: " + imie);
-          System.out.println("Nazwisko Case: " + nazwisko);
           softly.assertEquals(
               DemisSteps.firstNames.get(resultNumber - 1),
               webDriverHelpers.getValueFromWebElement(FIRST_NAME_INPUT),
