@@ -799,6 +799,7 @@ public class CreateNewCaseSteps implements En {
         "^I pick a new person in Pick or create person popup during case creation for DE$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CREATE_A_NEW_PERSON_CONFIRMATION_BUTTON_DE);
+          TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
 
