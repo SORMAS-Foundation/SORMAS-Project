@@ -43,6 +43,7 @@ import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.WindowType;
 import org.openqa.selenium.interactions.Actions;
 import org.sormas.e2etests.common.TimerLite;
 import org.sormas.e2etests.steps.BaseSteps;
@@ -70,6 +71,8 @@ public class WebDriverHelpers {
     this.baseSteps = baseSteps;
     this.assertHelpers = assertHelpers;
   }
+
+  ArrayList<String> tabs;
 
   public void waitForPageLoaded() {
     assertHelpers.assertWithPoll20Second(
@@ -440,6 +443,17 @@ public class WebDriverHelpers {
     log.info(PID + "Navigating to: {} ", url);
     baseSteps.getDriver().get(url);
     waitForPageLoaded();
+  }
+
+  public void accessWebSiteWithNewTab(String url) {
+    log.info(PID + "Navigating to: {} ", url);
+    baseSteps.getDriver().switchTo().newWindow(WindowType.TAB);
+    baseSteps.getDriver().get(url);
+  }
+
+  public void switchToTheTabNumber(int no) {
+    ArrayList<String> tab = new ArrayList<>(baseSteps.getDriver().getWindowHandles());
+    baseSteps.getDriver().switchTo().window(tab.get(no - 1));
   }
 
   public boolean isElementVisibleWithTimeout(By selector, int seconds) {

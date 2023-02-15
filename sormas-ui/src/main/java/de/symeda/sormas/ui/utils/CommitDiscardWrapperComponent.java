@@ -107,6 +107,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	}
 
 	private transient PreCommitListener preCommitListener;
+	private transient Runnable postCommitListener;
 	private transient List<CommitListener> commitListeners = new ArrayList<>();
 	private transient List<DiscardListener> discardListeners = new ArrayList<>();
 	private transient List<DoneListener> doneListeners = new ArrayList<>();
@@ -494,6 +495,10 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 			doCommit();
 		}
 
+		if (postCommitListener != null) {
+			postCommitListener.run();
+		}
+
 	}
 
 	private void doCommit() throws InvalidValueException, SourceException, CommitRuntimeException {
@@ -703,6 +708,10 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 	public void setPreCommitListener(PreCommitListener listener) {
 		this.preCommitListener = listener;
+	}
+
+	public void setPostCommitListener(Runnable postCommitListener) {
+		this.postCommitListener = postCommitListener;
 	}
 
 	public void addCommitListener(CommitListener listener) {

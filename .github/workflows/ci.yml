@@ -60,13 +60,54 @@ jobs:
           key: ${{ runner.os }}-java-${{ env.JAVA }}-m2-${{ hashFiles('**/pom.xml', '**/*.pom') }}
           restore-keys: ${{ runner.os }}-java-${{ env.JAVA }}-m2
 
-      - name: Run mvn verify
+      - name: Cache SonarCloud packages
+        # Check if PR results from the repository: if yes, it is safe to cache dependencies.
+        # This is to keep us safe from cache poisoning through 3rd party PRs.
+        if: ${{ fromJSON(env.PRIVILEGED_RUN) }}
+        uses: actions/cache@v2
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+      - name: Run mvn verify and sonar analysis
         # FIXME(@JonasCir) see https://github.com/hzi-braunschweig/SORMAS-Project/issues/3730#issuecomment-745165678
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         working-directory: ./sormas-base
-        run: mvn verify -B -ntp
+        run: mvn -B -ntp verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=SORMAS-Project
+
+      - name: Comment with SonarCloud analysis
+        uses: actions/github-script@v6
+        if: github.event_name == 'pull_request'
+        with:
+          github-token: ${{ secrets.SORMAS_VITAGROUP_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `SonarCloud analysis: https://sonarcloud.io/dashboard?id=SORMAS-Project&pullRequest=${{ github.event.pull_request.number }}`
+            })
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v1
+
+      - name: Run Trivy vulnerability scanner in repo mode
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          ignore-unfixed: true
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          security-checks: 'vuln,secret,config'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
+          # needed as codeQL also performs an upload and they clash otherwise
+          category: 'code-scanning/trivy-repo'
 
       - name: Commit external visits API spec to development
         # Privileged action needing a secret token. Since this only runs on development in our own repo

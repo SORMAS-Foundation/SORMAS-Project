@@ -7,7 +7,8 @@ public enum SampleAssociationType {
 	ALL,
 	CASE,
 	CONTACT,
-	EVENT_PARTICIPANT;
+	EVENT_PARTICIPANT,
+	PERSON;
 
 	@Override
 	public String toString() {

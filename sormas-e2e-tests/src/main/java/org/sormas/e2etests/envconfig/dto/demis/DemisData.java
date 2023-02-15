@@ -31,4 +31,5 @@ public class DemisData {
   String certificatePath;
   String certificatePassword;
   String authRequestBody;
+  String postalCode;
 }

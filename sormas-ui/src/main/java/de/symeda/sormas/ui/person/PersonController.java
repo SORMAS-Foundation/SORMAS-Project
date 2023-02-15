@@ -50,6 +50,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonContext;
+import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonHelper;
@@ -61,7 +62,9 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.CaseDataView;
+import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
@@ -410,6 +413,14 @@ public class PersonController {
 
 	public void navigateToPersons() {
 		SormasUI.get().getNavigator().navigateTo(PersonsView.VIEW_NAME);
+	}
+
+	public void navigateToPersons(PersonCriteria criteria) {
+		ViewModelProviders.of(PersonsView.class).remove(PersonCriteria.class);
+		ViewModelProviders.of(PersonsView.class).get(PersonCriteria.class, criteria);
+
+		String navigationState = AbstractView.buildNavigationState(PersonsView.VIEW_NAME, criteria);
+		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 
 	public void navigateToPerson(String uuid) {

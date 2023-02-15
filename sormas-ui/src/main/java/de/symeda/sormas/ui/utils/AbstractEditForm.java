@@ -359,6 +359,15 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 		}
 	}
 
+	protected void setVisible(boolean visible, Field<?>... fields) {
+
+		for (Field<?> field : fields) {
+			if (!visible || isVisibleAllowed(field)) {
+				field.setVisible(visible);
+			}
+		}
+	}
+
 	protected void setVisibleClear(boolean visible, String... fieldOrPropertyIds) {
 
 		for (String propertyId : fieldOrPropertyIds) {
@@ -523,8 +532,7 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 				}
 
 				if (field instanceof ComboBoxWithPlaceholder) {
-					ComboBoxWithPlaceholder combo = (ComboBoxWithPlaceholder) field;
-					combo.setPlaceholder(I18nProperties.getCaption(Captions.inaccessibleValue));
+					FieldHelper.setComboInaccessible((ComboBoxWithPlaceholder) field);
 				}
 			}
 		}

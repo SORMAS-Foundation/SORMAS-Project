@@ -374,6 +374,14 @@ public class EditCasePage {
           "//div[@location='sormasToSormas']//div[@class='v-slot v-slot-s-list-entry v-slot-s-list-entry-no-border']");
   public static final By CLINICAL_ASSESSMENTS_LABEL_DE =
       By.xpath("//div[contains(text(), 'Klinische Bewertungen')]");
+  public static final By REJECT_SHARED_CASE_BUTTON = By.cssSelector("#sormasToSormasRevokeShare");
+  public static final By REVOKE_CASE_POPUP_HEADER =
+      By.xpath("//*[contains(text(),'Anfrage widerrufen')]");
+  public static final By ERROR_IN_HANDOVER_HEADER_DE =
+      By.xpath("//*[contains(text(),'Fehler bei \u00DCbergabe')]");
+  public static final By ERROR_DESCRIPTION_REQUEST_PROCESSED =
+      By.xpath(
+          "//*[contains(text(),'Die Anfrage wurde bereits bearbeitet. Bitte laden Sie die Seite neu, um die neuesten \u00C4nderungen zu sehen.')]");
 
   public static By getPreExistingConditionCombobox_DE(String id) {
     return By.xpath(

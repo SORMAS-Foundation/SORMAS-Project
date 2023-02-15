@@ -22,10 +22,10 @@ import de.symeda.sormas.backend.person.PersonContactDetail;
 
 public abstract class QueryContext<ADO extends AbstractDomainObject, J extends QueryJoins<ADO>> {
 
-	private CriteriaQuery<?> query;
-	private CriteriaBuilder criteriaBuilder;
-	private From<?, ADO> root;
-	private J joins;
+	protected CriteriaQuery<?> query;
+	protected CriteriaBuilder criteriaBuilder;
+	protected From<?, ADO> root;
+	protected J joins;
 	private Map<String, Expression<?>> subqueryExpressions;
 
 	public QueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, ADO> root, J joins) {

@@ -312,6 +312,16 @@ public class CreateNewContactSteps implements En {
         });
 
     When(
+        "^I fill a mandatory fields for a new contact form$",
+        () -> {
+          contact = contactService.buildGeneratedContact();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          fillFirstName(contact.getFirstName());
+          fillLastName(contact.getLastName());
+          selectSex(contact.getSex());
+        });
+
+    When(
         "^I fill a new contact form with chosen data without personal data$",
         () -> {
           contact = contactService.buildGeneratedContact();

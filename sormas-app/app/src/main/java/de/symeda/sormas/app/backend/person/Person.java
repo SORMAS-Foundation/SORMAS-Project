@@ -17,14 +17,6 @@ package de.symeda.sormas.app.backend.person;
 
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
-import androidx.databinding.Bindable;
-
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
-
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -34,6 +26,14 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Transient;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
+import androidx.databinding.Bindable;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
@@ -128,7 +128,7 @@ public class Person extends PseudonymizableAdo {
 	@Column
 	private Integer birthWeight;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 2)
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Location address;
 
 	@Enumerated(EnumType.STRING)

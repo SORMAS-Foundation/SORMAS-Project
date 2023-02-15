@@ -154,9 +154,9 @@ Feature: Case end to end tests
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
-    And I click on the Cases button from navbar
     And I open the last created Case via API
     And I delete the case
+    And I filter by CaseID on Case directory page
     Then I check that number of displayed cases results is 0
 
   @tmsLink=SORDEV-5530 @env_main
@@ -207,7 +207,6 @@ Feature: Case end to end tests
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
-    And I click on the Cases button from navbar
     And I open the last created Case via API
     Then I am accessing the Therapy tab of created case
     And I create and fill Prescriptions with specific data for drug intake
@@ -270,7 +269,6 @@ Feature: Case end to end tests
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
-    And I click on the Cases button from navbar
     And I open the last created Case via API
     Then I click on Clinical Course tab from Edit Case page
     And I click on New Clinical Assesement button on Clinical Course page
@@ -297,7 +295,6 @@ Feature: Case end to end tests
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
-    And I click on the Cases button from navbar
     And I open the last created Case via API
     Then I set place for Quarantine as Home
     And I set Start date of Quarantine 2 days ago
@@ -325,8 +322,7 @@ Feature: Case end to end tests
     Then API: I create a new contact
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Then I click on the Contacts button from navbar
-    Then I search after last created contact via API by UUID and open
+    Then I open the last created contact via API
     Then I set place for Quarantine as Home
     And I set Start date of Quarantine 2 days ago
     And I set End date of Quarantine to 5 days
@@ -579,7 +575,6 @@ Feature: Case end to end tests
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
-    And I click on the Cases button from navbar
     And I open the last created Case via API
     Then I click on INFO button on Case Edit page
     When I am accessing the Symptoms tab using of created case via api
@@ -698,6 +693,7 @@ Feature: Case end to end tests
     And I create a new Sample with positive test result for DE version
     And I select the German words for Antigen Detection Test as Type of Test in the Create New Sample popup
     And I save the created sample with pathogen test
+    And I confirm case with positive test result
     Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
     And I check that case reference definition is set to not fulfilled in German on Edit case page
     When I click on New Sample in German
@@ -706,18 +702,21 @@ Feature: Case end to end tests
     And I save the created sample with pathogen test
     Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
     And I check that case reference definition is set to not fulfilled in German on Edit case page
+    And I confirm case with positive test result
     When I click on New Sample in German
     And I create a new Sample with positive test result for DE version
     And I select the German words for Isolation as Type of Test in the Create New Sample popup
     And I save the created sample with pathogen test
+    And I confirm case with positive test result
+    When I click on New Sample in German
     Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
     And I check that case reference definition is set to fulfilled in German on Edit case page
-    When I click on New Sample in German
     And I create a new Sample with positive test result for DE version
     And I select the German words for PCR RT-PCR as Type of Test in the Create New Sample popup
     And I save the created sample with pathogen test
     Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
     And I check that case reference definition is set to fulfilled in German on Edit case page
+    And I confirm case with positive test result
     When I click on the Cases button from navbar
     And I click SHOW MORE FILTERS button on Case directory page
     And I click Only cases with fulfilled reference definition checkbox in Cases directory additional filters
@@ -738,7 +737,6 @@ Feature: Case end to end tests
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
-    And I click on the Cases button from navbar
     And I open the last created Case via API
     When I open the Case Contacts tab
     Then I click on new contact button from Case Contacts tab
@@ -820,7 +818,6 @@ Feature: Case end to end tests
     And API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     And I log in as a National User
-    And I click on the Cases button from navbar
     And I open the last created Case via API
     And I navigate to Epidemiological Data tab on Edit Case Page
     When I select NO from Contacts With Source Case Known
@@ -846,7 +843,6 @@ Feature: Case end to end tests
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
-    And I click on the Cases button from navbar
     And I open the last created Case via API
     Then I click on Create button in Document Templates box in Edit Case directory
     And I click on checkbox to upload generated document to entity in Create Quarantine Order form in Edit Case directory
@@ -921,7 +917,6 @@ Feature: Case end to end tests
     And I Pick an existing case in Pick or create person popup in Case entry
     And I check the created data for existing person is correctly displayed on Edit case page
     And I click on Save button in Case form
-    When I click on the Persons button from navbar
     And I open the last created Person via API
     And I check that SEE CASES FOR THIS PERSON button appears on Edit Person page
     Then I click on the Cases button from navbar
@@ -974,7 +969,6 @@ Feature: Case end to end tests
     When I open the Case Contacts tab of the created case via api
     Then I click on new contact button from Case Contacts tab
     Then I create a new contact from Cases Contacts tab
-    And I click on the Cases button from navbar
     And I open the last created Case via API
     Then I click on the Archive case button
     Then I check the end of processing date in the archive popup and select Archive contacts checkbox
@@ -1026,7 +1020,6 @@ Feature: Case end to end tests
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
-    And I click on the Cases button from navbar
     And I open the last created Case via API
     And I check that the value selected from Disease combobox is "COVID-19" on Edit Case page
     Then I click on New Sample
@@ -1069,7 +1062,6 @@ Feature: Case end to end tests
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
-    And I click on the Cases button from navbar
     And I open the last created Case via API
     Then I navigate to Epidemiological Data tab on Edit Case Page
     And I click on Exposure details known with YES option
@@ -1214,7 +1206,6 @@ Feature: Case end to end tests
     And API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
-    Then I click on the Cases button from navbar
     When I open the last created Case via API
     Then I navigate to Epidemiological Data tab on Edit Case Page
     And I click on new entry button from Epidemiological Data tab for DE
@@ -1224,7 +1215,6 @@ Feature: Case end to end tests
     And I check that Sex is not visible in New Travel Entry popup
     And I check that disease in New Travel Entry popup is disabled
     And I click on Save button from the new travel entry form
-    Then I click on the Cases button from navbar
     When I open the last created Case via API
     Then I navigate to Epidemiological Data tab on Edit Case Page
     Then I check if added travel Entry appeared in Epi Data tab
@@ -2017,7 +2007,6 @@ Feature: Case end to end tests
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     Then I navigate to the last created case via the url
-    And I collect uuid of the case
     Then I click on share case button
     And I select organization to share with "s2s_2"
     And I fill comment in share popup with "shared with automated test"
@@ -2028,7 +2017,8 @@ Feature: Case end to end tests
     Then I navigate to "s2s_2" environment
     Given I log in as a Admin User
     And I click on the Shares button from navbar
-    Then I accept first case in Shares Page
+    And I click on the The Eye Icon located in the Shares Page
+    Then I check that first shared result has different id then deleted shared case
 
   @tmsLink=SORQA-658 @env_de @oldfake
     Scenario: Check automatic deletion of cases created 3651 days ago
@@ -2101,3 +2091,159 @@ Feature: Case end to end tests
     And I click on Create button in Document Templates box in Edit Case directory
     Then I select "ExampleDocumentTemplateCases.docx" Quarantine Order in Create Quarantine Order form in Edit Case directory
     And Sample name timestamp is correct in Create Quarantine Order form from Edit Case directory
+
+  @tmsLink=SORDEV-12081 @env_s2s_1
+  Scenario: Accept Reject Special Cases [1]
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    Then I navigate to the last created case via the url
+    And I collect uuid of the case
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment
+    Given I log in as a Admin User
+    And I click on the Shares button from navbar
+    And I click on "reject" shared case button with copied case description
+    Then I fill comment field in Reject share request popup and click confirm
+    Then I navigate to "s2s_1" environment
+    Then I navigate to the last created case via the url
+    And I check if reject share case button in Edit Case is unavailable
+
+  @tmsLink=SORDEV-12081 @env_s2s_1
+  Scenario: Accept Reject Special Cases [2]
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    Then I navigate to the last created case via the url
+    And I collect uuid of the case
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment in new driver tab
+    Given I log in as a Admin User
+    And I click on the Shares button from navbar
+    And I click on "accept" shared case button with copied case description
+    Then I back to tab number 1
+    And I click on revoke share button
+    Then I click on Ja button in Revoke case popup
+    And I check if popup with error with handover displays
+
+  @tmsLink=SORDEV-12081 @env_s2s_1
+  Scenario: Accept Reject Special Cases [3]
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    Then I navigate to the last created case via the url
+    And I collect uuid of the case
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment
+    Given I log in as a Admin User
+    And I click on the Shares button from navbar
+    And I click on "reject" shared case button with copied case description
+    Then I fill comment field in Reject share request popup and click confirm
+    Then I navigate to "s2s_1" environment
+    Then I navigate to the last created case via the url
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment
+    And I click on the Shares button from navbar
+    And I click on "reject" shared case button with copied case description
+
+  @tmsLink=SORDEV-12081 @env_s2s_1
+  Scenario: Accept Reject Special Cases [4]
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    Then I navigate to the last created case via the url
+    And I collect uuid of the case
+    Then I click on share case button
+    And I click to hand over the ownership of the case in Share popup
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment
+    Given I log in as a Admin User
+    And I click on the Shares button from navbar
+    And I click on "accept" shared case button with copied case description
+    Then I navigate to "s2s_1" environment
+    Then I navigate to the last created case via the url without check if uuid is enabled
+    And I check if share case button in Edit Case is unavailable
+
+  @tmsLink=SORDEV-12081 @env_s2s_1 @testIt
+  Scenario: Accept Reject Special Cases [5]
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    Then I navigate to the last created case via the url
+    And I collect uuid of the case
+    Then I click on share case button
+    And I click to hand over the ownership of the case in Share popup
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment in new driver tab
+    Given I log in as a Admin User
+    And I click on the Shares button from navbar
+    Then I back to tab number 1
+    And I click on revoke share button
+    Then I click on Ja button in Revoke case popup
+    Then I back to tab number 2
+    And I click on "accept" shared case button with copied case description
+    And I check if popup with error with handover displays
+
+  @tmsLink=SORDEV-12081 @env_s2s_1
+  Scenario: Accept Reject Special Cases [6]
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    Then I navigate to the last created case via the url
+    And I collect uuid of the case
+    Then I click on share case button
+    And I click to hand over the ownership of the case in Share popup
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment in new driver tab
+    Given I log in as a Admin User
+    And I click on the Shares button from navbar
+    Then I back to tab number 1
+    And I click on revoke share button
+    Then I click on Ja button in Revoke case popup
+    Then I back to tab number 2
+    And I click on "reject" shared case button with copied case description
+    Then I fill comment field in Reject share request popup and click confirm
+    And I check if popup with error with handover displays
+    

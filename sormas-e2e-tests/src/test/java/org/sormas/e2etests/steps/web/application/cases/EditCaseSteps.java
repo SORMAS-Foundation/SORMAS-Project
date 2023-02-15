@@ -2494,6 +2494,7 @@ public class EditCaseSteps implements En {
         "I click on share button in s2s share popup and wait for share to finish",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SHARE_SORMAS_2_SORMAS_POPUP_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
           // TODO Workaround before SORQA-565 will be fixed
           webDriverHelpers.refreshCurrentPage();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
@@ -2640,6 +2641,42 @@ public class EditCaseSteps implements En {
               webDriverHelpers.getTextFromWebElement(LINKED_EVENT_TITLE),
               apiState.getCreatedEvent().getEventTitle(),
               "Event title is not correct");
+          softly.assertAll();
+        });
+    When(
+        "I check if reject share case button in Edit Case is unavailable",
+        () -> {
+          softly.assertFalse(webDriverHelpers.isElementPresent(REJECT_SHARED_CASE_BUTTON));
+          softly.assertAll();
+        });
+    When(
+        "I check if share case button in Edit Case is unavailable",
+        () -> {
+          softly.assertFalse(webDriverHelpers.isElementPresent(SHARE_SORMAS_2_SORMAS_BUTTON));
+          softly.assertAll();
+        });
+    When(
+        "I click on revoke share button",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(REJECT_SHARED_CASE_BUTTON);
+          TimeUnit.SECONDS.sleep(3);
+        });
+    When(
+        "I click on Ja button in Revoke case popup",
+        () -> {
+          softly.assertTrue(
+              webDriverHelpers.isElementVisibleWithTimeout(REVOKE_CASE_POPUP_HEADER, 2));
+          softly.assertAll();
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_POPUP);
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
+        });
+    When(
+        "I check if popup with error with handover displays",
+        () -> {
+          softly.assertTrue(
+              webDriverHelpers.isElementVisibleWithTimeout(ERROR_IN_HANDOVER_HEADER_DE, 3));
+          softly.assertTrue(
+              webDriverHelpers.isElementVisibleWithTimeout(ERROR_DESCRIPTION_REQUEST_PROCESSED, 3));
           softly.assertAll();
         });
   }

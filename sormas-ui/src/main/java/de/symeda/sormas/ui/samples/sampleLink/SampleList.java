@@ -103,6 +103,9 @@ public class SampleList extends PaginationList<SampleListEntryDto> {
 	private String buildNoSamplesCaption(SampleAssociationType sampleAssociationType) {
 		String caption;
 		switch (sampleAssociationType) {
+		case PERSON:
+			caption = Captions.sampleNoSamplesForPerson;
+			break;
 		case CASE:
 			caption = Captions.sampleNoSamplesForCase;
 			break;

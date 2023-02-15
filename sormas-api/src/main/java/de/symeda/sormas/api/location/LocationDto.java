@@ -142,6 +142,7 @@ public class LocationDto extends PseudonymizableDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String addressTypeDetails;
 	@PersonalData
+	@SensitiveData
 	private FacilityType facilityType;
 	@PersonalData
 	@SensitiveData

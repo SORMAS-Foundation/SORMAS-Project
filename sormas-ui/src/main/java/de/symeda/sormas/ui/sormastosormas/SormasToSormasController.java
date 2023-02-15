@@ -31,9 +31,12 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -41,9 +44,10 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.person.PersonCriteria;
+import de.symeda.sormas.api.sormastosormas.DuplicateResult;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
-import de.symeda.sormas.api.sormastosormas.entities.DuplicateResult;
 import de.symeda.sormas.api.sormastosormas.share.ShareRequestDetailsDto;
 import de.symeda.sormas.api.sormastosormas.share.ShareRequestIndexDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
@@ -122,7 +126,7 @@ public class SormasToSormasController {
 			SormasToSormasOptionsForm.forEvent(event, currentShares));
 	}
 
-	public void shareLabMessage(ExternalMessageDto labMessage, Runnable callback) {
+	public void shareExternalMessage(ExternalMessageDto labMessage, Runnable callback) {
 		handleShareWithOptions(
 			options -> FacadeProvider.getSormasToSormasLabMessageFacade()
 				.sendExternalMessages(Collections.singletonList(labMessage.getUuid()), options),
@@ -209,13 +213,16 @@ public class SormasToSormasController {
 				DuplicateResult duplicateResult =
 					FacadeProvider.getSormasToSormasFacade().acceptShareRequest(request.getDataType(), request.getUuid(), true);
 
-				switch (duplicateResult) {
+				switch (duplicateResult.getType()) {
 				case CASE:
 					confirmDuplicateFound(
 						request,
 						Strings.messageSormasToSormasSimilarCaseFound,
 						Captions.actionOkAndGoToMerge,
-						() -> ControllerProvider.getCaseController().navigateToMergeCasesView(),
+						() -> ControllerProvider.getCaseController()
+							.navigateToMergeCasesView(
+								new CaseCriteria()
+									.caseUuidsForMerge(shareRequest.getCases().stream().map(EntityDto::getUuid).collect(Collectors.toSet()))),
 						callback);
 					break;
 				case CASE_CONVERTED:
@@ -223,7 +230,10 @@ public class SormasToSormasController {
 						request,
 						Strings.messageSormasToSormasSimilarConvertedCaseFound,
 						Captions.actionOkAndGoToMerge,
-						() -> ControllerProvider.getCaseController().navigateToMergeCasesView(),
+						() -> ControllerProvider.getCaseController()
+							.navigateToMergeCasesView(
+								new CaseCriteria()
+									.caseUuidsForMerge(shareRequest.getCases().stream().map(EntityDto::getUuid).collect(Collectors.toSet()))),
 						callback);
 					break;
 				case CONTACT_TO_CASE:
@@ -231,7 +241,7 @@ public class SormasToSormasController {
 						request,
 						Strings.messageSormasToSormasSimilarContactToCaseFound,
 						Captions.actionOkAndGoToContactDirectory,
-						() -> ControllerProvider.getContactController().navigateToIndex(),
+						() -> ControllerProvider.getContactController().navigateTo(new ContactCriteria().uuids(duplicateResult.getUuids())),
 						callback);
 					break;
 				case CONTACT:
@@ -239,7 +249,10 @@ public class SormasToSormasController {
 						request,
 						Strings.messageSormasToSormasSimilarContactFound,
 						Captions.actionOkAndGoToMerge,
-						() -> ControllerProvider.getContactController().navigateToMergeContactsView(),
+						() -> ControllerProvider.getContactController()
+							.navigateToMergeContactsView(
+								new ContactCriteria()
+									.contactUuidsForMerge(shareRequest.getContacts().stream().map(EntityDto::getUuid).collect(Collectors.toSet()))),
 						callback);
 					break;
 				case CONTACT_CONVERTED:
@@ -247,7 +260,10 @@ public class SormasToSormasController {
 						request,
 						Strings.messageSormasToSormasSimilarConvertedContactFound,
 						Captions.actionOkAndGoToMerge,
-						() -> ControllerProvider.getContactController().navigateToMergeContactsView(),
+						() -> ControllerProvider.getContactController()
+							.navigateToMergeContactsView(
+								new ContactCriteria()
+									.contactUuidsForMerge(shareRequest.getContacts().stream().map(EntityDto::getUuid).collect(Collectors.toSet()))),
 						callback);
 					break;
 				case CASE_TO_CONTACT:
@@ -258,7 +274,10 @@ public class SormasToSormasController {
 						isMultipleContacts ? Captions.actionOkAndGoToContactDirectory : Captions.actionOkAndGoToContactDetails,
 						() -> {
 							if (isMultipleContacts) {
-								ControllerProvider.getContactController().navigateToIndex();
+								ControllerProvider.getContactController()
+									.navigateTo(
+										new ContactCriteria()
+											.uuids(shareRequest.getContacts().stream().map(EntityDto::getUuid).collect(Collectors.toSet())));
 							} else {
 								ControllerProvider.getContactController().navigateToData(shareRequest.getContacts().get(0).getUuid());
 							}
@@ -270,7 +289,7 @@ public class SormasToSormasController {
 						request,
 						Strings.messageSormasToSormasSimilarPersonFound,
 						Captions.actionOkAndGoToPersonDirectory,
-						() -> ControllerProvider.getPersonController().navigateToPersons(),
+						() -> ControllerProvider.getPersonController().navigateToPersons(new PersonCriteria().uuids(duplicateResult.getUuids())),
 						callback);
 					break;
 

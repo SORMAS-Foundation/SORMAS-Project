@@ -1440,9 +1440,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	public List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, boolean ignoreRegion) {
-
-		return service.getCasesForDuplicateMerging(criteria, ignoreRegion, configFacade.getNameSimilarityThreshold());
+	public List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, int limit, boolean showDuplicatesWithDifferentRegion) {
+		return service.getCasesForDuplicateMerging(criteria, limit, showDuplicatesWithDifferentRegion, configFacade.getNameSimilarityThreshold());
 	}
 
 	@RightsAllowed(UserRight._CASE_EDIT)
@@ -1730,9 +1729,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			final Case caze = service.getByUuid(cazeRef.getUuid());
 			contact.getSamples().forEach(sample -> {
 				if (!sample.isDeleted()) {
-					if (sample.getAssociatedCase() == null) {
+					if (contact.getDisease() == caze.getDisease() && sample.getAssociatedCase() == null) {
 						sample.setAssociatedCase(caze);
-					} else if (!sample.getAssociatedCase().getUuid().equals(cazeRef.getUuid())) {
+					} else if (!DataHelper.isSame(sample.getAssociatedCase(), cazeRef)) {
 						sampleFacade.cloneSampleForCase(sample, caze);
 					}
 				}
@@ -1754,7 +1753,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			final Case caze = service.getByUuid(cazeRef.getUuid());
 			eventParticipant.getSamples().forEach(sample -> {
 				if (!sample.isDeleted()) {
-					if (sample.getAssociatedCase() == null) {
+					if (eventParticipant.getEvent().getDisease() == caze.getDisease() && sample.getAssociatedCase() == null) {
 						sample.setAssociatedCase(caze);
 					} else if (!sample.getAssociatedCase().getUuid().equals(cazeRef.getUuid())) {
 						sampleFacade.cloneSampleForCase(sample, caze);
@@ -1776,7 +1775,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		final Case caze = service.getByUuid(cazeRef.getUuid());
 		final Disease disease = caze.getDisease();
 		eventParticipant.getSamples().stream().filter(sample -> sampleContainsTestForDisease(sample, disease)).forEach(sample -> {
-			if (sample.getAssociatedCase() == null) {
+			if (eventParticipant.getEvent().getDisease() == disease && sample.getAssociatedCase() == null) {
 				sample.setAssociatedCase(caze);
 			} else {
 				sampleFacade.cloneSampleForCase(sample, caze);
@@ -2588,6 +2587,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	private void deleteCase(Case caze, DeletionDetails deletionDetails)
 		throws ExternalSurveillanceToolRuntimeException, SormasToSormasRuntimeException {
 
+		if (!caseService.inJurisdictionOrOwned(caze)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.messageCaseOutsideJurisdictionDeletionDenied));
+		}
 		externalJournalService.handleExternalJournalPersonUpdateAsync(caze.getPerson().toReference());
 
 		try {
@@ -2611,7 +2613,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					try {
 						deleteCase(caseToBeDeleted, deletionDetails);
 						deletedCasesUuids.add(caseToBeDeleted.getUuid());
-					} catch (ExternalSurveillanceToolRuntimeException | SormasToSormasRuntimeException e) {
+					} catch (ExternalSurveillanceToolRuntimeException | SormasToSormasRuntimeException | AccessDeniedException e) {
 						logger.error("The case with uuid {} could not be deleted", caseToBeDeleted.getUuid(), e);
 					}
 				}
