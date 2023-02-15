@@ -83,4 +83,5 @@ public class MessagesDirectoryPage {
   public static final By MARK_AS_FORWARDED_BUTTON =
       By.cssSelector("#actionManualForwardLabMessage");
   public static final By FORWARDED_MESSAGE_COUNTER = By.cssSelector("#Weitergeleitet");
+  public static final By NEW_SAMPLE_DATE_OF_REPORT_INPUT = By.cssSelector("#reportDate input");
 }

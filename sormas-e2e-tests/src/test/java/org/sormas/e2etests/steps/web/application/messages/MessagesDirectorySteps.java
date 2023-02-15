@@ -11,6 +11,7 @@ import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPa
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGE_DELETE_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGE_DIRECTORY_HEADER_DE;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGE_UUID_TEXT;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_DATE_OF_REPORT_INPUT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NO_NEW_REPORTS_POPUP;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.PATHOGEN_DETECTION_REPORTING_PROCESS_HEADER_DE;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_CONFIRM_BUTTON;
@@ -251,6 +252,12 @@ public class MessagesDirectorySteps implements En {
                       Integer.parseInt(textFromCounter),
                       number.intValue(),
                       "Number of displayed messages is not correct"));
+        });
+
+    And(
+        "^I check if date of report is prefilled in New sample form with pathogen detection process$",
+        () -> {
+          webDriverHelpers.getValueFromWebElement(NEW_SAMPLE_DATE_OF_REPORT_INPUT);
         });
   }
 }
