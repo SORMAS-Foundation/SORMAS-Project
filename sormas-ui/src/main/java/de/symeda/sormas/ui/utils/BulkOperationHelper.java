@@ -42,13 +42,14 @@ public class BulkOperationHelper {
 		if (bulkOperationResults.getRemainingEntries().isEmpty()) {
 			Notification.show(I18nProperties.getString(Strings.messageEntriesEdited), Notification.Type.HUMANIZED_MESSAGE);
 			bulkOperationDoneCallback.accept(bulkOperationResults);
-		} else if (bulkOperationResults.hasExceededEntryLimit()) {
+		} else if (bulkOperationResults.hasReachedEntryLimit()) {
 			VaadinUiUtil.showChooseOptionPopup(
 				I18nProperties.getString(Strings.headingBulkOperationProgress),
 				new Label(
 					String.format(
 						I18nProperties.getString(Strings.messageBulkOperationEntryLimitReached),
 						DataHelper.BULK_EDIT_ENTRY_LIMIT,
+						initialEntryCount - bulkOperationResults.getRemainingEntries().size(),
 						bulkOperationResults.getRemainingEntries().size()),
 					ContentMode.HTML),
 				I18nProperties.getCaption(Captions.actionYes),
@@ -62,7 +63,7 @@ public class BulkOperationHelper {
 						bulkOperationDoneCallback.accept(bulkOperationResults);
 					}
 				});
-		} else if (bulkOperationResults.hasExceededTimeLimit()) {
+		} else if (bulkOperationResults.hasReachedTimeLimit()) {
 			VaadinUiUtil.showChooseOptionPopup(
 				I18nProperties.getString(Strings.headingBulkOperationProgress),
 				new Label(

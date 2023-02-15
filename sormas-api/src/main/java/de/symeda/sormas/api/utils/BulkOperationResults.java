@@ -30,11 +30,11 @@ public class BulkOperationResults<E> implements Serializable {
 		return remainingEntries;
 	}
 
-	public boolean hasExceededTimeLimit() {
-		return elapsedTime > DataHelper.BULK_EDIT_TIME_LIMIT;
+	public boolean hasReachedTimeLimit() {
+		return elapsedTime >= DataHelper.BULK_EDIT_TIME_LIMIT;
 	}
 
-	public boolean hasExceededEntryLimit() {
-		return processedEntries > DataHelper.BULK_EDIT_ENTRY_LIMIT;
+	public boolean hasReachedEntryLimit() {
+		return processedEntries >= DataHelper.BULK_EDIT_ENTRY_LIMIT;
 	}
 }
