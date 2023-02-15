@@ -128,6 +128,22 @@ public class LoginSteps implements En {
           webDriverHelpers.accessWebSite(runningConfiguration.getEnvironmentUrlForMarket(locale));
           TimeUnit.SECONDS.sleep(5);
         });
+
+    When(
+        "I navigate to {string} environment in new driver tab",
+        (String env) -> {
+          locale = env;
+          webDriverHelpers.accessWebSiteWithNewTab(
+              runningConfiguration.getEnvironmentUrlForMarket(locale));
+          TimeUnit.SECONDS.sleep(5);
+        });
+
+    When(
+        "I back to tab number {int}",
+        (Integer tabNo) -> {
+          webDriverHelpers.switchToTheTabNumber(tabNo);
+          TimeUnit.SECONDS.sleep(2);
+        });
     Then(
         "I login with last edited user",
         () -> {
