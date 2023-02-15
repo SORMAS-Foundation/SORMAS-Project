@@ -447,6 +447,17 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
         });
 
+    When(
+        "^I navigate to the last created case via the url without check if uuid is enabled$",
+        () -> {
+          String LAST_CREATED_CASE_URL =
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
+                  + "/sormas-webdriver/#!cases/data/"
+                  + apiState.getCreatedCase().getUuid();
+          webDriverHelpers.accessWebSite(LAST_CREATED_CASE_URL);
+          webDriverHelpers.isElementVisibleWithTimeout(UUID_INPUT, 2);
+        });
+
     Then(
         "I check that number of displayed cases results is {int}",
         (Integer number) ->
@@ -1304,12 +1315,18 @@ public class CaseDirectorySteps implements En {
         });
 
     When(
-        "I click on reject shared case button with copied case description",
-        () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
-              getActionRejectButtonByCaseDescription(generatedRandomString));
-          webDriverHelpers.clickOnWebElementBySelector(
-              getActionRejectButtonByCaseDescription(generatedRandomString));
+        "I click on {string} shared case button with copied case description",
+        (String option) -> {
+          switch (option) {
+            case "reject":
+              webDriverHelpers.clickOnWebElementBySelector(
+                  getActionRejectButtonByCaseDescription(generatedRandomString));
+              break;
+            case "accept":
+              webDriverHelpers.clickOnWebElementBySelector(
+                  getActionAcceptButtonByCaseDescription(generatedRandomString));
+              break;
+          }
         });
 
     When(

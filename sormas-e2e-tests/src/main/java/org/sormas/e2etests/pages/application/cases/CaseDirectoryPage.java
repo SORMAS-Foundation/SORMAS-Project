@@ -194,6 +194,11 @@ public class CaseDirectoryPage {
         String.format("//*[contains(text(), '%s')]/..//div[@id='actionReject']", description));
   }
 
+  public static By getActionAcceptButtonByCaseDescription(String description) {
+    return By.xpath(
+        String.format("//*[contains(text(), '%s')]/..//div[@id='actionAccept']", description));
+  }
+
   public static final By REJECT_SHARED_CASE_POPUP_TEXT_AREA =
       By.cssSelector(".popupContent .v-widget textarea");
   public static final By RECEIVED_CASE_POPUP_UUID = By.xpath("//div[@class='popupContent']//td[1]");
