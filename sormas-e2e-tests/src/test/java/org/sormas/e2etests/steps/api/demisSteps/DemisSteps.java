@@ -355,16 +355,17 @@ public class DemisSteps implements En {
         });
 
     Given(
-        "I create and send Laboratory Notification with different report ID",
+        "I create and send Laboratory Notification with patient's phone and email",
         () -> {
           patientFirstName = faker.name().firstName();
           patientLastName = faker.name().lastName();
-          reportId = faker.code().imei();
-          String json = demisApiService.prepareLabNotificationFileWithDifferentReportId(patientFirstName, patientLastName, reportId);
+          String json =
+              demisApiService.prepareLabNotificationFileWithTelcom(
+                  patientFirstName, patientLastName);
           Assert.assertTrue(
               demisApiService.sendLabRequest(json, loginToken),
               "Failed to send laboratory request");
-         });
+        });
   }
 
   private List<Map<String, String>> getTableRowsData() {

@@ -149,11 +149,11 @@ public class DemisApiService {
     return json;
   }
 
-  public String prepareLabNotificationFileWithDifferentReportId(String patientFirstName, String patientLastName, String reportId) {
+  public String prepareLabNotificationFileWithTelcom(
+      String patientFirstName, String patientLastName) {
     DemisData demisData = runningConfiguration.getDemisData(locale);
-    String file = "src/main/resources/demisJsonTemplates/labNotificationTemplateReportId.json";
+    String file = "src/main/resources/demisJsonTemplates/labNotificationTemplateTelcom.json";
     String json = readFileAsString(file);
-    json = json.replace("\"<report_id_to_change>\"", "\"" + reportId + "\"");
     json = json.replace("\"<postal_code_to_change>\"", "\"" + demisData.getPostalCode() + "\"");
     json = json.replace("\"<last_name_to_change>\"", "\"" + patientLastName + "\"");
     json = json.replace("\"<first_name_to_change>\"", "\"" + patientFirstName + "\"");

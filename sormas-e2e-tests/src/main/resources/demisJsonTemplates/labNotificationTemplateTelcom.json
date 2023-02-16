@@ -28,10 +28,6 @@
                                     "https://demis.rki.de/fhir/StructureDefinition/NotificationLaboratorySARSCoV2"
                                 ]
                             },
-							"identifier": {
-								"system": "https://demis.rki.de/fhir/NamingSystem/NotificationId",
-								"value": "<report_id_to_change>"
-							},
                             "status": "preliminary",
                             "type": {
                                 "coding": [
@@ -116,6 +112,16 @@
                                     "given": [
                                         "<first_name_to_change>"
                                     ]
+                                }
+                            ],
+							"telecom": [
+                                {
+                                    "system": "phone",
+                                    "value": "+4915700000000"
+                                },
+                                {
+                                    "system": "email",
+                                    "value": "emailadresse@mail.com"
                                 }
                             ],
                             "gender": "male",
