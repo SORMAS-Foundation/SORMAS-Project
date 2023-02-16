@@ -67,6 +67,7 @@ public class DemisSteps implements En {
   public static List<String> firstNames = new ArrayList<>();
   public static List<String> lastNames = new ArrayList<>();
   public static Map<String, String> collectedMessagesTable;
+  public static String reportId;
 
   @Inject
   public DemisSteps(
@@ -351,6 +352,19 @@ public class DemisSteps implements En {
                   "Birthday dates are not equal");
               softly.assertAll();
           }
+        });
+
+    Given(
+        "I create and send Laboratory Notification with patient's phone and email",
+        () -> {
+          patientFirstName = faker.name().firstName();
+          patientLastName = faker.name().lastName();
+          String json =
+              demisApiService.prepareLabNotificationFileWithTelcom(
+                  patientFirstName, patientLastName);
+          Assert.assertTrue(
+              demisApiService.sendLabRequest(json, loginToken),
+              "Failed to send laboratory request");
         });
   }
 

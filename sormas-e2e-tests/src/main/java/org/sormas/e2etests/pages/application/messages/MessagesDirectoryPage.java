@@ -83,4 +83,15 @@ public class MessagesDirectoryPage {
   public static final By MARK_AS_FORWARDED_BUTTON =
       By.cssSelector("#actionManualForwardLabMessage");
   public static final By FORWARDED_MESSAGE_COUNTER = By.cssSelector("#Weitergeleitet");
+  public static final By NEW_SAMPLE_DATE_OF_REPORT_INPUT = By.cssSelector("#reportDate input");
+  public static final By NEW_SAMPLE_TEST_RESULT_INPUT = By.cssSelector("#testResult input");
+  public static final By NEW_SAMPLE_SPECIMEN_CONDITION_INPUT =
+      By.cssSelector("#specimenCondition input");
+  public static final By NEW_SAMPLE_TEST_RESULT_VERIFIED_RADIOBUTTON =
+      By.cssSelector("#testResultVerified");
+  public static final By NEW_SAMPLE_TEST_RESULT_VERIFIED_SELECTED_VALUE =
+      By.cssSelector("#testResultVerified input[checked] + label");
+  public static final By NEW_SAMPLE_TESTED_DISEASE_INPUT = By.cssSelector("#testedDisease input");
+  public static final By NEW_CASE_EMAIL_ADDRESS_INPUT = By.cssSelector("#emailAddress");
+  public static final By NEW_CASE_PHONE_NUMBER_INPUT = By.cssSelector("#phone");
 }

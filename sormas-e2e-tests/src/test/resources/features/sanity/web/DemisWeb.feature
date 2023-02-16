@@ -183,3 +183,27 @@ Scenario: Create and send laboratory request via Demis
     And I filter messages by collected uuid
     And I check that number of displayed messages results for Weitergeleitet is 1
     Then I click on reset filters button from Message Directory
+
+  @tmsLink=SORDEV-5189 @env_d2s @LoginKeycloak
+  Scenario: Test improvement of the mapping/prefilling the new sample forms when processing a DEMIS LabMessage
+    Given API : Login to DEMIS server
+    Then I create and send Laboratory Notification with patient's phone and email
+    When I log in as a Admin User
+    And I click on the Messages button from navbar
+    And I click on fetch messages button
+    Then I click on process button for 1 result in Message Directory page
+    And I pick a new person in Pick or create person popup during case creation for DE
+    And I choose create new case in Pick or create entry form for DE
+    And I check that create new case form with pathogen detection reporting process is displayed for DE
+    And I check if "email address" is prefilled in New case form while processing a DEMIS LabMessage
+    And I check if "phone number" is prefilled in New case form while processing a DEMIS LabMessage
+    And I fill only mandatory fields to convert laboratory message into a case for DE
+    And I click on save button in the case popup
+    Then I check that new sample form with pathogen detection reporting process is displayed
+    And I check if "specimen condition" is prefilled in New sample form while processing a DEMIS LabMessage
+    And I check if "specimen condition" is set to "Ausreichend"
+    And I check if "tested disease" is prefilled in New sample form while processing a DEMIS LabMessage
+    And I check if "tested disease" is set to "COVID-19"
+    And I check if "test result" is prefilled in New sample form while processing a DEMIS LabMessage
+    And I check if "test result verified" is prefilled in New sample form while processing a DEMIS LabMessage
+    And I check if "test result verified" is set to "JA"
