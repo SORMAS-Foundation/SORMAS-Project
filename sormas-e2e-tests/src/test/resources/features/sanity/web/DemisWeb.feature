@@ -188,7 +188,7 @@ Scenario: Create and send laboratory request via Demis
   Scenario: Test improvement of the mapping/prefilling the new sample forms when processing a DEMIS LabMessage
     Given API : Login to DEMIS server
     Then I create and send Laboratory Notification with patient's phone and email
-    When I log in as a National User
+    When I log in as a Admin User
     And I click on the Messages button from navbar
     And I click on fetch messages button
     Then I click on process button for 1 result in Message Directory page
