@@ -1,9 +1,14 @@
 package org.sormas.e2etests.steps.web.application.messages;
 
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.ACTION_CONFIRM_POPUP_BUTTON;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.ACTION_YES_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CLOSE_POPUP;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CREATE_NEW_CASE_POPUP_WINDOW_DE;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CREATE_NEW_SAMPLE_POPUP_WINDOW_DE;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FETCH_MESSAGES_BUTTON;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FETCH_MESSAGES_NULL_DATE;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FETCH_MESSAGES_NULL_TIME_COMBOBOX;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FIRST_TIME_FETCH_MESSAGE_POPUP;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FORWARDED_MESSAGE_COUNTER;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.GET_NEW_MESSAGES_POPUP;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MARK_AS_FORWARDED_BUTTON;
@@ -36,6 +41,8 @@ import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPa
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.getProcessStatusByIndex;
 
 import cucumber.api.java8.En;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -74,6 +81,14 @@ public class MessagesDirectorySteps implements En {
           }
           if (webDriverHelpers.isElementVisibleWithTimeout(GET_NEW_MESSAGES_POPUP, 1)) {
             webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT_FIRST_BUTTON);
+          }
+          if (webDriverHelpers.isElementVisibleWithTimeout(FIRST_TIME_FETCH_MESSAGE_POPUP, 1)) {
+            webDriverHelpers.clickOnWebElementBySelector(ACTION_YES_BUTTON);
+            webDriverHelpers.fillInWebElement(
+                FETCH_MESSAGES_NULL_DATE,
+                LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+            webDriverHelpers.selectFromCombobox(FETCH_MESSAGES_NULL_TIME_COMBOBOX, "00:00");
+            webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM_POPUP_BUTTON);
           }
         });
 
