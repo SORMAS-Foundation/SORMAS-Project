@@ -120,7 +120,11 @@ public class CampaignDataView extends AbstractCampaignView {
 		addHeaderComponent(campaignFormPhaseSelector);
 
 		grid = new CampaignDataGrid(criteria);
-		grid.setDescriptionGenerator(CampaignFormMetaReferenceDto -> grid.getCaption());
+//		for(int i = 0; i < grid.getHeaderRowCount(); i++) {
+//			grid.getHeaderRow(i).
+//			
+//		}
+		//grid.setDescriptionGenerator(CampaignFormMetaReferenceDto -> grid.getCaption());
 
 		VerticalLayout mainLayout = new VerticalLayout();
 		HorizontalLayout filtersLayout = new HorizontalLayout();

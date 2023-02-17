@@ -37,6 +37,7 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 	public static final String CCODE = "ccode";
 	public static final String FORM_DATE = "formDate";
 	public static final String FORM_TYPE = "formType";
+	public static final String ANALYSIS_FIELD = "analysis_a";
 
 	private static final long serialVersionUID = -6672198324526771162L;
 
@@ -55,6 +56,11 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 	private Long ccode;
 	private Date formDate;
 	private String formType;
+	private String analysis_a;
+	private String analysis_b;
+	private String analysis_c;
+	private String analysis_d;
+	
 
 	public CampaignFormDataIndexDto(
 		String uuid,
@@ -88,6 +94,47 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 		this.formDate = formDate;
 		this.formType = formType;
 	}
+	
+	public CampaignFormDataIndexDto(
+			String uuid,
+			String campaign,
+			String form,
+			Object formValues,
+			String area,
+			Long rcode,
+			String region,
+			Long pcode,
+			String district,
+			Long dcode,
+			String community,
+			Integer clusternumber,
+			Long ccode,
+			Date formDate,
+			String formType,
+			String analysis_a) {
+//			String analysis_b,
+//			String analysis_c,
+//			String analysis_d) {
+			this.uuid = uuid;
+			this.campaign = campaign;
+			this.form = form;
+			this.formValues = (List<CampaignFormDataEntry>) formValues;
+			this.area = area;
+			this.rcode = rcode;
+			this.region = region;
+			this.pcode = pcode;
+			this.district = district;
+			this.dcode = dcode;
+			this.community = community;
+			this.clusternumber = clusternumber;
+			this.ccode = ccode;
+			this.formDate = formDate;
+			this.formType = formType;
+			this.analysis_a = analysis_a;
+//			this.analysis_b = analysis_b;
+//			this.analysis_c = analysis_c;
+//			this.analysis_d = analysis_d;
+		}
 	
 	public CampaignFormDataIndexDto(
 			String uuid,
@@ -231,6 +278,38 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 
 	public void setCcode(Long ccode) {
 		this.ccode = ccode;
+	}
+
+	public String getAnalysis_a() {
+		return analysis_a;
+	}
+
+	public void setAnalysis_a(String analysis_a) {
+		this.analysis_a = analysis_a;
+	}
+
+	public String getAnalysis_b() {
+		return analysis_b;
+	}
+
+	public void setAnalysis_b(String analysis_b) {
+		this.analysis_b = analysis_b;
+	}
+
+	public String getAnalysis_c() {
+		return analysis_c;
+	}
+
+	public void setAnalysis_c(String analysis_c) {
+		this.analysis_c = analysis_c;
+	}
+
+	public String getAnalysis_d() {
+		return analysis_d;
+	}
+
+	public void setAnalysis_d(String analysis_d) {
+		this.analysis_d = analysis_d;
 	}
 	
 	

@@ -261,6 +261,10 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
 		}
 	}
 
+	public void hideFieldOnly() {
+		setVisibility(View.GONE);
+	}
+
 	@Override
 	public void setVisibility(int visibility) {
 		super.setVisibility(visibility);

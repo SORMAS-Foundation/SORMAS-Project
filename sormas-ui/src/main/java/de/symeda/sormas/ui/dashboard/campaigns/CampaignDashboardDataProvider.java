@@ -341,7 +341,7 @@ public class CampaignDashboardDataProvider {
 					
 				}else {
 					List<CampaignDiagramDataDto> diagramData = FacadeProvider.getCampaignFormDataFacade()
-						.getDiagramData(
+						.getDiagramDataCard(
 							campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto().getCampaignDiagramSeries(),
 							new CampaignDiagramCriteria(campaign, area, region, district, campaignJurisdictionLevelGroupBy));
 					

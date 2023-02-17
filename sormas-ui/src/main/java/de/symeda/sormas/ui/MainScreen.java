@@ -167,6 +167,8 @@ public class MainScreen extends HorizontalLayout {
 			menu.addView(PersonsView.class, PersonsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuPersons),
 					VaadinIcons.USER_CARD);
 		}
+		
+		
 		if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.CASE_VIEW)) {
 			ControllerProvider.getCaseController().registerViews(navigator);
 			menu.addView(CasesView.class, CasesView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuCases),
@@ -207,6 +209,8 @@ public class MainScreen extends HorizontalLayout {
 			menu.addView(TravelEntriesView.class, TravelEntriesView.VIEW_NAME,
 					I18nProperties.getCaption(Captions.mainMenuEntries), VaadinIcons.AIRPLANE);
 		}
+		
+		
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT)
 				&& FacadeProvider.getSormasToSormasFacade().isFeatureEnabledForUser()) {

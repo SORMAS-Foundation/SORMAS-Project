@@ -848,8 +848,7 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
                             isRangeandExpression = true;
                         }
 
-                    } else if (type == CampaignFormElementType.DROPDOWN) {
-                        dynamicField = CampaignFormDataFragmentUtils.createControlSpinnerFieldEditField(campaignFormElement, requireContext(), CampaignFormDataFragmentUtils.getUserTranslations(campaignFormMeta), optionsValues);
+                    } else if (type == CampaignFormElementType.DROPDOWN) {                        dynamicField = CampaignFormDataFragmentUtils.createControlSpinnerFieldEditField(campaignFormElement, requireContext(), CampaignFormDataFragmentUtils.getUserTranslations(campaignFormMeta), optionsValues);
                     } else if (type == CampaignFormElementType.DATE) {
                         dynamicField = CampaignFormDataFragmentUtils.createControlDateEditField(campaignFormElement, requireContext(), CampaignFormDataFragmentUtils.getUserTranslations(campaignFormMeta), true, this.getFragmentManager(), campaignFormElement.isImportant());
                     } else {
@@ -859,15 +858,22 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
                     fieldMap.put(campaignFormElement.getId(), dynamicField);
                     dynamicField.setShowCaption(true);
                     dynamicLayout.addView(dynamicField, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-
+                    final String dependingOn = campaignFormElement.getDependingOn();
                     Boolean finalIsRangeandExpression = isRangeandExpression;
+                    Boolean isdependingOn = false;
+                    if (dependingOn != null) {
+                        isdependingOn = true;
+                    }
 
-
-                        dynamicField.addValueChangedListener(field -> {
+                    Boolean finalIsdependingOn = isdependingOn;
+                    dynamicField.addValueChangedListener(field -> {
                             final Boolean isRangeandExpressionx = finalIsRangeandExpression;
+                            System.out.println(">>>>>>>>>>>>>>>>>finalIsdependingOn>>>>>>> "+finalIsdependingOn);
+
                             Boolean okk = field.getFocusedChild() != null ? true : false;
-                                final CampaignFormDataEntry campaignFormDataEntry = CampaignFormDataFragmentUtils.getOrCreateCampaignFormDataEntry(formValues, campaignFormElement);
-                                campaignFormDataEntry.setValue(field.getValue());
+                            final CampaignFormDataEntry campaignFormDataEntry = CampaignFormDataFragmentUtils.getOrCreateCampaignFormDataEntry(formValues, campaignFormElement);
+                            campaignFormDataEntry.setValue(field.getValue());
+
                                 if ((campaignFormElement.getExpression() == null && fieldMap.get(campaignFormElement.getId()) != null) || (okk && isRangeandExpressionx)) {
                                     for(CampaignFormDataEntry det : formValues){
                                         if(det.getValue() != null) {
@@ -883,6 +889,10 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
 
                                 }
 
+                        if(finalIsdependingOn){
+                            field.setVisibility(View.GONE);
+                        }
+
                         });
 
 
@@ -892,9 +902,17 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
                     Object defaultValue = campaignFormElement.getDefaultvalue();
                     formValues.add(new CampaignFormDataEntry(campaignFormElement.getId(), defaultValue == null ? null : defaultValue));
                     dynamicField.setValue(defaultValue == null ? null : defaultValue);
-                    final String dependingOn = campaignFormElement.getDependingOn();
-                    if (dependingOn != null) {
+
+                    if (dependingOn != null && finalIsRangeandExpression) {
+
+                      //  handleDependingOn(fieldMap, campaignFormElement, dynamicField);
+                        System.out.println(">>>>>>>>>>>>>>> "+finalIsRangeandExpression);
+                        dynamicField.hideFieldOnly();
+
+                    } else if (dependingOn != null) {
+
                         handleDependingOn(fieldMap, campaignFormElement, dynamicField);
+
                     }
 
                     final String expressionString = campaignFormElement.getExpression();

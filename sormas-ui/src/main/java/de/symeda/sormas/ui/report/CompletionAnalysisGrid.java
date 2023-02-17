@@ -54,7 +54,8 @@ public class CompletionAnalysisGrid extends FilteredGrid<CampaignFormDataIndexDt
 				CampaignFormDataIndexDto.COMMUNITYNUMBER,
 				CampaignFormDataIndexDto.FORM_DATE,
 				CampaignFormDataIndexDto.FORM_TYPE,
-				CampaignFormDataIndexDto.FORM);
+				CampaignFormDataIndexDto.FORM,
+				CampaignFormDataIndexDto.ANALYSIS_FIELD);
 
 //		((Column<CampaignFormDataIndexDto, Set<FormAccess>>) getColumn(CampaignFormDataIndexDto.REP_FORMACCESS)).setRenderer(new CollectionValueProvider<Set<FormAccess>>(), new HtmlRenderer());
 //		((Column<CampaignFormDataIndexDto, String>) getColumn(CampaignFormDataIndexDto.REP_USERNAME)).setRenderer(value -> String.valueOf(value).replace("[", "").replace("]", "").replace("null,", "").replace("null", ""), new HtmlRenderer());
@@ -85,7 +86,7 @@ public class CompletionAnalysisGrid extends FilteredGrid<CampaignFormDataIndexDt
 										query.getSortOrders().stream()
 												.map(sortOrder -> new SortProperty(sortOrder.getSorted(),
 														sortOrder.getDirection() == SortDirection.ASCENDING))
-												.collect(Collectors.toList()))// , formacc)
+												.collect(Collectors.toList()), formacc)
 								.stream(),
 						query -> FacadeProvider.getCampaignFormDataFacade()
 								.getByCompletionAnalysis(query.getFilter().orElse(null), query.getOffset(),
@@ -93,7 +94,7 @@ public class CompletionAnalysisGrid extends FilteredGrid<CampaignFormDataIndexDt
 										query.getSortOrders().stream()
 												.map(sortOrder -> new SortProperty(sortOrder.getSorted(),
 														sortOrder.getDirection() == SortDirection.ASCENDING))
-												.collect(Collectors.toList()))
+												.collect(Collectors.toList()), formacc)
 								.size());
 
 		System.out.println("sdafasdfasdfgasdgvasdfgsdfhsdfg " + dataProvider);

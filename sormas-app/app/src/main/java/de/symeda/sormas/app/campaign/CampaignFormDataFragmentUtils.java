@@ -512,7 +512,10 @@ public class CampaignFormDataFragmentUtils {
                 initLabelAndValidationListeners();
                 setLiveValidationDisabled(true);
                 initInput(isIntegerField, isRequired, true, minVal, maxVal, isExpressionx, warnOnError);
+                setVisibility(GONE);
             }
+
+
         };
     }
 
