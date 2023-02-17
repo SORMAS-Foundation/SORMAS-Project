@@ -207,3 +207,24 @@ Scenario: Create and send laboratory request via Demis
     And I check if "test result" is prefilled in New sample form while processing a DEMIS LabMessage
     And I check if "test result verified" is prefilled in New sample form while processing a DEMIS LabMessage
     And I check if "test result verified" is set to "JA"
+
+  @tmsLink=SORDEV-6171 @env_d2s @LoginKeycloak
+  Scenario: Test [DEMIS2SORMAS] Prefill SampleMaterial
+    Given API : Login to DEMIS server
+    Then I create and send Laboratory Notification
+    And I log in as a Admin User
+    Then I click on the Messages button from navbar
+    And I click on fetch messages button
+    Then I filter by last created person via API in Messages Directory
+    And I collect message data from searched record in Messages directory
+    And I click on process button for 1 result in Message Directory page
+    And I pick a new person in Pick or create person popup during case creation for DE
+    And I choose create new case in Pick or create entry form for DE
+    And I check that create new case form with pathogen detection reporting process is displayed for DE
+    And I fill only mandatory fields to convert laboratory message into a case for DE
+    And I click on save button in the case popup
+    Then I check if sample material has a option "Nasen-Abstrich"
+    And I check if sample material has a option "Oropharynx-Aspirat"
+    And I check if sample material has a option "Oropharynx-Aspirat"
+    And I check if sample material has a option "Nasopharynx-Abstrich"
+    And I check if sample material has a option "Pleuralflüssigkeitsprobe"
