@@ -63,6 +63,10 @@ public class DemisApiService {
   public String getAuthToken() {
     DemisData demisData = runningConfiguration.getDemisData(locale);
 
+    System.out.println("---------------------------");
+    System.out.println(demisData.getCertificatePath());
+    System.out.println("---------------------------");
+
     OkHttpClient client =
         SormasOkHttpClient.getClient(
             demisData.getCertificatePath(), demisData.getCertificatePassword());

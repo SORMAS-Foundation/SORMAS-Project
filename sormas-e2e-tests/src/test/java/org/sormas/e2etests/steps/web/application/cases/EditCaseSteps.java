@@ -2679,6 +2679,12 @@ public class EditCaseSteps implements En {
               webDriverHelpers.isElementVisibleWithTimeout(ERROR_DESCRIPTION_REQUEST_PROCESSED, 3));
           softly.assertAll();
         });
+    When(
+        "I check if edit sample button is unavailable",
+        () -> {
+          softly.assertFalse(webDriverHelpers.isElementPresent(EDIT_SAMPLE_BUTTON));
+          softly.assertAll();
+        });
   }
 
   private Vaccination collectVaccinationData() {
