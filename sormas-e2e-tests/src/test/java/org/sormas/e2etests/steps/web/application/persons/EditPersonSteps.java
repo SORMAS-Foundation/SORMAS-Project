@@ -110,6 +110,7 @@ import org.sormas.e2etests.entities.services.PersonService;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.contacts.EditContactPersonPage;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.sormas.e2etests.steps.web.application.contacts.EditContactPersonSteps;
@@ -124,6 +125,7 @@ public class EditPersonSteps implements En {
   protected Person previousCreatedPerson = null;
   protected Person collectedPerson;
   public static Person newGeneratedPerson;
+  private static String personFirstName;
 
   @Inject
   public EditPersonSteps(
@@ -542,6 +544,24 @@ public class EditPersonSteps implements En {
           Assert.assertTrue(
               webDriverHelpers.isElementEnabled(GENERAL_COMMENT_FIELD),
               "There is no resizable General comment field on page");
+        });
+
+    And(
+        "^I change first name of person from Edit person page$",
+        () -> {
+          personFirstName = faker.name().firstName();
+          fillFirstName(personFirstName);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+        });
+
+    And(
+        "^I check if first name of person has been changed$",
+        () -> {
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(EditContactPersonPage.FIRST_NAME_INPUT),
+              personFirstName,
+              "Name is incorrect!");
+          softly.assertAll();
         });
   }
 

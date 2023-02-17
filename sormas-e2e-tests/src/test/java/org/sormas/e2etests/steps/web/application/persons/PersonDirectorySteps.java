@@ -22,9 +22,11 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePersonPage.CASE_OF_DEATH_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePersonPage.DATE_OF_DEATH_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.ALL_BUTTON_CONTACT;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_RESULTS_UUID_LOCATOR;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.*;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.*;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
+import static org.sormas.e2etests.steps.web.application.contacts.EditContactSteps.aContact;
 import static org.sormas.e2etests.steps.web.application.entries.CreateNewTravelEntrySteps.TravelEntryUuid;
 import static org.sormas.e2etests.steps.web.application.entries.CreateNewTravelEntrySteps.aCase;
 
@@ -593,6 +595,25 @@ public class PersonDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(ALL_BUTTON_CONTACT);
           TimeUnit.SECONDS.sleep(5); // needed for table refresh
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(120);
+        });
+
+    And(
+        "^I filter persons by collected person UUID on Persons directory page$",
+        () -> {
+          String contactUuid = aContact.getUuid();
+          By uuidLocator = By.cssSelector(String.format(CONTACT_RESULTS_UUID_LOCATOR, contactUuid));
+          webDriverHelpers.fillAndSubmitInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, contactUuid);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(uuidLocator);
+        });
+
+    Then(
+        "^I click on the first result in table from Person directory page$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              FIRST_RESULT_IN_PERSON_DIRECTORY_TABLE);
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_RESULT_IN_PERSON_DIRECTORY_TABLE);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
         });
   }
 }

@@ -346,3 +346,14 @@ Feature: Edit Persons
     When I back to tab number 1
     Then I navigate to "s2s_1" environment
     And I open last created contact via API and check if Edit case page is read only
+    Then I open Contact Person tab
+    And I collect the contact person UUID displayed on Edit contact page
+    Then I click on the Persons button from navbar
+    And I filter persons by collected person UUID on Persons directory page
+    Then I click on the first result in table from Person directory page
+    And I change first name of person from Edit person page
+    When I back to tab number 2
+    Then I navigate to "s2s_2" environment
+    And I open the last created contact via API
+    Then I open Contact Person tab
+    And I check if first name of person has been changed
