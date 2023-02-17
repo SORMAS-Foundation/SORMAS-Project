@@ -39,11 +39,13 @@ public class CampaignDto extends EntityDto {
 	public static final String CAMPAIGN_FORM_METAS = "campaignFormMetas";
 	public static final String CAMPAIGN_TYPES = "campaignTypes";
 	public static final String CAMPAIGN_AREAS = "areas";
+	public static final String CAMPAIGN_STATUS = "campaignStatus";
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String name;
 	private String round;
 	//private String campaignTypes;
+	public String campaignStatus;
 	
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String description;
@@ -54,6 +56,7 @@ public class CampaignDto extends EntityDto {
 	private Set<CampaignFormMetaReferenceDto> campaignFormMetas;
 	
 	public String creatingusername;
+	
 	
 	private Set<AreaReferenceDto> areas = new HashSet<AreaReferenceDto>();
 	private Set<RegionReferenceDto> region = new HashSet<RegionReferenceDto>();
@@ -67,6 +70,14 @@ public class CampaignDto extends EntityDto {
 		CampaignDto campaign = new CampaignDto();
 		campaign.setUuid(DataHelper.createUuid());
 		return campaign;
+	}
+
+	public String getCampaignStatus() {
+		return campaignStatus;
+	}
+
+	public void setCampaignStatus(String campaignStatus) {
+		this.campaignStatus = campaignStatus;
 	}
 
 	public String getName() {

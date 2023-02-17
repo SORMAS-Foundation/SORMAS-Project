@@ -12,7 +12,8 @@ public enum FormAccess {
 	FLW,
 	ADMIN,
 	FMS,
-	LQAS ;
+	LQAS,
+	TRAINING;
 
 	public void addAssignableForms(Collection<FormAccess> collection) {
 

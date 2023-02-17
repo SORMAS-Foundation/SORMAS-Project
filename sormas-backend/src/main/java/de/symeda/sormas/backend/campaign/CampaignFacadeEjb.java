@@ -105,7 +105,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		CriteriaQuery<CampaignIndexDto> cq = cb.createQuery(CampaignIndexDto.class);
 		Root<Campaign> campaign = cq.from(Campaign.class);
 
-		cq.multiselect(campaign.get(Campaign.UUID), campaign.get(Campaign.NAME), campaign.get(Campaign.ROUND), campaign.get(Campaign.CAMPAIGN_YEAR), campaign.get(Campaign.START_DATE), campaign.get(Campaign.END_DATE));
+		cq.multiselect(campaign.get(Campaign.UUID), campaign.get(Campaign.NAME), campaign.get(Campaign.CLOSEOPEN), campaign.get(Campaign.ROUND), campaign.get(Campaign.CAMPAIGN_YEAR), campaign.get(Campaign.START_DATE), campaign.get(Campaign.END_DATE));
 
 		Predicate filter = campaignService.createUserFilter(cb, cq, campaign);
 
@@ -119,6 +119,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		if (sortProperties != null && sortProperties.size() > 0) {
 			List<Order> order = new ArrayList<Order>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
+				System.out.println("jgcgjcjgcdgjcxjgcxgjcjPROPERTY NAMEgcjggjcjgc jcj" + sortProperty.propertyName);
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
 				case CampaignIndexDto.UUID:
@@ -128,6 +129,9 @@ public class CampaignFacadeEjb implements CampaignFacade {
 				case CampaignIndexDto.START_DATE:
 				case CampaignIndexDto.END_DATE:
 					expression = campaign.get(sortProperty.propertyName);
+					break;
+				case CampaignIndexDto.CAMPAIGN_STATUS:
+					expression = campaign.get(Campaign.CLOSEOPEN);
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);

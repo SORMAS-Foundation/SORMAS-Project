@@ -178,9 +178,9 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         addField(UserDto.ACTIVE, CheckBox.class);
         addField(UserDto.USER_NAME, TextField.class);
         
-        addField(UserDto.FORM_ACCESS, OptionGroup.class).setCaption(I18nProperties.getCaption(Captions.formAccess)); 
-        OptionGroup formAccess = (OptionGroup) getFieldGroup().getField(UserDto.FORM_ACCESS);
-        formAccess.setMultiSelect(true);
+  	  	addField(UserDto.FORM_ACCESS, OptionGroup.class).setCaption(I18nProperties.getCaption(Captions.formAccess)); 
+  	  	OptionGroup formAccess = (OptionGroup) getFieldGroup().getField(UserDto.FORM_ACCESS);
+  	  	formAccess.setMultiSelect(true);
         
         addField(UserDto.USER_ROLES, OptionGroup.class).addValidator(new UserRolesValidator());
         OptionGroup userRoles = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
@@ -412,10 +412,20 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         userRoles.addItems(UserUiHelper.getAssignableRoles(userDto.getUserRoles()));
         
         OptionGroup formAccess = (OptionGroup) getFieldGroup().getField(UserDto.FORM_ACCESS);
-        formAccess.removeAllItems();
-        formAccess.addItems(UserUiHelper.getAssignableForms());
-        
+       // formAccess.removeAllItems();
 
+       formAccess.addItems(UserUiHelper.getAssignableForms());
+        
+       if ((UserProvider.getCurrent().getUser().getUsertype().equals(UserType.EOC_USER))) {
+           
+       	formAccess.removeItem(FormAccess.TRAINING);
+       	formAccess.removeItem(FormAccess.PCA);
+       	formAccess.removeItem(FormAccess.FLW);
+       	formAccess.removeItem(FormAccess.FMS);
+       	formAccess.removeItem(FormAccess.LQAS);
+       	
+       	
+       }
         super.setValue(userDto);
     }
 }
