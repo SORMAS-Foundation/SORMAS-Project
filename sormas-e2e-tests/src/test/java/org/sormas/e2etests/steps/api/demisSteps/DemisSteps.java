@@ -1,5 +1,6 @@
 package org.sormas.e2etests.steps.api.demisSteps;
 
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISTRICT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_OPTIONS;
@@ -160,6 +161,16 @@ public class DemisSteps implements En {
         () -> {
           webDriverHelpers.fillAndSubmitInWebElement(
               SEARCH_MESSAGE_INPUT, patientFirstName + " " + patientLastName);
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    Given(
+        "I filter by last created person via DEMIS API in Case Directory",
+        () -> {
+          webDriverHelpers.fillAndSubmitInWebElement(
+              PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT,
+              patientFirstName + " " + patientLastName);
           TimeUnit.SECONDS.sleep(2); // wait for reaction
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });

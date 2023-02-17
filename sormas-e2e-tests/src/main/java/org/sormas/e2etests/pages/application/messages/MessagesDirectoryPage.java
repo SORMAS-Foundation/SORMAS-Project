@@ -34,6 +34,12 @@ public class MessagesDirectoryPage {
 
   public static final By GET_NEW_MESSAGES_POPUP =
       By.xpath("//*[contains(text(),'Neue Meldungen abrufen')]");
+  public static final By FIRST_TIME_FETCH_MESSAGE_POPUP =
+      By.xpath("//*[contains(text(), 'Dies ist das erste Mal, dass Meldungen abgerufen werden.')]");
+  public static final By ACTION_YES_BUTTON = By.id("actionYes");
+  public static final By FETCH_MESSAGES_NULL_DATE = By.cssSelector(".v-window #null_date input");
+  public static final By FETCH_MESSAGES_NULL_TIME_COMBOBOX =
+      By.cssSelector(".v-window #null_time div");
 
   public static By checkMappedValueSelector(String value) {
     return By.xpath(
