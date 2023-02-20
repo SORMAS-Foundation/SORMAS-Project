@@ -154,6 +154,7 @@ Scenario: Create and send laboratory request via Demis
     When I log in as a National User
     And I click on the Messages button from navbar
     And I click on fetch messages button
+    And I filter by last created person via API in Messages Directory
     Then I click on the eye icon next for the first fetched message
     And I collect message uuid
     Then I click Delete button in Message form
@@ -173,6 +174,7 @@ Scenario: Create and send laboratory request via Demis
     When I log in as a National User
     And I click on the Messages button from navbar
     And I click on fetch messages button
+    And I filter by last created person via API in Messages Directory
     Then I click on the eye icon next for the first fetched message
     And I collect message uuid
     And I click on the Mark as unclear button
