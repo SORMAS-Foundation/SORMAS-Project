@@ -215,6 +215,9 @@ public class DemisSteps implements En {
 
           webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT_SECOND_BUTTON);
 
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+
           if (webDriverHelpers.isElementVisibleWithTimeout(UPDATE_THE_DISEASE_VARIANT_HEADER, 2)) {
             webDriverHelpers.clickOnWebElementBySelector(POPUP_CONFIRM_BUTTON);
           }
@@ -383,8 +386,9 @@ public class DemisSteps implements En {
         (Integer personNumber) -> {
           String personsFirstName = firstNames.get(personNumber - 1);
           String personsLastName = lastNames.get(personNumber - 1);
-          webDriverHelpers.fillAndSubmitInWebElement(SEARCH_MESSAGE_INPUT, personsFirstName + " " + personsLastName);
-          TimeUnit.SECONDS.sleep(2); //wait for reaction
+          webDriverHelpers.fillAndSubmitInWebElement(
+              SEARCH_MESSAGE_INPUT, personsFirstName + " " + personsLastName);
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
   }
