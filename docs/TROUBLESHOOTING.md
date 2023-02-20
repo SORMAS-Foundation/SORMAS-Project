@@ -115,17 +115,23 @@ Important points when **interpreting the visual report**:
 
 * Look for the **red highlights** in the report, especially for nodes that have a long runtime
 * Look for nodes that are processing a **lot of rows** (100+ millions). This is often the case for joins
-* When you are dealing with a lof of data, most often you only need to output a subset (e.g. the first 100). Make sure there is no sorting done close to the end of the query graph. This is often the case when 'DISTINCT' is used.
+* When you are dealing with a lof of data, most often you only need to output a subset 
+
+**How to improve the query** is most often a process of trial and error. Here are some things to consider:
+
+* Adding indices so postgres does not have to go through all data. You can use a btree index to include multiple columns and sorting
+* Getting rid of unnecessary joins. Example: Joining a region of a case to compare it to the region of the user, instead of directly doing this on the region_id field of the case
+* Using limit to reduce the output (e.g. the first 100). Make sure there is no sorting done close to the end of the query graph. This is often the case when 'DISTINCT' is used.
+  Example: https://github.com/hzi-braunschweig/SORMAS-Project/issues/9054#issuecomment-1420849461
+* Splitting the query into separate queries when 'DISTINCT' has to be used / using distinct on a sub-query
+* Using sub-queries to influence the query planner. 
+  Example: https://github.com/hzi-braunschweig/SORMAS-Project/issues/11465#issuecomment-1425789509
 
 **How to save time** when optimizing the query:
 
 * Make sure you have easy access to a database that allows you to reproduce the bad performance of the query and to **manipulate the query and re-run it directly on the database**.
 * Use the explain feature of pgAdmin to quickly output the query graph for debugging purposes
 * Make sure you have a unit test (see above) that allows you to create the SQL query from a criteria query without having to re-deploy your server
-
-Examples:
-
-* https://github.com/hzi-braunschweig/SORMAS-Project/issues/9054#issuecomment-1420849461
 
 ### Analyze Java Code Performance Logs
 
