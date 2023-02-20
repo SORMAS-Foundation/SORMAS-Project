@@ -215,7 +215,7 @@ public class DemisSteps implements En {
 
           webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT_SECOND_BUTTON);
 
-          if (webDriverHelpers.isElementVisibleWithTimeout(UPDATE_THE_DISEASE_VARIANT_HEADER, 4)) {
+          if (webDriverHelpers.isElementVisibleWithTimeout(UPDATE_THE_DISEASE_VARIANT_HEADER, 2)) {
             webDriverHelpers.clickOnWebElementBySelector(POPUP_CONFIRM_BUTTON);
           }
         });
