@@ -184,13 +184,14 @@ Scenario: Create and send laboratory request via Demis
     And I check that number of displayed messages results for Weitergeleitet is 1
     Then I click on reset filters button from Message Directory
 
-  @tmsLink=SORDEV-5189 @env_d2s @LoginKeycloak
+  @tmsLink=SORDEV-5189 @env_d2s @LoginKeycloak @testIt
   Scenario: Test improvement of the mapping/prefilling the new sample forms when processing a DEMIS LabMessage
     Given API : Login to DEMIS server
     Then I create and send Laboratory Notification with patient's phone and email
     When I log in as a Admin User
     And I click on the Messages button from navbar
     And I click on fetch messages button
+    And I filter by last created person via API in Messages Directory
     Then I click on process button for 1 result in Message Directory page
     And I pick a new person in Pick or create person popup during case creation for DE
     And I choose create new case in Pick or create entry form for DE
