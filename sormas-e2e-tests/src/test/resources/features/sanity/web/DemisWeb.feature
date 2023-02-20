@@ -184,7 +184,7 @@ Scenario: Create and send laboratory request via Demis
     And I check that number of displayed messages results for Weitergeleitet is 1
     Then I click on reset filters button from Message Directory
 
-  @tmsLink=SORDEV-5189 @env_d2s @LoginKeycloak @testIt
+  @tmsLink=SORDEV-5189 @env_d2s @LoginKeycloak
   Scenario: Test improvement of the mapping/prefilling the new sample forms when processing a DEMIS LabMessage
     Given API : Login to DEMIS server
     Then I create and send Laboratory Notification with patient's phone and email
