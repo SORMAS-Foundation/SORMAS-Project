@@ -150,17 +150,20 @@ Scenario: Create and send laboratory request via Demis
   Scenario: Test delete option in Lab Messages
     Given API : Login to DEMIS server
     Then I create and send Laboratory Notification
-    Then I create and send Laboratory Notification
+    And I collect first and last name of the person from Laboratory Notification
+    And I create and send Laboratory Notification
+    And I collect first and last name of the person from Laboratory Notification
     When I log in as a National User
     And I click on the Messages button from navbar
     And I click on fetch messages button
+    And I filter by the name of the 1 most recently created person in Messages Directory
     Then I click on the eye icon next for the first fetched message
     And I collect message uuid
     Then I click Delete button in Message form
     And I confirm message deletion
-    And I filter messages by collected uuid
     And I check that number of displayed messages results is 0
     And I click on reset filters button from Message Directory
+    And I filter by the name of the 2 most recently created person in Messages Directory
     And I click on process button for 1 result in Message Directory page
     Then I create a new person and a new case from received message
     Then I click on the eye icon next for the first fetched message
