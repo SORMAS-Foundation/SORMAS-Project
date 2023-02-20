@@ -377,6 +377,14 @@ public class DemisSteps implements En {
               demisApiService.sendLabRequest(json, loginToken),
               "Failed to send laboratory request");
         });
+
+    And(
+        "^I filter by the name of the (\\d+) most recently created person in Messages Directory$",
+        (Integer personNumber) -> {
+          webDriverHelpers.fillAndSubmitInWebElement(PERSON_LIKE_SEARCH_INPUT, firstNames.get(personNumber - 1) + lastNames.get(personNumber - 1));
+          TimeUnit.SECONDS.sleep(2); //wait for reaction
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
   }
 
   private List<Map<String, String>> getTableRowsData() {
