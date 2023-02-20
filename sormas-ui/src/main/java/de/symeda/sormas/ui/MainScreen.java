@@ -112,7 +112,7 @@ public class MainScreen extends HorizontalLayout {
 	private static final Set<String> KNOWN_VIEWS = initKnownViews();
 
 	private final Menu menu;
-
+	
 	public MainScreen(SormasUI ui) {
 
 		CssLayout viewContainer = new CssLayout();
@@ -167,8 +167,6 @@ public class MainScreen extends HorizontalLayout {
 			menu.addView(PersonsView.class, PersonsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuPersons),
 					VaadinIcons.USER_CARD);
 		}
-		
-		
 		if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.CASE_VIEW)) {
 			ControllerProvider.getCaseController().registerViews(navigator);
 			menu.addView(CasesView.class, CasesView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuCases),
@@ -209,8 +207,6 @@ public class MainScreen extends HorizontalLayout {
 			menu.addView(TravelEntriesView.class, TravelEntriesView.VIEW_NAME,
 					I18nProperties.getCaption(Captions.mainMenuEntries), VaadinIcons.AIRPLANE);
 		}
-		
-		
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT)
 				&& FacadeProvider.getSormasToSormasFacade().isFeatureEnabledForUser()) {
@@ -357,31 +353,115 @@ public class MainScreen extends HorizontalLayout {
 		setSpacing(false);
 		setMargin(false);
 		setSizeFull();
+		
+//		Page.getCurrent().getJavaScript().execute("\n" + "var timeleft = 1800;\n" + "\n"
+//				+ "        function resetTimer() {\n"
+//				+ "            return timeleft = (1800 - timeleft) + timeleft; //reset back to 35 seconds \n"
+//				+ "        }\n" + "\n" + "        function setupReset() {\n"
+//				+ "            document.addEventListener(\"mousedown\", resetTimer);\n"
+//				+ "            document.addEventListener(\"keypress\", resetTimer);\n"
+//				+ "            document.addEventListener(\"touchmove\", resetTimer);\n"
+//				+ "            document.addEventListener(\"onscroll\", resetTimer);\n" + "            \n"
+//				+ "        }\n" + "\n" + "        var pageTimer = setInterval(function () {\n"
+//				+ "            timeleft --;\n" + "            setupReset();\n"
+//
+//				+ "            if (timeleft > 600) {\n" + "                \n"
+//				+ "            } else if (timeleft == 600) {\n"
+//
+//				+ "               if (confirm(\"You've been idle for 20 minutes. Are you still working on the system? You will be logged out in 10 minutes after getting this message. Click OK to Logout now!\"))\n"
+//				+ "              { window.location.href = window.location.origin + \"sormas-ui/#!logouttimer\"}\n"
+//				+ "              else{window.location.reload();};\n" + "            } else if (timeleft ==5) {\n"
+//				+ "                alert(\"Logging you out.\");\n"
+//
+//				+ "            } else if (timeleft == 0) {\n"
+//
+//				+ "                window.location.href = window.location.origin+\"/sormas-ui/#!logouttimer\";\n"
+//				+ "            }\n" + "\n" + "        }, 1000);");
+		// Define a JavaScript function to display the modal popup with OK and Cancel buttons after 20 seconds of inactivity
+		
 
-		Page.getCurrent().getJavaScript().execute("\n" + "var timeleft = 1800;\n" + "\n"
-				+ "        function resetTimer() {\n"
-				+ "            return timeleft = (1800 - timeleft) + timeleft; //reset back to 35 seconds \n"
-				+ "        }\n" + "\n" + "        function setupReset() {\n"
-				+ "            document.addEventListener(\"mousedown\", resetTimer);\n"
-				+ "            document.addEventListener(\"keypress\", resetTimer);\n"
-				+ "            document.addEventListener(\"touchmove\", resetTimer);\n"
-				+ "            document.addEventListener(\"onscroll\", resetTimer);\n" + "            \n"
-				+ "        }\n" + "\n" + "        var pageTimer = setInterval(function () {\n"
-				+ "            timeleft --;\n" + "            setupReset();\n"
+		
+		Page.getCurrent().getJavaScript().execute(
+			    "var timeleft = 1800; " +
+			    "function resetTimer() { " +
+			    "   return timeleft = (1800 - timeleft) + timeleft; " +
+			    "} " +
+			    "function setupReset() { " +
+			    "   document.addEventListener('mousedown', resetTimer); " +
+			    "   document.addEventListener('keypress', resetTimer); " +
+			    "   document.addEventListener('touchmove', resetTimer); " +
+			    "   document.addEventListener('onscroll', resetTimer); " +
+			    "} " +
+			    "function showModal() { " +
+			    "   var modal = document.createElement('div'); " +
+			    "   modal.style.position = 'fixed'; " +
+			    "   modal.style.top = '0'; " +
+			    "   modal.style.left = '0'; " +
+			    "   modal.style.width = '100%'; " +
+			    "   modal.style.height = '100%'; " +
+			    "   modal.style.border = '5px solid red'; " +
+			    "   modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)'; " +
+			    "   modal.style.zIndex = '9999'; " +
+			    "   var message = document.createElement('div'); " +
+			    "   message.innerHTML = 'You have been idle for 20 minutes. You will automatically be logged out 10 minutes after getting this message.'; " +
+			    "   message.style.position = 'absolute'; " +
+			    "   message.style.top = '50%'; " +
+			    "   message.style.left = '50%'; " +
+			    "   message.style.height = '120px'; " +
+			    "   message.style.transform = 'translate(-50%, -50%)'; " +
+			    "   message.style.backgroundColor = '#fff'; " +
+			    "   message.style.padding = '1em'; " +
+			    "   modal.appendChild(message); " +
+			    "   var okButton = document.createElement('button'); " +
+			    "   okButton.innerHTML = 'Logout now'; " +
+			    "   okButton.style.marginRight = '0.5em'; " +
+			    "   okButton.style.position = 'absolute'; " +
+			    "   okButton.style.top = '80px'; " +
+			    "   okButton.style.right = '140px'; " +
+			    "   okButton.style.backgroundColor = 'white'; " +
+			    "   okButton.style.border = '1px solid red'; " +
+			    "   okButton.style.borderRadius = '4px'; " +
+			    "   okButton.style.width = '110px'; " +
+			    "   okButton.style.height = '35px'; " +
+			    "   okButton.style.color = 'green'; " +
+			    "   okButton.addEventListener('click', function () { " +
+			    "   window.location.href = window.location.origin + \"/sormas-ui/#!logouttimer\"; " +
+			    "   }); " +
+			    "   message.appendChild(okButton); " +
+			    "   var cancelButton = document.createElement('button'); " +
+			    "   cancelButton.innerHTML = 'Stay logged in'; " +
+			    "   cancelButton.style.position = 'absolute'; " +
+			    "   cancelButton.style.top = '80px'; " +
+			    "   cancelButton.style.right = '25px'; " +
+			    "   cancelButton.style.backgroundColor = '#0E693A'; " +
+			    "   cancelButton.style.border = '1px solid #0E693A'; " +
+			    "   cancelButton.style.borderRadius = '4px'; " +
+			    "   cancelButton.style.width = '110px'; " +
+			    "   cancelButton.style.height = '35px'; " +
+			    "   cancelButton.style.color = 'white'; " +
+			    "   cancelButton.addEventListener('click', function () { " +
+			    "   document.body.removeChild(modal); " +
+			    "   resetTimer()}); " +
+			    "   message.appendChild(cancelButton); " +
+			    "   document.body.appendChild(modal); " +
+			    "} " +
+			    "setInterval(function () { " +
+			    "   timeleft--; " +
+			   
+			    "   setupReset(); " +
+			    "   if (timeleft > 600) { " +
+			    "   } else if (timeleft == 600) { " +
+			    "       showModal(); " +
+			    "   } else if (timeleft == 0) { " +
+			    "   window.location.href = window.location.origin + \"/sormas-ui/#!logouttimer\"; " +
+			    "   } " +
+			    "}, 1000);"
+			);
 
-				+ "            if (timeleft > 600) {\n" + "                \n"
-				+ "            } else if (timeleft == 600) {\n"
-
-				+ "               if (confirm(\"You've been idle for 20 minutes. Are you still working on the system? You will be logged out in 10 minutes after getting this message. Click OK to Logout now!\"))\n"
-				+ "              { window.location.href = window.location.origin + \"sormas-ui/#!logouttimer\"}\n"
-				+ "              else{window.location.reload();};\n" + "            } else if (timeleft ==5) {\n"
-				+ "                alert(\"Logging you out.\");\n"
-
-				+ "            } else if (timeleft == 0) {\n"
-
-				+ "                window.location.href = window.location.origin+\"/sormas-ui/#!logouttimer\";\n"
-				+ "            }\n" + "\n" + "        }, 1000);");
+		
 	}
+	
+
 
 	private void showSettingsPopup() {
 

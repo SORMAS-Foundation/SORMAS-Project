@@ -12,6 +12,8 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.components.grid.HeaderCell;
+import com.vaadin.ui.components.grid.HeaderRow;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
@@ -73,6 +75,12 @@ public class AreasView extends AbstractConfigurationView {
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
+		HeaderRow mainHeader = grid.getDefaultHeaderRow();
+		
+		HeaderCell provinceHeader = mainHeader.getCell("name");
+		provinceHeader.setDescription("Province");
+		HeaderCell rCodeHeader = mainHeader.getCell("externalId");
+		rCodeHeader.setDescription("RCode");
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
 			btnImport = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {

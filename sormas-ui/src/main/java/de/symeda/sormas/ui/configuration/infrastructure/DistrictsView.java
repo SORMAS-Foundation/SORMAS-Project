@@ -27,6 +27,8 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.components.grid.HeaderCell;
+import com.vaadin.ui.components.grid.HeaderRow;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 
@@ -107,6 +109,25 @@ public class DistrictsView extends AbstractConfigurationView {
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
+		
+		HeaderRow mainHeader = grid.getDefaultHeaderRow();
+		
+		HeaderCell regionNameHeader = mainHeader.getCell("areaname");
+		regionNameHeader.setDescription("Region");
+		HeaderCell rCodeHeader = mainHeader.getCell("areaexternalId");
+		rCodeHeader.setDescription("RCode");
+		HeaderCell provinceNameHeader = mainHeader.getCell("region");
+		provinceNameHeader.setDescription("Province");
+		HeaderCell pCodeHeader = mainHeader.getCell("regionexternalId");
+		pCodeHeader.setDescription("PCode");
+		HeaderCell districtNameHeader = mainHeader.getCell("name");
+		districtNameHeader.setDescription("District");
+		HeaderCell dCodeHeader = mainHeader.getCell("externalId");
+		dCodeHeader.setDescription("DCode");
+		HeaderCell populationHeader = mainHeader.getCell("population");
+		populationHeader.setDescription("Population");
+		HeaderCell riskeHeader = mainHeader.getCell("risk");
+		riskeHeader.setDescription("Risk");
 
 		boolean infrastructureDataEditable = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA);
 		
