@@ -67,7 +67,8 @@ Scenario: Create and send laboratory request via Demis
     And I log in as a National User
     Then I click on the Messages button from navbar
     And I click on fetch messages button
-    And I click on process button for 3 result in Message Directory page
+    And I filter by the name of the 1 most recently created person in Messages Directory
+    And I click on Verarbeiten button in Messages Directory
     And I pick a new person in Pick or create person popup during case creation for DE
     And I choose create new case in Pick or create entry form for DE
     And I check that create new case form with pathogen detection reporting process is displayed for DE
@@ -83,7 +84,9 @@ Scenario: Create and send laboratory request via Demis
     And I navigate to case person tab
     And I check that first and last name are equal to data form 1 result in laboratory notification
     And I click on the Messages button from navbar
-    When I click on process button for 2 result in Message Directory page
+    And I click on the RESET FILTERS button for Messages
+    And I filter by the name of the 2 most recently created person in Messages Directory
+    And I click on Verarbeiten button in Messages Directory
     And I pick a new person in Pick or create person popup during case creation for DE
     And I choose create new case in Pick or create entry form for DE
     And I check that create new case form with pathogen detection reporting process is displayed for DE
@@ -92,7 +95,7 @@ Scenario: Create and send laboratory request via Demis
     And I check that new sample form with pathogen detection reporting process is displayed
     And I click on "discard" button in new sample form with pathogen detection reporting process
     Then I back to message directory
-    When I click on process button for 2 result in Message Directory page
+    And I click on Verarbeiten button in Messages Directory
     And I pick a new person in Pick or create person popup during case creation for DE
     And I choose create new case in Pick or create entry form for DE
     And I check that create new case form with pathogen detection reporting process is displayed for DE
@@ -102,8 +105,10 @@ Scenario: Create and send laboratory request via Demis
     And I click on "save" button in new sample form with pathogen detection reporting process
     And I click on "save" button in new sample form with pathogen detection reporting process
     And I click on YES button in Update case disease variant popup window
-    And I verify that status for result 2 is set to processed in Message Directory page
-    When I click on process button for 1 result in Message Directory page
+    And I verify that status for result 1 is set to processed in Message Directory page
+    And I click on the RESET FILTERS button for Messages
+    And I filter by the name of the 3 most recently created person in Messages Directory
+    And I click on Verarbeiten button in Messages Directory
     And I pick a new person in Pick or create person popup during case creation for DE
     And I choose create new case in Pick or create entry form for DE
     And I fill only mandatory fields to convert laboratory message into a case for DE
