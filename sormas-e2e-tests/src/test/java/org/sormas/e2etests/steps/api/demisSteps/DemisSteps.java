@@ -383,7 +383,7 @@ public class DemisSteps implements En {
         (Integer personNumber) -> {
           String personsFirstName = firstNames.get(personNumber - 1);
           String personsLastName = lastNames.get(personNumber - 1);
-          webDriverHelpers.fillAndSubmitInWebElement(PERSON_LIKE_SEARCH_INPUT, personsFirstName + " " + personsLastName);
+          webDriverHelpers.fillAndSubmitInWebElement(SEARCH_MESSAGE_INPUT, personsFirstName + " " + personsLastName);
           TimeUnit.SECONDS.sleep(2); //wait for reaction
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
