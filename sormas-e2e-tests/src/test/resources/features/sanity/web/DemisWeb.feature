@@ -191,6 +191,7 @@ Scenario: Create and send laboratory request via Demis
     When I log in as a Admin User
     And I click on the Messages button from navbar
     And I click on fetch messages button
+    And I filter by last created person via API in Messages Directory
     Then I click on process button for 1 result in Message Directory page
     And I pick a new person in Pick or create person popup during case creation for DE
     And I choose create new case in Pick or create entry form for DE
