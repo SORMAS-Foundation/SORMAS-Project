@@ -381,7 +381,9 @@ public class DemisSteps implements En {
     And(
         "^I filter by the name of the (\\d+) most recently created person in Messages Directory$",
         (Integer personNumber) -> {
-          webDriverHelpers.fillAndSubmitInWebElement(PERSON_LIKE_SEARCH_INPUT, firstNames.get(personNumber - 1) + lastNames.get(personNumber - 1));
+          String personsFirstName = firstNames.get(personNumber - 1);
+          String personsLastName = lastNames.get(personNumber - 1);
+          webDriverHelpers.fillAndSubmitInWebElement(PERSON_LIKE_SEARCH_INPUT, personsFirstName + " " + personsLastName);
           TimeUnit.SECONDS.sleep(2); //wait for reaction
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
