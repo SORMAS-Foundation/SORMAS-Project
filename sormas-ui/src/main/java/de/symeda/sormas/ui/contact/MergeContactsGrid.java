@@ -14,6 +14,7 @@ import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
+import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.MergeContactIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -78,7 +79,11 @@ public class MergeContactsGrid extends AbstractMergeGrid<MergeContactIndexDto, C
 
 	@Override
 	protected List<MergeContactIndexDto[]> getItemForDuplicateMerging() {
-		return FacadeProvider.getContactFacade().getContactsForDuplicateMerging(criteria, ignoreRegion);
+		return FacadeProvider.getContactFacade()
+			.getContactsForDuplicateMerging(
+				criteria,
+				queryDetails.getResultLimit() != null ? queryDetails.getResultLimit() : CaseFacade.DUPLICATE_MERGING_LIMIT_DEFAULT,
+				ignoreRegion);
 	}
 
 	@Override

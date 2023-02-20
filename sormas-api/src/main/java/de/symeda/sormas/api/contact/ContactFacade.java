@@ -24,6 +24,7 @@ import java.util.Map;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.CoreFacade;
@@ -144,7 +145,10 @@ public interface ContactFacade extends CoreFacade<ContactDto, ContactIndexDto, C
 
 	void deleteContactAsDuplicate(String uuid, String duplicateOfUuid);
 
-	List<MergeContactIndexDto[]> getContactsForDuplicateMerging(ContactCriteria criteria, boolean showDuplicatesWithDifferentRegion);
+	List<MergeContactIndexDto[]> getContactsForDuplicateMerging(
+		ContactCriteria criteria,
+		@Min(1) Integer limit,
+		boolean showDuplicatesWithDifferentRegion);
 
 	void updateCompleteness(String uuid);
 

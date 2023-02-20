@@ -13,6 +13,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -23,6 +24,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.QueryDetails;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
@@ -47,22 +49,26 @@ public class MergeContactsView extends AbstractView {
 				.setRegion(UserProvider.getCurrent().getUser().getRegion());
 		}
 
+		boolean queryDetailsUninitialized = !ViewModelProviders.of(MergeContactsView.class).has(QueryDetails.class);
+		QueryDetails queryDetails = ViewModelProviders.of(MergeContactsView.class).get(QueryDetails.class);
+		if (queryDetailsUninitialized || queryDetails.getResultLimit() == null) {
+			queryDetails.setResultLimit(CaseFacade.DUPLICATE_MERGING_LIMIT_DEFAULT);
+		}
+
 		grid = new MergeContactsGrid();
 		grid.setCriteria(criteria);
+		grid.setQueryDetails(queryDetails);
 
 		VerticalLayout gridLayout = new VerticalLayout();
-		filterComponent = new MergeContactsFilterComponent(criteria);
+		filterComponent = new MergeContactsFilterComponent(criteria, queryDetails);
 		filterComponent.setFiltersUpdatedCallback(() -> {
 			if (ViewModelProviders.of(MergeContactsView.class).has(ContactCriteria.class)) {
-				grid.reload();
-				filterComponent.updateDuplicateCountLabel(grid.getTreeData().getRootItems().size());
+				navigateTo(criteria, queryDetails);
 			} else {
-				navigateTo(null);
+				navigateTo();
 			}
 		});
-		filterComponent.setIgnoreRegionCallback((ignoreRegion) -> {
-			grid.reload(ignoreRegion);
-		});
+		filterComponent.setIgnoreRegionCallback((ignoreRegion) -> grid.reload(ignoreRegion));
 		gridLayout.addComponent(filterComponent);
 
 		gridLayout.addComponent(grid);
