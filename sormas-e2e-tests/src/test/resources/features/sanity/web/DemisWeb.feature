@@ -55,7 +55,7 @@ Scenario: Create and send laboratory request via Demis
     | 95410-7            | Antikörper-Neutralisationstest                          |                                             |
     | 97097-0            | Antigen-Nachweistest                                    |                                             |
 
-  @tmsLink=SORDEV-8689 @env_d2s @LoginKeycloak
+  @tmsLink=SORDEV-8689 @env_d2s @LoginKeycloak @precon @LanguageRisk
   Scenario: Test Handle New Profile: Process entities related to the same reportId
     Given API : Login to DEMIS server
     Then I create and send Laboratory Notification
