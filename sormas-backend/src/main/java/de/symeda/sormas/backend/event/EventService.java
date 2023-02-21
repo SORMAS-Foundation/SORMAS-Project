@@ -1019,15 +1019,12 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 	@Override
 	public EditPermissionType getEditPermissionType(Event event) {
 
-		if (event.getSormasToSormasOriginInfo() != null && !event.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
-			return EditPermissionType.REFUSED;
-		}
-
 		if (!inJurisdictionOrOwned(event)) {
 			return EditPermissionType.REFUSED;
 		}
 
-		if (sormasToSormasShareInfoService.isEventOwnershipHandedOver(event)) {
+		if (sormasToSormasShareInfoService.isEventOwnershipHandedOver(event)
+			|| event.getSormasToSormasOriginInfo() != null && !event.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
 			return EditPermissionType.WITHOUT_OWNERSHIP;
 		}
 

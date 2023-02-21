@@ -231,6 +231,8 @@ public class EventDataView extends AbstractEventView {
 			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
 		} else if (eventEditAllowed == EditPermissionType.REFUSED) {
 			layout.disable();
+		} else if (eventEditAllowed == EditPermissionType.WITHOUT_OWNERSHIP) {
+			layout.disableWithViewAllow(CommitDiscardWrapperComponent.DELETE_UNDELETE);
 		}
 	}
 
