@@ -362,6 +362,37 @@ public class DemisSteps implements En {
                   collectedMessagesTable.get(MessagesTableViewHeaders.GEBURTSDATUM.toString()),
                   "Birthday dates are not equal");
               softly.assertAll();
+              break;
+          }
+        });
+
+    When(
+        "I check if {string} in received message is set to {string}",
+        (String key, String value) -> {
+          List<Map<String, String>> tableRowsData = getTableRowsData();
+          Map<String, String> messagesTable = tableRowsData.get(0);
+          switch (key) {
+            case "laboratory name":
+              softly.assertEquals(
+                  messagesTable.get(MessagesTableViewHeaders.MELDER_NAME.toString()),
+                  value,
+                  "Lab names are not equal");
+              softly.assertAll();
+              break;
+            case "laboratory postal code":
+              softly.assertEquals(
+                  messagesTable.get(MessagesTableViewHeaders.MELDER_POSTLEITZAHL.toString()),
+                  value,
+                  "Lab postal codes are not equal");
+              softly.assertAll();
+              break;
+            case "postal code":
+              softly.assertEquals(
+                  messagesTable.get(MessagesTableViewHeaders.POSTLEITZAHL.toString()),
+                  value,
+                  "Postal codes are not equal");
+              softly.assertAll();
+              break;
           }
         });
 
