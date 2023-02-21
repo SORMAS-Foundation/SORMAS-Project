@@ -17,10 +17,6 @@ package de.symeda.sormas.app.settings;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
-import java.util.List;
-
-import org.hzi.sormas.lbds.messaging.LbdsRelated;
-
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -31,6 +27,10 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
+
+import org.hzi.sormas.lbds.messaging.LbdsRelated;
+
+import java.util.List;
 
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -226,43 +226,43 @@ public class SettingsFragment extends BaseLandingFragment {
 					for (Case caze : modifiedCases) {
 						if (DatabaseHelper.getCaseDao().queryUuidReference(caze.getUuid()) == null) {
 							DatabaseHelper.getSyncLogDao()
-								.createWithParentStack(caze.toString(), getResources().getString(R.string.caption_changed_data_lost));
+								.createWithParentStack(caze.buildCaption(), getResources().getString(R.string.caption_changed_data_lost));
 						}
 					}
 					for (Contact contact : modifiedContacts) {
 						if (DatabaseHelper.getContactDao().queryUuidReference(contact.getUuid()) == null) {
 							DatabaseHelper.getSyncLogDao()
-								.createWithParentStack(contact.toString(), getResources().getString(R.string.caption_changed_data_lost));
+								.createWithParentStack(contact.buildCaption(), getResources().getString(R.string.caption_changed_data_lost));
 						}
 					}
 					for (Person person : modifiedPersons) {
 						if (DatabaseHelper.getPersonDao().queryUuidReference(person.getUuid()) == null) {
 							DatabaseHelper.getSyncLogDao()
-								.createWithParentStack(person.toString(), getResources().getString(R.string.caption_changed_data_lost));
+								.createWithParentStack(person.buildCaption(), getResources().getString(R.string.caption_changed_data_lost));
 						}
 					}
 					for (Event event : modifiedEvents) {
 						if (DatabaseHelper.getEventDao().queryUuidReference(event.getUuid()) == null) {
 							DatabaseHelper.getSyncLogDao()
-								.createWithParentStack(event.toString(), getResources().getString(R.string.caption_changed_data_lost));
+								.createWithParentStack(event.buildCaption(), getResources().getString(R.string.caption_changed_data_lost));
 						}
 					}
 					for (EventParticipant eventParticipant : modifiedEventParticipants) {
 						if (DatabaseHelper.getEventParticipantDao().queryUuidReference(eventParticipant.getUuid()) == null) {
 							DatabaseHelper.getSyncLogDao()
-								.createWithParentStack(eventParticipant.toString(), getResources().getString(R.string.caption_changed_data_lost));
+								.createWithParentStack(eventParticipant.buildCaption(), getResources().getString(R.string.caption_changed_data_lost));
 						}
 					}
 					for (Sample sample : modifiedSamples) {
 						if (DatabaseHelper.getSampleDao().queryUuidReference(sample.getUuid()) == null) {
 							DatabaseHelper.getSyncLogDao()
-								.createWithParentStack(sample.toString(), getResources().getString(R.string.caption_changed_data_lost));
+								.createWithParentStack(sample.buildCaption(), getResources().getString(R.string.caption_changed_data_lost));
 						}
 					}
 					for (Visit visit : modifiedVisits) {
 						if (DatabaseHelper.getVisitDao().queryUuidReference(visit.getUuid()) == null) {
 							DatabaseHelper.getSyncLogDao()
-								.createWithParentStack(visit.toString(), getResources().getString(R.string.caption_changed_data_lost));
+								.createWithParentStack(visit.buildCaption(), getResources().getString(R.string.caption_changed_data_lost));
 						}
 					}
 				}

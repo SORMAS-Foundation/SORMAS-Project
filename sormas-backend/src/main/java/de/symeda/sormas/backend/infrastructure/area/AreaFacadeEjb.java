@@ -105,11 +105,6 @@ public class AreaFacadeEjb extends AbstractInfrastructureFacadeEjb<Area, AreaDto
 	}
 
 	@Override
-	protected void selectDtoFields(CriteriaQuery<AreaDto> cq, Root<Area> root) {
-		// we do not select DTO fields in getAllAfter query
-	}
-
-	@Override
 	public Area fillOrBuildEntity(@NotNull AreaDto source, Area target, boolean checkChangeDate) {
 		target = DtoHelper.fillOrBuildEntity(source, target, Area::new, checkChangeDate);
 		target.setName(source.getName());

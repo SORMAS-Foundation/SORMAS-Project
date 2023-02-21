@@ -19,7 +19,6 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTimeComparator;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -34,25 +33,21 @@ public final class PersonValidator {
 	static void initializePersonValidation(final FragmentPersonEditLayoutBinding contentBinding) {
 		ResultCallback<Boolean> deathDateCallback = () -> {
 			Date birthDate = PersonEditFragment.calculateBirthDateValue(contentBinding);
-			if (contentBinding.personDeathDate.getValue() != null && birthDate != null) {
-				if (DateTimeComparator.getDateOnlyInstance().compare(contentBinding.personDeathDate.getValue(), birthDate) < 0) {
-					contentBinding.personDeathDate.enableErrorState(
-						I18nProperties.getValidationError(
-							Validations.afterDate,
-							contentBinding.personDeathDate.getCaption(),
-							contentBinding.personBirthdateLabel.getText()));
-					return true;
-				}
+			if (DateHelper.isDateBefore(contentBinding.personDeathDate.getValue(), birthDate)) {
+				contentBinding.personDeathDate.enableErrorState(
+					I18nProperties.getValidationError(
+						Validations.afterDate,
+						contentBinding.personDeathDate.getCaption(),
+						contentBinding.personBirthdateLabel.getText()));
+				return true;
 			}
-			if (contentBinding.personDeathDate.getValue() != null && contentBinding.personBurialDate.getValue() != null) {
-				if (DateTimeComparator.getDateOnlyInstance().compare(contentBinding.personBurialDate.getValue(), contentBinding.personDeathDate.getValue()) < 0) {
-					contentBinding.personDeathDate.enableErrorState(
-							I18nProperties.getValidationError(
-									Validations.beforeDate,
-									contentBinding.personDeathDate.getCaption(),
-									contentBinding.personBurialDate.getCaption()));
-					return true;
-				}
+			if (DateHelper.isDateAfter(contentBinding.personDeathDate.getValue(), contentBinding.personBurialDate.getValue())) {
+				contentBinding.personDeathDate.enableErrorState(
+						I18nProperties.getValidationError(
+								Validations.beforeDate,
+								contentBinding.personDeathDate.getCaption(),
+								contentBinding.personBurialDate.getCaption()));
+				return true;
 			}
 
 			return false;
@@ -60,28 +55,22 @@ public final class PersonValidator {
 
 		ResultCallback<Boolean> burialDateCallback = () -> {
 			Date birthDate = PersonEditFragment.calculateBirthDateValue(contentBinding);
-			if (contentBinding.personBurialDate.getValue() != null && birthDate != null) {
-				if (DateTimeComparator.getDateOnlyInstance().compare(contentBinding.personBurialDate.getValue(), birthDate) < 0) {
-					contentBinding.personBurialDate.enableErrorState(
-						I18nProperties.getValidationError(
-							Validations.afterDate,
-							contentBinding.personBurialDate.getCaption(),
-							contentBinding.personBirthdateLabel.getText()));
-					return true;
-				}
+			if (DateHelper.isDateBefore(contentBinding.personBurialDate.getValue(), birthDate)) {
+				contentBinding.personBurialDate.enableErrorState(
+					I18nProperties.getValidationError(
+						Validations.afterDate,
+						contentBinding.personBurialDate.getCaption(),
+						contentBinding.personBirthdateLabel.getText()));
+				return true;
 			}
 
-			if (contentBinding.personBurialDate.getValue() != null && contentBinding.personDeathDate.getValue() != null) {
-				if (DateTimeComparator.getDateOnlyInstance()
-					.compare(contentBinding.personBurialDate.getValue(), contentBinding.personDeathDate.getValue())
-					< 0) {
-					contentBinding.personBurialDate.enableErrorState(
-						I18nProperties.getValidationError(
-							Validations.afterDate,
-							contentBinding.personBurialDate.getCaption(),
-							contentBinding.personDeathDate.getCaption()));
-					return true;
-				}
+			if (DateHelper.isDateBefore(contentBinding.personBurialDate.getValue(), contentBinding.personDeathDate.getValue())) {
+				contentBinding.personBurialDate.enableErrorState(
+					I18nProperties.getValidationError(
+						Validations.afterDate,
+						contentBinding.personBurialDate.getCaption(),
+						contentBinding.personDeathDate.getCaption()));
+				return true;
 			}
 
 			return false;
@@ -160,7 +149,7 @@ public final class PersonValidator {
 				calendar.set(Calendar.DAY_OF_MONTH, (Integer) personBirthdateDD.getValue());
 			}
 
-			if (DateHelper.getEndOfDay(calendar.getTime()).after(DateHelper.getEndOfDay(new Date()))) {
+			if (DateHelper.isDateAfter(calendar.getTime(), new Date())) {
 				personBirthdateYYYY.enableErrorState(I18nProperties.getValidationError(Validations.birthDateInFuture));
 				personBirthdateMM.enableErrorState(I18nProperties.getValidationError(Validations.birthDateInFuture));
 				personBirthdateDD.enableErrorState(I18nProperties.getValidationError(Validations.birthDateInFuture));

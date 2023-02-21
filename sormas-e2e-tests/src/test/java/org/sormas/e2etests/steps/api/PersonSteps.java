@@ -17,7 +17,6 @@
  */
 package org.sormas.e2etests.steps.api;
 
-import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,10 +32,7 @@ public class PersonSteps implements En {
 
   @Inject
   public PersonSteps(
-      PersonsHelper personsHelper,
-      PersonApiService personApiService,
-      ApiState apiState,
-      Faker faker) {
+      PersonsHelper personsHelper, PersonApiService personApiService, ApiState apiState) {
 
     When(
         "API: I receive the person",

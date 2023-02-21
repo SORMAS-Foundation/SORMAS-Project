@@ -19,7 +19,6 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.annotation.security.DenyAll;
 import javax.ejb.EJB;
@@ -53,7 +52,7 @@ import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
-public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends ReferenceDto, SRV extends AbstractCoreAdoService<ADO>, CRITERIA extends BaseCriteria>
+public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends ReferenceDto, SRV extends AbstractCoreAdoService<ADO, ? extends QueryJoins<ADO>>, CRITERIA extends BaseCriteria>
 	extends AbstractBaseEjb<ADO, DTO, INDEX_DTO, REF_DTO, SRV, CRITERIA>
 	implements CoreFacade<DTO, INDEX_DTO, REF_DTO, CRITERIA> {
 
@@ -69,42 +68,17 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		super(adoClass, dtoClass, service, userService);
 	}
 
-	@Override
-	public DTO getByUuid(String uuid) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return convertToDto(service.getByUuid(uuid), pseudonymizer);
-	}
-
-	@Override
-	public List<DTO> getByUuids(List<String> uuids) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return service.getByUuids(uuids).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
-	}
-
-	@Override
-	public List<DTO> getAllAfter(Date date) {
-		return getAllAfter(date, null, null);
-	}
-
-	public List<DTO> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return service.getAllAfter(date, batchSize, lastSynchronizedUuid)
-			.stream()
-			.map(c -> convertToDto(c, pseudonymizer))
-			.collect(Collectors.toList());
-	}
-
 	@DenyAll
 	public DTO doSave(@Valid @NotNull DTO dto) {
 		ADO existingAdo = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 
-		if (existingAdo != null && !service.getEditPermissionType(existingAdo).equals(EditPermissionType.ALLOWED)) {
+		if (existingAdo != null && !service.isEditAllowed(existingAdo)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEntityNotEditable));
 		}
 
 		DTO existingDto = toDto(existingAdo);
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		Pseudonymizer pseudonymizer = createPseudonymizer();
 		restorePseudonymizedDto(dto, existingDto, existingAdo, pseudonymizer);
 
 		validate(dto);
@@ -112,7 +86,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		existingAdo = fillOrBuildEntity(dto, existingAdo, true);
 		service.ensurePersisted(existingAdo);
 
-		return convertToDto(existingAdo, pseudonymizer);
+		return toPseudonymizedDto(existingAdo, pseudonymizer);
 	}
 
 	public boolean exists(String uuid) {
@@ -125,15 +99,21 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		service.delete(ado, deletionDetails);
 	}
 
+	@DenyAll
+	public void undelete(String uuid) {
+		ADO ado = service.getByUuid(uuid);
+		if (ado == null) {
+			throw new IllegalArgumentException("Cannot undelete non existing entity: [" + getCoreEntityType() + "] - " + uuid);
+		}
+		service.undelete(ado);
+	}
+
 	public boolean isArchived(String uuid) {
 		return service.isArchived(uuid);
 	}
 
-	public DTO convertToDto(ADO source, Pseudonymizer pseudonymizer) {
-
-		DTO dto = toDto(source);
-		pseudonymizeDto(source, dto, pseudonymizer);
-		return dto;
+	public boolean isDeleted(String uuid) {
+		return service.isDeleted(uuid);
 	}
 
 	public List<String> getUuidsForAutomaticDeletion(DeletionConfiguration entityConfig) {
@@ -210,6 +190,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		case CREATION:
 			return AbstractDomainObject.CREATION_DATE;
 		case END:
+			return CoreAdo.END_OF_PROCESSING_DATE;
 		case MANUAL_DELETION:
 			return AbstractDomainObject.CHANGE_DATE;
 		default:
@@ -236,10 +217,6 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 
 	protected abstract CoreEntityType getCoreEntityType();
 
-	protected abstract void pseudonymizeDto(ADO source, DTO dto, Pseudonymizer pseudonymizer);
-
-	protected abstract void restorePseudonymizedDto(DTO dto, DTO existingDto, ADO entity, Pseudonymizer pseudonymizer);
-
 	@DenyAll
 	public void archive(String entityUuid, Date endOfProcessingDate) {
 		service.archive(entityUuid, endOfProcessingDate);
@@ -259,8 +236,13 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		return service.calculateEndOfProcessingDate(Collections.singletonList(entityUuid)).get(entityUuid);
 	}
 
-	public EditPermissionType isEditAllowed(String uuid) {
-		ADO ado = service.getByUuid(uuid);
-		return service.isEditAllowed(ado);
+	@Override
+	public EditPermissionType getEditPermissionType(String uuid) {
+		return service.getEditPermissionType(service.getByUuid(uuid));
+	}
+
+	@Override
+	public boolean isEditAllowed(String uuid) {
+		return service.isEditAllowed(service.getByUuid(uuid));
 	}
 }

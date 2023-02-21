@@ -18,7 +18,6 @@
 package de.symeda.sormas.ui.samples;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.ui.Component;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -37,7 +36,6 @@ import de.symeda.sormas.ui.caze.CaseDataView;
 import de.symeda.sormas.ui.contact.ContactDataView;
 import de.symeda.sormas.ui.events.EventParticipantDataView;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
-import de.symeda.sormas.ui.utils.DirtyStateComponent;
 
 @SuppressWarnings("serial")
 public abstract class AbstractSampleView extends AbstractDetailView<SampleReferenceDto> {
@@ -107,26 +105,9 @@ public abstract class AbstractSampleView extends AbstractDetailView<SampleRefere
 		return ROOT_VIEW_NAME;
 	}
 
-	@Override
-	protected void setSubComponent(DirtyStateComponent newComponent) {
-		super.setSubComponent(newComponent);
-
-		if (FacadeProvider.getSampleFacade().isDeleted(getReference().getUuid())) {
-			newComponent.setEnabled(false);
-		}
-	}
-
-	public void setSampleEditPermission(Component component) {
-
-		Boolean isSampleEditAllowed = isSampleEditAllowed();
-
-		if (!isSampleEditAllowed) {
-			component.setEnabled(false);
-		}
-	}
-
-	protected Boolean isSampleEditAllowed() {
-		return FacadeProvider.getSampleFacade().isSampleEditAllowed(getSampleRef().getUuid());
+	protected boolean isEditAllowed() {
+		// Sample is not a Core ADO, therefore, we have to duplicate this unfortunately
+		return FacadeProvider.getSampleFacade().isEditAllowed(getSampleRef().getUuid());
 	}
 
 	public SampleReferenceDto getSampleRef() {

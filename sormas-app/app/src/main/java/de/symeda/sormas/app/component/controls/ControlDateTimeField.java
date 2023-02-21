@@ -16,12 +16,12 @@
 package de.symeda.sormas.app.component.controls;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
@@ -30,6 +30,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
@@ -42,14 +43,18 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
+import androidx.annotation.RequiresApi;
 import androidx.databinding.BindingAdapter;
 import androidx.databinding.InverseBindingAdapter;
 import androidx.databinding.InverseBindingListener;
 import androidx.fragment.app.FragmentManager;
 
+import com.google.type.DateTime;
+
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.VisualState;
@@ -230,6 +235,11 @@ public class ControlDateTimeField extends ControlPropertyEditField<Date> {
 	// Overrides
 
 	@Override
+	public Date getValue() {
+		return (Date) super.getValue();
+	}
+
+	@Override
 	protected Date getFieldValue() {
 		if (StringUtils.isEmpty(dateInput.getText().toString())) {
 			return null;
@@ -239,9 +249,10 @@ public class ControlDateTimeField extends ControlPropertyEditField<Date> {
 		Date time = !StringUtils.isEmpty(timeInput.getText().toString()) ? DateHelper.parseTime(timeInput.getText().toString()) : null;
 
 		if (time != null) {
-			LocalDate localDate = new LocalDate(date);
-			DateTime dateTime = localDate.toDateTime(new LocalTime(time));
-			return dateTime.toDate();
+			LocalDate localDate = UtilDate.toLocalDate(date);
+			LocalTime localTime = UtilDate.toLocalTime(time);
+			LocalDateTime localDateTime = localDate.atTime(localTime);
+			return UtilDate.from(localDateTime);
 		} else {
 			return date;
 		}

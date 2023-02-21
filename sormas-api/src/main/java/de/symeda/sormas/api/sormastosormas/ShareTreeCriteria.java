@@ -15,7 +15,7 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
-import static de.symeda.sormas.api.HasUuid.UUID_REGEX;
+import static de.symeda.sormas.api.uuid.HasUuid.UUID_REGEX;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_UUID_MAX;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_UUID_MIN;

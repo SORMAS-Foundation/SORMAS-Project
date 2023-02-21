@@ -20,11 +20,11 @@ package org.sormas.e2etests.steps.web.application.persons;
 
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EDIT_TRAVEL_ENTRY_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.NEW_ENTRY_POPUP;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.CONTACT_PERSON_FIRST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.CONTACT_PERSON_LAST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.SEX_COMBOBOX;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.ARRIVAL_DATE;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.ADDITIONAL_INFORMATION_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.AREA_TYPE_COMBOBOX;
@@ -521,7 +521,7 @@ public class EditPersonSteps implements En {
         "I click on new entry button on Edit Person Page for DE",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON_DE);
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_ENTRY_POPUP);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(ARRIVAL_DATE);
         });
     When(
         "I check if added travel Entry appeared on Edit Person Page",

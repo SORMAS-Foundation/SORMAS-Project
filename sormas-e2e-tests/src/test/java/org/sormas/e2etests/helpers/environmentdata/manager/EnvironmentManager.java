@@ -58,7 +58,14 @@ public class EnvironmentManager {
     return countries.stream()
         .filter(country -> country.getDefaultName().equalsIgnoreCase(countryName))
         .findFirst()
-        .orElseThrow(() -> new Exception("Unable to find country: " + countryName))
+        .orElseThrow(
+            () ->
+                new Exception(
+                    "Unable to find country: "
+                        + countryName
+                        + "\n"
+                        + "Available countries: "
+                        + countries))
         .getUuid();
   }
 
@@ -74,7 +81,14 @@ public class EnvironmentManager {
     return regions.stream()
         .filter(region -> region.getName().equalsIgnoreCase(regionName))
         .findFirst()
-        .orElseThrow(() -> new Exception("Unable to find region: " + regionName))
+        .orElseThrow(
+            () ->
+                new Exception(
+                    "Unable to find region: "
+                        + regionName
+                        + "\n"
+                        + "Available regions: "
+                        + regions))
         .getUuid();
   }
 
@@ -106,7 +120,14 @@ public class EnvironmentManager {
     return districts.stream()
         .filter(district -> district.getName().equalsIgnoreCase(districtName))
         .findFirst()
-        .orElseThrow(() -> new Exception("Unable to find district: " + districtName))
+        .orElseThrow(
+            () ->
+                new Exception(
+                    "Unable to find district: "
+                        + districtName
+                        + "\n"
+                        + "Available districts: "
+                        + districts))
         .getUuid();
   }
 
@@ -154,7 +175,14 @@ public class EnvironmentManager {
     return continents.stream()
         .filter(continent -> continent.getDefaultName().equalsIgnoreCase(continentName))
         .findFirst()
-        .orElseThrow(() -> new Exception("Unable to find continent: " + continentName))
+        .orElseThrow(
+            () ->
+                new Exception(
+                    "Unable to find continent: "
+                        + continentName
+                        + "\n"
+                        + "Available continents: "
+                        + continents))
         .getUuid();
   }
 
@@ -186,7 +214,14 @@ public class EnvironmentManager {
     return communities.stream()
         .filter(community -> community.getName().equalsIgnoreCase(communityName))
         .findFirst()
-        .orElseThrow(() -> new Exception("Unable to find community: " + communityName))
+        .orElseThrow(
+            () ->
+                new Exception(
+                    "Unable to find community: "
+                        + communityName
+                        + "\n"
+                        + "Available communities: "
+                        + communities))
         .getUuid();
   }
 
@@ -253,15 +288,18 @@ public class EnvironmentManager {
     Range<Integer> serverFailRange = Range.between(500, 600);
     int responseStatus = response.getStatusCode();
     if (clientFailRange.contains(responseStatus)) {
-      log.warn("Response returned status code [ {} ]", responseStatus);
       doc = Jsoup.parse(response.getBody().asString());
       throw new Exception(
-          String.format("Unable to perform API request due to: [ %s ]", doc.body().text()));
+          String.format(
+              "Status code: [ %s ] : Unable to perform API request due to: [ %s ]",
+              responseStatus, doc.body().text()));
     } else if (serverFailRange.contains(responseStatus)) {
       log.warn("Response returned status code [ {} ]", responseStatus);
       doc = Jsoup.parse(response.getBody().asString());
       throw new Exception(
-          String.format("Unable to perform API request due to: [ %s ]", doc.body().text()));
+          String.format(
+              "Status code: [ %s ] : Unable to perform API request due to: [ %s ]",
+              responseStatus, doc.body().text()));
     }
     if (response.getBody().asString().isEmpty()) {
       throw new Exception("Response is empty.");

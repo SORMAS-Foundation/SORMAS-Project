@@ -5,7 +5,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.sameInstance;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class GeoLatLonTest {
 

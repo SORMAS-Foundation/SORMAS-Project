@@ -20,9 +20,7 @@ import static org.hamcrest.Matchers.is;
 
 import java.util.Date;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -50,14 +48,13 @@ import de.symeda.sormas.backend.sormastosormas.SormasToSormasTest;
  * @author Alex Vidrean
  * @since 11-Oct-21
  */
-@RunWith(MockitoJUnitRunner.class)
+
 public class ReceivedEntitiesProcessorTest extends SormasToSormasTest {
 
 	@Test
 	public void testIgnoredPropertiesAreNotOverwrittenWithNewValuesForCase() throws CloneNotSupportedException {
 		PersonDto personDto = creator.createPerson();
-		UserReferenceDto officer =
-			creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		CaseDataDto existingCaseDto = creator.createCase(officer, rdcf, dto -> {
 			dto.setPerson(personDto.toReference());
 			dto.setSurveillanceOfficer(officer);
@@ -92,8 +89,7 @@ public class ReceivedEntitiesProcessorTest extends SormasToSormasTest {
 		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
 
 		PersonDto personDto = creator.createPerson();
-		UserReferenceDto officer =
-			creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		CaseDataDto existingCaseDto = creator.createCase(officer, rdcf, dto -> {
 			dto.setPerson(personDto.toReference());
 			dto.setSurveillanceOfficer(officer);

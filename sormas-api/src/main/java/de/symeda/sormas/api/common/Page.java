@@ -1,8 +1,11 @@
 package de.symeda.sormas.api.common;
 
+import de.symeda.sormas.api.audit.AuditedClass;
+
 import java.io.Serializable;
 import java.util.List;
 
+@AuditedClass
 public class Page<T> implements Serializable {
 
 	List<T> elements;

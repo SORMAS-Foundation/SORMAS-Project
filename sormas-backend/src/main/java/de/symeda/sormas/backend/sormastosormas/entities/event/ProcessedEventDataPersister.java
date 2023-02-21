@@ -24,7 +24,7 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
+import de.symeda.sormas.api.sormastosormas.entities.event.SormasToSormasEventDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
@@ -57,7 +57,8 @@ public class ProcessedEventDataPersister extends ProcessedDataPersister<EventDto
 	}
 
 	@Override
-	public void persistSharedData(SormasToSormasEventDto processedData, Event existingEvent) throws SormasToSormasValidationException {
+	public void persistSharedData(SormasToSormasEventDto processedData, Event existingEvent, boolean isSync)
+		throws SormasToSormasValidationException {
 		EventDto event = processedData.getEntity();
 
 		handleValidationError(() -> eventFacade.save(event, false, false), Captions.CaseData, buildCaseValidationGroupName(event), event);

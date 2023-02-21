@@ -52,6 +52,8 @@ public class PersonJoins extends QueryJoins<Person> {
 	private Join<Person, Country> birthCountry;
 	private Join<Person, Country> citizenship;
 	private Join<Person, List<Location>> addresses;
+	private Join<Person, PersonContactDetail> phone;
+	private Join<Person, PersonContactDetail> emailAddress;
 
 	private LocationJoins addressJoins;
 	private CaseJoins caseJoins;
@@ -182,6 +184,22 @@ public class PersonJoins extends QueryJoins<Person> {
 
 	private void setAddressJoins(LocationJoins addressJoins) {
 		this.addressJoins = addressJoins;
+	}
+
+	public Join<Person, PersonContactDetail> getPhone() {
+		return getOrCreate(phone, Person.PERSON_CONTACT_DETAILS, JoinType.LEFT, this::setPhone);
+	}
+
+	public void setPhone(Join<Person, PersonContactDetail> emailAddress) {
+		this.phone = emailAddress;
+	}
+
+	public Join<Person, PersonContactDetail> getEmailAddress() {
+		return getOrCreate(emailAddress, Person.PERSON_CONTACT_DETAILS, JoinType.LEFT, this::setEmailAddress);
+	}
+
+	public void setEmailAddress(Join<Person, PersonContactDetail> emailAddress) {
+		this.emailAddress = emailAddress;
 	}
 
 	public ImmunizationJoins getImmunizationJoins() {

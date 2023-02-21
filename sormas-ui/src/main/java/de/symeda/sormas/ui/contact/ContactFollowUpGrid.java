@@ -124,22 +124,10 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 
 	public void setDataProvider(Date referenceDate, int interval) {
 
-		DataProvider<ContactFollowUpDto, ContactCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-			query -> FacadeProvider.getContactFacade()
-				.getContactFollowUpList(
-					query.getFilter().orElse(null),
-					referenceDate,
-					interval,
-					query.getOffset(),
-					query.getLimit(),
-					query.getSortOrders()
-						.stream()
-						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-						.collect(Collectors.toList()))
-				.stream(),
-			query -> (int) FacadeProvider.getContactFacade().count(query.getFilter().orElse(null)));
-		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.NONE);
+		setLazyDataProvider(
+			(criteria, first, max, sortProperties) -> FacadeProvider.getContactFacade()
+				.getContactFollowUpList(criteria, referenceDate, interval, first, max, sortProperties),
+			FacadeProvider.getContactFacade()::count);
 	}
 
 	private void setDates(Date referenceDate, int interval) {

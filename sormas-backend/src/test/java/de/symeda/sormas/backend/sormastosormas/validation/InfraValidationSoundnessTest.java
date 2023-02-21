@@ -1,8 +1,8 @@
 package de.symeda.sormas.backend.sormastosormas.validation;
 
 import static org.hibernate.validator.internal.util.Contracts.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -25,8 +25,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.classmate.MemberResolver;
 import com.fasterxml.classmate.ResolvedType;
@@ -36,15 +36,16 @@ import com.fasterxml.classmate.members.ResolvedField;
 import com.fasterxml.classmate.members.ResolvedMember;
 import com.fasterxml.classmate.types.ResolvedPrimitiveType;
 
-import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
-import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
-import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
-import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
-import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventParticipantDto;
-import de.symeda.sormas.api.sormastosormas.externalmessage.SormasToSormasExternalMessageDto;
-import de.symeda.sormas.api.sormastosormas.immunization.SormasToSormasImmunizationDto;
-import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
+import de.symeda.sormas.api.sormastosormas.entities.SormasToSormasEntityDto;
+import de.symeda.sormas.api.sormastosormas.entities.caze.SormasToSormasCaseDto;
+import de.symeda.sormas.api.sormastosormas.entities.contact.SormasToSormasContactDto;
+import de.symeda.sormas.api.sormastosormas.entities.event.SormasToSormasEventDto;
+import de.symeda.sormas.api.sormastosormas.entities.event.SormasToSormasEventParticipantDto;
+import de.symeda.sormas.api.sormastosormas.entities.externalmessage.SormasToSormasExternalMessageDto;
+import de.symeda.sormas.api.sormastosormas.entities.immunization.SormasToSormasImmunizationDto;
+import de.symeda.sormas.api.sormastosormas.entities.sample.SormasToSormasSampleDto;
+import de.symeda.sormas.api.sormastosormas.entities.surveillancereport.SormasToSormasSurveillanceReportDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.PreviewNotImplementedDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasCasePreview;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasContactPreview;
@@ -70,6 +71,7 @@ import de.symeda.sormas.backend.sormastosormas.entities.event.SormasToSormasEven
 import de.symeda.sormas.backend.sormastosormas.entities.eventparticipant.SormasToSormasEventParticipantDtoValidator;
 import de.symeda.sormas.backend.sormastosormas.entities.externalmessage.SormasToSormasExternalMessageDtoValidator;
 import de.symeda.sormas.backend.sormastosormas.entities.immunization.SormasToSormasImmunizationDtoValidator;
+import de.symeda.sormas.backend.sormastosormas.entities.surveillancereport.SormasToSormasSurveillanceReportDtoValidator;
 
 public abstract class InfraValidationSoundnessTest extends AbstractBeanTest {
 
@@ -82,6 +84,7 @@ public abstract class InfraValidationSoundnessTest extends AbstractBeanTest {
 	protected SormasToSormasEventParticipantDtoValidator eventParticipantDtoValidator;
 	protected SormasToSormasImmunizationDtoValidator immunizationDtoValidator;
 	protected SormasToSormasExternalMessageDtoValidator labMessageDtoValidator;
+	protected SormasToSormasSurveillanceReportDtoValidator surveillanceReportDtoValidator;
 
 	@Override
 	public void init() {
@@ -92,6 +95,7 @@ public abstract class InfraValidationSoundnessTest extends AbstractBeanTest {
 		eventParticipantDtoValidator = getSormasToSormasEventParticipantDtoValidator();
 		immunizationDtoValidator = getSormasToSormasImmunizationDtoValidator();
 		labMessageDtoValidator = getSormasToSormasLabMessageDtoValidator();
+		surveillanceReportDtoValidator = getSormasToSormasSurveillanceReportDtoValidator();
 	}
 
 	/**
@@ -534,10 +538,10 @@ public abstract class InfraValidationSoundnessTest extends AbstractBeanTest {
 		Set<String> expected = getExpected(entity, rootNode);
 		if (expected.isEmpty()) {
 			assertEquals(
+				SormasToSormasExternalMessageDto.class.getTypeName(),
+				typeResolver.resolve(entity.getClass()).getTypeName(),
 				"SormasToSormasExternalMessageDto have no infra. fields as of now, therefore, the are not populated at all. "
-					+ "Other types are not expected to be completely empty.",
-				"de.symeda.sormas.api.sormastosormas.externalmessage.SormasToSormasExternalMessageDto",
-				typeResolver.resolve(entity.getClass()).getTypeName());
+					+ "Other types are not expected to be completely empty.");
 			return;
 		}
 		Set<String> foundFieldsIncoming = getRejectedFields(getDtoValidationErrors(entity, validator));
@@ -755,7 +759,7 @@ public abstract class InfraValidationSoundnessTest extends AbstractBeanTest {
 	}
 
 	@Test
-	@Ignore("samples depend on facilities which are not yet supported")
+	@Disabled("samples depend on facilities which are not yet supported")
 	public void testShareSampleValidation()
 		throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchFieldException {
 
@@ -778,5 +782,28 @@ public abstract class InfraValidationSoundnessTest extends AbstractBeanTest {
 		SampleDtoRootNode rootNode = new SampleDtoRootNode(sampleDto);
 		assertValidationDto(sampleDto, rootNode, getSormasToSormasSampleDtoValidator());
 
+	}
+
+	@Test
+	public void testSurveillanceReportValidation()
+		throws NoSuchFieldException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+		class SurveillanceReportDtoRootNode extends DtoRootNode<SormasToSormasSurveillanceReportDto> {
+
+			public SurveillanceReportDtoRootNode(SormasToSormasSurveillanceReportDto dtoUnderTest) {
+				super(dtoUnderTest);
+			}
+		}
+
+		class SurveillanceReportPreviewRootNode extends DtoRootNode<PreviewNotImplementedDto> {
+
+			// todo add test once preview is available for this entity
+			public SurveillanceReportPreviewRootNode(PreviewNotImplementedDto dtoUnderTest) {
+				super(dtoUnderTest);
+			}
+		}
+		before();
+		SormasToSormasSurveillanceReportDto surveillanceReportDto = new SormasToSormasSurveillanceReportDto();
+		SurveillanceReportDtoRootNode rootNode = new SurveillanceReportDtoRootNode(surveillanceReportDto);
+		assertValidationDto(surveillanceReportDto, rootNode, surveillanceReportDtoValidator);
 	}
 }

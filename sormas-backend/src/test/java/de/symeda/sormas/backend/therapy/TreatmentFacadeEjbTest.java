@@ -1,16 +1,16 @@
 package de.symeda.sormas.backend.therapy;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.person.PersonDto;
@@ -73,7 +73,7 @@ public class TreatmentFacadeEjbTest extends AbstractBeanTest {
 			creator.getUserRoleReference(DefaultUserRole.CASE_SUPERVISOR));
 		PersonDto casePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(user.toReference(), casePerson.toReference(), rdcf);
-		PrescriptionDto prescription =  creator.createPrescription(caze);
+		PrescriptionDto prescription = creator.createPrescription(caze);
 
 		TreatmentDto standaloneTreatment = creator.createTreatment(caze);
 		TreatmentDto prescriptionTreatment1 = creator.createTreatment(caze, t -> {
@@ -88,7 +88,7 @@ public class TreatmentFacadeEjbTest extends AbstractBeanTest {
 
 		List<TreatmentIndexDto> results = getTreatmentFacade().getTreatmentForPrescription(prescriptionUuids);
 		assertEquals(2, results.size());
-		List<String> treatmentUuids = results.stream().map(t->t.getUuid()).collect(Collectors.toList());
+		List<String> treatmentUuids = results.stream().map(t -> t.getUuid()).collect(Collectors.toList());
 		assertTrue(treatmentUuids.contains(prescriptionTreatment1.getUuid()));
 		assertTrue(treatmentUuids.contains(prescriptionTreatment2.getUuid()));
 		assertFalse(treatmentUuids.contains(standaloneTreatment.getUuid()));
@@ -98,9 +98,10 @@ public class TreatmentFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testDeleteTreatmentsByUuids() {
 		RDCFEntities rdcf = creator.createRDCFEntities();
-		UserDto user = creator.createUser(rdcf,
-				creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR),
-				creator.getUserRoleReference(DefaultUserRole.CASE_SUPERVISOR));
+		UserDto user = creator.createUser(
+			rdcf,
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR),
+			creator.getUserRoleReference(DefaultUserRole.CASE_SUPERVISOR));
 		PersonDto casePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(user.toReference(), casePerson.toReference(), rdcf);
 
@@ -126,12 +127,13 @@ public class TreatmentFacadeEjbTest extends AbstractBeanTest {
 	public void testUnbindTreatmentsFromPrescription() {
 
 		RDCFEntities rdcf = creator.createRDCFEntities();
-		UserDto user = creator.createUser(rdcf,
-				creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR),
-				creator.getUserRoleReference(DefaultUserRole.CASE_SUPERVISOR));
+		UserDto user = creator.createUser(
+			rdcf,
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR),
+			creator.getUserRoleReference(DefaultUserRole.CASE_SUPERVISOR));
 		PersonDto casePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(user.toReference(), casePerson.toReference(), rdcf);
-		PrescriptionDto prescription =  creator.createPrescription(caze);
+		PrescriptionDto prescription = creator.createPrescription(caze);
 
 		TreatmentDto prescriptionTreatment1 = creator.createTreatment(caze, t -> {
 			t.setPrescription(prescription.toReference());
@@ -145,7 +147,7 @@ public class TreatmentFacadeEjbTest extends AbstractBeanTest {
 		treatmentUuids.add(prescriptionTreatment2.getUuid());
 
 		List<TreatmentDto> treatmentDtos = getTreatmentFacade().getByUuids(treatmentUuids);
-		for(TreatmentDto treatmentDto:treatmentDtos){
+		for (TreatmentDto treatmentDto : treatmentDtos) {
 			assertNotNull(treatmentDto.getPrescription());
 			assertEquals(prescription.getUuid(), treatmentDto.getPrescription().getUuid());
 		}
@@ -153,7 +155,7 @@ public class TreatmentFacadeEjbTest extends AbstractBeanTest {
 		getTreatmentFacade().unlinkPrescriptionFromTreatments(treatmentUuids);
 
 		treatmentDtos = getTreatmentFacade().getByUuids(treatmentUuids);
-		for(TreatmentDto treatmentDto:treatmentDtos){
+		for (TreatmentDto treatmentDto : treatmentDtos) {
 			assertNull(treatmentDto.getPrescription());
 		}
 	}

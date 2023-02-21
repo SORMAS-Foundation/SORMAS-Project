@@ -382,7 +382,7 @@ public class CaseContactsView extends AbstractCaseView {
 				grid.setEagerDataProvider();
 			}
 
-			grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
+			grid.addDataSizeChangeListener(e -> updateStatusButtons());
 
 			setSubComponent(gridLayout);
 		}
@@ -394,10 +394,11 @@ public class CaseContactsView extends AbstractCaseView {
 		updateFilterComponents();
 
 		grid.reload();
-		setCaseEditPermission(gridLayout);
+		setEditPermission(gridLayout);
 	}
 
-	protected boolean isCaseEditAllowed() {
+	@Override
+	protected boolean isEditAllowed() {
 		return FacadeProvider.getCaseFacade().isEditContactAllowed(getReference().getUuid()).equals(EditPermissionType.ALLOWED);
 	}
 
@@ -433,7 +434,7 @@ public class CaseContactsView extends AbstractCaseView {
 		CssStyles.removeStyles(activeStatusButton, CssStyles.BUTTON_FILTER_LIGHT);
 		if (activeStatusButton != null) {
 			activeStatusButton
-				.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
+				.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getDataSize())));
 		}
 	}
 

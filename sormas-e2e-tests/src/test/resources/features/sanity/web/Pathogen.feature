@@ -151,8 +151,7 @@ Feature: Pathogen Functionalities
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
-    When I click on the Contacts button from navbar
-    Then I search after last created contact via API by UUID and open
+    Then I open the last created contact via API
     And I click on New Sample
     When I collect the sample UUID displayed on create new sample page
     And I create a new Sample with specific data and save

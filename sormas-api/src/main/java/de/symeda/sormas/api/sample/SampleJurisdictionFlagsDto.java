@@ -19,42 +19,47 @@ import java.io.Serializable;
 
 public class SampleJurisdictionFlagsDto implements Serializable {
 
-    private Boolean isInJurisdiction;
-    private Boolean isCaseInJurisdiction;
-    private Boolean isContactInJurisdiction;
-    private Boolean isContactCaseInJurisdiction;
-    private Boolean isEvenParticipantInJurisdiction;
+	private Boolean isInJurisdiction;
+	private Boolean isCaseInJurisdiction;
+	private Boolean isContactInJurisdiction;
+	private Boolean isContactCaseInJurisdiction;
+	private Boolean isEvenParticipantInJurisdiction;
 
-    public SampleJurisdictionFlagsDto(
-            Boolean isInJurisdiction,
-            Boolean isCaseInJurisdiction,
-            Boolean isContactInJurisdiction,
-            Boolean isContactCaseInJurisdiction,
-            Boolean isEvenParticipantInJurisdiction) {
-        this.isInJurisdiction = isInJurisdiction;
-        this.isCaseInJurisdiction = isCaseInJurisdiction;
-        this.isContactInJurisdiction = isContactInJurisdiction;
-        this.isContactCaseInJurisdiction = isContactCaseInJurisdiction;
-        this.isEvenParticipantInJurisdiction = isEvenParticipantInJurisdiction;
-    }
+	public SampleJurisdictionFlagsDto(Object[] flags) {
+		this((Boolean) flags[1], (Boolean) flags[2], (Boolean) flags[3], (Boolean) flags[4], (Boolean) flags[5]);
+	}
 
-    public Boolean getInJurisdiction() {
-        return isInJurisdiction;
-    }
+	public SampleJurisdictionFlagsDto(
+		Boolean isInJurisdiction,
+		Boolean isCaseInJurisdiction,
+		Boolean isContactInJurisdiction,
+		Boolean isContactCaseInJurisdiction,
+		Boolean isEvenParticipantInJurisdiction) {
 
-    public Boolean getCaseInJurisdiction() {
-        return isCaseInJurisdiction;
-    }
+		this.isInJurisdiction = isInJurisdiction;
+		this.isCaseInJurisdiction = isCaseInJurisdiction;
+		this.isContactInJurisdiction = isContactInJurisdiction;
+		this.isContactCaseInJurisdiction = isContactCaseInJurisdiction;
+		this.isEvenParticipantInJurisdiction = isEvenParticipantInJurisdiction;
+	}
 
-    public Boolean getContactInJurisdiction() {
-        return isContactInJurisdiction;
-    }
+	public Boolean getInJurisdiction() {
+		return isInJurisdiction;
+	}
 
-    public Boolean getContactCaseInJurisdiction() {
-        return isContactCaseInJurisdiction;
-    }
+	public Boolean getCaseInJurisdiction() {
+		return isCaseInJurisdiction;
+	}
 
-    public Boolean getEvenParticipantInJurisdiction() {
-        return isEvenParticipantInJurisdiction;
-    }
+	public Boolean getContactInJurisdiction() {
+		return isContactInJurisdiction;
+	}
+
+	public Boolean getContactCaseInJurisdiction() {
+		return isContactCaseInJurisdiction;
+	}
+
+	public Boolean getEvenParticipantInJurisdiction() {
+		return isEvenParticipantInJurisdiction;
+	}
 }

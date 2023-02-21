@@ -1,15 +1,19 @@
 package de.symeda.sormas.backend.externalmessage;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -17,15 +21,16 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Root;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import de.symeda.sormas.api.externalmessage.ExternalMessageCriteria;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
@@ -34,16 +39,19 @@ import de.symeda.sormas.api.systemevents.SystemEventDto;
 import de.symeda.sormas.api.systemevents.SystemEventStatus;
 import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportService;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
 import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ExternalMessageFacadeEjbUnitTest {
 
 	@Mock
 	private EntityManager em;
 	@Mock
 	private ExternalMessageService externalMessageService;
+	@Mock
+	private SurveillanceReportService surveillanceReportService;
 	@Mock
 	private SystemEventFacadeEjb.SystemEventFacadeEjbLocal systemEventFacade;
 
@@ -60,9 +68,13 @@ public class ExternalMessageFacadeEjbUnitTest {
 	@Mock
 	private CriteriaQuery<Long> longCriteriaQuery;
 	@Mock
-	private Root<ExternalMessage> labMessage;
+	private CriteriaQuery<Tuple> labMessageIndexIdsTupleCriteriaQuery;
+	@Mock
+	private Root<ExternalMessage> labMessageRoot;
 	@Mock
 	private TypedQuery<ExternalMessageIndexDto> labMessageIndexDtoTypedQuery;
+	@Mock
+	private TypedQuery<Tuple> labMessageIndexIdsTypedQuery;
 	@Mock
 	Join<Object, Object> userJoin;
 	@Mock
@@ -77,8 +89,8 @@ public class ExternalMessageFacadeEjbUnitTest {
 
 		when(em.getCriteriaBuilder()).thenReturn(criteriaBuilder);
 		when(criteriaBuilder.createQuery(Long.class)).thenReturn(longCriteriaQuery);
-		when(longCriteriaQuery.from(ExternalMessage.class)).thenReturn(labMessage);
-		when(criteriaBuilder.countDistinct(labMessage)).thenReturn(longExpression);
+		when(longCriteriaQuery.from(ExternalMessage.class)).thenReturn(labMessageRoot);
+		when(criteriaBuilder.countDistinct(labMessageRoot)).thenReturn(longExpression);
 		when(em.createQuery(longCriteriaQuery)).thenReturn(longTypedQuery);
 		long expected = 1L;
 		when(longTypedQuery.getSingleResult()).thenReturn(expected);
@@ -94,20 +106,30 @@ public class ExternalMessageFacadeEjbUnitTest {
 		int max = 1;
 
 		when(em.getCriteriaBuilder()).thenReturn(criteriaBuilder);
+
+		when(criteriaBuilder.createTupleQuery()).thenReturn(labMessageIndexIdsTupleCriteriaQuery);
+		when(labMessageIndexIdsTupleCriteriaQuery.from(ExternalMessage.class)).thenReturn(labMessageRoot);
+		when(em.createQuery(labMessageIndexIdsTupleCriteriaQuery)).thenReturn(labMessageIndexIdsTypedQuery);
+		when(labMessageIndexIdsTypedQuery.setFirstResult(first)).thenReturn(labMessageIndexIdsTypedQuery);
+		when(labMessageIndexIdsTypedQuery.setMaxResults(max)).thenReturn(labMessageIndexIdsTypedQuery);
+		when(labMessageIndexIdsTypedQuery.getResultList()).thenReturn(Collections.singletonList(mock(Tuple.class)));
+		when(criteriaBuilder.asc(any())).thenReturn(mock(Order.class));
+		when(criteriaBuilder.desc(any())).thenReturn(mock(Order.class));
+
 		when(criteriaBuilder.createQuery(ExternalMessageIndexDto.class)).thenReturn(labMessageIndexDtoCriteriaQuery);
-		when(labMessageIndexDtoCriteriaQuery.from(ExternalMessage.class)).thenReturn(labMessage);
+		when(labMessageIndexDtoCriteriaQuery.from(ExternalMessage.class)).thenReturn(labMessageRoot);
 		when(em.createQuery(labMessageIndexDtoCriteriaQuery)).thenReturn(labMessageIndexDtoTypedQuery);
-		when(labMessageIndexDtoTypedQuery.setFirstResult(first)).thenReturn(labMessageIndexDtoTypedQuery);
-		when(labMessageIndexDtoTypedQuery.setMaxResults(max)).thenReturn(labMessageIndexDtoTypedQuery);
 		ArrayList<ExternalMessageIndexDto> expectedResult = new ArrayList<>();
 		when(labMessageIndexDtoTypedQuery.getResultList()).thenReturn(expectedResult);
-		when(labMessage.join(ExternalMessage.ASSIGNEE, JoinType.LEFT)).thenReturn(userJoin);
+		when(labMessageRoot.get(anyString())).thenReturn(mock(Path.class));
+		when(labMessageRoot.join(ExternalMessage.ASSIGNEE, JoinType.LEFT)).thenReturn(userJoin);
 		when(userJoin.get((String) any())).thenReturn(null);
 		ArrayList<SortProperty> sortProperties = new ArrayList<>();
 		sortProperties.add(new SortProperty(ExternalMessageIndexDto.UUID));
 		sortProperties.add(new SortProperty("No Valid Property"));
 		List<ExternalMessageIndexDto> result = sut.getIndexList(new ExternalMessageCriteria(), first, max, sortProperties);
 
+		verify(labMessageIndexIdsTupleCriteriaQuery).orderBy(orderListArgumentCaptor.capture());
 		verify(labMessageIndexDtoCriteriaQuery).orderBy(orderListArgumentCaptor.capture());
 		assertEquals(2, orderListArgumentCaptor.getValue().size());
 		assertEquals(expectedResult, result);
@@ -115,11 +137,11 @@ public class ExternalMessageFacadeEjbUnitTest {
 
 	@Test
 	public void testSave() {
-
 		ExternalMessageDto externalMessageDto = new ExternalMessageDto();
 		String testUuid = "Test UUID";
 		externalMessageDto.setUuid(testUuid);
 		ExternalMessage externalMessage = new ExternalMessage();
+		externalMessage.setUuid(testUuid);
 
 		when(externalMessageService.getByUuid(testUuid)).thenReturn(externalMessage);
 		sut.save(externalMessageDto);
@@ -129,7 +151,6 @@ public class ExternalMessageFacadeEjbUnitTest {
 
 	@Test
 	public void testGetByUuid() {
-
 		String testUuid = "test UUID";
 		ExternalMessage externalMessage = new ExternalMessage();
 		when(externalMessageService.getByUuid(testUuid)).thenReturn(externalMessage);

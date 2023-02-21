@@ -20,8 +20,6 @@ import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 import java.util.List;
 import java.util.Random;
 
-import org.joda.time.DateTime;
-
 import com.google.android.gms.common.api.CommonStatusCodes;
 
 import android.content.Context;
@@ -131,12 +129,6 @@ public class SampleListActivity extends PagedBaseListActivity {
 			showPreloader();
 			model.getSamples().getValue().getDataSource().invalidate();
 		};
-	}
-
-	@Override
-	public int onNotificationCountChangingAsync(AdapterView parent, PageMenuItem menuItem, int position) {
-		//TODO: Call database and retrieve notification count
-		return (int) (new Random(DateTime.now().getMillis() * 1000).nextInt() / 10000000);
 	}
 
 	@Override

@@ -15,11 +15,11 @@
 
 package de.symeda.sormas.app.contact.read;
 
-import java.util.List;
-
 import android.content.Context;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import java.util.List;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.contact.ContactClassification;
@@ -135,7 +135,7 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
 		final Contact selectedContact = DatabaseHelper.getContactDao().getByReferenceDto(referenceDto);
 
 		if (editMenu != null) {
-			if (ContactEditAuthorization.isContactEditAllowed(selectedContact)) {
+			if (ConfigProvider.hasUserRight(UserRight.CONTACT_EDIT) && ContactEditAuthorization.isContactEditAllowed(selectedContact)) {
 				editMenu.setVisible(true);
 			} else {
 				editMenu.setVisible(false);

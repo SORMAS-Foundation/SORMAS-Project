@@ -23,6 +23,12 @@ import org.openqa.selenium.By;
 public class DistrictsTabPage {
 
   public static final By DISTRICTS_NEW_ENTRY_BUTTON = By.cssSelector("div#actionNewEntry");
+  public static final By IMPORT_BUTTON_DISTRICTS_CONFIGURATION = By.id("actionImport");
+  public static final By EXPORT_BUTTON_DISTRICTS_CONFIGURATION = By.id("export");
+  public static final By ENTER_BULK_EDIT_MODE_BUTTON_DISTRICTS_CONFIGURATION =
+      By.id("actionEnterBulkEditMode");
+  public static final By DISTRICTS_NAME_TABLE_ROW =
+      By.cssSelector("div.v-grid-tablewrapper tbody tr >:nth-child(2)");
   public static final By CREATE_NEW_ENTRY_DISTRICTS_NAME_INPUT =
       By.cssSelector(".popupContent #name");
   public static final By CREATE_NEW_ENTRY_DISTRICTS_REGION_COMBOBOX =
@@ -43,4 +49,8 @@ public class DistrictsTabPage {
       By.cssSelector("thead" + " .v-grid-column-default-header-content");
   public static final By COUNTRY_DISTRICT_FILTER_COMBOBOX =
       By.cssSelector("[id='country'] [class='v-filterselect-button']");
+  public static final By REGION_DISTRICT_FILTER_COMBOBOX =
+      By.cssSelector("[id='region'] [class='v-filterselect-button']");
+  public static final By RELEVANCE_STATUS_COMBO_BOX_DISTRICTS_CONFIGURATION =
+      By.id("relevanceStatus");
 }

@@ -17,8 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.surveillance;
 
-import com.vaadin.navigator.ViewChangeListener;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
@@ -80,11 +78,6 @@ public class SurveillanceDashboardView extends AbstractDashboardView {
 				dashboardLayout.addComponent(surveillanceOverviewLayout, 1);
 			}
 		});
-	}
-
-	@Override
-	public void enter(ViewChangeListener.ViewChangeEvent event) {
-		refreshDashboard();
 	}
 
 	public void refreshDashboard() {

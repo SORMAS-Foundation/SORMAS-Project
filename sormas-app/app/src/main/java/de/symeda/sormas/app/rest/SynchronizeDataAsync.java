@@ -60,20 +60,25 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.campaign.CampaignDtoHelper;
 import de.symeda.sormas.app.backend.campaign.data.CampaignFormDataDtoHelper;
 import de.symeda.sormas.app.backend.campaign.form.CampaignFormMetaDtoHelper;
+import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationDtoHelper;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalVisitDtoHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.common.DtoFeatureConfigHelper;
 import de.symeda.sormas.app.backend.common.DtoUserRightsHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactDtoHelper;
 import de.symeda.sormas.app.backend.customizableenum.CustomizableEnumValueDtoHelper;
 import de.symeda.sormas.app.backend.disease.DiseaseConfigurationDtoHelper;
+import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventDtoHelper;
 import de.symeda.sormas.app.backend.event.EventParticipantDtoHelper;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
 import de.symeda.sormas.app.backend.feature.FeatureConfigurationDtoHelper;
+import de.symeda.sormas.app.backend.immunization.Immunization;
 import de.symeda.sormas.app.backend.immunization.ImmunizationDtoHelper;
 import de.symeda.sormas.app.backend.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.app.backend.infrastructure.PointOfEntryDtoHelper;
@@ -91,6 +96,7 @@ import de.symeda.sormas.app.backend.report.WeeklyReportDtoHelper;
 import de.symeda.sormas.app.backend.sample.AdditionalTestDtoHelper;
 import de.symeda.sormas.app.backend.sample.PathogenTestDtoHelper;
 import de.symeda.sormas.app.backend.sample.SampleDtoHelper;
+import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDtoHelper;
 import de.symeda.sormas.app.backend.therapy.PrescriptionDtoHelper;
 import de.symeda.sormas.app.backend.therapy.TreatmentDtoHelper;
@@ -363,6 +369,31 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		boolean treatmentsNeedPull = treatmentDtoHelper.pullAndPushEntities(context, syncCallbacks);
 		boolean clinicalVisitsNeedPull = clinicalVisitDtoHelper.pullAndPushEntities(context, syncCallbacks);
 
+		boolean casesVisible = DtoUserRightsHelper.isViewAllowed(CaseDataDto.class) && DtoFeatureConfigHelper.isFeatureConfigForCaseEnabled();
+		boolean immunizationsVisible =
+			DtoUserRightsHelper.isViewAllowed(ImmunizationDto.class) && DtoFeatureConfigHelper.isFeatureConfigForImmunizationEnabled();
+		boolean eventsVisible = DtoUserRightsHelper.isViewAllowed(EventDto.class) && DtoFeatureConfigHelper.isFeatureConfigForEventsEnabled();
+		boolean eventParticipantsVisible =
+			DtoUserRightsHelper.isViewAllowed(EventParticipantDto.class) && DtoFeatureConfigHelper.isFeatureConfigForEventParticipantsEnabled();
+		boolean samplesVisible = DtoUserRightsHelper.isViewAllowed(SampleDto.class) && DtoFeatureConfigHelper.isFeatureConfigForSampleEnabled();
+		boolean sampleTestsVisible =
+			DtoUserRightsHelper.isViewAllowed(PathogenTestDto.class) && DtoFeatureConfigHelper.isFeatureConfigForSampleTestsEnabled();
+		boolean additionalTestsVisible =
+			DtoUserRightsHelper.isViewAllowed(AdditionalTestDto.class) && DtoFeatureConfigHelper.isFeatureConfigForAdditionalTestsEnabled();
+		boolean contactsVisible = DtoUserRightsHelper.isViewAllowed(ContactDto.class) && DtoFeatureConfigHelper.isFeatureConfigForContactsEnabled();
+		boolean visitsVisible = DtoUserRightsHelper.isViewAllowed(VisitDto.class) && DtoFeatureConfigHelper.isFeatureConfigForVisitsEnabled();
+		boolean tasksVisible = DtoUserRightsHelper.isViewAllowed(TaskDto.class) && DtoFeatureConfigHelper.isFeatureConfigForTasksEnabled();
+		boolean weeklyReportsVisible =
+			DtoUserRightsHelper.isViewAllowed(WeeklyReportDto.class) && DtoFeatureConfigHelper.isFeatureConfigForWeeklyReportsEnabled();
+		boolean aggregateReportsVisible =
+			DtoUserRightsHelper.isViewAllowed(AggregateReportDto.class) && DtoFeatureConfigHelper.isFeatureConfigForAggregateReportsEnabled();
+		boolean prescriptionsVisible =
+			DtoUserRightsHelper.isViewAllowed(PrescriptionDto.class) && DtoFeatureConfigHelper.isFeatureConfigForPrescriptionsEnabled();
+		boolean treatmentsVisible =
+			DtoUserRightsHelper.isViewAllowed(TreatmentDto.class) && DtoFeatureConfigHelper.isFeatureConfigForTreatmentsEnabled();
+		boolean clinicalVisitsVisible =
+			DtoUserRightsHelper.isViewAllowed(ClinicalVisitDto.class) && DtoFeatureConfigHelper.isFeatureConfigForClinicalVisitsEnabled();
+
 		syncCallbacks.ifPresent(c -> c.getUpdateSynchronizationStepCallback().accept(SynchronizationDialog.SynchronizationStep.PULL_MODIFIED));
 
 		casesNeedPull |= clinicalVisitsNeedPull;
@@ -370,65 +401,95 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		if (personsNeedPull) {
 			personDtoHelper.pullEntities(true, context, syncCallbacks, false);
 		}
-		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
-		if (casesNeedPull) {
-			caseDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		if (casesVisible) {
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+			if (casesNeedPull) {
+				caseDtoHelper.pullEntities(true, context, syncCallbacks, false);
+			}
 		}
-		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
-		if (immunizationsNeedPull) {
-			immunizationDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		if (immunizationsVisible) {
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+			if (immunizationsNeedPull) {
+				immunizationDtoHelper.pullEntities(true, context, syncCallbacks, false);
+			}
 		}
-		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
-		if (eventsNeedPull) {
-			eventDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		if (eventsVisible) {
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+			if (eventsNeedPull) {
+				eventDtoHelper.pullEntities(true, context, syncCallbacks, false);
+			}
 		}
-		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
-		if (eventParticipantsNeedPull) {
-			eventParticipantDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		if (eventParticipantsVisible) {
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+			if (eventParticipantsNeedPull) {
+				eventParticipantDtoHelper.pullEntities(true, context, syncCallbacks, false);
+			}
 		}
-		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
-		if (samplesNeedPull) {
-			sampleDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		if (samplesVisible) {
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+			if (samplesNeedPull) {
+				sampleDtoHelper.pullEntities(true, context, syncCallbacks, false);
+			}
 		}
-		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
-		if (sampleTestsNeedPull) {
-			pathogenTestDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		if (sampleTestsVisible) {
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+			if (sampleTestsNeedPull) {
+				pathogenTestDtoHelper.pullEntities(true, context, syncCallbacks, false);
+			}
 		}
-		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
-		if (additionalTestsNeedPull) {
-			additionalTestDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		if (additionalTestsVisible) {
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+			if (additionalTestsNeedPull) {
+				additionalTestDtoHelper.pullEntities(true, context, syncCallbacks, false);
+			}
 		}
-		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
-		if (contactsNeedPull) {
-			contactDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		if (contactsVisible) {
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+			if (contactsNeedPull) {
+				contactDtoHelper.pullEntities(true, context, syncCallbacks, false);
+			}
 		}
-		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
-		if (visitsNeedPull) {
-			visitDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		if (visitsVisible) {
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+			if (visitsNeedPull) {
+				visitDtoHelper.pullEntities(true, context, syncCallbacks, false);
+			}
 		}
-		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
-		if (tasksNeedPull) {
-			taskDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		if (tasksVisible) {
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+			if (tasksNeedPull) {
+				taskDtoHelper.pullEntities(true, context, syncCallbacks, false);
+			}
 		}
-		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
-		if (weeklyReportsNeedPull) {
-			weeklyReportDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		if (weeklyReportsVisible) {
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+			if (weeklyReportsNeedPull) {
+				weeklyReportDtoHelper.pullEntities(true, context, syncCallbacks, false);
+			}
 		}
-		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
-		if (aggregateReportsNeedPull) {
-			aggregateReportDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		if (aggregateReportsVisible) {
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+			if (aggregateReportsNeedPull) {
+				aggregateReportDtoHelper.pullEntities(true, context, syncCallbacks, false);
+			}
 		}
-		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
-		if (prescriptionsNeedPull) {
-			prescriptionDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		if (prescriptionsVisible) {
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+			if (prescriptionsNeedPull) {
+				prescriptionDtoHelper.pullEntities(true, context, syncCallbacks, false);
+			}
 		}
-		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
-		if (treatmentsNeedPull) {
-			treatmentDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		if (treatmentsVisible) {
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+			if (treatmentsNeedPull) {
+				treatmentDtoHelper.pullEntities(true, context, syncCallbacks, false);
+			}
 		}
-		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
-		if (clinicalVisitsNeedPull) {
-			clinicalVisitDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		if (clinicalVisitsVisible) {
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+			if (clinicalVisitsNeedPull) {
+				clinicalVisitDtoHelper.pullEntities(true, context, syncCallbacks, false);
+			}
 		}
 		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
 
@@ -584,6 +645,11 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 				for (String caseUuid : caseUuids) {
 					DatabaseHelper.getCaseDao().deleteCaseAndAllDependingEntities(caseUuid);
 				}
+				// Remove obsolete cases based on change date
+				List<Case> obsoleteCases = DatabaseHelper.getCaseDao().queryForObsolete();
+				for (Case obsoleteCase : obsoleteCases) {
+					DatabaseHelper.getCaseDao().deleteCaseAndAllDependingEntities(obsoleteCase.getUuid());
+				}
 			}
 			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
 
@@ -594,6 +660,11 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 				for (String contactUuid : contactUuids) {
 					DatabaseHelper.getContactDao().deleteContactAndAllDependingEntities(contactUuid);
 				}
+				// Remove obsolete contacts based on change date
+				List<Contact> obsoleteContacts = DatabaseHelper.getContactDao().queryForObsolete();
+				for (Contact obsoleteContact : obsoleteContacts) {
+					DatabaseHelper.getContactDao().deleteContactAndAllDependingEntities(obsoleteContact.getUuid());
+				}
 			}
 			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
 
@@ -602,6 +673,11 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 				List<String> eventUuids = executeUuidCall(RetroProvider.getEventFacade().pullObsoleteUuidsSince(since != null ? since.getTime() : 0));
 				for (String eventUuid : eventUuids) {
 					DatabaseHelper.getEventDao().deleteEventAndAllDependingEntities(eventUuid);
+				}
+				// Remove obsolete events based on change date
+				List<Event> obsoleteEvents = DatabaseHelper.getEventDao().queryForObsolete();
+				for (Event obsoleteEvent : obsoleteEvents) {
+					DatabaseHelper.getEventDao().deleteEventAndAllDependingEntities(obsoleteEvent.getUuid());
 				}
 			}
 			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
@@ -623,6 +699,11 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 				for (String immunizationUuid : immunizationUuids) {
 					DatabaseHelper.getImmunizationDao().deleteImmunizationAndAllDependingEntities(immunizationUuid);
 				}
+				// Remove obsolete immunizations based on change date
+				List<Immunization> obsoleteImmunizations = DatabaseHelper.getImmunizationDao().queryForObsolete();
+				for (Immunization obsoleteImmunization : obsoleteImmunizations) {
+					DatabaseHelper.getImmunizationDao().deleteImmunizationAndAllDependingEntities(obsoleteImmunization.getUuid());
+				}
 			}
 			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
 
@@ -641,6 +722,11 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 				List<String> taskUuids = executeUuidCall(RetroProvider.getTaskFacade().pullObsoleteUuidsSince(since != null ? since.getTime() : 0));
 				for (String taskUuid : taskUuids) {
 					DatabaseHelper.getTaskDao().deleteTaskAndAllDependingEntities(taskUuid);
+				}
+				// Remove obsolete tasks based on change date
+				List<Task> obsoleteTasks = DatabaseHelper.getTaskDao().queryForObsolete();
+				for (Task obsoleteTask : obsoleteTasks) {
+					DatabaseHelper.getTaskDao().deleteTaskAndAllDependingEntities(obsoleteTask.getUuid());
 				}
 			}
 			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());

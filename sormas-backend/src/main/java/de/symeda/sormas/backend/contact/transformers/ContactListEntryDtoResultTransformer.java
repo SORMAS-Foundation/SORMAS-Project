@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.contact.transformers;
 
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.transform.ResultTransformer;
@@ -12,6 +13,8 @@ import de.symeda.sormas.api.contact.ContactStatus;
 
 public class ContactListEntryDtoResultTransformer implements ResultTransformer {
 
+	private static final long serialVersionUID = -2135520032690371734L;
+
 	@Override
 	public Object transformTuple(Object[] objects, String[] strings) {
 		return new ContactListEntryDto(
@@ -20,7 +23,9 @@ public class ContactListEntryDtoResultTransformer implements ResultTransformer {
 			(Disease) objects[2],
 			(ContactClassification) objects[3],
 			(ContactCategory) objects[4],
-			(boolean) objects[5]);
+			(Date) objects[5],
+			(Date) objects[6],
+			(boolean) objects[7]);
 	}
 
 	@Override

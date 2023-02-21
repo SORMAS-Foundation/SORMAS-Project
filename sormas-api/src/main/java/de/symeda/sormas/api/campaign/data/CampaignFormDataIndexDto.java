@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,15 +15,14 @@
 
 package de.symeda.sormas.api.campaign.data;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-public class CampaignFormDataIndexDto implements Serializable, Cloneable {
+import de.symeda.sormas.api.uuid.AbstractUuidDto;
+
+public class CampaignFormDataIndexDto extends AbstractUuidDto implements Cloneable {
 
 	public static final String I18N_PREFIX = "CampaignFormData";
-
-	public static final String UUID = "uuid";
 	public static final String CAMPAIGN = "campaign";
 	public static final String FORM = "form";
 	public static final String REGION = "region";
@@ -33,7 +32,6 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = -6672198324526771162L;
 
-	private String uuid;
 	private String campaign;
 	private String form;
 	private List<CampaignFormDataEntry> formValues;
@@ -51,7 +49,7 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 		String district,
 		String community,
 		Date formDate) {
-		this.uuid = uuid;
+		super(uuid);
 		this.campaign = campaign;
 		this.form = form;
 		this.formValues = (List<CampaignFormDataEntry>) formValues;
@@ -59,14 +57,6 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 		this.district = district;
 		this.community = community;
 		this.formDate = formDate;
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
 	}
 
 	public String getCampaign() {

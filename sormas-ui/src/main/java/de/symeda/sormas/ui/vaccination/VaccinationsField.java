@@ -67,7 +67,7 @@ public class VaccinationsField extends AbstractTableField<VaccinationDto> {
 			ControllerProvider.getVaccinationController().create(entry.getImmunization(), disease, fieldAccessCheckers, commitCallback);
 		} else {
 			ControllerProvider.getVaccinationController()
-				.edit(entry, disease, fieldAccessCheckers, false, commitCallback, () -> VaccinationsField.this.removeEntry(entry));
+				.edit(entry, disease, fieldAccessCheckers, false, commitCallback, () -> VaccinationsField.this.removeEntry(entry), true);
 		}
 	}
 
@@ -111,7 +111,7 @@ public class VaccinationsField extends AbstractTableField<VaccinationDto> {
 		});
 
 		table.setVisibleColumns(
-			EDIT_COLUMN_ID,
+			ACTION_COLUMN_ID,
 			VaccinationDto.UUID,
 			VaccinationDto.VACCINATION_DATE,
 			VaccinationDto.VACCINE_NAME,
@@ -120,7 +120,7 @@ public class VaccinationsField extends AbstractTableField<VaccinationDto> {
 			VaccinationDto.VACCINE_DOSE);
 
 		for (Object columnId : table.getVisibleColumns()) {
-			if (columnId.equals(EDIT_COLUMN_ID)) {
+			if (columnId.equals(ACTION_COLUMN_ID)) {
 				table.setColumnHeader(columnId, "&nbsp");
 			} else if (columnId.equals(Captions.columnVaccineName)) {
 				table.setColumnHeader(columnId, I18nProperties.getCaption(Captions.columnVaccineName));

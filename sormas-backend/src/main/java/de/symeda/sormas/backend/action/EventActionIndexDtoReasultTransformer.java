@@ -8,6 +8,7 @@ import org.hibernate.transform.ResultTransformer;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.action.ActionPriority;
 import de.symeda.sormas.api.action.ActionStatus;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventActionIndexDto;
 import de.symeda.sormas.api.event.EventIdentificationSource;
@@ -23,34 +24,36 @@ public class EventActionIndexDtoReasultTransformer implements ResultTransformer 
 
 	@Override
 	public Object transformTuple(Object[] objects, String[] strings) {
-		UserReferenceDto eventReportingUser = new UserReferenceDto((String) objects[12], (String) objects[13], (String) objects[14]);
-		UserReferenceDto eventResponsibleUser = new UserReferenceDto((String) objects[15], (String) objects[16], (String) objects[17]);
-		UserReferenceDto actionLastModifiedBy = new UserReferenceDto((String) objects[26], (String) objects[27], (String) objects[28]);
-		UserReferenceDto actionCreatorUser = new UserReferenceDto((String) objects[29], (String) objects[30], (String) objects[31]);
+		UserReferenceDto eventReportingUser = new UserReferenceDto((String) objects[13], (String) objects[14], (String) objects[15]);
+		UserReferenceDto eventResponsibleUser = new UserReferenceDto((String) objects[16], (String) objects[17], (String) objects[18]);
+		UserReferenceDto actionLastModifiedBy = new UserReferenceDto((String) objects[27], (String) objects[28], (String) objects[29]);
+		UserReferenceDto actionCreatorUser = new UserReferenceDto((String) objects[30], (String) objects[31], (String) objects[32]);
 		return new EventActionIndexDto(
-			(String) objects[0],
 			(String) objects[1],
-			(Disease) objects[2],
-			(DiseaseVariant) objects[3],
-			(String) objects[4],
-			(EventIdentificationSource) objects[5],
-			(Date) objects[6],
+			(String) objects[2],
+			(Disease) objects[3],
+			(DiseaseVariant) objects[4],
+			(String) objects[5],
+			(EventIdentificationSource) objects[6],
 			(Date) objects[7],
-			(EventStatus) objects[8],
-			(RiskLevel) objects[9],
-			(EventInvestigationStatus) objects[10],
-			(EventManagementStatus) objects[11],
+			(Date) objects[8],
+			(EventStatus) objects[9],
+			(RiskLevel) objects[10],
+			(EventInvestigationStatus) objects[11],
+			(EventManagementStatus) objects[12],
 			eventReportingUser,
 			eventResponsibleUser,
-			(String) objects[20],
-			(Date) objects[19],
-			(Date) objects[21],
+			(String) objects[21],
+			(Date) objects[20],
 			(Date) objects[22],
 			(Date) objects[23],
-			(ActionStatus) objects[24],
-			(ActionPriority) objects[25],
+			(Date) objects[24],
+			(ActionStatus) objects[25],
+			(ActionPriority) objects[26],
 			actionLastModifiedBy,
-			actionCreatorUser);
+			actionCreatorUser,
+			(DeletionReason) objects[42],
+			(String) objects[43]);
 	}
 
 	@Override

@@ -130,12 +130,18 @@ public class EventParticipantsView extends AbstractEventView {
 				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportEventParticipant));
 				popupWindow.addCloseListener(c -> this.grid.reload());
 			}, ValoTheme.BUTTON_PRIMARY);
+			if (shouldDisableButton()) {
+				importButton.setEnabled(false);
+			}
 
 			addHeaderComponent(importButton);
 		}
 
 		// export
 		PopupButton exportPopupButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
+		if (shouldDisableButton()) {
+			exportPopupButton.setEnabled(false);
+		}
 		addHeaderComponent(exportPopupButton);
 
 		{
@@ -256,13 +262,17 @@ public class EventParticipantsView extends AbstractEventView {
 
 			btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
 			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
-
 			addHeaderComponent(btnEnterBulkEditMode);
 
 			Button btnLeaveBulkEditMode =
 				ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
 			btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
 
+			if (shouldDisableButton()) {
+				btnEnterBulkEditMode.setEnabled(false);
+				btnLeaveBulkEditMode.setEnabled(false);
+				bulkOperationsDropdown.setEnabled(false);
+			}
 			addHeaderComponent(btnLeaveBulkEditMode);
 
 			btnEnterBulkEditMode.addClickListener(e -> {
@@ -284,6 +294,11 @@ public class EventParticipantsView extends AbstractEventView {
 
 		topLayout.addStyleName(CssStyles.VSPACE_3);
 		return topLayout;
+	}
+
+	private boolean shouldDisableButton() {
+		return FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.EDIT_ARCHIVED_ENTITIES)
+			&& FacadeProvider.getEventFacade().isArchived(getEventRef().getUuid());
 	}
 
 	private Set<String> getSelectedRows() {
@@ -308,10 +323,9 @@ public class EventParticipantsView extends AbstractEventView {
 			gridLayout.addComponent(grid);
 			gridLayout.setExpandRatio(grid, 1);
 			gridLayout.setStyleName("crud-main-layout");
-			grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
+			grid.addDataSizeChangeListener(e -> updateStatusButtons());
 			setSubComponent(gridLayout);
-			gridLayout
-				.setEnabled(!isEventDeleted() && isEventEditAllowed() && UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_EDIT));
+			gridLayout.setEnabled(!isEventDeleted() && isEditAllowed() && UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_EDIT));
 		}
 
 		if (params.startsWith("?")) {
@@ -365,7 +379,7 @@ public class EventParticipantsView extends AbstractEventView {
 			eventParticipantRelevanceStatusFilter = buildRelevanceStatusFilter(
 				Captions.eventParticipantActiveEventParticipants,
 				Captions.eventParticipantArchivedEventParticipants,
-				Captions.eventParticipantAllEventParticipants);
+				Captions.eventParticipantActiveAndArchivedEventParticipants);
 
 			eventParticipantRelevanceStatusFilter.addValueChangeListener(e -> {
 				if (relevanceStatusInfoLabel != null) {
@@ -404,7 +418,15 @@ public class EventParticipantsView extends AbstractEventView {
 		relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
 		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(eventParticipantActiveCaption));
 		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(eventParticipantArchivedCaption));
-		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(eventParticipantAllCaption));
+		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(eventParticipantAllCaption));
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
+			relevanceStatusFilter
+				.setItemCaption(EntityRelevanceStatus.DELETED, I18nProperties.getCaption(Captions.eventParticipantDeletedEventParticipants));
+		} else {
+			relevanceStatusFilter.removeItem(EntityRelevanceStatus.DELETED);
+		}
+
 		return relevanceStatusFilter;
 	}
 
@@ -419,7 +441,7 @@ public class EventParticipantsView extends AbstractEventView {
 			if (criteria.getRelevanceStatus() == null) {
 				criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
 				boolean archived = FacadeProvider.getEventFacade().isArchived(getEventRef().getUuid());
-				eventParticipantRelevanceStatusFilter.setValue(archived ? EntityRelevanceStatus.ALL : criteria.getRelevanceStatus());
+				eventParticipantRelevanceStatusFilter.setValue(archived ? EntityRelevanceStatus.ACTIVE_AND_ARCHIVED : criteria.getRelevanceStatus());
 			} else {
 				eventParticipantRelevanceStatusFilter.setValue(criteria.getRelevanceStatus());
 			}
@@ -434,7 +456,7 @@ public class EventParticipantsView extends AbstractEventView {
 
 		if (activeStatusButton != null) {
 			activeStatusButton
-				.setCaption(I18nProperties.getCaption(Captions.all) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
+				.setCaption(I18nProperties.getCaption(Captions.all) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getDataSize())));
 		}
 	}
 }

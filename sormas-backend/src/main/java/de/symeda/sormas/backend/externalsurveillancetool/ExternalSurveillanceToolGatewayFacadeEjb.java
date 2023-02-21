@@ -33,6 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
@@ -68,6 +69,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 	private UserService userService;
 
 	@Override
+	@AuditIgnore
 	@PermitAll
 	public boolean isFeatureEnabled() {
 		return configFacade.isExternalSurveillanceToolGatewayConfigured();

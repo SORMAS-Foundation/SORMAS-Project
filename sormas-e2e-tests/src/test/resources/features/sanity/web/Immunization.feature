@@ -212,7 +212,8 @@ Feature: Immunization end to end tests
     And I click on Save button in Case form
     And I click on New Sample
     Then I create a new Sample with positive test result with COVID-19 as disease
-    Then I confirm case with positive test result
+    And I confirm case with positive test result
+    And I click on yes in Confirm case popup window
     And I click on the NEW IMMUNIZATION button in Edit case
     Then I fill only mandatory fields in immunization popup with means of immunization as a "Recovery"
     Then I click on Link Case button
@@ -247,7 +248,7 @@ Feature: Immunization end to end tests
     Then I check that Immunization data is displayed as read-only on Edit immunization page
 
   @tmsLink=SORDEV-8759 @env_de
-  Scenario: Test Reduced entry option for vaccinations
+  Scenario: Test Reduced entry option for vaccinations[1]
     Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
@@ -284,7 +285,7 @@ Feature: Immunization end to end tests
     And I set event Date filed on Create New Event form to current date for DE
     And I click SAVE button on Create New Event form
     And I click SAVE in Add Event Participant form on Edit Case Page for DE
-    And I click on Edit event button for the first event in Events section
+    And I click on first Edit event button for in Events section
     And I click on the Event participant tab
     And I click on the first row from event participant
     And I check if Vaccination Status is set to "Geimpft" on Edit Case page
@@ -321,23 +322,23 @@ Feature: Immunization end to end tests
     And I click SAVE button on Edit Contact Page
     And I check that vaccination entry is greyed out in the vaccination card
     And I check the displayed message is correct after hovering over the Vaccination Card Info icon on Edit Contact Page for DE
-    Then I click Link Event button on Edit Case Page for DE
-    And I click on New Event option in Link to Event Form
-    And I click on SAVE button in Link Event form
+
+  @tmsLink=SORDEV-8759 @env_de
+  Scenario: Test Reduced entry option for vaccinations[2]
+    Given I log in as a National User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
     And I fill event Title field on Create New Event Page
     And I set event Date filed on Create New Event form to current date for DE
     And I click SAVE button on Create New Event form
-    And I click SAVE in Add Event Participant form on Edit Case Page for DE
-    And I click on the Edit Vaccination icon on vaccination card on Edit Case page
-    And I set the vaccination date to 7 days before the current day for DE
+    And I add a participant to the event in DE
+    And I click NEW VACCINATION button for DE
+    And I fill new vaccination data in new Vaccination form with vaccination date 7 days before the current day for DE
     And I click SAVE button in new Vaccination form
-    And I click on Edit event button for the first event in Events section
     And I click on the Event participant tab
     And I click Create Case for Event Participant
-    And I pick a new case in pick or create a case popup
     And I fill only mandatory fields for a new case form for DE
     And I save the new case
-    And I pick a new case in pick or create a case popup
     And I check that displayed vaccination card has correct vaccination date and name
     And I check if Vaccination Status is set to "Geimpft" on Edit Case page
     And I click on the Contacts button from navbar
@@ -345,13 +346,13 @@ Feature: Immunization end to end tests
     And I fill a mandatory fields for a new contact form for DE
     And I change a Report Date to the current date for DE
     And I click on SAVE button in create contact form
-    And I click on CONFIRMED CONTACT radio button Contact Data tab for DE version
+    And I select CONFIRMED CONTACT radio button on Contact Data tab for DE version
     And I click SAVE button on Edit Contact Page
     And I click NEW VACCINATION button for DE
     And I fill new vaccination data in new Vaccination form with vaccination date 7 days before the current day for DE
     And I click SAVE button in new Vaccination form
     And I click Create Case from Contact button
-    And I fill only mandatory fields for a new case form for DE
+    And I fill only mandatory fields to convert a contact into a case for DE
     And I click SAVE button on Create New Case form
     And I check that displayed vaccination card has correct vaccination date and name
     And I check if Vaccination Status is set to "Geimpft" on Edit Case page
@@ -359,5 +360,37 @@ Feature: Immunization end to end tests
     And I click on the NEW CASE button
     And I create a new case with specific mandatory fields with saved person details from contact for DE
     And I click on SAVE new contact button and choose same person in duplicate detection
-    And I check that vaccination entry is greyed out in the vaccination card
     And I check if Vaccination Status is set to "" on Edit Case page
+    And I check that vaccination entry is greyed out in the vaccination card
+
+  @tmsLink=SORQA-668 @env_de @oldfake
+    Scenario: Check automatic deletion of IMMUNIZATION created 3651 days ago
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    When API: I create a new immunizations for last created person with creation date 3651 days ago
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in as a Admin User
+    And I click on the Configuration button from navbar
+    Then I navigate to Developer tab in Configuration
+    Then I click on Execute Automatic Deletion button
+    And I wait 30 seconds for system reaction
+    Then I check if created immunization is available in API
+    And API: I check that GET call status code is 204
+
+  @tmsLink=SORQA-677 @env_de @oldfake
+  Scenario: Check automatic deletion NOT of IMMUNIZATION created 3645 days ago
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    When API: I create a new immunizations for last created person with creation date 3645 days ago
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in as a Admin User
+    And I click on the Configuration button from navbar
+    Then I navigate to Developer tab in Configuration
+    Then I click on Execute Automatic Deletion button
+    And I wait 30 seconds for system reaction
+    Then I check if created immunization is available in API
+    And API: I check that GET call status code is 200

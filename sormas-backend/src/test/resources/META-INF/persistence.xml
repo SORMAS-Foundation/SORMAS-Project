@@ -83,6 +83,7 @@
 		<class>de.symeda.sormas.backend.vaccination.FirstVaccinationDate</class>
 		<class>de.symeda.sormas.backend.externalmessage.labmessage.TestReport</class>
 		<class>de.symeda.sormas.backend.deletionconfiguration.DeletionConfiguration</class>
+		<class>de.symeda.sormas.backend.externalmessage.labmessage.SampleReport</class>
 
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
@@ -103,6 +104,11 @@
 			<property name="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>
 			<property name="hibernate.show_sql" value="false" />
 			<property name="hibernate.format_sql" value="false" />
+
+			<property name="hibernate.cache.use_second_level_cache" value="true"/>
+			<property name="hibernate.cache.region.factory_class" value="org.hibernate.cache.ehcache.internal.SingletonEhcacheRegionFactory"/>
+
+			<property name="hibernate.enable_lazy_load_no_trans" value="true" />
 
 			<!-- 			
 			<property name="eclipselink.ddl-generation" value="drop-and-create-tables" /> 

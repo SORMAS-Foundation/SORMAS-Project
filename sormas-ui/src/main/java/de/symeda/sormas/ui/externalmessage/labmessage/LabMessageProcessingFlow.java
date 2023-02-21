@@ -18,18 +18,23 @@ package de.symeda.sormas.ui.externalmessage.labmessage;
 import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showCreateCaseWindow;
 import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showFormWithLabMessage;
 import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showMissingDiseaseConfiguration;
+import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showMultipleSamplesPopup;
 import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showPickOrCreateEntryWindow;
 import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showPickOrCreatePersonWindow;
 import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showRelatedForwardedMessageConfirmation;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.function.Consumer;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.Registration;
-import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
@@ -47,12 +52,14 @@ import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -60,17 +67,17 @@ import de.symeda.sormas.ui.contact.ContactCreateForm;
 import de.symeda.sormas.ui.events.EventDataForm;
 import de.symeda.sormas.ui.events.EventParticipantEditForm;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
-import de.symeda.sormas.ui.externalmessage.processing.EntrySelectionField;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractLabMessageProcessingFlow;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.LabMessageProcessingHelper;
-import de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper;
-import de.symeda.sormas.ui.externalmessage.processing.PickOrCreateEntryResult;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.PickOrCreateEventResult;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.PickOrCreateSampleResult;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.SampleAndPathogenTests;
-import de.symeda.sormas.ui.samples.PathogenTestForm;
+import de.symeda.sormas.ui.externalmessage.processing.EntrySelectionField;
+import de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper;
+import de.symeda.sormas.ui.externalmessage.processing.PickOrCreateEntryResult;
 import de.symeda.sormas.ui.samples.SampleController;
 import de.symeda.sormas.ui.samples.SampleCreateForm;
+import de.symeda.sormas.ui.samples.SampleEditPathogenTestListHandler;
 import de.symeda.sormas.ui.samples.SampleSelectionField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -123,26 +130,28 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 	}
 
 	@Override
+	public CompletionStage<Boolean> handleMultipleSampleConfirmation() {
+		return showMultipleSamplesPopup();
+	}
+
+	@Override
 	protected void handleCreateSampleAndPathogenTests(
 		SampleDto sample,
 		List<PathogenTestDto> pathogenTests,
 		Disease disease,
 		ExternalMessageDto labMessage,
 		boolean entityCreated,
+		boolean lastSample,
 		HandlerCallback<SampleAndPathogenTests> callback) {
 
-		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent = getSampleCreateComponent(sample, pathogenTests, labMessage, disease);
+		SampleEditPathogenTestListHandler pathogenTestHandler = new SampleEditPathogenTestListHandler();
+		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent =
+			getSampleCreateComponent(sample, lastSample, pathogenTests, labMessage, disease, pathogenTestHandler::addPathogenTest);
 
-		sampleCreateComponent.addCommitListener(() -> {
-			List<PathogenTestDto> createdPathogenTests = new ArrayList<>();
-			for (int i = 0; i < sampleCreateComponent.getComponentCount(); i++) {
-				Component component = sampleCreateComponent.getComponent(i);
-				if (PathogenTestForm.class.isAssignableFrom(component.getClass())) {
-					createdPathogenTests.add(((PathogenTestForm) component).getValue());
-				}
-			}
+		sampleCreateComponent.setPostCommitListener(() -> {
+			pathogenTestHandler.saveAll(sample.toReference());
 
-			callback.done(new SampleAndPathogenTests(sampleCreateComponent.getWrappedComponent().getValue(), createdPathogenTests));
+			callback.done(new SampleAndPathogenTests(sampleCreateComponent.getWrappedComponent().getValue(), pathogenTestHandler.getPathogenTests()));
 		});
 		sampleCreateComponent.addDiscardListener(callback::cancel);
 
@@ -175,7 +184,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 	@Override
 	protected void handlePickOrCreateEvent(ExternalMessageDto labMessage, HandlerCallback<PickOrCreateEventResult> callback) {
 		EventSelectionField eventSelect =
-			new EventSelectionField(labMessage.getTestedDisease(), I18nProperties.getString(Strings.infoPickOrCreateEventForLabMessage), null);
+			new EventSelectionField(labMessage.getDisease(), I18nProperties.getString(Strings.infoPickOrCreateEventForLabMessage), null);
 		eventSelect.setWidth(1024, Sizeable.Unit.PIXELS);
 
 		Window window = VaadinUiUtil.createPopupWindow();
@@ -208,7 +217,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 
 	@Override
 	protected void handleCreateEvent(EventDto event, HandlerCallback<EventDto> callback) {
-		EventDataForm eventCreateForm = new EventDataForm(true, false);
+		EventDataForm eventCreateForm = new EventDataForm(true, false, true);
 		eventCreateForm.setValue(event);
 		eventCreateForm.getField(EventDto.DISEASE).setReadOnly(true);
 		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<>(
@@ -247,7 +256,13 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		HandlerCallback<EventParticipantDto> callback) {
 		Window window = VaadinUiUtil.createPopupWindow();
 
-		EventParticipantEditForm createForm = new EventParticipantEditForm(event, false, eventParticipant.getPerson().isPseudonymized(), false);
+		EventParticipantEditForm createForm = new EventParticipantEditForm(
+			event,
+			false,
+			true,
+			eventParticipant.getPerson().isPseudonymized(),
+			eventParticipant.getPerson().isInJurisdiction(),
+			false);
 		createForm.setValue(eventParticipant);
 		final CommitDiscardWrapperComponent<EventParticipantEditForm> createComponent = new CommitDiscardWrapperComponent<>(
 			createForm,
@@ -292,9 +307,31 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		List<SampleDto> similarSamples,
 		List<SampleDto> otherSamples,
 		ExternalMessageDto labMessage,
+		int sampleReportIndex,
 		HandlerCallback<PickOrCreateSampleResult> callback) {
+
+		HorizontalLayout sampleDetailsLayout = new HorizontalLayout();
+		sampleDetailsLayout.setSpacing(true);
+
+		SampleReportDto sampleReport = labMessage.getSampleReportsNullSafe().get(sampleReportIndex);
+
+		Date sampleDateTime = sampleReport.getSampleDateTime();
+		addLabelIfAvailable(
+			sampleDetailsLayout,
+			sampleDateTime == null ? null : sampleDateTime.toString(),
+			ExternalMessageDto.I18N_PREFIX,
+			SampleReportDto.SAMPLE_DATE_TIME);
+		addLabelIfAvailable(sampleDetailsLayout, sampleReport.getLabSampleId(), ExternalMessageDto.I18N_PREFIX, SampleReportDto.LAB_SAMPLE_ID);
+
+		SampleMaterial sampleMaterial = sampleReport.getSampleMaterial();
+		addLabelIfAvailable(
+			sampleDetailsLayout,
+			sampleMaterial == null ? null : sampleMaterial.toString(),
+			ExternalMessageDto.I18N_PREFIX,
+			SampleReportDto.SAMPLE_MATERIAL);
+
 		SampleSelectionField selectField =
-			new SampleSelectionField(similarSamples, otherSamples, I18nProperties.getString(Strings.infoPickOrCreateSample));
+			new SampleSelectionField(similarSamples, otherSamples, I18nProperties.getString(Strings.infoPickOrCreateSample), sampleDetailsLayout);
 
 		Window window = VaadinUiUtil.createPopupWindow();
 
@@ -321,54 +358,59 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		showFormWithLabMessage(labMessage, selectionField, window, I18nProperties.getString(Strings.headingPickOrCreateSample), false);
 	}
 
+	private void addLabelIfAvailable(HorizontalLayout layout, String text, String i18nPrefix, String captionKey) {
+		if (StringUtils.isBlank(text)) {
+			return;
+		}
+		Label label = new Label(text);
+		label.setCaption(I18nProperties.getPrefixCaption(i18nPrefix, captionKey));
+		label.setWidthUndefined();
+		layout.addComponent(label);
+	}
+
 	@Override
 	protected void handleEditSample(
 		SampleDto sample,
 		List<PathogenTestDto> newPathogenTests,
 		ExternalMessageDto labMessage,
+		boolean lastSample,
 		HandlerCallback<SampleAndPathogenTests> callback) {
 
-		ExternalMessageProcessingUIHelper.showEditSampleWindow(sample, newPathogenTests, labMessage, callback::done, callback::cancel);
+		ExternalMessageProcessingUIHelper.showEditSampleWindow(sample, lastSample, newPathogenTests, labMessage, callback::done, callback::cancel);
 	}
 
 	private CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(
 		SampleDto sample,
+		boolean lastSample,
 		List<PathogenTestDto> pathogenTests,
 		ExternalMessageDto externalMessageDto,
-		Disease disease) {
+		Disease disease,
+		Consumer<PathogenTestDto> pathogenTestSaveHandler) {
 		SampleController sampleController = ControllerProvider.getSampleController();
-		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent = sampleController.getSampleCreateComponent(sample, disease, () -> {
-		});
+		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent = sampleController.getSampleCreateComponent(sample, disease, null);
 
 		// add pathogen test create components
-		addPathogenTests(pathogenTests, externalMessageDto, sampleCreateComponent);
-		// add option to create additional pathogen tests
-		sampleController.addPathogenTestButton(sampleCreateComponent, true);
+		List<PathogenTestDto> pathogenTestsToAdd = new ArrayList<>(pathogenTests);
+		// always build at least one PathogenTestDto
+		if (pathogenTestsToAdd.isEmpty()) {
+			pathogenTestsToAdd.add(LabMessageProcessingHelper.buildPathogenTest(null, externalMessageDto, sample, user));
+		}
 
-		LabMessageUiHelper.establishFinalCommitButtons(sampleCreateComponent);
+		ExternalMessageProcessingUIHelper.addNewPathogenTests(pathogenTestsToAdd, sampleCreateComponent, true, pathogenTestSaveHandler, null);
+
+		// add option to create additional pathogen tests
+		sampleController.addPathogenTestButton(sampleCreateComponent, true, null, null, pathogenTestSaveHandler);
+
+		LabMessageUiHelper.establishCommitButtons(sampleCreateComponent, lastSample);
 
 		return sampleCreateComponent;
 	}
 
-	public void addPathogenTests(
+	private void addPathogenTests(
 		List<PathogenTestDto> pathogenTests,
 		ExternalMessageDto labMessage,
-		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent) {
+		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent,
+		Consumer<PathogenTestDto> saveHandler) {
 
-		SampleController sampleController = ControllerProvider.getSampleController();
-		SampleDto sample = sampleCreateComponent.getWrappedComponent().getValue();
-		int caseSampleCount = sampleController.caseSampleCountOf(sample);
-
-		List<PathogenTestDto> pathogenTestsToAdd = new ArrayList<>(pathogenTests);
-		// always build at least one PathogenTestDto
-		if (pathogenTestsToAdd.isEmpty()) {
-			pathogenTestsToAdd.add(LabMessageProcessingHelper.buildPathogenTest(null, labMessage, sample, user));
-		}
-
-		for (PathogenTestDto pathogenTest : pathogenTestsToAdd) {
-			PathogenTestForm pathogenTestCreateComponent =
-				sampleController.addPathogenTestComponent(sampleCreateComponent, pathogenTest, caseSampleCount, true);
-			sampleController.setViaLimsFieldChecked(pathogenTestCreateComponent);
-		}
 	}
 }

@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.RadioButtonGroup;
 import com.vaadin.ui.VerticalLayout;
 
@@ -23,6 +24,7 @@ public class SampleSelectionField extends CustomField<SampleDto> {
 	private final List<SampleDto> similarSamples;
 	private final List<SampleDto> otherSamples;
 	private final String infoText;
+	private final HorizontalLayout detailsComponent;
 	private VerticalLayout mainLayout;
 	private SampleSelectionGrid similarSampleGrid;
 	private SampleSelectionGrid otherSampleGrid;
@@ -31,10 +33,11 @@ public class SampleSelectionField extends CustomField<SampleDto> {
 	private RadioButtonGroup<String> rbCreateSample;
 	private Consumer<Boolean> selectionChangeCallback;
 
-	public SampleSelectionField(List<SampleDto> similarSamples, List<SampleDto> otherSamples, String infoText) {
+	public SampleSelectionField(List<SampleDto> similarSamples, List<SampleDto> otherSamples, String infoText, HorizontalLayout detailsComponent) {
 		this.similarSamples = similarSamples;
 		this.otherSamples = otherSamples;
 		this.infoText = infoText;
+		this.detailsComponent = detailsComponent;
 	}
 
 	/**
@@ -92,6 +95,7 @@ public class SampleSelectionField extends CustomField<SampleDto> {
 		mainLayout.setWidth(100, Unit.PERCENTAGE);
 
 		addInfoComponent();
+		addDetailsComponent();
 
 		similarSampleGrid = createSampleGrid(similarSamples);
 		rbSelectSimilarSample = createSelectSelectRadioGroup(SELECT_SIMILAR_SAMPLE, Captions.selectSimilarSample);
@@ -125,6 +129,10 @@ public class SampleSelectionField extends CustomField<SampleDto> {
 		}
 
 		return mainLayout;
+	}
+
+	private void addDetailsComponent() {
+		mainLayout.addComponent(detailsComponent);
 	}
 
 	@Override

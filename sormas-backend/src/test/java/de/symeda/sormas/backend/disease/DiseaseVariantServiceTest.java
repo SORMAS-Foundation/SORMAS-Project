@@ -15,7 +15,7 @@
 
 package de.symeda.sormas.backend.disease;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.backend.AbstractBeanTest;
 

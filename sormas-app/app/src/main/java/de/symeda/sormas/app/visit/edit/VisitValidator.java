@@ -17,8 +17,6 @@ package de.symeda.sormas.app.visit.edit;
 
 import java.util.Date;
 
-import org.joda.time.DateTimeComparator;
-
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
@@ -33,7 +31,7 @@ public final class VisitValidator {
 			ResultCallback<Boolean> visitDateTimeCallback = () -> {
 				Date visitDateTime = (Date) contentBinding.visitVisitDateTime.getValue();
 				Date contactReferenceDate = contact.getLastContactDate() != null ? contact.getLastContactDate() : contact.getReportDateTime();
-				if (DateTimeComparator.getDateOnlyInstance().compare(visitDateTime, contactReferenceDate) < 0
+				if (DateHelper.isDateBefore(visitDateTime, contactReferenceDate)
 					&& DateHelper.getDaysBetween(visitDateTime, contactReferenceDate) > FollowUpLogic.ALLOWED_DATE_OFFSET) {
 					contentBinding.visitVisitDateTime.enableErrorState(
 						contact.getLastContactDate() != null
@@ -41,7 +39,7 @@ public final class VisitValidator {
 							: R.string.validation_visit_date_time_before_report_date);
 					return true;
 				} else if (contact.getFollowUpUntil() != null
-					&& DateTimeComparator.getDateOnlyInstance().compare(visitDateTime, contact.getFollowUpUntil()) > 0
+					&& DateHelper.isDateAfter(visitDateTime, contact.getFollowUpUntil())
 					&& DateHelper.getDaysBetween(contact.getFollowUpUntil(), visitDateTime) > FollowUpLogic.ALLOWED_DATE_OFFSET) {
 					contentBinding.visitVisitDateTime.enableErrorState(R.string.validation_visit_date_time_after_followup);
 					return true;

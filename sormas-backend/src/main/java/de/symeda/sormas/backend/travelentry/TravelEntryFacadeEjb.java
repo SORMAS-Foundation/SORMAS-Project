@@ -17,6 +17,8 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
@@ -103,11 +105,6 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
-	public boolean isDeleted(String travelEntryUuid) {
-		return service.isDeleted(travelEntryUuid);
-	}
-
-	@Override
 	@RightsAllowed(UserRight._TRAVEL_ENTRY_DELETE)
 	public void delete(String travelEntryUuid, DeletionDetails deletionDetails) {
 		TravelEntry travelEntry = service.getByUuid(travelEntryUuid);
@@ -119,7 +116,9 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
-	protected void selectDtoFields(CriteriaQuery<TravelEntryDto> cq, Root<TravelEntry> root) {
+	@RightsAllowed(UserRight._TRAVEL_ENTRY_DELETE)
+	public void undelete(String uuid) {
+		super.undelete(uuid);
 	}
 
 	@Override
@@ -127,8 +126,7 @@ public class TravelEntryFacadeEjb
 		final TravelEntry lastTravelEntry = service.getLastTravelEntry();
 
 		if (lastTravelEntry != null) {
-			Pseudonymizer aDefault = Pseudonymizer.getDefault(userService::hasRight);
-			TravelEntryDto travelEntryDto = convertToDto(lastTravelEntry, aDefault);
+			TravelEntryDto travelEntryDto = toPseudonymizedDto(lastTravelEntry);
 			return travelEntryDto.getDeaContent();
 		}
 
@@ -146,9 +144,9 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
-	protected void pseudonymizeDto(TravelEntry source, TravelEntryDto dto, Pseudonymizer pseudonymizer) {
+	protected void pseudonymizeDto(TravelEntry source, TravelEntryDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+
 		if (dto != null) {
-			boolean inJurisdiction = service.inJurisdictionOrOwned(source);
 			pseudonymizer.pseudonymizeDto(TravelEntryDto.class, dto, inJurisdiction, c -> {
 				User currentUser = userService.getCurrentUser();
 				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
@@ -180,6 +178,11 @@ public class TravelEntryFacadeEjb
 		List<TravelEntryIndexDto> travelEntryIndexList = service.getIndexList(criteria, offset, size, sortProperties);
 		long totalElementCount = count(criteria);
 		return new Page<>(travelEntryIndexList, offset, size, totalElementCount);
+	}
+
+	@Override
+	public List<TravelEntryDto> getByPersonUuids(List<String> uuids) {
+		return toDtos(service.getByPersonUuids(uuids).stream());
 	}
 
 	@Override
@@ -251,6 +254,13 @@ public class TravelEntryFacadeEjb
 		}
 		if (travelEntryDto.getPointOfEntry() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validPointOfEntry));
+		} else {
+			if (travelEntryDto.getPointOfEntry().isOtherPointOfEntry() && StringUtils.isEmpty(travelEntryDto.getPointOfEntryDetails())) {
+				throw new ValidationRuntimeException(
+					I18nProperties.getValidationError(
+						Validations.required,
+						I18nProperties.getPrefixCaption(TravelEntryDto.I18N_PREFIX, TravelEntryDto.POINT_OF_ENTRY_DETAILS)));
+			}
 		}
 		if (travelEntryDto.getDateOfArrival() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDateOfArrival));

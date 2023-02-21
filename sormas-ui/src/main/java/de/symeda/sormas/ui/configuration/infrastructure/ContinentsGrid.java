@@ -19,11 +19,11 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import de.symeda.sormas.api.feature.FeatureType;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.continent.ContinentCriteria;
 import de.symeda.sormas.api.infrastructure.continent.ContinentIndexDto;
@@ -48,9 +48,11 @@ public class ContinentsGrid extends FilteredGrid<ContinentIndexDto, ContinentCri
 
 		super.setCriteria(criteria, true);
 		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-			setSelectionMode(SelectionMode.MULTI);
+			setCriteria(criteria);
+			setEagerDataProvider();
 		} else {
-			setSelectionMode(SelectionMode.NONE);
+			setLazyDataProvider();
+			setCriteria(criteria);
 		}
 
 		setColumns(ContinentIndexDto.DISPLAY_NAME, ContinentIndexDto.EXTERNAL_ID, ContinentIndexDto.DEFAULT_NAME);
@@ -64,20 +66,22 @@ public class ContinentsGrid extends FilteredGrid<ContinentIndexDto, ContinentCri
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(ContinentIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
 		}
-
-		reload(true);
-	}
-
-	public void reload(boolean forceFetch) {
-		if (forceFetch || allContinents == null) {
-			allContinents = FacadeProvider.getContinentFacade().getIndexList(null, null, null, null);
-		}
-		reload();
 	}
 
 	public void reload() {
-		this.setItems(createFilteredStream());
 		setSelectionMode(isInEagerMode() ? SelectionMode.MULTI : SelectionMode.NONE);
+		if (ViewModelProviders.of(ContinentsView.class).get(ViewConfiguration.class).isInEagerMode()) {
+			setEagerDataProvider();
+		}
+		getDataProvider().refreshAll();
+	}
+
+	public void setLazyDataProvider() {
+		setLazyDataProvider(FacadeProvider.getContinentFacade()::getIndexList, FacadeProvider.getContinentFacade()::count);
+	}
+
+	public void setEagerDataProvider() {
+		setEagerDataProvider(FacadeProvider.getContinentFacade()::getIndexList);
 	}
 
 	private Stream<ContinentIndexDto> createFilteredStream() {

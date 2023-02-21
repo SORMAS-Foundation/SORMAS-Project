@@ -1,36 +1,32 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.api.sormastosormas.share;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
+import de.symeda.sormas.api.uuid.AbstractUuidDto;
 
-public class ShareRequestIndexDto implements Serializable {
+public class ShareRequestIndexDto extends AbstractUuidDto {
 
 	private static final long serialVersionUID = 2314636780125234734L;
 
 	public static final String I18N_PREFIX = "SormasToSormasShareRequestIndex";
 
-	public static final String UUID = "uuid";
 	public static final String CREATION_DATE = "creationDate";
 	public static final String DATA_TYPE = "dataType";
 	public static final String STATUS = "status";
@@ -40,7 +36,6 @@ public class ShareRequestIndexDto implements Serializable {
 	public static final String OWNERSHIP_HANDED_OVER = "ownershipHandedOver";
 	public static final String COMMENT = "comment";
 
-	private String uuid;
 	private Date creationDate;
 	private ShareRequestDataType dataType;
 	private ShareRequestStatus status;
@@ -59,7 +54,7 @@ public class ShareRequestIndexDto implements Serializable {
 		String senderName,
 		boolean ownershipHandedOver,
 		String comment) {
-		this.uuid = uuid;
+		super(uuid);
 		this.creationDate = creationDate;
 		this.dataType = dataType;
 		this.status = status;
@@ -67,14 +62,6 @@ public class ShareRequestIndexDto implements Serializable {
 		this.senderName = senderName;
 		this.ownershipHandedOver = ownershipHandedOver;
 		this.comment = comment;
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
 	}
 
 	public Date getCreationDate() {

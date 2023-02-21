@@ -50,6 +50,7 @@ public class Task extends AbstractDomainObject {
 
 	public static final String ASSIGNEE_REPLY = "assigneeReply";
 	public static final String ASSIGNEE_USER = "assigneeUser";
+	public static final String ASSIGNED_BY_USER = "assignedByUser";
 	public static final String CAZE = "caze";
 	public static final String CONTACT = "contact";
 	public static final String CREATOR_COMMENT = "creatorComment";
@@ -108,6 +109,9 @@ public class Task extends AbstractDomainObject {
 
 	@Column(length = CHARACTER_LIMIT_BIG)
 	private String assigneeReply;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private User assignedByUser;
 
 	@DatabaseField
 	private Double closedLat;
@@ -234,6 +238,14 @@ public class Task extends AbstractDomainObject {
 
 	public void setAssigneeReply(String assigneeReply) {
 		this.assigneeReply = assigneeReply;
+	}
+
+	public User getAssignedByUser() {
+		return assignedByUser;
+	}
+
+	public void setAssignedByUser(User assignedByUser) {
+		this.assignedByUser = assignedByUser;
 	}
 
 	public TaskPriority getPriority() {

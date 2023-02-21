@@ -1,8 +1,11 @@
 package de.symeda.sormas.api.deletionconfiguration;
 
+import de.symeda.sormas.api.audit.AuditedClass;
+
 import java.io.Serializable;
 import java.util.Date;
 
+@AuditedClass(includeAllFields = true)
 public class DeletionInfoDto implements Serializable {
 
 	private Date deletionDate;

@@ -1,24 +1,20 @@
 package de.symeda.sormas.ui.campaign.expressions;
 
-import java.util.HashMap;
+import static de.symeda.sormas.api.campaign.ExpressionProcessorUtils.refreshEvaluationContext;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
-import de.symeda.sormas.api.i18n.Descriptions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.v7.data.Property;
@@ -26,9 +22,9 @@ import com.vaadin.v7.ui.Field;
 
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
+import de.symeda.sormas.api.i18n.Descriptions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.campaign.campaigndata.CampaignFormBuilder;
-
-import static de.symeda.sormas.api.campaign.ExpressionProcessorUtils.refreshEvaluationContext;
 
 public class ExpressionProcessor {
 
@@ -82,7 +78,11 @@ public class ExpressionProcessor {
 				fieldNamesInExpression.add(campaignFormBuilder.get18nCaption(element.getId(), element.getCaption()));
 			}
 		});
-		field.setDescription(String.format("%s: %s", I18nProperties.getDescription(Descriptions.Campaign_calculatedBasedOn), StringUtils.join(fieldNamesInExpression, ", ")));
+		field.setDescription(
+			String.format(
+				"%s: %s",
+				I18nProperties.getDescription(Descriptions.Campaign_calculatedBasedOn),
+				StringUtils.join(fieldNamesInExpression, ", ")));
 	}
 
 	private void checkExpression() {

@@ -47,6 +47,7 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
@@ -279,6 +280,20 @@ public class TestDataCreator {
 		return contact;
 	}
 
+	public CaseDataDto createCase(RDCF rdcf) {
+		UserDto user = createUser(rdcf, getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto person = createPerson();
+		return createCase(
+			user.toReference(),
+			person.toReference(),
+			Disease.CORONAVIRUS,
+			CaseClassification.SUSPECT,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf,
+			DataHelper.createUuid());
+	}
+
 	public CaseDataDto createCase(
 		UserReferenceDto user,
 		PersonReferenceDto cazePerson,
@@ -392,7 +407,7 @@ public class TestDataCreator {
 		return report;
 	}
 
-	public EventDto createEvent(UserReferenceDto reportingUser, Disease disease) {
+	public EventDto createEvent(UserReferenceDto reportingUser, Disease disease, RDCF rdcf) {
 		return createEvent(
 			EventStatus.SIGNAL,
 			EventInvestigationStatus.PENDING,
@@ -407,7 +422,7 @@ public class TestDataCreator {
 			reportingUser,
 			null,
 			disease,
-			null);
+			rdcf);
 	}
 
 	public EventDto createEvent(
@@ -424,9 +439,9 @@ public class TestDataCreator {
 		UserReferenceDto reportingUser,
 		UserReferenceDto responsibleUser,
 		Disease disease,
-		DistrictReferenceDto district) {
+		RDCF rdcf) {
 
-		return createEvent(eventStatus, eventInvestigationStatus, eventTitle, eventDesc, reportingUser, (event) -> {
+		return createEvent(eventStatus, eventInvestigationStatus, eventTitle, eventDesc, reportingUser, rdcf, (event) -> {
 			event.setSrcFirstName(srcFirstName);
 			event.setSrcLastName(srcLastName);
 			event.setSrcTelNo(srcTelNo);
@@ -436,7 +451,6 @@ public class TestDataCreator {
 			event.setReportingUser(reportingUser);
 			event.setResponsibleUser(responsibleUser);
 			event.setDisease(disease);
-			event.getEventLocation().setDistrict(district);
 		});
 	}
 
@@ -446,6 +460,7 @@ public class TestDataCreator {
 		String eventTitle,
 		String eventDesc,
 		UserReferenceDto reportingUser,
+		RDCF rdcf,
 		Consumer<EventDto> customSettings) {
 
 		EventDto event = EventDto.build();
@@ -458,6 +473,13 @@ public class TestDataCreator {
 		if (customSettings != null) {
 			customSettings.accept(event);
 		}
+
+		if (rdcf == null) {
+			rdcf = createRDCF();
+		}
+
+		event.getEventLocation().setRegion(rdcf.region.toReference());
+		event.getEventLocation().setDistrict(rdcf.district.toReference());
 
 		event = FacadeProviderMock.getEventFacade().save(event);
 
@@ -476,6 +498,7 @@ public class TestDataCreator {
 		Date reportDateTime,
 		UserReferenceDto reportingUser,
 		UserReferenceDto responsibleUser,
+		RDCF rdcf,
 		Disease disease) {
 
 		EventDto event = EventDto.build();
@@ -491,6 +514,13 @@ public class TestDataCreator {
 		event.setReportingUser(reportingUser);
 		event.setResponsibleUser(responsibleUser);
 		event.setDisease(disease);
+
+		if (rdcf == null) {
+			rdcf = createRDCF();;
+		}
+
+		event.getEventLocation().setRegion(rdcf.region.toReference());
+		event.getEventLocation().setDistrict(rdcf.district.toReference());
 
 		event = FacadeProvider.getEventFacade().save(event);
 
@@ -551,6 +581,14 @@ public class TestDataCreator {
 		sample = FacadeProvider.getSampleFacade().saveSample(sample);
 
 		return sample;
+	}
+
+	public SampleDto createSample(
+		EventParticipantReferenceDto associatedEventParticipant,
+		UserReferenceDto reportingUser,
+		FacilityDto lab,
+		Consumer<SampleDto> customConfig) {
+		return createSample(associatedEventParticipant, new Date(), new Date(), reportingUser, SampleMaterial.BLOOD, lab.toReference(), customConfig);
 	}
 
 	public SampleDto createSample(
@@ -711,7 +749,7 @@ public class TestDataCreator {
 		return campaignForm;
 	}
 
-	public ExternalMessageDto createLabMessage(Consumer<ExternalMessageDto> config) {
+	public ExternalMessageDto createExternalMessage(Consumer<ExternalMessageDto> config) {
 		ExternalMessageDto labMessage = ExternalMessageDto.build();
 
 		config.accept(labMessage);
@@ -719,6 +757,12 @@ public class TestDataCreator {
 		labMessage = FacadeProvider.getExternalMessageFacade().save(labMessage);
 
 		return labMessage;
+	}
+
+	public SampleReportDto createSampleReport(SampleReferenceDto sample) {
+		SampleReportDto sampleReport = SampleReportDto.build();
+		sampleReport.setSample(sample);
+		return sampleReport;
 	}
 
 	public PathogenTestDto createPathogenTest(SampleReferenceDto sample, UserReferenceDto user, Consumer<PathogenTestDto> config) {

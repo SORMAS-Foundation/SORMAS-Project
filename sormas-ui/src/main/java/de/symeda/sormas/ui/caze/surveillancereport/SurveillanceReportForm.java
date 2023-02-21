@@ -25,6 +25,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
@@ -35,7 +36,8 @@ public class SurveillanceReportForm extends AbstractEditForm<SurveillanceReportD
 
 	//@formatter:off
 	protected static final String HTML_LAYOUT =
-			fluidRowLocs(SurveillanceReportDto.REPORTING_TYPE, SurveillanceReportDto.CREATING_USER) +
+			fluidRowLocs(SurveillanceReportDto.UUID, SurveillanceReportDto.REPORTING_USER) +
+			fluidRowLocs(SurveillanceReportDto.REPORTING_TYPE, SurveillanceReportDto.EXTERNAL_ID) +
 			fluidRowLocs(SurveillanceReportDto.REPORT_DATE, SurveillanceReportDto.DATE_OF_DIAGNOSIS) +
 			fluidRowLocs(SurveillanceReportDto.FACILITY_REGION, SurveillanceReportDto.FACILITY_DISTRICT) +
 			fluidRowLocs(FACILITY_TYPE_GROUP_LOC, SurveillanceReportDto.FACILITY_TYPE) +
@@ -49,7 +51,9 @@ public class SurveillanceReportForm extends AbstractEditForm<SurveillanceReportD
 			SurveillanceReportDto.I18N_PREFIX,
 			true,
 			null,
-			UiFieldAccessCheckers.forSensitiveData(report.isPseudonymized()));
+			UiFieldAccessCheckers.forDataAccessLevel(
+				UserProvider.getCurrent().getPseudonymizableDataAccessLevel(report.isInJurisdiction()),
+				report.isPseudonymized()));
 
 		setValue(report);
 	}
@@ -61,9 +65,11 @@ public class SurveillanceReportForm extends AbstractEditForm<SurveillanceReportD
 
 	@Override
 	protected void addFields() {
+		addField(SurveillanceReportDto.UUID).setReadOnly(true);
+		addField(SurveillanceReportDto.REPORTING_USER).setReadOnly(true);
 
 		addField(SurveillanceReportDto.REPORTING_TYPE).setRequired(true);
-		addField(SurveillanceReportDto.CREATING_USER).setReadOnly(true);
+		addField(SurveillanceReportDto.EXTERNAL_ID).setEnabled(false);
 
 		addField(SurveillanceReportDto.REPORT_DATE).setRequired(true);
 		addField(SurveillanceReportDto.DATE_OF_DIAGNOSIS);
@@ -86,7 +92,7 @@ public class SurveillanceReportForm extends AbstractEditForm<SurveillanceReportD
 	private ComboBox addFacilityTypeGroupField() {
 		ComboBox facilityTypeGroup = ComboBoxHelper.createComboBoxV7();
 		facilityTypeGroup.setId(FACILITY_TYPE_GROUP_LOC);
-		facilityTypeGroup.setCaption(I18nProperties.getCaption(Captions.Facility_typeGroup));
+		facilityTypeGroup.setCaption(I18nProperties.getCaption(Captions.SurveillanceReport_facilityTypeGroup));
 		facilityTypeGroup.setWidth(100, Unit.PERCENTAGE);
 		facilityTypeGroup.addItems(FacilityTypeGroup.values());
 		getContent().addComponent(facilityTypeGroup, FACILITY_TYPE_GROUP_LOC);

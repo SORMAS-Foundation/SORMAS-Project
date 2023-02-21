@@ -17,17 +17,15 @@
  *******************************************************************************/
 package de.symeda.sormas.api.person;
 
-import java.util.Calendar;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.Period;
 import java.util.Date;
-import java.util.GregorianCalendar;
-
-import org.joda.time.DateTime;
-import org.joda.time.Days;
-import org.joda.time.Months;
-import org.joda.time.Years;
+import java.util.Optional;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
+import de.symeda.sormas.api.utils.UtilDate;
 
 public enum ApproximateAgeType {
 
@@ -52,36 +50,21 @@ public enum ApproximateAgeType {
 				return Pair.createPair(null, ApproximateAgeType.YEARS);
 			}
 
-			DateTime toDate = deathDate == null ? DateTime.now() : new DateTime(deathDate);
-			DateTime startDate = new DateTime(birthDate);
-			Years years = Years.yearsBetween(startDate, toDate);
+			LocalDate startDate = UtilDate.toLocalDate(birthDate);
+			LocalDate toDate = Optional.ofNullable(UtilDate.toLocalDate(deathDate)).orElse(LocalDate.now());
+			Period period = Period.between(startDate, toDate);
 
-			if (years.getYears() < 1) {
-				Months months = Months.monthsBetween(startDate, toDate);
-				if (months.getMonths() < 1) {
-					Days days = Days.daysBetween(startDate, toDate);
-					return Pair.createPair(days.getDays(), ApproximateAgeType.DAYS);
+			final Pair<Integer, ApproximateAgeType> result;
+			if (period.getYears() < 1) {
+				if (period.getMonths() < 1) {
+					result = Pair.createPair(period.getDays(), ApproximateAgeType.DAYS);
 				} else {
-					return Pair.createPair(months.getMonths(), ApproximateAgeType.MONTHS);
+					result = Pair.createPair(period.getMonths(), ApproximateAgeType.MONTHS);
 				}
 			} else {
-				return Pair.createPair(years.getYears(), ApproximateAgeType.YEARS);
+				result = Pair.createPair(period.getYears(), ApproximateAgeType.YEARS);
 			}
-
-//	 		Same code for Java8		
-//			if (birthDate == null)
-//				return Pair.createPair(null, ApproximateAgeType.YEARS);
-//			
-//			LocalDate toDate = deathDate==null?LocalDate.now():Instant.ofEpochMilli(deathDate.getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
-//			LocalDate birthdate = birthDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-//			Period period = Period.between(birthdate, toDate);
-//			
-//			if(period.getYears()<1) {
-//				return Pair.createPair(period.getMonths(), ApproximateAgeType.MONTHS);
-//			}
-//			else {
-//				return Pair.createPair(period.getYears(), ApproximateAgeType.YEARS);
-//			}
+			return result;
 		}
 
 		public static Pair<Integer, ApproximateAgeType> getApproximateAge(Date birthDate) {
@@ -94,10 +77,9 @@ public enum ApproximateAgeType {
 			Integer birthdateDD,
 			Date deathDate) {
 
-			Calendar birthdate = new GregorianCalendar();
-			birthdate.set(birthdateYYYY, birthdateMM != null ? birthdateMM - 1 : 0, birthdateDD != null ? birthdateDD : 1);
-
-			return getApproximateAge(birthdate.getTime(), deathDate);
+			Date birthdate =
+				UtilDate.of(birthdateYYYY, birthdateMM != null ? Month.of(birthdateMM) : Month.JANUARY, birthdateDD != null ? birthdateDD : 1);
+			return getApproximateAge(birthdate, deathDate);
 		}
 
 		public static String formatApproximateAge(Integer approximateAge, ApproximateAgeType approximateAgeType) {

@@ -18,9 +18,11 @@ package de.symeda.sormas.backend.i18n;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.api.i18n.I18nFacade;
 import de.symeda.sormas.api.i18n.I18nProperties;
 
+@AuditIgnore
 @Stateless(name = "I18nFacade")
 public class I18nFacadeEjb implements I18nFacade {
 

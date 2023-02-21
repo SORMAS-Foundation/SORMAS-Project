@@ -70,6 +70,8 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 
 	private boolean withImmunizations;
 
+	private boolean withSurveillanceReports;
+
 	private String comment;
 
 	private SormasToSormasShareRequest request;
@@ -83,6 +85,8 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 	private List<EventParticipant> eventParticipants;
 
 	private List<Sample> samples;
+
+	private boolean pseudonymizedData;
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT, nullable = false)
 	public String getOrganizationId() {
@@ -165,6 +169,15 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 		this.withImmunizations = withImmunizations;
 	}
 
+	@Column
+	public boolean isWithSurveillanceReports() {
+		return withSurveillanceReports;
+	}
+
+	public void setWithSurveillanceReports(boolean withSurveillanceReports) {
+		this.withSurveillanceReports = withSurveillanceReports;
+	}
+
 	@OneToOne(mappedBy = "originInfo")
 	public SormasToSormasShareRequest getRequest() {
 		return request;
@@ -231,5 +244,14 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 
 	public void setSamples(List<Sample> samples) {
 		this.samples = samples;
+	}
+
+	@Column
+	public boolean isPseudonymizedData() {
+		return pseudonymizedData;
+	}
+
+	public void setPseudonymizedData(boolean pseudonymizedData) {
+		this.pseudonymizedData = pseudonymizedData;
 	}
 }

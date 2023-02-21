@@ -119,7 +119,7 @@ public class TravelEntryService {
         .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
         .disease("COVID-19")
         .pointOfEntry("Anderer Einreiseort")
-        .pointOfEntryDetails("Automated test dummy description "  + LocalDate.now())
+        .pointOfEntryDetails("Automated test dummy description " + LocalDate.now())
         .build();
   }
 }

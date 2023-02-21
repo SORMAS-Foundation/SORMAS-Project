@@ -15,8 +15,8 @@
 
 package de.symeda.sormas.backend.docgeneration;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,7 +25,7 @@ import de.symeda.sormas.api.person.PersonDto;
 
 public class TemplateTestUtil {
 
-	@Ignore("Only for creation of new test cases")
+	@Disabled("Only for creation of new test cases")
 	@Test
 	public void serializeObjects() throws JsonProcessingException {
 		// To create test cases with Object properties, use the following:

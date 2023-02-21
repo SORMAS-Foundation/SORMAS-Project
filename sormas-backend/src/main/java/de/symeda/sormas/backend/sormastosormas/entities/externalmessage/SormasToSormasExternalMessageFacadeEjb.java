@@ -28,6 +28,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
@@ -38,8 +39,8 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
-import de.symeda.sormas.api.sormastosormas.externalmessage.SormasToSormasExternalMessageDto;
-import de.symeda.sormas.api.sormastosormas.externalmessage.SormasToSormasExternalMessageFacade;
+import de.symeda.sormas.api.sormastosormas.entities.externalmessage.SormasToSormasExternalMessageDto;
+import de.symeda.sormas.api.sormastosormas.entities.externalmessage.SormasToSormasExternalMessageFacade;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
@@ -76,7 +77,7 @@ public class SormasToSormasExternalMessageFacadeEjb implements SormasToSormasExt
 
 	@Override
 	@RightsAllowed(UserRight._SORMAS_TO_SORMAS_SHARE)
-	public void sendExternalMessages(List<String> uuids, SormasToSormasOptionsDto options) throws SormasToSormasException {
+	public void sendExternalMessages(List<String> uuids, @Valid SormasToSormasOptionsDto options) throws SormasToSormasException {
 		if (!userService.hasRight(UserRight.EXTERNAL_MESSAGE_PROCESS)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorForbidden));
 		}

@@ -39,11 +39,11 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.FieldVisibleAndNotEmptyValidator;
 import de.symeda.sormas.ui.utils.components.linelisting.line.DeleteLineEvent;
@@ -94,10 +94,12 @@ public class LineListingLayout extends VerticalLayout {
 		disease.addValueChangeListener(event -> diseaseDetails.setVisible(Disease.OTHER.equals(disease.getValue())));
 
 		region = new ComboBox<>(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.RESPONSIBLE_REGION));
+		region.setItemCaptionGenerator(item -> item.buildCaption());
 		region.setId("lineListingRegion");
 		sharedInformationBar.addComponent(region);
 
 		district = new ComboBox<>(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.RESPONSIBLE_DISTRICT));
+		district.setItemCaptionGenerator(item -> item.buildCaption());
 		district.setId("lineListingDistrict");
 		district.addValueChangeListener(e -> setEpidNumberPrefixes());
 		sharedInformationBar.addComponent(district);
@@ -316,14 +318,14 @@ public class LineListingLayout extends VerticalLayout {
 			caze.setDiseaseDetails(caseLineDto.getDiseaseDetails());
 			caze.setResponsibleRegion(caseLineDto.getRegion());
 			caze.setResponsibleDistrict(caseLineDto.getDistrict());
-			caze.setReportDate(DateHelper8.toDate(caseLineDto.getDateOfReport()));
+			caze.setReportDate(UtilDate.from(caseLineDto.getDateOfReport()));
 			caze.setEpidNumber(caseLineDto.getEpidNumber());
 			caze.setResponsibleCommunity(caseLineDto.getCommunity());
 			caze.setFacilityType(caseLineDto.getFacilityType());
 			caze.setHealthFacility(caseLineDto.getFacility());
 			caze.setHealthFacilityDetails(caseLineDto.getFacilityDetails());
 			if (caseLineDto.getDateOfOnset() != null) {
-				caze.getSymptoms().setOnsetDate(DateHelper8.toDate(caseLineDto.getDateOfOnset()));
+				caze.getSymptoms().setOnsetDate(UtilDate.from(caseLineDto.getDateOfOnset()));
 			}
 			if (UserProvider.getCurrent() != null) {
 				caze.setReportingUser(UserProvider.getCurrent().getUserReference());
@@ -432,6 +434,7 @@ public class LineListingLayout extends VerticalLayout {
 			epidNumber.setWidth(160, Unit.PIXELS);
 			binder.forField(epidNumber).bind(CaseLineDto.EPID_NUMBER);
 			community = new ComboBox<>();
+			community.setItemCaptionGenerator(item -> item.buildCaption());
 			community.setId("lineListingCommunity_" + lineIndex);
 			community.addStyleName(CssStyles.SOFT_REQUIRED);
 			community.addValueChangeListener(e -> {
@@ -450,17 +453,17 @@ public class LineListingLayout extends VerticalLayout {
 			});
 			binder.forField(community).bind(CaseLineDto.COMMUNITY);
 			facility = new ComboBox<>();
+			facility.setItemCaptionGenerator(item -> item.buildCaption());
 			facility.setId("lineListingFacility_" + lineIndex);
 			facility.setWidth(364, Unit.PIXELS);
 			facility.addValueChangeListener(e -> updateFacilityFields(facility, facilityDetails));
 			binder.forField(facility).asRequired().bind(CaseLineDto.FACILITY);
 			facilityDetails = new TextField();
 			facilityDetails.setId("lineListingFacilityDetails_" + lineIndex);
+			CssStyles.style(facilityDetails, CssStyles.SOFT_REQUIRED);
 			facilityDetails.setVisible(false);
 			updateFacilityFields(facility, facilityDetails);
-			binder.forField(facilityDetails)
-				.asRequired(new FieldVisibleAndNotEmptyValidator<>(I18nProperties.getString(Strings.errorFieldValidationFailed)))
-				.bind(CaseLineDto.FACILITY_DETAILS);
+			binder.forField(facilityDetails).bind(CaseLineDto.FACILITY_DETAILS);
 
 			person = new PersonField();
 			person.setId("lineListingPerson_" + lineIndex);

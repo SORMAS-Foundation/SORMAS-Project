@@ -585,6 +585,7 @@
     <string name="time_future_x_years">dans les %1$s ans</string>
     <string name="time_now">à l’instant</string>
     <string name="time_past_almost_two_years">il y a presque deux ans</string>
+    <string name="time_past_today">today</string>
     <string name="time_past_one_day">hier</string>
     <string name="time_past_one_hour">il y a environ une heure</string>
     <string name="time_past_one_minute">il y a une minute</string>

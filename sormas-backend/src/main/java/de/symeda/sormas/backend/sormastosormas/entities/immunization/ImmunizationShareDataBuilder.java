@@ -21,7 +21,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 import de.symeda.sormas.api.immunization.ImmunizationDto;
-import de.symeda.sormas.api.sormastosormas.immunization.SormasToSormasImmunizationDto;
+import de.symeda.sormas.api.sormastosormas.entities.immunization.SormasToSormasImmunizationDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.PreviewNotImplementedDto;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal;
@@ -60,7 +60,7 @@ public class ImmunizationShareDataBuilder
 	@Override
 	protected ImmunizationDto getDto(Immunization immunization, Pseudonymizer pseudonymizer) {
 
-		ImmunizationDto immunizationDto = immunizationFacade.convertToDto(immunization, pseudonymizer);
+		ImmunizationDto immunizationDto = immunizationFacade.toPseudonymizedDto(immunization, pseudonymizer);
 		// reporting user is not set to null here as it would not pass the validation
 		// the receiver appears to set it to SORMAS2SORMAS Client anyway
 		immunizationDto.setSormasToSormasOriginInfo(null);

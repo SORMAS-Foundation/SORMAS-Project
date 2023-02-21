@@ -26,8 +26,10 @@ public class SmsListComponent extends VerticalLayout {
 	private SmsList list;
 	private Button sendSmsButton;
 	private boolean hasPhoneNumber;
+	private final boolean isEditAllowed;
 
-	public SmsListComponent(CaseReferenceDto caseRef, PersonReferenceDto personRef) {
+	public SmsListComponent(CaseReferenceDto caseRef, PersonReferenceDto personRef, boolean isEditAllowed) {
+		this.isEditAllowed = isEditAllowed;
 		long missingPhoneNumbers =
 			FacadeProvider.getCaseFacade().countCasesWithMissingContactInformation(Arrays.asList(caseRef.getUuid()), MessageType.SMS);
 		hasPhoneNumber = missingPhoneNumbers == 0;
@@ -68,13 +70,15 @@ public class SmsListComponent extends VerticalLayout {
 		smsHeader.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(smsHeader);
 
-		sendSmsButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.messagesSendSMS));
-		CssStyles.style(sendSmsButton, ValoTheme.BUTTON_PRIMARY);
-		sendSmsButton.addClickListener(clickListener);
-		componentHeader.addComponent(sendSmsButton);
-		componentHeader.setComponentAlignment(sendSmsButton, Alignment.MIDDLE_RIGHT);
-		if (!hasPhoneNumber) {
-			sendSmsButton.setEnabled(false);
+		if (isEditAllowed) {
+			sendSmsButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.messagesSendSMS));
+			CssStyles.style(sendSmsButton, ValoTheme.BUTTON_PRIMARY);
+			sendSmsButton.addClickListener(clickListener);
+			componentHeader.addComponent(sendSmsButton);
+			componentHeader.setComponentAlignment(sendSmsButton, Alignment.MIDDLE_RIGHT);
+			if (!hasPhoneNumber) {
+				sendSmsButton.setEnabled(false);
+			}
 		}
 	}
 }

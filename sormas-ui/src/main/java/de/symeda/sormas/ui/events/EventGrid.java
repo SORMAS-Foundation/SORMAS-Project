@@ -21,13 +21,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.DataProviderListener;
-import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.navigator.View;
-import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
@@ -46,7 +42,6 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -102,8 +97,9 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 
 		Language userLanguage = I18nProperties.getUserLanguage();
 
-		boolean tasksFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT);
-		if (tasksFeatureEnabled) {
+		boolean showPendingTasks = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW);
+		if (showPendingTasks) {
 			Column<EventIndexDto, String> pendingTasksColumn = addColumn(
 				entry -> String.format(
 					I18nProperties.getCaption(Captions.formatSimpleNumberFormat),
@@ -127,16 +123,16 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 			columnIds.add(EventIndexDto.SPECIFIC_RISK);
 		}
 
-		columnIds.addAll(Arrays.asList(
-			EventIndexDto.EVENT_INVESTIGATION_STATUS,
-			EventIndexDto.EVENT_MANAGEMENT_STATUS,
-			EventIndexDto.EVENT_IDENTIFICATION_SOURCE,
-			createEventDateColumn(this),
-			createEventEvolutionDateColumn(this),
-			DISEASE_SHORT,
-			EventIndexDto.DISEASE_VARIANT,
-			EventIndexDto.EVENT_TITLE));
-
+		columnIds.addAll(
+			Arrays.asList(
+				EventIndexDto.EVENT_INVESTIGATION_STATUS,
+				EventIndexDto.EVENT_MANAGEMENT_STATUS,
+				EventIndexDto.EVENT_IDENTIFICATION_SOURCE,
+				createEventDateColumn(this),
+				createEventEvolutionDateColumn(this),
+				DISEASE_SHORT,
+				EventIndexDto.DISEASE_VARIANT,
+				EventIndexDto.EVENT_TITLE));
 
 		if (eventGroupsFeatureEnabled) {
 			columnIds.add(EventIndexDto.EVENT_GROUPS);
@@ -162,7 +158,7 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 					EventIndexDto.SURVEILLANCE_TOOL_SHARE_COUNT));
 		}
 
-		if (tasksFeatureEnabled) {
+		if (showPendingTasks) {
 			columnIds.add(NUMBER_OF_PENDING_TASKS);
 		}
 
@@ -173,6 +169,20 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 				EventIndexDto.DEATH_COUNT,
 				EventIndexDto.CONTACT_COUNT,
 				EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT));
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_DELETE)) {
+			Column<EventIndexDto, String> deleteColumn = addColumn(entry -> {
+				if (entry.getDeletionReason() != null) {
+					return entry.getDeletionReason() + (entry.getOtherDeletionReason() != null ? ": " + entry.getOtherDeletionReason() : "");
+				} else {
+					return "-";
+				}
+			});
+			deleteColumn.setId(DELETE_REASON_COLUMN);
+			deleteColumn.setSortable(false);
+			deleteColumn.setCaption(I18nProperties.getCaption(Captions.deletionReason));
+			columnIds.add(DELETE_REASON_COLUMN);
+		}
 
 		setColumns(columnIds.toArray(new String[columnIds.size()]));
 
@@ -299,34 +309,11 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 
 	public void setLazyDataProvider() {
 
-		DataProvider<EventIndexDto, EventCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-			query -> FacadeProvider.getEventFacade()
-				.getIndexList(
-					query.getFilter().orElse(null),
-					query.getOffset(),
-					query.getLimit(),
-					query.getSortOrders()
-						.stream()
-						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-						.collect(Collectors.toList()))
-				.stream(),
-			query -> (int) FacadeProvider.getEventFacade().count(query.getFilter().orElse(null)));
-		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.NONE);
+		setLazyDataProvider(FacadeProvider.getEventFacade()::getIndexList, FacadeProvider.getEventFacade()::count);
 	}
 
 	public void setEagerDataProvider() {
-		ListDataProvider<EventIndexDto> dataProvider =
-			DataProvider.fromStream(FacadeProvider.getEventFacade().getIndexList(getCriteria(), null, null, null).stream());
-		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.MULTI);
 
-		if (dataProviderListener != null) {
-			dataProvider.addDataProviderListener(dataProviderListener);
-		}
-	}
-
-	public void setDataProviderListener(DataProviderListener<EventIndexDto> dataProviderListener) {
-		this.dataProviderListener = dataProviderListener;
+		setEagerDataProvider(FacadeProvider.getEventFacade()::getIndexList);
 	}
 }

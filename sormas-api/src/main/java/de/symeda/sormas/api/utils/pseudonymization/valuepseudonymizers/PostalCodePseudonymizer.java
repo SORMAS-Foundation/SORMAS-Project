@@ -23,4 +23,9 @@ public class PostalCodePseudonymizer extends ValuePseudonymizer<String> {
 	protected String pseudonymizeValue(String value) {
 		return value.substring(0, Math.min(3, value.length()));
 	}
+
+	@Override
+	public boolean isValuePseudonymized(String value) {
+		return value != null && value.length() == 3;
+	}
 }

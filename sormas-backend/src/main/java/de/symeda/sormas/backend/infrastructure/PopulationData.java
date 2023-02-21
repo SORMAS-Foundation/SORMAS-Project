@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -39,7 +40,7 @@ public class PopulationData extends AbstractDomainObject {
 	private Integer population;
 	private Date collectionDate;
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public Region getRegion() {
 		return region;
 	}
@@ -48,7 +49,7 @@ public class PopulationData extends AbstractDomainObject {
 		this.region = region;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public District getDistrict() {
 		return district;
 	}
@@ -57,7 +58,7 @@ public class PopulationData extends AbstractDomainObject {
 		this.district = district;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public Community getCommunity() {
 		return community;
 	}

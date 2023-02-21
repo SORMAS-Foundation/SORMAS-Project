@@ -15,14 +15,15 @@
 
 package de.symeda.sormas.backend.event;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.EventCriteria;
@@ -99,7 +100,7 @@ public class EventFacadeEjbUserFilterTest extends AbstractBeanTest {
 			nationalUser.toReference(),
 			nationalUser.toReference(),
 			Disease.EVD,
-			rdcf1.district);
+			rdcf1);
 
 		EventDto event2 = creator.createEvent(
 			EventStatus.EVENT,
@@ -115,7 +116,7 @@ public class EventFacadeEjbUserFilterTest extends AbstractBeanTest {
 			nationalUser.toReference(),
 			nationalUser.toReference(),
 			Disease.EVD,
-			rdcf2.district);
+			rdcf2);
 
 		loginWith(districtUser1);
 		EventCriteria eventCriteria = new EventCriteria();
@@ -129,8 +130,8 @@ public class EventFacadeEjbUserFilterTest extends AbstractBeanTest {
 		List<EventIndexDto> indexList = getEventFacade().getIndexList(eventCriteria, 0, 100, Arrays.asList(new SortProperty(Event.EVENT_TITLE)));
 		assertEquals(2, indexList.size());
 		// not checking here for pseudonymized because there is no field yet on event index that is sensitive/personal
-		Assert.assertTrue(indexList.get(0).getInJurisdictionOrOwned());
-		Assert.assertFalse(indexList.get(1).getInJurisdictionOrOwned());
+		assertTrue(indexList.get(0).getInJurisdictionOrOwned());
+		assertFalse(indexList.get(1).getInJurisdictionOrOwned());
 
 		assertEquals(
 			2,

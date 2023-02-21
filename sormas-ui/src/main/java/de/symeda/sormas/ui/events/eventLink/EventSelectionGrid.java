@@ -21,12 +21,8 @@
 package de.symeda.sormas.ui.events.eventLink;
 
 import java.util.Date;
-import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.ConfigurableFilterDataProvider;
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.DataProviderListener;
-import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.renderers.DateRenderer;
 
@@ -36,18 +32,21 @@ import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.events.EventGrid;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
 import de.symeda.sormas.ui.utils.FilteredGrid;
+import de.symeda.sormas.ui.utils.GridHeightResizer;
 
 @SuppressWarnings("serial")
 public class EventSelectionGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 
 	public EventSelectionGrid(EventCriteria criteria) {
+
 		super(EventIndexDto.class);
 
-		setLazyDataProvider();
+		setLazyDataProvider(FacadeProvider.getEventFacade()::getIndexList, FacadeProvider.getEventFacade()::count);
+		addDataSizeChangeListener(new GridHeightResizer());
+
 		setCriteria(criteria);
 		buildGrid();
 	}
@@ -75,33 +74,6 @@ public class EventSelectionGrid extends FilteredGrid<EventIndexDto, EventCriteri
 
 		((Column<EventIndexDto, Date>) getColumn(EventIndexDto.REPORT_DATE_TIME))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
-	}
-
-	public void setLazyDataProvider() {
-
-		DataProvider<EventIndexDto, EventCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-			query -> FacadeProvider.getEventFacade()
-				.getIndexList(
-					query.getFilter().orElse(null),
-					query.getOffset(),
-					query.getLimit(),
-					query.getSortOrders()
-						.stream()
-						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-						.collect(Collectors.toList()))
-				.stream(),
-			query -> (int) FacadeProvider.getEventFacade().count(query.getFilter().orElse(null)));
-		setDataProvider(dataProvider);
-		setSelectionMode(com.vaadin.ui.Grid.SelectionMode.NONE);
-
-		EventSelectionGrid tempGrid = this;
-		dataProvider.addDataProviderListener((DataProviderListener<EventIndexDto>) dataChangeEvent -> {
-			if (tempGrid.getItemCount() > 0) {
-				tempGrid.setHeightByRows(Math.min(tempGrid.getItemCount(), 5));
-			} else {
-				tempGrid.setHeightByRows(1);
-			}
-		});
 	}
 
 	@Override

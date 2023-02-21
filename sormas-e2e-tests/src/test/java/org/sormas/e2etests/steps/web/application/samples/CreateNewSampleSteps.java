@@ -29,6 +29,7 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.NUM
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_ACTIONS_COLUMN_HEADERS;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_ACTIONS_TABLE_DATA;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_ACTIONS_TABLE_ROW;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.ONE_TEST_IN_SAMPLES_DE;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.ADD_PATHOGEN_TEST;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.ADD_PATHOGEN_TEST_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.ANTIGEN_DETECTION_TEST_OPTION_BUTTON;
@@ -92,6 +93,7 @@ import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SAMPLE_TYPE_INPUT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SAMPLE_UUID;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SAVE_SAMPLE_BUTTON;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SAVE_SAMPLE_WITH_PATHOGEN_TEST_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SGOT_INPUT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SGPT_INPUT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SPECIMEN_CONDITION_COMBOBOX;
@@ -272,7 +274,7 @@ public class CreateNewSampleSteps implements En {
           selectResultVerifiedByLabSupervisor(
               sample.getResultVerifiedByLabSupervisor(), RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
           selectTestResult(sample.getTestResults());
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_WITH_PATHOGEN_TEST_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
         });
 
@@ -372,8 +374,19 @@ public class CreateNewSampleSteps implements En {
         });
 
     When(
+        "^I check that case created from laboratory message contains a sample with one test",
+        () -> {
+          softly.assertEquals(
+              webDriverHelpers.getNumberOfElements(EDIT_SAMPLE_BUTTON),
+              1,
+              "Number of samples is not correct");
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(ONE_TEST_IN_SAMPLES_DE);
+        });
+
+    When(
         "^I validate the existence of two pathogen tests",
         () -> {
+          TimeUnit.SECONDS.sleep(2);
           softly.assertEquals(
               webDriverHelpers.getNumberOfElements(EDIT_PATHOGEN_TEST),
               2,
@@ -448,6 +461,12 @@ public class CreateNewSampleSteps implements En {
         "^I save the created sample",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+        });
+
+    When(
+        "^I save the created sample with pathogen test",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_WITH_PATHOGEN_TEST_BUTTON);
         });
 
     When(
@@ -707,6 +726,13 @@ public class CreateNewSampleSteps implements En {
         });
 
     When(
+        "I confirm to create case for selected disease",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONFIRM_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
+        });
+
+    When(
         "I confirm case with positive test result",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONFIRM_BUTTON);
@@ -794,12 +820,17 @@ public class CreateNewSampleSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(GENERIC_ERROR_POPUP);
           List<String> popupExpected =
               List.of(
-                  "Probentyp",
-                  "Probenentnahme-Datum",
+                  "Bitte überprüfen Sie die Eingabedaten",
                   "Labor",
-                  "Ergebnis verifiziert von Laborleitung",
-                  "Art des Tests");
+                  "Art des Tests",
+                  "Ergebnis verifiziert von Laborleitung");
           webDriverHelpers.checkIsPopupContainsList(GENERIC_ERROR_POPUP, popupExpected);
+        });
+
+    When(
+        "I check if error popup contains {string}",
+        (String str) -> {
+          webDriverHelpers.checkWebElementContainsText(GENERIC_ERROR_POPUP, str);
         });
 
     When(
@@ -819,6 +850,18 @@ public class CreateNewSampleSteps implements En {
           fillTimeOfCollection(sample.getTimeOfCollection());
           selectSampleType(sample.getSampleType());
           selectLaboratory(sample.getLaboratory());
+        });
+
+    When(
+        "I click on edit pathogen button",
+        () -> webDriverHelpers.clickOnWebElementBySelector(EDIT_PATHOGEN_TEST_BUTTON));
+
+    And(
+        "^I click on yes in Confirm case popup window$",
+        () -> {
+          TimeUnit.SECONDS.sleep(2); // wait for popup to load
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CONFIRM_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
         });
   }
 

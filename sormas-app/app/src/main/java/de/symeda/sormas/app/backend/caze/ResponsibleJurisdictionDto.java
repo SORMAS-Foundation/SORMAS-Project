@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@ package de.symeda.sormas.app.backend.caze;
 
 import java.io.Serializable;
 
-import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.uuid.HasUuid;
 
 public class ResponsibleJurisdictionDto implements Serializable {
 
@@ -26,33 +26,44 @@ public class ResponsibleJurisdictionDto implements Serializable {
 	private String regionUuid;
 	private String districtUuid;
 	private String communityUuid;
+	private String facilityUuid;
 
 	public ResponsibleJurisdictionDto() {
 	}
 
-	private ResponsibleJurisdictionDto(String regionUuid, String districtUuid, String communityUuid) {
+	private ResponsibleJurisdictionDto(String regionUuid, String districtUuid, String communityUuid, String facilityUuid) {
 		this.regionUuid = regionUuid;
 		this.districtUuid = districtUuid;
 		this.communityUuid = communityUuid;
+		this.facilityUuid = facilityUuid;
 	}
 
-	public static ResponsibleJurisdictionDto of(String responsibleRegionUuid, String responsibleDistrictUuid, String responsibleCommunityUuid) {
-		if (responsibleRegionUuid == null && responsibleDistrictUuid == null && responsibleCommunityUuid == null) {
+	public static ResponsibleJurisdictionDto of(
+		String responsibleRegionUuid,
+		String responsibleDistrictUuid,
+		String responsibleCommunityUuid,
+		String responsibleFacilityUuid) {
+		if (responsibleRegionUuid == null && responsibleDistrictUuid == null && responsibleCommunityUuid == null && responsibleFacilityUuid == null) {
 			return null;
 		}
 
-		return new ResponsibleJurisdictionDto(responsibleRegionUuid, responsibleDistrictUuid, responsibleCommunityUuid);
+		return new ResponsibleJurisdictionDto(responsibleRegionUuid, responsibleDistrictUuid, responsibleCommunityUuid, responsibleFacilityUuid);
 	}
 
-	public static ResponsibleJurisdictionDto of(HasUuid responsibleRegion, HasUuid responsibleDistrict, HasUuid responsibleCommunity) {
-		if (responsibleRegion == null && responsibleDistrict == null && responsibleDistrict == null) {
+	public static ResponsibleJurisdictionDto of(
+		HasUuid responsibleRegion,
+		HasUuid responsibleDistrict,
+		HasUuid responsibleCommunity,
+		HasUuid responsibleFacility) {
+		if (responsibleRegion == null && responsibleDistrict == null && responsibleCommunity == null && responsibleFacility == null) {
 			return null;
 		}
 
 		return new ResponsibleJurisdictionDto(
 			responsibleRegion != null ? responsibleRegion.getUuid() : null,
 			responsibleDistrict != null ? responsibleDistrict.getUuid() : null,
-			responsibleCommunity != null ? responsibleCommunity.getUuid() : null);
+			responsibleCommunity != null ? responsibleCommunity.getUuid() : null,
+			responsibleFacility != null ? responsibleFacility.getUuid() : null);
 	}
 
 	public String getRegionUuid() {
@@ -77,5 +88,13 @@ public class ResponsibleJurisdictionDto implements Serializable {
 
 	public void setCommunityUuid(String communityUuid) {
 		this.communityUuid = communityUuid;
+	}
+
+	public String getFacilityUuid() {
+		return facilityUuid;
+	}
+
+	public void setFacilityUuid(String facilityUuid) {
+		this.facilityUuid = facilityUuid;
 	}
 }

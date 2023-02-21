@@ -21,7 +21,7 @@ package org.sormas.e2etests.pages.application.tasks;
 import org.openqa.selenium.By;
 
 public class TaskManagementPage {
-  public static final By NEW_TASK_BUTTON = By.cssSelector("div#taskNewTask");
+  public static final By NEW_TASK_BUTTON = By.cssSelector("[id='taskNewTask']");
   public static final By GENERAL_SEARCH_INPUT = By.cssSelector("input#freeText");
   public static final String EDIT_BUTTON_XPATH_BY_TEXT =
       "//td[contains(text(),'%s')]/../td/span[contains(@class, 'v-icon-edit')]";
@@ -76,5 +76,15 @@ public class TaskManagementPage {
   public static By getCustomExportByID(String id) {
     return By.xpath(
         String.format("//div[@class='popupContent']//div[contains(@id, '%s-download')]", id));
+  }
+
+  public static By getEditTaskButtonByNumber(Integer number) {
+    return By.xpath(String.format("//table/tbody/tr[%x]/td[1]", number));
+  }
+
+  public static By getLastCreatedEditTaskButton(String text) {
+    return By.xpath(
+        String.format(
+            "//td[contains(text(),'%s')]/../td/span[contains(@class, 'v-icon-edit')]", text));
   }
 }

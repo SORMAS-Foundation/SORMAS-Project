@@ -28,6 +28,7 @@ import org.sormas.e2etests.entities.pojo.api.chunks.DiseaseVariant;
 @Builder(toBuilder = true, builderClassName = "builder")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Event {
+  Long creationDate;
   String disease;
   DiseaseVariant diseaseVariant;
   String eventTitle;

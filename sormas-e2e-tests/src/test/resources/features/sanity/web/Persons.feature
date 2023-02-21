@@ -150,6 +150,9 @@ Feature: Edit Persons
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I navigate to the last created via api Person page via URL
     And I check General comment field is enabled on Edit Person page

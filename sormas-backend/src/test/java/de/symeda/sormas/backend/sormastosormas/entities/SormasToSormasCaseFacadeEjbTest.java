@@ -34,28 +34,31 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
-import de.symeda.sormas.api.immunization.ImmunizationDto;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
+import de.symeda.sormas.api.caze.surveillancereport.ReportingType;
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactStatus;
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.exposure.AnimalContactType;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
+import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryType;
@@ -73,9 +76,12 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareTree;
-import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
-import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
-import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
+import de.symeda.sormas.api.sormastosormas.entities.SyncDataDto;
+import de.symeda.sormas.api.sormastosormas.entities.caze.SormasToSormasCaseDto;
+import de.symeda.sormas.api.sormastosormas.entities.contact.SormasToSormasContactDto;
+import de.symeda.sormas.api.sormastosormas.entities.externalmessage.SormasToSormasExternalMessageDto;
+import de.symeda.sormas.api.sormastosormas.entities.sample.SormasToSormasSampleDto;
+import de.symeda.sormas.api.sormastosormas.entities.surveillancereport.SormasToSormasSurveillanceReportDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasShareRequestDto;
@@ -90,12 +96,12 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.externalmessage.ExternalMessage;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasTest;
 import de.symeda.sormas.backend.sormastosormas.share.ShareRequestAcceptData;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.user.User;
 
-@RunWith(MockitoJUnitRunner.class)
 public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
@@ -213,10 +219,14 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 			dto.setClassificationUser(officer);
 		});
 
+		ContactDto caseSampleContact = creator.createContact(user.toReference(), person.toReference());
+
 		Date sampleDateTime = new Date();
+		// Sample gets saved with associatedContact
 		SampleDto caseSample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
 			s.setSampleDateTime(sampleDateTime);
 			s.setComment("Test case sample");
+			s.setAssociatedContact(caseSampleContact.toReference());
 		});
 
 		creator.createPathogenTest(caseSample.toReference(), caze);
@@ -264,6 +274,16 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 				return encryptShareData(new ShareRequestAcceptData(null, null));
 			});
 
+		// If caseSample has associatedContact, sharing is not allowed
+		Assertions.assertThrows(
+			SormasToSormasException.class,
+			() -> getSormasToSormasCaseFacade().share(Collections.singletonList(caze.getUuid()), options));
+
+		// Removing the associatedContact allows sharing
+		SampleDto savedCaseSample = getSampleFacade().getByCaseUuids(Collections.singletonList(caze.getUuid())).get(0);
+		savedCaseSample.setAssociatedContact(null);
+		getSampleFacade().saveSample(savedCaseSample);
+
 		getSormasToSormasCaseFacade().share(Collections.singletonList(caze.getUuid()), options);
 
 		List<SormasToSormasShareInfoDto> shareInfoList =
@@ -281,7 +301,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		person.setFirstName("James");
 		person.setLastName("Smith");
 
-		CaseDataDto caze = createRemoteCaseDto(rdcf, person);
+		CaseDataDto caze = createCaseDto(rdcf, person);
 		caze.getHospitalization().setAdmittedToHealthFacility(YesNoUnknown.YES);
 		caze.getSymptoms().setAgitation(SymptomState.YES);
 		ExposureDto exposure = ExposureDto.build(ExposureType.ANIMAL_CONTACT);
@@ -291,7 +311,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		caze.getMaternalHistory().setChildrenNumber(2);
 
 		SormasToSormasDto shareData = new SormasToSormasDto();
-		shareData.setOriginInfo(createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, false));
+		shareData.setOriginInfo(createSormasToSormasOriginInfoDto(DEFAULT_SERVER_ID, false));
 		shareData.setCases(Collections.singletonList(new SormasToSormasCaseDto(person, caze)));
 		SormasToSormasEncryptedDataDto encryptedData = encryptShareData(shareData);
 
@@ -328,7 +348,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		person.setFirstName("James");
 		person.setLastName("Smith");
 
-		CaseDataDto caze = createRemoteCaseDto(rdcf, person);
+		CaseDataDto caze = createCaseDto(rdcf, person);
 		caze.getHospitalization().setAdmittedToHealthFacility(YesNoUnknown.YES);
 		caze.getSymptoms().setAgitation(SymptomState.YES);
 		ExposureDto exposure = ExposureDto.build(ExposureType.ANIMAL_CONTACT);
@@ -338,7 +358,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		caze.getMaternalHistory().setChildrenNumber(2);
 
 		SormasToSormasDto shareData = new SormasToSormasDto();
-		shareData.setOriginInfo(createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, false));
+		shareData.setOriginInfo(createSormasToSormasOriginInfoDto(DEFAULT_SERVER_ID, false));
 		shareData.setCases(Collections.singletonList(new SormasToSormasCaseDto(person, caze)));
 		SormasToSormasEncryptedDataDto encryptedData = encryptShareData(shareData);
 
@@ -384,7 +404,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		caze.setPortHealthInfo(portHealthInfo);
 
 		SormasToSormasDto shareData = new SormasToSormasDto();
-		shareData.setOriginInfo(createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, false));
+		shareData.setOriginInfo(createSormasToSormasOriginInfoDto(DEFAULT_SERVER_ID, false));
 		shareData.setCases(Collections.singletonList(new SormasToSormasCaseDto(person, caze)));
 		SormasToSormasEncryptedDataDto encryptedData = encryptShareData(shareData);
 
@@ -414,7 +434,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		caze.setPortHealthInfo(portHealthInfo);
 
 		SormasToSormasDto shareData = new SormasToSormasDto();
-		shareData.setOriginInfo(createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, false));
+		shareData.setOriginInfo(createSormasToSormasOriginInfoDto(DEFAULT_SERVER_ID, false));
 		shareData.setCases(Collections.singletonList(new SormasToSormasCaseDto(person, caze)));
 		SormasToSormasEncryptedDataDto encryptedData = encryptShareData(shareData);
 
@@ -433,7 +453,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 	public void testSaveSharedCaseWithContacts() throws SormasToSormasException, SormasToSormasValidationException {
 		PersonDto person = createPersonDto(rdcf);
 
-		CaseDataDto caze = createRemoteCaseDto(rdcf, person);
+		CaseDataDto caze = createCaseDto(rdcf, person);
 
 		ContactDto contact = createRemoteContactDto(rdcf, caze);
 
@@ -441,7 +461,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		contact.setPerson(contactPerson.toReference());
 
 		SormasToSormasDto shareData = new SormasToSormasDto();
-		shareData.setOriginInfo(createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, false));
+		shareData.setOriginInfo(createSormasToSormasOriginInfoDto(DEFAULT_SERVER_ID, false));
 		shareData.setCases(Collections.singletonList(new SormasToSormasCaseDto(person, caze)));
 		shareData.setContacts(Collections.singletonList(new SormasToSormasContactDto(contactPerson, contact)));
 
@@ -463,11 +483,11 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 	public void testSaveSharedCaseWithSamples() throws SormasToSormasException, SormasToSormasValidationException {
 		PersonDto person = createPersonDto(rdcf);
 
-		CaseDataDto caze = createRemoteCaseDto(rdcf, person);
+		CaseDataDto caze = createCaseDto(rdcf, person);
 		SormasToSormasSampleDto sample = createRemoteSampleDtoWithTests(rdcf, caze.toReference(), null);
 
 		SormasToSormasDto shareData = new SormasToSormasDto();
-		shareData.setOriginInfo(createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, false));
+		shareData.setOriginInfo(createSormasToSormasOriginInfoDto(DEFAULT_SERVER_ID, false));
 		shareData.setCases(Collections.singletonList(new SormasToSormasCaseDto(person, caze)));
 		shareData.setSamples(Collections.singletonList(sample));
 
@@ -626,7 +646,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		calendar.add(Calendar.DAY_OF_MONTH, 1);
 		caze.setChangeDate(calendar.getTime());
 
-		SormasToSormasOriginInfoDto originInfo = createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, true);
+		SormasToSormasOriginInfoDto originInfo = createSormasToSormasOriginInfoDto(DEFAULT_SERVER_ID, true);
 
 		SormasToSormasDto shareData = new SormasToSormasDto();
 		shareData.setOriginInfo(originInfo);
@@ -685,11 +705,11 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		person.setFirstName("James");
 		person.setLastName("Smith");
 
-		CaseDataDto caze = createRemoteCaseDto(rdcf, person);
+		CaseDataDto caze = createCaseDto(rdcf, person);
 		caze.setHealthFacility(new FacilityReferenceDto("unknown", "Unknown facility", "unknown"));
 
 		SormasToSormasDto shareData = new SormasToSormasDto();
-		shareData.setOriginInfo(createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, false));
+		shareData.setOriginInfo(createSormasToSormasOriginInfoDto(DEFAULT_SERVER_ID, false));
 		shareData.setCases(Collections.singletonList(new SormasToSormasCaseDto(person, caze)));
 
 		SormasToSormasEncryptedDataDto encryptedData = encryptShareData(shareData);
@@ -718,7 +738,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		caze.setPortHealthInfo(portHealthInfo);
 
 		SormasToSormasDto shareData = new SormasToSormasDto();
-		shareData.setOriginInfo(createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, false));
+		shareData.setOriginInfo(createSormasToSormasOriginInfoDto(DEFAULT_SERVER_ID, false));
 		shareData.setCases(Collections.singletonList(new SormasToSormasCaseDto(person, caze)));
 
 		SormasToSormasEncryptedDataDto encryptedData = encryptShareData(shareData);
@@ -758,7 +778,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		calendar.add(Calendar.DAY_OF_MONTH, 1);
 		caze.setChangeDate(calendar.getTime());
 
-		SormasToSormasOriginInfoDto originInfo = createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, true);
+		SormasToSormasOriginInfoDto originInfo = createSormasToSormasOriginInfoDto(DEFAULT_SERVER_ID, true);
 
 		SormasToSormasDto shareData = new SormasToSormasDto();
 		shareData.setOriginInfo(originInfo);
@@ -800,7 +820,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		calendar.add(Calendar.DAY_OF_MONTH, 1);
 		caze.setChangeDate(calendar.getTime());
 
-		SormasToSormasOriginInfoDto originInfo = createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, true);
+		SormasToSormasOriginInfoDto originInfo = createSormasToSormasOriginInfoDto(DEFAULT_SERVER_ID, true);
 		SormasToSormasDto shareData = new SormasToSormasDto();
 		shareData.setOriginInfo(originInfo);
 		shareData.setCases(Collections.singletonList(new SormasToSormasCaseDto(person, caze)));
@@ -819,7 +839,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 	}
 
 	@Test
-	public void testSyncCases() throws SormasToSormasValidationException, SormasToSormasException {
+	public void testSyncCases() throws SormasToSormasException {
 		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 
 		SormasToSormasOriginInfoDto originInfo =
@@ -1133,6 +1153,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
 		options.setWithImmunizations(true);
+		options.setComment("Test comment");
 
 		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
 
@@ -1149,6 +1170,9 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 				final CaseDataDto entity = postBody.getCases().get(0).getEntity();
 
 				entity.setUuid(uuid);
+				entity.getHospitalization().setUuid(DataHelper.createUuid());
+				entity.getSymptoms().setUuid(DataHelper.createUuid());
+				entity.getEpiData().setUuid(DataHelper.createUuid());
 				entity.getTherapy().setUuid(DataHelper.createUuid());
 				entity.getHealthConditions().setUuid(DataHelper.createUuid());
 				entity.getPortHealthInfo().setUuid(DataHelper.createUuid());
@@ -1173,14 +1197,307 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		assertThat(savedImmunization.getReportingUser(), is(s2sClientUser.toReference()));
 	}
 
-	private CaseDataDto createRemoteCaseDto(TestDataCreator.RDCF remoteRdcf, PersonDto person) {
-		CaseDataDto caze = CaseDataDto.build(person.toReference(), Disease.CORONAVIRUS);
-		caze.setResponsibleRegion(remoteRdcf.region);
-		caze.setResponsibleDistrict(remoteRdcf.district);
-		caze.setResponsibleCommunity(remoteRdcf.community);
-		caze.setHealthFacility(remoteRdcf.facility);
-		caze.setFacilityType(FacilityType.HOSPITAL);
-		return caze;
+	@Test
+	public void testSaveSyncedCase() throws SormasToSormasException, SormasToSormasValidationException {
+		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+
+		final PersonDto person = creator.createPerson();
+		CaseDataDto caze = creator.createCase(officer, person.toReference(), rdcf, c -> {
+			c.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
+			c.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, false, null));
+		});
+
+		caze.setFollowUpStatus(FollowUpStatus.LOST);
+		person.setBirthName("Test birth name");
+
+		SormasToSormasDto shareData = new SormasToSormasDto();
+		shareData.setOriginInfo(createSormasToSormasOriginInfoDto(DEFAULT_SERVER_ID, false));
+		shareData.setCases(Collections.singletonList(new SormasToSormasCaseDto(person, caze)));
+
+		SormasToSormasEncryptedDataDto encryptedData =
+			encryptShareData(new SyncDataDto(shareData, new ShareTreeCriteria(caze.getUuid(), null, false)));
+
+		getSormasToSormasCaseFacade().saveSyncedEntity(encryptedData);
+
+		CaseDataDto syncedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertThat(syncedCase.getFollowUpStatus(), is(FollowUpStatus.LOST));
+		assertThat(syncedCase.getSormasToSormasOriginInfo().isOwnershipHandedOver(), is(false));
+
+		PersonDto syncedPerson = getPersonFacade().getByUuid(person.getUuid());
+		assertThat(syncedPerson.getBirthName(), is("Test birth name"));
+	}
+
+	@Test
+	public void testSyncNotUpdateOwnedPerson() throws SormasToSormasException, SormasToSormasValidationException {
+		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+
+		final PersonDto person = creator.createPerson();
+		CaseDataDto caze = creator.createCase(officer, person.toReference(), rdcf, c -> {
+			c.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
+			c.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, false, null));
+		});
+
+		// owned contact with same person should make person not be synced
+		creator.createContact(rdcf, officer, person.toReference());
+
+		caze.setFollowUpStatus(FollowUpStatus.LOST);
+		person.setBirthName("Test birth name");
+
+		SormasToSormasDto shareData = new SormasToSormasDto();
+		shareData.setOriginInfo(createSormasToSormasOriginInfoDto(DEFAULT_SERVER_ID, false));
+		shareData.setCases(Collections.singletonList(new SormasToSormasCaseDto(person, caze)));
+
+		SormasToSormasEncryptedDataDto encryptedData =
+			encryptShareData(new SyncDataDto(shareData, new ShareTreeCriteria(caze.getUuid(), null, false)));
+
+		getSormasToSormasCaseFacade().saveSyncedEntity(encryptedData);
+
+		CaseDataDto syncedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertThat(syncedCase.getFollowUpStatus(), is(FollowUpStatus.LOST));
+
+		PersonDto syncedPerson = getPersonFacade().getByUuid(person.getUuid());
+		assertThat(syncedPerson.getBirthName(), is(nullValue()));
+	}
+
+	@Test
+	public void testShareWithSurveillanceReports() throws SormasToSormasException {
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+
+		PersonDto person = creator.createPerson();
+		UserReferenceDto officer = user.toReference();
+		CaseDataDto caze = creator.createCase(officer, rdcf, dto -> {
+			dto.setPerson(person.toReference());
+			dto.setSurveillanceOfficer(officer);
+			dto.setClassificationUser(officer);
+		});
+
+		SurveillanceReportDto surveillanceReport = creator.createSurveillanceReport(officer, ReportingType.LABORATORY, caze.toReference(), (r) -> {
+			r.setReportDate(new Date());
+			r.setFacilityRegion(rdcf.region);
+			r.setFacilityDistrict(rdcf.district);
+			r.setFacility(rdcf.facility);
+			r.setNotificationDetails("Test lab report notification");
+		});
+
+		SurveillanceReportDto surveillanceReport2 = creator.createSurveillanceReport(officer, ReportingType.DOCTOR, caze.toReference(), (r) -> {
+			r.setReportDate(new Date());
+			r.setFacilityRegion(rdcf.region);
+			r.setFacilityDistrict(rdcf.district);
+			r.setFacility(rdcf.facility);
+			r.setNotificationDetails("Test doctor report notification");
+		});
+
+		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
+		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
+		options.setComment("Test comment");
+		options.setWithSurveillanceReports(true);
+
+		Mockito
+			.when(
+				MockProducer.getSormasToSormasClient()
+					.post(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+			.thenAnswer(invocation -> {
+
+				assertThat(invocation.getArgument(0, String.class), is(SECOND_SERVER_ID));
+				assertThat(invocation.getArgument(1, String.class), is("/sormasToSormas/cases"));
+
+				SormasToSormasDto postBody = invocation.getArgument(2, SormasToSormasDto.class);
+
+				assertThat(postBody.getSurveillanceReports().size(), is(2));
+				SormasToSormasSurveillanceReportDto sharedSurveillanceReport = postBody.getSurveillanceReports()
+					.stream()
+					.filter(r -> r.getEntity().getUuid().equals(surveillanceReport.getUuid()))
+					.findFirst()
+					.get();
+				assertThat(sharedSurveillanceReport.getEntity().getReportDate().compareTo(surveillanceReport.getReportDate()), is(0)); // use compareTo because getReportDate() returns Timestamp object due to SurveillanceReport.java using TemporalType.Timestamp
+				assertThat(sharedSurveillanceReport.getEntity().getReportingType(), is(surveillanceReport.getReportingType()));
+				assertThat(sharedSurveillanceReport.getEntity().getFacilityRegion(), is(surveillanceReport.getFacilityRegion()));
+				assertThat(sharedSurveillanceReport.getEntity().getFacilityDistrict(), is(surveillanceReport.getFacilityDistrict()));
+				assertThat(sharedSurveillanceReport.getEntity().getFacility(), is(surveillanceReport.getFacility()));
+				assertThat(sharedSurveillanceReport.getEntity().getNotificationDetails(), is(surveillanceReport.getNotificationDetails()));
+
+				return encryptShareData(new ShareRequestAcceptData(null, null));
+			});
+
+		getSormasToSormasCaseFacade().share(Collections.singletonList(caze.getUuid()), options);
+
+		List<SormasToSormasShareInfoDto> surveillanceReportShareInfoList = getSormasToSormasShareInfoFacade()
+			.getIndexList(new SormasToSormasShareInfoCriteria().surveillanceReport(surveillanceReport.toReference()), 0, 100);
+
+		SormasToSormasShareInfoDto contactShareInfo = surveillanceReportShareInfoList.get(0);
+		assertThat(contactShareInfo.getTargetDescriptor().getId(), is(SECOND_SERVER_ID));
+		assertThat(contactShareInfo.getSender().getCaption(), is("ad MIN"));
+		assertThat(contactShareInfo.getComment(), is("Test comment"));
+
+		List<SormasToSormasShareInfoDto> surveillanceReport2ShareInfoList = getSormasToSormasShareInfoFacade()
+			.getIndexList(new SormasToSormasShareInfoCriteria().surveillanceReport(surveillanceReport2.toReference()), 0, 100);
+
+		assertThat(surveillanceReport2ShareInfoList, hasSize(1));
+	}
+
+	@Test
+	public void testSharePseudonymizedWithSurveillanceReport() throws SormasToSormasException {
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+
+		PersonDto person = creator.createPerson();
+		UserReferenceDto officer = user.toReference();
+		CaseDataDto caze = creator.createCase(officer, rdcf, dto -> {
+			dto.setPerson(person.toReference());
+			dto.setSurveillanceOfficer(officer);
+			dto.setClassificationUser(officer);
+		});
+
+		SurveillanceReportDto surveillanceReport = creator.createSurveillanceReport(officer, ReportingType.LABORATORY, caze.toReference(), (r) -> {
+			r.setReportDate(new Date());
+			r.setFacilityRegion(rdcf.region);
+			r.setFacilityDistrict(rdcf.district);
+			r.setFacility(rdcf.facility);
+			r.setFacilityDetails("Test facility details");
+			r.setNotificationDetails("Test lab report notification");
+		});
+
+		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
+		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
+		options.setComment("Test comment");
+		options.setWithSurveillanceReports(true);
+		options.setPseudonymizeData(true);
+
+		Mockito
+			.when(
+				MockProducer.getSormasToSormasClient()
+					.post(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+			.thenAnswer(invocation -> {
+
+				assertThat(invocation.getArgument(0, String.class), is(SECOND_SERVER_ID));
+				assertThat(invocation.getArgument(1, String.class), is("/sormasToSormas/cases"));
+
+				SormasToSormasDto postBody = invocation.getArgument(2, SormasToSormasDto.class);
+
+				SormasToSormasSurveillanceReportDto sharedSurveillanceReport = postBody.getSurveillanceReports().get(0);
+				assertThat(sharedSurveillanceReport.getEntity().getFacility(), is(surveillanceReport.getFacility()));
+				assertThat(sharedSurveillanceReport.getEntity().getFacilityDetails(), is(""));
+				assertThat(sharedSurveillanceReport.getEntity().getNotificationDetails(), is(""));
+
+				return encryptShareData(new ShareRequestAcceptData(null, null));
+			});
+
+		getSormasToSormasCaseFacade().share(Collections.singletonList(caze.getUuid()), options);
+	}
+
+	@Test
+	public void testShareWithSurveillanceReportAndExternalMessage() throws SormasToSormasException {
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+
+		PersonDto person = creator.createPerson();
+		UserReferenceDto officer = user.toReference();
+		CaseDataDto caze = creator.createCase(officer, rdcf, dto -> {
+			dto.setPerson(person.toReference());
+			dto.setSurveillanceOfficer(officer);
+			dto.setClassificationUser(officer);
+		});
+
+		SurveillanceReportDto report = creator.createSurveillanceReport(officer, ReportingType.LABORATORY, caze.toReference(), (r) -> {
+			r.setReportDate(new Date());
+			r.setFacilityRegion(rdcf.region);
+			r.setFacilityDistrict(rdcf.district);
+			r.setFacility(rdcf.facility);
+			r.setNotificationDetails("Test lab report notification");
+		});
+
+		ExternalMessageDto externalMessage = creator.createExternalMessage(m -> {
+			m.setStatus(ExternalMessageStatus.PROCESSED);
+			m.setSurveillanceReport(report.toReference());
+		});
+
+		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
+		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
+		options.setComment("Test comment");
+		options.setWithSurveillanceReports(true);
+		options.setHandOverOwnership(true);
+
+		Mockito
+			.when(
+				MockProducer.getSormasToSormasClient()
+					.post(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+			.thenAnswer(invocation -> {
+
+				assertThat(invocation.getArgument(0, String.class), is(SECOND_SERVER_ID));
+				assertThat(invocation.getArgument(1, String.class), is("/sormasToSormas/cases"));
+
+				SormasToSormasDto postBody = invocation.getArgument(2, SormasToSormasDto.class);
+
+				SormasToSormasExternalMessageDto sharedExternalMessage = postBody.getSurveillanceReports().get(0).getExternalMessage();
+				assertThat(sharedExternalMessage.getEntity().getUuid(), is(externalMessage.getUuid()));
+				assertThat(sharedExternalMessage.getEntity().getStatus(), is(externalMessage.getStatus()));
+				assertThat(sharedExternalMessage.getEntity().getSurveillanceReport(), is(report.toReference()));
+
+				return encryptShareData(new ShareRequestAcceptData(null, null));
+			});
+
+		getSormasToSormasCaseFacade().share(Collections.singletonList(caze.getUuid()), options);
+
+		assertThat(getExternalMessageFacade().getByUuid(externalMessage.getUuid()).getStatus(), is(ExternalMessageStatus.FORWARDED));
+	}
+
+	@Test
+	public void testSaveSharedWithSurveillanceReports() throws SormasToSormasException, SormasToSormasValidationException {
+		PersonDto person = createPersonDto(rdcf);
+		CaseDataDto caze = createCaseDto(rdcf, person);
+		SurveillanceReportDto report = SurveillanceReportDto.build(caze.toReference(), null);
+		report.setReportDate(new Date());
+		report.setReportingType(ReportingType.LABORATORY);
+		report.setFacilityRegion(rdcf.region);
+		report.setFacilityDistrict(rdcf.district);
+		report.setFacility(rdcf.facility);
+		report.setNotificationDetails("Test notification details");
+
+		SormasToSormasDto shareData = new SormasToSormasDto();
+		shareData.setOriginInfo(createSormasToSormasOriginInfoDto(DEFAULT_SERVER_ID, false));
+		shareData.setCases(Collections.singletonList(new SormasToSormasCaseDto(person, caze)));
+		shareData.setSurveillanceReports(Collections.singletonList(new SormasToSormasSurveillanceReportDto(report, null)));
+
+		SormasToSormasEncryptedDataDto encryptedData = encryptShareData(shareData);
+		getSormasToSormasCaseFacade().saveSharedEntities(encryptedData);
+
+		CaseDataDto savedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		SurveillanceReportDto savedReport = getSurveillanceReportFacade().getByUuid(report.getUuid());
+
+		assertThat(savedReport, is(notNullValue()));
+		assertThat(savedReport.getReportDate().compareTo(report.getReportDate()), is(0));
+		assertThat(savedReport.getReportingType(), is(report.getReportingType()));
+		assertThat(savedReport.getFacilityRegion(), is(report.getFacilityRegion()));
+		assertThat(savedReport.getFacilityDistrict(), is(report.getFacilityDistrict()));
+		assertThat(savedReport.getFacility(), is(report.getFacility()));
+		assertThat(savedReport.getNotificationDetails(), is(report.getNotificationDetails()));
+
+		assertThat(savedCase.getSormasToSormasOriginInfo().getUuid(), is(savedReport.getSormasToSormasOriginInfo().getUuid()));
+	}
+
+	@Test
+	public void testSaveSharedCaseWithSurveillanceReportAndExternalMessage() throws SormasToSormasException, SormasToSormasValidationException {
+		PersonDto person = createPersonDto(rdcf);
+		CaseDataDto caze = createCaseDto(rdcf, person);
+
+		SurveillanceReportDto report = SurveillanceReportDto.build(caze.toReference(), null);
+		report.setReportDate(new Date());
+		report.setReportingType(ReportingType.LABORATORY);
+
+		ExternalMessageDto externalMessage = ExternalMessageDto.build();
+		externalMessage.setSurveillanceReport(report.toReference());
+		externalMessage.setStatus(ExternalMessageStatus.PROCESSED);
+
+		SormasToSormasDto shareData = new SormasToSormasDto();
+		shareData.setOriginInfo(createSormasToSormasOriginInfoDto(DEFAULT_SERVER_ID, false));
+		shareData.setCases(Collections.singletonList(new SormasToSormasCaseDto(person, caze)));
+		shareData.setSurveillanceReports(
+			Collections.singletonList(new SormasToSormasSurveillanceReportDto(report, new SormasToSormasExternalMessageDto(externalMessage))));
+
+		SormasToSormasEncryptedDataDto encryptedData = encryptShareData(shareData);
+		getSormasToSormasCaseFacade().saveSharedEntities(encryptedData);
+
+		ExternalMessage savedExternalMessage = getSurveillanceReportService().getByUuid(report.getUuid()).getExternalMessage();
+		assertThat(savedExternalMessage.getUuid(), is(externalMessage.getUuid()));
+		assertThat(savedExternalMessage.getStatus(), is(externalMessage.getStatus()));
 	}
 
 	private ContactDto createRemoteContactDto(TestDataCreator.RDCF remoteRdcf, CaseDataDto caze) {

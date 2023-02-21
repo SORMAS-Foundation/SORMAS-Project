@@ -55,7 +55,7 @@ public class EventParticipant extends PseudonymizableAdo {
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false)
 	private Event event;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false)
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 4, canBeNull = false)
 	private Person person;
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
@@ -111,8 +111,8 @@ public class EventParticipant extends PseudonymizableAdo {
 	}
 
 	@Override
-	public String toString() {
-		return getPerson().toString();
+	public String buildCaption() {
+		return getPerson().buildCaption();
 	}
 
 	@Override

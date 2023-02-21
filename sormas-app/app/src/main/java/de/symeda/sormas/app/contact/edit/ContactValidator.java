@@ -17,11 +17,10 @@ package de.symeda.sormas.app.contact.edit;
 
 import java.util.Date;
 
-import org.joda.time.DateTimeComparator;
-
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.component.controls.ControlDateField;
 import de.symeda.sormas.app.component.validation.ValidationHelper;
@@ -93,9 +92,7 @@ public final class ContactValidator {
 		Date firstContactDate = firstContactDateField.getValue();
 		Date lastContactDate = lastContactDateField.getValue();
 
-		DateTimeComparator dateOnlyComparator = DateTimeComparator.getDateOnlyInstance();
-
-		if (firstContactDate != null && lastContactDate != null && dateOnlyComparator.compare(firstContactDate, lastContactDate) >= 0) {
+		if (DateHelper.isDateAfter(firstContactDate, lastContactDate)) {
 			firstContactDateField.enableErrorState(
 					I18nProperties.getValidationError(
 							Validations.beforeDate,
@@ -110,9 +107,7 @@ public final class ContactValidator {
 		Date firstContactDate = firstContactDateField.getValue();
 		Date lastContactDate = lastContactDateField.getValue();
 
-		DateTimeComparator dateOnlyComparator = DateTimeComparator.getDateOnlyInstance();
-
-		if (firstContactDate != null && lastContactDate != null && dateOnlyComparator.compare(firstContactDate, lastContactDate) >= 0) {
+		if (DateHelper.isDateBefore(lastContactDate, firstContactDate)) {
 			lastContactDateField.enableErrorState(
 					I18nProperties.getValidationError(
 							Validations.afterDate,
@@ -126,9 +121,7 @@ public final class ContactValidator {
 	private static boolean validateLastContactDateIsBeforeReportDate(final ControlDateField lastContactDateField, Date contactReferenceDate) {
 		Date lastContactDate = lastContactDateField.getValue();
 
-		DateTimeComparator dateOnlyComparator = DateTimeComparator.getDateOnlyInstance();
-
-		if (contactReferenceDate != null && dateOnlyComparator.compare(lastContactDate, contactReferenceDate) > 0) {
+		if (DateHelper.isDateAfter(lastContactDate, contactReferenceDate)) {
 			lastContactDateField.enableErrorState(
 					I18nProperties.getValidationError(
 							Validations.beforeDate,

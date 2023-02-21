@@ -19,7 +19,7 @@ package de.symeda.auditlog.api.sample;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedAttribute;
-import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.uuid.HasUuid;
 
 @Audited
 public class AnonymizedEntity implements HasUuid {

@@ -360,7 +360,7 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 		this.reportDateTime = reportDateTime;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	@JoinColumn(nullable = false)
 	public User getReportingUser() {
 		return reportingUser;
@@ -579,7 +579,7 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 		this.diseaseVariantDetails = diseaseVariantDetails;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	public User getResponsibleUser() {
 		return responsibleUser;
 	}

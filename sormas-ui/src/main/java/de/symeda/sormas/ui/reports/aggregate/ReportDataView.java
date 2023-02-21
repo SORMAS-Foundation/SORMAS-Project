@@ -58,7 +58,7 @@ public class ReportDataView extends AbstractAggregateReportsView {
 			criteria.epiWeekFrom(DateHelper.getEpiWeek(new Date())).epiWeekTo(DateHelper.getEpiWeek(new Date()));
 		}
 
-		grid = new ReportDataGrid(criteria);
+		grid = new ReportDataGrid(criteria, ()-> navigateTo(criteria, true));
 
 		gridLayout = new VerticalLayout();
 

@@ -78,7 +78,7 @@ public class UserRoleCreateForm extends AbstractEditForm<UserRoleDto> {
 
 		addField(UserRoleDto.HAS_OPTIONAL_HEALTH_FACILITY).addStyleName(CssStyles.VSPACE_TOP_3);
 		addField(UserRoleDto.HAS_ASSOCIATED_DISTRICT_USER).addStyleName(CssStyles.VSPACE_TOP_3);
-		addField(UserRoleDto.PORT_HEALTH_USER).addStyleName(CssStyles.VSPACE_TOP_3);
+		addField(UserRoleDto.PORT_HEALTH_USER).addStyleNames(CssStyles.VSPACE_TOP_3, CssStyles.VSPACE_3);
 
 		UserRoleFormHelper.createFieldDependencies(this);
 	}

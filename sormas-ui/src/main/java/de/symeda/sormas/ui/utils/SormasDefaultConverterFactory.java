@@ -24,6 +24,8 @@ import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.data.util.converter.DefaultConverterFactory;
 import com.vaadin.v7.data.util.converter.StringToEnumConverter;
 
+import de.symeda.sormas.api.utils.HasCaption;
+
 @SuppressWarnings("serial")
 public final class SormasDefaultConverterFactory extends DefaultConverterFactory {
 
@@ -43,6 +45,14 @@ public final class SormasDefaultConverterFactory extends DefaultConverterFactory
 					}
 
 					return SormasDefaultConverterFactory.enumToString(value, locale);
+				}
+			};
+		} else if (HasCaption.class.isAssignableFrom(sourceType)) {
+			return new StringToAnythingConverter<HasCaption>((Class<HasCaption>) sourceType) {
+
+				@Override
+				public String convertToPresentation(HasCaption value, Class<? extends String> targetType, Locale locale) throws ConversionException {
+					return value != null ? value.buildCaption() : null;
 				}
 			};
 		}

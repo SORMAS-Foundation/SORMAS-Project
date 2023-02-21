@@ -344,7 +344,6 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 			contentBinding.facilityTypeGroup.setRequired(false);
 			contentBinding.caseDataFacilityType.setRequired(false);
 			contentBinding.caseDataHealthFacility.setRequired(false);
-			contentBinding.caseDataHealthFacilityDetails.setRequired(false);
 		} else if (DatabaseHelper.getPointOfEntryDao().hasActiveEntriesInDistrict()) {
 			if (record.getCaseOrigin() == CaseOrigin.IN_COUNTRY) {
 				contentBinding.caseDataPointOfEntry.setRequired(false);
@@ -380,7 +379,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		diseaseVariantList.addAll(DataUtils.toItems(diseaseVariants));
 		contentBinding.caseDataDiseaseVariant.setSpinnerData(diseaseVariantList);
 		contentBinding.caseDataDiseaseVariant.setValue(null);
-		contentBinding.caseDataDiseaseVariant.setVisibility(diseaseVariants.isEmpty() ? GONE : VISIBLE);
+		contentBinding.caseDataDiseaseVariant.setVisibility(DataUtils.emptyOrWithOneNullItem(diseaseVariantList) ? GONE : VISIBLE);
 	}
 
 	private void updatePresentConditionField(FragmentCaseNewLayoutBinding contentBinding) {

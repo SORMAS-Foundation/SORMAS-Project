@@ -14,6 +14,8 @@
  */
 package de.symeda.sormas.backend.user;
 
+import static java.util.Objects.isNull;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -51,6 +53,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.InfrastructureDataReferenceDto;
+import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -62,7 +65,7 @@ import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
-import de.symeda.sormas.api.task.TaskContextIndex;
+import de.symeda.sormas.api.task.TaskContextIndexCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserCriteria;
@@ -376,23 +379,23 @@ public class UserFacadeEjb implements UserFacade {
 			.collect(Collectors.toList());
 	}
 
-	private List<UserReferenceDto> getAssignableUsersBasedOnContext(TaskContextIndex taskContextIndex) {
+	private List<UserReferenceDto> getAssignableUsersBasedOnContext(TaskContextIndexCriteria taskContextIndexCriteria) {
 		List<UserReferenceDto> availableUsers = new ArrayList<>();
-		if (taskContextIndex.getUuid() == null) {
-			taskContextIndex = new TaskContextIndex(TaskContext.GENERAL);
+		if (taskContextIndexCriteria.getUuid() == null) {
+			taskContextIndexCriteria = new TaskContextIndexCriteria(TaskContext.GENERAL);
 		}
-		switch (taskContextIndex.getTaskContext()) {
+		switch (taskContextIndexCriteria.getTaskContext()) {
 		case CASE:
-			availableUsers.addAll(getUsersHavingCaseInJurisdiction(new CaseReferenceDto(taskContextIndex.getUuid())));
+			availableUsers.addAll(getUsersHavingCaseInJurisdiction(new CaseReferenceDto(taskContextIndexCriteria.getUuid())));
 			break;
 		case CONTACT:
-			availableUsers.addAll(getUsersHavingContactInJurisdiction(new ContactReferenceDto(taskContextIndex.getUuid())));
+			availableUsers.addAll(getUsersHavingContactInJurisdiction(new ContactReferenceDto(taskContextIndexCriteria.getUuid())));
 			break;
 		case EVENT:
-			availableUsers.addAll(getUsersHavingEventInJurisdiction(new EventReferenceDto(taskContextIndex.getUuid())));
+			availableUsers.addAll(getUsersHavingEventInJurisdiction(new EventReferenceDto(taskContextIndexCriteria.getUuid())));
 			break;
 		case TRAVEL_ENTRY:
-			availableUsers.addAll(getUsersHavingTravelEntryInJurisdiction(new TravelEntryReferenceDto(taskContextIndex.getUuid())));
+			availableUsers.addAll(getUsersHavingTravelEntryInJurisdiction(new TravelEntryReferenceDto(taskContextIndexCriteria.getUuid())));
 			break;
 		default:
 			availableUsers.addAll(getAllUserRefs(false));
@@ -402,9 +405,9 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@PermitAll
-	public List<UserReferenceWithTaskNumbersDto> getAssignableUsersWithTaskNumbers(TaskContextIndex taskContextIndex) {
+	public List<UserReferenceWithTaskNumbersDto> getAssignableUsersWithTaskNumbers(TaskContextIndexCriteria taskContextIndexCriteria) {
 
-		List<UserReferenceDto> availableUsers = getAssignableUsersBasedOnContext(taskContextIndex);
+		List<UserReferenceDto> availableUsers = getAssignableUsersBasedOnContext(taskContextIndexCriteria);
 		Map<String, Long> userTaskCounts =
 			taskFacade.getPendingTaskCountPerUser(availableUsers.stream().map(UserReferenceDto::getUuid).collect(Collectors.toList()));
 
@@ -534,7 +537,7 @@ public class UserFacadeEjb implements UserFacade {
 
 		cq.distinct(true);
 		cq.orderBy(cb.asc(root.get(AbstractDomainObject.ID)));
-		List<User> resultList = em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+		List<User> resultList = em.createQuery(cq).setHint(ModelConstants.READ_ONLY, true).getResultList();
 		return resultList.stream().map(UserFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
@@ -584,25 +587,14 @@ public class UserFacadeEjb implements UserFacade {
 	@Override
 	@PermitAll
 	public UserDto saveUser(@Valid UserDto dto, boolean isUserSettingsUpdate) {
-
 		if (!userService.hasRight(UserRight.USER_CREATE) && !userService.hasRight(UserRight.USER_EDIT) && !DataHelper.isSame(getCurrentUser(), dto)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorForbidden));
 		}
 
-		User oldUser = null;
-		Set<UserRight> oldUserRights = Collections.emptySet();
-		if (dto.getCreationDate() != null) {
-			try {
-				oldUser = (User) BeanUtils.cloneBean(userService.getByUuid(dto.getUuid()));
-				oldUserRights = UserRole.getUserRights(oldUser.getUserRoles());
-			} catch (Exception e) {
-				throw new IllegalArgumentException("Invalid bean access", e);
-			}
-		}
-
+		User user = userService.getByUuid(dto.getUuid());
 		// current user should be able to edit itself
 		if (!DataHelper.isSame(userService.getCurrentUser(), dto)) {
-			FacadeHelper.checkCreateAndEditRights(oldUser, userService, UserRight.USER_CREATE, UserRight.USER_EDIT);
+			FacadeHelper.checkCreateAndEditRights(user, userService, UserRight.USER_CREATE, UserRight.USER_EDIT);
 		}
 
 		Collection<UserRoleDto> newRoles = userRoleFacade.getByReferences(dto.getUserRoles());
@@ -613,12 +605,22 @@ public class UserFacadeEjb implements UserFacade {
 			throw new ValidationException(e);
 		}
 
-		if (!isLoginUnique(oldUser == null ? null : oldUser.getUuid(), dto.getUserName())) {
+		if (!isLoginUnique(user == null ? null : user.getUuid(), dto.getUserName())) {
 			throw new ValidationException(I18nProperties.getValidationError(Validations.userNameNotUnique));
 		}
 
-		if (DataHelper.isSame(oldUser, userService.getCurrentUser()) && !isUserSettingsUpdate) {
+		User oldUser = null;
+		Set<UserRight> oldUserRights = Collections.emptySet();
+		if (dto.getCreationDate() != null) {
+			try {
+				oldUser = (User) BeanUtils.cloneBean(user);
+				oldUserRights = UserRole.getUserRights(oldUser.getUserRoles());
+			} catch (Exception e) {
+				throw new IllegalArgumentException("Invalid bean access", e);
+			}
+		}
 
+		if (DataHelper.isSame(user, userService.getCurrentUser()) && !isUserSettingsUpdate) {
 			Set<UserRight> newUserRights = UserRoleDto.getUserRights(newRoles);
 
 			if (oldUserRights.contains(UserRight.USER_ROLE_EDIT) && !newUserRights.contains(UserRight.USER_ROLE_EDIT)) {
@@ -628,7 +630,7 @@ public class UserFacadeEjb implements UserFacade {
 			}
 		}
 
-		User user = fromDto(dto, true);
+		user = fillOrBuildEntity(dto, user, true);
 		userService.ensurePersisted(user);
 
 		if (oldUser == null) {
@@ -730,15 +732,20 @@ public class UserFacadeEjb implements UserFacade {
 		return em.createQuery(cq).getSingleResult();
 	}
 
-	private User fromDto(UserDto source, boolean checkChangeDate) {
+	private User fillOrBuildEntity(UserDto source, User target, boolean checkChangeDate) {
+		boolean targetWasNull = isNull(target);
 
-		User target = DtoHelper.fillOrBuildEntity(source, userService.getByUuid(source.getUuid()), userService::createUser, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, userService::createUser, checkChangeDate);
+
+		if (targetWasNull) {
+			FacadeHelper.setUuidIfDtoExists(target.getAddress(), source.getAddress());
+		}
 
 		target.setActive(source.isActive());
 		target.setFirstName(source.getFirstName());
 		target.setLastName(source.getLastName());
 		target.setPhone(source.getPhone());
-		target.setAddress(locationFacade.fromDto(source.getAddress(), checkChangeDate));
+		target.setAddress(locationFacade.fillOrBuildEntity(source.getAddress(), target.getAddress(), checkChangeDate));
 
 		target.setUserName(source.getUserName());
 		target.setUserEmail(source.getUserEmail());
@@ -785,6 +792,7 @@ public class UserFacadeEjb implements UserFacade {
 
 	@Override
 	@RightsAllowed({
+		UserRight._USER_CREATE,
 		UserRight._USER_EDIT })
 	public String resetPassword(String uuid) {
 		String resetPassword = userService.resetPassword(uuid);
@@ -794,6 +802,7 @@ public class UserFacadeEjb implements UserFacade {
 
 	@Override
 	@PermitAll
+	@AuditIgnore
 	public UserDto getCurrentUser() {
 		return toDto(userService.getCurrentUser());
 	}
@@ -806,14 +815,14 @@ public class UserFacadeEjb implements UserFacade {
 
 	@Override
 	@PermitAll
+	@AuditIgnore
 	public Set<UserRight> getValidLoginRights(String userName, String password) {
 
 		User user = userService.getByUserName(userName);
-		if (user != null && user.isActive()) {
-			if (DataHelper.equal(user.getPassword(), PasswordHelper.encodePassword(password, user.getSeed()))) {
-				return new HashSet<>(UserRole.getUserRights(user.getUserRoles()));
-			}
+		if (user != null && user.isActive() && DataHelper.equal(user.getPassword(), PasswordHelper.encodePassword(password, user.getSeed()))) {
+			return new HashSet<>(UserRole.getUserRights(user.getUserRoles()));
 		}
+
 		return null;
 	}
 

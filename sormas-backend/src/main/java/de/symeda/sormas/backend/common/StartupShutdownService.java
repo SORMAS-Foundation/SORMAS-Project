@@ -20,7 +20,6 @@ import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.sql.Timestamp;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -56,6 +55,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -124,6 +124,7 @@ public class StartupShutdownService {
 
 	static final String SORMAS_SCHEMA = "sql/sormas_schema.sql";
 	static final String AUDIT_SCHEMA = "sql/sormas_audit_schema.sql";
+	static final String VERSIONING_FUNCTION = "sql/temporal_tables/versioning_function.sql";
 	private static final Pattern SQL_COMMENT_PATTERN = Pattern.compile("^\\s*(--.*)?");
 	//@formatter:off
     private static final Pattern SCHEMA_VERSION_SQL_PATTERN = Pattern.compile(
@@ -210,7 +211,10 @@ public class StartupShutdownService {
 	@PostConstruct
 	public void startup() {
 		auditLogger.logApplicationStart();
+
 		checkDatabaseConfig(em);
+
+		createVersioningFunction(UpdateQueryTransactionWrapper.TargetDb.SORMAS);
 
 		logger.info("Initiating automatic database update of main database...");
 		updateDatabase(UpdateQueryTransactionWrapper.TargetDb.SORMAS, em, SORMAS_SCHEMA);
@@ -631,26 +635,9 @@ public class StartupShutdownService {
 
 		List<User> users = userService.getAllActive();
 		for (User user : users) {
-			syncUser(user);
+			userService.syncUserAsync(user);
 		}
 		logger.info("User synchronization finalized");
-	}
-
-	/**
-	 * Triggers the user sync asynchronously to not block the deployment step
-	 */
-	private void syncUser(User user) {
-		String shortUuid = DataHelper.getShortUuid(user.getUuid());
-		logger.debug("Synchronizing user {}", shortUuid);
-		try {
-
-			UserUpdateEvent event = new UserUpdateEvent(user);
-			event.setExceptionCallback(exceptionMessage -> logger.error("Could not synchronize user {} due to {}", shortUuid, exceptionMessage));
-
-			this.userUpdateEvent.fireAsync(event);
-		} catch (Throwable e) {
-			logger.error(MessageFormat.format("Unexpected exception when synchronizing user {0}", shortUuid), e);
-		}
 	}
 
 	/**
@@ -678,7 +665,7 @@ public class StartupShutdownService {
 		}
 
 		// Check that required extensions are installed
-		Stream.of("temporal_tables", "pg_trgm").filter(t -> {
+		Stream.of("pg_trgm").filter(t -> {
 			String q = "select count(*) from pg_extension where extname = '" + t + "'";
 			int count = ((Number) entityManager.createNativeQuery(q).getSingleResult()).intValue();
 			return count == 0;
@@ -754,6 +741,25 @@ public class StartupShutdownService {
 			throw new UncheckedIOException(e);
 		} finally {
 			logger.info("Database update completed.");
+		}
+	}
+
+	private void createVersioningFunction(UpdateQueryTransactionWrapper.TargetDb db) {
+
+		logger.info("Starting create versioning function...");
+
+		final InputStream versioningFunctionStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(VERSIONING_FUNCTION);
+		try {
+			String versioningFunction = IOUtils.toString(versioningFunctionStream, StandardCharsets.UTF_8);
+			// escape for hibernate
+			// note: This will also escape ':' in pure strings, where a replacement may cause problems
+			versioningFunction = versioningFunction.replaceAll(":", "\\\\:");
+			updateQueryTransactionWrapper.executeUpdate(db, versioningFunction);
+		} catch (IOException e) {
+			logger.error("Could not load {} file. Create versioning function not performed.", VERSIONING_FUNCTION);
+			throw new UncheckedIOException(e);
+		} finally {
+			logger.info("Creating versioning function completed.");
 		}
 	}
 

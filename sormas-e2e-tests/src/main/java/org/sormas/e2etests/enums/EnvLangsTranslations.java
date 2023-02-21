@@ -23,9 +23,9 @@ import lombok.SneakyThrows;
 
 @Getter
 public enum EnvLangsTranslations {
-  en("English", "Deutsch"),
-  de("English", "Deutsch"),
-  ur("\u0627\u0646\u06AF\u0631\u06CC\u0632\u06CC", "\u062C\u0631\u0645\u0646");
+  English("English", "Deutsch"),
+  Deutsch("English", "Deutsch"),
+  Urdu("\u0627\u0646\u06AF\u0631\u06CC\u0632\u06CC", "\u062C\u0631\u0645\u0646");
 
   private final String englishLang;
   private final String germanLang;
@@ -37,8 +37,8 @@ public enum EnvLangsTranslations {
 
   @SneakyThrows
   public static EnvLangsTranslations getValueFor(String option) {
-    EnvLangsTranslations[] caseOutcomeOptions = EnvLangsTranslations.values();
-    for (EnvLangsTranslations value : caseOutcomeOptions) {
+    EnvLangsTranslations[] options = EnvLangsTranslations.values();
+    for (EnvLangsTranslations value : options) {
       if (value.toString().equalsIgnoreCase(option)) {
         return value;
       }

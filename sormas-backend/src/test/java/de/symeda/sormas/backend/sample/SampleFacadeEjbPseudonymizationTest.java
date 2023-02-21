@@ -23,7 +23,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
 
 import java.util.Calendar;
@@ -32,9 +32,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -55,7 +53,6 @@ import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 
-@RunWith(MockitoJUnitRunner.class)
 public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	private TestDataCreator.RDCF rdcf1;
@@ -465,7 +462,7 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(sample.getReportLon(), is(nullValue()));
 		assertThat(sample.getReportLatLonAccuracy(), is(10F));
 		assertThat(sample.getLab().getCaption(), is(labName));
-		assertThat(sample.getLabDetails(), is("Test lab details"));
+		assertThat(sample.getLabDetails(), isEmptyString());
 		assertThat(sample.getShipmentDetails(), isEmptyString());
 		assertThat(sample.getComment(), isEmptyString());
 	}

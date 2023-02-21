@@ -19,11 +19,6 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-
 import android.content.Context;
 import android.util.Log;
 import android.view.View;
@@ -31,6 +26,11 @@ import android.view.View;
 import androidx.databinding.ViewDataBinding;
 import androidx.databinding.library.baseAdapters.BR;
 import androidx.fragment.app.FragmentActivity;
+
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Arrays;
+import java.util.List;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -56,6 +56,7 @@ import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.DialogLocationLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.FieldVisibilityAndAccessHelper;
 import de.symeda.sormas.app.util.InfrastructureDaoHelper;
 import de.symeda.sormas.app.util.InfrastructureFieldsDependencyHandler;
 import de.symeda.sormas.app.util.LocationService;
@@ -169,6 +170,9 @@ public class LocationDialog extends FormDialog {
 		if (!isFieldAccessible(LocationDto.class, LocationDto.COMMUNITY)) {
 			this.contentBinding.locationRegion.setEnabled(false);
 			this.contentBinding.locationDistrict.setEnabled(false);
+		}
+		if(!isFieldAccessible(LocationDto.class, LocationDto.FACILITY)){
+			FieldVisibilityAndAccessHelper.setFieldInaccessibleValue(contentBinding.facilityTypeGroup);
 		}
 
 		contentBinding.locationAreaType.initializeSpinner(DataUtils.getEnumItems(AreaType.class));

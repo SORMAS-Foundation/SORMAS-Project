@@ -25,6 +25,7 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
@@ -39,6 +40,7 @@ import de.symeda.sormas.api.campaign.data.CampaignFormDataReferenceDto;
 import de.symeda.sormas.backend.campaign.Campaign;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.NotExposedToApi;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -70,6 +72,7 @@ public class CampaignFormData extends AbstractDomainObject {
 	private District district;
 	private Community community;
 	private User creatingUser;
+	@NotExposedToApi
 	private boolean archived;
 
 	@AuditedIgnore
@@ -112,7 +115,7 @@ public class CampaignFormData extends AbstractDomainObject {
 		this.formDate = formDate;
 	}
 
-	@ManyToOne()
+	@ManyToOne(fetch = FetchType.LAZY)
 	public Region getRegion() {
 		return region;
 	}
@@ -121,7 +124,7 @@ public class CampaignFormData extends AbstractDomainObject {
 		this.region = region;
 	}
 
-	@ManyToOne()
+	@ManyToOne(fetch = FetchType.LAZY)
 	public District getDistrict() {
 		return district;
 	}
@@ -130,7 +133,7 @@ public class CampaignFormData extends AbstractDomainObject {
 		this.district = district;
 	}
 
-	@ManyToOne()
+	@ManyToOne(fetch = FetchType.LAZY)
 	public Community getCommunity() {
 		return community;
 	}
@@ -139,7 +142,7 @@ public class CampaignFormData extends AbstractDomainObject {
 		this.community = community;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn
 	public User getCreatingUser() {
 		return creatingUser;

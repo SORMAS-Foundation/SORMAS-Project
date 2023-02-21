@@ -23,7 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.backend.AbstractBeanTest;
 
@@ -36,7 +36,7 @@ public class UserRolesGenerator extends AbstractBeanTest {
 	public void generateUserRoles() throws IOException {
 		File output = new File("../sormas-api/src/main/resources/doc/SORMAS_User_Roles.xlsx");
 
-		String documentPath = getUserRoleFacade().generateUserRolesDocument();
+		String documentPath = getUserRoleFacade().generateUserRolesDocument(false);
 
 		Files.copy(Paths.get(documentPath), output.toPath(), StandardCopyOption.REPLACE_EXISTING);
 	}

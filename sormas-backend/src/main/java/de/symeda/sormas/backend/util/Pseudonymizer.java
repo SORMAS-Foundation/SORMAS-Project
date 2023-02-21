@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.util;
 
+import java.lang.reflect.Field;
 import java.util.function.Consumer;
 
 import de.symeda.sormas.api.i18n.Captions;
@@ -63,17 +64,30 @@ public class Pseudonymizer extends DtoPseudonymizer {
 		return getFieldAccessCheckers(inJurisdiction).getCheckerByType(SensitiveDataFieldAccessChecker.class);
 	}
 
-	public boolean pseudonymizeUser(User dtoUser, User currentUser, Consumer<UserReferenceDto> setPseudonymizedValue) {
+	public boolean pseudonymizeUser(
+		User dtoUser,
+		User currentUser,
+		Consumer<UserReferenceDto> setPseudonymizedValue) {
 		boolean isInJurisdiction = dtoUser == null || isUserInJurisdiction(dtoUser, currentUser);
 
 		SensitiveDataFieldAccessChecker sensitiveDataFieldAccessChecker = getSensitiveDataFieldAccessChecker(isInJurisdiction);
-		if (sensitiveDataFieldAccessChecker != null && !sensitiveDataFieldAccessChecker.hasRight()) {
+		boolean isConfiguredToCheck = sensitiveDataFieldAccessChecker != null && pseudonymizeMandatoryFields;
+
+		if (isConfiguredToCheck && !sensitiveDataFieldAccessChecker.hasRight()) {
 			setPseudonymizedValue.accept(null);
 
 			return true;
 		}
 
 		return false;
+	}
+
+	private Field getDtoField(Class<?> dtoClass, String dtoFieldName) {
+		try {
+			return dtoClass.getDeclaredField(dtoFieldName);
+		} catch (NoSuchFieldException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public <DTO extends PseudonymizableDto> void restoreUser(

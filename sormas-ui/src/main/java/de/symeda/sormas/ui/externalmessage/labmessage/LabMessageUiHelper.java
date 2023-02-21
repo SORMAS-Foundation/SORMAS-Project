@@ -47,9 +47,11 @@ public class LabMessageUiHelper {
 		return cancelButton;
 	}
 
-	public static void establishFinalCommitButtons(CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleComponent) {
-		// add option to navigate to related entry after saving
-		LabMessageUiHelper.addSaveAndOpenEntryButton(sampleComponent);
+	public static void establishCommitButtons(CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleComponent, boolean lastSample) {
+		if (lastSample) {
+			// add option to navigate to related entry after saving
+			LabMessageUiHelper.addSaveAndOpenEntryButton(sampleComponent);
+		}
 		// add yet another listener just for the save button, it will not be added to the save and open entry button
 		sampleComponent.getCommitButton().addClickListener(clickEvent -> SormasUI.get().getNavigator().navigateTo(ExternalMessagesView.VIEW_NAME));
 	}

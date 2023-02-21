@@ -10,8 +10,10 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactIndexDetailedDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
@@ -59,6 +61,11 @@ public class ContactGridDetailed extends AbstractContactGrid<ContactIndexDetaile
 
 	@Override
 	public Stream<String> getEventColumns() {
+
+		if (!UiUtil.permitted(UserRight.EVENT_VIEW)) {
+			return Stream.empty();
+		}
+
 		return Stream.of(ContactIndexDetailedDto.LATEST_EVENT_ID, ContactIndexDetailedDto.LATEST_EVENT_TITLE);
 	}
 
@@ -88,13 +95,14 @@ public class ContactGridDetailed extends AbstractContactGrid<ContactIndexDetaile
 			}
 		}));
 
-		getColumn(ContactIndexDetailedDto.LATEST_EVENT_ID).setWidth(80).setSortable(false);
-		getColumn(ContactIndexDetailedDto.LATEST_EVENT_TITLE).setWidth(150).setSortable(false);
-		((Column<ContactIndexDetailedDto, String>) getColumn(ContactIndexDetailedDto.LATEST_EVENT_ID)).setRenderer(new UuidRenderer());
-		addItemClickListener(
-			new ShowDetailsListener<>(
-				ContactIndexDetailedDto.LATEST_EVENT_ID,
-				c -> ControllerProvider.getEventController().navigateToData(c.getLatestEventId())));
-
+		if (getEventColumns().findAny().isPresent()) {
+			getColumn(ContactIndexDetailedDto.LATEST_EVENT_ID).setWidth(80).setSortable(false);
+			getColumn(ContactIndexDetailedDto.LATEST_EVENT_TITLE).setWidth(150).setSortable(false);
+			((Column<ContactIndexDetailedDto, String>) getColumn(ContactIndexDetailedDto.LATEST_EVENT_ID)).setRenderer(new UuidRenderer());
+			addItemClickListener(
+				new ShowDetailsListener<>(
+					ContactIndexDetailedDto.LATEST_EVENT_ID,
+					c -> ControllerProvider.getEventController().navigateToData(c.getLatestEventId())));
+		}
 	}
 }

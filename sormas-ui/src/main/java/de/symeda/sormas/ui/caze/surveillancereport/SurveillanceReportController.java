@@ -15,14 +15,23 @@
 
 package de.symeda.sormas.ui.caze.surveillancereport;
 
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Sizeable;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -33,32 +42,60 @@ public class SurveillanceReportController {
 			SurveillanceReportDto.build(caze, FacadeProvider.getUserFacade().getCurrentUser().toReference()),
 			Strings.headingCreateSurveillanceReport,
 			false,
-			callback);
+			callback,
+			true);
 	}
 
-	public void editSurveillanceReport(SurveillanceReportDto report, Runnable callback) {
-		openEditWindow(report, Strings.headingEditSurveillanceReport, true, callback);
+	public void editSurveillanceReport(SurveillanceReportDto report, Runnable callback, boolean isEditAllowed) {
+		openEditWindow(
+			report,
+			isEditAllowed ? Strings.headingEditSurveillanceReport : Strings.headingViewSurveillanceReport,
+			true,
+			callback,
+			isEditAllowed);
 	}
 
-	private void openEditWindow(SurveillanceReportDto report, String titleTag, boolean canDelete, Runnable callback) {
+	private void openEditWindow(SurveillanceReportDto report, String titleTag, boolean canDelete, Runnable callback, boolean isEditAllowed) {
 		SurveillanceReportForm surveillanceReportForm = new SurveillanceReportForm(report);
 		surveillanceReportForm.setWidth(600, Sizeable.Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<SurveillanceReportForm> editView =
-			new CommitDiscardWrapperComponent<>(surveillanceReportForm, surveillanceReportForm.getFieldGroup());
-		editView.addCommitListener(() -> {
-			FacadeProvider.getSurveillanceReportFacade().saveSurveillanceReport(surveillanceReportForm.getValue());
-			callback.run();
-		});
+			new CommitDiscardWrapperComponent<>(surveillanceReportForm, true, surveillanceReportForm.getFieldGroup());
+		editView.setEditable(isEditAllowed);
+
+		if (UserProvider.getCurrent().getUserRights().contains(UserRight.EXTERNAL_MESSAGE_VIEW)) {
+			ExternalMessageDto externalMessage = FacadeProvider.getExternalMessageFacade().getForSurveillanceReport(report.toReference());
+
+			if (externalMessage != null) {
+				Button viewMessageButton = ButtonHelper.createIconButton(
+					Captions.viewMessage,
+					VaadinIcons.EYE,
+					e -> ControllerProvider.getExternalMessageController().showExternalMessage(externalMessage.getUuid(), false, null));
+
+				editView.getButtonsPanel().addComponent(viewMessageButton, 0);
+				editView.getButtonsPanel().setComponentAlignment(viewMessageButton, Alignment.BOTTOM_LEFT);
+			}
+		}
 
 		Window window = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(titleTag));
 
-		if (canDelete) {
-			editView.addDeleteListener(() -> {
-				FacadeProvider.getSurveillanceReportFacade().deleteSurveillanceReport(report.getUuid());
-				window.close();
+		if (isEditAllowed) {
+			editView.addCommitListener(() -> {
+				FacadeProvider.getSurveillanceReportFacade().save(surveillanceReportForm.getValue());
 				callback.run();
-			}, I18nProperties.getCaption(SurveillanceReportDto.I18N_PREFIX));
+			});
+			if (canDelete) {
+				editView.addDeleteListener(() -> {
+					FacadeProvider.getSurveillanceReportFacade().delete(report.getUuid());
+					window.close();
+					callback.run();
+				}, I18nProperties.getCaption(SurveillanceReportDto.I18N_PREFIX));
+			}
 		}
+		editView.setEditable(isEditAllowed, Captions.viewMessage);
+	}
+
+	public void viewSurveillanceReport(SurveillanceReportDto report, Runnable callback, boolean isEditAllowed) {
+		openEditWindow(report, Strings.headingViewSurveillanceReport, false, callback, isEditAllowed);
 	}
 }

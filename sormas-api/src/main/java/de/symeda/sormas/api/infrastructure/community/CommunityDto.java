@@ -20,6 +20,7 @@ import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import de.symeda.sormas.api.MappingException;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.InfrastructureDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -44,6 +45,7 @@ public class CommunityDto extends InfrastructureDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String name;
 	private Float growthRate;
+	@MappingException(reason = MappingException.FILLED_FROM_OTHER_ENTITY)
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private boolean archived;

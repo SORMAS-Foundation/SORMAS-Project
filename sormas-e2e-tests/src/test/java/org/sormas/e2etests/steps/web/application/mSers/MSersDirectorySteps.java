@@ -4,11 +4,12 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.DELETE_PO
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.CASE_CONTACT_EXPORT;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RESPONSIBLE_DISTRICT_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RESPONSIBLE_REGION_INPUT;
+import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.DELETE_AGGREGATED_REPORT_BUTTON;
+import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.AGGREGATE_REPORTING_BUTTON;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.DELETE_ICON;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.DISPLAY_ONLY_DUPLICATE_REPORTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.DISTRICT_COMBOBOX;
-import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.EDIT_ICON;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.EPI_WEEK_FROM_COMOBOX;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.EPI_WEEK_TO_COMOBOX;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.FACILITY_COMBOBOX;
@@ -25,8 +26,12 @@ import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.YEA
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.YEAR_FROM_INPUT;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.YEAR_TO_COMOBOX;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.YEAR_TO_INPUT;
+import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.getAgeGroupByResultNumber;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.getColumnSelectorByName;
+import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.getDeleteButtonByIndex;
 import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.getEditButtonByIndex;
+import static org.sormas.e2etests.pages.application.mSers.MSersDirectoryPage.getNumberOfSuspectedCasesByIndex;
+import static org.sormas.e2etests.steps.web.application.mSers.CreateNewAggregateReportSteps.duplicateReportWithJurisdiction;
 
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
@@ -139,10 +144,10 @@ public class MSersDirectorySteps implements En {
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(70);
           softly.assertTrue(
-              webDriverHelpers.isElementVisibleWithTimeout(DELETE_ICON, 5),
+              webDriverHelpers.isElementPresent(getDeleteButtonByIndex(1)),
               "Delete icon is not visible");
           softly.assertTrue(
-              webDriverHelpers.isElementVisibleWithTimeout(EDIT_ICON, 5),
+              webDriverHelpers.isElementPresent(getEditButtonByIndex(1)),
               "Edit icon is not visible");
           softly.assertAll();
         });
@@ -164,6 +169,7 @@ public class MSersDirectorySteps implements En {
         "I set Epi week from filter to {string} in mSers directory page",
         (String year) -> {
           TimeUnit.SECONDS.sleep(1);
+          webDriverHelpers.selectFromCombobox(EPI_WEEK_FROM_COMOBOX, "");
           webDriverHelpers.selectFromCombobox(EPI_WEEK_FROM_COMOBOX, year);
         });
     When(
@@ -182,6 +188,7 @@ public class MSersDirectorySteps implements En {
     When(
         "I click to edit {int} result in mSers directory page",
         (Integer ide) -> {
+          TimeUnit.SECONDS.sleep(1);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(getEditButtonByIndex(ide));
           webDriverHelpers.doubleClickOnWebElementBySelector(getEditButtonByIndex(ide));
         });
@@ -279,6 +286,65 @@ public class MSersDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(FIRST_AGGREGATED_REPORT_EDIT_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
         });
+
+    And(
+        "^I check if displayed numbers of suspected cases are equal to those previously entered for first result in mSers directory page$",
+        () -> {
+          String expectedSuspectedCases =
+              Integer.toString(duplicateReportWithJurisdiction.getMalariaCases());
+          String actualSuspectedCases =
+              webDriverHelpers.getTextFromWebElement(getNumberOfSuspectedCasesByIndex(1));
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertEquals(
+                      actualSuspectedCases,
+                      expectedSuspectedCases,
+                      "Number of suspected cases visible in grid is different than expected"),
+              10);
+        });
+
+    And(
+        "^I check that Age group for (\\d+) result in grid in mSers directory is \"([^\"]*)\"$",
+        (Integer resultNumber, String ageGroup) -> {
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(getAgeGroupByResultNumber(resultNumber)),
+              ageGroup,
+              "Age group is incorrect");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check if exported aggregate report contains correct age groups$",
+        () -> {
+          String fileName = "./downloads/sormas_aggregate_reports_" + LocalDate.now() + "_.csv";
+          AggregateReport reader = parseOneDiseaseExport(fileName);
+          softly.assertEquals(
+              reader.getAgeGroupForMalaria(),
+              CreateNewAggregateReportSteps.report.getAgeGroupForMalaria(),
+              "Age group for Malaria is different!");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check aggregate reports and delete them if they are listed$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_AGGREGATE_REPORT_BUTTON);
+          while (webDriverHelpers.getNumberOfElements(RESULT_IN_GRID) > 0) {
+            while (!webDriverHelpers.isElementVisibleWithTimeout(getEditButtonByIndex(1), 2)) {
+              webDriverHelpers.scrollInTable(5);
+            }
+            webDriverHelpers.waitUntilIdentifiedElementIsPresent(getEditButtonByIndex(1));
+            webDriverHelpers.doubleClickOnWebElementBySelector(getEditButtonByIndex(1));
+            webDriverHelpers.clickOnWebElementBySelector(DELETE_AGGREGATED_REPORT_BUTTON);
+            TimeUnit.SECONDS.sleep(1);
+          }
+        });
+
+    And(
+        "^I click on aggregate reporting tab$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(AGGREGATE_REPORTING_BUTTON);
+        });
   }
 
   public AggregateReport parseOneDiseaseExport(String fileName) {
@@ -305,6 +371,7 @@ public class MSersDirectorySteps implements En {
           AggregateReport.builder()
               .year(values[3])
               .epiWeek(values[4])
+              .ageGroupForMalaria(values[8])
               .acuteViralHepatitisCases(Integer.parseInt(values[6]))
               .build();
     } catch (NullPointerException e) {

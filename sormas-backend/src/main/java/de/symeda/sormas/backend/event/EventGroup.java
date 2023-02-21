@@ -28,6 +28,7 @@ import javax.persistence.ManyToMany;
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.NotExposedToApi;
 
 @Entity(name = "eventgroups")
 @Audited
@@ -44,6 +45,7 @@ public class EventGroup extends AbstractDomainObject {
     private String name;
     private List<Event> events;
 
+    @NotExposedToApi
     private boolean archived;
 
     @Column(columnDefinition = "text", nullable = false)

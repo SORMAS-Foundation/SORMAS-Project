@@ -16,10 +16,10 @@
 package de.symeda.sormas.backend.docgeneration;
 
 import static de.symeda.sormas.api.docgeneneration.DocumentWorkflow.QUARANTINE_ORDER_CASE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,8 +27,8 @@ import java.net.URISyntaxException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
@@ -39,7 +39,7 @@ public class DocumentTemplateFacadeEjbTest extends AbstractDocGenerationTest {
 
 	private DocumentTemplateFacade documentTemplateFacade;
 
-	@Before
+	@BeforeEach
 	public void setup() throws URISyntaxException {
 		documentTemplateFacade = getDocumentTemplateFacade();
 		reset();

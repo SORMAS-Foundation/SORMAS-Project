@@ -34,6 +34,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.FileContentsDoNotMatchExtensionException;
+import de.symeda.sormas.api.utils.FileExtensionNotAllowedException;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -68,6 +70,21 @@ public class DocumentUploadFinishedHandler implements UploadFinishedHandler {
 								FacadeProvider.getDocumentFacade().deleteDocument(existing);
 								try {
 									saveDocument(fileName, mimeType, length, relatedEntityType, relatedEntityUuid, bytes);
+									if (filesLeftInQueue == 0) {
+										Notification.show(I18nProperties.getString(Strings.headingUploadSuccess), Notification.Type.TRAY_NOTIFICATION);
+									}
+								} catch (FileExtensionNotAllowedException e) {
+									new Notification(
+											I18nProperties.getString(Strings.headingImportError),
+											I18nProperties.getString(Strings.messageImportFileTypeNotAllowed),
+											Notification.Type.ERROR_MESSAGE,
+											false).show(Page.getCurrent());
+								} catch (FileContentsDoNotMatchExtensionException e) {
+									new Notification(
+											I18nProperties.getString(Strings.headingImportError),
+											I18nProperties.getString(Strings.messageImportExtensionDoesNotMatchContent),
+											Notification.Type.ERROR_MESSAGE,
+											false).show(Page.getCurrent());
 								} catch (Exception e) {
 									new Notification(
 										I18nProperties.getString(Strings.headingImportError),
@@ -76,14 +93,9 @@ public class DocumentUploadFinishedHandler implements UploadFinishedHandler {
 										false).show(Page.getCurrent());
 									throw new RuntimeException(e);
 								}
-								if (filesLeftInQueue == 0) {
-									Notification.show(I18nProperties.getString(Strings.headingUploadSuccess), Notification.Type.TRAY_NOTIFICATION);
-								}
 							}
-							if (filesLeftInQueue == 0) {
-								if (callback != null) {
-									callback.run();
-								}
+							if (filesLeftInQueue == 0 && callback != null) {
+								callback.run();
 							}
 						});
 				} else {
@@ -97,6 +109,21 @@ public class DocumentUploadFinishedHandler implements UploadFinishedHandler {
 							if (ok) {
 								try {
 									saveDocument(fileName, mimeType, length, relatedEntityType, relatedEntityUuid, bytes);
+									if (filesLeftInQueue == 0) {
+										Notification.show(I18nProperties.getString(Strings.headingUploadSuccess), Notification.Type.TRAY_NOTIFICATION);
+									}
+								} catch (FileExtensionNotAllowedException e) {
+									new Notification(
+											I18nProperties.getString(Strings.headingImportError),
+											I18nProperties.getString(Strings.messageImportFileTypeNotAllowed),
+											Notification.Type.ERROR_MESSAGE,
+											false).show(Page.getCurrent());
+								} catch (FileContentsDoNotMatchExtensionException e) {
+									new Notification(
+											I18nProperties.getString(Strings.headingImportError),
+											I18nProperties.getString(Strings.messageImportExtensionDoesNotMatchContent),
+											Notification.Type.ERROR_MESSAGE,
+											false).show(Page.getCurrent());
 								} catch (Exception e) {
 									new Notification(
 										I18nProperties.getString(Strings.headingImportError),
@@ -105,25 +132,33 @@ public class DocumentUploadFinishedHandler implements UploadFinishedHandler {
 										false).show(Page.getCurrent());
 									throw new RuntimeException(e);
 								}
-								if (filesLeftInQueue == 0) {
-									Notification.show(I18nProperties.getString(Strings.headingUploadSuccess), Notification.Type.TRAY_NOTIFICATION);
-								}
 							}
-							if (filesLeftInQueue == 0) {
-								if (callback != null) {
-									callback.run();
-								}
+							if (filesLeftInQueue == 0 && callback != null) {
+								callback.run();
 							}
 						});
 				}
 			} else {
-				saveDocument(fileName, mimeType, length, relatedEntityType, relatedEntityUuid, bytes);
-
-				if (filesLeftInQueue == 0) {
-					Notification.show(I18nProperties.getString(Strings.headingUploadSuccess), Notification.Type.TRAY_NOTIFICATION);
-					if (callback != null) {
-						callback.run();
+				try {
+					saveDocument(fileName, mimeType, length, relatedEntityType, relatedEntityUuid, bytes);
+					if (filesLeftInQueue == 0) {
+						Notification.show(I18nProperties.getString(Strings.headingUploadSuccess), Notification.Type.TRAY_NOTIFICATION);
+						if (callback != null) {
+							callback.run();
+						}
 					}
+				} catch (FileExtensionNotAllowedException e) {
+					new Notification(
+							I18nProperties.getString(Strings.headingImportError),
+							I18nProperties.getString(Strings.messageImportFileTypeNotAllowed),
+							Notification.Type.ERROR_MESSAGE,
+							false).show(Page.getCurrent());
+				} catch (FileContentsDoNotMatchExtensionException e) {
+					new Notification(
+							I18nProperties.getString(Strings.headingImportError),
+							I18nProperties.getString(Strings.messageImportExtensionDoesNotMatchContent),
+							Notification.Type.ERROR_MESSAGE,
+							false).show(Page.getCurrent());
 				}
 			}
 		} catch (Exception e) {
@@ -159,5 +194,4 @@ public class DocumentUploadFinishedHandler implements UploadFinishedHandler {
 
 		FacadeProvider.getDocumentFacade().saveDocument(document, bytes);
 	}
-
 }

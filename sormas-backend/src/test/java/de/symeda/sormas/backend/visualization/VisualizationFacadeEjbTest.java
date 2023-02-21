@@ -19,16 +19,15 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.hamcrest.Matchers;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import de.symeda.sormas.api.Language;
 
 public class VisualizationFacadeEjbTest { // extends AbstractBeanTest {
 
-	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
+	@TempDir
+	private Path tempDir;
 
 	@Test
 	public void testStaticBuildTransmissionChainJson() {
@@ -45,7 +44,7 @@ public class VisualizationFacadeEjbTest { // extends AbstractBeanTest {
 
 			Path domainXmlPath = writeDomainXml();
 
-			String result = VisualizationFacadeEjb.buildTransmissionChainJson(r, temp.getRoot().toPath(), domainXmlPath, contactIds, Language.EN);
+			String result = VisualizationFacadeEjb.buildTransmissionChainJson(r, tempDir, domainXmlPath, contactIds, Language.EN);
 			assertThat(result, startsWith("{"));
 			assertThat(result, endsWith("}"));
 		});
@@ -82,7 +81,7 @@ public class VisualizationFacadeEjbTest { // extends AbstractBeanTest {
 
 	private Path writeDomainXml() {
 		try {
-			Path domPath = Files.createTempFile(temp.getRoot().toPath(), "domain", ".xml");
+			Path domPath = Files.createTempFile(tempDir, "domain", ".xml");
 
 			try (InputStream in = getClass().getResourceAsStream("/domain.xml")) {
 				Files.copy(in, domPath, StandardCopyOption.REPLACE_EXISTING);

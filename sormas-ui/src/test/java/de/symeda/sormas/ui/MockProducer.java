@@ -57,15 +57,6 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb;
  */
 public class MockProducer implements InitialContextFactory {
 
-	@Override
-	public Context getInitialContext(Hashtable<?, ?> environment) throws NamingException {
-		// this is used to provide the current user to the ADO Listener taking care of updating the last change user
-		CurrentUserService currentUserService = mock(CurrentUserService.class);
-		InitialContext mockCtx = mock(InitialContext.class);
-		when(mockCtx.lookup("java:global/sormas-ear/sormas-backend/CurrentUserService")).thenReturn(currentUserService);
-		return mockCtx;
-	}
-
 	private static SessionContext sessionContext = mock(SessionContext.class);
 	private static Principal principal = mock(Principal.class);
 	private static Topic topic = mock(Topic.class);
@@ -74,12 +65,17 @@ public class MockProducer implements InitialContextFactory {
 	private static Properties properties = new Properties();
 	private static UserTransaction userTransaction = mock(UserTransaction.class);
 	private static ManagedScheduledExecutorService managedScheduledExecutorService = mock(ManagedScheduledExecutorService.class);
+	// this is used to provide the current user to the ADO Listener taking care of updating the last change user
+	private static CurrentUserService currentUserService = mock(CurrentUserService.class);
+	private static InitialContext mockCtx = mock(InitialContext.class);
 
 	private static FacadeProvider facadeProvider = new FacadeProviderMock();
 
 	// Receiving e-mail server is mocked: org. jvnet. mock_javamail. mailbox
 	private static Session mailSession;
 	static {
+		wireMocks();
+
 		properties.setProperty(ConfigFacadeEjb.COUNTRY_NAME, "nigeria");
 		properties.setProperty(ConfigFacadeEjb.CSV_SEPARATOR, ",");
 		properties.setProperty(ConfigFacadeEjb.COUNTRY_EPID_PREFIX, "ng");
@@ -104,18 +100,17 @@ public class MockProducer implements InitialContextFactory {
 		mailSession = Session.getInstance(properties);
 	}
 
-	static {
-		wireMocks();
+	@Override
+	public Context getInitialContext(Hashtable<?, ?> environment) throws NamingException {
+		when(mockCtx.lookup("java:global/sormas-ear/sormas-backend/CurrentUserService")).thenReturn(currentUserService);
+		return mockCtx;
 	}
 
 	public static void resetMocks() {
-
-		reset(sessionContext, principal, topic, connectionFactory, timerService, userTransaction, managedScheduledExecutorService);
-		wireMocks();
+		reset(mockCtx, sessionContext, principal, topic, connectionFactory, timerService, userTransaction, currentUserService, managedScheduledExecutorService);
 	}
 
 	public static void wireMocks() {
-
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 	}
 

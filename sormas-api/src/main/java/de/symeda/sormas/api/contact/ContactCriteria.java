@@ -19,6 +19,7 @@ package de.symeda.sormas.api.contact;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Set;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
@@ -107,7 +108,6 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private ContactRelation relationToCase;
 	private Date lastContactDateFrom;
 	private Date lastContactDateTo;
-	private Boolean deleted = Boolean.FALSE;
 	private String contactOrCaseLike;
 	private EntityRelevanceStatus relevanceStatus;
 	private Boolean onlyHighPriorityContacts;
@@ -140,6 +140,12 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private String personLike;
 	private boolean excludeLimitedSyncRestrictions;
 	private Boolean withOwnership = true;
+
+	private Set<String> uuids;
+	/**
+	 * Used for filtering merge-able cases to filter both lead and similar cases.
+	 */
+	private Set<String> contactUuidsForMerge;
 
 	public UserRoleReferenceDto getReportingUserRole() {
 		return reportingUserRole;
@@ -389,16 +395,6 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	@IgnoreForUrl
 	public EntityRelevanceStatus getRelevanceStatus() {
 		return relevanceStatus;
-	}
-
-	public ContactCriteria deleted(Boolean deleted) {
-		this.deleted = deleted;
-		return this;
-	}
-
-	@IgnoreForUrl
-	public Boolean getDeleted() {
-		return deleted;
 	}
 
 	/**
@@ -733,5 +729,27 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	public void setWithOwnership(Boolean withOwnership) {
 		this.withOwnership = withOwnership;
+	}
+
+	@IgnoreForUrl
+	public Set<String> getUuids() {
+		return uuids;
+	}
+
+	public ContactCriteria uuids(Set<String> uuids) {
+		this.uuids = uuids;
+
+		return this;
+	}
+
+	@IgnoreForUrl
+	public Set<String> getContactUuidsForMerge() {
+		return contactUuidsForMerge;
+	}
+
+	public ContactCriteria contactUuidsForMerge(Set<String> contactUuidsForMerge) {
+		this.contactUuidsForMerge = contactUuidsForMerge;
+
+		return this;
 	}
 }

@@ -1,14 +1,19 @@
 package de.symeda.sormas.api.externaljournal;
 
+import de.symeda.sormas.api.audit.AuditIncludeProperty;
+import de.symeda.sormas.api.audit.AuditedClass;
+
 import java.io.Serializable;
 import java.time.Duration;
 import java.util.Objects;
 
+@AuditedClass
 public class PatientDiaryConfig implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 9020437984638539380L;
-
+	@AuditIncludeProperty
 	private String url;
+	@AuditIncludeProperty
 	private String probandsUrl;
 	private String authUrl;
 	private String frontendAuthUrl;

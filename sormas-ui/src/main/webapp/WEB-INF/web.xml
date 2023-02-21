@@ -113,6 +113,10 @@
 	</security-role>
 
 	<security-role>
+		<role-name>PERSON_MERGE</role-name>
+	</security-role>
+
+	<security-role>
 		<role-name>SAMPLE_CREATE</role-name>
 	</security-role>
 
@@ -250,6 +254,10 @@
 
 	<security-role>
 		<role-name>TASK_EXPORT</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>TASK_ARCHIVE</role-name>
 	</security-role>
 
 	<security-role>

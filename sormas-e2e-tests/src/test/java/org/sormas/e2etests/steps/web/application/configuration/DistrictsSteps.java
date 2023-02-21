@@ -27,14 +27,21 @@ import static org.sormas.e2etests.pages.application.configuration.CommunitiesTab
 import static org.sormas.e2etests.pages.application.configuration.ConfigurationTabsPage.CONFIGURATION_DISTRICTS_TAB;
 import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.ARCHIVE_DISTRICT_BUTTON;
 import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.CONFIRM_ARCHIVING_DISTRICT_TEXT;
+import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.COUNTRY_DISTRICT_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.CREATE_NEW_ENTRY_DISTRICTS_EPID_CODE_INPUT;
 import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.CREATE_NEW_ENTRY_DISTRICTS_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.CREATE_NEW_ENTRY_DISTRICTS_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.DISTRICTS_COLUMN_HEADERS;
+import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.DISTRICTS_NAME_TABLE_ROW;
 import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.DISTRICTS_NEW_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.DISTRICTS_TABLE_DATA;
 import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.DISTRICTS_TABLE_ROW;
 import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.EDIT_DISTRICT_BUTTON;
+import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.ENTER_BULK_EDIT_MODE_BUTTON_DISTRICTS_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.EXPORT_BUTTON_DISTRICTS_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.IMPORT_BUTTON_DISTRICTS_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.REGION_DISTRICT_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.RELEVANCE_STATUS_COMBO_BOX_DISTRICTS_CONFIGURATION;
 import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.RESET_FILTERS_DISTRICTS_BUTTON;
 import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.SAVE_NEW_ENTRY_DISTRICTS;
 import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.SEARCH_DISTRICT_INPUT;
@@ -268,6 +275,94 @@ public class DistrictsSteps implements En {
                       "EPID-NUMMER=DIS, BUNDESLAND=Voreingestellte Bundesl\u00e4nder, EXTERNE ID=, BEV\u00d6LKERUNG=, WACHSTUMSRATE=, NAME=Voreingestellter Landkreis"),
               "Voreingestellter Landkreis is not correctly displayed!");
           softly.assertAll();
+        });
+
+    Then(
+        "I Verify the page elements are present in Districts Configuration Page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              IMPORT_BUTTON_DISTRICTS_CONFIGURATION);
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(IMPORT_BUTTON_DISTRICTS_CONFIGURATION),
+              "Import Button is Not present in Districts Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(EXPORT_BUTTON_DISTRICTS_CONFIGURATION),
+              "Export Button is Not present in Districts Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(DISTRICTS_NEW_ENTRY_BUTTON),
+              "New Entry Button is Not present in Districts Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(
+                  ENTER_BULK_EDIT_MODE_BUTTON_DISTRICTS_CONFIGURATION),
+              "Enter Bulk Edit Mode Button is Not present in Districts Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(SEARCH_DISTRICT_INPUT),
+              "Search Input is Not present in Districts Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(COUNTRY_DISTRICT_FILTER_COMBOBOX),
+              "Country Combo box is Not present in Regions Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(REGION_DISTRICT_FILTER_COMBOBOX),
+              "Region Combo box is Not present in Regions Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(RESET_FILTERS_DISTRICTS_BUTTON),
+              "Reset Filters Button is Not present in Districts Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(RELEVANCE_STATUS_COMBO_BOX_DISTRICTS_CONFIGURATION),
+              "Relevance status Combo box is Not present in Districts Configuration");
+          softly.assertAll();
+        });
+
+    Then(
+        "I verify the Search and Reset filter functionality in Districts Configuration page",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              ENTER_BULK_EDIT_MODE_BUTTON_DISTRICTS_CONFIGURATION);
+          Integer defaultDistrictCount =
+              webDriverHelpers.getNumberOfElements(DISTRICTS_NAME_TABLE_ROW);
+          String districtName = webDriverHelpers.getTextFromWebElement(DISTRICTS_NAME_TABLE_ROW);
+          webDriverHelpers.fillAndSubmitInWebElement(SEARCH_DISTRICT_INPUT, districtName);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilNumberOfElementsIsExactly(DISTRICTS_NAME_TABLE_ROW, 1);
+          webDriverHelpers.waitUntilAListOfElementsHasText(DISTRICTS_NAME_TABLE_ROW, districtName);
+          webDriverHelpers.clickOnWebElementBySelector(RESET_FILTERS_DISTRICTS_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilNumberOfElementsIsExactly(
+              DISTRICTS_NAME_TABLE_ROW, defaultDistrictCount);
+        });
+
+    Then(
+        "I verify the Country dropdown functionality in Districts Configuration page",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              ENTER_BULK_EDIT_MODE_BUTTON_DISTRICTS_CONFIGURATION);
+          Integer defaultDistrictCount =
+              webDriverHelpers.getNumberOfElements(DISTRICTS_NAME_TABLE_ROW);
+          String districtName = webDriverHelpers.getTextFromWebElement(DISTRICTS_NAME_TABLE_ROW);
+          webDriverHelpers.selectFromCombobox(COUNTRY_DISTRICT_FILTER_COMBOBOX, "Germany");
+          webDriverHelpers.fillAndSubmitInWebElement(SEARCH_DISTRICT_INPUT, districtName);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilNumberOfElementsIsExactly(DISTRICTS_NAME_TABLE_ROW, 1);
+          webDriverHelpers.waitUntilAListOfElementsHasText(DISTRICTS_NAME_TABLE_ROW, districtName);
+          webDriverHelpers.clickOnWebElementBySelector(RESET_FILTERS_DISTRICTS_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilNumberOfElementsIsExactly(
+              DISTRICTS_NAME_TABLE_ROW, defaultDistrictCount);
+        });
+
+    Then(
+        "I verify the Region dropdown functionality in Districts Configuration page",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              ENTER_BULK_EDIT_MODE_BUTTON_DISTRICTS_CONFIGURATION);
+          webDriverHelpers.selectFromCombobox(REGION_DISTRICT_FILTER_COMBOBOX, "Bayern");
+          webDriverHelpers.waitUntilAListOfElementsHasText(DISTRICTS_NAME_TABLE_ROW, "Bayern");
         });
   }
 

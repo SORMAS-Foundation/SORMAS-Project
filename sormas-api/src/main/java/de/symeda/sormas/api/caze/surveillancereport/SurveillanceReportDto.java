@@ -15,33 +15,35 @@
 
 package de.symeda.sormas.api.caze.surveillancereport;
 
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.util.Date;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.SensitiveData;
-import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 @DependingOnFeatureType(featureType = FeatureType.CASE_SURVEILANCE)
-public class SurveillanceReportDto extends PseudonymizableDto {
+public class SurveillanceReportDto extends SormasToSormasShareableDto {
 
 	private static final long serialVersionUID = -8880285376883927386L;
 
 	public static final String I18N_PREFIX = "SurveillanceReport";
 
 	public static final String REPORTING_TYPE = "reportingType";
-	public static final String CREATING_USER = "creatingUser";
+	public static final String EXTERNAL_ID = "externalId";
+	public static final String REPORTING_USER = "reportingUser";
 	public static final String REPORT_DATE = "reportDate";
 	public static final String DATE_OF_DIAGNOSIS = "dateOfDiagnosis";
 	public static final String FACILITY_REGION = "facilityRegion";
@@ -50,21 +52,24 @@ public class SurveillanceReportDto extends PseudonymizableDto {
 	public static final String FACILITY = "facility";
 	public static final String FACILITY_DETAILS = "facilityDetails";
 	public static final String NOTIFICATION_DETAILS = "notificationDetails";
+	private UserReferenceDto reportingUser;
 
-	public static SurveillanceReportDto build(CaseReferenceDto caze, UserReferenceDto creatingUser) {
+	@NotNull
+	private ReportingType reportingType;
+
+	private String externalId;
+
+	public static SurveillanceReportDto build(CaseReferenceDto caze, UserReferenceDto reportingUser) {
 		SurveillanceReportDto surveillanceReport = new SurveillanceReportDto();
 
 		surveillanceReport.setUuid(DataHelper.createUuid());
 		surveillanceReport.setCaze(caze);
-		surveillanceReport.setCreatingUser(creatingUser);
+		surveillanceReport.setReportingUser(reportingUser);
 
 		return surveillanceReport;
 	}
 
-	private ReportingType reportingType;
-
-	private UserReferenceDto creatingUser;
-
+	@NotNull
 	private Date reportDate;
 
 	private Date dateOfDiagnosis;
@@ -95,12 +100,22 @@ public class SurveillanceReportDto extends PseudonymizableDto {
 		this.reportingType = reportingType;
 	}
 
-	public UserReferenceDto getCreatingUser() {
-		return creatingUser;
+	public String getExternalId() {
+		return externalId;
 	}
 
-	public void setCreatingUser(UserReferenceDto creatingUser) {
-		this.creatingUser = creatingUser;
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
+	}
+
+	@Override
+	public UserReferenceDto getReportingUser() {
+		return reportingUser;
+	}
+
+	@Override
+	public void setReportingUser(UserReferenceDto reportingUser) {
+		this.reportingUser = reportingUser;
 	}
 
 	public Date getReportDate() {
@@ -173,5 +188,9 @@ public class SurveillanceReportDto extends PseudonymizableDto {
 
 	public void setCaze(CaseReferenceDto caze) {
 		this.caze = caze;
+	}
+
+	public SurveillanceReportReferenceDto toReference() {
+		return new SurveillanceReportReferenceDto(getUuid());
 	}
 }

@@ -1,16 +1,16 @@
 package de.symeda.sormas.backend.geo;
 
 import static java.util.stream.Collectors.toList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-import de.symeda.sormas.backend.infrastructure.country.Country;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.Lists;
 
@@ -21,6 +21,7 @@ import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.utils.EmptyValueException;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.infrastructure.country.Country;
 
 public class CountryFacadeEjbTest extends AbstractBeanTest {
 
@@ -116,30 +117,30 @@ public class CountryFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(entityIsEqualToDto(actual, expected));
 	}
 
-	@Test(expected = EmptyValueException.class)
+	@Test
 	public void testSaveCountryIsoCodeEmpty() {
 		CountryDto country = new CountryDto();
 		country.setDefaultName("Romania");
-		getCountryFacade().save(country);
+		assertThrows(EmptyValueException.class, () -> getCountryFacade().save(country));
 	}
 
-	@Test(expected = ValidationRuntimeException.class)
+	@Test
 	public void testSaveCountryIsoCodeExists() {
 		creator.createCountry("Romania", "ROU", "642");
 		CountryDto duplicate = new CountryDto();
 		duplicate.setDefaultName("Romania");
 		duplicate.setIsoCode("ROU");
-		getCountryFacade().save(duplicate);
+		assertThrows(ValidationRuntimeException.class, () -> getCountryFacade().save(duplicate));
 	}
 
-	@Test(expected = ValidationRuntimeException.class)
+	@Test
 	public void testSaveCountryUnoCodeExists() {
 		creator.createCountry("Romania", "ROU", "642");
 		CountryDto duplicate = new CountryDto();
 		duplicate.setDefaultName("Germany");
 		duplicate.setIsoCode("DEU");
 		duplicate.setUnoCode("642");
-		getCountryFacade().save(duplicate);
+		assertThrows(ValidationRuntimeException.class, () -> getCountryFacade().save(duplicate));
 	}
 
 	@Test

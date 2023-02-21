@@ -19,8 +19,6 @@ import de.symeda.sormas.backend.util.DtoHelper;
 public class MaternalHistoryFacadeEjb implements MaternalHistoryFacade {
 
 	@EJB
-	private MaternalHistoryService service;
-	@EJB
 	private RegionService regionService;
 	@EJB
 	private DistrictService districtService;
@@ -65,8 +63,8 @@ public class MaternalHistoryFacadeEjb implements MaternalHistoryFacade {
 		return target;
 	}
 
-	public MaternalHistory fromDto(@NotNull MaternalHistoryDto source, boolean checkChangeDate) {
-		MaternalHistory target = DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), MaternalHistory::new, checkChangeDate);
+	public MaternalHistory fillOrBuildEntity(@NotNull MaternalHistoryDto source, MaternalHistory target, boolean checkChangeDate) {
+		target = DtoHelper.fillOrBuildEntity(source, target, MaternalHistory::new, checkChangeDate);
 
 		target.setAgeAtBirth(source.getAgeAtBirth());
 		target.setArthralgiaArthritis(source.getArthralgiaArthritis());

@@ -1,7 +1,5 @@
 package de.symeda.sormas.ui.reports.aggregate;
 
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.themes.ValoTheme;
@@ -21,7 +19,9 @@ public class ReportDataGrid extends FilteredGrid<AggregateReportDto, AggregateRe
 	public static final String EDIT_AGGREGATE_REPORT = "showAggregateReport";
 	public static final String DELETE_AGGREGATE_REPORT = "deleteAggregateReport";
 
-	public ReportDataGrid(AggregateReportCriteria criteria) {
+	private final Runnable editCallback;
+
+	public ReportDataGrid(AggregateReportCriteria criteria, Runnable editCallback) {
 		super(AggregateReportDto.class);
 		setSizeFull();
 		setSelectionMode(SelectionMode.NONE);
@@ -31,6 +31,7 @@ public class ReportDataGrid extends FilteredGrid<AggregateReportDto, AggregateRe
 		addEditColumn();
 		addDeleteColumn();
 		addDefaultColumns();
+		this.editCallback = editCallback;
 
 		for (Column<AggregateReportDto, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.findPrefixCaptionWithDefault(column.getId(), column.getCaption(), AggregateReportDto.I18N_PREFIX));
@@ -74,7 +75,8 @@ public class ReportDataGrid extends FilteredGrid<AggregateReportDto, AggregateRe
 			Button editButton = ButtonHelper.createIconButton(VaadinIcons.EDIT);
 			editButton.addStyleName(ValoTheme.BUTTON_BORDERLESS);
 			editButton.addClickListener(clickEvent -> {
-				ControllerProvider.getAggregateReportController().openEditOrCreateWindow(this::reload, true, aggregateReport);
+				ControllerProvider.getAggregateReportController()
+					.openEditOrCreateWindow( editCallback, true, aggregateReport);
 				reload();
 			});
 			return editButton;
@@ -101,14 +103,12 @@ public class ReportDataGrid extends FilteredGrid<AggregateReportDto, AggregateRe
 
 	public void reload() {
 
-		ListDataProvider<AggregateReportDto> dataProvider =
-			DataProvider.fromStream(FacadeProvider.getAggregateReportFacade().getAggregateReports(getCriteria()).stream().map(aggregatedReportDto -> {
-				if (aggregatedReportDto.getAgeGroup() != null) {
-					aggregatedReportDto.setAgeGroup(AgeGroupUtils.createCaption(aggregatedReportDto.getAgeGroup()));
-				}
-				return aggregatedReportDto;
-			}));
-		setDataProvider(dataProvider);
-		dataProvider.refreshAll();
+		setDataProvider(FacadeProvider.getAggregateReportFacade().getAggregateReports(getCriteria()).stream().map(aggregatedReportDto -> {
+			if (aggregatedReportDto.getAgeGroup() != null) {
+				aggregatedReportDto.setAgeGroup(AgeGroupUtils.createCaption(aggregatedReportDto.getAgeGroup()));
+			}
+			return aggregatedReportDto;
+		}));
+		getDataProvider().refreshAll();
 	}
 }

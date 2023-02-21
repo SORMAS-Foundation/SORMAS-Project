@@ -129,7 +129,8 @@ public class JurisdictionHelper {
 		ResponsibleJurisdictionDto responsibleJurisdiction = createResponsibleJurisdiction(
 			immunization.getResponsibleRegion(),
 			immunization.getResponsibleDistrict(),
-			immunization.getResponsibleCommunity());
+			immunization.getResponsibleCommunity(),
+			immunization.getHealthFacility());
 		immunizationJurisdictionDto.setResponsibleJurisdiction(responsibleJurisdiction);
 
 		return immunizationJurisdictionDto;
@@ -271,7 +272,17 @@ public class JurisdictionHelper {
 		Region responsibleRegion,
 		District responsibleDistrict,
 		Community responsibleCommunity) {
-		if (responsibleRegion == null && responsibleDistrict == null && responsibleCommunity == null) {
+
+		return createResponsibleJurisdiction(responsibleRegion, responsibleDistrict, responsibleCommunity, null);
+	}
+
+	private static ResponsibleJurisdictionDto createResponsibleJurisdiction(
+		Region responsibleRegion,
+		District responsibleDistrict,
+		Community responsibleCommunity,
+		Facility responsibleFacility) {
+
+		if (responsibleRegion == null && responsibleDistrict == null && responsibleCommunity == null && responsibleFacility == null) {
 			return null;
 		}
 
@@ -284,6 +295,9 @@ public class JurisdictionHelper {
 		}
 		if (responsibleCommunity != null) {
 			jurisdiction.setCommunityUuid(responsibleCommunity.getUuid());
+		}
+		if (responsibleFacility != null) {
+			jurisdiction.setFacilityUuid(responsibleFacility.getUuid());
 		}
 
 		return jurisdiction;

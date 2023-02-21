@@ -22,6 +22,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Map;
@@ -37,6 +38,7 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.JsonDataEntry;
 import de.symeda.sormas.api.utils.OutdatedEntityException;
+import de.symeda.sormas.api.uuid.MismatchUuidException;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 public final class DtoHelper {
@@ -65,6 +67,10 @@ public final class DtoHelper {
 		dto.setUuid(entity.getUuid());
 	}
 
+	public static <T extends EntityDto> T copyDtoValues(T target, T source, boolean overrideValues) {
+		return copyDtoValues(target, source, overrideValues, null);
+	}
+
 	/**
 	 * @param overrideValues
 	 *            Note: Existing references are NOT overridden
@@ -72,7 +78,7 @@ public final class DtoHelper {
 	@SuppressWarnings({
 		"unchecked",
 		"rawtypes" })
-	public static <T extends EntityDto> T copyDtoValues(T target, T source, boolean overrideValues) {
+	public static <T extends EntityDto> T copyDtoValues(T target, T source, boolean overrideValues, String... skippedFields) {
 
 		try {
 			PropertyDescriptor[] pds = Introspector.getBeanInfo(target.getClass(), EntityDto.class).getPropertyDescriptors();
@@ -90,78 +96,81 @@ public final class DtoHelper {
 					continue;
 				}
 
-				if (EntityDto.class.isAssignableFrom(pd.getPropertyType())) {
-
-					if (targetValue == null) {
-						targetValue = sourceValue.getClass().newInstance();
-						pd.getWriteMethod().invoke(target, targetValue);
-					}
-
-					// If both entities have the same UUID, assign a new one to targetValue to create a new entity
-					if (((EntityDto) targetValue).getUuid().equals(((EntityDto) sourceValue).getUuid())) {
-						((EntityDto) targetValue).setUuid(DataHelper.createUuid());
-					}
-
-					// entity: just fill the existing one with the source
-					copyDtoValues((EntityDto) targetValue, (EntityDto) sourceValue, overrideValues);
-				} else {
-					boolean override = overrideValues && !ReferenceDto.class.isAssignableFrom(pd.getPropertyType());
-					// should we write into the target property?
-					if (Collection.class.isAssignableFrom(pd.getPropertyType())) {
+				if (skippedFields == null || Arrays.stream(skippedFields).noneMatch(field -> field.equals(pd.getName()))) {
+					if (EntityDto.class.isAssignableFrom(pd.getPropertyType())) {
 
 						if (targetValue == null) {
 							targetValue = sourceValue.getClass().newInstance();
 							pd.getWriteMethod().invoke(target, targetValue);
 						}
 
-						Collection targetCollection = (Collection) targetValue;
-
-						for (Object sourceEntry : (Collection) sourceValue) {
-							if (sourceEntry instanceof EntityDto) {
-								EntityDto newEntry = ((EntityDto) sourceEntry).clone();
-								newEntry.setUuid(DataHelper.createUuid());
-								newEntry.setCreationDate(null);
-								copyDtoValues(newEntry, (EntityDto) sourceEntry, true);
-								targetCollection.add(newEntry);
-							} else if (DataHelper.isValueType(sourceEntry.getClass())
-								|| sourceEntry instanceof ReferenceDto
-								|| sourceEntry instanceof JsonDataEntry) {
-								targetCollection.add(sourceEntry);
-							} else {
-								throw new UnsupportedOperationException(pd.getPropertyType().getName() + " is not supported as a list entry type.");
-							}
+						// If both entities have the same UUID, assign a new one to targetValue to create a new entity
+						if (((EntityDto) targetValue).getUuid().equals(((EntityDto) sourceValue).getUuid())) {
+							((EntityDto) targetValue).setUuid(DataHelper.createUuid());
 						}
-					} else if (Map.class.isAssignableFrom(pd.getPropertyType())) {
 
-						if (targetValue == null) {
-							if (sourceValue.getClass() == EnumMap.class) {
-								// Enum map needs to be initialized with the content of the source map because it does not have an init method
-								targetValue = Maps.newEnumMap((EnumMap) sourceValue);
-								((EnumMap) targetValue).clear();
-							} else {
+						// entity: just fill the existing one with the source
+						copyDtoValues((EntityDto) targetValue, (EntityDto) sourceValue, overrideValues);
+					} else {
+						boolean override = overrideValues && !ReferenceDto.class.isAssignableFrom(pd.getPropertyType());
+						// should we write into the target property?
+						if (Collection.class.isAssignableFrom(pd.getPropertyType())) {
+
+							if (targetValue == null) {
 								targetValue = sourceValue.getClass().newInstance();
+								pd.getWriteMethod().invoke(target, targetValue);
 							}
-							pd.getWriteMethod().invoke(target, targetValue);
-						}
 
-						Map targetMap = (Map) targetValue;
+							Collection targetCollection = (Collection) targetValue;
 
-						for (Object sourceKey : ((Map) sourceValue).keySet()) {
-							if (override || !targetMap.containsKey(sourceKey)) {
-								targetMap.put(sourceKey, ((Map) sourceValue).get(sourceKey));
+							for (Object sourceEntry : (Collection) sourceValue) {
+								if (sourceEntry instanceof EntityDto) {
+									EntityDto newEntry = ((EntityDto) sourceEntry).clone();
+									newEntry.setUuid(DataHelper.createUuid());
+									newEntry.setCreationDate(null);
+									copyDtoValues(newEntry, (EntityDto) sourceEntry, true);
+									targetCollection.add(newEntry);
+								} else if (DataHelper.isValueType(sourceEntry.getClass())
+									|| sourceEntry instanceof ReferenceDto
+									|| sourceEntry instanceof JsonDataEntry) {
+									targetCollection.add(sourceEntry);
+								} else {
+									throw new UnsupportedOperationException(
+										pd.getPropertyType().getName() + " is not supported as a list entry type.");
+								}
 							}
-						}
-					} else if (targetValue == null
-						|| override
-						|| (pd.getPropertyType().equals(String.class)
-							&& StringUtils.isBlank((String) targetValue)
-							&& StringUtils.isNotBlank((String) sourceValue))
-						|| (pd.getPropertyType().equals(boolean.class) && ((boolean) sourceValue) && !((boolean) targetValue))) {
-						if (DataHelper.isValueType(pd.getPropertyType()) || ReferenceDto.class.isAssignableFrom(pd.getPropertyType())) {
-							pd.getWriteMethod().invoke(target, sourceValue);
-						} else {
-							// Other objects are not supported
-							throw new UnsupportedOperationException(pd.getPropertyType().getName() + " is not supported as a property type.");
+						} else if (Map.class.isAssignableFrom(pd.getPropertyType())) {
+
+							if (targetValue == null) {
+								if (sourceValue.getClass() == EnumMap.class) {
+									// Enum map needs to be initialized with the content of the source map because it does not have an init method
+									targetValue = Maps.newEnumMap((EnumMap) sourceValue);
+									((EnumMap) targetValue).clear();
+								} else {
+									targetValue = sourceValue.getClass().newInstance();
+								}
+								pd.getWriteMethod().invoke(target, targetValue);
+							}
+
+							Map targetMap = (Map) targetValue;
+
+							for (Object sourceKey : ((Map) sourceValue).keySet()) {
+								if (override || !targetMap.containsKey(sourceKey)) {
+									targetMap.put(sourceKey, ((Map) sourceValue).get(sourceKey));
+								}
+							}
+						} else if (targetValue == null
+							|| override
+							|| (pd.getPropertyType().equals(String.class)
+								&& StringUtils.isBlank((String) targetValue)
+								&& StringUtils.isNotBlank((String) sourceValue))
+							|| (pd.getPropertyType().equals(boolean.class) && ((boolean) sourceValue) && !((boolean) targetValue))) {
+							if (DataHelper.isValueType(pd.getPropertyType()) || ReferenceDto.class.isAssignableFrom(pd.getPropertyType())) {
+								pd.getWriteMethod().invoke(target, sourceValue);
+							} else {
+								// Other objects are not supported
+								throw new UnsupportedOperationException(pd.getPropertyType().getName() + " is not supported as a property type.");
+							}
 						}
 					}
 				}
@@ -176,8 +185,9 @@ public final class DtoHelper {
 		return target;
 	}
 
-	// todo this really should return void. Taking a target/receiver argument and then return it anyways does not make sense
-	// FIXME(#6880)
+	/**
+	 * @return The target entity or a new entity of target was null
+	 */
 	public static <T extends AbstractDomainObject> T fillOrBuildEntity(EntityDto source, T target, Supplier<T> newEntity, boolean checkChangeDate) {
 		if (target == null) {
 			target = newEntity.get();
@@ -187,6 +197,15 @@ public final class DtoHelper {
 
 			if (source.getCreationDate() != null) {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
+			}
+		} else {
+			if (DataHelper.isNullOrEmpty(target.getUuid())) {
+				String uuid = source.getUuid() != null ? source.getUuid() : DataHelper.createUuid();
+				target.setUuid(uuid);
+			} else if (DataHelper.isNullOrEmpty(source.getUuid())) {
+				// target has a uuid. do nothing -> gracefully handle missing uuids of children
+			} else if (!target.getUuid().equals(source.getUuid())) {
+				throw new MismatchUuidException(target.getUuid(), target.getClass(), source.getUuid());
 			}
 		}
 

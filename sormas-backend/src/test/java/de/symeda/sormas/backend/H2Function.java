@@ -3,7 +3,8 @@ package de.symeda.sormas.backend;
 import java.util.Date;
 
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.backend.util.DateHelper8;
+import de.symeda.sormas.api.utils.UtilDate;
+import de.symeda.sormas.backend.vaccination.VaccinationService;
 
 /**
  * When extending this class make sure to also extend {@link AbstractBeanTest#initH2Functions()} and {@link ExtendedH2Dialect}.
@@ -17,7 +18,7 @@ public class H2Function {
 	public static long date_part(String part, Date date) {
 		switch (part) {
 		case "year":
-			return DateHelper8.toLocalDate(date).getYear();
+			return UtilDate.toLocalDate(date).getYear();
 		case "epoch":
 			return date.getTime() / 1000;
 		default:
@@ -45,8 +46,8 @@ public class H2Function {
 		return DateHelper.getStartOfDay(timestamp);
 	}
 
-	public static Date timestamp_subtract_days(Date timestamp, int days) {
-		return DateHelper.subtractDays(timestamp, days);
+	public static Date timestamp_subtract_14_days(Date timestamp) {
+		return DateHelper.subtractDays(timestamp, VaccinationService.REPORT_DATE_RELEVANT_DAYS);
 	}
 
 	public static Date at_end_of_day(Date timestamp) {

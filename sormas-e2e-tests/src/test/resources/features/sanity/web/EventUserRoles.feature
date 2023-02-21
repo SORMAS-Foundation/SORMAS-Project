@@ -1,7 +1,7 @@
 @UI @Sanity @EventUserRoles @add_userroles
 Feature: Create events for different user roles
 
-  @tmsLink=SORDEV-10359 @env_main
+  @tmsLink=SORDEV-10359 @env_main @ignore
   Scenario Outline: Test Access to the event directory filtered on the events of a group
     Given API: I create a new event
     Then API: I check that POST call body is "OK"

@@ -31,6 +31,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.share.ExternalShareInfoCriteria;
 import de.symeda.sormas.api.share.ExternalShareInfoDto;
 import de.symeda.sormas.api.share.ExternalShareStatus;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.PaginationList;
@@ -93,8 +94,11 @@ public class ExternalShareInfoList extends PaginationList<ExternalShareInfoDto> 
 			infoLayout.setTemplateContents(buildLayout(shareInfo.getStatus()));
 			infoLayout.setWidth(100, Unit.PERCENTAGE);
 
+			UserReferenceDto sender = shareInfo.getSender();
 			Label senderLabel = new Label(
-				shareInfo.isPseudonymized() ? I18nProperties.getCaption(Captions.inaccessibleValue) : shareInfo.getSender().getShortCaption());
+				shareInfo.isPseudonymized()
+					? I18nProperties.getCaption(Captions.inaccessibleValue)
+					: sender != null ? sender.getShortCaption() : I18nProperties.getCaption(Captions.system));
 			senderLabel.addStyleName(CssStyles.LABEL_BOLD);
 			if (shareInfo.isPseudonymized()) {
 				senderLabel.addStyleName(CssStyles.INACCESSIBLE_LABEL);

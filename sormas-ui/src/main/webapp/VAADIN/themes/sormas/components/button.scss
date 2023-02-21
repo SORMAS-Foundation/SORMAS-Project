@@ -9,6 +9,11 @@
   	&.v-button-link {
   	  text-transform: none;
   	}
+
+    &.v-button-caption-overflow-label {
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
   
   	&.v-button-font-size-large {
   	  font-size: 1.5em;

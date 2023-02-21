@@ -93,6 +93,26 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 		}
 	}
 
+	protected AbstractEditForm(
+		Class<DTO> type,
+		String propertyI18nPrefix,
+		boolean addFields,
+		FieldVisibilityCheckers fieldVisibilityCheckers,
+		UiFieldAccessCheckers fieldAccessCheckers,
+		boolean isEditAllowed) {
+
+		super(type, propertyI18nPrefix, new SormasFieldGroupFieldFactory(fieldVisibilityCheckers, fieldAccessCheckers, isEditAllowed), false);
+		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
+		this.fieldAccessCheckers = fieldAccessCheckers;
+
+		getFieldGroup().addCommitHandler(this);
+		setWidth(900, Unit.PIXELS);
+
+		if (addFields) {
+			addFields();
+		}
+	}
+
 	@Override
 	public void setValue(DTO newFieldValue) throws com.vaadin.v7.data.Property.ReadOnlyException, ConversionException {
 		super.setValue(newFieldValue);
@@ -339,6 +359,15 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 		}
 	}
 
+	protected void setVisible(boolean visible, Field<?>... fields) {
+
+		for (Field<?> field : fields) {
+			if (!visible || isVisibleAllowed(field)) {
+				field.setVisible(visible);
+			}
+		}
+	}
+
 	protected void setVisibleClear(boolean visible, String... fieldOrPropertyIds) {
 
 		for (String propertyId : fieldOrPropertyIds) {
@@ -503,8 +532,7 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 				}
 
 				if (field instanceof ComboBoxWithPlaceholder) {
-					ComboBoxWithPlaceholder combo = (ComboBoxWithPlaceholder) field;
-					combo.setPlaceholder(I18nProperties.getCaption(Captions.inaccessibleValue));
+					FieldHelper.setComboInaccessible((ComboBoxWithPlaceholder) field);
 				}
 			}
 		}

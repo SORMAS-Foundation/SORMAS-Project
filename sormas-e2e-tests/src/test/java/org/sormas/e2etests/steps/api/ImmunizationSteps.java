@@ -17,16 +17,22 @@
  */
 package org.sormas.e2etests.steps.api;
 
+import static org.sormas.e2etests.constants.api.Endpoints.IMMUNIZATIONS_PATH;
+
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
+import io.restassured.http.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import javax.inject.Inject;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.sormas.e2etests.entities.pojo.api.Immunization;
 import org.sormas.e2etests.entities.pojo.api.Person;
+import org.sormas.e2etests.entities.pojo.api.Request;
 import org.sormas.e2etests.entities.services.api.ImmunizationApiService;
+import org.sormas.e2etests.helpers.RestAssuredClient;
 import org.sormas.e2etests.helpers.api.sormasrest.ImmunizationHelper;
 import org.sormas.e2etests.state.ApiState;
 
@@ -34,13 +40,17 @@ import org.sormas.e2etests.state.ApiState;
 public class ImmunizationSteps implements En {
 
   private final Random random = new Random();
+  private final RestAssuredClient restAssuredClient;
 
   @Inject
   public ImmunizationSteps(
       ImmunizationHelper immunizationHelper,
       ImmunizationApiService immunizationApiService,
       ApiState apiState,
-      Faker faker) {
+      Faker faker,
+      RestAssuredClient restAssuredClient) {
+
+    this.restAssuredClient = restAssuredClient;
 
     When(
         "API: I create {int} new immunizations for last created person",
@@ -73,5 +83,32 @@ public class ImmunizationSteps implements En {
         });
 
     When("API: I receive all immunizations ids", immunizationHelper::getAllImmunizationsUUIDs);
+
+    When(
+        "API: I create a new immunizations for last created person with creation date {int} days ago",
+        (Integer creationDate) -> {
+          String lastCreatedUserUUID = apiState.getLastCreatedPerson().getUuid();
+          Person person = Person.builder().uuid(lastCreatedUserUUID).build();
+          Immunization immunization =
+              immunizationApiService.buildGeneratedImmunizationForPersonWithCreationDate(
+                  person, creationDate);
+          apiState.setCreatedImmunization(immunization);
+          immunizationHelper.createNewImmunization(immunization);
+        });
+
+    When(
+        "I check if created immunization is available in API",
+        () -> {
+          getImmunizationByUUID(apiState.getCreatedImmunization().getUuid());
+        });
+  }
+
+  @SneakyThrows
+  public void getImmunizationByUUID(String immunizationUUID) {
+    restAssuredClient.sendRequest(
+        Request.builder()
+            .method(Method.GET)
+            .path(IMMUNIZATIONS_PATH + "/" + immunizationUUID)
+            .build());
   }
 }

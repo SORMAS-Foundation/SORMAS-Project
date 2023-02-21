@@ -7,13 +7,19 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoFacade;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless(name = "PortHealthInfoFacade")
 public class PortHealthInfoFacadeEjb implements PortHealthInfoFacade {
 
 	@EJB
-	private PortHealthInfoService service;
+	private PortHealthInfoService portHealthInfoService;
+	@EJB
+	private UserService userService;
 
 	public static PortHealthInfoDto toDto(PortHealthInfo source) {
 		if (source == null) {
@@ -49,8 +55,8 @@ public class PortHealthInfoFacadeEjb implements PortHealthInfoFacade {
 		return target;
 	}
 
-	public PortHealthInfo fromDto(@NotNull PortHealthInfoDto source, boolean checkChangeDate) {
-		PortHealthInfo target = DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), PortHealthInfo::new, checkChangeDate);
+	public PortHealthInfo fillOrBuildEntity(@NotNull PortHealthInfoDto source, PortHealthInfo target, boolean checkChangeDate) {
+		target = DtoHelper.fillOrBuildEntity(source, target, PortHealthInfo::new, checkChangeDate);
 
 		target.setAirlineName(source.getAirlineName());
 		target.setFlightNumber(source.getFlightNumber());
@@ -76,6 +82,23 @@ public class PortHealthInfoFacadeEjb implements PortHealthInfoFacade {
 		target.setDetails(source.getDetails());
 
 		return target;
+	}
+
+	@Override
+	public PortHealthInfoDto getByCaseUuid(String caseUuid) {
+
+		return toPseudonymizedDto(portHealthInfoService.getByCaseUuid(caseUuid));
+	}
+
+	private PortHealthInfoDto toPseudonymizedDto(PortHealthInfo portHealthInfo) {
+		Pseudonymizer pseudonymizer = createPseudonymizer();
+		PortHealthInfoDto portHealthInfoDto = toDto(portHealthInfo);
+		pseudonymizer.pseudonymizeDto(PortHealthInfoDto.class, portHealthInfoDto, portHealthInfoService.inJurisdictionOrOwned(portHealthInfo), null);
+		return portHealthInfoDto;
+	}
+
+	private Pseudonymizer createPseudonymizer() {
+		return Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 	}
 
 	@LocalBean

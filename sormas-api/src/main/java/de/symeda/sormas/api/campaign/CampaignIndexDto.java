@@ -1,37 +1,41 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.api.campaign;
 
-import java.io.Serializable;
 import java.util.Date;
 
-public class CampaignIndexDto implements Serializable {
+import de.symeda.sormas.api.uuid.AbstractUuidDto;
 
+public class CampaignIndexDto extends AbstractUuidDto {
 	private static final long serialVersionUID = 2448753530580084851L;
 
 	public static final String I18N_PREFIX = "Campaign";
-
-	public static final String UUID = "uuid";
 	public static final String NAME = "name";
 	public static final String START_DATE = "startDate";
 	public static final String END_DATE = "endDate";
 
-	private String uuid;
 	private String name;
 	private Date startDate;
 	private Date endDate;
 
 	public CampaignIndexDto(String uuid, String name, Date startDate, Date endDate) {
-		this.uuid = uuid;
+		super(uuid);
 		this.name = name;
 		this.startDate = startDate;
 		this.endDate = endDate;
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
 	}
 
 	public String getName() {

@@ -29,7 +29,7 @@ import javax.persistence.PreRemove;
 import javax.persistence.PreUpdate;
 
 import de.symeda.auditlog.api.AuditListener;
-import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.uuid.HasUuid;
 
 public class AuditListenerCdiWrapper implements Serializable, AuditListener {
 

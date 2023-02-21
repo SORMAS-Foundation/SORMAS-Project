@@ -1,7 +1,5 @@
 package de.symeda.sormas.ui.utils;
 
-import de.symeda.sormas.ui.user.UserRoleNotificationCheckboxSet;
-import de.symeda.sormas.ui.utils.components.CheckboxSet;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
@@ -34,6 +32,8 @@ import de.symeda.sormas.ui.hospitalization.PreviousHospitalizationsField;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.person.LocationsField;
 import de.symeda.sormas.ui.person.PersonContactDetailsField;
+import de.symeda.sormas.ui.user.UserRoleNotificationCheckboxSet;
+import de.symeda.sormas.ui.utils.components.CheckboxSet;
 import de.symeda.sormas.ui.utils.components.JsonForm;
 import de.symeda.sormas.ui.utils.components.MultiSelect;
 import de.symeda.sormas.ui.vaccination.VaccinationsField;
@@ -45,10 +45,21 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 	private static final long serialVersionUID = 471700572643936674L;
 	private final FieldVisibilityCheckers fieldVisibilityCheckers;
 	private final UiFieldAccessCheckers fieldAccessCheckers;
+	private final boolean isEditAllowed;
 
 	public SormasFieldGroupFieldFactory(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
 		this.fieldAccessCheckers = fieldAccessCheckers;
+		this.isEditAllowed = true;
+	}
+
+	public SormasFieldGroupFieldFactory(
+		FieldVisibilityCheckers fieldVisibilityCheckers,
+		UiFieldAccessCheckers fieldAccessCheckers,
+		boolean isEditAllowed) {
+		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
+		this.fieldAccessCheckers = fieldAccessCheckers;
+		this.isEditAllowed = isEditAllowed;
 	}
 
 	@SuppressWarnings({
@@ -76,7 +87,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 					if (!AbstractSelect.class.isAssignableFrom(fieldType)) {
 						fieldType = (Class<T>) ComboBox.class;
 					}
-					T field = super.createField(type, fieldType);
+					T field = ComboBoxWithPlaceholder.class == fieldType ? (T) new ComboBoxWithPlaceholder() : super.createField(type, fieldType);
 					if (field instanceof OptionGroup) {
 						CssStyles.style(field, ValoTheme.OPTIONGROUP_HORIZONTAL);
 					} else if (fieldType.isAssignableFrom(NullableOptionGroup.class)) {
@@ -101,6 +112,11 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			combo.setImmediate(true);
 
 			return (T) combo;
+		} else if (OptionGroup.class.isAssignableFrom(fieldType) || OptionGroupWithCaption.class.isAssignableFrom(fieldType)) {
+			OptionGroupWithCaption optionGroupWithCaption = new OptionGroupWithCaption();
+			optionGroupWithCaption.setImmediate(true);
+
+			return (T) optionGroupWithCaption;
 		} else if (AbstractSelect.class.isAssignableFrom(fieldType)) {
 			AbstractSelect field = createCompatibleSelect((Class<? extends AbstractSelect>) fieldType);
 			field.setNullSelectionAllowed(true);
@@ -120,15 +136,15 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			field.setConverter(new SormasDefaultConverterFactory().createDateConverter(Date.class));
 			return (T) field;
 		} else if (PreviousHospitalizationsField.class.isAssignableFrom(fieldType)) {
-			return (T) new PreviousHospitalizationsField(fieldVisibilityCheckers, fieldAccessCheckers);
+			return (T) new PreviousHospitalizationsField(fieldVisibilityCheckers, fieldAccessCheckers, isEditAllowed);
 		} else if (ExposuresField.class.isAssignableFrom(fieldType)) {
-			return (T) new ExposuresField(fieldVisibilityCheckers, fieldAccessCheckers);
+			return (T) new ExposuresField(fieldVisibilityCheckers, fieldAccessCheckers, isEditAllowed);
 		} else if (ActivityAsCaseField.class.isAssignableFrom(fieldType)) {
-			return (T) new ActivityAsCaseField(fieldVisibilityCheckers, fieldAccessCheckers);
+			return (T) new ActivityAsCaseField(fieldVisibilityCheckers, fieldAccessCheckers, isEditAllowed);
 		} else if (LocationsField.class.isAssignableFrom(fieldType)) {
-			return (T) new LocationsField(fieldVisibilityCheckers, fieldAccessCheckers);
+			return (T) new LocationsField(fieldVisibilityCheckers, fieldAccessCheckers, isEditAllowed);
 		} else if (PersonContactDetailsField.class.isAssignableFrom(fieldType)) {
-			return (T) new PersonContactDetailsField(fieldVisibilityCheckers, fieldAccessCheckers);
+			return (T) new PersonContactDetailsField(fieldVisibilityCheckers, fieldAccessCheckers, isEditAllowed);
 		} else if (VaccinationsField.class.isAssignableFrom(fieldType)) {
 			return (T) new VaccinationsField(fieldAccessCheckers);
 		} else if (JsonForm.class.isAssignableFrom(fieldType)) {
@@ -158,6 +174,9 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 	protected AbstractSelect createCompatibleSelect(Class<? extends AbstractSelect> fieldType) {
 		if (NullableOptionGroup.class.isAssignableFrom(fieldType)) {
 			return new NullableOptionGroup();
+		}
+		if (ComboBoxWithPlaceholder.class.isAssignableFrom(fieldType)) {
+			return new ComboBoxWithPlaceholder();
 		}
 		return super.createCompatibleSelect(fieldType);
 	}

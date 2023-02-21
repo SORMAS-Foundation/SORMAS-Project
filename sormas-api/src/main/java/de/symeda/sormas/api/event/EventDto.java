@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,31 +15,33 @@
 
 package de.symeda.sormas.api.event;
 
-import de.symeda.sormas.api.common.DeletionReason;
-import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
-import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.util.Date;
 import java.util.Map;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.format.ImportExportFormat;
 import de.symeda.sormas.api.importexport.format.ImportFormat;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Required;
@@ -120,8 +122,7 @@ public class EventDto extends SormasToSormasShareableDto {
 	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 
 	private EventReferenceDto superordinateEvent;
-
-	@Required
+	@NotNull(message = Validations.validEventStatus)
 	private EventStatus eventStatus;
 	private RiskLevel riskLevel;
 	private SpecificRisk specificRisk;
@@ -135,6 +136,7 @@ public class EventDto extends SormasToSormasShareableDto {
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalToken;
+	@NotEmpty(message = Validations.validEventTitle)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String eventTitle;
 	@Required
@@ -143,14 +145,15 @@ public class EventDto extends SormasToSormasShareableDto {
 	private YesNoUnknown nosocomial;
 	private Date startDate;
 	private Date endDate;
-	@Required
+	@NotNull(message = Validations.validReportDateTime)
 	private Date reportDateTime;
-	@Required
+
 	private UserReferenceDto reportingUser;
 	private Date evolutionDate;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String evolutionComment;
 	@Valid
+	@NotNull(message = Validations.validLocation)
 	private LocationDto eventLocation;
 	private TypeOfPlace typeOfPlace;
 	private MeansOfTransport meansOfTransport;
@@ -242,12 +245,19 @@ public class EventDto extends SormasToSormasShareableDto {
 		return event;
 	}
 
-	public static EventDto build(CountryReferenceDto country, UserDto user, Disease disease) {
+	public static EventDto build(CountryReferenceDto country, UserDto user) {
 		EventDto event = build();
 
 		event.getEventLocation().setCountry(country);
 		event.getEventLocation().setRegion(user.getRegion());
 		event.setReportingUser(user.toReference());
+
+		return event;
+	}
+
+	public static EventDto build(CountryReferenceDto country, UserDto user, Disease disease) {
+		EventDto event = build(country, user);
+
 		event.setDisease(disease);
 
 		return event;

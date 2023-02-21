@@ -172,10 +172,12 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		DateField startDate = addField(ImmunizationDto.START_DATE, DateField.class);
 		DateField endDate = addDateField(ImmunizationDto.END_DATE, DateField.class, -1);
 		DateComparisonValidator.addStartEndValidators(startDate, endDate);
+		DateComparisonValidator.dateFieldDependencyValidationVisibility(startDate, endDate);
 
 		DateField validFrom = addDateField(ImmunizationDto.VALID_FROM, DateField.class, -1);
 		DateField validUntil = addDateField(ImmunizationDto.VALID_UNTIL, DateField.class, -1);
 		DateComparisonValidator.addStartEndValidators(validFrom, validUntil);
+		DateComparisonValidator.dateFieldDependencyValidationVisibility(validFrom, validUntil);
 
 		Field numberOfDosesField = addField(ImmunizationDto.NUMBER_OF_DOSES);
 		numberOfDosesField.addValidator(new NumberValidator(I18nProperties.getValidationError(Validations.vaccineDosesFormat), 1, 10, false));

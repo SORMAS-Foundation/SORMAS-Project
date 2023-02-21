@@ -42,7 +42,12 @@ import org.eclipse.microprofile.config.ConfigProvider;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
+import org.keycloak.admin.client.resource.ClientResource;
+import org.keycloak.admin.client.resource.UserResource;
+import org.keycloak.admin.client.resource.UsersResource;
+import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.CredentialRepresentation;
+import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +56,7 @@ import com.jayway.jsonpath.JsonPath;
 
 import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.event.PasswordResetEvent;
 import de.symeda.sormas.backend.user.event.UserCreateEvent;
@@ -64,6 +70,8 @@ import de.symeda.sormas.backend.user.event.UserUpdateEvent;
 @LocalBean
 public class KeycloakService {
 
+	private static final String CLIENT_ID_SORMAS_STATS = "sormas-stats";
+	private static final String KEYCLOAK_ROLE_SORMAS_STATS_ACCESS = "sormas-stats-access";
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
@@ -78,7 +86,7 @@ public class KeycloakService {
 	private static final String ACTION_UPDATE_PASSWORD = "UPDATE_PASSWORD";
 	private static final String ACTION_VERIFY_EMAIL = "VERIFY_EMAIL";
 
-	private Keycloak keycloak = null;
+	private Keycloak keycloakInstance = null;
 
 	@PostConstruct
 	public void init() {
@@ -98,7 +106,7 @@ public class KeycloakService {
 
 		String keycloakJsonConfig = oidcJson.get();
 
-		keycloak = KeycloakBuilder.builder()
+		keycloakInstance = KeycloakBuilder.builder()
 			.realm(JsonPath.read(keycloakJsonConfig, OIDC_REALM))
 			.serverUrl(JsonPath.read(keycloakJsonConfig, OIDC_SERVER_URL))
 			.clientId("sormas-backend")
@@ -126,7 +134,7 @@ public class KeycloakService {
 	 * @see de.symeda.sormas.backend.common.StartupShutdownService
 	 */
 	public void handleUserCreateEvent(@Observes UserCreateEvent userCreateEvent) {
-		Optional<Keycloak> keycloak = getKeycloak();
+		Optional<Keycloak> keycloak = getKeycloakInstance();
 		if (!keycloak.isPresent()) {
 			logger.warn("Cannot obtain keycloak instance. Will not create user in keycloak");
 			return;
@@ -153,7 +161,7 @@ public class KeycloakService {
 	 *            contains the old user and the new user information
 	 */
 	public void handleUserUpdateEvent(@Observes UserUpdateEvent userUpdateEvent) {
-		Optional<Keycloak> keycloak = getKeycloak();
+		Optional<Keycloak> keycloak = getKeycloakInstance();
 		if (!keycloak.isPresent()) {
 			logger.warn("Cannot obtain keycloak instance. Will not update user in keycloak");
 			return;
@@ -199,7 +207,7 @@ public class KeycloakService {
 	 *            user and the plain text password which was set
 	 */
 	public void handlePasswordResetEvent(@Observes PasswordResetEvent passwordResetEvent) {
-		Optional<Keycloak> keycloak = getKeycloak();
+		Optional<Keycloak> keycloak = getKeycloakInstance();
 		if (!keycloak.isPresent()) {
 			logger.warn("Cannot obtain keycloak instance. Will not reset user password in keycloak");
 			return;
@@ -221,7 +229,32 @@ public class KeycloakService {
 		}
 	}
 
+	/**
+	 * Creates a {@link UserRepresentation} from the SORMAS user and send the request to create the user to Keycloak.
+	 *
+	 * @return keycloak user identifier, which is extracted from the location of the response
+	 *         `https://keycloak-url/auth/admin/realms/realm-name/users/user-identifier
+	 */
+	private String createUser(Keycloak keycloak, User user) {
+
+		UserRepresentation userRepresentation = createUserRepresentation(user, user.getPassword());
+		String ret;
+		try (Response response = keycloak.realm(REALM_NAME).users().create(userRepresentation)) {
+			if (response.getStatus() != Response.Status.CREATED.getStatusCode()) {
+				throw new WebApplicationException(response);
+			}
+			String[] pathSegments = response.getLocation().getPath().split("/");
+			ret = pathSegments[pathSegments.length - 1];
+		}
+
+		assignKeycloakClientRolesToUser(keycloak, user, ret);
+
+		return ret;
+
+	}
+
 	private UserRepresentation createUserRepresentation(User user, String hashedPassword) {
+
 		UserRepresentation userRepresentation = new UserRepresentation();
 
 		userRepresentation.setEnabled(user.isActive());
@@ -241,34 +274,8 @@ public class KeycloakService {
 		return userRepresentation;
 	}
 
-	private void updateUserRepresentation(UserRepresentation userRepresentation, User user) {
-		userRepresentation.setEnabled(user.isActive());
-		userRepresentation.setUsername(user.getUserName());
-		userRepresentation.setFirstName(user.getFirstName());
-		userRepresentation.setLastName(user.getLastName());
-		userRepresentation.setEmail(user.getUserEmail());
-		setLanguage(userRepresentation, user.getLanguage());
-	}
-
-	/**
-	 * Creates a {@link UserRepresentation} from the SORMAS user and send the request to create the user to Keycloak.
-	 * 
-	 * @return keycloak user identifier, which is extracted from the location of the response
-	 *         `https://keycloak-url/auth/admin/realms/realm-name/users/user-identifier
-	 */
-	private String createUser(Keycloak keycloak, User user) {
-		UserRepresentation userRepresentation = createUserRepresentation(user, user.getPassword());
-		Response response = keycloak.realm(REALM_NAME).users().create(userRepresentation);
-		if (response.getStatus() != Response.Status.CREATED.getStatusCode()) {
-			throw new WebApplicationException(response);
-		}
-
-		String[] pathSegments = response.getLocation().getPath().split("/");
-
-		return pathSegments[pathSegments.length - 1];
-	}
-
 	private Optional<UserRepresentation> updateUser(Keycloak keycloak, String existingUsername, User newUser) {
+
 		Optional<UserRepresentation> userRepresentation = getUserByUsername(keycloak, existingUsername);
 
 		if (!userRepresentation.isPresent()) {
@@ -279,15 +286,81 @@ public class KeycloakService {
 		UserRepresentation newUserRepresentation = userRepresentation.get();
 
 		updateUserRepresentation(newUserRepresentation, newUser);
-		keycloak.realm(REALM_NAME).users().get(newUserRepresentation.getId()).update(newUserRepresentation);
+
+		final String userId = newUserRepresentation.getId();
+
+		keycloak.realm(REALM_NAME).users().get(userId).update(newUserRepresentation);
+
+		assignKeycloakClientRolesToUser(keycloak, newUser, userId);
 
 		return Optional.of(newUserRepresentation);
 	}
 
-	private Optional<UserRepresentation> getUserByUsername(Keycloak keycloak, String username) {
-		List<UserRepresentation> users = keycloak.realm(REALM_NAME).users().search(username, true);
+	private void updateUserRepresentation(UserRepresentation userRepresentation, User user) {
 
-		return users.stream().findFirst();
+		userRepresentation.setEnabled(user.isActive());
+		userRepresentation.setUsername(user.getUserName());
+		userRepresentation.setFirstName(user.getFirstName());
+		userRepresentation.setLastName(user.getLastName());
+		userRepresentation.setEmail(user.getUserEmail());
+		setLanguage(userRepresentation, user.getLanguage());
+	}
+
+	/**
+	 * Assigns a keycloak user a client role.
+	 * 
+	 * @param keycloak
+	 *            the keycloak instance
+	 * @param sormasUser
+	 *            the SORMAS user we inspect for a certain right
+	 * @param userResourceId
+	 *            the user resource id in keycloak
+	 */
+	private void assignKeycloakClientRolesToUser(Keycloak keycloak, User sormasUser, String userResourceId) {
+
+		// Please note that this cannot be done via the client representation directly as Keycloak is very strict about
+		// resource creation. Currently, we only use this function to assign the sormas-stats-access client role to a
+		// sormasUser if the sormasUser has the STATISTICS_ACCESS right.
+
+		UsersResource usersResource = keycloak.realm(REALM_NAME).users();
+		UserResource userResource = usersResource.get(userResourceId);
+
+		assignSormasStatsRole(keycloak, sormasUser, userResource);
+	}
+
+	private void assignSormasStatsRole(Keycloak keycloak, User sormasUser, UserResource userResource) {
+		if (StringUtils.isBlank(configFacade.getSormasStatsUrl())) {
+			return;
+		}
+
+		Optional<ClientRepresentation> clientRepresentation =
+			keycloak.realm(REALM_NAME).clients().findAll().stream().filter(client -> client.getClientId().equals(CLIENT_ID_SORMAS_STATS)).findFirst();
+		if (!clientRepresentation.isPresent()) {
+			logger.error("Cannot find client with id {}", CLIENT_ID_SORMAS_STATS);
+			return;
+		}
+
+		final String clientRepId = clientRepresentation.get().getId();
+
+		ClientResource clientResource = keycloak.realm(REALM_NAME).clients().get(clientRepId);
+		Optional<RoleRepresentation> roleRepresentation =
+			clientResource.roles().list().stream().filter(element -> element.getName().equals(KEYCLOAK_ROLE_SORMAS_STATS_ACCESS)).findFirst();
+
+		if (!roleRepresentation.isPresent()) {
+			logger.error("Cannot find role with name {}", KEYCLOAK_ROLE_SORMAS_STATS_ACCESS);
+			return;
+		}
+		// we cannot add the role directly to the user in an update of the representation, we have to do it separately
+		if (sormasUser.isActive() && sormasUser.hasUserRight(UserRight.STATISTICS_ACCESS)) {
+			userResource.roles().clientLevel(clientRepId).add(Collections.singletonList(roleRepresentation.get()));
+		} else {
+			// we cannot remove the role directly from the user in an update operation, we have to do it explicitly
+			userResource.roles().clientLevel(clientRepId).remove(Collections.singletonList(roleRepresentation.get()));
+		}
+	}
+
+	private Optional<UserRepresentation> getUserByUsername(Keycloak keycloak, String username) {
+		return keycloak.realm(REALM_NAME).users().search(username, true).stream().findFirst();
 	}
 
 	private void sendActivationEmail(Keycloak keycloak, String userId) {
@@ -327,8 +400,8 @@ public class KeycloakService {
 		userRepresentation.setCredentials(singletonList(credential));
 	}
 
-	private Optional<Keycloak> getKeycloak() {
-		return Optional.ofNullable(keycloak);
+	private Optional<Keycloak> getKeycloakInstance() {
+		return Optional.ofNullable(keycloakInstance);
 	}
 
 }

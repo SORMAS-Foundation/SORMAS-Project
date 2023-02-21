@@ -15,6 +15,15 @@
 
 package de.symeda.sormas.app.backend.user;
 
+import android.util.Log;
+
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.DeleteBuilder;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
+
+import org.apache.commons.collections4.CollectionUtils;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,15 +31,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
-
-import org.apache.commons.collections4.CollectionUtils;
-
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.stmt.DeleteBuilder;
-import com.j256.ormlite.stmt.QueryBuilder;
-import com.j256.ormlite.stmt.Where;
-
-import android.util.Log;
 
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRight;
@@ -63,13 +63,11 @@ public class UserDao extends AbstractAdoDao<User> {
 		return User.TABLE_NAME;
 	}
 
-	public User getByUsername(String username, boolean loadUserRoles) {
+	public User getByUsername(String username) {
 		List<User> users = queryForEq(User.USER_NAME, username);
 		if (users.size() == 1) {
 			User user = users.get(0);
-			if (loadUserRoles) {
-				loadUserRoles(user);
-			}
+			initUserRoles(user);
 			return user;
 		} else if (users.size() == 0) {
 			return null;
@@ -78,7 +76,34 @@ public class UserDao extends AbstractAdoDao<User> {
 		}
 	}
 
-	public void loadUserRoles(User user) {
+	@Override
+	public User querySnapshotByUuid(String uuid) {
+		User user = super.querySnapshotByUuid(uuid);
+		if (user != null) {
+			initUserRoles(user);
+		}
+		return user;
+	}
+
+	@Override
+	public User queryUuid(String uuid) {
+		User user = super.queryUuid(uuid);
+		if (user != null) {
+			initUserRoles(user);
+		}
+		return user;
+	}
+
+	@Override
+	public User queryForId(Long id) {
+		User user = super.queryForId(id);
+		if (user != null) {
+			initUserRoles(user);
+		}
+		return user;
+	}
+
+	public void initUserRoles(User user) {
 		user.setUserRoles(
 			loadUserUserRoles(user.getId()).stream()
 				.map(userUserRole -> DatabaseHelper.getUserRoleDao().queryForId(userUserRole.getUserRole().getId()))

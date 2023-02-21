@@ -16,6 +16,7 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonJoins;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 
 public class EventParticipantJoins extends QueryJoins<EventParticipant> {
@@ -31,6 +32,8 @@ public class EventParticipantJoins extends QueryJoins<EventParticipant> {
 	private CaseJoins caseJoins;
 	private PersonJoins personJoins;
 	private EventJoins eventJoins;
+
+	private Join<EventParticipant, SormasToSormasShareInfo> sormasToSormasShareInfo;
 
 	public EventParticipantJoins(From<?, EventParticipant> eventParticipant) {
 		super(eventParticipant);
@@ -194,5 +197,13 @@ public class EventParticipantJoins extends QueryJoins<EventParticipant> {
 
 	private void setEventJoins(EventJoins eventJoins) {
 		this.eventJoins = eventJoins;
+	}
+
+	public Join<EventParticipant, SormasToSormasShareInfo> getSormasToSormasShareInfo() {
+		return getOrCreate(sormasToSormasShareInfo, EventParticipant.SORMAS_TO_SORMAS_SHARES, JoinType.LEFT, this::setSormasToSormasShareInfo);
+	}
+
+	private void setSormasToSormasShareInfo(Join<EventParticipant, SormasToSormasShareInfo> sormasToSormasShareInfo) {
+		this.sormasToSormasShareInfo = sormasToSormasShareInfo;
 	}
 }

@@ -44,4 +44,14 @@ Feature: Application invalid actions end to end tests
     Given I navigate to /events via URL append
     Then Login page should be displayed
 
+  @env_main @API
+  Scenario: Perform API call with an empty user
+    Given API: I GET persons uuids without user credentials
+    And API: I check that POST call status code is 401
+
+  @env_main @API
+  Scenario: Perform API call with an invalid user
+    Given API: I GET persons uuids with invalid user credentials
+    And API: I check that POST call status code is 401
+
 

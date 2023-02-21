@@ -263,6 +263,8 @@ public class ButtonHelper {
 		if (!enableDoubleClick) {
 			preventDoubleClick(button);
 		}
+		CssStyles.style(button, CssStyles.BUTTON_CAPTION_OVERFLOW);
+		button.setDescription(I18nProperties.getCaption(caption));
 		return button;
 	}
 

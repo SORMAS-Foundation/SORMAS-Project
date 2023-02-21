@@ -1,17 +1,10 @@
 package de.symeda.sormas.ui.configuration.infrastructure;
 
-import java.util.stream.Collectors;
-
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.shared.data.sort.SortDirection;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryCriteria;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -60,34 +53,17 @@ public class PointsOfEntryGrid extends FilteredGrid<PointOfEntryDto, PointOfEntr
 	}
 
 	public void reload() {
+		if (ViewModelProviders.of(PointsOfEntryView.class).get(ViewConfiguration.class).isInEagerMode()) {
+			setEagerDataProvider();
+		}
 		getDataProvider().refreshAll();
 	}
 
 	public void setLazyDataProvider() {
-
-		DataProvider<PointOfEntryDto, PointOfEntryCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-			query -> FacadeProvider.getPointOfEntryFacade()
-				.getIndexList(
-					query.getFilter().orElse(null),
-					query.getOffset(),
-					query.getLimit(),
-					query.getSortOrders()
-						.stream()
-						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-						.collect(Collectors.toList()))
-				.stream(),
-			query -> {
-				return (int) FacadeProvider.getPointOfEntryFacade().count(query.getFilter().orElse(null));
-			});
-		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.NONE);
+		setLazyDataProvider(FacadeProvider.getPointOfEntryFacade()::getIndexList, FacadeProvider.getPointOfEntryFacade()::count);
 	}
 
 	public void setEagerDataProvider() {
-
-		ListDataProvider<PointOfEntryDto> dataProvider =
-			DataProvider.fromStream(FacadeProvider.getPointOfEntryFacade().getIndexList(getCriteria(), null, null, null).stream());
-		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.MULTI);
+		setEagerDataProvider(FacadeProvider.getPointOfEntryFacade()::getIndexList);
 	}
 }

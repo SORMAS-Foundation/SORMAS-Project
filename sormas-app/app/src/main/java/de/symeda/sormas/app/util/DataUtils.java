@@ -27,6 +27,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlSpinnerField;
@@ -75,21 +76,16 @@ public class DataUtils {
 		return list;
 	}
 
+	public static boolean emptyOrWithOneNullItem(List<Item> listIn) {
+		return listIn.isEmpty() || (listIn.size() == 1 && (listIn.get(0) == null || listIn.get(0).getValue() == null));
+	}
+
 	public static <E> List<Item> toItems(List<E> listIn) {
 		return toItems(listIn, true);
 	}
 
 	public static <E> Item toItem(E item) {
-		return new Item<E>(item.toString(), item);
-	}
-
-	public static List<Item> getMonthItems() {
-		List<Item> listOut = new ArrayList<>();
-		listOut.add(new Item<Integer>("", null));
-		for (Month month : Month.values()) {
-			listOut.add(new Item<Integer>(I18nProperties.getEnumCaption(month), month.ordinal()));
-		}
-		return listOut;
+		return new Item<>(item instanceof AbstractDomainObject ? ((AbstractDomainObject) item).buildCaption() : item.toString(), item);
 	}
 
 	public static List<Item> getMonthItems(boolean withNull) {
@@ -110,7 +106,12 @@ public class DataUtils {
 		}
 		if (listIn != null) {
 			for (E listInEntry : listIn) {
-				listOut.add(new Item<E>(String.valueOf(listInEntry), listInEntry));
+				listOut.add(
+					new Item<E>(
+						listInEntry instanceof AbstractDomainObject
+							? ((AbstractDomainObject) listInEntry).buildCaption()
+							: String.valueOf(listInEntry),
+						listInEntry));
 			}
 		}
 

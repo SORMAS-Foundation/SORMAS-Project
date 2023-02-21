@@ -20,14 +20,9 @@ package de.symeda.sormas.ui.contact;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.DataProviderListener;
-import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.navigator.View;
-import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.renderers.DateRenderer;
 
@@ -64,8 +59,6 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 	public static final String NUMBER_OF_PENDING_TASKS = Captions.columnNumberOfPendingTasks;
 	public static final String DISEASE_SHORT = Captions.columnDiseaseShort;
 	public static final String COLUMN_COMPLETENESS = "completenessValue";
-
-	private DataProviderListener<IndexDto> dataProviderListener;
 
 	private final Class<? extends View> viewClass;
 	private final Class<? extends ViewConfiguration> viewConfigurationClass;
@@ -114,14 +107,9 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 		diseaseShortColumn.setSortProperty(ContactIndexDto.DISEASE);
 
 		Column<IndexDto, String> visitsColumn = addColumn(entry -> {
-			if (FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(entry.getDisease())) {
-				int numberOfVisits = entry.getVisitCount();
-				int numberOfRequiredVisits = FollowUpLogic.getNumberOfRequiredVisitsSoFar(entry.getReportDateTime(), entry.getFollowUpUntil());
-				int numberOfMissedVisits = numberOfRequiredVisits - numberOfVisits;
-				// Set number of missed visits to 0 when more visits than expected have been done
-				if (numberOfMissedVisits < 0) {
-					numberOfMissedVisits = 0;
-				}
+			Integer numberOfVisits = entry.getVisitCount();
+			Integer numberOfMissedVisits = entry.getMissedVisitsCount();
+			if (numberOfVisits != null && numberOfMissedVisits != null ) {
 				return String.format(I18nProperties.getCaption(Captions.formatNumberOfVisitsFormat), numberOfVisits, numberOfMissedVisits);
 			} else {
 				return "-";
@@ -130,6 +118,17 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 		});
 		visitsColumn.setId(NUMBER_OF_VISITS);
 		visitsColumn.setSortable(false);
+
+		Column<IndexDto, String> deleteColumn = addColumn(entry -> {
+			if (entry.getDeletionReason() != null) {
+				return entry.getDeletionReason() + (entry.getOtherDeletionReason() != null ? ": " + entry.getOtherDeletionReason() : "");
+			} else {
+				return "-";
+			}
+		});
+		deleteColumn.setId(DELETE_REASON_COLUMN);
+		deleteColumn.setSortable(false);
+		deleteColumn.setCaption(I18nProperties.getCaption(Captions.deletionReason));
 
 		addComponentColumn(indexDto -> {
 			Label label =
@@ -151,8 +150,8 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 		getColumn(COLUMN_COMPLETENESS).setCaption(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.COMPLETENESS));
 		getColumn(COLUMN_COMPLETENESS).setSortable(false);
 
-		boolean tasksFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT);
-		if (tasksFeatureEnabled) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW)) {
 			Column<IndexDto, String> pendingTasksColumn = addColumn(
 				entry -> String.format(
 					I18nProperties.getCaption(Captions.formatSimpleNumberFormat),
@@ -179,6 +178,10 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 			getColumn(ContactIndexDto.SYMPTOM_JOURNAL_STATUS).setHidden(true);
 		}
 
+		if (!UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_DELETE)) {
+			removeColumn(DELETE_REASON_COLUMN);
+		}
+
 		for (Column<IndexDto, ?> column : getColumns()) {
 			column.setCaption(
 				I18nProperties.findPrefixCaptionWithDefault(
@@ -193,8 +196,6 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 	}
 
 	protected Stream<String> getColumnList() {
-
-		boolean tasksFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT);
 
 		return Stream
 			.of(
@@ -216,8 +217,12 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 					ContactIndexDto.SYMPTOM_JOURNAL_STATUS,
 					ContactIndexDto.VACCINATION_STATUS,
 					NUMBER_OF_VISITS),
-				Stream.of(NUMBER_OF_PENDING_TASKS).filter(column -> tasksFeatureEnabled),
-				Stream.of(COLUMN_COMPLETENESS))
+				Stream.of(NUMBER_OF_PENDING_TASKS)
+					.filter(
+						column -> FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)
+							&& UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW)),
+				Stream.of(COLUMN_COMPLETENESS),
+				Stream.of(DELETE_REASON_COLUMN))
 			.flatMap(s -> s);
 	}
 
@@ -250,32 +255,12 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 
 	public void setLazyDataProvider() {
 
-		DataProvider<IndexDto, ContactCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-			query -> getGridData(
-				query.getFilter().orElse(null),
-				query.getOffset(),
-				query.getLimit(),
-				query.getSortOrders()
-					.stream()
-					.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-					.collect(Collectors.toList())).stream(),
-			query -> (int) FacadeProvider.getContactFacade().count(query.getFilter().orElse(null)));
-		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.NONE);
+		setLazyDataProvider(this::getGridData, FacadeProvider.getContactFacade()::count);
 	}
 
 	public void setEagerDataProvider() {
-		ListDataProvider<IndexDto> dataProvider = DataProvider.fromStream(getGridData(getCriteria(), null, null, null).stream());
-		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.MULTI);
 
-		if (dataProviderListener != null) {
-			dataProvider.addDataProviderListener(dataProviderListener);
-		}
-	}
-
-	public void setDataProviderListener(DataProviderListener<IndexDto> dataProviderListener) {
-		this.dataProviderListener = dataProviderListener;
+		setEagerDataProvider(this::getGridData);
 	}
 
 	protected abstract List<IndexDto> getGridData(ContactCriteria contactCriteria, Integer first, Integer max, List<SortProperty> sortProperties);

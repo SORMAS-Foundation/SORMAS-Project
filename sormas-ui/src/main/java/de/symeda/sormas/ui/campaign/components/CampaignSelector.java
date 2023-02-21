@@ -31,6 +31,7 @@ public class CampaignSelector extends HorizontalLayout {
 		campaignCombo = new ComboBox<>(" ");
 		List<CampaignReferenceDto> campaigns = FacadeProvider.getCampaignFacade().getAllActiveCampaignsAsReference();
 		campaignCombo.setItems(campaigns);
+		campaignCombo.setItemCaptionGenerator(item -> item.buildCaption());
 		campaignCombo.setEmptySelectionCaption(I18nProperties.getCaption(Captions.campaignAllCampaigns));
 		final CampaignReferenceDto lastStartedCampaign = FacadeProvider.getCampaignFacade().getLastStartedCampaign();
 		if (lastStartedCampaign != null) {

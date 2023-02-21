@@ -19,15 +19,20 @@ import java.io.Serializable;
 
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.audit.AuditIncludeProperty;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.person.PersonDto;
 
+@AuditedClass
 public class CasePersonDto implements Serializable {
 
 	private static final long serialVersionUID = 4238365446327936524L;
 
 	@Valid
+	@AuditIncludeProperty
 	private CaseDataDto caze;
 	@Valid
+	@AuditIncludeProperty
 	private PersonDto person;
 
 	public CasePersonDto() {

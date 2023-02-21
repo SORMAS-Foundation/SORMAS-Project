@@ -16,9 +16,9 @@
 package de.symeda.sormas.backend.docgeneration;
 
 import static de.symeda.sormas.backend.docgeneration.TemplateTestUtil.cleanLineSeparators;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -38,8 +38,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.velocity.runtime.parser.ParseException;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -52,7 +52,7 @@ public class TemplateEngineTest {
 
 	private TemplateEngine templateEngine;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		templateEngine = new TemplateEngine();
 	}
@@ -90,13 +90,13 @@ public class TemplateEngineTest {
 					.load(new FileInputStream(new File(testcaseVariables != null ? testcaseVariables.toURI() : testcaseProperties.toURI())));
 
 				assertEquals(
-					testcaseBasename + ": extracted [" + String.join(", ", variables) + "]",
 					variablesExpected.stringPropertyNames().size(),
-					variables.size());
+					variables.size(),
+					testcaseBasename + ": extracted [" + String.join(", ", variables) + "]");
 				for (String key : variablesExpected.stringPropertyNames()) {
 					assertTrue(
-						testcaseBasename + ": Variable " + key + " not extracted. Found: [" + String.join(", ", variables) + "]",
-						variables.contains(key));
+						variables.contains(key),
+						testcaseBasename + ": Variable " + key + " not extracted. Found: [" + String.join(", ", variables) + "]");
 				}
 
 				if (testcaseProperties != null && testcaseCmpText != null) {
@@ -106,7 +106,7 @@ public class TemplateEngineTest {
 					String testCaseText = cleanLineSeparators(testCaseRunner.getGeneratedText(testCase, properties));
 
 					String expected = getComparisonText(new File(testcaseCmpText.toURI()));
-					assertEquals(testcaseBasename + ": generated text does not match.", expected, testCaseText);
+					assertEquals(expected, testCaseText, testcaseBasename + ": generated text does not match.");
 				}
 			} else {
 				System.out.println("No file " + testcaseBasename + ".vars or " + testcaseBasename + ".properties found");

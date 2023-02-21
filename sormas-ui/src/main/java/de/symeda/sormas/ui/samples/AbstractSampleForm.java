@@ -240,7 +240,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 			.append(" ")
 			.append(DateFormatHelper.formatLocalDateTime(getValue().getReportDateTime()));
 		if (reportingUser != null) {
-			reportInfoText.append(" ").append(I18nProperties.getString(Strings.by)).append(" ").append(reportingUser.toString());
+			reportInfoText.append(" ").append(I18nProperties.getString(Strings.by)).append(" ").append(reportingUser.buildCaption());
 		}
 		Label reportInfoLabel = new Label(reportInfoText.toString());
 		reportInfoLabel.setEnabled(false);
@@ -252,7 +252,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		if (event.getProperty().getValue() != null
 			&& ((FacilityReferenceDto) event.getProperty().getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
 			labDetails.setVisible(true);
-			labDetails.setRequired(true);
+			labDetails.setRequired(isEditableAllowed(labDetails));
 		} else {
 			labDetails.setVisible(false);
 			labDetails.setRequired(false);

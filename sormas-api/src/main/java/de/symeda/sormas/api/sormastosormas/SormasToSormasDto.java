@@ -20,12 +20,13 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
-import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
-import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
-import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventParticipantDto;
-import de.symeda.sormas.api.sormastosormas.immunization.SormasToSormasImmunizationDto;
-import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
+import de.symeda.sormas.api.sormastosormas.entities.caze.SormasToSormasCaseDto;
+import de.symeda.sormas.api.sormastosormas.entities.contact.SormasToSormasContactDto;
+import de.symeda.sormas.api.sormastosormas.entities.event.SormasToSormasEventDto;
+import de.symeda.sormas.api.sormastosormas.entities.event.SormasToSormasEventParticipantDto;
+import de.symeda.sormas.api.sormastosormas.entities.immunization.SormasToSormasImmunizationDto;
+import de.symeda.sormas.api.sormastosormas.entities.sample.SormasToSormasSampleDto;
+import de.symeda.sormas.api.sormastosormas.entities.surveillancereport.SormasToSormasSurveillanceReportDto;
 
 public class SormasToSormasDto implements Serializable {
 
@@ -46,6 +47,8 @@ public class SormasToSormasDto implements Serializable {
 	private List<SormasToSormasEventParticipantDto> eventParticipants;
 	@Valid
 	private List<SormasToSormasImmunizationDto> immunizations;
+	@Valid
+	private List<SormasToSormasSurveillanceReportDto> surveillanceReports;
 
 	public SormasToSormasOriginInfoDto getOriginInfo() {
 		return originInfo;
@@ -101,5 +104,13 @@ public class SormasToSormasDto implements Serializable {
 
 	public void setImmunizations(List<SormasToSormasImmunizationDto> immunizations) {
 		this.immunizations = immunizations;
+	}
+
+	public List<SormasToSormasSurveillanceReportDto> getSurveillanceReports() {
+		return surveillanceReports;
+	}
+
+	public void setSurveillanceReports(List<SormasToSormasSurveillanceReportDto> surveillanceReports) {
+		this.surveillanceReports = surveillanceReports;
 	}
 }

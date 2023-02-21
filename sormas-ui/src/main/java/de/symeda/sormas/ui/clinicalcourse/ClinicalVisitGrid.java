@@ -27,15 +27,15 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 @SuppressWarnings("serial")
 public class ClinicalVisitGrid extends Grid implements V7AbstractGrid<ClinicalVisitCriteria> {
 
-	private static final String EDIT_BTN_ID = "edit";
+	private static final String ACTION_BTN_ID = "action";
 
 	private ClinicalVisitCriteria clinicalVisitCriteria = new ClinicalVisitCriteria();
 
-	public ClinicalVisitGrid(CaseReferenceDto caseRef, boolean isPseudonymized) {
+	public ClinicalVisitGrid(CaseReferenceDto caseRef, boolean isPseudonymized, boolean isEditAllowed) {
 
 		setSizeFull();
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (isEditAllowed && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setSelectionMode(SelectionMode.MULTI);
 		} else {
 			setSelectionMode(SelectionMode.NONE);
@@ -43,11 +43,11 @@ public class ClinicalVisitGrid extends Grid implements V7AbstractGrid<ClinicalVi
 
 		BeanItemContainer<ClinicalVisitIndexDto> container = new BeanItemContainer<>(ClinicalVisitIndexDto.class);
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
-		VaadinUiUtil.addIconColumn(generatedContainer, EDIT_BTN_ID, VaadinIcons.EDIT);
+		VaadinUiUtil.addIconColumn(generatedContainer, ACTION_BTN_ID, isEditAllowed ? VaadinIcons.EDIT : VaadinIcons.EYE);
 		setContainerDataSource(generatedContainer);
 
 		setColumns(
-			EDIT_BTN_ID,
+			ACTION_BTN_ID,
 			ClinicalVisitIndexDto.VISIT_DATE_TIME,
 			ClinicalVisitIndexDto.VISITING_PERSON,
 			ClinicalVisitIndexDto.TEMPERATURE,
@@ -55,7 +55,7 @@ public class ClinicalVisitGrid extends Grid implements V7AbstractGrid<ClinicalVi
 			ClinicalVisitIndexDto.HEART_RATE,
 			ClinicalVisitIndexDto.VISIT_REMARKS);
 
-		VaadinUiUtil.setupEditColumn(getColumn(EDIT_BTN_ID));
+		VaadinUiUtil.setupActionColumn(getColumn(ACTION_BTN_ID));
 
 		Language userLanguage = I18nProperties.getUserLanguage();
 		getColumn(ClinicalVisitIndexDto.VISIT_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
@@ -70,9 +70,9 @@ public class ClinicalVisitGrid extends Grid implements V7AbstractGrid<ClinicalVi
 				.withFieldAccessCheckers(ClinicalVisitIndexDto.class, UiFieldAccessCheckers.forSensitiveData(isPseudonymized)));
 
 		addItemClickListener(e -> {
-			if (EDIT_BTN_ID.equals(e.getPropertyId()) || e.isDoubleClick()) {
+			if (ACTION_BTN_ID.equals(e.getPropertyId()) || e.isDoubleClick()) {
 				ControllerProvider.getClinicalCourseController()
-					.openClinicalVisitEditForm((ClinicalVisitIndexDto) e.getItemId(), caseRef.getUuid(), this::reload);
+					.openClinicalVisitEditForm((ClinicalVisitIndexDto) e.getItemId(), caseRef.getUuid(), this::reload, isEditAllowed);
 			}
 		});
 	}
@@ -92,6 +92,7 @@ public class ClinicalVisitGrid extends Grid implements V7AbstractGrid<ClinicalVi
 
 		getContainer().removeAllItems();
 		getContainer().addAll(entries);
+		setHeightByRows(Math.max(1, Math.min(getContainer().size(), 10)));
 	}
 
 	@Override

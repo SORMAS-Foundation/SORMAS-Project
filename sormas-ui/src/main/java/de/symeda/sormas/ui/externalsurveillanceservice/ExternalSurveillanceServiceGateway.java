@@ -3,11 +3,12 @@ package de.symeda.sormas.ui.externalsurveillanceservice;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 
@@ -23,6 +24,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.DirtyStateComponent;
+import de.symeda.sormas.ui.utils.LayoutWithSidePanel;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 /**
@@ -39,51 +41,53 @@ public class ExternalSurveillanceServiceGateway {
 	}
 
 	public static ExternalSurveillanceShareComponent addComponentToLayout(
-		CustomLayout targetLayout,
+		LayoutWithSidePanel targetLayout,
 		DirtyStateComponent editComponent,
-		CaseDataDto caze) {
+		CaseDataDto caze,
+		boolean isEditAllowed) {
 		return addComponentToLayout(
 			targetLayout,
 			editComponent,
 			I18nProperties.getString(Strings.entityCase),
 			I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_confirmSendCase),
 			I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_confirmDeleteCase),
-			caze.isDontShareWithReportingTool() ? null : () -> {
+			caze.isDontShareWithReportingTool() || !isEditAllowed ? null : () -> {
 				FacadeProvider.getExternalSurveillanceToolFacade().sendCases(Collections.singletonList(caze.getUuid()), false);
 			},
-			() -> {
+			isEditAllowed ? () -> {
 				FacadeProvider.getExternalSurveillanceToolFacade().deleteCases(Collections.singletonList(caze));
-			},
+			} : null,
 			new ExternalShareInfoCriteria().caze(caze.toReference()));
 	}
 
 	public static ExternalSurveillanceShareComponent addComponentToLayout(
-		CustomLayout targetLayout,
+		LayoutWithSidePanel targetLayout,
 		DirtyStateComponent editComponent,
-		EventDto event) {
+		EventDto event,
+		boolean isEditAllowed) {
 		return addComponentToLayout(
 			targetLayout,
 			editComponent,
 			I18nProperties.getString(Strings.entityEvent),
 			I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_confirmSendEvent),
 			I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_confirmDeleteEvent),
-			() -> {
+			isEditAllowed ? () -> {
 				FacadeProvider.getExternalSurveillanceToolFacade().sendEvents(Collections.singletonList(event.getUuid()), false);
-			},
-			() -> {
+			} : null,
+			isEditAllowed ? () -> {
 				FacadeProvider.getExternalSurveillanceToolFacade().deleteEvents(Collections.singletonList(event));
-			},
+			} : null,
 			new ExternalShareInfoCriteria().event(event.toReference()));
 	}
 
 	private static ExternalSurveillanceShareComponent addComponentToLayout(
-		CustomLayout targetLayout,
+		LayoutWithSidePanel targetLayout,
 		DirtyStateComponent editComponent,
 		String entityName,
 		String confirmationText,
 		String deletionText,
-		GatewayCall gatewaySendCall,
-		GatewayCall gatewayDeleteCall,
+		@Nullable GatewayCall gatewaySendCall,
+		@Nullable GatewayCall gatewayDeleteCall,
 		ExternalShareInfoCriteria shareInfoCriteria) {
 		if (!FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()
 			|| !UserProvider.getCurrent().hasUserRight(UserRight.EXTERNAL_SURVEILLANCE_SHARE)) {
@@ -97,10 +101,10 @@ public class ExternalSurveillanceServiceGateway {
 				I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntrySent),
 				SormasUI::refreshView,
 				true);
-		} : null, () -> {
+		} : null, gatewayDeleteCall != null ? () -> {
 			deleteInExternalSurveillanceTool(deletionText, gatewayDeleteCall, SormasUI::refreshView);
-		}, shareInfoCriteria, editComponent);
-		targetLayout.addComponent(shareComponent, EXTERANEL_SURVEILLANCE_TOOL_GATEWAY_LOC);
+		} : null, shareInfoCriteria, editComponent);
+		targetLayout.addSidePanelComponent(shareComponent, EXTERANEL_SURVEILLANCE_TOOL_GATEWAY_LOC);
 
 		return shareComponent;
 	}

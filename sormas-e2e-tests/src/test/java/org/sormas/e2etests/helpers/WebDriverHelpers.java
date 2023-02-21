@@ -43,6 +43,7 @@ import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.WindowType;
 import org.openqa.selenium.interactions.Actions;
 import org.sormas.e2etests.common.TimerLite;
 import org.sormas.e2etests.steps.BaseSteps;
@@ -71,6 +72,8 @@ public class WebDriverHelpers {
     this.assertHelpers = assertHelpers;
   }
 
+  ArrayList<String> tabs;
+
   public void waitForPageLoaded() {
     assertHelpers.assertWithPoll20Second(
         () ->
@@ -93,7 +96,6 @@ public class WebDriverHelpers {
   }
 
   public void waitUntilIdentifiedElementIsVisibleAndClickable(final Object selector, int seconds) {
-    log.info(PID + "Waiting for element [{}] to be visible and clickable", selector);
     if (selector instanceof By) {
       assertHelpers.assertWithPoll(
           () -> {
@@ -127,7 +129,6 @@ public class WebDriverHelpers {
   }
 
   public void waitUntilIdentifiedElementDisappear(final Object selector, int seconds) {
-    log.info(PID + "Waiting for element [{}] to disappear", selector);
     if (selector instanceof By) {
       assertHelpers.assertWithPoll(
           () -> {
@@ -444,6 +445,17 @@ public class WebDriverHelpers {
     waitForPageLoaded();
   }
 
+  public void accessWebSiteWithNewTab(String url) {
+    log.info(PID + "Navigating to: {} ", url);
+    baseSteps.getDriver().switchTo().newWindow(WindowType.TAB);
+    baseSteps.getDriver().get(url);
+  }
+
+  public void switchToTheTabNumber(int no) {
+    ArrayList<String> tab = new ArrayList<>(baseSteps.getDriver().getWindowHandles());
+    baseSteps.getDriver().switchTo().window(tab.get(no - 1));
+  }
+
   public boolean isElementVisibleWithTimeout(By selector, int seconds) {
     try {
       assertHelpers.assertWithPoll(
@@ -472,6 +484,48 @@ public class WebDriverHelpers {
     return true;
   }
 
+  public boolean isElementChecked(By elementLocator) {
+    scrollToElement(elementLocator);
+    boolean isChecked = elementContainsAttribute(elementLocator, "checked");
+    if (isChecked) {
+      return true;
+    }
+    return false;
+  }
+
+  public boolean elementContainsAttribute(By elementLocator, String attribute) {
+    scrollToElement(elementLocator);
+    boolean result = false;
+    String value = baseSteps.getDriver().findElement(elementLocator).getAttribute(attribute);
+    if (value != null) {
+      result = true;
+    }
+    return result;
+  }
+
+  public boolean isElementPresent(By elementLocator) {
+    Boolean isPresent = baseSteps.getDriver().findElements(elementLocator).size() > 0;
+    return isPresent;
+  }
+
+  public void verifyListContainsText(final By selector, String value) {
+    assertHelpers.assertWithPoll(
+        () -> {
+          List<String> webElementsTexts =
+              baseSteps.getDriver().findElements(selector).stream()
+                  .map(
+                      webElement -> {
+                        scrollToElement(webElement);
+                        return webElement.getText();
+                      })
+                  .collect(Collectors.toList());
+          Assert.assertTrue(
+              webElementsTexts.contains(value),
+              String.format("The element: %s did not contain text: %s", selector, value));
+        },
+        FLUENT_WAIT_TIMEOUT_SECONDS);
+  }
+
   public void clickOnWebElementWhichMayNotBePresent(final By byObject, final int index) {
     try {
       log.info(PID + "Clicking on element: {}", byObject);
@@ -498,10 +552,8 @@ public class WebDriverHelpers {
     JavascriptExecutor javascriptExecutor = baseSteps.getDriver();
     try {
       if (selector instanceof WebElement) {
-        log.info(PID + "Scrolling to element [{}]", selector);
         javascriptExecutor.executeScript(SCROLL_TO_WEB_ELEMENT_SCRIPT, selector);
       } else {
-        log.info(PID + "Scrolling to element [{}]", selector);
         javascriptExecutor.executeScript(
             SCROLL_TO_WEB_ELEMENT_SCRIPT, baseSteps.getDriver().findElement((By) selector));
       }
@@ -569,22 +621,35 @@ public class WebDriverHelpers {
     waitForPageLoaded();
   }
 
-  private WebElement getWebElementByText(By selector, Predicate<WebElement> webElementPredicate) {
-    waitForPageLoaded();
-    assertHelpers.assertWithPoll20Second(
-        () -> {
-          waitUntilIdentifiedElementIsVisibleAndClickable(selector);
-          assertWithMessage("Unable to find element based on: %s ", webElementPredicate)
-              .that(
-                  baseSteps.getDriver().findElements(selector).stream()
-                      .anyMatch(webElementPredicate))
-              .isTrue();
-        });
+  private WebElement getWebElementByText(
+      By selector, Predicate<WebElement> webElementPredicate, String text) {
+    waitUntilIdentifiedElementIsVisibleAndClickable(selector);
     return baseSteps.getDriver().findElements(selector).stream()
         .filter(webElementPredicate)
         .findFirst()
         .orElseThrow(
-            () -> new NotFoundException("The selector containing text has not been found"));
+            () ->
+                new NotFoundException(
+                    "Cannot select by visible text: ["
+                        + text
+                        + "] from locator -> "
+                        + selector.toString()));
+    // LET THIS CODE COMMENTED until we check a regression and make sure this change doesn't have
+    // any impact over execution
+    //    assertHelpers.assertWithPoll20Second(
+    //        () -> {
+    //          waitUntilIdentifiedElementIsVisibleAndClickable(selector);
+    //          assertWithMessage("Unable to find element based on: %s ", webElementPredicate)
+    //              .that(
+    //                  baseSteps.getDriver().findElements(selector).stream()
+    //                      .anyMatch(webElementPredicate))
+    //              .isTrue();
+    //        });
+    //    return baseSteps.getDriver().findElements(selector).stream()
+    //        .filter(webElementPredicate)
+    //        .findFirst()
+    //        .orElseThrow(
+    //            () -> new NotFoundException("The selector containing text has not been found"));
   }
 
   public void waitUntilAListOfElementsHasText(By selector, String text) {
@@ -635,7 +700,8 @@ public class WebDriverHelpers {
   }
 
   public WebElement getWebElementBySelectorAndText(final By selector, final String text) {
-    return getWebElementByText(selector, webElement -> webElement.getText().contentEquals(text));
+    return getWebElementByText(
+        selector, webElement -> webElement.getText().contentEquals(text), text);
   }
 
   @SneakyThrows
@@ -959,6 +1025,12 @@ public class WebDriverHelpers {
             Assert.assertTrue(
                 getAttributeFromWebElement(rowLocator, "class").contains("row-selected"),
                 String.format("Row element: %s wasn't selected within 20s", rowLocator)));
+  }
+
+  public void refreshCurrentPage() throws InterruptedException {
+    baseSteps.refreshCurrentPage();
+    TimeUnit.SECONDS.sleep(3);
+    waitForPageLoadingSpinnerToDisappear(10);
   }
 
   public void isElementGreyedOut(By elementLocator) {

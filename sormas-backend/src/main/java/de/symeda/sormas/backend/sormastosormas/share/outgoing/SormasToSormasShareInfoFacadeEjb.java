@@ -94,9 +94,7 @@ public class SormasToSormasShareInfoFacadeEjb implements SormasToSormasShareInfo
 		return toDto(shareInfo);
 	}
 
-	@RightsAllowed({
-		UserRight._SORMAS_TO_SORMAS_SHARE,
-		UserRight._SORMAS_TO_SORMAS_PROCESS })
+	@PermitAll
 	public SormasToSormasShareInfoDto toDto(SormasToSormasShareInfo source) {
 		if (source == null) {
 			return null;
@@ -122,6 +120,7 @@ public class SormasToSormasShareInfoFacadeEjb implements SormasToSormasShareInfo
 		target.setWithSamples(latestRequest.isWithSamples());
 		target.setWithEvenParticipants(latestRequest.isWithEventParticipants());
 		target.setWithImmunizations(latestRequest.isWithImmunizations());
+		target.setWithSurveillanceReports(latestRequest.isWithSurveillanceReports());
 		target.setPseudonymizedPersonalData(latestRequest.isPseudonymizedPersonalData());
 		target.setPseudonymizedSensitiveData(latestRequest.isPseudonymizedSensitiveData());
 		target.setComment(latestRequest.getComment());

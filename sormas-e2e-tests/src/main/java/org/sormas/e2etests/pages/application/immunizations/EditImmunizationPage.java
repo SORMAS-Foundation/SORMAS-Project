@@ -24,9 +24,13 @@ public class EditImmunizationPage {
   public static final By NEW_ENTRY_BUTTON = By.id("actionNewEntry");
   public static final By NUMBER_OF_DOSES = By.id("numberOfDoses");
   public static final By POPUP_MESSAGE = By.xpath("//div[@class='popupContent']//p");
+  public static final By VACCINE_DOSE_POPUP =
+      By.xpath(
+          "//div[@class='popupContent']//li[text()='Vaccine dose should be a number between 1 and 10']");
   public static final By BUTTONS_IN_VACCINATIONS_LOCATION =
       By.xpath("//div[contains(@location,\"vaccinations\")]//span[@class=\"v-button-wrap\"]");
-  public static final By DELETE_VACCINATION_BUTTON = By.cssSelector(".popupContent #delete");
+  public static final By DELETE_VACCINATION_BUTTON =
+      By.cssSelector(".popupContent #deleteUndelete");
   public static final By VACCINATION_ID_HEADER = By.xpath("//div[text()=\"Vaccination ID\"]");
   public static final By VACCINATION_DATE_HEADER = By.xpath("//div[text()=\"Vaccination date\"]");
   public static final By VACCINATION_NAME_HEADER = By.xpath("//div[text()=\"Vaccine name\"]");
@@ -46,7 +50,7 @@ public class EditImmunizationPage {
   public static final By ACTION_CONFIRM_BUTTON = By.id("actionConfirm");
   public static final By DISCARD_BUTTON = By.id("discard");
   public static final By COMMIT_BUTTON = By.id("commit");
-  public static final By DELETE_BUTTON = By.id("delete");
+  public static final By DELETE_BUTTON = By.id("deleteUndelete");
   public static final By DELETION_REASON_COMBOBOX =
       By.cssSelector(".popupContent div[role='combobox'] input+div");
   public static final By ACTION_CANCEL_BUTTON = By.cssSelector(".popupContent #actionCancel");

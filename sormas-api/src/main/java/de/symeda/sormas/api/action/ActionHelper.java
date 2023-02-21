@@ -19,7 +19,7 @@ package de.symeda.sormas.api.action;
 
 import java.util.Date;
 
-import org.joda.time.DateTime;
+import de.symeda.sormas.api.utils.UtilDate;
 
 public final class ActionHelper {
 
@@ -28,6 +28,6 @@ public final class ActionHelper {
 	}
 
 	public static Date getDefaultDate() {
-		return new DateTime().toDate();
+		return UtilDate.now();
 	}
 }

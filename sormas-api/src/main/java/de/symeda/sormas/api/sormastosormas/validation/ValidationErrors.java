@@ -54,7 +54,7 @@ public class ValidationErrors implements Serializable {
 		if (subGroups.contains(subGroup)) {
 			subGroupToAdd = subGroups.get(subGroups.indexOf(subGroup));
 		} else {
-			subGroupToAdd = new ValidationErrorGroup(subGroup.getI18nTag(), subGroup.getUuid());
+			subGroupToAdd = new ValidationErrorGroup(subGroup.getI18nTag(), subGroup.getValidatedEntityShortUuid());
 			subGroups.add(subGroupToAdd);
 		}
 

@@ -20,9 +20,17 @@ package org.sormas.e2etests.steps.web.application.regions;
 
 import static org.sormas.e2etests.pages.application.configuration.ConfigurationTabsPage.CONFIGURATION_REGIONS_TAB;
 import static org.sormas.e2etests.pages.application.configuration.RegionsTabPage.COUNTRY_REGION_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.configuration.RegionsTabPage.ENTER_BULK_EDIT_MODE_BUTTON_REGIONS_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.RegionsTabPage.EXPORT_BUTTON_REGIONS_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.RegionsTabPage.IMPORT_BUTTON_REGIONS_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.RegionsTabPage.NEW_ENTRY_BUTTON_REGIONS_CONFIGURATION;
 import static org.sormas.e2etests.pages.application.configuration.RegionsTabPage.REGIONS_COLUMN_HEADERS;
+import static org.sormas.e2etests.pages.application.configuration.RegionsTabPage.REGIONS_NAME_TABLE_ROW;
 import static org.sormas.e2etests.pages.application.configuration.RegionsTabPage.REGIONS_TABLE_DATA;
 import static org.sormas.e2etests.pages.application.configuration.RegionsTabPage.REGIONS_TABLE_ROW;
+import static org.sormas.e2etests.pages.application.configuration.RegionsTabPage.RELEVANCE_STATUS_COMBO_BOX_REGIONS_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.RegionsTabPage.RESET_FILTERS_BUTTON_REGIONS_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.RegionsTabPage.SEARCH_INPUT_REGIONS_CONFIGURATION;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
@@ -99,6 +107,69 @@ public class ConfigurationRegionsSteps implements En {
                       "EPID-NUMMER=DEF-REG, LAND=Deutschland, EXTERNE ID=, BEV\u00d6LKERUNG=, WACHSTUMSRATE=, NAME=Voreingestellte Bundesl\u00e4nder"),
               "Voreingestellte Bundeslander is not correctly displayed!");
           softly.assertAll();
+        });
+
+    Then(
+        "I Verify the page elements are present in Regions Configuration Page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              IMPORT_BUTTON_REGIONS_CONFIGURATION);
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(IMPORT_BUTTON_REGIONS_CONFIGURATION),
+              "Import Button is Not present in Regions Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(EXPORT_BUTTON_REGIONS_CONFIGURATION),
+              "Export Button is Not present in Regions Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(NEW_ENTRY_BUTTON_REGIONS_CONFIGURATION),
+              "New Entry Button is Not present in Regions Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(ENTER_BULK_EDIT_MODE_BUTTON_REGIONS_CONFIGURATION),
+              "Enter Bulk Edit Mode Button is Not present in Regions Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(SEARCH_INPUT_REGIONS_CONFIGURATION),
+              "Search Input is Not present in Regions Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(COUNTRY_REGION_FILTER_COMBOBOX),
+              "Country Combo box is Not present in Regions Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(RESET_FILTERS_BUTTON_REGIONS_CONFIGURATION),
+              "Reset Filters Button is Not present in Regions Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(RELEVANCE_STATUS_COMBO_BOX_REGIONS_CONFIGURATION),
+              "Relevance status Combo box is Not present in Regions Configuration");
+          softly.assertAll();
+        });
+
+    Then(
+        "I verify the Search and Reset filter functionality in Regions Configuration page",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              ENTER_BULK_EDIT_MODE_BUTTON_REGIONS_CONFIGURATION);
+          Integer defaultCountriesCount =
+              webDriverHelpers.getNumberOfElements(REGIONS_NAME_TABLE_ROW);
+          String countries = webDriverHelpers.getTextFromWebElement(REGIONS_NAME_TABLE_ROW);
+          webDriverHelpers.fillAndSubmitInWebElement(SEARCH_INPUT_REGIONS_CONFIGURATION, countries);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilNumberOfElementsIsExactly(REGIONS_NAME_TABLE_ROW, 1);
+          webDriverHelpers.waitUntilAListOfElementsHasText(REGIONS_NAME_TABLE_ROW, countries);
+          webDriverHelpers.clickOnWebElementBySelector(RESET_FILTERS_BUTTON_REGIONS_CONFIGURATION);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilNumberOfElementsIsExactly(
+              REGIONS_NAME_TABLE_ROW, defaultCountriesCount);
+        });
+
+    Then(
+        "I verify the Country combo box returns appropriate filter results in Regions Configuration page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              COUNTRY_REGION_FILTER_COMBOBOX);
+          webDriverHelpers.selectFromCombobox(COUNTRY_REGION_FILTER_COMBOBOX, "Germany");
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilNumberOfElementsIsExactly(REGIONS_NAME_TABLE_ROW, 19);
         });
   }
 

@@ -21,8 +21,8 @@ public class CampaignDiagramDefinitionFacadeEjb implements CampaignDiagramDefini
 
 	@Override
 	public CampaignDiagramDefinitionDto save(@Valid CampaignDiagramDefinitionDto campaignDiagramDefinitionDto) {
-
-		CampaignDiagramDefinition campaignDiagramDefinition = fromDto(campaignDiagramDefinitionDto, true);
+		CampaignDiagramDefinition existingCampaignDiagramDefinition = service.getByUuid(campaignDiagramDefinitionDto.getUuid());
+		CampaignDiagramDefinition campaignDiagramDefinition = fillOrBuildEntity(campaignDiagramDefinitionDto, existingCampaignDiagramDefinition, true);
 		service.ensurePersisted(campaignDiagramDefinition);
 		return toDto(campaignDiagramDefinition);
 	}
@@ -47,9 +47,12 @@ public class CampaignDiagramDefinitionFacadeEjb implements CampaignDiagramDefini
 		return toDto(service.getByDiagramId(diagramId));
 	}
 
-	public CampaignDiagramDefinition fromDto(@NotNull CampaignDiagramDefinitionDto source, boolean checkChangeDate) {
-		CampaignDiagramDefinition target =
-			DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), CampaignDiagramDefinition::new, checkChangeDate);
+	public CampaignDiagramDefinition fillOrBuildEntity(@NotNull CampaignDiagramDefinitionDto source, CampaignDiagramDefinition target, boolean checkChangeDate) {
+		if (source == null) {
+			return null;
+		}
+
+		target = DtoHelper.fillOrBuildEntity(source, target, CampaignDiagramDefinition::new, checkChangeDate);
 
 		target.setDiagramId(source.getDiagramId());
 		target.setDiagramType(source.getDiagramType());

@@ -27,7 +27,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
+import de.symeda.sormas.api.sormastosormas.entities.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasCasePreview;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.caze.Case;
@@ -72,11 +72,13 @@ public class ReceivedCaseProcessor
 
 		CaseDataDto caze = sharedData.getEntity();
 		PersonDto person = sharedData.getPerson();
+		sormasToSormasEntitiesHelper.updateIfNecessaryOccupationType(sharedData.getPerson());
+
 		caze.setPerson(person.toReference());
 		updateReportingUser(caze, existingCase);
 
 		if(originInfo.isOwnershipHandedOver()) {
-			sormasToSormasEntitiesHelper.updateCaseResponsibleDistrict(caze, configFacade.getS2SConfig().getDistrictExternalId());
+			sormasToSormasEntitiesHelper.updateReceivedCaseResponsibleDistrict(caze);
 		}
 	}
 

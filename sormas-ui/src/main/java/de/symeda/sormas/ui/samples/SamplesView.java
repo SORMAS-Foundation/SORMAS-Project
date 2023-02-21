@@ -93,7 +93,7 @@ public class SamplesView extends AbstractView {
 					? this.sampleListComponent.getGrid().asMultiSelect().getSelectedItems()
 					: Collections.emptySet(),
 				ExportEntityName.SAMPLES,
-				SampleGrid.EDIT_BTN_ID);
+				SampleGrid.ACTION_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(basicExportButton);
 
@@ -153,7 +153,6 @@ public class SamplesView extends AbstractView {
 				ViewModelProviders.of(SamplesView.class).get(ViewConfiguration.class).setInEagerMode(true);
 				btnEnterBulkEditMode.setVisible(false);
 				btnLeaveBulkEditMode.setVisible(true);
-				sampleListComponent.getSearchField().setEnabled(false);
 				sampleListComponent.getGrid().reload();
 			});
 			btnLeaveBulkEditMode.addClickListener(e -> {
@@ -161,7 +160,6 @@ public class SamplesView extends AbstractView {
 				ViewModelProviders.of(SamplesView.class).get(ViewConfiguration.class).setInEagerMode(false);
 				btnLeaveBulkEditMode.setVisible(false);
 				btnEnterBulkEditMode.setVisible(true);
-				sampleListComponent.getSearchField().setEnabled(true);
 				navigateTo(sampleListComponent.getCriteria());
 			});
 		}

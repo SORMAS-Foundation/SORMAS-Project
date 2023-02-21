@@ -15,37 +15,15 @@
 
 package de.symeda.sormas.backend.event;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.containing;
-import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import de.symeda.sormas.api.event.EventInvestigationStatus;
-import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
-import de.symeda.sormas.api.share.ExternalShareStatus;
-import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.backend.MockProducer;
-import org.apache.http.HttpStatus;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -54,6 +32,7 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -61,25 +40,8 @@ import de.symeda.sormas.backend.TestDataCreator;
 
 public class EventServiceTest extends AbstractBeanTest {
 
-	private static final int WIREMOCK_TESTING_PORT = 8888;
-	private ExternalSurveillanceToolFacade subjectUnderTest;
-
 	private TestDataCreator.RDCF rdcf;
 	private UserDto nationalUser;
-
-	@Rule
-	public WireMockRule wireMockRule = new WireMockRule(options().port(WIREMOCK_TESTING_PORT), false);
-
-	@Before
-	public void setup() {
-		configureExternalSurvToolUrlForWireMock();
-		subjectUnderTest = getExternalSurveillanceToolGatewayFacade();
-	}
-
-	@After
-	public void teardown() {
-		clearExternalSurvToolUrlForWireMock();
-	}
 
 	@Override
 	public void init() {
@@ -100,7 +62,7 @@ public class EventServiceTest extends AbstractBeanTest {
 	public void testHasRegionAndDistrict() {
 
 		EventDto event1 = creator.createEvent(nationalUser.toReference());
-		assertFalse(getEventService().hasRegionAndDistrict(event1.getUuid()));
+		assertTrue(getEventService().hasRegionAndDistrict(event1.getUuid()));
 
 		EventDto event2 = creator.createEvent(nationalUser.toReference(), Disease.EVD, e -> {
 			e.getEventLocation().setRegion(rdcf.region);
@@ -146,11 +108,6 @@ public class EventServiceTest extends AbstractBeanTest {
 		assertEquals(event.getUuid(), result.get(0).getEventUuid());
 		assertEquals(event.getEventTitle(), result.get(0).getEventTitle());
 
-		stubFor(
-			post(urlEqualTo("/export")).withRequestBody(containing(event.getUuid()))
-				.withRequestBody(containing("eventUuids"))
-				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
-
 		// archiving should not have any effect on the export list
 		getEventFacade().archive(Collections.singletonList(event.getUuid()));
 
@@ -190,11 +147,6 @@ public class EventServiceTest extends AbstractBeanTest {
 		assertEquals(eventDto.getUuid(), result.get(0).getEventUuid());
 		assertEquals(eventDto.getEventTitle(), result.get(0).getEventTitle());
 
-		stubFor(
-			post(urlEqualTo("/export")).withRequestBody(containing(event.getUuid()))
-				.withRequestBody(containing("eventUuids"))
-				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
-
 		// archiving should not have any effect on the export list
 		getEventFacade().archive(Collections.singletonList(event.getUuid()));
 
@@ -208,81 +160,5 @@ public class EventServiceTest extends AbstractBeanTest {
 
 		result = sut.getEventSummaryDetailsByCases(Arrays.asList(cazeId));
 		assertTrue(result.isEmpty());
-	}
-
-	@Test
-	public void testSetArchiveInExternalSurveillanceToolForEntity_WithProperEntity() {
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserReferenceDto user = creator.createUser(rdcf).toReference();
-
-		EventDto eventDto = creator.createEvent(
-			EventStatus.SIGNAL,
-			EventInvestigationStatus.PENDING,
-			"",
-			"",
-			"",
-			"",
-			"",
-			TypeOfPlace.FACILITY,
-			new Date(),
-			new Date(),
-			user,
-			user,
-			Disease.DENGUE,
-			rdcf.district);
-
-		Event event = getEventService().getByUuid(eventDto.getUuid());
-		getExternalShareInfoService().createAndPersistShareInfo(event, ExternalShareStatus.SHARED);
-		EventService eventService = getBean(EventService.class);
-
-		stubFor(
-			post(urlEqualTo("/export")).withRequestBody(containing(event.getUuid()))
-				.withRequestBody(containing("eventUuids"))
-				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
-
-		eventService.setArchiveInExternalSurveillanceToolForEntity(event.getUuid(), false);
-		wireMockRule.verify(exactly(1), postRequestedFor(urlEqualTo("/export")));
-	}
-
-	@Test(expected = ExternalSurveillanceToolRuntimeException.class)
-	public void testSetArchiveInExternalSurveillanceToolForEntity_Exception() {
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserReferenceDto user = creator.createUser(rdcf).toReference();
-
-		EventDto eventDto = creator.createEvent(
-			EventStatus.SIGNAL,
-			EventInvestigationStatus.PENDING,
-			"",
-			"",
-			"",
-			"",
-			"",
-			TypeOfPlace.FACILITY,
-			new Date(),
-			new Date(),
-			user,
-			user,
-			Disease.DENGUE,
-			rdcf.district);
-
-		Event event = getEventService().getByUuid(eventDto.getUuid());
-		getExternalShareInfoService().createAndPersistShareInfo(event, ExternalShareStatus.SHARED);
-
-		EventService eventService = getBean(EventService.class);
-
-		stubFor(
-			post(urlEqualTo("/export")).withRequestBody(containing(eventDto.getUuid()))
-				.withRequestBody(containing("eventUuids"))
-				.willReturn(aResponse().withStatus(HttpStatus.SC_BAD_REQUEST)));
-
-		eventService.setArchiveInExternalSurveillanceToolForEntity(eventDto.getUuid(), true);
-	}
-
-	private void configureExternalSurvToolUrlForWireMock() {
-		MockProducer.getProperties().setProperty("survnet.url", String.format("http://localhost:%s", WIREMOCK_TESTING_PORT));
-	}
-
-	private void clearExternalSurvToolUrlForWireMock() {
-		MockProducer.getProperties().setProperty("survnet.url", "");
 	}
 }

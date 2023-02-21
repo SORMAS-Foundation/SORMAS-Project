@@ -20,11 +20,22 @@ package org.sormas.e2etests.pages.application.configuration;
 import org.openqa.selenium.By;
 
 public class RegionsTabPage {
+  public static final By IMPORT_BUTTON_REGIONS_CONFIGURATION = By.id("actionImport");
+  public static final By EXPORT_BUTTON_REGIONS_CONFIGURATION = By.id("export");
+  public static final By NEW_ENTRY_BUTTON_REGIONS_CONFIGURATION = By.id("actionNewEntry");
+  public static final By ENTER_BULK_EDIT_MODE_BUTTON_REGIONS_CONFIGURATION =
+      By.id("actionEnterBulkEditMode");
+  public static final By SEARCH_INPUT_REGIONS_CONFIGURATION = By.id("search");
+  public static final By RESET_FILTERS_BUTTON_REGIONS_CONFIGURATION = By.id("actionResetFilters");
+  public static final By RELEVANCE_STATUS_COMBO_BOX_REGIONS_CONFIGURATION =
+      By.id("relevanceStatus");
   public static final By NUMBER_OF_REGIONS =
       By.xpath(
           "//div[@class='v-label v-widget bold v-label-bold vspace-top-none v-label-vspace-top-none align-right v-label-align-right v-label-undef-w']");
   public static final By REGIONS_TABLE_DATA = By.tagName("td");
   public static final By REGIONS_TABLE_ROW = By.cssSelector("div.v-grid-tablewrapper tbody tr");
+  public static final By REGIONS_NAME_TABLE_ROW =
+      By.cssSelector("div.v-grid-tablewrapper tbody tr >:nth-child(2)");
   public static final By REGIONS_COLUMN_HEADERS =
       By.cssSelector("thead" + " .v-grid-column-default-header-content");
   public static final By COUNTRY_REGION_FILTER_COMBOBOX =

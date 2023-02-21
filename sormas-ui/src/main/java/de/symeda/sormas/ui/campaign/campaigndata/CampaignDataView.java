@@ -15,9 +15,10 @@
 
 package de.symeda.sormas.ui.campaign.campaigndata;
 
-import static de.symeda.sormas.ui.utils.FilteredGrid.EDIT_BTN_ID;
+import static de.symeda.sormas.ui.utils.FilteredGrid.ACTION_BTN_ID;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -136,7 +137,7 @@ public class CampaignDataView extends AbstractCampaignView {
 			addHeaderComponent(exportPopupButton);
 
 			{
-				StreamResource streamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.CAMPAIGN_DATA, EDIT_BTN_ID);
+				StreamResource streamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.CAMPAIGN_DATA, ACTION_BTN_ID);
 				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.export, Strings.infoBasicExport);
 			}
 		}
@@ -204,14 +205,14 @@ public class CampaignDataView extends AbstractCampaignView {
 			List<CampaignFormMetaReferenceDto> campagaignFormReferences =
 				FacadeProvider.getCampaignFormMetaFacade().getCampaignFormMetasAsReferencesByCampaign(campaignReferenceDto.getUuid());
 			for (CampaignFormMetaReferenceDto campaignForm : campagaignFormReferences) {
-				Button campaignFormButton = ButtonHelper.createButton(campaignForm.toString(), e -> {
+				Button campaignFormButton = ButtonHelper.createButton(campaignForm.buildCaption(), e -> {
 					importCampaignButton.setPopupVisible(false);
 					try {
 						Window popupWindow = VaadinUiUtil.showPopupWindow(new CampaignFormDataImportLayout(campaignForm, campaignReferenceDto));
 						popupWindow.setCaption(I18nProperties.getString(Strings.headingImportCampaign));
 						popupWindow.addCloseListener(c -> grid.reload());
-					} catch (IOException ioException) {
-						ioException.printStackTrace();
+					} catch (IOException ex) {
+						throw new UncheckedIOException(ex);
 					}
 				});
 				campaignFormButton.setWidth(100, Unit.PERCENTAGE);
@@ -235,7 +236,7 @@ public class CampaignDataView extends AbstractCampaignView {
 			List<CampaignFormMetaReferenceDto> campagaignFormReferences =
 				FacadeProvider.getCampaignFormMetaFacade().getCampaignFormMetasAsReferencesByCampaign(campaignReferenceDto.getUuid());
 			for (CampaignFormMetaReferenceDto campaignForm : campagaignFormReferences) {
-				Button campaignFormButton = ButtonHelper.createButton(campaignForm.toString(), e -> {
+				Button campaignFormButton = ButtonHelper.createButton(campaignForm.buildCaption(), e -> {
 					ControllerProvider.getCampaignController().createCampaignDataForm(criteria.getCampaign(), campaignForm);
 					newFormButton.setPopupVisible(false);
 				});

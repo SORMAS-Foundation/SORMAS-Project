@@ -17,40 +17,55 @@ package de.symeda.sormas.ui.samples.sampleLink;
 
 import java.util.function.Consumer;
 
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.themes.ValoTheme;
+
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 public class SampleListComponent extends SideComponent {
 
-	public SampleListComponent(SampleCriteria sampleCriteria, Consumer<Runnable> actionCallback) {
+	public SampleListComponent(SampleCriteria sampleCriteria, Consumer<Runnable> actionCallback, boolean isEditAllowed) {
 		super(I18nProperties.getString(Strings.entitySamples), actionCallback);
 
-		SampleList sampleList = new SampleList(sampleCriteria);
+		SampleList sampleList = new SampleList(sampleCriteria, isEditAllowed);
 
-		addCreateButton(I18nProperties.getCaption(Captions.sampleNewSample), () -> {
-			switch (sampleCriteria.getSampleAssociationType()) {
-			case CASE:
-				ControllerProvider.getSampleController().create(sampleCriteria.getCaze(), sampleCriteria.getDisease(), SormasUI::refreshView);
-				break;
-			case CONTACT:
-				ControllerProvider.getSampleController().create(sampleCriteria.getContact(), sampleCriteria.getDisease(), SormasUI::refreshView);
-				break;
-			case EVENT_PARTICIPANT:
-				ControllerProvider.getSampleController()
-					.create(sampleCriteria.getEventParticipant(), sampleCriteria.getDisease(), SormasUI::refreshView);
-				break;
-			default:
-				throw new IllegalArgumentException("Invalid sample association type:" + sampleCriteria.getSampleAssociationType());
-			}
-		}, UserRight.SAMPLE_CREATE);
-
+		if (isEditAllowed && sampleCriteria.getSampleAssociationType() != SampleAssociationType.PERSON) {
+			addCreateButton(I18nProperties.getCaption(Captions.sampleNewSample), () -> {
+				switch (sampleCriteria.getSampleAssociationType()) {
+				case CASE:
+					ControllerProvider.getSampleController().create(sampleCriteria.getCaze(), sampleCriteria.getDisease(), SormasUI::refreshView);
+					break;
+				case CONTACT:
+					ControllerProvider.getSampleController().create(sampleCriteria.getContact(), sampleCriteria.getDisease(), SormasUI::refreshView);
+					break;
+				case EVENT_PARTICIPANT:
+					ControllerProvider.getSampleController()
+						.create(sampleCriteria.getEventParticipant(), sampleCriteria.getDisease(), SormasUI::refreshView);
+					break;
+				default:
+					throw new IllegalArgumentException("Invalid sample association type:" + sampleCriteria.getSampleAssociationType());
+				}
+			}, UserRight.SAMPLE_CREATE);
+		}
 		addComponent(sampleList);
 		sampleList.reload();
+		if (!sampleList.isEmpty()) {
+			final Button seeSamples = ButtonHelper.createButton(I18nProperties.getCaption(Captions.personLinkToSamples));
+			CssStyles.style(seeSamples, ValoTheme.BUTTON_PRIMARY);
+			seeSamples.addClickListener(clickEvent -> ControllerProvider.getSampleController().navigateTo(sampleCriteria));
+			addComponent(seeSamples);
+			setComponentAlignment(seeSamples, Alignment.MIDDLE_LEFT);
+		}
 	}
 }

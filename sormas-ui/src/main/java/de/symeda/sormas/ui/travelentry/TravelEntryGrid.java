@@ -1,19 +1,15 @@
 package de.symeda.sormas.ui.travelentry;
 
 import java.util.Date;
-import java.util.stream.Collectors;
 
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryIndexDto;
-import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.campaign.campaigns.CampaignsView;
@@ -42,6 +38,17 @@ public class TravelEntryGrid extends FilteredGrid<TravelEntryIndexDto, TravelEnt
 			setCriteria(criteria);
 		}
 
+		Column<TravelEntryIndexDto, String> deleteColumn = addColumn(entry -> {
+			if (entry.getDeletionReason() != null) {
+				return entry.getDeletionReason() + (entry.getOtherDeletionReason() != null ? ": " + entry.getOtherDeletionReason() : "");
+			} else {
+				return "-";
+			}
+		});
+		deleteColumn.setId(DELETE_REASON_COLUMN);
+		deleteColumn.setSortable(false);
+		deleteColumn.setCaption(I18nProperties.getCaption(Captions.deletionReason));
+
 		setCriteria(criteria);
 		initColumns();
 		addItemClickListener(
@@ -61,7 +68,8 @@ public class TravelEntryGrid extends FilteredGrid<TravelEntryIndexDto, TravelEnt
 			TravelEntryIndexDto.RECOVERED,
 			TravelEntryIndexDto.VACCINATED,
 			TravelEntryIndexDto.TESTED_NEGATIVE,
-			TravelEntryIndexDto.QUARANTINE_TO);
+			TravelEntryIndexDto.QUARANTINE_TO,
+			DELETE_REASON_COLUMN);
 
 		((Column<TravelEntryIndexDto, String>) getColumn(TravelEntryIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<TravelEntryIndexDto, Boolean>) getColumn(TravelEntryIndexDto.RECOVERED)).setRenderer(new BooleanRenderer());
@@ -79,28 +87,12 @@ public class TravelEntryGrid extends FilteredGrid<TravelEntryIndexDto, TravelEnt
 	}
 
 	public void setLazyDataProvider() {
-		DataProvider<TravelEntryIndexDto, TravelEntryCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-			query -> FacadeProvider.getTravelEntryFacade()
-				.getIndexList(
-					query.getFilter().orElse(null),
-					query.getOffset(),
-					query.getLimit(),
-					query.getSortOrders()
-						.stream()
-						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-						.collect(Collectors.toList()))
-				.stream(),
-			query -> (int) FacadeProvider.getTravelEntryFacade().count(query.getFilter().orElse(null)));
-		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.NONE);
+
+		setLazyDataProvider(FacadeProvider.getTravelEntryFacade()::getIndexList, FacadeProvider.getTravelEntryFacade()::count);
 	}
 
-
 	public void setEagerDataProvider() {
-		ListDataProvider<TravelEntryIndexDto> dataProvider =
-				DataProvider.fromStream(FacadeProvider.getTravelEntryFacade().getIndexList(getCriteria(), null, null, null).stream());
-		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.MULTI);
+		setEagerDataProvider(FacadeProvider.getTravelEntryFacade()::getIndexList);
 	}
 
 	public void reload() {

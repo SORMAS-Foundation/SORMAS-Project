@@ -21,17 +21,14 @@ import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
+import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @LocalBean
 @Stateless(name = "HealthConditionsMapper")
 public class HealthConditionsMapper {
 
-	@EJB
-	private HealthConditionsService healthConditionsService;
-
 	public static HealthConditionsDto toDto(HealthConditions source) {
-
 		if (source == null) {
 			return null;
 		}
@@ -68,6 +65,9 @@ public class HealthConditionsMapper {
 	}
 
 	public HealthConditions fillOrBuildEntity(@NotNull HealthConditionsDto source, HealthConditions target, boolean checkChangeDate) {
+		if (source == null) {
+			return null;
+		}
 
 		target = DtoHelper.fillOrBuildEntity(source, target, HealthConditions::new, checkChangeDate);
 
@@ -96,13 +96,5 @@ public class HealthConditionsMapper {
 		target.setImmunodeficiencyIncludingHiv(source.getImmunodeficiencyIncludingHiv());
 
 		return target;
-	}
-
-	public HealthConditions fromDto(@NotNull HealthConditionsDto source, boolean checkChangeDate) {
-
-		HealthConditions target =
-			DtoHelper.fillOrBuildEntity(source, healthConditionsService.getByUuid(source.getUuid()), HealthConditions::new, checkChangeDate);
-
-		return fillOrBuildEntity(source, target, checkChangeDate);
 	}
 }

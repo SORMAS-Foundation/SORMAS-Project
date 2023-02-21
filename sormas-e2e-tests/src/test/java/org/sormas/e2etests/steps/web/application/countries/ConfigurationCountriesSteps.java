@@ -20,11 +20,20 @@ package org.sormas.e2etests.steps.web.application.countries;
 
 import static org.sormas.e2etests.pages.application.configuration.ConfigurationTabsPage.CONFIGURATION_COUNTRIES_TAB;
 import static org.sormas.e2etests.pages.application.configuration.CountriesTabPage.COUNTRIES_COLUMN_HEADERS;
+import static org.sormas.e2etests.pages.application.configuration.CountriesTabPage.COUNTRIES_NAME_TABLE_ROW;
 import static org.sormas.e2etests.pages.application.configuration.CountriesTabPage.COUNTRIES_TABLE_DATA;
 import static org.sormas.e2etests.pages.application.configuration.CountriesTabPage.COUNTRIES_TABLE_ROW;
 import static org.sormas.e2etests.pages.application.configuration.CountriesTabPage.COUNTRY_GRID_RESULTS_ROWS;
+import static org.sormas.e2etests.pages.application.configuration.CountriesTabPage.ENTER_BULK_EDIT_MODE_BUTTON_COUNTRIES_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.CountriesTabPage.EXPORT_BUTTON_COUNTRIES_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.CountriesTabPage.IMPORT_BUTTON_COUNTRIES_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.CountriesTabPage.IMPORT_DEFAULT_BUTTON_COUNTRIES_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.CountriesTabPage.NEW_ENTRY_BUTTON_COUNTRIES_CONFIGURATION;
 import static org.sormas.e2etests.pages.application.configuration.CountriesTabPage.NUMBER_OF_COUNTRIES;
+import static org.sormas.e2etests.pages.application.configuration.CountriesTabPage.RELEVANCE_STATUS_COMBO_BOX_COUNTRIES_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.CountriesTabPage.RESET_FILTERS_BUTTON_COUNTRIES_CONFIGURATION;
 import static org.sormas.e2etests.pages.application.configuration.CountriesTabPage.SEARCH_COUNTRY;
+import static org.sormas.e2etests.pages.application.configuration.CountriesTabPage.SUBCONTINENTS_COMBO_BOX_COUNTRIES_CONFIGURATION;
 import static org.sormas.e2etests.pages.application.configuration.CountriesTabPage.SUBCONTINENT_TABLE_VALUE;
 
 import com.github.javafaker.Faker;
@@ -112,6 +121,117 @@ public class ConfigurationCountriesSteps implements En {
                       "ISO CODE=ALB, SUBKONTINENT=S\u00fcdosteuropa, EXTERNE ID=21000125, UNO CODE=8, NAME=Albanien"),
               "Albania is not correctly displayed!");
           softly.assertAll();
+        });
+
+    Then(
+        "I Verify the page elements are present in Countries Configuration Page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              IMPORT_BUTTON_COUNTRIES_CONFIGURATION);
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(IMPORT_BUTTON_COUNTRIES_CONFIGURATION),
+              "Import Button is Not present in Countries Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(IMPORT_DEFAULT_BUTTON_COUNTRIES_CONFIGURATION),
+              "Import Default Button is Not present in Countries Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(EXPORT_BUTTON_COUNTRIES_CONFIGURATION),
+              "Export Button is Not present in Countries Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(NEW_ENTRY_BUTTON_COUNTRIES_CONFIGURATION),
+              "New Entry Button is Not present in Countries Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(
+                  ENTER_BULK_EDIT_MODE_BUTTON_COUNTRIES_CONFIGURATION),
+              "Enter Bulk Edit Mode Button is Not present in Countries Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(SEARCH_COUNTRY),
+              "Search Input is Not present in Countries Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(SUBCONTINENTS_COMBO_BOX_COUNTRIES_CONFIGURATION),
+              "Continent Name Combo box is Not present in Countries Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(RESET_FILTERS_BUTTON_COUNTRIES_CONFIGURATION),
+              "Reset Filters Button is Not present in Countries Configuration");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(RELEVANCE_STATUS_COMBO_BOX_COUNTRIES_CONFIGURATION),
+              "Relevance status Combo box is Not present in Countries Configuration");
+          softly.assertAll();
+        });
+
+    Then(
+        "I verify the Search and Reset filter functionality in Countries Configuration page",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              ENTER_BULK_EDIT_MODE_BUTTON_COUNTRIES_CONFIGURATION);
+          webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(COUNTRIES_NAME_TABLE_ROW);
+          Integer defaultCountriesCount =
+              webDriverHelpers.getNumberOfElements(COUNTRIES_NAME_TABLE_ROW);
+          String countries = webDriverHelpers.getTextFromWebElement(COUNTRIES_NAME_TABLE_ROW);
+          webDriverHelpers.fillAndSubmitInWebElement(SEARCH_COUNTRY, countries);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilNumberOfElementsIsExactly(COUNTRIES_NAME_TABLE_ROW, 1);
+          webDriverHelpers.waitUntilAListOfElementsHasText(COUNTRIES_NAME_TABLE_ROW, countries);
+          webDriverHelpers.clickOnWebElementBySelector(
+              RESET_FILTERS_BUTTON_COUNTRIES_CONFIGURATION);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilNumberOfElementsIsExactly(
+              COUNTRIES_NAME_TABLE_ROW, defaultCountriesCount);
+        });
+
+    Then(
+        "^I verify the Subcontinent ([^\"]*) combo box returns appropriate filter results in Countries Configuration page$",
+        (String Subcontinent) -> {
+          switch (Subcontinent) {
+            case "Australia (Subcontinent)":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  SUBCONTINENTS_COMBO_BOX_COUNTRIES_CONFIGURATION);
+              webDriverHelpers.selectFromCombobox(
+                  SUBCONTINENTS_COMBO_BOX_COUNTRIES_CONFIGURATION, "Australia (Subcontinent)");
+              webDriverHelpers.waitForPageLoaded();
+              webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+              webDriverHelpers.waitUntilNumberOfElementsIsExactly(COUNTRIES_NAME_TABLE_ROW, 1);
+              String CountryCounter = webDriverHelpers.getTextFromWebElement(NUMBER_OF_COUNTRIES);
+              break;
+            case "Central Africa":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  SUBCONTINENTS_COMBO_BOX_COUNTRIES_CONFIGURATION);
+              webDriverHelpers.selectFromCombobox(
+                  SUBCONTINENTS_COMBO_BOX_COUNTRIES_CONFIGURATION, "Central Africa");
+              webDriverHelpers.waitForPageLoaded();
+              webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+              webDriverHelpers.waitUntilNumberOfElementsIsExactly(COUNTRIES_NAME_TABLE_ROW, 8);
+              break;
+            case "Central America":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  SUBCONTINENTS_COMBO_BOX_COUNTRIES_CONFIGURATION);
+              webDriverHelpers.selectFromCombobox(
+                  SUBCONTINENTS_COMBO_BOX_COUNTRIES_CONFIGURATION, "Central America");
+              webDriverHelpers.waitForPageLoaded();
+              webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+              webDriverHelpers.waitUntilNumberOfElementsIsExactly(COUNTRIES_NAME_TABLE_ROW, 20);
+              break;
+            case "Central Asia":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  SUBCONTINENTS_COMBO_BOX_COUNTRIES_CONFIGURATION);
+              webDriverHelpers.selectFromCombobox(
+                  SUBCONTINENTS_COMBO_BOX_COUNTRIES_CONFIGURATION, "Central Asia");
+              webDriverHelpers.waitForPageLoaded();
+              webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+              webDriverHelpers.waitUntilNumberOfElementsIsExactly(COUNTRIES_NAME_TABLE_ROW, 6);
+              break;
+            case "Central Europe":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  SUBCONTINENTS_COMBO_BOX_COUNTRIES_CONFIGURATION);
+              webDriverHelpers.selectFromCombobox(
+                  SUBCONTINENTS_COMBO_BOX_COUNTRIES_CONFIGURATION, "Central Europe");
+              webDriverHelpers.waitForPageLoaded();
+              webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+              webDriverHelpers.waitUntilNumberOfElementsIsExactly(COUNTRIES_NAME_TABLE_ROW, 7);
+              break;
+          }
         });
   }
 

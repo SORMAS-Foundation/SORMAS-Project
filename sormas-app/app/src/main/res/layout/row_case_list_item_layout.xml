@@ -222,6 +222,7 @@
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentRight="true"
                         app:timeAgoValue="@{data.reportDate}"
+                        app:timeAgoDetailLevelDays="@{true}"
                         app:defaultValue='@{@string/value_report_date_unknown}'
                         />
 

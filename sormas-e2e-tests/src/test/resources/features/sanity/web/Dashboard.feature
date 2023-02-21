@@ -264,3 +264,45 @@ Feature: Dashboard counters
     And I click on the Contacts button from navbar
     And I click on first created contact in Contact directory page by UUID
     And I delete the contact
+
+  @env_main @#7443
+  Scenario: Validate Contacts Dashboard layout
+    Given I log in as a National User
+    When I click on the Contacts Radio button in Contact Dashboard
+    Then I verify filter component Region in the Contacts Dashboard Page
+    Then I verify filter component Disease in the Contacts Dashboard Page
+    Then I verify filter component Reset Filters in the Contacts Dashboard Page
+    Then I verify filter component Apply Filters in the Contacts Dashboard Page
+    And I click on the Show All Diseases button in the Contacts Dashboard Page
+    Then I verify the All Contacts Counter is displayed in the Contacts Dashboard Page
+    Then I verify the Under Follow-up Counter is displayed in the Contacts Dashboard Page
+    Then I verify the Stopped Follow-up Counter is displayed in the Contacts Dashboard Page
+    Then I verify the Visits Counter is displayed in the Contacts Dashboard Page
+    Then I verify the All Contacts Metrics are displayed in the Contacts Dashboard Page
+    Then I verify the Under Follow-up Metrics are displayed in the Contacts Dashboard Page
+    Then I verify the Stopped Follow-up Metrics are displayed in the Contacts Dashboard Page
+    Then I verify the Visits Metrics are displayed in the Contacts Dashboard Page
+    Then I verify the Contacts Per Case, min, max and average are displayed in the Contacts Dashboard Page
+    Then I verify that Contacts in Quarantine is displayed in the Contacts Dashboard Page
+    Then I verify that New Cases not Previously Known to Be Contacts is displayed in the Contacts Dashboard Page
+    Then I verify that Contacts placed in Quarantine is displayed in the Contacts Dashboard Page
+    Then I verify that Contacts placed in Quarantine is displayed in the Contacts Dashboard Page
+    And I click on the Show First Diseases button in the Contacts Dashboard Page
+    Then I verify Follow-Up Status Chart Elements are displayed in the Contacts Dashboard Page
+    And I click to Expand the Follow up status chart in the Contacts Dashboard Page
+    Then I verify Follow up status Chart Context Menu and its contents in the Contacts Dashboard Page
+    And I click to Collapse the Follow up status chart in the Contacts Dashboard Page
+    And I click to Expand the Contact Map displayed in the Contacts Dashboard Page
+    Then I Verify Contact Map elements are displayed in the Contacts Dashboard Page
+    And I click to Collapse the Contact Map displayed in the Contacts Dashboard Page
+
+  @env_main @#7443
+  Scenario: Verify filters in the Contact Dashboard
+    Given I log in as a National User
+    When I click on the Contacts Radio button in Contact Dashboard
+    And I Select the Today option from the Current period filter in Contact Dashboard
+    And I Select the Day before option from the Comparison period filter in Contact Dashboard
+    And I select a region for the filter located in Contact Dashboard
+    And I select a disease for the filter located in Contact Dashboard
+    Then I click the Apply filter button in Contact Dashboard
+    Then I click the Reset filter button in Contact Dashboard

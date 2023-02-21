@@ -39,6 +39,7 @@ import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.RequestContextTO;
+import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
 import de.symeda.sormas.api.externaljournal.SymptomJournalConfig;
 import de.symeda.sormas.api.externaljournal.UserConfig;
@@ -54,6 +55,7 @@ import de.symeda.sormas.api.utils.VersionHelper;
 /**
  * Provides the application configuration settings
  */
+@AuditIgnore
 @Stateless(name = "ConfigFacade")
 public class ConfigFacadeEjb implements ConfigFacade {
 
@@ -66,7 +68,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String COUNTRY_CENTER_LAT = "country.center.latitude";
 	private static final String COUNTRY_CENTER_LON = "country.center.longitude";
 	private static final String MAP_USE_COUNTRY_CENTER = "map.usecountrycenter";
-	private static final String MAP_TILES_URL = "map.tiles.url";
+	public static final String MAP_TILES_URL = "map.tiles.url";
 	private static final String MAP_TILES_ATTRIBUTION = "map.tiles.attribution";
 	private static final String MAP_ZOOM = "map.zoom";
 
@@ -124,9 +126,12 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String DOCGENERATION_NULL_REPLACEMENT = "docgeneration.nullReplacement";
 	public static final String INTERFACE_DEMIS_JNDINAME = "interface.demis.jndiName";
 
+	public static final String ALLOWED_FILE_EXTENSIONS = "allowed.file.extensions";
+	public static final String DEFAULT_ALLOWED_FILETYPES = ".pdf,.txt,.doc,.docx,.odt,.xls,.xlsx,.ods,.ppt,.pptx,.odp,.jpg,.jpeg,.png,.gif,.msg,.html";
+
 	private static final String DAYS_AFTER_SYSTEM_EVENT_GETS_DELETED = "daysAfterSystemEventGetsDeleted";
 
-	private static final String GEOCODING_SERVICE_URL_TEMPLATE = "geocodingServiceUrlTemplate";
+	public static final String GEOCODING_SERVICE_URL_TEMPLATE = "geocodingServiceUrlTemplate";
 	private static final String GEOCODING_LONGITUDE_JSON_PATH = "geocodingLongitudeJsonPath";
 	private static final String GEOCODING_LATITUDE_JSON_PATH = "geocodingLatitudeJsonPath";
 	private static final String GEOCODING_EPSG4326_WKT = "geocodingEPSG4326_WKT";
@@ -582,9 +587,10 @@ public class ConfigFacadeEjb implements ConfigFacade {
 			patientDiaryConfig.getAuthUrl(),
 			patientDiaryConfig.getFrontendAuthUrl(),
 			getAppUrl(),
-			getUiUrl());
+			getUiUrl(),
+			getSormasStatsUrl());
 
-		List<String> allowHttp = Lists.newArrayList(getExternalSurveillanceToolGatewayUrl(), getSormasStatsUrl());
+		List<String> allowHttp = Lists.newArrayList(getExternalSurveillanceToolGatewayUrl());
 
 		// separately as they are interpolated
 		if (!StringUtils.isBlank(s2sConfig.getOidcServer())) {
@@ -622,20 +628,18 @@ public class ConfigFacadeEjb implements ConfigFacade {
 			throw new IllegalArgumentException(String.format("Invalid URLs in property file:\n\t%s", invalid));
 		}
 
+		// the following two checks cannot be collapsed with the general HTTPS check because they are not valid URLs
+		// as they contain placeholders
+
 		String geocodingUrl = getGeocodingServiceUrlTemplate();
-		if (!StringUtils.isBlank(geocodingUrl)) {
-			if (!geocodingUrl.startsWith("https://")) {
-				throw new IllegalArgumentException("geocodingServiceUrlTemplate property is required to be HTTPS");
-			}
+		if (!StringUtils.isBlank(geocodingUrl) && !geocodingUrl.startsWith("https://")) {
+			throw new IllegalArgumentException("geocodingServiceUrlTemplate property is required to be HTTPS");
 		}
 
 		String mapTilersUrl = getMapTilersUrl();
-		if (!StringUtils.isBlank(mapTilersUrl)) {
-			if (!mapTilersUrl.startsWith("https://")) {
-				throw new IllegalArgumentException("map.tiles.url property is required to be HTTPS");
-			}
+		if (!StringUtils.isBlank(mapTilersUrl) && !mapTilersUrl.startsWith("https://")) {
+			throw new IllegalArgumentException("map.tiles.url property is required to be HTTPS");
 		}
-
 	}
 
 	@Override
@@ -761,6 +765,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
+	public String[] getAllowedFileExtensions() {
+		return getProperty(ALLOWED_FILE_EXTENSIONS, DEFAULT_ALLOWED_FILETYPES).split(",");
+	}
+
+	@Override
 	public long getDocumentUploadSizeLimitMb() {
 		return getLong(DOCUMENT_UPLOAD_SIZE_LIMIT_MB, DEFAULT_DOCUMENT_UPLOAD_SIZE_LIMIT_MB);
 	}
@@ -770,11 +779,13 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		return getLong(IMPORT_FILE_SIZE_LIMIT_MB, DEFAULT_IMPOR_FILE_SIZE_LIMIT_MB);
 	}
 
-	@Override public void setRequestContext(RequestContextTO requestContext) {
+	@Override
+	public void setRequestContext(RequestContextTO requestContext) {
 		RequestContextHolder.setRequestContext(requestContext);
 	}
 
-	@Override public void resetRequestContext() {
+	@Override
+	public void resetRequestContext() {
 		RequestContextHolder.reset();
 	}
 

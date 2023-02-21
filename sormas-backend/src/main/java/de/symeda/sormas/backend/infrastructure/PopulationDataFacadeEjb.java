@@ -170,7 +170,8 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 
 		for (PopulationDataDto populationData : populationDataList) {
 			validate(populationData);
-			PopulationData entity = fromDto(populationData, true);
+			PopulationData existingPopulationData = service.getByUuid(populationData.getUuid());
+			PopulationData entity = fillOrBuildEntity(populationData, existingPopulationData, true);
 			service.ensurePersisted(entity);
 		}
 	}
@@ -324,9 +325,8 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 	}
 
 	@RightsAllowed(UserRight._POPULATION_MANAGE)
-	public PopulationData fromDto(@NotNull PopulationDataDto source, boolean checkChangeDate) {
-
-		PopulationData target = DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), PopulationData::new, checkChangeDate);
+	public PopulationData fillOrBuildEntity(@NotNull PopulationDataDto source, PopulationData target, boolean checkChangeDate) {
+		target = DtoHelper.fillOrBuildEntity(source, target, PopulationData::new, checkChangeDate);
 
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));

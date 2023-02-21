@@ -27,6 +27,8 @@ import org.apache.commons.lang3.StringUtils;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.HasCaption;
+import de.symeda.sormas.api.uuid.HasUuid;
 
 public class EntityDtoAccessHelper {
 
@@ -113,6 +115,7 @@ public class EntityDtoAccessHelper {
 		} else if (value instanceof Date
 			|| value instanceof BurialInfoDto
 			|| value instanceof BirthDateDto
+			|| value instanceof HasCaption
 			|| value.getClass().equals(Boolean.class)) {
 			return DataHelper.valueToString(value);
 		} else {

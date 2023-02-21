@@ -50,7 +50,7 @@ public class EditContactPage {
   public static final By TYPE_OF_CONTACT_OPTIONS = By.cssSelector("#contactProximity label");
   public static final By CONTACT_CATEGORY_OPTIONS = By.cssSelector("#contactCategory label");
   public static final By CONTACT_CREATED_POPUP = By.cssSelector(".v-Notification-caption");
-  public static final By DELETE_BUTTON = By.id("delete");
+  public static final By DELETE_BUTTON = By.id("deleteUndelete");
   public static final By DELETE_POPUP_YES_BUTTON = By.cssSelector(".popupContent #actionConfirm");
   public static final By CONTACT_CLASSIFICATION_OPTIONS =
       By.cssSelector("#contactClassification label");
@@ -115,6 +115,8 @@ public class EditContactPage {
   public static final By CHANGE_CASE_BUTTON = By.id("contactChangeCase");
   public static final By CASE_ID_LABEL = By.id("caseIdLabel");
   public static final By CONTACT_CLASSIFICATION_RADIO_BUTTON = By.cssSelector(".v-radiobutton");
+  public static final By CONFIRMED_CONTACT_DE_BUTTON =
+      By.xpath("//label[contains(text(),'Best\u00E4tigter Kontakt')]");
   public static final By CASE_PERSON_LABEL =
       By.xpath(
           "//span[contains(text(), 'Case person')]/ancestor::div[@class='v-caption']/following-sibling::div");
@@ -158,6 +160,7 @@ public class EditContactPage {
   public static final By CREATE_NEW_TASK_FORM_HEADER = By.xpath("//div[@class='v-window-header']");
   public static final By TASK_TYPE_COMBOBOX = By.cssSelector(".v-window #taskType div");
   public static final By NEW_TASK_DUE_DATE = By.cssSelector("#dueDate_date input");
+  public static final By NEW_TASK_BUTTON = By.id("New task");
   public static final By TASK_TYPE_TITLE = By.cssSelector("[location='taskType']");
   public static final By DUE_DATE_TITLE = By.cssSelector("[location='dueDate']");
   public static final By ASSIGNED_TO_TITLE = By.cssSelector("[location='assigneeUser']");
@@ -188,7 +191,7 @@ public class EditContactPage {
   public static final By NOTIFICATION_MESSAGE_POPUP = By.cssSelector(".v-Notification-description");
   public static final By EDIT_VACCINATION_BUTTON =
       By.xpath(
-          "//div[@location='vaccinations']//div[@class='v-button v-widget link v-button-link compact v-button-compact']");
+          "//div[@location='vaccinations']//div[@class='v-button v-widget link v-button-link compact v-button-compact caption-overflow-label v-button-caption-overflow-label']");
 
   public static final By OPEN_CASE_OF_THIS_CONTACT_PERSON_LINK =
       By.cssSelector("[location='toCaseBtnLoc'] div");

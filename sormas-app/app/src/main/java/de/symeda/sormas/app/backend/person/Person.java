@@ -128,7 +128,7 @@ public class Person extends PseudonymizableAdo {
 	@Column
 	private Integer birthWeight;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 2)
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Location address;
 
 	@Enumerated(EnumType.STRING)
@@ -436,7 +436,7 @@ public class Person extends PseudonymizableAdo {
 	}
 
 	@Override
-	public String toString() {
+	public String buildCaption() {
 		StringBuilder builder = new StringBuilder();
 		builder.append(getFirstName() != null ? getFirstName() : "").append(" ").append((getLastName() != null ? getLastName() : "").toUpperCase());
 		return builder.toString();

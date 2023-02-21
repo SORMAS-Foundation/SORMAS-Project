@@ -42,13 +42,13 @@ public class EditCasePage {
       By.cssSelector(".v-slot-view-header .v-slot-primary div");
   public static final By CASE_TAB = By.cssSelector("div#tab-cases-data");
   public static final By CASE_PERSON_TAB = By.cssSelector("div#tab-cases-person");
-  public static final By NEW_TASK_BUTTON = By.cssSelector("div#taskNewTask");
-  public static final By EDIT_TASK_BUTTON = By.cssSelector("div[id*='edit-task']");
+  public static final By NEW_TASK_BUTTON = By.cssSelector("[id='New task']");
+  public static final By EDIT_TASK_BUTTON = By.cssSelector("div[id*='edit0']");
+  public static final By EDIT_FIRST_TASK_BUTTON = By.cssSelector("[location='events'] #edit0");
   public static final By NEW_SAMPLE_BUTTON = By.cssSelector("[id='New sample']");
   public static final By NEW_SAMPLE_BUTTON_DE = By.cssSelector("[id='Neue Probe']");
-  public static final By EDIT_SAMPLE_BUTTON =
-      By.cssSelector(
-          "[location='samples'] [class='v-button v-widget link v-button-link compact v-button-compact']");
+  public static final By EDIT_SAMPLE_BUTTON = By.xpath("//div[contains(@id, 'edit-sample')]");
+
   public static final By REPORT_DATE_INPUT = By.cssSelector("#reportDate input");
   public static final By CASE_CLASSIFICATION_COMBOBOX = By.cssSelector("#caseClassification div");
   public static final By CASE_CLASSIFICATION_SPAN =
@@ -158,14 +158,19 @@ public class EditCasePage {
   public static final By GENERAL_COMMENT_TEXTAREA = By.cssSelector("textarea#additionalDetails");
   public static final By SAVE_BUTTON = By.id("commit");
   public static final By ACTION_CANCEL = By.cssSelector(".popupContent #actionCancel");
-  public static final By DELETE_BUTTON = By.id("delete");
+  public static final By DELETE_BUTTON = By.id("deleteUndelete");
   public static final By DELETE_POPUP_YES_BUTTON = By.cssSelector(".popupContent #actionConfirm");
   public static final By CASE_SAVED_POPUP = By.cssSelector(".v-Notification-caption");
   public static final By EXTRA_COMMENT_INPUT =
       By.cssSelector(".popupContent [class='v-textfield v-widget v-has-width']");
+  public static final By EXTRA_COMMENT_INPUT_SHARE_POPUP = By.cssSelector(".popupContent #comment");
   public static final By CREATE_DOCUMENT_BUTTON = By.cssSelector("[id='Create']");
+  public static final By CREATE_DOCUMENT_BUTTON_DE = By.cssSelector("[id='Erstellen']");
+
   public static final By CREATE_QUARANTINE_ORDER_BUTTON =
       By.cssSelector(".popupContent [id='Create']");
+  public static final By CREATE_QUARANTINE_ORDER_BUTTON_DE =
+      By.cssSelector(".popupContent [id='Erstellen']");
   public static final By EXTRA_COMMENT_TEXTAREA =
       By.cssSelector(".popupContent [class='v-textfield v-widget v-has-width']");
   public static final By QUARANTINE_ORDER_COMBOBOX =
@@ -234,6 +239,8 @@ public class EditCasePage {
   public static final By UPLOAD_DOCUMENT_CHECKBOX =
       By.xpath("//label[text()='Also upload the generated document to this entity']");
   public static final By POPUPS_INPUTS = By.cssSelector(".popupContent input");
+  public static final By QUARANTINE_ORDER_POPUP_SAMPLE_FIELD =
+      By.xpath("//span[text()='Sample']//following::input[1]");
   public static final By VACCINATION_STATUS_INPUT = By.cssSelector("#vaccinationStatus input");
   public static final By GENERATED_DOCUMENT_NAME =
       By.xpath(
@@ -295,8 +302,7 @@ public class EditCasePage {
       By.xpath(
           "//div[@location='immunizations']//div[@class='v-slot v-slot-link v-slot-compact v-align-right']");
   public static final By BUTTONS_IN_VACCINATIONS_LOCATION =
-      By.xpath(
-          "//div[contains(@location,\"vaccinations\")]//div[contains(@id,\"edit-vaccination\")]");
+      By.xpath("//div[contains(@location,\"vaccinations\")]//div[contains(@id,\"edit\")]");
   public static final By GENERAL_COMMENT_TEXT_AREA = By.id("additionalDetails");
   public static final By VACCINATION_STATUS_COMBOBOX =
       By.xpath("//div[@id='vaccinationStatus']/div");
@@ -310,7 +316,7 @@ public class EditCasePage {
   }
 
   public static By getByImmunizationUuid(String immunizationUuid) {
-    return By.id("edit-immunization-" + immunizationUuid);
+    return By.id("edit" + immunizationUuid);
   }
 
   public static final By IMMUNIZATION_CARD_IMMUNIZATION_PERIOD_LABEL =
@@ -338,13 +344,17 @@ public class EditCasePage {
           "//div[@location='vaccinations']//div[@class='v-slot v-slot-bold v-slot-uppercase v-align-right v-align-middle']/div");
   public static final By EDIT_VACCINATION_BUTTON =
       By.xpath(
-          "//div[@location='vaccinations']//div[@class='v-button v-widget link v-button-link compact v-button-compact']");
+          "//div[@location='vaccinations']//div[@class='v-button v-widget link v-button-link compact v-button-compact caption-overflow-label v-button-caption-overflow-label']");
   public static final By VACCINATION_CARD_INFO_ICON =
       By.xpath(
           "//div[@location = 'vaccinations']//span[contains(@class, 'v-icon v-icon-info_circle')]");
   public static final By VACCINATION_CARD_INFO_POPUP_TEXT =
       By.xpath("//div[@class='v-tooltip-text']");
   public static final By LINK_EVENT_BUTTON_DE = By.id("Ereignis verkn\u00FCpfen");
+  public static final By LINK_EVENT_BUTTON = By.xpath("//div[@id='Link event']");
+  public static final By LINKED_EVENT_TITLE =
+      By.xpath(
+          "//div[@location='events']//div[@class='v-label v-widget bold v-label-bold uppercase v-label-uppercase v-has-width']");
   public static final By ADD_A_PARTICIPANT_HEADER_DE =
       By.xpath("//*[contains(text(),'Neuen Ereignisteilnehmer hinzuf\u00FCgen')]");
   public static final By CHANGE_DISEASE_CONFIRMATION_POPUP =
@@ -355,9 +365,51 @@ public class EditCasePage {
   public static final By SHARE_SORMAS_2_SORMAS_BUTTON = By.cssSelector("#sormasToSormasShare");
   public static final By SHARE_ORGANIZATION_POPUP_COMBOBOX =
       By.cssSelector(".popupContent #organization div");
+  public static final By HAND_THE_OWNERSHIP_CHECKBOX =
+      By.cssSelector(".popupContent #handOverOwnership label");
   public static final By SHARE_SORMAS_2_SORMAS_POPUP_BUTTON =
       By.cssSelector(".popupContent #commit");
   public static final By LINKED_SHARED_ORGANIZATION_SELECTED_VALUE =
       By.xpath(
           "//div[@location='sormasToSormas']//div[@class='v-slot v-slot-s-list-entry v-slot-s-list-entry-no-border']");
+  public static final By CLINICAL_ASSESSMENTS_LABEL_DE =
+      By.xpath("//div[contains(text(), 'Klinische Bewertungen')]");
+  public static final By REJECT_SHARED_CASE_BUTTON = By.cssSelector("#sormasToSormasRevokeShare");
+  public static final By REVOKE_CASE_POPUP_HEADER =
+      By.xpath("//*[contains(text(),'Anfrage widerrufen')]");
+  public static final By ERROR_IN_HANDOVER_HEADER_DE =
+      By.xpath("//*[contains(text(),'Fehler bei \u00DCbergabe')]");
+  public static final By ERROR_DESCRIPTION_REQUEST_PROCESSED =
+      By.xpath(
+          "//*[contains(text(),'Die Anfrage wurde bereits bearbeitet. Bitte laden Sie die Seite neu, um die neuesten \u00C4nderungen zu sehen.')]");
+
+  public static By getPreExistingConditionCombobox_DE(String id) {
+    return By.xpath(
+        String.format(
+            "//div[@id='%s']//input[@value='on']/following-sibling::label[contains(text(),'Ja') or contains(text(),'Nein') or contains(text(),'Unbekannt')]",
+            id));
+  }
+
+  public static By getPreExistingConditionComboboxWithValue_DE(String id, String value) {
+    return By.xpath(
+        String.format(
+            "//div[@id='%s']//input[@value='on' and @checked]/following-sibling::label[contains(text(),'%s')]",
+            id, value));
+  }
+
+  public static By getEditTaskButtonByNumber(Integer number) {
+    return By.cssSelector(String.format("#edit%x", number));
+  }
+
+  public static final By DELETE_VACCINATION_REASON_POPUP_DE_VERSION =
+      By.xpath(
+          "//div[@class='popupContent']//*[text()='Grund des L\u00F6schens']/../following-sibling::div//div");
+  public static final By REASON_FOR_DELETION_DETAILS_TEXTAREA =
+      By.cssSelector(".popupContent textarea");
+  public static final By VACCINATION_STATUS_UPDATE_POPUP_HEADER =
+      By.xpath("//div[@class='popupContent']//*[text()='Impfstatus Aktualisierung']");
+
+  public static By checkIfTextExists(String text) {
+    return By.xpath(String.format("//div[contains(text(),'%s')]", text));
+  }
 }

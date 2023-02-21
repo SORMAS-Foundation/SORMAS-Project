@@ -119,7 +119,7 @@ public class Vaccination extends AbstractDomainObject {
 		this.reportDate = reportDate;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public User getReportingUser() {
 		return reportingUser;
 	}

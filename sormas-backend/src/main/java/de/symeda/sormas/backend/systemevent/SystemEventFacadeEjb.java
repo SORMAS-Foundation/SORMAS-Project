@@ -82,10 +82,9 @@ public class SystemEventFacadeEjb implements SystemEventFacade {
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void saveSystemEvent(@Valid SystemEventDto dto) {
-
-		SystemEvent systemEvent = systemEventService.getByUuid(dto.getUuid());
-		systemEvent = fromDto(dto, systemEvent, true);
-		systemEventService.ensurePersisted(systemEvent);
+		SystemEvent existingSystemEvent = systemEventService.getByUuid(dto.getUuid());
+		existingSystemEvent = fillOrBuildEntity(dto, existingSystemEvent, true);
+		systemEventService.ensurePersisted(existingSystemEvent);
 	}
 
 	@Override
@@ -125,8 +124,7 @@ public class SystemEventFacadeEjb implements SystemEventFacade {
 		em.createQuery(cu).executeUpdate();
 	}
 
-	public SystemEvent fromDto(@NotNull SystemEventDto source, SystemEvent target, boolean checkChangeDate) {
-
+	public SystemEvent fillOrBuildEntity(@NotNull SystemEventDto source, SystemEvent target, boolean checkChangeDate) {
 		target = DtoHelper.fillOrBuildEntity(source, target, SystemEvent::new, checkChangeDate);
 
 		target.setType(source.getType());

@@ -17,25 +17,31 @@ package de.symeda.sormas.backend.externalmessage;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.externalmessage.ExternalMessageCriteria;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.externalmessage.ExternalMessageIndexDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 
@@ -44,14 +50,14 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetByReportIdWithCornerCaseInput() {
 		String reportId = "123456789";
-		creator.createLabMessage((lm) -> lm.setReportId(reportId));
+		creator.createExternalMessage((lm) -> lm.setReportId(reportId));
 
-		List<ExternalMessageDto> list = getLabMessageFacade().getByReportId(null);
+		List<ExternalMessageDto> list = getExternalMessageFacade().getByReportId(null);
 
 		assertNotNull(list);
 		assertTrue(list.isEmpty());
 
-		list = getLabMessageFacade().getByReportId("");
+		list = getExternalMessageFacade().getByReportId("");
 
 		assertNotNull(list);
 		assertTrue(list.isEmpty());
@@ -61,13 +67,13 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 	public void testGetByReportIdWithOneMessage() {
 
 		String reportId = "123456789";
-		creator.createLabMessage((lm) -> lm.setReportId(reportId));
+		creator.createExternalMessage((lm) -> lm.setReportId(reportId));
 
 		// create noise
-		creator.createLabMessage(null);
-		creator.createLabMessage((lm) -> lm.setReportId("some-other-id"));
+		creator.createExternalMessage(null);
+		creator.createExternalMessage((lm) -> lm.setReportId("some-other-id"));
 
-		List<ExternalMessageDto> list = getLabMessageFacade().getByReportId(reportId);
+		List<ExternalMessageDto> list = getExternalMessageFacade().getByReportId(reportId);
 
 		assertNotNull(list);
 		assertFalse(list.isEmpty());
@@ -78,9 +84,9 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetByUuid() {
 
-		ExternalMessageDto labMessage = creator.createLabMessage(null);
+		ExternalMessageDto labMessage = creator.createExternalMessage(null);
 
-		ExternalMessageDto result = getLabMessageFacade().getByUuid(labMessage.getUuid());
+		ExternalMessageDto result = getExternalMessageFacade().getByUuid(labMessage.getUuid());
 		assertThat(result, equalTo(labMessage));
 	}
 
@@ -90,21 +96,21 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 		String reportId = "1234";
 
 		// create noise
-		creator.createLabMessage((lm) -> lm.setStatus(ExternalMessageStatus.FORWARDED));
+		creator.createExternalMessage((lm) -> lm.setStatus(ExternalMessageStatus.FORWARDED));
 
-		assertFalse(getLabMessageFacade().existsForwardedExternalMessageWith(reportId));
-		assertFalse(getLabMessageFacade().existsForwardedExternalMessageWith(null));
+		assertFalse(getExternalMessageFacade().existsForwardedExternalMessageWith(reportId));
+		assertFalse(getExternalMessageFacade().existsForwardedExternalMessageWith(null));
 
-		creator.createLabMessage((lm) -> lm.setReportId(reportId));
+		creator.createExternalMessage((lm) -> lm.setReportId(reportId));
 
-		assertFalse(getLabMessageFacade().existsForwardedExternalMessageWith(reportId));
+		assertFalse(getExternalMessageFacade().existsForwardedExternalMessageWith(reportId));
 
-		ExternalMessageDto forwardedMessage = creator.createLabMessage((lm) -> {
+		ExternalMessageDto forwardedMessage = creator.createExternalMessage((lm) -> {
 			lm.setReportId(reportId);
 			lm.setStatus(ExternalMessageStatus.FORWARDED);
 		});
 
-		assertTrue(getLabMessageFacade().existsForwardedExternalMessageWith(reportId));
+		assertTrue(getExternalMessageFacade().existsForwardedExternalMessageWith(reportId));
 	}
 
 	@Test
@@ -114,23 +120,23 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 		PersonDto person = creator.createPerson();
 		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
 
-		assertFalse(getLabMessageFacade().existsExternalMessageForEntity(caze.toReference()));
+		assertFalse(getExternalMessageFacade().existsExternalMessageForEntity(caze.toReference()));
 
 		// create noise
 		CaseDataDto noiseCaze = creator.createCase(user.toReference(), person.toReference(), rdcf);
 		creator.createSample(noiseCaze.toReference(), user.toReference(), rdcf.facility);
 
 		SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
-		assertFalse(getLabMessageFacade().existsExternalMessageForEntity(caze.toReference()));
+		assertFalse(getExternalMessageFacade().existsExternalMessageForEntity(caze.toReference()));
 
-		creator.createLabMessage(lm -> lm.setSample(sample.toReference()));
-		assertTrue(getLabMessageFacade().existsExternalMessageForEntity(caze.toReference()));
+		creator.createLabMessageWithTestReportAndSurveillanceReport(user.toReference(), caze.toReference(), sample.toReference());
+		assertTrue(getExternalMessageFacade().existsExternalMessageForEntity(caze.toReference()));
 
 		// create additional matches
-		creator.createLabMessage(lm -> lm.setSample(sample.toReference()));
+		creator.createLabMessageWithTestReportAndSurveillanceReport(user.toReference(), caze.toReference(), sample.toReference());
 		SampleDto sample2 = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
-		creator.createLabMessage(lm -> lm.setSample(sample2.toReference()));
-		assertTrue(getLabMessageFacade().existsExternalMessageForEntity(caze.toReference()));
+		creator.createLabMessageWithTestReportAndSurveillanceReport(user.toReference(), caze.toReference(), sample2.toReference());
+		assertTrue(getExternalMessageFacade().existsExternalMessageForEntity(caze.toReference()));
 	}
 
 	@Test
@@ -140,23 +146,23 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 		PersonDto person = creator.createPerson();
 		ContactDto contact = creator.createContact(user.toReference(), person.toReference());
 
-		assertFalse(getLabMessageFacade().existsExternalMessageForEntity(contact.toReference()));
+		assertFalse(getExternalMessageFacade().existsExternalMessageForEntity(contact.toReference()));
 
 		// create noise
 		ContactDto noiseContact = creator.createContact(user.toReference(), person.toReference());
 		creator.createSample(noiseContact.toReference(), user.toReference(), rdcf.facility, null);
 
 		SampleDto sample = creator.createSample(contact.toReference(), user.toReference(), rdcf.facility, null);
-		assertFalse(getLabMessageFacade().existsExternalMessageForEntity(contact.toReference()));
+		assertFalse(getExternalMessageFacade().existsExternalMessageForEntity(contact.toReference()));
 
-		creator.createLabMessage(lm -> lm.setSample(sample.toReference()));
-		assertTrue(getLabMessageFacade().existsExternalMessageForEntity(contact.toReference()));
+		creator.createLabMessageWithTestReport(sample.toReference());
+		assertTrue(getExternalMessageFacade().existsExternalMessageForEntity(contact.toReference()));
 
 		// create additional matches
-		creator.createLabMessage(lm -> lm.setSample(sample.toReference()));
+		creator.createLabMessageWithTestReport(sample.toReference());
 		SampleDto sample2 = creator.createSample(contact.toReference(), user.toReference(), rdcf.facility, null);
-		creator.createLabMessage(lm -> lm.setSample(sample2.toReference()));
-		assertTrue(getLabMessageFacade().existsExternalMessageForEntity(contact.toReference()));
+		creator.createLabMessageWithTestReport(sample2.toReference());
+		assertTrue(getExternalMessageFacade().existsExternalMessageForEntity(contact.toReference()));
 	}
 
 	@Test
@@ -167,23 +173,83 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 		EventDto event = creator.createEvent(user.toReference());
 		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, user.toReference());
 
-		assertFalse(getLabMessageFacade().existsExternalMessageForEntity(eventParticipant.toReference()));
+		assertFalse(getExternalMessageFacade().existsExternalMessageForEntity(eventParticipant.toReference()));
 
 		// create noise
 		EventParticipantDto noiseEventParticipant = creator.createEventParticipant(event.toReference(), person, user.toReference());
 		creator.createSample(noiseEventParticipant.toReference(), user.toReference(), rdcf.facility);
 
 		SampleDto sample = creator.createSample(eventParticipant.toReference(), user.toReference(), rdcf.facility);
-		assertFalse(getLabMessageFacade().existsExternalMessageForEntity(eventParticipant.toReference()));
+		assertFalse(getExternalMessageFacade().existsExternalMessageForEntity(eventParticipant.toReference()));
 
-		creator.createLabMessage(lm -> lm.setSample(sample.toReference()));
-		assertTrue(getLabMessageFacade().existsExternalMessageForEntity(eventParticipant.toReference()));
+		creator.createLabMessageWithTestReport(sample.toReference());
+		assertTrue(getExternalMessageFacade().existsExternalMessageForEntity(eventParticipant.toReference()));
 
 		// create additional matches
-		creator.createLabMessage(lm -> lm.setSample(sample.toReference()));
+		creator.createLabMessageWithTestReport(sample.toReference());
 		SampleDto sample2 = creator.createSample(eventParticipant.toReference(), user.toReference(), rdcf.facility);
-		creator.createLabMessage(lm -> lm.setSample(sample2.toReference()));
-		assertTrue(getLabMessageFacade().existsExternalMessageForEntity(eventParticipant.toReference()));
+		creator.createLabMessageWithTestReport(sample2.toReference());
+		assertTrue(getExternalMessageFacade().existsExternalMessageForEntity(eventParticipant.toReference()));
+	}
+
+	@Test
+	public void testCountAndIndexListDoesNotReturnMessagesLinkedToDeletedEntities() {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto person = creator.createPerson();
+
+		CaseDataDto externalMessageCase = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		SampleDto externalMessageSample = creator.createSample(
+			creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf).toReference(),
+			user.toReference(),
+			rdcf.facility);
+
+		CaseDataDto caseWithSample = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		SampleDto caseSample = creator.createSample(caseWithSample.toReference(), user.toReference(), rdcf.facility);
+
+		ContactDto contactWithSample = creator.createContact(rdcf, user.toReference(), creator.createPerson().toReference());
+		SampleDto contactSample = creator.createSample(contactWithSample.toReference(), user.toReference(), rdcf.facility, null);
+
+		EventParticipantDto eventParticipantWithSample =
+			creator.createEventParticipant(creator.createEvent(user.toReference()).toReference(), creator.createPerson(), user.toReference());
+		SampleDto eventParticipantSample = creator.createSample(eventParticipantWithSample.toReference(), user.toReference(), rdcf.facility);
+
+		EventDto eventToDelete = creator.createEvent(user.toReference());
+		EventParticipantDto eventParticipantWithDeletedEvent =
+			creator.createEventParticipant(eventToDelete.toReference(), creator.createPerson(), user.toReference());
+		SampleDto eventParticipantSampleForDeletedEvent =
+			creator.createSample(eventParticipantWithDeletedEvent.toReference(), user.toReference(), rdcf.facility);
+
+		ExternalMessageDto messageWithCaseSample = creator.createLabMessageWithTestReport(externalMessageSample.toReference());
+		ExternalMessageDto messageWithSurveillanceReport =
+			creator.createLabMessageWithSurveillanceReport(user.toReference(), externalMessageCase.toReference());
+		ExternalMessageDto labMessageWithSurveillanceReportAndSample =
+			creator.createLabMessageWithTestReportAndSurveillanceReport(user.toReference(), caseWithSample.toReference(), caseSample.toReference());
+		ExternalMessageDto messageWithContactSample = creator.createLabMessageWithTestReport(contactSample.toReference());
+		ExternalMessageDto messageWithEventParticipantSample = creator.createLabMessageWithTestReport(eventParticipantSample.toReference());
+		ExternalMessageDto messageWithEvent = creator.createLabMessageWithTestReport(eventParticipantSampleForDeletedEvent.toReference());
+
+		assertThat(getExternalMessageFacade().count(new ExternalMessageCriteria()), is(6L));
+		List<ExternalMessageIndexDto> indexList = getExternalMessageFacade().getIndexList(new ExternalMessageCriteria(), null, null, null);
+		assertThat(indexList, hasSize(6));
+		assertThat(indexList.stream().filter(m -> DataHelper.isSame(m, messageWithCaseSample)).count(), is(1L));
+		assertThat(indexList.stream().filter(m -> DataHelper.isSame(m, messageWithSurveillanceReport)).count(), is(1L));
+		assertThat(indexList.stream().filter(m -> DataHelper.isSame(m, labMessageWithSurveillanceReportAndSample)).count(), is(1L));
+		assertThat(indexList.stream().filter(m -> DataHelper.isSame(m, messageWithContactSample)).count(), is(1L));
+		assertThat(indexList.stream().filter(m -> DataHelper.isSame(m, messageWithEventParticipantSample)).count(), is(1L));
+		assertThat(indexList.stream().filter(m -> DataHelper.isSame(m, messageWithEvent)).count(), is(1L));
+
+		getCaseFacade().delete(externalMessageCase.getUuid(), new DeletionDetails());
+		getSampleFacade().deleteSample(externalMessageSample.toReference(), new DeletionDetails());
+		getCaseFacade().delete(caseWithSample.getUuid(), new DeletionDetails());
+		getContactFacade().delete(contactWithSample.getUuid(), new DeletionDetails());
+		getEventParticipantFacade().delete(eventParticipantWithSample.getUuid(), new DeletionDetails());
+		getEventFacade().delete(eventToDelete.getUuid(), new DeletionDetails());
+
+		assertThat(getExternalMessageFacade().count(new ExternalMessageCriteria()), is(0L));
+		indexList = getExternalMessageFacade().getIndexList(new ExternalMessageCriteria(), null, null, null);
+		assertThat(indexList, hasSize(0));
+
 	}
 
 //	This test currently does not work because the bean tests used don't support @TransactionAttribute tags.

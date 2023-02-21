@@ -1,3 +1,18 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.backend.externalmessage.labmessage;
 
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
@@ -16,17 +31,16 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+
 import com.vladmihalcea.hibernate.type.array.ListArrayType;
+
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.externalmessage.ExternalMessage;
-
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-
 
 @Entity(name = TestReport.TABLE_NAME)
 @Audited
@@ -37,7 +51,8 @@ public class TestReport extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "testreport";
 
-	public static final String LAB_MESSAGE = "labMessage";
+	public static final String SAMPLE_REPORT = "sampleReport";
+
 	public static final String TEST_LAB_NAME = "testLabName";
 	public static final String TEST_LAB_EXTERNAL_IDS = "testLabExternalIds";
 	public static final String TEST_LAB_POSTAL_CODE = "testLabPostalCode";
@@ -49,7 +64,6 @@ public class TestReport extends AbstractDomainObject {
 	public static final String TEST_RESULT_TEXT = "testResultText";
 	public static final String TEST_PCR_TEST_SPECIFICATION = "testPcrTestSpecification";
 
-	private ExternalMessage labMessage;
 	private String testLabName;
 	private List<String> testLabExternalIds;
 	private String testLabPostalCode;
@@ -68,15 +82,7 @@ public class TestReport extends AbstractDomainObject {
 	private Boolean preliminary;
 	private PCRTestSpecification testPcrTestSpecification;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(nullable = false)
-	public ExternalMessage getLabMessage() {
-		return labMessage;
-	}
-
-	public void setLabMessage(ExternalMessage externalMessage) {
-		this.labMessage = externalMessage;
-	}
+	private SampleReport sampleReport;
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getTestLabName() {
@@ -88,10 +94,7 @@ public class TestReport extends AbstractDomainObject {
 	}
 
 	@Type(type = "list-array")
-	@Column(
-			name = "testlabexternalids",
-			columnDefinition = "VARCHAR(255) ARRAY"
-	)
+	@Column(name = "testlabexternalids", columnDefinition = "VARCHAR(255) ARRAY")
 	public List<String> getTestLabExternalIds() {
 		return testLabExternalIds;
 	}
@@ -221,5 +224,15 @@ public class TestReport extends AbstractDomainObject {
 
 	public void setTestPcrTestSpecification(PCRTestSpecification testPcrTestSpecification) {
 		this.testPcrTestSpecification = testPcrTestSpecification;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(nullable = false)
+	public SampleReport getSampleReport() {
+		return sampleReport;
+	}
+
+	public void setSampleReport(SampleReport sampleReport) {
+		this.sampleReport = sampleReport;
 	}
 }

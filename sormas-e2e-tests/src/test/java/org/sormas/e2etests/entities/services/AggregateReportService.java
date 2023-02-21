@@ -3,6 +3,8 @@ package org.sormas.e2etests.entities.services;
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import org.sormas.e2etests.entities.pojo.web.AggregateReport;
+import org.sormas.e2etests.enums.DistrictsValues;
+import org.sormas.e2etests.enums.RegionsValues;
 
 public class AggregateReportService {
   private final Faker faker;
@@ -195,6 +197,30 @@ public class AggregateReportService {
   public AggregateReport buildAggredateReportsForOneDisease() {
     return AggregateReport.builder()
         .acuteViralHepatitisCases(faker.number().numberBetween(2, 12))
+        .build();
+  }
+
+  public AggregateReport buildAggregateReportsForDuplicatesWithJurisdiction() {
+    return AggregateReport.builder()
+        .year("2005")
+        .epiWeek("Wk 6-2005 (1/31 - 2/6)")
+        .region(RegionsValues.VoreingestellteBundeslander.getName())
+        .district(DistrictsValues.VoreingestellterLandkreis.getName())
+        .malariaCases(faker.number().numberBetween(2, 12))
+        .tuberculosisDeaths(faker.number().numberBetween(2, 12))
+        .build();
+  }
+
+  public AggregateReport buildAggregateReportForSpecificAgeGroups() {
+    return AggregateReport.builder()
+        .year("2012")
+        .epiWeek("Wk 1-2012 (12/26 - 1/1)")
+        .region(RegionsValues.VoreingestellteBundeslander.getName())
+        .district(DistrictsValues.VoreingestellterLandkreis.getName())
+        .acuteViralHepatitisLabConfirmations(faker.number().numberBetween(2, 12))
+        .malariaCases(faker.number().numberBetween(2, 12))
+        .hivDeaths(faker.number().numberBetween(2, 12))
+        .ageGroupForMalaria("3-12 months")
         .build();
   }
 }

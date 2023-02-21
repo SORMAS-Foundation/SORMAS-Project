@@ -19,9 +19,9 @@ package de.symeda.auditlog.api;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.lessThan;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -31,8 +31,8 @@ import java.util.Date;
 import java.util.Map;
 import java.util.SortedMap;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.auditlog.api.sample.AnonymizedEntity;
 import de.symeda.auditlog.api.sample.BaseEntity;
@@ -265,7 +265,7 @@ public class AuditorTest {
 		assertThat(changes.get("someAttribute"), is("someValue"));
 	}
 
-	@Ignore("Deactivated due to instability on github actions. See #3805")
+	@Disabled("Deactivated due to instability on github actions. See #3805")
 	@Test
 	public void testDetectAnnotationChangesFast() {
 

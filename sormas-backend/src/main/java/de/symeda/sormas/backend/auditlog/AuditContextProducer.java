@@ -29,6 +29,7 @@ import de.symeda.auditlog.api.Auditor;
 import de.symeda.auditlog.api.Current;
 import de.symeda.auditlog.api.TransactionId;
 import de.symeda.auditlog.api.UserId;
+import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
 /**
@@ -38,6 +39,7 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb;
  * @since 13.01.2016
  */
 @Stateless
+@AuditIgnore
 public class AuditContextProducer {
 
 	@EJB

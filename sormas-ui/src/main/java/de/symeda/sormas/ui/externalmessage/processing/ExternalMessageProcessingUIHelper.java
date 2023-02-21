@@ -15,7 +15,9 @@
 
 package de.symeda.sormas.ui.externalmessage.processing;
 
-import java.util.ArrayList;
+import static de.symeda.sormas.ui.utils.CssStyles.H3;
+import static java.util.Objects.nonNull;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletionStage;
@@ -24,11 +26,13 @@ import java.util.stream.Collectors;
 
 import javax.naming.CannotProceedException;
 
+import org.apache.commons.lang3.mutable.MutableLong;
 import org.apache.commons.lang3.mutable.MutableObject;
 
 import com.vaadin.server.ClientConnector;
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.Registration;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -63,16 +67,16 @@ import de.symeda.sormas.ui.externalmessage.ExternalMessageForm;
 import de.symeda.sormas.ui.externalmessage.labmessage.LabMessageUiHelper;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.LabMessageProcessingHelper;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.SampleAndPathogenTests;
-import de.symeda.sormas.ui.samples.PathogenTestForm;
+import de.symeda.sormas.ui.samples.AbstractSampleForm;
+import de.symeda.sormas.ui.samples.CollapsiblePathogenTestForm;
 import de.symeda.sormas.ui.samples.SampleController;
 import de.symeda.sormas.ui.samples.SampleCreateForm;
 import de.symeda.sormas.ui.samples.SampleEditForm;
+import de.symeda.sormas.ui.samples.SampleEditPathogenTestListHandler;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-
-import static java.util.Objects.nonNull;
 
 /**
  * Collection of common UI related functions used by processing related code placed in multiple classes
@@ -95,6 +99,14 @@ public class ExternalMessageProcessingUIHelper {
 			I18nProperties.getCaption(Captions.externalMessageForwardedMessageFound),
 			new Label(I18nProperties.getString(Strings.messageForwardedExternalMessageFound)),
 			I18nProperties.getCaption(Captions.actionYes),
+			I18nProperties.getCaption(Captions.actionCancel));
+	}
+
+	public static CompletionStage<Boolean> showMultipleSamplesPopup() {
+		return VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getString(Strings.externalMessageMultipleSampleReports),
+			new Label(I18nProperties.getString(Strings.messageMultipleSampleReports), ContentMode.HTML),
+			I18nProperties.getCaption(Captions.actionContinue),
 			I18nProperties.getCaption(Captions.actionCancel));
 	}
 
@@ -146,7 +158,7 @@ public class ExternalMessageProcessingUIHelper {
 		Window window = VaadinUiUtil.createPopupWindow();
 
 		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent =
-			ControllerProvider.getCaseController().getCaseCreateComponent(null, null, null, null, true);
+			ControllerProvider.getCaseController().getCaseCreateComponent(null, null, null, null, null, true);
 		caseCreateComponent.addCommitListener(() -> {
 			LabMessageProcessingHelper.updateAddressAndSavePerson(
 				FacadeProvider.getPersonFacade().getByUuid(caseCreateComponent.getWrappedComponent().getValue().getPerson().getUuid()),
@@ -168,6 +180,7 @@ public class ExternalMessageProcessingUIHelper {
 
 	public static void showEditSampleWindow(
 		SampleDto sample,
+		boolean lastSample,
 		List<PathogenTestDto> newPathogenTests,
 		ExternalMessageDto externalMessageDto,
 		Consumer<SampleAndPathogenTests> commitHandler,
@@ -176,47 +189,81 @@ public class ExternalMessageProcessingUIHelper {
 		MutableObject<CommitDiscardWrapperComponent<SampleEditForm>> editComponentWrapper = new MutableObject<>();
 		// discard on close without commit or discard button clicked
 		Registration closeListener = window.addCloseListener(
-				nonNull(editComponentWrapper.getValue())?e -> editComponentWrapper.getValue().discard():e -> editComponentWrapper.getValue());
+			nonNull(editComponentWrapper.getValue()) ? e -> editComponentWrapper.getValue().discard() : e -> editComponentWrapper.getValue());
 
 		CommitDiscardWrapperComponent<SampleEditForm> sampleEditComponent = ExternalMessageProcessingUIHelper
-			.getSampleEditComponent(sample, newPathogenTests, externalMessageDto, commitHandler, cancelHandler, () -> {
+			.getSampleEditComponent(sample, lastSample, newPathogenTests, externalMessageDto, commitHandler, cancelHandler, () -> {
 				// do not discard
 				closeListener.remove();
 				window.close();
 			});
 
-		showFormWithLabMessage(externalMessageDto, sampleEditComponent, window, I18nProperties.getString(Strings.headingEditSample), false, false);
-		sampleEditComponent.addDoneListener(
-			() -> {
-				// prevent discard on close
-				closeListener.remove();
-				// close after commit/discard
-				window.close();
-			});
+		showFormWithLabMessage(
+			externalMessageDto,
+			sampleEditComponent,
+			window,
+			I18nProperties.getString(Strings.headingExternalMessageProcessSample),
+			false,
+			false);
+		sampleEditComponent.addDoneListener(() -> {
+			// prevent discard on close
+			closeListener.remove();
+			// close after commit/discard
+			window.close();
+		});
 	}
 
 	private static CommitDiscardWrapperComponent<SampleEditForm> getSampleEditComponent(
 		SampleDto sample,
+		boolean lastSample,
 		List<PathogenTestDto> newPathogenTests,
 		ExternalMessageDto externalMessageDto,
 		Consumer<SampleAndPathogenTests> commitHandler,
 		Runnable cancelHandler,
 		Runnable closeOnNavigateToRefer) {
 		SampleController sampleController = ControllerProvider.getSampleController();
-		CommitDiscardWrapperComponent<SampleEditForm> sampleEditComponent =
-			sampleController.getSampleEditComponent(sample.getUuid(), sample.isPseudonymized(), sampleController.getDiseaseOf(sample), false);
+		CommitDiscardWrapperComponent<SampleEditForm> sampleEditComponent = sampleController.getSampleEditComponent(
+			sample.getUuid(),
+			sample.isPseudonymized(),
+			sample.isInJurisdiction(),
+			sampleController.getDiseaseOf(sample),
+			false);
+		sampleEditComponent.getWrappedComponent().setHeading(I18nProperties.getString(Strings.headingExternalMessageSampleInformation));
 
 		// add existing tests to edit component
 		int caseSampleCount = sampleController.caseSampleCountOf(sample);
+		SampleEditPathogenTestListHandler pathogenTestHandler = new SampleEditPathogenTestListHandler();
 
 		List<PathogenTestDto> existingTests = FacadeProvider.getPathogenTestFacade().getAllBySample(sample.toReference());
-		for (PathogenTestDto existingTest : existingTests) {
-			PathogenTestForm pathogenTestForm = sampleController.addPathogenTestComponent(sampleEditComponent, existingTest, caseSampleCount, false);
+
+		Label existingTestsSeparator = new Label("<br/><hr/><br/>", ContentMode.HTML);
+		existingTestsSeparator.setWidth(100f, Sizeable.Unit.PERCENTAGE);
+		existingTestsSeparator.setVisible(!existingTests.isEmpty());
+		sampleEditComponent.addComponent(existingTestsSeparator, sampleEditComponent.getComponentCount() - 1);
+
+		Label existingTestsLabel = createPathogenTestGroupLabel(Strings.headingExternalMessageExistingPathogenTests, existingTests);
+		sampleEditComponent.addComponent(existingTestsLabel, sampleEditComponent.getComponentCount() - 1);
+
+		for (int i = 0; i < existingTests.size(); i++) {
+			PathogenTestDto existingTest = existingTests.get(i);
+			CollapsiblePathogenTestForm pathogenTestForm = sampleController.addPathogenTestComponent(
+				sampleEditComponent,
+				existingTest,
+				pathogenTestHandler::addPathogenTest,
+				caseSampleCount,
+				false,
+				false,
+				i > 0);
 			// when the user removes the pathogen test from the sampleEditComponent, mark the pathogen test as to be removed on commit
-			pathogenTestForm.addDetachListener(
-				(ClientConnector.DetachEvent detachEvent) -> sampleEditComponent.getWrappedComponent()
-					.getTestsToBeRemovedOnCommit()
-					.add(pathogenTestForm.getValue().toReference()));
+			pathogenTestForm.addDetachListener((ClientConnector.DetachEvent detachEvent) -> {
+				List<PathogenTestReferenceDto> pathogenTestsToRemove = sampleEditComponent.getWrappedComponent().getTestsToBeRemovedOnCommit();
+
+				pathogenTestsToRemove.add(pathogenTestForm.getValue().toReference());
+				if (pathogenTestsToRemove.size() == existingTests.size()) {
+					existingTestsSeparator.setVisible(false);
+					existingTestsLabel.setVisible(false);
+				}
+			});
 		}
 		if (!existingTests.isEmpty()) {
 			// delete all pathogen test marked as removed on commit
@@ -231,8 +278,6 @@ public class ExternalMessageProcessingUIHelper {
 				}
 			});
 		}
-		// add option to create additional pathogen tests
-		sampleController.addPathogenTestButton(sampleEditComponent, true);
 
 		// add newly submitted tests to sample edit component
 		List<String> existingTestExternalIds =
@@ -241,31 +286,49 @@ public class ExternalMessageProcessingUIHelper {
 		List<PathogenTestDto> newTestsToAdd =
 			newPathogenTests.stream().filter(p -> !existingTestExternalIds.contains(p.getExternalId())).collect(Collectors.toList());
 
-		for (PathogenTestDto test : newTestsToAdd) {
-			PathogenTestForm form = sampleController.addPathogenTestComponent(sampleEditComponent, test, caseSampleCount, true);
-			sampleController.setViaLimsFieldChecked(form);
-		}
-
 		// always add at least one PathogenTest
 		if (existingTests.isEmpty() && newTestsToAdd.isEmpty()) {
-			sampleController.addPathogenTestComponent(
-				sampleEditComponent,
-				LabMessageProcessingHelper.buildPathogenTest(null, externalMessageDto, sample, UserProvider.getCurrent().getUser()),
-				caseSampleCount,
-				true);
+			newTestsToAdd.add(LabMessageProcessingHelper.buildPathogenTest(null, externalMessageDto, sample, UserProvider.getCurrent().getUser()));
 		}
+
+		Label newTestSeparator = new Label("<br/><hr/><br/>", ContentMode.HTML);
+		newTestSeparator.setWidth(100f, Sizeable.Unit.PERCENTAGE);
+		newTestSeparator.setVisible(!newTestsToAdd.isEmpty());
+		sampleEditComponent.addComponent(newTestSeparator, sampleEditComponent.getComponentCount() - 1);
+
+		Label newTestsLabel = createPathogenTestGroupLabel(Strings.headingExternalMessageNewPathogenTests, newTestsToAdd);
+		sampleEditComponent.addComponent(newTestsLabel, sampleEditComponent.getComponentCount() - 1);
+
+		MutableLong newPathogenTestCount = new MutableLong(newTestsToAdd.size());
+		ExternalMessageProcessingUIHelper.addNewPathogenTests(newTestsToAdd, sampleEditComponent, false, pathogenTestHandler::addPathogenTest, () -> {
+			long newTestCount = newPathogenTestCount.decrementAndGet();
+			if (newTestCount == 0) {
+				newTestsLabel.setVisible(false);
+			}
+		});
+
+		// add option to create additional pathogen tests
+		sampleController.addPathogenTestButton(sampleEditComponent, true, () -> {
+			newPathogenTestCount.increment();
+			newTestsLabel.setVisible(true);
+		}, () -> {
+			long newTestCount = newPathogenTestCount.decrementAndGet();
+			if (newTestCount == 0) {
+				newTestsLabel.setVisible(false);
+			}
+		}, pathogenTestHandler::addPathogenTest);
 
 		// button configuration
 		Consumer<Disease> createReferral = disease -> {
 			// discard current changes and create sample referral
 			SampleDto existingSample =
 				FacadeProvider.getSampleFacade().getSampleByUuid(sampleEditComponent.getWrappedComponent().getValue().getUuid());
-			createSampleReferral(existingSample, disease, externalMessageDto, commitHandler, cancelHandler);
+			createSampleReferral(existingSample, lastSample, disease, newPathogenTests, externalMessageDto, commitHandler, cancelHandler);
 
 			closeOnNavigateToRefer.run();
 		};
 		Consumer<SampleDto> editSample = referredTo -> {
-			showEditSampleWindow(referredTo, newPathogenTests, externalMessageDto, commitHandler, cancelHandler);
+			showEditSampleWindow(referredTo, lastSample, newPathogenTests, externalMessageDto, commitHandler, cancelHandler);
 			closeOnNavigateToRefer.run();
 		};
 
@@ -273,23 +336,24 @@ public class ExternalMessageProcessingUIHelper {
 
 		sampleController.addReferredFromButton(sampleEditComponent, editSample);
 
-		// add commit and discard listeners
-		sampleEditComponent.addCommitListener(() -> {
-			List<PathogenTestDto> createdPathogenTests = new ArrayList<>();
-			for (int i = 0; i < sampleEditComponent.getComponentCount(); i++) {
-				Component component = sampleEditComponent.getComponent(i);
-				if (PathogenTestForm.class.isAssignableFrom(component.getClass())) {
-					createdPathogenTests.add(((PathogenTestForm) component).getValue());
-				}
-			}
-
-			commitHandler.accept(new SampleAndPathogenTests(sampleEditComponent.getWrappedComponent().getValue(), createdPathogenTests));
+		// add done and discard listeners
+		sampleEditComponent.setPostCommitListener(() -> {
+			pathogenTestHandler.saveAll(sample.toReference());
+			commitHandler
+				.accept(new SampleAndPathogenTests(sampleEditComponent.getWrappedComponent().getValue(), pathogenTestHandler.getPathogenTests()));
 		});
 		sampleEditComponent.addDiscardListener(cancelHandler::run);
 
-		LabMessageUiHelper.establishFinalCommitButtons(sampleEditComponent);
+		LabMessageUiHelper.establishCommitButtons(sampleEditComponent, lastSample);
 
 		return sampleEditComponent;
+	}
+
+	private static Label createPathogenTestGroupLabel(String captionStringProperty, List<PathogenTestDto> testsInGroup) {
+		Label existingTestsLabel = new Label(I18nProperties.getString(captionStringProperty));
+		existingTestsLabel.addStyleName(H3);
+		existingTestsLabel.setVisible(!testsInGroup.isEmpty());
+		return existingTestsLabel;
 	}
 
 	public static void showFormWithLabMessage(
@@ -354,7 +418,9 @@ public class ExternalMessageProcessingUIHelper {
 
 	private static void createSampleReferral(
 		SampleDto existingSample,
+		boolean lastSample,
 		Disease disease,
+		List<PathogenTestDto> newPathogenTests,
 		ExternalMessageDto externalMessageDto,
 		Consumer<SampleAndPathogenTests> commitHandler,
 		Runnable cancelHandler) {
@@ -363,42 +429,48 @@ public class ExternalMessageProcessingUIHelper {
 		SampleController sampleController = ControllerProvider.getSampleController();
 		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent =
 			sampleController.getSampleReferralCreateComponent(existingSample, disease);
-		addAllTestReportsOf(externalMessageDto, sampleCreateComponent);
+
+		SampleEditPathogenTestListHandler pathogenTestHandler = new SampleEditPathogenTestListHandler();
+
+		newPathogenTests.forEach(t -> t.setSample(existingSample.toReference()));
+		addNewPathogenTests(newPathogenTests, sampleCreateComponent, true, pathogenTestHandler::addPathogenTest, null);
+
 		// add option to create additional pathogen tests
-		sampleController.addPathogenTestButton(sampleCreateComponent, true);
+		sampleController.addPathogenTestButton(sampleCreateComponent, true, null, null, pathogenTestHandler::addPathogenTest);
 
-		sampleCreateComponent.addCommitListener(() -> {
-			List<PathogenTestDto> createdPathogenTests = new ArrayList<>();
-			for (int i = 0; i < sampleCreateComponent.getComponentCount(); i++) {
-				Component component = sampleCreateComponent.getComponent(i);
-				if (PathogenTestForm.class.isAssignableFrom(component.getClass())) {
-					createdPathogenTests.add(((PathogenTestForm) component).getValue());
-				}
-			}
+		sampleCreateComponent.setPostCommitListener(() -> {
+			SampleDto referredSample = sampleCreateComponent.getWrappedComponent().getValue();
 
-			commitHandler.accept(new SampleAndPathogenTests(sampleCreateComponent.getWrappedComponent().getValue(), createdPathogenTests));
+			pathogenTestHandler.saveAll(referredSample.toReference());
+			commitHandler.accept(new SampleAndPathogenTests(referredSample, pathogenTestHandler.getPathogenTests()));
 		});
 		sampleCreateComponent.addDiscardListener(cancelHandler::run);
 
-		LabMessageUiHelper.establishFinalCommitButtons(sampleCreateComponent);
+		LabMessageUiHelper.establishCommitButtons(sampleCreateComponent, lastSample);
 
 		showFormWithLabMessage(externalMessageDto, sampleCreateComponent, window, I18nProperties.getString(Strings.headingCreateNewSample), false);
 	}
 
-	private static void addAllTestReportsOf(
-		ExternalMessageDto externalMessageDto,
-		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent) {
+	public static void addNewPathogenTests(
+		List<PathogenTestDto> pathogenTests,
+		CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleForm,
+		boolean forceSeparator,
+		Consumer<PathogenTestDto> saveHandler,
+		Runnable deleteHandler) {
 
 		SampleController sampleController = ControllerProvider.getSampleController();
-		SampleDto sample = sampleCreateComponent.getWrappedComponent().getValue();
-		List<PathogenTestDto> pathogenTests =
-			LabMessageProcessingHelper.buildPathogenTests(sample, externalMessageDto, UserProvider.getCurrent().getUser());
+		SampleDto sample = sampleForm.getWrappedComponent().getValue();
 		int caseSampleCount = sampleController.caseSampleCountOf(sample);
 
-		for (PathogenTestDto pathogenTest : pathogenTests) {
-			PathogenTestForm pathogenTestCreateComponent =
-				sampleController.addPathogenTestComponent(sampleCreateComponent, pathogenTest, caseSampleCount, true);
-			sampleController.setViaLimsFieldChecked(pathogenTestCreateComponent);
+		for (int i = 0; i < pathogenTests.size(); i++) {
+			PathogenTestDto pathogenTest = pathogenTests.get(i);
+			CollapsiblePathogenTestForm pathogenTestComponent = sampleController
+				.addPathogenTestComponent(sampleForm, pathogenTest, saveHandler, caseSampleCount, true, true, forceSeparator || i > 0);
+			pathogenTestComponent.addDetachListener((e) -> {
+				if (deleteHandler != null) {
+					deleteHandler.run();
+				}
+			});
 		}
 	}
 

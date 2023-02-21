@@ -79,6 +79,7 @@ import de.symeda.sormas.app.databinding.DialogClassificationRulesLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentCaseEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
+import de.symeda.sormas.app.util.FieldVisibilityAndAccessHelper;
 import de.symeda.sormas.app.util.InfrastructureDaoHelper;
 import de.symeda.sormas.app.util.InfrastructureFieldsDependencyHandler;
 
@@ -203,11 +204,13 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		contentBinding.caseDataQuarantineReduced.setVisibility(record.isQuarantineReduced() ? VISIBLE : GONE);
 
 		User user = ConfigProvider.getUser();
-		if (user.hasJurisdictionLevel(JurisdictionLevel.HEALTH_FACILITY)) {
+		if (user.hasJurisdictionLevel(JurisdictionLevel.HEALTH_FACILITY) || getPrimaryData().getHealthFacility() == null) {
 			// Hospital Informants are not allowed to change place of stay
 			contentBinding.caseDataDifferentPlaceOfStayJurisdiction.setEnabled(false);
 			contentBinding.caseDataDifferentPlaceOfStayJurisdiction.setVisibility(GONE);
 		}
+
+		contentBinding.caseDataDiseaseVariant.setVisibility(DataUtils.emptyOrWithOneNullItem(diseaseVariantList) ? GONE : VISIBLE);
 	}
 
 	private void updateCaseConfirmationBasis(FragmentCaseEditLayoutBinding contentBinding) {
@@ -668,7 +671,10 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			contentBinding.caseDataClassifiedBy.setValue(getResources().getString(R.string.system));
 		}
 
-		if (record.getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY && record.getHealthFacility() == null) {
+		if(!isFieldAccessible(CaseDataDto.class, contentBinding.caseDataHealthFacility)){
+			FieldVisibilityAndAccessHelper.setFieldInaccessibleValue(contentBinding.facilityOrHome);
+			FieldVisibilityAndAccessHelper.setFieldInaccessibleValue(contentBinding.facilityTypeGroup);
+		} else if (record.getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY && record.getHealthFacility() == null) {
 			contentBinding.facilityTypeFieldsLayout.setVisibility(GONE);
 			contentBinding.caseDataHealthFacility.setVisibility(GONE);
 			contentBinding.caseDataHealthFacilityDetails.setVisibility(GONE);

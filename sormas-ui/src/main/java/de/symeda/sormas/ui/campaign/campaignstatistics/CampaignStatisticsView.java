@@ -1,6 +1,6 @@
 package de.symeda.sormas.ui.campaign.campaignstatistics;
 
-import static de.symeda.sormas.ui.utils.FilteredGrid.EDIT_BTN_ID;
+import static de.symeda.sormas.ui.utils.FilteredGrid.ACTION_BTN_ID;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -74,7 +74,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 			addHeaderComponent(exportPopupButton);
 			{
 				StreamResource streamResource =
-					GridExportStreamResource.createStreamResource(grid, ExportEntityName.CAMPAIGN_STATISTICS, EDIT_BTN_ID);
+					GridExportStreamResource.createStreamResource(grid, ExportEntityName.CAMPAIGN_STATISTICS, ACTION_BTN_ID);
 				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.export, Strings.infoBasicExport);
 			}
 		}

@@ -1,19 +1,16 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.backend.sormastosormas.share.outgoing;
@@ -27,6 +24,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -72,6 +70,8 @@ public class ShareRequestInfo extends AbstractDomainObject {
 
 	private boolean withImmunizations;
 
+	private boolean withSurveillanceReports;
+
 	private boolean pseudonymizedPersonalData;
 
 	private boolean pseudonymizedSensitiveData;
@@ -79,6 +79,8 @@ public class ShareRequestInfo extends AbstractDomainObject {
 	private String comment;
 
 	private String responseComment;
+
+	private boolean ownershipHandedOver;
 
 	@Enumerated(EnumType.STRING)
 	public ShareRequestDataType getDataType() {
@@ -110,7 +112,7 @@ public class ShareRequestInfo extends AbstractDomainObject {
 		this.requestStatus = requestStatus;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(nullable = false)
 	public User getSender() {
 		return sender;
@@ -157,6 +159,15 @@ public class ShareRequestInfo extends AbstractDomainObject {
 	}
 
 	@Column
+	public boolean isWithSurveillanceReports() {
+		return withSurveillanceReports;
+	}
+
+	public void setWithSurveillanceReports(boolean withSurveillanceReports) {
+		this.withSurveillanceReports = withSurveillanceReports;
+	}
+
+	@Column
 	public boolean isPseudonymizedPersonalData() {
 		return pseudonymizedPersonalData;
 	}
@@ -190,6 +201,15 @@ public class ShareRequestInfo extends AbstractDomainObject {
 
 	public void setResponseComment(String responseComment) {
 		this.responseComment = responseComment;
+	}
+
+	@Column
+	public boolean isOwnershipHandedOver() {
+		return ownershipHandedOver;
+	}
+
+	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
+		this.ownershipHandedOver = ownershipHandedOver;
 	}
 
 	public List<AbstractDomainObject> extractSharedMainEntities() {

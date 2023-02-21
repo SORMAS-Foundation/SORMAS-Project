@@ -88,7 +88,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 			fluidRowLocs(TaskDto.TASK_STATUS) +
 			fluidRowLocs(TaskDto.OBSERVER_USERS) +
 			fluidRowLocs(OBSERVER_MISSING_INFO) +
-			fluidRowLocs(SAVE_INFO);
+			fluidRowLocs(SAVE_INFO) + fluidRowLocs(TaskDto.ASSIGNED_BY_USER);
 	//@formatter:on
 
 	private UserRight editOrCreateUserRight;
@@ -175,6 +175,9 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		observerUsers.setImmediate(true);
 		CssStyles.style(observerUsers, CssStyles.OPTIONGROUP_MAX_HEIGHT_150);
 
+		ComboBox assignedBy = addField(TaskDto.ASSIGNED_BY_USER, ComboBox.class);
+		assignedBy.setReadOnly(true);
+
 		setRequired(true, TaskDto.TASK_CONTEXT, TaskDto.TASK_TYPE, TaskDto.ASSIGNEE_USER, TaskDto.DUE_DATE, TaskDto.TASK_STATUS);
 		setReadOnly(true, TaskDto.TASK_CONTEXT, TaskDto.CAZE, TaskDto.CONTACT, TaskDto.EVENT);
 
@@ -223,20 +226,8 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 			}
 
 			// Validation
-			startDate.addValidator(
-				new DateComparisonValidator(
-					startDate,
-					dueDate,
-					true,
-					false,
-					I18nProperties.getValidationError(Validations.beforeDate, startDate.getCaption(), dueDate.getCaption())));
-			dueDate.addValidator(
-				new DateComparisonValidator(
-					dueDate,
-					startDate,
-					false,
-					false,
-					I18nProperties.getValidationError(Validations.afterDate, dueDate.getCaption(), startDate.getCaption())));
+			DateComparisonValidator.addStartEndValidators(startDate, dueDate);
+			DateComparisonValidator.dateFieldDependencyValidationVisibility(startDate, dueDate);
 
 			Map<String, Long> userTaskCounts = FacadeProvider.getTaskFacade()
 				.getPendingTaskCountPerUser(availableUsers.stream().map(ReferenceDto::getUuid).collect(Collectors.toList()));

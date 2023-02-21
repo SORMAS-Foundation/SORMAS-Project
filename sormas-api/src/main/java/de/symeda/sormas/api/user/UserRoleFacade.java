@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.ejb.Remote;
@@ -37,6 +36,8 @@ public interface UserRoleFacade {
 	List<UserRoleDto> getAllAfter(Date date);
 
 	List<UserRoleDto> getAll();
+
+	List<UserRoleDto> getAllActive();
 
 	List<String> getAllUuids();
 
@@ -54,7 +55,7 @@ public interface UserRoleFacade {
 
 	boolean hasAnyUserRight(Collection<UserRoleDto> userRoles, Collection<UserRight> userRights);
 
-	Set<UserRoleReferenceDto> getAllAsReference();
+	List<UserRoleReferenceDto> getAllAsReference();
 
 	List<UserRoleReferenceDto> getAllActiveAsReference();
 
@@ -67,8 +68,6 @@ public interface UserRoleFacade {
 	void validateUserRoleCombination(Collection<UserRoleDto> roles) throws UserRoleDto.UserRoleValidationException;
 
 	UserRoleReferenceDto getReferenceById(long id);
-
-	Map<UserRoleDto, Set<UserRight>> getUserRoleRights();
 
 	long count(UserRoleCriteria userRoleCriteria);
 

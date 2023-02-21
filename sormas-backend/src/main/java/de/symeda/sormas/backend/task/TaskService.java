@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import javax.ejb.EJB;
@@ -43,6 +44,7 @@ import javax.persistence.criteria.Selection;
 
 import org.apache.commons.lang3.ArrayUtils;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -62,8 +64,10 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
-import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.JurisdictionFlagsService;
 import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
@@ -85,7 +89,8 @@ import de.symeda.sormas.backend.util.JurisdictionHelper;
 
 @Stateless
 @LocalBean
-public class TaskService extends AdoServiceWithUserFilter<Task> {
+public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
+	implements JurisdictionFlagsService<Task, TaskJurisdictionFlagsDto, TaskJoins, TaskQueryContext> {
 
 	@EJB
 	private CaseService caseService;
@@ -104,29 +109,18 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		super(Task.class);
 	}
 
-	public List<Task> getAllActiveTasksAfter(Date date, User user, Integer batchSize, String lastSynchronizedUuid) {
+	@Override
+	@SuppressWarnings("rawtypes")
+	protected Predicate createRelevantDataFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Task> from) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Task> cq = cb.createQuery(getElementClass());
-		Root<Task> from = cq.from(getElementClass());
 		final TaskQueryContext taskQueryContext = new TaskQueryContext(cb, cq, from);
-
 		Predicate filter = buildActiveTasksFilter(taskQueryContext);
 
-		if (user != null) {
-			Predicate userFilter = createUserFilter(taskQueryContext);
-			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
+		if (getCurrentUser() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(taskQueryContext));
 		}
 
-		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, date, lastSynchronizedUuid);
-			filter = CriteriaBuilderHelper.and(cb, filter, dateFilter);
-		}
-
-		cq.where(filter);
-		cq.distinct(true);
-
-		return getBatchedQueryResults(cb, cq, from, batchSize);
+		return filter;
 	}
 
 	public List<String> getAllActiveUuids(User user) {
@@ -141,6 +135,13 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		if (user != null) {
 			Predicate userFilter = createUserFilter(taskQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
+		}
+
+		if (RequestContextHolder.isMobileSync()) {
+			Predicate predicate = createLimitedChangeDateFilter(cb, from);
+			if (predicate != null) {
+				filter = CriteriaBuilderHelper.and(cb, filter, predicate);
+			}
 		}
 
 		cq.where(filter);
@@ -251,6 +252,13 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		}
 
 		filter = cb.or(filter, assigneeFilter);
+
+		if (RequestContextHolder.isMobileSync()) {
+			Predicate limitedChangeDatePredicate = CriteriaBuilderHelper.and(cb, createLimitedChangeDateFilter(cb, taskQueryContext.getRoot()));
+			if (limitedChangeDatePredicate != null) {
+				filter = CriteriaBuilderHelper.and(cb, filter, limitedChangeDatePredicate);
+			}
+		}
 
 		if ((taskCriteria == null || !taskCriteria.isExcludeLimitedSyncRestrictions())
 			&& featureConfigurationFacade
@@ -431,7 +439,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 					cb.or(
 						cb.isTrue(from.get(Task.ARCHIVED)),
 						cb.and(cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CASE), cb.equal(joins.getCaze().get(Case.ARCHIVED), true)),
-						cb.and(cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CONTACT), cb.equal(joins.getContactCase().get(Case.ARCHIVED), true)),
+						cb.and(cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CONTACT), cb.equal(joins.getContact().get(Case.ARCHIVED), true)),
 						cb.and(cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT), cb.equal(joins.getEvent().get(Event.ARCHIVED), true)),
 						cb.and(
 							cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.TRAVEL_ENTRY),
@@ -527,6 +535,22 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 			}
 		}
 
+		if (taskCriteria.getAssignedByUserLike() != null) {
+			String[] textFilters = taskCriteria.getAssignedByUserLike().split("\\s+");
+			for (String textFilter : textFilters) {
+				if (DataHelper.isNullOrEmpty(textFilter)) {
+					continue;
+				}
+
+				Predicate likeFilters = cb.or(
+					CriteriaBuilderHelper.ilike(cb, joins.getCaze().get(Case.UUID), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getAssignedBy().get(User.LAST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getAssignedBy().get(User.FIRST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getAssignedBy().get(User.USER_NAME), textFilter));
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+			}
+		}
+
 		if (getCurrentUser() != null) {
 			Predicate taskContextFilter = buildTaskContextFilter(taskQueryContext);
 			taskContextFilter = CriteriaBuilderHelper
@@ -564,7 +588,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		TaskJoins joins = taskQueryContext.getJoins();
 
 		Join<Task, Case> caze = joins.getCaze();
-		Join<Contact, Case> contactCaze = joins.getContactCase();
+		Join<Task, Contact> contact = joins.getContact();
 		Join<Task, Event> event = joins.getEvent();
 		Join<Task, TravelEntry> travelEntry = joins.getTravelEntry();
 
@@ -580,8 +604,8 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 				cb.and(
 					cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CONTACT),
 					cb.and(
-						cb.or(cb.isNull(contactCaze.get(Case.ARCHIVED)), cb.isFalse(contactCaze.get(Case.ARCHIVED))),
-						cb.or(cb.isNull(contactCaze.get(Case.DELETED)), cb.isFalse(contactCaze.get(Case.DELETED))))),
+						cb.or(cb.isNull(contact.get(Case.ARCHIVED)), cb.isFalse(contact.get(Case.ARCHIVED))),
+						cb.or(cb.isNull(contact.get(Case.DELETED)), cb.isFalse(contact.get(Case.DELETED))))),
 				cb.and(
 					cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT),
 					cb.and(
@@ -717,17 +741,36 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		em.createQuery(cu).executeUpdate();
 	}
 
-	public TaskJurisdictionFlagsDto inJurisdictionOrOwned(Task task) {
+	public boolean isArchived(String taskUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<TaskJurisdictionFlagsDto> cq = cb.createQuery(TaskJurisdictionFlagsDto.class);
-		Root<Task> root = cq.from(Task.class);
-		cq.multiselect(getJurisdictionSelections(new TaskQueryContext(cb, cq, root)));
-		cq.where(cb.equal(root.get(Task.UUID), task.getUuid()));
-		return em.createQuery(cq).getSingleResult();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Task> from = cq.from(getElementClass());
+
+		cq.where(cb.and(cb.equal(from.get(Task.ARCHIVED), true), cb.equal(from.get(AbstractDomainObject.UUID), taskUuid)));
+		cq.select(cb.count(from));
+		long count = em.createQuery(cq).getSingleResult();
+		return count > 0;
 	}
 
+	@Override
+	public TaskJurisdictionFlagsDto getJurisdictionFlags(Task entity) {
+
+		return getJurisdictionsFlags(Collections.singletonList(entity)).get(entity.getId());
+	}
+
+	@Override
+	public Map<Long, TaskJurisdictionFlagsDto> getJurisdictionsFlags(List<Task> selectedEntities) {
+
+		return getSelectionAttributes(
+			selectedEntities,
+			(cb, cq, from) -> getJurisdictionSelections(new TaskQueryContext(cb, cq, from)),
+			e -> new TaskJurisdictionFlagsDto(e));
+	}
+
+	@Override
 	public List<Selection<?>> getJurisdictionSelections(TaskQueryContext qc) {
+
 		final CriteriaBuilder cb = qc.getCriteriaBuilder();
 		final TaskJoins joins = qc.getJoins();
 
@@ -761,8 +804,38 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 					travelEntryService.inJurisdictionOrOwned(new TravelEntryQueryContext(cb, qc.getQuery(), joins.getTravelEntryJoins())))));
 	}
 
+	@Override
 	public Predicate inJurisdictionOrOwned(TaskQueryContext qc) {
 		final User currentUser = userService.getCurrentUser();
 		return TaskJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
+	}
+
+	public EditPermissionType getEditPermissionType(Task task) {
+		if (task.isArchived()) {
+			return featureConfigurationFacade.isFeatureEnabled(FeatureType.EDIT_ARCHIVED_ENTITIES)
+				? EditPermissionType.ALLOWED
+				: EditPermissionType.ARCHIVING_STATUS_ONLY;
+		}
+
+		switch (task.getTaskContext()) {
+		case CASE:
+			EditPermissionType casePermissionType = caseService.getEditPermissionType(task.getCaze());
+			return casePermissionType == EditPermissionType.WITHOUT_OWNERSHIP ? EditPermissionType.ALLOWED : casePermissionType;
+		case CONTACT:
+			EditPermissionType contactPermissionType = contactService.getEditPermissionType(task.getContact());
+			return contactPermissionType == EditPermissionType.WITHOUT_OWNERSHIP ? EditPermissionType.ALLOWED : contactPermissionType;
+		case EVENT:
+			EditPermissionType eventPermissionType = eventService.getEditPermissionType(task.getEvent());
+			return eventPermissionType == EditPermissionType.WITHOUT_OWNERSHIP ? EditPermissionType.ALLOWED : eventPermissionType;
+		case TRAVEL_ENTRY:
+			return travelEntryService.getEditPermissionType(task.getTravelEntry());
+		}
+
+		return EditPermissionType.ALLOWED;
+	}
+
+	@Override
+	protected boolean hasLimitedChangeDateFilterImplementation() {
+		return true;
 	}
 }

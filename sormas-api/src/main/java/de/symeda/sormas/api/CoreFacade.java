@@ -29,11 +29,13 @@ public interface CoreFacade<DTO extends EntityDto, INDEX_DTO extends Serializabl
 
 	boolean isArchived(String uuid);
 
+	boolean isDeleted(String uuid);
+
 	void delete(String uuid, DeletionDetails deletionDetails);
 
-	boolean exists(String uuid);
+	void undelete(String uuid);
 
-	List<DTO> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
+	boolean exists(String uuid);
 
 	DeletionInfoDto getAutomaticDeletionInfo(String uuid);
 
@@ -46,13 +48,15 @@ public interface CoreFacade<DTO extends EntityDto, INDEX_DTO extends Serializabl
 	void dearchive(List<String> entityUuids, String dearchiveReason);
 
 	default void setArchiveInExternalSurveillanceToolForEntity(String uuid, boolean archived) throws ExternalSurveillanceToolException {
-	};
+	}
 
 	default void setArchiveInExternalSurveillanceToolForEntities(List<String> uuid, boolean archived) throws ExternalSurveillanceToolException {
-	};
+	}
 
 	Date calculateEndOfProcessingDate(String entityUuids);
 
-	EditPermissionType isEditAllowed(String uuid);
+	EditPermissionType getEditPermissionType(String uuid);
+
+	boolean isEditAllowed(String uuid);
 
 }

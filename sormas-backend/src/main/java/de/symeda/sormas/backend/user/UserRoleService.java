@@ -45,12 +45,12 @@ import de.symeda.sormas.api.user.UserRoleCriteria;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 
 @Stateless
 @LocalBean
-public class UserRoleService extends AdoServiceWithUserFilter<UserRole> {
+public class UserRoleService extends AdoServiceWithUserFilterAndJurisdiction<UserRole> {
 
 	@EJB
 	private UserService userService;

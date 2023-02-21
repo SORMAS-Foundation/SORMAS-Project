@@ -18,9 +18,11 @@ import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskDateType;
 import de.symeda.sormas.api.task.TaskIndexDto;
+import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -40,7 +42,7 @@ public class TaskGridFilterForm extends AbstractFilterForm<TaskCriteria> {
 	private static final String WEEK_AND_DATE_FILTER = "weekAndDateFilter";
 
 	private static final String MORE_FILTERS_HTML =
-		filterLocs(TaskCriteria.ASSIGNEE_USER_LIKE, TaskCriteria.CREATOR_USER_LIKE) + loc(WEEK_AND_DATE_FILTER);
+		filterLocs(TaskCriteria.ASSIGNEE_USER_LIKE, TaskCriteria.CREATOR_USER_LIKE, TaskCriteria.ASSIGNED_BY_USER_LIKE) + loc(WEEK_AND_DATE_FILTER);
 
 	protected TaskGridFilterForm() {
 		super(
@@ -54,6 +56,7 @@ public class TaskGridFilterForm extends AbstractFilterForm<TaskCriteria> {
 		return new String[] {
 			TaskIndexDto.TASK_CONTEXT,
 			TaskIndexDto.TASK_STATUS,
+			TaskIndexDto.TASK_TYPE,
 			TaskIndexDto.REGION,
 			TaskIndexDto.DISTRICT,
 			TaskCriteria.FREE_TEXT };
@@ -66,8 +69,14 @@ public class TaskGridFilterForm extends AbstractFilterForm<TaskCriteria> {
 
 	@Override
 	protected void addFields() {
-		addField(FieldConfiguration.pixelSized(TaskIndexDto.TASK_CONTEXT, 140));
+		final ComboBox contextField = addField(FieldConfiguration.pixelSized(TaskIndexDto.TASK_CONTEXT, 140));
 		addField(FieldConfiguration.pixelSized(TaskIndexDto.TASK_STATUS, 140));
+		final ComboBox typeField = addField(FieldConfiguration.pixelSized(TaskIndexDto.TASK_TYPE, 140));
+
+		contextField.addValueChangeListener(e -> {
+			TaskContext taskContext = (TaskContext) e.getProperty().getValue();
+			FieldHelper.updateEnumData(typeField, TaskType.getTaskTypes(taskContext));
+		});
 
 		final UserDto user = currentUserDto();
 		if (user.getDistrict() == null) {
@@ -112,6 +121,10 @@ public class TaskGridFilterForm extends AbstractFilterForm<TaskCriteria> {
 		TextField creatorUserLikeField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(TaskCriteria.CREATOR_USER_LIKE, 200));
 		creatorUserLikeField.setInputPrompt(I18nProperties.getPrefixCaption(propertyI18nPrefix, TaskIndexDto.CREATOR_USER));
 		creatorUserLikeField.setNullRepresentation("");
+
+		TextField assignedByUserLikeField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(TaskCriteria.ASSIGNED_BY_USER_LIKE, 200));
+		assignedByUserLikeField.setInputPrompt(I18nProperties.getPrefixCaption(propertyI18nPrefix, TaskIndexDto.ASSIGNED_BY_USER));
+		assignedByUserLikeField.setNullRepresentation("");
 
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(), WEEK_AND_DATE_FILTER);
 	}

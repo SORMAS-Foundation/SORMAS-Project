@@ -22,7 +22,7 @@ import javax.persistence.OneToOne;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
-import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.uuid.HasUuid;
 
 @Audited
 public class EntityWithHelperAttributes implements HasUuid {

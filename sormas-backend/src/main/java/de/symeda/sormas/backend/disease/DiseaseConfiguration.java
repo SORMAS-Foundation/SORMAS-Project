@@ -12,10 +12,12 @@ import javax.persistence.Enumerated;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 @Entity(name = DiseaseConfiguration.TABLE_NAME)
 @Audited
+@AuditIgnore(retainWrites = true)
 public class DiseaseConfiguration extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -7653585175036656526L;
@@ -23,6 +25,8 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	public static final String TABLE_NAME = "diseaseconfiguration";
 
 	public static final String DISEASE = "disease";
+	public static final String PRIMARY_DISEASE = "primaryDisease";
+	public static final String CASE_SURVEILLANCE_ENABLED = "caseSurveillanceEnabled";
 
 	private Disease disease;
 	private Boolean active;

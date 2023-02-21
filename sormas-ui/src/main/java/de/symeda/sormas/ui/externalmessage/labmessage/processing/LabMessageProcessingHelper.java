@@ -15,13 +15,13 @@
 
 package de.symeda.sormas.ui.externalmessage.labmessage.processing;
 
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.person.PersonDto;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.UserDto;
@@ -35,9 +35,9 @@ public class LabMessageProcessingHelper {
 	private LabMessageProcessingHelper() {
 	}
 
-	public static List<PathogenTestDto> buildPathogenTests(SampleDto sample, ExternalMessageDto labMessage, UserDto user) {
+	public static List<PathogenTestDto> buildPathogenTests(SampleDto sample, int sampleReportIndex, ExternalMessageDto labMessage, UserDto user) {
 		ArrayList<PathogenTestDto> pathogenTests = new ArrayList<>();
-		for (TestReportDto testReport : labMessage.getTestReports()) {
+		for (TestReportDto testReport : labMessage.getSampleReportsNullSafe().get(sampleReportIndex).getTestReports()) {
 			pathogenTests.add(buildPathogenTest(testReport, labMessage, sample, user));
 		}
 

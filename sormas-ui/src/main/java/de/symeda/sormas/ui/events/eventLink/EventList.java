@@ -30,6 +30,7 @@ import com.vaadin.ui.Label;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
@@ -37,7 +38,6 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -50,16 +50,18 @@ public class EventList extends PaginationList<EventIndexDto> {
 	private final Label noEventLabel;
 	private BiConsumer<Integer, EventListEntry> addUnlinkEventListener;
 	private final Consumer<Runnable> actionCallback;
+	private final boolean isEditAllowed;
 
-	public EventList(CaseReferenceDto caseReferenceDto, Consumer<Runnable> actionCallback) {
+	public EventList(CaseReferenceDto caseReferenceDto, Consumer<Runnable> actionCallback, boolean isEditAllowed) {
 
 		super(5);
 		this.actionCallback = actionCallback;
+		this.isEditAllowed = isEditAllowed;
 		eventCriteria.caze(caseReferenceDto);
 		eventCriteria.setUserFilterIncluded(false);
 		noEventLabel = new Label(I18nProperties.getCaption(Captions.eventNoEventLinkedToCase));
 		addUnlinkEventListener = (Integer i, EventListEntry listEntry) -> {
-			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EDIT)) {
+			if (UserProvider.getCurrent().hasAllUserRights(UserRight.EVENT_EDIT, UserRight.CASE_EDIT) && isEditAllowed) {
 				listEntry.addUnlinkEventListener(i, (ClickListener) clickEvent -> {
 					VaadinUiUtil.showConfirmationPopup(
 						I18nProperties.getString(Strings.headingUnlinkCaseFromEvent),
@@ -85,28 +87,30 @@ public class EventList extends PaginationList<EventIndexDto> {
 		};
 	}
 
-	public EventList(PersonReferenceDto personRef, Consumer<Runnable> actionCallback) {
+	public EventList(ContactDto contact, Consumer<Runnable> actionCallback, boolean isEditAllowed) {
 
 		super(5);
 		this.actionCallback = actionCallback;
-		eventCriteria.setPerson(personRef);
+		this.isEditAllowed = isEditAllowed;
+		eventCriteria.setPerson(contact.getPerson());
 		eventCriteria.setUserFilterIncluded(false);
-		noEventLabel = new Label(I18nProperties.getCaption(Captions.eventNoEventLinkedToCase));
+		noEventLabel = new Label(I18nProperties.getCaption(Captions.eventNoEventLinkedToContact));
 		addUnlinkEventListener = (Integer i, EventListEntry listEntry) -> {
 			UserProvider user = UserProvider.getCurrent();
-			if (personRef != null && user.hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
+			if (contact.getPerson() != null && user.hasUserRight(UserRight.EVENTPARTICIPANT_DELETE) && isEditAllowed) {
 				listEntry.addUnlinkEventListener(
 					i,
 					(ClickListener) clickEvent -> ControllerProvider.getEventParticipantController()
-						.deleteEventParticipant(listEntry.getEvent().getUuid(), personRef.getUuid(), this::reload));
+						.deleteEventParticipant(listEntry.getEvent().getUuid(), contact.getPerson().getUuid(), this::reload));
 			}
 		};
 	}
 
-	public EventList(EventReferenceDto superordinateEvent, Consumer<Runnable> actionCallback) {
+	public EventList(EventReferenceDto superordinateEvent, Consumer<Runnable> actionCallback, boolean isEditAllowed) {
 
 		super(5);
 		this.actionCallback = actionCallback;
+		this.isEditAllowed = isEditAllowed;
 		eventCriteria.superordinateEvent(superordinateEvent);
 		eventCriteria.setUserFilterIncluded(false);
 		noEventLabel = new Label(I18nProperties.getString(Strings.infoNoSubordinateEvents));
@@ -150,11 +154,13 @@ public class EventList extends PaginationList<EventIndexDto> {
 				if (addUnlinkEventListener != null) {
 					addUnlinkEventListener.accept(i, listEntry);
 				}
-				listEntry.addEditListener(
-					i,
-					(ClickListener) clickEvent -> actionCallback
-						.accept(() -> ControllerProvider.getEventController().navigateToData(listEntry.getEvent().getUuid())));
 			}
+			listEntry.addActionButton(
+				String.valueOf(i),
+				(ClickListener) clickEvent -> actionCallback
+					.accept(() -> ControllerProvider.getEventController().navigateToData(listEntry.getEvent().getUuid())),
+				isEditAllowed && user.hasUserRight(UserRight.EVENT_EDIT));
+			listEntry.setEnabled(isEditAllowed);
 			listLayout.addComponent(listEntry);
 		}
 	}

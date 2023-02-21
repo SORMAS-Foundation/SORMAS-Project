@@ -48,7 +48,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
+import de.symeda.sormas.api.vaccination.VaccinationCriteria;
 import de.symeda.sormas.ui.document.DocumentListComponent;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.DownloadUtil;
@@ -64,7 +64,7 @@ public class DocGenerationController {
 		ReferenceDto referenceDto,
 		DocumentWorkflow workflow,
 		SampleCriteria sampleCriteria,
-		VaccinationListCriteria vaccinationCriteria,
+		VaccinationCriteria vaccinationCriteria,
 		DocumentListComponent documentListComponent) {
 		showDialog(
 			new QuarantineOrderLayout(

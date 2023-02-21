@@ -4,6 +4,11 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum PersonAssociation {
 
+	/**
+	 * Persons that are associated to <strong>all permitted</strong> association types.
+	 * 
+	 * @see #getSingleAssociations()
+	 */
 	ALL,
 	CASE,
 	CONTACT,

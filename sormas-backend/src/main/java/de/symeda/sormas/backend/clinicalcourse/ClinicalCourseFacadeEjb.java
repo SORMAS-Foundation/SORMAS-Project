@@ -13,9 +13,6 @@ import de.symeda.sormas.backend.util.DtoHelper;
 @Stateless(name = "ClinicalCourseFacade")
 public class ClinicalCourseFacadeEjb implements ClinicalCourseFacade {
 
-	@EJB
-	private ClinicalCourseService service;
-
 	public static ClinicalCourseReferenceDto toReferenceDto(ClinicalCourse entity) {
 
 		if (entity == null) {
@@ -38,10 +35,8 @@ public class ClinicalCourseFacadeEjb implements ClinicalCourseFacade {
 		return target;
 	}
 
-	public ClinicalCourse fromDto(@NotNull ClinicalCourseDto source, boolean checkChangeDate) {
-
-		ClinicalCourse target = DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), ClinicalCourse::new, checkChangeDate);
-		return target;
+	public ClinicalCourse fillOrBuildEntity(@NotNull ClinicalCourseDto source, ClinicalCourse entity, boolean checkChangeDate) {
+		return DtoHelper.fillOrBuildEntity(source, entity, ClinicalCourse::new, checkChangeDate);
 	}
 
 	@LocalBean

@@ -1,16 +1,20 @@
 package de.symeda.sormas.api.contact;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
 public class ContactListEntryDto extends PseudonymizableIndexDto implements Serializable, Cloneable {
 
+	private static final long serialVersionUID = -3753167578595277556L;
 	private ContactStatus contactStatus;
 	private Disease disease;
 	private ContactClassification contactClassification;
 	private ContactCategory contactCategory;
+	private Date reportDate;
+	private Date lastContactDate;
 
 	private boolean isInJurisdiction;
 
@@ -20,12 +24,16 @@ public class ContactListEntryDto extends PseudonymizableIndexDto implements Seri
 		Disease disease,
 		ContactClassification contactClassification,
 		ContactCategory contactCategory,
+		Date reportDate,
+		Date lastContactDate,
 		boolean isInJurisdiction) {
 		super(uuid);
 		this.contactStatus = contactStatus;
 		this.disease = disease;
 		this.contactClassification = contactClassification;
 		this.contactCategory = contactCategory;
+		this.reportDate = reportDate;
+		this.lastContactDate = lastContactDate;
 		this.isInJurisdiction = isInJurisdiction;
 	}
 
@@ -61,10 +69,28 @@ public class ContactListEntryDto extends PseudonymizableIndexDto implements Seri
 		this.contactCategory = contactCategory;
 	}
 
+	public Date getReportDate() {
+		return reportDate;
+	}
+
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
+	}
+
+	public Date getLastContactDate() {
+		return lastContactDate;
+	}
+
+	public void setLastContactDate(Date lastContactDate) {
+		this.lastContactDate = lastContactDate;
+	}
+
+	@Override
 	public boolean isInJurisdiction() {
 		return isInJurisdiction;
 	}
 
+	@Override
 	public void setInJurisdiction(boolean inJurisdiction) {
 		isInJurisdiction = inJurisdiction;
 	}

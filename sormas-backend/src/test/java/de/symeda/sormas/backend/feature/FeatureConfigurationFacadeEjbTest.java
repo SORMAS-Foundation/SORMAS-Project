@@ -1,12 +1,12 @@
 package de.symeda.sormas.backend.feature;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.common.CoreEntityType;
@@ -31,8 +31,7 @@ public class FeatureConfigurationFacadeEjbTest extends AbstractBeanTest {
 		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.TASK_GENERATION_CASE_SURVEILLANCE);
 
 		RDCFEntities rdcf = creator.createRDCFEntities();
-		UserReferenceDto user =
-			creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR)).toReference();
+		UserReferenceDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR)).toReference();
 		PersonReferenceDto person = creator.createPerson("Case", "Person").toReference();
 
 		CaseDataDto caze = creator.createCase(user, person, rdcf);
@@ -61,18 +60,22 @@ public class FeatureConfigurationFacadeEjbTest extends AbstractBeanTest {
 
 		Integer defaultDaysForCaseArchiving = getFeatureConfigurationFacade()
 			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CASE, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
-		Assert.assertEquals(90, (int) defaultDaysForCaseArchiving);
+		assertEquals(90, (int) defaultDaysForCaseArchiving);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testGetPropertyWithWrongPropertyType() {
-		getFeatureConfigurationFacade()
-			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CASE, FeatureTypeProperty.THRESHOLD_IN_DAYS, Boolean.class);
+		assertThrows(
+			IllegalArgumentException.class,
+			() -> getFeatureConfigurationFacade()
+				.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CASE, FeatureTypeProperty.THRESHOLD_IN_DAYS, Boolean.class));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testGetPropertyWhenFeatureTypeDoesNotContainIt() {
-		getFeatureConfigurationFacade()
-			.getProperty(FeatureType.CASE_SURVEILANCE, CoreEntityType.CASE, FeatureTypeProperty.THRESHOLD_IN_DAYS, Boolean.class);
+		assertThrows(
+			IllegalArgumentException.class,
+			() -> getFeatureConfigurationFacade()
+				.getProperty(FeatureType.CASE_SURVEILANCE, CoreEntityType.CASE, FeatureTypeProperty.THRESHOLD_IN_DAYS, Boolean.class));
 	}
 }

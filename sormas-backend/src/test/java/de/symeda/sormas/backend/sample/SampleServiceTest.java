@@ -1,12 +1,13 @@
 package de.symeda.sormas.backend.sample;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.common.DeletionDetails;
@@ -28,10 +29,8 @@ public class SampleServiceTest extends AbstractBeanTest {
 	public void testSamplePermanentDeletion() {
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(
-			rdcf,
-			creator.getUserRoleReference(DefaultUserRole.ADMIN),
-			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator
+			.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN), creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		PersonDto person = creator.createPerson();
 		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
 		SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
@@ -39,7 +38,7 @@ public class SampleServiceTest extends AbstractBeanTest {
 			creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> s.setReferredTo(sample.toReference()));
 		creator.createPathogenTest(sample.toReference(), caze);
 		creator.createAdditionalTest(sample.toReference());
-		ExternalMessageDto labMessage = creator.createLabMessage(lm -> lm.setSample(sample.toReference()));
+		ExternalMessageDto labMessage = creator.createLabMessageWithTestReport(sample.toReference());
 
 		getSampleFacade().deleteSample(sample.toReference(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
@@ -50,14 +49,18 @@ public class SampleServiceTest extends AbstractBeanTest {
 		assertEquals(1, pathogenTests.size());
 		assertTrue(pathogenTests.get(0).isDeleted());
 		assertEquals(1, getAdditionalTestService().count());
-		assertNull(getSampleService().getByUuid(referralSample.getUuid()).getReferredTo());
-		assertNull(getLabMessageService().getByUuid(labMessage.getUuid()).getSample());
+		assertNotNull(getSampleService().getByUuid(referralSample.getUuid()).getReferredTo());
+		assertNotNull(getSampleReportService().getByUuid(labMessage.getSampleReports().get(0).getUuid()).getSample());
 
 		getSampleService().deletePermanent(getEntityAttached(sampleEntity));
 
 		assertEquals(1, getSampleService().count());
 		assertEquals(0, getPathogenTestService().count());
 		assertEquals(0, getAdditionalTestService().count());
-		assertEquals(1, getLabMessageService().count());
+		assertEquals(1, getExternalMessageService().count());
+		assertEquals(1, getSampleReportService().count());
+		assertEquals(1, getTestReportService().count());
+		assertNull(getSampleService().getByUuid(referralSample.getUuid()).getReferredTo());
+		assertNull(getSampleReportService().getByUuid(labMessage.getSampleReports().get(0).getUuid()).getSample());
 	}
 }

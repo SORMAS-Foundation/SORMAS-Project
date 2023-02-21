@@ -14,6 +14,8 @@
  */
 package de.symeda.sormas.rest;
 
+import java.util.EnumSet;
+
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
 import javax.servlet.ServletContext;
@@ -22,13 +24,20 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 import javax.ws.rs.ApplicationPath;
 
+import org.apache.commons.collections4.SetUtils;
+import org.glassfish.jersey.jackson.JacksonFeature;
+import org.glassfish.jersey.server.ResourceConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.utils.InfoProvider;
-import de.symeda.sormas.rest.externaljournal.ExternalVisitsResource;
+import de.symeda.sormas.rest.resources.ExternalVisitsResource;
 import de.symeda.sormas.rest.security.KeycloakFilter;
 import de.symeda.sormas.rest.swagger.AttributeConverter;
 import de.symeda.sormas.rest.swagger.SormasSwaggerExtensions;
+import de.symeda.sormas.rest.swagger.SwaggerConfig;
 import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.core.util.Json;
 import io.swagger.v3.jaxrs2.integration.resources.OpenApiResource;
@@ -37,15 +46,6 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
-import org.apache.commons.collections4.SetUtils;
-import org.glassfish.jersey.jackson.JacksonFeature;
-import org.glassfish.jersey.server.ResourceConfig;
-
-import de.symeda.sormas.rest.swagger.SwaggerConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.EnumSet;
 
 /**
  * @see <a href="https://jersey.github.io/documentation/latest/index.html">Jersey documentation</a>

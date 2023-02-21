@@ -34,9 +34,11 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
@@ -48,6 +50,7 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
@@ -149,15 +152,15 @@ public class TaskFacadeEjb implements TaskFacade {
 	@EJB
 	private NotificationService notificationService;
 
-	public Task fromDto(TaskDto source, boolean checkChangeDate) {
-
+	public Task fillOrBuildEntity(TaskDto source, Task target, boolean checkChangeDate) {
 		if (source == null) {
 			return null;
 		}
 
-		Task target = DtoHelper.fillOrBuildEntity(source, taskService.getByUuid(source.getUuid()), Task::new, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, Task::new, checkChangeDate);
 
 		target.setAssigneeUser(userService.getByReferenceDto(source.getAssigneeUser()));
+		target.setAssignedByUser(userService.getByReferenceDto(source.getAssignedByUser()));
 		target.setAssigneeReply(source.getAssigneeReply());
 		target.setCreatorUser(userService.getByReferenceDto(source.getCreatorUser()));
 		target.setCreatorComment(source.getCreatorComment());
@@ -233,11 +236,17 @@ public class TaskFacadeEjb implements TaskFacade {
 			return null;
 		}
 
+		return toDto(source, pseudonymizer, taskService.getJurisdictionFlags(source));
+	}
+
+	private TaskDto toDto(Task source, Pseudonymizer pseudonymizer, TaskJurisdictionFlagsDto jurisdictionFlags) {
+
 		TaskDto target = new TaskDto();
 
 		DtoHelper.fillDto(target, source);
 
 		target.setAssigneeUser(UserFacadeEjb.toReferenceDto(source.getAssigneeUser()));
+		target.setAssignedByUser(UserFacadeEjb.toReferenceDto(source.getAssignedByUser()));
 		target.setAssigneeReply(source.getAssigneeReply());
 		target.setCreatorUser(UserFacadeEjb.toReferenceDto(source.getCreatorUser()));
 		target.setCreatorComment(source.getCreatorComment());
@@ -265,34 +274,42 @@ public class TaskFacadeEjb implements TaskFacade {
 		target.setClosedLon(source.getClosedLon());
 		target.setClosedLatLonAccuracy(source.getClosedLatLonAccuracy());
 
-		TaskJurisdictionFlagsDto taskJurisdictionFlagsDto = taskService.inJurisdictionOrOwned(source);
-		pseudonymizer.pseudonymizeDto(TaskDto.class, target, taskJurisdictionFlagsDto.getInJurisdiction(), t -> {
+		pseudonymizer.pseudonymizeDto(TaskDto.class, target, jurisdictionFlags.getInJurisdiction(), t -> {
 			if (source.getCaze() != null) {
-				pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, target.getCaze(), taskJurisdictionFlagsDto.getCaseInJurisdiction(), null);
+				pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, target.getCaze(), jurisdictionFlags.getCaseInJurisdiction(), null);
 			}
 
 			if (source.getContact() != null) {
 				pseudonymizeContactReference(
 					pseudonymizer,
 					target.getContact(),
-					taskJurisdictionFlagsDto.getContactInJurisdiction(),
-					taskJurisdictionFlagsDto.getContactCaseInJurisdiction());
+					jurisdictionFlags.getContactInJurisdiction(),
+					jurisdictionFlags.getContactCaseInJurisdiction());
 			}
 
 			if (source.getEvent() != null) {
-				pseudonymizer.pseudonymizeDto(EventReferenceDto.class, target.getEvent(), taskJurisdictionFlagsDto.getEventInJurisdiction(), null);
+				pseudonymizer.pseudonymizeDto(EventReferenceDto.class, target.getEvent(), jurisdictionFlags.getEventInJurisdiction(), null);
 			}
 
 			if (source.getTravelEntry() != null) {
-				pseudonymizer.pseudonymizeDto(
-					TravelEntryReferenceDto.class,
-					target.getTravelEntry(),
-					taskJurisdictionFlagsDto.getTravelEntryInJurisdiction(),
-					null);
+				pseudonymizer
+					.pseudonymizeDto(TravelEntryReferenceDto.class, target.getTravelEntry(), jurisdictionFlags.getTravelEntryInJurisdiction(), null);
 			}
 		});
 
 		return target;
+	}
+
+	private List<TaskDto> toPseudonymizedDtos(List<Task> entities) {
+
+		Map<Long, TaskJurisdictionFlagsDto> jurisdictionFlags = taskService.getJurisdictionsFlags(entities);
+		Pseudonymizer pseudonymizer = createPseudonymizer();
+		List<TaskDto> dtos = entities.stream().map(p -> toDto(p, pseudonymizer, jurisdictionFlags.get(p.getId()))).collect(Collectors.toList());
+		return dtos;
+	}
+
+	private Pseudonymizer createPseudonymizer() {
+		return Pseudonymizer.getDefault(userService::hasRight);
 	}
 
 	@Override
@@ -306,7 +323,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		// Let's retrieve the old assignee before updating the task
 		User oldAssignee = existingTask != null ? existingTask.getAssigneeUser() : null;
 
-		Task ado = fromDto(dto, true);
+		Task ado = fillOrBuildEntity(dto, existingTask, true);
 
 		validate(dto);
 
@@ -316,7 +333,7 @@ public class TaskFacadeEjb implements TaskFacade {
 
 		notifyAboutNewAssignee(ado, newAssignee, oldAssignee);
 
-		// once we have to handle additional logic this should be moved to it's own function or even class 
+		// once we have to handle additional logic this should be moved to it's own function or even class
 		if (ado.getTaskType() == TaskType.CASE_INVESTIGATION && ado.getCaze() != null) {
 			caseFacade.updateInvestigationByTask(ado.getCaze());
 		}
@@ -339,7 +356,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			}
 		}
 
-		return toDto(ado, Pseudonymizer.getDefault(userService::hasRight));
+		return toDto(ado, createPseudonymizer());
 	}
 
 	private void notifyAboutNewAssignee(Task task, User newAssignee, User oldAssignee) {
@@ -409,11 +426,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			return Collections.emptyList();
 		}
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return taskService.getAllActiveTasksAfter(date, user, batchSize, lastSynchronizedUuid)
-			.stream()
-			.map(c -> toDto(c, pseudonymizer))
-			.collect(Collectors.toList());
+		return toPseudonymizedDtos(taskService.getAllAfter(date, batchSize, lastSynchronizedUuid));
 	}
 
 	@Override
@@ -432,12 +445,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		TaskQueryContext taskQueryContext = new TaskQueryContext(cb, cq, task);
 		TaskJoins joins = taskQueryContext.getJoins();
 
-		Predicate filter = null;
-		if (taskCriteria == null || !taskCriteria.hasContextCriteria()) {
-			filter = taskService.createUserFilter(taskQueryContext);
-		} else {
-			filter = CriteriaBuilderHelper.and(cb, filter, taskService.createAssigneeFilter(cb, joins.getAssignee()));
-		}
+		Predicate filter = taskService.createUserFilter(taskQueryContext, taskCriteria);
 
 		if (taskCriteria != null) {
 			Predicate criteriaFilter = taskService.buildCriteriaFilter(taskCriteria, taskQueryContext);
@@ -455,187 +463,90 @@ public class TaskFacadeEjb implements TaskFacade {
 	@Override
 	public List<TaskIndexDto> getIndexList(TaskCriteria taskCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<TaskIndexDto> cq = cb.createQuery(TaskIndexDto.class);
-		Root<Task> task = cq.from(Task.class);
+		List<Long> indexListIds = getIndexListIds(taskCriteria, first, max, sortProperties);
 
-		TaskQueryContext taskQueryContext = new TaskQueryContext(cb, cq, task);
-		TaskJoins joins = taskQueryContext.getJoins();
+		List<TaskIndexDto> tasks = new ArrayList<>();
 
-		// Filter select based on case/contact/event region/district/community and case facility/point of entry
-		Expression<Object> regionUuid = getIndexJurisdictionExpression(
-			cb,
-			joins.getCaseResponsibleRegion(),
-			joins.getCaseRegion(),
-			joins.getContactRegion(),
-			joins.getEventRegion(),
-			joins.getTravelEntryResponsibleRegion(),
-			Region.UUID);
-		Expression<Object> regionName = getIndexJurisdictionExpression(
-			cb,
-			joins.getCaseResponsibleRegion(),
-			joins.getCaseRegion(),
-			joins.getContactRegion(),
-			joins.getEventRegion(),
-			joins.getTravelEntryResponsibleRegion(),
-			Region.NAME);
-		Expression<Object> districtUuid = getIndexJurisdictionExpression(
-			cb,
-			joins.getCaseResponsibleDistrict(),
-			joins.getCaseDistrict(),
-			joins.getContactDistrict(),
-			joins.getEventDistrict(),
-			joins.getTravelEntryResponsibleDistrict(),
-			District.UUID);
-		Expression<Object> districtName = getIndexJurisdictionExpression(
-			cb,
-			joins.getCaseResponsibleDistrict(),
-			joins.getCaseDistrict(),
-			joins.getContactDistrict(),
-			joins.getEventDistrict(),
-			joins.getTravelEntryResponsibleDistrict(),
-			District.NAME);
-		Expression<Object> communityUuid = getIndexJurisdictionExpression(
-			cb,
-			joins.getCaseResponsibleCommunity(),
-			joins.getCaseCommunity(),
-			joins.getContactCommunity(),
-			joins.getEventCommunity(),
-			joins.getTravelEntryResponsibleCommunity(),
-			Community.UUID);
-		Expression<Object> communityName = getIndexJurisdictionExpression(
-			cb,
-			joins.getCaseResponsibleCommunity(),
-			joins.getCaseCommunity(),
-			joins.getContactCommunity(),
-			joins.getEventCommunity(),
-			joins.getTravelEntryResponsibleCommunity(),
-			Community.NAME);
+		IterableHelper.executeBatched(indexListIds, ModelConstants.PARAMETER_LIMIT, batchedIds -> {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<TaskIndexDto> cq = cb.createQuery(TaskIndexDto.class);
+			Root<Task> task = cq.from(Task.class);
 
-		List<Selection<?>> selections = new ArrayList<>(
-			Arrays.asList(
-				task.get(Task.UUID),
-				task.get(Task.TASK_CONTEXT),
-				joins.getCaze().get(Case.UUID),
-				joins.getCasePerson().get(Person.FIRST_NAME),
-				joins.getCasePerson().get(Person.LAST_NAME),
-				joins.getEvent().get(Event.UUID),
-				joins.getEvent().get(Event.EVENT_TITLE),
-				joins.getEvent().get(Event.DISEASE),
-				joins.getEvent().get(Event.DISEASE_DETAILS),
-				joins.getEvent().get(Event.EVENT_STATUS),
-				joins.getEvent().get(Event.EVENT_INVESTIGATION_STATUS),
-				joins.getEvent().get(Event.START_DATE),
-				joins.getContact().get(Contact.UUID),
-				joins.getContactPerson().get(Person.FIRST_NAME),
-				joins.getContactPerson().get(Person.LAST_NAME),
-				joins.getContactCasePerson().get(Person.FIRST_NAME),
-				joins.getContactCasePerson().get(Person.LAST_NAME),
-				joins.getTravelEntry().get(TravelEntry.UUID),
-				joins.getTravelEntry().get(TravelEntry.EXTERNAL_ID),
-				joins.getTravelEntryPerson().get(Person.FIRST_NAME),
-				joins.getTravelEntryPerson().get(Person.LAST_NAME),
-				task.get(Task.TASK_TYPE),
-				task.get(Task.PRIORITY),
-				task.get(Task.DUE_DATE),
-				task.get(Task.SUGGESTED_START),
-				task.get(Task.TASK_STATUS),
-				cb.selectCase()
-					.when(cb.isNotNull(joins.getCaze()), joins.getCaze().get(Case.DISEASE))
-					.when(cb.isNotNull(joins.getContact()), joins.getContact().get(Contact.DISEASE))
-					.when(cb.isNotNull(joins.getEvent()), joins.getEvent().get(Event.DISEASE))
-					.otherwise(joins.getTravelEntry().get(TravelEntry.DISEASE)),
-				joins.getCreator().get(User.UUID),
-				joins.getCreator().get(User.FIRST_NAME),
-				joins.getCreator().get(User.LAST_NAME),
-				task.get(Task.CREATOR_COMMENT),
-				joins.getAssignee().get(User.UUID),
-				joins.getAssignee().get(User.FIRST_NAME),
-				joins.getAssignee().get(User.LAST_NAME),
-				task.get(Task.ASSIGNEE_REPLY),
-				regionUuid,
-				regionName,
-				districtUuid,
-				districtName,
-				communityUuid,
-				communityName,
-				joins.getCaseFacility().get(Facility.UUID),
-				joins.getCaseFacility().get(Facility.NAME),
-				joins.getCasePointOfEntry().get(PointOfEntry.UUID),
-				joins.getCasePointOfEntry().get(PointOfEntry.NAME)));
+			TaskQueryContext taskQueryContext = new TaskQueryContext(cb, cq, task);
+			TaskJoins joins = taskQueryContext.getJoins();
 
-		selections.addAll(taskService.getJurisdictionSelections(taskQueryContext));
-		cq.multiselect(selections);
+			// Filter select based on case/contact/event region/district/community and case facility/point of entry
+			Expression<String> regionUuid = taskQueryContext.getRegionExpressionForIndex(Region.UUID);
+			Expression<String> regionName = taskQueryContext.getRegionNameForIndex();
+			Expression<String> districtUuid = taskQueryContext.getDistrictExpressionForIndex(District.UUID);
+			Expression<String> districtName = taskQueryContext.getDistrictNameForIndex();
+			Expression<String> communityUuid = taskQueryContext.getCommunityExpressionForIndex(Community.UUID);
+			Expression<String> communityName = taskQueryContext.getCommunityExpressionForIndex(Community.NAME);
 
-		Predicate filter = taskService.createUserFilter(taskQueryContext, taskCriteria);
+			List<Selection<?>> selections = new ArrayList<>(
+				Arrays.asList(
+					task.get(Task.UUID),
+					task.get(Task.TASK_CONTEXT),
+					joins.getCaze().get(Case.UUID),
+					joins.getCasePerson().get(Person.FIRST_NAME),
+					joins.getCasePerson().get(Person.LAST_NAME),
+					joins.getEvent().get(Event.UUID),
+					joins.getEvent().get(Event.EVENT_TITLE),
+					joins.getEvent().get(Event.DISEASE),
+					joins.getEvent().get(Event.DISEASE_DETAILS),
+					joins.getEvent().get(Event.EVENT_STATUS),
+					joins.getEvent().get(Event.EVENT_INVESTIGATION_STATUS),
+					joins.getEvent().get(Event.START_DATE),
+					joins.getContact().get(Contact.UUID),
+					joins.getContactPerson().get(Person.FIRST_NAME),
+					joins.getContactPerson().get(Person.LAST_NAME),
+					joins.getContactCasePerson().get(Person.FIRST_NAME),
+					joins.getContactCasePerson().get(Person.LAST_NAME),
+					joins.getTravelEntry().get(TravelEntry.UUID),
+					joins.getTravelEntry().get(TravelEntry.EXTERNAL_ID),
+					joins.getTravelEntryPerson().get(Person.FIRST_NAME),
+					joins.getTravelEntryPerson().get(Person.LAST_NAME),
+					task.get(Task.TASK_TYPE),
+					task.get(Task.PRIORITY),
+					task.get(Task.DUE_DATE),
+					task.get(Task.SUGGESTED_START),
+					task.get(Task.TASK_STATUS),
+					cb.selectCase()
+						.when(cb.isNotNull(joins.getCaze()), joins.getCaze().get(Case.DISEASE))
+						.when(cb.isNotNull(joins.getContact()), joins.getContact().get(Contact.DISEASE))
+						.when(cb.isNotNull(joins.getEvent()), joins.getEvent().get(Event.DISEASE))
+						.otherwise(joins.getTravelEntry().get(TravelEntry.DISEASE)),
+					joins.getCreator().get(User.UUID),
+					joins.getCreator().get(User.FIRST_NAME),
+					joins.getCreator().get(User.LAST_NAME),
+					task.get(Task.CREATOR_COMMENT),
+					joins.getAssignee().get(User.UUID),
+					joins.getAssignee().get(User.FIRST_NAME),
+					joins.getAssignee().get(User.LAST_NAME),
+					task.get(Task.ASSIGNEE_REPLY),
+					joins.getAssignedBy().get(User.UUID),
+					joins.getAssignedBy().get(User.FIRST_NAME),
+					joins.getAssignedBy().get(User.LAST_NAME),
+					regionUuid,
+					regionName,
+					districtUuid,
+					districtName,
+					communityUuid,
+					communityName,
+					joins.getCaseFacility().get(Facility.UUID),
+					joins.getCaseFacility().get(Facility.NAME),
+					joins.getCasePointOfEntry().get(PointOfEntry.UUID),
+					joins.getCasePointOfEntry().get(PointOfEntry.NAME)));
 
-		if (taskCriteria != null) {
-			Predicate criteriaFilter = taskService.buildCriteriaFilter(taskCriteria, taskQueryContext);
-			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
-		}
+			selections.addAll(taskService.getJurisdictionSelections(taskQueryContext));
+			cq.multiselect(selections);
 
-		if (filter != null) {
-			cq.where(filter);
-		}
+			cq.where(task.get(Task.ID).in(batchedIds));
+			cq.orderBy(getOrderList(sortProperties, taskQueryContext));
+			cq.distinct(true);
 
-		// Distinct is necessary here to avoid duplicate results due to the user role join in taskService.createAssigneeFilter
-		cq.distinct(true);
-
-		List<Order> order = new ArrayList<>();
-		if (sortProperties != null && sortProperties.size() > 0) {
-			for (SortProperty sortProperty : sortProperties) {
-				Expression<?> expression;
-				switch (sortProperty.propertyName) {
-				case TaskIndexDto.UUID:
-				case TaskIndexDto.ASSIGNEE_REPLY:
-				case TaskIndexDto.CREATOR_COMMENT:
-				case TaskIndexDto.PRIORITY:
-				case TaskIndexDto.DUE_DATE:
-				case TaskIndexDto.SUGGESTED_START:
-				case TaskIndexDto.TASK_CONTEXT:
-				case TaskIndexDto.TASK_STATUS:
-				case TaskIndexDto.TASK_TYPE:
-					expression = task.get(sortProperty.propertyName);
-					break;
-				case TaskIndexDto.ASSIGNEE_USER:
-					expression = joins.getAssignee().get(User.LAST_NAME);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					expression = joins.getAssignee().get(User.FIRST_NAME);
-					break;
-				case TaskIndexDto.CREATOR_USER:
-					expression = joins.getCreator().get(User.LAST_NAME);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					expression = joins.getCreator().get(User.FIRST_NAME);
-					break;
-				case TaskIndexDto.CAZE:
-					expression = joins.getCasePerson().get(Person.LAST_NAME);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					expression = joins.getCasePerson().get(Person.FIRST_NAME);
-					break;
-				case TaskIndexDto.CONTACT:
-					expression = joins.getContactPerson().get(Person.LAST_NAME);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					expression = joins.getContactPerson().get(Person.FIRST_NAME);
-					break;
-				case TaskIndexDto.EVENT:
-					expression = joins.getEvent().get(Event.START_DATE);
-					break;
-				case TaskIndexDto.DISTRICT:
-					expression = districtName;
-					break;
-				case TaskIndexDto.REGION:
-					expression = regionName;
-					break;
-				default:
-					throw new IllegalArgumentException(sortProperty.propertyName);
-				}
-				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-			}
-		}
-		order.add(cb.desc(task.get(Task.DUE_DATE)));
-		cq.orderBy(order);
-
-		List<TaskIndexDto> tasks = QueryHelper.getResultList(em, cq, first, max);
+			tasks.addAll(QueryHelper.getResultList(em, cq, null, null));
+		});
 
 		if (!tasks.isEmpty()) {
 			List<String> assigneeUserUuids = tasks.stream().map(t -> t.getAssigneeUser().getUuid()).collect(Collectors.toList());
@@ -650,7 +561,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			}
 
 			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-			Pseudonymizer emptyValuePseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+			Pseudonymizer emptyValuePseudonymizer = createPseudonymizer();
 			pseudonymizer
 				.pseudonymizeDtoCollection(TaskIndexDto.class, tasks, t -> t.getTaskJurisdictionFlagsDto().getInJurisdiction(), (t, ignored) -> {
 					final TaskJurisdictionFlagsDto taskJurisdictionFlagsDto = t.getTaskJurisdictionFlagsDto();
@@ -685,27 +596,106 @@ public class TaskFacadeEjb implements TaskFacade {
 		return tasks;
 	}
 
-	private Expression<Object> getIndexJurisdictionExpression(
-		CriteriaBuilder cb,
-		Join<?, ?> caseResponsibleJurisdictionJoin,
-		Join<?, ?> caseJurisdictionJoin,
-		Join<?, ?> contactJurisdictionJoin,
-		Join<?, ?> eventJurisdictionJoin,
-		Join<?, ?> travelEntryResponsibleJurisdictionJoin,
-		String propertyName) {
+	private List<Long> getIndexListIds(TaskCriteria taskCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 
-		return cb.selectCase()
-			.when(cb.isNotNull(caseResponsibleJurisdictionJoin), caseResponsibleJurisdictionJoin.get(propertyName))
-			.otherwise(
-				cb.selectCase()
-					.when(cb.isNotNull(caseJurisdictionJoin), caseJurisdictionJoin.get(propertyName))
-					.otherwise(
-						cb.selectCase()
-							.when(cb.isNotNull(contactJurisdictionJoin), contactJurisdictionJoin.get(propertyName))
-							.otherwise(
-								cb.selectCase()
-									.when(cb.isNotNull(eventJurisdictionJoin), eventJurisdictionJoin.get(propertyName))
-									.otherwise(travelEntryResponsibleJurisdictionJoin.get(propertyName)))));
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Tuple> cq = cb.createTupleQuery();
+		Root<Task> task = cq.from(Task.class);
+
+		TaskQueryContext taskQueryContext = new TaskQueryContext(cb, cq, task);
+
+		List<Selection<?>> selections = new ArrayList<>();
+		selections.add(task.get(Task.ID));
+
+		List<Order> orderList = getOrderList(sortProperties, taskQueryContext);
+		List<Expression<?>> sortColumns = orderList.stream().map(Order::getExpression).collect(Collectors.toList());
+		selections.addAll(sortColumns);
+
+		cq.multiselect(selections);
+
+		Predicate filter = taskService.createUserFilter(taskQueryContext, taskCriteria);
+
+		if (taskCriteria != null) {
+			Predicate criteriaFilter = taskService.buildCriteriaFilter(taskCriteria, taskQueryContext);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.distinct(true);
+		cq.orderBy(orderList);
+
+		return QueryHelper.getResultList(em, cq, first, max).stream().map(t -> t.get(0, Long.class)).collect(Collectors.toList());
+	}
+
+	private List<Order> getOrderList(List<SortProperty> sortProperties, TaskQueryContext taskQueryContext) {
+		CriteriaBuilder cb = taskQueryContext.getCriteriaBuilder();
+		From<?, Task> taskRoot = taskQueryContext.getRoot();
+		TaskJoins joins = taskQueryContext.getJoins();
+
+		List<Order> orderList = new ArrayList<>();
+		if (sortProperties != null && sortProperties.size() > 0) {
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+				switch (sortProperty.propertyName) {
+				case TaskIndexDto.UUID:
+				case TaskIndexDto.ASSIGNEE_REPLY:
+				case TaskIndexDto.CREATOR_COMMENT:
+				case TaskIndexDto.PRIORITY:
+				case TaskIndexDto.DUE_DATE:
+				case TaskIndexDto.SUGGESTED_START:
+				case TaskIndexDto.TASK_CONTEXT:
+				case TaskIndexDto.TASK_STATUS:
+				case TaskIndexDto.TASK_TYPE:
+					expression = taskRoot.get(sortProperty.propertyName);
+					break;
+				case TaskIndexDto.ASSIGNEE_USER:
+					expression = joins.getAssignee().get(User.LAST_NAME);
+					orderList.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = joins.getAssignee().get(User.FIRST_NAME);
+					break;
+				case TaskIndexDto.CREATOR_USER:
+					expression = joins.getCreator().get(User.LAST_NAME);
+					orderList.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = joins.getCreator().get(User.FIRST_NAME);
+					break;
+				case TaskIndexDto.ASSIGNED_BY_USER:
+					expression = joins.getAssignedBy().get(User.LAST_NAME);
+					orderList.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = joins.getAssignedBy().get(User.FIRST_NAME);
+					break;
+				case TaskIndexDto.CAZE:
+					expression = joins.getCasePerson().get(Person.LAST_NAME);
+					orderList.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = joins.getCasePerson().get(Person.FIRST_NAME);
+					break;
+				case TaskIndexDto.CONTACT:
+					expression = joins.getContactPerson().get(Person.LAST_NAME);
+					orderList.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = joins.getContactPerson().get(Person.FIRST_NAME);
+					break;
+				case TaskIndexDto.EVENT:
+					expression = joins.getEvent().get(Event.START_DATE);
+					break;
+				case TaskIndexDto.DISTRICT:
+					expression = taskQueryContext.getDistrictNameForIndex();
+					break;
+				case TaskIndexDto.REGION:
+					expression = taskQueryContext.getRegionNameForIndex();
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+
+				orderList.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+			}
+		}
+
+		orderList.add(cb.desc(taskRoot.get(Task.DUE_DATE)));
+
+		return orderList;
 	}
 
 	@Override
@@ -749,12 +739,7 @@ public class TaskFacadeEjb implements TaskFacade {
 				JurisdictionHelper.booleanSelector(cb, taskService.inJurisdictionOrOwned(taskQueryContext))
 			);
 		//@formatter:on
-		Predicate filter = null;
-		if (criteria == null || !criteria.hasContextCriteria()) {
-			filter = taskService.createUserFilter(taskQueryContext);
-		} else {
-			filter = CriteriaBuilderHelper.and(cb, filter, taskService.createAssigneeFilter(cb, joins.getAssignee()));
-		}
+		Predicate filter = taskService.createUserFilter(taskQueryContext, criteria);
 
 		if (criteria != null) {
 			Predicate criteriaFilter = taskService.buildCriteriaFilter(criteria, taskQueryContext);
@@ -809,8 +794,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			return Collections.emptyList();
 		}
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return taskService.findBy(new TaskCriteria().caze(caseRef), false).stream().map(c -> toDto(c, pseudonymizer)).collect(Collectors.toList());
+		return toPseudonymizedDtos(taskService.findBy(new TaskCriteria().caze(caseRef), false));
 	}
 
 	@Override
@@ -820,11 +804,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			return Collections.emptyList();
 		}
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return taskService.findBy(new TaskCriteria().contact(contactRef), false)
-			.stream()
-			.map(c -> toDto(c, pseudonymizer))
-			.collect(Collectors.toList());
+		return toPseudonymizedDtos(taskService.findBy(new TaskCriteria().contact(contactRef), false));
 	}
 
 	@Override
@@ -834,14 +814,12 @@ public class TaskFacadeEjb implements TaskFacade {
 			return Collections.emptyList();
 		}
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return taskService.findBy(new TaskCriteria().event(eventRef), false).stream().map(c -> toDto(c, pseudonymizer)).collect(Collectors.toList());
+		return toPseudonymizedDtos(taskService.findBy(new TaskCriteria().event(eventRef), false));
 	}
 
 	@Override
 	public List<TaskDto> getByUuids(List<String> uuids) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return taskService.getByUuids(uuids).stream().map(c -> toDto(c, pseudonymizer)).collect(Collectors.toList());
+		return toPseudonymizedDtos(taskService.getByUuids(uuids));
 	}
 
 	@Override
@@ -851,11 +829,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			return Collections.emptyList();
 		}
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return taskService.findBy(new TaskCriteria().caze(caseRef).taskStatus(TaskStatus.PENDING), false)
-			.stream()
-			.map(c -> toDto(c, pseudonymizer))
-			.collect(Collectors.toList());
+		return toPseudonymizedDtos(taskService.findBy(new TaskCriteria().caze(caseRef).taskStatus(TaskStatus.PENDING), false));
 	}
 
 	@Override
@@ -902,7 +876,7 @@ public class TaskFacadeEjb implements TaskFacade {
 
 	@Override
 	public TaskDto getByUuid(String uuid) {
-		return toDto(taskService.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
+		return toDto(taskService.getByUuid(uuid), createPseudonymizer());
 	}
 
 	@Override
@@ -1000,9 +974,20 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
-	@RightsAllowed(UserRight._TASK_EDIT)
+	@RightsAllowed(UserRight._TASK_ARCHIVE)
 	public void updateArchived(List<String> taskUuids, boolean archived) {
 		IterableHelper.executeBatched(taskUuids, ARCHIVE_BATCH_SIZE, e -> taskService.updateArchived(e, archived));
+	}
+
+	@Override
+	@RightsAllowed(UserRight._TASK_ARCHIVE)
+	public void updateArchived(String taskUuid, boolean archived) {
+		taskService.updateArchived(Collections.singletonList(taskUuid), archived);
+	}
+
+	@Override
+	public boolean isArchived(String taskUuid) {
+		return taskService.isArchived(taskUuid);
 	}
 
 	@Override
@@ -1074,6 +1059,11 @@ public class TaskFacadeEjb implements TaskFacade {
 			uiUrlBuilder.append("/");
 		}
 		return uiUrlBuilder.append("#!").append(taskContext.getUrlPattern()).append("/data/").append(uuid).toString();
+	}
+
+	@Override
+	public EditPermissionType getEditPermissionType(String uuid) {
+		return taskService.getEditPermissionType(taskService.getByUuid(uuid));
 	}
 
 	@LocalBean

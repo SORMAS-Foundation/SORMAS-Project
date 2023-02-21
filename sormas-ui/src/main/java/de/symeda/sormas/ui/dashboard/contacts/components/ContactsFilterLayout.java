@@ -59,6 +59,7 @@ public class ContactsFilterLayout extends DashboardFilterLayout {
 		diseaseFilter.setValue(dashboardDataProvider.getDisease());
 		diseaseFilter.addValueChangeListener(e -> {
 			dashboardDataProvider.setDisease((Disease) diseaseFilter.getValue());
+			dashboardDataProvider.refreshDataForSelectedDisease();
 		});
 		addCustomComponent(diseaseFilter, DISEASE_FILTER);
 	}

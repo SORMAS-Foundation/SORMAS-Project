@@ -38,6 +38,7 @@ import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -254,8 +255,13 @@ public class EntrySelectionField extends CustomField<PickOrCreateEntryResult> {
 		HorizontalLayout labMessageLayout = new HorizontalLayout();
 		labMessageLayout.setSpacing(true);
 
+		List<SampleReportDto> sampleReports = externalMessageDto.getSampleReports();
+		SampleReportDto sampleReport = sampleReports != null ? sampleReports.get(0) : null;
+
 		createAndAddLabel(externalMessageDto.getMessageDateTime(), ExternalMessageDto.MESSAGE_DATE_TIME, labMessageLayout);
-		createAndAddLabel(externalMessageDto.getSampleDateTime(), ExternalMessageDto.SAMPLE_DATE_TIME, labMessageLayout);
+		if (sampleReport != null) {
+			createAndAddLabel(sampleReport.getSampleDateTime(), SampleReportDto.SAMPLE_DATE_TIME, labMessageLayout);
+		}
 		createAndAddLabel(externalMessageDto.getPersonFirstName(), ExternalMessageDto.PERSON_FIRST_NAME, labMessageLayout);
 		createAndAddLabel(externalMessageDto.getPersonLastName(), ExternalMessageDto.PERSON_LAST_NAME, labMessageLayout);
 		createAndAddLabel(externalMessageDto.getPersonBirthDateDD(), ExternalMessageDto.PERSON_BIRTH_DATE_DD, labMessageLayout);

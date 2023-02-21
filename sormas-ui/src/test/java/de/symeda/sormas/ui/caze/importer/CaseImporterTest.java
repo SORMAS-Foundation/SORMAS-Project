@@ -15,9 +15,9 @@
 
 package de.symeda.sormas.ui.caze.importer;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,10 +33,8 @@ import java.util.function.Consumer;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.output.StringBuilderWriter;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import com.opencsv.exceptions.CsvValidationException;
 import com.vaadin.ui.UI;
@@ -69,7 +67,6 @@ import de.symeda.sormas.ui.importer.ImportResultStatus;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
 import de.symeda.sormas.ui.importer.PersonImportSimilarityResult;
 
-@RunWith(MockitoJUnitRunner.class)
 public class CaseImporterTest extends AbstractBeanTest {
 
 	@Test
@@ -89,7 +86,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		CaseImporterExtension caseImporter = new CaseImporterExtension(csvFile, true, user);
 		ImportResultStatus importResult = caseImporter.runImport();
 
-		assertEquals(caseImporter.stringBuilder.toString(), ImportResultStatus.COMPLETED, importResult);
+		assertEquals(ImportResultStatus.COMPLETED, importResult, caseImporter.stringBuilder.toString());
 		assertEquals(5, getCaseFacade().count(null));
 
 		// Failed import of 5 cases because of errors
@@ -118,7 +115,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 		assertEquals(5, getCaseFacade().count(null));
-		assertEquals("ABC-DEF-GHI-19-5", getCaseFacade().getAllActiveCasesAfter(null).get(4).getEpidNumber());
+		assertEquals("ABC-DEF-GHI-19-5", getCaseFacade().getAllAfter(null).get(4).getEpidNumber());
 
 		// Similarity: pick
 		List<SimilarPersonDto> persons = FacadeProvider.getPersonFacade().getSimilarPersonDtos(new PersonSimilarityCriteria());
@@ -152,7 +149,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 		assertEquals(5, getCaseFacade().count(null));
-		assertEquals("ABC-DEF-GHI-19-5", getCaseFacade().getAllActiveCasesAfter(null).get(4).getEpidNumber());
+		assertEquals("ABC-DEF-GHI-19-5", getCaseFacade().getAllAfter(null).get(4).getEpidNumber());
 
 		// Similarity: cancel
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").toURI());
@@ -172,7 +169,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 
 		assertEquals(ImportResultStatus.CANCELED, importResult);
 		assertEquals(5, getCaseFacade().count(null));
-		assertEquals("ABC-DEF-GHI-19-5", getCaseFacade().getAllActiveCasesAfter(null).get(4).getEpidNumber());
+		assertEquals("ABC-DEF-GHI-19-5", getCaseFacade().getAllAfter(null).get(4).getEpidNumber());
 
 		// Similarity: override
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").toURI());
@@ -205,7 +202,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 		assertEquals(5, getCaseFacade().count(null));
-		assertEquals("ABC-DEF-GHI-19-10", getCaseFacade().getAllActiveCasesAfter(null).get(4).getEpidNumber());
+		assertEquals("ABC-DEF-GHI-19-10", getCaseFacade().getAllAfter(null).get(4).getEpidNumber());
 
 		// Similarity: create -> fail because of duplicate epid number
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").toURI());
@@ -238,13 +235,13 @@ public class CaseImporterTest extends AbstractBeanTest {
 
 		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importResult);
 		assertEquals(5, getCaseFacade().count(null));
-		assertEquals("ABC-DEF-GHI-19-10", getCaseFacade().getAllActiveCasesAfter(null).get(4).getEpidNumber());
+		assertEquals("ABC-DEF-GHI-19-10", getCaseFacade().getAllAfter(null).get(4).getEpidNumber());
 
 		// Change epid number of the case in database to pass creation test
-		CaseDataDto caze = getCaseFacade().getAllActiveCasesAfter(null).get(4);
+		CaseDataDto caze = getCaseFacade().getAllAfter(null).get(4);
 		caze.setEpidNumber("ABC-DEF-GHI-19-99");
 		getCaseFacade().save(caze);
-		assertEquals("ABC-DEF-GHI-19-99", getCaseFacade().getAllActiveCasesAfter(null).get(4).getEpidNumber());
+		assertEquals("ABC-DEF-GHI-19-99", getCaseFacade().getAllAfter(null).get(4).getEpidNumber());
 
 		// Similarity: create -> pass
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").toURI());
@@ -253,7 +250,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 		assertEquals(6, getCaseFacade().count(null));
-		assertEquals("ABC-DEF-GHI-19-10", getCaseFacade().getAllActiveCasesAfter(null).get(5).getEpidNumber());
+		assertEquals("ABC-DEF-GHI-19-10", getCaseFacade().getAllAfter(null).get(5).getEpidNumber());
 
 		// Successful import of a case with different infrastructure combinations
 		creator.createRDCF("R1", "D1", "C1", "F1");
@@ -272,7 +269,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		caseImporter = new CaseImporterExtension(csvFile, true, user);
 		importResult = caseImporter.runImport();
 
-		assertEquals(caseImporter.stringBuilder.toString(), ImportResultStatus.COMPLETED, importResult);
+		assertEquals(ImportResultStatus.COMPLETED, importResult, caseImporter.stringBuilder.toString());
 		assertEquals(12, getCaseFacade().count(null));
 	}
 
@@ -292,7 +289,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		CaseImporterExtension caseImporter = new CaseImporterExtension(csvFile, false, user);
 		ImportResultStatus importResult = caseImporter.runImport();
 
-		assertEquals(caseImporter.stringBuilder.toString(), ImportResultStatus.COMPLETED, importResult);
+		assertEquals(ImportResultStatus.COMPLETED, importResult, caseImporter.stringBuilder.toString());
 		assertEquals(5, getCaseFacade().count(null));
 
 		// Successful import of 5 cases from commented CSV file
@@ -300,7 +297,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		caseImporter = new CaseImporterExtension(csvFile, false, user);
 		importResult = caseImporter.runImport();
 
-		assertEquals(caseImporter.stringBuilder.toString(), ImportResultStatus.COMPLETED, importResult);
+		assertEquals(ImportResultStatus.COMPLETED, importResult, caseImporter.stringBuilder.toString());
 		assertEquals(10, getCaseFacade().count(null));
 	}
 
@@ -382,7 +379,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		CaseImporterExtension caseImporter = new CaseImporterExtension(csvFile, true, user);
 		ImportResultStatus importResult = caseImporter.runImport();
 
-		assertEquals(caseImporter.stringBuilder.toString(), ImportResultStatus.COMPLETED, importResult);
+		assertEquals(ImportResultStatus.COMPLETED, importResult, caseImporter.stringBuilder.toString());
 
 		CaseDataDto case1 = getCaseFacade().getByExternalId("case1").get(0);
 		CaseDataDto case2 = getCaseFacade().getByExternalId("case2").get(0);
@@ -396,8 +393,8 @@ public class CaseImporterTest extends AbstractBeanTest {
 
 		List<SampleDto> case3Samples = getSampleFacade().getByCaseUuids(Collections.singletonList(case3.getUuid()));
 		assertEquals(2, case3Samples.size());
-		assertEquals("Should have one blood sample", 1, case3Samples.stream().filter(s -> s.getSampleMaterial() == SampleMaterial.BLOOD).count());
-		assertEquals("Should have one stool sample", 1, case3Samples.stream().filter(s -> s.getSampleMaterial() == SampleMaterial.STOOL).count());
+		assertEquals(1, case3Samples.stream().filter(s -> s.getSampleMaterial() == SampleMaterial.BLOOD).count(), "Should have one blood sample");
+		assertEquals(1, case3Samples.stream().filter(s -> s.getSampleMaterial() == SampleMaterial.STOOL).count(), "Should have one stool sample");
 
 	}
 
@@ -420,7 +417,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		CaseImporterExtension caseImporter = new CaseImporterExtension(csvFile, true, user);
 		ImportResultStatus importResult = caseImporter.runImport();
 
-		assertEquals(caseImporter.stringBuilder.toString(), ImportResultStatus.COMPLETED, importResult);
+		assertEquals(ImportResultStatus.COMPLETED, importResult, caseImporter.stringBuilder.toString());
 
 		CaseDataDto case1 = getCaseFacade().getByExternalId("case1").get(0);
 		CaseDataDto case2 = getCaseFacade().getByExternalId("case2").get(0);
@@ -451,7 +448,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 	}
 
 	@Test
-	@Ignore("Remove ignore once we have replaced H2, and feature properties can be changed by code")
+	@Disabled("Remove ignore once we have replaced H2, and feature properties can be changed by code")
 	public void testImportWithVaccinations()
 		throws IOException, InterruptedException, CsvValidationException, InvalidColumnException, URISyntaxException {
 
@@ -470,7 +467,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		CaseImporterExtension caseImporter = new CaseImporterExtension(csvFile, true, user);
 		ImportResultStatus importResult = caseImporter.runImport();
 
-		assertEquals(caseImporter.stringBuilder.toString(), ImportResultStatus.COMPLETED, importResult);
+		assertEquals(ImportResultStatus.COMPLETED, importResult, caseImporter.stringBuilder.toString());
 
 		CaseDataDto case1 = getCaseFacade().getByExternalId("case1").get(0);
 		CaseDataDto case2 = getCaseFacade().getByExternalId("case2").get(0);

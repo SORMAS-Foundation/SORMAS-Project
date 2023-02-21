@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 
 import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
@@ -50,7 +49,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
@@ -71,7 +69,8 @@ import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "RegionFacade")
 @RightsAllowed(UserRight._INFRASTRUCTURE_VIEW)
-public class RegionFacadeEjb extends AbstractInfrastructureFacadeEjb<Region, RegionDto, RegionIndexDto, RegionReferenceDto, RegionService, RegionCriteria>
+public class RegionFacadeEjb
+	extends AbstractInfrastructureFacadeEjb<Region, RegionDto, RegionIndexDto, RegionReferenceDto, RegionService, RegionCriteria>
 	implements RegionFacade {
 
 	@EJB
@@ -121,28 +120,7 @@ public class RegionFacadeEjb extends AbstractInfrastructureFacadeEjb<Region, Reg
 	@Override
 	@PermitAll
 	public List<RegionReferenceDto> getAllActiveAsReference() {
-		return service.getAllActive(Region.NAME, true).stream().map(RegionFacadeEjb::toReferenceDto).collect(Collectors.toList());
-	}
-
-	@Override
-	protected void selectDtoFields(CriteriaQuery<RegionDto> cq, Root<Region> root) {
-
-		Join<Region, Country> country = root.join(Region.COUNTRY, JoinType.LEFT);
-		Join<Region, Area> area = root.join(Region.AREA, JoinType.LEFT);
-		// Needs to be in the same order as in the constructor
-		cq.multiselect(
-			root.get(AbstractDomainObject.CREATION_DATE),
-			root.get(AbstractDomainObject.CHANGE_DATE),
-			root.get(AbstractDomainObject.UUID),
-			root.get(InfrastructureAdo.ARCHIVED),
-			root.get(Region.NAME),
-			root.get(Region.EPID_CODE),
-			root.get(Region.GROWTH_RATE),
-			root.get(Region.EXTERNAL_ID),
-			country.get(AbstractDomainObject.UUID),
-			country.get(Country.DEFAULT_NAME),
-			country.get(Country.ISO_CODE),
-			area.get(AbstractDomainObject.UUID));
+		return toRefDtos(service.getAllActive(Region.NAME, true).stream());
 	}
 
 	@Override
@@ -283,21 +261,18 @@ public class RegionFacadeEjb extends AbstractInfrastructureFacadeEjb<Region, Reg
 	@Override
 	@PermitAll
 	public List<RegionReferenceDto> getReferencesByName(String name, boolean includeArchivedEntities) {
-		return service.getByName(name, includeArchivedEntities).stream().map(RegionFacadeEjb::toReferenceDto).collect(Collectors.toList());
+		return toRefDtos(service.getByName(name, includeArchivedEntities).stream());
 	}
 
 	@PermitAll
 	public List<RegionDto> getByName(String name, boolean includeArchivedEntities) {
-		return service.getByName(name, includeArchivedEntities).stream().map(this::toDto).collect(Collectors.toList());
+		return toDtos(service.getByName(name, includeArchivedEntities).stream());
 	}
 
 	@Override
 	@PermitAll
 	public List<RegionReferenceDto> getReferencesByExternalId(String externalId, boolean includeArchivedEntities) {
-		return service.getByExternalId(externalId, includeArchivedEntities)
-			.stream()
-			.map(RegionFacadeEjb::toReferenceDto)
-			.collect(Collectors.toList());
+		return toRefDtos(service.getByExternalId(externalId, includeArchivedEntities).stream());
 	}
 
 	private List<RegionReferenceDto> getAllActiveByPredicate(BiFunction<CriteriaBuilder, Root<Region>, Predicate> buildPredicate) {
@@ -310,7 +285,7 @@ public class RegionFacadeEjb extends AbstractInfrastructureFacadeEjb<Region, Reg
 
 		cq.orderBy(cb.asc(root.get(Region.NAME)));
 
-		return em.createQuery(cq).getResultList().stream().map(RegionFacadeEjb::toReferenceDto).collect(Collectors.toList());
+		return toRefDtos(em.createQuery(cq).getResultList().stream());
 	}
 
 	@Override

@@ -3,13 +3,14 @@ package de.symeda.sormas.backend.campaign.diagram;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
 import de.symeda.sormas.api.campaign.diagram.DiagramType;
 import de.symeda.sormas.backend.AbstractBeanTest;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CampaignDiagramDefinitionFacadeEjbTest extends AbstractBeanTest {
 
@@ -31,18 +32,18 @@ public class CampaignDiagramDefinitionFacadeEjbTest extends AbstractBeanTest {
 
 		final CampaignDiagramDefinitionDto savedDiagramDefinition = getCampaignDiagramDefinitionFacade().save(campaignDiagramDefinitionDto);
 
-		Assert.assertEquals("testDiagram", savedDiagramDefinition.getDiagramId());
-		Assert.assertEquals(DiagramType.COLUMN, savedDiagramDefinition.getDiagramType());
+		assertEquals("testDiagram", savedDiagramDefinition.getDiagramId());
+		assertEquals(DiagramType.COLUMN, savedDiagramDefinition.getDiagramType());
 		final List<CampaignDiagramSeries> savedCampaignDiagramSeriesList = savedDiagramDefinition.getCampaignDiagramSeries();
-		Assert.assertEquals(7, savedCampaignDiagramSeriesList.size());
+		assertEquals(7, savedCampaignDiagramSeriesList.size());
 		final CampaignDiagramSeries campaignDiagramSeries1 = savedCampaignDiagramSeriesList.get(0);
-		Assert.assertEquals("recordedAbsentDuring", campaignDiagramSeries1.getFieldId());
-		Assert.assertEquals("tallySheetTotalsForm", campaignDiagramSeries1.getFormId());
-		Assert.assertEquals("days 1-3", campaignDiagramSeries1.getStack());
+		assertEquals("recordedAbsentDuring", campaignDiagramSeries1.getFieldId());
+		assertEquals("tallySheetTotalsForm", campaignDiagramSeries1.getFormId());
+		assertEquals("days 1-3", campaignDiagramSeries1.getStack());
 		final CampaignDiagramSeries campaignDiagramSeries7 = savedCampaignDiagramSeriesList.get(6);
-		Assert.assertEquals("missedTeamNegligence", campaignDiagramSeries7.getFieldId());
-		Assert.assertEquals("monitoringRevisitForm", campaignDiagramSeries7.getFormId());
-		Assert.assertEquals("revisit", campaignDiagramSeries7.getStack());
+		assertEquals("missedTeamNegligence", campaignDiagramSeries7.getFieldId());
+		assertEquals("monitoringRevisitForm", campaignDiagramSeries7.getFormId());
+		assertEquals("revisit", campaignDiagramSeries7.getStack());
 
 		savedDiagramDefinition.setDiagramId("test2");
 		getCampaignDiagramDefinitionFacade().save(savedDiagramDefinition);

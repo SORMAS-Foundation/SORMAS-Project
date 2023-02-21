@@ -107,6 +107,8 @@ public class CaseDirectoryPage {
       By.cssSelector("[id='newCaseDateType'] [class='v-filterselect-button']");
   public static final By CASE_DISPLAY_FILTER_COMBOBOX =
       By.cssSelector("[id='relevanceStatus'] [class='v-filterselect-button']");
+  public static final By CASE_OWNERSHIP_FILTER_COMBOBOX =
+      By.cssSelector("[id='ownershipStatus'] [class='v-filterselect-button']");
   public static final By BULK_ACTIONS = By.id("bulkActions-2");
   public static final By BULK_ACTIONS_VALUES = By.id("bulkActions-10");
   public static final By BULK_ACTIONS_ARCHIVE = By.id("bulkActions-5");
@@ -148,6 +150,9 @@ public class CaseDirectoryPage {
   public static final By ACTION_OKAY = By.id("actionOkay");
   public static final By MERGE_DUPLICATES_BUTTON = By.id("caseMergeDuplicates");
   public static final By ENTER_BULK_EDIT_MODE = By.id("actionEnterBulkEditMode");
+
+  public static final By BULK_EDIT_INFORMATION =
+      By.xpath("//div[@class='v-window-header' and text()='Massenbearbeitung aktivieren']");
   public static final By LEAVE_BULK_EDIT_MODE = By.id("actionLeaveBulkEditMode");
   public static final By ALL_RESULTS_CHECKBOX =
       By.xpath("//th[@role='columnheader']//input[@type='checkbox']/../..");
@@ -181,6 +186,22 @@ public class CaseDirectoryPage {
       By.cssSelector("[id='reinfectionStatus'] [class='v-filterselect-button']");
   public static final By CREATE_NEW_PERSON_CHECKBOX =
       By.xpath("//div[@class='v-select-optiongroup v-widget']/span/label");
+  public static final By POPUP_WINDOW_HEADER = By.xpath("//div[@class='v-window-closebox']");
+  public static final By ACTION_REJECT_BUTTON = By.cssSelector("#actionReject");
+
+  public static By getActionRejectButtonByCaseDescription(String description) {
+    return By.xpath(
+        String.format("//*[contains(text(), '%s')]/..//div[@id='actionReject']", description));
+  }
+
+  public static By getActionAcceptButtonByCaseDescription(String description) {
+    return By.xpath(
+        String.format("//*[contains(text(), '%s')]/..//div[@id='actionAccept']", description));
+  }
+
+  public static final By REJECT_SHARED_CASE_POPUP_TEXT_AREA =
+      By.cssSelector(".popupContent .v-widget textarea");
+  public static final By RECEIVED_CASE_POPUP_UUID = By.xpath("//div[@class='popupContent']//td[1]");
 
   public static By getVaccinationStatusCasesByText(String status) {
     return By.xpath(String.format("//td[contains(text(), '%s')]", status));
@@ -206,4 +227,8 @@ public class CaseDirectoryPage {
   }
 
   public static By CONFIRM_POPUP = By.cssSelector(".popupContent #actionConfirm");
+  public static By SHARE_OPTION_BULK_ACTION_COMBOBOX =
+      By.xpath("//span[text()=\"\u00DCbergeben\"]");
+  public static By REJECT_SHARED_CASE_HEADER_DE =
+      By.xpath("//div[@class='popupContent']//*[contains(text(), 'Anfrage ablehnen')]");
 }

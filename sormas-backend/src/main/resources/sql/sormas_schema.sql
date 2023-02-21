@@ -11967,4 +11967,323 @@ $$ LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment) VALUES (490, '#8543 Add backend checks to access documents');
 
+
+-- 2022-09-07 Add hash indices to improve getAllAfter fetch #9320
+-- Hint: You can use CREATE INDEX CONCURRENTLY IF NOT EXISTS ... if indices are created before update on running instance to not block other transactions.
+-- DeletableAdo
+CREATE INDEX IF NOT EXISTS idx_campaigns_changedate_uuid_id ON campaigns USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_cases_changedate_uuid_id ON cases USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_contact_changedate_uuid_id ON contact USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_eventparticipant_changedate_uuid_id ON eventparticipant USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_events_changedate_uuid_id ON events USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_immunization_changedate_uuid_id ON immunization USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_travelentry_changedate_uuid_id ON travelentry USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_pathogentest_changedate_uuid_id ON pathogentest USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_samples_changedate_uuid_id ON samples USING btree (changedate ASC, uuid ASC, id ASC);
+-- InfrastructureAdo
+CREATE INDEX IF NOT EXISTS idx_areas_changedate_uuid_id ON areas USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_community_changedate_uuid_id ON community USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_continent_changedate_uuid_id ON continent USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_country_changedate_uuid_id ON country USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_district_changedate_uuid_id ON district USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_facility_changedate_uuid_id ON facility USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_pointofentry_changedate_uuid_id ON pointofentry USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_region_changedate_uuid_id ON region USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_subcontinent_changedate_uuid_id ON subcontinent USING btree (changedate ASC, uuid ASC, id ASC);
+-- BaseAdo
+CREATE INDEX IF NOT EXISTS idx_action_changedate_uuid_id ON action USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_additionaltest_changedate_uuid_id ON additionaltest USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_aggregatereport_changedate_uuid_id ON aggregatereport USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_campaigndiagramdefinition_changedate_uuid_id ON campaigndiagramdefinition USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_campaignformdata_changedate_uuid_id ON campaignformdata USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_campaignformmeta_changedate_uuid_id ON campaignformmeta USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_clinicalvisit_changedate_uuid_id ON clinicalvisit USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_customizableenumvalue_changedate_uuid_id ON customizableenumvalue USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_diseaseconfiguration_changedate_uuid_id ON diseaseconfiguration USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_documents_changedate_uuid_id ON documents USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_eventgroups_changedate_uuid_id ON eventgroups USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_externalmessage_changedate_uuid_id ON externalmessage USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_externalshareinfo_changedate_uuid_id ON externalshareinfo USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_featureconfiguration_changedate_uuid_id ON featureconfiguration USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_outbreak_changedate_uuid_id ON outbreak USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_person_changedate_uuid_id ON person USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_populationdata_changedate_uuid_id ON populationdata USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_prescription_changedate_uuid_id ON prescription USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_sharerequestinfo_changedate_uuid_id ON sharerequestinfo USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_sormastosormasorigininfo_changedate_uuid_id ON sormastosormasorigininfo USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_sormastosormasshareinfo_changedate_uuid_id ON sormastosormasshareinfo USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_sormastosormassharerequest_changedate_uuid_id ON sormastosormassharerequest USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_task_changedate_uuid_id ON task USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_treatment_changedate_uuid_id ON treatment USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_userroles_changedate_uuid_id ON userroles USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_users_changedate_uuid_id ON users USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_weeklyreportentry_changedate_uuid_id ON weeklyreportentry USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_weeklyreport_changedate_uuid_id ON weeklyreport USING btree (changedate ASC, uuid ASC, id ASC);
+
+INSERT INTO schema_version (version_number, comment) VALUES (491, 'Add hash indices to improve getAllAfter fetch #9320');
+
+
+-- 2022-09-27 S2S_New Right_ S2S_Process #10084 - revoke S2S rights
+
+DELETE FROM userroles_userrights where userright = 'SORMAS_TO_SORMAS_SHARE' or userright = 'SORMAS_TO_SORMAS_PROCESS';
+
+INSERT INTO schema_version (version_number, comment) VALUES (492, 'S2S_New Right_ S2S_Process #10084 - revoke S2S rights');
+
+
+-- 2022-08-11 Introduce sample reports #9109
+CREATE TABLE samplereport
+(
+    id                      bigint      not null,
+    uuid                    varchar(36) not null unique,
+    changedate              timestamp   not null,
+    creationdate            timestamp   not null,
+    sys_period              tstzrange   not null,
+    change_user_id          BIGINT,
+    sampledatetime          timestamp,
+    samplereceiveddate      timestamp,
+    labsampleid             text,
+    samplematerial          varchar(255),
+    samplematerialtext      varchar(255),
+    specimencondition       varchar(255),
+    sampleoveralltestresult varchar(255),
+    sample_id               bigint,
+    labmessage_id           bigint      not null,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE samplereport_history (LIKE samplereport);
+
+ALTER TABLE samplereport ADD CONSTRAINT fk_change_user_id FOREIGN KEY (change_user_id) REFERENCES users (id);
+
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON samplereport
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'samplereport_history', true);
+
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON samplereport
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('samplereport_history', 'id');
+
+ALTER TABLE samplereport
+    OWNER TO sormas_user;
+ALTER TABLE samplereport_history
+    OWNER TO sormas_user;
+
+
+ALTER TABLE samplereport
+    ADD CONSTRAINT fk_samplereport_labmessage_id FOREIGN KEY (labmessage_id) REFERENCES externalmessage (id);
+ALTER TABLE samplereport
+    ADD CONSTRAINT fk_samplereport_sample_id FOREIGN KEY (sample_id) REFERENCES samples (id);
+
+DO $$
+    DECLARE
+        rec RECORD;
+    BEGIN
+        FOR rec IN SELECT id,
+                          uuid,
+                          sampledatetime,
+                          samplereceiveddate,
+                          labsampleid,
+                          samplematerial,
+                          samplematerialtext,
+                          specimencondition,
+                          sampleoveralltestresult
+                   FROM externalmessage
+            LOOP
+                INSERT INTO samplereport(id, uuid, changedate, creationdate, sampledatetime, samplereceiveddate,
+                                         labsampleid, samplematerial, samplematerialtext, specimencondition,
+                                         sampleoveralltestresult, labmessage_id)
+                VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), rec.sampledatetime,
+                        rec.samplereceiveddate, rec.labsampleid, rec.samplematerial, rec.samplematerialtext,
+                        rec.specimencondition, rec.sampleoveralltestresult, rec.id);
+            END LOOP;
+    END;
+    $$ LANGUAGE plpgsql;
+
+ALTER TABLE externalmessage
+    DROP COLUMN sampledatetime,
+    DROP COLUMN samplereceiveddate,
+    DROP COLUMN labsampleid,
+    DROP COLUMN samplematerial,
+    DROP COLUMN samplematerialtext,
+    DROP COLUMN specimencondition,
+    DROP COLUMN sampleoveralltestresult,
+    DROP COLUMN sample_id;
+
+ALTER TABLE externalmessage_history
+    DROP COLUMN sampledatetime,
+    DROP COLUMN samplereceiveddate,
+    DROP COLUMN labsampleid,
+    DROP COLUMN samplematerial,
+    DROP COLUMN samplematerialtext,
+    DROP COLUMN specimencondition,
+    DROP COLUMN sampleoveralltestresult,
+    DROP COLUMN sample_id;
+
+ALTER TABLE testreport
+    ADD COLUMN samplereport_id bigint;
+ALTER TABLE testreport_history
+    ADD COLUMN samplereport_id bigint;
+
+ALTER TABLE testreport
+    ADD CONSTRAINT fk_testreport_samplereport_id FOREIGN KEY (samplereport_id) REFERENCES samplereport (id);
+
+UPDATE testreport SET samplereport_id = s.id FROM samplereport s WHERE testreport.labmessage_id = s.labmessage_id;
+
+ALTER TABLE testreport
+    ALTER COLUMN samplereport_id SET not null;
+
+ALTER TABLE testreport
+    DROP COLUMN labmessage_id;
+ALTER TABLE testreport_history
+    DROP COLUMN labmessage_id;
+
+INSERT INTO schema_version (version_number, comment) VALUES (493, 'Introduce sample reports #9109');
+
+-- 2022-10-12 [S2S] Add a duplicate detection warning when sharing a case with another instance #9527
+
+ALTER TABLE sormastosormasorigininfo ADD COLUMN pseudonymizeddata BOOLEAN DEFAULT false;
+ALTER TABLE sormastosormasorigininfo_history ADD COLUMN pseudonymizeddata BOOLEAN DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (494, '[S2S] Add a duplicate detection warning when sharing a case with another instance #9527');
+
+-- 2022-10-13 S2S_case editable on two systems, behavior of jurisdiction level wrong if share is without ownership #10553
+
+ALTER TABLE sharerequestinfo ADD COLUMN ownershiphandedover BOOLEAN DEFAULT false;
+ALTER TABLE sharerequestinfo_history ADD COLUMN ownershiphandedover BOOLEAN DEFAULT false;
+
+-- set ownershiphandedover to true on latest requests where the share info has ownershiphandedover = true
+DO $$
+    DECLARE rec RECORD;
+    BEGIN
+        FOR rec IN SELECT si.id FROM sharerequestinfo si
+                                         JOIN sharerequestinfo_shareinfo ss ON si.id = ss.sharerequestinfo_id
+                                         JOIN sormastosormasshareinfo s ON s.id = ss.shareinfo_id
+                   WHERE
+                           s.ownershiphandedover = true AND
+                           si.creationdate = (SELECT max(creationdate) FROM sharerequestinfo sri
+                                                JOIN sharerequestinfo_shareinfo srisi ON sri.id = srisi.sharerequestinfo_id
+                                              WHERE srisi.shareinfo_id = s.id
+                                              GROUP BY srisi.shareinfo_id)
+            LOOP
+                UPDATE sharerequestinfo SET ownershiphandedover = true WHERE id = rec.id;
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (495, 'S2S_case editable on two systems, behavior of jurisdiction level wrong if share is without ownership #10553');
+
+-- 2022-10-10 [DEMIS2SORMAS] Adjust the mapping for the disease in external messages #9733
+
+ALTER TABLE externalmessage RENAME COLUMN testeddisease to disease;
+ALTER TABLE externalmessage_history RENAME COLUMN testeddisease to disease;
+
+INSERT INTO schema_version (version_number, comment) VALUES (496, '[DEMIS2SORMAS] Adjust the mapping for the disease in external messages #9733');
+
+ALTER TABLE surveillancereports ADD COLUMN externalid varchar(255);
+ALTER TABLE surveillancereports_history ADD COLUMN externalid varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (497, 'Add externalId to surveillance reports #6621');
+
+-- 2022-11-02 Automatic deletion based on end of process date #8996
+
+UPDATE campaigns SET endofprocessingdate = changedate WHERE endofprocessingdate IS NULL AND archived = true;
+UPDATE cases SET endofprocessingdate = changedate WHERE endofprocessingdate IS NULL AND archived = true;
+UPDATE contact SET endofprocessingdate = changedate WHERE endofprocessingdate IS NULL AND archived = true;
+UPDATE events SET endofprocessingdate = changedate WHERE endofprocessingdate IS NULL AND archived = true;
+UPDATE eventparticipant SET endofprocessingdate = changedate WHERE endofprocessingdate IS NULL AND archived = true;
+UPDATE immunization SET endofprocessingdate = changedate WHERE endofprocessingdate IS NULL AND archived = true;
+UPDATE travelentry SET endofprocessingdate = changedate WHERE endofprocessingdate IS NULL AND archived = true;
+
+INSERT INTO schema_version (version_number, comment) VALUES (498, 'Automatic deletion based on end of process date #8996');
+
+-- 2022-10-25 [Merging] Merge persons via bulk actions [5] #5606
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'PERSON_MERGE' FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'ADMIN';
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'PERSON_MERGE' FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'NATIONAL_USER';
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'PERSON_MERGE' FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'ADMIN_SUPERVISOR';
+
+INSERT INTO schema_version (version_number, comment) VALUES (499, '[Merging] Merge persons via bulk actions [5] #5606');
+
+-- 2022-11-7 Add the user who assigned the task to task entity #4621
+ALTER  TABLE task ADD COLUMN assignedbyuser_id bigint;
+ALTER  TABLE task_history ADD COLUMN assignedbyuser_id bigint;
+
+INSERT INTO schema_version (version_number, comment) VALUES (500, 'Add the user who assigned the task to task entity #4621');
+
+-- 2022-11-30 Adjust the processing of external messages to create surveillance reports #9680
+ALTER TABLE externalmessage ADD COLUMN surveillancereport_id bigint;
+ALTER TABLE externalmessage ADD CONSTRAINT fk_externalmessage_surveillancereport_id FOREIGN KEY (surveillancereport_id) REFERENCES surveillancereports (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE externalmessage_history ADD COLUMN surveillancereport_id bigint;
+
+DO $$
+    DECLARE rec RECORD;
+        DECLARE sr_id bigint;
+    BEGIN
+        FOR rec IN SELECT DISTINCT ON (em.id) em.id as emid, em.caze_id AS emcaseid, s.associatedcase_id AS scaseid, messagedatetime, em.type FROM externalmessage em JOIN samplereport sr ON sr.labmessage_id = em.id JOIN samples s ON s.id = sr.sample_id WHERE status = 'PROCESSED' AND (s.associatedcase_id IS NOT NULL OR em.caze_id IS NOT NULL)
+            LOOP
+                INSERT INTO surveillancereports (id, uuid, changedate, creationdate, reportdate, caze_id, reportingtype) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), rec.messagedatetime, CASE WHEN rec.emcaseid IS NOT NULL THEN rec.emcaseid ELSE rec.scaseid END, CASE WHEN rec.type = 'LAB_MESSAGE' THEN 'LABORATORY' ELSE 'DOCTOR' END) RETURNING id INTO sr_id;
+                UPDATE externalmessage SET surveillancereport_id = sr_id WHERE externalmessage.id = rec.emid;
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+ALTER TABLE externalmessage DROP COLUMN caze_id;
+ALTER TABLE externalmessage_history DROP COLUMN caze_id;
+
+INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (501, 'Adjust the processing of external messages to create surveillance reports #9680', true);
+
+-- 2022-12-05 Fix upgradeNeeded flag set on schema version 501 #11086
+
+UPDATE schema_version SET upgradeNeeded = false WHERE version_number = 501;
+
+INSERT INTO schema_version (version_number, comment) VALUES (502, 'Fix upgradeNeeded flag set on schema version 501 #11086');
+
+-- 2022-12-05 [DEMIS2SORMAS] Add a Field for the NotificationBundleId to the External Message and map it when processing #10826
+ALTER TABLE externalmessage ADD COLUMN reportmessageid varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN reportmessageid varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (503, '[DEMIS2SORMAS] Add a Field for the NotificationBundleId to the External Message and map it when processing #10826');
+
+-- 2022-12-08 Add task archive user right #4060
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'TASK_ARCHIVE' FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'ADMIN';
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'TASK_ARCHIVE' FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'NATIONAL_USER';
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'TASK_ARCHIVE' FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'ADMIN_SUPERVISOR';
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'TASK_ARCHIVE' FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'SURVEILLANCE_SUPERVISOR';
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'TASK_ARCHIVE' FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'CONTACT_SUPERVISOR';
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'TASK_ARCHIVE' FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'CASE_SUPERVISOR';
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'TASK_ARCHIVE' FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'NATIONAL_CLINICIAN';
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'TASK_ARCHIVE' FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'POE_SUPERVISOR';
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'TASK_ARCHIVE' FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'POE_NATIONAL_USER';
+
+INSERT INTO schema_version (version_number, comment) VALUES (504, 'Add task archive user right #4060');
+
+-- 2022-12-08 S2S Surveillance Reports should be shareable (along with possibly attached External Messages) #10247
+ALTER TABLE sormastosormasorigininfo ADD COLUMN withsurveillancereports boolean DEFAULT false;
+ALTER TABLE sormastosormasorigininfo_history ADD COLUMN withsurveillancereports boolean DEFAULT false;
+ALTER TABLE sharerequestinfo ADD COLUMN withsurveillancereports boolean DEFAULT false;
+ALTER TABLE sharerequestinfo_history ADD COLUMN withsurveillancereports boolean DEFAULT false;
+ALTER TABLE sormastosormasshareinfo ADD COLUMN surveillancereport_id bigint;
+ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_surveillancereport_id FOREIGN KEY (surveillancereport_id) REFERENCES surveillancereports (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE sormastosormasshareinfo_history ADD COLUMN surveillancereport_id bigint;
+
+ALTER TABLE surveillancereports ADD COLUMN sormastosormasorigininfo_id bigint;
+ALTER TABLE surveillancereports ADD CONSTRAINT fk_surveillancereports_sormastosormasorigininfo_id FOREIGN KEY (sormastosormasorigininfo_id) REFERENCES sormastosormasorigininfo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE surveillancereports_history ADD COLUMN sormastosormasorigininfo_id bigint;
+
+ALTER TABLE surveillancereports RENAME COLUMN creatinguser_id to reportinguser_id;
+ALTER TABLE surveillancereports_history RENAME COLUMN creatinguser_id to reportinguser_id;
+
+INSERT INTO schema_version (version_number, comment) VALUES (505, 'S2S Surveillance Reports should be shareable (along with possibly attached External Messages) #10247');
+
+-- 2023-01-05 Add max change date period property to limited synchronization feature #7305
+UPDATE featureconfiguration SET properties = properties::jsonb || json_build_object('MAX_CHANGE_DATE_PERIOD',-1)::jsonb WHERE featuretype = 'LIMITED_SYNCHRONIZATION';
+
+INSERT INTO schema_version (version_number, comment) VALUES (506, 'Add max change date period property to limited synchronization feature #7305');
+
+-- 2023-02-07 Improve performance or case duplicate merging lists #9054
+CREATE INDEX IF NOT EXISTS idx_cases_creationdate_desc ON cases USING btree (creationdate DESC);
+
+INSERT INTO schema_version (version_number, comment) VALUES (507, 'Add index to improve performance or case duplicate merging lists #9054');
+
+
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

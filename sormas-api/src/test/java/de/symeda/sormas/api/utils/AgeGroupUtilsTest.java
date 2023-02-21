@@ -17,42 +17,46 @@ package de.symeda.sormas.api.utils;
 
 import java.util.Arrays;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AgeGroupUtilsTest {
 
 	@Test
 	public void testAgeGroupValidation() {
 
-		Assert.assertTrue(isAgeGroupValid("6m"));
-		Assert.assertTrue(isAgeGroupValid("0D_28Y"));
-		Assert.assertTrue(isAgeGroupValid("0D_28D"));
-		Assert.assertTrue(isAgeGroupValid("1M_12M"));
-		Assert.assertTrue(isAgeGroupValid("1Y_4Y"));
-		Assert.assertTrue(isAgeGroupValid("5Y_15Y"));
-		Assert.assertTrue(isAgeGroupValid("16Y"));
-		Assert.assertTrue(isAgeGroupValid("3y"));
+		assertTrue(isAgeGroupValid("6m"));
+		assertTrue(isAgeGroupValid("0D_28Y"));
+		assertTrue(isAgeGroupValid("0D_28D"));
+		assertTrue(isAgeGroupValid("1M_12M"));
+		assertTrue(isAgeGroupValid("1Y_4Y"));
+		assertTrue(isAgeGroupValid("5Y_15Y"));
+		assertTrue(isAgeGroupValid("16Y"));
+		assertTrue(isAgeGroupValid("3y"));
 
-		Assert.assertFalse(isAgeGroupValid("3yy"));
-		Assert.assertFalse(isAgeGroupValid("3years"));
-		Assert.assertFalse(isAgeGroupValid("1m12m"));
-		Assert.assertFalse(isAgeGroupValid("1m_12"));
-		Assert.assertFalse(isAgeGroupValid("0D-28Y"));
-		Assert.assertFalse(isAgeGroupValid("0D_28C"));
-		Assert.assertFalse(isAgeGroupValid("0D_28D_30D"));
+		assertFalse(isAgeGroupValid("3yy"));
+		assertFalse(isAgeGroupValid("3years"));
+		assertFalse(isAgeGroupValid("1m12m"));
+		assertFalse(isAgeGroupValid("1m_12"));
+		assertFalse(isAgeGroupValid("0D-28Y"));
+		assertFalse(isAgeGroupValid("0D_28C"));
+		assertFalse(isAgeGroupValid("0D_28D_30D"));
 	}
 
 	@Test
 	public void testCreateAgeGroupCaption() {
-		Assert.assertEquals("6+ months", AgeGroupUtils.createCaption("6m"));
-		Assert.assertEquals("0 days - 28 years", AgeGroupUtils.createCaption("0D_28Y"));
-		Assert.assertEquals("0-28 days", AgeGroupUtils.createCaption("0D_28D"));
-		Assert.assertEquals("1-12 months", AgeGroupUtils.createCaption("1M_12M"));
-		Assert.assertEquals("1-4 years", AgeGroupUtils.createCaption("1Y_4Y"));
-		Assert.assertEquals("5-15 years", AgeGroupUtils.createCaption("5Y_15Y"));
-		Assert.assertEquals("16+ years", AgeGroupUtils.createCaption("16Y"));
-		Assert.assertEquals("3+ years", AgeGroupUtils.createCaption("3y"));
+		assertEquals("6+ months", AgeGroupUtils.createCaption("6m"));
+		assertEquals("0 days - 28 years", AgeGroupUtils.createCaption("0D_28Y"));
+		assertEquals("0-28 days", AgeGroupUtils.createCaption("0D_28D"));
+		assertEquals("1-12 months", AgeGroupUtils.createCaption("1M_12M"));
+		assertEquals("1-4 years", AgeGroupUtils.createCaption("1Y_4Y"));
+		assertEquals("5-15 years", AgeGroupUtils.createCaption("5Y_15Y"));
+		assertEquals("16+ years", AgeGroupUtils.createCaption("16Y"));
+		assertEquals("3+ years", AgeGroupUtils.createCaption("3y"));
 	}
 
 	private boolean isAgeGroupValid(String ageGroup) {
@@ -66,36 +70,36 @@ public class AgeGroupUtilsTest {
 
 	@Test
 	public void testComparator() {
-		String[] input = new String[]{
-				"1Y_5Y",
-				"3M_6M",
+		String[] input = new String[] {
+			"1Y_5Y",
+			"3M_6M",
+			"0D_28D",
+			"29D_60D",
+			"6M_2Y" };
+		Arrays.sort(input, AgeGroupUtils.getComparator());
+		assertArrayEquals(
+			new String[] {
 				"0D_28D",
 				"29D_60D",
-				"6M_2Y"};
-		Arrays.sort(input, AgeGroupUtils.getComparator());
-		Assert.assertArrayEquals(
-				new String[]{
-						"0D_28D",
-						"29D_60D",
-						"3M_6M",
-						"6M_2Y",
-						"1Y_5Y"}, input
-		);
+				"3M_6M",
+				"6M_2Y",
+				"1Y_5Y" },
+			input);
 
-		input = new String[]{
-				"6D_8Y",
-				"5D_9Y",
-				"4Y_6Y",
-				"2M_300M",
-				"2M_200M"};
+		input = new String[] {
+			"6D_8Y",
+			"5D_9Y",
+			"4Y_6Y",
+			"2M_300M",
+			"2M_200M" };
 		Arrays.sort(input, AgeGroupUtils.getComparator());
-		Assert.assertArrayEquals(
-				new String[]{
-						"5D_9Y",
-						"6D_8Y",
-						"2M_200M",
-						"2M_300M",
-						"4Y_6Y"}, input
-		);
+		assertArrayEquals(
+			new String[] {
+				"5D_9Y",
+				"6D_8Y",
+				"2M_200M",
+				"2M_300M",
+				"4Y_6Y" },
+			input);
 	}
 }

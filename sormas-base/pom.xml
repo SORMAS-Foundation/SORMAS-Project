@@ -5,7 +5,7 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.76.0-SNAPSHOT</version>
+	<version>1.81.0-SNAPSHOT</version>
 
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -39,9 +39,14 @@
 		<docx4j.version>8.3.2</docx4j.version>
 		<archunit.version>0.22.0</archunit.version>
 		<hamcrest.version>2.2</hamcrest.version>
+		<apache-tika.version>2.6.0</apache-tika.version>
+		<temportal-tables.version>0.4.2</temportal-tables.version>
+
+		<!--SONAR GitHub Actions scanner -->
+		<sonar.organization>sormas</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 
 		<!-- Attention: Compile dependencies with versions are maintained redundantly in sormas-app/app/build.gradle -->
-
 	</properties>
 
 	<distributionManagement>
@@ -398,13 +403,6 @@
 			</dependency>
 
 			<dependency>
-				<groupId>joda-time</groupId>
-				<artifactId>joda-time</artifactId>
-				<version>2.10.13</version>
-				<scope>provided</scope>
-			</dependency>
-
-			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpclient</artifactId>
 				<version>4.5.13</version>
@@ -438,7 +436,7 @@
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-text</artifactId>
-				<version>1.9</version>
+				<version>1.10.0</version>
 				<scope>provided</scope>
 			</dependency>
 
@@ -453,6 +451,12 @@
 				<version>2.7</version>
 			</dependency>
 
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcmail-jdk15on</artifactId>
+				<version>${bouncycastle.version}</version>
+				<scope>provided</scope>
+			</dependency>
 			<dependency>
 				<groupId>org.bouncycastle</groupId>
 				<artifactId>bcpkix-jdk15on</artifactId>
@@ -532,6 +536,12 @@
 				<!-- Dependency of hibernate-core -->
 			</dependency>
 			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-ehcache</artifactId>
+				<version>5.6.5.Final</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
 				<groupId>com.vladmihalcea</groupId>
 				<artifactId>hibernate-types-55</artifactId>
 				<version>2.14.0</version>
@@ -564,6 +574,11 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
+
+			<!-- manual dependency
+				SQL function copied to sormas-backend/src/main/resources/sql/versioning_function.sql
+				https://github.com/nearform/temporal_tables/releases/tag/v0.4.2
+			-->
 
 			<dependency>
 				<groupId>org.slf4j</groupId>
@@ -639,6 +654,23 @@
 				<groupId>io.swagger.core.v3</groupId>
 				<artifactId>swagger-jaxrs2</artifactId>
 				<version>${swagger.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.tika</groupId>
+				<artifactId>tika-core</artifactId>
+				<version>${apache-tika.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.tika</groupId>
+				<artifactId>tika-parsers-standard-package</artifactId>
+				<version>${apache-tika.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>xml-apis</groupId>
+						<artifactId>xml-apis</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 
 			<dependency>
@@ -730,6 +762,12 @@
 				<version>${keycloak.version}</version>
 			</dependency>
 
+			<dependency>
+				<groupId>org.reflections</groupId>
+				<artifactId>reflections</artifactId>
+				<version>0.10.2</version>
+			</dependency>
+
 			<!-- ** Vaadin ** -->
 
 			<dependency>
@@ -793,7 +831,13 @@
 			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>1.17.1</version>
+				<version>1.17.5</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>junit-jupiter</artifactId>
+				<version>1.17.5</version>
 				<scope>test</scope>
 			</dependency>
 
@@ -825,9 +869,23 @@
 			</dependency>
 
 			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>4.13.2</version>
+				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter</artifactId>
+				<version>5.9.1</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-junit-jupiter</artifactId>
+				<version>4.5.1</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-inline</artifactId>
+				<version>4.5.1</version>
 				<scope>test</scope>
 			</dependency>
 
@@ -873,13 +931,6 @@
 			</dependency>
 
 			<dependency>
-				<groupId>org.mockito</groupId>
-				<artifactId>mockito-inline</artifactId>
-				<version>4.3.1</version>
-				<scope>test</scope>
-			</dependency>
-
-			<dependency>
 				<groupId>io.swagger.core.v3</groupId>
 				<artifactId>swagger-jaxrs2-servlet-initializer-v2</artifactId>
 				<version>${swagger.version}</version>
@@ -888,8 +939,17 @@
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-context</artifactId>
-				<version>4.3.30.RELEASE</version>
-				<!-- downgraded because of missing support in android api 24-->
+				<version>5.3.25</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.springframework</groupId>
+						<artifactId>spring-aop</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.springframework</groupId>
+						<artifactId>spring-beans</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 
 			<dependency>
@@ -901,8 +961,8 @@
 
 			<dependency>
 				<groupId>com.github.tomakehurst</groupId>
-				<artifactId>wiremock-standalone</artifactId>
-				<version>2.27.2</version>
+				<artifactId>wiremock-jre8-standalone</artifactId>
+				<version>2.34.0</version>
 				<scope>test</scope>
 			</dependency>
 
@@ -914,7 +974,7 @@
 			</dependency>
 			<dependency>
 				<groupId>com.tngtech.archunit</groupId>
-				<artifactId>archunit-junit4</artifactId>
+				<artifactId>archunit-junit5</artifactId>
 				<version>${archunit.version}</version>
 				<scope>test</scope>
 			</dependency>
@@ -958,15 +1018,19 @@
 		</dependency>
 
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-junit-jupiter</artifactId>
 		</dependency>
 
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-inline</artifactId>
 		</dependency>
-
 	</dependencies>
 
 	<build>
@@ -1283,6 +1347,11 @@
 						</includeOnlyProperties>
 						<commitIdGenerationMode>full</commitIdGenerationMode>
 					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>com.googlecode.maven-download-plugin</groupId>
+					<artifactId>download-maven-plugin</artifactId>
+					<version>1.6.8</version>
 				</plugin>
 				<!-- *** Plugins for generate-reports END *** -->
 

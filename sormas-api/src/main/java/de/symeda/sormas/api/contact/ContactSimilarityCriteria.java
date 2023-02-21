@@ -1,9 +1,12 @@
 package de.symeda.sormas.api.contact;
 
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
@@ -12,7 +15,9 @@ public class ContactSimilarityCriteria extends BaseCriteria implements Cloneable
 	private static final long serialVersionUID = 6902101244020083789L;
 
 	private PersonReferenceDto person;
+	private Collection<PersonReferenceDto> persons;
 	private CaseReferenceDto caze;
+	private List<CaseReferenceDto> resultingCases;
 	private Disease disease;
 	private Date lastContactDate;
 	private Date reportDate;
@@ -20,6 +25,7 @@ public class ContactSimilarityCriteria extends BaseCriteria implements Cloneable
 	private ContactClassification contactClassification;
 	private Boolean excludePseudonymized;
 	private Boolean noResultingCase;
+	private DistrictReferenceDto district;
 
 	public ContactSimilarityCriteria() {
 
@@ -47,6 +53,15 @@ public class ContactSimilarityCriteria extends BaseCriteria implements Cloneable
 		return this;
 	}
 
+	public Collection<PersonReferenceDto> getPersons() {
+		return persons;
+	}
+
+	public ContactSimilarityCriteria withPersons(Collection<PersonReferenceDto> persons) {
+		this.persons = persons;
+		return this;
+	}
+
 	public CaseReferenceDto getCaze() {
 		return caze;
 	}
@@ -57,6 +72,16 @@ public class ContactSimilarityCriteria extends BaseCriteria implements Cloneable
 
 	public ContactSimilarityCriteria withCaze(CaseReferenceDto caze) {
 		this.caze = caze;
+		return this;
+	}
+
+	public List<CaseReferenceDto> getResultingCases() {
+		return resultingCases;
+	}
+
+	public ContactSimilarityCriteria withResultingCases(List<CaseReferenceDto> resultingCases) {
+		this.resultingCases = resultingCases;
+
 		return this;
 	}
 
@@ -133,6 +158,16 @@ public class ContactSimilarityCriteria extends BaseCriteria implements Cloneable
 
 	public ContactSimilarityCriteria withNoResultingCase(Boolean noResultingCase) {
 		this.noResultingCase = noResultingCase;
+		return this;
+	}
+
+	public DistrictReferenceDto getDistrict() {
+		return district;
+	}
+
+	public ContactSimilarityCriteria withDistrict(DistrictReferenceDto district) {
+		this.district = district;
+
 		return this;
 	}
 }

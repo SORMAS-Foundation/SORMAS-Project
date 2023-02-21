@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.api.caze.surveillancereport;
 
+import java.util.List;
+
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
@@ -24,6 +26,8 @@ public class SurveillanceReportCriteria extends BaseCriteria {
 
 	private CaseReferenceDto caze;
 
+	private List<String> caseUuids;
+
 	public CaseReferenceDto getCaze() {
 		return caze;
 	}
@@ -31,6 +35,15 @@ public class SurveillanceReportCriteria extends BaseCriteria {
 	public SurveillanceReportCriteria caze(CaseReferenceDto caze) {
 		this.caze = caze;
 
+		return this;
+	}
+
+	public List<String> getCaseUuids() {
+		return caseUuids;
+	}
+
+	public SurveillanceReportCriteria caseUuids(List<String> caseUuids) {
+		this.caseUuids = caseUuids;
 		return this;
 	}
 }

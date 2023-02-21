@@ -15,11 +15,6 @@
 
 package de.symeda.sormas.app.core;
 
-import java.util.Date;
-import java.util.List;
-
-import org.joda.time.DateTime;
-
 import android.app.AlarmManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -34,9 +29,13 @@ import android.text.TextUtils;
 
 import androidx.core.app.NotificationCompat;
 
+import java.util.Date;
+import java.util.List;
+
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -104,7 +103,7 @@ public class TaskNotificationService extends Service {
 
 			Date notificationRangeStart = ConfigProvider.getLastNotificationDate();
 			if (notificationRangeStart == null) {
-				notificationRangeStart = new DateTime().minusDays(1).toDate();
+				notificationRangeStart = UtilDate.yesterday();
 			}
 			Date notificationRangeEnd = new Date();
 
@@ -125,21 +124,21 @@ public class TaskNotificationService extends Service {
 					if (task.getCaze() != null
 						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.TASK_GENERATION_CASE_SURVEILLANCE)) {
 						caze = caseDAO.queryForId(task.getCaze().getId());
-						content.append("<b>").append(caze.toString()).append("</b><br/>");
+						content.append("<b>").append(caze.buildCaption()).append("</b><br/>");
 					}
 					break;
 				case CONTACT:
 					if (task.getContact() != null
 						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.TASK_GENERATION_CONTACT_TRACING)) {
 						contact = contactDAO.queryForId(task.getContact().getId());
-						content.append("<b>").append(contact.toString()).append("</b><br/>");
+						content.append("<b>").append(contact.buildCaption()).append("</b><br/>");
 					}
 					break;
 				case EVENT:
 					if (task.getEvent() != null
 						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.TASK_GENERATION_EVENT_SURVEILLANCE)) {
 						event = eventDAO.queryForId(task.getEvent().getId());
-						content.append("<b>").append(event.toString()).append("</b><br/>");
+						content.append("<b>").append(event.buildCaption()).append("</b><br/>");
 					}
 					break;
 				case GENERAL:

@@ -16,6 +16,7 @@ package de.symeda.sormas.api.person;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
@@ -35,6 +36,8 @@ import de.symeda.sormas.api.utils.SortProperty;
 @Remote
 public interface PersonFacade extends BaseFacade<PersonDto, PersonIndexDto, PersonReferenceDto, PersonCriteria> {
 
+	Set<PersonAssociation> getPermittedAssociations();
+
 	List<PersonDto> getDeathsBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease);
 
 	JournalPersonDto getPersonForJournal(String uuid);
@@ -42,8 +45,6 @@ public interface PersonFacade extends BaseFacade<PersonDto, PersonIndexDto, Pers
 	PersonDto save(@Valid @NotNull PersonDto source, boolean skipValidation);
 
 	DataHelper.Pair<CaseClassification, PersonDto> savePersonWithoutNotifyingExternalJournal(@Valid PersonDto source);
-
-	List<PersonDto> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
 
 	/**
 	 * Returns a list with the names of all persons that the user has access to and that match the criteria.
@@ -73,7 +74,7 @@ public interface PersonFacade extends BaseFacade<PersonDto, PersonIndexDto, Pers
 
 	long setMissingGeoCoordinates(boolean overwriteExistingCoordinates);
 
-	boolean isSharedWithoutOwnership(String uuid);
+	boolean isSharedOrReceived(String uuid);
 
 	List<PersonDto> getByExternalIds(List<String> externalIds);
 
@@ -81,9 +82,15 @@ public interface PersonFacade extends BaseFacade<PersonDto, PersonIndexDto, Pers
 
 	void mergePerson(PersonDto leadPerson, PersonDto otherPerson);
 
+	void mergePerson(String leadPersonUuid, String otherPersonUuid, boolean mergeProperties);
+
+	boolean isPersonSimilar(PersonSimilarityCriteria criteria, String personUuid);
+
 	PersonDto getByContext(PersonContext context, String contextUuid);
 
 	boolean isEnrolledInExternalJournal(String uuid);
 
-	boolean isPersonAssociatedWithNotDeletedEntities(String uuid);
+	void copyHomeAddress(PersonReferenceDto source, PersonReferenceDto target);
+
+	boolean isEditAllowed(String uuid);
 }

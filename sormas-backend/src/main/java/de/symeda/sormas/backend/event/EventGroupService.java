@@ -41,7 +41,7 @@ import de.symeda.sormas.backend.caze.CaseJoins;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -51,7 +51,7 @@ import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
-public class EventGroupService extends AdoServiceWithUserFilter<EventGroup> {
+public class EventGroupService extends AdoServiceWithUserFilterAndJurisdiction<EventGroup> {
 
 	@EJB
 	private CaseService caseService;

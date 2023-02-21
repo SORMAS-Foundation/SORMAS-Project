@@ -16,13 +16,12 @@
 package de.symeda.sormas.api.utils;
 
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_SMALL;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
 
 import javax.validation.constraints.Size;
-
-import org.junit.Assert;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -69,14 +68,14 @@ public class SizeGenerator {
 		AggregateReportDto.class,
 		PrescriptionDto.class,
 		TreatmentDto.class,
-		ClinicalVisitDto.class
-	};
+		ClinicalVisitDto.class };
 
 	public static void main(String[] args) throws Exception {
 		final PodamFactory factory = new PodamFactoryImpl();
 
 		RandomDataProviderStrategyImpl strategy = (RandomDataProviderStrategyImpl) factory.getStrategy();
-		strategy.addOrReplaceAttributeStrategy(Size.class, new ObjectStrategy(){
+		strategy.addOrReplaceAttributeStrategy(Size.class, new ObjectStrategy() {
+
 			@Override
 			public Object getValue(Class<?> attrType, List<Annotation> attrAnnotations) {
 				long length = CHARACTER_LIMIT_SMALL;
@@ -97,7 +96,7 @@ public class SizeGenerator {
 
 	private static void getSizeOfFilledDto(PodamFactory factory, Class<? extends EntityDto> dtoClass) throws JsonProcessingException {
 		final EntityDto dto = factory.manufacturePojo(dtoClass);
-		Assert.assertNotNull(dto);
+		assertNotNull(dto);
 		final ObjectMapper objectMapper = new ObjectMapper();
 		final String json = objectMapper.writeValueAsString(dto);
 		System.out.println(dtoClass.getSimpleName() + " JSON (UTF-8) size: " + Utf8.encodedLength(json));

@@ -31,12 +31,14 @@ import de.symeda.sormas.api.caze.CaseStatisticsFacade;
 import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
 import de.symeda.sormas.api.caze.classification.CaseClassificationFacade;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryFacade;
+import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoFacade;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
 import de.symeda.sormas.api.dashboard.DashboardFacade;
+import de.symeda.sormas.api.deletionconfiguration.DeletionConfigurationFacade;
 import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
 import de.symeda.sormas.api.docgeneneration.EventDocumentFacade;
@@ -82,10 +84,10 @@ import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.share.ExternalShareInfoFacade;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptionFacade;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasFacade;
-import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseFacade;
-import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactFacade;
-import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventFacade;
-import de.symeda.sormas.api.sormastosormas.externalmessage.SormasToSormasExternalMessageFacade;
+import de.symeda.sormas.api.sormastosormas.entities.caze.SormasToSormasCaseFacade;
+import de.symeda.sormas.api.sormastosormas.entities.contact.SormasToSormasContactFacade;
+import de.symeda.sormas.api.sormastosormas.entities.event.SormasToSormasEventFacade;
+import de.symeda.sormas.api.sormastosormas.entities.externalmessage.SormasToSormasExternalMessageFacade;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasShareRequestFacade;
 import de.symeda.sormas.api.sormastosormas.share.outgoing.ShareRequestInfoFacade;
 import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoFacade;
@@ -317,6 +319,10 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(PointOfEntryFacade.class);
 	}
 
+	public static PortHealthInfoFacade getPortHealthInfoFacade() {
+		return get().lookupEjbRemote(PortHealthInfoFacade.class);
+	}
+
 	public static PopulationDataFacade getPopulationDataFacade() {
 		return get().lookupEjbRemote(PopulationDataFacade.class);
 	}
@@ -482,6 +488,10 @@ public class FacadeProvider {
 
 	public static AuditLoggerFacade getAuditLoggerFacade() {
 		return get().lookupEjbRemote(AuditLoggerFacade.class);
+	}
+
+	public static DeletionConfigurationFacade getDeletionConfigurationFacade() {
+		return get().lookupEjbRemote(DeletionConfigurationFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")

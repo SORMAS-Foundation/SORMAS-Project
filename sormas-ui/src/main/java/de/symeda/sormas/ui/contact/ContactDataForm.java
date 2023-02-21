@@ -29,7 +29,6 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
 import com.google.common.collect.Sets;
 import com.vaadin.server.ErrorMessage;
@@ -42,7 +41,6 @@ import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.data.validator.DateRangeValidator;
 import com.vaadin.v7.shared.ui.datefield.Resolution;
-import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
@@ -194,13 +192,13 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private DateField reportDate;
 	private Button toCaseButton;
 
-	public ContactDataForm(Disease disease, ViewMode viewMode, boolean isPseudonymized) {
+	public ContactDataForm(Disease disease, ViewMode viewMode, boolean isPseudonymized, boolean inJurisdiction) {
 		super(
 			ContactDto.class,
 			ContactDto.I18N_PREFIX,
 			false,
 			FieldVisibilityCheckers.withDisease(disease).andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
-			UiFieldAccessCheckers.forSensitiveData(isPseudonymized));
+			UiFieldAccessCheckers.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized));
 
 		this.viewMode = viewMode;
 		this.disease = disease;
@@ -244,12 +242,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		lastContactDate = addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
 		reportDate = addField(ContactDto.REPORT_DATE_TIME, DateField.class);
 
-		List<AbstractField<Date>> validatedFields = Arrays.asList(firstContactDate, lastContactDate, reportDate);
-		validatedFields.forEach(field -> field.addValueChangeListener(r -> {
-			validatedFields.forEach(otherField -> {
-				otherField.setValidationVisible(!otherField.isValid());
-			});
-		}));
+		DateComparisonValidator.dateFieldDependencyValidationVisibility(firstContactDate, lastContactDate, reportDate);
 
 		FieldHelper
 			.setVisibleWhen(getFieldGroup(), ContactDto.FIRST_CONTACT_DATE, ContactDto.MULTI_DAY_CONTACT, Collections.singletonList(true), true);
@@ -637,7 +630,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				FollowUpPeriodDto followUpPeriod = ContactLogic.getFollowUpStartDate(
 					lastContactDate.getValue(),
 					reportDate.getValue(),
-					FacadeProvider.getSampleFacade().getByContactUuids(Collections.singletonList(getValue().getUuid())));
+					FacadeProvider.getSampleFacade().getEarliestPositiveSampleDate(getValue().getUuid()));
 				Date minimumFollowUpUntilDate = FollowUpLogic
 					.calculateFollowUpUntilDate(
 						followUpPeriod,

@@ -63,13 +63,12 @@ public class ActionFacadeEjb implements ActionFacade {
 	@EJB
 	private EventService eventService;
 
-	public Action fromDto(ActionDto source, boolean checkChangeDate) {
-
+	public Action fillOrBuildEntity(ActionDto source, Action target, boolean checkChangeDate) {
 		if (source == null) {
 			return null;
 		}
 
-		Action target = DtoHelper.fillOrBuildEntity(source, actionService.getByUuid(source.getUuid()), Action::new, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, Action::new, checkChangeDate);
 
 		target.setLastModifiedBy(userService.getByReferenceDto(source.getLastModifiedBy()));
 		target.setReply(source.getReply());
@@ -134,7 +133,7 @@ public class ActionFacadeEjb implements ActionFacade {
 
 		Action existingAction = actionService.getByUuid(dto.getUuid());
 		FacadeHelper.checkCreateAndEditRights(existingAction, userService, UserRight.ACTION_CREATE, UserRight.ACTION_EDIT);
-		Action ado = fromDto(dto, true);
+		Action ado = fillOrBuildEntity(dto, existingAction, true);
 		actionService.ensurePersisted(ado);
 		return toDto(ado);
 	}

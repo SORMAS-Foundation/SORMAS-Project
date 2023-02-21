@@ -1,18 +1,17 @@
 package de.symeda.sormas.backend.central;
 
-import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
-import de.symeda.sormas.backend.MockProducer;
-import org.junit.Test;
-
-import org.mockito.Mockito;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
 
 import java.io.IOException;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.eq;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
+import de.symeda.sormas.backend.MockProducer;
 
 public class EtcdCentralClientTest {
 

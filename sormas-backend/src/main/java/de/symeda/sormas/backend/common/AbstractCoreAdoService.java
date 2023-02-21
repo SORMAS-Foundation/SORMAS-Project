@@ -37,11 +37,10 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.util.IterableHelper;
 
-public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends AbstractDeletableAdoService<ADO> {
+public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends QueryJoins<ADO>> extends AbstractDeletableAdoService<ADO> {
 
 	private static final int ARCHIVE_BATCH_SIZE = 1000;
 
@@ -53,7 +52,7 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 	}
 
 	/**
-	 * @deprecated Invocation without a {@link QueryContext} is only allowed interally in the same class. For invocation from other EJBs,
+	 * @deprecated Invocation without a {@link QueryContext} is only allowed internally in the same class. For invocation from other EJBs,
 	 *             use {@code createUserFilter(QueryContext)} instead (to be implemented by each subclass).
 	 */
 	@Deprecated
@@ -83,8 +82,25 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 		return count > 0;
 	}
 
-	protected <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, From<?, ADO> adoPath, boolean includeExtendedChangeDateFilters) {
-		return builder.add(adoPath);
+	public boolean isDeleted(String uuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<ADO> from = cq.from(getElementClass());
+
+		cq.where(cb.and(cb.isTrue(from.get(CoreAdo.DELETED)), cb.equal(from.get(AbstractDomainObject.UUID), uuid)));
+		cq.select(cb.count(from));
+		long count = em.createQuery(cq).getSingleResult();
+		return count > 0;
+	}
+
+	protected abstract J toJoins(From<?, ADO> adoPath);
+
+	private <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, From<?, ADO> adoPath, boolean includeExtendedChangeDateFilters) {
+		return addChangeDates(builder, toJoins(adoPath), includeExtendedChangeDateFilters);
+	}
+
+	protected <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, J joins, boolean includeExtendedChangeDateFilters) {
+		return builder.add(joins.getRoot());
 	}
 
 	public Map<String, Date> calculateEndOfProcessingDate(List<String> entityuuids) {
@@ -98,9 +114,9 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 		Root<ADO> from = cq.from(getElementClass());
 
 		Expression aggregatedChangeDateExpression = addChangeDates(new AggregatedChangeDateExpressionBuilder(cb), from, true).build();
-		cq.multiselect(from.get(AbstractDomainObject.UUID), cb.max(aggregatedChangeDateExpression));
-		cq.where(from.get(ADO.UUID).in(entityuuids));
-		cq.groupBy(from.get(AbstractDomainObject.UUID));
+		cq.multiselect(from.get(CoreAdo.UUID), cb.max(aggregatedChangeDateExpression));
+		cq.where(from.get(CoreAdo.UUID).in(entityuuids));
+		cq.groupBy(from.get(CoreAdo.UUID));
 
 		Map<String, Date> collect = em.createQuery(cq).getResultList().stream().collect(Collectors.toMap(r -> (String) r[0], r -> (Date) r[1]));
 		return collect;
@@ -118,7 +134,7 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 		Root<ADO> root = cu.from(getElementClass());
 
 		cu.set(AbstractDomainObject.CHANGE_DATE, Timestamp.from(Instant.now()));
-		cu.set(root.get(Case.ARCHIVED), true);
+		cu.set(root.get(CoreAdo.ARCHIVED), true);
 		cu.set(root.get(CoreAdo.END_OF_PROCESSING_DATE), endOfProcessingDate);
 
 		cu.where(cb.equal(root.get(AbstractDomainObject.UUID), entityUuid));
@@ -138,7 +154,7 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 				Root<ADO> root = cu.from(getElementClass());
 
 				cu.set(AbstractDomainObject.CHANGE_DATE, Timestamp.from(Instant.now()));
-				cu.set(root.get(Case.ARCHIVED), true);
+				cu.set(root.get(CoreAdo.ARCHIVED), true);
 				cu.set(root.get(CoreAdo.END_OF_PROCESSING_DATE), finalEndOfProcessingDate);
 
 				cu.where(cb.equal(root.get(AbstractDomainObject.UUID), entityUuid));
@@ -156,7 +172,7 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 			Root<ADO> root = cu.from(getElementClass());
 
 			cu.set(AbstractDomainObject.CHANGE_DATE, Timestamp.from(Instant.now()));
-			cu.set(root.get(Case.ARCHIVED), false);
+			cu.set(root.get(CoreAdo.ARCHIVED), false);
 			cu.set(root.get(CoreAdo.END_OF_PROCESSING_DATE), (Date) null);
 			cu.set(root.get(CoreAdo.ARCHIVE_UNDONE_REASON), dearchiveReason);
 
@@ -176,5 +192,25 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 		return EditPermissionType.ALLOWED;
 	}
 
-	public abstract EditPermissionType isEditAllowed(ADO entity);
+	public boolean isEditAllowed(ADO entity) {
+		return getEditPermissionType(entity) == EditPermissionType.ALLOWED;
+	}
+
+	@Override
+	public List<Long> getInJurisdictionIds(List<ADO> selectedEntities) {
+		return getIdList(selectedEntities, this::inJurisdictionOrOwned);
+	}
+
+	@Override
+	public boolean inJurisdictionOrOwned(ADO entity) {
+		return fulfillsCondition(entity, this::inJurisdictionOrOwned);
+	}
+
+	/**
+	 * Used to fetch {@link AdoServiceWithUserFilterAndJurisdiction#getInJurisdictionIds(List)}/{@link AdoServiceWithUserFilterAndJurisdiction#inJurisdictionOrOwned(AbstractDomainObject)}
+	 * (without {@link QueryContext} because there are no other conditions etc.).
+	 * 
+	 * @return A filter on entities within the users jurisdiction or owned by him.
+	 */
+	public abstract Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, ADO> from);
 }

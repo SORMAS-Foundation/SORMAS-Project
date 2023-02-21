@@ -23,7 +23,7 @@ public class GeoShapeProviderEjbTest {
 
 //    private static BeanProviderHelper bm;
 //    
-//    @BeforeClass
+//    @BeforeAll
 //    public static void initialize() {
 //        bm = BeanProviderHelper.getInstance();
 //        
@@ -37,7 +37,7 @@ public class GeoShapeProviderEjbTest {
 //		districtService.importDistricts(countryName, regions);
 //    }
 //
-//    @AfterClass
+//    @AfterAll
 //    public static void cleanUp() {
 //        bm.shutdown();
 //    }

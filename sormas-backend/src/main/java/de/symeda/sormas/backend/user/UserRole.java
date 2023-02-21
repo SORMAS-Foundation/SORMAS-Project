@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.persistence.Cacheable;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -38,6 +39,9 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.UniqueConstraint;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.JurisdictionLevel;
@@ -48,6 +52,8 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 @Entity(name = UserRole.TABLE_NAME)
 @Audited
 @EntityListeners(UserRole.UserRoleListener.class)
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class UserRole extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 9053095630718041842L;

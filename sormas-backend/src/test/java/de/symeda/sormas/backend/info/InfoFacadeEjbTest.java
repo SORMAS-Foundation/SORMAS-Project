@@ -18,7 +18,6 @@ package de.symeda.sormas.backend.info;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-import de.symeda.sormas.backend.feature.FeatureConfigurationService;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -29,14 +28,15 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.feature.FeatureConfigurationService;
 
 public class InfoFacadeEjbTest extends AbstractBeanTest {
 
@@ -70,7 +70,7 @@ public class InfoFacadeEjbTest extends AbstractBeanTest {
 		loginWith(admin);
 	}
 
-	@After
+	@AfterEach
 	public void destroy() {
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.CUSTOM_FILES_PATH, originalCustomFilesPath);
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, originalServerCountry);

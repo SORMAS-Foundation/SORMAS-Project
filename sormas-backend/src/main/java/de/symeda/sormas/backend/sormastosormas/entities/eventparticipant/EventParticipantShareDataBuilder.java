@@ -21,7 +21,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 import de.symeda.sormas.api.event.EventParticipantDto;
-import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventParticipantDto;
+import de.symeda.sormas.api.sormastosormas.entities.event.SormasToSormasEventParticipantDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasEventParticipantPreview;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
@@ -67,7 +67,7 @@ public class EventParticipantShareDataBuilder
 	@Override
 	protected EventParticipantDto getDto(EventParticipant eventParticipant, Pseudonymizer pseudonymizer) {
 
-		EventParticipantDto eventParticipantDto = eventParticipantFacade.convertToDto(eventParticipant, pseudonymizer);
+		EventParticipantDto eventParticipantDto = eventParticipantFacade.toPseudonymizedDto(eventParticipant, pseudonymizer);
 		// reporting user is not set to null here as it would not pass the validation
 		// the receiver appears to set it to SORMAS2SORMAS Client anyway
 		eventParticipantDto.setSormasToSormasOriginInfo(null);

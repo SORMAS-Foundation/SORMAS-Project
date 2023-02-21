@@ -11,8 +11,6 @@ import de.symeda.sormas.api.utils.SortProperty;
 @Remote
 public interface TravelEntryFacade extends CoreFacade<TravelEntryDto, TravelEntryIndexDto, TravelEntryReferenceDto, TravelEntryCriteria> {
 
-	boolean isDeleted(String eventUuid);
-
 	long count(TravelEntryCriteria criteria, boolean ignoreUserFilter);
 
 	List<DeaContentEntry> getDeaContentOfLastTravelEntry();
@@ -22,4 +20,6 @@ public interface TravelEntryFacade extends CoreFacade<TravelEntryDto, TravelEntr
 	Page<TravelEntryIndexDto> getIndexPage(TravelEntryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
 	void archiveAllArchivableTravelEntries(int daysAfterTravelEntryGetsArchived);
+
+	List<TravelEntryDto> getByPersonUuids(List<String> uuids);
 }

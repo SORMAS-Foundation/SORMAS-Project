@@ -3,11 +3,6 @@
 SORMAS releases starting from 1.21.0 contain a script that automatically updates and deploys the server. If you are using an older version and therefore need to do a manual server update, please download the 1.21.0 release files and use the commands specified in the server-update.sh script.
 
 ## Preparations
-Note: At some versions it is mandatory to switch to a new Payara Server. If your version bump does apply to the listing below, please proceed with [Payara migration](SERVER_UPDATE.md#how-to-migrate-to-new-payara-server).
-* Switching from <=v1.66.4 to v1.67.0 or newer
-
-Note: You can skip this step if you've just set up your SORMAS server and have already downloaded the latest release.
-
 * Get the latest release files (deploy.zip) from <https://github.com/hzi-braunschweig/SORMAS-Project/releases/latest>
 * Unzip the archive and copy/upload its contents to **/root/deploy/sormas/$(date +%F)**
     ```bash
@@ -18,6 +13,46 @@ Note: You can skip this step if you've just set up your SORMAS server and have a
     mv deploy/ $(date +%F)
     rm sormas_${SORMAS_VERSION}.zip
     ```
+
+## Breaking Updates
+The following is a list of version that have breaking changes in the update. **You only have to consider this if you are coming from an earlier version.** For fresh installs, this is not relevant.
+
+### 1.67.0
+Coming from 1.66.4 or earlier, you have to update the payara server, as explained in the [Payara migration](SERVER_UPDATE.md#how-to-migrate-to-new-payara-server).
+
+### 1.73.0
+Deploying this release **will clear the userrolesconfig and userrole_userrights tables** and overwrite them with the default user role configurations of SORMAS. **If you added entries to these tables in order to customize the user roles on your system**, please run the following queries before deploying this release in order to prevent data loss:
+
+```SQL
+-- Retrieve all customized roles
+SELECT * FROM userrolesconfig;
+ 
+-- Overridden rights for roles
+SELECT c.userrole, ur.userright FROM userroles_userrights ur LEFT JOIN userrolesconfig c (ON c.id = ur.userrole_id);
+```
+
+After deploying the new version, the information retrieved from these queries can be used to alter the new user role configurations accordingly.
+
+### 1.81.0
+The [temporal tables extension is replaced](https://github.com/hzi-braunschweig/SORMAS-Project/issues/10260) during the deployment of the backend. As a preparation the following SQL **needs to be executed on the SORMAS database using the postgres user.**
+
+```SQL
+-- versioning function will be replaced during server backend startup
+ALTER FUNCTION public.versioning() OWNER TO sormas_user;
+```
+
+**After the successful deployment**, you can run the following SQL to get rid of the no longer used extension:
+
+```SQL
+-- needed because `ALTER FUNCTION ... NO DEPENDS ON EXTENSION` is not possible in Postgres 10 and below
+DELETE FROM pg_depend
+WHERE deptype = 'e'
+  AND refobjid = (SELECT oid FROM pg_extension WHERE extname = 'temporal_tables')
+  and objid = (SELECT oid FROM pg_proc WHERE proname = 'versioning');
+
+DROP EXTENSION IF EXISTS temporal_tables;
+```
+
 ## Automatic Server Update
 * Navigate to the  folder containing the unzipped deploy files:
   ``cd /root/deploy/sormas/$(date +%F)``

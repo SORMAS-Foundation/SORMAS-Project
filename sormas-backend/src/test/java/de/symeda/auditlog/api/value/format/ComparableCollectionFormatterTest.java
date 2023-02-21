@@ -18,7 +18,8 @@
 package de.symeda.auditlog.api.value.format;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.auditlog.api.sample.CustomEnum;
 
@@ -96,7 +97,7 @@ public class ComparableCollectionFormatterTest {
 	/**
 	 * {@code null} within the Collection is not supported!
 	 */
-	@Test(expected = NullPointerException.class)
+	@Test
 	public void testFormatEnumsWithNullInCollection() {
 
 		ComparableCollectionFormatter<CustomEnum> cut = new ComparableCollectionFormatter<>(value -> value.name());
@@ -107,6 +108,6 @@ public class ComparableCollectionFormatterTest {
 				null,
 				CustomEnum.VALUE_3 });
 
-		cut.format(unsortedList);
+		assertThrows(NullPointerException.class, () -> cut.format(unsortedList));
 	}
 }

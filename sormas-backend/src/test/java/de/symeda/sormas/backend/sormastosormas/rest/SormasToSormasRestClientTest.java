@@ -4,7 +4,7 @@ import static de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestCli
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.StringStartsWith.startsWith;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class SormasToSormasRestClientTest {
 

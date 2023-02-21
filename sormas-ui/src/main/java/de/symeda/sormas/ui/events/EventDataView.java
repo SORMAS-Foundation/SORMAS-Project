@@ -88,6 +88,7 @@ public class EventDataView extends AbstractEventView {
 		container.setWidth(100, Unit.PERCENTAGE);
 		container.setMargin(true);
 		setSubComponent(container);
+		container.setEnabled(true);
 
 		editComponent =
 			ControllerProvider.getEventController().getEventDataEditComponent(getEventRef().getUuid(), this::setExternalSurvToolLayoutVisibility);
@@ -107,11 +108,17 @@ public class EventDataView extends AbstractEventView {
 
 		container.addComponent(layout);
 
-		externalSurvToolLayout = ExternalSurveillanceServiceGateway.addComponentToLayout(layout.getSidePanelComponent(), editComponent, event);
+		final String uuid = event.getUuid();
+		final EditPermissionType eventEditAllowed = FacadeProvider.getEventFacade().getEditPermissionType(uuid);
+		boolean isEditAllowed = isEditAllowed();
+
+		externalSurvToolLayout = ExternalSurveillanceServiceGateway.addComponentToLayout(layout, editComponent, event, isEditAllowed);
 		setExternalSurvToolLayoutVisibility(event.getEventStatus());
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)) {
-			TaskListComponent taskList = new TaskListComponent(TaskContext.EVENT, getEventRef(), event.getDisease());
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW)) {
+			TaskListComponent taskList =
+				new TaskListComponent(TaskContext.EVENT, getEventRef(), event.getDisease(), this::showUnsavedChangesPopup, isEditAllowed);
 			taskList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addSidePanelComponent(taskList, TASKS_LOC);
 		}
@@ -123,7 +130,16 @@ public class EventDataView extends AbstractEventView {
 		DocumentListComponent documentList = null;
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_VIEW)) {
-			documentList = new DocumentListComponent(DocumentRelatedEntityType.EVENT, getEventRef(), UserRight.EVENT_EDIT, event.isPseudonymized());
+
+			boolean isDocumentDeleteAllowed =
+				EditPermissionType.ALLOWED.equals(eventEditAllowed) || EditPermissionType.WITHOUT_OWNERSHIP.equals(eventEditAllowed);
+			documentList = new DocumentListComponent(
+				DocumentRelatedEntityType.EVENT,
+				getEventRef(),
+				UserRight.EVENT_EDIT,
+				event.isPseudonymized(),
+				isEditAllowed,
+				isDocumentDeleteAllowed);
 			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
@@ -137,7 +153,7 @@ public class EventDataView extends AbstractEventView {
 			superordinateEventComponent.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addSidePanelComponent(superordinateEventComponent, SUPERORDINATE_EVENT_LOC);
 
-			EventListComponent subordinateEventList = new EventListComponent(event.toReference(), this::showUnsavedChangesPopup);
+			EventListComponent subordinateEventList = new EventListComponent(event.toReference(), this::showUnsavedChangesPopup, isEditAllowed);
 			subordinateEventList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addSidePanelComponent(subordinateEventList, SUBORDINATE_EVENTS_LOC);
 		}
@@ -149,13 +165,13 @@ public class EventDataView extends AbstractEventView {
 				EVENT_GROUPS_LOC);
 		}
 
-		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isSharingEventsEnabledForUser();
+		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isAnyFeatureConfigured(FeatureType.SORMAS_TO_SORMAS_SHARE_EVENTS);
 		if (sormasToSormasEnabled || event.getSormasToSormasOriginInfo() != null || event.isOwnershipHandedOver()) {
 			VerticalLayout sormasToSormasLocLayout = new VerticalLayout();
 			sormasToSormasLocLayout.setMargin(false);
 			sormasToSormasLocLayout.setSpacing(false);
 
-			SormasToSormasListComponent sormasToSormasListComponent = new SormasToSormasListComponent(event, sormasToSormasEnabled);
+			SormasToSormasListComponent sormasToSormasListComponent = new SormasToSormasListComponent(event);
 			sormasToSormasListComponent.addStyleNames(CssStyles.SIDE_COMPONENT);
 			sormasToSormasLocLayout.addComponent(sormasToSormasListComponent);
 
@@ -207,9 +223,11 @@ public class EventDataView extends AbstractEventView {
 			layout.setEnabled(false);
 		}
 
-		EditPermissionType eventEditAllowed = FacadeProvider.getEventFacade().isEditAllowed(event.getUuid());
+		final boolean deleted = FacadeProvider.getEventFacade().isDeleted(uuid);
 
-		if (eventEditAllowed == EditPermissionType.ARCHIVING_STATUS_ONLY) {
+		if (deleted) {
+			layout.disable(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+		} else if (eventEditAllowed == EditPermissionType.ARCHIVING_STATUS_ONLY) {
 			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
 		} else if (eventEditAllowed == EditPermissionType.REFUSED) {
 			layout.disable();

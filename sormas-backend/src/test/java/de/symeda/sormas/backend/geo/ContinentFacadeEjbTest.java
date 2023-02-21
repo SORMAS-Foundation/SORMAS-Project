@@ -1,11 +1,11 @@
 package de.symeda.sormas.backend.geo;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 
-import de.symeda.sormas.backend.infrastructure.continent.Continent;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.continent.ContinentCriteria;
@@ -16,6 +16,7 @@ import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentIndexDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.infrastructure.continent.Continent;
 
 public class ContinentFacadeEjbTest extends AbstractBeanTest {
 
@@ -56,12 +57,12 @@ public class ContinentFacadeEjbTest extends AbstractBeanTest {
 		assertEquals("Central Europe", subcontinentIndexDto.getDisplayName());
 	}
 
-	@Test(expected = ValidationRuntimeException.class)
+	@Test
 	public void testSaveContinentExists() {
 		final ContinentDto continentDto = new ContinentDto();
 		continentDto.setDefaultName("Europe");
 		getContinentFacade().save(continentDto);
-		getContinentFacade().save(continentDto);
+		assertThrows(ValidationRuntimeException.class, () -> getContinentFacade().save(continentDto));
 	}
 
 	@Test

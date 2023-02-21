@@ -23,6 +23,8 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
+import javax.validation.Valid;
+
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -46,7 +48,7 @@ public class ShareInfoHelper {
 		String organizationId,
 		T entity,
 		BiConsumer<SormasToSormasShareInfo, T> setEntity,
-		SormasToSormasOptionsDto options) {
+		@Valid SormasToSormasOptionsDto options) {
 		SormasToSormasShareInfo shareInfo = new SormasToSormasShareInfo();
 		shareInfo.setUuid(DataHelper.createUuid());
 		shareInfo.setOrganizationId(organizationId);

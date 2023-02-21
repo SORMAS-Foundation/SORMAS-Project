@@ -85,7 +85,6 @@
 		<artifact:pom id="serverlibsPom" file="dependencies/serverlibs.pom">
 		</artifact:pom>
 
-		<echo>The following invalid POM warning can be ignored</echo>
 		<artifact:dependencies filesetId="serverlibsid" pomRefId="serverlibsPom" useScope="compile" versionsId="dependency.versions" />
 
 		<delete failonerror="false">

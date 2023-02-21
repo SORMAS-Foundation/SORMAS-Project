@@ -24,15 +24,13 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
-import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sormastosormas.externalmessage.SormasToSormasExternalMessageDto;
-import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
+import de.symeda.sormas.api.sormastosormas.entities.externalmessage.SormasToSormasExternalMessageDto;
+import de.symeda.sormas.api.sormastosormas.entities.sample.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.PreviewNotImplementedDto;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
 import de.symeda.sormas.backend.sample.Sample;
@@ -54,8 +52,6 @@ public class SampleShareDataBuilder
 	@EJB
 	private AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal additionalTestFacade;
 	@EJB
-	private ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal externalMessageFacade;
-	@EJB
 	private ShareDataBuilderHelper dataBuilderHelper;
 
 	@Inject
@@ -68,8 +64,7 @@ public class SampleShareDataBuilder
 
 	@Override
 	protected SormasToSormasSampleDto doBuildShareData(Sample sample, ShareRequestInfo requestInfo, boolean ownerShipHandedOver) {
-		Pseudonymizer pseudonymizer =
-			dataBuilderHelper.createPseudonymizer(requestInfo);
+		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
 
 		SampleDto sampleDto = getDto(sample, pseudonymizer);
 
@@ -80,16 +75,15 @@ public class SampleShareDataBuilder
 		}).collect(Collectors.toList());
 
 		List<AdditionalTestDto> additionalTests =
-				sample.getAdditionalTests().stream().map(t -> additionalTestFacade.convertToDto(t, pseudonymizer)).collect(Collectors.toList());
+			sample.getAdditionalTests().stream().map(t -> additionalTestFacade.convertToDto(t, pseudonymizer)).collect(Collectors.toList());
 
 		List<SormasToSormasExternalMessageDto> externalMessages = Collections.emptyList();
 		if (ownerShipHandedOver) {
-			externalMessages = sample.getExternalMessages().stream().map(m -> {
-				ExternalMessageDto externalMessageDto = externalMessageFacade.toDto(m);
-				externalMessageDto.setAssignee(null);
-
-				return new SormasToSormasExternalMessageDto(externalMessageDto);
-			}).collect(Collectors.toList());
+			externalMessages =
+				sample.getSampleReports()
+					.stream()
+					.map(s -> dataBuilderHelper.getExternalMessageDto(s.getLabMessage(), requestInfo))
+					.collect(Collectors.toList());
 		}
 
 		return new SormasToSormasSampleDto(sampleDto, pathogenTests, additionalTests, externalMessages);

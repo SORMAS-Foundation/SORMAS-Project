@@ -22,7 +22,7 @@ import javax.inject.Inject;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
+import de.symeda.sormas.api.sormastosormas.entities.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasCasePreview;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
@@ -85,7 +85,7 @@ public class CaseShareDataBuilder
 	@Override
 	protected CaseDataDto getDto(Case caze, Pseudonymizer pseudonymizer) {
 
-		CaseDataDto cazeDto = caseFacade.convertToDto(caze, pseudonymizer);
+		CaseDataDto cazeDto = caseFacade.toPseudonymizedDto(caze, pseudonymizer);
 		// reporting user is not set to null here as it would not pass the validation
 		// the receiver appears to set it to SORMAS2SORMAS Client anyway
 		cazeDto.setClassificationUser(null);

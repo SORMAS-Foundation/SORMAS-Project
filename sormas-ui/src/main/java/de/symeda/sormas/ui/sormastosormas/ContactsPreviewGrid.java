@@ -29,10 +29,12 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasCasePreview;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasContactPreview;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasPersonPreview;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.utils.CaptionRenderer;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
 public class ContactsPreviewGrid extends BasePreviewGrid<SormasToSormasContactPreview> {
@@ -88,6 +90,10 @@ public class ContactsPreviewGrid extends BasePreviewGrid<SormasToSormasContactPr
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		((Column<SormasToSormasContactPreview, Date>) getColumn(SormasToSormasContactPreview.LAST_CONTACT_DATE))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
+
+		getColumn(SormasToSormasCasePreview.REGION).setRenderer(new CaptionRenderer());
+		getColumn(SormasToSormasCasePreview.DISTRICT).setRenderer(new CaptionRenderer());
+		getColumn(SormasToSormasCasePreview.COMMUNITY).setRenderer(new CaptionRenderer());
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(

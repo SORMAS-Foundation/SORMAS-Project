@@ -1,11 +1,27 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.api.therapy;
 
 import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.uuid.AbstractUuidDto;
 
-public class PrescriptionIndexDto implements Serializable {
+public class PrescriptionIndexDto extends AbstractUuidDto {
 
 	private static final long serialVersionUID = 9189039796173435070L;
 
@@ -19,7 +35,6 @@ public class PrescriptionIndexDto implements Serializable {
 	public static final String PRESCRIPTION_ROUTE = "prescriptionRoute";
 	public static final String PRESCRIBING_CLINICIAN = "prescribingClinician";
 
-	private String uuid;
 	private PrescriptionIndexType prescriptionIndexType;
 	private Date prescriptionDate;
 	private PeriodDto prescriptionPeriod;
@@ -46,7 +61,7 @@ public class PrescriptionIndexDto implements Serializable {
 		String prescribingClinician,
 		boolean isInJurisdiction) {
 
-		this.uuid = uuid;
+		super(uuid);
 		this.prescriptionIndexType = new PrescriptionIndexType(prescriptionType, prescriptionDetails, typeOfDrug);
 		this.prescriptionDate = prescriptionDate;
 		this.prescriptionPeriod = new PeriodDto(prescriptionStart, prescriptionEnd);
@@ -55,14 +70,6 @@ public class PrescriptionIndexDto implements Serializable {
 		this.prescriptionIndexRoute = new PrescriptionIndexRoute(route, routeDetails);
 		this.prescribingClinician = prescribingClinician;
 		this.isInJurisdiction = isInJurisdiction;
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
 	}
 
 	public String getPrescriptionType() {

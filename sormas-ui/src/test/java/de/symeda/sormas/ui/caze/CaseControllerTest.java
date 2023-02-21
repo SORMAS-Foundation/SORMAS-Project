@@ -4,7 +4,7 @@ import static org.mockito.Mockito.when;
 
 import java.security.Principal;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
 
 import com.vaadin.server.Page;
@@ -25,7 +25,7 @@ public class CaseControllerTest extends AbstractBeanTest {
 
 	private SormasUI ui;
 
-	@Before
+	@BeforeEach
 	public void initUI() throws Exception {
 
 		creator.createUser(

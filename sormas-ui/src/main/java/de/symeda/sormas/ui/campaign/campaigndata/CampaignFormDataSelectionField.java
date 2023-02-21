@@ -119,17 +119,17 @@ public class CampaignFormDataSelectionField extends VerticalLayout {
 		HorizontalLayout formDataLayout = new HorizontalLayout();
 		formDataLayout.setSpacing(true);
 		{
-			Label fdRegion = new Label(formData.getRegion() != null ? formData.getRegion().toString() : "");
+			Label fdRegion = new Label(formData.getRegion() != null ? formData.getRegion().buildCaption() : "");
 			fdRegion.setCaption(I18nProperties.getPrefixCaption(CampaignFormDataDto.I18N_PREFIX, CampaignFormDataDto.REGION));
 			fdRegion.setWidthUndefined();
 			formDataLayout.addComponent(fdRegion);
 
-			Label fdDistrict = new Label(formData.getDistrict() != null ? formData.getDistrict().toString() : "");
+			Label fdDistrict = new Label(formData.getDistrict() != null ? formData.getDistrict().buildCaption() : "");
 			fdDistrict.setCaption(I18nProperties.getPrefixCaption(CampaignFormDataDto.I18N_PREFIX, CampaignFormDataDto.DISTRICT));
 			fdDistrict.setWidthUndefined();
 			formDataLayout.addComponent(fdDistrict);
 
-			Label fdCommunity = new Label(formData.getCommunity() != null ? formData.getCommunity().toString() : "");
+			Label fdCommunity = new Label(formData.getCommunity() != null ? formData.getCommunity().buildCaption() : "");
 			fdCommunity.setCaption(I18nProperties.getPrefixCaption(CampaignFormDataDto.I18N_PREFIX, CampaignFormDataDto.COMMUNITY));
 			fdCommunity.setWidthUndefined();
 			formDataLayout.addComponent(fdCommunity);
@@ -140,7 +140,7 @@ public class CampaignFormDataSelectionField extends VerticalLayout {
 			formDataLayout.addComponent(fdFormDate);
 
 			if (existingData) {
-				Label fdCreatingUser = new Label(formData.getCreatingUser() != null ? formData.getCreatingUser().toString() : "");
+				Label fdCreatingUser = new Label(formData.getCreatingUser() != null ? formData.getCreatingUser().buildCaption() : "");
 				fdCreatingUser.setCaption(I18nProperties.getPrefixCaption(CampaignFormDataDto.I18N_PREFIX, CampaignFormDataDto.CREATING_USER));
 				fdCreatingUser.setWidthUndefined();
 				formDataLayout.addComponent(fdCreatingUser);

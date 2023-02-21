@@ -3,6 +3,7 @@ package de.symeda.sormas.ui.utils;
 import static de.symeda.sormas.ui.utils.LayoutUtil.div;
 import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
 
 import java.util.stream.Stream;
 
@@ -47,8 +48,12 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 		this(type, propertyI18nPrefix, null);
 	}
 
+	protected AbstractFilterForm(Class<T> type, String propertyI18nPrefix, boolean addFields) {
+		this(type, propertyI18nPrefix, null, Captions.actionApplyFilters, Captions.actionResetFilters, addFields);
+	}
+
 	protected AbstractFilterForm(Class<T> type, String propertyI18nPrefix, FieldVisibilityCheckers fieldVisibilityCheckers) {
-		this(type, propertyI18nPrefix, fieldVisibilityCheckers, Captions.actionApplyFilters, Captions.actionResetFilters);
+		this(type, propertyI18nPrefix, fieldVisibilityCheckers, Captions.actionApplyFilters, Captions.actionResetFilters, true);
 	}
 
 	protected AbstractFilterForm(
@@ -56,9 +61,10 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 		String propertyI18nPrefix,
 		FieldVisibilityCheckers fieldVisibilityCheckers,
 		String applyCaptionTag,
-		String resetCaptionTag) {
+		String resetCaptionTag,
+		boolean addFields) {
 
-		super(type, propertyI18nPrefix, new SormasFieldGroupFieldFactory(fieldVisibilityCheckers, null), true);
+		super(type, propertyI18nPrefix, new SormasFieldGroupFieldFactory(fieldVisibilityCheckers, null), addFields);
 
 		String moreFiltersHtmlLayout = createMoreFiltersHtmlLayout();
 		boolean hasMoreFilters = moreFiltersHtmlLayout != null && moreFiltersHtmlLayout.length() > 0;
@@ -90,7 +96,8 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 
 	@Override
 	protected String createHtmlLayout() {
-		return div(filterLocs(ArrayUtils.addAll(getMainFilterLocators(), ACTION_BUTTONS_ID)) + loc(MORE_FILTERS_ID));
+		return div(filterLocs(ArrayUtils.addAll(getMainFilterLocators(), ACTION_BUTTONS_ID)) + locCss(CssStyles.VSPACE_TOP_3, MORE_FILTERS_ID));
+
 	}
 
 	protected abstract String[] getMainFilterLocators();
@@ -220,7 +227,7 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 				this.getFieldGroup().commit();
 				this.fireValueChange(true);
 			} catch (FieldGroup.CommitException ex) {
-				ex.printStackTrace();
+				// do nothing
 			}
 		}
 	}

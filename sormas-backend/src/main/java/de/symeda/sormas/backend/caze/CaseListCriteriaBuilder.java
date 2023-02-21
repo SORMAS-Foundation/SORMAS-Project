@@ -12,8 +12,10 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -33,6 +35,8 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
+import de.symeda.sormas.api.person.PersonContactDetailType;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -47,8 +51,10 @@ import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.person.PersonContactDetail;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.symptoms.Symptoms;
+import de.symeda.sormas.backend.user.CurrentUserService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -62,11 +68,17 @@ public class CaseListCriteriaBuilder {
 	@EJB
 	private CaseService caseService;
 
-	public CriteriaQuery<CaseIndexDto> buildIndexCriteria(CaseCriteria caseCriteria, List<SortProperty> sortProperties) {
-		return buildIndexCriteria(CaseIndexDto.class, this::getCaseIndexSelections, caseCriteria, this::getIndexOrders, sortProperties, false);
+	@Inject
+	private CurrentUserService currentUserService;
+
+	public CriteriaQuery<CaseIndexDto> buildIndexCriteria(CaseCriteria caseCriteria, List<SortProperty> sortProperties, List<Long> ids) {
+		return buildIndexCriteria(CaseIndexDto.class, this::getCaseIndexSelections, caseCriteria, this::getIndexOrders, sortProperties, false, ids);
 	}
 
-	public CriteriaQuery<CaseIndexDetailedDto> buildIndexDetailedCriteria(CaseCriteria caseCriteria, List<SortProperty> sortProperties) {
+	public CriteriaQuery<CaseIndexDetailedDto> buildIndexDetailedCriteria(
+		CaseCriteria caseCriteria,
+		List<SortProperty> sortProperties,
+		List<Long> ids) {
 
 		return buildIndexCriteria(
 			CaseIndexDetailedDto.class,
@@ -74,7 +86,24 @@ public class CaseListCriteriaBuilder {
 			caseCriteria,
 			this::getIndexDetailOrders,
 			sortProperties,
-			true);
+			true,
+			ids);
+	}
+
+	public CriteriaQuery<Tuple> buildIndexCriteriaPrefetchIds(CaseCriteria caseCriteria, List<SortProperty> sortProperties) {
+		return buildIndexCriteria(Tuple.class, this::getCaseIndexSelections, caseCriteria, this::getIndexOrders, sortProperties, false, null);
+	}
+
+	public CriteriaQuery<Tuple> buildIndexDetailedCriteriaPrefetchIds(CaseCriteria caseCriteria, List<SortProperty> sortProperties) {
+
+		return buildIndexCriteria(
+			Tuple.class,
+			this::getCaseIndexDetailedSelections,
+			caseCriteria,
+			this::getIndexDetailOrders,
+			sortProperties,
+			true,
+			null);
 	}
 
 	private <T> CriteriaQuery<T> buildIndexCriteria(
@@ -83,7 +112,10 @@ public class CaseListCriteriaBuilder {
 		CaseCriteria caseCriteria,
 		OrderExpressionProvider orderExpressionProvider,
 		List<SortProperty> sortProperties,
-		boolean detailed) {
+		boolean detailed,
+		List<Long> ids) {
+
+		boolean prefetchIds = ids == null;
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<T> cq = cb.createQuery(type);
@@ -91,75 +123,91 @@ public class CaseListCriteriaBuilder {
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
 		final CaseJoins joins = caseQueryContext.getJoins();
 
-		List<Selection<?>> selectionList = new ArrayList<>(selectionProvider.apply(caze, caseQueryContext));
-
 		Subquery<Integer> visitCountSq = cq.subquery(Integer.class);
 		Root<Case> visitCountRoot = visitCountSq.from(Case.class);
 		visitCountSq.where(cb.equal(visitCountRoot.get(AbstractDomainObject.ID), caze.get(AbstractDomainObject.ID)));
 		visitCountSq.select(cb.size(visitCountRoot.get(Case.VISITS)));
-		selectionList.add(visitCountSq);
 
-		if (detailed) {
-			// Events count subquery
-			Subquery<Long> eventCountSq = cq.subquery(Long.class);
-			Root<EventParticipant> eventCountRoot = eventCountSq.from(EventParticipant.class);
-			Join<EventParticipant, Event> event = eventCountRoot.join(EventParticipant.EVENT, JoinType.INNER);
-			Join<EventParticipant, Case> resultingCase = eventCountRoot.join(EventParticipant.RESULTING_CASE, JoinType.INNER);
-			eventCountSq.where(
-				cb.and(
-					cb.equal(resultingCase.get(Case.ID), caze.get(Case.ID)),
-					cb.isFalse(event.get(Event.DELETED)),
-					cb.isFalse(eventCountRoot.get(EventParticipant.DELETED))));
-			eventCountSq.select(cb.countDistinct(event.get(Event.ID)));
-			selectionList.add(eventCountSq);
+		List<Selection<?>> selectionList = new ArrayList<>();
 
-			// Latest sampleDateTime subquery
-			Subquery<Timestamp> latestSampleDateTimeSq = cq.subquery(Timestamp.class);
-			Root<Sample> sample = latestSampleDateTimeSq.from(Sample.class);
-			Path<Timestamp> sampleDateTime = sample.get(Sample.SAMPLE_DATE_TIME);
-			latestSampleDateTimeSq.where(
-				cb.equal(sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT).get(AbstractDomainObject.ID), caze.get(AbstractDomainObject.ID)),
-				cb.isFalse(sample.get(Sample.DELETED)));
-			latestSampleDateTimeSq.select(cb.greatest(sampleDateTime));
-			selectionList.add(latestSampleDateTimeSq);
-
-			// Samples count subquery
-			Subquery<Long> sampleCountSq = cq.subquery(Long.class);
-			Root<Sample> sampleCountRoot = sampleCountSq.from(Sample.class);
-			sampleCountSq.where(
-				cb.equal(sampleCountRoot.join(Sample.ASSOCIATED_CASE, JoinType.LEFT).get(AbstractDomainObject.ID), caze.get(AbstractDomainObject.ID)),
-				cb.isFalse(sampleCountRoot.get(Sample.DELETED)));
-			sampleCountSq.select(cb.countDistinct(sampleCountRoot.get(AbstractDomainObject.ID)));
-			selectionList.add(sampleCountSq);
-		}
-
-		// This is needed in selection because of the combination of distinct and orderBy clauses - every operator in the orderBy has to be part of the select IF distinct is used
 		Expression<Date> latestChangedDateFunction =
 			cb.function(ExtendedPostgreSQL94Dialect.GREATEST, Date.class, caze.get(Contact.CHANGE_DATE), joins.getPerson().get(Person.CHANGE_DATE));
-		selectionList.add(latestChangedDateFunction);
 
-		cq.multiselect(selectionList);
-		cq.distinct(true);
-
+		List<Selection<?>> selectionListPrefetchIds = new ArrayList<>();
 		if (!CollectionUtils.isEmpty(sortProperties)) {
 			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
-				order.addAll(
-					orderExpressionProvider.forProperty(sortProperty, caze, joins, cb)
-						.stream()
-						.map(e -> sortProperty.ascending ? cb.asc(e) : cb.desc(e))
-						.collect(Collectors.toList()));
+				List<Expression<?>> expressions = orderExpressionProvider.forProperty(sortProperty, caze, joins, cb);
+				selectionListPrefetchIds.addAll(expressions);
+				order.addAll(expressions.stream().map(e -> sortProperty.ascending ? cb.asc(e) : cb.desc(e)).collect(Collectors.toList()));
 			}
 			cq.orderBy(order);
 		} else {
+			selectionListPrefetchIds.add(latestChangedDateFunction);
 			cq.orderBy(cb.desc(latestChangedDateFunction));
 		}
+
+		if (prefetchIds) {
+			selectionList.add(caze.get(AbstractDomainObject.ID));
+			selectionList.addAll(selectionListPrefetchIds);
+		} else {
+			selectionList.addAll(selectionProvider.apply(caze, caseQueryContext));
+			selectionList.add(visitCountSq);
+
+			if (detailed) {
+				// Events count subquery
+				if (currentUserService.hasUserRight(UserRight.EVENT_VIEW)) {
+					Subquery<Long> eventCountSq = cq.subquery(Long.class);
+					Root<EventParticipant> eventCountRoot = eventCountSq.from(EventParticipant.class);
+					Join<EventParticipant, Event> event = eventCountRoot.join(EventParticipant.EVENT, JoinType.INNER);
+					Join<EventParticipant, Case> resultingCase = eventCountRoot.join(EventParticipant.RESULTING_CASE, JoinType.INNER);
+					eventCountSq.where(
+						cb.and(
+							cb.equal(resultingCase.get(Case.ID), caze.get(Case.ID)),
+							cb.isFalse(event.get(Event.DELETED)),
+							cb.isFalse(eventCountRoot.get(EventParticipant.DELETED))));
+					eventCountSq.select(cb.countDistinct(event.get(Event.ID)));
+					selectionList.add(eventCountSq);
+				}
+
+				// Latest sampleDateTime subquery
+				Subquery<Timestamp> latestSampleDateTimeSq = cq.subquery(Timestamp.class);
+				Root<Sample> sample = latestSampleDateTimeSq.from(Sample.class);
+				Path<Timestamp> sampleDateTime = sample.get(Sample.SAMPLE_DATE_TIME);
+				latestSampleDateTimeSq.where(
+					cb.equal(sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT).get(AbstractDomainObject.ID), caze.get(AbstractDomainObject.ID)),
+					cb.isFalse(sample.get(Sample.DELETED)));
+				latestSampleDateTimeSq.select(cb.greatest(sampleDateTime));
+				selectionList.add(latestSampleDateTimeSq);
+
+				// Samples count subquery
+				Subquery<Long> sampleCountSq = cq.subquery(Long.class);
+				Root<Sample> sampleCountRoot = sampleCountSq.from(Sample.class);
+				sampleCountSq.where(
+					cb.equal(
+						sampleCountRoot.join(Sample.ASSOCIATED_CASE, JoinType.LEFT).get(AbstractDomainObject.ID),
+						caze.get(AbstractDomainObject.ID)),
+					cb.isFalse(sampleCountRoot.get(Sample.DELETED)));
+				sampleCountSq.select(cb.countDistinct(sampleCountRoot.get(AbstractDomainObject.ID)));
+				selectionList.add(sampleCountSq);
+			}
+
+			// This is needed in selection because of the combination of distinct and orderBy clauses - every operator in the orderBy has to be part of the select IF distinct is used
+			selectionList.add(latestChangedDateFunction);
+		}
+
+		cq.multiselect(selectionList);
+		cq.distinct(true);
 
 		CaseUserFilterCriteria caseUserFilterCriteria = new CaseUserFilterCriteria();
 		if (caseCriteria != null) {
 			caseUserFilterCriteria.setIncludeCasesFromOtherJurisdictions(caseCriteria.getIncludeCasesFromOtherJurisdictions());
 		}
 		Predicate filter = caseService.createUserFilter(caseQueryContext, caseUserFilterCriteria);
+
+		if (!prefetchIds) {
+			filter = CriteriaBuilderHelper.and(cb, filter, caze.get(AbstractDomainObject.ID).in(ids));
+		}
 
 		if (caseCriteria != null) {
 			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, caseQueryContext);
@@ -222,6 +270,8 @@ public class CaseListCriteriaBuilder {
 			joins.getResponsibleRegion().get(Region.UUID),
 			joins.getResponsibleDistrict().get(District.UUID),
 			joins.getResponsibleDistrict().get(District.NAME),
+			root.get(Case.DELETION_REASON),
+			root.get(Case.OTHER_DELETION_REASON),
 			JurisdictionHelper.booleanSelector(cb, caseService.inJurisdictionOrOwned(caseQueryContext)));
 	}
 
@@ -284,6 +334,13 @@ public class CaseListCriteriaBuilder {
 
 		CaseJoins joins = caseQueryContext.getJoins();
 
+		Join<Person, PersonContactDetail> phone = joins.getPersonJoins().getPhone();
+		CriteriaBuilder cb = caseQueryContext.getCriteriaBuilder();
+		phone.on(
+			cb.and(
+				cb.isTrue(phone.get(PersonContactDetail.PRIMARY_CONTACT)),
+				cb.equal(phone.get(PersonContactDetail.PERSON_CONTACT_DETAIL_TYPE), PersonContactDetailType.PHONE)));
+
 		List<Selection<?>> selections = new ArrayList<>(getCaseIndexSelections(caze, caseQueryContext));
 		selections.addAll(
 			Arrays.asList(
@@ -293,7 +350,7 @@ public class CaseListCriteriaBuilder {
 				joins.getPersonAddress().get(Location.HOUSE_NUMBER),
 				joins.getPersonAddress().get(Location.ADDITIONAL_INFORMATION),
 				joins.getPersonAddress().get(Location.POSTAL_CODE),
-				caseQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_SUBQUERY),
+				phone.get(PersonContactDetail.CONTACT_INFORMATION),
 				joins.getReportingUser().get(User.UUID),
 				joins.getReportingUser().get(User.FIRST_NAME),
 				joins.getReportingUser().get(User.LAST_NAME),
@@ -314,7 +371,7 @@ public class CaseListCriteriaBuilder {
 		case CaseIndexDetailedDto.POSTAL_CODE:
 			return Collections.singletonList(joins.getPersonAddress().get(sortProperty.propertyName));
 		case CaseIndexDetailedDto.PHONE:
-			return Collections.singletonList(cb.literal(49));
+			return Collections.singletonList(joins.getPersonJoins().getPhone().get(PersonContactDetail.CONTACT_INFORMATION));
 		case CaseIndexDetailedDto.REPORTING_USER:
 			return Arrays.asList(joins.getReportingUser().get(User.FIRST_NAME), joins.getReportingUser().get(User.LAST_NAME));
 		case CaseIndexDetailedDto.SYMPTOM_ONSET_DATE:

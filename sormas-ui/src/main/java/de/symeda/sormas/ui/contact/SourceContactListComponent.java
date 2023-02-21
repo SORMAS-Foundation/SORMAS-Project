@@ -47,13 +47,13 @@ public class SourceContactListComponent extends VerticalLayout {
 	private final CaseReferenceDto caseReference;
 	private final AbstractDetailView<? extends ReferenceDto> view;
 
-	public SourceContactListComponent(CaseReferenceDto caseReference, AbstractDetailView<? extends ReferenceDto> view) {
+	public SourceContactListComponent(CaseReferenceDto caseReference, AbstractDetailView<? extends ReferenceDto> view, boolean isEditAllowed) {
 		this.caseReference = caseReference;
 		this.view = view;
-		createSourceContactListComponent(new SourceContactList(caseReference));
+		createSourceContactListComponent(new SourceContactList(caseReference, isEditAllowed), isEditAllowed);
 	}
 
-	private void createSourceContactListComponent(SourceContactList sourceContactList) {
+	private void createSourceContactListComponent(SourceContactList sourceContactList, boolean isEditAllowed) {
 		setWidth(100, Unit.PERCENTAGE);
 		setMargin(false);
 		setSpacing(false);
@@ -72,7 +72,7 @@ public class SourceContactListComponent extends VerticalLayout {
 		sourceContactsHeader.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(sourceContactsHeader);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE) && isEditAllowed) {
 			Button createButton = ButtonHelper.createIconButton(
 				Captions.contactNewContact,
 				VaadinIcons.PLUS_CIRCLE,

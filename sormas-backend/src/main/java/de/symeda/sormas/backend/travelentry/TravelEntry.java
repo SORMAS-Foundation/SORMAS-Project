@@ -8,6 +8,7 @@ import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
@@ -136,7 +137,7 @@ public class TravelEntry extends CoreAdo {
 		this.reportDate = reportDate;
 	}
 
-	@ManyToOne()
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(nullable = false)
 	public User getReportingUser() {
 		return reportingUser;
@@ -193,7 +194,7 @@ public class TravelEntry extends CoreAdo {
 		this.diseaseVariantDetails = diseaseVariantDetails;
 	}
 
-	@ManyToOne()
+	@ManyToOne(fetch = FetchType.LAZY)
 	public Region getResponsibleRegion() {
 		return responsibleRegion;
 	}
@@ -202,7 +203,7 @@ public class TravelEntry extends CoreAdo {
 		this.responsibleRegion = responsibleRegion;
 	}
 
-	@ManyToOne()
+	@ManyToOne(fetch = FetchType.LAZY)
 	public District getResponsibleDistrict() {
 		return responsibleDistrict;
 	}
@@ -211,7 +212,7 @@ public class TravelEntry extends CoreAdo {
 		this.responsibleDistrict = responsibleDistrict;
 	}
 
-	@ManyToOne()
+	@ManyToOne(fetch = FetchType.LAZY)
 	public Community getResponsibleCommunity() {
 		return responsibleCommunity;
 	}
@@ -220,7 +221,7 @@ public class TravelEntry extends CoreAdo {
 		this.responsibleCommunity = responsibleCommunity;
 	}
 
-	@ManyToOne()
+	@ManyToOne(fetch = FetchType.LAZY)
 	public Region getPointOfEntryRegion() {
 		return pointOfEntryRegion;
 	}
@@ -229,7 +230,7 @@ public class TravelEntry extends CoreAdo {
 		this.pointOfEntryRegion = pointOfEntryRegion;
 	}
 
-	@ManyToOne()
+	@ManyToOne(fetch = FetchType.LAZY)
 	public District getPointOfEntryDistrict() {
 		return pointOfEntryDistrict;
 	}
@@ -238,7 +239,7 @@ public class TravelEntry extends CoreAdo {
 		this.pointOfEntryDistrict = pointOfEntryDistrict;
 	}
 
-	@ManyToOne()
+	@ManyToOne(fetch = FetchType.LAZY)
 	public PointOfEntry getPointOfEntry() {
 		return pointOfEntry;
 	}

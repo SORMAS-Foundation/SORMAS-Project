@@ -37,8 +37,11 @@ public class CoreAdo extends DeletableAdo {
 	public static final String END_OF_PROCESSING_DATE = "endOfProcessingDate";
 	public static final String ARCHIVE_UNDONE_REASON = "archiveUndoneReason";
 
+	@NotExposedToApi
 	private boolean archived;
+	@NotExposedToApi
 	private Timestamp endOfProcessingDate;
+	@NotExposedToApi
 	private String archiveUndoneReason;
 
 	@Column(nullable = false)

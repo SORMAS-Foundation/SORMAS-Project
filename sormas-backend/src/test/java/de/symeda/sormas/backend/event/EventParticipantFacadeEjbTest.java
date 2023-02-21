@@ -24,21 +24,25 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.caze.VaccinationStatus;
@@ -56,17 +60,25 @@ import de.symeda.sormas.api.event.EventParticipantIndexDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
+import de.symeda.sormas.api.person.PersonContactDetailDto;
+import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
@@ -74,6 +86,18 @@ import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 
 public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
+
+	@Test
+	public void testValidateWithNullReportingUser() {
+		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = createUser(rdcf);
+		EventDto event = createEvent(user, rdcf);
+
+		PersonDto eventPerson = creator.createPerson("Event", "Organizer");
+		assertThrows(
+			ValidationRuntimeException.class,
+			() -> creator.createEventParticipant(event.toReference(), eventPerson, "event Director", null));
+	}
 
 	@Test
 	public void testGetExportListWithRelevantVaccinations() {
@@ -313,7 +337,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 		creator.createEventParticipant(event.toReference(), person, user.toReference());
 
 		boolean exist = getEventParticipantFacade().exists(person.getUuid(), event.getUuid());
-		Assert.assertTrue(exist);
+		assertTrue(exist);
 	}
 
 	@Test
@@ -327,7 +351,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 		getEventParticipantFacade().delete(eventParticipant.toReference().getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
 		boolean exist = getEventParticipantFacade().exists(person.getUuid(), event.getUuid());
-		Assert.assertFalse(exist);
+		assertFalse(exist);
 	}
 
 	@Test
@@ -400,6 +424,238 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(calendarDay10.getTime(), eventParticipantIndexDtos.get(0).getSampleDateTime());
 	}
 
+	@Test
+	public void testEventParticipantWithArchivedEvent() {
+		RDCF rdcf = new RDCF(creator.createRDCFEntities());
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		EventDto event = creator.createEvent(user.toReference());
+		PersonDto person = creator.createPerson();
+
+		EventParticipantDto eventParticipant1 = creator.createEventParticipant(event.toReference(), person, user.toReference());
+		EventParticipantDto eventParticipant2 = creator.createEventParticipant(event.toReference(), person, user.toReference());
+
+		FeatureConfigurationIndexDto editArchivedFeatureConfiguration =
+			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
+		getFeatureConfigurationFacade().saveFeatureConfiguration(editArchivedFeatureConfiguration, FeatureType.EDIT_ARCHIVED_ENTITIES);
+
+		getEventFacade().archive(event.getUuid(), null);
+		getEventParticipantFacade().dearchive(Arrays.asList(eventParticipant1.getUuid()), null);
+
+		EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
+		eventParticipantCriteria.setEvent(event.toReference());
+		eventParticipantCriteria.relevanceStatus(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED);
+
+		List<EventParticipantIndexDto> eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
+		assertEquals(2, eventParticipantIndexDtos.size());
+		List<String> eventParticipantUuids = eventParticipantIndexDtos.stream().map(ev -> ev.getUuid()).collect(Collectors.toList());
+		assertTrue(eventParticipantUuids.contains(eventParticipant1.getUuid()));
+		assertTrue(eventParticipantUuids.contains(eventParticipant2.getUuid()));
+
+		eventParticipantCriteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
+		eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
+		assertEquals(1, eventParticipantIndexDtos.size());
+		assertEquals(eventParticipant1.getUuid(), eventParticipantIndexDtos.get(0).getUuid());
+
+		eventParticipantCriteria.relevanceStatus(EntityRelevanceStatus.ARCHIVED);
+		eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
+		assertEquals(1, eventParticipantIndexDtos.size());
+		assertEquals(eventParticipant2.getUuid(), eventParticipantIndexDtos.get(0).getUuid());
+
+		editArchivedFeatureConfiguration.setEnabled(false);
+		getFeatureConfigurationFacade().saveFeatureConfiguration(editArchivedFeatureConfiguration, FeatureType.EDIT_ARCHIVED_ENTITIES);
+
+		eventParticipantCriteria.relevanceStatus(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED);
+		eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
+		assertEquals(2, eventParticipantIndexDtos.size());
+		eventParticipantUuids = eventParticipantIndexDtos.stream().map(ev -> ev.getUuid()).collect(Collectors.toList());
+		assertTrue(eventParticipantUuids.contains(eventParticipant1.getUuid()));
+		assertTrue(eventParticipantUuids.contains(eventParticipant2.getUuid()));
+
+		eventParticipantCriteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
+		eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
+		assertEquals(0, eventParticipantIndexDtos.size());
+
+		eventParticipantCriteria.relevanceStatus(EntityRelevanceStatus.ARCHIVED);
+		eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
+		assertEquals(2, eventParticipantIndexDtos.size());
+		eventParticipantUuids = eventParticipantIndexDtos.stream().map(ev -> ev.getUuid()).collect(Collectors.toList());
+		assertTrue(eventParticipantUuids.contains(eventParticipant1.getUuid()));
+		assertTrue(eventParticipantUuids.contains(eventParticipant2.getUuid()));
+	}
+
+	@Test
+	public void testEventParticipantIndexListSorting() {
+		RDCF rdcf = new RDCF(creator.createRDCFEntities());
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		EventDto event = creator.createEvent(user.toReference());
+		PersonDto person = creator.createPerson();
+
+		EventParticipantDto eventParticipant1 = creator.createEventParticipant(event.toReference(), person, user.toReference());
+		EventParticipantDto eventParticipant2 = creator.createEventParticipant(event.toReference(), person, user.toReference());
+
+		Calendar calendarDay1 = Calendar.getInstance();
+		calendarDay1.set(2022, 7, 1);
+
+		creator.createSample(
+			eventParticipant1.toReference(),
+			calendarDay1.getTime(),
+			new Date(),
+			user.toReference(),
+			SampleMaterial.BLOOD,
+			rdcf.facility,
+			s -> s.setPathogenTestResult(PathogenTestResultType.POSITIVE));
+
+		EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
+		eventParticipantCriteria.setEvent(event.toReference());
+		SortProperty sortProperty = new SortProperty(SampleIndexDto.SAMPLE_DATE_TIME, false);
+		List<EventParticipantIndexDto> eventParticipantIndexDtos =
+			getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, Arrays.asList(sortProperty));
+		assertEquals(2, eventParticipantIndexDtos.size());
+		assertEquals(eventParticipant1.getUuid(), eventParticipantIndexDtos.get(0).getUuid());
+	}
+
+	@Test
+	public void searchEventParticipantsByPersonPhone() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto personWithPhone = creator.createPerson("personWithPhone", "test");
+		PersonDto personWithoutPhone = creator.createPerson("personWithoutPhone", "test");
+
+		PersonContactDetailDto primaryPhone =
+			creator.createPersonContactDetail(personWithPhone.toReference(), true, PersonContactDetailType.PHONE, "111222333");
+		PersonContactDetailDto secondaryPhone =
+			creator.createPersonContactDetail(personWithoutPhone.toReference(), false, PersonContactDetailType.PHONE, "444555666");
+
+		personWithPhone.getPersonContactDetails().add(primaryPhone);
+		personWithPhone.getPersonContactDetails().add(secondaryPhone);
+		getPersonFacade().save(personWithPhone);
+
+		EventDto eventDto = creator.createEvent(user.toReference());
+		EventParticipantDto eventParticipantDto1 = creator.createEventParticipant(eventDto.toReference(), personWithPhone, user.toReference());
+		EventParticipantDto eventParticipantDto2 = creator.createEventParticipant(eventDto.toReference(), personWithoutPhone, user.toReference());
+
+		EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
+		eventParticipantCriteria.setEvent(eventDto.toReference());
+		List<EventParticipantIndexDto> eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
+		assertEquals(2, eventParticipantIndexDtos.size());
+		List<String> uuids = eventParticipantIndexDtos.stream().map(c -> c.getUuid()).collect(Collectors.toList());
+		assertTrue(uuids.contains(eventParticipantDto1.getUuid()));
+		assertTrue(uuids.contains(eventParticipantDto2.getUuid()));
+
+		eventParticipantCriteria.setFreeText("111222333");
+		eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
+		assertEquals(1, eventParticipantIndexDtos.size());
+		assertEquals(eventParticipantDto1.getUuid(), eventParticipantIndexDtos.get(0).getUuid());
+
+		eventParticipantCriteria.setFreeText("444555666");
+		eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
+		assertEquals(0, eventParticipantIndexDtos.size());
+	}
+
+	@Test
+	public void searchEventParticipantsByPersonEmail() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto personWithEmail = creator.createPerson("personWithEmail", "test");
+		PersonDto personWithoutEmail = creator.createPerson("personWithoutEmail", "test");
+
+		PersonContactDetailDto primaryEmail =
+			creator.createPersonContactDetail(personWithEmail.toReference(), true, PersonContactDetailType.EMAIL, "test1@email.com");
+		PersonContactDetailDto secondaryEmail =
+			creator.createPersonContactDetail(personWithoutEmail.toReference(), false, PersonContactDetailType.EMAIL, "test2@email.com");
+
+		personWithEmail.getPersonContactDetails().add(primaryEmail);
+		personWithEmail.getPersonContactDetails().add(secondaryEmail);
+		getPersonFacade().save(personWithEmail);
+
+		EventDto eventDto = creator.createEvent(user.toReference());
+		EventParticipantDto eventParticipantDto1 = creator.createEventParticipant(eventDto.toReference(), personWithEmail, user.toReference());
+		EventParticipantDto eventParticipantDto2 = creator.createEventParticipant(eventDto.toReference(), personWithoutEmail, user.toReference());
+
+		EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
+		eventParticipantCriteria.setEvent(eventDto.toReference());
+		List<EventParticipantIndexDto> eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
+		assertEquals(2, eventParticipantIndexDtos.size());
+		List<String> uuids = eventParticipantIndexDtos.stream().map(c -> c.getUuid()).collect(Collectors.toList());
+		assertTrue(uuids.contains(eventParticipantDto1.getUuid()));
+		assertTrue(uuids.contains(eventParticipantDto2.getUuid()));
+
+		eventParticipantCriteria.setFreeText("test1@email.com");
+		eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
+		assertEquals(1, eventParticipantIndexDtos.size());
+		assertEquals(eventParticipantDto1.getUuid(), eventParticipantIndexDtos.get(0).getUuid());
+
+		eventParticipantCriteria.setFreeText("test2@email.com");
+		eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
+		assertEquals(0, eventParticipantIndexDtos.size());
+	}
+
+	@Test
+	public void searchEventParticipantsByPersonOtherDetail() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto personWithOtherDetail = creator.createPerson("personWithOtherDetail", "test");
+		PersonDto personWithoutOtherDetail = creator.createPerson("personWithoutOtherDetail", "test");
+
+		PersonContactDetailDto primaryOtherDetail =
+			creator.createPersonContactDetail(personWithOtherDetail.toReference(), true, PersonContactDetailType.OTHER, "detail1");
+		PersonContactDetailDto secondaryOtherDetail =
+			creator.createPersonContactDetail(personWithoutOtherDetail.toReference(), false, PersonContactDetailType.OTHER, "detail2");
+
+		personWithOtherDetail.getPersonContactDetails().add(primaryOtherDetail);
+		personWithOtherDetail.getPersonContactDetails().add(secondaryOtherDetail);
+		getPersonFacade().save(personWithOtherDetail);
+
+		EventDto eventDto = creator.createEvent(user.toReference());
+		EventParticipantDto eventParticipantDto1 = creator.createEventParticipant(eventDto.toReference(), personWithOtherDetail, user.toReference());
+		EventParticipantDto eventParticipantDto2 =
+			creator.createEventParticipant(eventDto.toReference(), personWithoutOtherDetail, user.toReference());
+
+		EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
+		eventParticipantCriteria.setEvent(eventDto.toReference());
+		List<EventParticipantIndexDto> eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
+		assertEquals(2, eventParticipantIndexDtos.size());
+		List<String> uuids = eventParticipantIndexDtos.stream().map(c -> c.getUuid()).collect(Collectors.toList());
+		assertTrue(uuids.contains(eventParticipantDto1.getUuid()));
+		assertTrue(uuids.contains(eventParticipantDto2.getUuid()));
+
+		eventParticipantCriteria.setFreeText("detail1");
+		eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
+		assertEquals(1, eventParticipantIndexDtos.size());
+		assertEquals(eventParticipantDto1.getUuid(), eventParticipantIndexDtos.get(0).getUuid());
+
+		eventParticipantCriteria.setFreeText("detail2");
+		eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
+		assertEquals(0, eventParticipantIndexDtos.size());
+	}
+
+	@Test
+	public void testSaveEventParticipantWithEventArchiving() {
+		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = createUser(rdcf);
+		EventDto event = createEvent(user, rdcf);
+		// Validate that for a newly created Event Participant the archived status is kept from the Event
+		getEventFacade().archive(Collections.singletonList(event.getUuid()));
+		PersonDto eventPersonArchived = creator.createPerson("EventArchived", "OrganizerArchived");
+		EventParticipantDto archivedEventParticipantDto =
+			creator.createEventParticipant(event.toReference(), eventPersonArchived, "event Director", user.toReference());
+		assertTrue(getEventParticipantFacade().isArchived(archivedEventParticipantDto.getUuid()));
+
+		// Validate that for a newly created Event Participant the active status is kept from the Event
+		getEventFacade().dearchive(Collections.singletonList(event.getUuid()), "reason");
+		PersonDto eventPersonActive = creator.createPerson("EventActive", "OrganizerActive");
+		EventParticipantDto activeEventParticipantDto =
+			creator.createEventParticipant(event.toReference(), eventPersonActive, "event Director", user.toReference());
+		assertFalse(getEventParticipantFacade().isArchived(activeEventParticipantDto.getUuid()));
+
+		//Validate that the newly created Event Participant status is in sync with Event and with existing Event Participant
+		EventParticipantDto alreadyArchivedParticipantDto =
+			creator.createEventParticipant(event.toReference(), eventPersonArchived, "event Director", user.toReference());
+		assertFalse(getEventFacade().isArchived(event.getUuid()));
+		assertFalse(getEventParticipantFacade().isArchived(archivedEventParticipantDto.getUuid()));
+		assertFalse(getEventParticipantFacade().isArchived(alreadyArchivedParticipantDto.getUuid()));
+	}
+
 	private UserDto createUser(TestDataCreator.RDCF rdcf) {
 		return creator.createUser(
 			rdcf.region.getUuid(),
@@ -425,6 +681,6 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 			user.toReference(),
 			user.toReference(),
 			Disease.EVD,
-			rdcf.district);
+			rdcf);
 	}
 }

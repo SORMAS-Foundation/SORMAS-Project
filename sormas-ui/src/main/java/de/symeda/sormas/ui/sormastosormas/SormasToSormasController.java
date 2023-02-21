@@ -31,9 +31,12 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -41,6 +44,8 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.person.PersonCriteria;
+import de.symeda.sormas.api.sormastosormas.DuplicateResult;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.share.ShareRequestDetailsDto;
@@ -55,6 +60,7 @@ import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationEx
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -72,6 +78,7 @@ public class SormasToSormasController {
 	public void shareCaseFromDetailsPage(CaseDataDto caze) {
 		List<SormasToSormasShareInfoDto> currentShares = FacadeProvider.getSormasToSormasShareInfoFacade()
 			.getIndexList(new SormasToSormasShareInfoCriteria().caze(caze.toReference()), null, null);
+
 		shareToSormasFromDetailPage(
 			options -> FacadeProvider.getSormasToSormasCaseFacade().share(Collections.singletonList(caze.getUuid()), options),
 			SormasToSormasOptionsForm.forCase(caze, currentShares));
@@ -119,7 +126,7 @@ public class SormasToSormasController {
 			SormasToSormasOptionsForm.forEvent(event, currentShares));
 	}
 
-	public void shareLabMessage(ExternalMessageDto labMessage, Runnable callback) {
+	public void shareExternalMessage(ExternalMessageDto labMessage, Runnable callback) {
 		handleShareWithOptions(
 			options -> FacadeProvider.getSormasToSormasLabMessageFacade()
 				.sendExternalMessages(Collections.singletonList(labMessage.getUuid()), options),
@@ -154,10 +161,9 @@ public class SormasToSormasController {
 	public void acceptShareRequest(ShareRequestIndexDto request, Runnable callback) {
 		boolean hasErrors = false;
 
-		if (request.getDataType() == ShareRequestDataType.CONTACT) {
-			SormasToSormasShareRequestDto shareRequest =
-				FacadeProvider.getSormasToSormasShareRequestFacade().getShareRequestByUuid(request.getUuid());
+		SormasToSormasShareRequestDto shareRequest = FacadeProvider.getSormasToSormasShareRequestFacade().getShareRequestByUuid(request.getUuid());
 
+		if (request.getDataType() == ShareRequestDataType.CONTACT) {
 			List<SormasToSormasContactPreview> contacts = shareRequest.getContacts();
 			for (int i = 0, contactsSize = contacts.size(); i < contactsSize && !hasErrors; i++) {
 				SormasToSormasContactPreview c = contacts.get(i);
@@ -203,10 +209,122 @@ public class SormasToSormasController {
 		}
 
 		if (!hasErrors) {
-			handleSormasToSormasRequest(
-				() -> FacadeProvider.getSormasToSormasFacade().acceptShareRequest(request.getDataType(), request.getUuid()),
-				callback);
+			handleSormasToSormasRequest(() -> {
+				DuplicateResult duplicateResult =
+					FacadeProvider.getSormasToSormasFacade().acceptShareRequest(request.getDataType(), request.getUuid(), true);
+
+				switch (duplicateResult.getType()) {
+				case CASE:
+					confirmDuplicateFound(
+						request,
+						Strings.messageSormasToSormasSimilarCaseFound,
+						Captions.actionOkAndGoToMerge,
+						() -> ControllerProvider.getCaseController()
+							.navigateToMergeCasesView(
+								new CaseCriteria()
+									.caseUuidsForMerge(shareRequest.getCases().stream().map(EntityDto::getUuid).collect(Collectors.toSet()))),
+						callback);
+					break;
+				case CASE_CONVERTED:
+					confirmDuplicateFound(
+						request,
+						Strings.messageSormasToSormasSimilarConvertedCaseFound,
+						Captions.actionOkAndGoToMerge,
+						() -> ControllerProvider.getCaseController()
+							.navigateToMergeCasesView(
+								new CaseCriteria()
+									.caseUuidsForMerge(shareRequest.getCases().stream().map(EntityDto::getUuid).collect(Collectors.toSet()))),
+						callback);
+					break;
+				case CONTACT_TO_CASE:
+					confirmDuplicateFound(
+						request,
+						Strings.messageSormasToSormasSimilarContactToCaseFound,
+						Captions.actionOkAndGoToContactDirectory,
+						() -> ControllerProvider.getContactController().navigateTo(new ContactCriteria().uuids(duplicateResult.getUuids())),
+						callback);
+					break;
+				case CONTACT:
+					confirmDuplicateFound(
+						request,
+						Strings.messageSormasToSormasSimilarContactFound,
+						Captions.actionOkAndGoToMerge,
+						() -> ControllerProvider.getContactController()
+							.navigateToMergeContactsView(
+								new ContactCriteria()
+									.contactUuidsForMerge(shareRequest.getContacts().stream().map(EntityDto::getUuid).collect(Collectors.toSet()))),
+						callback);
+					break;
+				case CONTACT_CONVERTED:
+					confirmDuplicateFound(
+						request,
+						Strings.messageSormasToSormasSimilarConvertedContactFound,
+						Captions.actionOkAndGoToMerge,
+						() -> ControllerProvider.getContactController()
+							.navigateToMergeContactsView(
+								new ContactCriteria()
+									.contactUuidsForMerge(shareRequest.getContacts().stream().map(EntityDto::getUuid).collect(Collectors.toSet()))),
+						callback);
+					break;
+				case CASE_TO_CONTACT:
+					boolean isMultipleContacts = shareRequest.getContacts().size() > 1;
+					confirmDuplicateFound(
+						request,
+						Strings.messageSormasToSormasSimilarCaseToContactFound,
+						isMultipleContacts ? Captions.actionOkAndGoToContactDirectory : Captions.actionOkAndGoToContactDetails,
+						() -> {
+							if (isMultipleContacts) {
+								ControllerProvider.getContactController()
+									.navigateTo(
+										new ContactCriteria()
+											.uuids(shareRequest.getContacts().stream().map(EntityDto::getUuid).collect(Collectors.toSet())));
+							} else {
+								ControllerProvider.getContactController().navigateToData(shareRequest.getContacts().get(0).getUuid());
+							}
+						},
+						callback);
+					break;
+				case PERSON_ONLY:
+					confirmDuplicateFound(
+						request,
+						Strings.messageSormasToSormasSimilarPersonFound,
+						Captions.actionOkAndGoToPersonDirectory,
+						() -> ControllerProvider.getPersonController().navigateToPersons(new PersonCriteria().uuids(duplicateResult.getUuids())),
+						callback);
+					break;
+
+				default:
+					callback.run();
+				}
+			}, () -> {
+			});
 		}
+	}
+
+	private void confirmDuplicateFound(
+		ShareRequestIndexDto request,
+		String messageI18nProperty,
+		String thirdActionI18nProperty,
+		Runnable navigateToMergeView,
+		Runnable callback) {
+		VaadinUiUtil.showThreeOptionsPopup(
+			I18nProperties.getString(Strings.headingSormasToSormasDuplicateDetection),
+			new Label(I18nProperties.getString(messageI18nProperty), ContentMode.HTML),
+			I18nProperties.getCaption(Captions.actionOkay),
+			I18nProperties.getCaption(Captions.actionCancel),
+			I18nProperties.getCaption(thirdActionI18nProperty),
+			600,
+			(response) -> {
+				if (response != VaadinUiUtil.PopupOption.OPTION2) {
+					handleSormasToSormasRequest(() -> {
+						FacadeProvider.getSormasToSormasFacade().acceptShareRequest(request.getDataType(), request.getUuid(), false);
+
+						if (response == VaadinUiUtil.PopupOption.OPTION3) {
+							navigateToMergeView.run();
+						}
+					}, callback);
+				}
+			});
 	}
 
 	public void revokeShare(String shareInfoUuid, Runnable callback) {

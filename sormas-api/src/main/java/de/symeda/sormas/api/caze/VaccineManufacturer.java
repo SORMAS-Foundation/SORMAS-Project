@@ -39,6 +39,7 @@ public enum VaccineManufacturer {
 	@Diseases(value = {
 		Disease.CORONAVIRUS })
 	SANOFI_GSK,
+	VALNEVA,
 	UNKNOWN,
 	OTHER;
 

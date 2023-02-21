@@ -45,4 +45,7 @@ public class ConfigurationTabsPage {
       By.cssSelector("div#tab-configuration-linelisting");
   public static final By CONFIGURATION_DOCUMENT_TEMPLATES_TAB =
       By.cssSelector("div#tab-configuration-documentTemplates");
+  public static final By CONFIGURATION_DEVELOPER_TAB =
+      By.cssSelector("div#tab-configuration-devMode");
+  public static final By EXECUTE_AUTOMATIC_DELETION = By.id("actionExecuteAutomaticDeletion");
 }

@@ -1,13 +1,28 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.api.clinicalcourse;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.uuid.AbstractUuidDto;
 
-public class ClinicalVisitIndexDto implements Serializable {
+public class ClinicalVisitIndexDto extends AbstractUuidDto {
 
 	private static final long serialVersionUID = -7587908114350685830L;
 
@@ -21,7 +36,6 @@ public class ClinicalVisitIndexDto implements Serializable {
 	public static final String HEART_RATE = "heartRate";
 	public static final String SIGNS_AND_SYMPTOMS_COUNT = "signsAndSymptomsCount";
 
-	private String uuid;
 	private Date visitDateTime;
 	@SensitiveData
 	private String visitingPerson;
@@ -48,7 +62,7 @@ public class ClinicalVisitIndexDto implements Serializable {
 		Long symptomsId,
 		boolean isInJurisdiction) {
 
-		this.uuid = uuid;
+		super(uuid);
 		this.visitDateTime = visitDateTime;
 		this.visitingPerson = visitingPerson;
 		this.visitRemarks = visitRemarks;
@@ -57,14 +71,6 @@ public class ClinicalVisitIndexDto implements Serializable {
 		this.heartRate = heartRate != null ? SymptomsHelper.getHeartRateString(heartRate) : "";
 		this.symptomsId = symptomsId;
 		this.isInJurisdiction = isInJurisdiction;
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
 	}
 
 	public Date getVisitDateTime() {

@@ -18,16 +18,16 @@ package de.symeda.sormas.app.backend.contact;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.VaccinationStatus;
@@ -437,8 +437,8 @@ public class Contact extends PseudonymizableAdo {
 	}
 
 	@Override
-	public String toString() {
-		return super.toString() + " " + (getPerson() != null ? getPerson().toString() : "") + " (" + DataHelper.getShortUuid(getUuid()) + ")";
+	public String buildCaption() {
+		return super.buildCaption() + " " + (getPerson() != null ? getPerson().buildCaption() : "") + " (" + DataHelper.getShortUuid(getUuid()) + ")";
 	}
 
 	@Override

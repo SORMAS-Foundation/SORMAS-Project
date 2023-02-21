@@ -1,5 +1,8 @@
 package de.symeda.sormas.ui.utils;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -7,10 +10,7 @@ import java.util.Collections;
 import java.util.Date;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
 
 import com.vaadin.server.StreamResource;
 
@@ -33,7 +33,6 @@ import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator;
 
-@RunWith(MockitoJUnitRunner.class)
 public class DownloadUtilTest extends AbstractBeanTest {
 
 	@Test
@@ -92,13 +91,13 @@ public class DownloadUtilTest extends AbstractBeanTest {
 			DownloadUtil.createVisitsExportStreamResource(new ContactCriteria(), Collections::emptySet, ExportEntityName.CONTACT_FOLLOW_UPS);
 
 		String expectedFileName = DownloadUtil.createFileNameWithCurrentDate(ExportEntityName.CONTACT_FOLLOW_UPS, ".csv");
-		Assert.assertNotNull(contactVisitsExport);
-		Assert.assertEquals(expectedFileName, contactVisitsExport.getStream().getFileName());
+		assertNotNull(contactVisitsExport);
+		assertEquals(expectedFileName, contactVisitsExport.getStream().getFileName());
 		InputStream stream = contactVisitsExport.getStream().getStream();
 
 		final String shortDate = DateFormatHelper.formatDate(new Date());
 
-		Assert.assertEquals(
+		assertEquals(
 			"\"Contact ID\",\"First name\",\"Last name\",\"Date and time of visit\",\"Person available and "
 				+ "cooperative?\",\"Symptoms\",\"Date and time of visit\",\"Person available and cooperative?\","
 				+ "\"Symptoms\",\"Date and time of visit\",\"Person available and cooperative?\",\"Symptoms\"\n"

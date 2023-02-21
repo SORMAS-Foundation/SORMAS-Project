@@ -18,12 +18,8 @@
 package de.symeda.sormas.ui.task;
 
 import java.util.Date;
-import java.util.stream.Collectors;
 
-import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.DataProviderListener;
-import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 import com.vaadin.ui.renderers.TextRenderer;
@@ -38,7 +34,6 @@ import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -95,7 +90,7 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 		});
 
 		setColumns(
-			EDIT_BTN_ID,
+			ACTION_BTN_ID,
 			TaskIndexDto.CONTEXT_REFERENCE,
 			TaskIndexDto.TASK_CONTEXT,
 			TaskIndexDto.TASK_TYPE,
@@ -106,6 +101,7 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 			TaskIndexDto.DUE_DATE,
 			TaskIndexDto.ASSIGNEE_USER,
 			TaskIndexDto.ASSIGNEE_REPLY,
+			TaskIndexDto.ASSIGNED_BY_USER,
 			TaskIndexDto.CREATOR_USER,
 			TaskIndexDto.CREATOR_COMMENT,
 			TaskIndexDto.TASK_STATUS);
@@ -167,7 +163,7 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 			return UiFieldAccessCheckers.getDefault(!isInJurisdiction).hasRight();
 		}));
 
-		addItemClickListener(new ShowDetailsListener<>(TaskIndexDto.CONTEXT_REFERENCE, false, e -> navigateToData(e)));
+		addItemClickListener(new ShowDetailsListener<>(TaskIndexDto.CONTEXT_REFERENCE, false, this::navigateToData));
 	}
 
 	public void reload() {
@@ -205,31 +201,11 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 	}
 
 	public void setLazyDataProvider() {
-		DataProvider<TaskIndexDto, TaskCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-			query -> FacadeProvider.getTaskFacade()
-				.getIndexList(
-					query.getFilter().orElse(null),
-					query.getOffset(),
-					query.getLimit(),
-					query.getSortOrders()
-						.stream()
-						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-						.collect(Collectors.toList()))
-				.stream(),
-			query -> (int) FacadeProvider.getTaskFacade().count(query.getFilter().orElse(null)));
-		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.NONE);
+		setLazyDataProvider(FacadeProvider.getTaskFacade()::getIndexList, FacadeProvider.getTaskFacade()::count);
 	}
 
 	public void setEagerDataProvider() {
-		ListDataProvider<TaskIndexDto> dataProvider =
-			DataProvider.fromStream(FacadeProvider.getTaskFacade().getIndexList(getCriteria(), null, null, null).stream());
-		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.MULTI);
-
-		if (dataProviderListener != null) {
-			dataProvider.addDataProviderListener(dataProviderListener);
-		}
+		setEagerDataProvider(FacadeProvider.getTaskFacade()::getIndexList);
 	}
 
 	public void setDataProviderListener(DataProviderListener<TaskIndexDto> dataProviderListener) {

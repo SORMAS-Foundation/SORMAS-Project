@@ -8,6 +8,7 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Window;
+import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.Table;
 
 import de.symeda.sormas.api.i18n.Captions;
@@ -36,10 +37,15 @@ public class PersonContactDetailsField extends AbstractTableField<PersonContactD
 	private FieldVisibilityCheckers fieldVisibilityCheckers;
 	private PersonDto thisPerson;
 	private boolean isPseudonymized;
+	private boolean isEditAllowed;
 
-	public PersonContactDetailsField(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
-		super(fieldAccessCheckers);
+	public PersonContactDetailsField(
+		FieldVisibilityCheckers fieldVisibilityCheckers,
+		UiFieldAccessCheckers fieldAccessCheckers,
+		boolean isEditAllowed) {
+		super(fieldAccessCheckers, isEditAllowed);
 		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
+		this.isEditAllowed = isEditAllowed;
 	}
 
 	@Override
@@ -58,67 +64,72 @@ public class PersonContactDetailsField extends AbstractTableField<PersonContactD
 		editForm.setValue(entry);
 
 		final CommitDiscardWrapperComponent<PersonContactDetailEditForm> editView =
-			new CommitDiscardWrapperComponent<>(editForm, true, editForm.getFieldGroup());
+			new CommitDiscardWrapperComponent<>(editForm, isEditAllowed, editForm.getFieldGroup());
 		editView.getCommitButton().setCaption(I18nProperties.getString(Strings.done));
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.entityPersonContactDetail));
 
-		editView.addCommitListener(() -> {
-			if (!editForm.getFieldGroup().isModified()) {
+		if (isEditAllowed) {
+			editView.addCommitListener(() -> {
+				if (!editForm.getFieldGroup().isModified()) {
 
-				final Predicate<PersonContactDetailDto> sameTypePrimaryPredicate =
-					pcd -> pcd.getPersonContactDetailType() == entry.getPersonContactDetailType()
-						&& !entry.getUuid().equals(pcd.getUuid())
-						&& pcd.isPrimaryContact();
+					final Predicate<PersonContactDetailDto> sameTypePrimaryPredicate =
+						pcd -> pcd.getPersonContactDetailType() == entry.getPersonContactDetailType()
+							&& !entry.getUuid().equals(pcd.getUuid())
+							&& pcd.isPrimaryContact();
 
-				if (entry.isPrimaryContact()) {
-					Optional<PersonContactDetailDto> existingPrimaryContactDetails =
-						getContainer().getItemIds().stream().filter(sameTypePrimaryPredicate).findFirst();
+					if (entry.isPrimaryContact()) {
+						Optional<PersonContactDetailDto> existingPrimaryContactDetails =
+							getContainer().getItemIds().stream().filter(sameTypePrimaryPredicate).findFirst();
 
-					if (existingPrimaryContactDetails.isPresent()) {
-						VaadinUiUtil.showConfirmationPopup(
-							I18nProperties.getString(Strings.headingUpdatePersonContactDetails),
-							new Label(I18nProperties.getString(Strings.messagePersonContactDetailsPrimaryDuplicate)),
-							questionWindow -> {
-								ConfirmationComponent confirmationComponent = new ConfirmationComponent(false) {
+						if (existingPrimaryContactDetails.isPresent()) {
+							VaadinUiUtil.showConfirmationPopup(
+								I18nProperties.getString(Strings.headingUpdatePersonContactDetails),
+								new Label(I18nProperties.getString(Strings.messagePersonContactDetailsPrimaryDuplicate)),
+								questionWindow -> {
+									ConfirmationComponent confirmationComponent = new ConfirmationComponent(false) {
 
-									private static final long serialVersionUID = 1L;
+										private static final long serialVersionUID = 1L;
 
-									@Override
-									protected void onConfirm() {
-										existingPrimaryContactDetails.get().setPrimaryContact(false);
-										commitCallback.accept(editForm.getValue());
-										questionWindow.close();
-									}
+										@Override
+										protected void onConfirm() {
+											existingPrimaryContactDetails.get().setPrimaryContact(false);
+											commitCallback.accept(editForm.getValue());
+											questionWindow.close();
+										}
 
-									@Override
-									protected void onCancel() {
-										entry.setPrimaryContact(false);
-										commitCallback.accept(editForm.getValue());
-										questionWindow.close();
-									}
-								};
+										@Override
+										protected void onCancel() {
+											entry.setPrimaryContact(false);
+											commitCallback.accept(editForm.getValue());
+											questionWindow.close();
+										}
+									};
 
-								confirmationComponent.getConfirmButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
-								confirmationComponent.getCancelButton().setCaption(I18nProperties.getCaption(Captions.actionCancel));
+									confirmationComponent.getConfirmButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
+									confirmationComponent.getCancelButton().setCaption(I18nProperties.getCaption(Captions.actionCancel));
 
-								return confirmationComponent;
-							},
-							null);
+									return confirmationComponent;
+								},
+								null);
+						} else {
+							commitCallback.accept(editForm.getValue());
+						}
 					} else {
 						commitCallback.accept(editForm.getValue());
 					}
-				} else {
-					commitCallback.accept(editForm.getValue());
 				}
-			}
-		});
+			});
 
-		if (!isEmpty(entry)) {
-			editView.addDeleteListener(() -> {
-				popupWindow.close();
-				PersonContactDetailsField.this.removeEntry(entry);
-			}, I18nProperties.getCaption(PersonContactDetailDto.I18N_PREFIX));
+			if (!isEmpty(entry)) {
+				editView.addDeleteListener(() -> {
+					popupWindow.close();
+					PersonContactDetailsField.this.removeEntry(entry);
+				}, I18nProperties.getCaption(PersonContactDetailDto.I18N_PREFIX));
+			}
+		} else {
+			editView.getCommitButton().setVisible(false);
+			editView.getDiscardButton().setVisible(false);
 		}
 	}
 
@@ -141,18 +152,18 @@ public class PersonContactDetailsField extends AbstractTableField<PersonContactD
 		});
 
 		table.setVisibleColumns(
-			EDIT_COLUMN_ID,
+			ACTION_COLUMN_ID,
 			COLUMN_PRIMARY,
 			COLUMN_OWNER,
 			COLUMN_OWNER_NAME,
 			PersonContactDetailDto.PERSON_CONTACT_DETAILS_TYPE,
 			PersonContactDetailDto.CONTACT_INFORMATION);
+		table.setColumnExpandRatio(ACTION_COLUMN_ID, 0);
 
 		table.setCellStyleGenerator(
 			FieldAccessCellStyleGenerator
 				.withFieldAccessCheckers(PersonContactDetailDto.class, UiFieldAccessCheckers.forSensitiveData(isPseudonymized)));
 
-		table.setColumnExpandRatio(EDIT_COLUMN_ID, 0);
 		table.setColumnExpandRatio(COLUMN_PRIMARY, 0);
 		table.setColumnExpandRatio(COLUMN_OWNER, 0);
 		table.setColumnExpandRatio(COLUMN_OWNER_NAME, 0);
@@ -160,7 +171,7 @@ public class PersonContactDetailsField extends AbstractTableField<PersonContactD
 		table.setColumnExpandRatio(PersonContactDetailDto.CONTACT_INFORMATION, 0);
 
 		for (Object columnId : table.getVisibleColumns()) {
-			if (columnId.equals(EDIT_COLUMN_ID)) {
+			if (columnId.equals(ACTION_COLUMN_ID)) {
 				table.setColumnHeader(columnId, "&nbsp");
 			} else {
 				table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(PersonContactDetailDto.I18N_PREFIX, (String) columnId));
@@ -191,5 +202,11 @@ public class PersonContactDetailsField extends AbstractTableField<PersonContactD
 
 	public void setThisPerson(PersonDto thisPerson) {
 		this.thisPerson = thisPerson;
+	}
+
+	@Override
+	public void setPropertyDataSource(Property newDataSource) {
+		super.setPropertyDataSource(newDataSource);
+		getAddButton().setVisible(isEditAllowed);
 	}
 }

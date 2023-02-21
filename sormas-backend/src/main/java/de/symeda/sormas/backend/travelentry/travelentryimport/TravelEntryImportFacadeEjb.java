@@ -344,7 +344,7 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 				person.setEmailAddress(entry);
 				return;
 			} else if (DATE_OF_ARRIVAL.equalsIgnoreCase(propertyCaption)) {
-				travelEntry.setDateOfArrival(DateHelper.parseDateWithException(entry, I18nProperties.getUserLanguage().getDateFormat()));
+				travelEntry.setDateOfArrival(DateHelper.parseDateWithException(entry, I18nProperties.getUserLanguage()));
 				return;
 			}
 

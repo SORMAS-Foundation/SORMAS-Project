@@ -18,12 +18,12 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -38,8 +38,8 @@ import java.util.stream.Collectors;
 
 import javax.validation.ValidationException;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -73,7 +73,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 	@Mock
 	private UserRoleFacadeEjb.UserRoleFacadeEjbLocal userRoleFacadeEjb;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
 	}
@@ -311,18 +311,9 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 
 		RDCF rdcf = creator.createRDCF();
 		creator.createUser(rdcf, "Hans", "Peter", creator.getUserRoleReference(SURVEILLANCE_OFFICER));
-		assertThrows(
-			"User name is not unique!",
-			ValidationException.class,
-			() -> creator.createUser(rdcf, "Hans", "Peter", creator.getUserRoleReference(SURVEILLANCE_OFFICER)));
-		assertThrows(
-			"User name is not unique!",
-			ValidationException.class,
-			() -> creator.createUser(rdcf, "hans", "peter", creator.getUserRoleReference(SURVEILLANCE_OFFICER)));
-		assertThrows(
-			"User name is not unique!",
-			ValidationException.class,
-			() -> creator.createUser(rdcf, "HANS", "PETER", creator.getUserRoleReference(SURVEILLANCE_OFFICER)));
+		assertThrows(ValidationException.class, () -> creator.createUser(rdcf, "Hans", "Peter", creator.getUserRoleReference(SURVEILLANCE_OFFICER)));
+		assertThrows(ValidationException.class, () -> creator.createUser(rdcf, "hans", "peter", creator.getUserRoleReference(SURVEILLANCE_OFFICER)));
+		assertThrows(ValidationException.class, () -> creator.createUser(rdcf, "HANS", "PETER", creator.getUserRoleReference(SURVEILLANCE_OFFICER)));
 	}
 
 	@Test
@@ -344,19 +335,21 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetUserRefsByDistrictsForResponsibleSurveillanceOfficer(){
+	public void testGetUserRefsByDistrictsForResponsibleSurveillanceOfficer() {
 		RDCF rdcfDefault = creator.createRDCF();
 		RDCF rdcfOther = creator.createRDCF("otherRegion", "oderDistrict", "otherCommunity", "otherFacility");
 
-		UserDto surveilanceOfficerDefault = creator.createUser(rdcfDefault, "Surveillance", "Officer", creator.getUserRoleReference(SURVEILLANCE_OFFICER));
-		UserDto surveilanceSupervisorDefault = creator.createUser(rdcfDefault, "Surveillance", "Supervisor", creator.getUserRoleReference(SURVEILLANCE_SUPERVISOR));
+		UserDto surveilanceOfficerDefault =
+			creator.createUser(rdcfDefault, "Surveillance", "Officer", creator.getUserRoleReference(SURVEILLANCE_OFFICER));
+		UserDto surveilanceSupervisorDefault =
+			creator.createUser(rdcfDefault, "Surveillance", "Supervisor", creator.getUserRoleReference(SURVEILLANCE_SUPERVISOR));
 		UserDto adminSupervisorDefault = creator.createUser(rdcfDefault, "Admin", "Supervisor", creator.getUserRoleReference(ADMIN_SUPERVISOR));
 		UserDto adminSupervisorOther = creator.createUser(rdcfOther, "Admin", "Supervisor Other", creator.getUserRoleReference(ADMIN_SUPERVISOR));
 
 		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUserRefsByDistricts(Arrays.asList(rdcfDefault.district), Disease.CORONAVIRUS);
 		assertNotNull(userReferenceDtos);
 		assertEquals(3, userReferenceDtos.size());
-		List<String> userReferenceUUIDs = userReferenceDtos.stream().map(u->u.getUuid()).collect(Collectors.toList());
+		List<String> userReferenceUUIDs = userReferenceDtos.stream().map(u -> u.getUuid()).collect(Collectors.toList());
 		assertTrue(userReferenceUUIDs.contains(surveilanceOfficerDefault.getUuid()));
 		assertTrue(userReferenceUUIDs.contains(surveilanceSupervisorDefault.getUuid()));
 		assertTrue(userReferenceUUIDs.contains(adminSupervisorDefault.getUuid()));

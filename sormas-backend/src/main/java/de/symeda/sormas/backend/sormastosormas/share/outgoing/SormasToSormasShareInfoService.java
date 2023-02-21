@@ -1,19 +1,16 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.backend.sormastosormas.share.outgoing;
@@ -40,8 +37,9 @@ import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.Event;
@@ -50,10 +48,12 @@ import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless
 @LocalBean
-public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<SormasToSormasShareInfo> {
+public class SormasToSormasShareInfoService extends AdoServiceWithUserFilterAndJurisdiction<SormasToSormasShareInfo> {
 
 	@EJB
 	private ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
@@ -113,6 +113,15 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 				cb.equal(
 					from.join(SormasToSormasShareInfo.IMMUNIZATION, JoinType.LEFT).get(Immunization.UUID),
 					criteria.getImmunization().getUuid()));
+		}
+
+		if (criteria.getSurveillanceReport() != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.equal(
+					from.join(SormasToSormasShareInfo.SURVEILLANCE_REPORT, JoinType.LEFT).get(SurveillanceReport.UUID),
+					criteria.getSurveillanceReport().getUuid()));
 		}
 
 		return filter;
@@ -193,6 +202,10 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 		return getByOrganization(SormasToSormasShareInfo.IMMUNIZATION, immunizationUuid, organizationId);
 	}
 
+	public SormasToSormasShareInfo getBySurveillanceReportAndOrganization(String surveillanceUuid, String organizationId) {
+		return getByOrganization(SormasToSormasShareInfo.SURVEILLANCE_REPORT, surveillanceUuid, organizationId);
+	}
+
 	public SormasToSormasShareInfo getByOrganization(String associatedObjectField, String associatedObjectUuid, String organizationId) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SormasToSormasShareInfo> cq = cb.createQuery(SormasToSormasShareInfo.class);
@@ -217,6 +230,19 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 		TypedQuery<SormasToSormasShareInfo> q = em.createQuery(cq);
 
 		return q.getResultList();
+	}
+
+	public boolean hasPendingRequest(String associatedObjectField, List<String> associatedObjectUuids) {
+
+		return IterableHelper.anyBatch(
+			associatedObjectUuids,
+			ModelConstants.PARAMETER_LIMIT,
+			(batch) -> exists(
+				((cb, root, cq) -> cb.and(
+					root.join(associatedObjectField, JoinType.LEFT).get(AbstractDomainObject.UUID).in(batch),
+					cb.equal(
+						root.join(SormasToSormasShareInfo.REQUESTS, JoinType.LEFT).get(ShareRequestInfo.REQUEST_STATUS),
+						ShareRequestStatus.PENDING)))));
 	}
 
 	public List<String> getCaseUuidsWithPendingOwnershipHandOver(List<Case> cases) {
@@ -261,12 +287,12 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled() && isOwnershipHandedOver) {
 			List<Case> sharedCases = cases.stream().filter(c -> !c.getExternalShares().isEmpty()).collect(Collectors.toList());
 			if (sharedCases.size() > 0) {
-				externalSurveillanceToolGatewayFacade.deleteCases(sharedCases.stream().map(caseFacade::toDto).collect(Collectors.toList()));
+				externalSurveillanceToolGatewayFacade.deleteCases(caseFacade.toDtos(sharedCases.stream()));
 			}
 
 			List<Event> sharedEvents = events.stream().filter(e -> !e.getExternalShares().isEmpty()).collect(Collectors.toList());
 			if (sharedEvents.size() > 0) {
-				externalSurveillanceToolGatewayFacade.deleteEvents(sharedEvents.stream().map(eventFacade::toDto).collect(Collectors.toList()));
+				externalSurveillanceToolGatewayFacade.deleteEvents(eventFacade.toDtos(sharedEvents.stream()));
 			}
 		}
 	}

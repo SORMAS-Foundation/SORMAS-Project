@@ -73,6 +73,7 @@ public interface Validations {
 	String externalMessageFetchError = "externalMessageFetchError";
 	String externalMessageInitError = "externalMessageInitError";
 	String externalMessagePdfConversionError = "externalMessagePdfConversionError";
+	String externalMessageRefersToMultipleEntities = "externalMessageRefersToMultipleEntities";
 	String feverTemperatureAboveThreshold = "feverTemperatureAboveThreshold";
 	String feverTemperatureBelowThreshold = "feverTemperatureBelowThreshold";
 	String fileTooBig = "fileTooBig";
@@ -126,7 +127,11 @@ public interface Validations {
 	String importWrongDataTypeError = "importWrongDataTypeError";
 	String infrastructureDataLocked = "infrastructureDataLocked";
 	String investigationStatusUnclassifiedCase = "investigationStatusUnclassifiedCase";
-	String missingRequiredUserRights = "missingRequiredUserRights";
+	String jurisdictionChangeUserAssignment = "jurisdictionChangeUserAssignment";
+	String missingRequiredUserRightsBaseText = "missingRequiredUserRightsBaseText";
+	String missingRequiredUserRightsLargeDependency = "missingRequiredUserRightsLargeDependency";
+	String missingRequiredUserRightsNoDependency = "missingRequiredUserRightsNoDependency";
+	String missingRequiredUserRightsSmallDependency = "missingRequiredUserRightsSmallDependency";
 	String nameOrAnyOtherFieldShouldBeFilled = "nameOrAnyOtherFieldShouldBeFilled";
 	String noAddressCommunityInAddressDistrict = "noAddressCommunityInAddressDistrict";
 	String noAddressDistrictInAddressRegion = "noAddressDistrictInAddressRegion";
@@ -177,11 +182,14 @@ public interface Validations {
 	String sormasToSormasAcceptContactHasNoCase = "sormasToSormasAcceptContactHasNoCase";
 	String sormasToSormasAcceptContactWithoutCaseShared = "sormasToSormasAcceptContactWithoutCaseShared";
 	String sormasToSormasCaseExists = "sormasToSormasCaseExists";
+	String sormasToSormasCaseSampleHasAssociatedContact = "sormasToSormasCaseSampleHasAssociatedContact";
+	String sormasToSormasCommentMissing = "sormasToSormasCommentMissing";
 	String sormasToSormasCommunity = "sormasToSormasCommunity";
 	String sormasToSormasContactCaseNotExists = "sormasToSormasContactCaseNotExists";
 	String sormasToSormasContactCaseNotShared = "sormasToSormasContactCaseNotShared";
 	String sormasToSormasContactExists = "sormasToSormasContactExists";
 	String sormasToSormasContactHasNoCase = "sormasToSormasContactHasNoCase";
+	String sormasToSormasContactSampleHasAssociatedCase = "sormasToSormasContactSampleHasAssociatedCase";
 	String sormasToSormasContinent = "sormasToSormasContinent";
 	String sormasToSormasCountry = "sormasToSormasCountry";
 	String sormasToSormasDistrict = "sormasToSormasDistrict";
@@ -207,6 +215,7 @@ public interface Validations {
 	String sormasToSormasSenderNameMissing = "sormasToSormasSenderNameMissing";
 	String sormasToSormasShareInfoMissing = "sormasToSormasShareInfoMissing";
 	String sormasToSormasSubcontinent = "sormasToSormasSubcontinent";
+	String sormasToSormasSurveillanceReportExists = "sormasToSormasSurveillanceReportExists";
 	String specifyCaption = "specifyCaption";
 	String specifyEpiWeek = "specifyEpiWeek";
 	String specifyFirstName = "specifyFirstName";
@@ -230,7 +239,6 @@ public interface Validations {
 	String validDisease = "validDisease";
 	String validDistrict = "validDistrict";
 	String validEmailAddress = "validEmailAddress";
-	String validEventInvestigationStatus = "validEventInvestigationStatus";
 	String validEventStatus = "validEventStatus";
 	String validEventTitle = "validEventTitle";
 	String validFacility = "validFacility";

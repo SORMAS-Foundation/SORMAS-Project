@@ -25,6 +25,7 @@ import java.util.Map;
 import javax.ejb.Remote;
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -76,7 +77,13 @@ public interface TaskFacade {
 
 	void updateArchived(List<String> taskUuids, boolean archived);
 
+	void updateArchived(String taskUuid, boolean archived);
+
+	boolean isArchived(String taskUuid);
+
 	List<String> getArchivedUuidsSince(Date since);
 
 	List<String> getObsoleteUuidsSince(Date since);
+
+	EditPermissionType getEditPermissionType(String uuid);
 }

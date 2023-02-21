@@ -3,7 +3,7 @@ Feature: Keycloak tests
 
   @tmsLink=SORQA-458 @env_keycloak
   Scenario:SORMAS - Keycloak Synchronisation (manual sync)
-    Given I log in as Admin User in Keycloak enabled environment
+    Given I log in as a Admin User
     Then I click on the Users from navbar
     Then I click on Sync Users button
     And I click on Sync button from Sync Users popup
@@ -18,7 +18,7 @@ Feature: Keycloak tests
 
   @tmsLink=SORQA-459 @env_keycloak
   Scenario:SORMAS - Keycloak Synchronisation (automatic sync)
-    Given I log in as Admin User in Keycloak enabled environment
+    Given I log in as a Admin User
     Then I click on the Users from navbar
     And I count the number of users displayed in User Directory
     Given I navigate to Keycloak Administrator Console Login page

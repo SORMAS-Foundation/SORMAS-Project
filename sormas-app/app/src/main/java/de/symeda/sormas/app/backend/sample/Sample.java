@@ -18,6 +18,12 @@ package de.symeda.sormas.app.backend.sample;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -27,12 +33,6 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Transient;
-
-import org.apache.commons.lang3.StringUtils;
-
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.sample.AdditionalTestType;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -494,8 +494,8 @@ public class Sample extends PseudonymizableAdo {
 	}
 
 	@Override
-	public String toString() {
-		return super.toString() + " " + DateFormatHelper.formatLocalDate(getSampleDateTime());
+	public String buildCaption() {
+		return super.buildCaption() + " " + DateFormatHelper.formatLocalDate(getSampleDateTime());
 	}
 
 	public Double getReportLat() {

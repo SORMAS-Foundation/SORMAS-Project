@@ -36,7 +36,7 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.report.WeeklyReportCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.EpiWeek;
-import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
@@ -49,7 +49,7 @@ import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
-public class WeeklyReportService extends AdoServiceWithUserFilter<WeeklyReport> {
+public class WeeklyReportService extends AdoServiceWithUserFilterAndJurisdiction<WeeklyReport> {
 
 	@EJB
 	private RegionService regionService;

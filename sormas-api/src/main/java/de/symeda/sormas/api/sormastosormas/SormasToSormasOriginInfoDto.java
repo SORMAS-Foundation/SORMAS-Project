@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.EntityDto;
@@ -38,6 +39,10 @@ public class SormasToSormasOriginInfoDto extends EntityDto {
 	private boolean withSamples;
 	private boolean withEventParticipants;
 	private boolean withImmunizations;
+	private boolean withSurveillanceReports;
+	private boolean pseudonymizedData;
+
+	@NotEmpty(message = Validations.requiredField)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String comment;
 
@@ -116,11 +121,27 @@ public class SormasToSormasOriginInfoDto extends EntityDto {
 		this.withImmunizations = withImmunizations;
 	}
 
+	public boolean isWithSurveillanceReports() {
+		return withSurveillanceReports;
+	}
+
+	public void setWithSurveillanceReports(boolean withSurveillanceReports) {
+		this.withSurveillanceReports = withSurveillanceReports;
+	}
+
 	public String getComment() {
 		return comment;
 	}
 
 	public void setComment(String comment) {
 		this.comment = comment;
+	}
+
+	public boolean isPseudonymizedData() {
+		return pseudonymizedData;
+	}
+
+	public void setPseudonymizedData(boolean pseudonymizedData) {
+		this.pseudonymizedData = pseudonymizedData;
 	}
 }

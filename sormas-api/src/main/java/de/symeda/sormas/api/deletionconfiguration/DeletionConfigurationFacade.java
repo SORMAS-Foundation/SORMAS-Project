@@ -4,4 +4,7 @@ import javax.ejb.Remote;
 
 @Remote
 public interface DeletionConfigurationFacade {
+
+	void startAutomaticDeletion();
+
 }

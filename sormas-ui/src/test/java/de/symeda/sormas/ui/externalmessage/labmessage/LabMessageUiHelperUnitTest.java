@@ -17,12 +17,11 @@ package de.symeda.sormas.ui.externalmessage.labmessage;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.when;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -35,7 +34,6 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.ui.samples.SampleCreateForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 
-@RunWith(MockitoJUnitRunner.class)
 public class LabMessageUiHelperUnitTest {
 
 	@Test
@@ -47,6 +45,7 @@ public class LabMessageUiHelperUnitTest {
 		CaseReferenceDto caze = new CaseReferenceDto();
 		SampleDto sample = SampleDto.build(user, caze);
 
+		// Test for last sample
 		SampleCreateForm createForm = new SampleCreateForm(Disease.CORONAVIRUS);
 		when(createForm.getFieldGroup()).thenReturn(new BeanFieldGroup(SampleDto.class));
 
@@ -54,7 +53,7 @@ public class LabMessageUiHelperUnitTest {
 			new CommitDiscardWrapperComponent<>(createForm, true, createForm.getFieldGroup());
 		when(sampleComponent.getWrappedComponent().getValue()).thenReturn(sample);
 
-		LabMessageUiHelper.establishFinalCommitButtons(sampleComponent);
+		LabMessageUiHelper.establishCommitButtons(sampleComponent, true);
 
 		HorizontalLayout buttonsPanel = sampleComponent.getButtonsPanel();
 		Button saveAndOpenEntryButton = (Button) buttonsPanel.getComponent(buttonsPanel.getComponentCount() - 2);
@@ -66,6 +65,20 @@ public class LabMessageUiHelperUnitTest {
 		assertThat(
 			saveAndOpenEntryButton.getListeners(Button.ClickEvent.class).size(),
 			equalTo(sampleComponent.getCommitButton().getListeners(Button.ClickEvent.class).size()));
+
+		// Test for non-last sample
+		createForm = new SampleCreateForm(Disease.CORONAVIRUS);
+		when(createForm.getFieldGroup()).thenReturn(new BeanFieldGroup(SampleDto.class));
+
+		sampleComponent = new CommitDiscardWrapperComponent<>(createForm, true, createForm.getFieldGroup());
+		when(sampleComponent.getWrappedComponent().getValue()).thenReturn(sample);
+
+		LabMessageUiHelper.establishCommitButtons(sampleComponent, false);
+		buttonsPanel = sampleComponent.getButtonsPanel();
+
+		for (int i = 0; i < buttonsPanel.getComponentCount(); i++) {
+			assertThat(buttonsPanel.getComponent(i).getId(), not(equalTo("saveAndOpenEntryButton")));
+		}
 	}
 
 }

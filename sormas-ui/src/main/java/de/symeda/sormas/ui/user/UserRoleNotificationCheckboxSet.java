@@ -233,6 +233,7 @@ public class UserRoleNotificationCheckboxSet extends CustomField<UserRoleDto.Not
 
 		public NotificationTypeCheckboxes(NotificationType type) {
 			Label label = new Label(type.toString());
+			label.setDescription(type.getDescription());
 			smsCb = createCheckbox(Captions.userRoleNotificationTypeSms, type, UserRoleNotificationCheckboxSet.this::createSmsCheckboxDataSource);
 			emailCb =
 				createCheckbox(Captions.userRoleNotificationTypeEmail, type, UserRoleNotificationCheckboxSet.this::createEmailCheckboxDataSource);

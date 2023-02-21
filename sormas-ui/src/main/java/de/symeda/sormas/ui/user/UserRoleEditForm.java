@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections.CollectionUtils;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Label;
@@ -95,7 +97,16 @@ public class UserRoleEditForm extends AbstractUserRoleForm {
 
 		userRightCbSet = addField(UserRoleDto.USER_RIGHTS, CheckboxSet.class);
 		userRightCbSet.setCaption(null);
-		userRightCbSet.setItems(getSortedUserRights(), r -> r.getUserRightGroup().toString(), UserRight::getDescription);
+		userRightCbSet.setItems(getSortedUserRights(), r -> r.getUserRightGroup().toString(), (r) -> {
+			String description = r.getDescription();
+			Set<UserRight> requiredUserRights = UserRight.getRequiredUserRights(Collections.singleton(r));
+			if (CollectionUtils.isEmpty(requiredUserRights)) {
+				return description;
+			}
+
+			return description + "\n" + I18nProperties.getCaption(Captions.requiredUserRights) + ": "
+				+ requiredUserRights.stream().map(UserRight::toString).collect(Collectors.joining(", "));
+		});
 		userRightCbSet.addCheckboxValueChangeListener(e -> {
 			CheckBox checkbox = e.getCheckbox();
 			if (Boolean.TRUE.equals(checkbox.getValue())) {

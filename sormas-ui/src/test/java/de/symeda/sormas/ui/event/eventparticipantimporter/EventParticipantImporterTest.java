@@ -15,13 +15,12 @@
 
 package de.symeda.sormas.ui.event.eventparticipantimporter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import de.symeda.sormas.api.person.PresentCondition;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
@@ -37,8 +36,8 @@ import java.util.function.Consumer;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.output.StringBuilderWriter;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import com.opencsv.exceptions.CsvValidationException;
 import com.vaadin.ui.UI;
@@ -60,6 +59,7 @@ import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
+import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
@@ -102,6 +102,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 			new Date(),
 			user.toReference(),
 			user.toReference(),
+			rdcf,
 			Disease.EVD);
 		EventReferenceDto eventRef = event.toReference();
 
@@ -146,6 +147,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 			new Date(),
 			user.toReference(),
 			user.toReference(),
+			rdcf,
 			Disease.EVD);
 		EventReferenceDto eventRef = event.toReference();
 		final String EXISTING_PERSON_LAST_NAME = "Heinz";
@@ -228,6 +230,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 			new Date(),
 			user.toReference(),
 			user.toReference(),
+			rdcf,
 			Disease.EVD);
 		EventReferenceDto eventRef = event.toReference();
 		PersonDto person = creator.createPerson("Günther", "Heinz");
@@ -295,6 +298,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 			new Date(),
 			user.toReference(),
 			user.toReference(),
+			rdcf,
 			Disease.EVD);
 		EventReferenceDto eventRef = event.toReference();
 		PersonDto person = creator.createPerson("Günther", "Heinze");
@@ -347,6 +351,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 			new Date(),
 			user.toReference(),
 			user.toReference(),
+			rdcf,
 			Disease.EVD);
 		EventReferenceDto eventRef = event.toReference();
 
@@ -397,6 +402,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 			new Date(),
 			user.toReference(),
 			user.toReference(),
+			rdcf,
 			Disease.EVD);
 		EventReferenceDto eventRef = event.toReference();
 
@@ -435,6 +441,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 			new Date(),
 			user.toReference(),
 			user.toReference(),
+			rdcf,
 			Disease.EVD);
 		EventReferenceDto eventRef = event.toReference();
 
@@ -471,11 +478,11 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 			}
 		}
 
-		assertTrue("Not all eventparticipants found.", foundOtto && foundOskar && foundOona);
+		assertTrue(foundOtto && foundOskar && foundOona, "Not all eventparticipants found.");
 	}
 
 	@Test
-	@Ignore("Remove ignore once we have replaced H2, and feature properties can be changed by code")
+	@Disabled("Remove ignore once we have replaced H2, and feature properties can be changed by code")
 	public void testImportWithVaccinations()
 		throws URISyntaxException, IOException, InterruptedException, CsvValidationException, InvalidColumnException {
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
@@ -498,6 +505,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 			new Date(),
 			user.toReference(),
 			user.toReference(),
+			null,
 			Disease.CORONAVIRUS);
 
 		// Successful import of 5 event participant
@@ -505,7 +513,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 		EventParticipantImporterExtension eventParticipantImporter = new EventParticipantImporterExtension(csvFile, user, event);
 		ImportResultStatus importResult = eventParticipantImporter.runImport();
 
-		assertEquals(eventParticipantImporter.stringBuilder.toString(), ImportResultStatus.COMPLETED, importResult);
+		assertEquals(ImportResultStatus.COMPLETED, importResult, eventParticipantImporter.stringBuilder.toString());
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 
 		List<EventParticipantDto> eventParticipants = getEventParticipantFacade().getByEventUuids(Collections.singletonList(event.getUuid()));

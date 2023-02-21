@@ -1,3 +1,18 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.backend.disease;
 
 import java.util.ArrayList;
@@ -21,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
 import de.symeda.sormas.backend.user.User;
@@ -74,6 +90,7 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	}
 
 	@Override
+	@AuditIgnore
 	public List<Disease> getAllDiseases(Boolean active, Boolean primary, boolean caseSurveillance) {
 		return getAllDiseases(active, primary, caseSurveillance, false);
 	}
@@ -215,7 +232,8 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 
 	@Override
 	public void saveDiseaseConfiguration(DiseaseConfigurationDto configuration) {
-		service.ensurePersisted(fromDto(configuration, true));
+		DiseaseConfiguration existingDiseaseConfiguration = service.getByUuid(configuration.getUuid());
+		service.ensurePersisted(fillOrBuildEntity(configuration, existingDiseaseConfiguration, true));
 	}
 
 	@Override
@@ -241,10 +259,12 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		return getAgeGroups(disease) != null ? getAgeGroups(disease).get(0) : null;
 	}
 
-	public DiseaseConfiguration fromDto(@NotNull DiseaseConfigurationDto source, boolean checkChangeDate) {
+	public DiseaseConfiguration fillOrBuildEntity(@NotNull DiseaseConfigurationDto source, DiseaseConfiguration target, boolean checkChangeDate) {
+		if (source == null) {
+			return null;
+		}
 
-		DiseaseConfiguration target =
-			DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), DiseaseConfiguration::new, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, DiseaseConfiguration::new, checkChangeDate);
 
 		target.setDisease(source.getDisease());
 		target.setActive(source.getActive());

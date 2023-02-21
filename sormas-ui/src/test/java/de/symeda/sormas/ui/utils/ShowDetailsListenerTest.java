@@ -8,7 +8,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.function.Consumer;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.ui.Grid.Column;

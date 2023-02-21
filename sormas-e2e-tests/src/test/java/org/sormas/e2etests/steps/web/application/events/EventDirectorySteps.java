@@ -127,7 +127,11 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.ge
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getCheckboxByIndex;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getCheckboxByUUID;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getVaccinationStatusEventParticipantByText;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CREATE_NEW_PERSON_RADIO_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EVENT_PARTICIPANT_DISPLAY_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.NOTIFICATION_EVENT_PARTICIPANT;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PICK_OR_CREATE_PERSON_POPUP;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PICK_OR_CREATE_POPUP_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.RESET_FILTERS_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
@@ -198,7 +202,9 @@ public class EventDirectorySteps implements En {
     When(
         "I fill EVENT ID filter by API",
         () -> {
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
           String eventUuid = apiState.getCreatedEvent().getUuid();
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(SEARCH_EVENT_BY_FREE_TEXT);
           webDriverHelpers.fillInWebElement(
               SEARCH_EVENT_BY_FREE_TEXT,
               dataOperations.getPartialUuidFromAssociatedLink(eventUuid));
@@ -400,7 +406,11 @@ public class EventDirectorySteps implements En {
     When(
         "^I click on ([^\"]*) Radiobutton on Event Directory Page$",
         (String buttonName) -> {
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(EVENTS_RADIO_BUTTON);
           webDriverHelpers.clickWebElementByText(EVENTS_RADIO_BUTTON, buttonName);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
         });
 
     When(
@@ -428,7 +438,11 @@ public class EventDirectorySteps implements En {
 
     When(
         "^I click on SAVE button in Link Event to group form$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_IN_LINK_FORM));
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              SAVE_BUTTON_IN_LINK_FORM);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_IN_LINK_FORM);
+        });
     When(
         "^I click on Linked Group Id on Edit Event Page$",
         () -> webDriverHelpers.clickOnWebElementBySelector(LINKED_EVENT_GROUP_ID));
@@ -446,6 +460,8 @@ public class EventDirectorySteps implements En {
         "I apply {string} to combobox on Event Directory Page",
         (String eventParameter) -> {
           webDriverHelpers.selectFromCombobox(EVENT_DISPLAY_COMBOBOX, eventParameter);
+          TimeUnit.SECONDS.sleep(5); // wait for reaction
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
     And(
         "I apply Date type filter to {string} on Event directory page",
@@ -809,10 +825,14 @@ public class EventDirectorySteps implements En {
     When(
         "I search for specific event by uuid in event directory",
         () -> {
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           final String eventUuid = CreateNewEventSteps.newEvent.getUuid();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               SEARCH_EVENT_BY_FREE_TEXT_INPUT, 20);
-          webDriverHelpers.fillAndSubmitInWebElement(SEARCH_EVENT_BY_FREE_TEXT_INPUT, eventUuid);
+          webDriverHelpers.fillInWebElement(SEARCH_EVENT_BY_FREE_TEXT_INPUT, eventUuid);
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
           TimeUnit.SECONDS.sleep(2); // wait for filter
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
@@ -885,8 +905,9 @@ public class EventDirectorySteps implements En {
     When(
         "I apply on the APPLY FILTERS button from Event",
         () -> {
+          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              APPLY_FILTERS_BUTTON, 30);
+              APPLY_FILTERS_BUTTON, 60);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
           TimeUnit.SECONDS.sleep(3);
         });
@@ -992,6 +1013,24 @@ public class EventDirectorySteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ENTER_BULK_EDIT_MODE_EVENT_DIRECTORY);
         });
+
+    And(
+        "I click Enter Bulk Edit Mode in Event Participants Page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ENTER_BULK_EDIT_MODE_EVENT_DIRECTORY);
+        });
+
+    Then(
+        "I verify the warning message 'No event participants selected' is displayed",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NOTIFICATION_EVENT_PARTICIPANT);
+          softly.assertEquals(
+              webDriverHelpers.getTextFromPresentWebElement(NOTIFICATION_EVENT_PARTICIPANT),
+              "You have not selected any event participants",
+              "Assert on notification popup went wrong");
+          softly.assertAll();
+        });
+
     When(
         "I click on the created event participant from the list",
         () -> webDriverHelpers.clickOnWebElementBySelector(CREATED_PARTICIPANT));
@@ -1075,8 +1114,13 @@ public class EventDirectorySteps implements En {
     When(
         "I confirm the save Event Participant Import popup",
         () -> {
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(COMMIT_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(COMMIT_BUTTON);
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_POPUP, 15)) {
+            webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_RADIO_BUTTON);
+            webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
+          } else {
+            webDriverHelpers.waitUntilElementIsVisibleAndClickable(COMMIT_BUTTON);
+            webDriverHelpers.clickOnWebElementBySelector(COMMIT_BUTTON);
+          }
         });
     Then(
         "I check that number of displayed Event results is {int}",

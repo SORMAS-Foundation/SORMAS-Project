@@ -23,9 +23,7 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
@@ -38,7 +36,6 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 
-@RunWith(MockitoJUnitRunner.class)
 public class EventFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	private TestDataCreator.RDCF rdcf1;
@@ -139,10 +136,11 @@ public class EventFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	private EventDto createEvent(UserDto user, TestDataCreator.RDCF rdcf) {
-		return creator.createEvent(EventStatus.SIGNAL, EventInvestigationStatus.PENDING, "Test title", "Test Description", user.toReference(), e -> {
-			e.setResponsibleUser(user.toReference());
-			e.setConnectionNumber("Connect No.");
-		});
+		return creator
+			.createEvent(EventStatus.SIGNAL, EventInvestigationStatus.PENDING, "Test title", "Test Description", user.toReference(), null, e -> {
+				e.setResponsibleUser(user.toReference());
+				e.setConnectionNumber("Connect No.");
+			});
 	}
 
 	private void assertNotPseudonymized(EventDto event) {

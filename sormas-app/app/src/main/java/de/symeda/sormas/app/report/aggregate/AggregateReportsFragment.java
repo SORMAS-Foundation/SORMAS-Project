@@ -611,7 +611,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 
 		public String getCaption() {
 
-			return getInfrastructure().toString() + (user != null ? " - " + user.getUserName() : "");
+			return getInfrastructure().buildCaption() + (user != null ? " - " + user.getUserName() : "");
 		}
 
 		public boolean isCurrentUserReport() {

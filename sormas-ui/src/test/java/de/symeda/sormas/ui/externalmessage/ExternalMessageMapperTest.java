@@ -1,37 +1,10 @@
 package de.symeda.sormas.ui.externalmessage;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PresentCondition;
-import de.symeda.sormas.ui.TestDataCreator;
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.customizableenum.CustomEnumNotFoundException;
-import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
-import de.symeda.sormas.api.disease.DiseaseVariant;
-import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
-import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.sample.PathogenTestDto;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb;
-import de.symeda.sormas.ui.AbstractBeanTest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,18 +12,58 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-@RunWith(MockitoJUnitRunner.Silent.class)
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.customizableenum.CustomEnumNotFoundException;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
+import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
+import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb;
+import de.symeda.sormas.ui.AbstractBeanTest;
+import de.symeda.sormas.ui.TestDataCreator;
+
 public class ExternalMessageMapperTest extends AbstractBeanTest {
 
 	@Test
 	public void testHomogenousTestResultTypesInWithNoTestReport() {
-		ExternalMessageDto externalMessageDto = ExternalMessageDto.build();
-		ExternalMessageMapper mapper = ExternalMessageMapper.forLabMessage(externalMessageDto);
+		ExternalMessageDto oneSampleReportMessage = ExternalMessageDto.build();
+		ExternalMessageMapper oneSampleReportMessageMapper = ExternalMessageMapper.forLabMessage(oneSampleReportMessage);
 
-		SampleDto sample = new SampleDto();
-		mapper.mapToSample(sample);
+		SampleDto sample1 = new SampleDto();
+		oneSampleReportMessageMapper.mapToSample(sample1, oneSampleReportMessage.getSampleReportsNullSafe().get(0));
 
-		assertNull(sample.getPathogenTestResult());
+		assertNull(sample1.getPathogenTestResult());
+
+		ExternalMessageDto twoSampleReportsMessage = ExternalMessageDto.build();
+		twoSampleReportsMessage.addSampleReport(SampleReportDto.build());
+		twoSampleReportsMessage.addSampleReport(SampleReportDto.build());
+		ExternalMessageMapper twoSampleReportsMessageMapper = ExternalMessageMapper.forLabMessage(twoSampleReportsMessage);
+
+		SampleDto sample2 = new SampleDto();
+		twoSampleReportsMessageMapper.mapToSample(sample2, twoSampleReportsMessage.getSampleReportsNullSafe().get(0));
+
+		SampleDto sample3 = new SampleDto();
+		twoSampleReportsMessageMapper.mapToSample(sample3, twoSampleReportsMessage.getSampleReportsNullSafe().get(1));
+
+		assertNull(sample2.getPathogenTestResult());
+		assertNull(sample3.getPathogenTestResult());
+
 	}
 
 	@Test
@@ -60,16 +73,16 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 
 		TestReportDto testReport1 = TestReportDto.build();
 		testReport1.setTestResult(PathogenTestResultType.POSITIVE);
-		labMessage.addTestReport(testReport1);
+		labMessage.getSampleReportsNullSafe().get(0).addTestReport(testReport1);
 
 		TestReportDto testReport2 = TestReportDto.build();
 		testReport2.setTestResult(PathogenTestResultType.POSITIVE);
-		labMessage.addTestReport(testReport2);
+		labMessage.getSampleReportsNullSafe().get(0).addTestReport(testReport2);
 
 		SampleDto sample = new SampleDto();
-		mapper.mapToSample(sample);
+		mapper.mapToSample(sample, labMessage.getSampleReportsNullSafe().get(0));
 
-		assertEquals(sample.getPathogenTestResult(), PathogenTestResultType.POSITIVE);
+		assertEquals(PathogenTestResultType.POSITIVE, sample.getPathogenTestResult());
 	}
 
 	@Test
@@ -78,20 +91,20 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 
 		TestReportDto testReport1 = TestReportDto.build();
 		testReport1.setTestResult(PathogenTestResultType.POSITIVE);
-		labMessage.addTestReport(testReport1);
+		labMessage.getSampleReportsNullSafe().get(0).addTestReport(testReport1);
 
 		TestReportDto testReport2 = TestReportDto.build();
 		testReport2.setTestResult(PathogenTestResultType.POSITIVE);
-		labMessage.addTestReport(testReport2);
+		labMessage.getSampleReportsNullSafe().get(0).addTestReport(testReport2);
 
 		TestReportDto testReport3 = TestReportDto.build();
 		testReport3.setTestResult(PathogenTestResultType.NEGATIVE);
-		labMessage.addTestReport(testReport3);
+		labMessage.getSampleReportsNullSafe().get(0).addTestReport(testReport3);
 
 		ExternalMessageMapper mapper = ExternalMessageMapper.forLabMessage(labMessage);
 
 		SampleDto sample = new SampleDto();
-		mapper.mapToSample(sample);
+		mapper.mapToSample(sample, labMessage.getSampleReportsNullSafe().get(0));
 
 		assertNull(sample.getPathogenTestResult());
 	}
@@ -100,7 +113,7 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 	public void testMigrateDiseaseVariant() throws CustomEnumNotFoundException {
 		CustomizableEnumFacadeEjb customizableEnumFacade = mock(CustomizableEnumFacadeEjb.class);
 		ExternalMessageDto labMessage = ExternalMessageDto.build();
-		labMessage.setTestedDisease(Disease.CORONAVIRUS);
+		labMessage.setDisease(Disease.CORONAVIRUS);
 		TestReportDto testReport = TestReportDto.build();
 
 		ExternalMessageMapper mapper = ExternalMessageMapper.forLabMessage(labMessage);
@@ -211,8 +224,8 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 		ExternalMessageDto labMessageDto = ExternalMessageDto.build();
 		ExternalMessageMapper mapper = ExternalMessageMapper.forLabMessage(labMessageDto);
 
-		assertEquals(otherFacilityRef, mapper.getLabReference(Collections.emptyList()));
-		assertEquals(otherFacilityRef, mapper.getLabReference(Collections.singletonList("unknown")));
+		assertEquals(otherFacilityRef, mapper.getFacilityReference(Collections.emptyList()));
+		assertEquals(otherFacilityRef, mapper.getFacilityReference(Collections.singletonList("unknown")));
 
 		FacilityDto one = creator
 			.createFacility("One", FacilityType.LABORATORY, rdcf.region.toReference(), rdcf.district.toReference(), rdcf.community.toReference());
@@ -226,12 +239,12 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 		two.setChangeDate(new Date());
 		getFacilityFacade().save(two);
 
-		FacilityReferenceDto oneExternal = mapper.getLabReference(Collections.singletonList("oneExternal"));
+		FacilityReferenceDto oneExternal = mapper.getFacilityReference(Collections.singletonList("oneExternal"));
 		assertEquals(one.toReference(), oneExternal);
 
-		FacilityReferenceDto twoExternal = mapper.getLabReference(Collections.singletonList("twoExternal"));
+		FacilityReferenceDto twoExternal = mapper.getFacilityReference(Collections.singletonList("twoExternal"));
 		assertEquals(two.toReference(), twoExternal);
 
-		assertNull(mapper.getLabReference(Arrays.asList("oneExternal", "twoExternal")));
+		assertNull(mapper.getFacilityReference(Arrays.asList("oneExternal", "twoExternal")));
 	}
 }

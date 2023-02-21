@@ -22,9 +22,12 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -33,7 +36,11 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.share.ExternalShareInfoCriteria;
 import de.symeda.sormas.api.share.ExternalShareInfoDto;
 import de.symeda.sormas.api.share.ExternalShareInfoFacade;
+import de.symeda.sormas.api.share.ExternalShareStatus;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -77,10 +84,51 @@ public class ExternalShareInfoFacadeEjb implements ExternalShareInfoFacade {
 		return shareInfoList.stream().map(i -> convertToDto(i, pseudonymizer)).collect(Collectors.toList());
 	}
 
+	@Override
+	public boolean isSharedCase(String caseUuid) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<ExternalShareStatus> cq = cb.createQuery(ExternalShareStatus.class);
+		final Root<ExternalShareInfo> shareInfo = cq.from(ExternalShareInfo.class);
+		Join<ExternalShareInfo, Case> caseJoin = shareInfo.join(ExternalShareInfo.CAZE, JoinType.LEFT);
+
+		cq.select(shareInfo.get(ExternalShareInfo.STATUS));
+		cq.where(cb.equal(caseJoin.get(Case.UUID), caseUuid));
+		cq.orderBy(cb.desc(shareInfo.get(ExternalShareInfo.CREATION_DATE)));
+
+		ExternalShareStatus externalShareStatus = null;
+		try {
+			externalShareStatus = em.createQuery(cq).setMaxResults(1).getSingleResult();
+		} catch (NoResultException e) {
+		}
+
+		return ExternalShareStatus.SHARED.equals(externalShareStatus);
+	}
+
+	@Override
+	public boolean isSharedEvent(String eventUuid) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<ExternalShareStatus> cq = cb.createQuery(ExternalShareStatus.class);
+		final Root<ExternalShareInfo> shareInfo = cq.from(ExternalShareInfo.class);
+		Join<ExternalShareInfo, Event> eventJoin = shareInfo.join(ExternalShareInfo.EVENT, JoinType.LEFT);
+
+		cq.select(shareInfo.get(ExternalShareInfo.STATUS));
+		cq.where(cb.equal(eventJoin.get(Event.UUID), eventUuid));
+		cq.orderBy(cb.desc(shareInfo.get(ExternalShareInfo.CREATION_DATE)));
+
+		ExternalShareStatus externalShareStatus = null;
+		try {
+			externalShareStatus = em.createQuery(cq).setMaxResults(1).getSingleResult();
+		} catch (NoResultException e) {
+		}
+
+		return ExternalShareStatus.SHARED.equals(externalShareStatus);
+	}
+
 	private ExternalShareInfoDto convertToDto(ExternalShareInfo source, Pseudonymizer pseudonymizer) {
 		ExternalShareInfoDto dto = toDto(source);
 
-		boolean pseudonymized = pseudonymizer.pseudonymizeUser(source.getSender(), userService.getCurrentUser(), dto::setSender);
+		boolean pseudonymized = pseudonymizer
+			.pseudonymizeUser(source.getSender(), userService.getCurrentUser(), dto::setSender);
 		if (pseudonymized) {
 			dto.setPseudonymized(true);
 		}
@@ -93,7 +141,7 @@ public class ExternalShareInfoFacadeEjb implements ExternalShareInfoFacade {
 
 		DtoHelper.fillDto(target, source);
 
-		target.setSender(source.getSender().toReference());
+		target.setSender(UserFacadeEjb.toReferenceDto(source.getSender()));
 		target.setStatus(source.getStatus());
 
 		return target;

@@ -25,7 +25,7 @@ import javax.ejb.Stateless;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventParticipantDto;
+import de.symeda.sormas.api.sormastosormas.entities.event.SormasToSormasEventParticipantDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
@@ -63,16 +63,20 @@ public class ProcessedEventParticipantDataPersister
 	}
 
 	@Override
-	public void persistSharedData(SormasToSormasEventParticipantDto processedData, EventParticipant existingEventParticipant)
+	public void persistSharedData(SormasToSormasEventParticipantDto processedData, EventParticipant existingEventParticipant, boolean isSync)
 
 		throws SormasToSormasValidationException {
 		EventParticipantDto eventParticipant = processedData.getEntity();
 		PersonDto person = eventParticipant.getPerson();
-		handleValidationError(
-			() -> personFacade.save(person, false, false, false),
-			Captions.EventParticipant,
-			buildEventParticipantValidationGroupName(eventParticipant),
-			person);
+
+		// #10544 only persons not owned should be updated
+		if (!(isSync && personFacade.isEditAllowed(person.getUuid()))) {
+			handleValidationError(
+				() -> personFacade.save(person, false, false, false),
+				Captions.EventParticipant,
+				buildEventParticipantValidationGroupName(eventParticipant),
+				person);
+		}
 
 		handleValidationError(
 			() -> eventParticipantFacade.saveEventParticipant(eventParticipant, false, false),

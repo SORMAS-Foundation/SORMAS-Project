@@ -15,6 +15,7 @@ import de.symeda.sormas.api.therapy.TreatmentRoute;
 import de.symeda.sormas.api.therapy.TreatmentType;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -31,13 +32,13 @@ public class TreatmentForm extends AbstractEditForm<TreatmentDto> {
 		+ loc(TreatmentDto.ROUTE_DETAILS)
 		+ loc(TreatmentDto.ADDITIONAL_NOTES);
 
-	public TreatmentForm(boolean create, boolean isPseudonymized) {
+	public TreatmentForm(boolean create, boolean isPseudonymized, boolean inJurisdiction) {
 		super(
 			TreatmentDto.class,
 			TreatmentDto.I18N_PREFIX,
 			true,
 			new FieldVisibilityCheckers(),
-			UiFieldAccessCheckers.forSensitiveData(isPseudonymized));
+			UiFieldAccessCheckers.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized));
 
 		setWidth(680, Unit.PIXELS);
 

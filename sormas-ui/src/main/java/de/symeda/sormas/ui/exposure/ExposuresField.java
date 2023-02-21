@@ -76,11 +76,13 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 	private Supplier<List<ContactReferenceDto>> getSourceContactsCallback;
 	private Class<? extends EntityDto> epiDataParentClass;
 	private boolean isPseudonymized;
+	private boolean isEditAllowed;
 
-	public ExposuresField(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
+	public ExposuresField(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers, boolean isEditAllowed) {
 
-		super(fieldAccessCheckers);
+		super(fieldAccessCheckers, isEditAllowed);
 		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
+		this.isEditAllowed = isEditAllowed;
 	}
 
 	@Override
@@ -91,7 +93,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 
 		if (epiDataParentClass == CaseDataDto.class) {
 			table.setVisibleColumns(
-				EDIT_COLUMN_ID,
+				ACTION_COLUMN_ID,
 				COLUMN_EXPOSURE_TYPE,
 				ExposureDto.EXPOSURE_ROLE,
 				COLUMN_TYPE_OF_PLACE,
@@ -101,7 +103,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 				COLUMN_SOURCE_CASE_NAME);
 		} else {
 			table.setVisibleColumns(
-				EDIT_COLUMN_ID,
+				ACTION_COLUMN_ID,
 				COLUMN_EXPOSURE_TYPE,
 				ExposureDto.EXPOSURE_ROLE,
 				COLUMN_TYPE_OF_PLACE,
@@ -113,7 +115,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 			FieldAccessCellStyleGenerator.withFieldAccessCheckers(ExposureDto.class, UiFieldAccessCheckers.forSensitiveData(isPseudonymized)));
 
 		for (Object columnId : table.getVisibleColumns()) {
-			if (columnId.equals(EDIT_COLUMN_ID)) {
+			if (columnId.equals(ACTION_COLUMN_ID)) {
 				table.setColumnHeader(columnId, "&nbsp");
 			} else {
 				table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(ExposureDto.I18N_PREFIX, (String) columnId));
@@ -183,7 +185,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 				if (StringUtils.isNotEmpty(exposure.getLocation().getFacilityDetails())) {
 					typeOfPlaceString += " - " + exposure.getLocation().getFacilityDetails();
 				} else if (exposure.getLocation().getFacility() != null) {
-					typeOfPlaceString += " - " + exposure.getLocation().getFacility().toString();
+					typeOfPlaceString += " - " + exposure.getLocation().getFacility().buildCaption();
 				}
 			} else if (exposure.getTypeOfPlace() == TypeOfPlace.MEANS_OF_TRANSPORT) {
 				typeOfPlaceString = exposure.getMeansOfTransport() == null
@@ -225,9 +227,14 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 		table.addGeneratedColumn(COLUMN_SOURCE_CASE_NAME, (Table.ColumnGenerator) (source, itemId, columnId) -> {
 			ExposureDto exposure = (ExposureDto) itemId;
 			return !isPseudonymized
-				? DataHelper.toStringNullable(exposure.getContactToCase() != null ? exposure.getContactToCase().getCaseName() : "")
+				? DataHelper
+					.toStringNullable(isCaseNameExisting(exposure.getContactToCase()) ? exposure.getContactToCase().getCaseName().buildCaption() : "")
 				: I18nProperties.getCaption(Captions.inaccessibleValue);
 		});
+	}
+
+	private boolean isCaseNameExisting(ContactReferenceDto contactToCase) {
+		return contactToCase != null && contactToCase.getCaseName() != null;
 	}
 
 	@Override
@@ -272,38 +279,44 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 
 		final CommitDiscardWrapperComponent<ExposureForm> component = new CommitDiscardWrapperComponent<>(
 			exposureForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT),
+			UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT) && isEditAllowed,
 			exposureForm.getFieldGroup());
 		component.getCommitButton().setCaption(I18nProperties.getString(Strings.done));
-		component.addCommitListener(() -> {
-			if (entry.isProbableInfectionEnvironment()) {
-				for (ExposureDto exposure : getValue()) {
-					if (exposure.isProbableInfectionEnvironment() && !exposure.getUuid().equals(entry.getUuid())) {
-						showMultipleInfectionEnvironmentsPopup(entry);
-						break;
-					}
-				}
-			}
-		});
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.entityExposure));
 		popupWindow.setHeight(90, Unit.PERCENTAGE);
 
-		component.addCommitListener(() -> {
-			if (!exposureForm.getFieldGroup().isModified()) {
-				commitCallback.accept(exposureForm.getValue());
+		if (isEditAllowed) {
+			component.addCommitListener(() -> {
+				if (entry.isProbableInfectionEnvironment()) {
+					for (ExposureDto exposure : getValue()) {
+						if (exposure.isProbableInfectionEnvironment() && !exposure.getUuid().equals(entry.getUuid())) {
+							showMultipleInfectionEnvironmentsPopup(entry);
+							break;
+						}
+					}
+				}
+			});
 
-				updateAddButtonVisibility(getValue().size());
+			component.addCommitListener(() -> {
+				if (!exposureForm.getFieldGroup().isModified()) {
+					commitCallback.accept(exposureForm.getValue());
+
+					updateAddButtonVisibility(getValue().size());
+				}
+			});
+
+			if (!create) {
+				component.addDeleteListener(() -> {
+					popupWindow.close();
+					ExposuresField.this.removeEntry(entry);
+
+					updateAddButtonVisibility(getValue().size());
+				}, I18nProperties.getCaption(ExposureDto.I18N_PREFIX));
 			}
-		});
-
-		if (!create) {
-			component.addDeleteListener(() -> {
-				popupWindow.close();
-				ExposuresField.this.removeEntry(entry);
-
-				updateAddButtonVisibility(getValue().size());
-			}, I18nProperties.getCaption(ExposureDto.I18N_PREFIX));
+		} else {
+			component.getCommitButton().setVisible(false);
+			component.getDiscardButton().setVisible(false);
 		}
 	}
 
@@ -340,7 +353,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 	}
 
 	private void updateAddButtonVisibility(int exposureCount) {
-		if (isReadOnly() || epiDataParentClass == ContactDto.class && exposureCount > 0) {
+		if (isReadOnly() || epiDataParentClass == ContactDto.class && exposureCount > 0 || !isEditAllowed) {
 			getAddButton().setVisible(false);
 		} else {
 			getAddButton().setVisible(true);

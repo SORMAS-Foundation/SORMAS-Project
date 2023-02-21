@@ -17,7 +17,9 @@ package de.symeda.sormas.api.utils.fieldaccess;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class FieldAccessCheckers {
 
@@ -39,6 +41,20 @@ public class FieldAccessCheckers {
 	public boolean isAccessible(Field field, boolean withMandatoryFields) {
 
 		for (FieldAccessChecker checker : checkers) {
+			if (checker.isConfiguredForCheck(field, withMandatoryFields) && !checker.hasRight()) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	@SafeVarargs
+	public final boolean isAccessibleBy(Field field, boolean withMandatoryFields, Class<? extends FieldAccessChecker>... checkerTypes) {
+
+		List<FieldAccessChecker> filteredCheckers =
+			checkers.stream().filter(c -> Arrays.stream(checkerTypes).anyMatch(t -> c.getClass().isAssignableFrom(t))).collect(Collectors.toList());
+		for (FieldAccessChecker checker : filteredCheckers) {
 			if (checker.isConfiguredForCheck(field, withMandatoryFields) && !checker.hasRight()) {
 				return false;
 			}

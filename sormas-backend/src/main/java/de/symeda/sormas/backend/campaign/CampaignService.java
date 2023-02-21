@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.campaign;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.ejb.LocalBean;
@@ -11,7 +10,6 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.campaign.CampaignCriteria;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -21,7 +19,7 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 
 @Stateless
 @LocalBean
-public class CampaignService extends AbstractCoreAdoService<Campaign> {
+public class CampaignService extends AbstractCoreAdoService<Campaign, CampaignJoins> {
 
 	public CampaignService() {
 		super(Campaign.class);
@@ -34,9 +32,8 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 	}
 
 	@Override
-	public EditPermissionType isEditAllowed(Campaign entity) {
-		// todo this case was not covered before? Feels like a bug fixed?
-		return getEditPermissionType(entity);
+	protected CampaignJoins toJoins(From<?, Campaign> adoPath) {
+		return new CampaignJoins(adoPath);
 	}
 
 	public Predicate createUserFilter(CampaignQueryContext queryContext) {
@@ -50,9 +47,6 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 		From<?, Campaign> from = queryContext.getRoot();
 
 		Predicate filter = null;
-		if (campaignCriteria.getDeleted() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Campaign.DELETED), campaignCriteria.getDeleted()));
-		}
 		if (campaignCriteria.getStartDateAfter() != null || campaignCriteria.getStartDateBefore() != null) {
 			filter = CriteriaBuilderHelper.and(
 				cb,
@@ -82,8 +76,15 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 					.and(cb, filter, cb.or(cb.equal(from.get(Campaign.ARCHIVED), false), cb.isNull(from.get(Campaign.ARCHIVED))));
 			} else if (campaignCriteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Campaign.ARCHIVED), true));
+			} else if (campaignCriteria.getRelevanceStatus() == EntityRelevanceStatus.DELETED) {
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Campaign.DELETED), true));
 			}
 		}
+
+		if (campaignCriteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(from.get(Campaign.DELETED)));
+		}
+
 		return filter;
 	}
 
@@ -121,26 +122,9 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 	}
 
 	@Override
-	public List<Campaign> getAllAfter(Date since) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Campaign> cq = cb.createQuery(getElementClass());
-		Root<Campaign> root = cq.from(getElementClass());
+	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Campaign> from) {
 
-		Predicate filter = createUserFilter(cb, cq, root);
-		if (since != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, root, since);
-			if (filter != null) {
-				filter = cb.and(filter, dateFilter);
-			} else {
-				filter = dateFilter;
-			}
-		}
-		if (filter != null) {
-			cq.where(filter);
-		}
-		cq.orderBy(cb.desc(root.get(AbstractDomainObject.CHANGE_DATE)));
-
-		return em.createQuery(cq).getResultList();
+		// Currently no jurisdiction checks for campaigns
+		return cb.conjunction();
 	}
-
 }

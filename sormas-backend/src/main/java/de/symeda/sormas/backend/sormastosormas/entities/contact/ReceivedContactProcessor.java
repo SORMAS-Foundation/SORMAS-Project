@@ -27,7 +27,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
+import de.symeda.sormas.api.sormastosormas.entities.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasContactPreview;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
@@ -71,12 +71,13 @@ public class ReceivedContactProcessor
 
 		ContactDto contact = sharedData.getEntity();
 		PersonDto person = sharedData.getPerson();
+		sormasToSormasEntitiesHelper.updateIfNecessaryOccupationType(sharedData.getPerson());
 
 		contact.setPerson(person.toReference());
 		updateReportingUser(contact, existingData);
 
 		if (originInfo.isOwnershipHandedOver()) {
-			sormasToSormasEntitiesHelper.updateContactResponsibleDistrict(contact, configFacade.getS2SConfig().getDistrictExternalId());
+			sormasToSormasEntitiesHelper.updateReceivedContactResponsibleDistrict(contact);
 		}
 	}
 

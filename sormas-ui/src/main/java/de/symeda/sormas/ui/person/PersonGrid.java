@@ -1,9 +1,7 @@
 package de.symeda.sormas.ui.person;
 
-import java.util.stream.Collectors;
+import java.util.List;
 
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.TextRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -14,8 +12,9 @@ import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonIndexDto;
-import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
@@ -23,12 +22,22 @@ import de.symeda.sormas.ui.utils.UuidRenderer;
 
 public class PersonGrid extends FilteredGrid<PersonIndexDto, PersonCriteria> {
 
+	private boolean bulkEditMode;
+
+	public PersonGrid() {
+		super(PersonIndexDto.class);
+		initColumns();
+	}
+
 	public PersonGrid(PersonCriteria criteria) {
 		super(PersonIndexDto.class);
 		setSizeFull();
 		setLazyDataProvider();
 		setCriteria(criteria);
 		initColumns();
+
+		setBulkEditMode(isInEagerMode());
+
 		addItemClickListener(
 			new ShowDetailsListener<>(PersonIndexDto.UUID, e -> ControllerProvider.getPersonController().navigateToPerson(e.getUuid())));
 	}
@@ -74,23 +83,33 @@ public class PersonGrid extends FilteredGrid<PersonIndexDto, PersonCriteria> {
 	}
 
 	public void setLazyDataProvider() {
-		DataProvider<PersonIndexDto, PersonCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-			query -> FacadeProvider.getPersonFacade()
-				.getIndexList(
-					query.getFilter().orElse(null),
-					query.getOffset(),
-					query.getLimit(),
-					query.getSortOrders()
-						.stream()
-						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-						.collect(Collectors.toList()))
-				.stream(),
-			query -> (int) FacadeProvider.getPersonFacade().count(query.getFilter().orElse(null)));
-		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.NONE);
+
+		setLazyDataProvider(
+			FacadeProvider.getPersonFacade()::getIndexList,
+			FacadeProvider.getPersonFacade()::count,
+			bulkEditMode && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS) ? SelectionMode.MULTI : SelectionMode.NONE);
+	}
+
+	public void setFixDataProvider(List<PersonIndexDto> list) {
+
+		setDataProvider(query -> list.stream(), query -> list.size());
+	}
+
+	protected void setBulkEditMode(boolean bulkEditMode) {
+		this.bulkEditMode = bulkEditMode;
+		if (bulkEditMode && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			setSelectionMode(SelectionMode.MULTI);
+		} else {
+			setSelectionMode(SelectionMode.NONE);
+		}
 	}
 
 	public void reload() {
+
+		if (getSelectionModel().isUserSelectionAllowed()) {
+			deselectAll();
+		}
+
 		getDataProvider().refreshAll();
 	}
 }

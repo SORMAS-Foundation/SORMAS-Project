@@ -25,9 +25,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -41,7 +39,6 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 
-@RunWith(MockitoJUnitRunner.class)
 public class PathogenTestFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	private TestDataCreator.RDCF rdcf1;
@@ -262,7 +259,7 @@ public class PathogenTestFacadeEjbPseudonymizationTest extends AbstractBeanTest 
 
 	private void assertPseudonymized(PathogenTestDto pathogenTes) {
 		assertThat(pathogenTes.getLab().getCaption(), is("Lab"));
-		assertThat(pathogenTes.getLabDetails(), is("Test lab details"));
+		assertThat(pathogenTes.getLabDetails(), isEmptyString());
 		assertThat(pathogenTes.getLabUser(), is(nullValue()));
 		assertThat(pathogenTes.getTestTypeText(), isEmptyString());
 	}

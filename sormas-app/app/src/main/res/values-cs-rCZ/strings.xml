@@ -585,6 +585,7 @@
     <string name="time_future_x_years">do %1$s let</string>
     <string name="time_now">právě teď</string>
     <string name="time_past_almost_two_years">téměř před dvěma lety</string>
+    <string name="time_past_today">dnes</string>
     <string name="time_past_one_day">včera</string>
     <string name="time_past_one_hour">asi před hodinou</string>
     <string name="time_past_one_minute">před minutou</string>

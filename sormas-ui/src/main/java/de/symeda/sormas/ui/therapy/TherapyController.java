@@ -40,7 +40,7 @@ public class TherapyController {
 	}
 
 	public void openPrescriptionCreateForm(TherapyReferenceDto therapy, Runnable callback) {
-		PrescriptionForm form = new PrescriptionForm(true, false, false);
+		PrescriptionForm form = new PrescriptionForm(true, false, false, true); // Valid because jurisdiction doesn't matter for entities that are about to be created
 		form.setValue(PrescriptionDto.buildPrescription(therapy));
 		final CommitDiscardWrapperComponent<PrescriptionForm> view =
 			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.PRESCRIPTION_CREATE), form.getFieldGroup());
@@ -63,84 +63,88 @@ public class TherapyController {
 
 	public void openPrescriptionEditForm(PrescriptionReferenceDto prescriptionReference, Runnable callback, boolean readOnly) {
 		PrescriptionDto prescription = FacadeProvider.getPrescriptionFacade().getPrescriptionByUuid(prescriptionReference.getUuid());
-		PrescriptionForm form = new PrescriptionForm(false, readOnly, prescription.isPseudonymized());
+		PrescriptionForm form = new PrescriptionForm(false, readOnly, prescription.isPseudonymized(), prescription.isInJurisdiction());
 		form.setValue(prescription);
 
-		final CommitDiscardWrapperComponent<PrescriptionForm> view =
-			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.PRESCRIPTION_EDIT), form.getFieldGroup());
+		final CommitDiscardWrapperComponent<PrescriptionForm> view = new CommitDiscardWrapperComponent<>(
+			form,
+			UserProvider.getCurrent().hasUserRight(UserRight.PRESCRIPTION_EDIT) && !readOnly,
+			form.getFieldGroup());
 		Window popupWindow = VaadinUiUtil
 			.showModalPopupWindow(view, I18nProperties.getString(readOnly ? Strings.entityPrescription : Strings.headingEditPrescription));
 
-		view.addCommitListener(new CommitListener() {
-
-			@Override
-			public void onCommit() {
-				if (!form.getFieldGroup().isModified()) {
-					PrescriptionDto dto = form.getValue();
-					FacadeProvider.getPrescriptionFacade().savePrescription(dto);
-					popupWindow.close();
-					Notification.show(I18nProperties.getString(Strings.messagePrescriptionSaved), Type.TRAY_NOTIFICATION);
-					if (callback != null) {
-						callback.run();
-					}
-				}
-			}
-		});
-
-		view.addDiscardListener(() -> popupWindow.close());
-
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PRESCRIPTION_DELETE)) {
-			view.addDeleteListener(new DeleteListener() {
+		if (!readOnly) {
+			view.addCommitListener(new CommitListener() {
 
 				@Override
-				public void onDelete() {
-					List<String> prescriptionUuids = new ArrayList<>();
-					prescriptionUuids.add(prescription.getUuid());
-					List<TreatmentIndexDto> treatmentDtos = FacadeProvider.getTreatmentFacade().getTreatmentForPrescription(prescriptionUuids);
-					if(treatmentDtos.size() > 0 ){
-						handleDeletePrescriptionWithTreatments(treatmentDtos, prescriptionUuids);
-					}
-					else {
-						FacadeProvider.getPrescriptionFacade().deletePrescription(prescription.getUuid());
-					}
-					popupWindow.close();
-					if (callback != null) {
-						callback.run();
+				public void onCommit() {
+					if (!form.getFieldGroup().isModified()) {
+						PrescriptionDto dto = form.getValue();
+						FacadeProvider.getPrescriptionFacade().savePrescription(dto);
+						popupWindow.close();
+						Notification.show(I18nProperties.getString(Strings.messagePrescriptionSaved), Type.TRAY_NOTIFICATION);
+						if (callback != null) {
+							callback.run();
+						}
 					}
 				}
-			}, I18nProperties.getString(Strings.entityPrescription));
+			});
+
+			view.addDiscardListener(() -> popupWindow.close());
+
+			if (UserProvider.getCurrent().hasUserRight(UserRight.PRESCRIPTION_DELETE)) {
+				view.addDeleteListener(new DeleteListener() {
+
+					@Override
+					public void onDelete() {
+						List<String> prescriptionUuids = new ArrayList<>();
+						prescriptionUuids.add(prescription.getUuid());
+						List<TreatmentIndexDto> treatmentDtos = FacadeProvider.getTreatmentFacade().getTreatmentForPrescription(prescriptionUuids);
+						if (treatmentDtos.size() > 0) {
+							handleDeletePrescriptionWithTreatments(treatmentDtos, prescriptionUuids);
+						} else {
+							FacadeProvider.getPrescriptionFacade().deletePrescription(prescription.getUuid());
+						}
+						popupWindow.close();
+						if (callback != null) {
+							callback.run();
+						}
+					}
+				}, I18nProperties.getString(Strings.entityPrescription));
+			}
 		}
+		view.getButtonsPanel().setVisible(!readOnly);
+		view.setEditable(!readOnly);
 	}
 
-	private void handleDeletePrescriptionWithTreatments(List<TreatmentIndexDto> treatmentIndexDtos , List<String> prescriptionUuids){
+	private void handleDeletePrescriptionWithTreatments(List<TreatmentIndexDto> treatmentIndexDtos, List<String> prescriptionUuids) {
 		Consumer<Boolean> resultConsumer = new Consumer<Boolean>() {
 
 			@Override
 			public void accept(Boolean option) {
-				List<String> treatmentUuids = treatmentIndexDtos.stream().map(t->t.getUuid()).collect(Collectors.toList());
+				List<String> treatmentUuids = treatmentIndexDtos.stream().map(t -> t.getUuid()).collect(Collectors.toList());
 				if (Boolean.TRUE.equals(option)) {
 					//delete just prescription and leave the treatments standalone
 					FacadeProvider.getTreatmentFacade().unlinkPrescriptionFromTreatments(treatmentUuids);
 
-				}
-				else {
+				} else {
 					//delete the prescription and all the treatments assign with
 					FacadeProvider.getTreatmentFacade().deleteTreatments(treatmentUuids);
 				}
-				for(String prescriptionUuid : prescriptionUuids){
+				for (String prescriptionUuid : prescriptionUuids) {
 					FacadeProvider.getPrescriptionFacade().deletePrescription(prescriptionUuid);
 				}
 				SormasUI.refreshView();
 			}
 		};
 		VaadinUiUtil.showChooseOptionPopup(
-				I18nProperties.getCaption(Captions.prescriptionWithTreatmentTitleDelete),
-				new Label(I18nProperties.getString(Strings.confirmationDeletePrescriptionWithTreatment)),
-				I18nProperties.getCaption(Captions.prescriptionAlone),
-				I18nProperties.getCaption(Captions.prescriptionWithTreatment),
-				650,
-				resultConsumer,
-				true);
+			I18nProperties.getCaption(Captions.prescriptionWithTreatmentTitleDelete),
+			new Label(I18nProperties.getString(Strings.confirmationDeletePrescriptionWithTreatment)),
+			I18nProperties.getCaption(Captions.prescriptionAlone),
+			I18nProperties.getCaption(Captions.prescriptionWithTreatment),
+			650,
+			resultConsumer,
+			true);
 	}
 
 	public void openPrescriptionEditForm(PrescriptionIndexDto prescriptionIndex, Runnable callback, boolean readOnly) {
@@ -148,7 +152,7 @@ public class TherapyController {
 	}
 
 	public void openTreatmentCreateForm(TherapyReferenceDto therapy, Runnable callback) {
-		TreatmentForm form = new TreatmentForm(true, false);
+		TreatmentForm form = new TreatmentForm(true, false, true); // Valid because jurisdiction doesn't matter for entities that are about to be created
 		form.setValue(TreatmentDto.build(therapy));
 		final CommitDiscardWrapperComponent<TreatmentForm> view =
 			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_CREATE), form.getFieldGroup());
@@ -170,7 +174,7 @@ public class TherapyController {
 	}
 
 	public void openTreatmentCreateForm(PrescriptionDto prescription, Runnable callback) {
-		TreatmentForm form = new TreatmentForm(true, false);
+		TreatmentForm form = new TreatmentForm(true, false, true); // Valid because jurisdiction doesn't matter for entities that are about to be created
 		form.setValue(TreatmentDto.build(prescription));
 		final CommitDiscardWrapperComponent<TreatmentForm> view =
 			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_CREATE), form.getFieldGroup());
@@ -191,33 +195,42 @@ public class TherapyController {
 		VaadinUiUtil.showModalPopupWindow(view, I18nProperties.getString(Strings.headingCreateNewTreatment));
 	}
 
-	public void openTreatmentEditForm(TreatmentIndexDto treatmentIndex, Runnable callback) {
+	public void openTreatmentEditForm(TreatmentIndexDto treatmentIndex, Runnable callback, boolean isEditAllowed) {
 		TreatmentDto treatment = FacadeProvider.getTreatmentFacade().getTreatmentByUuid(treatmentIndex.getUuid());
-		TreatmentForm form = new TreatmentForm(false, treatment.isPseudonymized());
+		TreatmentForm form = new TreatmentForm(false, treatment.isPseudonymized(), treatment.isInJurisdiction());
 		form.setValue(treatment);
 
-		final CommitDiscardWrapperComponent<TreatmentForm> view =
-			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_EDIT), form.getFieldGroup());
+		final CommitDiscardWrapperComponent<TreatmentForm> view = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(view, I18nProperties.getString(Strings.headingEditTreatment));
 
-		view.addCommitListener(() -> {
-			if (!form.getFieldGroup().isModified()) {
-				TreatmentDto dto = form.getValue();
-				FacadeProvider.getTreatmentFacade().saveTreatment(dto);
-				popupWindow.close();
-				Notification.show(I18nProperties.getString(Strings.messageTreatmentSaved), Type.TRAY_NOTIFICATION);
-				callback.run();
+		for (int i = 0; i < view.getButtonsPanel().getComponentCount(); i++) {
+			view.getButtonsPanel().getComponent(i).setVisible(isEditAllowed);
+		}
+
+		if (!UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_EDIT) || !isEditAllowed) {
+			view.getWrappedComponent().setEnabled(false);
+		}
+
+		if (isEditAllowed) {
+			view.addCommitListener(() -> {
+				if (!form.getFieldGroup().isModified()) {
+					TreatmentDto dto = form.getValue();
+					FacadeProvider.getTreatmentFacade().saveTreatment(dto);
+					popupWindow.close();
+					Notification.show(I18nProperties.getString(Strings.messageTreatmentSaved), Type.TRAY_NOTIFICATION);
+					callback.run();
+				}
+			});
+
+			view.addDiscardListener(popupWindow::close);
+
+			if (UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_DELETE) && isEditAllowed) {
+				view.addDeleteListener(() -> {
+					FacadeProvider.getTreatmentFacade().deleteTreatment(treatment.getUuid());
+					popupWindow.close();
+					callback.run();
+				}, I18nProperties.getString(Strings.entityTreatment));
 			}
-		});
-
-		view.addDiscardListener(popupWindow::close);
-
-		if (UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_DELETE)) {
-			view.addDeleteListener(() -> {
-				FacadeProvider.getTreatmentFacade().deleteTreatment(treatment.getUuid());
-				popupWindow.close();
-				callback.run();
-			}, I18nProperties.getString(Strings.entityTreatment));
 		}
 
 		if (treatment.getPrescription() != null) {
@@ -252,11 +265,10 @@ public class TherapyController {
 						}
 
 						List<TreatmentIndexDto> treatmentDtos = FacadeProvider.getTreatmentFacade().getTreatmentForPrescription(prescriptionUuids);
-						if(treatmentDtos.size() > 0 ){
+						if (treatmentDtos.size() > 0) {
 							handleDeletePrescriptionWithTreatments(treatmentDtos, prescriptionUuids);
-						}
-						else {
-							for(String prescriptionUuid : prescriptionUuids) {
+						} else {
+							for (String prescriptionUuid : prescriptionUuids) {
 								FacadeProvider.getPrescriptionFacade().deletePrescription(prescriptionUuid);
 							}
 						}

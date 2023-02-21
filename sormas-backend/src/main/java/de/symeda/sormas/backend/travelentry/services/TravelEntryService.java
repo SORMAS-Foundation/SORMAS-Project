@@ -2,12 +2,14 @@ package de.symeda.sormas.backend.travelentry.services;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.TypedQuery;
+import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -15,8 +17,10 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
 
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -44,8 +48,10 @@ import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntryJoins;
 import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
 import de.symeda.sormas.backend.travelentry.transformers.TravelEntryIndexDtoResultTransformer;
-import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
@@ -56,19 +62,42 @@ public class TravelEntryService extends BaseTravelEntryService {
 	@EJB
 	private DocumentService documentService;
 
+	public List<TravelEntry> getByPersonUuids(List<String> personUuids) {
+
+		List<TravelEntry> travelEntries = new LinkedList<>();
+		IterableHelper.executeBatched(personUuids, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> {
+
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<TravelEntry> cq = cb.createQuery(TravelEntry.class);
+			Root<TravelEntry> travelEntryRoot = cq.from(TravelEntry.class);
+			Join<TravelEntry, Person> personJoin = travelEntryRoot.join(TravelEntry.PERSON, JoinType.INNER);
+
+			cq.where(personJoin.get(AbstractDomainObject.UUID).in(batchedPersonUuids));
+
+			travelEntries.addAll(em.createQuery(cq).getResultList());
+		});
+		return travelEntries;
+	}
+
 	public List<TravelEntryIndexDto> getIndexList(TravelEntryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
-		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
-		final Root<TravelEntry> travelEntry = cq.from(TravelEntry.class);
 
-		TravelEntryQueryContext travelEntryQueryContext = new TravelEntryQueryContext(cb, cq, travelEntry);
-		TravelEntryJoins joins = travelEntryQueryContext.getJoins();
+		List<Long> indexListIds = getIndexListIds(criteria, first, max, sortProperties);
 
-		final Join<TravelEntry, Person> person = joins.getPerson();
-		final Join<TravelEntry, PointOfEntry> pointOfEntry = joins.getPointOfEntry();
+		List<TravelEntryIndexDto> travelEntries = new ArrayList<>();
 
-		final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
-		final Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
+		IterableHelper.executeBatched(indexListIds, ModelConstants.PARAMETER_LIMIT, batchedIds -> {
+			final CriteriaBuilder cb = em.getCriteriaBuilder();
+			final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+			final Root<TravelEntry> travelEntry = cq.from(TravelEntry.class);
+
+			TravelEntryQueryContext travelEntryQueryContext = new TravelEntryQueryContext(cb, cq, travelEntry);
+			TravelEntryJoins joins = travelEntryQueryContext.getJoins();
+
+			final Join<TravelEntry, Person> person = joins.getPerson();
+			final Join<TravelEntry, PointOfEntry> pointOfEntry = joins.getPointOfEntry();
+
+			final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
+			final Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
 
 		cq.multiselect(
 			travelEntry.get(TravelEntry.UUID),
@@ -82,8 +111,49 @@ public class TravelEntryService extends BaseTravelEntryService {
 			travelEntry.get(TravelEntry.VACCINATED),
 			travelEntry.get(TravelEntry.TESTED_NEGATIVE),
 			travelEntry.get(TravelEntry.QUARANTINE_TO),
+			travelEntry.get(TravelEntry.DELETION_REASON),
+			travelEntry.get(TravelEntry.OTHER_DELETION_REASON),
 			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(travelEntryQueryContext)),
 			travelEntry.get(TravelEntry.CHANGE_DATE));
+
+			Predicate filter = travelEntry.get(TravelEntry.ID).in(batchedIds);
+
+			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(travelEntryQueryContext));
+			if (criteria != null) {
+				final Predicate criteriaFilter = buildCriteriaFilter(criteria, travelEntryQueryContext);
+				filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+			}
+
+			if (filter != null) {
+				cq.where(filter);
+			}
+
+			sortBy(sortProperties, travelEntryQueryContext);
+			cq.distinct(true);
+
+			travelEntries.addAll(
+				createQuery(cq, null, null).unwrap(org.hibernate.query.Query.class)
+					.setResultTransformer(new TravelEntryIndexDtoResultTransformer())
+					.getResultList());
+		});
+
+		return travelEntries;
+	}
+
+	private List<Long> getIndexListIds(TravelEntryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Tuple> cq = cb.createTupleQuery();
+		final Root<TravelEntry> travelEntry = cq.from(TravelEntry.class);
+
+		TravelEntryQueryContext travelEntryQueryContext = new TravelEntryQueryContext(cb, cq, travelEntry);
+		TravelEntryJoins joins = travelEntryQueryContext.getJoins();
+
+		List<Selection<?>> selections = new ArrayList<>();
+		selections.add(travelEntry.get(Person.ID));
+		selections.addAll(sortBy(sortProperties, travelEntryQueryContext));
+
+		cq.multiselect(selections);
 
 		Predicate filter = createUserFilter(travelEntryQueryContext);
 		if (criteria != null) {
@@ -94,6 +164,21 @@ public class TravelEntryService extends BaseTravelEntryService {
 		if (filter != null) {
 			cq.where(filter);
 		}
+		cq.distinct(true);
+
+		List<Tuple> travelEntries = QueryHelper.getResultList(em, cq, first, max);
+		return travelEntries.stream().map(t -> t.get(0, Long.class)).collect(Collectors.toList());
+	}
+
+	private List<Selection<?>> sortBy(List<SortProperty> sortProperties, TravelEntryQueryContext travelEntryQueryContext) {
+
+		List<Selection<?>> selections = new ArrayList<>();
+		CriteriaBuilder cb = travelEntryQueryContext.getCriteriaBuilder();
+		CriteriaQuery<?> cq = travelEntryQueryContext.getQuery();
+
+		Join<TravelEntry, Person> person = travelEntryQueryContext.getJoins().getPerson();
+		final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
+		final Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
 
 		if (CollectionUtils.isNotEmpty(sortProperties)) {
 			List<Order> order = new ArrayList<>(sortProperties.size());
@@ -106,7 +191,7 @@ public class TravelEntryService extends BaseTravelEntryService {
 				case TravelEntryIndexDto.VACCINATED:
 				case TravelEntryIndexDto.TESTED_NEGATIVE:
 				case TravelEntryIndexDto.QUARANTINE_TO:
-					expression = travelEntry.get(sortProperty.propertyName);
+					expression = travelEntryQueryContext.getJoins().getRoot().get(sortProperty.propertyName);
 					break;
 				case TravelEntryIndexDto.PERSON_FIRST_NAME:
 					expression = person.get(Person.FIRST_NAME);
@@ -115,26 +200,24 @@ public class TravelEntryService extends BaseTravelEntryService {
 					expression = person.get(Person.LAST_NAME);
 					break;
 				case TravelEntryIndexDto.HOME_DISTRICT_NAME:
-					expression = district.get(District.NAME);
+					expression = location.get(District.NAME);
 					break;
 				case TravelEntryIndexDto.POINT_OF_ENTRY_NAME:
-					expression = pointOfEntry.get(PointOfEntry.NAME);
+					expression = travelEntryQueryContext.getJoins().getPointOfEntry().get(PointOfEntry.NAME);
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
 				}
 				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+				selections.add(expression);
 			}
 			cq.orderBy(order);
 		} else {
-			cq.orderBy(cb.desc(travelEntry.get(TravelEntry.CHANGE_DATE)));
+			Path<Object> changeDate = travelEntryQueryContext.getJoins().getRoot().get(TravelEntry.CHANGE_DATE);
+			cq.orderBy(cb.desc(changeDate));
+			selections.add(changeDate);
 		}
-
-		cq.distinct(true);
-
-		return createQuery(cq, first, max).unwrap(org.hibernate.query.Query.class)
-			.setResultTransformer(new TravelEntryIndexDtoResultTransformer())
-			.getResultList();
+		return selections;
 	}
 
 	public long count(TravelEntryCriteria criteria, boolean ignoreUserFilter) {
@@ -156,20 +239,6 @@ public class TravelEntryService extends BaseTravelEntryService {
 
 		cq.select(cb.countDistinct(travelEntry));
 		return em.createQuery(cq).getSingleResult();
-	}
-
-	public boolean inJurisdictionOrOwned(TravelEntry travelEntry) {
-		return inJurisdictionOrOwned(travelEntry, getCurrentUser());
-	}
-
-	public boolean inJurisdictionOrOwned(TravelEntry travelEntry, User user) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
-		Root<TravelEntry> root = cq.from(TravelEntry.class);
-		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(new TravelEntryQueryContext(cb, cq, root), user)));
-		cq.where(cb.equal(root.get(TravelEntry.UUID), travelEntry.getUuid()));
-		return em.createQuery(cq).getResultList().stream().anyMatch(aBoolean -> aBoolean);
 	}
 
 	public Predicate createActiveTravelEntriesFilter(CriteriaBuilder cb, From<?, TravelEntry> root) {
@@ -196,7 +265,7 @@ public class TravelEntryService extends BaseTravelEntryService {
 	}
 
 	@Override
-	public EditPermissionType isEditAllowed(TravelEntry travelEntry) {
+	public EditPermissionType getEditPermissionType(TravelEntry travelEntry) {
 
 		if (!userService.hasRight(UserRight.TRAVEL_ENTRY_EDIT) || !inJurisdictionOrOwned(travelEntry)) {
 			return EditPermissionType.REFUSED;
@@ -226,18 +295,8 @@ public class TravelEntryService extends BaseTravelEntryService {
 		super.deletePermanent(travelEntry);
 	}
 
-	public boolean isDeleted(String travelEntryUuid) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<TravelEntry> from = cq.from(TravelEntry.class);
-
-		cq.where(cb.and(cb.isTrue(from.get(TravelEntry.DELETED)), cb.equal(from.get(AbstractDomainObject.UUID), travelEntryUuid)));
-		cq.select(cb.count(from));
-		long count = em.createQuery(cq).getSingleResult();
-		return count > 0;
-	}
-
 	public TravelEntry getLastTravelEntry() {
+
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<TravelEntry> query = cb.createQuery(TravelEntry.class);
 		final Root<TravelEntry> from = query.from(TravelEntry.class);
@@ -245,8 +304,7 @@ public class TravelEntryService extends BaseTravelEntryService {
 		query.where(cb.and(createDefaultFilter(cb, from), cb.lessThanOrEqualTo(from.get(TravelEntry.CREATION_DATE), new Date())));
 		query.orderBy(cb.desc(from.get(TravelEntry.CREATION_DATE)));
 
-		final TypedQuery<TravelEntry> q = em.createQuery(query);
-		return q.getResultList().stream().findFirst().orElse(null);
+		return QueryHelper.getFirstResult(em, query);
 	}
 
 	private Predicate buildCriteriaFilter(TravelEntryCriteria criteria, TravelEntryQueryContext travelEntryQueryContext) {
@@ -289,7 +347,12 @@ public class TravelEntryService extends BaseTravelEntryService {
 					.and(cb, filter, cb.or(cb.equal(from.get(TravelEntry.ARCHIVED), false), cb.isNull(from.get(TravelEntry.ARCHIVED))));
 			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(TravelEntry.ARCHIVED), true));
+			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.DELETED) {
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(TravelEntry.DELETED), true));
 			}
+		}
+		if (criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
+			filter = CriteriaBuilderHelper.and(cb, filter, createDefaultFilter(cb, from));
 		}
 
 		if (criteria.getReportDateFrom() != null && criteria.getReportDateTo() != null) {
@@ -299,10 +362,6 @@ public class TravelEntryService extends BaseTravelEntryService {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(from.get(TravelEntry.REPORT_DATE), criteria.getReportDateFrom()));
 		} else if (criteria.getReportDateTo() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(from.get(TravelEntry.REPORT_DATE), criteria.getReportDateTo()));
-		}
-
-		if (criteria.getDeleted() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(TravelEntry.DELETED), criteria.getDeleted()));
 		}
 
 		if (!DataHelper.isNullOrEmpty(criteria.getNameUuidExternalIDLike())) {
@@ -319,7 +378,6 @@ public class TravelEntryService extends BaseTravelEntryService {
 			filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 		}
 
-		filter = CriteriaBuilderHelper.and(cb, filter, createDefaultFilter(cb, from));
 		return filter;
 	}
 }

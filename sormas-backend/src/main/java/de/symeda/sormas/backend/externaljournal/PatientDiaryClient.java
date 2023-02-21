@@ -48,6 +48,8 @@ import de.symeda.sormas.api.externaljournal.ExternalJournalSyncResponseDto;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryPersonDto;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryQueryResponse;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryResult;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.util.ClientHelper;
 
@@ -95,7 +97,9 @@ public class PatientDiaryClient {
 			ObjectMapper mapper = new ObjectMapper();
 			JsonNode node = mapper.readValue(responseJson, JsonNode.class);
 			boolean success = node.get("success").booleanValue();
-			String message = node.get("message").textValue();
+			String message = node.get("message") != null
+				? node.get("message").textValue()
+				: I18nProperties.getString(Strings.messageExternalJournalDidNotProvideMessage);
 			if (!success) {
 				logger.warn("Could not create new patient diary person: " + message);
 			} else {

@@ -25,7 +25,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;

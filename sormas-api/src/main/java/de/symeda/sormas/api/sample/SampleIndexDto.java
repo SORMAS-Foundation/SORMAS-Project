@@ -22,18 +22,17 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.EmptyValuePseudonymizer;
-import org.apache.commons.lang3.StringUtils;
 
 public class SampleIndexDto extends PseudonymizableIndexDto implements Serializable {
 
@@ -99,6 +98,8 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 	private Float lastTestCqValue;
 
 	private SampleJurisdictionFlagsDto sampleJurisdictionFlagsDto;
+	private DeletionReason deletionReason;
+	private String otherDeletionReason;
 
 	//@formatter:off
 	public SampleIndexDto(String uuid, String epidNumber, String labSampleId, Date sampleDateTime,
@@ -110,7 +111,7 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 						  String associatedContactUuid, String associatedContactFirstName, String associatedContactLastName,
 						  String associatedEventParticipantUuid, String associatedEventParticipantFirstName, String associatedEventParticipantLastName,
 						  Disease disease, String diseaseDetails, PathogenTestResultType pathogenTestResult, Boolean additionalTestingRequested, Boolean additionalTestPerformed,
-						  String districtName, String labUuid, Long pathogenTestCount,
+						  String districtName, String labUuid, DeletionReason deletionReason, String otherDeletionReason, Long pathogenTestCount,
 						  boolean isInJurisdiction, boolean isCaseInJurisdiction, boolean isContactInJurisdiction,  boolean isContactCaseInJurisdiction, boolean isEventParticipantInJurisdiction) {
 	//@formatter:on
 
@@ -154,6 +155,9 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 		// These attributes will be set later
 		this.typeOfLastTest = null;
 		this.lastTestCqValue = null;
+
+		this.deletionReason = deletionReason;
+		this.otherDeletionReason = otherDeletionReason;
 
 		this.sampleJurisdictionFlagsDto = new SampleJurisdictionFlagsDto(
 			isInJurisdiction,
@@ -375,6 +379,22 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 
 	public void setLastTestCqValue(Float lastTestCqValue) {
 		this.lastTestCqValue = lastTestCqValue;
+	}
+
+	public DeletionReason getDeletionReason() {
+		return deletionReason;
+	}
+
+	public void setDeletionReason(DeletionReason deletionReason) {
+		this.deletionReason = deletionReason;
+	}
+
+	public String getOtherDeletionReason() {
+		return otherDeletionReason;
+	}
+
+	public void setOtherDeletionReason(String otherDeletionReason) {
+		this.otherDeletionReason = otherDeletionReason;
 	}
 
 	public String getCaption() {

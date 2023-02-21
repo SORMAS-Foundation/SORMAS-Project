@@ -15,7 +15,7 @@
 
 package de.symeda.sormas.api.sormastosormas.share.incoming;
 
-import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 public class PreviewNotImplementedDto extends PseudonymizableDto implements HasUuid {

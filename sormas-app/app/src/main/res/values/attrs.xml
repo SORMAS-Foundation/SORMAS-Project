@@ -112,6 +112,7 @@
     <attr name="visibility" format="boolean" />
     <attr name="collapsible" format="boolean" />
     <attr name="marginBottomOffset" format="reference" />
+    <attr name="timeAgoDetailLevelDays" format="boolean" />
 
     <attr name="gravity">
         <flag name="bottom" value="80" />

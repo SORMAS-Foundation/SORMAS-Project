@@ -25,6 +25,8 @@ import java.util.Random;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -48,6 +50,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.messaging.ManualMessageLogDto;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -56,12 +59,8 @@ import de.symeda.sormas.api.vaccination.VaccinationDto;
 @Remote
 public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseReferenceDto, CaseCriteria> {
 
-	List<CaseDataDto> getAllActiveCasesAfter(Date date);
-
-	/**
-	 * Additional change dates filters for: sample, pathogenTests, patient and location.
-	 */
-	List<CaseDataDto> getAllActiveCasesAfter(Date date, boolean includeExtendedChangeDateFilters);
+	int DUPLICATE_MERGING_LIMIT_DEFAULT = 100;
+	int DUPLICATE_MERGING_LIMIT_MAX = 1000;
 
 	long count(CaseCriteria caseCriteria, boolean ignoreUserFilter);
 
@@ -106,8 +105,6 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	List<String> getAllActiveUuids();
 
-	List<CaseDataDto> getAllActiveCasesAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
-
 	String getUuidByUuidEpidNumberOrExternalId(String searchTerm, CaseCriteria caseCriteria);
 
 	List<MapCaseDto> getCasesForMap(
@@ -142,10 +139,6 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	Date getOldestCaseOutcomeDate();
 
-	boolean isDeleted(String caseUuid);
-
-	boolean isArchived(String caseUuid);
-
 	List<String> getArchivedUuidsSince(Date since);
 
 	List<String> getDeletedUuidsSince(Date since);
@@ -160,7 +153,7 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	List<CaseSelectionDto> getSimilarCases(CaseSimilarityCriteria criteria);
 
-	List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, boolean showDuplicatesWithDifferentRegion);
+	List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, @Min(1) @Max(DUPLICATE_MERGING_LIMIT_MAX) int limit, boolean showDuplicatesWithDifferentRegion);
 
 	void updateCompleteness(String caseUuid);
 
@@ -217,6 +210,8 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	List<CasePersonDto> getDuplicates(@Valid CasePersonDto casePerson);
 
+	List<CaseDataDto> getDuplicatesWithPathogenTest(@Valid PersonReferenceDto personReferenceDto, PathogenTestDto pathogenTestDto);
+
 	List<CaseDataDto> getByPersonUuids(List<String> personUuids);
 
 	List<CaseDataDto> getByExternalId(String externalId);
@@ -240,5 +235,7 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 	EditPermissionType isEditContactAllowed(String uuid);
 
 	boolean hasOtherValidVaccination(CaseDataDto caze, String vaccinationUuid);
+
+	Pair<RegionReferenceDto, DistrictReferenceDto> getRegionAndDistrictRefsOf(CaseReferenceDto caze);
 
 }

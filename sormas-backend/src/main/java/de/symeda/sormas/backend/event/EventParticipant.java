@@ -77,7 +77,7 @@ public class EventParticipant extends CoreAdo implements SormasToSormasShareable
 	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
 	private VaccinationStatus vaccinationStatus;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(nullable = false)
 	public User getReportingUser() {
 		return reportingUser;
@@ -134,7 +134,7 @@ public class EventParticipant extends CoreAdo implements SormasToSormasShareable
 		this.samples = samples;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	public Region getRegion() {
 		return region;
 	}
@@ -143,7 +143,7 @@ public class EventParticipant extends CoreAdo implements SormasToSormasShareable
 		this.region = region;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	public District getDistrict() {
 		return district;
 	}

@@ -61,11 +61,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.sormas.e2etests.entities.pojo.web.Sample;
-import org.sormas.e2etests.enums.CaseClassification;
-import org.sormas.e2etests.enums.DiseasesValues;
-import org.sormas.e2etests.enums.LaboratoryValues;
-import org.sormas.e2etests.enums.PathogenTestResults;
-import org.sormas.e2etests.enums.SpecimenConditions;
+import org.sormas.e2etests.enums.*;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.RestAssuredClient;
@@ -437,33 +433,31 @@ public class SamplesDirectorySteps implements En {
                     }));
 
     Then(
-        "^I check the displayed Laboratory filter dropdown",
-        () ->
-            Arrays.stream(LaboratoryValues.values())
-                .forEach(
-                    caption -> {
-                      webDriverHelpers.selectFromCombobox(
-                          LABORATORY_SEARCH_COMBOBOX, caption.getCaptionEnglish());
-                      webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER_BUTTON);
-                      webDriverHelpers.waitUntilAListOfElementsHasText(
-                          FINAL_LABORATORY_RESULT, caption.getCaptionEnglish());
-                      assertHelpers.assertWithPoll20Second(
-                          () ->
-                              Truth.assertWithMessage(
-                                      "Total number of sample results is not correct")
-                                  .that(
-                                      apiState.getCreatedSamples().stream()
-                                          .filter(
-                                              sample ->
-                                                  sample
-                                                      .getLab()
-                                                      .getUuid()
-                                                      .contentEquals(caption.getUuidValue()))
-                                          .count())
-                                  .isEqualTo(
-                                      webDriverHelpers.getNumberOfElements(
-                                          SAMPLE_GRID_RESULTS_ROWS)));
-                    }));
+        "^I validate that number of displayed samples is correct for applied Voreingestelltes Labor filter",
+        () -> {
+          EnvironmentManager environmentManager = new EnvironmentManager(restAssuredClient);
+          String labName = LaboratoryValues.VOREINGESTELLTES_LABOR.getCaptionEnglish();
+          webDriverHelpers.selectFromCombobox(LABORATORY_SEARCH_COMBOBOX, labName);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER_BUTTON);
+          webDriverHelpers.waitUntilAListOfElementsHasText(FINAL_LABORATORY_RESULT, labName);
+          assertHelpers.assertWithPoll20Second(
+              () ->
+                  Truth.assertWithMessage("Total number of sample results is not correct")
+                      .that(
+                          apiState.getCreatedSamples().stream()
+                              .filter(
+                                  sample ->
+                                      sample
+                                          .getLab()
+                                          .getUuid()
+                                          .contentEquals(
+                                              environmentManager.getLaboratoryUUID(
+                                                  RegionsValues.VoreingestellteBundeslander
+                                                      .getName(),
+                                                  labName)))
+                              .count())
+                      .isEqualTo(webDriverHelpers.getNumberOfElements(SAMPLE_GRID_RESULTS_ROWS)));
+        });
 
     Then(
         "I search after the last created Sample via API",

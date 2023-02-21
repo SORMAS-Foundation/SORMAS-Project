@@ -1,8 +1,18 @@
 # REST interface for SORMAS
 
+This is a one-stop-shop for all systems that need access to the SORMAS data:
+
+* Synchronization of data with the SORMAS Android app
+* Data access for the SORMAS Angular web app
+* Exchanging data with other SORMAS instances
+* External services like symptom diaries or citizen applications
+* Synchronization of data with other surveillance or to data analysis systems
+
 ## Authentication
-Access to the API is restricted by HTTP Basic Authentication. You need to add a user to your instance with the
-REST role attached to it. Use the username and password of the REST user as credentials for your HTTP requests.
+Access to the API is by default restricted by HTTP Basic authentication. Using OIDC/OAUTH2/Bearer authentication is also possible depending on how keycloak is setup. See , it can als use Bearer authentication. See [Authentication & Authorization](https://github.com/hzi-braunschweig/SORMAS-Project/wiki/Authentication-&-Authorization#keycloak). 
+
+For basic auth use the username and password as credentials for your HTTP requests.
+The user needs to have a user role having the SORMAS_REST user right.
 
 ## API Documentation
 The SORMAS REST API is documented automatically. The OpenAPI specification files are generated during the build process

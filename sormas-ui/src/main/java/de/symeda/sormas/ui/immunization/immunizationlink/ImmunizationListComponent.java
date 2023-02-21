@@ -13,15 +13,25 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 public class ImmunizationListComponent extends SideComponent {
 
-	public ImmunizationListComponent(Supplier<ImmunizationListCriteria> criteriaSupplier, Consumer<Runnable> actionCallback) {
+	public ImmunizationListComponent(Supplier<ImmunizationListCriteria> criteriaSupplier, String activeUuid, Consumer<Runnable> actionCallback) {
+		this(criteriaSupplier, activeUuid, actionCallback, true);
+	}
+
+	public ImmunizationListComponent(
+		Supplier<ImmunizationListCriteria> criteriaSupplier,
+		String activeUuid,
+		Consumer<Runnable> actionCallback,
+		boolean isEditAllowed) {
 		super(I18nProperties.getString(Strings.entityImmunization), actionCallback);
 
-		addCreateButton(I18nProperties.getCaption(Captions.immunizationNewImmunization), () -> {
-			ImmunizationListCriteria immunizationListCriteria = criteriaSupplier.get();
-			ControllerProvider.getImmunizationController().create(immunizationListCriteria.getPerson(), immunizationListCriteria.getDisease());
-		}, UserRight.IMMUNIZATION_CREATE);
-
-		ImmunizationList immunizationList = new ImmunizationList(criteriaSupplier.get());
+		if (isEditAllowed) {
+			addCreateButton(I18nProperties.getCaption(Captions.immunizationNewImmunization), () -> {
+				ImmunizationListCriteria immunizationListCriteria = criteriaSupplier.get();
+				ControllerProvider.getImmunizationController().create(immunizationListCriteria.getPerson(), immunizationListCriteria.getDisease());
+			}, UserRight.IMMUNIZATION_CREATE);
+		}
+		ImmunizationList immunizationList = new ImmunizationList(criteriaSupplier.get(), isEditAllowed);
+		immunizationList.setActiveUuid(activeUuid);
 		addComponent(immunizationList);
 		immunizationList.reload();
 	}

@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 
-import org.springframework.util.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.j256.ormlite.logger.Logger;
 import com.j256.ormlite.logger.LoggerFactory;
@@ -101,9 +101,9 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 	public boolean pullAndPushEntities(Context context, Optional<SynchronizationDialog.SynchronizationCallbacks> syncCallbacks)
 		throws DaoException, ServerConnectionException, ServerCommunicationException, NoConnectionException {
 
-		pullEntities(false, context, syncCallbacks);
+		pullEntities(false, context, syncCallbacks, false);
 
-		return pushEntities(false, syncCallbacks);
+		return pushEntities(false, syncCallbacks, isViewAllowed());
 	}
 
 	public void pullEntities(final boolean markAsRead, Context context, Optional<SynchronizationDialog.SynchronizationCallbacks> syncCallbacks)
@@ -291,7 +291,19 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 	public boolean pushEntities(boolean onlyNewEntities, Optional<SynchronizationDialog.SynchronizationCallbacks> syncCallbacks)
 		throws DaoException, ServerConnectionException, ServerCommunicationException, NoConnectionException {
 
+		return pushEntities(onlyNewEntities, syncCallbacks, false);
+	}
+
+	public boolean pushEntities(
+		boolean onlyNewEntities,
+		Optional<SynchronizationDialog.SynchronizationCallbacks> syncCallbacks,
+		boolean forceLoadNext)
+		throws DaoException, ServerConnectionException, ServerCommunicationException, NoConnectionException {
+
 		if (!isEditAllowed()) {
+			if (forceLoadNext) {
+				syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+			}
 			return false;
 		}
 
@@ -306,6 +318,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 		}
 
 		if (modifiedDtos.isEmpty()) {
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
 			return false;
 		}
 
@@ -381,6 +394,10 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
 	public void pullMissing(List<String> uuids, Optional<SynchronizationDialog.SynchronizationCallbacks> syncCallbacks)
 		throws ServerCommunicationException, ServerConnectionException, DaoException, NoConnectionException {
+
+		if (!isViewAllowed()) {
+			return;
+		}
 
 		final AbstractAdoDao<ADO> dao = DatabaseHelper.getAdoDao(getAdoClass());
 		uuids = dao.filterMissing(uuids);

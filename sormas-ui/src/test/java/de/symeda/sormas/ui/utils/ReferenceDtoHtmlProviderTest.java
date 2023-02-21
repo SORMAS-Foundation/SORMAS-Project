@@ -1,8 +1,8 @@
 package de.symeda.sormas.ui.utils;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;

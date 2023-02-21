@@ -30,7 +30,7 @@ public class DeletionConfiguration extends AbstractDomainObject {
 
 	@Min(value = 7, message = Validations.numberTooSmall)
 	@Max(value = Integer.MAX_VALUE, message = Validations.numberTooBig)
-	Integer deletionPeriod;
+	public Integer deletionPeriod;
 
 	public static DeletionConfiguration build(CoreEntityType coreEntityType) {
 

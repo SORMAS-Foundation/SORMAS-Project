@@ -11,13 +11,11 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,13 +30,12 @@ import de.symeda.sormas.api.campaign.form.CampaignFormElement;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.campaign.campaigndata.CampaignFormBuilder;
 
-@RunWith(MockitoJUnitRunner.class)
 public class ExpressionProcessorTest {
 
 	private ExpressionProcessor expressionProcessor;
 	private CampaignFormBuilder campaignFormBuilder;
 
-	@BeforeClass
+	@BeforeAll
 	public static void setupClass() {
 		UI ui = new SormasUI();
 		final MockedStatic<UI> uiMockedStatic = Mockito.mockStatic(UI.class);
@@ -49,7 +46,7 @@ public class ExpressionProcessorTest {
 		pageMockedStatic.when(Page::getCurrent).thenReturn(page);
 	}
 
-	@Before
+	@BeforeEach
 	public void setup() throws IOException {
 		GridLayout campaignFormLayout = new GridLayout(12, 1);
 		ObjectMapper objectMapper = new ObjectMapper();

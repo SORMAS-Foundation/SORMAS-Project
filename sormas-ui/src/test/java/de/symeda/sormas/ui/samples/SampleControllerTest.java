@@ -1,11 +1,11 @@
 package de.symeda.sormas.ui.samples;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 
 import java.util.Date;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -53,7 +53,7 @@ public class SampleControllerTest extends AbstractBeanTest {
 		assertThat(sut.getDiseaseOf(sample), equalTo(Disease.CORONAVIRUS));
 
 		// event participant
-		EventDto event = creator.createEvent(user.toReference(), Disease.CHOLERA);
+		EventDto event = creator.createEvent(user.toReference(), Disease.CHOLERA, rdcf);
 		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, user.toReference());
 		sample = creator.createSample(
 			eventParticipant.toReference(),

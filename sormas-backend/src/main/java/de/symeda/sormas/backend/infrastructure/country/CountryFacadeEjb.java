@@ -316,24 +316,6 @@ public class CountryFacadeEjb
 		return QueryHelper.getFirstResult(em, cq) != null;
 	}
 
-	@Override
-	protected void selectDtoFields(CriteriaQuery<CountryDto> cq, Root<Country> root) {
-		Join<Country, Subcontinent> subcontinent = root.join(Country.SUBCONTINENT, JoinType.LEFT);
-		// Need to be in the same order as in the constructor
-		cq.multiselect(
-			root.get(AbstractDomainObject.CREATION_DATE),
-			root.get(Country.CHANGE_DATE),
-			root.get(AbstractDomainObject.UUID),
-			root.get(InfrastructureAdo.ARCHIVED),
-			root.get(Country.DEFAULT_NAME),
-			root.get(Country.EXTERNAL_ID),
-			root.get(Country.ISO_CODE),
-			root.get(Country.UNO_CODE),
-			subcontinent.get(AbstractDomainObject.UUID),
-			subcontinent.get(Subcontinent.DEFAULT_NAME),
-			subcontinent.get(Subcontinent.EXTERNAL_ID));
-	}
-
 	@LocalBean
 	@Stateless
 	public static class CountryFacadeEjbLocal extends CountryFacadeEjb {

@@ -17,10 +17,10 @@
  *******************************************************************************/
 package de.symeda.auditlog.api.value.format;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.auditlog.api.sample.CustomEnum;
 import de.symeda.auditlog.api.value.ValueContainer;

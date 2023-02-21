@@ -23,10 +23,10 @@ import java.util.Date;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.MappingException;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
@@ -40,6 +40,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
@@ -158,11 +159,12 @@ public class ContactDto extends SormasToSormasShareableDto {
 	private Disease disease;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String diseaseDetails;
+	@MappingException(reason = MappingException.FILLED_FROM_OTHER_ENTITY)
 	private DiseaseVariant diseaseVariant;
 
 	@Required
 	private Date reportDateTime;
-	@NotNull(message = Validations.validReportingUser)
+
 	private UserReferenceDto reportingUser;
 	@SensitiveData
 	@Pseudonymizer(LatitudePseudonymizer.class)
@@ -374,6 +376,13 @@ public class ContactDto extends SormasToSormasShareableDto {
 	public static ContactDto build(EventParticipantDto eventParticipant) {
 		final ContactDto contact = build();
 		contact.setPerson(eventParticipant.getPerson().toReference());
+
+		return contact;
+	}
+
+	public static ContactDto build(PersonDto person) {
+		final ContactDto contact = build();
+		contact.setPerson(person.toReference());
 
 		return contact;
 	}

@@ -17,15 +17,15 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.report;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.report.WeeklyReportDto;
@@ -49,7 +49,7 @@ public class WeeklyReportFacadeEjbTest extends AbstractBeanTest {
 	private UserDto informant3;
 	private UserDto informant4;
 
-	@Before
+	@BeforeEach
 	public void setupData() {
 
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");

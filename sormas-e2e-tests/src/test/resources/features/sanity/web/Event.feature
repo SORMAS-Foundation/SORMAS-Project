@@ -106,7 +106,6 @@ Feature: Create events
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
-    And I click on the Events button from navbar
     Then I open the last created event via api
     And I click on New Action button from Event tab
     Then I create New Action from event tab
@@ -157,18 +156,6 @@ Feature: Create events
     And I am checking if the associated linked event appears in task management and click on it
     And I click on edit task icon of the first created task
     And I check the created task is correctly displayed on Edit task page
-
-  @env_main
-  Scenario: Add a New Groups Event from event and verify the fields
-    Given API: I create a new event
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given I log in as a National User
-    When I am accessing the event tab using the created event via api
-    And I click on link event group
-    And I create a new event group
-    When I am accessing the event tab using the created event via api
-    Then I am checking event group name and id is correctly displayed
 
   @tmsLink=SORDEV-5496 @env_main
   Scenario: Generate and download Event document
@@ -259,7 +246,6 @@ Feature: Create events
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
-    And I click on the Events button from navbar
     Then I open the last created event via api
     And I click on link event group
     And I choose select event group Radiobutton
@@ -280,7 +266,6 @@ Feature: Create events
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
-    And I click on the Events button from navbar
     Then I open the last created event via api
     And I click on link event group
     And I create a new event group
@@ -510,7 +495,6 @@ Feature: Create events
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
-    And I click on the Events button from navbar
     Then I open the last created event via api
     And I check CLUSTER option on edit Event page
     And I select "Hauptsächlich von Mensch zu Mensch" option from Primary Mode Of Transmission Combobox on edit Event page
@@ -563,7 +547,6 @@ Feature: Create events
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     And I log in as a National User
-    And I click on the Events button from navbar
     Then I open the last created event via api
     And I navigate to Event Participants tab in Edit case page
     And I add participant responsible region and responsible district only
@@ -581,11 +564,10 @@ Feature: Create events
 #    And I confirm navigation popup
     Then I click on Apply filters button in event participant list
     Then I check if filtered participant for existing person appears in the event participants list
-    When I click on the Persons button from navbar
     And I open the last created Person via API
     And I check that SEE EVENTS FOR THIS PERSON button appears on Edit Person page
 
-  @env_main @#8555 @ignore
+  @env_main @#8555
   Scenario: Add back a person to an event who was previously deleted as event participant
     Given API: I create a new person
     And API: I check that POST call body is "OK"
@@ -626,7 +608,7 @@ Feature: Create events
     Then I check if Archive button changed name to De-Archive
 
   @tmsLink=SORDEV-10265 @env_main
-  Scenario: Manual archiving for event participats
+  Scenario: Manual archiving for event participants
     Given I log in as a Admin User
     And I click on the Events button from navbar
     And I click on the NEW EVENT button
@@ -646,7 +628,7 @@ Feature: Create events
     Then I check if participant appears in the event participants list
 
   @tmsLink=SORDEV-10265 @env_main
-  Scenario: Manual archiving for bulk event participats
+  Scenario: Manual archiving for bulk event participants
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
@@ -700,7 +682,6 @@ Feature: Create events
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
-    And I click on the Events button from navbar
     Then I open the last created event via api
     And I check that the value selected from Disease combobox is "COVID-19" on Edit Event page
     And I navigate to Event Participants tab in Edit case page
@@ -725,12 +706,12 @@ Feature: Create events
     Then I navigate to EVENT PARTICIPANT from edit event page
     And I click on Add Participant button
     Then I add Participant to an Event with same person data
-    And I click on save button in Add Participant form
+    And I save Add participant form
     Then I navigate to EVENT PARTICIPANT from edit event page
     And I click on Add Participant button
     Then I add Participant to an Event with same person data
-    And I click on save button in Add Participant form
-    And I check if National Health Id, Nickname and Passport number appear in Pick or create person popup
+    And I save Add participant form
+    And I check if National Health Id, Nickname and Passport number do not appear in Pick or create person popup
 
   @env_main @tmsLink=SORDEV-7460
   Scenario: Test Extend the exposure and event startDate and endDate to include a startTime and endTime
@@ -753,7 +734,6 @@ Feature: Create events
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
-    And I click on the Events button from navbar
     Then I open the last created event via api
     Then I click on the Event participant tab
     And I add only required data for event participant creation
@@ -768,12 +748,6 @@ Feature: Create events
     And I click on Save Button in Edit Event directory
     And I click on the Event participant tab
     And I back to the Event tab
-    And I set Country combobox to "Germany" from Edit Event Page
-    And I set Country combobox to empty value from Edit Event Page
-    And I clear Region and District fields from Edit Event Directory
-    And I click on Save Button in Edit Event directory
-    Then I click on the Event participant tab
-    And I add a participant to the event
 
   @tmsLink=SORDEV-10254 @env_main
   Scenario: Manual archive Event participants/Events
@@ -815,7 +789,6 @@ Feature: Create events
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
-    And I click on the Events button from navbar
     When I open the last created event via api
     Then I navigate to EVENT PARTICIPANT from edit event page
     Then I click on ADD PARTICIPANT button
@@ -879,7 +852,7 @@ Feature: Create events
     Then I click on edit button for the last searched facility
     And I archive facility
 
-    @env_main @#8556 @ignore
+  @env_main @#8556
   Scenario: Add two positive Pathogen Test Result of different diseases to a Sample of an Event Participant
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -1016,7 +989,7 @@ Feature: Create events
     And I click on Yes option in Confirm deletion on Edit Event Page
     And I am accessing the event tab using the created event via api
     And I check if Reason for deletion is set to "Entity created without legal reason" on Edit Event Page
-    And I check if Delete button on Edit Event Page is disabled
+    And I check if Delete button on Edit Event Page is changed to Undo Deletion
 
     @tmsLink=SORDEV-8055 @env_main
     Scenario Outline: Allow users to select the used delimiter when importing files
@@ -1160,7 +1133,7 @@ Feature: Create events
     And I fill De-Archive event popup with test automation reason
     And I click on the Events button from navbar
     And I apply "Aktive Ereignisse" to combobox on Event Directory Page
-    And I search for specific event by uuid in event directory
+    # And I search for specific event by uuid in event directory
     And I check that number of displayed Event results is 1
 
   @tmsLink=SORDEV-9792 @env_de
@@ -1270,7 +1243,6 @@ Feature: Create events
     And I check if "Burial conductor" field is present in case person
     And I check if "Burial place description" field is present in case person
     Then I click on the Event participant tab
-    And I click yes on the DISCARD UNSAVED CHANGES popup if it appears
     And I navigate to EVENT PARTICIPANT from edit event page
     And I back to the Event tab
     And I change disease to "COVID-19" in the event tab
@@ -1323,7 +1295,6 @@ Feature: Create events
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
-    And I click on the Events button from navbar
     When I open the last created event via api
     When I click on the Event participant tab
     When I add a participant to the event
@@ -1343,3 +1314,127 @@ Feature: Create events
     Then I open the last created event via api
     Then I navigate to EVENT PARTICIPANT from edit event page
     And I add only required data for event participant creation for DE
+
+    @tmsLink=SORQA-667 @env_de @oldfake
+    Scenario: Check automatic deletion of EVENT_PARTICIPANT created 1826 days ago
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new event
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new event participant with creation date 1826 days ago
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in as a Admin User
+    Then I open the last created event via api
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    And I check if participant created via API appears in the event participants list
+    And I click on the Configuration button from navbar
+    Then I navigate to Developer tab in Configuration
+    Then I click on Execute Automatic Deletion button
+    And I wait 30 seconds for system reaction
+    Then I check if created event participant is available in API
+    And API: I check that GET call status code is 204
+    Then I open the last created event via api
+    And I navigate to EVENT PARTICIPANT from edit event page
+    Then I check if event participant created via API not appears in the event participant list
+
+  @tmsLink=SORQA-666 @env_de @oldfake
+    Scenario: Check automatic deletion of EVENT created 1826 days ago
+    Given API: I create a new event with creation date 1826 days ago
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in as a Admin User
+    Then I open the last created event via api
+    And I copy uuid of current event
+    And I click on the Configuration button from navbar
+    Then I navigate to Developer tab in Configuration
+    Then I click on Execute Automatic Deletion button
+    And I wait 30 seconds for system reaction
+    Then I check if created event is available in API
+    And API: I check that GET call status code is 500
+    Then I click on the Events button from navbar
+    And I filter by last created event via api
+    And I check the number of displayed Event results from All button is 0
+
+  @tmsLink=SORQA-679 @env_de @oldfake
+  Scenario: Check automatic deletion NOT of EVENT_PARTICIPANT created 1820 days ago
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new event
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new event participant with creation date 1820 days ago
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in as a Admin User
+    Then I open the last created event via api
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    And I check if participant created via API appears in the event participants list
+    And I click on the Configuration button from navbar
+    Then I navigate to Developer tab in Configuration
+    Then I click on Execute Automatic Deletion button
+    And I wait 30 seconds for system reaction
+    Then I check if created event participant is available in API
+    And API: I check that GET call status code is 200
+    Then I open the last created event via api
+    And I navigate to EVENT PARTICIPANT from edit event page
+    Then I check if event participant created via API still appears in the event participant list
+
+  @tmsLink=SORQA-680 @env_de @oldfake
+  Scenario: Check automatic deletion NOT of EVENT created 1820 days ago
+    Given API: I create a new event with creation date 1820 days ago
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in as a Admin User
+    Then I open the last created event via api
+    And I copy uuid of current event
+    And I click on the Configuration button from navbar
+    Then I navigate to Developer tab in Configuration
+    Then I click on Execute Automatic Deletion button
+    And I wait 60 seconds for system reaction
+    Then I check if created event is available in API
+    And API: I check that GET call status code is 200
+    Then I click on the Events button from navbar
+    And I filter by last created event via api
+    And I check the number of displayed Event results from All button is 1
+
+  @#10419 @env_main
+  Scenario: Verify Warning message in Event Participants for Bulk actions, when no event is selected
+    Given I log in as a Admin User
+    And I click on the Events button from navbar
+    When I click on the first row from event participant list
+    And I navigate to EVENT PARTICIPANT from edit event page
+    And I click Enter Bulk Edit Mode in Event Participants Page
+    And I click on Bulk Actions combobox in Event Parcitipant Tab
+    And I click on Create Contacts button from bulk actions menu in Event Participant Tab
+    Then I verify the warning message 'No event participants selected' is displayed
+    And I click on Bulk Actions combobox in Event Parcitipant Tab
+    And I click on Delete button from bulk actions menu in Event Participant Tab
+    Then I verify the warning message 'No event participants selected' is displayed
+    And I click on Bulk Actions combobox in Event Parcitipant Tab
+    And I click on Create quarantine order documents from bulk actions menu in Event Participant Tab
+    Then I verify the warning message 'No event participants selected' is displayed
+
+  @#5762 @env_main
+  Scenario: Link Event to a Case
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    And I open the last created Case via API
+    Then I click Link Event button on Edit Case Page
+    And I fill Event Id filter in Link to Event form with last created via API Event uuid
+    And I click first result in grid on Link to Event form
+    And I click on SAVE button in Link Event to group form
+#    Then I click on save button in Add Participant form
+    Then I click Save in Add Event Participant form on Edit Contact Page
+    And I validate last created via API Event data is displayed under Linked Events section

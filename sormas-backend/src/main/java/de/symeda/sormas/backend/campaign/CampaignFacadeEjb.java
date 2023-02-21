@@ -27,7 +27,6 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.campaign.CampaignCriteria;
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignFacade;
@@ -97,8 +96,8 @@ public class CampaignFacadeEjb
 
 		cq.where(filter);
 
-		if (sortProperties != null && sortProperties.size() > 0) {
-			List<Order> order = new ArrayList<Order>(sortProperties.size());
+		if (sortProperties != null && !sortProperties.isEmpty()) {
+			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
@@ -170,8 +169,9 @@ public class CampaignFacadeEjb
 	@RightsAllowed(UserRight._CAMPAIGN_EDIT)
 	public CampaignDto save(@Valid @NotNull CampaignDto dto) {
 		validate(dto);
-		Campaign campaign = fillOrBuildEntity(dto, service.getByUuid(dto.getUuid()), true);
-		if (!service.getEditPermissionType(campaign).equals(EditPermissionType.ALLOWED)) {
+		Campaign existingCampaign = service.getByUuid(dto.getUuid());
+		Campaign campaign = fillOrBuildEntity(dto, existingCampaign, true);
+		if (!service.isEditAllowed(campaign)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEntityNotEditable));
 		}
 		service.ensurePersisted(campaign);
@@ -359,28 +359,19 @@ public class CampaignFacadeEjb
 	}
 
 	@Override
-	protected void pseudonymizeDto(Campaign source, CampaignDto dto, Pseudonymizer pseudonymizer) {
+	@RightsAllowed(UserRight._CAMPAIGN_DELETE)
+	public void undelete(String uuid) {
+		super.undelete(uuid);
+	}
 
+	@Override
+	protected void pseudonymizeDto(Campaign source, CampaignDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+		// No pseudonymization for Campaign entities
 	}
 
 	@Override
 	protected void restorePseudonymizedDto(CampaignDto dto, CampaignDto existingDto, Campaign entity, Pseudonymizer pseudonymizer) {
-
-	}
-
-	@Override
-	public List<CampaignDto> getAllAfter(Date date) {
-		return service.getAllAfter(date).stream().map(campaignFormMeta -> toDto(campaignFormMeta)).collect(Collectors.toList());
-	}
-
-	@Override
-	protected void selectDtoFields(CriteriaQuery<CampaignDto> cq, Root<Campaign> root) {
-
-	}
-
-	@Override
-	public List<CampaignDto> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		// No pseudonymization for Campaign entities
 	}
 
 	@Override
@@ -396,8 +387,7 @@ public class CampaignFacadeEjb
 		if (entity == null) {
 			return null;
 		}
-		CampaignReferenceDto dto = new CampaignReferenceDto(entity.getUuid(), entity.getName());
-		return dto;
+		return new CampaignReferenceDto(entity.getUuid(), entity.getName());
 	}
 
 	@Override
@@ -408,12 +398,6 @@ public class CampaignFacadeEjb
 	@Override
 	public DeletionInfoDto getAutomaticDeletionInfo(String uuid) {
 		return null; // campaigns do not support automatic deletion yet
-	}
-
-	@Override
-	public EditPermissionType isCampaignEditAllowed(String caseUuid) {
-		Campaign campaign = service.getByUuid(caseUuid);
-		return service.getEditPermissionType(campaign);
 	}
 
 	@Override

@@ -27,8 +27,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.utils.DataHelper;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.exception.CloneFailedException;
 import org.slf4j.Logger;
@@ -75,7 +73,7 @@ public abstract class AbstractTableField<E> extends CustomField<Collection> {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	public static final String EDIT_COLUMN_ID = "editColumn";
+	public static final String ACTION_COLUMN_ID = "actionColumn";
 
 	protected static final String SCROLLBAR_FIX_CSS = "scrollbarFix";
 
@@ -97,10 +95,20 @@ public abstract class AbstractTableField<E> extends CustomField<Collection> {
 	private Property<Collection<E>> dataSource;
 	private BeanItemContainer<E> container;
 
+	private boolean isEditAllowed;
+
 	protected UiFieldAccessCheckers fieldAccessCheckers;
 
 	public AbstractTableField(UiFieldAccessCheckers fieldAccessCheckers) {
 		this.fieldAccessCheckers = fieldAccessCheckers;
+		this.isEditAllowed = true;
+
+		getContent();
+	}
+
+	public AbstractTableField(UiFieldAccessCheckers fieldAccessCheckers, boolean isEditAllowed) {
+		this.fieldAccessCheckers = fieldAccessCheckers;
+		this.isEditAllowed = isEditAllowed;
 
 		getContent();
 	}
@@ -199,12 +207,12 @@ public abstract class AbstractTableField<E> extends CustomField<Collection> {
 		table.setSelectable(false);
 		table.setSizeFull();
 
-		createEditColumn(table);
+		createActionColumn(table);
 
 		return table;
 	}
 
-	protected void createEditColumn(Table table) {
+	protected void createActionColumn(Table table) {
 
 		ColumnGenerator editColumnGenerator = new ColumnGenerator() {
 
@@ -213,16 +221,16 @@ public abstract class AbstractTableField<E> extends CustomField<Collection> {
 				return generateEditCell(itemId);
 			}
 		};
-		table.addGeneratedColumn(EDIT_COLUMN_ID, editColumnGenerator);
-		table.setColumnWidth(EDIT_COLUMN_ID, 20);
-		table.setColumnHeader(EDIT_COLUMN_ID, "");
+		table.addGeneratedColumn(ACTION_COLUMN_ID, editColumnGenerator);
+		table.setColumnWidth(ACTION_COLUMN_ID, 20);
+		table.setColumnHeader(ACTION_COLUMN_ID, "");
 
 		table.addItemClickListener(new ItemClickListener() {
 
 			@SuppressWarnings("unchecked")
 			@Override
 			public void itemClick(ItemClickEvent event) {
-				if (event.isDoubleClick() || EDIT_COLUMN_ID.equals(event.getPropertyId())) {
+				if (event.isDoubleClick() || ACTION_COLUMN_ID.equals(event.getPropertyId())) {
 					final E entry = (E) event.getItemId();
 					if (entry != null) {
 						editEntry(entry, false, result -> onEntryChanged(result));
@@ -235,7 +243,7 @@ public abstract class AbstractTableField<E> extends CustomField<Collection> {
 	@SuppressWarnings("unchecked")
 	protected Object generateEditCell(Object itemId) {
 
-		return ButtonHelper.createIconButtonWithCaption(itemId + "-edit", null, VaadinIcons.EDIT, e -> {
+		return ButtonHelper.createIconButtonWithCaption(itemId + "-edit", null, isEditAllowed ? VaadinIcons.EDIT : VaadinIcons.EYE, e -> {
 			editEntry((E) itemId, false, this::onEntryChanged);
 		}, ValoTheme.BUTTON_BORDERLESS);
 	}
@@ -645,7 +653,7 @@ public abstract class AbstractTableField<E> extends CustomField<Collection> {
 		super.setReadOnly(readOnly);
 		getAddButton().setVisible(!readOnly);
 		if (readOnly) {
-			getTable().removeContainerProperty(EDIT_COLUMN_ID);
+			getTable().removeContainerProperty(ACTION_COLUMN_ID);
 		}
 	}
 }

@@ -1,7 +1,7 @@
 @UI @Sanity @PersonsUserRoles @add_userroles
 Feature: Edit Persons for different user roles
 
-@tmsLink=SORDEV-8469 @env_main
+@tmsLink=SORDEV-8469 @env_main @ignore
 Scenario Outline: Test for navigating through Case, Contact and Immunization cards on Edit Person Page
   Given API: I create a new person
   Then API: I check that POST call body is "OK"
@@ -43,7 +43,7 @@ Scenario Outline: Test for navigating through Case, Contact and Immunization car
     | Hospital Informant        |
     | Clinician                 |
 
-  @tmsLink=SORDEV-8468 @env_main
+  @tmsLink=SORDEV-8468 @env_main @ignore
   Scenario Outline: Edit existent person and provoke errors in the Edit Person page
     Given I log in as a <user>
     When I click on the Persons button from navbar
@@ -74,7 +74,7 @@ Scenario Outline: Test for navigating through Case, Contact and Immunization car
       | Hospital Informant        |
       | Clinician                 |
 
-  @tmsLink=SORDEV-8467 @env_main
+  @tmsLink=SORDEV-8467 @env_main @ignore
   Scenario Outline: Test column structure in Person directory
     Given I log in as a <user>
     And I click on the Persons button from navbar

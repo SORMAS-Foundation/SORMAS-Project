@@ -29,6 +29,7 @@ import static org.sormas.e2etests.pages.application.dashboard.Surveillance.Surve
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.*;
 import static org.sormas.e2etests.pages.application.users.UserManagementPage.FIRST_EDIT_BUTTON_FROM_LIST;
 import static org.sormas.e2etests.pages.application.users.UserManagementPage.NEW_USER_BUTTON;
+import static org.sormas.e2etests.pages.application.users.UserManagementPage.getUserRoleLabelByCaption;
 
 import cucumber.api.java8.En;
 import java.util.*;
@@ -37,7 +38,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 import org.openqa.selenium.WebElement;
-import org.sormas.e2etests.entities.pojo.User;
+import org.sormas.e2etests.entities.pojo.common.User;
 import org.sormas.e2etests.entities.services.UserService;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
@@ -230,7 +231,6 @@ public class CreateNewUserSteps implements En {
     When(
         "I create {int} new users with National User via UI",
         (Integer users) -> {
-          List<User> userList = new ArrayList<>();
           for (int i = 0; i < users; i++) {
             webDriverHelpers.clickWhileOtherButtonIsDisplayed(
                 NEW_USER_BUTTON, FIRST_NAME_OF_USER_INPUT);
@@ -266,6 +266,43 @@ public class CreateNewUserSteps implements En {
             webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
             closeNewPasswordPopUp();
           }
+        });
+
+    When(
+        "I create a new disabled National User in the Create New User page",
+        () -> {
+          webDriverHelpers.clickWhileOtherButtonIsDisplayed(
+              NEW_USER_BUTTON, FIRST_NAME_OF_USER_INPUT);
+          user = userService.buildGeneratedUserWithRole("National User");
+          fillFirstName(user.getFirstName());
+          fillLastName(user.getLastName());
+          fillEmailAddress(user.getEmailAddress());
+          fillPhoneNumber(user.getPhoneNumber());
+          selectLanguage(user.getLanguage());
+          selectCountry(user.getCountry());
+          selectRegion(user.getRegion());
+          selectDistrict(user.getDistrict());
+          selectCommunity(user.getCommunity());
+          selectFacilityCategory(user.getFacilityCategory());
+          selectFacilityType(user.getFacilityType());
+          selectFacility(user.getFacility());
+          fillFacilityNameAndDescription(user.getFacilityNameAndDescription());
+          fillStreet(user.getStreet());
+          fillHouseNr(user.getHouseNumber());
+          fillAdditionalInformation(user.getAdditionalInformation());
+          fillPostalCode(user.getPostalCode());
+          fillCity(user.getCity());
+          selectAreaType(user.getAreaType());
+          fillGpsLatitude(user.getGpsLatitude());
+          fillGpsLongitude(user.getGpsLongitude());
+          fillGpsAccuracy(user.getGpsAccuracy());
+          fillUserName(user.getUserName());
+          selectUserRole("National User");
+          selectLimitedDisease(user.getLimitedDisease());
+          webDriverHelpers.scrollToElement(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          closeNewPasswordPopUp();
         });
 
     And(
@@ -340,7 +377,7 @@ public class CreateNewUserSteps implements En {
         });
 
     When(
-        "I create new ([^\"]*) user for test on DE specific",
+        "^I create new ([^\"]*) user for test on DE specific$",
         (String role) -> {
           user = userService.buildGeneratedUserWithRole(role);
           fillFirstName(user.getFirstName());
@@ -372,7 +409,7 @@ public class CreateNewUserSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(LoginPage.USER_NAME_INPUT);
           webDriverHelpers.fillInWebElement(LoginPage.USER_NAME_INPUT, userName);
           webDriverHelpers.fillInWebElement(LoginPage.USER_PASSWORD_INPUT, userPass);
-          webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_KEYCLOAK_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
           userPass = userPass + "3!";
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.fillInWebElement(LoginPage.PASSWORD_NEW_INPUT, userPass);
@@ -390,7 +427,7 @@ public class CreateNewUserSteps implements En {
               LoginPage.USER_NAME_INPUT, EditUserSteps.collectedUser.getUserName());
           webDriverHelpers.fillInWebElement(
               LoginPage.USER_PASSWORD_INPUT, EditUserSteps.collectedUser.getPassword());
-          webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_KEYCLOAK_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
           String newPassword = EditUserSteps.collectedUser.getPassword() + "3!";
           EditUserSteps.collectedUser =
               EditUserSteps.collectedUser.toBuilder().password(newPassword).build();
@@ -410,7 +447,7 @@ public class CreateNewUserSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(LoginPage.USER_NAME_INPUT);
           webDriverHelpers.fillInWebElement(LoginPage.USER_NAME_INPUT, userName);
           webDriverHelpers.fillInWebElement(LoginPage.USER_PASSWORD_INPUT, userPass);
-          webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_KEYCLOAK_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
         });
 
     And(
@@ -517,6 +554,35 @@ public class CreateNewUserSteps implements En {
               "Users name are not equal");
           softly.assertAll();
         });
+
+    And(
+        "^I check that \"([^\"]*)\" user role checkbox is not available in Create New User form$",
+        (String userRole) -> {
+          softly.assertFalse(
+              webDriverHelpers.isElementVisibleWithTimeout(
+                  getUserRoleLabelByCaption("TestNatUser"), 3),
+              userRole + " user role is available!");
+          softly.assertAll();
+        });
+
+    And(
+        "^I create new \"([^\"]*)\" with english language for test$",
+        (String role) -> {
+          user = userService.buildGeneratedUserWithRole(role);
+          fillFirstName(user.getFirstName());
+          fillLastName(user.getLastName());
+          fillEmailAddress(user.getEmailAddress());
+          fillPhoneNumber(user.getPhoneNumber());
+          selectActive(user.getActive());
+          fillUserName(user.getUserName());
+          selectUserRole(role);
+          userName = user.getUserName();
+          webDriverHelpers.scrollToElement(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          userPass = webDriverHelpers.getTextFromWebElement(PASSWORD_FIELD);
+          closeNewPasswordPopUp();
+        });
   }
 
   private void fillFirstName(String firstName) {
@@ -601,6 +667,7 @@ public class CreateNewUserSteps implements En {
   }
 
   private void fillPostalCode(String postalCode) {
+    webDriverHelpers.scrollToElement(POSTAL_CODE_INPUT);
     webDriverHelpers.fillInWebElement(POSTAL_CODE_INPUT, postalCode);
   }
 

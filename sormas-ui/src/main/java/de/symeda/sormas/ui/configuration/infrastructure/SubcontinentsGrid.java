@@ -19,11 +19,11 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import de.symeda.sormas.api.feature.FeatureType;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentCriteria;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentIndexDto;
@@ -48,9 +48,11 @@ public class SubcontinentsGrid extends FilteredGrid<SubcontinentIndexDto, Subcon
 
 		super.setCriteria(criteria, true);
 		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-			setSelectionMode(SelectionMode.MULTI);
+			setCriteria(criteria);
+			setEagerDataProvider();
 		} else {
-			setSelectionMode(SelectionMode.NONE);
+			setLazyDataProvider();
+			setCriteria(criteria);
 		}
 
 		setColumns(
@@ -68,20 +70,22 @@ public class SubcontinentsGrid extends FilteredGrid<SubcontinentIndexDto, Subcon
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(SubcontinentIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
 		}
-
-		reload(true);
-	}
-
-	public void reload(boolean forceFetch) {
-		if (forceFetch || allSubcontinents == null) {
-			allSubcontinents = FacadeProvider.getSubcontinentFacade().getIndexList(null, null, null, null);
-		}
-		reload();
 	}
 
 	public void reload() {
-		this.setItems(createFilteredStream());
 		setSelectionMode(isInEagerMode() ? SelectionMode.MULTI : SelectionMode.NONE);
+		if (ViewModelProviders.of(SubcontinentsView.class).get(ViewConfiguration.class).isInEagerMode()) {
+			setEagerDataProvider();
+		}
+		getDataProvider().refreshAll();
+	}
+
+	public void setLazyDataProvider() {
+		setLazyDataProvider(FacadeProvider.getSubcontinentFacade()::getIndexList, FacadeProvider.getSubcontinentFacade()::count);
+	}
+
+	public void setEagerDataProvider() {
+		setEagerDataProvider(FacadeProvider.getSubcontinentFacade()::getIndexList);
 	}
 
 	private Stream<SubcontinentIndexDto> createFilteredStream() {

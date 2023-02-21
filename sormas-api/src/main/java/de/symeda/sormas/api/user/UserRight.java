@@ -17,8 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -29,9 +31,9 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 public enum UserRight {
 
 	//@formatter:off
-	CASE_VIEW(UserRightGroup.CASE),
+	CASE_VIEW(UserRightGroup.CASE, UserRight._PERSON_VIEW),
 	CASE_CREATE(UserRightGroup.CASE, UserRight._CASE_VIEW),
-	CASE_EDIT(UserRightGroup.CASE, UserRight._CASE_VIEW),
+	CASE_EDIT(UserRightGroup.CASE, UserRight._CASE_VIEW, UserRight._PERSON_EDIT),
 	CASE_ARCHIVE(UserRightGroup.CASE, UserRight._CASE_VIEW),
 	CASE_DELETE(UserRightGroup.CASE, UserRight._CASE_VIEW, UserRight._TASK_DELETE, UserRight._SAMPLE_DELETE, UserRight._VISIT_DELETE, UserRight._PERSON_DELETE, UserRight._TREATMENT_DELETE, UserRight._PRESCRIPTION_DELETE, UserRight._CLINICAL_VISIT_DELETE, UserRight._IMMUNIZATION_DELETE, UserRight._DOCUMENT_DELETE, UserRight._EXTERNAL_SURVEILLANCE_DELETE),
 	CASE_IMPORT(UserRightGroup.CASE, UserRight._CASE_VIEW),
@@ -52,17 +54,18 @@ public enum UserRight {
 	CASE_SHARE(UserRightGroup.CASE, UserRight._CASE_VIEW),
 	CASE_RESPONSIBLE(UserRightGroup.CASE, UserRight._CASE_EDIT),
 
-	IMMUNIZATION_VIEW(UserRightGroup.IMMUNIZATION),
+	IMMUNIZATION_VIEW(UserRightGroup.IMMUNIZATION, UserRight._PERSON_VIEW),
 	IMMUNIZATION_CREATE(UserRightGroup.IMMUNIZATION, UserRight._IMMUNIZATION_VIEW),
-	IMMUNIZATION_EDIT(UserRightGroup.IMMUNIZATION, UserRight._IMMUNIZATION_VIEW),
+	IMMUNIZATION_EDIT(UserRightGroup.IMMUNIZATION, UserRight._IMMUNIZATION_VIEW, UserRight._PERSON_EDIT),
 	IMMUNIZATION_ARCHIVE(UserRightGroup.IMMUNIZATION, UserRight._IMMUNIZATION_VIEW),
-	IMMUNIZATION_DELETE(UserRightGroup.IMMUNIZATION, UserRight._IMMUNIZATION_VIEW),
+	IMMUNIZATION_DELETE(UserRightGroup.IMMUNIZATION, UserRight._IMMUNIZATION_VIEW, UserRight._PERSON_DELETE),
 
 	PERSON_VIEW(UserRightGroup.PERSON),
 	PERSON_EDIT(UserRightGroup.PERSON, UserRight._PERSON_VIEW),
 	PERSON_DELETE(UserRightGroup.PERSON, UserRight._PERSON_VIEW, UserRight._VISIT_DELETE),
 	PERSON_EXPORT(UserRightGroup.PERSON, UserRight._PERSON_VIEW),
 	PERSON_CONTACT_DETAILS_DELETE(UserRightGroup.PERSON, UserRight._PERSON_EDIT),
+	PERSON_MERGE(UserRightGroup.PERSON, UserRight._PERSON_VIEW),
 
 	SAMPLE_VIEW(UserRightGroup.SAMPLE),
 	SAMPLE_CREATE(UserRightGroup.SAMPLE, UserRight._SAMPLE_VIEW),
@@ -82,9 +85,9 @@ public enum UserRight {
 	ADDITIONAL_TEST_EDIT(UserRightGroup.SAMPLE, UserRight._ADDITIONAL_TEST_VIEW),
 	ADDITIONAL_TEST_DELETE(UserRightGroup.SAMPLE, UserRight._ADDITIONAL_TEST_VIEW),
 
-	CONTACT_VIEW(UserRightGroup.CONTACT, UserRight._CASE_VIEW),
+	CONTACT_VIEW(UserRightGroup.CONTACT, UserRight._CASE_VIEW, UserRight._PERSON_VIEW),
 	CONTACT_CREATE(UserRightGroup.CONTACT, UserRight._CONTACT_VIEW),
-	CONTACT_EDIT(UserRightGroup.CONTACT, UserRight._CONTACT_VIEW),
+	CONTACT_EDIT(UserRightGroup.CONTACT, UserRight._CONTACT_VIEW, UserRight._PERSON_EDIT),
 	CONTACT_ARCHIVE(UserRightGroup.CONTACT, UserRight._CONTACT_VIEW),
 	CONTACT_DELETE(UserRightGroup.CONTACT, UserRight._CONTACT_VIEW, UserRight._TASK_DELETE, UserRight._SAMPLE_DELETE, UserRight._VISIT_DELETE, UserRight._PERSON_DELETE, UserRight._DOCUMENT_DELETE),
 	CONTACT_IMPORT(UserRightGroup.CONTACT, UserRight._CONTACT_VIEW),
@@ -107,6 +110,7 @@ public enum UserRight {
 	TASK_DELETE(UserRightGroup.TASK, UserRight._TASK_VIEW),
 	TASK_EXPORT(UserRightGroup.TASK, UserRight._TASK_VIEW),
 	TASK_ASSIGN(UserRightGroup.TASK, UserRight._TASK_EDIT),
+	TASK_ARCHIVE(UserRightGroup.TASK, UserRight._TASK_VIEW),
 
 	ACTION_CREATE(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
 	ACTION_DELETE(UserRightGroup.EVENT, UserRight._EVENT_VIEW, UserRight._DOCUMENT_DELETE),
@@ -122,9 +126,9 @@ public enum UserRight {
 	PERFORM_BULK_OPERATIONS_EVENT(UserRightGroup.EVENT, UserRight._EVENT_EDIT),
 	EVENT_RESPONSIBLE(UserRightGroup.EVENT, UserRight._EVENT_EDIT),
 
-	EVENTPARTICIPANT_VIEW(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
+	EVENTPARTICIPANT_VIEW(UserRightGroup.EVENT, UserRight._EVENT_VIEW, UserRight._PERSON_VIEW),
 	EVENTPARTICIPANT_CREATE(UserRightGroup.EVENT, UserRight._EVENTPARTICIPANT_VIEW),
-	EVENTPARTICIPANT_EDIT(UserRightGroup.EVENT, UserRight._EVENTPARTICIPANT_VIEW),
+	EVENTPARTICIPANT_EDIT(UserRightGroup.EVENT, UserRight._EVENTPARTICIPANT_VIEW, UserRight._PERSON_EDIT),
 	EVENTPARTICIPANT_ARCHIVE(UserRightGroup.EVENT, UserRight._EVENTPARTICIPANT_VIEW),
 	EVENTPARTICIPANT_DELETE(UserRightGroup.EVENT, UserRight._EVENTPARTICIPANT_VIEW, UserRight._SAMPLE_DELETE, UserRight._PERSON_DELETE),
 	EVENTPARTICIPANT_IMPORT(UserRightGroup.EVENT, UserRight._EVENTPARTICIPANT_VIEW),
@@ -155,10 +159,10 @@ public enum UserRight {
 	INFRASTRUCTURE_EXPORT(UserRightGroup.INFRASTRUCTURE, UserRight._INFRASTRUCTURE_VIEW),
 	POPULATION_MANAGE(UserRightGroup.INFRASTRUCTURE, UserRight._INFRASTRUCTURE_VIEW),
 
-	DASHBOARD_SURVEILLANCE_VIEW(UserRightGroup.DASHBOARD),
-	DASHBOARD_CONTACT_VIEW(UserRightGroup.DASHBOARD),
+	DASHBOARD_SURVEILLANCE_VIEW(UserRightGroup.DASHBOARD, UserRight._CASE_VIEW),
+	DASHBOARD_CONTACT_VIEW(UserRightGroup.DASHBOARD, UserRight._CONTACT_VIEW),
 	DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS(UserRightGroup.DASHBOARD, UserRight._DASHBOARD_CONTACT_VIEW),
-	DASHBOARD_CAMPAIGNS_VIEW(UserRightGroup.DASHBOARD),
+	DASHBOARD_CAMPAIGNS_VIEW(UserRightGroup.DASHBOARD, UserRight._CAMPAIGN_VIEW),
 
 	CASE_CLINICIAN_VIEW(UserRightGroup.CASE_MANAGEMENT, UserRight._CASE_VIEW),
 
@@ -202,11 +206,11 @@ public enum UserRight {
 	CAMPAIGN_FORM_DATA_EXPORT(UserRightGroup.CAMPAIGN, UserRight._CAMPAIGN_FORM_DATA_VIEW),
 
 	TRAVEL_ENTRY_MANAGEMENT_ACCESS(UserRightGroup.TRAVEL_ENTRY),
-	TRAVEL_ENTRY_VIEW(UserRightGroup.TRAVEL_ENTRY, UserRight._TRAVEL_ENTRY_MANAGEMENT_ACCESS),
+	TRAVEL_ENTRY_VIEW(UserRightGroup.TRAVEL_ENTRY, UserRight._TRAVEL_ENTRY_MANAGEMENT_ACCESS, UserRight._PERSON_VIEW),
 	TRAVEL_ENTRY_CREATE(UserRightGroup.TRAVEL_ENTRY, UserRight._TRAVEL_ENTRY_VIEW),
-	TRAVEL_ENTRY_EDIT(UserRightGroup.TRAVEL_ENTRY, UserRight._TRAVEL_ENTRY_VIEW),
+	TRAVEL_ENTRY_EDIT(UserRightGroup.TRAVEL_ENTRY, UserRight._TRAVEL_ENTRY_VIEW, UserRight._PERSON_EDIT),
 	TRAVEL_ENTRY_ARCHIVE(UserRightGroup.TRAVEL_ENTRY, UserRight._TRAVEL_ENTRY_VIEW),
-	TRAVEL_ENTRY_DELETE(UserRightGroup.TRAVEL_ENTRY, UserRight._TRAVEL_ENTRY_VIEW, UserRight._TASK_DELETE, UserRight._DOCUMENT_DELETE),
+	TRAVEL_ENTRY_DELETE(UserRightGroup.TRAVEL_ENTRY, UserRight._TRAVEL_ENTRY_VIEW, UserRight._TASK_DELETE, UserRight._DOCUMENT_DELETE, UserRight._PERSON_DELETE),
 
 	DOCUMENT_VIEW(UserRightGroup.DOCUMENT),
 	DOCUMENT_UPLOAD(UserRightGroup.DOCUMENT, UserRight._DOCUMENT_VIEW),
@@ -317,6 +321,7 @@ public enum UserRight {
 	public static final String _TASK_ASSIGN = "TASK_ASSIGN";
 	public static final String _TASK_DELETE = "TASK_DELETE";
 	public static final String _TASK_EXPORT = "TASK_EXPORT";
+	public static final String _TASK_ARCHIVE = "TASK_ARCHIVE";
 	public static final String _ACTION_CREATE = "ACTION_CREATE";
 	public static final String _ACTION_DELETE = "ACTION_DELETE";
 	public static final String _ACTION_EDIT = "ACTION_EDIT";
@@ -343,6 +348,8 @@ public enum UserRight {
 	public static final String _USER_CREATE = "USER_CREATE";
 	public static final String _USER_EDIT = "USER_EDIT";
 	public static final String _USER_VIEW = "USER_VIEW";
+	public static final String _USER_ROLE_EDIT = "USER_ROLE_EDIT";
+	public static final String _USER_ROLE_DELETE = "USER_ROLE_DELETE";
 	public static final String _USER_ROLE_VIEW = "USER_ROLE_VIEW";
 	public static final String _SEND_MANUAL_EXTERNAL_MESSAGES = "SEND_MANUAL_EXTERNAL_MESSAGES";
 	public static final String _STATISTICS_ACCESS = "STATISTICS_ACCESS";
@@ -423,6 +430,7 @@ public enum UserRight {
 	public static final String _SORMAS_UI = "SORMAS_UI";
 	public static final String _SORMAS_TO_SORMAS_CLIENT = "SORMAS_TO_SORMAS_CLIENT";
 	public static final String _EXTERNAL_VISITS = "EXTERNAL_VISITS";
+	public static final String _DEV_MODE = "DEV_MODE";
 
 	private static final Map<UserRight, Set<UserRight>> userRightDependencies = buildUserRightDependencies();
 
@@ -478,5 +486,21 @@ public enum UserRight {
 
 	public Set<UserRight> getRequiredUserRights() {
 		return userRightDependencies.get(this);
+	}
+
+	public static Set<UserRight> getUserRightsOfGroup(UserRightGroup userRightGroup) {
+		return Arrays.stream(values()).filter(userRight -> userRight.getUserRightGroup() == userRightGroup).collect(Collectors.toSet());
+	}
+
+	public static Set<UserRight> requiredRightFromUserRights(UserRight userRight, Set<UserRight> userRights) {
+
+		Set<UserRight> requiredRights = new HashSet<>();
+		for (Map.Entry<UserRight, Set<UserRight>> entry : userRightDependencies.entrySet()) {
+			UserRight keyRight = entry.getKey();
+			if (entry.getValue().contains(userRight) && userRights.contains(keyRight)) {
+				requiredRights.add(keyRight);
+			}
+		}
+		return requiredRights;
 	}
 }

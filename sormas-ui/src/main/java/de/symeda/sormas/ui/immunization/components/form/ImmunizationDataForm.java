@@ -70,9 +70,11 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SearchSpecificLayout;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
+import de.symeda.sormas.ui.utils.ComboBoxWithPlaceholder;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -123,16 +125,16 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 	private boolean ignoreMeansOfImmunizationChange = false;
 	private MeansOfImmunization previousMeansOfImmunization;
 	private CheckBox overwriteImmunizationManagementStatus;
-	private ComboBox facilityTypeGroup;
+	private ComboBoxWithPlaceholder facilityTypeGroup;
 	private final Consumer<Runnable> actionCallback;
 
-	public ImmunizationDataForm(boolean isPseudonymized, CaseReferenceDto relatedCase, Consumer<Runnable> actionCallback) {
+	public ImmunizationDataForm(boolean isPseudonymized, boolean inJurisdiction, CaseReferenceDto relatedCase, Consumer<Runnable> actionCallback) {
 		super(
 			ImmunizationDto.class,
 			ImmunizationDto.I18N_PREFIX,
 			false,
 			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
-			UiFieldAccessCheckers.getDefault(isPseudonymized));
+			UiFieldAccessCheckers.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized));
 		this.relatedCase = relatedCase;
 		this.actionCallback = actionCallback;
 		addFields();
@@ -204,7 +206,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		facilityTypeGroup.setWidth(100, Unit.PERCENTAGE);
 		facilityTypeGroup.addItems(FacilityTypeGroup.values());
 		getContent().addComponent(facilityTypeGroup, FACILITY_TYPE_GROUP_LOC);
-		ComboBox facilityType = addField(ImmunizationDto.FACILITY_TYPE);
+		ComboBox facilityType = addField(ImmunizationDto.FACILITY_TYPE, ComboBoxWithPlaceholder.class);
 		ComboBox facilityCombo = addInfrastructureField(ImmunizationDto.HEALTH_FACILITY);
 		facilityCombo.setImmediate(true);
 		TextField facilityDetails = addField(ImmunizationDto.HEALTH_FACILITY_DETAILS, TextField.class);
@@ -213,10 +215,12 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		DateField startDate = addField(ImmunizationDto.START_DATE, DateField.class);
 		DateField endDate = addDateField(ImmunizationDto.END_DATE, DateField.class, -1);
 		DateComparisonValidator.addStartEndValidators(startDate, endDate);
+		DateComparisonValidator.dateFieldDependencyValidationVisibility(startDate, endDate);
 
 		DateField validFrom = addDateField(ImmunizationDto.VALID_FROM, DateField.class, -1);
 		DateField validUntil = addDateField(ImmunizationDto.VALID_UNTIL, DateField.class, -1);
 		DateComparisonValidator.addStartEndValidators(validFrom, validUntil);
+		DateComparisonValidator.dateFieldDependencyValidationVisibility(validFrom, validUntil);
 
 		MeansOfImmunization meansOfImmunizationValue = (MeansOfImmunization) meansOfImmunizationField.getValue();
 
@@ -282,6 +286,12 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 
 		// Set initial visibilities & accesses
 		initializeVisibilitiesAndAllowedVisibilities();
+		initializeAccessAndAllowedAccesses();
+
+		if (!isEditableAllowed(ImmunizationDto.HEALTH_FACILITY)) {
+			setEnabled(false, ImmunizationDto.FACILITY_TYPE, ImmunizationDto.HEALTH_FACILITY_DETAILS);
+			FieldHelper.setComboInaccessible(facilityTypeGroup);
+		}
 
 		setRequired(true, ImmunizationDto.REPORT_DATE, ImmunizationDto.DISEASE, ImmunizationDto.MEANS_OF_IMMUNIZATION);
 
@@ -373,7 +383,6 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 
 			if (!isVaccinationVisible) {
 				numberOfDosesField.clear();
-				numberOfDosesDetailsField.clear();
 			}
 
 			if (!isRecoveryVisible) {

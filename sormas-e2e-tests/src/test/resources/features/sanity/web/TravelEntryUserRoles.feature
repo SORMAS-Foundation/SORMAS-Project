@@ -1,7 +1,7 @@
 @UI @Sanity @TravelEntriesUserRoles @add_userroles
 Feature: Create travel entries for different user roles
 
-@tmsLink=SORDEV-10360 @env_de
+@tmsLink=SORDEV-10360 @env_de @ignore
 Scenario Outline: Test add Date of arrival to Travel Entry and fill it when importing DEA information
   Given I log in as a <user>
   And I click on the Entries button from navbar
@@ -36,7 +36,7 @@ Scenario Outline: Test add Date of arrival to Travel Entry and fill it when impo
     | Surveillance Supervisor   |
     | Community Officer         |
 
-  @tmsLink=SORDEV-8266 @env_de
+  @tmsLink=SORDEV-8266 @env_de @ignore
   Scenario Outline: Create a Travel Entry
     Given I log in as a <user>
     And I click on the Entries button from navbar
@@ -56,7 +56,7 @@ Scenario Outline: Test add Date of arrival to Travel Entry and fill it when impo
       | Community Officer         |
       | Clinician                 |
 
-  @tmsLink=SORDEV-8268 @env_de
+  @tmsLink=SORDEV-8268 @env_de @ignore
   Scenario Outline: Create a case for a travel entry
     Given I log in as a <user>
     And I click on the Entries button from navbar

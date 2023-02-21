@@ -46,104 +46,16 @@ Feature: Create user
       Then I click on the Cases button from navbar
       And I check if user have limited disease view to Cholera only
 
-  @tmsLink=SORDEV-5964 @env_main
-  Scenario: Bulk mode for Activate/deactivate user accounts
-    Given I log in as a Admin User
-    And I click on the Users from navbar
-    And I create 2 new users with National User via UI
-    And I pick and count amount a users that was created on the same period of time
-    And I click Enter Bulk Edit Mode on Users directory page
-    And I click checkbox to choose all User results
-    And I click on Bulk Actions combobox on User Directory Page
-    And I click on "Disable" from Bulk Actions combobox on User Directory Page
-    And I pick "Inactive" value for Active filter in User Directory
-    And I check that all Users are changed Active field value to opposite
-    And I click checkbox to choose all User results
-    And I click on Bulk Actions combobox on User Directory Page
-    And I click on "Enable" from Bulk Actions combobox on User Directory Page
-    And I pick "Active" value for Active filter in User Directory
-    And I check that all Users are changed Active field value to opposite
-
-  @tmsLink=SORQA-461 @env_main
-  Scenario Outline: Filter of User folder for user roles
-    Given I log in as a Admin User
-    And I click on the Users from navbar
-    Then I set user role to "<user>"
-
-    Examples:
-    | user                          |
-    | Admin                         |
-    | National User                 |
-    | Surveillance Supervisor       |
-    | Admin Surveillance Supervisor |
-    | Surveillance Officer          |
-    | Hospital Informant            |
-    | Community Officer             |
-    | Clinician                     |
-    | Case Officer                  |
-    | Contact Supervisor            |
-    | Contact Officer               |
-    | Event Officer                 |
-    | Lab Officer                   |
-    | National Observer             |
-    | Region Observer               |
-    | District Observer             |
-    | National Clinician            |
-    | POE Informant                 |
-    | POE Supervisor                |
-    | POE National User             |
-    | Import User                   |
-    | External Visits User          |
-    | Sormas to Sormas Client       |
-    | BAG User                      |
-    | Community Informant           |
-    | External Lab Officer          |
-
-  @tmsLink=SORQA-461 @env_main
-  Scenario Outline: Filter of User folder for regions
-    Given I log in as a Admin User
-    And I click on the Users from navbar
-    Then I set region filter to "<region>"
-
-    Examples:
-    | region                          |
-    | Baden-Württemberg               |
-    | Bayern                          |
-    | Berlin                          |
-    | Brandenburg                     |
-    | Bremen                          |
-    | Hamburg                         |
-    | Hessen                          |
-    | Mecklenburg-Vorpommern          |
-    | Niedersachsen                   |
-    | Nordrhein-Westfalen             |
-    | Rheinland-Pfalz                 |
-    | Saarland                        |
-    | Sachsen                         |
-    | Sachsen-Anhalt                  |
-    | Schleswig-Holstein              |
-    | Thüringen                       |
-    | Voreingestellte Bundesländer    |
-
-  @tmsLink=SORQA-461 @env_main
-  Scenario: Filter of User folder for automation_admin user and active filter
-    Given I log in as a Admin User
-    And I click on the Users from navbar
-    Then I search user "automation_admin"
-    And I check if displayed user name is equal with searched "automation_admin"
-    And I pick "Active" value for Active filter in User Directory
-    And I pick "Inactive" value for Active filter in User Directory
-
   @tmsLink=SORQA-457 @env_keycloak
   Scenario: Create a new SORMAS user, check login and disable
-    Given I log in as Admin User in Keycloak enabled environment
+    Given I log in as a Admin User
     And I click on the Users from navbar
     Then I click on the NEW USER button
-    Then I create new Test user for test on DE specific
+    Then I create new Importierender Benutzer user for test on DE specific
     And I click on logout button from navbar
     And I login first time as a new created user from keycloak instance
     And I click on logout button from navbar
-    Then I log in as Admin User in Keycloak enabled environment
+    Then I log in as a Admin User
     And I click on the Users from navbar
     And I filter last created user
     And I open first user from the list
@@ -161,7 +73,7 @@ Feature: Create user
 
   @tmsLink=SORQA-460 @env_keycloak
   Scenario: Change password of SORMAS user (by admin)
-    Given I log in as Admin User in Keycloak enabled environment
+    Given I log in as a Admin User
     And I click on the Users from navbar
     Then I search user "PasswordUser"
     And I select first user from list
@@ -179,3 +91,36 @@ Feature: Create user
     Then I click on logout button from navbar
     And I login with last edited user
     Then I click on logout button from navbar
+
+  @#7470 @env_main
+  Scenario: Verify user set active set inactive functionality
+    Given I log in as a Admin User
+    And I click on the Users from navbar
+    When I create a new disabled National User in the Create New User page
+    When I search for created user in the User Management Page
+    Then I verify that the Active value is Checked in the User Management Page
+    When I select first user from list
+    Then I click on the Active checkbox in the Edit User Page
+    Then I verify that the Active value is Unchecked in the User Management Page
+
+  @#7470 @env_main
+  Scenario: Validate create new password functionality
+    Given I log in as a Admin User
+    And I click on the Users from navbar
+    When I create 1 new users with National User via UI
+    When I search for created user
+    When I click Create New Password in Edit User page
+    Then I click the Cancel button in the Update Password Modal located in the Edit User Page
+    When I click Create New Password in Edit User page
+    Then I click the Update button in the Update Password Modal located in the Edit User Page
+    Then I Verify the New Password Modal in the Edit User Page
+
+  @#7470 @env_main
+  Scenario: Validate mandatory phone number field
+    Given I log in as a Admin User
+    And I click on the Users from navbar
+    When I create 1 new users with National User via UI
+    When I search for created user
+    When I fill phone number with a wrong format in the Edit User Page
+    And I click on the Save button in the Edit User Page
+    Then I verify the error message is displayed in the Edit User Page

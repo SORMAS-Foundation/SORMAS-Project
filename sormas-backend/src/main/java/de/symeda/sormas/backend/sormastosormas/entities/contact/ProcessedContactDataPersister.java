@@ -18,20 +18,41 @@ package de.symeda.sormas.backend.sormastosormas.entities.contact;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildContactValidationGroupName;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.handleValidationError;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.CaseSelectionDto;
+import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
+import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.infrastructure.district.DistrictDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.person.PersonSimilarityCriteria;
+import de.symeda.sormas.api.person.SimilarPersonDto;
+import de.symeda.sormas.api.sormastosormas.DuplicateResult;
+import de.symeda.sormas.api.sormastosormas.entities.DuplicateResultType;
+import de.symeda.sormas.api.sormastosormas.entities.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
+import de.symeda.sormas.api.uuid.AbstractUuidDto;
+import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
+import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.data.processed.ProcessedDataPersister;
+import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntitiesHelper;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
@@ -45,7 +66,14 @@ public class ProcessedContactDataPersister extends ProcessedDataPersister<Contac
 	@EJB
 	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacade;
 	@EJB
+	private ContactService contactService;
+	@EJB
 	private SormasToSormasShareInfoService shareInfoService;
+	@EJB
+	private CaseService caseService;
+	@EJB
+	private SormasToSormasEntitiesHelper sormasToSormasEntitiesHelper;
+
 	@EJB
 	private SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
 
@@ -60,8 +88,9 @@ public class ProcessedContactDataPersister extends ProcessedDataPersister<Contac
 	}
 
 	@Override
-	public void persistSharedData(SormasToSormasContactDto processedData, Contact existingContact) throws SormasToSormasValidationException {
-		persistProcessedData(processedData, existingContact == null);
+	public void persistSharedData(SormasToSormasContactDto processedData, Contact existingContact, boolean isSync)
+		throws SormasToSormasValidationException {
+		persistProcessedData(processedData, existingContact == null, isSync);
 	}
 
 	@Override
@@ -69,7 +98,52 @@ public class ProcessedContactDataPersister extends ProcessedDataPersister<Contac
 		return shareInfoService.getByContactAndOrganization(entity.getUuid(), organizationId);
 	}
 
-	private void persistProcessedData(SormasToSormasContactDto processedData, boolean isCreate) throws SormasToSormasValidationException {
+	@Override
+	public DuplicateResult checkForSimilarEntities(SormasToSormasContactDto processedData) {
+		List<SimilarPersonDto> similarPersons = personFacade.getSimilarPersonDtos(PersonSimilarityCriteria.forPerson(processedData.getPerson()));
+		if (similarPersons.isEmpty()) {
+			return DuplicateResult.none();
+		}
+
+		Set<PersonReferenceDto> similarPersonRefs = similarPersons.stream().map(SimilarPersonDto::toReference).collect(Collectors.toSet());
+		List<SimilarContactDto> similarContacts = contactFacade.getMatchingContacts(
+			new ContactSimilarityCriteria().withPersons(similarPersonRefs)
+				.withCaze(processedData.getEntity().getCaze())
+				.withDisease(processedData.getEntity().getDisease()));
+
+		if (!similarContacts.isEmpty()) {
+			Set<String> similarContactUuids = similarContacts.stream().map(AbstractUuidDto::getUuid).collect(Collectors.toSet());
+			boolean foundSimilarContactsConverted = contactService
+				.exists(((cb, root, cq) -> cb.and(root.get(Contact.UUID).in(similarContactUuids), cb.isNotNull(root.get(Contact.RESULTING_CASE)))));
+
+			return foundSimilarContactsConverted
+				? new DuplicateResult(DuplicateResultType.CONTACT_CONVERTED, similarContactUuids)
+				: new DuplicateResult(DuplicateResultType.CONTACT, similarContactUuids);
+		}
+
+		DistrictReferenceDto district =
+			sormasToSormasEntitiesHelper.getS2SDistrictReference().map(DistrictDto::toReference).orElse(processedData.getEntity().getDistrict());
+		if (district != null) {
+			List<CaseSelectionDto> similarCases = caseService.getSimilarCases(
+				new CaseSimilarityCriteria().caseCriteria(new CaseCriteria().disease(processedData.getEntity().getDisease()).district(district))
+					.personUuids(similarPersons.stream().map(SimilarPersonDto::getUuid).collect(Collectors.toList())));
+
+			return !similarCases.isEmpty()
+				? new DuplicateResult(
+					DuplicateResultType.CASE_TO_CONTACT,
+					similarCases.stream().map(AbstractUuidDto::getUuid).collect(Collectors.toSet()))
+				: new DuplicateResult(
+					DuplicateResultType.PERSON_ONLY,
+					similarPersonRefs.stream().map(ReferenceDto::getUuid).collect(Collectors.toSet()));
+		}
+
+		return new DuplicateResult(
+			DuplicateResultType.PERSON_ONLY,
+			similarPersonRefs.stream().map(ReferenceDto::getUuid).collect(Collectors.toSet()));
+	}
+
+	private void persistProcessedData(SormasToSormasContactDto processedData, boolean isCreate, boolean isSync)
+		throws SormasToSormasValidationException {
 		ContactDto contact = processedData.getEntity();
 		ValidationErrorGroup contactValidationGroupName = buildContactValidationGroupName(contact);
 
@@ -82,7 +156,11 @@ public class ProcessedContactDataPersister extends ProcessedDataPersister<Contac
 		} else {
 			//save contact first during update
 			handleValidationError(() -> contactFacade.save(contact, true, true, false, false), Captions.Contact, contactValidationGroupName, contact);
-			handleValidationError(() -> personFacade.save(person, false, false, false), Captions.Person, contactValidationGroupName, contact);
+
+			// #10544 only persons not owned should be updated
+			if (!(isSync && personFacade.isEditAllowed(person.getUuid()))) {
+				handleValidationError(() -> personFacade.save(person, false, false, false), Captions.Person, contactValidationGroupName, contact);
+			}
 		}
 	}
 }

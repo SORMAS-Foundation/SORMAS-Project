@@ -134,6 +134,7 @@
                         android:layout_marginTop="@dimen/listActivityRowSecondaryTextVerticalMargin"
                         android:fontFamily="sans-serif-medium"
                         app:timeAgoValue="@{data.lastContactDate}"
+                        app:timeAgoDetailLevelDays="@{true}"
                         app:goneIfEmpty="@{data.lastContactDate}" />
 
                 </LinearLayout>

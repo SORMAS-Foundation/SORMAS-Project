@@ -186,6 +186,7 @@ public class SurveillanceDiseaseCarouselLayout extends VerticalLayout {
 	private void changeSelectedDisease(Disease disease, boolean doRefresh) {
 		this.dashboardDataProvider.setDisease(disease);
 		if (doRefresh) {
+			this.dashboardDataProvider.refreshDataForSelectedDisease();
 			refresh();
 		}
 	}

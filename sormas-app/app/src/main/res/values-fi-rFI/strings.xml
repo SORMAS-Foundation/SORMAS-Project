@@ -585,6 +585,7 @@
     <string name="time_future_x_years">%1$s vuoden sisällä</string>
     <string name="time_now">juuri nyt</string>
     <string name="time_past_almost_two_years">melkein kaksi vuotta sitten</string>
+    <string name="time_past_today">today</string>
     <string name="time_past_one_day">eilen</string>
     <string name="time_past_one_hour">noin tunti sitten</string>
     <string name="time_past_one_minute">minuutti sitten</string>

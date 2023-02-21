@@ -36,8 +36,9 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentField;
 
-public class SourceContactListEntry extends HorizontalLayout {
+public class SourceContactListEntry extends SideComponentField {
 
 	private final ContactIndexDto contact;
 	private Button editButton;
@@ -46,17 +47,11 @@ public class SourceContactListEntry extends HorizontalLayout {
 
 		this.contact = contact;
 
-		setMargin(false);
-		setSpacing(true);
-		setWidth(100, Unit.PERCENTAGE);
-		addStyleName(CssStyles.SORMAS_LIST_ENTRY);
-
 		HorizontalLayout mainLayout = new HorizontalLayout();
 		mainLayout.setWidth(100, Unit.PERCENTAGE);
 		mainLayout.setMargin(false);
 		mainLayout.setSpacing(true);
-		addComponent(mainLayout);
-		setExpandRatio(mainLayout, 1);
+		addComponentToField(mainLayout);
 
 		VerticalLayout leftColumn = new VerticalLayout();
 		leftColumn.setMargin(false);

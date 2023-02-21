@@ -58,6 +58,7 @@ import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.ComboBoxWithPlaceholder;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -342,10 +343,13 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 
 		if (epiDataParentClass == CaseDataDto.class) {
 			ComboBox cbContactToCase = getField(ExposureDto.CONTACT_TO_CASE);
-			if (sourceContacts != null) {
+			if (sourceContacts != null && !cbContactToCase.isReadOnly()) {
 				cbContactToCase.addItems(sourceContacts);
 			}
-			cbContactToCase.getItemIds().forEach(i -> cbContactToCase.setItemCaption(i, ((ContactReferenceDto) i).getCaptionAlwaysWithUuid()));
+			cbContactToCase.getItemIds()
+				.stream()
+				.filter(i -> !(i instanceof ComboBoxWithPlaceholder.PlaceholderReferenceDto))
+				.forEach(i -> cbContactToCase.setItemCaption(i, ((ContactReferenceDto) i).getCaptionAlwaysWithUuid()));
 		}
 
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.

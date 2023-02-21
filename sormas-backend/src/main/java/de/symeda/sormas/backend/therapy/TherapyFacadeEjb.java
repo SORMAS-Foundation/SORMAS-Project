@@ -19,14 +19,6 @@ import de.symeda.sormas.backend.util.ModelConstants;
 @Stateless(name = "TherapyFacade")
 public class TherapyFacadeEjb implements TherapyFacade {
 
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	private EntityManager em;
-
-	@EJB
-	private TherapyService service;
-	@EJB
-	private UserService userService;
-
 	public static TherapyReferenceDto toReferenceDto(Therapy entity) {
 
 		if (entity == null) {
@@ -47,9 +39,8 @@ public class TherapyFacadeEjb implements TherapyFacade {
 		return target;
 	}
 
-	public Therapy fromDto(@NotNull TherapyDto source, boolean checkChangeDate) {
-
-		Therapy target = DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), () -> {
+	public Therapy fillOrBuildEntity(@NotNull TherapyDto source, Therapy entity, boolean checkChangeDate) {
+		return DtoHelper.fillOrBuildEntity(source, entity, () -> {
 			Therapy newTherapy = new Therapy();
 			if (source.getChangeDate() != null) {
 				newTherapy.setChangeDate(new Timestamp(source.getChangeDate().getTime()));
@@ -57,8 +48,6 @@ public class TherapyFacadeEjb implements TherapyFacade {
 
 			return newTherapy;
 		}, checkChangeDate);
-
-		return target;
 	}
 
 	@LocalBean

@@ -31,6 +31,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FACI
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.LEAVE_BULK_EDIT_MODE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.MORE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SHARE_OPTION_BULK_ACTION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SHOW_MORE_LESS_FILTERS;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getMergeDuplicatesButtonById;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
@@ -89,7 +90,7 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.BULK_ACTIONS_CONTACT_VALUES;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.BULK_CREATE_QUARANTINE_ORDER;
-import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_COLUMN_HEADERS;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.BULK_DELETE_BUTTON_CONTACT_PAGE;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_FROM_OTHER_INSTANCES_CHECKBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_ONLY_HIGH_PRIOROTY_CHECKBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_WITH_EXTENDED_QUARANTINE_CHECKBOX;
@@ -241,7 +242,7 @@ public class ContactDirectorySteps implements En {
     this.faker = faker;
 
     When(
-        "^I navigate to the last created contact via the url$",
+        "^I open the last created contact via API$",
         () -> {
           String LAST_CREATED_CONTACT_URL =
               runningConfiguration.getEnvironmentUrlForMarket(locale)
@@ -341,7 +342,15 @@ public class ContactDirectorySteps implements En {
               getMergeDuplicatesButtonById(leadingContactUUID));
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
         });
-
+    When(
+        "I check that Share option is not visible in Bulk Actions dropdown in Contact Directory for DE specific",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          softly.assertFalse(
+              webDriverHelpers.isElementVisibleWithTimeout(SHARE_OPTION_BULK_ACTION_COMBOBOX, 3),
+              "Share is visible!");
+          softly.assertAll();
+        });
     And(
         "I click on Merge button of first leading Contact in Merge Duplicate Contact page",
         () -> {
@@ -355,14 +364,6 @@ public class ContactDirectorySteps implements En {
               MULTIPLE_OPTIONS_SEARCH_INPUT, apiState.getCreatedCase().getUuid());
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
         });
-    When(
-        "I open the last created contact",
-        () -> {
-          searchAfterContactByMultipleOptions(apiState.getCreatedContact().getUuid());
-          webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(CONTACTS_COLUMN_HEADERS);
-          openContactFromResultsByUUID(apiState.getCreatedContact().getUuid());
-        });
-
     When(
         "I click on the DETAILED radiobutton from Contact directory",
         () -> {
@@ -1028,6 +1029,9 @@ public class ContactDirectorySteps implements En {
           webDriverHelpers.clickWebElementByText(
               RESIDING_OR_TRAVELING_DETAILS_KNOWN_OPTIONS, option);
         });
+    And(
+        "I click on Delete button from Bulk Actions Combobox in Contact Directory",
+        () -> webDriverHelpers.clickOnWebElementBySelector(BULK_DELETE_BUTTON_CONTACT_PAGE));
 
     When(
         "I am checking if options in checkbox for Contact are displayed correctly",
@@ -1037,14 +1041,6 @@ public class ContactDirectorySteps implements En {
               specificCaseData,
               dataSavedFromCheckbox,
               List.of("residingAreaWithRisk", "largeOutbreaksArea"));
-        });
-
-    When(
-        "I search after last created contact via API by UUID and open",
-        () -> {
-          searchAfterContactByMultipleOptions(apiState.getCreatedContact().getUuid());
-          TimeUnit.SECONDS.sleep(2);
-          openContactFromResultsByUUID(apiState.getCreatedContact().getUuid());
         });
 
     When(
@@ -1358,12 +1354,6 @@ public class ContactDirectorySteps implements En {
     } catch (IOException e) {
       log.error("IOException csvWriter: ", e);
     }
-  }
-
-  private void searchAfterContactByMultipleOptions(String idPhoneNameEmail) {
-    webDriverHelpers.waitUntilElementIsVisibleAndClickable(APPLY_FILTERS_BUTTON);
-    webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, idPhoneNameEmail);
-    webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
   }
 
   private void openContactFromResultsByUUID(String uuid) {
