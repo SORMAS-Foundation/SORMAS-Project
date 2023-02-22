@@ -24,6 +24,13 @@ public class MessagesDirectoryPage {
       By.xpath("//*[contains(text(),'Eintrag ausw\u00E4hlen oder erstellen')]");
   public static final By UPDATE_THE_DISEASE_VARIANT_HEADER =
       By.xpath("//*[contains(text(),'Krankheitsvariante des Falls aktualisieren')]");
+  public static final By CREATE_A_NEW_CASE_WITH_POSITIVE_TEST_CONTACT_HEADER_DE =
+      By.xpath(
+          "//*[contains(text(),'Soll ein Fall aus dem Kontakt mit positivem Testresultat erstellt werden?')]");
+
+  public static final By CREATE_A_NEW_CASE_WITH_POSITIVE_TEST_EVENT_PARTICIPANT_HEADER_DE =
+      By.xpath(
+          "//*[contains(text(),'M\u00F6chten Sie einen Fall f\u00FCr den Ereignisteilnehmer mit postitivem Testresultat erstellen?')]");
   public static final By SAVE_POPUP_CONTENT_FIRST_BUTTON =
       By.xpath("(//div[@class='popupContent']//div[@id='commit'])[1]");
   public static final By SAVE_POPUP_CONTENT_SECOND_BUTTON =
@@ -109,4 +116,8 @@ public class MessagesDirectoryPage {
   public static final By PROCESSED_QUICK_FILTER_COUNTER = By.cssSelector("#Verarbeitet .badge");
   public static final By UNCLEAR_QUICK_FILTER_COUNTER = By.cssSelector("#Unklar .badge");
   public static final By FORWARDED_QUICK_FILTER_COUNTER = By.cssSelector("#Weitergeleitet .badge");
+  public static final By CREATE_NEW_PERSON_RADIOBUTTON_DE =
+      By.xpath("//*[text()='Neuen Kontakt erstellen']");
+  public static final By CREATE_NEW_EVENT_PARTICIPANT_RADIOBUTTON_DE =
+      By.xpath("//*[text()='Neuen Ereignisteilnehmer erstellen']");
 }
