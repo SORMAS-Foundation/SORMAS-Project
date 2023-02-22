@@ -66,6 +66,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.events.EventDataForm;
 import de.symeda.sormas.ui.location.AccessibleTextField;
 import de.symeda.sormas.ui.location.LocationEditForm;
@@ -977,6 +979,17 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 	public void setDirty(boolean dirty) {
 		this.dirty = dirty;
+	}
+
+	//In case of having delete right without edit rightm the delete button should remain enabled
+	public void restrictEditableComponentsOnEditView(UserRight editRight, UserRight deleteRight) {
+		if (!UserProvider.getCurrent().hasUserRight(editRight)) {
+			if (UserProvider.getCurrent().hasUserRight(deleteRight)) {
+				this.setEditable(false, CommitDiscardWrapperComponent.DELETE_UNDELETE);
+			} else {
+				this.setEditable(false);
+			}
+		}
 	}
 
 	//excludedButtons: contains the buttons attached to the CommitDiscardWrapperComponent which we intend to

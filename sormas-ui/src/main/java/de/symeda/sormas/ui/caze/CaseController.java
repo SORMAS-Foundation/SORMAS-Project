@@ -921,7 +921,7 @@ public class CaseController {
 
 		CommitDiscardWrapperComponent<CaseDataForm> editView = new CommitDiscardWrapperComponent<CaseDataForm>(
 			caseEditForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT),
+			true,
 			caseEditForm.getFieldGroup());
 
 		editView.getButtonsPanel()
@@ -955,6 +955,7 @@ public class CaseController {
 
 		appendSpecialCommands(caze, editView);
 
+		editView.restrictEditableComponentsOnEditView(UserRight.CASE_EDIT, UserRight.CASE_DELETE);
 		return editView;
 	}
 

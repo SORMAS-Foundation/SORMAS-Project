@@ -89,8 +89,7 @@ public class UserRoleController {
 		UserRoleDto userRole = FacadeProvider.getUserRoleFacade().getByUuid(userRoleRef.getUuid());
 		form.setValue(userRole);
 
-		final CommitDiscardWrapperComponent<UserRoleEditForm> editView =
-			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.USER_ROLE_EDIT), form.getFieldGroup());
+		final CommitDiscardWrapperComponent<UserRoleEditForm> editView = new CommitDiscardWrapperComponent<>(form, true, form.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {
@@ -184,6 +183,8 @@ public class UserRoleController {
 
 		editView.getButtonsPanel().addComponentAsFirst(enableDisableButton);
 		editView.getButtonsPanel().setComponentAlignment(enableDisableButton, Alignment.BOTTOM_LEFT);
+
+		editView.restrictEditableComponentsOnEditView(UserRight.USER_ROLE_EDIT, UserRight.USER_ROLE_DELETE);
 
 		return editView;
 	}
