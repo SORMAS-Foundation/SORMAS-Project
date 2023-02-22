@@ -535,7 +535,8 @@ public class EventsView extends AbstractView {
 						new MenuBarHelper.MenuBarItem(
 							I18nProperties.getCaption(Captions.bulkEdit),
 							VaadinIcons.ELLIPSIS_H,
-							mi -> grid.bulkActionHandler(items -> ControllerProvider.getEventController().showBulkEventDataEditComponent(items))));
+							mi -> grid.bulkActionHandler(
+								items -> ControllerProvider.getEventController().showBulkEventDataEditComponent(items, (EventGrid) grid))));
 				}
 				if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_DELETE)) {
 					bulkActions.add(

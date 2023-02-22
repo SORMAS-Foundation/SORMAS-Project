@@ -389,6 +389,7 @@ public interface Strings {
 	String headingArchiveTravelEntry = "headingArchiveTravelEntry";
 	String headingArchivingNotPossible = "headingArchivingNotPossible";
 	String headingAutomaticDeletionStarted = "headingAutomaticDeletionStarted";
+	String headingBulkOperationProgress = "headingBulkOperationProgress";
 	String headingBurialDetails = "headingBurialDetails";
 	String headingCampaignBasics = "headingCampaignBasics";
 	String headingCampaignDashboard = "headingCampaignDashboard";
@@ -963,6 +964,8 @@ public interface Strings {
 	String messageBulkContactsWithDifferentDiseasesSelected = "messageBulkContactsWithDifferentDiseasesSelected";
 	String messageBulkDontShareWithReportingToolWarning = "messageBulkDontShareWithReportingToolWarning";
 	String messageBulkLinkEventHint = "messageBulkLinkEventHint";
+	String messageBulkOperationEntryLimitReached = "messageBulkOperationEntryLimitReached";
+	String messageBulkOperationTimeLimitReached = "messageBulkOperationTimeLimitReached";
 	String messageCampaignArchived = "messageCampaignArchived";
 	String messageCampaignCreated = "messageCampaignCreated";
 	String messageCampaignDearchived = "messageCampaignDearchived";
@@ -986,8 +989,6 @@ public interface Strings {
 	String messageCaseSavedClassificationChanged = "messageCaseSavedClassificationChanged";
 	String messageCasesDearchived = "messageCasesDearchived";
 	String messageCasesDeleted = "messageCasesDeleted";
-	String messageCasesEdited = "messageCasesEdited";
-	String messageCasesEditedExceptArchived = "messageCasesEditedExceptArchived";
 	String messageCasesMerged = "messageCasesMerged";
 	String messageCasesNotDeletedReasonExternalSurveillanceTool = "messageCasesNotDeletedReasonExternalSurveillanceTool";
 	String messageCaseTransfered = "messageCaseTransfered";
@@ -1021,8 +1022,6 @@ public interface Strings {
 	String messageContactOutsideJurisdictionDeletionDenied = "messageContactOutsideJurisdictionDeletionDenied";
 	String messageContactSaved = "messageContactSaved";
 	String messageContactsDeleted = "messageContactsDeleted";
-	String messageContactsEdited = "messageContactsEdited";
-	String messageContactsEditedExceptArchived = "messageContactsEditedExceptArchived";
 	String messageContactsMerged = "messageContactsMerged";
 	String messageContactToCaseConfirmationRequired = "messageContactToCaseConfirmationRequired";
 	String messageContinentArchived = "messageContinentArchived";
@@ -1066,6 +1065,8 @@ public interface Strings {
 	String messageDontShareWithReportingToolWarning = "messageDontShareWithReportingToolWarning";
 	String messageEnterSms = "messageEnterSms";
 	String messageEntityNotFound = "messageEntityNotFound";
+	String messageEntriesEdited = "messageEntriesEdited";
+	String messageEntriesEditedExceptArchived = "messageEntriesEditedExceptArchived";
 	String messageEntryCreated = "messageEntryCreated";
 	String messageEpiDataHint = "messageEpiDataHint";
 	String messageEpidNumberWarning = "messageEpidNumberWarning";
