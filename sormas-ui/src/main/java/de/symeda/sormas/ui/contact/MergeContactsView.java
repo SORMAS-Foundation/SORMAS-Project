@@ -13,7 +13,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -22,6 +21,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.utils.AbstractMergeGrid;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.QueryDetails;
@@ -52,7 +52,7 @@ public class MergeContactsView extends AbstractView {
 		boolean queryDetailsUninitialized = !ViewModelProviders.of(MergeContactsView.class).has(QueryDetails.class);
 		QueryDetails queryDetails = ViewModelProviders.of(MergeContactsView.class).get(QueryDetails.class);
 		if (queryDetailsUninitialized || queryDetails.getResultLimit() == null) {
-			queryDetails.setResultLimit(CaseFacade.DUPLICATE_MERGING_LIMIT_DEFAULT);
+			queryDetails.setResultLimit(AbstractMergeGrid.DUPLICATE_MERGING_LIMIT_DEFAULT);
 		}
 
 		grid = new MergeContactsGrid();
@@ -68,7 +68,7 @@ public class MergeContactsView extends AbstractView {
 				navigateTo();
 			}
 		});
-		filterComponent.setIgnoreRegionCallback((ignoreRegion) -> grid.reload(ignoreRegion));
+		filterComponent.setIgnoreRegionCallback(ignoreRegion -> grid.reload(ignoreRegion));
 		gridLayout.addComponent(filterComponent);
 
 		gridLayout.addComponent(grid);

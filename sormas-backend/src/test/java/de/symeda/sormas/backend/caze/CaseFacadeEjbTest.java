@@ -68,7 +68,6 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.CaseExportType;
-import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseLogic;
@@ -307,14 +306,10 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			DateUtils.addMinutes(today, -3),
 			rdcf);
 
-		final List<CaseIndexDto[]> casesForDuplicateMergingToday = getCaseFacade().getCasesForDuplicateMerging(
-			new CaseCriteria().creationDateFrom(today).creationDateTo(today),
-			CaseFacade.DUPLICATE_MERGING_LIMIT_DEFAULT,
-			true);
-		final List<CaseIndexDto[]> casesForDuplicateMergingThreeDaysAgo = getCaseFacade().getCasesForDuplicateMerging(
-			new CaseCriteria().creationDateFrom(threeDaysAgo).creationDateTo(threeDaysAgo),
-			CaseFacade.DUPLICATE_MERGING_LIMIT_DEFAULT,
-			true);
+		final List<CaseIndexDto[]> casesForDuplicateMergingToday =
+			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), 100, true);
+		final List<CaseIndexDto[]> casesForDuplicateMergingThreeDaysAgo =
+			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(threeDaysAgo).creationDateTo(threeDaysAgo), 100, true);
 		assertEquals(1, casesForDuplicateMergingToday.size());
 		assertEquals(1, casesForDuplicateMergingThreeDaysAgo.size());
 	}
@@ -354,12 +349,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		assertEquals(
 			0,
-			getCaseFacade()
-				.getCasesForDuplicateMerging(
-					new CaseCriteria().creationDateFrom(today).creationDateTo(today),
-					CaseFacade.DUPLICATE_MERGING_LIMIT_DEFAULT,
-					true)
-				.size());
+			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), 100, true).size());
 	}
 
 	@Test
@@ -400,7 +390,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			getCaseFacade()
 				.getCasesForDuplicateMerging(
 					new CaseCriteria().creationDateFrom(today).creationDateTo(today),
-					CaseFacade.DUPLICATE_MERGING_LIMIT_DEFAULT,
+					100,
 					true)
 				.size());
 	}
@@ -443,7 +433,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			getCaseFacade()
 				.getCasesForDuplicateMerging(
 					new CaseCriteria().creationDateFrom(today).creationDateTo(today),
-					CaseFacade.DUPLICATE_MERGING_LIMIT_DEFAULT,
+					100,
 					true)
 				.size());
 	}
