@@ -100,4 +100,13 @@ public class MessagesDirectoryPage {
   public static final By NEW_SAMPLE_TESTED_DISEASE_INPUT = By.cssSelector("#testedDisease input");
   public static final By NEW_CASE_EMAIL_ADDRESS_INPUT = By.cssSelector("#emailAddress");
   public static final By NEW_CASE_PHONE_NUMBER_INPUT = By.cssSelector("#phone");
+  public static final By UNPROCESSED_QUICK_FILTER_BUTTON = By.cssSelector("#Unverarbeitet");
+  public static final By PROCESSED_QUICK_FILTER_BUTTON = By.cssSelector("#Verarbeitet");
+  public static final By UNCLEAR_QUICK_FILTER_BUTTON = By.cssSelector("#Unklar");
+  public static final By FORWARDED_QUICK_FILTER_BUTTON = By.cssSelector("#Weitergeleitet");
+  public static final By ALL_QUICK_FILTER_COUNTER = By.cssSelector("#Alle .badge");
+  public static final By UNPROCESSED_QUICK_FILTER_COUNTER = By.cssSelector("#Unverarbeitet .badge");
+  public static final By PROCESSED_QUICK_FILTER_COUNTER = By.cssSelector("#Verarbeitet .badge");
+  public static final By UNCLEAR_QUICK_FILTER_COUNTER = By.cssSelector("#Unklar .badge");
+  public static final By FORWARDED_QUICK_FILTER_COUNTER = By.cssSelector("#Weitergeleitet .badge");
 }

@@ -250,3 +250,21 @@ Scenario: Create and send laboratory request via Demis
     Then I check if "laboratory name" in received message is set to "Testlabor"
     And  I check if "laboratory postal code" in received message is set to "12347"
     And  I check if "postal code" in received message is set to "20095"
+
+  @tmsLink=SORDEV-8810 @env_d2s @LoginKeycloak
+  Scenario: [DEMIS2SORMAS] Test messages directory status quick filters
+    Given I log in as a Admin User
+    When I click on the Messages button from navbar
+    Then I check that "Alle" quick filter button is selected in Message directory page
+    When I click on "Unverarbeitet" quick filter above the messages in Message directory page
+    Then I check that "Unverarbeitet" quick filter button is selected in Message directory page
+    And I check that the Status column is filtered by "Unverarbeitet" on Message directory page
+    When I click on "Verarbeitet" quick filter above the messages in Message directory page
+    Then I check that "Verarbeitet" quick filter button is selected in Message directory page
+    And I check that the Status column is filtered by "Verarbeitet" on Message directory page
+    When I click on "Unklar" quick filter above the messages in Message directory page
+    Then I check that "Unklar" quick filter button is selected in Message directory page
+    And I check that the Status column is filtered by "Unklar" on Message directory page
+    When I click on "Weitergeleitet" quick filter above the messages in Message directory page
+    Then I check that "Weitergeleitet" quick filter button is selected in Message directory page
+    And I check that the Status column is filtered by "Weitergeleitet" on Message directory page
