@@ -227,7 +227,7 @@ public class CaseDataView extends AbstractCaseView {
 		} else if (caseEditAllowed.equals(EditPermissionType.REFUSED)) {
 			layout.disableWithViewAllow();
 		} else if (caseEditAllowed.equals(EditPermissionType.WITHOUT_OWNERSHIP)) {
-			layout.disableWithViewAllow();
+			layout.disableWithViewAllow(CommitDiscardWrapperComponent.DELETE_UNDELETE);
 		}
 	}
 }
