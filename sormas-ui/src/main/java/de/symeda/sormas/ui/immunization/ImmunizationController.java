@@ -148,7 +148,7 @@ public class ImmunizationController {
 		UserProvider currentUserProvider = UserProvider.getCurrent();
 		CommitDiscardWrapperComponent<ImmunizationDataForm> editComponent = new CommitDiscardWrapperComponent<ImmunizationDataForm>(
 			immunizationDataForm,
-			currentUserProvider != null && currentUserProvider.hasUserRight(UserRight.IMMUNIZATION_EDIT),
+			true,
 			immunizationDataForm.getFieldGroup()) {
 
 			@Override
@@ -213,6 +213,9 @@ public class ImmunizationController {
 					editComponent,
 					() -> navigateToImmunization(immunizationDto.getUuid()));
 		}
+
+		//check for vaccination too if is working
+		editComponent.restrictEditableComponentsOnEditView(UserRight.IMMUNIZATION_EDIT, UserRight.IMMUNIZATION_DELETE);
 
 		return editComponent;
 	}
