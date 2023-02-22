@@ -268,3 +268,43 @@ Scenario: Create and send laboratory request via Demis
     When I click on "Weitergeleitet" quick filter above the messages in Message directory page
     Then I check that "Weitergeleitet" quick filter button is selected in Message directory page
     And I check that the Status column is filtered by "Weitergeleitet" on Message directory page
+
+    @tmsLink=SORDEV-9104 @env_d2s @LoginKeycloak
+    Scenario: Test [DEMIS2SORMAS] Add new userflow for lab message processing [1]
+      Given API : Login to DEMIS server
+      Then I create and send Laboratory Notification
+      And I log in as a Admin User
+      Then I click on the Messages button from navbar
+      And I click on fetch messages button
+      Then I filter by last created person via API in Messages Directory
+      And I click on Verarbeiten button in Messages Directory
+      Then I create a new person and a new case from received message
+      Then I click on the Cases button from navbar
+      And I search the case by last created person via Demis message
+      Then I click on the first Case ID from Case Directory
+
+  @tmsLink=SORDEV-9104 @env_d2s @LoginKeycloak
+  Scenario: Test [DEMIS2SORMAS] Add new userflow for lab message processing [2]
+    Given API : Login to DEMIS server
+    Then I create and send Laboratory Notification
+    And I log in as a Admin User
+    Then I click on the Messages button from navbar
+    And I click on fetch messages button
+    Then I filter by last created person via API in Messages Directory
+    And I click on Verarbeiten button in Messages Directory
+    Then I create a new person from received message
+    And I create a new contact form received message
+    Then I check if contact tab was opened after create new contact from message
+
+  @tmsLink=SORDEV-9104 @env_d2s @LoginKeycloak
+  Scenario: Test [DEMIS2SORMAS] Add new userflow for lab message processing [3]
+    Given API : Login to DEMIS server
+    Then I create and send Laboratory Notification
+    And I log in as a Admin User
+    Then I click on the Messages button from navbar
+    And I click on fetch messages button
+    Then I filter by last created person via API in Messages Directory
+    And I click on Verarbeiten button in Messages Directory
+    Then I create a new person from received message
+    And I create a new event participant form received message
+    Then I check if event participant tab was opened after create new contact from message

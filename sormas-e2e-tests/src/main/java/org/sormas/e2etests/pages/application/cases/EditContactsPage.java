@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.pages.application.cases;
 
+import java.util.Locale;
 import org.openqa.selenium.By;
 
 public class EditContactsPage {
@@ -53,5 +54,13 @@ public class EditContactsPage {
 
   public static By getContactByUUID(String uuid) {
     return By.xpath(String.format("//a[text()=\"%s\"]", uuid.substring(0, 6).toUpperCase()));
+  }
+
+  public static By getContactFirstAndLastName(String name) {
+    String[] firstAndLastName = name.split("\\s+");
+    return By.xpath(
+        String.format(
+            "//div[@class='v-slot v-slot-h2 v-slot-primary v-slot-vspace-none v-slot-vspace-top-none v-slot-caption-truncated']/div[contains(text(), '%s')]",
+            firstAndLastName[0] + " " + firstAndLastName[1].toUpperCase(Locale.GERMAN)));
   }
 }
