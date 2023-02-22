@@ -19,6 +19,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
@@ -31,6 +32,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.QueryDetails;
 
 @SuppressWarnings("serial")
 public class MergeCasesFilterComponent extends VerticalLayout {
@@ -55,26 +57,34 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 	private Button btnConfirmFilters;
 	private Button btnResetFilters;
 
-	private Binder<CaseCriteria> binder = new Binder<>(CaseCriteria.class);
+	private Binder<CaseCriteria> criteriaBinder = new Binder<>(CaseCriteria.class);
 	private CaseCriteria criteria;
+	private Binder<QueryDetails> queryDetailsBinder = new Binder<>(QueryDetails.class);
+	private QueryDetails queryDetails;
 	private Runnable filtersUpdatedCallback;
 	private Consumer<Boolean> ignoreRegionCallback;
 
 	private Label lblNumberOfDuplicates;
 
-	public MergeCasesFilterComponent(CaseCriteria criteria) {
+	public MergeCasesFilterComponent(CaseCriteria criteria, QueryDetails queryDetails) {
 
 		setSpacing(false);
 		setMargin(false);
 		setWidth(100, Unit.PERCENTAGE);
 
-		this.criteria = criteria;
-
 		addFirstRowLayout();
 		addSecondRowLayout();
 		addThirdRowLayout();
 
-		binder.readBean(this.criteria);
+		setValue(criteria, queryDetails);
+	}
+
+	public void setValue(CaseCriteria criteria, QueryDetails queryDetails) {
+		this.criteria = criteria;
+		this.queryDetails = queryDetails;
+
+		criteriaBinder.readBean(this.criteria);
+		queryDetailsBinder.readBean(this.queryDetails);
 	}
 
 	private void addFirstRowLayout() {
@@ -88,7 +98,9 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		dfCreationDateFrom.setWidth(120, Unit.PIXELS);
 		dfCreationDateFrom.setPlaceholder(I18nProperties.getString(Strings.promptCreationDateFrom));
 		dfCreationDateFrom.setCaption(I18nProperties.getCaption(Captions.creationDate));
-		binder.forField(dfCreationDateFrom).withConverter(new LocalDateToDateConverter(ZoneId.systemDefault())).bind(CaseCriteria.CREATION_DATE_FROM);
+		criteriaBinder.forField(dfCreationDateFrom)
+			.withConverter(new LocalDateToDateConverter(ZoneId.systemDefault()))
+			.bind(CaseCriteria.CREATION_DATE_FROM);
 		firstRowLayout.addComponent(dfCreationDateFrom);
 
 		dfCreationDateTo = new DateField();
@@ -96,7 +108,9 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		dfCreationDateTo.setWidth(120, Unit.PIXELS);
 		CssStyles.style(dfCreationDateTo, CssStyles.FORCE_CAPTION);
 		dfCreationDateTo.setPlaceholder(I18nProperties.getString(Strings.promptDateTo));
-		binder.forField(dfCreationDateTo).withConverter(new LocalDateToDateConverter(ZoneId.systemDefault())).bind(CaseCriteria.CREATION_DATE_TO);
+		criteriaBinder.forField(dfCreationDateTo)
+			.withConverter(new LocalDateToDateConverter(ZoneId.systemDefault()))
+			.bind(CaseCriteria.CREATION_DATE_TO);
 		firstRowLayout.addComponent(dfCreationDateTo);
 
 		cbDisease = new ComboBox<>();
@@ -105,7 +119,7 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		CssStyles.style(cbDisease, CssStyles.FORCE_CAPTION);
 		cbDisease.setPlaceholder(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
 		cbDisease.setItems(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true));
-		binder.bind(cbDisease, CaseDataDto.DISEASE);
+		criteriaBinder.bind(cbDisease, CaseDataDto.DISEASE);
 		firstRowLayout.addComponent(cbDisease);
 
 		tfSearch = new TextField();
@@ -113,7 +127,7 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		tfSearch.setWidth(200, Unit.PIXELS);
 		CssStyles.style(tfSearch, CssStyles.FORCE_CAPTION);
 		tfSearch.setPlaceholder(I18nProperties.getString(Strings.promptCasesSearchField));
-		binder.bind(tfSearch, CaseCriteria.CASE_LIKE);
+		criteriaBinder.bind(tfSearch, CaseCriteria.CASE_LIKE);
 		firstRowLayout.addComponent(tfSearch);
 
 		eventSearch = new TextField();
@@ -121,7 +135,7 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		eventSearch.setWidth(200, Unit.PIXELS);
 		CssStyles.style(eventSearch, CssStyles.FORCE_CAPTION);
 		eventSearch.setPlaceholder(I18nProperties.getString(Strings.promptCaseOrContactEventSearchField));
-		binder.bind(eventSearch, CaseCriteria.EVENT_LIKE);
+		criteriaBinder.bind(eventSearch, CaseCriteria.EVENT_LIKE);
 		firstRowLayout.addComponent(eventSearch);
 
 		tfReportingUser = new TextField();
@@ -129,7 +143,7 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		tfReportingUser.setWidth(200, Unit.PIXELS);
 		CssStyles.style(tfReportingUser, CssStyles.FORCE_CAPTION);
 		tfReportingUser.setPlaceholder(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REPORTING_USER));
-		binder.bind(tfReportingUser, CaseCriteria.REPORTING_USER_LIKE);
+		criteriaBinder.bind(tfReportingUser, CaseCriteria.REPORTING_USER_LIKE);
 		firstRowLayout.addComponent(tfReportingUser);
 		firstRowLayout.setExpandRatio(tfReportingUser, 1);
 
@@ -144,15 +158,15 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 
 		cbRegion = new ComboBox<>();
 		cbDistrict = new ComboBox<>();
-		cbRegion.setItemCaptionGenerator(item -> item.buildCaption());
-		cbDistrict.setItemCaptionGenerator(item -> item.buildCaption());
+		cbRegion.setItemCaptionGenerator(ReferenceDto::buildCaption);
+		cbDistrict.setItemCaptionGenerator(ReferenceDto::buildCaption);
 
 		cbRegion.setId(CaseDataDto.REGION);
 		cbRegion.setWidth(200, Unit.PIXELS);
 		CssStyles.style(cbRegion, CssStyles.FORCE_CAPTION);
 		cbRegion.setPlaceholder(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
 		cbRegion.setItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
-		binder.bind(cbRegion, CaseDataDto.REGION);
+		criteriaBinder.bind(cbRegion, CaseDataDto.REGION);
 		cbRegion.addValueChangeListener(e -> {
 			RegionReferenceDto region = e.getValue();
 			cbDistrict.clear();
@@ -172,16 +186,14 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		cbDistrict.setWidth(200, Unit.PIXELS);
 		CssStyles.style(cbDistrict, CssStyles.FORCE_CAPTION);
 		cbDistrict.setPlaceholder(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
-		binder.bind(cbDistrict, CaseDataDto.DISTRICT);
+		criteriaBinder.bind(cbDistrict, CaseDataDto.DISTRICT);
 		secondRowLayout.addComponent(cbDistrict);
 
 		cbIgnoreRegion = new CheckBox();
 		cbIgnoreRegion.setId(Captions.caseFilterWithDifferentRegion);
 		CssStyles.style(cbIgnoreRegion, CssStyles.CHECKBOX_FILTER_INLINE);
 		cbIgnoreRegion.setCaption(I18nProperties.getCaption(Captions.caseFilterWithDifferentRegion));
-		cbIgnoreRegion.addValueChangeListener(e -> {
-			ignoreRegionCallback.accept(e.getValue());
-		});
+		cbIgnoreRegion.addValueChangeListener(e -> ignoreRegionCallback.accept(e.getValue()));
 		secondRowLayout.addComponent(cbIgnoreRegion);
 		secondRowLayout.setComponentAlignment(cbIgnoreRegion, Alignment.MIDDLE_LEFT);
 		secondRowLayout.setExpandRatio(cbIgnoreRegion, 1);
@@ -197,13 +209,14 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		cbNewCaseDateType = new ComboBox<>();
 		dfNewCaseDateFrom = new DateField();
 		dfNewCaseDateTo = new DateField();
+		ComboBox<Integer> cbResultLimit = new ComboBox<>();
 
 		cbNewCaseDateType.setId(CaseCriteria.NEW_CASE_DATE_TYPE);
 		cbNewCaseDateType.setWidth(200, Unit.PIXELS);
 		cbNewCaseDateType.setPlaceholder(I18nProperties.getString(Strings.promptNewCaseDateType));
 		cbNewCaseDateType.setCaption(I18nProperties.getCaption(Captions.caseNewCaseDate));
 		cbNewCaseDateType.setItems(NewCaseDateType.values());
-		binder.bind(cbNewCaseDateType, CaseCriteria.NEW_CASE_DATE_TYPE);
+		criteriaBinder.bind(cbNewCaseDateType, CaseCriteria.NEW_CASE_DATE_TYPE);
 		cbNewCaseDateType.addValueChangeListener(event -> {
 			dfNewCaseDateFrom.setEnabled(event.getValue() != null);
 			dfNewCaseDateTo.setEnabled(event.getValue() != null);
@@ -214,7 +227,9 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		dfNewCaseDateFrom.setWidth(120, Unit.PIXELS);
 		CssStyles.style(dfNewCaseDateFrom, CssStyles.FORCE_CAPTION);
 		dfNewCaseDateFrom.setPlaceholder(I18nProperties.getString(Strings.promptCasesDateFrom));
-		binder.forField(dfNewCaseDateFrom).withConverter(new LocalDateToDateConverter(ZoneId.systemDefault())).bind(CaseCriteria.NEW_CASE_DATE_FROM);
+		criteriaBinder.forField(dfNewCaseDateFrom)
+			.withConverter(new LocalDateToDateConverter(ZoneId.systemDefault()))
+			.bind(CaseCriteria.NEW_CASE_DATE_FROM);
 		dfNewCaseDateFrom.setEnabled(false);
 		thirdRowLayout.addComponent(dfNewCaseDateFrom);
 
@@ -222,13 +237,24 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		dfNewCaseDateTo.setWidth(120, Unit.PIXELS);
 		CssStyles.style(dfNewCaseDateTo, CssStyles.FORCE_CAPTION);
 		dfNewCaseDateTo.setPlaceholder(I18nProperties.getString(Strings.promptDateTo));
-		binder.forField(dfNewCaseDateTo).withConverter(new LocalDateToDateConverter(ZoneId.systemDefault())).bind(CaseCriteria.NEW_CASE_DATE_TO);
+		criteriaBinder.forField(dfNewCaseDateTo)
+			.withConverter(new LocalDateToDateConverter(ZoneId.systemDefault()))
+			.bind(CaseCriteria.NEW_CASE_DATE_TO);
 		dfNewCaseDateTo.setEnabled(false);
 		thirdRowLayout.addComponent(dfNewCaseDateTo);
 
+		cbResultLimit.setId(QueryDetails.RESULT_LIMIT);
+		cbResultLimit.setWidth(200, Unit.PIXELS);
+		cbResultLimit.setCaption(I18nProperties.getCaption(Captions.QueryDetails_resultLimit));
+		cbResultLimit.setItems(50, 100, 500, 1000);
+		cbResultLimit.setEmptySelectionAllowed(false);
+		queryDetailsBinder.bind(cbResultLimit, QueryDetails.RESULT_LIMIT);
+		thirdRowLayout.addComponent(cbResultLimit);
+
 		btnConfirmFilters = ButtonHelper.createButton(Captions.actionConfirmFilters, event -> {
 			try {
-				binder.writeBean(criteria);
+				criteriaBinder.writeBean(criteria);
+				queryDetailsBinder.writeBean(queryDetails);
 				filtersUpdatedCallback.run();
 			} catch (ValidationException e) {
 				// No validation needed

@@ -147,6 +147,8 @@ public class CaseExportDto extends AbstractUuidDto {
 	@PersonalData
 	@SensitiveData
 	private String community;
+	@PersonalData
+	@SensitiveData
 	private FacilityType facilityType;
 	@PersonalData
 	@SensitiveData

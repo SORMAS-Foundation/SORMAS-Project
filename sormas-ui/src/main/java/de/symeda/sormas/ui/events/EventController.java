@@ -72,8 +72,10 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.BulkOperationResults;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.HtmlHelper;
+import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -81,8 +83,8 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
 import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceServiceGateway;
 import de.symeda.sormas.ui.utils.AbstractView;
+import de.symeda.sormas.ui.utils.BulkOperationHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
@@ -926,9 +928,9 @@ public class EventController {
 		}
 	}
 
-	public void showBulkEventDataEditComponent(Collection<EventIndexDto> selectedEvents) {
+	public void showBulkEventDataEditComponent(Collection<EventIndexDto> selectedEvents, EventGrid eventGrid) {
 
-		if (selectedEvents.size() == 0) {
+		if (selectedEvents.isEmpty()) {
 			new Notification(
 				I18nProperties.getString(Strings.headingNoEventsSelected),
 				I18nProperties.getString(Strings.messageNoEventsSelected),
@@ -939,64 +941,49 @@ public class EventController {
 
 		// Create a temporary event in order to use the CommitDiscardWrapperComponent
 		EventDto tempEvent = new EventDto();
-
 		BulkEventDataForm form = new BulkEventDataForm();
 		form.setValue(tempEvent);
-		final CommitDiscardWrapperComponent<BulkEventDataForm> editView =
-			new CommitDiscardWrapperComponent<BulkEventDataForm>(form, form.getFieldGroup());
+		final CommitDiscardWrapperComponent<BulkEventDataForm> editView = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditEvents));
 
-		editView.addCommitListener(new CommitListener() {
+		editView.addCommitListener(() -> {
+			EventDto updatedTempEvent = form.getValue();
+			EventFacade eventFacade = FacadeProvider.getEventFacade();
+			boolean eventStatusChange = form.getEventStatusCheckBox().getValue();
+			boolean eventInvestigationStatusChange = form.getEventInvestigationStatusCheckbox().getValue();
+			boolean eventManagementStatusChange = form.getEventManagementStatusCheckbox().getValue();
 
-			@Override
-			public void onCommit() {
-				EventDto updatedTempEvent = form.getValue();
-
-				EventFacade eventFacade = FacadeProvider.getEventFacade();
-				boolean eventStatusChange = form.getEventStatusCheckBox().getValue();
-				boolean eventInvestigationStatusChange = form.getEventInvestigationStatusCheckbox().getValue();
-				boolean eventManagementStatusChange = form.getEventManagementStatusCheckbox().getValue();
-
-				int changedEvents = bulkEdit(
-					selectedEvents,
+			List<EventIndexDto> selectedEventsCpy = new ArrayList<>(selectedEvents);
+			BulkOperationHelper.doBulkOperation(
+				selectedEntries -> eventFacade.saveBulkEvents(
+					selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
 					updatedTempEvent,
-					eventFacade,
 					eventStatusChange,
 					eventInvestigationStatusChange,
-					eventManagementStatusChange);
-
-				popupWindow.close();
-				navigateToIndex();
-
-				if (changedEvents == selectedEvents.size()) {
-					Notification.show(I18nProperties.getString(Strings.messageEventsEdited), Type.HUMANIZED_MESSAGE);
-				} else {
-					NotificationHelper.showNotification(
-						String.format(I18nProperties.getString(Strings.messageEventsEditedExceptArchived), selectedEvents.size(), changedEvents),
-						Type.HUMANIZED_MESSAGE,
-						-1);
-				}
-			}
+					eventManagementStatusChange),
+				selectedEventsCpy,
+				selectedEventsCpy.size(),
+				results -> handleBulkOperationDone(results, popupWindow, eventGrid, selectedEvents));
 		});
 
 		editView.addDiscardListener(() -> popupWindow.close());
 	}
 
-	private int bulkEdit(
-		Collection<? extends EventIndexDto> selectedEvents,
-		EventDto updatedTempEvent,
-		EventFacade eventFacade,
-		boolean eventStatusChange,
-		boolean eventInvestigationStatusChange,
-		boolean eventManagementStatusChange) {
+	private void handleBulkOperationDone(
+		BulkOperationResults<?> results,
+		Window popupWindow,
+		EventGrid eventGrid,
+		Collection<EventIndexDto> selectedEvents) {
 
-		return eventFacade.saveBulkEvents(
-			selectedEvents.stream().map(EventIndexDto::getUuid).collect(Collectors.toList()),
-			updatedTempEvent,
-			eventStatusChange,
-			eventInvestigationStatusChange,
-			eventManagementStatusChange);
+		popupWindow.close();
+		eventGrid.reload();
+		if (CollectionUtils.isNotEmpty(results.getRemainingEntries())) {
+			eventGrid.asMultiSelect()
+				.selectItems(selectedEvents.stream().filter(e -> results.getRemainingEntries().contains(e.getUuid())).toArray(EventIndexDto[]::new));
+		} else {
+			navigateToIndex();
+		}
 	}
 
 	public EventDto createNewEvent() {

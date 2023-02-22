@@ -344,7 +344,6 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 			contentBinding.facilityTypeGroup.setRequired(false);
 			contentBinding.caseDataFacilityType.setRequired(false);
 			contentBinding.caseDataHealthFacility.setRequired(false);
-			contentBinding.caseDataHealthFacilityDetails.setRequired(false);
 		} else if (DatabaseHelper.getPointOfEntryDao().hasActiveEntriesInDistrict()) {
 			if (record.getCaseOrigin() == CaseOrigin.IN_COUNTRY) {
 				contentBinding.caseDataPointOfEntry.setRequired(false);

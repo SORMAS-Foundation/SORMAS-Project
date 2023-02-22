@@ -91,7 +91,6 @@ Feature: Event Directory filters check
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     When I log in as a National User
-    And I click on the Events button from navbar
     And I open the last created event via api
     And I add a participant to the event
     And I open the last created event via api

@@ -134,6 +134,7 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
+import de.symeda.sormas.api.utils.BulkOperationResults;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -202,6 +203,7 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserReference;
 import de.symeda.sormas.backend.user.UserRoleFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.BulkOperationHelper;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -555,6 +557,10 @@ public class ContactFacadeEjb
 	}
 
 	private void deleteContact(Contact contact, DeletionDetails deletionDetails) {
+
+		if (!contactService.inJurisdictionOrOwned(contact)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.messageContactOutsideJurisdictionDeletionDenied));
+		}
 		externalJournalService.handleExternalJournalPersonUpdateAsync(contact.getPerson().toReference());
 		try {
 			sormasToSormasFacade.revokePendingShareRequests(contact.getSormasToSormasShares(), true);
@@ -575,8 +581,12 @@ public class ContactFacadeEjb
 		if (contactsToBeDeleted != null) {
 			contactsToBeDeleted.forEach(contactToBeDeleted -> {
 				if (!contactToBeDeleted.isDeleted()) {
-					deleteContact(contactToBeDeleted, deletionDetails);
-					deletedContactUuids.add(contactToBeDeleted.getUuid());
+					try {
+						deleteContact(contactToBeDeleted, deletionDetails);
+						deletedContactUuids.add(contactToBeDeleted.getUuid());
+					} catch (AccessDeniedException e) {
+						logger.error("The contact with uuid {} could not be deleted", contactToBeDeleted.getUuid(), e);
+					}
 				}
 			});
 		}
@@ -2265,6 +2275,11 @@ public class ContactFacadeEjb
 		filter = cb.and(filter, creationDateFilter);
 		filter = cb.and(filter, cb.notEqual(root.get(Contact.ID), root2.get(Contact.ID)));
 
+		if (CollectionUtils.isNotEmpty(criteria.getContactUuidsForMerge())) {
+			Set<String> contactUuidsForMerge = criteria.getContactUuidsForMerge();
+			filter = cb.and(filter, cb.or(root.get(Contact.UUID).in(contactUuidsForMerge), root2.get(Contact.UUID).in(contactUuidsForMerge)));
+		}
+
 		cq.where(filter);
 		cq.multiselect(root.get(Contact.ID), root2.get(Contact.ID), root.get(Contact.CREATION_DATE));
 		cq.orderBy(cb.desc(root.get(Contact.CREATION_DATE)));
@@ -2330,16 +2345,15 @@ public class ContactFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._CONTACT_EDIT)
-	public int saveBulkContacts(
-		List<String> contactUuidlist,
+	public BulkOperationResults<String> saveBulkContacts(
+		List<String> contactUuidList,
 		ContactBulkEditData updatedContactBulkEditData,
 		boolean classificationChange,
 		boolean contactOfficerChange)
 		throws ValidationRuntimeException {
 
-		int changedContacts = 0;
-		for (String contactUuid : contactUuidlist) {
-			Contact contact = service.getByUuid(contactUuid);
+		return BulkOperationHelper.executeWithLimits(contactUuidList, uuid -> {
+			Contact contact = service.getByUuid(uuid);
 
 			if (service.isEditAllowed(contact)) {
 				ContactDto existingContactDto = toDto(contact);
@@ -2352,10 +2366,8 @@ public class ContactFacadeEjb
 				}
 
 				save(existingContactDto);
-				changedContacts++;
 			}
-		}
-		return changedContacts;
+		});
 	}
 
 	@Override

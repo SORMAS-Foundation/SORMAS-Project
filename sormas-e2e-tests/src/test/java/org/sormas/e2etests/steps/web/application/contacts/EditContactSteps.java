@@ -139,10 +139,15 @@ public class EditContactSteps implements En {
     this.restAssuredClient = restAssuredClient;
 
     When(
-        "I open the last created contact in Contact directory page",
+        "I search and open  last created contact in Contact directory page",
         () -> {
-          searchAfterContactByMultipleOptions(collectedContact.getUuid());
-          openContactFromResultsByUUID(collectedContact.getUuid());
+          String contactUUID = collectedContact.getUuid();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(APPLY_FILTERS_BUTTON);
+          webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, contactUUID);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
+          By uuidLocator = By.cssSelector(String.format(CONTACT_RESULTS_UUID_LOCATOR, contactUUID));
+          webDriverHelpers.clickOnWebElementBySelector((uuidLocator));
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(EditContactPage.UUID_INPUT);
         });
 
     When(
@@ -511,6 +516,14 @@ public class EditContactSteps implements En {
     When(
         "I accept first contact in Shares Page",
         () -> webDriverHelpers.clickOnWebElementBySelector(ACCEPT_BUTTON));
+    When(
+        "I check if accept button does not appear in Shares Page",
+        () -> {
+          softly.assertFalse(
+              webDriverHelpers.isElementVisibleWithTimeout(ACCEPT_BUTTON, 3),
+              "Accept button is visible!");
+          softly.assertAll();
+        });
     When(
         "I click to accept potential duplicate in Shares Page",
         () -> webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM));
@@ -1850,18 +1863,6 @@ public class EditContactSteps implements En {
   private Contact collectContactPersonUuid() {
     webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 40);
     return Contact.builder().uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT)).build();
-  }
-
-  private void searchAfterContactByMultipleOptions(String idPhoneNameEmail) {
-    webDriverHelpers.waitUntilElementIsVisibleAndClickable(APPLY_FILTERS_BUTTON);
-    webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, idPhoneNameEmail);
-    webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
-  }
-
-  private void openContactFromResultsByUUID(String uuid) {
-    By uuidLocator = By.cssSelector(String.format(CONTACT_RESULTS_UUID_LOCATOR, uuid));
-    webDriverHelpers.clickOnWebElementBySelector((uuidLocator));
-    webDriverHelpers.waitUntilIdentifiedElementIsPresent(EditContactPage.UUID_INPUT);
   }
 
   @SneakyThrows

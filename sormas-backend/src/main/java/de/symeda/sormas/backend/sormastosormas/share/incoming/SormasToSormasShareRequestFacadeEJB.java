@@ -256,14 +256,21 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 		return toDetailsDto(request);
 	}
 
-	private SormasToSormasShareRequest fillOrBuildEntity(@NotNull SormasToSormasShareRequestDto source, SormasToSormasShareRequest target, boolean checkChangeDate) {
+	private SormasToSormasShareRequest fillOrBuildEntity(
+		@NotNull SormasToSormasShareRequestDto source,
+		SormasToSormasShareRequest target,
+		boolean checkChangeDate) {
 		target = DtoHelper.fillOrBuildEntity(source, target, SormasToSormasShareRequest::new, checkChangeDate);
 
 		target.setDataType(source.getDataType());
 		target.setStatus(source.getStatus());
 
 		// #10679: originInfo should be reference type
-		target.setOriginInfo(originInfoFacade.fillOrBuildEntity(source.getOriginInfo(), sormasToSormasOriginInfoService.getByUuid(source.getOriginInfo().getUuid()), checkChangeDate));
+		target.setOriginInfo(
+			originInfoFacade.fillOrBuildEntity(
+				source.getOriginInfo(),
+				sormasToSormasOriginInfoService.getByUuid(source.getOriginInfo().getUuid()),
+				checkChangeDate));
 		target.setCasesList(source.getCases());
 		target.setContactsList(source.getContacts());
 		target.setEventsList(source.getEvents());

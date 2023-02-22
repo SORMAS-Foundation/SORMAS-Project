@@ -345,6 +345,8 @@ public enum UserRight {
 	public static final String _USER_CREATE = "USER_CREATE";
 	public static final String _USER_EDIT = "USER_EDIT";
 	public static final String _USER_VIEW = "USER_VIEW";
+	public static final String _USER_ROLE_EDIT = "USER_ROLE_EDIT";
+	public static final String _USER_ROLE_DELETE = "USER_ROLE_DELETE";
 	public static final String _USER_ROLE_VIEW = "USER_ROLE_VIEW";
 	public static final String _SEND_MANUAL_EXTERNAL_MESSAGES = "SEND_MANUAL_EXTERNAL_MESSAGES";
 	public static final String _STATISTICS_ACCESS = "STATISTICS_ACCESS";

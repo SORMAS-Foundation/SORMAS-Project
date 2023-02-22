@@ -1,8 +1,11 @@
 package de.symeda.sormas.api.person;
 
+import java.util.Set;
+
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class PersonCriteria extends BaseCriteria implements Cloneable {
@@ -33,6 +36,7 @@ public class PersonCriteria extends BaseCriteria implements Cloneable {
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
 	private PersonAssociation personAssociation;
+	private Set<String> uuids;
 
 	public PersonCriteria() {
 
@@ -120,6 +124,17 @@ public class PersonCriteria extends BaseCriteria implements Cloneable {
 	public PersonCriteria personAssociation(PersonAssociation personAssociation) {
 		validate(personAssociation);
 		this.personAssociation = personAssociation;
+		return this;
+	}
+
+	@IgnoreForUrl
+	public Set<String> getUuids() {
+		return uuids;
+	}
+
+	public PersonCriteria uuids(Set<String> uuids) {
+		this.uuids = uuids;
+
 		return this;
 	}
 

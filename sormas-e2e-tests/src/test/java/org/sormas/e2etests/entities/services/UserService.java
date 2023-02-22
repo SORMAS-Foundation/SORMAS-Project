@@ -21,7 +21,7 @@ package org.sormas.e2etests.entities.services;
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.time.LocalTime;
-import org.sormas.e2etests.entities.pojo.User;
+import org.sormas.e2etests.entities.pojo.common.User;
 import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.DistrictsValues;

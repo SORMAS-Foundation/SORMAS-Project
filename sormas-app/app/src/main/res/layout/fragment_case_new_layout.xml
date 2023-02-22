@@ -225,7 +225,7 @@
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/caseData_healthFacilityDetails"
                 style="@style/ControlSingleColumnStyle"
-                app:required="true"
+                app:softRequired="true"
                 app:value="@={data.healthFacilityDetails}" />
 
             <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField

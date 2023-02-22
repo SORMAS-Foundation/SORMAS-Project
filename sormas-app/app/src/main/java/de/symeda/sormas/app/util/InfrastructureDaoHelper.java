@@ -27,10 +27,10 @@ import java.util.stream.Collectors;
 import androidx.annotation.Nullable;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
@@ -260,8 +260,7 @@ public final class InfrastructureDaoHelper {
 		final ControlPropertyField healthFacilityDetailsField) {
 		setHealthFacilityDetailsFieldVisibility(healthFacilityField, healthFacilityDetailsField);
 		healthFacilityField
-			.addValueChangedListener(field ->
-					setHealthFacilityDetailsFieldVisibility(healthFacilityField, healthFacilityDetailsField));
+			.addValueChangedListener(field -> setHealthFacilityDetailsFieldVisibility(healthFacilityField, healthFacilityDetailsField));
 	}
 
 	public static void setHealthFacilityDetailsFieldVisibility(
@@ -280,7 +279,6 @@ public final class InfrastructureDaoHelper {
 				if (healthFacilityDetailsField instanceof ControlPropertyEditField) {
 					ControlPropertyEditField healthFacilityDetailsEditField = (ControlPropertyEditField) healthFacilityDetailsField;
 					healthFacilityDetailsEditField.setHint(caption);
-					healthFacilityDetailsEditField.setRequired(true);
 				}
 			} else if (noneHealthFacility) {
 				healthFacilityDetailsField.setVisibility(VISIBLE);
@@ -289,7 +287,6 @@ public final class InfrastructureDaoHelper {
 				if (healthFacilityDetailsField instanceof ControlPropertyEditField) {
 					ControlPropertyEditField healthFacilityDetailsEditField = (ControlPropertyEditField) healthFacilityDetailsField;
 					healthFacilityDetailsEditField.setHint(caption);
-					healthFacilityDetailsEditField.setRequired(false);
 				}
 			} else {
 				healthFacilityDetailsField.setVisibility(GONE);

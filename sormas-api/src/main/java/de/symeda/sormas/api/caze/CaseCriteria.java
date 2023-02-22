@@ -18,6 +18,7 @@
 package de.symeda.sormas.api.caze;
 
 import java.util.Date;
+import java.util.Set;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
@@ -149,6 +150,10 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	private Boolean onlyShowCasesWithFulfilledReferenceDefinition;
 	private String personLike;
 	private Boolean withOwnership;
+	/**
+	 * Used for filtering merge-able cases to filter both lead and similar cases.
+	 */
+	private Set<String> caseUuidsForMerge;
 
 	public CaseCriteria() {
 		super(NewCaseDateType.class);
@@ -771,5 +776,16 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 
 	public void setWithOwnership(Boolean withOwnership) {
 		this.withOwnership = withOwnership;
+	}
+
+	@IgnoreForUrl
+	public Set<String> getCaseUuidsForMerge() {
+		return caseUuidsForMerge;
+	}
+
+	public CaseCriteria caseUuidsForMerge(Set<String> caseUuidsForMerge) {
+		this.caseUuidsForMerge = caseUuidsForMerge;
+
+		return this;
 	}
 }

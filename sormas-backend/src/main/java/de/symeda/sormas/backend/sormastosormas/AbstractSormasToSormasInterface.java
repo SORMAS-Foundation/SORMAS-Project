@@ -52,6 +52,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sormastosormas.DuplicateResult;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
@@ -61,7 +62,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareTree;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
-import de.symeda.sormas.api.sormastosormas.entities.DuplicateResult;
+import de.symeda.sormas.api.sormastosormas.entities.DuplicateResultType;
 import de.symeda.sormas.api.sormastosormas.entities.SormasToSormasEntityDto;
 import de.symeda.sormas.api.sormastosormas.entities.SormasToSormasEntityInterface;
 import de.symeda.sormas.api.sormastosormas.entities.SyncDataDto;
@@ -244,7 +245,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 			ensureConsistentOptions(options);
 		}
 
-		validateEntitiesBeforeShare(entities, options.isHandOverOwnership(), options.getOrganization().getId(), false);
+		validateEntitiesBeforeShare(entities, options.isHandOverOwnership(), options.isWithSamples(), options.getOrganization().getId(), false);
 
 		String requestUuid = DataHelper.createUuid();
 
@@ -303,20 +304,20 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 			sormasToSormasRestClient.post(organizationId, requestGetDataEndpoint, requestUuid, SormasToSormasEncryptedDataDto.class);
 
 		DuplicateResult duplicateCheckResult = decryptAndPersist(encryptedData, (data, existingData) -> {
-			DuplicateResult duplicateResult = DuplicateResult.NONE;
+			DuplicateResult duplicateResult = DuplicateResult.none();
 
 			if (checkDuplicates && !data.getOriginInfo().isPseudonymizedData()) {
 				duplicateResult = processedEntitiesPersister.checkForSimilarEntities(data, existingData);
 			}
 
-			if (duplicateResult == DuplicateResult.NONE) {
+			if (duplicateResult.getType() == DuplicateResultType.NONE) {
 				processedEntitiesPersister.persistSharedData(data, shareRequest.getOriginInfo(), existingData);
 			}
 
 			return duplicateResult;
 		});
 
-		if (duplicateCheckResult == DuplicateResult.NONE) {
+		if (duplicateCheckResult.getType() == DuplicateResultType.NONE) {
 			// notify the sender that the request has been accepted
 			sormasToSormasRestClient.post(
 				organizationId,
@@ -344,7 +345,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 		if (requestInfo == null) {
 			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasShare);
 		}
-		validateEntitiesBeforeSend(requestInfo.getShares());
+		validateEntitiesBeforeSend(requestInfo);
 
 		// update share request: add new samples, immunizations, etc.
 		requestInfo.extractSharedMainEntities().forEach((e) -> updateShareRequestInfo(requestInfo, currentUser, (ADO) e));
@@ -358,7 +359,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 		User currentUser = userService.getCurrentUser();
 		List<ADO> entities = getEntityService().getByUuids(entityUuids);
 
-		validateEntitiesBeforeShare(entities, options.isHandOverOwnership(), options.getOrganization().getId(), false);
+		validateEntitiesBeforeShare(entities, options.isHandOverOwnership(), options.isWithSamples(), options.getOrganization().getId(), false);
 		ensureConsistentOptions(options);
 
 		String requestUuid = DataHelper.createUuid();
@@ -630,6 +631,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 	protected void validateEntitiesBeforeShare(
 		List<ADO> entities,
 		boolean handOverOwnership,
+		boolean isWithSamples,
 		String targetOrganizationId,
 		boolean pendingRequestAllowed)
 		throws SormasToSormasException {
@@ -662,7 +664,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 			}
 
 			// run type specific S2S validation checks
-			validateEntitiesBeforeShareInner(ado, handOverOwnership, targetOrganizationId, validationErrors);
+			validateEntitiesBeforeShareInner(ado, handOverOwnership, isWithSamples, targetOrganizationId, validationErrors);
 		}
 
 		if (!validationErrors.isEmpty()) {
@@ -674,6 +676,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 	protected abstract void validateEntitiesBeforeShareInner(
 		ADO ado,
 		boolean handOverOwnership,
+		boolean isWithSamples,
 		String targetOrganizationId,
 		List<ValidationErrors> validationErrors);
 
@@ -681,10 +684,12 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 
 	protected abstract ValidationErrorGroup buildEntityValidationGroupNameForAdo(ADO ado);
 
-	protected void validateEntitiesBeforeSend(List<SormasToSormasShareInfo> shares) throws SormasToSormasException {
+	protected void validateEntitiesBeforeSend(ShareRequestInfo shareRequestInfo) throws SormasToSormasException {
+		List<SormasToSormasShareInfo> shares = shareRequestInfo.getShares();
 		validateEntitiesBeforeShare(
 			shares.stream().map(this::extractFromShareInfo).filter(Objects::nonNull).collect(Collectors.toList()),
 			shares.get(0).isOwnershipHandedOver(),
+			shareRequestInfo.isWithSamples(),
 			shares.get(0).getOrganizationId(),
 			true);
 	}

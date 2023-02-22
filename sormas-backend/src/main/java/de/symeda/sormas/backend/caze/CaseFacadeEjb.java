@@ -154,7 +154,6 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
-import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
@@ -197,6 +196,7 @@ import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
+import de.symeda.sormas.api.utils.BulkOperationResults;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -337,6 +337,7 @@ import de.symeda.sormas.backend.user.UserReference;
 import de.symeda.sormas.backend.user.UserRoleFacadeEjb;
 import de.symeda.sormas.backend.user.UserRoleService;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.BulkOperationHelper;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -1440,9 +1441,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	public List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, boolean ignoreRegion) {
-
-		return service.getCasesForDuplicateMerging(criteria, ignoreRegion, configFacade.getNameSimilarityThreshold());
+	public List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, int limit, boolean showDuplicatesWithDifferentRegion) {
+		return service.getCasesForDuplicateMerging(criteria, limit, showDuplicatesWithDifferentRegion, configFacade.getNameSimilarityThreshold());
 	}
 
 	@RightsAllowed(UserRight._CASE_EDIT)
@@ -1501,7 +1501,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@RightsAllowed({
 		UserRight._CASE_EDIT })
-	public Integer saveBulkCase(
+	public BulkOperationResults<String> saveBulkCase(
 		List<String> caseUuidList,
 		@Valid CaseBulkEditData updatedCaseBulkEditData,
 		boolean diseaseChange,
@@ -1511,13 +1511,11 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		boolean surveillanceOfficerChange)
 		throws ValidationRuntimeException {
 
-		int changedCases = 0;
-		for (String caseUuid : caseUuidList) {
-			Case caze = service.getByUuid(caseUuid);
+		return BulkOperationHelper.executeWithLimits(caseUuidList, uuid -> {
+			Case caze = service.getByUuid(uuid);
 
 			if (service.isEditAllowed(caze)) {
 				CaseDataDto existingCaseDto = toDto(caze);
-
 				updateCaseWithBulkData(
 					updatedCaseBulkEditData,
 					caze,
@@ -1527,15 +1525,13 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					outcomeChange,
 					surveillanceOfficerChange);
 				doSave(caze, true, existingCaseDto, true);
-				changedCases++;
 			}
-		}
-		return changedCases;
+		});
 	}
 
 	@RightsAllowed({
 		UserRight._CASE_EDIT })
-	public void saveBulkEditWithFacilities(
+	public BulkOperationResults<String> saveBulkEditWithFacilities(
 		List<String> caseUuidList,
 		@Valid CaseBulkEditData updatedCaseBulkEditData,
 		boolean diseaseChange,
@@ -1547,18 +1543,15 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		Region newRegion = regionService.getByUuid(updatedCaseBulkEditData.getRegion().getUuid());
 		District newDistrict = districtService.getByUuid(updatedCaseBulkEditData.getDistrict().getUuid());
-		CommunityReferenceDto communityDto = updatedCaseBulkEditData.getCommunity();
-		Community newCommunity = null;
-		if (communityDto != null) {
-			newCommunity = communityService.getByUuid(updatedCaseBulkEditData.getCommunity().getUuid());
-		}
+		Community newCommunity =
+			updatedCaseBulkEditData.getCommunity() != null ? communityService.getByUuid(updatedCaseBulkEditData.getCommunity().getUuid()) : null;
+		Facility newFacility = facilityService.getByUuid(updatedCaseBulkEditData.getHealthFacility().getUuid());
 
-		for (String caseUuid : caseUuidList) {
-			Case caze = service.getByUuid(caseUuid);
+		return BulkOperationHelper.executeWithLimits(caseUuidList, uuid -> {
+			Case caze = service.getByUuid(uuid);
 
 			if (service.isEditAllowed(caze)) {
 				CaseDataDto existingCaseDto = toDto(caze);
-
 				updateCaseWithBulkData(
 					updatedCaseBulkEditData,
 					caze,
@@ -1572,12 +1565,12 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				caze.setDistrict(newDistrict);
 				caze.setCommunity(newCommunity);
 				caze.setFacilityType(updatedCaseBulkEditData.getFacilityType());
-				caze.setHealthFacility(facilityService.getByUuid(updatedCaseBulkEditData.getHealthFacility().getUuid()));
+				caze.setHealthFacility(newFacility);
 				caze.setHealthFacilityDetails(updatedCaseBulkEditData.getHealthFacilityDetails());
 				CaseLogic.handleHospitalization(toDto(caze), existingCaseDto, doTransfer);
 				doSave(caze, true, existingCaseDto, true);
 			}
-		}
+		});
 	}
 
 	private void updateCaseWithBulkData(
@@ -1730,9 +1723,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			final Case caze = service.getByUuid(cazeRef.getUuid());
 			contact.getSamples().forEach(sample -> {
 				if (!sample.isDeleted()) {
-					if (sample.getAssociatedCase() == null) {
+					if (contact.getDisease() == caze.getDisease() && sample.getAssociatedCase() == null) {
 						sample.setAssociatedCase(caze);
-					} else if (!sample.getAssociatedCase().getUuid().equals(cazeRef.getUuid())) {
+					} else if (!DataHelper.isSame(sample.getAssociatedCase(), cazeRef)) {
 						sampleFacade.cloneSampleForCase(sample, caze);
 					}
 				}
@@ -1754,7 +1747,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			final Case caze = service.getByUuid(cazeRef.getUuid());
 			eventParticipant.getSamples().forEach(sample -> {
 				if (!sample.isDeleted()) {
-					if (sample.getAssociatedCase() == null) {
+					if (eventParticipant.getEvent().getDisease() == caze.getDisease() && sample.getAssociatedCase() == null) {
 						sample.setAssociatedCase(caze);
 					} else if (!sample.getAssociatedCase().getUuid().equals(cazeRef.getUuid())) {
 						sampleFacade.cloneSampleForCase(sample, caze);
@@ -1776,7 +1769,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		final Case caze = service.getByUuid(cazeRef.getUuid());
 		final Disease disease = caze.getDisease();
 		eventParticipant.getSamples().stream().filter(sample -> sampleContainsTestForDisease(sample, disease)).forEach(sample -> {
-			if (sample.getAssociatedCase() == null) {
+			if (eventParticipant.getEvent().getDisease() == disease && sample.getAssociatedCase() == null) {
 				sample.setAssociatedCase(caze);
 			} else {
 				sampleFacade.cloneSampleForCase(sample, caze);
@@ -2588,6 +2581,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	private void deleteCase(Case caze, DeletionDetails deletionDetails)
 		throws ExternalSurveillanceToolRuntimeException, SormasToSormasRuntimeException {
 
+		if (!caseService.inJurisdictionOrOwned(caze)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.messageCaseOutsideJurisdictionDeletionDenied));
+		}
 		externalJournalService.handleExternalJournalPersonUpdateAsync(caze.getPerson().toReference());
 
 		try {
@@ -2611,7 +2607,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					try {
 						deleteCase(caseToBeDeleted, deletionDetails);
 						deletedCasesUuids.add(caseToBeDeleted.getUuid());
-					} catch (ExternalSurveillanceToolRuntimeException | SormasToSormasRuntimeException e) {
+					} catch (ExternalSurveillanceToolRuntimeException | SormasToSormasRuntimeException | AccessDeniedException e) {
 						logger.error("The case with uuid {} could not be deleted", caseToBeDeleted.getUuid(), e);
 					}
 				}

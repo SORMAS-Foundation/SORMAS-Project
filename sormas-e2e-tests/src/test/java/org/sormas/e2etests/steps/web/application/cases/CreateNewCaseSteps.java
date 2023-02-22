@@ -35,6 +35,8 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CONF
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CONTACT_CASE_POPUP_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CREATE_A_NEW_CASE_CONFIRMATION_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CREATE_A_NEW_PERSON_CONFIRMATION_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CREATE_A_NEW_PERSON_CONFIRMATION_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CREATE_NEW_CASE_CONFIRMATION_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_BIRTH_DAY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_BIRTH_MONTH_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_BIRTH_YEAR_COMBOBOX;
@@ -794,6 +796,14 @@ public class CreateNewCaseSteps implements En {
         });
 
     When(
+        "^I pick a new person in Pick or create person popup during case creation for DE$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_A_NEW_PERSON_CONFIRMATION_BUTTON_DE);
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+        });
+
+    When(
         "^I create a new case with specific data using line listing feature$",
         () -> {
           caze = caseService.buildCaseForLineListingFeature();
@@ -1165,6 +1175,16 @@ public class CreateNewCaseSteps implements En {
         });
 
     And(
+        "^I fill only mandatory fields to convert laboratory message into a case for DE$",
+        () -> {
+          LocalDate reportDate = LocalDate.now().minusDays(2);
+          selectResponsibleRegion("Hamburg");
+          selectResponsibleDistrict("SK Hamburg");
+          selectPlaceOfStay("ZUHAUSE");
+          fillDateOfReport(reportDate, Locale.GERMAN);
+        });
+
+    And(
         "^I click SAVE button on Create New Case form$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
@@ -1339,6 +1359,13 @@ public class CreateNewCaseSteps implements En {
     When(
         "I accept first case in Shares Page",
         () -> webDriverHelpers.clickOnWebElementBySelector(ACCEPT_BUTTON));
+
+    And(
+        "^I choose create new case in Pick or create entry form for DE$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_CASE_CONFIRMATION_BUTTON_DE);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON_POPUP);
+        });
   }
 
   private void selectPlaceOfStayDistrict(String placeOfStayDistrict) {

@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 import org.openqa.selenium.WebElement;
-import org.sormas.e2etests.entities.pojo.User;
+import org.sormas.e2etests.entities.pojo.common.User;
 import org.sormas.e2etests.entities.services.UserService;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;

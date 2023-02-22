@@ -19,8 +19,11 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
 
 import de.symeda.sormas.backend.common.QueryContext;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 
 public class TaskQueryContext extends QueryContext<Task, TaskJoins> {
 
@@ -31,5 +34,69 @@ public class TaskQueryContext extends QueryContext<Task, TaskJoins> {
 	@Override
 	protected Expression<?> createExpression(String name) {
 		return null;
+	}
+
+	public Expression<String> getRegionNameForIndex() {
+		return getRegionExpressionForIndex(Region.NAME);
+	}
+
+	public Expression<String> getRegionExpressionForIndex(String regionProperty) {
+		return getIndexJurisdictionExpression(
+			criteriaBuilder,
+			joins.getCaseResponsibleRegion(),
+			joins.getCaseRegion(),
+			joins.getContactRegion(),
+			joins.getEventRegion(),
+			joins.getTravelEntryResponsibleRegion(),
+			regionProperty);
+	}
+
+	public Expression<String> getDistrictNameForIndex() {
+		return getDistrictExpressionForIndex(District.NAME);
+	}
+
+	public Expression<String> getDistrictExpressionForIndex(String districtProperty) {
+		return getIndexJurisdictionExpression(
+			criteriaBuilder,
+			joins.getCaseResponsibleDistrict(),
+			joins.getCaseDistrict(),
+			joins.getContactDistrict(),
+			joins.getEventDistrict(),
+			joins.getTravelEntryResponsibleDistrict(),
+			districtProperty);
+	}
+
+	public Expression<String> getCommunityExpressionForIndex(String communityProperty) {
+		return getIndexJurisdictionExpression(
+			criteriaBuilder,
+			joins.getCaseResponsibleCommunity(),
+			joins.getCaseCommunity(),
+			joins.getContactCommunity(),
+			joins.getEventCommunity(),
+			joins.getTravelEntryResponsibleCommunity(),
+			communityProperty);
+	}
+
+	private <T> Expression<T> getIndexJurisdictionExpression(
+		CriteriaBuilder cb,
+		Join<?, ?> caseResponsibleJurisdictionJoin,
+		Join<?, ?> caseJurisdictionJoin,
+		Join<?, ?> contactJurisdictionJoin,
+		Join<?, ?> eventJurisdictionJoin,
+		Join<?, ?> travelEntryResponsibleJurisdictionJoin,
+		String propertyName) {
+
+		return cb.<T> selectCase()
+			.when(cb.isNotNull(caseResponsibleJurisdictionJoin), caseResponsibleJurisdictionJoin.get(propertyName))
+			.otherwise(
+				cb.<T> selectCase()
+					.when(cb.isNotNull(caseJurisdictionJoin), caseJurisdictionJoin.get(propertyName))
+					.otherwise(
+						cb.<T> selectCase()
+							.when(cb.isNotNull(contactJurisdictionJoin), contactJurisdictionJoin.get(propertyName))
+							.otherwise(
+								cb.<T> selectCase()
+									.when(cb.isNotNull(eventJurisdictionJoin), eventJurisdictionJoin.get(propertyName))
+									.otherwise(travelEntryResponsibleJurisdictionJoin.get(propertyName)))));
 	}
 }
