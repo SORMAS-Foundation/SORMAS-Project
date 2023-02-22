@@ -595,23 +595,6 @@ public class PersonDirectorySteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(120);
         });
 
-    And(
-        "^I filter persons by collected person UUID on Persons directory page$",
-        () -> {
-          String contactUuid = aContact.getUuid();
-          By uuidLocator = By.cssSelector(String.format(CONTACT_RESULTS_UUID_LOCATOR, contactUuid));
-          webDriverHelpers.fillAndSubmitInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, contactUuid);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(uuidLocator);
-        });
 
-    Then(
-        "^I click on the first result in table from Person directory page$",
-        () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              FIRST_RESULT_IN_PERSON_DIRECTORY_TABLE);
-          webDriverHelpers.clickOnWebElementBySelector(FIRST_RESULT_IN_PERSON_DIRECTORY_TABLE);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
-        });
   }
 }

@@ -200,7 +200,6 @@ import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pages.application.cases.EditCasePage;
 import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.Assert;
@@ -1255,17 +1254,7 @@ public class ContactDirectorySteps implements En {
               "There is no contact with expected status");
         });
 
-    And(
-        "^I open last created contact via API and check if Edit case page is read only$",
-        () -> {
-          String LAST_CREATED_CONTACT_URL =
-              runningConfiguration.getEnvironmentUrlForMarket(locale)
-                  + "/sormas-webdriver/#!contacts/data/"
-                  + apiState.getCreatedContact().getUuid();
-          webDriverHelpers.accessWebSite(LAST_CREATED_CONTACT_URL);
-          webDriverHelpers.isElementGreyedOut(EditCasePage.UUID_INPUT);
-          webDriverHelpers.isElementGreyedOut(SAVE_EDIT_BUTTON);
-        });
+
   }
 
   public Map<String, Object> parseCSVintoPOJODetailedContactCSV(String fileName) {
