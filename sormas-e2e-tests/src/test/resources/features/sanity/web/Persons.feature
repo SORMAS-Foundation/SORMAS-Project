@@ -321,6 +321,7 @@ Feature: Edit Persons
     Then I navigate to the last created case via the url
     And I collect uuid of the case
     Then I click on share case button
+    And I click to hand over the ownership of the contact in Share popup
     And I select organization to share with "s2s_2"
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
@@ -328,7 +329,6 @@ Feature: Edit Persons
     Given I log in as a Admin User
     And I click on the Shares button from navbar
     Then I accept first case in Shares Page
-#    case shared
     When I back to tab number 1
     Then I navigate to "s2s_1" environment
     Then I open the last created contact via API
@@ -342,18 +342,68 @@ Feature: Edit Persons
     And I click on the Shares button from navbar
     Then I accept first contact in Shares Page
     And I click to accept potential duplicate in Shares Page
-#    contact shared
-    When I back to tab number 1
-    Then I navigate to "s2s_1" environment
-    And I open last created contact via API and check if Edit case page is read only
+    And I click on the Contacts button from navbar
+    And I open the first contact from contacts list
     Then I open Contact Person tab
-    And I collect the contact person UUID displayed on Edit contact page
-    Then I click on the Persons button from navbar
-    And I filter persons by collected person UUID on Persons directory page
-    Then I click on the first result in table from Person directory page
     And I change first name of person from Edit person page
     When I back to tab number 2
     Then I navigate to "s2s_2" environment
     And I open the last created contact via API
     Then I open Contact Person tab
     And I check if first name of person has been changed
+
+  @tmsLink=SORDEV-12088 @env_s2s_1
+  Scenario: [S2S] Simultaneous Work on Person [2]
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    Then I navigate to the last created case via the url
+    And I collect uuid of the case
+    Then I click on share case button
+    And I click to hand over the ownership of the contact in Share popup
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with "shared with automated test"
+    Then I click on share button in s2s share popup and wait for share to finish
+    And I navigate to "s2s_2" environment in new driver tab
+    Given I log in as a Admin User
+    And I click on the Shares button from navbar
+    Then I accept first case in Shares Page
+    And I click on the Cases button from navbar
+    And I filter Cases by collected case uuid
+    And I click on the first Case ID from Case Directory
+    And I navigate to case person tab
+    And I change first name of person from Edit person page
+    When I back to tab number 1
+    Then I navigate to "s2s_1" environment
+    And I open the last created case via API and check if Edit case page is read only
+    And I navigate to case person tab
+    And I check if first name of person has been changed
+
+  @tmsLink=SORDEV-12088 @env_s2s_1
+  Scenario: [S2S] Simultaneous Work on Person [3]
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    Then I navigate to the last created case via the url
+    And I collect uuid of the case
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with "shared with automated test"
+    Then I click on share button in s2s share popup and wait for share to finish
+    And I navigate to "s2s_2" environment in new driver tab
+    Given I log in as a Admin User
+    And I click on the Shares button from navbar
+    Then I accept first case in Shares Page
+    And I click on the The Eye Icon located in the Shares Page
+    And I click on the shortened case ID to open the case
+    And I check if editable fields are read only for shared case
+    And I navigate to case person tab
+    And I check if editable fields are read only for person case tab

@@ -375,6 +375,16 @@ public class EditCasePersonSteps implements En {
               "Last name is incorrect!");
           softly.assertAll();
         });
+
+    And(
+        "^I check if editable fields are read only for person case tab$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
+          webDriverHelpers.isElementGreyedOut(UUID_INPUT);
+          webDriverHelpers.isElementGreyedOut(FIRST_NAME_INPUT);
+          webDriverHelpers.isElementGreyedOut(LAST_NAME_INPUT);
+          webDriverHelpers.isElementGreyedOut(SAVE_BUTTON);
+        });
   }
 
   private void selectCountry(String country) {

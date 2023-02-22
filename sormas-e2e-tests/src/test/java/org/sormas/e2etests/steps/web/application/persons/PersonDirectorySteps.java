@@ -22,11 +22,9 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePersonPage.CASE_OF_DEATH_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePersonPage.DATE_OF_DEATH_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.ALL_BUTTON_CONTACT;
-import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_RESULTS_UUID_LOCATOR;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.*;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.*;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
-import static org.sormas.e2etests.steps.web.application.contacts.EditContactSteps.aContact;
 import static org.sormas.e2etests.steps.web.application.entries.CreateNewTravelEntrySteps.TravelEntryUuid;
 import static org.sormas.e2etests.steps.web.application.entries.CreateNewTravelEntrySteps.aCase;
 

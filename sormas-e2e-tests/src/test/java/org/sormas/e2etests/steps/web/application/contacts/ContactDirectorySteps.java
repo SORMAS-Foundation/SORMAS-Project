@@ -130,7 +130,6 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.getVaccinationStatusContactsByText;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.FIRST_NAME_OF_CONTACT_PERSON_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SAVE_BUTTON;
-import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SAVE_EDIT_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.getContactIDPathByIndex;
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.AREA_TYPE_COMBOBOX;

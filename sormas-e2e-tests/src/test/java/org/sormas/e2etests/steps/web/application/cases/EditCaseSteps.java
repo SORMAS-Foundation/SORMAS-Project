@@ -2685,6 +2685,14 @@ public class EditCaseSteps implements En {
           softly.assertFalse(webDriverHelpers.isElementPresent(EDIT_SAMPLE_BUTTON));
           softly.assertAll();
         });
+    And(
+        "^I check if editable fields are read only for shared case$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(EditCasePage.UUID_INPUT);
+          webDriverHelpers.isElementGreyedOut(EditCasePage.UUID_INPUT);
+          webDriverHelpers.isElementGreyedOut(REPORT_DATE_INPUT);
+          webDriverHelpers.isElementGreyedOut(EditCasePage.SAVE_BUTTON);
+        });
   }
 
   private Vaccination collectVaccinationData() {
