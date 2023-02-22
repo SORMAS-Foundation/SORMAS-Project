@@ -94,6 +94,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasRuntimeException;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
+import de.symeda.sormas.api.utils.BulkOperationResults;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.FacadeHelper;
@@ -125,6 +126,7 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShar
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.BulkOperationHelper;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -428,52 +430,52 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 			Join<Event, User> reportingUser = eventJoins.getReportingUser();
 			Join<Event, User> responsibleUser = eventJoins.getResponsibleUser();
 
-		cq.multiselect(
-			event.get(Event.ID),
-			event.get(Event.UUID),
-			event.get(Event.EXTERNAL_ID),
-			event.get(Event.EXTERNAL_TOKEN),
-			event.get(Event.INTERNAL_TOKEN),
-			event.get(Event.EVENT_STATUS),
-			event.get(Event.RISK_LEVEL),
-			event.get(Event.SPECIFIC_RISK),
-			event.get(Event.EVENT_INVESTIGATION_STATUS),
-			event.get(Event.EVENT_MANAGEMENT_STATUS),
-			event.get(Event.DISEASE),
-			event.get(Event.DISEASE_VARIANT),
-			event.get(Event.DISEASE_DETAILS),
-			event.get(Event.START_DATE),
-			event.get(Event.END_DATE),
-			event.get(Event.EVOLUTION_DATE),
-			event.get(Event.EVENT_TITLE),
-			region.get(Region.UUID),
-			region.get(Region.NAME),
-			district.get(District.UUID),
-			district.get(District.NAME),
-			community.get(Community.UUID),
-			community.get(Community.NAME),
-			location.get(Location.CITY),
-			location.get(Location.STREET),
-			location.get(Location.HOUSE_NUMBER),
-			location.get(Location.ADDITIONAL_INFORMATION),
-			event.get(Event.SRC_TYPE),
-			event.get(Event.SRC_FIRST_NAME),
-			event.get(Event.SRC_LAST_NAME),
-			event.get(Event.SRC_TEL_NO),
-			event.get(Event.SRC_MEDIA_WEBSITE),
-			event.get(Event.SRC_MEDIA_NAME),
-			event.get(Event.REPORT_DATE_TIME),
-			reportingUser.get(User.UUID),
-			reportingUser.get(User.FIRST_NAME),
-			reportingUser.get(User.LAST_NAME),
-			responsibleUser.get(User.UUID),
-			responsibleUser.get(User.FIRST_NAME),
-			responsibleUser.get(User.LAST_NAME),
-			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(eventQueryContext)),
-			event.get(Event.CHANGE_DATE),
-			event.get(Event.EVENT_IDENTIFICATION_SOURCE),
-			event.get(Event.DELETION_REASON),
-			event.get(Event.OTHER_DELETION_REASON));
+			cq.multiselect(
+				event.get(Event.ID),
+				event.get(Event.UUID),
+				event.get(Event.EXTERNAL_ID),
+				event.get(Event.EXTERNAL_TOKEN),
+				event.get(Event.INTERNAL_TOKEN),
+				event.get(Event.EVENT_STATUS),
+				event.get(Event.RISK_LEVEL),
+				event.get(Event.SPECIFIC_RISK),
+				event.get(Event.EVENT_INVESTIGATION_STATUS),
+				event.get(Event.EVENT_MANAGEMENT_STATUS),
+				event.get(Event.DISEASE),
+				event.get(Event.DISEASE_VARIANT),
+				event.get(Event.DISEASE_DETAILS),
+				event.get(Event.START_DATE),
+				event.get(Event.END_DATE),
+				event.get(Event.EVOLUTION_DATE),
+				event.get(Event.EVENT_TITLE),
+				region.get(Region.UUID),
+				region.get(Region.NAME),
+				district.get(District.UUID),
+				district.get(District.NAME),
+				community.get(Community.UUID),
+				community.get(Community.NAME),
+				location.get(Location.CITY),
+				location.get(Location.STREET),
+				location.get(Location.HOUSE_NUMBER),
+				location.get(Location.ADDITIONAL_INFORMATION),
+				event.get(Event.SRC_TYPE),
+				event.get(Event.SRC_FIRST_NAME),
+				event.get(Event.SRC_LAST_NAME),
+				event.get(Event.SRC_TEL_NO),
+				event.get(Event.SRC_MEDIA_WEBSITE),
+				event.get(Event.SRC_MEDIA_NAME),
+				event.get(Event.REPORT_DATE_TIME),
+				reportingUser.get(User.UUID),
+				reportingUser.get(User.FIRST_NAME),
+				reportingUser.get(User.LAST_NAME),
+				responsibleUser.get(User.UUID),
+				responsibleUser.get(User.FIRST_NAME),
+				responsibleUser.get(User.LAST_NAME),
+				JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(eventQueryContext)),
+				event.get(Event.CHANGE_DATE),
+				event.get(Event.EVENT_IDENTIFICATION_SOURCE),
+				event.get(Event.DELETION_REASON),
+				event.get(Event.OTHER_DELETION_REASON));
 
 			Predicate filter = event.get(Event.ID).in(batchedIds);
 
@@ -1424,16 +1426,15 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 	@Override
 	@RightsAllowed(UserRight._EVENT_EDIT)
-	public int saveBulkEvents(
+	public BulkOperationResults<String> saveBulkEvents(
 		List<String> eventUuidList,
 		EventDto updatedTempEvent,
 		boolean eventStatusChange,
 		boolean eventInvestigationStatusChange,
 		boolean eventManagementStatusChange) {
 
-		int changedEvents = 0;
-		for (String evetUuid : eventUuidList) {
-			Event event = service.getByUuid(evetUuid);
+		return BulkOperationHelper.executeWithLimits(eventUuidList, uuid -> {
+			Event event = service.getByUuid(uuid);
 
 			if (service.isEditAllowed(event)) {
 				EventDto eventDto = toDto(event);
@@ -1450,11 +1451,9 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 				}
 
 				save(eventDto);
-				changedEvents++;
 			}
-		}
+		});
 
-		return changedEvents;
 	}
 
 	@Override

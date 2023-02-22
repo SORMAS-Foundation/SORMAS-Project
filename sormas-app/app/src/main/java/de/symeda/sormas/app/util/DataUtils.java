@@ -15,12 +15,12 @@
 
 package de.symeda.sormas.app.util;
 
-import org.apache.commons.collections4.CollectionUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.Month;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -85,16 +85,7 @@ public class DataUtils {
 	}
 
 	public static <E> Item toItem(E item) {
-		return new Item<E>(item.toString(), item);
-	}
-
-	public static List<Item> getMonthItems() {
-		List<Item> listOut = new ArrayList<>();
-		listOut.add(new Item<Integer>("", null));
-		for (Month month : Month.values()) {
-			listOut.add(new Item<Integer>(I18nProperties.getEnumCaption(month), month.ordinal()));
-		}
-		return listOut;
+		return new Item<>(item instanceof AbstractDomainObject ? ((AbstractDomainObject) item).buildCaption() : item.toString(), item);
 	}
 
 	public static List<Item> getMonthItems(boolean withNull) {

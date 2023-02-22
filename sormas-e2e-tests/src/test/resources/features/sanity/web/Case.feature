@@ -2091,3 +2091,242 @@ Feature: Case end to end tests
     And I click on Create button in Document Templates box in Edit Case directory
     Then I select "ExampleDocumentTemplateCases.docx" Quarantine Order in Create Quarantine Order form in Edit Case directory
     And Sample name timestamp is correct in Create Quarantine Order form from Edit Case directory
+
+  @tmsLink=SORDEV-12081 @env_s2s_1
+  Scenario: Accept Reject Special Cases [1]
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    Then I navigate to the last created case via the url
+    And I collect uuid of the case
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment
+    Given I log in as a Admin User
+    And I click on the Shares button from navbar
+    And I click on "reject" shared case button with copied case description
+    Then I fill comment field in Reject share request popup and click confirm
+    Then I navigate to "s2s_1" environment
+    Then I navigate to the last created case via the url
+    And I check if reject share case button in Edit Case is unavailable
+
+  @tmsLink=SORDEV-12081 @env_s2s_1
+  Scenario: Accept Reject Special Cases [2]
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    Then I navigate to the last created case via the url
+    And I collect uuid of the case
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment in new driver tab
+    Given I log in as a Admin User
+    And I click on the Shares button from navbar
+    And I click on "accept" shared case button with copied case description
+    Then I back to tab number 1
+    And I click on revoke share button
+    Then I click on Ja button in Revoke case popup
+    And I check if popup with error with handover displays
+
+  @tmsLink=SORDEV-12081 @env_s2s_1
+  Scenario: Accept Reject Special Cases [3]
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    Then I navigate to the last created case via the url
+    And I collect uuid of the case
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment
+    Given I log in as a Admin User
+    And I click on the Shares button from navbar
+    And I click on "reject" shared case button with copied case description
+    Then I fill comment field in Reject share request popup and click confirm
+    Then I navigate to "s2s_1" environment
+    Then I navigate to the last created case via the url
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment
+    And I click on the Shares button from navbar
+    And I click on "reject" shared case button with copied case description
+
+  @tmsLink=SORDEV-12081 @env_s2s_1
+  Scenario: Accept Reject Special Cases [4]
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    Then I navigate to the last created case via the url
+    And I collect uuid of the case
+    Then I click on share case button
+    And I click to hand over the ownership of the case in Share popup
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment
+    Given I log in as a Admin User
+    And I click on the Shares button from navbar
+    And I click on "accept" shared case button with copied case description
+    Then I navigate to "s2s_1" environment
+    Then I navigate to the last created case via the url without check if uuid is enabled
+    And I check if share case button in Edit Case is unavailable
+
+  @tmsLink=SORDEV-12081 @env_s2s_1
+  Scenario: Accept Reject Special Cases [5]
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    Then I navigate to the last created case via the url
+    And I collect uuid of the case
+    Then I click on share case button
+    And I click to hand over the ownership of the case in Share popup
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment in new driver tab
+    Given I log in as a Admin User
+    And I click on the Shares button from navbar
+    Then I back to tab number 1
+    And I click on revoke share button
+    Then I click on Ja button in Revoke case popup
+    Then I back to tab number 2
+    And I click on "accept" shared case button with copied case description
+    And I check if popup with error with handover displays
+
+  @tmsLink=SORDEV-12081 @env_s2s_1
+  Scenario: Accept Reject Special Cases [6]
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    Then I navigate to the last created case via the url
+    And I collect uuid of the case
+    Then I click on share case button
+    And I click to hand over the ownership of the case in Share popup
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment in new driver tab
+    Given I log in as a Admin User
+    And I click on the Shares button from navbar
+    Then I back to tab number 1
+    And I click on revoke share button
+    Then I click on Ja button in Revoke case popup
+    Then I back to tab number 2
+    And I click on "reject" shared case button with copied case description
+    Then I fill comment field in Reject share request popup and click confirm
+    And I check if popup with error with handover displays
+
+    @tmsLink=SORDEV-12445 @env_d2s
+    Scenario: S2S_Processed lab messages should be transferred [1]
+      Given API : Login to DEMIS server
+      Then I create and send Laboratory Notification
+      And I log in as a Admin User
+      Then I click on the Messages button from navbar
+      And I click on fetch messages button
+      Then I filter by last created person via API in Messages Directory
+      And I collect message data from searched record in Messages directory
+      And I click on process button for 1 result in Message Directory page
+      And I pick a new person in Pick or create person popup during case creation for DE
+      And I choose create new case in Pick or create entry form for DE
+      And I check that create new case form with pathogen detection reporting process is displayed for DE
+      And I fill only mandatory fields to convert laboratory message into a case for DE
+      And I click on save button in the case popup
+      And I check that new sample form with pathogen detection reporting process is displayed
+      And I click on save sample button
+      And I click on save sample button
+      And I click on YES button in Update case disease variant popup window
+      And I click on the Cases button from navbar
+      And I search the case by last created person via Demis message
+      Then I click on the first Case ID from Case Directory
+      Then I click on share case button
+      And I click to hand over the ownership of the case in Share popup
+      And I select organization to share with "s2s_3"
+      And I fill comment in share popup with random string
+      Then I click on share button in s2s share popup and wait for share to finish
+      Then I navigate to "s2s_3" environment in new driver tab
+      Given I log in as a Admin User
+      And I click on the Shares button from navbar
+      And I click on "accept" shared case button with copied case description
+      And I click on the Cases button from navbar
+      Then I filter by last created person via DEMIS API in Case Directory
+      Then I click on the first Case ID from Case Directory
+      And I click on edit Sample
+      Then I back to tab number 1
+      And I click on the Cases button from navbar
+      And I apply "Zur Ansicht" to ownership combobox on Case Directory Page
+      And I search the case by last created person via Demis message
+      Then I click on the first Case ID from Case Directory
+      And I check if edit sample button is unavailable
+
+  @tmsLink=SORDEV-12445 @env_d2s
+  Scenario: S2S_Processed lab messages should be transferred [2]
+    Given API : Login to DEMIS server
+    Then I create and send Laboratory Notification
+    And I log in as a Admin User
+    Then I click on the Messages button from navbar
+    And I click on fetch messages button
+    Then I filter by last created person via API in Messages Directory
+    And I collect message data from searched record in Messages directory
+    And I click on process button for 1 result in Message Directory page
+    And I pick a new person in Pick or create person popup during case creation for DE
+    And I choose create new case in Pick or create entry form for DE
+    And I check that create new case form with pathogen detection reporting process is displayed for DE
+    And I fill only mandatory fields to convert laboratory message into a case for DE
+    And I click on save button in the case popup
+    And I check that new sample form with pathogen detection reporting process is displayed
+    And I click on save sample button
+    And I click on save sample button
+    And I click on YES button in Update case disease variant popup window
+    And I click on the Cases button from navbar
+    And I search the case by last created person via Demis message
+    Then I click on the first Case ID from Case Directory
+    Then I click on share case button
+    And I select organization to share with "s2s_3"
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_3" environment in new driver tab
+    Given I log in as a Admin User
+    And I click on the Shares button from navbar
+    And I click on "accept" shared case button with copied case description
+    And I click on the Cases button from navbar
+    Then I filter by last created person via DEMIS API in Case Directory
+    And I apply "Zur Ansicht" to ownership combobox on Case Directory Page
+    Then I click on the first Case ID from Case Directory
+    And I check if edit sample button is unavailable
+    Then I back to tab number 1
+    And I click on the Cases button from navbar
+    And I search the case by last created person via Demis message
+    Then I click on the first Case ID from Case Directory
+    And I click on edit Sample
+    

@@ -1674,15 +1674,12 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 	@Override
 	public EditPermissionType getEditPermissionType(Contact contact) {
 
-		if (contact.getSormasToSormasOriginInfo() != null && !contact.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
-			return EditPermissionType.REFUSED;
-		}
-
 		if (!inJurisdictionOrOwned(contact)) {
 			return EditPermissionType.REFUSED;
 		}
 
-		if (sormasToSormasShareInfoService.isContactOwnershipHandedOver(contact)) {
+		if (sormasToSormasShareInfoService.isContactOwnershipHandedOver(contact)
+			|| (contact.getSormasToSormasOriginInfo() != null && !contact.getSormasToSormasOriginInfo().isOwnershipHandedOver())) {
 			return EditPermissionType.WITHOUT_OWNERSHIP;
 		}
 
