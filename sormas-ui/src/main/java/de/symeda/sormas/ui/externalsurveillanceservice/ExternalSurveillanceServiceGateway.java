@@ -20,9 +20,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.share.ExternalShareInfoCriteria;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.DirtyStateComponent;
 import de.symeda.sormas.ui.utils.LayoutWithSidePanel;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -52,7 +50,7 @@ public class ExternalSurveillanceServiceGateway {
 			I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_confirmSendCase),
 			I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_confirmDeleteCase),
 			caze.isDontShareWithReportingTool() || !isEditAllowed ? null : () -> {
-				FacadeProvider.getExternalSurveillanceToolFacade().sendCases(Collections.singletonList(caze.getUuid()), false);
+				FacadeProvider.getExternalSurveillanceToolFacade().sendCases(Collections.singletonList(caze.getUuid()));
 			},
 			isEditAllowed ? () -> {
 				FacadeProvider.getExternalSurveillanceToolFacade().deleteCases(Collections.singletonList(caze));
@@ -72,7 +70,7 @@ public class ExternalSurveillanceServiceGateway {
 			I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_confirmSendEvent),
 			I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_confirmDeleteEvent),
 			isEditAllowed ? () -> {
-				FacadeProvider.getExternalSurveillanceToolFacade().sendEvents(Collections.singletonList(event.getUuid()), false);
+				FacadeProvider.getExternalSurveillanceToolFacade().sendEvents(Collections.singletonList(event.getUuid()));
 			} : null,
 			isEditAllowed ? () -> {
 				FacadeProvider.getExternalSurveillanceToolFacade().deleteEvents(Collections.singletonList(event));
@@ -89,8 +87,7 @@ public class ExternalSurveillanceServiceGateway {
 		@Nullable GatewayCall gatewaySendCall,
 		@Nullable GatewayCall gatewayDeleteCall,
 		ExternalShareInfoCriteria shareInfoCriteria) {
-		if (!FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()
-			|| !UserProvider.getCurrent().hasUserRight(UserRight.EXTERNAL_SURVEILLANCE_SHARE)) {
+		if (!FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()) {
 			return null;
 		}
 
@@ -111,13 +108,13 @@ public class ExternalSurveillanceServiceGateway {
 
 	public static void sendCasesToExternalSurveillanceTool(List<String> uuids, Runnable callback, boolean shouldConfirm) {
 		sendToExternalSurveillanceTool(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_confirmSendCases), () -> {
-			FacadeProvider.getExternalSurveillanceToolFacade().sendCases(uuids, false);
+			FacadeProvider.getExternalSurveillanceToolFacade().sendCases(uuids);
 		}, I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntriesSent), callback, shouldConfirm);
 	}
 
 	public static void sendEventsToExternalSurveillanceTool(List<String> uuids, Runnable callback, boolean shouldConfirm) {
 		sendToExternalSurveillanceTool(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_confirmSendEvents), () -> {
-			FacadeProvider.getExternalSurveillanceToolFacade().sendEvents(uuids, false);
+			FacadeProvider.getExternalSurveillanceToolFacade().sendEvents(uuids);
 		}, I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntriesSent), callback, shouldConfirm);
 	}
 

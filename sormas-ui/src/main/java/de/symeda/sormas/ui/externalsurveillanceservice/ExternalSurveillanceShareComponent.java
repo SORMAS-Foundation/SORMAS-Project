@@ -84,7 +84,7 @@ public class ExternalSurveillanceShareComponent extends VerticalLayout {
 		HorizontalLayout headerLayout = new HorizontalLayout(header);
 		headerLayout.setComponentAlignment(header, Alignment.MIDDLE_LEFT);
 
-		if (sendHandler != null) {
+		if (sendHandler != null && UserProvider.getCurrent().hasUserRight(UserRight.EXTERNAL_SURVEILLANCE_SHARE)) {
 			Button sendButton = ButtonHelper.createIconButton(
 				Captions.ExternalSurveillanceToolGateway_send,
 				VaadinIcons.OUTBOX,

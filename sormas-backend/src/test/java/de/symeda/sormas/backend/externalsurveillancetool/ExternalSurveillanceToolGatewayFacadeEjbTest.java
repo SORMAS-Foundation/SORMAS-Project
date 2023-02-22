@@ -137,7 +137,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 				.withRequestBody(containing("caseUuids"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
-		getExternalSurveillanceToolGatewayFacade().sendCases(Arrays.asList(case1.getUuid()), true);
+		getExternalSurveillanceToolGatewayFacade().sendCases(Arrays.asList(case1.getUuid()));
 
 		ExternalShareInfoCriteria externalShareInfoCriteria1 = new ExternalShareInfoCriteria().caze(case1.toReference());
 		assertThat(getExternalShareInfoFacade().getIndexList(externalShareInfoCriteria1, 0, 100), hasSize(1));
@@ -156,7 +156,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 				.withRequestBody(containing("caseUuids"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
-		getExternalSurveillanceToolGatewayFacade().sendCases(Arrays.asList(case1.getUuid(), case2.getUuid()), true);
+		getExternalSurveillanceToolGatewayFacade().sendCases(Arrays.asList(case1.getUuid(), case2.getUuid()));
 
 		assertThat(getExternalShareInfoFacade().getIndexList(new ExternalShareInfoCriteria().caze(case1.toReference()), 0, 100), hasSize(1));
 		assertThat(getExternalShareInfoFacade().getIndexList(new ExternalShareInfoCriteria().caze(case2.toReference()), 0, 100), hasSize(1));
@@ -170,7 +170,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
 		try {
-			getExternalSurveillanceToolGatewayFacade().sendCases(Arrays.asList("XRJOEJ-P2OY5E-CA5MYT-LSVCCGVY", "test-not-found"), true);
+			getExternalSurveillanceToolGatewayFacade().sendCases(Arrays.asList("XRJOEJ-P2OY5E-CA5MYT-LSVCCGVY", "test-not-found"));
 		} catch (ExternalSurveillanceToolException e) {
 			assertThat(e.getMessage(), Matchers.is(I18nProperties.getString("ExternalSurveillanceToolGateway.notificationErrorSending")));
 		}
@@ -184,7 +184,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 			post(urlEqualTo("/export")).withRequestBody(containing(event1.getUuid()))
 				.withRequestBody(containing("eventUuids"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
-		getExternalSurveillanceToolGatewayFacade().sendEvents(Arrays.asList(event1.getUuid()), true);
+		getExternalSurveillanceToolGatewayFacade().sendEvents(Arrays.asList(event1.getUuid()));
 
 		assertThat(getExternalShareInfoFacade().getIndexList(new ExternalShareInfoCriteria().event(event1.toReference()), 0, 100), hasSize(1));
 	}
@@ -414,7 +414,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 				.withRequestBody(containing("cases"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
-		getExternalSurveillanceToolGatewayFacade().sendCases(Arrays.asList(case1.getUuid()), false);
+		getExternalSurveillanceToolGatewayFacade().sendCases(Arrays.asList(case1.getUuid()));
 
 		boolean shared = getExternalShareInfoFacade().isSharedCase(case1.getUuid());
 		assertTrue(shared);
@@ -425,7 +425,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 		shared = getExternalShareInfoFacade().isSharedCase(case1.getUuid());
 		assertFalse(shared);
 
-		getExternalSurveillanceToolGatewayFacade().sendCases(Arrays.asList(case1.getUuid()), false);
+		getExternalSurveillanceToolGatewayFacade().sendCases(Arrays.asList(case1.getUuid()));
 		shared = getExternalShareInfoFacade().isSharedCase(case1.getUuid());
 		assertTrue(shared);
 	}
@@ -446,7 +446,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 				.withRequestBody(containing("eventUuids"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
-		getExternalSurveillanceToolGatewayFacade().sendEvents(Arrays.asList(event1.getUuid()), false);
+		getExternalSurveillanceToolGatewayFacade().sendEvents(Arrays.asList(event1.getUuid()));
 
 		boolean shared = getExternalShareInfoFacade().isSharedEvent(event1.getUuid());
 		assertTrue(shared);
@@ -767,7 +767,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 				.withRequestBody(containing("caseUuids"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
-		getExternalSurveillanceToolGatewayFacade().sendCases(Arrays.asList(sharedCase1.getUuid(), sharedCase2.getUuid()), false);
+		getExternalSurveillanceToolGatewayFacade().sendCases(Arrays.asList(sharedCase1.getUuid(), sharedCase2.getUuid()));
 
 		sharedCase2.setDontShareWithReportingTool(true);
 		getCaseFacade().save(sharedCase2);

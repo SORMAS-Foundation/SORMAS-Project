@@ -337,7 +337,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		if (event.getEventStatus() == EventStatus.CLUSTER
 			&& externalSurveillanceToolFacade.isFeatureEnabled()
 			&& externalShareInfoService.isEventShared(event.getId())) {
-			externalSurveillanceToolFacade.deleteEvents(Collections.singletonList(toDto(event)));
+			externalSurveillanceToolFacade.deleteEventsInternal(Collections.singletonList(toDto(event)));
 		}
 
 		service.delete(event, deletionDetails);
@@ -370,7 +370,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled() && StringUtils.isNotBlank(event.getExternalId())) {
 			List<Event> eventsWithSameExternalId = service.getByExternalId(event.getExternalId());
 			if (eventsWithSameExternalId != null && eventsWithSameExternalId.size() == 1) {
-				externalSurveillanceToolGatewayFacade.deleteEvents(Collections.singletonList(toDto(event)));
+				externalSurveillanceToolGatewayFacade.deleteEventsInternal(Collections.singletonList(toDto(event)));
 			}
 		}
 	}

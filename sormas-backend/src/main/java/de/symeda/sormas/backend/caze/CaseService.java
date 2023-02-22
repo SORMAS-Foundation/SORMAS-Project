@@ -1122,7 +1122,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 				if (!sharedCaseUuids.isEmpty()) {
 					try {
-						externalSurveillanceToolGatewayFacade.sendCases(sharedCaseUuids, archived);
+						externalSurveillanceToolGatewayFacade.sendCasesInternal(entityUuids, archived);
 					} catch (ExternalSurveillanceToolException e) {
 						throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
 					}

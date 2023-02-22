@@ -314,7 +314,7 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 
 			if (!sharedEventUuids.isEmpty()) {
 				try {
-					externalSurveillanceToolGatewayFacade.sendEvents(sharedEventUuids, archived);
+					externalSurveillanceToolGatewayFacade.sendEventsInternal(sharedEventUuids, archived);
 				} catch (ExternalSurveillanceToolException e) {
 					throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
 				}
