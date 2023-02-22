@@ -294,8 +294,7 @@ public abstract class AbstractBeanTest {
 		}
 
 		UserDto user = creator.createTestUser();
-
-		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName());
+		loginWith(user);
 
 		when(MockProducer.getSessionContext().isCallerInRole(any(String.class))).thenAnswer(invocationOnMock -> {
 			String role = invocationOnMock.getArgument(0);
@@ -805,8 +804,7 @@ public abstract class AbstractBeanTest {
 			"Surv",
 			"Off",
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
-		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff");
-
+		loginWith(survOff);
 		return survOff;
 	}
 
@@ -822,8 +820,7 @@ public abstract class AbstractBeanTest {
 			"Case",
 			"Off",
 			creator.getUserRoleReference(DefaultUserRole.CASE_OFFICER));
-		when(MockProducer.getPrincipal().getName()).thenReturn("CaseOff");
-
+		loginWith(caseOff);
 		return caseOff;
 	}
 
@@ -841,8 +838,7 @@ public abstract class AbstractBeanTest {
 
 	protected UserDto useNationalUserLogin() {
 		UserDto natUser = creator.createUser("", "", "", "Nat", "Usr", creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
-		when(MockProducer.getPrincipal().getName()).thenReturn("NatUsr");
-
+		loginWith(natUser);
 		return natUser;
 	}
 
@@ -855,13 +851,13 @@ public abstract class AbstractBeanTest {
 			"Admin",
 			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER),
 			creator.getUserRoleReference(DefaultUserRole.ADMIN));
-		when(MockProducer.getPrincipal().getName()).thenReturn("NationalAdmin");
-
+		loginWith(natUser);
 		return natUser;
 	}
 
 	protected void loginWith(UserDto user) {
 		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName());
+		getCurrentUserService().getCurrentUser(); // load into cache, to work-around CurrentUserService.fetchUser @Transactional not working in tests
 	}
 
 	protected void useSystemUser() {
