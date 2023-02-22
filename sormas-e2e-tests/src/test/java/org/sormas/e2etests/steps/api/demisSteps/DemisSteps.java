@@ -10,8 +10,11 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.CREATE_NEW_CASE_RADIOBUTTON_DE;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.NEW_PERSON_RADIOBUTTON_DE;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.PICK_OR_CREATE_PERSON_HEADER_DE;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.ALL_QUICK_FILTER_COUNTER;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.APPLY_FILTER_MESSAGE;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CHOOSE_OR_CREATE_ENTRY_HEADER;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FORWARDED_QUICK_FILTER_BUTTON;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FORWARDED_QUICK_FILTER_COUNTER;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGES_DETAILED_COLUMN_HEADERS;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGES_DETAILED_TABLE_ROWS;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGES_TABLE_DATA;
@@ -23,9 +26,15 @@ import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPa
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.PATIENT_BIRTHDAY_FROM_INPUT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.PATIENT_BIRTHDAY_TO_INPUT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_CONFIRM_BUTTON;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.PROCESSED_QUICK_FILTER_BUTTON;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.PROCESSED_QUICK_FILTER_COUNTER;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.RELATED_FORWARDED_MESSAGE_HEADER;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.SAVE_POPUP_CONTENT_SECOND_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.SEARCH_MESSAGE_INPUT;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.UNCLEAR_QUICK_FILTER_BUTTON;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.UNCLEAR_QUICK_FILTER_COUNTER;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.UNPROCESSED_QUICK_FILTER_BUTTON;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.UNPROCESSED_QUICK_FILTER_COUNTER;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.UPDATE_THE_DISEASE_VARIANT_HEADER;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.VERARBEITEN_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.checkMappedValueSelector;
@@ -49,6 +58,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.entities.services.api.demis.DemisApiService;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
@@ -419,6 +429,64 @@ public class DemisSteps implements En {
           TimeUnit.SECONDS.sleep(2); // wait for reaction
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
+
+    When(
+        "^I click on \"([^\"]*)\" quick filter above the messages in Message directory page$",
+        (String quickFilterOption) -> {
+          switch (quickFilterOption) {
+            case "Unverarbeitet":
+              webDriverHelpers.clickOnWebElementBySelector(UNPROCESSED_QUICK_FILTER_BUTTON);
+              webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+              break;
+            case "Verarbeitet":
+              webDriverHelpers.clickOnWebElementBySelector(PROCESSED_QUICK_FILTER_BUTTON);
+              webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+              break;
+            case "Unklar":
+              webDriverHelpers.clickOnWebElementBySelector(UNCLEAR_QUICK_FILTER_BUTTON);
+              webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+              break;
+            case "Weitergeleitet":
+              webDriverHelpers.clickOnWebElementBySelector(FORWARDED_QUICK_FILTER_BUTTON);
+              webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+              break;
+          }
+        });
+
+    Then(
+        "^I check that \"([^\"]*)\" quick filter button is selected in Message directory page$",
+        (String quickFilterOption) -> {
+          switch (quickFilterOption) {
+            case "Alle":
+              webDriverHelpers.isElementVisibleWithTimeout(ALL_QUICK_FILTER_COUNTER, 4);
+              break;
+            case "Unverarbeitet":
+              webDriverHelpers.isElementVisibleWithTimeout(UNPROCESSED_QUICK_FILTER_COUNTER, 4);
+              break;
+            case "Verarbeitet":
+              webDriverHelpers.isElementVisibleWithTimeout(PROCESSED_QUICK_FILTER_COUNTER, 4);
+              break;
+            case "Unklar":
+              webDriverHelpers.isElementVisibleWithTimeout(UNCLEAR_QUICK_FILTER_COUNTER, 4);
+              break;
+            case "Weitergeleitet":
+              webDriverHelpers.isElementVisibleWithTimeout(FORWARDED_QUICK_FILTER_COUNTER, 4);
+              break;
+          }
+        });
+
+    And(
+        "^I check that the Status column is filtered by \"([^\"]*)\" on Message directory page$",
+        (String quickFilterOption) -> {
+          List<String> statusColumnData = getTableColumnDataByIndex(12, 10);
+          for (int i = 1; i < statusColumnData.size(); i++) {
+            softly.assertEquals(
+                statusColumnData.get(i),
+                quickFilterOption,
+                "At least one record in the column is invalid!");
+            softly.assertAll();
+          }
+        });
   }
 
   private List<Map<String, String>> getTableRowsData() {
@@ -470,5 +538,15 @@ public class DemisSteps implements En {
               }
             });
     return headerHashmap;
+  }
+
+  private List<String> getTableColumnDataByIndex(int col, int maxRows) {
+    List<String> list = new ArrayList<>();
+    for (int i = 1; i < maxRows + 1; i++) {
+      list.add(
+          webDriverHelpers.getTextFromWebElement(
+              By.xpath("//tbody//tr[" + i + "]//td[" + col + "]")));
+    }
+    return list;
   }
 }
