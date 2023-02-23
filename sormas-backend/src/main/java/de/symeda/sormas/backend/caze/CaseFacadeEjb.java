@@ -2638,7 +2638,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			// Can potentially be changed back once 10844 is done.
 			List<Case> casesWithSameExternalId = service.getByExternalId(caze.getExternalID());
 			if (casesWithSameExternalId != null && casesWithSameExternalId.size() == 1) {
-				externalSurveillanceToolGatewayFacade.deleteCases(Collections.singletonList(toDto(caze)));
+				externalSurveillanceToolGatewayFacade.deleteCasesInternal(Collections.singletonList(toDto(caze)));
 			}
 		}
 	}
