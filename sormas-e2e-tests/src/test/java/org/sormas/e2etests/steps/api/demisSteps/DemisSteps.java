@@ -56,6 +56,7 @@ import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPa
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.RESET_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.TYPE_OF_TEST_INPUT;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.PCR_TEST_SPECIFICATION_INPUT;
+import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
@@ -78,6 +79,8 @@ import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.entities.pojo.web.Event;
 import org.sormas.e2etests.entities.services.EventService;
 import org.sormas.e2etests.entities.services.api.demis.DemisApiService;
+import org.sormas.e2etests.envconfig.dto.demis.DemisData;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.sormas.e2etests.steps.web.application.messages.MessagesTableViewHeaders;
@@ -97,6 +100,7 @@ public class DemisSteps implements En {
   public static Map<String, String> collectedMessagesTable;
   public static String reportId;
   protected static Event newEvent;
+  private final RunningConfiguration runningConfiguration;
 
   @Inject
   public DemisSteps(
@@ -105,9 +109,11 @@ public class DemisSteps implements En {
       WebDriverHelpers webDriverHelpers,
       BaseSteps baseSteps,
       SoftAssert softly,
-      EventService eventService) {
+      EventService eventService,
+      RunningConfiguration runningConfiguration) {
     this.webDriverHelpers = webDriverHelpers;
     this.baseSteps = baseSteps;
+    this.runningConfiguration = runningConfiguration;
 
     Given(
         "API : Login to DEMIS server",
@@ -423,6 +429,17 @@ public class DemisSteps implements En {
               softly.assertAll();
               break;
           }
+        });
+
+    When(
+        "I check if postal code for test instance in received message is set correctly",
+        () -> {
+          DemisData demisData = runningConfiguration.getDemisData(locale);
+          softly.assertEquals(
+              demisData.getPostalCode(),
+              collectedMessagesTable.get(MessagesTableViewHeaders.POSTLEITZAHL.toString()),
+              "Postal codes are not equal");
+          softly.assertAll();
         });
 
     Given(

@@ -238,7 +238,7 @@ Scenario: Create and send laboratory request via Demis
     And I check if sample material has a option "Nasopharynx-Abstrich"
     And I check if sample material has a option "Pleuralflüssigkeitsprobe"
 
-  @tmsLink=SORDEV-5629 @env_d2s @LoginKeycloak
+  @tmsLink=SORDEV-5629 @env_d2s @LoginKeycloak @testIt
   Scenario: [4841] [Sormas@DEMIS] Add columns in Lab Massage Directory [0.5]
     Given API : Login to DEMIS server
     Then I create and send Laboratory Notification
@@ -248,8 +248,8 @@ Scenario: Create and send laboratory request via Demis
     Then I filter by last created person via API in Messages Directory
     And I collect message data from searched record in Messages directory
     Then I check if "laboratory name" in received message is set to "Testlabor"
-    And  I check if "laboratory postal code" in received message is set to "12347"
-    And  I check if "postal code" in received message is set to "20095"
+    And I check if "laboratory postal code" in received message is set to "12347"
+    And I check if postal code for test instance in received message is set correctly
 
   @tmsLink=SORDEV-8810 @env_d2s @LoginKeycloak
   Scenario: [DEMIS2SORMAS] Test messages directory status quick filters
