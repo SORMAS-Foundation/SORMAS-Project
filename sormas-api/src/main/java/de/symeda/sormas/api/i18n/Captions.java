@@ -1933,6 +1933,9 @@ public interface Captions {
 	String SampleExport_caseOutcome = "SampleExport.caseOutcome";
 	String SampleExport_caseRegion = "SampleExport.caseRegion";
 	String SampleExport_caseReportDate = "SampleExport.caseReportDate";
+	String SampleExport_caseResponsibleCommunity = "SampleExport.caseResponsibleCommunity";
+	String SampleExport_caseResponsibleDistrict = "SampleExport.caseResponsibleDistrict";
+	String SampleExport_caseResponsibleRegion = "SampleExport.caseResponsibleRegion";
 	String SampleExport_caseUuid = "SampleExport.caseUuid";
 	String SampleExport_conjBilirubin = "SampleExport.conjBilirubin";
 	String SampleExport_contactCommunity = "SampleExport.contactCommunity";
