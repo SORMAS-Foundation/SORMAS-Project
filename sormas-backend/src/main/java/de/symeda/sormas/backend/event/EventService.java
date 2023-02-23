@@ -1132,4 +1132,19 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 	protected boolean hasLimitedChangeDateFilterImplementation() {
 		return true;
 	}
+
+	public List<Event> getEventsByPersons(List<String> personUuid) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Event> cq = cb.createQuery(Event.class);
+		Root<Event> from = cq.from(getElementClass());
+		Join<Event, EventParticipant> eventParticipantJoin = from.join(Event.EVENT_PERSONS, JoinType.INNER);
+		Join<EventParticipant, Person> personJoin = eventParticipantJoin.join(EventParticipant.PERSON, JoinType.INNER);
+
+		cq.where(cb.in(personJoin.get(Person.UUID)).value(personUuid));
+
+		List<Event> results = em.createQuery(cq).getResultList();
+
+		return results;
+	}
 }

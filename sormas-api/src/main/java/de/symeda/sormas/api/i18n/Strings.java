@@ -640,6 +640,8 @@ public interface Strings {
 	String headingPersonData = "headingPersonData";
 	String headingPersonInformation = "headingPersonInformation";
 	String headingPersonOccupation = "headingPersonOccupation";
+	String headingPickEventParticipants = "headingPickEventParticipants";
+	String headingPickEventParticipantsIncompleteSelection = "headingPickEventParticipantsIncompleteSelection";
 	String headingPickOrCreateCase = "headingPickOrCreateCase";
 	String headingPickOrCreateContact = "headingPickOrCreateContact";
 	String headingPickOrCreateEntry = "headingPickOrCreateEntry";
@@ -863,6 +865,7 @@ public interface Strings {
 	String infoPersonMergeConfirmationForNonSimilarPersons = "infoPersonMergeConfirmationForNonSimilarPersons";
 	String infoPersonMergeDescription = "infoPersonMergeDescription";
 	String infoPersonMergeSharedMustLead = "infoPersonMergeSharedMustLead";
+	String infoPickEventParticipantsForPersonMerge = "infoPickEventParticipantsForPersonMerge";
 	String infoPickOrCreateCase = "infoPickOrCreateCase";
 	String infoPickOrCreateCaseNewCase = "infoPickOrCreateCaseNewCase";
 	String infoPickOrCreateEventForCase = "infoPickOrCreateEventForCase";
@@ -1190,8 +1193,10 @@ public interface Strings {
 	String messagePersonContactDetailsPrimaryDuplicate = "messagePersonContactDetailsPrimaryDuplicate";
 	String messagePersonExternalTokenWarning = "messagePersonExternalTokenWarning";
 	String messagePersonMergedAddressDescription = "messagePersonMergedAddressDescription";
+	String messagePersonMergeNoEventParticipantRights = "messagePersonMergeNoEventParticipantRights";
 	String messagePersonSaved = "messagePersonSaved";
 	String messagePersonSavedClassificationChanged = "messagePersonSavedClassificationChanged";
+	String messagePickEventParticipantsIncompleteSelection = "messagePickEventParticipantsIncompleteSelection";
 	String messagePlagueTypeChange = "messagePlagueTypeChange";
 	String messagePointOfEntryArchived = "messagePointOfEntryArchived";
 	String messagePointOfEntryDearchived = "messagePointOfEntryDearchived";

@@ -1005,7 +1005,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(2, leadPerson.getAddresses().size());
 		assertTrue(getPersonFacade().exists(otherPerson.getUuid()));
 
-		getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true);
+		getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true, new ArrayList<>());
 
 		leadPerson = getPersonFacade().getByUuid(leadPerson.getUuid());
 
@@ -1110,7 +1110,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(getPersonFacade().exists(otherPerson.getUuid()));
 		assertNull(leadPerson.getAddress().getCommunity());
 
-		getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true);
+		getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true, new ArrayList<>());
 
 		leadPerson = getPersonFacade().getByUuid(leadPerson.getUuid());
 
@@ -1183,7 +1183,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(getPersonFacade().exists(otherPerson.getUuid()));
 		assertNull(leadPerson.getAddress().getCommunity());
 
-		getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true);
+		getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true, new ArrayList<>());
 
 		leadPerson = getPersonFacade().getByUuid(leadPerson.getUuid());
 
@@ -1236,7 +1236,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		leadPerson = getPersonFacade().save(leadPerson);
 		otherPerson = getPersonFacade().save(otherPerson);
 
-		getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true);
+		getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true, new ArrayList<>());
 
 		leadPerson = getPersonFacade().getByUuid(leadPerson.getUuid());
 
@@ -1281,7 +1281,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		leadPerson = getPersonFacade().save(leadPerson);
 		otherPerson = getPersonFacade().save(otherPerson);
 
-		getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true);
+		getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true, new ArrayList<>());
 
 		leadPerson = getPersonFacade().getByUuid(leadPerson.getUuid());
 
@@ -1328,7 +1328,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		leadPerson = getPersonFacade().save(leadPerson);
 		otherPerson = getPersonFacade().save(otherPerson);
 
-		getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true);
+		getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true, new ArrayList<>());
 
 		leadPerson = getPersonFacade().getByUuid(leadPerson.getUuid());
 		assertEquals(rdcf1.region.getUuid(), leadPerson.getAddress().getRegion().getUuid());

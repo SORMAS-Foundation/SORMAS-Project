@@ -1232,6 +1232,9 @@ public interface Captions {
 	String EventParticipantExport_personNationalHealthId = "EventParticipantExport.personNationalHealthId";
 	String EventParticipantExport_sampleInformation = "EventParticipantExport.sampleInformation";
 	String eventParticipantSelect = "eventParticipantSelect";
+	String EventParticipantSelection_eventParticipantUuidLink = "EventParticipantSelection.eventParticipantUuidLink";
+	String EventParticipantSelection_eventUuidLink = "EventParticipantSelection.eventUuidLink";
+	String EventParticipantSelection_resultingCaseUuidLink = "EventParticipantSelection.resultingCaseUuidLink";
 	String eventSearchEvent = "eventSearchEvent";
 	String eventSearchSpecificEvent = "eventSearchSpecificEvent";
 	String eventSelect = "eventSelect";

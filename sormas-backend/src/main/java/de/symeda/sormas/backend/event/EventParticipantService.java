@@ -312,6 +312,39 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		return em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
 	}
 
+	public List<EventParticipant> getEventParticipantsThatAttendedByTwoPersonsTogether(List<String> personIdList) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<EventParticipant> cq = cb.createQuery(EventParticipant.class);
+		Root<Event> eventRoot = cq.from(Event.class);
+		Join<Event, EventParticipant> eventParticipantJoin = eventRoot.join(Event.EVENT_PERSONS, JoinType.INNER);
+		Join<EventParticipant, Person> personJoin = eventParticipantJoin.join(EventParticipant.PERSON, JoinType.INNER);
+
+		cq.select(eventParticipantJoin);
+
+		cq.where(
+			cb.and(
+				personSubquery(cq, cb, personIdList.get(0), eventRoot),
+				personSubquery(cq, cb, personIdList.get(1), eventRoot),
+				cb.in(personJoin.get(Person.UUID)).value(personIdList)));
+
+		List<EventParticipant> results = em.createQuery(cq).getResultList();
+
+		return results;
+	}
+
+	private Predicate personSubquery(CriteriaQuery<EventParticipant> cq, CriteriaBuilder cb, String personUuid, Root<Event> mainEventRoot) {
+
+		final Subquery<Long> personSubquery = cq.subquery(Long.class);
+		final Root<Event> eventRoot = personSubquery.from(Event.class);
+		Join<Event, EventParticipant> eventParticipantJoin = eventRoot.join(Event.EVENT_PERSONS, JoinType.INNER);
+		Join<EventParticipant, Person> personJoin = eventParticipantJoin.join(EventParticipant.PERSON, JoinType.INNER);
+
+		personSubquery.select(eventRoot.get(Event.UUID));
+		personSubquery
+			.where(cb.and(cb.equal(personJoin.get(Person.UUID), personUuid), cb.equal(eventRoot.get(Event.UUID), mainEventRoot.get(Event.UUID))));
+		return cb.exists(personSubquery);
+	}
+
 	@Override
 	public void delete(EventParticipant eventParticipant, DeletionDetails deletionDetails) {
 
@@ -333,11 +366,13 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 
 	@Override
 	public void deletePermanent(EventParticipant eventParticipant) {
-		for (Sample sample : eventParticipant.getSamples()) {
-			if (sample.getAssociatedCase() == null && sample.getAssociatedContact() == null) {
-				sampleService.deletePermanent(sample);
-			} else {
-				sampleService.unlinkFromEventParticipant(sample);
+		if (eventParticipant.getSamples() != null) {
+			for (Sample sample : eventParticipant.getSamples()) {
+				if (sample.getAssociatedCase() == null && sample.getAssociatedContact() == null) {
+					sampleService.deletePermanent(sample);
+				} else {
+					sampleService.unlinkFromEventParticipant(sample);
+				}
 			}
 		}
 
