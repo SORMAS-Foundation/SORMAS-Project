@@ -238,7 +238,7 @@ Scenario: Create and send laboratory request via Demis
     And I check if sample material has a option "Nasopharynx-Abstrich"
     And I check if sample material has a option "Pleuralflüssigkeitsprobe"
 
-  @tmsLink=SORDEV-5629 @env_d2s @LoginKeycloak @testIt
+  @tmsLink=SORDEV-5629 @env_d2s @LoginKeycloak
   Scenario: [4841] [Sormas@DEMIS] Add columns in Lab Massage Directory [0.5]
     Given API : Login to DEMIS server
     Then I create and send Laboratory Notification
