@@ -165,7 +165,7 @@ public class SampleDataView extends AbstractSampleView {
 			disableComponentIfNotNull(layout.getComponent(SORMAS_TO_SORMAS_LOC));
 		}
 
-		editComponent.setEnabled(isEditAllowed() && UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT));
+		editComponent.setEnabled(isEditAllowed());
 	}
 
 	private AbstractInfoLayout<EntityDto> getDependentSideComponent(SampleDto sampleDto) {
