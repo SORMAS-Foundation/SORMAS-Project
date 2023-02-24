@@ -137,4 +137,8 @@ public class CreateNewCasePage {
       By.cssSelector(".v-window #district div");
   public static final By CREATE_NEW_CASE_CONFIRMATION_BUTTON_DE =
       By.xpath("//*[text()='Neuen Fall erstellen']");
+  public static final By SELECT_MATCHING_PERSON_CHECKBOX_DE =
+      By.xpath("//label[text()='W\u00E4hlen Sie eine passende Person']");
+  public static final By SELECT_EXISTING_CASE_DE =
+      By.xpath("//label[text()='Einen vorhandenen Fall w\u00E4hlen']");
 }

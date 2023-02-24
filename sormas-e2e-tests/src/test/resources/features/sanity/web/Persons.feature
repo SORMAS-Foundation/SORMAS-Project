@@ -385,17 +385,11 @@ Feature: Edit Persons
 
   @tmsLink=SORDEV-12088 @env_s2s_1
   Scenario: [S2S] Simultaneous Work on Person [3]
-#    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-#    And API: I check that POST call body is "OK"
-#    And API: I check that POST call status code is 200
-#    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-#    Then API: I check that POST call body is "OK"
-#    And API: I check that POST call status code is 200
     Given I log in as a Admin User
-#    Then I navigate to the last created case via the url
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
-    And I fill new case data for duplicates merge with for one person data
+    And I fill new case data for duplicates merge with for one person data for DE
+    And I save a new case
     And I collect uuid of the case
     Then I click on share case button
     And I select organization to share with "s2s_2"
@@ -410,6 +404,9 @@ Feature: Edit Persons
     And I check if editable fields are read only for shared case
     And I navigate to case person tab
     And I check if editable fields are read only for person case tab
-    #create duplicated case
-#    And I check the created data for duplicated case is correctly displayed on Edit case page
-#    And I fill new case data for duplicates merge with for one person data
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I fill new case data for duplicates merge with for one person data for DE
+    And I click on SAVE new case button and choose same person in duplicate detection
+    And I choose same case in duplicate detection and save for DE
+    #duplicated case created
