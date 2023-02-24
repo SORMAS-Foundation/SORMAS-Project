@@ -97,7 +97,7 @@ Feature: Tasks functionalities
     And I check if popup message is "All selected tasks have been archived"
     And I check that number of displayed tasks results is 0
 
-  @tmsLink=SORDEV-6080 @env_main
+  @tmsLink=SORDEV-6080 @env_main @testIt
   Scenario: Bulk editing tasks in Task Directory
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
