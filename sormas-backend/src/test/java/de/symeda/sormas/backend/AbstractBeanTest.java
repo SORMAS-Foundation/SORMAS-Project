@@ -312,6 +312,7 @@ public abstract class AbstractBeanTest {
 
 	protected void initH2Functions() {
 		EntityManager em = getEntityManager();
+		em.getTransaction().begin();
 		Query nativeQuery = em.createNativeQuery("CREATE ALIAS similarity FOR \"de.symeda.sormas.backend.H2Function.similarity\"");
 		nativeQuery.executeUpdate();
 		nativeQuery = em.createNativeQuery("CREATE ALIAS date_part FOR \"de.symeda.sormas.backend.H2Function.date_part\"");
@@ -331,6 +332,7 @@ public abstract class AbstractBeanTest {
 		nativeQuery.executeUpdate();
 		nativeQuery = em.createNativeQuery("CREATE ALIAS at_end_of_day FOR \"de.symeda.sormas.backend.H2Function.at_end_of_day\"");
 		nativeQuery.executeUpdate();
+		em.getTransaction().commit();
 	}
 
 	private void createDiseaseConfigurations() {
@@ -346,6 +348,11 @@ public abstract class AbstractBeanTest {
 		return ContextControlWrapper.getInstance().getContextualReference(beanClass, qualifiers);
 	}
 
+	/**
+	 * Note: The entity manager does not have an active transaction when called from a test method
+	 * 
+	 * @return
+	 */
 	public EntityManager getEntityManager() {
 		return getBean(EntityManager.class);
 	}
@@ -857,7 +864,7 @@ public abstract class AbstractBeanTest {
 
 	protected void loginWith(UserDto user) {
 		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName());
-		getCurrentUserService().getCurrentUser(); // load into cache, to work-around CurrentUserService.fetchUser @Transactional not working in tests
+		getCurrentUserService().getCurrentUser(); // load into cache, to work-around CurrentUserService.fetchUser @TransactionalCustom not working in tests
 	}
 
 	protected void useSystemUser() {

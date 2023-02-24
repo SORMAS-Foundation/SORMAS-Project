@@ -123,26 +123,7 @@
 		<dependency>
 			<groupId>de.hilling.junit.cdi</groupId>
 			<artifactId>cdi-test-core</artifactId>
-			<version>3.4.0</version>
 			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<artifactId>junit-jupiter-api</artifactId>
-					<groupId>org.junit.jupiter</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>de.hilling.junit.cdi</groupId>
-			<artifactId>cdi-test-jee</artifactId>
-			<version>3.4.0</version>
-			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<artifactId>junit-jupiter-api</artifactId>
-					<groupId>org.junit.jupiter</groupId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 
 		<dependency>
