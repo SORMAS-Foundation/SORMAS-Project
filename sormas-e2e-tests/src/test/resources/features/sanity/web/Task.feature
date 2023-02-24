@@ -97,7 +97,7 @@ Feature: Tasks functionalities
     And I check if popup message is "All selected tasks have been archived"
     And I check that number of displayed tasks results is 0
 
-  @tmsLink=SORDEV-6080 @env_main @testIt
+  @tmsLink=SORDEV-6080 @env_main
   Scenario: Bulk editing tasks in Task Directory
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -123,7 +123,7 @@ Feature: Tasks functionalities
     And I click to bulk change priority for selected tasks
     And I click to bulk change status for selected tasks
     And I click on Save button in New Task form
-    And I check if popup message from Edit Task Form after bulk edit is "All tasks have been edited"
+    And I check if popup message from Edit Task Form after bulk edit is "All entries have been edited"
     And I check that number of displayed tasks results is 0
 
   @tmsLink=SORDEV-9156 @env_main
