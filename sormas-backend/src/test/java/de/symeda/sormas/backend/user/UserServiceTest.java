@@ -140,7 +140,7 @@ public class UserServiceTest extends AbstractBeanTest {
 		testUsers.addAll(randomUsers);
 
 		for (User u : testUsers) {
-			getEntityManager().persist(u);
+			getUserService().persist(u);
 		}
 
 		List<User> result = getUserService().getAllDefaultUsers();
