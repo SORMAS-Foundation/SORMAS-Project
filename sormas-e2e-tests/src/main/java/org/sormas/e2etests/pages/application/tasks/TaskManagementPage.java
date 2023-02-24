@@ -41,7 +41,7 @@ public class TaskManagementPage {
   public static final By CHANGE_ASSIGNEE_CHECKBOX = By.xpath("//label[text()='Change assignee']");
   public static final By CHANGE_PRIORITY_CHECKBOX = By.xpath("//label[text()='Change priority']");
   public static final By CHANGE_STATUS_CHECKBOX = By.xpath("//label[text()='Change task status']");
-  public static final By TASK_ASSIGNEE_COMBOBOX = By.cssSelector("#taskAssignee div");
+  public static final By TASK_ASSIGNEE_COMBOBOX = By.cssSelector("#assigneeUser div");
   public static final By TASK_RADIOBUTTON = By.cssSelector(".v-radiobutton");
   public static final By EDIT_FIRST_SEARCH_RESULT = By.xpath("//table/tbody/tr[1]/td[1]");
   public static final By TASK_CONTEXT_FIRST_RESULT = By.xpath("//td[3]");
