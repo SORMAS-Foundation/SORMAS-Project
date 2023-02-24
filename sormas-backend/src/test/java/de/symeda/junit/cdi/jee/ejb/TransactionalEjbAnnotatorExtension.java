@@ -44,7 +44,6 @@ public class TransactionalEjbAnnotatorExtension implements Extension, Serializab
 	private static final Logger LOG = Logger.getLogger(TransactionalEjbAnnotatorExtension.class.getCanonicalName());
 
 	public <X> void processAnnotatedTypes(@Observes ProcessAnnotatedType<X> pat) {
-		LOG.log(Level.FINE, "processing type {0}", pat);
 		AnnotatedTypeConfigurator<X> configurator = pat.configureAnnotatedType();
 
 		if (configurator.getAnnotated().isAnnotationPresent(Stateless.class)
@@ -58,7 +57,7 @@ public class TransactionalEjbAnnotatorExtension implements Extension, Serializab
 
 			configurator.add((Annotation) replacementProxy);
 			LOG.log(
-				Level.INFO,
+				Level.FINE,
 				"Added TransactionalEjb annotation to {1}",
 				new Object[] {
 					replacementProxy.getClass().getName(),
