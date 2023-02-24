@@ -1329,9 +1329,19 @@
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">[&#xd;
     {&#xd;
-        &quot;eventTitle&quot;: &quot;${current_date}&quot;,&#xd;
+        &quot;eventTitle&quot;: &quot;API event&quot;,&#xd;
+        &quot;disease&quot;: &quot;CORONAVIRUS&quot;,&#xd;
         &quot;eventLocation&quot;: {&#xd;
-            &quot;uuid&quot;: &quot;${__UUID()}&quot;&#xd;
+            &quot;uuid&quot;: &quot;${__UUID()}&quot;,&#xd;
+            &quot;region&quot;: {&#xd;
+                &quot;uuid&quot;: &quot;RKVAOM-ZNAAFU-R2KF6Z-6BENKHEY&quot;&#xd;
+            },&#xd;
+            &quot;district&quot;: {&#xd;
+                &quot;uuid&quot;: &quot;SZ75BK-5OUMFU-V2DTKG-5BYACHFE&quot;&#xd;
+            },&#xd;
+            &quot;community&quot;: {&#xd;
+                &quot;uuid&quot;: &quot;QWK33J-XYN3DE-5CSXFJ-MMFOKNKM&quot;&#xd;
+            }&#xd;
         },&#xd;
         &quot;eventStatus&quot;: &quot;SIGNAL&quot;,&#xd;
         &quot;reportingUser&quot;: {&#xd;
@@ -1339,8 +1349,13 @@
         },&#xd;
         &quot;eventInvestigationStatus&quot;: &quot;PENDING&quot;,&#xd;
         &quot;reportDateTime&quot;: ${current_date},&#xd;
-        &quot;uuid&quot;: &quot;${event_uuid}&quot;,&#xd;
-        &quot;startDate&quot;: ${current_date}&#xd;
+        &quot;uuid&quot;:  &quot;${__UUID()}&quot;,&#xd;
+        &quot;startDate&quot;: ${current_date},&#xd;
+        &quot;riskLevel&quot;: &quot;LOW&quot;,&#xd;
+        &quot;eventDesc&quot;: &quot;Dummy&quot;,&#xd;
+        &quot;srcType&quot;: &quot;NOT_APPLICABLE&quot;,&#xd;
+        &quot;typeOfPlace&quot;: &quot;HOME&quot;,&#xd;
+         &quot;eventManagementStatus&quot;: &quot;ONGOING&quot;&#xd;
     }&#xd;
 ]</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
@@ -1558,7 +1573,7 @@
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">[&#xd;
     {&#xd;
-        &quot;sampleMaterial&quot;: &quot;BLOOD&quot;,&#xd;
+         &quot;sampleMaterial&quot;: &quot;BLOOD&quot;,&#xd;
         &quot;samplePurpose&quot;: &quot;EXTERNAL&quot;,&#xd;
         &quot;associatedCase&quot;: {&#xd;
             &quot;uuid&quot;: &quot;${case_uuid}&quot;&#xd;
@@ -1570,8 +1585,11 @@
         &quot;sampleDateTime&quot;: ${current_date},&#xd;
         &quot;reportDateTime&quot;: ${current_date},&#xd;
         &quot;lab&quot;: {&#xd;
-            &quot;uuid&quot;: &quot;${__UUID()}&quot;&#xd;
+            &quot;uuid&quot;: &quot;VQL6NJ-HPJY24-56F2R5-T5UV2HUI&quot;,&#xd;
+            &quot;caption&quot;: &quot;Voreingestelltes Labor&quot;&#xd;
         },&#xd;
+        &quot;labDetails&quot;: &quot;Dexter&apos;s laboratory&quot;,&#xd;
+        &quot;specimenCondition&quot;: &quot;ADEQUATE&quot;,&#xd;
         &quot;uuid&quot;: &quot;${sample_uuid}&quot;&#xd;
     }&#xd;
 ]</stringProp>
@@ -1613,7 +1631,7 @@
             <stringProp name="Assertion.custom_message"></stringProp>
             <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
             <boolProp name="Assertion.assume_success">false</boolProp>
-            <intProp name="Assertion.test_type">8</intProp>
+            <intProp name="Assertion.test_type">2</intProp>
           </ResponseAssertion>
           <hashTree/>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
