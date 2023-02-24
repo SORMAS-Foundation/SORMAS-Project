@@ -213,6 +213,23 @@ public class CreateNewCaseSteps implements En {
         });
 
     When(
+        "I fill new case data for duplicates merge with for one person data for DE",
+        () -> {
+          selectCaseOrigin(oneCase.getCaseOrigin());
+          fillDisease(oneCase.getDisease());
+          selectResponsibleRegion(oneCase.getResponsibleRegion());
+          selectResponsibleDistrict(oneCase.getResponsibleDistrict());
+          selectResponsibleCommunity(oneCase.getResponsibleCommunity());
+          selectPlaceOfStay(oneCase.getPlaceOfStay());
+          fillFirstName(oneCase.getFirstName());
+          fillLastName(oneCase.getLastName());
+          fillDateOfBirth(oneCase.getDateOfBirth(), Locale.ENGLISH);
+          selectSex(oneCase.getSex());
+          selectPresentConditionOfPerson(oneCase.getPresentConditionOfPerson());
+          fillDateOfReport(oneCase.getDateOfReport(), Locale.ENGLISH);
+        });
+
+    When(
         "I fill new case with for one person with specified date for month ago",
         () -> {
           LocalDate date = LocalDate.now().minusMonths(1);
@@ -1358,7 +1375,10 @@ public class CreateNewCaseSteps implements En {
         });
     When(
         "I accept first case in Shares Page",
-        () -> webDriverHelpers.clickOnWebElementBySelector(ACCEPT_BUTTON));
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ACCEPT_BUTTON);
+          TimeUnit.SECONDS.sleep(2); // wait for results to reload
+        });
 
     And(
         "^I choose create new case in Pick or create entry form for DE$",

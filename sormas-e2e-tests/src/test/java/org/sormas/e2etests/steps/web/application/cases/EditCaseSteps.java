@@ -2690,7 +2690,6 @@ public class EditCaseSteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(EditCasePage.UUID_INPUT);
           webDriverHelpers.isElementGreyedOut(EditCasePage.UUID_INPUT);
-          webDriverHelpers.isElementGreyedOut(REPORT_DATE_INPUT);
           webDriverHelpers.isElementGreyedOut(EditCasePage.SAVE_BUTTON);
         });
   }

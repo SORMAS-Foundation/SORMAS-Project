@@ -77,6 +77,16 @@ public class CaseService {
         .build();
   }
 
+  public Case buildGeneratedCaseForOnePersonDE(
+      String firstName, String lastName, LocalDate dateOfBirth) {
+    return Case.builder()
+            .firstName(firstName)
+            .lastName(lastName)
+            .caseOrigin("IN-COUNTRY")
+            .build();
+//    PLEASE ADD OTHER ELEMENTS
+  }
+
   public Case buildGeneratedCase() {
     firstName = faker.name().firstName();
     lastName = faker.name().lastName();
