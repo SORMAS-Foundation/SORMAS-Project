@@ -403,42 +403,46 @@ public class MainScreen extends HorizontalLayout {
 			    "   modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)'; " +
 			    "   modal.style.zIndex = '9999'; " +
 			    "   var message = document.createElement('div'); " +
-			    "   message.innerHTML = 'You have been idle for 20 minutes. You will automatically be logged out 10 minutes after getting this message.'; " +
+			    "   message.innerHTML = 'You have been idle for 20 minutes. You will automatically be <br>logged out 10 minutes after getting this message.'; " +
 			    "   message.style.position = 'absolute'; " +
 			    "   message.style.top = '50%'; " +
 			    "   message.style.left = '50%'; " +
-			    "   message.style.height = '120px'; " +
+			    "   message.style.height = '160px'; " +
 			    "   message.style.transform = 'translate(-50%, -50%)'; " +
 			    "   message.style.backgroundColor = '#fff'; " +
+			    "   message.style.border = '1px solid green'; " +
+			    "   message.style.borderRadius = '4px'; " +
+			    
 			    "   message.style.padding = '1em'; " +
+			    "   message.style.paddingTop = '30px'; " +
 			    "   modal.appendChild(message); " +
 			    "   var okButton = document.createElement('button'); " +
-			    "   okButton.innerHTML = 'Logout now'; " +
+			    "   okButton.innerHTML = 'Logout Now'; " +
 			    "   okButton.style.marginRight = '0.5em'; " +
 			    "   okButton.style.position = 'absolute'; " +
-			    "   okButton.style.top = '80px'; " +
-			    "   okButton.style.right = '140px'; " +
-			    "   okButton.style.backgroundColor = 'white'; " +
+			    "   okButton.style.top = '95px'; " +
+			    "   okButton.style.right = '200px'; " +
+			    "   okButton.style.backgroundColor = 'red'; " +
 			    "   okButton.style.border = '1px solid red'; " +
 			    "   okButton.style.borderRadius = '4px'; " +
 			    "   okButton.style.width = '110px'; " +
 			    "   okButton.style.height = '35px'; " +
-			    "   okButton.style.color = 'green'; " +
+			    "   okButton.style.color = 'white'; " +
 			    "   okButton.addEventListener('click', function () { " +
 			    "   window.location.href = window.location.origin + \"/sormas-ui/#!logouttimer\"; " +
 			    "   }); " +
 			    "   message.appendChild(okButton); " +
 			    "   var cancelButton = document.createElement('button'); " +
-			    "   cancelButton.innerHTML = 'Stay logged in'; " +
+			    "   cancelButton.innerHTML = 'Stay Logged In'; " +
 			    "   cancelButton.style.position = 'absolute'; " +
-			    "   cancelButton.style.top = '80px'; " +
-			    "   cancelButton.style.right = '25px'; " +
-			    "   cancelButton.style.backgroundColor = '#0E693A'; " +
+			    "   cancelButton.style.top = '95px'; " +
+			    "   cancelButton.style.right = '80px'; " +
+			    "   cancelButton.style.backgroundColor = 'white'; " +
 			    "   cancelButton.style.border = '1px solid #0E693A'; " +
 			    "   cancelButton.style.borderRadius = '4px'; " +
 			    "   cancelButton.style.width = '110px'; " +
 			    "   cancelButton.style.height = '35px'; " +
-			    "   cancelButton.style.color = 'white'; " +
+			    "   cancelButton.style.color = 'green'; " +
 			    "   cancelButton.addEventListener('click', function () { " +
 			    "   document.body.removeChild(modal); " +
 			    "   resetTimer()}); " +
@@ -450,9 +454,10 @@ public class MainScreen extends HorizontalLayout {
 			   
 			    "   setupReset(); " +
 			    "   if (timeleft > 600) { " +
+			    "   setupReset(document.body.removeChild(modal)); " +
 			    "   } else if (timeleft == 600) { " +
 			    "       showModal(); " +
-			    "   } else if (timeleft == 0) { " +
+			    "   }  else if (timeleft == 0) { " +
 			    "   window.location.href = window.location.origin + \"/sormas-ui/#!logouttimer\"; " +
 			    "   } " +
 			    "}, 1000);"
