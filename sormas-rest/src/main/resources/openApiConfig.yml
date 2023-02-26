@@ -1,0 +1,5 @@
+openAPI:
+  info:
+    title: SORMAS REST API
+  servers:
+    - url: /sormas-rest
