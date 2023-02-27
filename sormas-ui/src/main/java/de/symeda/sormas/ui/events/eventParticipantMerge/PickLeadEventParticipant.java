@@ -29,7 +29,7 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class PickLeadEventParticipant extends CustomField<List<String>> {
 
-	private Map<String, EventParticipantGridByEvent> duplicateEventParticipantByEventGridMap;
+	private Map<String, EventParticipantSelectGrid> eventParticipantSelectGrids;
 
 	protected VerticalLayout mainLayout;
 
@@ -37,7 +37,7 @@ public class PickLeadEventParticipant extends CustomField<List<String>> {
 		Map<EventReferenceDto, List<EventParticipantSelectionDto>> eventParticipantsByEventSelectionDtos =
 			eventParticipantSelectionDtos.stream().collect(Collectors.groupingBy(EventParticipantSelectionDto::getEvent));
 
-		duplicateEventParticipantByEventGridMap = initializeDuplicateEventParticipantsByEventGrids(eventParticipantsByEventSelectionDtos);
+		eventParticipantSelectGrids = initializeEventParticipantsSelectGrids(eventParticipantsByEventSelectionDtos);
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class PickLeadEventParticipant extends CustomField<List<String>> {
 		infoLayout.addComponent(VaadinUiUtil.createInfoComponent(I18nProperties.getString(Strings.infoPickEventParticipantsForPersonMerge)));
 		mainLayout.addComponent(infoLayout);
 
-		duplicateEventParticipantByEventGridMap.forEach((key, value) -> {
+		eventParticipantSelectGrids.forEach((key, value) -> {
 			mainLayout.addComponent(value.getEventTitle());
 			mainLayout.addComponent(value.eventParticipantMergeSelectionGrid);
 		});
@@ -67,8 +67,8 @@ public class PickLeadEventParticipant extends CustomField<List<String>> {
 
 	@Override
 	public List<String> getValue() {
-		return duplicateEventParticipantByEventGridMap.values().stream().map(eventParticipantGridByEvent -> {
-			Set<EventParticipantSelectionDto> selectedRow = eventParticipantGridByEvent.eventParticipantMergeSelectionGrid.getSelectedItems();
+		return eventParticipantSelectGrids.values().stream().map(eventParticipantSelectGrid -> {
+			Set<EventParticipantSelectionDto> selectedRow = eventParticipantSelectGrid.eventParticipantMergeSelectionGrid.getSelectedItems();
 			if (!selectedRow.isEmpty()) {
 				return selectedRow.iterator().next().getUuid();
 			}
@@ -76,27 +76,27 @@ public class PickLeadEventParticipant extends CustomField<List<String>> {
 		}).filter(Objects::nonNull).collect(Collectors.toList());
 	}
 
-	protected Map<String, EventParticipantGridByEvent> initializeDuplicateEventParticipantsByEventGrids(
+	protected Map<String, EventParticipantSelectGrid> initializeEventParticipantsSelectGrids(
 		Map<EventReferenceDto, List<EventParticipantSelectionDto>> eventParticipantByEventDtos) {
 
-		Map<String, EventParticipantGridByEvent> ret = new HashMap<>();
+		Map<String, EventParticipantSelectGrid> ret = new HashMap<>();
 
 		eventParticipantByEventDtos.forEach((key, value) -> {
 
 			EventParticipantMergeSelectionGrid newGrid = new EventParticipantMergeSelectionGrid(value);
 			Component eventComponent = buildEventComponent(key.getUuid(), key.getCaption());
 
-			EventParticipantGridByEvent eventParticipantGridByEvent = new EventParticipantGridByEvent();
-			eventParticipantGridByEvent.setEventTitle(eventComponent);
-			eventParticipantGridByEvent.setEventParticipantMergeSelectionGrid(newGrid);
+			EventParticipantSelectGrid eventParticipantSelectGrid = new EventParticipantSelectGrid();
+			eventParticipantSelectGrid.setEventTitle(eventComponent);
+			eventParticipantSelectGrid.setEventParticipantMergeSelectionGrid(newGrid);
 
-			ret.put(key.getUuid(), eventParticipantGridByEvent);
+			ret.put(key.getUuid(), eventParticipantSelectGrid);
 
 		});
 		return ret;
 	}
 
-	private static class EventParticipantGridByEvent {
+	private static class EventParticipantSelectGrid {
 
 		private Component eventTitle;
 		private EventParticipantMergeSelectionGrid eventParticipantMergeSelectionGrid;
@@ -133,8 +133,7 @@ public class PickLeadEventParticipant extends CustomField<List<String>> {
 
 		Link linkUuidData = new Link(
 			DataHelper.getShortUuid(eventUuid),
-			new ExternalResource(
-				SormasUI.get().getPage().getLocation().getRawPath() + "#!" + EventDataView.VIEW_NAME + "/" + eventUuid));
+			new ExternalResource(SormasUI.get().getPage().getLocation().getRawPath() + "#!" + EventDataView.VIEW_NAME + "/" + eventUuid));
 		linkUuidData.setTargetName("_blank");
 		eventUuidLayout.addComponent(linkUuidData);
 		eventLayout.addComponent(eventUuidLayout);

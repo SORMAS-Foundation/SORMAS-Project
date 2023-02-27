@@ -387,8 +387,8 @@ public class EventParticipantFacadeEjb
 
 		cq.where(
 			cb.and(
-				createPersonEventSubquery(cq, cb, firstPersonUuid, eventRoot),
-				createPersonEventSubquery(cq, cb, secondPersonUuid, eventRoot),
+				isPersonParticipantInEvent(firstPersonUuid, eventRoot, cq, cb),
+				isPersonParticipantInEvent(secondPersonUuid, eventRoot, cq, cb),
 				cb.in(personJoin.get(Person.UUID)).value(Arrays.asList(firstPersonUuid, secondPersonUuid))));
 
 		List<EventParticipantSelectionDto> resultList = em.createQuery(cq).getResultList();
@@ -407,11 +407,11 @@ public class EventParticipantFacadeEjb
 		return resultList;
 	}
 
-	private Predicate createPersonEventSubquery(
-		CriteriaQuery<EventParticipantSelectionDto> cq,
-		CriteriaBuilder cb,
+	private Predicate isPersonParticipantInEvent(
 		String personUuid,
-		Root<Event> mainEventRoot) {
+		Root<Event> event,
+		CriteriaQuery<EventParticipantSelectionDto> cq,
+		CriteriaBuilder cb) {
 
 		final Subquery<Long> personSubquery = cq.subquery(Long.class);
 		final Root<Event> eventRoot = personSubquery.from(Event.class);
@@ -419,8 +419,7 @@ public class EventParticipantFacadeEjb
 		Join<EventParticipant, Person> personJoin = eventParticipantJoin.join(EventParticipant.PERSON, JoinType.INNER);
 
 		personSubquery.select(eventRoot.get(Event.UUID));
-		personSubquery
-			.where(cb.and(cb.equal(personJoin.get(Person.UUID), personUuid), cb.equal(eventRoot.get(Event.UUID), mainEventRoot.get(Event.UUID))));
+		personSubquery.where(cb.and(cb.equal(personJoin.get(Person.UUID), personUuid), cb.equal(eventRoot.get(Event.UUID), event.get(Event.UUID))));
 		return cb.exists(personSubquery);
 	}
 
