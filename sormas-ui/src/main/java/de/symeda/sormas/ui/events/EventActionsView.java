@@ -115,17 +115,33 @@ public class EventActionsView extends AbstractEventView {
 			listLayout.setSizeFull();
 			listLayout.setMargin(true);
 			listLayout.setSpacing(false);
-			listLayout.addComponent(createTopBar());
-			listLayout.addComponent(createFilterBar());
+
+			HorizontalLayout topBar = createTopBar();
+			listLayout.addComponent(topBar);
+
+			HorizontalLayout filterBar = createFilterBar();
+			listLayout.addComponent(filterBar);
+
 			listLayout.addComponent(list);
 			listLayout.setExpandRatio(list, 1);
 			setSubComponent(listLayout);
-			listLayout.setEnabled(UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EDIT) && isEditAllowed() && !isEventDeleted());
+
+			boolean hasEventEditRight = UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EDIT);
+			if (hasEventEditRight) {
+				listLayout.setEnabled(isEditAllowed() && !isEventDeleted());
+			} else {
+				listLayout.getComponent(getIndex(listLayout, topBar)).setEnabled(false);
+				listLayout.getComponent(getIndex(listLayout, filterBar)).setEnabled(false);
+			}
 		}
 
 		updateFilterComponents();
 
 		reload();
+	}
+
+	private int getIndex(DetailSubComponentWrapper listLayout, HorizontalLayout component) {
+		return listLayout.getComponentIndex(component);
 	}
 
 	/**
