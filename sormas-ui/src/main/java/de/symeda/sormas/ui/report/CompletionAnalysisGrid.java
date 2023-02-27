@@ -69,7 +69,23 @@ public class CompletionAnalysisGrid extends FilteredGrid<CampaignFormDataIndexDt
 			if (column.getId().toString().equals("community")) {
 				column.setCaption(I18nProperties.getPrefixCaption(CampaignFormDataIndexDto.I18N_PREFIX,
 						column.getId().toString(), column.getCaption()));
-			} else {
+			} 
+			if(column.getCaption().equalsIgnoreCase("Analysis_a")) {
+				column.setCaption("ICM Household Monitoring");
+			}
+			if(column.getCaption().equalsIgnoreCase("Analysis_b")) {
+				column.setCaption("ICM Revisits");
+			}
+			if(column.getCaption().equalsIgnoreCase("Analysis_c")) {
+				column.setCaption("ICM Supervisor Monitoring");
+			}
+			if(column.getCaption().equalsIgnoreCase("Analysis_d")) {
+				column.setCaption("ICM Team Monitoring");
+			}
+			if(column.getCaption().equalsIgnoreCase("Clusternumber")) {
+				column.setCaption("Cluster Number");
+			}
+			else {
 				column.setCaption(I18nProperties.getPrefixCaption(CampaignFormDataIndexDto.I18N_PREFIX,
 						column.getId().toString(), column.getCaption()));
 			}
