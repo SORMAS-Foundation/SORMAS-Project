@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import javax.naming.InitialContext;
@@ -342,6 +343,10 @@ public abstract class AbstractBeanTest {
 			DiseaseConfiguration configuration = DiseaseConfiguration.build(d);
 			getDiseaseConfigurationService().ensurePersisted(configuration);
 		});
+	}
+
+	public <T,R> R executeInTransaction(BiFunction<EntityManager, T, R> callback, T param) {
+		return getBean(TransactionalTestEjb.class).executeInTransaction(callback, param);
 	}
 
 	protected <T> T getBean(Class<T> beanClass, Annotation... qualifiers) {
