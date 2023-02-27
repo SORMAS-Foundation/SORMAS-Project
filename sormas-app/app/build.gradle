@@ -7,6 +7,11 @@ ext.sormasVersion = getVersionName()
 ext.keystoreProperties = loadKeystoreProperties()
 
 android {
+    packagingOptions{
+        exclude 'META-INF/LICENSE.md'
+        exclude 'META-INF/NOTICE.md'
+    }
+
     // https://medium.com/google-developers/picking-your-compilesdkversion-minsdkversion-targetsdkversion-a098a0341ebd
     // ideally: minSdkVersion (lowest possible) <= targetSdkVersion == compileSdkVersion (latest SDK)
     compileSdkVersion 31
