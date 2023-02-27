@@ -82,6 +82,7 @@ public class EventParticipantMergeSelectionGrid extends Grid<EventParticipantSel
 		getColumn(EventParticipantSelectionDto.FIRST_NAME).setMinimumWidth(150);
 		getColumn(EventParticipantSelectionDto.LAST_NAME).setMinimumWidth(150);
 		((Column<EventParticipantSelectionDto, String>) getColumn(EventParticipantSelectionDto.PERSON_UUID)).setRenderer(new UuidRenderer());
+		getColumn(EventParticipantSelectionDto.CONTACT_COUNT).setSortable(false);
 	}
 
 	/**

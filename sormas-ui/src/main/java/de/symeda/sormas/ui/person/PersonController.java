@@ -23,7 +23,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -46,7 +45,7 @@ import com.vaadin.v7.data.Validator;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.event.EventParticipantSelectionDto;
 import de.symeda.sormas.api.externaljournal.ExternalJournalSyncResponseDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -186,14 +185,17 @@ public class PersonController {
 			confirmationMessage = I18nProperties.getString(Strings.infoPersonMergeConfirmation);
 		}
 
-		List<EventParticipantDto> eventParticipantsThatAttendedTogetherSameEvent = FacadeProvider.getEventParticipantFacade()
-			.getEventParticipantsThatAttendedByTwoPersonsTogether(personIndexDtos.stream().map(PersonIndexDto::getUuid).collect(Collectors.toList()));
+		String firstPersonUuid = personIndexDtos.get(0).getUuid();
+		String secondPersonUuid = personIndexDtos.get(1).getUuid();
 
-		if (eventParticipantsThatAttendedTogetherSameEvent.size() > 0) {
+		List<EventParticipantSelectionDto> eventParticipantsThatAttendedTogetherSameEvent =
+			FacadeProvider.getEventParticipantFacade().getEventParticipantsThatAttendedByTwoPersonsTogether(firstPersonUuid, secondPersonUuid);
+
+		if (!eventParticipantsThatAttendedTogetherSameEvent.isEmpty()) {
 			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_VIEW)) {
 				selectLeadEventParticipantByEvent(
 					eventParticipantsThatAttendedTogetherSameEvent,
-					(selectedEventParticipants) -> confirmationWindow(
+					(selectedEventParticipants) -> pickOrMergeConfirmationPopUp(
 						popupWindow,
 						mergeProperties,
 						leadPerson,
@@ -209,10 +211,10 @@ public class PersonController {
 			}
 		}
 
-		confirmationWindow(popupWindow, mergeProperties, leadPerson, otherPerson, confirmationMessage, new ArrayList<>());
+		pickOrMergeConfirmationPopUp(popupWindow, mergeProperties, leadPerson, otherPerson, confirmationMessage, new ArrayList<>());
 	}
 
-	private Window confirmationWindow(
+	private Window pickOrMergeConfirmationPopUp(
 		Window popupWindow,
 		boolean mergeProperties,
 		PersonIndexDto leadPerson,
@@ -237,7 +239,9 @@ public class PersonController {
 		return mergeWindow;
 	}
 
-	private void selectLeadEventParticipantByEvent(List<EventParticipantDto> eventsParticipantThatAttendedTogether, Consumer<List<String>> callback) {
+	private void selectLeadEventParticipantByEvent(
+		List<EventParticipantSelectionDto> eventsParticipantThatAttendedTogether,
+		Consumer<List<String>> callback) {
 		EventParticipantPickLeadEventParticipant eventParticipantPickLeadEventParticipant =
 			new EventParticipantPickLeadEventParticipant(eventsParticipantThatAttendedTogether);
 

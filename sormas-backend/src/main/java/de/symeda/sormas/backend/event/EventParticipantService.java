@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.event;
 
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
@@ -43,16 +44,21 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
+import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.event.EventParticipantSelectionDto;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.sample.Sample;
@@ -312,27 +318,48 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		return em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
 	}
 
-	public List<EventParticipant> getEventParticipantsThatAttendedByTwoPersonsTogether(List<String> personIdList) {
+	public List<EventParticipantSelectionDto> getEventParticipantsThatAttendedByTwoPersonsTogether(String firstPersonUuid, String secondPersonUuid) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<EventParticipant> cq = cb.createQuery(EventParticipant.class);
+		CriteriaQuery<EventParticipantSelectionDto> cq = cb.createQuery(EventParticipantSelectionDto.class);
 		Root<Event> eventRoot = cq.from(Event.class);
 		Join<Event, EventParticipant> eventParticipantJoin = eventRoot.join(Event.EVENT_PERSONS, JoinType.INNER);
 		Join<EventParticipant, Person> personJoin = eventParticipantJoin.join(EventParticipant.PERSON, JoinType.INNER);
+		Join<EventParticipant, Case> caseJoin = eventParticipantJoin.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
+		Join<EventParticipant, District> districtJoin = eventParticipantJoin.join(EventParticipant.DISTRICT, JoinType.LEFT);
 
-		cq.select(eventParticipantJoin);
+		cq.multiselect(
+			eventRoot.get(Event.UUID),
+			eventRoot.get(Event.EVENT_TITLE),
+			eventParticipantJoin.get(EventParticipantDto.UUID),
+			personJoin.get(PersonDto.UUID),
+			personJoin.get(PersonDto.FIRST_NAME),
+			personJoin.get(PersonDto.LAST_NAME),
+			personJoin.get(PersonDto.APPROXIMATE_AGE),
+			personJoin.get(PersonDto.APPROXIMATE_AGE_TYPE),
+			personJoin.get(PersonDto.BIRTH_DATE_DD),
+			personJoin.get(PersonDto.BIRTH_DATE_MM),
+			personJoin.get(PersonDto.BIRTH_DATE_YYYY),
+			personJoin.get(PersonDto.SEX),
+			districtJoin.get(District.NAME),
+			eventParticipantJoin.get(EventParticipantDto.INVOLVEMENT_DESCRIPTION),
+			caseJoin.get(Case.UUID));
 
 		cq.where(
 			cb.and(
-				personSubquery(cq, cb, personIdList.get(0), eventRoot),
-				personSubquery(cq, cb, personIdList.get(1), eventRoot),
-				cb.in(personJoin.get(Person.UUID)).value(personIdList)));
+				createPersonPredicateSubquery(cq, cb, firstPersonUuid, eventRoot),
+				createPersonPredicateSubquery(cq, cb, secondPersonUuid, eventRoot),
+				cb.in(personJoin.get(Person.UUID)).value(Arrays.asList(firstPersonUuid, secondPersonUuid))));
 
-		List<EventParticipant> results = em.createQuery(cq).getResultList();
+		List<EventParticipantSelectionDto> resultList = em.createQuery(cq).getResultList();
 
-		return results;
+		return resultList;
 	}
 
-	private Predicate personSubquery(CriteriaQuery<EventParticipant> cq, CriteriaBuilder cb, String personUuid, Root<Event> mainEventRoot) {
+	private Predicate createPersonPredicateSubquery(
+		CriteriaQuery<EventParticipantSelectionDto> cq,
+		CriteriaBuilder cb,
+		String personUuid,
+		Root<Event> mainEventRoot) {
 
 		final Subquery<Long> personSubquery = cq.subquery(Long.class);
 		final Root<Event> eventRoot = personSubquery.from(Event.class);
@@ -534,10 +561,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	}
 
 	@Override
-	protected <T extends ChangeDateBuilder<T>> T addChangeDates(
-		T builder,
-		EventParticipantJoins joins,
-		boolean includeExtendedChangeDateFilters) {
+	protected <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, EventParticipantJoins joins, boolean includeExtendedChangeDateFilters) {
 
 		From<?, EventParticipant> eventParticipantFrom = joins.getRoot();
 

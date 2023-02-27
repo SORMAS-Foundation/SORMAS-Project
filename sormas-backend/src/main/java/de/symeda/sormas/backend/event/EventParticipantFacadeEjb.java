@@ -74,6 +74,7 @@ import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
 import de.symeda.sormas.api.event.EventParticipantListEntryDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.event.EventParticipantSelectionDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
@@ -349,8 +350,21 @@ public class EventParticipantFacadeEjb
 		return toPseudonymizedDto(entity, pseudonymizer);
 	}
 
-	public List<EventParticipantDto> getEventParticipantsThatAttendedByTwoPersonsTogether(List<String> personIdList) {
-		return toDtos(service.getEventParticipantsThatAttendedByTwoPersonsTogether(personIdList).stream());
+	public List<EventParticipantSelectionDto> getEventParticipantsThatAttendedByTwoPersonsTogether(String firstPersonUuid, String secondPersonUuid) {
+		List<EventParticipantSelectionDto> eventParticipantsThatAttendedByTwoPersonsTogether =
+			service.getEventParticipantsThatAttendedByTwoPersonsTogether(firstPersonUuid, secondPersonUuid);
+		if (!eventParticipantsThatAttendedByTwoPersonsTogether.isEmpty()) {
+			EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
+			Map<String, Long> eventParticipantContactCount = getContactCountPerEventParticipant(
+				eventParticipantsThatAttendedByTwoPersonsTogether.stream().map(EventParticipantSelectionDto::getUuid).collect(Collectors.toList()),
+				eventParticipantCriteria);
+
+			for (EventParticipantSelectionDto eventParticipantSelectionDto : eventParticipantsThatAttendedByTwoPersonsTogether) {
+				Optional.ofNullable(eventParticipantContactCount.get(eventParticipantSelectionDto.getUuid()))
+					.ifPresent(eventParticipantSelectionDto::setContactCount);
+			}
+		}
+		return eventParticipantsThatAttendedByTwoPersonsTogether;
 	}
 
 	@PermitAll

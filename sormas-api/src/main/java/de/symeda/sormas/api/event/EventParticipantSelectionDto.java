@@ -2,6 +2,8 @@ package de.symeda.sormas.api.event;
 
 import java.io.Serializable;
 
+import de.symeda.sormas.api.person.ApproximateAgeType;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
@@ -21,118 +23,118 @@ public class EventParticipantSelectionDto extends PseudonymizableIndexDto implem
 	public static final String CONTACT_COUNT = "contactCount";
 	public static final String I18N_PREFIX = "EventParticipantSelection";
 
-	private String eventUuid;
-	private String eventTitle;
-	private String eventParticipantUuid;
-	private String personUuid;
-	private String firstName;
-	private String lastName;
-	private String ageAndBirthDate;
-	private Sex sex;
-	private String districtName;
-	private String involvementDescription;
-	private String resultingCaseUuid;
-	private int contactCount;
+	private final EventReferenceDto event;
+	private final String personUuid;
+	private final String firstName;
+	private final String lastName;
+	private final String ageAndBirthDate;
+	private final Integer approximateAge;
+	private final ApproximateAgeType approximateAgeType;
+	private final Integer birthdateDD;
+	private final Integer birthdateMM;
+	private final Integer birthdateYYYY;
+	private final Sex sex;
+	private final String districtName;
+	private final String involvementDescription;
+	private final String resultingCaseUuid;
+	private long contactCount;
 
-	public EventParticipantSelectionDto(String eventUuid, String eventParticipantUuid) {
+	public EventParticipantSelectionDto(
+		String eventUuid,
+		String eventTitle,
+		String eventParticipantUuid,
+		String personUuid,
+		String firstName,
+		String lastName,
+		Integer approximateAge,
+		ApproximateAgeType approximateAgeType,
+		Integer birthdateDD,
+		Integer birthdateMM,
+		Integer birthdateYYYY,
+		Sex sex,
+		String districtName,
+		String involvementDescription,
+		String resultingCaseUuid
+
+	) {
 		super(eventParticipantUuid);
-		this.eventUuid = eventUuid;
-		this.eventParticipantUuid = eventParticipantUuid;
+		this.event = new EventReferenceDto(eventUuid, eventTitle);
+		this.personUuid = personUuid;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.approximateAge = approximateAge;
+		this.approximateAgeType = approximateAgeType;
+		this.birthdateDD = birthdateDD;
+		this.birthdateMM = birthdateMM;
+		this.birthdateYYYY = birthdateYYYY;
+		this.sex = sex;
+		this.districtName = districtName;
+		this.involvementDescription = involvementDescription;
+		this.resultingCaseUuid = resultingCaseUuid;
+		this.ageAndBirthDate = PersonHelper.getAgeAndBirthdateString(approximateAge, approximateAgeType, birthdateDD, birthdateMM, birthdateYYYY);
 	}
 
-	public String getEventUuid() {
-		return eventUuid;
-	}
-
-	public void setEventUuid(String eventUuid) {
-		this.eventUuid = eventUuid;
-	}
-
-	public String getEventTitle() {
-		return eventTitle;
-	}
-
-	public void setEventTitle(String eventTitle) {
-		this.eventTitle = eventTitle;
-	}
-
-	public String getEventParticipantUuid() {
-		return eventParticipantUuid;
-	}
-
-	public void setEventParticipantUuid(String eventParticipantUuid) {
-		this.eventParticipantUuid = eventParticipantUuid;
+	public EventReferenceDto getEvent() {
+		return event;
 	}
 
 	public String getPersonUuid() {
 		return personUuid;
 	}
 
-	public void setPersonUuid(String personUuid) {
-		this.personUuid = personUuid;
-	}
-
 	public String getFirstName() {
 		return firstName;
-	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
 	}
 
 	public String getLastName() {
 		return lastName;
 	}
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
 	public String getAgeAndBirthDate() {
 		return ageAndBirthDate;
 	}
 
-	public void setAgeAndBirthDate(String ageAndBirthDate) {
-		this.ageAndBirthDate = ageAndBirthDate;
+	public Integer getApproximateAge() {
+		return approximateAge;
+	}
+
+	public ApproximateAgeType getApproximateAgeType() {
+		return approximateAgeType;
+	}
+
+	public Integer getBirthdateDD() {
+		return birthdateDD;
+	}
+
+	public Integer getBirthdateMM() {
+		return birthdateMM;
+	}
+
+	public Integer getBirthdateYYYY() {
+		return birthdateYYYY;
 	}
 
 	public Sex getSex() {
 		return sex;
 	}
 
-	public void setSex(Sex sex) {
-		this.sex = sex;
-	}
-
 	public String getDistrictName() {
 		return districtName;
-	}
-
-	public void setDistrictName(String districtName) {
-		this.districtName = districtName;
 	}
 
 	public String getInvolvementDescription() {
 		return involvementDescription;
 	}
 
-	public void setInvolvementDescription(String involvementDescription) {
-		this.involvementDescription = involvementDescription;
-	}
-
 	public String getResultingCaseUuid() {
 		return resultingCaseUuid;
 	}
 
-	public void setResultingCaseUuid(String resultingCaseUuid) {
-		this.resultingCaseUuid = resultingCaseUuid;
-	}
-
-	public int getContactCount() {
+	public long getContactCount() {
 		return contactCount;
 	}
 
-	public void setContactCount(int contactCount) {
+	public void setContactCount(long contactCount) {
 		this.contactCount = contactCount;
 	}
 }

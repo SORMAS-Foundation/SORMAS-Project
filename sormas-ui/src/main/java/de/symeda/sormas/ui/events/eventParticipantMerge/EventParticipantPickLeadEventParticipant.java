@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -15,16 +16,12 @@ import com.vaadin.ui.Link;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.ui.CustomField;
 
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.event.EventDto;
-import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantSelectionDto;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventSelectionDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.infrastructure.district.DistrictDto;
-import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.events.EventDataView;
@@ -33,16 +30,15 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class EventParticipantPickLeadEventParticipant extends CustomField<List<String>> {
 
-	protected List<EventParticipantDto> eventParticipantDtos;
-	private Map<String, EventParticipantDuplicate> eventParticipantSelectionDtos;
-	private Map<String, EventParticipantDuplicateGrid> eventParticipantMergeSelectionGrid = new HashMap<>();
+	private Map<String, EventParticipantGridByEvent> duplicateEventParticipantByEventGridMap;
 
 	protected VerticalLayout mainLayout;
 
-	public EventParticipantPickLeadEventParticipant(List<EventParticipantDto> eventsFromBothPersons) {
-		this.eventParticipantDtos = eventsFromBothPersons;
+	public EventParticipantPickLeadEventParticipant(List<EventParticipantSelectionDto> eventParticipantsFromBothPersons) {
+		Map<EventReferenceDto, List<EventParticipantSelectionDto>> eventParticipantsByEventSelectionDtos =
+			eventParticipantsFromBothPersons.stream().collect(Collectors.groupingBy(EventParticipantSelectionDto::getEvent));
 
-		initializeGrid();
+		duplicateEventParticipantByEventGridMap = initializeDuplicateEventParticipantsByEventGrids(eventParticipantsByEventSelectionDtos);
 	}
 
 	@Override
@@ -57,7 +53,7 @@ public class EventParticipantPickLeadEventParticipant extends CustomField<List<S
 		infoLayout.addComponent(VaadinUiUtil.createInfoComponent(I18nProperties.getString(Strings.infoPickEventParticipantsForPersonMerge)));
 		mainLayout.addComponent(infoLayout);
 
-		eventParticipantMergeSelectionGrid.forEach((key, value) -> {
+		duplicateEventParticipantByEventGridMap.forEach((key, value) -> {
 			mainLayout.addComponent(value.getEventTitle());
 			mainLayout.addComponent(value.eventParticipantMergeSelectionGrid);
 		});
@@ -72,77 +68,37 @@ public class EventParticipantPickLeadEventParticipant extends CustomField<List<S
 
 	@Override
 	public List<String> getValue() {
-		List<String> pickedEventParticipants = new ArrayList<>();
-
-		eventParticipantMergeSelectionGrid.forEach((s, eventParticipantDuplicateGrid) -> {
-			Set<EventParticipantSelectionDto> selectedRow = eventParticipantDuplicateGrid.getEventParticipantMergeSelectionGrid().getSelectedItems();
+		return duplicateEventParticipantByEventGridMap.values().stream().map(eventParticipantGridByEvent -> {
+			Set<EventParticipantSelectionDto> selectedRow = eventParticipantGridByEvent.eventParticipantMergeSelectionGrid.getSelectedItems();
 			if (!selectedRow.isEmpty()) {
-				pickedEventParticipants.add(selectedRow.iterator().next().getEventParticipantUuid());
+				return selectedRow.iterator().next().getUuid();
 			}
-		});
-
-		return pickedEventParticipants;
+			return null;
+		}).filter(Objects::nonNull).collect(Collectors.toList());
 	}
 
-	protected void initializeGrid() {
+	protected Map<String, EventParticipantGridByEvent> initializeDuplicateEventParticipantsByEventGrids(
+		Map<EventReferenceDto, List<EventParticipantSelectionDto>> eventParticipantByEventDtos) {
 
-		eventParticipantSelectionDtos = transformDuplicateEventParticipants(eventParticipantDtos);
+		Map<String, EventParticipantGridByEvent> ret = new HashMap<>();
 
-		eventParticipantSelectionDtos.forEach((key, value) -> {
-			List<EventParticipantSelectionDto> eventParticipantSelectionDtos =
-				mapEventParticipantToSelection(value.getDuplicateEventParticipantList());
-			EventParticipantMergeSelectionGrid newGrid = new EventParticipantMergeSelectionGrid(eventParticipantSelectionDtos);
+		eventParticipantByEventDtos.forEach((key, value) -> {
 
-			EventSelectionDto eventSelectionDto =
-				new EventSelectionDto(eventParticipantSelectionDtos.get(0).getEventUuid(), eventParticipantSelectionDtos.get(0).getEventTitle());
+			EventParticipantMergeSelectionGrid newGrid = new EventParticipantMergeSelectionGrid(value);
+			EventSelectionDto eventSelectionDto = new EventSelectionDto(key.getUuid(), key.getCaption());
 			Component eventComponent = buildEventComponent(eventSelectionDto);
 
-			EventParticipantDuplicateGrid eventParticipantDuplicateGrid = new EventParticipantDuplicateGrid();
-			eventParticipantDuplicateGrid.setEventTitle(eventComponent);
-			eventParticipantDuplicateGrid.setEventParticipantMergeSelectionGrid(newGrid);
+			EventParticipantGridByEvent eventParticipantGridByEvent = new EventParticipantGridByEvent();
+			eventParticipantGridByEvent.setEventTitle(eventComponent);
+			eventParticipantGridByEvent.setEventParticipantMergeSelectionGrid(newGrid);
 
-			eventParticipantMergeSelectionGrid.put(key, eventParticipantDuplicateGrid);
-
-		});
-	}
-
-	private Map<String, EventParticipantDuplicate> transformDuplicateEventParticipants(List<EventParticipantDto> duplicateEventParticipantList) {
-
-		Map<String, EventParticipantDuplicate> duplicateEvParticipantByEvent = new HashMap<>();
-
-		duplicateEventParticipantList.forEach(eventParticipantDto -> {
-
-			if (duplicateEvParticipantByEvent.containsKey(eventParticipantDto.getEvent().getUuid())) {
-				duplicateEvParticipantByEvent.get(eventParticipantDto.getEvent().getUuid())
-					.getDuplicateEventParticipantList()
-					.add(eventParticipantDto);
-			} else {
-				EventParticipantDuplicate newEventWithDuplicate = new EventParticipantDuplicate();
-				List<EventParticipantDto> newDuplicateEventParticipantList = new ArrayList<>();
-				newDuplicateEventParticipantList.add(eventParticipantDto);
-				newEventWithDuplicate.setDuplicateEventParticipantList(newDuplicateEventParticipantList);
-				duplicateEvParticipantByEvent.put(eventParticipantDto.getEvent().getUuid(), newEventWithDuplicate);
-			}
+			ret.put(key.getUuid(), eventParticipantGridByEvent);
 
 		});
-
-		return duplicateEvParticipantByEvent;
+		return ret;
 	}
 
-	public static class EventParticipantDuplicate {
-
-		private List<EventParticipantDto> duplicateEventParticipantList;
-
-		public List<EventParticipantDto> getDuplicateEventParticipantList() {
-			return duplicateEventParticipantList;
-		}
-
-		public void setDuplicateEventParticipantList(List<EventParticipantDto> duplicateEventParticipantList) {
-			this.duplicateEventParticipantList = duplicateEventParticipantList;
-		}
-	}
-
-	public static class EventParticipantDuplicateGrid {
+	private static class EventParticipantGridByEvent {
 
 		private Component eventTitle;
 		private EventParticipantMergeSelectionGrid eventParticipantMergeSelectionGrid;
@@ -199,46 +155,6 @@ public class EventParticipantPickLeadEventParticipant extends CustomField<List<S
 		eventLayout.addComponent(eventTitleLayout);
 
 		return eventLayout;
-	}
-
-	public List<EventParticipantSelectionDto> mapEventParticipantToSelection(List<EventParticipantDto> eventParticipantDtos) {
-		List<EventParticipantSelectionDto> eventParticipantSelectionDtos = new ArrayList<>();
-
-		eventParticipantSelectionDtos = eventParticipantDtos.stream().map(eventParticipantDto -> {
-			EventParticipantSelectionDto selectionDto =
-				new EventParticipantSelectionDto(eventParticipantDto.getEvent().getUuid(), eventParticipantDto.getUuid());
-			EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(eventParticipantDto.getEvent().getUuid(), true);
-			selectionDto.setEventUuid(eventDto.getUuid());
-			selectionDto.setEventTitle(eventDto.getEventTitle());
-			selectionDto.setPersonUuid(eventParticipantDto.getPerson().getUuid());
-			selectionDto.setFirstName(eventParticipantDto.getPerson().getFirstName());
-			selectionDto.setLastName(eventParticipantDto.getPerson().getLastName());
-			selectionDto.setAgeAndBirthDate(
-				PersonHelper.getAgeAndBirthdateString(
-					eventParticipantDto.getPerson().getApproximateAge(),
-					eventParticipantDto.getPerson().getApproximateAgeType(),
-					eventParticipantDto.getPerson().getBirthdateDD(),
-					eventParticipantDto.getPerson().getBirthdateMM(),
-					eventParticipantDto.getPerson().getBirthdateYYYY()));
-			selectionDto.setSex(eventParticipantDto.getPerson().getSex());
-
-			DistrictDto districtDto = null;
-			if (eventParticipantDto.getDistrict() != null) {
-				districtDto = FacadeProvider.getDistrictFacade().getByUuid(eventParticipantDto.getDistrict().getUuid());
-			} else if (eventDto.getEventLocation().getDistrict() != null) {
-				districtDto = FacadeProvider.getDistrictFacade().getByUuid(eventDto.getEventLocation().getDistrict().getUuid());
-			}
-			selectionDto.setDistrictName(districtDto.getName());
-
-			selectionDto.setInvolvementDescription(eventParticipantDto.getInvolvementDescription());
-			selectionDto
-				.setResultingCaseUuid(eventParticipantDto.getResultingCase() != null ? eventParticipantDto.getResultingCase().getUuid() : null);
-			selectionDto.setContactCount(0);
-
-			return selectionDto;
-		}).collect(Collectors.toList());
-
-		return eventParticipantSelectionDtos;
 	}
 
 }
