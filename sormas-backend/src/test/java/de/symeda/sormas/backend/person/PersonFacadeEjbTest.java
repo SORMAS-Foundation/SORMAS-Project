@@ -365,6 +365,18 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			getPersonFacade().getSimilarPersonDtos(criteria).stream().map(dto -> dto.getUuid()).collect(Collectors.toList());
 		assertEquals(1, relevantNameUuids.size());
 		assertEquals(person1.getUuid(), relevantNameUuids.get(0));
+
+		// Check functionality of strict name comparison
+		person1.setExternalId("555");
+		getPersonFacade().save(person1);
+		PersonDto tmpPerson = PersonDto.build();
+		tmpPerson.setFirstName("555");
+		tmpPerson.setLastName("555");
+		tmpPerson.setSex(Sex.UNKNOWN);
+		criteria = PersonSimilarityCriteria.forPerson(tmpPerson);
+		assertEquals(1, getPersonFacade().getSimilarPersonDtos(criteria).size());
+		criteria = PersonSimilarityCriteria.forPerson(tmpPerson, true);
+		assertEquals(0, getPersonFacade().getSimilarPersonDtos(criteria).size());
 	}
 
 	@Test
