@@ -21,6 +21,7 @@
 package de.symeda.sormas.backend.campaign.data;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -281,13 +282,13 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 
 	@Override
 	public CampaignFormDataReferenceDto getReferenceByUuid(String uuid) {
-		////System.out.println("sssssssdfgfsdfghjghfhjkssssddsssssssssssssssss");
+		//System.out.println("sssssssdfgfsdfghjghfhjkssssddsssssssssssssssss");
 		return toReferenceDto(campaignFormDataService.getByUuid(uuid));
 	}
 
 	@Override
 	public CampaignFormDataDto getExistingData(CampaignFormDataCriteria criteria) {
-		////System.out.println("ssssssssssssddddddddddddsssssssssssssssssssddsssssssssssssssss");
+		//System.out.println("ssssssssssssddddddddddddsssssssssssssssssssddsssssssssssssssss");	
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CampaignFormData> cq = cb.createQuery(CampaignFormData.class);
 		Root<CampaignFormData> root = cq.from(CampaignFormData.class);
@@ -308,7 +309,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 	public List<CampaignFormDataIndexDto> getIndexList(CampaignFormDataCriteria criteria, Integer first, Integer max,
 			List<SortProperty> sortProperties) {
 
-		////System.out.println(criteria.getCampaignFormMeta().getUuid()+"sdddddddddddddfdsyu876456uiuytrertyuyttyukldsssssssssssssssss formValues"+sortProperties.get(1));
+		//System.out.println(criteria.getCampaignFormMeta().getUuid()+"sdddddddddddddfdsyu876456uiuytrertyuyttyukldsssssssssssssssss formValues"+sortProperties.get(1));
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CampaignFormDataIndexDto> cq = cb.createQuery(CampaignFormDataIndexDto.class);
@@ -343,7 +344,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			cq.where(filter);
 			//cq.where(typeClause); //can write another filter to remove if archive is true
 		} else {
-			////System.out.println("DEBUGGER ASDHFUASDFHAS: Filter is null");
+			//System.out.println("DEBUGGER ASDHFUASDFHAS: Filter is null");
 		}
 
 		if (sortProperties != null && sortProperties.size() > 0) {
@@ -409,10 +410,94 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 	@Override
 	public List<CampaignFormDataIndexDto> getByCompletionAnalysis(CampaignFormDataCriteria criteria, Integer first, Integer max,
 			List<SortProperty> sortProperties, FormAccess frms) {
+		
+		String joinBuilder = "\n"
+				+ "select area3_x.\"name\" as area_, region4_x.\"name\" as region_, district5_x.\"name\" as district_, campaignfo0_x.clusternumber as clusternumber_, campaignfo0_x.externalid as ccode, COALESCE((\n"
+				+ "select count(campaignfo0_.formvalues)\n"
+				+ "from campaignFormData campaignfo0_\n"
+				+ "left outer join campaigns campaign1_ on campaignfo0_.campaign_id=campaign1_.id\n"
+				+ "left outer join areas area3_ on campaignfo0_.area_id=area3_.id \n"
+				+ "left outer join CampaignFormMeta campaignfo2_ on campaignfo0_.campaignFormMeta_id=campaignfo2_.id\n"
+				+ "where area3_.uuid=area3_x.uuid and campaignfo2_.formCategory= 'ICM' and (campaignfo2_.formName like '%Revisit%')\n"
+				+ "and campaignfo0_.community_id = campaignfo0_x.id \n"
+				+ "group by campaignfo0_.community_id\n"
+				+ "), 0) as hh, COALESCE((\n"
+				+ "select count(campaignfo0_.formvalues)\n"
+				+ "from campaignFormData campaignfo0_\n"
+				+ "left outer join campaigns campaign1_ on campaignfo0_.campaign_id=campaign1_.id\n"
+				+ "left outer join areas area3_ on campaignfo0_.area_id=area3_.id \n"
+				+ "left outer join CampaignFormMeta campaignfo2_ on campaignfo0_.campaignFormMeta_id=campaignfo2_.id\n"
+				+ "where area3_.uuid=area3_x.uuid and campaignfo2_.formCategory= 'ICM' and (campaignfo2_.formName like '%Revisit%')\n"
+				+ "and campaignfo0_.community_id = campaignfo0_x.id \n"
+				+ "group by campaignfo0_.community_id\n"
+				+ "), 0) as sup, COALESCE((\n"
+				+ "select count(campaignfo0_.formvalues)\n"
+				+ "from campaignFormData campaignfo0_\n"
+				+ "left outer join campaigns campaign1_ on campaignfo0_.campaign_id=campaign1_.id\n"
+				+ "left outer join areas area3_ on campaignfo0_.area_id=area3_.id \n"
+				+ "left outer join CampaignFormMeta campaignfo2_ on campaignfo0_.campaignFormMeta_id=campaignfo2_.id\n"
+				+ "where area3_.uuid=area3_x.uuid and campaignfo2_.formCategory= 'ICM' and (campaignfo2_.formName like '%Revisit%')\n"
+				+ "and campaignfo0_.community_id = campaignfo0_x.id \n"
+				+ "group by campaignfo0_.community_id\n"
+				+ "), 0) as team, COALESCE((\n"
+				+ "select count(campaignfo0_.formvalues)\n"
+				+ "from campaignFormData campaignfo0_\n"
+				+ "left outer join campaigns campaign1_ on campaignfo0_.campaign_id=campaign1_.id\n"
+				+ "left outer join areas area3_ on campaignfo0_.area_id=area3_.id \n"
+				+ "left outer join CampaignFormMeta campaignfo2_ on campaignfo0_.campaignFormMeta_id=campaignfo2_.id\n"
+				+ "where area3_.uuid=area3_x.uuid and campaignfo2_.formCategory= 'ICM' and (campaignfo2_.formName like '%Revisit%')\n"
+				+ "and campaignfo0_.community_id = campaignfo0_x.id \n"
+				+ "group by campaignfo0_.community_id\n"
+				+ "), 0) as rev from community campaignfo0_x\n"
+				+ "left outer join District district5_x on campaignfo0_x.district_id=district5_x.id\n"
+				+ "left outer join Region region4_x on district5_x.region_id=region4_x.id \n"
+				+ "left outer join areas area3_x on region4_x.area_id=area3_x.id \n"
+				+ "where area3_x.uuid='W5R34K-APYPCA-4GZXDO-IVJWKGIM' and campaignfo0_x.archived = false";
+		
+		Query seriesDataQuery = em.createNativeQuery(joinBuilder);
+		
+		List<CampaignFormDataIndexDto> resultData = new ArrayList<>();
+		
+		
+		@SuppressWarnings("unchecked")
+		List<Object[]> resultList = seriesDataQuery.getResultList(); 
+		
+		/*
+		 * String area,
+			String region,
+			String district,
+			String community,
+			Integer clusternumber,
+			Long ccode,
+			Long analysis_a,
+			Long analysis_b,
+			Long analysis_c,																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																											ee																																																																																																																																																																																																																																																																																																																																																																																																																																																					
+			Long analysis_d
+			
+			*/
+		//	bigValue[0] = new BigInteger("6464764");
+		resultData.addAll(resultList.stream()
+				.map((result) -> new CampaignFormDataIndexDto((String) result[0].toString(), (String) result[1].toString(),
+						(String) result[2].toString(),"", (Integer) result[3], 
+						((BigInteger) result[4]).longValue(),  
+						((BigInteger) result[5]).longValue(), 
+						((BigInteger) result[6]).longValue(), 
+						((BigInteger) result[7]).longValue(),
+						((BigInteger) result[8]).longValue()
+				)).collect(Collectors.toList()));
+
+	
+	
+	System.out.println("resultData - "+ resultData.toString()); //SQLExtractor.from(seriesDataQuery));
+	return resultData;
+	
+	
+	
 
 //		System.out.println(criteria.getCampaignFormMeta().getUuid()+"sdddddddddddddfdsyu876456uiuytrertyuyttyukldsssssssssssssssss formValues");
 //		System.out.println("xxxxsdddddddddddddfdsyu876456uiuytrertyuyttyukldsssssssssssssssss formValues"+sortProperties.get(1));
 
+		/*
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CampaignFormDataIndexDto> cq = cb.createQuery(CampaignFormDataIndexDto.class);
 		Root<CampaignFormData> root = cq.from(CampaignFormData.class);
@@ -429,38 +514,42 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 				campaignFormMetaJoin.get(CampaignFormMeta.FORM_NAME), cb.nullLiteral(String.class),
 //				criteria.getCampaignFormMeta() != null ? root.get(CampaignFormData.FORM_VALUES)
 //						: cb.nullLiteral(String.class),
-						areaJoin.get(Area.NAME), areaJoin.get(Area.EXTERNAL_ID),
-						regionJoin.get(Region.NAME), regionJoin.get(Region.EXTERNAL_ID),
-						districtJoin.get(District.NAME), districtJoin.get(District.EXTERNAL_ID),
-						communityJoin.get(Community.NAME), communityJoin.get(Community.CLUSTER_NUMBER), communityJoin.get(Community.EXTERNAL_ID),
-						root.get(CampaignFormData.FORM_DATE),
-				campaignFormMetaJoin.get(CampaignFormMeta.FORM_TYPE), campaignFormMetaJoin.get(CampaignFormMeta.FORM_ID));
+				areaJoin.get(Area.NAME), areaJoin.get(Area.EXTERNAL_ID), regionJoin.get(Region.NAME),
+				regionJoin.get(Region.EXTERNAL_ID), districtJoin.get(District.NAME),
+				districtJoin.get(District.EXTERNAL_ID), communityJoin.get(Community.NAME),
+				communityJoin.get(Community.CLUSTER_NUMBER), communityJoin.get(Community.EXTERNAL_ID),
+			//	root.get(CampaignFormData.FORM_DATE), 
+				campaignFormMetaJoin.get(CampaignFormMeta.FORM_TYPE),
+				cb.count(campaignFormMetaJoin.get(CampaignFormMeta.FORM_ID))
+				);
 
 		Predicate filterx = cb.equal(campaignFormMetaJoin.get(CampaignFormMeta.FORM_CATEGORY), frms);
 		Predicate filter = CriteriaBuilderHelper.and(cb,
 				campaignFormDataService.createCriteriaFilter(criteria, cb, root),
 				campaignFormDataService.createUserFilter(cb, cq, root));
-
+		Predicate filterxy = cb.like(campaignFormMetaJoin.get(CampaignFormMeta.FORM_NAME), "%Household%");
+		
 		
 		if (filter != null) {
-			 Predicate catgoryFilter = cb.and(filter, filterx);
+			 Predicate catgoryFilter = cb.and(filter, filterx, filterxy);
 			cq.where(catgoryFilter);
 			//cq.where(typeClause); //can write another filter to remove if archive is true
 		} else {
-			cq.where(filterx);
+			Predicate catgoryFilterx = cb.and(filterx, filterxy);
+			cq.where(catgoryFilterx);
 			////System.out.println("DEBUGGER ASDHFUASDFHAS: Filter is null");
 		}
 		
 
-//		cq.groupBy(root.get(CampaignFormData.UUID), campaignJoin.get(Campaign.NAME),
-//				campaignFormMetaJoin.get(CampaignFormMeta.FORM_NAME),
-//						areaJoin.get(Area.NAME), areaJoin.get(Area.EXTERNAL_ID),
-//						regionJoin.get(Region.NAME), regionJoin.get(Region.EXTERNAL_ID),
-//						districtJoin.get(District.NAME), districtJoin.get(District.EXTERNAL_ID),
-//						communityJoin.get(Community.NAME), communityJoin.get(Community.CLUSTER_NUMBER), communityJoin.get(Community.EXTERNAL_ID),
-//						root.get(CampaignFormData.FORM_DATE),
-//				campaignFormMetaJoin.get(CampaignFormMeta.FORM_TYPE), campaignFormMetaJoin.get(CampaignFormMeta.FORM_ID));
-//		
+		cq.groupBy(root.get(CampaignFormData.UUID), campaignJoin.get(Campaign.NAME),
+				campaignFormMetaJoin.get(CampaignFormMeta.FORM_NAME),
+						areaJoin.get(Area.NAME), areaJoin.get(Area.EXTERNAL_ID),
+						regionJoin.get(Region.NAME), regionJoin.get(Region.EXTERNAL_ID),
+						districtJoin.get(District.NAME), districtJoin.get(District.EXTERNAL_ID),
+						communityJoin.get(Community.NAME), communityJoin.get(Community.CLUSTER_NUMBER), communityJoin.get(Community.EXTERNAL_ID),
+						//root.get(CampaignFormData.FORM_DATE),
+				campaignFormMetaJoin.get(CampaignFormMeta.FORM_TYPE), campaignFormMetaJoin.get(CampaignFormMeta.FORM_ID));
+		
 
 		if (sortProperties != null && sortProperties.size() > 0) {
 			List<Order> order = new ArrayList<>(sortProperties.size());
@@ -468,9 +557,6 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
 				case CampaignFormDataIndexDto.UUID:
-				case CampaignFormDataIndexDto.FORM_DATE:
-					expression = root.get(sortProperty.propertyName);
-					break;
 				case CampaignFormDataIndexDto.CAMPAIGN:
 					expression = campaignJoin.get(Campaign.NAME);
 					break;
@@ -512,9 +598,11 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 				}
 				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 			}
+
 			cq.orderBy(order);
+
 		} else {
-			cq.orderBy(cb.desc(root.get(CampaignFormData.CHANGE_DATE)));
+			//cq.orderBy(cb.desc(root.get(CampaignFormData.CHANGE_DATE)));
 			//cq.groupBy(root.get(CampaignFormData.CHANGE_DATE));
 		}
 		
@@ -523,6 +611,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		//Can add where clause to compare boolean for archive
 	System.out.println("DEBUGGER r567ujhgty8ijyu8dfrfdddddddddddddd  " + SQLExtractor.from(em.createQuery(cq)));
 		return QueryHelper.getResultList(em, cq, first, max);
+		*/
 	}
 
 	@Override
@@ -1108,7 +1197,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 							series.getStack()))
 					.collect(Collectors.toList()));
 		}
-		System.out.println("resultData - "+ resultData.toString());//SQLExtractor.from(seriesDataQuery));
+		//System.out.println("resultData - "+ resultData.toString());//SQLExtractor.from(seriesDataQuery));
 		return resultData;
 	}
 	

@@ -49,13 +49,15 @@ public class CompletionAnalysisGrid extends FilteredGrid<CampaignFormDataIndexDt
 
 		setColumns(
 				CampaignFormDataIndexDto.AREA, 
-//				CampaignFormDataIndexDto.REGION, CampaignFormDataIndexDto.DISTRICT,
-				CampaignFormDataIndexDto.COMMUNITY, CampaignFormDataIndexDto.CCODE,
+				CampaignFormDataIndexDto.REGION, CampaignFormDataIndexDto.DISTRICT,
+				//CampaignFormDataIndexDto.COMMUNITY, 
+				CampaignFormDataIndexDto.CCODE,
 				CampaignFormDataIndexDto.COMMUNITYNUMBER,
-				CampaignFormDataIndexDto.FORM_DATE,
-				CampaignFormDataIndexDto.FORM_TYPE,
-				CampaignFormDataIndexDto.FORM,
-				CampaignFormDataIndexDto.ANALYSIS_FIELD);
+				CampaignFormDataIndexDto.ANALYSIS_FIELD_A,
+				CampaignFormDataIndexDto.ANALYSIS_FIELD_B,
+				CampaignFormDataIndexDto.ANALYSIS_FIELD_C,
+				CampaignFormDataIndexDto.ANALYSIS_FIELD_D
+				);
 
 //		((Column<CampaignFormDataIndexDto, Set<FormAccess>>) getColumn(CampaignFormDataIndexDto.REP_FORMACCESS)).setRenderer(new CollectionValueProvider<Set<FormAccess>>(), new HtmlRenderer());
 //		((Column<CampaignFormDataIndexDto, String>) getColumn(CampaignFormDataIndexDto.REP_USERNAME)).setRenderer(value -> String.valueOf(value).replace("[", "").replace("]", "").replace("null,", "").replace("null", ""), new HtmlRenderer());

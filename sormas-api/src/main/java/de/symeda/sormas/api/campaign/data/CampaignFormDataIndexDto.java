@@ -34,10 +34,14 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 	public static final String DCODE = "dcode";
 	public static final String COMMUNITY = "community";
 	public static final String COMMUNITYNUMBER = "clusternumber";
+	public static final String COMMUNITYNUMBER_ = "clusternumber_";
 	public static final String CCODE = "ccode";
 	public static final String FORM_DATE = "formDate";
 	public static final String FORM_TYPE = "formType";
-	public static final String ANALYSIS_FIELD = "analysis_a";
+	public static final String ANALYSIS_FIELD_A = "analysis_a";
+	public static final String ANALYSIS_FIELD_B = "analysis_b";
+	public static final String ANALYSIS_FIELD_C = "analysis_c";
+	public static final String ANALYSIS_FIELD_D = "analysis_d";
 
 	private static final long serialVersionUID = -6672198324526771162L;
 
@@ -53,13 +57,14 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 	private Long dcode;
 	private String community;
 	private Integer clusternumber;
+	private Long clusternumber_;
 	private Long ccode;
 	private Date formDate;
 	private String formType;
-	private String analysis_a;
-	private String analysis_b;
-	private String analysis_c;
-	private String analysis_d;
+	private Long analysis_a;
+	private Long analysis_b;
+	private Long analysis_c;
+	private Long analysis_d;
 	
 
 	public CampaignFormDataIndexDto(
@@ -96,44 +101,29 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 	}
 	
 	public CampaignFormDataIndexDto(
-			String uuid,
-			String campaign,
-			String form,
-			Object formValues,
 			String area,
-			Long rcode,
 			String region,
-			Long pcode,
 			String district,
-			Long dcode,
 			String community,
-			Integer clusternumber,
+			Integer clusternumer,
+			//Long clusternumber_,
 			Long ccode,
-			Date formDate,
-			String formType,
-			String analysis_a) {
-//			String analysis_b,
-//			String analysis_c,
-//			String analysis_d) {
-			this.uuid = uuid;
-			this.campaign = campaign;
-			this.form = form;
-			this.formValues = (List<CampaignFormDataEntry>) formValues;
+			Long analysis_a,
+			Long analysis_b,
+			Long analysis_c,
+			Long analysis_d
+			) {
 			this.area = area;
-			this.rcode = rcode;
 			this.region = region;
-			this.pcode = pcode;
 			this.district = district;
-			this.dcode = dcode;
 			this.community = community;
-			this.clusternumber = clusternumber;
+			this.clusternumber = clusternumer;
+			//this.clusternumber_ = clusternumber_;
 			this.ccode = ccode;
-			this.formDate = formDate;
-			this.formType = formType;
 			this.analysis_a = analysis_a;
-//			this.analysis_b = analysis_b;
-//			this.analysis_c = analysis_c;
-//			this.analysis_d = analysis_d;
+			this.analysis_b = analysis_b;
+			this.analysis_c = analysis_c;
+			this.analysis_d = analysis_d;
 		}
 	
 	public CampaignFormDataIndexDto(
@@ -231,6 +221,16 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 	public void setClusternumber(Integer clusternumber) {
 		this.clusternumber = clusternumber;
 	}
+	
+	
+
+	public Long getClusternumber_() {
+		return clusternumber_;
+	}
+
+	public void setClusternumber_(Long clusternumber_) {
+		this.clusternumber_ = clusternumber_;
+	}
 
 	public Date getFormDate() {
 		return formDate;
@@ -280,39 +280,37 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 		this.ccode = ccode;
 	}
 
-	public String getAnalysis_a() {
+	public Long getAnalysis_a() {
 		return analysis_a;
 	}
 
-	public void setAnalysis_a(String analysis_a) {
+	public void setAnalysis_a(Long analysis_a) {
 		this.analysis_a = analysis_a;
 	}
 
-	public String getAnalysis_b() {
+	public Long getAnalysis_b() {
 		return analysis_b;
 	}
 
-	public void setAnalysis_b(String analysis_b) {
+	public void setAnalysis_b(Long analysis_b) {
 		this.analysis_b = analysis_b;
 	}
 
-	public String getAnalysis_c() {
+	public Long getAnalysis_c() {
 		return analysis_c;
 	}
 
-	public void setAnalysis_c(String analysis_c) {
+	public void setAnalysis_c(Long analysis_c) {
 		this.analysis_c = analysis_c;
 	}
 
-	public String getAnalysis_d() {
+	public Long getAnalysis_d() {
 		return analysis_d;
 	}
 
-	public void setAnalysis_d(String analysis_d) {
+	public void setAnalysis_d(Long analysis_d) {
 		this.analysis_d = analysis_d;
 	}
-	
-	
-	
+
 	
 }
