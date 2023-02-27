@@ -228,7 +228,7 @@ public class EventGroupController {
 		eventGroupEditForm.setValue(eventGroup);
 		UserProvider user = UserProvider.getCurrent();
 		final CommitDiscardWrapperComponent<EventGroupDataForm> editView =
-			new CommitDiscardWrapperComponent<>(eventGroupEditForm, user.hasUserRight(UserRight.EVENTGROUP_EDIT), eventGroupEditForm.getFieldGroup());
+			new CommitDiscardWrapperComponent<>(eventGroupEditForm, true, eventGroupEditForm.getFieldGroup());
 
 		List<RegionReferenceDto> regions = FacadeProvider.getEventGroupFacade().getEventGroupRelatedRegions(uuid);
 		boolean hasRegion = user.hasNationJurisdictionLevel() || regions.stream().allMatch(user::hasRegion);
@@ -265,6 +265,7 @@ public class EventGroupController {
 		}
 
 		editView.addDiscardListener(SormasUI::refreshView);
+		editView.restrictEditableComponentsOnEditView(UserRight.EVENTGROUP_EDIT, UserRight.EVENTGROUP_DELETE);
 
 		return editView;
 
