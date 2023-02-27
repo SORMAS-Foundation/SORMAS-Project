@@ -108,6 +108,7 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, column.getId().toString(),
 					column.getCaption()));
+			column.setDescriptionGenerator(UserDto -> column.getCaption());
 		}
 	}
 

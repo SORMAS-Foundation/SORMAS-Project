@@ -17,12 +17,16 @@ package de.symeda.sormas.ui.campaign.campaigns;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.Page;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.components.grid.HeaderCell;
+import com.vaadin.ui.components.grid.HeaderRow;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.TextField;
 
@@ -67,6 +71,7 @@ public class CampaignsView extends AbstractCampaignView {
 		}
 
 		grid = new CampaignGrid(criteria);
+
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(grid);
@@ -75,8 +80,22 @@ public class CampaignsView extends AbstractCampaignView {
 		gridLayout.setSizeFull();
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setStyleName("crud-main-layout");
-
+		HeaderRow mainHeader = grid.getDefaultHeaderRow();
+		
+		HeaderCell campaignNameHeader = mainHeader.getCell("name");
+		campaignNameHeader.setDescription("Name");
+		HeaderCell campaignStatusHeader = mainHeader.getCell("campaignStatus");
+		campaignStatusHeader.setDescription("Campaign Status");
+		HeaderCell campaignStartHeader = mainHeader.getCell("startDate");
+		campaignStartHeader.setDescription("Start Date");
+		HeaderCell campaignStopHeader = mainHeader.getCell("endDate");
+		campaignStopHeader.setDescription("End Date");
+		HeaderCell campaignYearHeader = mainHeader.getCell("campaignYear");
+		campaignYearHeader.setDescription("Campaign Year");
+	
 		addComponent(gridLayout);
+		
+
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_EDIT)) {
 			validateFormsButton = ButtonHelper.createIconButton(Captions.campaignValidateForms, VaadinIcons.CHECK_CIRCLE, e -> {
@@ -94,6 +113,8 @@ public class CampaignsView extends AbstractCampaignView {
 
 			addHeaderComponent(createButton);
 		}
+		
+		
 	}
 
 	private HorizontalLayout createFilterBar() {

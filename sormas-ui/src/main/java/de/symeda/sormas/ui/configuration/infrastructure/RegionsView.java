@@ -27,6 +27,8 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.components.grid.HeaderCell;
+import com.vaadin.ui.components.grid.HeaderRow;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 
@@ -105,6 +107,20 @@ public class RegionsView extends AbstractConfigurationView {
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
+		HeaderRow mainHeader = grid.getDefaultHeaderRow();
+		
+		HeaderCell regionNameHeader = mainHeader.getCell("area");
+		regionNameHeader.setDescription("Region");
+		HeaderCell rCodeHeader = mainHeader.getCell("areaexternalId");
+		rCodeHeader.setDescription("RCode");
+		HeaderCell provinceNameHeader = mainHeader.getCell("name");
+		provinceNameHeader.setDescription("Province");
+		HeaderCell pCodeHeader = mainHeader.getCell("externalId");
+		pCodeHeader.setDescription("PCode");
+		HeaderCell populationHeader = mainHeader.getCell("population");
+		populationHeader.setDescription("Population");
+		HeaderCell growthRateHeader = mainHeader.getCell("growthRate");
+		growthRateHeader.setDescription("Growth Rate");
 
 		boolean infrastructureDataEditable = FacadeProvider.getFeatureConfigurationFacade()
 				.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA);

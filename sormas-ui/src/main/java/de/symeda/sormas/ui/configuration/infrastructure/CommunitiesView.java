@@ -26,6 +26,8 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.components.grid.HeaderCell;
+import com.vaadin.ui.components.grid.HeaderRow;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 
@@ -109,6 +111,28 @@ public class CommunitiesView extends AbstractConfigurationView {
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
+		
+HeaderRow mainHeader = grid.getDefaultHeaderRow();
+		
+		HeaderCell regionNameHeader = mainHeader.getCell("areaname");
+		regionNameHeader.setDescription("Region");
+		HeaderCell rCodeHeader = mainHeader.getCell("areaexternalId");
+		rCodeHeader.setDescription("RCode");
+		HeaderCell provinceNameHeader = mainHeader.getCell("region");
+		provinceNameHeader.setDescription("Province");
+		HeaderCell pCodeHeader = mainHeader.getCell("regionexternalId");
+		pCodeHeader.setDescription("PCode");
+		HeaderCell districtNameHeader = mainHeader.getCell("district");
+		districtNameHeader.setDescription("District");
+		HeaderCell dCodeHeader = mainHeader.getCell("districtexternalId");
+		dCodeHeader.setDescription("DCode");
+		HeaderCell clusterNameHeader = mainHeader.getCell("name");
+		clusterNameHeader.setDescription("Cluster");
+		HeaderCell cCodeHeader = mainHeader.getCell("externalId");
+		cCodeHeader.setDescription("CCode");
+		HeaderCell populationHeader = mainHeader.getCell("clusterNumber");
+		populationHeader.setDescription("Cluster Number");
+	
 
 		boolean infrastructureDataEditable = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA);
 		
