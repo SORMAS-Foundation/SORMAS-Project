@@ -75,5 +75,5 @@ public interface EventParticipantFacade
 
 	List<EventParticipantDto> getByEventAndPersons(String eventUuid, List<String> personUuids);
 
-	List<EventParticipantSelectionDto> getEventParticipantsThatAttendedByTwoPersonsTogether(String firstPersonUuid, String secondPersonUuid);
+	List<EventParticipantSelectionDto> getEventParticipantsWithSameEvent(String firstPersonUuid, String secondPersonUuid);
 }

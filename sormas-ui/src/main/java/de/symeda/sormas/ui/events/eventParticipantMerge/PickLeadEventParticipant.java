@@ -18,7 +18,6 @@ import com.vaadin.v7.ui.CustomField;
 
 import de.symeda.sormas.api.event.EventParticipantSelectionDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
-import de.symeda.sormas.api.event.EventSelectionDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -28,15 +27,15 @@ import de.symeda.sormas.ui.events.EventDataView;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
-public class EventParticipantPickLeadEventParticipant extends CustomField<List<String>> {
+public class PickLeadEventParticipant extends CustomField<List<String>> {
 
 	private Map<String, EventParticipantGridByEvent> duplicateEventParticipantByEventGridMap;
 
 	protected VerticalLayout mainLayout;
 
-	public EventParticipantPickLeadEventParticipant(List<EventParticipantSelectionDto> eventParticipantsFromBothPersons) {
+	public PickLeadEventParticipant(List<EventParticipantSelectionDto> eventParticipantSelectionDtos) {
 		Map<EventReferenceDto, List<EventParticipantSelectionDto>> eventParticipantsByEventSelectionDtos =
-			eventParticipantsFromBothPersons.stream().collect(Collectors.groupingBy(EventParticipantSelectionDto::getEvent));
+			eventParticipantSelectionDtos.stream().collect(Collectors.groupingBy(EventParticipantSelectionDto::getEvent));
 
 		duplicateEventParticipantByEventGridMap = initializeDuplicateEventParticipantsByEventGrids(eventParticipantsByEventSelectionDtos);
 	}
@@ -85,8 +84,7 @@ public class EventParticipantPickLeadEventParticipant extends CustomField<List<S
 		eventParticipantByEventDtos.forEach((key, value) -> {
 
 			EventParticipantMergeSelectionGrid newGrid = new EventParticipantMergeSelectionGrid(value);
-			EventSelectionDto eventSelectionDto = new EventSelectionDto(key.getUuid(), key.getCaption());
-			Component eventComponent = buildEventComponent(eventSelectionDto);
+			Component eventComponent = buildEventComponent(key.getUuid(), key.getCaption());
 
 			EventParticipantGridByEvent eventParticipantGridByEvent = new EventParticipantGridByEvent();
 			eventParticipantGridByEvent.setEventTitle(eventComponent);
@@ -120,7 +118,7 @@ public class EventParticipantPickLeadEventParticipant extends CustomField<List<S
 		}
 	}
 
-	private Component buildEventComponent(EventSelectionDto eventSelectionDto) {
+	private Component buildEventComponent(String eventUuid, String eventTitle) {
 		HorizontalLayout eventLayout = new HorizontalLayout();
 		eventLayout.setSpacing(true);
 		eventLayout.setMargin(false);
@@ -134,9 +132,9 @@ public class EventParticipantPickLeadEventParticipant extends CustomField<List<S
 		eventUuidLayout.addComponent(eventUuidLabel);
 
 		Link linkUuidData = new Link(
-			DataHelper.getShortUuid(eventSelectionDto.getEventUuid()),
+			DataHelper.getShortUuid(eventUuid),
 			new ExternalResource(
-				SormasUI.get().getPage().getLocation().getRawPath() + "#!" + EventDataView.VIEW_NAME + "/" + eventSelectionDto.getEventUuid()));
+				SormasUI.get().getPage().getLocation().getRawPath() + "#!" + EventDataView.VIEW_NAME + "/" + eventUuid));
 		linkUuidData.setTargetName("_blank");
 		eventUuidLayout.addComponent(linkUuidData);
 		eventLayout.addComponent(eventUuidLayout);
@@ -149,7 +147,7 @@ public class EventParticipantPickLeadEventParticipant extends CustomField<List<S
 		eventTitleLabel.setStyleName(CssStyles.VSPACE_NONE, true);
 		eventTitleLayout.addComponent(eventTitleLabel);
 
-		Label eventTitleData = new Label(eventSelectionDto.getEventTitle());
+		Label eventTitleData = new Label(eventTitle);
 		eventTitleData.addStyleName(CssStyles.VSPACE_TOP_NONE);
 		eventTitleLayout.addComponent(eventTitleData);
 		eventLayout.addComponent(eventTitleLayout);

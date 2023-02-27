@@ -66,7 +66,7 @@ import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.CaseDataView;
-import de.symeda.sormas.ui.events.eventParticipantMerge.EventParticipantPickLeadEventParticipant;
+import de.symeda.sormas.ui.events.eventParticipantMerge.PickLeadEventParticipant;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -188,13 +188,13 @@ public class PersonController {
 		String firstPersonUuid = personIndexDtos.get(0).getUuid();
 		String secondPersonUuid = personIndexDtos.get(1).getUuid();
 
-		List<EventParticipantSelectionDto> eventParticipantsThatAttendedTogetherSameEvent =
-			FacadeProvider.getEventParticipantFacade().getEventParticipantsThatAttendedByTwoPersonsTogether(firstPersonUuid, secondPersonUuid);
+		List<EventParticipantSelectionDto> eventParticipantsWithSameEvent =
+			FacadeProvider.getEventParticipantFacade().getEventParticipantsWithSameEvent(firstPersonUuid, secondPersonUuid);
 
-		if (!eventParticipantsThatAttendedTogetherSameEvent.isEmpty()) {
+		if (!eventParticipantsWithSameEvent.isEmpty()) {
 			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_VIEW)) {
 				selectLeadEventParticipantByEvent(
-					eventParticipantsThatAttendedTogetherSameEvent,
+					eventParticipantsWithSameEvent,
 					(selectedEventParticipants) -> pickOrMergeConfirmationPopUp(
 						popupWindow,
 						mergeProperties,
@@ -240,20 +240,18 @@ public class PersonController {
 	}
 
 	private void selectLeadEventParticipantByEvent(
-		List<EventParticipantSelectionDto> eventsParticipantThatAttendedTogether,
+		List<EventParticipantSelectionDto> eventParticipantSelectionDtos,
 		Consumer<List<String>> callback) {
-		EventParticipantPickLeadEventParticipant eventParticipantPickLeadEventParticipant =
-			new EventParticipantPickLeadEventParticipant(eventsParticipantThatAttendedTogether);
+		PickLeadEventParticipant pickLeadEventParticipant = new PickLeadEventParticipant(eventParticipantSelectionDtos);
 
-		final CommitDiscardWrapperComponent<EventParticipantPickLeadEventParticipant> component =
-			new CommitDiscardWrapperComponent<>(eventParticipantPickLeadEventParticipant);
+		final CommitDiscardWrapperComponent<PickLeadEventParticipant> component = new CommitDiscardWrapperComponent<>(pickLeadEventParticipant);
 
 		component.getCommitButton().setCaption(I18nProperties.getCaption((Captions.actionConfirm)));
 
 		component.setPreCommitListener(preCommitCallback -> {
 			List<String> pickedEventParticipants = component.getWrappedComponent().getValue();
 
-			if (eventsParticipantThatAttendedTogether.size() / 2 > pickedEventParticipants.size()) {
+			if (eventParticipantSelectionDtos.size() / 2 > pickedEventParticipants.size()) {
 				VaadinUiUtil.showSimplePopupWindow(
 					I18nProperties.getString(Strings.headingPickEventParticipantsIncompleteSelection),
 					I18nProperties.getString(Strings.messagePickEventParticipantsIncompleteSelection));

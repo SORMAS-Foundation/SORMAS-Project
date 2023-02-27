@@ -350,7 +350,14 @@ public class EventParticipantFacadeEjb
 		return toPseudonymizedDto(entity, pseudonymizer);
 	}
 
-	public List<EventParticipantSelectionDto> getEventParticipantsThatAttendedByTwoPersonsTogether(String firstPersonUuid, String secondPersonUuid) {
+	/**
+	 * returns a list containing event participants of the given two persons in the same event
+	 * 
+	 * @param firstPersonUuid
+	 * @param secondPersonUuid
+	 * @return
+	 */
+	public List<EventParticipantSelectionDto> getEventParticipantsWithSameEvent(String firstPersonUuid, String secondPersonUuid) {
 		List<EventParticipantSelectionDto> eventParticipantsThatAttendedByTwoPersonsTogether =
 			service.getEventParticipantsThatAttendedByTwoPersonsTogether(firstPersonUuid, secondPersonUuid);
 		if (!eventParticipantsThatAttendedByTwoPersonsTogether.isEmpty()) {
