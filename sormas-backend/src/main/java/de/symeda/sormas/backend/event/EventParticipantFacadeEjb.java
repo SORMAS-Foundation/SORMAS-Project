@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -358,20 +359,69 @@ public class EventParticipantFacadeEjb
 	 * @return
 	 */
 	public List<EventParticipantSelectionDto> getEventParticipantsWithSameEvent(String firstPersonUuid, String secondPersonUuid) {
-		List<EventParticipantSelectionDto> eventParticipantsThatAttendedByTwoPersonsTogether =
-			service.getEventParticipantsThatAttendedByTwoPersonsTogether(firstPersonUuid, secondPersonUuid);
-		if (!eventParticipantsThatAttendedByTwoPersonsTogether.isEmpty()) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<EventParticipantSelectionDto> cq = cb.createQuery(EventParticipantSelectionDto.class);
+		Root<Event> eventRoot = cq.from(Event.class);
+		Join<Event, EventParticipant> eventParticipantJoin = eventRoot.join(Event.EVENT_PERSONS, JoinType.INNER);
+		Join<EventParticipant, Person> personJoin = eventParticipantJoin.join(EventParticipant.PERSON, JoinType.INNER);
+		Join<EventParticipant, Case> caseJoin = eventParticipantJoin.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
+		Join<EventParticipant, District> districtJoin = eventParticipantJoin.join(EventParticipant.DISTRICT, JoinType.LEFT);
+
+		cq.multiselect(
+			eventRoot.get(Event.UUID),
+			eventRoot.get(Event.EVENT_TITLE),
+			eventParticipantJoin.get(EventParticipantDto.UUID),
+			personJoin.get(PersonDto.UUID),
+			personJoin.get(PersonDto.FIRST_NAME),
+			personJoin.get(PersonDto.LAST_NAME),
+			personJoin.get(PersonDto.APPROXIMATE_AGE),
+			personJoin.get(PersonDto.APPROXIMATE_AGE_TYPE),
+			personJoin.get(PersonDto.BIRTH_DATE_DD),
+			personJoin.get(PersonDto.BIRTH_DATE_MM),
+			personJoin.get(PersonDto.BIRTH_DATE_YYYY),
+			personJoin.get(PersonDto.SEX),
+			districtJoin.get(District.NAME),
+			eventParticipantJoin.get(EventParticipantDto.INVOLVEMENT_DESCRIPTION),
+			caseJoin.get(Case.UUID));
+
+		cq.where(
+			cb.and(
+				createPersonEventSubquery(cq, cb, firstPersonUuid, eventRoot),
+				createPersonEventSubquery(cq, cb, secondPersonUuid, eventRoot),
+				cb.in(personJoin.get(Person.UUID)).value(Arrays.asList(firstPersonUuid, secondPersonUuid))));
+
+		List<EventParticipantSelectionDto> resultList = em.createQuery(cq).getResultList();
+
+		if (!resultList.isEmpty()) {
 			EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
 			Map<String, Long> eventParticipantContactCount = getContactCountPerEventParticipant(
-				eventParticipantsThatAttendedByTwoPersonsTogether.stream().map(EventParticipantSelectionDto::getUuid).collect(Collectors.toList()),
+				resultList.stream().map(EventParticipantSelectionDto::getUuid).collect(Collectors.toList()),
 				eventParticipantCriteria);
 
-			for (EventParticipantSelectionDto eventParticipantSelectionDto : eventParticipantsThatAttendedByTwoPersonsTogether) {
+			for (EventParticipantSelectionDto eventParticipantSelectionDto : resultList) {
 				Optional.ofNullable(eventParticipantContactCount.get(eventParticipantSelectionDto.getUuid()))
 					.ifPresent(eventParticipantSelectionDto::setContactCount);
 			}
 		}
-		return eventParticipantsThatAttendedByTwoPersonsTogether;
+		return resultList;
+	}
+
+	private Predicate createPersonEventSubquery(
+		CriteriaQuery<EventParticipantSelectionDto> cq,
+		CriteriaBuilder cb,
+		String personUuid,
+		Root<Event> mainEventRoot) {
+
+		final Subquery<Long> personSubquery = cq.subquery(Long.class);
+		final Root<Event> eventRoot = personSubquery.from(Event.class);
+		Join<Event, EventParticipant> eventParticipantJoin = eventRoot.join(Event.EVENT_PERSONS, JoinType.INNER);
+		Join<EventParticipant, Person> personJoin = eventParticipantJoin.join(EventParticipant.PERSON, JoinType.INNER);
+
+		personSubquery.select(eventRoot.get(Event.UUID));
+		personSubquery
+			.where(cb.and(cb.equal(personJoin.get(Person.UUID), personUuid), cb.equal(eventRoot.get(Event.UUID), mainEventRoot.get(Event.UUID))));
+		return cb.exists(personSubquery);
 	}
 
 	@PermitAll
