@@ -72,6 +72,7 @@ import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseLogic;
+import de.symeda.sormas.api.caze.CaseMergeIndexDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CasePersonDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -307,11 +308,11 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			DateUtils.addMinutes(today, -3),
 			rdcf);
 
-		final List<CaseIndexDto[]> casesForDuplicateMergingToday = getCaseFacade().getCasesForDuplicateMerging(
+		final List<CaseMergeIndexDto[]> casesForDuplicateMergingToday = getCaseFacade().getCasesForDuplicateMerging(
 			new CaseCriteria().creationDateFrom(today).creationDateTo(today),
 			CaseFacade.DUPLICATE_MERGING_LIMIT_DEFAULT,
 			true);
-		final List<CaseIndexDto[]> casesForDuplicateMergingThreeDaysAgo = getCaseFacade().getCasesForDuplicateMerging(
+		final List<CaseMergeIndexDto[]> casesForDuplicateMergingThreeDaysAgo = getCaseFacade().getCasesForDuplicateMerging(
 			new CaseCriteria().creationDateFrom(threeDaysAgo).creationDateTo(threeDaysAgo),
 			CaseFacade.DUPLICATE_MERGING_LIMIT_DEFAULT,
 			true);
