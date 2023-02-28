@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -74,6 +75,7 @@ import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
 import de.symeda.sormas.api.event.EventParticipantListEntryDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.event.EventParticipantSelectionDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
@@ -349,6 +351,78 @@ public class EventParticipantFacadeEjb
 		return toPseudonymizedDto(entity, pseudonymizer);
 	}
 
+	/**
+	 * returns a list containing event participants of the given two persons in the same event
+	 * 
+	 * @param firstPersonUuid
+	 * @param secondPersonUuid
+	 * @return
+	 */
+	public List<EventParticipantSelectionDto> getEventParticipantsWithSameEvent(String firstPersonUuid, String secondPersonUuid) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<EventParticipantSelectionDto> cq = cb.createQuery(EventParticipantSelectionDto.class);
+		Root<Event> eventRoot = cq.from(Event.class);
+		Join<Event, EventParticipant> eventParticipantJoin = eventRoot.join(Event.EVENT_PERSONS, JoinType.INNER);
+		Join<EventParticipant, Person> personJoin = eventParticipantJoin.join(EventParticipant.PERSON, JoinType.INNER);
+		Join<EventParticipant, Case> caseJoin = eventParticipantJoin.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
+		Join<EventParticipant, District> districtJoin = eventParticipantJoin.join(EventParticipant.DISTRICT, JoinType.LEFT);
+
+		cq.multiselect(
+			eventRoot.get(Event.UUID),
+			eventRoot.get(Event.EVENT_TITLE),
+			eventParticipantJoin.get(EventParticipantDto.UUID),
+			personJoin.get(PersonDto.UUID),
+			personJoin.get(PersonDto.FIRST_NAME),
+			personJoin.get(PersonDto.LAST_NAME),
+			personJoin.get(PersonDto.APPROXIMATE_AGE),
+			personJoin.get(PersonDto.APPROXIMATE_AGE_TYPE),
+			personJoin.get(PersonDto.BIRTH_DATE_DD),
+			personJoin.get(PersonDto.BIRTH_DATE_MM),
+			personJoin.get(PersonDto.BIRTH_DATE_YYYY),
+			personJoin.get(PersonDto.SEX),
+			districtJoin.get(District.NAME),
+			eventParticipantJoin.get(EventParticipantDto.INVOLVEMENT_DESCRIPTION),
+			caseJoin.get(Case.UUID));
+
+		cq.where(
+			cb.and(
+				isPersonParticipantInEvent(firstPersonUuid, eventRoot, cq, cb),
+				isPersonParticipantInEvent(secondPersonUuid, eventRoot, cq, cb),
+				cb.in(personJoin.get(Person.UUID)).value(Arrays.asList(firstPersonUuid, secondPersonUuid))));
+
+		List<EventParticipantSelectionDto> resultList = em.createQuery(cq).getResultList();
+
+		if (!resultList.isEmpty()) {
+			EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
+			Map<String, Long> eventParticipantContactCount = getContactCountPerEventParticipant(
+				resultList.stream().map(EventParticipantSelectionDto::getUuid).collect(Collectors.toList()),
+				eventParticipantCriteria);
+
+			for (EventParticipantSelectionDto eventParticipantSelectionDto : resultList) {
+				Optional.ofNullable(eventParticipantContactCount.get(eventParticipantSelectionDto.getUuid()))
+					.ifPresent(eventParticipantSelectionDto::setContactCount);
+			}
+		}
+		return resultList;
+	}
+
+	private Predicate isPersonParticipantInEvent(
+		String personUuid,
+		Root<Event> event,
+		CriteriaQuery<EventParticipantSelectionDto> cq,
+		CriteriaBuilder cb) {
+
+		final Subquery<Long> personSubquery = cq.subquery(Long.class);
+		final Root<Event> eventRoot = personSubquery.from(Event.class);
+		Join<Event, EventParticipant> eventParticipantJoin = eventRoot.join(Event.EVENT_PERSONS, JoinType.INNER);
+		Join<EventParticipant, Person> personJoin = eventParticipantJoin.join(EventParticipant.PERSON, JoinType.INNER);
+
+		personSubquery.select(eventRoot.get(Event.UUID));
+		personSubquery.where(cb.and(cb.equal(personJoin.get(Person.UUID), personUuid), cb.equal(eventRoot.get(Event.UUID), event.get(Event.UUID))));
+		return cb.exists(personSubquery);
+	}
+
 	@PermitAll
 	public void onEventParticipantChanged(
 		EventDto event,
@@ -473,50 +547,50 @@ public class EventParticipantFacadeEjb
 			Join<EventParticipant, Event> event = joins.getEvent();
 			final Join<EventParticipant, Sample> samples = queryContext.getSamplesJoin();
 
-		Expression<Object> inJurisdictionSelector = JurisdictionHelper.booleanSelector(cb, service.inJurisdiction(queryContext));
-		Expression<Object> inJurisdictionOrOwnedSelector = JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(queryContext));
-		cq.multiselect(
-			eventParticipant.get(EventParticipant.UUID),
-			person.get(Person.UUID),
-			resultingCase.get(Case.UUID),
-			event.get(Event.UUID),
-			person.get(Person.FIRST_NAME),
-			person.get(Person.LAST_NAME),
-			person.get(Person.SEX),
-			person.get(Person.APPROXIMATE_AGE),
-			person.get(Person.APPROXIMATE_AGE_TYPE),
-			eventParticipant.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
-			// POSITIVE is the max value of available results
-			cb.max(samples.get(Sample.PATHOGEN_TEST_RESULT)),
-			// all samples have the same date, but have to be aggregated
-			cb.max(samples.get(Sample.SAMPLE_DATE_TIME)),
-			eventParticipant.get(EventParticipant.VACCINATION_STATUS),
-			joins.getEventParticipantReportingUser().get(User.UUID),
-			eventParticipant.get(EventParticipant.DELETION_REASON),
-			eventParticipant.get(EventParticipant.OTHER_DELETION_REASON),
-			inJurisdictionSelector,
-			inJurisdictionOrOwnedSelector);
-		cq.groupBy(
-			eventParticipant.get(EventParticipant.ID),
-			eventParticipant.get(EventParticipant.UUID),
-			person.get(Person.UUID),
-			resultingCase.get(Case.UUID),
-			event.get(Event.UUID),
-			person.get(Person.FIRST_NAME),
-			person.get(Person.LAST_NAME),
-			person.get(Person.SEX),
-			person.get(Person.APPROXIMATE_AGE),
-			person.get(Person.APPROXIMATE_AGE_TYPE),
-			eventParticipant.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
-			joins.getSamples().get(Sample.PATHOGEN_TEST_RESULT),
-			joins.getSamples().get(Sample.SAMPLE_DATE_TIME),
-			eventParticipant.get(EventParticipant.VACCINATION_STATUS),
-			joins.getEventParticipantReportingUser().get(User.ID),
-			joins.getEventParticipantReportingUser().get(User.UUID),
-			eventParticipant.get(EventParticipant.DELETION_REASON),
-			eventParticipant.get(EventParticipant.OTHER_DELETION_REASON),
-			inJurisdictionSelector,
-			inJurisdictionOrOwnedSelector);
+			Expression<Object> inJurisdictionSelector = JurisdictionHelper.booleanSelector(cb, service.inJurisdiction(queryContext));
+			Expression<Object> inJurisdictionOrOwnedSelector = JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(queryContext));
+			cq.multiselect(
+				eventParticipant.get(EventParticipant.UUID),
+				person.get(Person.UUID),
+				resultingCase.get(Case.UUID),
+				event.get(Event.UUID),
+				person.get(Person.FIRST_NAME),
+				person.get(Person.LAST_NAME),
+				person.get(Person.SEX),
+				person.get(Person.APPROXIMATE_AGE),
+				person.get(Person.APPROXIMATE_AGE_TYPE),
+				eventParticipant.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
+				// POSITIVE is the max value of available results
+				cb.max(samples.get(Sample.PATHOGEN_TEST_RESULT)),
+				// all samples have the same date, but have to be aggregated
+				cb.max(samples.get(Sample.SAMPLE_DATE_TIME)),
+				eventParticipant.get(EventParticipant.VACCINATION_STATUS),
+				joins.getEventParticipantReportingUser().get(User.UUID),
+				eventParticipant.get(EventParticipant.DELETION_REASON),
+				eventParticipant.get(EventParticipant.OTHER_DELETION_REASON),
+				inJurisdictionSelector,
+				inJurisdictionOrOwnedSelector);
+			cq.groupBy(
+				eventParticipant.get(EventParticipant.ID),
+				eventParticipant.get(EventParticipant.UUID),
+				person.get(Person.UUID),
+				resultingCase.get(Case.UUID),
+				event.get(Event.UUID),
+				person.get(Person.FIRST_NAME),
+				person.get(Person.LAST_NAME),
+				person.get(Person.SEX),
+				person.get(Person.APPROXIMATE_AGE),
+				person.get(Person.APPROXIMATE_AGE_TYPE),
+				eventParticipant.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
+				joins.getSamples().get(Sample.PATHOGEN_TEST_RESULT),
+				joins.getSamples().get(Sample.SAMPLE_DATE_TIME),
+				eventParticipant.get(EventParticipant.VACCINATION_STATUS),
+				joins.getEventParticipantReportingUser().get(User.ID),
+				joins.getEventParticipantReportingUser().get(User.UUID),
+				eventParticipant.get(EventParticipant.DELETION_REASON),
+				eventParticipant.get(EventParticipant.OTHER_DELETION_REASON),
+				inJurisdictionSelector,
+				inJurisdictionOrOwnedSelector);
 
 			Predicate filter = service.buildCriteriaFilter(eventParticipantCriteria, queryContext);
 

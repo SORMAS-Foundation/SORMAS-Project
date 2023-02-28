@@ -1129,4 +1129,5 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 	protected boolean hasLimitedChangeDateFilterImplementation() {
 		return true;
 	}
+
 }

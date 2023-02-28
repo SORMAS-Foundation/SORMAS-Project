@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.person;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -44,6 +45,7 @@ import com.vaadin.v7.data.Validator;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.event.EventParticipantSelectionDto;
 import de.symeda.sormas.api.externaljournal.ExternalJournalSyncResponseDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -64,6 +66,7 @@ import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.CaseDataView;
+import de.symeda.sormas.ui.events.eventParticipantMerge.PickLeadEventParticipant;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -165,7 +168,7 @@ public class PersonController {
 		final PersonIndexDto leadPerson = selectedItems.iterator().next();
 		final PersonIndexDto otherPerson = personIndexDtos.stream().filter(p -> p.getUuid() != leadPerson.getUuid()).findFirst().get();
 
-		String confirmationMessage = I18nProperties.getString(Strings.infoPersonMergeConfirmation);
+		final String confirmationMessage;
 
 		if (FacadeProvider.getPersonFacade().isSharedOrReceived(otherPerson.getUuid())) {
 			if (FacadeProvider.getPersonFacade().isSharedOrReceived(leadPerson.getUuid())) {
@@ -178,9 +181,47 @@ public class PersonController {
 					false).show(Page.getCurrent());
 				return;
 			}
+		} else {
+			confirmationMessage = I18nProperties.getString(Strings.infoPersonMergeConfirmation);
 		}
 
-		VaadinUiUtil.showConfirmationPopup(
+		String firstPersonUuid = personIndexDtos.get(0).getUuid();
+		String secondPersonUuid = personIndexDtos.get(1).getUuid();
+
+		List<EventParticipantSelectionDto> eventParticipantsWithSameEvent =
+			FacadeProvider.getEventParticipantFacade().getEventParticipantsWithSameEvent(firstPersonUuid, secondPersonUuid);
+
+		if (!eventParticipantsWithSameEvent.isEmpty()) {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_VIEW)) {
+				selectLeadEventParticipantByEvent(
+					eventParticipantsWithSameEvent,
+					(selectedEventParticipants) -> pickOrMergeConfirmationPopUp(
+						popupWindow,
+						mergeProperties,
+						leadPerson,
+						otherPerson,
+						confirmationMessage,
+						selectedEventParticipants));
+				return;
+			} else {
+				VaadinUiUtil.showSimplePopupWindow(
+					I18nProperties.getString(Strings.headingMergePersonError),
+					I18nProperties.getString(Strings.messagePersonMergeNoEventParticipantRights));
+				return;
+			}
+		}
+
+		pickOrMergeConfirmationPopUp(popupWindow, mergeProperties, leadPerson, otherPerson, confirmationMessage, new ArrayList<>());
+	}
+
+	private Window pickOrMergeConfirmationPopUp(
+		Window popupWindow,
+		boolean mergeProperties,
+		PersonIndexDto leadPerson,
+		PersonIndexDto otherPerson,
+		String confirmationMessage,
+		List<String> selectedEventParticipantUuids) {
+		Window mergeWindow = VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getString(Strings.headingPickOrMergePersonConfirmation),
 			new Label(confirmationMessage, ContentMode.HTML),
 			I18nProperties.getCaption(Captions.actionConfirm),
@@ -188,11 +229,45 @@ public class PersonController {
 			800,
 			confirm -> {
 				if (Boolean.TRUE.equals(confirm)) {
-					FacadeProvider.getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), mergeProperties);
+					FacadeProvider.getPersonFacade()
+						.mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), mergeProperties, selectedEventParticipantUuids);
 					popupWindow.close();
 					SormasUI.refreshView();
 				}
 			});
+
+		return mergeWindow;
+	}
+
+	private void selectLeadEventParticipantByEvent(
+		List<EventParticipantSelectionDto> eventParticipantSelectionDtos,
+		Consumer<List<String>> callback) {
+		PickLeadEventParticipant pickLeadEventParticipant = new PickLeadEventParticipant(eventParticipantSelectionDtos);
+
+		final CommitDiscardWrapperComponent<PickLeadEventParticipant> component = new CommitDiscardWrapperComponent<>(pickLeadEventParticipant);
+
+		component.getCommitButton().setCaption(I18nProperties.getCaption((Captions.actionConfirm)));
+
+		component.setPreCommitListener(preCommitCallback -> {
+			List<String> pickedEventParticipants = component.getWrappedComponent().getValue();
+
+			if (eventParticipantSelectionDtos.size() / 2 > pickedEventParticipants.size()) {
+				VaadinUiUtil.showSimplePopupWindow(
+					I18nProperties.getString(Strings.headingPickEventParticipantsIncompleteSelection),
+					I18nProperties.getString(Strings.messagePickEventParticipantsIncompleteSelection));
+			} else {
+				preCommitCallback.run();
+			}
+		});
+
+		component.addCommitListener(() -> {
+			List<String> pickedEventParticipants = component.getWrappedComponent().getValue();
+			callback.accept(pickedEventParticipants);
+		});
+
+		component.setWidth(1500, Unit.PIXELS);
+
+		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickEventParticipants));
 	}
 
 	public void selectOrCreatePerson(final PersonDto person, String infoText, Consumer<PersonReferenceDto> resultConsumer, boolean saveNewPerson) {
