@@ -80,10 +80,11 @@ public class SystemEventFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	private List<SystemEvent> getAllSystemEvents() {
-		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-		CriteriaQuery<SystemEvent> cq = cb.createQuery(SystemEvent.class);
-		cq.from(SystemEvent.class);
-		return getEntityManager().createQuery(cq).getResultList();
+		return executeInTransaction(em -> {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<SystemEvent> cq = cb.createQuery(SystemEvent.class);
+			cq.from(SystemEvent.class);
+			return em.createQuery(cq).getResultList();
+		});
 	}
-
 }

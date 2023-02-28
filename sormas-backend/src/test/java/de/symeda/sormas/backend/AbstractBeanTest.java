@@ -23,6 +23,8 @@ import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.naming.InitialContext;
@@ -246,7 +248,6 @@ import de.symeda.sormas.backend.user.UserRole;
 import de.symeda.sormas.backend.user.UserRoleFacadeEjb.UserRoleFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserRoleService;
 import de.symeda.sormas.backend.user.UserService;
-import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
 import de.symeda.sormas.backend.vaccination.VaccinationService;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
@@ -312,28 +313,27 @@ public abstract class AbstractBeanTest {
 	}
 
 	protected void initH2Functions() {
-		EntityManager em = getEntityManager();
-		em.getTransaction().begin();
-		Query nativeQuery = em.createNativeQuery("CREATE ALIAS similarity FOR \"de.symeda.sormas.backend.H2Function.similarity\"");
-		nativeQuery.executeUpdate();
-		nativeQuery = em.createNativeQuery("CREATE ALIAS date_part FOR \"de.symeda.sormas.backend.H2Function.date_part\"");
-		nativeQuery.executeUpdate();
-		nativeQuery = em.createNativeQuery("CREATE ALIAS epi_week FOR \"de.symeda.sormas.backend.H2Function.epi_week\"");
-		nativeQuery.executeUpdate();
-		nativeQuery = em.createNativeQuery("CREATE ALIAS epi_year FOR \"de.symeda.sormas.backend.H2Function.epi_year\"");
-		nativeQuery.executeUpdate();
-		nativeQuery = em.createNativeQuery("CREATE ALIAS similarity_operator FOR \"de.symeda.sormas.backend.H2Function.similarity_operator\"");
-		nativeQuery.executeUpdate();
-		nativeQuery = em.createNativeQuery("CREATE ALIAS set_limit FOR \"de.symeda.sormas.backend.H2Function.set_limit\"");
-		nativeQuery.executeUpdate();
-		nativeQuery = em.createNativeQuery("CREATE ALIAS date FOR \"de.symeda.sormas.backend.H2Function.date\"");
-		nativeQuery.executeUpdate();
-		nativeQuery =
-			em.createNativeQuery("CREATE ALIAS timestamp_subtract_14_days FOR \"de.symeda.sormas.backend.H2Function.timestamp_subtract_14_days\"");
-		nativeQuery.executeUpdate();
-		nativeQuery = em.createNativeQuery("CREATE ALIAS at_end_of_day FOR \"de.symeda.sormas.backend.H2Function.at_end_of_day\"");
-		nativeQuery.executeUpdate();
-		em.getTransaction().commit();
+		executeInTransaction(em -> {
+			Query nativeQuery = em.createNativeQuery("CREATE ALIAS similarity FOR \"de.symeda.sormas.backend.H2Function.similarity\"");
+			nativeQuery.executeUpdate();
+			nativeQuery = em.createNativeQuery("CREATE ALIAS date_part FOR \"de.symeda.sormas.backend.H2Function.date_part\"");
+			nativeQuery.executeUpdate();
+			nativeQuery = em.createNativeQuery("CREATE ALIAS epi_week FOR \"de.symeda.sormas.backend.H2Function.epi_week\"");
+			nativeQuery.executeUpdate();
+			nativeQuery = em.createNativeQuery("CREATE ALIAS epi_year FOR \"de.symeda.sormas.backend.H2Function.epi_year\"");
+			nativeQuery.executeUpdate();
+			nativeQuery = em.createNativeQuery("CREATE ALIAS similarity_operator FOR \"de.symeda.sormas.backend.H2Function.similarity_operator\"");
+			nativeQuery.executeUpdate();
+			nativeQuery = em.createNativeQuery("CREATE ALIAS set_limit FOR \"de.symeda.sormas.backend.H2Function.set_limit\"");
+			nativeQuery.executeUpdate();
+			nativeQuery = em.createNativeQuery("CREATE ALIAS date FOR \"de.symeda.sormas.backend.H2Function.date\"");
+			nativeQuery.executeUpdate();
+			nativeQuery = em
+				.createNativeQuery("CREATE ALIAS timestamp_subtract_14_days FOR \"de.symeda.sormas.backend.H2Function.timestamp_subtract_14_days\"");
+			nativeQuery.executeUpdate();
+			nativeQuery = em.createNativeQuery("CREATE ALIAS at_end_of_day FOR \"de.symeda.sormas.backend.H2Function.at_end_of_day\"");
+			nativeQuery.executeUpdate();
+		});
 	}
 
 	private void createDiseaseConfigurations() {
@@ -345,42 +345,47 @@ public abstract class AbstractBeanTest {
 		});
 	}
 
-	public <T,R> R executeInTransaction(BiFunction<EntityManager, T, R> callback, T param) {
-		return getBean(TransactionalTestEjb.class).executeInTransaction(callback, param);
-	}
-
 	protected <T> T getBean(Class<T> beanClass, Annotation... qualifiers) {
 		return ContextControlWrapper.getInstance().getContextualReference(beanClass, qualifiers);
 	}
 
+	public void executeInTransaction(Consumer<EntityManager> callback) {
+		getBean(TransactionalTestEjb.class).executeInTransaction(callback);
+	}
+
+	public <R> R executeInTransaction(Function<EntityManager, R> callback) {
+		return getBean(TransactionalTestEjb.class).executeInTransaction(callback);
+	}
+
+	public <T, R> R executeInTransaction(BiFunction<EntityManager, T, R> callback, T param) {
+		return getBean(TransactionalTestEjb.class).executeInTransaction(callback, param);
+	}
+
 	/**
-	 * Note: The entity manager does not have an active transaction when called from a test method
-	 * 
-	 * @return
+	 * This is private, because the entity manager does not have an active transaction when called from a test method
+	 * and should not be used in test code.
+	 * Use executeInTransaction or getEntityAttached instead!
 	 */
-	public EntityManager getEntityManager() {
+	private EntityManager getEntityManager() {
 		return getBean(EntityManager.class);
 	}
 
 	/**
-	 * Loads an attached entity.<br />
-	 * Use Case: Lazy loaded references aren't available after EJB calls anymore because the JTA transaction has already been closed.
+	 * Attaches the entity to the persistence context
+	 * <b>Important</b>: The entity will only be attached until the next ejb call is concluded, which clears the entity manager.
 	 */
-	@SuppressWarnings("unchecked")
-	public <E extends AbstractDomainObject> E getEntityAttached(E entity) {
-		return (E) QueryHelper.simpleSingleQuery(getEntityManager(), entity.getClass(), AbstractDomainObject.UUID, entity.getUuid());
+	public <E extends AbstractDomainObject> E mergeToEntityManager(E entity) {
+		return getEntityManager().contains(entity) ? entity : getEntityManager().merge(entity);
 	}
 
 	public UserRole getEagerUserRole(String uuid) {
-
-		UserRole userRole = getEntityAttached(getUserRoleService().getByUuid(uuid));
+		UserRole userRole = getUserRoleService().getByUuid(uuid);
 		initUserRole(userRole);
 		return userRole;
 	}
 
 	public User getEagerUser(String uuid) {
-
-		User user = getEntityAttached(getUserService().getByUuid(uuid));
+		User user = getUserService().getByUuid(uuid);
 		for (UserRole userRole : user.getUserRoles()) {
 			initUserRole(userRole);
 		}
@@ -391,7 +396,6 @@ public abstract class AbstractBeanTest {
 	 * Initializes lazy references.
 	 */
 	private void initUserRole(UserRole userRole) {
-
 		userRole.getEmailNotificationTypes().size();
 		userRole.getSmsNotificationTypes().size();
 	}

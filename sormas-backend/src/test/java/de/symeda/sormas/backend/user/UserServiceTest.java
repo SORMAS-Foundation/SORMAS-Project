@@ -118,12 +118,14 @@ public class UserServiceTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetAllDefaultUsers() {
-		User user = getUserService().getByUserName("admin");
-		assertNotNull(user);
 
-		user.setSeed(PasswordHelper.createPass(16));
-		user.setPassword(PasswordHelper.encodePassword("sadmin", user.getSeed()));
-		getEntityManager().merge(user);
+		executeInTransaction(em -> {
+			User user = getUserService().getByUserName("admin");
+			assertNotNull(user);
+			user.setSeed(PasswordHelper.createPass(16));
+			user.setPassword(PasswordHelper.encodePassword("sadmin", user.getSeed()));
+			getUserService().persist(user);
+		});
 
 		List<User> result = getUserService().getAllDefaultUsers();
 		assertNotNull(result);
