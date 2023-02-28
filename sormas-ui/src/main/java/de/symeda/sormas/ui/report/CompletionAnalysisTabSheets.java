@@ -22,6 +22,8 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
+import com.vaadin.ui.components.grid.HeaderCell;
+import com.vaadin.ui.components.grid.HeaderRow;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.components.grid.HeaderCell;
 import com.vaadin.ui.components.grid.HeaderRow;
@@ -111,6 +113,27 @@ public class CompletionAnalysisTabSheets extends VerticalLayout implements View 
 		// gridLayout = new VerticalLayout();
 		criteria = new CampaignFormDataCriteria();
 		grid = new CompletionAnalysisGrid(criteria, formAccess);
+		HeaderRow mainHeader = grid.getDefaultHeaderRow();
+		
+		HeaderCell regionNameHeader = mainHeader.getCell("area");
+		regionNameHeader.setDescription("Region");
+		HeaderCell provinceNameHeader = mainHeader.getCell("region");
+		provinceNameHeader.setDescription("Province");
+		HeaderCell districtNameHeader = mainHeader.getCell("district");
+		districtNameHeader.setDescription("District");
+		HeaderCell ccodeNameHeader = mainHeader.getCell("ccode");
+		ccodeNameHeader.setDescription("CCode");
+		HeaderCell clusterNumberHeader = mainHeader.getCell("clusternumber");
+		clusterNumberHeader.setDescription("Cluster Number");
+		HeaderCell houseHoldHeader = mainHeader.getCell("analysis_a");
+		houseHoldHeader.setDescription("ICM Household Monitoring");
+		HeaderCell icmRevisitsHeader = mainHeader.getCell("analysis_b");
+		icmRevisitsHeader.setDescription("ICM Revisits");
+		HeaderCell supervisorMonitpringHeader = mainHeader.getCell("analysis_c");
+		supervisorMonitpringHeader.setDescription("ICM Supervisor Monitoring");
+		HeaderCell teamMonitpringHeader = mainHeader.getCell("analysis_d");
+		teamMonitpringHeader.setDescription("ICM Team Monitoring");
+		
 		this.addComponent(createFilterBar());
 		extractUrl();
 		this.addComponent(grid);
