@@ -497,6 +497,11 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	}
 
 	@Override
+	public boolean areAllFeatureEnabled(FeatureType... featureType) {
+		return Stream.of(featureType).allMatch(this::isFeatureEnabled);
+	}
+
+	@Override
 	public boolean isAnySurveillanceEnabled() {
 		return isAnyFeatureEnabled(FeatureType.CASE_SURVEILANCE, FeatureType.EVENT_SURVEILLANCE, FeatureType.AGGREGATE_REPORTING);
 	}

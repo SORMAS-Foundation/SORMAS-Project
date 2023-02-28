@@ -12284,6 +12284,20 @@ CREATE INDEX IF NOT EXISTS idx_cases_creationdate_desc ON cases USING btree (cre
 
 INSERT INTO schema_version (version_number, comment) VALUES (507, 'Add index to improve performance or case duplicate merging lists #9054');
 
+-- 2023-02-28 Create basic samples dashboard #10721
+DELETE FROM featureconfiguration where featuretype = 'DASHBOARD';
+CREATE INDEX idx_sample_pathogenTestResult ON samples USING btree (pathogenTestResult ASC NULLS LAST);
+INSERT INTO userroles_userrights (userrole_id, userright, sys_period)
+SELECT userrole_id, 'DASHBOARD_SAMPLES_VIEW', tstzrange(now(), null)
+FROM userroles_userrights uu
+WHERE uu.userright = 'DASHBOARD_SURVEILLANCE_VIEW'
+  AND exists(SELECT uu2.userrole_id
+             FROM userroles_userrights uu2
+             WHERE uu2.userrole_id = uu.userrole_id
+               AND uu2.userright = 'SAMPLE_VIEW');
+
+INSERT INTO schema_version (version_number, comment) VALUES (508, 'Create basic samples dashboard #10721');
+
 
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

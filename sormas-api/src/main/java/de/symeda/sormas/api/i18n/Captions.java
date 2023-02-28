@@ -876,6 +876,7 @@ public interface Captions {
 	String dashboardNotACase = "dashboardNotACase";
 	String dashboardNotAContact = "dashboardNotAContact";
 	String dashboardNotAnEvent = "dashboardNotAnEvent";
+	String dashboardNotDone = "dashboardNotDone";
 	String dashboardNotExecutable = "dashboardNotExecutable";
 	String dashboardNotVisitedFor = "dashboardNotVisitedFor";
 	String dashboardNotYetClassified = "dashboardNotYetClassified";
