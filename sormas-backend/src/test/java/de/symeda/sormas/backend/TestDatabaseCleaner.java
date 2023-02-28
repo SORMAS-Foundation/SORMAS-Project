@@ -31,7 +31,8 @@ public class TestDatabaseCleaner implements DatabaseCleaner {
 		connection.commit();
 
 		Map<String, String> properties = new HashMap<>();
-		properties.put(AvailableSettings.HBM2DDL_DATABASE_ACTION, "create");//Action.CREATE.getExternalJpaName());
+		// TODO later 5.6.x hibernate version: Action.CREATE.getExternalJpaName());
+		properties.put(AvailableSettings.HBM2DDL_DATABASE_ACTION, "create");
 		Persistence.generateSchema(EntityManagerTestProducer.BEAN_TEST_PU, properties);
 	}
 }
