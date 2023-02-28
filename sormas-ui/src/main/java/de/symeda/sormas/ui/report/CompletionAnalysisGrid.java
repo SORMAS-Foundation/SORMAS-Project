@@ -1,7 +1,5 @@
 package de.symeda.sormas.ui.report;
 
-import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
@@ -9,26 +7,14 @@ import org.springframework.stereotype.Component;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.data.sort.SortDirection;
-import com.vaadin.ui.Grid.Column;
-import com.vaadin.ui.Grid.SelectionMode;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.infrastructure.community.CommunityCriteriaNew;
-import de.symeda.sormas.api.infrastructure.community.CommunityDto;
-import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
-
-import de.symeda.sormas.api.report.UserReportModelDto;
 import de.symeda.sormas.api.user.FormAccess;
-import de.symeda.sormas.api.user.UserCriteria;
-import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.ui.user.UserGrid.ActiveRenderer;
-import de.symeda.sormas.ui.utils.CollectionValueProvider;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import elemental.json.JsonValue;
 
@@ -106,14 +92,14 @@ public class CompletionAnalysisGrid extends FilteredGrid<CampaignFormDataIndexDt
 														sortOrder.getDirection() == SortDirection.ASCENDING))
 												.collect(Collectors.toList()), formacc)
 								.stream(),
-						query -> FacadeProvider.getCampaignFormDataFacade()
-								.getByCompletionAnalysis(query.getFilter().orElse(null), query.getOffset(),
+						query -> Integer.parseInt(FacadeProvider.getCampaignFormDataFacade()
+								.getByCompletionAnalysisCount(query.getFilter().orElse(null), query.getOffset(),
 										query.getLimit(),
 										query.getSortOrders().stream()
 												.map(sortOrder -> new SortProperty(sortOrder.getSorted(),
 														sortOrder.getDirection() == SortDirection.ASCENDING))
-												.collect(Collectors.toList()), formacc)
-								.size());
+												.collect(Collectors.toList()), formacc))
+								);
 
 		System.out.println("sdafasdfasdfgasdgvasdfgsdfhsdfg " + dataProvider);
 		setDataProvider(dataProvider);

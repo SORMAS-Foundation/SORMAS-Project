@@ -13,6 +13,7 @@ import com.vaadin.server.VaadinService;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.TextField;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -22,6 +23,8 @@ import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.components.grid.HeaderCell;
+import com.vaadin.ui.components.grid.HeaderRow;
 
 import java.net.URI;
 import java.util.List;
@@ -117,6 +120,10 @@ public class CompletionAnalysisTabSheets extends VerticalLayout implements View 
 		this.setSizeFull();
 		this.setExpandRatio(grid, 1);
 		this.setStyleName("crud-main-layout");
+		
+		
+		
+		
 
 		Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.TABLE, null,
 				ValoTheme.BUTTON_PRIMARY);
@@ -137,7 +144,7 @@ public class CompletionAnalysisTabSheets extends VerticalLayout implements View 
 		filterLayout = new HorizontalLayout();
 		filterLayout.setMargin(false);
 		filterLayout.setSpacing(true);
-		filterLayout.setWidth(100, Unit.PERCENTAGE);
+	//	filterLayout.setWidth(100, Unit.PERCENTAGE);
 
 //		searchField = new SearchField();
 //		searchField.addTextChangeListener(e -> {

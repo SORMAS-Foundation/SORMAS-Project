@@ -74,18 +74,31 @@ public class CampaignReportView extends AbstractView {
 
 		TabSheet tabsheetxr = new TabSheet();
 		FormAccess frmss[] = FormAccess.values();
-		for (FormAccess lopper : frmss) {
-
+	//	for (FormAccess lopper : frmss) {
+		{
 			gridLayout = new VerticalLayout();
 			gridLayout.setHeightFull();
-			CompletionAnalysisTabSheets compAnalysis = new CompletionAnalysisTabSheets(lopper);// CampaignReportTabSheets
+			CompletionAnalysisTabSheets compAnalysis = new CompletionAnalysisTabSheets(FormAccess.ICM);// CampaignReportTabSheets
 																								// sheet = new
 																								// CampaignReportTabSheets(criteria,
 																								// lopper);
 			gridLayout.addComponent(compAnalysis);
-			tabsheetxr.addTab(gridLayout, lopper.toString());
-
+			tabsheetxr.addTab(gridLayout, "ICM Completion");
 		}
+		
+		{
+			
+			gridLayout = new VerticalLayout();
+			gridLayout.setHeightFull();
+			CompletionAnalysisTabSheets compAnalysis = new CompletionAnalysisTabSheets(FormAccess.ICM);// CampaignReportTabSheets
+																								// sheet = new
+																								// CampaignReportTabSheets(criteria,
+																								// lopper);
+			gridLayout.addComponent(compAnalysis);
+			tabsheetxr.addTab(gridLayout, "ICM Missing");
+			
+		}
+	//	}
 
 		tabsheetxr.setHeightFull();
 
