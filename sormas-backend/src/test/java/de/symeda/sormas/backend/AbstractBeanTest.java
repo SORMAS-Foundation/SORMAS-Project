@@ -379,17 +379,21 @@ public abstract class AbstractBeanTest {
 	}
 
 	public UserRole getEagerUserRole(String uuid) {
-		UserRole userRole = getUserRoleService().getByUuid(uuid);
-		initUserRole(userRole);
-		return userRole;
+		return executeInTransaction(em -> {
+			UserRole userRole = getUserRoleService().getByUuid(uuid);
+			initUserRole(userRole);
+			return userRole;
+		});
 	}
 
 	public User getEagerUser(String uuid) {
-		User user = getUserService().getByUuid(uuid);
-		for (UserRole userRole : user.getUserRoles()) {
-			initUserRole(userRole);
-		}
-		return user;
+		return executeInTransaction(em -> {
+			User user = getUserService().getByUuid(uuid);
+			for (UserRole userRole : user.getUserRoles()) {
+				initUserRole(userRole);
+			}
+			return user;
+		});
 	}
 
 	/**
@@ -458,10 +462,6 @@ public abstract class AbstractBeanTest {
 
 	public CaseStatisticsFacade getCaseStatisticsFacade() {
 		return getBean(CaseStatisticsFacadeEjbLocal.class);
-	}
-
-	public CaseClassificationFacadeEjb getCaseClassificationLogic() {
-		return getBean(CaseClassificationFacadeEjb.class);
 	}
 
 	public ContactFacadeEjbLocal getContactFacade() {
@@ -544,10 +544,6 @@ public abstract class AbstractBeanTest {
 		return getBean(AdditionalTestFacadeEjbLocal.class);
 	}
 
-	public SymptomsFacade getSymptomsFacade() {
-		return getBean(SymptomsFacadeEjbLocal.class);
-	}
-
 	public SymptomsService getSymptomsService() {
 		return getBean(SymptomsService.class);
 	}
@@ -602,14 +598,6 @@ public abstract class AbstractBeanTest {
 
 	public UserRoleService getUserRoleService() {
 		return getBean(UserRoleService.class);
-	}
-
-	public HospitalizationFacade getHospitalizationFacade() {
-		return getBean(HospitalizationFacadeEjbLocal.class);
-	}
-
-	public EpiDataFacade getEpiDataFacade() {
-		return getBean(EpiDataFacadeEjb.EpiDataFacadeEjbLocal.class);
 	}
 
 	public WeeklyReportFacade getWeeklyReportFacade() {
@@ -746,10 +734,6 @@ public abstract class AbstractBeanTest {
 
 	public ExternalMessageService getExternalMessageService() {
 		return getBean(ExternalMessageService.class);
-	}
-
-	public NotificationService getNotificationService() {
-		return getBean(NotificationService.class);
 	}
 
 	public SormasToSormasExternalMessageFacade getSormasToSormasLabMessageFacade() {
