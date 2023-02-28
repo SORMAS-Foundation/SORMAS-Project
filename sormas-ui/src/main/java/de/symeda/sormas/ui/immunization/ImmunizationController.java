@@ -214,7 +214,6 @@ public class ImmunizationController {
 					() -> navigateToImmunization(immunizationDto.getUuid()));
 		}
 
-		//check for vaccination too if is working
 		editComponent.restrictEditableComponentsOnEditView(UserRight.IMMUNIZATION_EDIT, UserRight.IMMUNIZATION_DELETE);
 
 		return editComponent;
