@@ -19,6 +19,8 @@ package de.symeda.sormas.ui.dashboard.surveillance;
 
 import com.vaadin.ui.CustomLayout;
 
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.CaseStatisticsComponent;
 import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.EventStatisticsComponent;
@@ -56,7 +58,8 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		caseStatisticsComponent = new CaseStatisticsComponent();
 		diseaseSummaryComponent = new DiseaseSummaryComponent();
 		eventStatisticsComponent = new EventStatisticsComponent();
-		testResultsStatisticsComponent = new TestResultsStatisticsComponent(false);
+		testResultsStatisticsComponent =
+			new TestResultsStatisticsComponent(Captions.dashboardNewTestResults, Descriptions.descDashboardNewTestResults, null, false);
 
 		addComponent(caseStatisticsComponent, CASE_LOC);
 		addComponent(diseaseSummaryComponent, OUTBREAK_LOC);

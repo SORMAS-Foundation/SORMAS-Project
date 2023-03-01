@@ -2,12 +2,14 @@ package de.symeda.sormas.ui.dashboard.surveillance.components.statistics;
 
 import java.util.Map;
 
+import com.vaadin.ui.Label;
+
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.ui.dashboard.statistics.CountElementStyle;
 import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsCountElement;
+import de.symeda.sormas.ui.utils.CssStyles;
 
 public class TestResultsStatisticsComponent extends DiseaseSectionStatisticsComponent {
 
@@ -18,10 +20,16 @@ public class TestResultsStatisticsComponent extends DiseaseSectionStatisticsComp
 	private final boolean showNotDoneCount;
 	private DashboardStatisticsCountElement testResultNotDone;
 
-	public TestResultsStatisticsComponent(boolean showNotDoneCount) {
-		super(Captions.dashboardNewTestResults, Descriptions.descDashboardNewTestResults);
+	public TestResultsStatisticsComponent(String titleCaption, String description, String subtitleCaption, boolean showNotDoneCount) {
+		super(titleCaption, description);
 
 		this.showNotDoneCount = showNotDoneCount;
+
+		if (subtitleCaption != null) {
+			Label subTitleLabel = new Label(I18nProperties.getCaption(subtitleCaption));
+			CssStyles.style(subTitleLabel, CssStyles.H3, CssStyles.VSPACE_TOP_NONE);
+			addComponent(subTitleLabel);
+		}
 
 		// Count layout
 		testResultPositive = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardPositive), CountElementStyle.CRITICAL);

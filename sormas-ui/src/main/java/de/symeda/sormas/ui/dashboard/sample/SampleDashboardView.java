@@ -17,6 +17,7 @@ package de.symeda.sormas.ui.dashboard.sample;
 
 import com.vaadin.ui.CustomLayout;
 
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
 import de.symeda.sormas.ui.dashboard.DashboardType;
 import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.TestResultsStatisticsComponent;
@@ -56,7 +57,8 @@ public class SampleDashboardView extends AbstractDashboardView {
 
 		dashboardLayout.addComponent(sampleCountsLayout);
 
-		labResultsStatisticsComponent = new TestResultsStatisticsComponent(true);
+		labResultsStatisticsComponent =
+			new TestResultsStatisticsComponent(Captions.sampleDashboardAllSamples, null, Captions.sampleDashboardFinalLabResults, true);
 		sampleCountsLayout.addComponent(labResultsStatisticsComponent, LAB_RESULTS);
 
 	}
