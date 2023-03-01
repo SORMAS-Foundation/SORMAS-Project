@@ -2043,20 +2043,18 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 				try {
 					// Cloning is necessary here to allow us to add the same CaseIndexDto to the grid multiple times
 					CaseMergeIndexDto parent = (CaseMergeIndexDto) indexCases.get(idPair[0]).clone();
+					parent.setUniqueUuid(DataHelper.createUuid());
 					CaseMergeIndexDto child = (CaseMergeIndexDto) indexCases.get(idPair[1]).clone();
+					child.setUniqueUuid(DataHelper.createUuid());
 
 					if (parent.getCompleteness() == null && child.getCompleteness() == null
 						|| parent.getCompleteness() != null
 							&& (child.getCompleteness() == null || (parent.getCompleteness() >= child.getCompleteness()))) {
-						parent.setUniqueUuid(DataHelper.createUuid());
-						child.setUniqueUuid(DataHelper.createUuid());
 						resultList.add(
 							new CaseMergeIndexDto[] {
 								parent,
 								child });
 					} else {
-						parent.setUniqueUuid(DataHelper.createUuid());
-						child.setUniqueUuid(DataHelper.createUuid());
 						resultList.add(
 							new CaseMergeIndexDto[] {
 								child,
