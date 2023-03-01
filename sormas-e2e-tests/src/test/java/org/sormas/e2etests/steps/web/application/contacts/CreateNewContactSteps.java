@@ -225,6 +225,17 @@ public class CreateNewContactSteps implements En {
         });
 
     When(
+        "I fill a new contact form with same person data with {string} region and {string} district for DE version",
+        (String region, String district) -> {
+          fillFirstName(samePersonDataContact.getFirstName());
+          fillLastName(samePersonDataContact.getLastName());
+          fillDateOfBirth(samePersonDataContact.getDateOfBirth(), Locale.GERMAN);
+          selectSex(samePersonDataContact.getSex());
+          selectResponsibleRegion(region);
+          selectResponsibleDistrict(district);
+        });
+
+    When(
         "^I fill a new contact form with specific person data$",
         () -> {
           contact =
