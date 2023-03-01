@@ -41,6 +41,7 @@ import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractBaseEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.dashboard.DashboardFacadeEjb;
+import de.symeda.sormas.backend.dashboard.sample.SampleDashboardFacadeEjb;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
@@ -437,6 +438,11 @@ public class ArchitectureTest {
 	@ArchTest
 	public void testExternalSurveillanceToolGatewayFacadeEjbAuthorization(JavaClasses classes) {
 		assertFacadeEjbAnnotated(ExternalSurveillanceToolGatewayFacadeEjb.class, AuthMode.METHODS_ONLY, classes);
+	}
+
+	@ArchTest
+	public void testSampleDashboardFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(SampleDashboardFacadeEjb.class, AuthMode.CLASS_ONLY, classes);
 	}
 
 	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, JavaClasses classes) {

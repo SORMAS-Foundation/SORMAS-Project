@@ -28,13 +28,13 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "SampleDashboardFacade")
+@RightsAllowed(UserRight._DASHBOARD_SAMPLES_VIEW)
 public class SampleDashboardFacadeEjb implements SampleDashboardFacade {
 
 	@EJB
 	private SampleDashboardService sampleDashboardService;
 
 	@Override
-	@RightsAllowed(UserRight._DASHBOARD_SAMPLES_VIEW)
 	public Map<PathogenTestResultType, Long> getSampleCountByResultType(SampleDashboardCriteria dashboardCriteria) {
 		return sampleDashboardService.getSampleCountByResultType(dashboardCriteria);
 	}
