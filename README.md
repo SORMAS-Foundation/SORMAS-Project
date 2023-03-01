@@ -26,7 +26,7 @@ You can give SORMAS a try on our demo server at <https://demoversion.sormas-oegd
 ### How Can I Get Involved?
 Read through our [*Contributing Readme*](docs/CONTRIBUTING.md) and contact us at sormas@helmholtz-hzi.de or join our [developer chat on Gitter](https://gitter.im/SORMAS-Project) to learn how you can help to drive the development of SORMAS forward and to get development support from our core developers. SORMAS is a community-driven project, and we'd love to have you on board!
 If you want to contribute to the code, please strictly adhere to the [*Development Environment*](docs/DEVELOPMENT_ENVIRONMENT.md) guide to ensure that everything is set up correctly.
-Please also make sure that you've read the [*Development Contributing Guidelines*](docs/CONTRIBUTING.md#development-contributing-guidelines) before you start to develop, and either follow or regularly check our Twitter account <a href="https://twitter.com/SORMASDev" target="_blank">@SORMASDev</a> to stay up to date with our schedule, new releases, guideline changes and other announcements.
+Please also make sure that you've read the [*Development Contributing Guidelines*](docs/CONTRIBUTING.md#development-contributing-guidelines) before you start to develop.
 
 ### How Can I Report a Bug or Request a Feature?
 If you want to report a **security issue**, please read and follow our [*Security Policies*](docs/SECURITY.md). For bugs without security implications, change and feature requests, please [create a new issue](https://github.com/hzi-braunschweig/SORMAS-Project/issues/new/choose) and
