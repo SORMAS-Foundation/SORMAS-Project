@@ -36,12 +36,17 @@ public class SampleDashboardDataProvider extends AbstractDashboardDataProvider<S
 
 	@Override
 	public void refreshData() {
-		testResultCountByResultType = FacadeProvider.getDashboardFacade().getSampleCountByResultType(buildDashboardCriteriaWithDates());
+		testResultCountByResultType = FacadeProvider.getSampleDashboardFacade().getSampleCountByResultType(buildDashboardCriteriaWithDates());
 	}
 
 	@Override
 	protected SampleDashboardCriteria newCriteria() {
 		return new SampleDashboardCriteria();
+	}
+
+	@Override
+	protected SampleDashboardCriteria buildDashboardCriteriaWithDates() {
+		return super.buildDashboardCriteriaWithDates();
 	}
 
 	@Override
@@ -63,6 +68,10 @@ public class SampleDashboardDataProvider extends AbstractDashboardDataProvider<S
 
 	public void setSampleMaterial(SampleMaterial sampleMaterial) {
 		this.sampleMaterial = sampleMaterial;
+	}
+
+	public Boolean getWithNoDisease() {
+		return withNoDisease;
 	}
 
 	public void setWithNoDisease(Boolean withNoDisease) {

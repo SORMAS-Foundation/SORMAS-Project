@@ -43,7 +43,6 @@ import de.symeda.sormas.api.dashboard.DashboardEventDto;
 import de.symeda.sormas.api.dashboard.DashboardFacade;
 import de.symeda.sormas.api.dashboard.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.dashboard.EpiCurveGrouping;
-import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventStatus;
@@ -126,12 +125,6 @@ public class DashboardFacadeEjb implements DashboardFacade {
 		UserRight._DASHBOARD_CONTACT_VIEW })
 	public Map<PathogenTestResultType, Long> getTestResultCountByResultType(DashboardCriteria dashboardCriteria) {
 		return dashboardService.getNewTestResultCountByResultType(dashboardCriteria);
-	}
-
-	@Override
-	@RightsAllowed(UserRight._DASHBOARD_SAMPLES_VIEW)
-	public Map<PathogenTestResultType, Long> getSampleCountByResultType(SampleDashboardCriteria dashboardCriteria) {
-		return dashboardService.getSampleCountByResultType(dashboardCriteria);
 	}
 
 	@RightsAllowed({
