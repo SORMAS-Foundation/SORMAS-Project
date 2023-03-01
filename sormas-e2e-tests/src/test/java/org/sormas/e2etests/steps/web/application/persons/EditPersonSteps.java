@@ -111,6 +111,7 @@ import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.contacts.EditContactPersonPage;
+import org.sormas.e2etests.pages.application.persons.EditPersonPage;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.sormas.e2etests.steps.web.application.contacts.EditContactPersonSteps;
@@ -562,6 +563,16 @@ public class EditPersonSteps implements En {
               personFirstName,
               "Name is incorrect!");
           softly.assertAll();
+        });
+
+    Then(
+        "^I check if editable fields are read only for person$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
+          webDriverHelpers.isElementGreyedOut(UUID_INPUT);
+          webDriverHelpers.isElementGreyedOut(FIRST_NAME_INPUT);
+          webDriverHelpers.isElementGreyedOut(LAST_NAME_INPUT);
+          webDriverHelpers.isElementGreyedOut(EditPersonPage.SAVE_BUTTON);
         });
   }
 

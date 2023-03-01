@@ -410,3 +410,87 @@ Feature: Edit Persons
     And I click on SAVE new case button and choose same person in duplicate detection
     And I choose same case in duplicate detection and save for DE
     #duplicated case created
+    And I check if editable fields are read only for shared case
+    And I navigate to case person tab
+    And I check if editable fields are read only for person case tab
+    And I copy uuid of current person
+#    And I collect the case person UUID displayed on Edit case page
+    And I click on the Persons button from navbar
+    And I search by copied uuid of the person in Person Directory for DE
+    And I click on first person in person directory
+    Then I check if editable fields are read only for person
+    #duplicate person but new case
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I fill new case data for duplicates merge with for one person data for DE
+    And I click on SAVE new case button and choose same person in duplicate detection
+    And I choose create new case in Pick or create entry form for DE
+    And I navigate to case person tab
+    And I change first name of person from Edit person page
+    And I click on the Persons button from navbar
+    And I search by copied uuid of the person in Person Directory for DE
+    And I click on first person in person directory
+    #should be read-only but it is still editable
+#    Then I check if editable fields are read only for person
+    #check iif sync works
+    When I back to tab number 1
+    And I navigate to case person tab
+    And I check if first name of person has been changed
+
+  @tmsLink=SORDEV-12088 @env_s2s_1
+  Scenario: [S2S] Simultaneous Work on Person [4]
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I fill new case data for duplicates merge with for one person data for DE
+    And I save a new case
+    And I collect uuid of the case
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with "shared with automated test"
+    Then I click on share button in s2s share popup and wait for share to finish
+    And I navigate to "s2s_2" environment in new driver tab
+    Given I log in as a Admin User
+    And I click on the Shares button from navbar
+    Then I accept first case in Shares Page
+    When I back to tab number 1
+    Then I navigate to "s2s_1" environment
+    Then I open the last created contact via API
+    #todo:adjust the scenario to works for contact
+    And I click on the The Eye Icon located in the Shares Page
+    And I click on the shortened case ID to open the case
+    And I check if editable fields are read only for shared case
+    And I navigate to case person tab
+    And I check if editable fields are read only for person case tab
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I fill new case data for duplicates merge with for one person data for DE
+    And I click on SAVE new case button and choose same person in duplicate detection
+    And I choose same case in duplicate detection and save for DE
+    #duplicated case created
+    And I check if editable fields are read only for shared case
+    And I navigate to case person tab
+    And I check if editable fields are read only for person case tab
+    And I copy uuid of current person
+#    And I collect the case person UUID displayed on Edit case page
+    And I click on the Persons button from navbar
+    And I search by copied uuid of the person in Person Directory for DE
+    And I click on first person in person directory
+    Then I check if editable fields are read only for person
+    #duplicate person but new case
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I fill new case data for duplicates merge with for one person data for DE
+    And I click on SAVE new case button and choose same person in duplicate detection
+    And I choose create new case in Pick or create entry form for DE
+    And I navigate to case person tab
+    And I change first name of person from Edit person page
+    And I click on the Persons button from navbar
+    And I search by copied uuid of the person in Person Directory for DE
+    And I click on first person in person directory
+    #should be read-only but it is still editable
+#    Then I check if editable fields are read only for person
+    #check iif sync works
+    When I back to tab number 1
+    And I navigate to case person tab
+    And I check if first name of person has been changed
