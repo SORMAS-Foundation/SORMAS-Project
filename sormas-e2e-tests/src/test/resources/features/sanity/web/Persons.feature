@@ -450,12 +450,24 @@ Feature: Edit Persons
     And I click on the NEW CONTACT button
     And I fill a new contact form with same person data with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district for DE version
     And I click on save Contact button
+#    And I collect contact UUID displayed on Edit Contact Page
     And I click on the CHOOSE SOURCE CASE button from CONTACT page
     And I click yes on the DISCARD UNSAVED CHANGES popup from CONTACT page
     And I search for the last case uuid created via Api in the CHOOSE SOURCE Contact window
     And I open the first found result in the CHOOSE SOURCE window
     Then I click SAVE button on Edit Contact Page
-#    And I collect uuid of the case
+    Then I navigate to the last created case via the url
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with "shared with automated test"
+    Then I click on share button in s2s share popup and wait for share to finish
+    And I navigate to "s2s_2" environment in new driver tab
+    Given I log in as a Admin User
+    And I click on the Shares button from navbar
+    Then I accept first case in Shares Page
+    When I back to tab number 1
+    And I click on the Contacts button from navbar
+    And I search and open  last created contact in Contact directory page
 #    Then I click on share case button
 #    And I select organization to share with "s2s_2"
 #    And I fill comment in share popup with "shared with automated test"
