@@ -26,11 +26,15 @@ import org.junit.jupiter.api.Test;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
+import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDashboardFilterDateType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SamplePurpose;
+import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -40,7 +44,7 @@ import de.symeda.sormas.backend.TestDataCreator;
 public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
-	public void getSampleCountByResultType() {
+	public void getSampleCountsByResultType() {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		TestDataCreator.RDCF rdcf2 = creator.createRDCF();
 		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
@@ -139,7 +143,7 @@ public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 			true,
 			null);
 
-		Map<PathogenTestResultType, Long> sampleCountsForRelevantDate = getSampleDashboardFacade().getSampleCountByResultType(
+		Map<PathogenTestResultType, Long> sampleCountsForRelevantDate = getSampleDashboardFacade().getSampleCountsByResultType(
 			new SampleDashboardCriteria().dateBetween(DateHelper.subtractDays(reportDate, 2), DateHelper.addDays(reportDate, 2))
 				.sampleDateType(SampleDashboardFilterDateType.MOST_RELEVANT));
 
@@ -149,7 +153,7 @@ public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, sampleCountsForRelevantDate.get(PathogenTestResultType.POSITIVE));
 		assertEquals(1, sampleCountsForRelevantDate.get(PathogenTestResultType.NOT_DONE));
 
-		Map<PathogenTestResultType, Long> sampleCountsForSampleDate = getSampleDashboardFacade().getSampleCountByResultType(
+		Map<PathogenTestResultType, Long> sampleCountsForSampleDate = getSampleDashboardFacade().getSampleCountsByResultType(
 			new SampleDashboardCriteria().dateBetween(DateHelper.subtractDays(reportDate, 2), DateHelper.addDays(reportDate, 2))
 				.sampleDateType(SampleDashboardFilterDateType.SAMPLE_DATE_TIME));
 
@@ -159,7 +163,7 @@ public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, sampleCountsForSampleDate.get(PathogenTestResultType.POSITIVE));
 		assertNull(sampleCountsForSampleDate.get(PathogenTestResultType.NOT_DONE));
 
-		Map<PathogenTestResultType, Long> sampleCountsForAssociatedEntityDate = getSampleDashboardFacade().getSampleCountByResultType(
+		Map<PathogenTestResultType, Long> sampleCountsForAssociatedEntityDate = getSampleDashboardFacade().getSampleCountsByResultType(
 			new SampleDashboardCriteria().dateBetween(DateHelper.subtractDays(reportDate, 2), DateHelper.addDays(reportDate, 2))
 				.sampleDateType(SampleDashboardFilterDateType.ASSOCIATED_ENTITY_REPORT_DATE));
 
@@ -169,7 +173,7 @@ public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, sampleCountsForAssociatedEntityDate.get(PathogenTestResultType.POSITIVE));
 		assertNull(sampleCountsForAssociatedEntityDate.get(PathogenTestResultType.NOT_DONE));
 
-		Map<PathogenTestResultType, Long> sampleCounts = getSampleDashboardFacade().getSampleCountByResultType(new SampleDashboardCriteria());
+		Map<PathogenTestResultType, Long> sampleCounts = getSampleDashboardFacade().getSampleCountsByResultType(new SampleDashboardCriteria());
 
 		assertEquals(1, sampleCounts.get(PathogenTestResultType.INDETERMINATE));
 		assertEquals(1, sampleCounts.get(PathogenTestResultType.PENDING));
@@ -178,7 +182,7 @@ public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, sampleCounts.get(PathogenTestResultType.NOT_DONE));
 
 		Map<PathogenTestResultType, Long> sampleCountsForRegion =
-			getSampleDashboardFacade().getSampleCountByResultType(new SampleDashboardCriteria().region(rdcf2.region));
+			getSampleDashboardFacade().getSampleCountsByResultType(new SampleDashboardCriteria().region(rdcf2.region));
 
 		assertNull(sampleCountsForRegion.get(PathogenTestResultType.INDETERMINATE));
 		assertNull(sampleCountsForRegion.get(PathogenTestResultType.PENDING));
@@ -187,7 +191,7 @@ public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, sampleCountsForRegion.get(PathogenTestResultType.NOT_DONE));
 
 		Map<PathogenTestResultType, Long> sampleCountsForDistrict =
-			getSampleDashboardFacade().getSampleCountByResultType(new SampleDashboardCriteria().district(rdcf2.district));
+			getSampleDashboardFacade().getSampleCountsByResultType(new SampleDashboardCriteria().district(rdcf2.district));
 
 		assertNull(sampleCountsForDistrict.get(PathogenTestResultType.INDETERMINATE));
 		assertNull(sampleCountsForDistrict.get(PathogenTestResultType.PENDING));
@@ -196,7 +200,7 @@ public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, sampleCountsForDistrict.get(PathogenTestResultType.NOT_DONE));
 
 		Map<PathogenTestResultType, Long> sampleCountsForCovid =
-			getSampleDashboardFacade().getSampleCountByResultType(new SampleDashboardCriteria().disease(Disease.CORONAVIRUS));
+			getSampleDashboardFacade().getSampleCountsByResultType(new SampleDashboardCriteria().disease(Disease.CORONAVIRUS));
 
 		assertEquals(1, sampleCountsForCovid.get(PathogenTestResultType.INDETERMINATE));
 		assertEquals(1, sampleCountsForCovid.get(PathogenTestResultType.PENDING));
@@ -205,7 +209,7 @@ public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 		assertNull(sampleCountsForCovid.get(PathogenTestResultType.NOT_DONE));
 
 		Map<PathogenTestResultType, Long> sampleCountsForSampleMaterial =
-			getSampleDashboardFacade().getSampleCountByResultType(new SampleDashboardCriteria().sampleMaterial(SampleMaterial.BLOOD));
+			getSampleDashboardFacade().getSampleCountsByResultType(new SampleDashboardCriteria().sampleMaterial(SampleMaterial.BLOOD));
 
 		assertEquals(1, sampleCountsForSampleMaterial.get(PathogenTestResultType.INDETERMINATE));
 		assertNull(sampleCountsForSampleMaterial.get(PathogenTestResultType.PENDING));
@@ -213,7 +217,7 @@ public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 		assertNull(sampleCountsForSampleMaterial.get(PathogenTestResultType.POSITIVE));
 		assertNull(sampleCountsForSampleMaterial.get(PathogenTestResultType.NOT_DONE));
 
-		Map<PathogenTestResultType, Long> sampleCountsForMultipleFilters = getSampleDashboardFacade().getSampleCountByResultType(
+		Map<PathogenTestResultType, Long> sampleCountsForMultipleFilters = getSampleDashboardFacade().getSampleCountsByResultType(
 			new SampleDashboardCriteria().dateBetween(DateHelper.subtractDays(reportDate, 2), DateHelper.addDays(reportDate, 2))
 				.sampleDateType(SampleDashboardFilterDateType.ASSOCIATED_ENTITY_REPORT_DATE)
 				.sampleMaterial(SampleMaterial.BLOOD)
@@ -227,4 +231,131 @@ public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 		assertNull(sampleCountsForMultipleFilters.get(PathogenTestResultType.NOT_DONE));
 	}
 
+	@Test
+	public void testGetSampleCountsWithNoDiseaseFlag() {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+
+		EventDto eventWithNoDisease = creator.createEvent(user.toReference());
+		EventParticipantDto eventParticipantWithNoDisease =
+			creator.createEventParticipant(eventWithNoDisease.toReference(), creator.createPerson(), user.toReference());
+		creator.createSample(
+			eventParticipantWithNoDisease.toReference(),
+			new Date(),
+			new Date(),
+			user.toReference(),
+			SampleMaterial.CRUST,
+			rdcf.facility);
+		creator.createSample(
+			eventParticipantWithNoDisease.toReference(),
+			new Date(),
+			new Date(),
+			user.toReference(),
+			SampleMaterial.CRUST,
+			rdcf.facility);
+
+		EventDto eventWithDisease = creator.createEvent(user.toReference(), Disease.CORONAVIRUS);
+		EventParticipantDto eventParticipantWithDisease =
+			creator.createEventParticipant(eventWithDisease.toReference(), creator.createPerson(), user.toReference());
+		creator
+			.createSample(eventParticipantWithDisease.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.CRUST, rdcf.facility);
+
+		Map<PathogenTestResultType, Long> counts =
+			getSampleDashboardFacade().getSampleCountsByResultType(new SampleDashboardCriteria().withNoDisease(null));
+		assertEquals(3, counts.get(PathogenTestResultType.PENDING));
+
+		Map<PathogenTestResultType, Long> countsWithNoDisease =
+			getSampleDashboardFacade().getSampleCountsByResultType(new SampleDashboardCriteria().withNoDisease(true));
+		assertEquals(2, countsWithNoDisease.get(PathogenTestResultType.PENDING));
+
+		Map<PathogenTestResultType, Long> countsWithDisease =
+			getSampleDashboardFacade().getSampleCountsByResultType(new SampleDashboardCriteria().withNoDisease(false));
+		assertEquals(1, countsWithDisease.get(PathogenTestResultType.PENDING));
+
+	}
+
+	@Test
+	public void testGetSampleCountsByPurpose() {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		CaseDataDto caze = creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
+
+		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
+			s.setSamplePurpose(SamplePurpose.INTERNAL);
+		});
+
+		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
+			s.setSamplePurpose(SamplePurpose.EXTERNAL);
+		});
+
+		Map<SamplePurpose, Long> sampleCounts = getSampleDashboardFacade().getSampleCountsByPurpose(new SampleDashboardCriteria());
+
+		assertEquals(1, sampleCounts.get(SamplePurpose.INTERNAL));
+		assertEquals(1, sampleCounts.get(SamplePurpose.EXTERNAL));
+	}
+
+	@Test
+	public void testGetSampleCountsBySpecimenCondition() {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		CaseDataDto caze = creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
+
+		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
+			s.setSamplePurpose(SamplePurpose.EXTERNAL);
+			s.setSpecimenCondition(SpecimenCondition.ADEQUATE);
+		});
+
+		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
+			s.setSamplePurpose(SamplePurpose.EXTERNAL);
+			s.setSpecimenCondition(SpecimenCondition.NOT_ADEQUATE);
+		});
+
+		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
+			s.setSamplePurpose(SamplePurpose.INTERNAL);
+			s.setSpecimenCondition(SpecimenCondition.NOT_ADEQUATE);
+		});
+
+		Map<SpecimenCondition, Long> sampleCounts = getSampleDashboardFacade().getSampleCountsBySpecimenCondition(new SampleDashboardCriteria());
+
+		assertEquals(1, sampleCounts.get(SpecimenCondition.ADEQUATE));
+		assertEquals(1, sampleCounts.get(SpecimenCondition.NOT_ADEQUATE));
+	}
+
+	@Test
+	public void testGetSampleCountsByShipmentStatus() {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		CaseDataDto caze = creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
+
+		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
+			s.setSamplePurpose(SamplePurpose.EXTERNAL);
+			s.setShipped(true);
+		});
+
+		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
+			s.setSamplePurpose(SamplePurpose.EXTERNAL);
+			s.setShipped(false);
+		});
+
+		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
+			s.setSamplePurpose(SamplePurpose.EXTERNAL);
+			s.setReceived(true);
+		});
+
+		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
+			s.setSamplePurpose(SamplePurpose.EXTERNAL);
+			s.setReceived(false);
+		});
+
+		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
+			s.setSamplePurpose(SamplePurpose.INTERNAL);
+			s.setShipped(true);
+			s.setReceived(true);
+		});
+
+		Map<SpecimenCondition, Long> sampleCounts = getSampleDashboardFacade().getSampleCountsBySpecimenCondition(new SampleDashboardCriteria());
+
+		assertEquals(1, sampleCounts.get(SpecimenCondition.ADEQUATE));
+		assertEquals(1, sampleCounts.get(SpecimenCondition.NOT_ADEQUATE));
+	}
 }

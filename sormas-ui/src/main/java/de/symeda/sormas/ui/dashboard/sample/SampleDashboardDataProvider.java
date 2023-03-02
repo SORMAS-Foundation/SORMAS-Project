@@ -36,7 +36,7 @@ public class SampleDashboardDataProvider extends AbstractDashboardDataProvider<S
 
 	@Override
 	public void refreshData() {
-		testResultCountByResultType = FacadeProvider.getSampleDashboardFacade().getSampleCountByResultType(buildDashboardCriteriaWithDates());
+		testResultCountByResultType = FacadeProvider.getSampleDashboardFacade().getSampleCountsByResultType(buildDashboardCriteriaWithDates());
 	}
 
 	@Override
