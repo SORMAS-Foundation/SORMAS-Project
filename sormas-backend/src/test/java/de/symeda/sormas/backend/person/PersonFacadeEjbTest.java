@@ -31,6 +31,7 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
@@ -1006,7 +1007,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(2, leadPerson.getAddresses().size());
 		assertTrue(getPersonFacade().exists(otherPerson.getUuid()));
 
-		getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true, new ArrayList<>());
+		getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true, new ArrayList<>(), false);
 
 		leadPerson = getPersonFacade().getByUuid(leadPerson.getUuid());
 
@@ -1111,7 +1112,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(getPersonFacade().exists(otherPerson.getUuid()));
 		assertNull(leadPerson.getAddress().getCommunity());
 
-		getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true, new ArrayList<>());
+		getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true, new ArrayList<>(), false);
 
 		leadPerson = getPersonFacade().getByUuid(leadPerson.getUuid());
 
@@ -1184,7 +1185,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(getPersonFacade().exists(otherPerson.getUuid()));
 		assertNull(leadPerson.getAddress().getCommunity());
 
-		getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true, new ArrayList<>());
+		getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true, new ArrayList<>(), false);
 
 		leadPerson = getPersonFacade().getByUuid(leadPerson.getUuid());
 
@@ -1237,7 +1238,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		leadPerson = getPersonFacade().save(leadPerson);
 		otherPerson = getPersonFacade().save(otherPerson);
 
-		getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true, new ArrayList<>());
+		getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true, new ArrayList<>(), false);
 
 		leadPerson = getPersonFacade().getByUuid(leadPerson.getUuid());
 
@@ -1282,7 +1283,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		leadPerson = getPersonFacade().save(leadPerson);
 		otherPerson = getPersonFacade().save(otherPerson);
 
-		getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true, new ArrayList<>());
+		getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true, new ArrayList<>(), false);
 
 		leadPerson = getPersonFacade().getByUuid(leadPerson.getUuid());
 
@@ -1329,7 +1330,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		leadPerson = getPersonFacade().save(leadPerson);
 		otherPerson = getPersonFacade().save(otherPerson);
 
-		getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true, new ArrayList<>());
+		getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true, new ArrayList<>(), false);
 
 		leadPerson = getPersonFacade().getByUuid(leadPerson.getUuid());
 		assertEquals(rdcf1.region.getUuid(), leadPerson.getAddress().getRegion().getUuid());
@@ -1343,18 +1344,98 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testMergePersonWithDuplicateEventParticipant() {
+	public void testMergePersonWithMergeDuplicateEventParticipant() {
 		PersonDto leadPerson = creator.createPerson("John", "Doe", Sex.MALE, 1980, 1, 1, "000111222", null);
 		PersonDto otherPerson = creator.createPerson("James", "Smith", Sex.MALE, 1990, 1, 1, "444555666", "123456789");
 
 		final PersonReferenceDto leadPersonRef = leadPerson.toReference();
 		final PersonReferenceDto otherPersonRef = otherPerson.toReference();
 		final UserReferenceDto natUserRef = nationalUser.toReference();
+		TestDataCreator.RDCFEntities rdcf2 = creator.createRDCFEntities("Region2", "District2", "Community2", "Facility2");
 
 		final CaseDataDto leadCase = creator.createCase(natUserRef, leadPersonRef, rdcfEntities);
 		creator.createContact(natUserRef, leadPersonRef);
 		final EventDto leadEvent = creator.createEvent(natUserRef);
 		EventParticipantDto leadEventParticipant = creator.createEventParticipant(leadEvent.toReference(), leadPerson, natUserRef);
+		leadEventParticipant.setRegion(new RegionReferenceDto(rdcf2.region.getUuid()));
+		leadEventParticipant.setDistrict(new DistrictReferenceDto(rdcf2.district.getUuid()));
+		leadEventParticipant.setInvolvementDescription("concert steward");
+		leadEventParticipant.setVaccinationStatus(VaccinationStatus.UNKNOWN);
+		getEventParticipantFacade().save(leadEventParticipant);
+
+		creator.createVisit(leadPersonRef);
+		creator.createImmunization(Disease.CORONAVIRUS, leadPersonRef, natUserRef, rdcf);
+		creator.createTravelEntry(leadPersonRef, natUserRef, rdcf, te -> te.setResultingCase(leadCase.toReference()));
+		creator.createSample(new EventParticipantReferenceDto(leadEventParticipant.getUuid()), natUserRef, rdcf.facility);
+		final EventDto secondLeadEvent = creator.createEvent(natUserRef);
+		EventParticipantDto secondLeadEventParticipant = creator.createEventParticipant(secondLeadEvent.toReference(), leadPerson, natUserRef);
+		creator.createSample(new EventParticipantReferenceDto(secondLeadEventParticipant.getUuid()), natUserRef, rdcf.facility);
+
+		final CaseDataDto otherCase = creator.createCase(natUserRef, otherPersonRef, rdcfEntities);
+		creator.createContact(natUserRef, otherPersonRef);
+		final EventDto otherEvent = creator.createEvent(natUserRef);
+		EventParticipantDto firstOtherEventParticipant = creator.createEventParticipant(otherEvent.toReference(), otherPerson, natUserRef);
+		EventParticipantDto secondOtherEventParticipant = creator.createEventParticipant(leadEvent.toReference(), otherPerson, natUserRef);
+		secondOtherEventParticipant.setInvolvementDescription(null);
+		getEventParticipantFacade().save(secondOtherEventParticipant);
+		creator.createVisit(otherPersonRef);
+		creator.createImmunization(Disease.CORONAVIRUS, otherPersonRef, natUserRef, rdcf);
+		creator.createTravelEntry(otherPersonRef, natUserRef, rdcf, te -> te.setResultingCase(otherCase.toReference()));
+		creator.createSample(new EventParticipantReferenceDto(firstOtherEventParticipant.getUuid()), natUserRef, rdcf.facility);
+		creator.createSample(new EventParticipantReferenceDto(secondOtherEventParticipant.getUuid()), natUserRef, rdcf.facility);
+
+		assertEquals(1, getCaseFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(1, getContactFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(2, getEventParticipantFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(2, getEventParticipantFacade().getByPersonUuids(Collections.singletonList(otherPerson.getUuid())).size());
+		assertEquals(1, getImmunizationFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(1, getTravelEntryFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(1, getVisitService().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(4, getSampleService().getAll().size());
+		assertTrue(getPersonFacade().exists(otherPerson.getUuid()));
+		assertNull(leadPerson.getAddress().getCommunity());
+		assertEquals(rdcf2.region.getUuid(), getEventParticipantFacade().getByUuid(leadEventParticipant.getUuid()).getRegion().getUuid());
+		assertEquals(rdcf2.district.getUuid(), getEventParticipantFacade().getByUuid(leadEventParticipant.getUuid()).getDistrict().getUuid());
+		assertEquals("concert steward", getEventParticipantFacade().getByUuid(leadEventParticipant.getUuid()).getInvolvementDescription());
+		assertEquals(VaccinationStatus.UNKNOWN, getEventParticipantFacade().getByUuid(leadEventParticipant.getUuid()).getVaccinationStatus());
+
+		getPersonFacade()
+			.mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true, Collections.singletonList(secondOtherEventParticipant.getUuid()), true);
+
+		assertEquals(2, getCaseFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(2, getContactFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(3, getEventParticipantFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(3, getEventParticipantFacade().getAllUuids().size());
+		assertEquals(2, getImmunizationFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(2, getTravelEntryFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(2, getVisitService().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
+		assertEquals(4, getSampleService().getAll().size());
+		assertEquals(rdcf2.region.getUuid(), getEventParticipantFacade().getByUuid(secondOtherEventParticipant.getUuid()).getRegion().getUuid());
+		assertEquals(rdcf2.district.getUuid(), getEventParticipantFacade().getByUuid(secondOtherEventParticipant.getUuid()).getDistrict().getUuid());
+		assertEquals("concert steward", getEventParticipantFacade().getByUuid(secondOtherEventParticipant.getUuid()).getInvolvementDescription());
+		assertEquals(VaccinationStatus.UNKNOWN, getEventParticipantFacade().getByUuid(secondOtherEventParticipant.getUuid()).getVaccinationStatus());
+		assertFalse(getPersonFacade().exists(otherPerson.getUuid()));
+	}
+
+	@Test
+	public void testMergePersonWithPickDuplicateEventParticipant() {
+		PersonDto leadPerson = creator.createPerson("John", "Doe", Sex.MALE, 1980, 1, 1, "000111222", null);
+		PersonDto otherPerson = creator.createPerson("James", "Smith", Sex.MALE, 1990, 1, 1, "444555666", "123456789");
+
+		final PersonReferenceDto leadPersonRef = leadPerson.toReference();
+		final PersonReferenceDto otherPersonRef = otherPerson.toReference();
+		final UserReferenceDto natUserRef = nationalUser.toReference();
+		TestDataCreator.RDCFEntities rdcf2 = creator.createRDCFEntities("Region2", "District2", "Community2", "Facility2");
+
+		final CaseDataDto leadCase = creator.createCase(natUserRef, leadPersonRef, rdcfEntities);
+		creator.createContact(natUserRef, leadPersonRef);
+		final EventDto leadEvent = creator.createEvent(natUserRef);
+		EventParticipantDto leadEventParticipant = creator.createEventParticipant(leadEvent.toReference(), leadPerson, natUserRef);
+		leadEventParticipant.setRegion(new RegionReferenceDto(rdcf2.region.getUuid()));
+		leadEventParticipant.setDistrict(new DistrictReferenceDto(rdcf2.district.getUuid()));
+		leadEventParticipant.setInvolvementDescription("concert steward");
+		leadEventParticipant.setVaccinationStatus(VaccinationStatus.UNKNOWN);
+		getEventParticipantFacade().save(leadEventParticipant);
 		creator.createVisit(leadPersonRef);
 		creator.createImmunization(Disease.CORONAVIRUS, leadPersonRef, natUserRef, rdcf);
 		creator.createTravelEntry(leadPersonRef, natUserRef, rdcf, te -> te.setResultingCase(leadCase.toReference()));
@@ -1386,7 +1467,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		assertNull(leadPerson.getAddress().getCommunity());
 
 		getPersonFacade()
-			.mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true, Collections.singletonList(secondOtherEventParticipant.getUuid()));
+			.mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), true, Collections.singletonList(secondOtherEventParticipant.getUuid()), false);
 
 		assertEquals(2, getCaseFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
 		assertEquals(2, getContactFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
@@ -1395,7 +1476,11 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(2, getImmunizationFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
 		assertEquals(2, getTravelEntryFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
 		assertEquals(2, getVisitService().getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).size());
-		assertEquals(4, getSampleService().getAll().size());
+		assertEquals(3, getSampleService().getAll().size());
+		assertEquals(null, getEventParticipantFacade().getByUuid(secondOtherEventParticipant.getUuid()).getRegion());
+		assertEquals(null, getEventParticipantFacade().getByUuid(secondOtherEventParticipant.getUuid()).getDistrict());
+		assertEquals("Description", getEventParticipantFacade().getByUuid(secondOtherEventParticipant.getUuid()).getInvolvementDescription());
+		assertEquals(null, getEventParticipantFacade().getByUuid(secondOtherEventParticipant.getUuid()).getVaccinationStatus());
 		assertFalse(getPersonFacade().exists(otherPerson.getUuid()));
 	}
 

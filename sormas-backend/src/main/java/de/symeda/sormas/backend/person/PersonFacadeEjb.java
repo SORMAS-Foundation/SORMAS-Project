@@ -1803,13 +1803,18 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 	@Override
 	@RightsAllowed(UserRight._PERSON_EDIT)
-	public void mergePerson(String leadPersonUuid, String otherPersonUuid, boolean mergeProperties, List<String> selectedEventParticipantUuids) {
+	public void mergePerson(
+		String leadPersonUuid,
+		String otherPersonUuid,
+		boolean mergePersonProperties,
+		List<String> selectedEventParticipantUuids,
+		boolean mergeEventParticipantProperties) {
 
 		if (leadPersonUuid.equals(otherPersonUuid)) {
 			throw new UnsupportedOperationException("Two different persons need to be selected for merge!");
 		}
 
-		if (mergeProperties) {
+		if (mergePersonProperties) {
 			final PersonDto leadPersonDto = getByUuid(leadPersonUuid);
 			final PersonDto otherPersonDto = getByUuid(otherPersonUuid);
 
@@ -1856,7 +1861,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 			contactService.ensurePersisted(o);
 		});
 
-		mergeEventParticipants(leadPersonUuid, otherPersonUuid, selectedEventParticipantUuids, leadPerson);
+		mergeEventParticipants(leadPersonUuid, otherPersonUuid, selectedEventParticipantUuids, leadPerson, mergeEventParticipantProperties);
 
 		final List<Visit> visits = new ArrayList<>(visitService.getByPersonUuids(Collections.singletonList(otherPersonUuid)));
 		visits.forEach(o -> {
@@ -1872,7 +1877,8 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		String leadPersonUuid,
 		String otherPersonUuid,
 		List<String> selectedEventParticipantUuids,
-		Person leadPerson) {
+		Person leadPerson,
+		boolean mergeEventParticipantProperties) {
 		List<String> personUuids = new ArrayList<>();
 		personUuids.add(leadPersonUuid);
 		personUuids.add(otherPersonUuid);
@@ -1885,6 +1891,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 				eventParticipantService.ensurePersisted(o);
 			});
 		} else {
+
 			Set<Event> singleEvents = eventParticipants.stream().map(EventParticipant::getEvent).collect(Collectors.toSet());
 			singleEvents.stream().forEach(event -> {
 
@@ -1913,14 +1920,31 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 						.orElse(null);
 
 					if (otherEventParticipant != null) {
-						otherEventParticipant.getSamples().forEach(sample -> {
-							sample.setAssociatedEventParticipant(leadEventParticipant);
-						});
-						otherEventParticipant.setSamples(null);
-						eventParticipantService.ensurePersisted(otherEventParticipant);
+						if (mergeEventParticipantProperties) {
+							if (leadEventParticipant.getRegion() == null && otherEventParticipant.getRegion() != null) {
+								leadEventParticipant.setRegion(otherEventParticipant.getRegion());
+							}
+							if (leadEventParticipant.getDistrict() == null && otherEventParticipant.getDistrict() != null) {
+								leadEventParticipant.setDistrict(otherEventParticipant.getDistrict());
+							}
+							if ((leadEventParticipant.getInvolvementDescription() == null
+								|| leadEventParticipant.getInvolvementDescription().isEmpty())
+								&& !otherEventParticipant.getInvolvementDescription().isEmpty()) {
+								leadEventParticipant.setInvolvementDescription(otherEventParticipant.getInvolvementDescription());
+							}
+							if (leadEventParticipant.getVaccinationStatus() == null && otherEventParticipant.getVaccinationStatus() != null) {
+								leadEventParticipant.setVaccinationStatus(otherEventParticipant.getVaccinationStatus());
+							}
 
-						if (otherEventParticipant.getResultingCase() != null && leadEventParticipant.getResultingCase() == null) {
-							leadEventParticipant.setResultingCase(otherEventParticipant.getResultingCase());
+							otherEventParticipant.getSamples().forEach(sample -> {
+								sample.setAssociatedEventParticipant(leadEventParticipant);
+							});
+							otherEventParticipant.setSamples(null);
+							eventParticipantService.ensurePersisted(otherEventParticipant);
+
+							if (otherEventParticipant.getResultingCase() != null && leadEventParticipant.getResultingCase() == null) {
+								leadEventParticipant.setResultingCase(otherEventParticipant.getResultingCase());
+							}
 						}
 						eventParticipantService.deletePermanent(otherEventParticipant);
 					}
