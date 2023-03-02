@@ -387,12 +387,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		assertEquals(
 			0,
-			getCaseFacade()
-				.getCasesForDuplicateMerging(
-					new CaseCriteria().creationDateFrom(today).creationDateTo(today),
-					100,
-					true)
-				.size());
+			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), 100, true).size());
 	}
 
 	@Test
@@ -430,12 +425,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		assertEquals(
 			1,
-			getCaseFacade()
-				.getCasesForDuplicateMerging(
-					new CaseCriteria().creationDateFrom(today).creationDateTo(today),
-					100,
-					true)
-				.size());
+			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), 100, true).size());
 	}
 
 	@Test

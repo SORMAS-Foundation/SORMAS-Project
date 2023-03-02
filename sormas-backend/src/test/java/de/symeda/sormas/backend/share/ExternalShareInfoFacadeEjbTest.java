@@ -41,8 +41,7 @@ public class ExternalShareInfoFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetIndexList() {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserReferenceDto officer =
-			creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 
 		CaseDataDto caze = creator.createCase(officer, rdcf, null);
 		ExternalShareInfo caseShareInfoOld = creator.createExternalShareInfo(caze.toReference(), officer, ExternalShareStatus.SHARED, (i) -> {

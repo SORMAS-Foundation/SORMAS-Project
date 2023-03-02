@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Date;
 import java.util.HashMap;
 
-import org.hibernate.internal.SessionImpl;
-import org.hibernate.query.spi.QueryImplementor;
+import javax.persistence.Query;
+
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.RequestContextHolder;
@@ -27,9 +27,6 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.feature.FeatureConfiguration;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-
 public class AdoServiceWithUserFilterTest extends AbstractBeanTest {
 
 	@Test
@@ -40,13 +37,13 @@ public class AdoServiceWithUserFilterTest extends AbstractBeanTest {
 		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.LIMITED_SYNCHRONIZATION);
 
 		executeInTransaction(em -> {
-					Query query = em.createQuery("select f from featureconfiguration f");
-					FeatureConfiguration singleResult = (FeatureConfiguration) query.getSingleResult();
-					HashMap<FeatureTypeProperty, Object> properties = new HashMap<>();
-					properties.put(FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES, true);
-					singleResult.setProperties(properties);
-					em.persist(singleResult);
-				});
+			Query query = em.createQuery("select f from featureconfiguration f");
+			FeatureConfiguration singleResult = (FeatureConfiguration) query.getSingleResult();
+			HashMap<FeatureTypeProperty, Object> properties = new HashMap<>();
+			properties.put(FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES, true);
+			singleResult.setProperties(properties);
+			em.persist(singleResult);
+		});
 
 		RequestContextHolder.setRequestContext(new RequestContextTO(true)); // simulate mobile call
 

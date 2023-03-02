@@ -27,11 +27,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.persistence.Query;
+
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
-import org.hibernate.internal.SessionImpl;
-import org.hibernate.query.spi.QueryImplementor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -101,8 +101,6 @@ import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasTest;
 import de.symeda.sormas.backend.sormastosormas.share.ShareRequestAcceptData;
-
-import javax.persistence.Query;
 
 @WireMockTest(httpPort = 8888)
 public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormasTest {
@@ -589,11 +587,10 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
 		creator.createSurveillanceReport(user.toReference(), caze.toReference());
 
-		byte[] contentAsBytes =  ("%PDF-1.0\n1 0 obj<</Type/Catalog/Pages " +
-				"2 0 R>>endobj 2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj 3 0 obj<</Ty" +
-				"pe/Page/MediaBox[0 0 3 3]>>endobj\nxref\n0 4\n0000000000 65535 f\n000000001" +
-				"0 00000 n\n0000000053 00000 n\n0000000102 00000 n\ntrailer<</Size 4/Root 1 " +
-				"0 R>>\nstartxref\n149\n%EOF").getBytes();
+		byte[] contentAsBytes =
+			("%PDF-1.0\n1 0 obj<</Type/Catalog/Pages " + "2 0 R>>endobj 2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj 3 0 obj<</Ty"
+				+ "pe/Page/MediaBox[0 0 3 3]>>endobj\nxref\n0 4\n0000000000 65535 f\n000000001"
+				+ "0 00000 n\n0000000053 00000 n\n0000000102 00000 n\ntrailer<</Size 4/Root 1 " + "0 R>>\nstartxref\n149\n%EOF").getBytes();
 		creator.createDocument(
 			user.toReference(),
 			"document.pdf",
@@ -651,13 +648,13 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 
 		final Date tenYearsPlusAgo = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
 		executeInTransaction(em -> {
-					Query query = em.createQuery("select c from cases c where c.uuid=:uuid");
-					query.setParameter("uuid", caze.getUuid());
-					Case singleResult = (Case) query.getSingleResult();
-					singleResult.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
-					singleResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
-					em.persist(singleResult);
-				});
+			Query query = em.createQuery("select c from cases c where c.uuid=:uuid");
+			query.setParameter("uuid", caze.getUuid());
+			Case singleResult = (Case) query.getSingleResult();
+			singleResult.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
+			singleResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
+			em.persist(singleResult);
+		});
 
 		assertEquals(2, getCaseService().count());
 

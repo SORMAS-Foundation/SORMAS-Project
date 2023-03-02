@@ -92,7 +92,8 @@ public class TaskServiceTest extends AbstractBeanTest {
 
 		TestDataCreator.RDCFEntities rdcf = creator.createRDCFEntities();
 		// There is currently no default user role with CONTACT_RESPONSIBLE on region level
-		UserRoleReferenceDto userRole = creator.createUserRoleWithRequiredRights("RegionContactResponsible", JurisdictionLevel.REGION, UserRight.CONTACT_RESPONSIBLE);
+		UserRoleReferenceDto userRole =
+			creator.createUserRoleWithRequiredRights("RegionContactResponsible", JurisdictionLevel.REGION, UserRight.CONTACT_RESPONSIBLE);
 		UserDto contactSupervisor = creator.createUser(rdcf, userRole);
 
 		Contact contact = new Contact();
