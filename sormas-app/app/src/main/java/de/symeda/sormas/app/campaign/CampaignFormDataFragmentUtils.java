@@ -238,7 +238,7 @@ public class CampaignFormDataFragmentUtils {
                 throw new EmptyStackException();
             }
         } else{
-            System.out.println("EmptyStackException: NEW >>>>>>-");
+
             throw new SpelEvaluationException(SpelMessage.NOT_A_REAL);
         }
         return expression.getValue(context, valueType);
@@ -257,10 +257,14 @@ public class CampaignFormDataFragmentUtils {
         if (dependingOnValues != null) {
             constraints = (List) Arrays.stream(dependingOnValues).collect(Collectors.toList());
             ListIterator<String> lstItemsx = constraints.listIterator();
-            while (lstItemsx.hasNext()) {
+            if (lstItemsx.hasNext()) {
+                System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@1111>>>>>>>> "+lstItemsx);
+
                 depenValuexd = lstItemsx.next().toString();
             }
         }
+
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@22222>>>>>>>> "+depenValuexd);
 
         final String depenValuex = depenValuexd;
 
@@ -268,16 +272,24 @@ public class CampaignFormDataFragmentUtils {
             ControlPropertyField controlPropertyField = fieldMap.get(dependingOn);
             setVisibilityDependency(dynamicField, depenValuex, controlPropertyField.getValue());
             final ControlPropertyField finalDynamicField = dynamicField;
-            controlPropertyField.addValueChangedListener(field -> setVisibilityDependency(finalDynamicField, depenValuex, field.getValue()));
+            controlPropertyField.addValueChangedListener(field -> {
+                final String manVal = depenValuex;
+                setVisibilityDependency(finalDynamicField, manVal, field.getValue());
+            });
+            };
         }
-    }
+
 
     public static void setVisibilityDependency(ControlPropertyField field, String dependingOnValues, Object dependingOnFieldValue) {
+        System.out.println(dependingOnValues+ " = static   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@22>>>>>>>> dynamic = "+dependingOnFieldValue);
+
         String parsedDependingOnFieldValue = dependingOnFieldValue == null
                 ? ""
                 : dependingOnFieldValue instanceof Boolean
                 ? YesNoUnknown.valueOf(((Boolean) dependingOnFieldValue).booleanValue()).name()
                 : dependingOnFieldValue.toString();
+
+
         if (dependingOnValues.contains("!")) {
 
             dependingOnValues = dependingOnValues.replace("!", "");
@@ -288,11 +300,15 @@ public class CampaignFormDataFragmentUtils {
                 field.setVisibility(View.VISIBLE);
             }
         } else {
+             if (dependingOnValues.equalsIgnoreCase(parsedDependingOnFieldValue)) {
+                System.out.println(parsedDependingOnFieldValue+ " VISIBLE   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@22>>>>>>>> "+dependingOnFieldValue);
 
-            if (dependingOnValues.contains(parsedDependingOnFieldValue)) {
-                field.setVisibility(View.GONE);
+                 field.setVisibility(View.VISIBLE);
+
             } else {
-                field.setVisibility(View.VISIBLE);
+                System.out.println(parsedDependingOnFieldValue+ " GONE   "+field.getCaption()+"   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@22>>>>>>>> "+dependingOnFieldValue);
+
+                 field.setVisibility(View.GONE);
             }
         }
     }
