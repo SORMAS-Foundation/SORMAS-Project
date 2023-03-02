@@ -857,7 +857,8 @@ public abstract class AbstractBeanTest {
 
 	protected void loginWith(UserDto user) {
 		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName());
-		getCurrentUserService().getCurrentUser(); // load into cache, to work-around CurrentUserService.fetchUser @TransactionalCustom not working in tests
+		// load into cache, to work-around CurrentUserService.fetchUser @Transactional annotation not working in tests
+		getCurrentUserService().getCurrentUser();
 	}
 
 	protected void useSystemUser() {
