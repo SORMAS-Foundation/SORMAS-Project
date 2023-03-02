@@ -30,6 +30,7 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 public class PickLeadEventParticipant extends CustomField<List<String>> {
 
 	private Map<String, EventParticipantSelectGrid> eventParticipantSelectGrids;
+	private PickOrMerge pickOrMerge = PickOrMerge.PICK;
 
 	protected VerticalLayout mainLayout;
 
@@ -152,6 +153,19 @@ public class PickLeadEventParticipant extends CustomField<List<String>> {
 		eventLayout.addComponent(eventTitleLayout);
 
 		return eventLayout;
+	}
+
+	public PickOrMerge getPickOrMerge() {
+		return pickOrMerge;
+	}
+
+	public void setPickOrMerge(PickOrMerge pickOrMerge) {
+		this.pickOrMerge = pickOrMerge;
+	}
+
+	public enum PickOrMerge {
+		PICK,
+		MERGE
 	}
 
 }

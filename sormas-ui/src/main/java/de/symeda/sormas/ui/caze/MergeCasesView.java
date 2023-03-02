@@ -1,5 +1,8 @@
 package de.symeda.sormas.ui.caze;
 
+import static de.symeda.sormas.ui.utils.AbstractMergeGrid.DUPLICATE_MERGING_LIMIT_DEFAULT;
+import static de.symeda.sormas.ui.utils.AbstractMergeGrid.DUPLICATE_MERGING_LIMIT_MAX;
+
 import java.util.Date;
 
 import com.vaadin.icons.VaadinIcons;
@@ -15,7 +18,6 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -52,7 +54,7 @@ public class MergeCasesView extends AbstractView {
 		boolean queryDetailsUninitialized = !ViewModelProviders.of(MergeCasesView.class).has(QueryDetails.class);
 		QueryDetails queryDetails = ViewModelProviders.of(MergeCasesView.class).get(QueryDetails.class);
 		if (queryDetailsUninitialized || queryDetails.getResultLimit() == null) {
-			queryDetails.setResultLimit(CaseFacade.DUPLICATE_MERGING_LIMIT_DEFAULT);
+			queryDetails.setResultLimit(DUPLICATE_MERGING_LIMIT_DEFAULT);
 		}
 
 		grid = new MergeCasesGrid();
@@ -141,8 +143,8 @@ public class MergeCasesView extends AbstractView {
 
 			queryDetails.setResultLimit(
 				queryDetails.getResultLimit() != null
-					? Math.max(1, Math.min(queryDetails.getResultLimit().intValue(), CaseFacade.DUPLICATE_MERGING_LIMIT_MAX))
-					: CaseFacade.DUPLICATE_MERGING_LIMIT_DEFAULT);
+					? Math.max(1, Math.min(queryDetails.getResultLimit(), DUPLICATE_MERGING_LIMIT_MAX))
+					: DUPLICATE_MERGING_LIMIT_DEFAULT);
 
 			filterComponent.setValue(criteria, queryDetails);
 		}
