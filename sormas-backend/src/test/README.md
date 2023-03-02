@@ -22,10 +22,10 @@ This means you can make full use of cdi annotations like `@Inject`.
 cdi-test imitates this by adding cdi annotations to classes annotated with bean annotiations like `@Stateless`.\
 This means all EJB classes can be used in test classes by injecting them.
 
-You can **mock beans** as explained here: [Mocking Beans](https://cdi-test.hilling.de/#mocking-beans\)
+You can **mock beans** as explained here: [Mocking Beans](https://cdi-test.hilling.de/#mocking-beans)\
 Those mocks will automatically replace all usages of the bean, so **you don't have to use the `@InjectMocks` annotation**.
 
-As an alternative you can **inherit beans in test implementations** as explained here: [Test Implementations](https://cdi-test.hilling.de/#test-implementations\)
+As an alternative you can **inherit beans in test implementations** as explained here: [Test Implementations](https://cdi-test.hilling.de/#test-implementations)\
 This allows you to only override a part of the beans logic, keeping the other functionality as-is.
 
 ### Authentication / Security API
