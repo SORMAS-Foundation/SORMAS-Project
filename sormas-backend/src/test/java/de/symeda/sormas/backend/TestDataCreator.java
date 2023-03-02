@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -298,6 +299,14 @@ public class TestDataCreator {
 		userRole.setCaption(caption);
 		userRole.setJurisdictionLevel(jurisdictionLevel);
 		userRole.setUserRights(Arrays.stream(userRights).collect(Collectors.toSet()));
+		return beanTest.getUserRoleFacade().saveUserRole(userRole).toReference();
+	}
+
+	public UserRoleReferenceDto createUserRoleWithRequiredRights(String caption, JurisdictionLevel jurisdictionLevel, UserRight... userRights) {
+		UserRoleDto userRole = new UserRoleDto();
+		userRole.setCaption(caption);
+		userRole.setJurisdictionLevel(jurisdictionLevel);
+		userRole.setUserRights(UserRight.getWithRequiredUserRights(userRights));
 		return beanTest.getUserRoleFacade().saveUserRole(userRole).toReference();
 	}
 

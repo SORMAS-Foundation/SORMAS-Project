@@ -22,12 +22,18 @@ import static org.mockito.Mockito.when;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
@@ -35,6 +41,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import de.hilling.junit.cdi.CdiTestJunitExtension;
+import de.hilling.junit.cdi.ContextControlWrapper;
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
@@ -147,8 +155,8 @@ import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipant
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
-import de.symeda.sormas.backend.externalmessage.ExternalMessageService;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal;
+import de.symeda.sormas.backend.externalmessage.ExternalMessageService;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportService;
 import de.symeda.sormas.backend.externalmessage.labmessage.TestReportFacadeEjb;
@@ -240,25 +248,33 @@ import de.symeda.sormas.backend.user.UserRole;
 import de.symeda.sormas.backend.user.UserRoleFacadeEjb.UserRoleFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserRoleService;
 import de.symeda.sormas.backend.user.UserService;
-import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
 import de.symeda.sormas.backend.vaccination.VaccinationService;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.VisitService;
-import info.novatec.beantest.api.BaseBeanTest;
-import info.novatec.beantest.api.BeanProviderHelper;
 
+@ExtendWith(CdiTestJunitExtension.class)
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public abstract class AbstractBeanTest extends BaseBeanTest {
+public abstract class AbstractBeanTest {
 
 	protected final TestDataCreator creator = new TestDataCreator(this);
 	public static final String CONFIDENTIAL = "Confidential";
+
+	@BeforeAll
+	public static void beforeAll() {
+
+	}
 
 	@BeforeEach
 	public void beforeEach() {
 		// so we can override init
 		init();
+	}
+
+	@AfterEach
+	public void afterEach() {
+
 	}
 
 	/**
@@ -267,15 +283,20 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 	 */
 	public void init() {
 
-		super.initilaize();
+		initH2Functions();
 
 		MockProducer.resetMocks();
-		initH2Functions();
+
 		// this is used to provide the current user to the ADO Listener taking care of updating the last change user
 		System.setProperty("java.naming.factory.initial", MockProducer.class.getCanonicalName());
-		UserDto user = creator.createTestUser();
+		try {
+			when(InitialContext.doLookup("java:global/sormas-ear/sormas-backend/CurrentUserService")).thenReturn(getCurrentUserService());
+		} catch (NamingException e) {
+			e.printStackTrace();
+		}
 
-		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName());
+		UserDto user = creator.createTestUser();
+		loginWith(user);
 
 		when(MockProducer.getSessionContext().isCallerInRole(any(String.class))).thenAnswer(invocationOnMock -> {
 			String role = invocationOnMock.getArgument(0);
@@ -291,34 +312,28 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		createDiseaseConfigurations();
 	}
 
-	@AfterEach
-	public void cleanUp() {
-		super.cleanUp();
-	}
-
 	protected void initH2Functions() {
-		EntityManager em = getEntityManager();
-		em.getTransaction().begin();
-		Query nativeQuery = em.createNativeQuery("CREATE ALIAS similarity FOR \"de.symeda.sormas.backend.H2Function.similarity\"");
-		nativeQuery.executeUpdate();
-		nativeQuery = em.createNativeQuery("CREATE ALIAS date_part FOR \"de.symeda.sormas.backend.H2Function.date_part\"");
-		nativeQuery.executeUpdate();
-		nativeQuery = em.createNativeQuery("CREATE ALIAS epi_week FOR \"de.symeda.sormas.backend.H2Function.epi_week\"");
-		nativeQuery.executeUpdate();
-		nativeQuery = em.createNativeQuery("CREATE ALIAS epi_year FOR \"de.symeda.sormas.backend.H2Function.epi_year\"");
-		nativeQuery.executeUpdate();
-		nativeQuery = em.createNativeQuery("CREATE ALIAS similarity_operator FOR \"de.symeda.sormas.backend.H2Function.similarity_operator\"");
-		nativeQuery.executeUpdate();
-		nativeQuery = em.createNativeQuery("CREATE ALIAS set_limit FOR \"de.symeda.sormas.backend.H2Function.set_limit\"");
-		nativeQuery.executeUpdate();
-		nativeQuery = em.createNativeQuery("CREATE ALIAS date FOR \"de.symeda.sormas.backend.H2Function.date\"");
-		nativeQuery.executeUpdate();
-		nativeQuery =
-			em.createNativeQuery("CREATE ALIAS timestamp_subtract_14_days FOR \"de.symeda.sormas.backend.H2Function.timestamp_subtract_14_days\"");
-		nativeQuery.executeUpdate();
-		nativeQuery = em.createNativeQuery("CREATE ALIAS at_end_of_day FOR \"de.symeda.sormas.backend.H2Function.at_end_of_day\"");
-		nativeQuery.executeUpdate();
-		em.getTransaction().commit();
+		executeInTransaction(em -> {
+			Query nativeQuery = em.createNativeQuery("CREATE ALIAS similarity FOR \"de.symeda.sormas.backend.H2Function.similarity\"");
+			nativeQuery.executeUpdate();
+			nativeQuery = em.createNativeQuery("CREATE ALIAS date_part FOR \"de.symeda.sormas.backend.H2Function.date_part\"");
+			nativeQuery.executeUpdate();
+			nativeQuery = em.createNativeQuery("CREATE ALIAS epi_week FOR \"de.symeda.sormas.backend.H2Function.epi_week\"");
+			nativeQuery.executeUpdate();
+			nativeQuery = em.createNativeQuery("CREATE ALIAS epi_year FOR \"de.symeda.sormas.backend.H2Function.epi_year\"");
+			nativeQuery.executeUpdate();
+			nativeQuery = em.createNativeQuery("CREATE ALIAS similarity_operator FOR \"de.symeda.sormas.backend.H2Function.similarity_operator\"");
+			nativeQuery.executeUpdate();
+			nativeQuery = em.createNativeQuery("CREATE ALIAS set_limit FOR \"de.symeda.sormas.backend.H2Function.set_limit\"");
+			nativeQuery.executeUpdate();
+			nativeQuery = em.createNativeQuery("CREATE ALIAS date FOR \"de.symeda.sormas.backend.H2Function.date\"");
+			nativeQuery.executeUpdate();
+			nativeQuery = em
+				.createNativeQuery("CREATE ALIAS timestamp_subtract_14_days FOR \"de.symeda.sormas.backend.H2Function.timestamp_subtract_14_days\"");
+			nativeQuery.executeUpdate();
+			nativeQuery = em.createNativeQuery("CREATE ALIAS at_end_of_day FOR \"de.symeda.sormas.backend.H2Function.at_end_of_day\"");
+			nativeQuery.executeUpdate();
+		});
 	}
 
 	private void createDiseaseConfigurations() {
@@ -330,47 +345,61 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		});
 	}
 
-	/**
-	 * Use Case: Static methods when a bean test is already running.
-	 */
-	public static <T> T getBeanStatic(Class<T> beanClass, Annotation... qualifiers) {
-		return BeanProviderHelper.getInstance().getBean(beanClass, qualifiers);
+	protected <T> T getBean(Class<T> beanClass, Annotation... qualifiers) {
+		return ContextControlWrapper.getInstance().getContextualReference(beanClass, qualifiers);
+	}
+
+	public void executeInTransaction(Consumer<EntityManager> callback) {
+		getBean(TransactionalTestEjb.class).executeInTransaction(callback);
+	}
+
+	public <R> R executeInTransaction(Function<EntityManager, R> callback) {
+		return getBean(TransactionalTestEjb.class).executeInTransaction(callback);
+	}
+
+	public <T, R> R executeInTransaction(BiFunction<EntityManager, T, R> callback, T param) {
+		return getBean(TransactionalTestEjb.class).executeInTransaction(callback, param);
 	}
 
 	/**
-	 * Loads an attached entity.<br />
-	 * Use Case: Lazy loaded references aren't available after EJB calls anymore because the JTA transaction has already been closed.
+	 * This is private, because the entity manager does not have an active transaction when called from a test method
+	 * and should not be used in test code.
+	 * Use executeInTransaction or getEntityAttached instead!
 	 */
-	@SuppressWarnings("unchecked")
-	public <E extends AbstractDomainObject> E getEntityAttached(E entity) {
-		return (E) QueryHelper.simpleSingleQuery(
-			getBeanStatic(EntityManagerWrapper.class).getEntityManager(),
-			entity.getClass(),
-			AbstractDomainObject.UUID,
-			entity.getUuid());
+	private EntityManager getEntityManager() {
+		return getBean(EntityManager.class);
+	}
+
+	/**
+	 * Attaches the entity to the persistence context
+	 * <b>Important</b>: The entity will only be attached until the next ejb call is concluded, which clears the entity manager.
+	 */
+	public <E extends AbstractDomainObject> E mergeToEntityManager(E entity) {
+		return getEntityManager().contains(entity) ? entity : getEntityManager().merge(entity);
 	}
 
 	public UserRole getEagerUserRole(String uuid) {
-
-		UserRole userRole = getEntityAttached(getUserRoleService().getByUuid(uuid));
-		initUserRole(userRole);
-		return userRole;
+		return executeInTransaction(em -> {
+			UserRole userRole = getUserRoleService().getByUuid(uuid);
+			initUserRole(userRole);
+			return userRole;
+		});
 	}
 
 	public User getEagerUser(String uuid) {
-
-		User user = getEntityAttached(getUserService().getByUuid(uuid));
-		for (UserRole userRole : user.getUserRoles()) {
-			initUserRole(userRole);
-		}
-		return user;
+		return executeInTransaction(em -> {
+			User user = getUserService().getByUuid(uuid);
+			for (UserRole userRole : user.getUserRoles()) {
+				initUserRole(userRole);
+			}
+			return user;
+		});
 	}
 
 	/**
 	 * Initializes lazy references.
 	 */
 	private void initUserRole(UserRole userRole) {
-
 		userRole.getEmailNotificationTypes().size();
 		userRole.getSmsNotificationTypes().size();
 	}
@@ -388,10 +417,6 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		DeletionConfigurationService deletionConfigurationService = getBean(DeletionConfigurationService.class);
 		deletionConfigurationService.ensurePersisted(DeletionConfiguration.build(coreEntityType, DeletionReference.CREATION, 3650));
 		deletionConfigurationService.ensurePersisted(DeletionConfiguration.build(coreEntityType, DeletionReference.MANUAL_DELETION, 90));
-	}
-
-	public EntityManager getEntityManager() {
-		return getBean(EntityManagerWrapper.class).getEntityManager();
 	}
 
 	public ConfigFacade getConfigFacade() {
@@ -437,10 +462,6 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	public CaseStatisticsFacade getCaseStatisticsFacade() {
 		return getBean(CaseStatisticsFacadeEjbLocal.class);
-	}
-
-	public CaseClassificationFacadeEjb getCaseClassificationLogic() {
-		return getBean(CaseClassificationFacadeEjb.class);
 	}
 
 	public ContactFacadeEjbLocal getContactFacade() {
@@ -523,10 +544,6 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(AdditionalTestFacadeEjbLocal.class);
 	}
 
-	public SymptomsFacade getSymptomsFacade() {
-		return getBean(SymptomsFacadeEjbLocal.class);
-	}
-
 	public SymptomsService getSymptomsService() {
 		return getBean(SymptomsService.class);
 	}
@@ -581,14 +598,6 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	public UserRoleService getUserRoleService() {
 		return getBean(UserRoleService.class);
-	}
-
-	public HospitalizationFacade getHospitalizationFacade() {
-		return getBean(HospitalizationFacadeEjbLocal.class);
-	}
-
-	public EpiDataFacade getEpiDataFacade() {
-		return getBean(EpiDataFacadeEjb.EpiDataFacadeEjbLocal.class);
 	}
 
 	public WeeklyReportFacade getWeeklyReportFacade() {
@@ -727,10 +736,6 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(ExternalMessageService.class);
 	}
 
-	public NotificationService getNotificationService() {
-		return getBean(NotificationService.class);
-	}
-
 	public SormasToSormasExternalMessageFacade getSormasToSormasLabMessageFacade() {
 		return getBean(SormasToSormasExternalMessageFacadeEjbLocal.class);
 	}
@@ -799,8 +804,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 			"Surv",
 			"Off",
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
-		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff");
-
+		loginWith(survOff);
 		return survOff;
 	}
 
@@ -816,8 +820,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 			"Case",
 			"Off",
 			creator.getUserRoleReference(DefaultUserRole.CASE_OFFICER));
-		when(MockProducer.getPrincipal().getName()).thenReturn("CaseOff");
-
+		loginWith(caseOff);
 		return caseOff;
 	}
 
@@ -835,8 +838,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	protected UserDto useNationalUserLogin() {
 		UserDto natUser = creator.createUser("", "", "", "Nat", "Usr", creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
-		when(MockProducer.getPrincipal().getName()).thenReturn("NatUsr");
-
+		loginWith(natUser);
 		return natUser;
 	}
 
@@ -849,13 +851,14 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 			"Admin",
 			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER),
 			creator.getUserRoleReference(DefaultUserRole.ADMIN));
-		when(MockProducer.getPrincipal().getName()).thenReturn("NationalAdmin");
-
+		loginWith(natUser);
 		return natUser;
 	}
 
 	protected void loginWith(UserDto user) {
 		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName());
+		// load into cache, to work-around CurrentUserService.fetchUser @Transactional annotation not working in tests
+		getCurrentUserService().getCurrentUser();
 	}
 
 	protected void useSystemUser() {

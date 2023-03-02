@@ -23,13 +23,16 @@ import javax.persistence.Persistence;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 
-import de.symeda.sormas.backend.AbstractBeanTest;
+import de.hilling.junit.cdi.CdiTestJunitExtension;
+import de.hilling.junit.cdi.annotations.BypassTestInterceptor;
 
-public class HistoryTablesTest extends AbstractBeanTest {
+@ExtendWith(CdiTestJunitExtension.class)
+public class HistoryTablesTest {
 
 	/**
 	 * Test that the *_history tables have the same columns as the corresponding production tables
@@ -86,6 +89,7 @@ public class HistoryTablesTest extends AbstractBeanTest {
 		}
 	}
 
+	@BypassTestInterceptor
 	public static class SormasPostgresSQLContainer extends JdbcDatabaseContainer<SormasPostgresSQLContainer> {
 
 		public SormasPostgresSQLContainer() {

@@ -52,23 +52,22 @@ public class EpiDataPseudonymizationTest extends AbstractBeanTest {
 
 		rdcf1 = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1", "Point of entry 1");
 		user1 = creator.createUser(
-			rdcf1.region.getUuid(),
-			rdcf1.district.getUuid(),
-			rdcf1.facility.getUuid(),
-			"Surv",
-			"Off1",
-			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+				rdcf1.region.getUuid(),
+				rdcf1.district.getUuid(),
+				rdcf1.facility.getUuid(),
+				"Surv",
+				"Off1",
+				creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		rdcf2 = creator.createRDCF("Region 2", "District 2", "Community 2", "Facility 2", "Point of entry 2");
 		user2 = creator.createUser(
-			rdcf2.region.getUuid(),
-			rdcf2.district.getUuid(),
-			rdcf2.facility.getUuid(),
-			"Surv",
-			"Off2",
-			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
-
-		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
+				rdcf2.region.getUuid(),
+				rdcf2.district.getUuid(),
+				rdcf2.facility.getUuid(),
+				"Surv",
+				"Off2",
+				creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+		loginWith(user2);
 	}
 
 	@Test

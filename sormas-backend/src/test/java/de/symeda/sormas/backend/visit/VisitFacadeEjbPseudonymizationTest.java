@@ -84,7 +84,7 @@ public class VisitFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		nationalVisitUser =
 			creator.createUser(null, null, null, "National", "Visit User", "National Visit User", JurisdictionLevel.NATION, UserRight.VISIT_EDIT);
 
-		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
+		loginWith(user2);
 
 		person = creator.createPerson("John", "Smith");
 	}

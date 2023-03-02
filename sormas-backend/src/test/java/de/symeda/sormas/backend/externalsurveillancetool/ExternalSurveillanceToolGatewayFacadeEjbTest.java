@@ -102,6 +102,8 @@ import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasTest;
 import de.symeda.sormas.backend.sormastosormas.share.ShareRequestAcceptData;
 
+import javax.persistence.Query;
+
 @WireMockTest(httpPort = 8888)
 public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormasTest {
 
@@ -648,13 +650,14 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 		getVisitFacade().saveVisit(visit);
 
 		final Date tenYearsPlusAgo = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
-		SessionImpl em = (SessionImpl) getEntityManager();
-		QueryImplementor query = em.createQuery("select c from cases c where c.uuid=:uuid");
-		query.setParameter("uuid", caze.getUuid());
-		Case singleResult = (Case) query.getSingleResult();
-		singleResult.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
-		singleResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
-		em.save(singleResult);
+		executeInTransaction(em -> {
+					Query query = em.createQuery("select c from cases c where c.uuid=:uuid");
+					query.setParameter("uuid", caze.getUuid());
+					Case singleResult = (Case) query.getSingleResult();
+					singleResult.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
+					singleResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
+					em.persist(singleResult);
+				});
 
 		assertEquals(2, getCaseService().count());
 
