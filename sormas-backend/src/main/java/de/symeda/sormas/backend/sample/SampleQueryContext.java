@@ -32,7 +32,7 @@ import de.symeda.sormas.backend.location.Location;
 
 public class SampleQueryContext extends QueryContext<Sample, SampleJoins> {
 
-	protected SampleQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Sample> root) {
+	public SampleQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Sample> root) {
 		super(cb, query, root, new SampleJoins(root));
 	}
 

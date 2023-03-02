@@ -71,8 +71,15 @@ public enum FeatureType {
 	IMMUNIZATION_MANAGEMENT(true, true, null, null, ImmutableMap.of(FeatureTypeProperty.REDUCED, Boolean.FALSE)),
 	TRAVEL_ENTRIES(true, false, null, null, null),
 
-	DASHBOARD(true, true, null, null, null),
-	LIMITED_SYNCHRONIZATION(true, false, null, null, ImmutableMap.of(FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES, Boolean.FALSE, FeatureTypeProperty.MAX_CHANGE_DATE_PERIOD, -1)),
+	DASHBOARD_SURVEILLANCE(true, true, null, null, null),
+	DASHBOARD_CONTACTS(true, true, null, null, null),
+	DASHBOARD_CAMPAIGNS(true, true, null, null, null),
+	DASHBOARD_SAMPLES(true, true, null, null, null),
+	LIMITED_SYNCHRONIZATION(true,
+		false,
+		null,
+		null,
+		ImmutableMap.of(FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES, Boolean.FALSE, FeatureTypeProperty.MAX_CHANGE_DATE_PERIOD, -1)),
 
 	// FEATURE EXTENSIONS
 	ASSIGN_TASKS_TO_HIGHER_LEVEL(true,

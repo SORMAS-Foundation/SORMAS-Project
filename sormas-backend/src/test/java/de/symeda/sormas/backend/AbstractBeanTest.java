@@ -59,6 +59,7 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitFacade;
 import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
 import de.symeda.sormas.api.dashboard.DashboardFacade;
+import de.symeda.sormas.api.dashboard.sample.SampleDashboardFacade;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
@@ -138,6 +139,7 @@ import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumValueService;
 import de.symeda.sormas.backend.dashboard.DashboardFacadeEjb;
 import de.symeda.sormas.backend.dashboard.DashboardService;
+import de.symeda.sormas.backend.dashboard.sample.SampleDashboardFacadeEjb;
 import de.symeda.sormas.backend.deletionconfiguration.CoreEntityDeletionService;
 import de.symeda.sormas.backend.deletionconfiguration.DeletionConfiguration;
 import de.symeda.sormas.backend.deletionconfiguration.DeletionConfigurationService;
@@ -474,6 +476,10 @@ public abstract class AbstractBeanTest {
 
 	public DashboardFacade getDashboardFacade() {
 		return getBean(DashboardFacadeEjb.DashboardFacadeEjbLocal.class);
+	}
+
+	public SampleDashboardFacade getSampleDashboardFacade() {
+		return getBean(SampleDashboardFacadeEjb.SampleDashboardFacadeEjbLocal.class);
 	}
 
 	public DashboardService getDashboardService() {

@@ -876,6 +876,7 @@ public interface Captions {
 	String dashboardNotACase = "dashboardNotACase";
 	String dashboardNotAContact = "dashboardNotAContact";
 	String dashboardNotAnEvent = "dashboardNotAnEvent";
+	String dashboardNotDone = "dashboardNotDone";
 	String dashboardNotExecutable = "dashboardNotExecutable";
 	String dashboardNotVisitedFor = "dashboardNotVisitedFor";
 	String dashboardNotYetClassified = "dashboardNotYetClassified";
@@ -1921,6 +1922,8 @@ public interface Captions {
 	String sampleArchivedSamples = "sampleArchivedSamples";
 	String sampleAssociationType = "sampleAssociationType";
 	String sampleCreateNew = "sampleCreateNew";
+	String sampleDashboardAllSamples = "sampleDashboardAllSamples";
+	String sampleDashboardFinalLabResults = "sampleDashboardFinalLabResults";
 	String sampleDeletedSamples = "sampleDeletedSamples";
 	String SampleExport_additionalTestingRequested = "SampleExport.additionalTestingRequested";
 	String SampleExport_altSgpt = "SampleExport.altSgpt";
