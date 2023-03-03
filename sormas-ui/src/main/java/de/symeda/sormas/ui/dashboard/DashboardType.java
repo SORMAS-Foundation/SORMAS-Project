@@ -23,7 +23,8 @@ public enum DashboardType {
 
 	SURVEILLANCE,
 	CONTACTS,
-	CAMPAIGNS;
+	CAMPAIGNS,
+	SAMPLES;
 
 	@Override
 	public String toString() {

@@ -1423,6 +1423,7 @@ public interface Strings {
 	String promptPrescriptionTextFilter = "promptPrescriptionTextFilter";
 	String promptRegion = "promptRegion";
 	String promptRelatedPersonLikeField = "promptRelatedPersonLikeField";
+	String promptSampleDashboardFilterDateType = "promptSampleDashboardFilterDateType";
 	String promptSampleDateFrom = "promptSampleDateFrom";
 	String promptSampleDateTo = "promptSampleDateTo";
 	String promptSampleEpiWeekFrom = "promptSampleEpiWeekFrom";

@@ -18,7 +18,6 @@ package de.symeda.sormas.backend.event;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,7 +32,6 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.AbstractBeanTest;
-import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 
 public class EventFacadeEjbPseudonymizationTest extends AbstractBeanTest {
@@ -78,7 +76,7 @@ public class EventFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			UserRight.EVENT_VIEW,
 			UserRight.EVENT_EDIT);
 
-		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
+		loginWith(user2);
 	}
 
 	@Test

@@ -77,8 +77,12 @@ public class MergeContactsGrid extends AbstractMergeGrid<MergeContactIndexDto, C
 	}
 
 	@Override
-	protected List<MergeContactIndexDto[]> getItemForDuplicateMerging() {
-		return FacadeProvider.getContactFacade().getContactsForDuplicateMerging(criteria, ignoreRegion);
+	protected List<MergeContactIndexDto[]> getItemsForDuplicateMerging(int limit) {
+		return FacadeProvider.getContactFacade()
+			.getContactsForDuplicateMerging(
+				criteria,
+				limit,
+				ignoreRegion);
 	}
 
 	@Override

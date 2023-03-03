@@ -16,7 +16,6 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseMergeIndexDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
@@ -80,12 +79,8 @@ public class MergeCasesGrid extends AbstractMergeGrid<CaseMergeIndexDto, CaseCri
 	}
 
 	@Override
-	protected List<CaseMergeIndexDto[]> getItemForDuplicateMerging() {
-		return FacadeProvider.getCaseFacade()
-			.getCasesForDuplicateMerging(
-				criteria,
-				queryDetails.getResultLimit() != null ? queryDetails.getResultLimit().intValue() : CaseFacade.DUPLICATE_MERGING_LIMIT_DEFAULT,
-				ignoreRegion);
+	protected List<CaseMergeIndexDto[]> getItemsForDuplicateMerging(int limit) {
+		return FacadeProvider.getCaseFacade().getCasesForDuplicateMerging(criteria, limit, ignoreRegion);
 	}
 
 	@Override
