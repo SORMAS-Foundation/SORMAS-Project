@@ -53,6 +53,7 @@ import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.inject.Inject;
 import javax.persistence.Query;
 import javax.persistence.Tuple;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -63,6 +64,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -2181,22 +2183,19 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	public List<MergeContactIndexDto[]> getContactsForDuplicateMerging(ContactCriteria criteria, boolean ignoreRegion) {
+	public List<MergeContactIndexDto[]> getContactsForDuplicateMerging(ContactCriteria criteria, @Min(1) Integer limit, boolean ignoreRegion) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+
 		Root<Contact> root = cq.from(Contact.class);
+
 		final ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, root);
 		ContactJoins joins = contactQueryContext.getJoins();
-		Root<Contact> root2 = cq.from(Contact.class);
 		Join<Contact, Person> person = joins.getPerson();
-		Join<Contact, Person> person2 = root2.join(Contact.PERSON, JoinType.LEFT);
-		Join<Contact, Region> region = joins.getRegion();
-		Join<Contact, Region> region2 = root2.join(Contact.REGION, JoinType.LEFT);
-		Join<Contact, Case> sourceCase = joins.getCaze();
-		Join<Contact, Case> sourceCase2 = root2.join(Contact.CAZE, JoinType.LEFT);
 
-		cq.distinct(true);
+		Root<Contact> root2 = cq.from(Contact.class);
+		Join<Contact, Person> person2 = root2.join(Contact.PERSON, JoinType.LEFT);
 
 		// similarity:
 		// * first & last name concatenated with whitespace. Similarity function with default threshold of 0.65D
@@ -2208,7 +2207,7 @@ public class ContactFacadeEjb
 		// * same sex or same birth date (when defined)
 		// * same birth date (when fully defined)
 
-		Predicate sourceCaseFilter = cb.equal(sourceCase, sourceCase2);
+		Predicate sourceCaseFilter = cb.equal(root.get(Contact.CAZE), root2.get(Contact.CAZE));
 		Predicate userFilter = service.createUserFilter(contactQueryContext);
 		Predicate criteriaFilter = criteria != null ? service.buildCriteriaFilter(criteria, contactQueryContext) : null;
 		Expression<String> nameSimilarityExpr = cb.concat(person.get(Person.FIRST_NAME), " ");
@@ -2218,8 +2217,6 @@ public class ContactFacadeEjb
 		Predicate nameSimilarityFilter =
 			cb.gt(cb.function("similarity", double.class, nameSimilarityExpr, nameSimilarityExpr2), configFacade.getNameSimilarityThreshold());
 		Predicate diseaseFilter = cb.equal(root.get(Contact.DISEASE), root2.get(Contact.DISEASE));
-		Predicate regionFilter = cb
-			.or(cb.or(cb.isNull(region.get(Region.ID)), cb.isNull(region2.get(Region.ID))), cb.equal(region.get(Region.ID), region2.get(Region.ID)));
 		Predicate reportDateFilter = cb.lessThanOrEqualTo(
 			cb.abs(
 				cb.diff(
@@ -2250,30 +2247,26 @@ public class ContactFacadeEjb
 				cb.lessThanOrEqualTo(root2.get(Contact.CREATION_DATE), DateHelper.getStartOfDay(criteria.getCreationDateFrom())),
 				cb.greaterThanOrEqualTo(root2.get(Contact.CREATION_DATE), DateHelper.getEndOfDay(criteria.getCreationDateTo()))));
 
-		Predicate filter = cb.and(service.createDefaultFilter(cb, root), service.createDefaultFilter(cb, root2), sourceCaseFilter);
-		if (userFilter != null) {
-			filter = cb.and(filter, userFilter);
-		}
-		if (filter != null) {
-			filter = cb.and(filter, criteriaFilter);
-		} else {
-			filter = criteriaFilter;
-		}
-		if (filter != null) {
-			filter = cb.and(filter, nameSimilarityFilter);
-		} else {
-			filter = nameSimilarityFilter;
-		}
-		filter = cb.and(filter, diseaseFilter);
+		Predicate filter = CriteriaBuilderHelper.and(
+			cb,
+			cb.and(service.createDefaultFilter(cb, root), service.createDefaultFilter(cb, root2), sourceCaseFilter),
+			userFilter,
+			criteriaFilter,
+			nameSimilarityFilter,
+			diseaseFilter,
+			reportDateFilter,
+			sexFilter,
+			birthDateFilter,
+			creationDateFilter,
+			cb.notEqual(root.get(Contact.ID), root2.get(Contact.ID)));
 
 		if (!ignoreRegion) {
+			Predicate regionFilter = cb.or(
+				cb.or(cb.isNull(root.get(Contact.REGION)), cb.isNull(root2.get(Contact.REGION))),
+				cb.equal(root.get(Contact.REGION), root2.get(Contact.REGION)));
+
 			filter = cb.and(filter, regionFilter);
 		}
-
-		filter = cb.and(filter, reportDateFilter);
-		filter = cb.and(filter, cb.and(sexFilter, birthDateFilter));
-		filter = cb.and(filter, creationDateFilter);
-		filter = cb.and(filter, cb.notEqual(root.get(Contact.ID), root2.get(Contact.ID)));
 
 		if (CollectionUtils.isNotEmpty(criteria.getContactUuidsForMerge())) {
 			Set<String> contactUuidsForMerge = criteria.getContactUuidsForMerge();
@@ -2284,7 +2277,13 @@ public class ContactFacadeEjb
 		cq.multiselect(root.get(Contact.ID), root2.get(Contact.ID), root.get(Contact.CREATION_DATE));
 		cq.orderBy(cb.desc(root.get(Contact.CREATION_DATE)));
 
-		List<Object[]> foundIds = em.createQuery(cq).setParameter("date_type", "epoch").getResultList();
+		TypedQuery<Object[]> query = em.createQuery(cq).setParameter("date_type", "epoch");
+		if (limit != null) {
+			query.setMaxResults(limit);
+		}
+
+		List<Object[]> foundIds = query.getResultList();
+
 		List<MergeContactIndexDto[]> resultList = new ArrayList<>();
 
 		if (!foundIds.isEmpty()) {

@@ -38,6 +38,7 @@
 		<xdocreport.version>2.0.3</xdocreport.version>
 		<docx4j.version>8.3.2</docx4j.version>
 		<archunit.version>0.22.0</archunit.version>
+		<junit.version>5.9.1</junit.version>
 		<hamcrest.version>2.2</hamcrest.version>
 		<apache-tika.version>2.6.0</apache-tika.version>
 		<temportal-tables.version>0.4.2</temportal-tables.version>
@@ -871,21 +872,35 @@
 			<dependency>
 				<groupId>org.junit.jupiter</groupId>
 				<artifactId>junit-jupiter</artifactId>
-				<version>5.9.1</version>
+				<version>${junit.version}</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter-api</artifactId>
+				<version>${junit.version}</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>de.hilling.junit.cdi</groupId>
+				<artifactId>cdi-test-core</artifactId>
+				<version>3.4.0</version>
 				<scope>test</scope>
 			</dependency>
 
 			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-junit-jupiter</artifactId>
-				<version>4.5.1</version>
+				<version>4.11.0</version>
 				<scope>test</scope>
 			</dependency>
 
 			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-inline</artifactId>
-				<version>4.5.1</version>
+				<version>4.11.0</version>
 				<scope>test</scope>
 			</dependency>
 

@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.user;
 
-import static de.symeda.sormas.api.user.DefaultUserRole.ADMIN;
 import static de.symeda.sormas.api.user.DefaultUserRole.ADMIN_SUPERVISOR;
 import static de.symeda.sormas.api.user.DefaultUserRole.CASE_OFFICER;
 import static de.symeda.sormas.api.user.DefaultUserRole.CONTACT_OFFICER;
@@ -15,8 +14,10 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -40,8 +41,6 @@ import javax.validation.ValidationException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -64,15 +63,6 @@ import de.symeda.sormas.backend.infrastructure.region.RegionService;
 
 public class UserFacadeEjbTest extends AbstractBeanTest {
 
-	@InjectMocks
-	private UserFacadeEjb userFacadeEjb;
-
-	@Mock
-	private UserService userService;
-
-	@Mock
-	private UserRoleFacadeEjb.UserRoleFacadeEjbLocal userRoleFacadeEjb;
-
 	@BeforeEach
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
@@ -82,7 +72,6 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 	public void testGetUsersByRegionAndRights() {
 		RDCF rdcf = creator.createRDCF();
 		RegionReferenceDto region = rdcf.region;
-		RegionFacadeEjb.RegionFacadeEjbLocal regionFacade = (RegionFacadeEjb.RegionFacadeEjbLocal) getRegionFacade();
 
 		// given region and right
 		List<UserReferenceDto> result = getUserFacade().getUsersByRegionAndRights(region, null, UserRight.EXTERNAL_MESSAGE_VIEW);
@@ -224,39 +213,26 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		testUsers.addAll(randomUsers);
 
 		for (User user : testUsers) {
-			Mockito.when(userRoleFacadeEjb.hasUserRight(any(), any()))
-				.then(
-					invocation -> getUserRoleFacade().hasUserRight(
-						user.getUserRoles().stream().map(userRole -> UserRoleFacadeEjb.toDto(userRole)).collect(Collectors.toSet()),
-						UserRight.USER_EDIT));
-			Mockito.when(userService.hasRight(any())).then(invocation -> {
-				UserRight userRight = invocation.getArgument(0);
-				return user.getUserRoles().stream().anyMatch(userRole -> userRole.getUserRights().contains(userRight));
-			});
-			Mockito.when(userService.getCurrentUser()).thenReturn(user);
-			Mockito.when(userService.getAllDefaultUsers()).thenReturn(Collections.singletonList(user));
-			if (defaultUsers.contains(user)) {
-				assertEquals(1, userFacadeEjb.getUsersWithDefaultPassword().size());
-				assertEquals(UserFacadeEjb.toDto(user), userFacadeEjb.getUsersWithDefaultPassword().get(0));
-			} else {
-				assertEquals(0, userFacadeEjb.getUsersWithDefaultPassword().size());
-			}
+			getUserService().persist(user);
+		}
 
-			Mockito.when(userService.getAllDefaultUsers()).thenReturn(testUsers);
-			if (user.hasAnyUserRole(creator.getUserRole(ADMIN))) {
-				assertEquals(defaultUsers.size(), userFacadeEjb.getUsersWithDefaultPassword().size());
+		for (User user : testUsers) {
+			loginWith(UserFacadeEjb.toDto(user));
+			List<UserDto> persistedDefaultUsers = getUserFacade().getUsersWithDefaultPassword();
+
+			if (user.hasUserRight(UserRight.USER_EDIT)) {
+				assertEquals(defaultUsers.size(), persistedDefaultUsers.size());
 				for (User defUser : defaultUsers) {
-					assertTrue(userFacadeEjb.getUsersWithDefaultPassword().contains(UserFacadeEjb.toDto(defUser)));
+					assertThat(persistedDefaultUsers, hasItem(UserFacadeEjb.toDto(defUser)));
 				}
 				for (User randomUser : randomUsers) {
-					assertFalse(userFacadeEjb.getUsersWithDefaultPassword().contains(UserFacadeEjb.toDto(randomUser)));
+					assertThat(persistedDefaultUsers, not(hasItem(UserFacadeEjb.toDto(randomUser))));
 				}
-
 			} else if (defaultUsers.contains(user)) {
-				assertEquals(1, userFacadeEjb.getUsersWithDefaultPassword().size());
-				assertEquals(UserFacadeEjb.toDto(user), userFacadeEjb.getUsersWithDefaultPassword().get(0));
+				assertEquals(1, persistedDefaultUsers.size());
+				assertEquals(UserFacadeEjb.toDto(user), persistedDefaultUsers.get(0));
 			} else {
-				assertEquals(0, userFacadeEjb.getUsersWithDefaultPassword().size());
+				assertEquals(0, persistedDefaultUsers.size());
 			}
 		}
 	}
@@ -265,16 +241,10 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 	public void testGetExistentDefaultUsersUpperCase() {
 		Set<User> defaultUsers = UserTestHelper.generateDefaultUsers(true, creator);
 		for (User user : defaultUsers) {
-			Mockito.when(userRoleFacadeEjb.hasUserRight(any(), any()))
-				.then(
-					invocation -> getUserRoleFacade().hasUserRight(
-						user.getUserRoles().stream().map(userRole -> UserRoleFacadeEjb.toDto(userRole)).collect(Collectors.toSet()),
-						UserRight.USER_EDIT));
 			user.setUserName(user.getUserName().toUpperCase());
-			Mockito.when(userService.getCurrentUser()).thenReturn(user);
-			Mockito.when(userService.getAllDefaultUsers()).thenReturn(Collections.singletonList(user));
-			assertEquals(0, userFacadeEjb.getUsersWithDefaultPassword().size());
+			getUserService().persist(user);
 		}
+		assertEquals(0, getUserFacade().getUsersWithDefaultPassword().size());
 	}
 
 	@Test

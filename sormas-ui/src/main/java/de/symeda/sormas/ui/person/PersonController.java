@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.StringUtils;
@@ -195,13 +196,14 @@ public class PersonController {
 			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_VIEW)) {
 				selectLeadEventParticipantByEvent(
 					eventParticipantsWithSameEvent,
-					(selectedEventParticipants) -> pickOrMergeConfirmationPopUp(
+					(selectedEventParticipants, mergeEventParticipantProperties) -> pickOrMergeConfirmationPopUp(
 						popupWindow,
 						mergeProperties,
 						leadPerson,
 						otherPerson,
 						confirmationMessage,
-						selectedEventParticipants));
+						selectedEventParticipants,
+						mergeEventParticipantProperties));
 				return;
 			} else {
 				VaadinUiUtil.showSimplePopupWindow(
@@ -211,16 +213,17 @@ public class PersonController {
 			}
 		}
 
-		pickOrMergeConfirmationPopUp(popupWindow, mergeProperties, leadPerson, otherPerson, confirmationMessage, new ArrayList<>());
+		pickOrMergeConfirmationPopUp(popupWindow, mergeProperties, leadPerson, otherPerson, confirmationMessage, new ArrayList<>(), false);
 	}
 
 	private Window pickOrMergeConfirmationPopUp(
 		Window popupWindow,
-		boolean mergeProperties,
+		boolean mergePersonProperties,
 		PersonIndexDto leadPerson,
 		PersonIndexDto otherPerson,
 		String confirmationMessage,
-		List<String> selectedEventParticipantUuids) {
+		List<String> selectedEventParticipantUuids,
+		boolean mergeEventParticipantProperties) {
 		Window mergeWindow = VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getString(Strings.headingPickOrMergePersonConfirmation),
 			new Label(confirmationMessage, ContentMode.HTML),
@@ -230,7 +233,12 @@ public class PersonController {
 			confirm -> {
 				if (Boolean.TRUE.equals(confirm)) {
 					FacadeProvider.getPersonFacade()
-						.mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), mergeProperties, selectedEventParticipantUuids);
+						.mergePerson(
+							leadPerson.getUuid(),
+							otherPerson.getUuid(),
+							mergePersonProperties,
+							selectedEventParticipantUuids,
+							mergeEventParticipantProperties);
 					popupWindow.close();
 					SormasUI.refreshView();
 				}
@@ -241,12 +249,23 @@ public class PersonController {
 
 	private void selectLeadEventParticipantByEvent(
 		List<EventParticipantSelectionDto> eventParticipantSelectionDtos,
-		Consumer<List<String>> callback) {
+		BiConsumer<List<String>, Boolean> callback) {
+
 		PickLeadEventParticipant pickLeadEventParticipant = new PickLeadEventParticipant(eventParticipantSelectionDtos);
 
 		final CommitDiscardWrapperComponent<PickLeadEventParticipant> component = new CommitDiscardWrapperComponent<>(pickLeadEventParticipant);
 
-		component.getCommitButton().setCaption(I18nProperties.getCaption((Captions.actionConfirm)));
+		component.getCommitButton().setCaption(I18nProperties.getCaption((Captions.actionPick)));
+
+		final Button mergeButton = ButtonHelper.createButton(Captions.actionMerge);
+		component.getButtonsPanel().addComponent(mergeButton);
+		mergeButton.removeStyleName(ValoTheme.BUTTON_LINK);
+		mergeButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+
+		mergeButton.addClickListener(clickEvent -> {
+			pickLeadEventParticipant.setPickOrMerge(PickLeadEventParticipant.PickOrMerge.MERGE);
+			component.commit();
+		});
 
 		component.setPreCommitListener(preCommitCallback -> {
 			List<String> pickedEventParticipants = component.getWrappedComponent().getValue();
@@ -262,7 +281,7 @@ public class PersonController {
 
 		component.addCommitListener(() -> {
 			List<String> pickedEventParticipants = component.getWrappedComponent().getValue();
-			callback.accept(pickedEventParticipants);
+			callback.accept(pickedEventParticipants, pickLeadEventParticipant.getPickOrMerge() == PickLeadEventParticipant.PickOrMerge.MERGE);
 		});
 
 		component.setWidth(1500, Unit.PIXELS);

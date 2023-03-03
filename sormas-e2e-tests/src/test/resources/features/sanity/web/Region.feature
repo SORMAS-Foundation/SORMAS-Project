@@ -32,4 +32,4 @@ Feature: Region end to end tests
     And I click on the Configuration button from navbar
     Then I navigate to regions tab in Configuration
     Then I verify the Search and Reset filter functionality in Regions Configuration page
-    Then I verify the Country combo box returns appropriate filter results in Regions Configuration page
+    Then I check that number of regions is at least 19

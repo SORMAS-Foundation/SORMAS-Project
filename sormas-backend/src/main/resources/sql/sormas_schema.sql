@@ -12284,6 +12284,14 @@ CREATE INDEX IF NOT EXISTS idx_cases_creationdate_desc ON cases USING btree (cre
 
 INSERT INTO schema_version (version_number, comment) VALUES (507, 'Add index to improve performance or case duplicate merging lists #9054');
 
+-- 2023-02-20 Limit lists for duplicate merging of contacts and improve query performance #11469
+CREATE INDEX idx_sharerequestinfo_shareinfo_requestinfo_id ON sharerequestinfo_shareinfo(sharerequestinfo_id);
+CREATE INDEX idx_sharerequestinfo_shareinfo_shareinfo_id ON sharerequestinfo_shareinfo(shareinfo_id);
+CREATE INDEX idx_contact_sormastosormasorigininfo_id ON contact(sormastosormasorigininfo_id);
+CREATE INDEX idx_contact_creation_date_and_deleted ON public.contact USING btree (deleted ASC NULLS FIRST, creationdate DESC NULLS FIRST);
+
+INSERT INTO schema_version (version_number, comment) VALUES (508, 'Limit lists for duplicate merging of contacts and improve query performance #11469');
+
 -- 2023-02-28 Create basic samples dashboard #10721
 DELETE FROM featureconfiguration where featuretype = 'DASHBOARD';
 CREATE INDEX idx_sample_pathogenTestResult ON samples USING btree (pathogenTestResult ASC NULLS LAST);
@@ -12296,8 +12304,6 @@ WHERE uu.userright = 'DASHBOARD_SURVEILLANCE_VIEW'
              WHERE uu2.userrole_id = uu.userrole_id
                AND uu2.userright = 'SAMPLE_VIEW');
 
-INSERT INTO schema_version (version_number, comment) VALUES (508, 'Create basic samples dashboard #10721');
-
-
+INSERT INTO schema_version (version_number, comment) VALUES (509, 'Create basic samples dashboard #10721');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

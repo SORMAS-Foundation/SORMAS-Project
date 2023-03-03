@@ -61,7 +61,7 @@ public class HospitalizationFacadeEjbPseudonymizationTest extends AbstractBeanTe
 			"Off2",
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 
-		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
+		loginWith(user2);
 	}
 
 	@Test
