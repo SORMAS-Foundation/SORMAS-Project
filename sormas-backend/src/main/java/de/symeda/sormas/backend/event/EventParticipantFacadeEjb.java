@@ -358,7 +358,7 @@ public class EventParticipantFacadeEjb
 	 * @param secondPersonUuid
 	 * @return
 	 */
-	@RightsAllowed(UserRight._PERSON_VIEW)
+	@RightsAllowed(UserRight._PERSON_MERGE)
 	public List<EventParticipantSelectionDto> getEventParticipantsWithSameEvent(String firstPersonUuid, String secondPersonUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
