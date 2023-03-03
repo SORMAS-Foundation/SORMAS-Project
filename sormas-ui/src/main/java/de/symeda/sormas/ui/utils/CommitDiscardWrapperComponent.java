@@ -981,7 +981,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		this.dirty = dirty;
 	}
 
-	//In case of having delete right without edit rightm the delete button should remain enabled
+	//In case of having delete right without edit right the delete button should remain enabled
 	public void restrictEditableComponentsOnEditView(UserRight editRight, UserRight deleteRight) {
 		if (!UserProvider.getCurrent().hasUserRight(editRight)) {
 			if (UserProvider.getCurrent().hasUserRight(deleteRight)) {
@@ -989,6 +989,17 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 			} else {
 				this.setEditable(false);
 			}
+		}
+	}
+
+	//used for Tasks
+	public void restrictEditableComponentsOnEditView(boolean isEditingAllowed, UserRight deleteRight) {
+		if (!isEditingAllowed) {
+			if (UserProvider.getCurrent().hasUserRight(deleteRight)) {
+				this.setEditable(false, CommitDiscardWrapperComponent.DELETE_UNDELETE, ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+			}
+		} else {
+			this.setEditable(true, ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
 		}
 	}
 

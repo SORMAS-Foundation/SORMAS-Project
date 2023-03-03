@@ -95,10 +95,16 @@ public class TaskList extends PaginationList<TaskIndexDto> {
 				String.valueOf(i),
 				(ClickListener) event -> ControllerProvider.getTaskController()
 					.edit(listEntry.getTask(), TaskList.this::reload, false, listEntry.getTask().getDisease()),
-				UserProvider.getCurrent().hasUserRight(UserRight.TASK_EDIT));
+				hasEditOrDeleteRights());
 
 			listEntry.setEnabled(isEditAllowed);
 			listLayout.addComponent(listEntry);
 		}
 	}
+
+	//check if can be added to a higher level
+	private boolean hasEditOrDeleteRights() {
+		return UserProvider.getCurrent().hasUserRight(UserRight.TASK_EDIT) || UserProvider.getCurrent().hasUserRight(UserRight.TASK_DELETE);
+	}
+
 }
