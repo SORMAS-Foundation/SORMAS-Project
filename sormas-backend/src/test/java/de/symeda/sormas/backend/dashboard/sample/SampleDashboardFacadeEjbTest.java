@@ -26,8 +26,11 @@ import org.junit.jupiter.api.Test;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
+import de.symeda.sormas.api.dashboard.sample.SampleShipmentStatus;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDashboardFilterDateType;
@@ -324,38 +327,70 @@ public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetSampleCountsByShipmentStatus() {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		FacilityReferenceDto lab = creator.createFacility("lab", rdcf.region, rdcf.district, null, FacilityType.LABORATORY).toReference();
 		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		CaseDataDto caze = creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
 
-		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
+		// not shipped sample
+		creator.createSample(caze.toReference(), user.toReference(), lab, s -> {
 			s.setSamplePurpose(SamplePurpose.EXTERNAL);
-			s.setShipped(true);
+		});
+		// not shipped sample
+		creator.createSample(caze.toReference(), user.toReference(), lab, s -> {
+			s.setSamplePurpose(SamplePurpose.EXTERNAL);
+			s.setShipped(false);
+			s.setReceived(false);
 		});
 
-		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
+		// not shipped sample
+		creator.createSample(caze.toReference(), user.toReference(), lab, s -> {
 			s.setSamplePurpose(SamplePurpose.EXTERNAL);
 			s.setShipped(false);
 		});
 
-		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
-			s.setSamplePurpose(SamplePurpose.EXTERNAL);
-			s.setReceived(true);
-		});
-
-		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
+		// not shipped sample
+		creator.createSample(caze.toReference(), user.toReference(), lab, s -> {
 			s.setSamplePurpose(SamplePurpose.EXTERNAL);
 			s.setReceived(false);
 		});
 
-		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
-			s.setSamplePurpose(SamplePurpose.INTERNAL);
+		// shipped sample
+		creator.createSample(caze.toReference(), user.toReference(), lab, s -> {
+			s.setSamplePurpose(SamplePurpose.EXTERNAL);
 			s.setShipped(true);
 			s.setReceived(true);
 		});
 
-		Map<SpecimenCondition, Long> sampleCounts = getSampleDashboardFacade().getSampleCountsBySpecimenCondition(new SampleDashboardCriteria());
+		// not received sample
+		creator.createSample(caze.toReference(), user.toReference(), lab, s -> {
+			s.setSamplePurpose(SamplePurpose.EXTERNAL);
+			s.setShipped(true);
+		});
 
-		assertEquals(1, sampleCounts.get(SpecimenCondition.ADEQUATE));
-		assertEquals(1, sampleCounts.get(SpecimenCondition.NOT_ADEQUATE));
+		// not received sample
+		creator.createSample(caze.toReference(), user.toReference(), lab, s -> {
+			s.setSamplePurpose(SamplePurpose.EXTERNAL);
+			s.setShipped(true);
+			s.setReceived(false);
+		});
+
+		// received sample
+		creator.createSample(caze.toReference(), user.toReference(), lab, s -> {
+			s.setSamplePurpose(SamplePurpose.EXTERNAL);
+			s.setReceived(true);
+		});
+
+		// internal sample should not be counted
+		creator.createSample(caze.toReference(), user.toReference(), lab, s -> {
+			s.setSamplePurpose(SamplePurpose.INTERNAL);
+			s.setShipped(true);
+		});
+
+		Map<SampleShipmentStatus, Long> sampleCounts = getSampleDashboardFacade().getSampleCountsByShipmentStatus(new SampleDashboardCriteria());
+
+		assertEquals(4, sampleCounts.get(SampleShipmentStatus.NOT_SHIPPED));
+		assertEquals(1, sampleCounts.get(SampleShipmentStatus.SHIPPED));
+		assertEquals(2, sampleCounts.get(SampleShipmentStatus.NOT_RECEIVED));
+		assertEquals(1, sampleCounts.get(SampleShipmentStatus.RECEIVED));
 	}
 }

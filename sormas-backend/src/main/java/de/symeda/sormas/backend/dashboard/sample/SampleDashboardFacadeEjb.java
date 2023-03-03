@@ -23,6 +23,7 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
 import de.symeda.sormas.api.dashboard.sample.SampleDashboardFacade;
+import de.symeda.sormas.api.dashboard.sample.SampleShipmentStatus;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SpecimenCondition;
@@ -49,6 +50,11 @@ public class SampleDashboardFacadeEjb implements SampleDashboardFacade {
 	@Override
 	public Map<SpecimenCondition, Long> getSampleCountsBySpecimenCondition(SampleDashboardCriteria dashboardCriteria) {
 		return sampleDashboardService.getSampleCountsBySpecimenCondition(dashboardCriteria);
+	}
+
+	@Override
+	public Map<SampleShipmentStatus, Long> getSampleCountsByShipmentStatus(SampleDashboardCriteria dashboardCriteria) {
+		return sampleDashboardService.getSampleCountsByShipmentStatus(dashboardCriteria);
 	}
 
 	@LocalBean

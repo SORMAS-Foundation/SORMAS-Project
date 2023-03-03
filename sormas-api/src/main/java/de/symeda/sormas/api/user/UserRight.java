@@ -286,6 +286,7 @@ public enum UserRight {
 	public static final String _PERSON_EDIT = "PERSON_EDIT";
 	public static final String _PERSON_DELETE = "PERSON_DELETE";
 	public static final String _PERSON_CONTACT_DETAILS_DELETE = "PERSON_CONTACT_DETAILS_DELETE";
+	public static final String _PERSON_MERGE = "PERSON_MERGE";
 	public static final String _PERSON_EXPORT = "PERSON_EXPORT";
 	public static final String _SAMPLE_CREATE = "SAMPLE_CREATE";
 	public static final String _SAMPLE_VIEW = "SAMPLE_VIEW";

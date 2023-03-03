@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.dashboard.sample;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -36,7 +37,10 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
+import de.symeda.sormas.api.dashboard.sample.SampleShipmentStatus;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDashboardFilterDateType;
@@ -74,12 +78,21 @@ public class SampleDashboardService {
 		return getSampleCountsByEnumProperty(Sample.SAMPLE_PURPOSE, SamplePurpose.class, dashboardCriteria, null);
 	}
 
+	private static Map<org.apache.commons.lang3.tuple.Pair<Boolean, Boolean>, SampleShipmentStatus> shipmentStatusMapping = new HashMap<>();
+
+	static {
+		shipmentStatusMapping.put(Pair.of(true, true), SampleShipmentStatus.SHIPPED);
+		shipmentStatusMapping.put(Pair.of(true, false), SampleShipmentStatus.NOT_RECEIVED);
+		shipmentStatusMapping.put(Pair.of(false, true), SampleShipmentStatus.RECEIVED);
+		shipmentStatusMapping.put(Pair.of(false, false), SampleShipmentStatus.NOT_SHIPPED);
+	}
+
 	public Map<SpecimenCondition, Long> getSampleCountsBySpecimenCondition(SampleDashboardCriteria dashboardCriteria) {
 		return getSampleCountsByEnumProperty(
 			Sample.SPECIMEN_CONDITION,
 			SpecimenCondition.class,
 			dashboardCriteria,
-			(cb, root) -> cb.equal(root.get(Sample.SAMPLE_PURPOSE), SamplePurpose.EXTERNAL));
+			(cb, root) -> buildExternalSamplePredicate(cb, root));
 	}
 
 	private <T extends Enum<?>> Map<T, Long> getSampleCountsByEnumProperty(
@@ -102,6 +115,33 @@ public class SampleDashboardService {
 		return QueryHelper.getResultList(em, cq, null, null, Function.identity())
 			.stream()
 			.collect(Collectors.toMap(t -> propertyType.cast(t.get(0)), t -> (Long) t.get(1)));
+	}
+
+	private Predicate buildExternalSamplePredicate(CriteriaBuilder cb, Root<Sample> root) {
+		return cb.equal(root.get(Sample.SAMPLE_PURPOSE), SamplePurpose.EXTERNAL);
+	}
+
+	public Map<SampleShipmentStatus, Long> getSampleCountsByShipmentStatus(SampleDashboardCriteria dashboardCriteria) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Tuple> cq = cb.createTupleQuery();
+		final Root<Sample> sample = cq.from(Sample.class);
+
+		Path<Boolean> shipped = sample.get(Sample.SHIPPED);
+		Path<Boolean> received = sample.get(Sample.RECEIVED);
+		cq.multiselect(shipped, received, cb.count(sample));
+
+		final Predicate criteriaFilter = createSampleFilter(new SampleQueryContext(cb, cq, sample), dashboardCriteria);
+		cq.where(CriteriaBuilderHelper.and(cb, criteriaFilter, buildExternalSamplePredicate(cb, sample)));
+
+		cq.groupBy(shipped, received);
+
+		return QueryHelper.getResultList(em, cq, null, null, Function.identity())
+			.stream()
+			.collect(Collectors.toMap(t -> getSampleShipmentStatusByFlags((Boolean) t.get(0), (Boolean) t.get(1)), t -> (Long) t.get(2), Long::sum));
+	}
+
+	private SampleShipmentStatus getSampleShipmentStatusByFlags(Boolean shipped, Boolean received) {
+		return shipmentStatusMapping.get(Pair.of(Boolean.TRUE.equals(shipped), Boolean.TRUE.equals(received)));
 	}
 
 	private <T extends AbstractDomainObject> Predicate createSampleFilter(SampleQueryContext queryContext, SampleDashboardCriteria criteria) {

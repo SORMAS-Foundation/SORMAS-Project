@@ -15,23 +15,9 @@
 
 package de.symeda.sormas.api.dashboard.sample;
 
-import java.util.Map;
-
-import javax.ejb.Remote;
-
-import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.sample.SamplePurpose;
-import de.symeda.sormas.api.sample.SpecimenCondition;
-
-@Remote
-public interface SampleDashboardFacade {
-
-	Map<PathogenTestResultType, Long> getSampleCountsByResultType(SampleDashboardCriteria dashboardCriteria);
-
-	Map<SamplePurpose, Long> getSampleCountsByPurpose(SampleDashboardCriteria dashboardCriteria);
-
-	Map<SpecimenCondition, Long> getSampleCountsBySpecimenCondition(SampleDashboardCriteria dashboardCriteria);
-
-	Map<SampleShipmentStatus, Long> getSampleCountsByShipmentStatus(SampleDashboardCriteria dashboardCriteria);
+public enum SampleShipmentStatus {
+	NOT_SHIPPED,
+	SHIPPED,
+	NOT_RECEIVED,
+	RECEIVED
 }
