@@ -10,6 +10,7 @@
 
     <artifactId>sormas-widgetset</artifactId>
 	<name>${project.artifactId}</name>
+	
 
 	<properties>
 		<vaadin-widgetsets-dir>src/main/webapp/VAADIN/widgetsets</vaadin-widgetsets-dir>
