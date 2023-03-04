@@ -251,7 +251,7 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
                                 System.out.println(">>>>>>>>>>>>>>>>>ONFOCUSSS>>>>>>>>>>>>>>>>>>>>" +fieldMap.get(campaignFormElement.getId()).getCaption());
 
                             }
-                            if(finalIsdependingOn){
+                            if(finalIsdependingOn && isRangeandExpressionx){
                                 field.setVisibility(View.GONE);
                             }
 
@@ -342,7 +342,7 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
                                 System.out.println(">>>>>>>>>>>>>>>>>ONFOCUSSS>>>>>>>>>>>>>>>>>>>>" +fieldMap.get(campaignFormElement.getId()).getCaption());
 
                             }
-                            if(finalIsdependingOn){
+                            if(finalIsdependingOn && isRangeandExpressionx){
                                 field.setVisibility(View.GONE);
                             }
 
@@ -431,7 +431,7 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
                                 System.out.println(">>>>>>>>>>>>>>>>>ONFOCUSSS>>>>>>>>>>>>>>>>>>>>" +fieldMap.get(campaignFormElement.getId()).getCaption());
 
                             }
-                            if(finalIsdependingOn){
+                            if(finalIsdependingOn && isRangeandExpressionx){
                                 field.setVisibility(View.GONE);
                             }
 
@@ -519,7 +519,7 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
                                 System.out.println(">>>>>>>>>>>>>>>>>ONFOCUSSS>>>>>>>>>>>>>>>>>>>>" +fieldMap.get(campaignFormElement.getId()).getCaption());
 
                             }
-                            if(finalIsdependingOn){
+                            if(finalIsdependingOn && isRangeandExpressionx){
                                 field.setVisibility(View.GONE);
                             }
 
@@ -610,7 +610,7 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
                                 System.out.println(">>>>>>>>>>>>>>>>>ONFOCUSSS>>>>>>>>>>>>>>>>>>>>" +fieldMap.get(campaignFormElement.getId()).getCaption());
 
                             }
-                            if(finalIsdependingOn){
+                            if(finalIsdependingOn && isRangeandExpressionx){
                                 field.setVisibility(View.GONE);
                             }
 
@@ -700,7 +700,7 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
                                 System.out.println(">>>>>>>>>>>>>>>>>ONFOCUSSS>>>>>>>>>>>>>>>>>>>>" +fieldMap.get(campaignFormElement.getId()).getCaption());
 
                             }
-                            if(finalIsdependingOn){
+                            if(finalIsdependingOn && isRangeandExpressionx){
                                 field.setVisibility(View.GONE);
                             }
 
@@ -790,7 +790,7 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
 
                             }
 
-                            if(finalIsdependingOn){
+                            if(finalIsdependingOn && isRangeandExpressionx){
                                 field.setVisibility(View.GONE);
                             }
 
@@ -879,7 +879,7 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
                                 System.out.println(">>>>>>>>>>>>>>>>>ONFOCUSSS>>>>>>>>>>>>>>>>>>>>" +fieldMap.get(campaignFormElement.getId()).getCaption());
 
                             }
-                            if(finalIsdependingOn){
+                            if(finalIsdependingOn && isRangeandExpressionx){
                                 field.setVisibility(View.GONE);
                             }
 
@@ -938,7 +938,8 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
                             isRangeandExpression = true;
                         }
 
-                    } else if (type == CampaignFormElementType.DROPDOWN) {                        dynamicField = CampaignFormDataFragmentUtils.createControlSpinnerFieldEditField(campaignFormElement, requireContext(), CampaignFormDataFragmentUtils.getUserTranslations(campaignFormMeta), optionsValues);
+                    } else if (type == CampaignFormElementType.DROPDOWN) {
+                        dynamicField = CampaignFormDataFragmentUtils.createControlSpinnerFieldEditField(campaignFormElement, requireContext(), CampaignFormDataFragmentUtils.getUserTranslations(campaignFormMeta), optionsValues);
                     } else if (type == CampaignFormElementType.DATE) {
                         dynamicField = CampaignFormDataFragmentUtils.createControlDateEditField(campaignFormElement, requireContext(), CampaignFormDataFragmentUtils.getUserTranslations(campaignFormMeta), true, this.getFragmentManager(), campaignFormElement.isImportant());
                     } else {
@@ -982,8 +983,7 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
 //                                }
 
                         if(finalIsdependingOn && isRangeandExpressionx){
-                            System.out.println(finalIsdependingOn+" >>>>>>>>>>>>>>>> " +  isRangeandExpressionx);
-                            field.setVisibility(View.GONE);
+                             field.setVisibility(View.GONE);
                         }
 
                         });
@@ -1064,6 +1064,7 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
                         .setContent(R.id.tabSheet5);
                 mTabHost.addTab(spec);
                 mTabHost.getTabWidget().getChildAt(4).getLayoutParams().width = 140;
+                mTabHost.getTabWidget().getChildAt(4).setVisibility(View.GONE);
             }
            /*  if (dayy > 5) {
                 spec = mTabHost.newTabSpec("tab6").setIndicator("D6",//caption_1,

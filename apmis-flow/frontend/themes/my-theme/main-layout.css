@@ -149,9 +149,14 @@ width: 100%;
     }
 
    .loginView{
-   background-image: url("images/loginBackground.png");
-       background-repeat: no-repeat;
+   background-image: url("images/afghanistan-map.svg");
+   background-color: white;
+    background-repeat: no-repeat;
        background-size: cover;
+   }
+   
+   .loginOverlay{
+   background-color: rgba(8, 0, 113, 0.6);
    }
 
    .loginContainer{

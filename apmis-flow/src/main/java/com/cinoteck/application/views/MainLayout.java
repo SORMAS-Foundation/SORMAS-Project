@@ -33,6 +33,7 @@ import java.nio.file.attribute.UserDefinedFileAttributeView;
  */
 
 @StyleSheet("https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css")
+@JavaScript("https://code.jquery.com/jquery-3.6.3.min.js")
 @JavaScript("https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js")
 public class MainLayout extends AppLayout {
 

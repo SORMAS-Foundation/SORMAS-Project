@@ -37,6 +37,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
 		addClassName("login-view");
 		addClassName("loginView");
+		
 
 		setSizeFull(); 
 		setAlignItems(Alignment.CENTER);
@@ -47,7 +48,8 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
 
 		logoDiv.setClassName("logoContainer");
-		imgApmis.setWidth("100px");
+		imgApmis.setWidth("20%");
+		addClassName("loginOverlay");
 		logoDiv.add(imgApmis);
 
 
