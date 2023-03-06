@@ -206,7 +206,7 @@ Feature: Check basic POSTs RestApi endpoints
     And API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
 
-  @env_de @oldfake @testIt
+  @env_de @oldfake
   Scenario: Create Travel entry with creation date 14 days ago
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
