@@ -1253,8 +1253,6 @@ public class ContactDirectorySteps implements En {
                   getVaccinationStatusContactsByText(vaccinationStatus), 5),
               "There is no contact with expected status");
         });
-
-
   }
 
   public Map<String, Object> parseCSVintoPOJODetailedContactCSV(String fileName) {
