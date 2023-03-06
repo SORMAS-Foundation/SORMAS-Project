@@ -133,6 +133,9 @@ public interface Descriptions {
 	String Person_sex = "Person.sex";
 	String Sample_associatedLabMessages = "Sample.associatedLabMessages";
 	String Sample_sampleDateTime = "Sample.sampleDateTime";
+	String sampleDashboardDiseaseFilter = "sampleDashboardDiseaseFilter";
+	String sampleDashboardDistrictFilter = "sampleDashboardDistrictFilter";
+	String sampleDashboardRegionFilter = "sampleDashboardRegionFilter";
 	String SormasToSormasOptions_comment = "SormasToSormasOptions.comment";
 	String SurveillanceReport_associatedMessage = "SurveillanceReport.associatedMessage";
 	String Symptoms_alteredConsciousness = "Symptoms.alteredConsciousness";

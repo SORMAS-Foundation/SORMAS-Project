@@ -11,6 +11,8 @@ public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable 
 	public static final String BIRTHDATE_MM = "birthdateMM";
 	public static final String BIRTHDATE_DD = "birthdateDD";
 
+	private String firstName;
+	private String lastName;
 	private Sex sex;
 	private Integer birthdateYYYY;
 	private Integer birthdateMM;
@@ -19,6 +21,31 @@ public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable 
 	private String nationalHealthId;
 	private String nameUuidExternalIdExternalTokenLike;
 	private Boolean matchMissingInfo = Boolean.FALSE;
+	/**
+	 * If true, compare the name of the person only to the first and last name fields of the database; if false, compare the
+	 * name of the person to other fields like UUID and external ID as well.
+	 */
+	private Boolean strictNameComparison = Boolean.FALSE;
+
+	@IgnoreForUrl
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public PersonSimilarityCriteria firstName(String firstName) {
+		this.firstName = firstName;
+		return this;
+	}
+
+	@IgnoreForUrl
+	public String getLastName() {
+		return lastName;
+	}
+
+	public PersonSimilarityCriteria lastName(String lastName) {
+		this.lastName = lastName;
+		return this;
+	}
 
 	@IgnoreForUrl
 	public Sex getSex() {
@@ -100,6 +127,15 @@ public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable 
 		this.matchMissingInfo = matchMissingInfo;
 	}
 
+	public Boolean getStrictNameComparison() {
+		return strictNameComparison;
+	}
+
+	public PersonSimilarityCriteria strictNameComparison(Boolean strictNameComparison) {
+		this.strictNameComparison = strictNameComparison;
+		return this;
+	}
+
 	public void setBirthdateYYYY(Integer birthdateYYYY) {
 		this.birthdateYYYY = birthdateYYYY;
 	}
@@ -113,14 +149,28 @@ public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable 
 	}
 
 	public static PersonSimilarityCriteria forPerson(PersonDto person) {
-		PersonSimilarityCriteria personSimilarityCriteria = new PersonSimilarityCriteria()
-				.sex(person.getSex())
-				.birthdateDD(person.getBirthdateDD())
-				.birthdateMM(person.getBirthdateMM())
-				.birthdateYYYY(person.getBirthdateYYYY())
-				.passportNumber(person.getPassportNumber())
-				.nationalHealthId(person.getNationalHealthId());
-		personSimilarityCriteria.setNameUuidExternalIdExternalTokenLike(person.getFirstName() + " " + person.getLastName());
+		return forPerson(person, false);
+	}
+
+	/**
+	 * @param strictNameComparison
+	 *            If true, compares the name of the person only to the first and last name fields of the database; if false, compares the
+	 *            name of the person to other fields like UUID and external ID as well.
+	 */
+	public static PersonSimilarityCriteria forPerson(PersonDto person, boolean strictNameComparison) {
+
+		PersonSimilarityCriteria personSimilarityCriteria = new PersonSimilarityCriteria().sex(person.getSex())
+			.birthdateDD(person.getBirthdateDD())
+			.birthdateMM(person.getBirthdateMM())
+			.birthdateYYYY(person.getBirthdateYYYY())
+			.passportNumber(person.getPassportNumber())
+			.nationalHealthId(person.getNationalHealthId());
+		if (strictNameComparison) {
+			personSimilarityCriteria.firstName(person.getFirstName()).lastName(person.getLastName()).strictNameComparison(Boolean.TRUE);
+		} else {
+			personSimilarityCriteria.setNameUuidExternalIdExternalTokenLike(person.getFirstName() + " " + person.getLastName());
+		}
 		return personSimilarityCriteria;
 	}
+
 }

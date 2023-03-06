@@ -25,7 +25,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,17 +33,16 @@ import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MediaType;
 
-import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
-import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
+import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 
 import de.symeda.sormas.api.externaljournal.ExternalJournalValidation;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryIdatId;
@@ -56,7 +54,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
@@ -75,11 +72,11 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_PATIENT_DIARY_PROBANDS_URL, wireMockUrl);
 		stubFor(post(urlEqualTo("/auth")).willReturn(aResponse().withBody("{\"success\": true, \"token\": \"token\"}").withStatus(HttpStatus.SC_OK)));
 		stubFor(
-				get(urlPathEqualTo("/probands")).atPriority(2)
-						.willReturn(
-								aResponse().withBody("{ \"total\": 0, \"count\": 0, \"results\": [] }")
-										.withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-										.withStatus(HttpStatus.SC_OK)));
+			get(urlPathEqualTo("/probands")).atPriority(2)
+				.willReturn(
+					aResponse().withBody("{ \"total\": 0, \"count\": 0, \"results\": [] }")
+						.withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+						.withStatus(HttpStatus.SC_OK)));
 
 		// Pretend that the number +49 621 121 849-3 already is in use by another person
 		PatientDiaryQueryResponse queryResponse = new PatientDiaryQueryResponse();
@@ -95,12 +92,12 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 
 		try {
 			stubFor(
-					get(urlPathEqualTo("/probands")).withQueryParam("q", matching("\"Mobile phone\" = \"\\+49 621 121 849-3\".*"))
-							.atPriority(1)
-							.willReturn(
-									aResponse().withBody(new ObjectMapper().writeValueAsString(queryResponse))
-											.withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-											.withStatus(HttpStatus.SC_OK)));
+				get(urlPathEqualTo("/probands")).withQueryParam("q", matching("\"Mobile phone\" = \"\\+49 621 121 849-3\".*"))
+					.atPriority(1)
+					.willReturn(
+						aResponse().withBody(new ObjectMapper().writeValueAsString(queryResponse))
+							.withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+							.withStatus(HttpStatus.SC_OK)));
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException(e.getMessage());
 		}
@@ -108,12 +105,12 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 		// Pretend that the number taken@test.de already is in use by another person
 		try {
 			stubFor(
-					get(urlPathEqualTo("/probands")).withQueryParam("q", matching("\"Email\" = \"taken@test.de\".*"))
-							.atPriority(1)
-							.willReturn(
-									aResponse().withBody(new ObjectMapper().writeValueAsString(queryResponse))
-											.withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-											.withStatus(HttpStatus.SC_OK)));
+				get(urlPathEqualTo("/probands")).withQueryParam("q", matching("\"Email\" = \"taken@test.de\".*"))
+					.atPriority(1)
+					.willReturn(
+						aResponse().withBody(new ObjectMapper().writeValueAsString(queryResponse))
+							.withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+							.withStatus(HttpStatus.SC_OK)));
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException(e.getMessage());
 		}
@@ -121,10 +118,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 
 	public void init() {
 		super.init();
-		creator.createUser("", "", "", "Nat", "Usr", creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
-		when(MockProducer.getPrincipal().getName()).thenReturn("NatUsr");
-
-
+		useNationalUserLogin();
 	}
 
 	@AfterEach

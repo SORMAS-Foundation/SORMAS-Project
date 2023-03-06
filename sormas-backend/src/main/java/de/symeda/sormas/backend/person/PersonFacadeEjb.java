@@ -137,11 +137,13 @@ import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantService;
+import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
@@ -169,6 +171,7 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.location.LocationService;
+import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
@@ -245,6 +248,10 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	private ImmunizationService immunizationService;
 	@EJB
 	private TravelEntryService travelEntryService;
+	@EJB
+	private EventService eventService;
+	@EJB
+	private SampleService sampleService;
 
 	public PersonFacadeEjb() {
 	}
@@ -1796,13 +1803,18 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 	@Override
 	@RightsAllowed(UserRight._PERSON_EDIT)
-	public void mergePerson(String leadPersonUuid, String otherPersonUuid, boolean mergeProperties) {
+	public void mergePerson(
+		String leadPersonUuid,
+		String otherPersonUuid,
+		boolean mergePersonProperties,
+		List<String> selectedEventParticipantUuids,
+		boolean mergeEventParticipantProperties) {
 
 		if (leadPersonUuid.equals(otherPersonUuid)) {
 			throw new UnsupportedOperationException("Two different persons need to be selected for merge!");
 		}
 
-		if (mergeProperties) {
+		if (mergePersonProperties) {
 			final PersonDto leadPersonDto = getByUuid(leadPersonUuid);
 			final PersonDto otherPersonDto = getByUuid(otherPersonUuid);
 
@@ -1848,12 +1860,9 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 			o.setPerson(leadPerson);
 			contactService.ensurePersisted(o);
 		});
-		final List<EventParticipant> eventParticipants =
-			new ArrayList<>(eventParticipantService.getByPersonUuids(Collections.singletonList(otherPersonUuid)));
-		eventParticipants.forEach(o -> {
-			o.setPerson(leadPerson);
-			eventParticipantService.ensurePersisted(o);
-		});
+
+		mergeEventParticipants(leadPersonUuid, otherPersonUuid, selectedEventParticipantUuids, leadPerson, mergeEventParticipantProperties);
+
 		final List<Visit> visits = new ArrayList<>(visitService.getByPersonUuids(Collections.singletonList(otherPersonUuid)));
 		visits.forEach(o -> {
 			o.setPerson(leadPerson);
@@ -1862,6 +1871,86 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 		service.deletePermanent(otherPerson);
 		service.ensurePersisted(leadPerson);
+	}
+
+	private void mergeEventParticipants(
+		String leadPersonUuid,
+		String otherPersonUuid,
+		List<String> selectedEventParticipantUuids,
+		Person leadPerson,
+		boolean mergeEventParticipantProperties) {
+		List<String> personUuids = new ArrayList<>();
+		personUuids.add(leadPersonUuid);
+		personUuids.add(otherPersonUuid);
+
+		final List<EventParticipant> eventParticipants = new ArrayList<>(eventParticipantService.getByPersonUuids(personUuids));
+
+		if (selectedEventParticipantUuids.isEmpty()) {
+			eventParticipants.forEach(o -> {
+				o.setPerson(leadPerson);
+				eventParticipantService.ensurePersisted(o);
+			});
+		} else {
+
+			Set<Event> singleEvents = eventParticipants.stream().map(EventParticipant::getEvent).collect(Collectors.toSet());
+			singleEvents.stream().forEach(event -> {
+
+				List<EventParticipant> participantsToSameEvent =
+					eventParticipants.stream().filter(eventParticipant -> eventParticipant.getEvent().equals(event)).collect(Collectors.toList());
+
+				if (participantsToSameEvent.size() == 1) {
+					if (!participantsToSameEvent.get(0).getPerson().getUuid().equals(leadPerson.getUuid())) {
+						participantsToSameEvent.get(0).setPerson(leadPerson);
+						eventParticipantService.ensurePersisted(participantsToSameEvent.get(0));
+					}
+				} else {
+					EventParticipant leadEventParticipant = participantsToSameEvent.stream()
+						.filter(eventParticipant -> selectedEventParticipantUuids.contains(eventParticipant.getUuid()))
+						.findFirst()
+						.orElse(null);
+
+					if (!leadEventParticipant.getPerson().equals(leadPerson)) {
+						leadEventParticipant.setPerson(leadPerson);
+						eventParticipantService.ensurePersisted(leadEventParticipant);
+					}
+
+					EventParticipant otherEventParticipant = participantsToSameEvent.stream()
+						.filter(eventParticipant -> !selectedEventParticipantUuids.contains(eventParticipant.getUuid()))
+						.findFirst()
+						.orElse(null);
+
+					if (otherEventParticipant != null) {
+						if (mergeEventParticipantProperties) {
+							if (leadEventParticipant.getRegion() == null && otherEventParticipant.getRegion() != null) {
+								leadEventParticipant.setRegion(otherEventParticipant.getRegion());
+							}
+							if (leadEventParticipant.getDistrict() == null && otherEventParticipant.getDistrict() != null) {
+								leadEventParticipant.setDistrict(otherEventParticipant.getDistrict());
+							}
+							if ((leadEventParticipant.getInvolvementDescription() == null
+								|| leadEventParticipant.getInvolvementDescription().isEmpty())
+								&& !otherEventParticipant.getInvolvementDescription().isEmpty()) {
+								leadEventParticipant.setInvolvementDescription(otherEventParticipant.getInvolvementDescription());
+							}
+							if (leadEventParticipant.getVaccinationStatus() == null && otherEventParticipant.getVaccinationStatus() != null) {
+								leadEventParticipant.setVaccinationStatus(otherEventParticipant.getVaccinationStatus());
+							}
+
+							otherEventParticipant.getSamples().forEach(sample -> {
+								sample.setAssociatedEventParticipant(leadEventParticipant);
+							});
+							otherEventParticipant.setSamples(null);
+							eventParticipantService.ensurePersisted(otherEventParticipant);
+
+							if (otherEventParticipant.getResultingCase() != null && leadEventParticipant.getResultingCase() == null) {
+								leadEventParticipant.setResultingCase(otherEventParticipant.getResultingCase());
+							}
+						}
+						eventParticipantService.deletePermanent(otherEventParticipant);
+					}
+				}
+			});
+		}
 	}
 
 	private void processPersonAddressMerge(PersonDto leadPersonDto, PersonDto otherPersonDto) {

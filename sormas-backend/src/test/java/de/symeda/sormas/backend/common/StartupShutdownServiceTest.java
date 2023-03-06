@@ -18,9 +18,7 @@ import java.util.stream.Collectors;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
-import info.novatec.beantest.api.BaseBeanTest;
-
-public class StartupShutdownServiceTest extends BaseBeanTest {
+public class StartupShutdownServiceTest {
 
 	private final String[] SUPPORTED_DATABASE_VERSIONS = new String[] {
 		"9.5",

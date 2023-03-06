@@ -163,6 +163,7 @@ public enum UserRight {
 	DASHBOARD_CONTACT_VIEW(UserRightGroup.DASHBOARD, UserRight._CONTACT_VIEW),
 	DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS(UserRightGroup.DASHBOARD, UserRight._DASHBOARD_CONTACT_VIEW),
 	DASHBOARD_CAMPAIGNS_VIEW(UserRightGroup.DASHBOARD, UserRight._CAMPAIGN_VIEW),
+	DASHBOARD_SAMPLES_VIEW(UserRightGroup.DASHBOARD, UserRight._SAMPLE_VIEW),
 
 	CASE_CLINICIAN_VIEW(UserRightGroup.CASE_MANAGEMENT, UserRight._CASE_VIEW),
 
@@ -234,6 +235,9 @@ public enum UserRight {
 	SORMAS_TO_SORMAS_SHARE(UserRightGroup.EXTERNAL),
 	SORMAS_TO_SORMAS_PROCESS(UserRightGroup.EXTERNAL),
 
+	EXTERNAL_SURVEILLANCE_SHARE(UserRightGroup.EXTERNAL),
+	EXTERNAL_SURVEILLANCE_DELETE(UserRightGroup.EXTERNAL),
+
 	EXTERNAL_MESSAGE_VIEW(UserRightGroup.EXTERNAL),
 	EXTERNAL_MESSAGE_PROCESS(UserRightGroup.EXTERNAL, UserRight._EXTERNAL_MESSAGE_VIEW,
 			UserRight._CASE_CREATE, UserRight._CASE_EDIT,
@@ -282,6 +286,7 @@ public enum UserRight {
 	public static final String _PERSON_EDIT = "PERSON_EDIT";
 	public static final String _PERSON_DELETE = "PERSON_DELETE";
 	public static final String _PERSON_CONTACT_DETAILS_DELETE = "PERSON_CONTACT_DETAILS_DELETE";
+	public static final String _PERSON_MERGE = "PERSON_MERGE";
 	public static final String _PERSON_EXPORT = "PERSON_EXPORT";
 	public static final String _SAMPLE_CREATE = "SAMPLE_CREATE";
 	public static final String _SAMPLE_VIEW = "SAMPLE_VIEW";
@@ -368,6 +373,7 @@ public enum UserRight {
 	public static final String _DASHBOARD_CONTACT_VIEW = "DASHBOARD_CONTACT_VIEW";
 	public static final String _DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS = "DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS";
 	public static final String _DASHBOARD_CAMPAIGNS_VIEW = "DASHBOARD_CAMPAIGNS_VIEW";
+	public static final String _DASHBOARD_SAMPLES_VIEW = "DASHBOARD_SAMPLES_VIEW";
 	public static final String _CASE_CLINICIAN_VIEW = "CASE_CLINICIAN_VIEW";
 	public static final String _THERAPY_VIEW = "THERAPY_VIEW";
 	public static final String _PRESCRIPTION_CREATE = "PRESCRIPTION_CREATE";
@@ -406,6 +412,8 @@ public enum UserRight {
 	public static final String _BAG_EXPORT = "BAG_EXPORT";
 	public static final String _SORMAS_TO_SORMAS_SHARE = "SORMAS_TO_SORMAS_SHARE";
 	public static final String _SORMAS_TO_SORMAS_PROCESS = "SORMAS_TO_SORMAS_PROCESS";
+	public static final String _EXTERNAL_SURVEILLANCE_SHARE = "EXTERNAL_SURVEILLANCE_SHARE";
+	public static final String _EXTERNAL_SURVEILLANCE_DELETE = "EXTERNAL_SURVEILLANCE_DELETE";
 	public static final String _EXTERNAL_MESSAGE_VIEW = "EXTERNAL_MESSAGE_VIEW";
 	public static final String _EXTERNAL_MESSAGE_PROCESS = "EXTERNAL_MESSAGE_PROCESS";
 	public static final String _EXTERNAL_MESSAGE_DELETE = "EXTERNAL_MESSAGE_DELETE";
@@ -479,6 +487,14 @@ public enum UserRight {
 		return userRights.stream().map(UserRight::getRequiredUserRights).flatMap(Collection::stream).collect(Collectors.toSet());
 	}
 
+	/**
+	 * Appends the required user rights. The result also includes the passed user rights.
+	 */
+	public static Set<UserRight> getWithRequiredUserRights(UserRight... userRights) {
+		return Stream.concat(Arrays.stream(userRights), Arrays.stream(userRights).map(UserRight::getRequiredUserRights).flatMap(Collection::stream))
+			.collect(Collectors.toSet());
+	}
+
 	public Set<UserRight> getRequiredUserRights() {
 		return userRightDependencies.get(this);
 	}
@@ -487,6 +503,9 @@ public enum UserRight {
 		return Arrays.stream(values()).filter(userRight -> userRight.getUserRightGroup() == userRightGroup).collect(Collectors.toSet());
 	}
 
+	/**
+	 * Get which required user rights are not already in the passed set.
+	 */
 	public static Set<UserRight> requiredRightFromUserRights(UserRight userRight, Set<UserRight> userRights) {
 
 		Set<UserRight> requiredRights = new HashSet<>();

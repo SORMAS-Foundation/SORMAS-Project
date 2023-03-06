@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -58,6 +57,7 @@ import de.symeda.sormas.api.caze.CaseBulkEditData;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOrigin;
@@ -103,12 +103,14 @@ import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.BulkOperationResults;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
+import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
@@ -131,13 +133,13 @@ import de.symeda.sormas.ui.hospitalization.HospitalizationView;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.therapy.TherapyView;
 import de.symeda.sormas.ui.utils.AbstractView;
+import de.symeda.sormas.ui.utils.BulkOperationHelper;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DeletableUtils;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
-import de.symeda.sormas.ui.utils.NotificationHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
@@ -959,9 +961,9 @@ public class CaseController {
 		return editView;
 	}
 
-	public void showBulkCaseDataEditComponent(Collection<? extends CaseIndexDto> selectedCases) {
+	public void showBulkCaseDataEditComponent(Collection<? extends CaseIndexDto> selectedCases, AbstractCaseGrid<?> caseGrid) {
 
-		if (selectedCases.size() == 0) {
+		if (selectedCases.isEmpty()) {
 			new Notification(
 				I18nProperties.getString(Strings.headingNoCasesSelected),
 				I18nProperties.getString(Strings.messageNoCasesSelected),
@@ -971,7 +973,8 @@ public class CaseController {
 		}
 
 		// Check if cases with multiple regions and districts have been selected
-		String regionUuid = null, districtUuid = null;
+		String regionUuid = null;
+		String districtUuid = null;
 		boolean first = true;
 		for (CaseIndexDto selectedCase : selectedCases) {
 			String currentRegionUuid =
@@ -1005,8 +1008,7 @@ public class CaseController {
 
 		BulkCaseDataForm form = new BulkCaseDataForm(district, selectedCases);
 		form.setValue(bulkEditData);
-		final CommitDiscardWrapperComponent<BulkCaseDataForm> editView =
-			new CommitDiscardWrapperComponent<BulkCaseDataForm>(form, form.getFieldGroup());
+		final CommitDiscardWrapperComponent<BulkCaseDataForm> editView = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditCases));
 
@@ -1021,6 +1023,7 @@ public class CaseController {
 			boolean facilityChange = form.getHealthFacilityCheckbox().getValue();
 
 			CaseFacade caseFacade = FacadeProvider.getCaseFacade();
+			List<CaseIndexDto> selectedCasesCpy = new ArrayList<>(selectedCases);
 			if (facilityChange) {
 				VaadinUiUtil.showChooseOptionPopup(
 					I18nProperties.getCaption(Captions.caseInfrastructureDataChanged),
@@ -1028,129 +1031,59 @@ public class CaseController {
 					I18nProperties.getCaption(Captions.caseTransferCases),
 					I18nProperties.getCaption(Captions.caseEditData),
 					500,
-					e -> {
-						bulkEditWithFacilities(
-							selectedCases,
+					e -> BulkOperationHelper.doBulkOperation(
+						selectedEntries -> caseFacade.saveBulkEditWithFacilities(
+							selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
 							updatedBulkEditData,
 							diseaseChange,
 							classificationChange,
 							investigationStatusChange,
 							outcomeChange,
 							surveillanceOfficerChange,
-							e.booleanValue(),
-							caseFacade);
-
-						popupWindow.close();
-						navigateToIndex();
-						Notification.show(I18nProperties.getString(Strings.messageCasesEdited), Type.HUMANIZED_MESSAGE);
-					});
-
+							e),
+						selectedCasesCpy,
+						selectedCasesCpy.size(),
+						results -> handleBulkOperationDone(results, popupWindow, caseGrid, selectedCases)));
 			} else {
-				int changedCases = bulkEdit(
-					selectedCases,
-					updatedBulkEditData,
-					diseaseChange,
-					classificationChange,
-					investigationStatusChange,
-					outcomeChange,
-					surveillanceOfficerChange,
-					caseFacade);
-
-				popupWindow.close();
-				navigateToIndex();
-
-				if (changedCases == selectedCases.size()) {
-					Notification.show(I18nProperties.getString(Strings.messageCasesEdited), Type.HUMANIZED_MESSAGE);
-				} else {
-					NotificationHelper.showNotification(
-						String.format(I18nProperties.getString(Strings.messageCasesEditedExceptArchived), changedCases),
-						Type.HUMANIZED_MESSAGE,
-						-1);
-				}
+				BulkOperationHelper.doBulkOperation(
+					selectedEntries -> caseFacade.saveBulkCase(
+						selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
+						updatedBulkEditData,
+						diseaseChange,
+						classificationChange,
+						investigationStatusChange,
+						outcomeChange,
+						surveillanceOfficerChange),
+					selectedCasesCpy,
+					selectedCasesCpy.size(),
+					results -> handleBulkOperationDone(results, popupWindow, caseGrid, selectedCases));
 			}
 		});
 
-		editView.addDiscardListener(() -> popupWindow.close());
+		editView.addDiscardListener(popupWindow::close);
 	}
 
-	private int bulkEdit(
-		Collection<? extends CaseIndexDto> selectedCases,
-		CaseBulkEditData updatedCaseBulkEditData,
-		boolean diseaseChange,
-		boolean classificationChange,
-		boolean investigationStatusChange,
-		boolean outcomeChange,
-		boolean surveillanceOfficerChange,
-		CaseFacade caseFacade) {
+	private void handleBulkOperationDone(
+		BulkOperationResults<?> results,
+		Window popupWindow,
+		AbstractCaseGrid<?> caseGrid,
+		Collection<? extends CaseIndexDto> selectedCases) {
 
-		return caseFacade.saveBulkCase(
-			selectedCases.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList()),
-			updatedCaseBulkEditData,
-			diseaseChange,
-			classificationChange,
-			investigationStatusChange,
-			outcomeChange,
-			surveillanceOfficerChange);
-	}
-
-	private void bulkEditWithFacilities(
-		Collection<? extends CaseIndexDto> selectedCases,
-		CaseBulkEditData updatedCaseBulkEditData,
-		boolean diseaseChange,
-		boolean classificationChange,
-		boolean investigationStatusChange,
-		boolean outcomeChange,
-		boolean surveillanceOfficerChange,
-		Boolean doTransfer,
-		CaseFacade caseFacade) {
-
-		caseFacade.saveBulkEditWithFacilities(
-			selectedCases.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList()),
-			updatedCaseBulkEditData,
-			diseaseChange,
-			classificationChange,
-			investigationStatusChange,
-			outcomeChange,
-			surveillanceOfficerChange,
-			doTransfer);
-	}
-
-	private CaseDataDto changeCaseDto(
-		CaseBulkEditData updatedCaseBulkEditData,
-		CaseDataDto caseDto,
-		boolean diseaseChange,
-		boolean classificationChange,
-		boolean investigationStatusChange,
-		boolean outcomeChange,
-		boolean surveillanceOfficerChange) {
-
-		if (diseaseChange) {
-			caseDto.setDisease(updatedCaseBulkEditData.getDisease());
-			caseDto.setDiseaseDetails(updatedCaseBulkEditData.getDiseaseDetails());
-			caseDto.setPlagueType(updatedCaseBulkEditData.getPlagueType());
-			caseDto.setDengueFeverType(updatedCaseBulkEditData.getDengueFeverType());
-			caseDto.setRabiesType(updatedCaseBulkEditData.getRabiesType());
+		popupWindow.close();
+		caseGrid.reload();
+		if (CollectionUtils.isNotEmpty(results.getRemainingEntries())) {
+			if (caseGrid instanceof CaseGrid) {
+				((CaseGrid) caseGrid).asMultiSelect()
+					.selectItems(
+						selectedCases.stream().filter(c -> results.getRemainingEntries().contains(c.getUuid())).toArray(CaseIndexDto[]::new));
+			} else if (caseGrid instanceof CaseGridDetailed) {
+				((CaseGridDetailed) caseGrid).asMultiSelect()
+					.selectItems(
+						selectedCases.stream().filter(c -> results.getRemainingEntries().contains(c.getUuid())).toArray(CaseIndexDetailedDto[]::new));
+			}
+		} else {
+			navigateToIndex();
 		}
-		if (classificationChange) {
-			caseDto.setCaseClassification(updatedCaseBulkEditData.getCaseClassification());
-		}
-		if (investigationStatusChange) {
-			caseDto.setInvestigationStatus(updatedCaseBulkEditData.getInvestigationStatus());
-		}
-		if (outcomeChange) {
-			caseDto.setOutcome(updatedCaseBulkEditData.getOutcome());
-		}
-		// Setting the surveillance officer is only allowed if all selected cases are in
-		// the same district
-		if (surveillanceOfficerChange) {
-			caseDto.setSurveillanceOfficer(updatedCaseBulkEditData.getSurveillanceOfficer());
-		}
-
-		if (Objects.nonNull(updatedCaseBulkEditData.getHealthFacilityDetails())) {
-			caseDto.setHealthFacilityDetails(updatedCaseBulkEditData.getHealthFacilityDetails());
-		}
-
-		return caseDto;
 	}
 
 	private void appendSpecialCommands(CaseDataDto caze, CommitDiscardWrapperComponent<? extends Component> editView) {

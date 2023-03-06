@@ -25,7 +25,6 @@ import java.util.Random;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
@@ -51,6 +50,7 @@ import de.symeda.sormas.api.messaging.ManualMessageLogDto;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.utils.BulkOperationResults;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -58,9 +58,6 @@ import de.symeda.sormas.api.vaccination.VaccinationDto;
 
 @Remote
 public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseReferenceDto, CaseCriteria> {
-
-	int DUPLICATE_MERGING_LIMIT_DEFAULT = 100;
-	int DUPLICATE_MERGING_LIMIT_MAX = 1000;
 
 	long count(CaseCriteria caseCriteria, boolean ignoreUserFilter);
 
@@ -153,7 +150,7 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	List<CaseSelectionDto> getSimilarCases(CaseSimilarityCriteria criteria);
 
-	List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, @Min(1) @Max(DUPLICATE_MERGING_LIMIT_MAX) int limit, boolean showDuplicatesWithDifferentRegion);
+	List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, @Min(1) Integer limit, boolean showDuplicatesWithDifferentRegion);
 
 	void updateCompleteness(String caseUuid);
 
@@ -187,7 +184,7 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	List<String> getUuidsNotShareableWithExternalReportingTools(List<String> caseUuids);
 
-	Integer saveBulkCase(
+	BulkOperationResults<String> saveBulkCase(
 		List<String> caseUuidList,
 		@Valid CaseBulkEditData updatedCaseBulkEditData,
 		boolean diseaseChange,
@@ -196,7 +193,7 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 		boolean outcomeChange,
 		boolean surveillanceOfficerChange);
 
-	void saveBulkEditWithFacilities(
+	BulkOperationResults<String> saveBulkEditWithFacilities(
 		List<String> caseUuidList,
 		@Valid CaseBulkEditData updatedCaseBulkEditData,
 		boolean diseaseChange,

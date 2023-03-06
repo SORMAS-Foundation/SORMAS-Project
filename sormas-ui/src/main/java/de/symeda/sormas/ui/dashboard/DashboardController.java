@@ -25,6 +25,7 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.dashboard.campaigns.CampaignDashboardView;
 import de.symeda.sormas.ui.dashboard.contacts.ContactsDashboardView;
+import de.symeda.sormas.ui.dashboard.sample.SampleDashboardView;
 import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
 
 public class DashboardController {
@@ -42,6 +43,10 @@ public class DashboardController {
 		}
 		if (permitted(FeatureType.CAMPAIGNS, UserRight.DASHBOARD_CAMPAIGNS_VIEW)) {
 			navigator.addView(CampaignDashboardView.VIEW_NAME, CampaignDashboardView.class);
+		}
+
+		if (permitted(FeatureType.SAMPLES_LAB, UserRight.DASHBOARD_SAMPLES_VIEW)) {
+			navigator.addView(SampleDashboardView.VIEW_NAME, SampleDashboardView.class);
 		}
 	}
 }

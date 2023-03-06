@@ -30,9 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
-
 import org.apache.commons.beanutils.BeanUtils;
 import org.junit.jupiter.api.Test;
 
@@ -73,10 +70,10 @@ import de.symeda.sormas.backend.person.PersonService;
  */
 public class ExternalVisitTest extends AbstractBeanTest {
 
-	TestDataCreator.RDCFEntities rdcfEntities;
 	private UserDto externalVisitsUser;
 	private UserDto nationalUser;
 	private TestDataCreator.RDCF rdcf;
+	private TestDataCreator.RDCFEntities rdcfEntities;
 
 	public void init() {
 		super.init();
@@ -180,7 +177,6 @@ public class ExternalVisitTest extends AbstractBeanTest {
 	 * https://gitter.im/SORMAS-Project!
 	 */
 	public void givenRelevantChangeShouldNotify() {
-		EntityManager entityManager = getEntityManager();
 		PersonFacadeEjb.PersonFacadeEjbLocal personFacade = getPersonFacade();
 		personFacade.setExternalJournalService(getExternalJournalService());
 		PersonService personService = getPersonService();
@@ -189,11 +185,7 @@ public class ExternalVisitTest extends AbstractBeanTest {
 		setPersonRelevantFields(person);
 
 		// cannot use PersonFacade save since it also calls the method being tested
-		EntityTransaction transaction = entityManager.getTransaction();
-		transaction.begin();
-		entityManager.persist(person);
-		entityManager.flush();
-		transaction.commit();
+		personService.persist(person);
 
 		// need to create a case with the person to avoid pseudonymization related errors
 		creator.createCase(externalVisitsUser.toReference(), new PersonReferenceDto(person.getUuid()), rdcf);
@@ -221,28 +213,28 @@ public class ExternalVisitTest extends AbstractBeanTest {
 		for (String propertyName : relevantChanges.keySet()) {
 			journalPerson = personFacade.getPersonForJournal(person.getUuid());
 			setPersonProperty(person, propertyName, relevantChanges.get(propertyName));
-			person = entityManager.merge(person);
+			person = executeInTransaction((entityManager, personParam) -> entityManager.merge(personParam), person);
 			assertTrue(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson).getElement0());
 
 			// Modify the SymptomJournalStatus of the original person
 			journalPerson = personFacade.getPersonForJournal(person.getUuid());
 			person.setSymptomJournalStatus(SymptomJournalStatus.DELETED);
-			person = entityManager.merge(person);
+			person = executeInTransaction((entityManager, personParam) -> entityManager.merge(personParam), person);
 			assertFalse(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson).getElement0());
 
 			journalPerson = personFacade.getPersonForJournal(person.getUuid());
 			person.setSymptomJournalStatus(SymptomJournalStatus.REJECTED);
-			person = entityManager.merge(person);
+			person = executeInTransaction((entityManager, personParam) -> entityManager.merge(personParam), person);
 			assertFalse(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson).getElement0());
 
 			journalPerson = personFacade.getPersonForJournal(person.getUuid());
 			person.setSymptomJournalStatus(SymptomJournalStatus.UNREGISTERED);
-			person = entityManager.merge(person);
+			person = executeInTransaction((entityManager, personParam) -> entityManager.merge(personParam), person);
 			assertFalse(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson).getElement0());
 
 			journalPerson = personFacade.getPersonForJournal(person.getUuid());
 			person.setSymptomJournalStatus(SymptomJournalStatus.ACCEPTED);
-			person = entityManager.merge(person);
+			person = executeInTransaction((entityManager, personParam) -> entityManager.merge(personParam), person);
 			assertFalse(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson).getElement0());
 
 			// Apply any other relevant change and make sure notification is still considered necessary
@@ -250,13 +242,13 @@ public class ExternalVisitTest extends AbstractBeanTest {
 				if (!secondPropertyName.equals(propertyName)) {
 					journalPerson = personFacade.getPersonForJournal(person.getUuid());
 					setPersonProperty(person, secondPropertyName, relevantChanges.get(secondPropertyName));
-					person = entityManager.merge(person);
+					person = executeInTransaction((entityManager, personParam) -> entityManager.merge(personParam), person);
 					assertTrue(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson).getElement0());
 				}
 			}
 
 			setPersonRelevantFields(person);
-			person = entityManager.merge(person);
+			person = executeInTransaction((entityManager, personParam) -> entityManager.merge(personParam), person);
 		}
 	}
 

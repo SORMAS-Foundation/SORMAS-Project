@@ -287,12 +287,12 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilterAndJ
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled() && isOwnershipHandedOver) {
 			List<Case> sharedCases = cases.stream().filter(c -> !c.getExternalShares().isEmpty()).collect(Collectors.toList());
 			if (sharedCases.size() > 0) {
-				externalSurveillanceToolGatewayFacade.deleteCases(caseFacade.toDtos(sharedCases.stream()));
+				externalSurveillanceToolGatewayFacade.deleteCasesInternal(caseFacade.toDtos(sharedCases.stream()));
 			}
 
 			List<Event> sharedEvents = events.stream().filter(e -> !e.getExternalShares().isEmpty()).collect(Collectors.toList());
 			if (sharedEvents.size() > 0) {
-				externalSurveillanceToolGatewayFacade.deleteEvents(eventFacade.toDtos(sharedEvents.stream()));
+				externalSurveillanceToolGatewayFacade.deleteEventsInternal(eventFacade.toDtos(sharedEvents.stream()));
 			}
 		}
 	}
