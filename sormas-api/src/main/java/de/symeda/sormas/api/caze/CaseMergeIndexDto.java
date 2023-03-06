@@ -1,6 +1,7 @@
 package de.symeda.sormas.api.caze;
 
 import java.util.Date;
+import java.util.Objects;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.common.DeletionReason;
@@ -11,9 +12,12 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 
+/**
+ * equals method was overridden in order to allow same case being loaded in the TreeData data type multiple times
+ * (it allows to display same case being duplicate against multiple other cases)
+ *
+ */
 public class CaseMergeIndexDto extends CaseIndexDto {
-
-	private String uniqueUuid;
 
 	//@formatter:off
 	public CaseMergeIndexDto(
@@ -81,11 +85,9 @@ public class CaseMergeIndexDto extends CaseIndexDto {
 	}
 	//@formatter:on
 
-	public String getUniqueUuid() {
-		return uniqueUuid;
+	@Override
+	public boolean equals(Object o) {
+		return this == o;
 	}
 
-	public void setUniqueUuid(String uniqueUuid) {
-		this.uniqueUuid = uniqueUuid;
-	}
 }
