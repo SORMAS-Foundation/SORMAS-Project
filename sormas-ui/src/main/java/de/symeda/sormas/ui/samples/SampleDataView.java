@@ -156,7 +156,8 @@ public class SampleDataView extends AbstractSampleView {
 		final boolean deleted = FacadeProvider.getSampleFacade().isDeleted(uuid);
 
 		if (deleted) {
-			editComponent.setEditable(false, CommitDiscardWrapperComponent.DELETE_UNDELETE);
+			editComponent.addButtonToExcludedList(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+			editComponent.setEditable(false, editComponent.getExcludedButtons().stream().toArray(String[]::new));
 			disableComponentIfNotNull(layout.getComponent(CASE_LOC));
 			disableComponentIfNotNull(layout.getComponent(CONTACT_LOC));
 			disableComponentIfNotNull(layout.getComponent(EVENT_PARTICIPANT_LOC));

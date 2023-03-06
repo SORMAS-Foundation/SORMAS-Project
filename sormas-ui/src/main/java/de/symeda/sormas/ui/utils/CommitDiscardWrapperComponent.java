@@ -987,7 +987,6 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	//In case of having delete right without edit right the delete button should remain enabled
 	public void restrictEditableComponentsOnEditView(UserRight editRight, UserRight deleteRight, EditPermissionType editPermissionType) {
 		boolean isEditAllowed = isEditAllowed(editRight, editPermissionType);
-
 		if (!isEditAllowed) {
 			if (isDeleteAllowed(deleteRight)) {
 				addButtonToExcludedList(CommitDiscardWrapperComponent.DELETE_UNDELETE);
@@ -1025,7 +1024,6 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 	public void addButtonToExcludedList(String button) {
 		List<String> excludedButtonsList = getExcludedButtons();
-
 		if (!excludedButtonsList.contains(button)) {
 			excludedButtonsList.add(button);
 			setExcludedButtons(excludedButtonsList);

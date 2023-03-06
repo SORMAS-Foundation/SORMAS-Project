@@ -102,7 +102,6 @@ public class TaskList extends PaginationList<TaskIndexDto> {
 		}
 	}
 
-	//check if can be added to a higher level
 	private boolean hasEditOrDeleteRights() {
 		return UserProvider.getCurrent().hasUserRight(UserRight.TASK_EDIT) || UserProvider.getCurrent().hasUserRight(UserRight.TASK_DELETE);
 	}
