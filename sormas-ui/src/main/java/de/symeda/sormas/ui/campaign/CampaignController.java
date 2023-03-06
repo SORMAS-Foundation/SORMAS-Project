@@ -104,8 +104,9 @@ public class CampaignController {
 			getCampaignFormDataComponent(null, campaign, campaignForm, false, false, () -> {
 				window.close();
 				SormasUI.refreshView();
-				Notification
-					.show(String.format(I18nProperties.getString(Strings.messageCampaignFormSaved), campaignForm.buildCaption()), Type.TRAY_NOTIFICATION);
+				Notification.show(
+					String.format(I18nProperties.getString(Strings.messageCampaignFormSaved), campaignForm.buildCaption()),
+					Type.TRAY_NOTIFICATION);
 			}, window::close);
 
 		window.setCaption(String.format(I18nProperties.getString(Strings.headingCreateCampaignDataForm), campaignForm.buildCaption()));
@@ -124,17 +125,15 @@ public class CampaignController {
 		}
 		campaignEditForm.setValue(campaignDto);
 
-		final CommitDiscardWrapperComponent<CampaignEditForm> campaignComponent = new CommitDiscardWrapperComponent<CampaignEditForm>(
-			campaignEditForm,
-			true,
-			campaignEditForm.getFieldGroup()) {
+		final CommitDiscardWrapperComponent<CampaignEditForm> campaignComponent =
+			new CommitDiscardWrapperComponent<CampaignEditForm>(campaignEditForm, true, campaignEditForm.getFieldGroup()) {
 
-			@Override
-			public void discard() {
-				super.discard();
-				campaignEditForm.discard();
-			}
-		};
+				@Override
+				public void discard() {
+					super.discard();
+					campaignEditForm.discard();
+				}
+			};
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE) && !isCreate) {
 			CampaignDto finalCampaignDto = campaignDto;
@@ -194,7 +193,8 @@ public class CampaignController {
 		}
 		form.setValue(campaignFormData);
 
-		final CommitDiscardWrapperComponent<CampaignFormDataEditForm> component = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
+		final CommitDiscardWrapperComponent<CampaignFormDataEditForm> component =
+			new CommitDiscardWrapperComponent<>(form, true, form.getFieldGroup());
 
 		component.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {
@@ -234,6 +234,7 @@ public class CampaignController {
 			}, I18nProperties.getString(Strings.entityCampaignDataForm));
 		}
 
+		component.restrictEditableComponentsOnEditView(UserRight.CAMPAIGN_FORM_DATA_EDIT, UserRight.CAMPAIGN_FORM_DATA_DELETE);
 		return component;
 	}
 
