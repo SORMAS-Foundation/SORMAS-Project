@@ -202,12 +202,10 @@ public class EventDirectorySteps implements En {
     When(
         "I fill EVENT ID filter by API",
         () -> {
-          TimeUnit.SECONDS.sleep(2); // wait for reaction
+          TimeUnit.SECONDS.sleep(5); //waiting time for filters to load
           String eventUuid = apiState.getCreatedEvent().getUuid();
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(SEARCH_EVENT_BY_FREE_TEXT);
-          webDriverHelpers.fillInWebElement(
-              SEARCH_EVENT_BY_FREE_TEXT,
-              dataOperations.getPartialUuidFromAssociatedLink(eventUuid));
+          String partialEventUuid = dataOperations.getPartialUuidFromAssociatedLink(eventUuid);
+          webDriverHelpers.fillAndSubmitInWebElement(SEARCH_EVENT_BY_FREE_TEXT, partialEventUuid);
         });
 
     When(
@@ -905,7 +903,6 @@ public class EventDirectorySteps implements En {
     When(
         "I apply on the APPLY FILTERS button from Event",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               APPLY_FILTERS_BUTTON, 60);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
