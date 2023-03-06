@@ -77,6 +77,22 @@ public class CaseService {
         .build();
   }
 
+  public Case buildGeneratedCaseForOnePersonDE(
+      String firstName, String lastName, LocalDate dateOfBirth) {
+    return Case.builder()
+        .firstName(firstName)
+        .lastName(lastName)
+        .caseOrigin("IM LAND")
+        .dateOfReport(LocalDate.now().minusDays(1))
+        .disease("COVID-19")
+        .responsibleRegion("Baden-W\u00FCrttemberg")
+        .responsibleDistrict("LK Alb-Donau-Kreis")
+        .placeOfStay("ZUHAUSE")
+        .dateOfBirth(dateOfBirth)
+        .sex(GenderValues.getRandomGenderDE())
+        .build();
+  }
+
   public Case buildGeneratedCase() {
     firstName = faker.name().firstName();
     lastName = faker.name().lastName();

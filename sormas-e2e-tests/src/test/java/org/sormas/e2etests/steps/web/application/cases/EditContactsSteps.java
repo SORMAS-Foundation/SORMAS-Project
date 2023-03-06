@@ -524,6 +524,10 @@ public class EditContactsSteps implements En {
           webDriverHelpers.fillAndSubmitInWebElement(
               LAST_CONTACT_DATE, formatterDE.format(LocalDate.now().minusDays(days)));
         });
+
+    And(
+        "^I open a contact using the collected contact UUID$",
+        () -> openContactFromResultsByUUID(contactUUID));
   }
 
   private void fillFirstName(String firstName) {
