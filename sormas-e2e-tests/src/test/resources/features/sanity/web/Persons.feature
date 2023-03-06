@@ -430,7 +430,7 @@ Feature: Edit Persons
     And I check if first name of person has been changed
     When I back to tab number 1
     And I navigate to case person tab
-    And I check if first name of person has not been changed
+    Then I check if first name of person from case has not been changed
 
   @tmsLink=SORDEV-12088 @env_s2s_1
   Scenario: [S2S] Simultaneous Work on Person [4]
@@ -501,4 +501,4 @@ Feature: Edit Persons
     And I check if first name of person has been changed
     When I back to tab number 1
     And I open Contact Person tab
-    And I check if first name of person has not been changed
+    And I check if first name of person from contact has not been changed

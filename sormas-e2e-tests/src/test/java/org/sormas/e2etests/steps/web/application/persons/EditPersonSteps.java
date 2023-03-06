@@ -114,6 +114,7 @@ import org.sormas.e2etests.pages.application.contacts.EditContactPersonPage;
 import org.sormas.e2etests.pages.application.persons.EditPersonPage;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
+import org.sormas.e2etests.steps.web.application.cases.CreateNewCaseSteps;
 import org.sormas.e2etests.steps.web.application.contacts.CreateNewContactSteps;
 import org.sormas.e2etests.steps.web.application.contacts.EditContactPersonSteps;
 import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
@@ -577,7 +578,7 @@ public class EditPersonSteps implements En {
         });
 
     And(
-        "^I check if first name of person has not been changed$",
+        "^I check if first name of person from contact has not been changed$",
         () -> {
           softly.assertNotEquals(
               webDriverHelpers.getValueFromWebElement(FIRST_NAME_INPUT),
@@ -587,6 +588,21 @@ public class EditPersonSteps implements En {
           softly.assertEquals(
               webDriverHelpers.getValueFromWebElement(FIRST_NAME_INPUT),
               CreateNewContactSteps.samePersonDataContact.getFirstName(),
+              "Names are not equal!!");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check if first name of person from case has not been changed$",
+        () -> {
+          softly.assertNotEquals(
+              webDriverHelpers.getValueFromWebElement(FIRST_NAME_INPUT),
+              personFirstName,
+              "Names are equal!!");
+          softly.assertAll();
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(FIRST_NAME_INPUT),
+              CreateNewCaseSteps.oneCaseDe.getFirstName(),
               "Names are not equal!!");
           softly.assertAll();
         });
