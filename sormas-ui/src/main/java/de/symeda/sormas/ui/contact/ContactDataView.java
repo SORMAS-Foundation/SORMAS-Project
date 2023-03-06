@@ -288,13 +288,16 @@ public class ContactDataView extends AbstractContactView {
 		final boolean deleted = FacadeProvider.getContactFacade().isDeleted(uuid);
 
 		if (deleted) {
-			layout.disable(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+			editComponent.addButtonToExcludedList(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+			layout.disable();
 		} else if (contactEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
-			layout.disableWithViewAllow(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+			editComponent.addButtonToExcludedList(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+			layout.disableWithViewAllow();
 		} else if (contactEditAllowed.equals(EditPermissionType.REFUSED)) {
 			layout.disableWithViewAllow();
 		} else if (contactEditAllowed.equals(EditPermissionType.WITHOUT_OWNERSHIP)) {
-			layout.disableWithViewAllow(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+			editComponent.addButtonToExcludedList(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+			layout.disableWithViewAllow();
 		}
 	}
 

@@ -114,9 +114,11 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 		final boolean deleted = FacadeProvider.getTravelEntryFacade().isDeleted(uuid);
 
 		if (deleted) {
-			layout.disable(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+			editComponent.addButtonToExcludedList(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+			layout.disable();
 		} else if (travelEntryEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
-			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+			editComponent.addButtonToExcludedList(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+			layout.disable();
 		} else if (travelEntryEditAllowed.equals(EditPermissionType.REFUSED)) {
 			layout.disable();
 		}

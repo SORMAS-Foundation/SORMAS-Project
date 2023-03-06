@@ -221,13 +221,16 @@ public class CaseDataView extends AbstractCaseView {
 		final boolean deleted = FacadeProvider.getCaseFacade().isDeleted(uuid);
 
 		if (deleted) {
-			layout.disable(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+			editComponent.addButtonToExcludedList(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+			layout.disable();
 		} else if (caseEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
-			layout.disableWithViewAllow(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+			editComponent.addButtonToExcludedList(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+			layout.disableWithViewAllow();
 		} else if (caseEditAllowed.equals(EditPermissionType.REFUSED)) {
 			layout.disableWithViewAllow();
 		} else if (caseEditAllowed.equals(EditPermissionType.WITHOUT_OWNERSHIP)) {
-			layout.disableWithViewAllow(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+			editComponent.addButtonToExcludedList(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+			layout.disableWithViewAllow();
 		}
 	}
 }

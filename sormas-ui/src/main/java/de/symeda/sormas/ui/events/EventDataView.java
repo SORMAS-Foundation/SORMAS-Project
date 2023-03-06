@@ -226,13 +226,16 @@ public class EventDataView extends AbstractEventView {
 		final boolean deleted = FacadeProvider.getEventFacade().isDeleted(uuid);
 
 		if (deleted) {
-			layout.disable(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+			editComponent.addButtonToExcludedList(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+			layout.disable();
 		} else if (eventEditAllowed == EditPermissionType.ARCHIVING_STATUS_ONLY) {
-			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+			editComponent.addButtonToExcludedList(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+			layout.disable();
 		} else if (eventEditAllowed == EditPermissionType.REFUSED) {
 			layout.disable();
 		} else if (eventEditAllowed == EditPermissionType.WITHOUT_OWNERSHIP) {
-			layout.disableWithViewAllow(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+			editComponent.addButtonToExcludedList(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+			layout.disableWithViewAllow();
 		}
 	}
 

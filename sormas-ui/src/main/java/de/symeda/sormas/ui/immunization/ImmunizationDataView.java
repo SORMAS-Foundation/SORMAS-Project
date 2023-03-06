@@ -72,9 +72,11 @@ public class ImmunizationDataView extends AbstractImmunizationView {
 		final boolean deleted = FacadeProvider.getImmunizationFacade().isDeleted(uuid);
 
 		if (deleted) {
-			layout.disable(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+			editComponent.addButtonToExcludedList(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+			layout.disable();
 		} else if (immunizationEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
-			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+			editComponent.addButtonToExcludedList(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+			layout.disable();
 		} else if (immunizationEditAllowed.equals(EditPermissionType.REFUSED)) {
 			layout.disable();
 		}
