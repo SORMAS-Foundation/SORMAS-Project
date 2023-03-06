@@ -162,7 +162,7 @@ public class CreateNewCaseSteps implements En {
   private final SoftAssert softly;
   private static BaseSteps baseSteps;
   protected static Case oneCase;
-  protected static Case oneCaseDe;
+  public static Case oneCaseDe;
   public static final String userDirPath = System.getProperty("user.dir");
   public static List<String> casesUUID = new ArrayList<>();
   private static String currentUrl;

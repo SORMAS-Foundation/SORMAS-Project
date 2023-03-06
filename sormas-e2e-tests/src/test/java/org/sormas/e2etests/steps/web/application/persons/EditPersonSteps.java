@@ -114,6 +114,7 @@ import org.sormas.e2etests.pages.application.contacts.EditContactPersonPage;
 import org.sormas.e2etests.pages.application.persons.EditPersonPage;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
+import org.sormas.e2etests.steps.web.application.cases.CreateNewCaseSteps;
 import org.sormas.e2etests.steps.web.application.contacts.EditContactPersonSteps;
 import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
 import org.sormas.e2etests.steps.web.application.immunizations.EditImmunizationSteps;
@@ -573,6 +574,22 @@ public class EditPersonSteps implements En {
           webDriverHelpers.isElementGreyedOut(FIRST_NAME_INPUT);
           webDriverHelpers.isElementGreyedOut(LAST_NAME_INPUT);
           webDriverHelpers.isElementGreyedOut(EditPersonPage.SAVE_BUTTON);
+        });
+
+    And(
+        "^I check if first name of person has not been changed$",
+        () -> {
+          softly.assertNotEquals(
+              webDriverHelpers.getValueFromWebElement(FIRST_NAME_INPUT),
+              personFirstName,
+              "Names are equal!!");
+          softly.assertAll();
+          System.out.println("Zmienione imie: " + personFirstName);
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(FIRST_NAME_INPUT),
+              CreateNewCaseSteps.oneCaseDe.getFirstName(),
+              "Names are not equal!!");
+          softly.assertAll();
         });
   }
 

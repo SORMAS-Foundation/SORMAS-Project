@@ -430,12 +430,12 @@ Feature: Edit Persons
     And I click on the Persons button from navbar
     And I search by copied uuid of the person in Person Directory for DE
     And I click on first person in person directory
-    #should be read-only but it is still editable
-#    Then I check if editable fields are read only for person
-    #check iif sync works
+    #should be editable
+    And I check if first name of person has been changed
+    #check iif sync does not work
     When I back to tab number 1
     And I navigate to case person tab
-    And I check if first name of person has been changed
+    And I check if first name of person has not been changed
 
   @tmsLink=SORDEV-12088 @env_s2s_1
   Scenario: [S2S] Simultaneous Work on Person [4]
