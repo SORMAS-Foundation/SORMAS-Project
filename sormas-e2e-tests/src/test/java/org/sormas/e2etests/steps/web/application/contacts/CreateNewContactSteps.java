@@ -234,7 +234,6 @@ public class CreateNewContactSteps implements En {
           selectSex(samePersonDataContact.getSex());
           selectResponsibleRegion(region);
           selectResponsibleDistrict(district);
-          System.out.println("Imie kontaktu: " + samePersonDataContact.getFirstName());
         });
 
     When(
