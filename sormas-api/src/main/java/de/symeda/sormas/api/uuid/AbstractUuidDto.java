@@ -78,15 +78,11 @@ public class AbstractUuidDto implements HasUuid, HasCaption, Serializable {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		AbstractUuidDto that = (AbstractUuidDto) o;
-		return getUniqueUuid().equals(that.getUniqueUuid());
+		return uuid.equals(that.uuid);
 	}
 
 	@Override
 	public int hashCode() {
 		return Objects.hash(uuid);
-	}
-
-	protected String getUniqueUuid() {
-		return uuid;
 	}
 }
