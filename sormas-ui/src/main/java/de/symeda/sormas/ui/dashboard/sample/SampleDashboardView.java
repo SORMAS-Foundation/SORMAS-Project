@@ -15,12 +15,19 @@
 
 package de.symeda.sormas.ui.dashboard.sample;
 
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.CustomLayout;
 
+import de.symeda.sormas.api.dashboard.sample.SampleShipmentStatus;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.sample.SamplePurpose;
+import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
 import de.symeda.sormas.ui.dashboard.DashboardType;
+import de.symeda.sormas.ui.dashboard.components.DashboardHeadingComponent;
+import de.symeda.sormas.ui.dashboard.sample.components.SampleCountTilesComponent;
 import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.TestResultsStatisticsComponent;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 public class SampleDashboardView extends AbstractDashboardView {
@@ -34,7 +41,11 @@ public class SampleDashboardView extends AbstractDashboardView {
 	private static final String SHIPMENT_STATUS = "shipmentStatus";
 
 	private final SampleDashboardDataProvider dataProvider;
-	private final TestResultsStatisticsComponent labResultsStatisticsComponent;
+	private final TestResultsStatisticsComponent countsByResultType;
+	private final SampleCountTilesComponent<SamplePurpose> countsByPurpose;
+	private final SampleCountTilesComponent<SpecimenCondition> countsBySpecimenCondition;
+	private final SampleCountTilesComponent<SampleShipmentStatus> countsBySpecimenShipmentStatus;
+	private final DashboardHeadingComponent heading;
 
 	public SampleDashboardView() {
 		super(VIEW_NAME);
@@ -49,24 +60,47 @@ public class SampleDashboardView extends AbstractDashboardView {
 
 		dashboardLayout.addComponent(filterLayout);
 
+		heading = new DashboardHeadingComponent(Captions.sampleDashboardAllSamples);
+		heading.setMargin(new MarginInfo(true, true, false, true));
+		dashboardLayout.addComponent(heading);
+
 		CustomLayout sampleCountsLayout = new CustomLayout();
 		sampleCountsLayout.setTemplateContents(
 			LayoutUtil.fluidRowLocs(LAB_RESULTS, SAMPLE_PURPOSE, TEST_RESULTS)
-				+ LayoutUtil
-					.fluidRow(LayoutUtil.fluidColumnLoc(2, 0, 4, 0, SPECIMEN_CONDITION), LayoutUtil.fluidColumnLoc(5, 0, 8, 0, SHIPMENT_STATUS)));
+				+ LayoutUtil.fluidRowCss(
+					CssStyles.VSPACE_TOP_1,
+					LayoutUtil.fluidColumnLoc(3, 0, 4, 0, SPECIMEN_CONDITION),
+					LayoutUtil.fluidColumnLoc(6, 0, 8, 0, SHIPMENT_STATUS)));
 
 		dashboardLayout.addComponent(sampleCountsLayout);
 
-		labResultsStatisticsComponent =
+		countsByResultType =
 			new TestResultsStatisticsComponent(Captions.sampleDashboardAllSamples, null, Captions.sampleDashboardFinalLabResults, true);
-		sampleCountsLayout.addComponent(labResultsStatisticsComponent, LAB_RESULTS);
+		countsByResultType.hideHeading();
+		sampleCountsLayout.addComponent(countsByResultType, LAB_RESULTS);
 
+		countsByPurpose = new SampleCountTilesComponent<>(SamplePurpose.class, Captions.sampleDashboardSamplePurpose);
+		countsByPurpose.setTitleStyleNames(CssStyles.H3, CssStyles.VSPACE_TOP_NONE);
+		sampleCountsLayout.addComponent(countsByPurpose, SAMPLE_PURPOSE);
+
+		countsBySpecimenCondition = new SampleCountTilesComponent<>(SpecimenCondition.class, Captions.sampleDashboardSpecimenCondition);
+		countsBySpecimenCondition.setTitleStyleNames(CssStyles.H4);
+		sampleCountsLayout.addComponent(countsBySpecimenCondition, SPECIMEN_CONDITION);
+
+		countsBySpecimenShipmentStatus = new SampleCountTilesComponent<>(SampleShipmentStatus.class, Captions.sampleDashboardShipmentStatus);
+		countsBySpecimenShipmentStatus.setTitleStyleNames(CssStyles.H4);
+		sampleCountsLayout.addComponent(countsBySpecimenShipmentStatus, SHIPMENT_STATUS);
 	}
 
 	@Override
 	public void refreshDashboard() {
 		dataProvider.refreshData();
 
-		labResultsStatisticsComponent.update(dataProvider.getTestResultCountByResultType());
+		heading.updateTotalLabel(String.valueOf(dataProvider.getTestResultCountByResultType().values().stream().mapToLong(Long::longValue).sum()));
+
+		countsByResultType.update(dataProvider.getTestResultCountByResultType());
+		countsByPurpose.update(dataProvider.getTestResultCountByPurpose());
+		countsBySpecimenCondition.update(dataProvider.getTestResultCountBySpecimenCondition());
+		countsBySpecimenShipmentStatus.update(dataProvider.getTestResultCountByShipmentStatus());
 	}
 }

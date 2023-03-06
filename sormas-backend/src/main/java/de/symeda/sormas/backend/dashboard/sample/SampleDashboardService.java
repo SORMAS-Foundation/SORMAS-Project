@@ -78,7 +78,7 @@ public class SampleDashboardService {
 		return getSampleCountsByEnumProperty(Sample.SAMPLE_PURPOSE, SamplePurpose.class, dashboardCriteria, null);
 	}
 
-	private static Map<org.apache.commons.lang3.tuple.Pair<Boolean, Boolean>, SampleShipmentStatus> shipmentStatusMapping = new HashMap<>();
+	private static Map<Pair<Boolean, Boolean>, SampleShipmentStatus> shipmentStatusMapping = new HashMap<>();
 
 	static {
 		shipmentStatusMapping.put(Pair.of(true, true), SampleShipmentStatus.SHIPPED);

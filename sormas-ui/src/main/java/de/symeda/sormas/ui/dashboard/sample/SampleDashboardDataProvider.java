@@ -19,9 +19,12 @@ import java.util.Map;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
+import de.symeda.sormas.api.dashboard.sample.SampleShipmentStatus;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDashboardFilterDateType;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SamplePurpose;
+import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardDataProvider;
 
 public class SampleDashboardDataProvider extends AbstractDashboardDataProvider<SampleDashboardCriteria> {
@@ -33,10 +36,18 @@ public class SampleDashboardDataProvider extends AbstractDashboardDataProvider<S
 	private Boolean withNoDisease;
 
 	private Map<PathogenTestResultType, Long> testResultCountByResultType;
+	private Map<SamplePurpose, Long> testResultCountByPurpose;
+	private Map<SpecimenCondition, Long> testResultCountBySpecimenCondition;
+	private Map<SampleShipmentStatus, Long> testResultCountByShipmentStatus;
 
 	@Override
 	public void refreshData() {
 		testResultCountByResultType = FacadeProvider.getSampleDashboardFacade().getSampleCountsByResultType(buildDashboardCriteriaWithDates());
+		testResultCountByPurpose = FacadeProvider.getSampleDashboardFacade().getSampleCountsByPurpose(buildDashboardCriteriaWithDates());
+		testResultCountBySpecimenCondition =
+			FacadeProvider.getSampleDashboardFacade().getSampleCountsBySpecimenCondition(buildDashboardCriteriaWithDates());
+		testResultCountByShipmentStatus =
+			FacadeProvider.getSampleDashboardFacade().getSampleCountsByShipmentStatus(buildDashboardCriteriaWithDates());
 	}
 
 	@Override
@@ -80,5 +91,17 @@ public class SampleDashboardDataProvider extends AbstractDashboardDataProvider<S
 
 	public Map<PathogenTestResultType, Long> getTestResultCountByResultType() {
 		return testResultCountByResultType;
+	}
+
+	public Map<SamplePurpose, Long> getTestResultCountByPurpose() {
+		return testResultCountByPurpose;
+	}
+
+	public Map<SpecimenCondition, Long> getTestResultCountBySpecimenCondition() {
+		return testResultCountBySpecimenCondition;
+	}
+
+	public Map<SampleShipmentStatus, Long> getTestResultCountByShipmentStatus() {
+		return testResultCountByShipmentStatus;
 	}
 }

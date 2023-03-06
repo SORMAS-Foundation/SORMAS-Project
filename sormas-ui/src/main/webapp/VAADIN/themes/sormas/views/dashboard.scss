@@ -1,5 +1,8 @@
 
 @mixin sormas-dashboard-view {
+  .heading-title-label {
+	  margin-top: 12px;
+  }
 
   .dashboard-screen {
 	  overflow-x: hidden;
