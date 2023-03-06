@@ -461,6 +461,10 @@
 	</security-role>
 
 	<security-role>
+		<role-name>DASHBOARD_SAMPLES_VIEW</role-name>
+	</security-role>
+
+	<security-role>
 		<role-name>CASE_CLINICIAN_VIEW</role-name>
 	</security-role>
 
@@ -610,6 +614,14 @@
 
 	<security-role>
 		<role-name>SORMAS_TO_SORMAS_PROCESS</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EXTERNAL_SURVEILLANCE_SHARE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EXTERNAL_SURVEILLANCE_DELETE</role-name>
 	</security-role>
 
 	<security-role>

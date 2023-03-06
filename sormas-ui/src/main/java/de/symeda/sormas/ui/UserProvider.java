@@ -94,6 +94,10 @@ public class UserProvider {
 		return getUserRights().contains(userRight);
 	}
 
+	public boolean hasAnyRight(Set<UserRight> userRight) {
+		return getUserRights().stream().anyMatch(userRight::contains);
+	}
+
 	public boolean hasAllUserRights(UserRight... userRights) {
 		return getUserRights().containsAll(Arrays.asList(userRights));
 	}

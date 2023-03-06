@@ -30,6 +30,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.QueryDetails;
 
 @SuppressWarnings("serial")
 public class MergeContactsFilterComponent extends VerticalLayout {
@@ -50,25 +51,33 @@ public class MergeContactsFilterComponent extends VerticalLayout {
 	private Button btnConfirmFilters;
 	private Button btnResetFilters;
 
-	private Binder<ContactCriteria> binder = new Binder<>(ContactCriteria.class);
+	private Binder<ContactCriteria> criteriaBinder = new Binder<>(ContactCriteria.class);
 	private ContactCriteria criteria;
+	private Binder<QueryDetails> queryDetailsBinder = new Binder<>(QueryDetails.class);
+	private QueryDetails queryDetails;
 	private Runnable filtersUpdatedCallback;
 	private Consumer<Boolean> ignoreRegionCallback;
 
 	private Label lblNumberOfDuplicates;
 
-	public MergeContactsFilterComponent(ContactCriteria criteria) {
+	public MergeContactsFilterComponent(ContactCriteria criteria, QueryDetails queryDetails) {
 
 		setSpacing(false);
 		setMargin(false);
 		setWidth(100, Unit.PERCENTAGE);
 
-		this.criteria = criteria;
-
 		addFirstRowLayout();
 		addSecondRowLayout();
 
-		binder.readBean(this.criteria);
+		setValue(criteria, queryDetails);
+	}
+
+	private void setValue(ContactCriteria criteria, QueryDetails queryDetails) {
+		this.criteria = criteria;
+		this.queryDetails = queryDetails;
+
+		criteriaBinder.readBean(this.criteria);
+		queryDetailsBinder.readBean(this.queryDetails);
 	}
 
 	private void addFirstRowLayout() {
@@ -82,7 +91,9 @@ public class MergeContactsFilterComponent extends VerticalLayout {
 		dfCreationDateFrom.setWidth(200, Unit.PIXELS);
 		dfCreationDateFrom.setPlaceholder(I18nProperties.getString(Strings.promptCreationDateFrom));
 		dfCreationDateFrom.setCaption(I18nProperties.getCaption(Captions.creationDate));
-		binder.forField(dfCreationDateFrom).withConverter(new LocalDateToDateConverter(ZoneId.systemDefault())).bind(ContactCriteria.CREATION_DATE_FROM);
+		criteriaBinder.forField(dfCreationDateFrom)
+			.withConverter(new LocalDateToDateConverter(ZoneId.systemDefault()))
+			.bind(ContactCriteria.CREATION_DATE_FROM);
 		firstRowLayout.addComponent(dfCreationDateFrom);
 
 		dfCreationDateTo = new DateField();
@@ -90,7 +101,9 @@ public class MergeContactsFilterComponent extends VerticalLayout {
 		dfCreationDateTo.setWidth(200, Unit.PIXELS);
 		CssStyles.style(dfCreationDateTo, CssStyles.FORCE_CAPTION);
 		dfCreationDateTo.setPlaceholder(I18nProperties.getString(Strings.promptDateTo));
-		binder.forField(dfCreationDateTo).withConverter(new LocalDateToDateConverter(ZoneId.systemDefault())).bind(ContactCriteria.CREATION_DATE_TO);
+		criteriaBinder.forField(dfCreationDateTo)
+			.withConverter(new LocalDateToDateConverter(ZoneId.systemDefault()))
+			.bind(ContactCriteria.CREATION_DATE_TO);
 		firstRowLayout.addComponent(dfCreationDateTo);
 
 		cbDisease = new ComboBox<>();
@@ -99,7 +112,7 @@ public class MergeContactsFilterComponent extends VerticalLayout {
 		CssStyles.style(cbDisease, CssStyles.FORCE_CAPTION);
 		cbDisease.setPlaceholder(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.DISEASE));
 		cbDisease.setItems(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true));
-		binder.bind(cbDisease, ContactDto.DISEASE);
+		criteriaBinder.bind(cbDisease, ContactDto.DISEASE);
 		firstRowLayout.addComponent(cbDisease);
 
 		tfSearch = new TextField();
@@ -107,7 +120,7 @@ public class MergeContactsFilterComponent extends VerticalLayout {
 		tfSearch.setWidth(200, Unit.PIXELS);
 		CssStyles.style(tfSearch, CssStyles.FORCE_CAPTION);
 		tfSearch.setPlaceholder(I18nProperties.getString(Strings.promptContactsSearchField));
-		binder.bind(tfSearch, ContactCriteria.CONTACT_OR_CASE_LIKE);
+		criteriaBinder.bind(tfSearch, ContactCriteria.CONTACT_OR_CASE_LIKE);
 		firstRowLayout.addComponent(tfSearch);
 
 		eventSearch = new TextField();
@@ -115,7 +128,7 @@ public class MergeContactsFilterComponent extends VerticalLayout {
 		eventSearch.setWidth(200, Unit.PIXELS);
 		CssStyles.style(eventSearch, CssStyles.FORCE_CAPTION);
 		eventSearch.setPlaceholder(I18nProperties.getString(Strings.promptCaseOrContactEventSearchField));
-		binder.bind(eventSearch, ContactCriteria.EVENT_LIKE);
+		criteriaBinder.bind(eventSearch, ContactCriteria.EVENT_LIKE);
 		firstRowLayout.addComponent(eventSearch);
 
 		tfReportingUser = new TextField();
@@ -123,7 +136,7 @@ public class MergeContactsFilterComponent extends VerticalLayout {
 		tfReportingUser.setWidth(200, Unit.PIXELS);
 		CssStyles.style(tfReportingUser, CssStyles.FORCE_CAPTION);
 		tfReportingUser.setPlaceholder(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.REPORTING_USER));
-		binder.bind(tfReportingUser, ContactCriteria.REPORTING_USER_LIKE);
+		criteriaBinder.bind(tfReportingUser, ContactCriteria.REPORTING_USER_LIKE);
 		firstRowLayout.addComponent(tfReportingUser);
 
 		cbIgnoreRegion = new CheckBox();
@@ -156,7 +169,7 @@ public class MergeContactsFilterComponent extends VerticalLayout {
 		CssStyles.style(cbRegion, CssStyles.FORCE_CAPTION);
 		cbRegion.setPlaceholder(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.REGION));
 		cbRegion.setItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
-		binder.bind(cbRegion, ContactDto.REGION);
+		criteriaBinder.bind(cbRegion, ContactDto.REGION);
 		cbRegion.addValueChangeListener(e -> {
 			RegionReferenceDto region = e.getValue();
 			cbDistrict.clear();
@@ -176,12 +189,22 @@ public class MergeContactsFilterComponent extends VerticalLayout {
 		cbDistrict.setWidth(200, Unit.PIXELS);
 		CssStyles.style(cbDistrict, CssStyles.FORCE_CAPTION);
 		cbDistrict.setPlaceholder(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.DISTRICT));
-		binder.bind(cbDistrict, ContactDto.DISTRICT);
+		criteriaBinder.bind(cbDistrict, ContactDto.DISTRICT);
 		secondRowLayout.addComponent(cbDistrict);
+
+		ComboBox<Integer> cbResultLimit = new ComboBox<>();
+		cbResultLimit.setId(QueryDetails.RESULT_LIMIT);
+		cbResultLimit.setWidth(200, Unit.PIXELS);
+		cbResultLimit.setCaption(I18nProperties.getCaption(Captions.QueryDetails_resultLimit));
+		cbResultLimit.setItems(50, 100, 500, 1000);
+		cbResultLimit.setEmptySelectionAllowed(false);
+		queryDetailsBinder.bind(cbResultLimit, QueryDetails.RESULT_LIMIT);
+		secondRowLayout.addComponent(cbResultLimit);
 
 		btnConfirmFilters = ButtonHelper.createButton(Captions.actionConfirmFilters, event -> {
 			try {
-				binder.writeBean(criteria);
+				criteriaBinder.writeBean(criteria);
+				queryDetailsBinder.writeBean(queryDetails);
 				filtersUpdatedCallback.run();
 			} catch (ValidationException e) {
 				// No validation needed
@@ -208,6 +231,8 @@ public class MergeContactsFilterComponent extends VerticalLayout {
 		secondRowLayout.addComponent(lblNumberOfDuplicates);
 		secondRowLayout.setComponentAlignment(lblNumberOfDuplicates, Alignment.MIDDLE_RIGHT);
 		secondRowLayout.setExpandRatio(lblNumberOfDuplicates, 1);
+
+		queryDetailsBinder.bind(cbResultLimit, QueryDetails.RESULT_LIMIT);
 
 		addComponent(secondRowLayout);
 	}

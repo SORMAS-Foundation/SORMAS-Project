@@ -2489,6 +2489,12 @@ public class EditCaseSteps implements En {
     When(
         "I click to hand over the ownership of the case in Share popup",
         () -> webDriverHelpers.clickOnWebElementBySelector(HAND_THE_OWNERSHIP_CHECKBOX));
+    When(
+        "I click to share samples of the case in Share popup",
+        () -> webDriverHelpers.clickOnWebElementBySelector(SAHRE_SAMPLES_CHECKBOX));
+    When(
+        "I click to share reports of the case in Share popup",
+        () -> webDriverHelpers.clickOnWebElementBySelector(SHARE_REPORTS_CHECKBOX));
 
     When(
         "I click on share button in s2s share popup and wait for share to finish",
@@ -2499,6 +2505,13 @@ public class EditCaseSteps implements En {
           webDriverHelpers.refreshCurrentPage();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               LINKED_SHARED_ORGANIZATION_SELECTED_VALUE, 60);
+        });
+
+    When(
+        "I click on share button in s2s share popup",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SHARE_SORMAS_2_SORMAS_POPUP_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
         });
 
     And(
@@ -2683,6 +2696,20 @@ public class EditCaseSteps implements En {
         "I check if edit sample button is unavailable",
         () -> {
           softly.assertFalse(webDriverHelpers.isElementPresent(EDIT_SAMPLE_BUTTON));
+          softly.assertAll();
+        });
+    When(
+        "I check if share warning is displayed",
+        () -> {
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.isElementPresent(SHARE_PENDING_WARNING_DE);
+        });
+
+    When(
+        "I check if popup with error with handover header displays",
+        () -> {
+          softly.assertTrue(
+              webDriverHelpers.isElementVisibleWithTimeout(ERROR_IN_HANDOVER_HEADER_DE, 3));
           softly.assertAll();
         });
     And(

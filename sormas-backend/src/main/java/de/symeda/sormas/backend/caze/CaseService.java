@@ -63,9 +63,9 @@ import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseListEntryDto;
 import de.symeda.sormas.api.caze.CaseLogic;
+import de.symeda.sormas.api.caze.CaseMergeIndexDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDefinition;
@@ -1122,7 +1122,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 				if (!sharedCaseUuids.isEmpty()) {
 					try {
-						externalSurveillanceToolGatewayFacade.sendCases(sharedCaseUuids, archived);
+						externalSurveillanceToolGatewayFacade.sendCasesInternal(entityUuids, archived);
 					} catch (ExternalSurveillanceToolException e) {
 						throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
 					}
@@ -1625,15 +1625,12 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 	@Override
 	public EditPermissionType getEditPermissionType(Case caze) {
 
-		if (caze.getSormasToSormasOriginInfo() != null && !caze.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
-			return EditPermissionType.REFUSED;
-		}
-
 		if (!inJurisdictionOrOwned(caze)) {
 			return EditPermissionType.REFUSED;
 		}
 
-		if (sormasToSormasShareInfoService.isCaseOwnershipHandedOver(caze)) {
+		if (sormasToSormasShareInfoService.isCaseOwnershipHandedOver(caze)
+			|| (caze.getSormasToSormasOriginInfo() != null && !caze.getSormasToSormasOriginInfo().isOwnershipHandedOver())) {
 			return EditPermissionType.WITHOUT_OWNERSHIP;
 		}
 
@@ -1909,7 +1906,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 	 * @param limit
 	 *            null: no limit
 	 */
-	public List<CaseIndexDto[]> getCasesForDuplicateMerging(
+	public List<CaseMergeIndexDto[]> getCasesForDuplicateMerging(
 		CaseCriteria criteria,
 		@Min(1) Integer limit,
 		boolean showDuplicatesWithDifferentRegion,
@@ -2031,33 +2028,33 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		}
 
 		List<Object[]> foundIds = typedQuery.getResultList();
-		List<CaseIndexDto[]> resultList = new ArrayList<>();
+		List<CaseMergeIndexDto[]> resultList = new ArrayList<>();
 
 		if (!foundIds.isEmpty()) {
-			CriteriaQuery<CaseIndexDto> indexCasesCq = cb.createQuery(CaseIndexDto.class);
+			CriteriaQuery<CaseMergeIndexDto> indexCasesCq = cb.createQuery(CaseMergeIndexDto.class);
 			Root<Case> indexRoot = indexCasesCq.from(Case.class);
 			selectIndexDtoFields(new CaseQueryContext(cb, indexCasesCq, indexRoot));
 			indexCasesCq.where(
 				indexRoot.get(Case.ID).in(foundIds.stream().map(a -> Arrays.copyOf(a, 2)).flatMap(Arrays::stream).collect(Collectors.toSet())));
-			Map<Long, CaseIndexDto> indexCases =
+			Map<Long, CaseMergeIndexDto> indexCases =
 				em.createQuery(indexCasesCq).getResultStream().collect(Collectors.toMap(c -> c.getId(), Function.identity()));
 
 			for (Object[] idPair : foundIds) {
 				try {
 					// Cloning is necessary here to allow us to add the same CaseIndexDto to the grid multiple times
-					CaseIndexDto parent = (CaseIndexDto) indexCases.get(idPair[0]).clone();
-					CaseIndexDto child = (CaseIndexDto) indexCases.get(idPair[1]).clone();
+					CaseMergeIndexDto parent = (CaseMergeIndexDto) indexCases.get(idPair[0]).clone();
+					CaseMergeIndexDto child = (CaseMergeIndexDto) indexCases.get(idPair[1]).clone();
 
 					if (parent.getCompleteness() == null && child.getCompleteness() == null
 						|| parent.getCompleteness() != null
 							&& (child.getCompleteness() == null || (parent.getCompleteness() >= child.getCompleteness()))) {
 						resultList.add(
-							new CaseIndexDto[] {
+							new CaseMergeIndexDto[] {
 								parent,
 								child });
 					} else {
 						resultList.add(
-							new CaseIndexDto[] {
+							new CaseMergeIndexDto[] {
 								child,
 								parent });
 					}

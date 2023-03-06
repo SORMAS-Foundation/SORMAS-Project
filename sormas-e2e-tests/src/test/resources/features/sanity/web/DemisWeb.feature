@@ -55,7 +55,7 @@ Scenario: Create and send laboratory request via Demis
     | 95410-7            | Antikörper-Neutralisationstest                          |                                             |
     | 97097-0            | Antigen-Nachweistest                                    |                                             |
 
-  @tmsLink=SORDEV-8689 @env_d2s @LoginKeycloak
+  @tmsLink=SORDEV-8689 @env_d2s @LoginKeycloak @precon @LanguageRisk
   Scenario: Test Handle New Profile: Process entities related to the same reportId
     Given API : Login to DEMIS server
     Then I create and send Laboratory Notification
@@ -67,7 +67,8 @@ Scenario: Create and send laboratory request via Demis
     And I log in as a National User
     Then I click on the Messages button from navbar
     And I click on fetch messages button
-    And I click on process button for 3 result in Message Directory page
+    And I filter by the name of the 1 most recently created person in Messages Directory
+    And I click on Verarbeiten button in Messages Directory
     And I pick a new person in Pick or create person popup during case creation for DE
     And I choose create new case in Pick or create entry form for DE
     And I check that create new case form with pathogen detection reporting process is displayed for DE
@@ -83,7 +84,9 @@ Scenario: Create and send laboratory request via Demis
     And I navigate to case person tab
     And I check that first and last name are equal to data form 1 result in laboratory notification
     And I click on the Messages button from navbar
-    When I click on process button for 2 result in Message Directory page
+    And I click on the RESET FILTERS button for Messages
+    And I filter by the name of the 2 most recently created person in Messages Directory
+    And I click on Verarbeiten button in Messages Directory
     And I pick a new person in Pick or create person popup during case creation for DE
     And I choose create new case in Pick or create entry form for DE
     And I check that create new case form with pathogen detection reporting process is displayed for DE
@@ -92,7 +95,7 @@ Scenario: Create and send laboratory request via Demis
     And I check that new sample form with pathogen detection reporting process is displayed
     And I click on "discard" button in new sample form with pathogen detection reporting process
     Then I back to message directory
-    When I click on process button for 2 result in Message Directory page
+    And I click on Verarbeiten button in Messages Directory
     And I pick a new person in Pick or create person popup during case creation for DE
     And I choose create new case in Pick or create entry form for DE
     And I check that create new case form with pathogen detection reporting process is displayed for DE
@@ -102,8 +105,10 @@ Scenario: Create and send laboratory request via Demis
     And I click on "save" button in new sample form with pathogen detection reporting process
     And I click on "save" button in new sample form with pathogen detection reporting process
     And I click on YES button in Update case disease variant popup window
-    And I verify that status for result 2 is set to processed in Message Directory page
-    When I click on process button for 1 result in Message Directory page
+    And I verify that status for result 1 is set to processed in Message Directory page
+    And I click on the RESET FILTERS button for Messages
+    And I filter by the name of the 3 most recently created person in Messages Directory
+    And I click on Verarbeiten button in Messages Directory
     And I pick a new person in Pick or create person popup during case creation for DE
     And I choose create new case in Pick or create entry form for DE
     And I fill only mandatory fields to convert laboratory message into a case for DE
@@ -145,17 +150,20 @@ Scenario: Create and send laboratory request via Demis
   Scenario: Test delete option in Lab Messages
     Given API : Login to DEMIS server
     Then I create and send Laboratory Notification
-    Then I create and send Laboratory Notification
+    And I collect first and last name of the person from Laboratory Notification
+    And I create and send Laboratory Notification
+    And I collect first and last name of the person from Laboratory Notification
     When I log in as a National User
     And I click on the Messages button from navbar
     And I click on fetch messages button
+    And I filter by the name of the 1 most recently created person in Messages Directory
     Then I click on the eye icon next for the first fetched message
     And I collect message uuid
     Then I click Delete button in Message form
     And I confirm message deletion
-    And I filter messages by collected uuid
     And I check that number of displayed messages results is 0
     And I click on reset filters button from Message Directory
+    And I filter by the name of the 2 most recently created person in Messages Directory
     And I click on process button for 1 result in Message Directory page
     Then I create a new person and a new case from received message
     Then I click on the eye icon next for the first fetched message
@@ -191,6 +199,7 @@ Scenario: Create and send laboratory request via Demis
     When I log in as a Admin User
     And I click on the Messages button from navbar
     And I click on fetch messages button
+    And I filter by last created person via API in Messages Directory
     Then I click on process button for 1 result in Message Directory page
     And I pick a new person in Pick or create person popup during case creation for DE
     And I choose create new case in Pick or create entry form for DE
@@ -207,3 +216,95 @@ Scenario: Create and send laboratory request via Demis
     And I check if "test result" is prefilled in New sample form while processing a DEMIS LabMessage
     And I check if "test result verified" is prefilled in New sample form while processing a DEMIS LabMessage
     And I check if "test result verified" is set to "JA"
+
+  @tmsLink=SORDEV-6171 @env_d2s @LoginKeycloak
+  Scenario: Test [DEMIS2SORMAS] Prefill SampleMaterial
+    Given API : Login to DEMIS server
+    Then I create and send Laboratory Notification
+    And I log in as a Admin User
+    Then I click on the Messages button from navbar
+    And I click on fetch messages button
+    Then I filter by last created person via API in Messages Directory
+    And I collect message data from searched record in Messages directory
+    And I click on process button for 1 result in Message Directory page
+    And I pick a new person in Pick or create person popup during case creation for DE
+    And I choose create new case in Pick or create entry form for DE
+    And I check that create new case form with pathogen detection reporting process is displayed for DE
+    And I fill only mandatory fields to convert laboratory message into a case for DE
+    And I click on save button in the case popup
+    Then I check if sample material has a option "Nasen-Abstrich"
+    And I check if sample material has a option "Oropharynx-Aspirat"
+    And I check if sample material has a option "Oropharynx-Aspirat"
+    And I check if sample material has a option "Nasopharynx-Abstrich"
+    And I check if sample material has a option "Pleuralflüssigkeitsprobe"
+
+  @tmsLink=SORDEV-5629 @env_d2s @LoginKeycloak
+  Scenario: [4841] [Sormas@DEMIS] Add columns in Lab Massage Directory [0.5]
+    Given API : Login to DEMIS server
+    Then I create and send Laboratory Notification
+    And I log in as a Admin User
+    Then I click on the Messages button from navbar
+    And I click on fetch messages button
+    Then I filter by last created person via API in Messages Directory
+    And I collect message data from searched record in Messages directory
+    Then I check if "laboratory name" in received message is set to "Testlabor"
+    And I check if "laboratory postal code" in received message is set to "12347"
+    And I check if postal code for test instance in received message is set correctly
+
+  @tmsLink=SORDEV-8810 @env_d2s @LoginKeycloak
+  Scenario: [DEMIS2SORMAS] Test messages directory status quick filters
+    Given I log in as a Admin User
+    When I click on the Messages button from navbar
+    Then I check that "Alle" quick filter button is selected in Message directory page
+    When I click on "Unverarbeitet" quick filter above the messages in Message directory page
+    Then I check that "Unverarbeitet" quick filter button is selected in Message directory page
+    And I check that the Status column is filtered by "Unverarbeitet" on Message directory page
+    When I click on "Verarbeitet" quick filter above the messages in Message directory page
+    Then I check that "Verarbeitet" quick filter button is selected in Message directory page
+    And I check that the Status column is filtered by "Verarbeitet" on Message directory page
+    When I click on "Unklar" quick filter above the messages in Message directory page
+    Then I check that "Unklar" quick filter button is selected in Message directory page
+    And I check that the Status column is filtered by "Unklar" on Message directory page
+    When I click on "Weitergeleitet" quick filter above the messages in Message directory page
+    Then I check that "Weitergeleitet" quick filter button is selected in Message directory page
+    And I check that the Status column is filtered by "Weitergeleitet" on Message directory page
+
+    @tmsLink=SORDEV-9104 @env_d2s @LoginKeycloak
+    Scenario: Test [DEMIS2SORMAS] Add new userflow for lab message processing [1]
+      Given API : Login to DEMIS server
+      Then I create and send Laboratory Notification
+      And I log in as a Admin User
+      Then I click on the Messages button from navbar
+      And I click on fetch messages button
+      Then I filter by last created person via API in Messages Directory
+      And I click on Verarbeiten button in Messages Directory
+      Then I create a new person and a new case from received message
+      Then I click on the Cases button from navbar
+      And I search the case by last created person via Demis message
+      Then I click on the first Case ID from Case Directory
+
+  @tmsLink=SORDEV-9104 @env_d2s @LoginKeycloak
+  Scenario: Test [DEMIS2SORMAS] Add new userflow for lab message processing [2]
+    Given API : Login to DEMIS server
+    Then I create and send Laboratory Notification
+    And I log in as a Admin User
+    Then I click on the Messages button from navbar
+    And I click on fetch messages button
+    Then I filter by last created person via API in Messages Directory
+    And I click on Verarbeiten button in Messages Directory
+    Then I create a new person from received message
+    And I create a new contact form received message
+    Then I check if contact tab was opened after create new contact from message
+
+  @tmsLink=SORDEV-9104 @env_d2s @LoginKeycloak
+  Scenario: Test [DEMIS2SORMAS] Add new userflow for lab message processing [3]
+    Given API : Login to DEMIS server
+    Then I create and send Laboratory Notification
+    And I log in as a Admin User
+    Then I click on the Messages button from navbar
+    And I click on fetch messages button
+    Then I filter by last created person via API in Messages Directory
+    And I click on Verarbeiten button in Messages Directory
+    Then I create a new person from received message
+    And I create a new event participant form received message
+    Then I check if event participant tab was opened after create new contact from message

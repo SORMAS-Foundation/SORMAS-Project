@@ -620,7 +620,10 @@ public class SampleFacadeEjb implements SampleFacade {
 			joins.getContact().get(Contact.CONTACT_CLASSIFICATION),
 			joins.getContact().get(Contact.CONTACT_STATUS),
 			joins.getLab().get(AbstractDomainObject.UUID),
-			joins.getCaseFacility().get(AbstractDomainObject.UUID) };
+			joins.getCaseFacility().get(AbstractDomainObject.UUID),
+			joins.getCaseResponsibleRegion().get(Region.NAME),
+			joins.getCaseResponsibleDistrict().get(District.NAME),
+			joins.getCaseResponsibleCommunity().get(Community.NAME) };
 
 		Collections.addAll(selections, tmp);
 		selections.addAll(sampleService.getJurisdictionSelections(sampleQueryContext));
@@ -879,8 +882,7 @@ public class SampleFacadeEjb implements SampleFacade {
 			User currentUser = userService.getCurrentUser();
 
 			pseudonymizer.pseudonymizeDto(SampleDto.class, dto, jurisdictionFlags.getInJurisdiction(), s -> {
-				pseudonymizer
-					.pseudonymizeUser(source.getReportingUser(), currentUser, s::setReportingUser);
+				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, s::setReportingUser);
 				pseudonymizeAssociatedObjects(
 					s.getAssociatedCase(),
 					s.getAssociatedContact(),

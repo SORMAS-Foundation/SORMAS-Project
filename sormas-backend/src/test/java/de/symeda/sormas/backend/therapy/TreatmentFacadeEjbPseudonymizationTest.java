@@ -18,7 +18,6 @@ package de.symeda.sormas.backend.therapy;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
-import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -36,7 +35,6 @@ import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.backend.AbstractBeanTest;
-import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 
 public class TreatmentFacadeEjbPseudonymizationTest extends AbstractBeanTest {
@@ -70,7 +68,7 @@ public class TreatmentFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			creator.getUserRoleReference(DefaultUserRole.CASE_OFFICER),
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 
-		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
+		loginWith(user2);
 	}
 
 	@Test

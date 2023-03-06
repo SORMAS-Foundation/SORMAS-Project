@@ -573,6 +573,11 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>DASHBOARD_SAMPLES_VIEW</role-name>
+        <group-name>DASHBOARD_SAMPLES_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>CASE_CLINICIAN_VIEW</role-name>
         <group-name>CASE_CLINICIAN_VIEW</group-name>
     </security-role-mapping>
@@ -760,6 +765,16 @@
     <security-role-mapping>
         <role-name>SORMAS_TO_SORMAS_PROCESS</role-name>
         <group-name>SORMAS_TO_SORMAS_PROCESS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EXTERNAL_SURVEILLANCE_SHARE</role-name>
+        <group-name>EXTERNAL_SURVEILLANCE_SHARE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EXTERNAL_SURVEILLANCE_DELETE</role-name>
+        <group-name>EXTERNAL_SURVEILLANCE_DELETE</group-name>
     </security-role-mapping>
 
     <security-role-mapping>

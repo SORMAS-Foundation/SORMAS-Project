@@ -65,6 +65,8 @@ public interface FeatureConfigurationFacade {
 
 	boolean isAnyFeatureEnabled(FeatureType... featureType);
 
+	boolean areAllFeatureEnabled(FeatureType... featureType);
+
 	boolean isFeatureEnabled(FeatureType featureType, CoreEntityType entityType);
 
 	<T extends Object> T getProperty(FeatureType featureType, CoreEntityType entityType, FeatureTypeProperty property, Class<T> returnType);

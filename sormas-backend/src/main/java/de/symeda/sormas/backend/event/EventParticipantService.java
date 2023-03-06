@@ -333,11 +333,13 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 
 	@Override
 	public void deletePermanent(EventParticipant eventParticipant) {
-		for (Sample sample : eventParticipant.getSamples()) {
-			if (sample.getAssociatedCase() == null && sample.getAssociatedContact() == null) {
-				sampleService.deletePermanent(sample);
-			} else {
-				sampleService.unlinkFromEventParticipant(sample);
+		if (eventParticipant.getSamples() != null) {
+			for (Sample sample : eventParticipant.getSamples()) {
+				if (sample.getAssociatedCase() == null && sample.getAssociatedContact() == null) {
+					sampleService.deletePermanent(sample);
+				} else {
+					sampleService.unlinkFromEventParticipant(sample);
+				}
 			}
 		}
 
@@ -499,10 +501,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	}
 
 	@Override
-	protected <T extends ChangeDateBuilder<T>> T addChangeDates(
-		T builder,
-		EventParticipantJoins joins,
-		boolean includeExtendedChangeDateFilters) {
+	protected <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, EventParticipantJoins joins, boolean includeExtendedChangeDateFilters) {
 
 		From<?, EventParticipant> eventParticipantFrom = joins.getRoot();
 

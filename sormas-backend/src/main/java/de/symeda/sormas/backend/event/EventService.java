@@ -314,7 +314,7 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 
 			if (!sharedEventUuids.isEmpty()) {
 				try {
-					externalSurveillanceToolGatewayFacade.sendEvents(sharedEventUuids, archived);
+					externalSurveillanceToolGatewayFacade.sendEventsInternal(sharedEventUuids, archived);
 				} catch (ExternalSurveillanceToolException e) {
 					throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
 				}
@@ -1019,15 +1019,12 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 	@Override
 	public EditPermissionType getEditPermissionType(Event event) {
 
-		if (event.getSormasToSormasOriginInfo() != null && !event.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
-			return EditPermissionType.REFUSED;
-		}
-
 		if (!inJurisdictionOrOwned(event)) {
 			return EditPermissionType.REFUSED;
 		}
 
-		if (sormasToSormasShareInfoService.isEventOwnershipHandedOver(event)) {
+		if (sormasToSormasShareInfoService.isEventOwnershipHandedOver(event)
+			|| event.getSormasToSormasOriginInfo() != null && !event.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
 			return EditPermissionType.WITHOUT_OWNERSHIP;
 		}
 
@@ -1132,4 +1129,5 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 	protected boolean hasLimitedChangeDateFilterImplementation() {
 		return true;
 	}
+
 }

@@ -2,16 +2,33 @@ package org.sormas.e2etests.steps.api.demisSteps;
 
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PLACE_OF_STAY_DISTRICT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PLACE_OF_STAY_REGION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISTRICT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPUP_CONTENT;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.getContactFirstAndLastName;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.PERSON_LIKE_SEARCH_INPUT;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.CREATE_NEW_CASE_RADIOBUTTON_DE;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.NEW_PERSON_RADIOBUTTON_DE;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.PICK_OR_CREATE_PERSON_HEADER_DE;
+import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.EVENT_DISTRICT;
+import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.EVENT_REGION;
+import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.NEW_EVENT_CREATED_DE_MESSAGE;
+import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.NEW_EVENT_RADIOBUTTON_DE_MESSAGE;
+import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.TITLE_INPUT;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CHOOSE_OR_CREATE_EVENT_HEADER_DE;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.ALL_QUICK_FILTER_COUNTER;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.APPLY_FILTER_MESSAGE;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CHOOSE_OR_CREATE_ENTRY_HEADER;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CREATE_A_NEW_CASE_WITH_POSITIVE_TEST_CONTACT_HEADER_DE;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CREATE_A_NEW_CASE_WITH_POSITIVE_TEST_EVENT_PARTICIPANT_HEADER_DE;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CREATE_NEW_EVENT_PARTICIPANT_RADIOBUTTON_DE;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CREATE_NEW_PERSON_RADIOBUTTON_DE;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FORWARDED_QUICK_FILTER_BUTTON;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FORWARDED_QUICK_FILTER_COUNTER;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGES_DETAILED_COLUMN_HEADERS;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGES_DETAILED_TABLE_ROWS;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGES_TABLE_DATA;
@@ -23,15 +40,23 @@ import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPa
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.PATIENT_BIRTHDAY_FROM_INPUT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.PATIENT_BIRTHDAY_TO_INPUT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_CONFIRM_BUTTON;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_WINDOW_SAVE_AND_OPEN_CASE_BUTTON;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.PROCESSED_QUICK_FILTER_BUTTON;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.PROCESSED_QUICK_FILTER_COUNTER;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.RELATED_FORWARDED_MESSAGE_HEADER;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.SAVE_POPUP_CONTENT_SECOND_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.SEARCH_MESSAGE_INPUT;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.UNCLEAR_QUICK_FILTER_BUTTON;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.UNCLEAR_QUICK_FILTER_COUNTER;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.UNPROCESSED_QUICK_FILTER_BUTTON;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.UNPROCESSED_QUICK_FILTER_COUNTER;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.UPDATE_THE_DISEASE_VARIANT_HEADER;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.VERARBEITEN_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.checkMappedValueSelector;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.RESET_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.TYPE_OF_TEST_INPUT;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.PCR_TEST_SPECIFICATION_INPUT;
+import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
@@ -49,8 +74,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.sormas.e2etests.entities.pojo.web.Event;
+import org.sormas.e2etests.entities.services.EventService;
 import org.sormas.e2etests.entities.services.api.demis.DemisApiService;
+import org.sormas.e2etests.envconfig.dto.demis.DemisData;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.sormas.e2etests.steps.web.application.messages.MessagesTableViewHeaders;
@@ -69,6 +99,8 @@ public class DemisSteps implements En {
   public static List<String> lastNames = new ArrayList<>();
   public static Map<String, String> collectedMessagesTable;
   public static String reportId;
+  protected static Event newEvent;
+  private final RunningConfiguration runningConfiguration;
 
   @Inject
   public DemisSteps(
@@ -76,9 +108,12 @@ public class DemisSteps implements En {
       Faker faker,
       WebDriverHelpers webDriverHelpers,
       BaseSteps baseSteps,
-      SoftAssert softly) {
+      SoftAssert softly,
+      EventService eventService,
+      RunningConfiguration runningConfiguration) {
     this.webDriverHelpers = webDriverHelpers;
     this.baseSteps = baseSteps;
+    this.runningConfiguration = runningConfiguration;
 
     Given(
         "API : Login to DEMIS server",
@@ -362,7 +397,49 @@ public class DemisSteps implements En {
                   collectedMessagesTable.get(MessagesTableViewHeaders.GEBURTSDATUM.toString()),
                   "Birthday dates are not equal");
               softly.assertAll();
+              break;
           }
+        });
+
+    When(
+        "I check if {string} in received message is set to {string}",
+        (String key, String value) -> {
+          List<Map<String, String>> tableRowsData = getTableRowsData();
+          Map<String, String> messagesTable = tableRowsData.get(0);
+          switch (key) {
+            case "laboratory name":
+              softly.assertEquals(
+                  messagesTable.get(MessagesTableViewHeaders.MELDER_NAME.toString()),
+                  value,
+                  "Lab names are not equal");
+              softly.assertAll();
+              break;
+            case "laboratory postal code":
+              softly.assertEquals(
+                  messagesTable.get(MessagesTableViewHeaders.MELDER_POSTLEITZAHL.toString()),
+                  value,
+                  "Lab postal codes are not equal");
+              softly.assertAll();
+              break;
+            case "postal code":
+              softly.assertEquals(
+                  messagesTable.get(MessagesTableViewHeaders.POSTLEITZAHL.toString()),
+                  value,
+                  "Postal codes are not equal");
+              softly.assertAll();
+              break;
+          }
+        });
+
+    When(
+        "I check if postal code for test instance in received message is set correctly",
+        () -> {
+          DemisData demisData = runningConfiguration.getDemisData(locale);
+          softly.assertEquals(
+              demisData.getPostalCode(),
+              collectedMessagesTable.get(MessagesTableViewHeaders.POSTLEITZAHL.toString()),
+              "Postal codes are not equal");
+          softly.assertAll();
         });
 
     Given(
@@ -376,6 +453,160 @@ public class DemisSteps implements En {
           Assert.assertTrue(
               demisApiService.sendLabRequest(json, loginToken),
               "Failed to send laboratory request");
+        });
+
+    And(
+        "^I filter by the name of the (\\d+) most recently created person in Messages Directory$",
+        (Integer personNumber) -> {
+          String personsFirstName = firstNames.get(personNumber - 1);
+          String personsLastName = lastNames.get(personNumber - 1);
+          webDriverHelpers.fillAndSubmitInWebElement(
+              SEARCH_MESSAGE_INPUT, personsFirstName + " " + personsLastName);
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "^I click on \"([^\"]*)\" quick filter above the messages in Message directory page$",
+        (String quickFilterOption) -> {
+          switch (quickFilterOption) {
+            case "Unverarbeitet":
+              webDriverHelpers.clickOnWebElementBySelector(UNPROCESSED_QUICK_FILTER_BUTTON);
+              webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+              break;
+            case "Verarbeitet":
+              webDriverHelpers.clickOnWebElementBySelector(PROCESSED_QUICK_FILTER_BUTTON);
+              webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+              break;
+            case "Unklar":
+              webDriverHelpers.clickOnWebElementBySelector(UNCLEAR_QUICK_FILTER_BUTTON);
+              webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+              break;
+            case "Weitergeleitet":
+              webDriverHelpers.clickOnWebElementBySelector(FORWARDED_QUICK_FILTER_BUTTON);
+              webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+              break;
+          }
+        });
+
+    Then(
+        "^I check that \"([^\"]*)\" quick filter button is selected in Message directory page$",
+        (String quickFilterOption) -> {
+          switch (quickFilterOption) {
+            case "Alle":
+              webDriverHelpers.isElementVisibleWithTimeout(ALL_QUICK_FILTER_COUNTER, 4);
+              break;
+            case "Unverarbeitet":
+              webDriverHelpers.isElementVisibleWithTimeout(UNPROCESSED_QUICK_FILTER_COUNTER, 4);
+              break;
+            case "Verarbeitet":
+              webDriverHelpers.isElementVisibleWithTimeout(PROCESSED_QUICK_FILTER_COUNTER, 4);
+              break;
+            case "Unklar":
+              webDriverHelpers.isElementVisibleWithTimeout(UNCLEAR_QUICK_FILTER_COUNTER, 4);
+              break;
+            case "Weitergeleitet":
+              webDriverHelpers.isElementVisibleWithTimeout(FORWARDED_QUICK_FILTER_COUNTER, 4);
+              break;
+          }
+        });
+
+    And(
+        "^I check that the Status column is filtered by \"([^\"]*)\" on Message directory page$",
+        (String quickFilterOption) -> {
+          List<String> statusColumnData = getTableColumnDataByIndex(12, 10);
+          for (int i = 1; i < statusColumnData.size(); i++) {
+            softly.assertEquals(
+                statusColumnData.get(i),
+                quickFilterOption,
+                "At least one record in the column is invalid!");
+            softly.assertAll();
+          }
+        });
+
+    Given(
+        "I create a new person from received message",
+        () -> {
+          webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_HEADER_DE, 1);
+          webDriverHelpers.clickOnWebElementBySelector(NEW_PERSON_RADIOBUTTON_DE);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+        });
+
+    Given(
+        "I create a new contact form received message",
+        () -> {
+          webDriverHelpers.isElementVisibleWithTimeout(CHOOSE_OR_CREATE_ENTRY_HEADER, 1);
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_RADIOBUTTON_DE);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+
+          TimeUnit.SECONDS.sleep(1);
+
+          webDriverHelpers.selectFromCombobox(PLACE_OF_STAY_REGION_COMBOBOX, "Bremen");
+          webDriverHelpers.selectFromCombobox(PLACE_OF_STAY_DISTRICT_COMBOBOX, "SK Bremen");
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+          TimeUnit.SECONDS.sleep(2);
+
+          webDriverHelpers.clickOnWebElementBySelector(POPUP_WINDOW_SAVE_AND_OPEN_CASE_BUTTON);
+
+          if (webDriverHelpers.isElementVisibleWithTimeout(UPDATE_THE_DISEASE_VARIANT_HEADER, 2)) {
+            webDriverHelpers.clickOnWebElementBySelector(POPUP_CONFIRM_BUTTON);
+          }
+          if (webDriverHelpers.isElementVisibleWithTimeout(
+              CREATE_A_NEW_CASE_WITH_POSITIVE_TEST_CONTACT_HEADER_DE, 2)) {
+            webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL);
+          }
+        });
+
+    Given(
+        "I check if contact tab was opened after create new contact from message",
+        () -> {
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(
+                  getContactFirstAndLastName(patientFirstName + " " + patientLastName)));
+          softly.assertAll();
+        });
+
+    Given(
+        "I check if event participant tab was opened after create new contact from message",
+        () -> {
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(
+                  getContactFirstAndLastName(patientFirstName + " " + patientLastName)));
+          softly.assertAll();
+        });
+
+    Given(
+        "I create a new event participant form received message",
+        () -> {
+          webDriverHelpers.isElementVisibleWithTimeout(CHOOSE_OR_CREATE_ENTRY_HEADER, 1);
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_EVENT_PARTICIPANT_RADIOBUTTON_DE);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+
+          TimeUnit.SECONDS.sleep(1);
+
+          if (webDriverHelpers.isElementVisibleWithTimeout(CHOOSE_OR_CREATE_EVENT_HEADER_DE, 2)) {
+            webDriverHelpers.clickOnWebElementBySelector(NEW_EVENT_CREATED_DE_MESSAGE);
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+          }
+
+          webDriverHelpers.clickOnWebElementBySelector(NEW_EVENT_RADIOBUTTON_DE_MESSAGE);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+
+          newEvent = eventService.buildGeneratedEventWithCorrectRegionAndDisctrictDE();
+          fillTitle(newEvent.getTitle());
+          selectResponsibleRegion(newEvent.getRegion());
+          selectResponsibleDistrict(newEvent.getDistrict());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+
+          TimeUnit.SECONDS.sleep(3);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+
+          webDriverHelpers.clickOnWebElementBySelector(POPUP_WINDOW_SAVE_AND_OPEN_CASE_BUTTON);
+
+          if (webDriverHelpers.isElementVisibleWithTimeout(
+              CREATE_A_NEW_CASE_WITH_POSITIVE_TEST_EVENT_PARTICIPANT_HEADER_DE, 2)) {
+            webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL);
+          }
         });
   }
 
@@ -428,5 +659,27 @@ public class DemisSteps implements En {
               }
             });
     return headerHashmap;
+  }
+
+  private List<String> getTableColumnDataByIndex(int col, int maxRows) {
+    List<String> list = new ArrayList<>();
+    for (int i = 1; i < maxRows + 1; i++) {
+      list.add(
+          webDriverHelpers.getTextFromWebElement(
+              By.xpath("//tbody//tr[" + i + "]//td[" + col + "]")));
+    }
+    return list;
+  }
+
+  private void fillTitle(String title) {
+    webDriverHelpers.fillInWebElement(TITLE_INPUT, title);
+  }
+
+  private void selectResponsibleRegion(String selectResponsibleRegion) {
+    webDriverHelpers.selectFromCombobox(EVENT_REGION, selectResponsibleRegion);
+  }
+
+  private void selectResponsibleDistrict(String responsibleDistrict) {
+    webDriverHelpers.selectFromCombobox(EVENT_DISTRICT, responsibleDistrict);
   }
 }

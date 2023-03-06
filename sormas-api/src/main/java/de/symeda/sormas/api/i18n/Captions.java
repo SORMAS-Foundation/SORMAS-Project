@@ -876,6 +876,7 @@ public interface Captions {
 	String dashboardNotACase = "dashboardNotACase";
 	String dashboardNotAContact = "dashboardNotAContact";
 	String dashboardNotAnEvent = "dashboardNotAnEvent";
+	String dashboardNotDone = "dashboardNotDone";
 	String dashboardNotExecutable = "dashboardNotExecutable";
 	String dashboardNotVisitedFor = "dashboardNotVisitedFor";
 	String dashboardNotYetClassified = "dashboardNotYetClassified";
@@ -1232,6 +1233,9 @@ public interface Captions {
 	String EventParticipantExport_personNationalHealthId = "EventParticipantExport.personNationalHealthId";
 	String EventParticipantExport_sampleInformation = "EventParticipantExport.sampleInformation";
 	String eventParticipantSelect = "eventParticipantSelect";
+	String EventParticipantSelection_eventParticipantUuidLink = "EventParticipantSelection.eventParticipantUuidLink";
+	String EventParticipantSelection_eventUuidLink = "EventParticipantSelection.eventUuidLink";
+	String EventParticipantSelection_resultingCaseUuidLink = "EventParticipantSelection.resultingCaseUuidLink";
 	String eventSearchEvent = "eventSearchEvent";
 	String eventSearchSpecificEvent = "eventSearchSpecificEvent";
 	String eventSelect = "eventSelect";
@@ -1918,6 +1922,8 @@ public interface Captions {
 	String sampleArchivedSamples = "sampleArchivedSamples";
 	String sampleAssociationType = "sampleAssociationType";
 	String sampleCreateNew = "sampleCreateNew";
+	String sampleDashboardAllSamples = "sampleDashboardAllSamples";
+	String sampleDashboardFinalLabResults = "sampleDashboardFinalLabResults";
 	String sampleDeletedSamples = "sampleDeletedSamples";
 	String SampleExport_additionalTestingRequested = "SampleExport.additionalTestingRequested";
 	String SampleExport_altSgpt = "SampleExport.altSgpt";
@@ -1933,6 +1939,9 @@ public interface Captions {
 	String SampleExport_caseOutcome = "SampleExport.caseOutcome";
 	String SampleExport_caseRegion = "SampleExport.caseRegion";
 	String SampleExport_caseReportDate = "SampleExport.caseReportDate";
+	String SampleExport_caseResponsibleCommunity = "SampleExport.caseResponsibleCommunity";
+	String SampleExport_caseResponsibleDistrict = "SampleExport.caseResponsibleDistrict";
+	String SampleExport_caseResponsibleRegion = "SampleExport.caseResponsibleRegion";
 	String SampleExport_caseUuid = "SampleExport.caseUuid";
 	String SampleExport_conjBilirubin = "SampleExport.conjBilirubin";
 	String SampleExport_contactCommunity = "SampleExport.contactCommunity";

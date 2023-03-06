@@ -1059,13 +1059,14 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 		}
 
 		CriteriaBuilder cb = qc.getCriteriaBuilder();
-		CriteriaQuery cq = qc.getQuery();
-		From contactPath = qc.getRoot();
+		CriteriaQuery<?> cq = qc.getQuery();
+		From<?, Contact> contactRoot = qc.getRoot();
+
 		// National users can access all contacts in the system
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if ((jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))) {
 			if (currentUser.getLimitedDisease() != null) {
-				return cb.equal(contactPath.get(Contact.DISEASE), currentUser.getLimitedDisease());
+				return cb.equal(contactRoot.get(Contact.DISEASE), currentUser.getLimitedDisease());
 			} else {
 				return null;
 			}
@@ -1074,36 +1075,37 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 		Predicate filter = null;
 		// whoever created it or is assigned to it is allowed to access it
 		if (contactCriteria == null || contactCriteria.getIncludeContactsFromOtherJurisdictions()) {
-			filter = cb.equal(contactPath.get(Contact.REPORTING_USER), currentUser);
-			filter = cb.or(filter, cb.equal(contactPath.get(Contact.CONTACT_OFFICER), currentUser));
+			filter = cb.equal(contactRoot.get(Contact.REPORTING_USER), currentUser);
+			filter = cb.or(filter, cb.equal(contactRoot.get(Contact.CONTACT_OFFICER), currentUser));
 		}
 
 		switch (jurisdictionLevel) {
 		case REGION:
 			final Region region = currentUser.getRegion();
 			if (region != null) {
-				filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(contactPath.get(Contact.REGION), currentUser.getRegion()));
+				filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(contactRoot.get(Contact.REGION), currentUser.getRegion()));
 			}
 			break;
 		case DISTRICT:
 			final District district = currentUser.getDistrict();
 			if (district != null) {
 				filter = CriteriaBuilderHelper
-					.or(cb, filter, cb.equal(contactPath.get(Contact.DISTRICT).get(District.ID), currentUser.getDistrict().getId()));
+					.or(cb, filter, cb.equal(contactRoot.get(Contact.DISTRICT), currentUser.getDistrict()));
 			}
 			break;
 		case COMMUNITY:
 			final Community community = currentUser.getCommunity();
 			if (community != null) {
-				filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(contactPath.get(Contact.COMMUNITY), currentUser.getCommunity()));
+				filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(contactRoot.get(Contact.COMMUNITY), currentUser.getCommunity()));
 			}
 			break;
 		case LABORATORY:
 			final Subquery<Long> sampleSubQuery = cq.subquery(Long.class);
 			final Root<Sample> sampleRoot = sampleSubQuery.from(Sample.class);
 			final SampleJoins joins = new SampleJoins(sampleRoot);
-			final Join contactJoin = joins.getContact();
-			sampleSubQuery.where(cb.and(cb.equal(contactJoin, contactPath), sampleService.createUserFilterWithoutAssociations(cb, joins)));
+			final Join<Sample, Contact> contactJoin = joins.getContact();
+
+			sampleSubQuery.where(cb.and(cb.equal(contactJoin, contactRoot), sampleService.createUserFilterWithoutAssociations(cb, joins)));
 			sampleSubQuery.select(sampleRoot.get(Sample.ID));
 			filter = CriteriaBuilderHelper.or(cb, filter, cb.exists(sampleSubQuery));
 			break;
@@ -1114,7 +1116,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				cb.or(cb.equal(contactPath.get(Contact.DISEASE), currentUser.getLimitedDisease()), cb.isNull(contactPath.get(Contact.DISEASE))));
+				cb.or(cb.equal(contactRoot.get(Contact.DISEASE), currentUser.getLimitedDisease()), cb.isNull(contactRoot.get(Contact.DISEASE))));
 		}
 
 		if ((contactCriteria == null || !contactCriteria.isExcludeLimitedSyncRestrictions())
@@ -1135,8 +1137,6 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 		final From<?, Contact> from = cqc.getRoot();
 
 		Predicate filter = null;
-		Join<Contact, Case> caze = joins.getCaze();
-		Join<Contact, Case> resultingCase = joins.getResultingCase();
 
 		PersonQueryContext personQueryContext = new PersonQueryContext(cb, cqc.getQuery(), joins.getPersonJoins());
 
@@ -1149,10 +1149,11 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Contact.DISEASE), contactCriteria.getDisease()));
 		}
 		if (contactCriteria.getCaze() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(caze.get(Case.UUID), contactCriteria.getCaze().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getCaze().get(Case.UUID), contactCriteria.getCaze().getUuid()));
 		}
 		if (contactCriteria.getResultingCase() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(resultingCase.get(Case.UUID), contactCriteria.getResultingCase().getUuid()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(joins.getResultingCase().get(Case.UUID), contactCriteria.getResultingCase().getUuid()));
 		}
 		if (contactCriteria.getRegion() != null) {
 			String regionUuid = contactCriteria.getRegion().getUuid();
@@ -1335,7 +1336,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 			filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 		}
 
-		if (contactCriteria.getContactOrCaseLike() != null) {
+		if (!DataHelper.isNullOrEmpty(contactCriteria.getContactOrCaseLike())) {
 			Join<Case, Person> casePerson = joins.getCasePerson();
 			String[] textFilters = contactCriteria.getContactOrCaseLike().split("\\s+");
 			for (String textFilter : textFilters) {
@@ -1348,11 +1349,11 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 					CriteriaBuilderHelper.ilike(cb, from.get(Contact.EXTERNAL_ID), textFilter),
 					CriteriaBuilderHelper.ilike(cb, from.get(Contact.EXTERNAL_TOKEN), textFilter),
 					CriteriaBuilderHelper.ilike(cb, from.get(Contact.INTERNAL_TOKEN), textFilter),
-					CriteriaBuilderHelper.ilike(cb, caze.get(Case.UUID), textFilter),
-					CriteriaBuilderHelper.ilike(cb, caze.get(Case.EXTERNAL_ID), textFilter),
-					CriteriaBuilderHelper.ilike(cb, caze.get(Case.EXTERNAL_TOKEN), textFilter),
-					CriteriaBuilderHelper.ilike(cb, caze.get(Case.INTERNAL_TOKEN), textFilter),
-					CriteriaBuilderHelper.ilike(cb, caze.get(Case.EPID_NUMBER), textFilter),
+					CriteriaBuilderHelper.ilike(cb, joins.getCaze().get(Case.UUID), textFilter),
+					CriteriaBuilderHelper.ilike(cb, joins.getCaze().get(Case.EXTERNAL_ID), textFilter),
+					CriteriaBuilderHelper.ilike(cb, joins.getCaze().get(Case.EXTERNAL_TOKEN), textFilter),
+					CriteriaBuilderHelper.ilike(cb, joins.getCaze().get(Case.INTERNAL_TOKEN), textFilter),
+					CriteriaBuilderHelper.ilike(cb, joins.getCaze().get(Case.EPID_NUMBER), textFilter),
 					CriteriaBuilderHelper.ilikePrecise(cb, casePerson.get(Person.UUID), textFilter + "%"),
 					CriteriaBuilderHelper.unaccentedIlike(cb, casePerson.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, casePerson.get(Person.LAST_NAME), textFilter),
@@ -1361,7 +1362,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 			}
 		}
 
-		if (contactCriteria.getReportingUserLike() != null) {
+		if (!DataHelper.isNullOrEmpty(contactCriteria.getReportingUserLike())) {
 			String[] textFilters = contactCriteria.getReportingUserLike().split("\\s+");
 			for (String s : textFilters) {
 				String textFilter = formatForLike(s);
@@ -1382,7 +1383,8 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Contact.CONTACT_CATEGORY), contactCriteria.getContactCategory()));
 		}
 		if (contactCriteria.getCaseClassification() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(caze.get(Case.CASE_CLASSIFICATION), contactCriteria.getCaseClassification()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(joins.getCaze().get(Case.CASE_CLASSIFICATION), contactCriteria.getCaseClassification()));
 		}
 		if (contactCriteria.getPerson() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getPerson().get(Person.UUID), contactCriteria.getPerson().getUuid()));
@@ -1457,7 +1459,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 				.and(cb, filter, createOwnershipPredicate(Boolean.TRUE.equals(contactCriteria.getWithOwnership()), from, cb, cqc.getQuery()));
 		}
 
-		filter = CriteriaBuilderHelper.andInValues(contactCriteria.getUuids(), filter, cb, from.get(Person.UUID));
+		filter = CriteriaBuilderHelper.andInValues(contactCriteria.getUuids(), filter, cb, from.get(Contact.UUID));
 
 		return filter;
 	}
@@ -1672,15 +1674,12 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 	@Override
 	public EditPermissionType getEditPermissionType(Contact contact) {
 
-		if (contact.getSormasToSormasOriginInfo() != null && !contact.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
-			return EditPermissionType.REFUSED;
-		}
-
 		if (!inJurisdictionOrOwned(contact)) {
 			return EditPermissionType.REFUSED;
 		}
 
-		if (sormasToSormasShareInfoService.isContactOwnershipHandedOver(contact)) {
+		if (sormasToSormasShareInfoService.isContactOwnershipHandedOver(contact)
+			|| (contact.getSormasToSormasOriginInfo() != null && !contact.getSormasToSormasOriginInfo().isOwnershipHandedOver())) {
 			return EditPermissionType.WITHOUT_OWNERSHIP;
 		}
 

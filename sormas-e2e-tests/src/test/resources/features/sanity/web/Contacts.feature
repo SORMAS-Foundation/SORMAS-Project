@@ -1186,7 +1186,7 @@ Feature: Contacts end to end tests
     Then I check that Citizenship is not visible in Contact Information section for DE version
     And I check that Country of birth is not visible in Contact Information section for DE version
 
-  @tmsLink=SORDEV-12087 @env_s2s_1
+  @tmsLink=SORDEV-12087 @env_s2s_1 @precon @LanguageRisk
   Scenario: Delete a contact in source system with handing ownership
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
     And API: I check that POST call body is "OK"

@@ -527,7 +527,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 		return persister.call(receivedData, existingEntities);
 	}
 
-	private interface Persister<T> {
+	protected interface Persister<T> {
 
 		T call(SormasToSormasDto data, ShareDataExistingEntities existingEntities) throws SormasToSormasValidationException;
 	}
@@ -873,12 +873,12 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 		}
 	}
 
-	private interface WalkParent<ADO> {
+	protected interface WalkParent<ADO> {
 
 		void walk(ADO entity, SormasToSormasOriginInfo originInfo, ShareTreeCriteria criteria);
 	}
 
-	private interface WalkReShare<ADO> {
+	protected interface WalkReShare<ADO> {
 
 		void walk(ADO entity, SormasToSormasShareInfo shareInfo, ShareTreeCriteria criteria, boolean noForward);
 	}
