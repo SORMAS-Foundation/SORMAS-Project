@@ -78,9 +78,11 @@ public class CampaignView extends AbstractDetailView<CampaignReferenceDto> {
 		final boolean deleted = FacadeProvider.getCampaignFacade().isDeleted(campaignDto.getUuid());
 
 		if (deleted) {
-			editComponent.setEditable(false, CommitDiscardWrapperComponent.DELETE_UNDELETE);
+			editComponent.addButtonToExcludedList(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+			editComponent.setEditable(false, editComponent.getExcludedButtons().stream().toArray(String[]::new));
 		} else if (campaignEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
-			editComponent.setEditable(false, ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+			editComponent.addButtonToExcludedList(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+			editComponent.setEditable(false, editComponent.getExcludedButtons().stream().toArray(String[]::new));
 		} else if (campaignEditAllowed.equals(EditPermissionType.REFUSED)) {
 			editComponent.setEditable(false, "");
 		}

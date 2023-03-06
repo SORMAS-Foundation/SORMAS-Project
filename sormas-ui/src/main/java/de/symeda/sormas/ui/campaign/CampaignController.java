@@ -126,7 +126,7 @@ public class CampaignController {
 
 		final CommitDiscardWrapperComponent<CampaignEditForm> campaignComponent = new CommitDiscardWrapperComponent<CampaignEditForm>(
 			campaignEditForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_EDIT),
+			true,
 			campaignEditForm.getFieldGroup()) {
 
 			@Override
@@ -169,6 +169,8 @@ public class CampaignController {
 				campaignComponent.getWrappedComponent().getField(CampaignDto.OTHER_DELETION_REASON).setVisible(true);
 			}
 		}
+
+		campaignComponent.restrictEditableComponentsOnEditView(UserRight.CAMPAIGN_EDIT, UserRight.CAMPAIGN_DELETE);
 
 		return campaignComponent;
 	}

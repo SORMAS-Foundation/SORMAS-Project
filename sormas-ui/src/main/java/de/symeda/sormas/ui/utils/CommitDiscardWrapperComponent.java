@@ -76,6 +76,8 @@ import de.symeda.sormas.ui.person.PersonEditForm;
 public class CommitDiscardWrapperComponent<C extends Component> extends VerticalLayout implements DirtyStateComponent, Buffered {
 
 	private static final long serialVersionUID = 1L;
+	private List<String> excludedButtons = new ArrayList<>();
+
 	public static final String DELETE_UNDELETE = "deleteUndelete";
 
 	public static interface PreCommitListener {
@@ -985,8 +987,10 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	public void restrictEditableComponentsOnEditView(UserRight editRight, UserRight deleteRight) {
 		if (!UserProvider.getCurrent().hasUserRight(editRight)) {
 			if (UserProvider.getCurrent().hasUserRight(deleteRight)) {
-				this.setEditable(false, CommitDiscardWrapperComponent.DELETE_UNDELETE);
+				addButtonToExcludedList(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+				this.setEditable(false, getExcludedButtons().stream().toArray(String[]::new));
 			} else {
+				//check if can already be excluded buttons at this point which should be added
 				this.setEditable(false);
 			}
 		}
@@ -1016,7 +1020,24 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		}
 	}
 
+	public void addButtonToExcludedList(String button) {
+		List<String> excludedButtonsList = getExcludedButtons();
+
+		if (!excludedButtonsList.contains(button)) {
+			excludedButtonsList.add(button);
+			setExcludedButtons(excludedButtonsList);
+		}
+	}
+
 	public void setButtonsVisible(boolean visible) {
 		buttonsPanel.setVisible(visible);
+	}
+
+	public List<String> getExcludedButtons() {
+		return excludedButtons;
+	}
+
+	public void setExcludedButtons(List<String> excludedButtons) {
+		this.excludedButtons = excludedButtons;
 	}
 }
