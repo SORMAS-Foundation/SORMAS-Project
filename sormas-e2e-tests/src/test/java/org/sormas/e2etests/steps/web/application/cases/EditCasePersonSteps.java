@@ -377,7 +377,7 @@ public class EditCasePersonSteps implements En {
         });
 
     And(
-        "^I check if editable fields are read only for person case tab$",
+        "^I check if editable fields are read only for person case/contact tab$",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
           webDriverHelpers.isElementGreyedOut(UUID_INPUT);

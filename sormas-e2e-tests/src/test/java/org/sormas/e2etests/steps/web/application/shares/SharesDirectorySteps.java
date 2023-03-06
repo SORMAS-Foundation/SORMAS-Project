@@ -65,7 +65,7 @@ public class SharesDirectorySteps implements En {
         });
 
     And(
-        "^I click on the shortened case ID to open the case$",
+        "^I click on the shortened case/contact ID to open the case$",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SHARE_UUID_CASE_TITLE);
           webDriverHelpers.clickOnWebElementBySelector(SHARE_UUID_CASE_TITLE);

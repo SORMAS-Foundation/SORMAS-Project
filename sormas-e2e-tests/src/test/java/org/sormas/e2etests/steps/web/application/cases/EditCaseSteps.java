@@ -2686,7 +2686,7 @@ public class EditCaseSteps implements En {
           softly.assertAll();
         });
     And(
-        "^I check if editable fields are read only for shared case$",
+        "^I check if editable fields are read only for shared case/contact$",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(EditCasePage.UUID_INPUT);
           webDriverHelpers.isElementGreyedOut(EditCasePage.UUID_INPUT);

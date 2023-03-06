@@ -114,7 +114,7 @@ import org.sormas.e2etests.pages.application.contacts.EditContactPersonPage;
 import org.sormas.e2etests.pages.application.persons.EditPersonPage;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
-import org.sormas.e2etests.steps.web.application.cases.CreateNewCaseSteps;
+import org.sormas.e2etests.steps.web.application.contacts.CreateNewContactSteps;
 import org.sormas.e2etests.steps.web.application.contacts.EditContactPersonSteps;
 import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
 import org.sormas.e2etests.steps.web.application.immunizations.EditImmunizationSteps;
@@ -584,10 +584,9 @@ public class EditPersonSteps implements En {
               personFirstName,
               "Names are equal!!");
           softly.assertAll();
-          System.out.println("Zmienione imie: " + personFirstName);
           softly.assertEquals(
               webDriverHelpers.getValueFromWebElement(FIRST_NAME_INPUT),
-              CreateNewCaseSteps.oneCaseDe.getFirstName(),
+              CreateNewContactSteps.samePersonDataContact.getFirstName(),
               "Names are not equal!!");
           softly.assertAll();
         });
