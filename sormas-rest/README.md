@@ -10,7 +10,7 @@ This is a one-stop-shop for all systems that need access to the SORMAS data:
 
 ## Authentication
 Access to the API is by default restricted by HTTP Basic authentication. Using OIDC/OAUTH2/Bearer authentication is
-also possible depending on how keycloak is setup. See , it can als use Bearer authentication.
+also possible depending on how keycloak is set up.
 See [Authentication & Authorization](https://github.com/hzi-braunschweig/SORMAS-Project/wiki/Authentication-&-Authorization#keycloak).
 
 For basic auth use the username and password as credentials for your HTTP requests.
@@ -30,7 +30,8 @@ and the Swagger Annotation Framework<sup>[[1]]([SwaggerAnnotations])</sup>.
 
 If you are only interested in the OpenAPI specification files, you may either download a recent SORMAS
 [release](https://github.com/hzi-braunschweig/SORMAS-Project/releases/) where the files reside in the `openapi`
-directory, or execute the following command inside the `sormas-base` module's directory to build them for yourself:
+directory, take a look at the files in `sormas-rest`, or execute the following command inside the `sormas-base` module's
+directory to build them for yourself:
 
 ```bash
 # Requires Maven to be installed!
@@ -41,11 +42,11 @@ The specification files are created at the path specified above.
 
 ---
 
-<a id="SwaggerAnnotations"></a>\[1] Swagger Annotations Guide on Github:
+<a id="SwaggerAnnotations"></a>\[1] Swagger Annotations Guide on GitHub:
 <https://github.com/swagger-api/swagger-core/wiki/Swagger-2.X---Annotations>
 
 
-## External Visist API
+## External Visit API
 
 The purpose of this API is to enable communication between SORMAS and other symptom journals.
 Only users with the role `REST_EXTERNAL_VISITS_USER` are authorized to use the endpoints. Authentication is done using

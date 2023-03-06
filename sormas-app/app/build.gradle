@@ -7,6 +7,8 @@ ext.sormasVersion = getVersionName()
 ext.keystoreProperties = loadKeystoreProperties()
 
 android {
+    // this avoids build errors as these files are present multiple times in the project dependencies,
+    // however, as they do not need to be part of the artifact, they can be excluded
     packagingOptions{
         exclude 'META-INF/LICENSE.md'
         exclude 'META-INF/NOTICE.md'

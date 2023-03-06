@@ -106,28 +106,28 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: 'trivy-results.sarif'
-          # needed as codeQL also performs an upload and they clash otherwise
+          # needed as codeQL also performs an upload, and they clash otherwise
           category: 'code-scanning/trivy-repo'
 
-      - name: Commit external visits API spec to development
+      - name: Commit openAPI spec to development
         # Privileged action needing a secret token. Since this only runs on development in our own repo
         # the token will be available through a privileged checkout.
-        if: github.event_name == 'push' && github.ref == 'refs/heads/development' && hashFiles('sormas-rest/target/external_visits_API.yaml') != hashFiles('openapi/external_visits_API.yaml')
+        if: github.event_name == 'push' && github.ref == 'refs/heads/development' && hashFiles('sormas-rest/target/swagger.yaml') != hashFiles('sormas-rest/swagger.yaml')
         # https://stackoverflow.com/questions/59604922/authorize-bash-to-access-github-protected-branch
         run: |
             git config --global user.name "sormas-vitagroup"
             git config --global user.email "support.sormas@helpdesk.symeda.de"
           
             mkdir /tmp/openapi
-            cp sormas-rest/target/external_visits_API.* /tmp/openapi
+            cp sormas-rest/target/swagger.* /tmp/openapi
             
             git fetch
             git checkout development
             git pull
 
-            rm -rf openapi
-            cp -r /tmp/openapi .
+            rm -f sormas-rest/swagger.*
+            cp /tmp/openapi/swagger.* sormas-rest/
 
-            git add openapi
-            git commit -m "[GitHub Actions] Update external visits API spec files"
+            git add sormas-rest/swagger.*
+            git commit -m "[GitHub Actions] Update openAPI spec files"
             git push
