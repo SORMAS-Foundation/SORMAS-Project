@@ -515,7 +515,11 @@ public class EditContactSteps implements En {
         () -> webDriverHelpers.clickOnWebElementBySelector(HAND_THE_OWNERSHIP_CHECKBOX));
     When(
         "I accept first contact in Shares Page",
-        () -> webDriverHelpers.clickOnWebElementBySelector(ACCEPT_BUTTON));
+        () -> {
+          TimeUnit.SECONDS.sleep(1); // wait for the page to load
+          webDriverHelpers.clickOnWebElementBySelector(ACCEPT_BUTTON);
+          TimeUnit.SECONDS.sleep(3); // wait for reaction
+        });
     When(
         "I check if accept button does not appear in Shares Page",
         () -> {
