@@ -251,7 +251,7 @@ public class EventParticipantsController {
 					() -> navigateToData(eventParticipant.getUuid()));
 		}
 
-		editComponent.restrictEditableComponentsOnEditView(UserRight.EVENTPARTICIPANT_EDIT, UserRight.EVENTPARTICIPANT_DELETE);
+		editComponent.restrictEditableComponentsOnEditView(UserRight.EVENTPARTICIPANT_EDIT, UserRight.EVENTPARTICIPANT_DELETE, null);
 
 		return editComponent;
 	}

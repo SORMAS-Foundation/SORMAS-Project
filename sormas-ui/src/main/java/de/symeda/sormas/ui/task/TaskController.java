@@ -181,7 +181,8 @@ public class TaskController {
 			editView.getButtonsPanel().setComponentAlignment(archiveButton, Alignment.BOTTOM_LEFT);
 		}
 
-		editView.restrictEditableComponentsOnEditView(isEditingAllowed, UserRight.TASK_DELETE);
+		editView.addButtonToExcludedList(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+		editView.restrictEditableComponentsOnEditView(UserRight.TASK_EDIT, UserRight.TASK_DELETE, editPermissionType);
 	}
 
 	private TaskDto createNewTask(TaskContext context, ReferenceDto entityRef) {

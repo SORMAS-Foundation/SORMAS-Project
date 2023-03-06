@@ -909,7 +909,7 @@ public class EventController {
 				.addArchivingButton(event, FacadeProvider.getEventFacade(), CoreEntityArchiveMessages.EVENT, editView, () -> navigateToData(uuid));
 		}
 
-		editView.restrictEditableComponentsOnEditView(UserRight.EVENT_EDIT, UserRight.EVENT_DELETE);
+		editView.restrictEditableComponentsOnEditView(UserRight.EVENT_EDIT, UserRight.EVENT_DELETE, null);
 
 		return editView;
 	}

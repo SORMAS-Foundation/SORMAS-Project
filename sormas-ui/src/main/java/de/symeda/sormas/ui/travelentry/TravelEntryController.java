@@ -180,7 +180,7 @@ public class TravelEntryController {
 					() -> navigateToTravelEntry(travelEntry.getUuid()));
 		}
 
-		editComponent.restrictEditableComponentsOnEditView(UserRight.TRAVEL_ENTRY_EDIT, UserRight.TRAVEL_ENTRY_DELETE);
+		editComponent.restrictEditableComponentsOnEditView(UserRight.TRAVEL_ENTRY_EDIT, UserRight.TRAVEL_ENTRY_DELETE, null);
 
 		return editComponent;
 	}

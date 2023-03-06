@@ -101,7 +101,7 @@ public class ActionController {
 		}
 
 		editView.addDiscardListener(popupWindow::close);
-		editView.restrictEditableComponentsOnEditView(UserRight.ACTION_EDIT, UserRight.ACTION_DELETE);
+		editView.restrictEditableComponentsOnEditView(UserRight.ACTION_EDIT, UserRight.ACTION_DELETE, null);
 	}
 
 	private ActionDto createNewAction(ActionContext context, ReferenceDto entityRef) {

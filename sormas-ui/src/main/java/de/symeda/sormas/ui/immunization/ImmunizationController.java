@@ -214,7 +214,7 @@ public class ImmunizationController {
 					() -> navigateToImmunization(immunizationDto.getUuid()));
 		}
 
-		editComponent.restrictEditableComponentsOnEditView(UserRight.IMMUNIZATION_EDIT, UserRight.IMMUNIZATION_DELETE);
+		editComponent.restrictEditableComponentsOnEditView(UserRight.IMMUNIZATION_EDIT, UserRight.IMMUNIZATION_DELETE, null);
 
 		return editComponent;
 	}

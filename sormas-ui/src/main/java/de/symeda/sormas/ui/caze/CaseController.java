@@ -957,7 +957,7 @@ public class CaseController {
 
 		appendSpecialCommands(caze, editView);
 
-		editView.restrictEditableComponentsOnEditView(UserRight.CASE_EDIT, UserRight.CASE_DELETE);
+		editView.restrictEditableComponentsOnEditView(UserRight.CASE_EDIT, UserRight.CASE_DELETE, null);
 		return editView;
 	}
 

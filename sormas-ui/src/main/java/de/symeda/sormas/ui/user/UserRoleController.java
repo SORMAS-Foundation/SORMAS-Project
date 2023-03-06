@@ -184,7 +184,7 @@ public class UserRoleController {
 		editView.getButtonsPanel().addComponentAsFirst(enableDisableButton);
 		editView.getButtonsPanel().setComponentAlignment(enableDisableButton, Alignment.BOTTOM_LEFT);
 
-		editView.restrictEditableComponentsOnEditView(UserRight.USER_ROLE_EDIT, UserRight.USER_ROLE_DELETE);
+		editView.restrictEditableComponentsOnEditView(UserRight.USER_ROLE_EDIT, UserRight.USER_ROLE_DELETE, null);
 
 		return editView;
 	}

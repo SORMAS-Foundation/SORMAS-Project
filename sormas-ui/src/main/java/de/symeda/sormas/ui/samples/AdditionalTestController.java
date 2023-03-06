@@ -98,7 +98,7 @@ public class AdditionalTestController {
 				}, I18nProperties.getString(Strings.entityAdditionalTest));
 			}
 
-			component.restrictEditableComponentsOnEditView(UserRight.ADDITIONAL_TEST_EDIT, UserRight.ADDITIONAL_TEST_DELETE);
+			component.restrictEditableComponentsOnEditView(UserRight.ADDITIONAL_TEST_EDIT, UserRight.ADDITIONAL_TEST_DELETE, null);
 		}
 		component.getButtonsPanel().setVisible(isEditAllowed);
 	}

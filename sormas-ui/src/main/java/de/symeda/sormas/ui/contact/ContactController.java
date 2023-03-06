@@ -698,7 +698,7 @@ public class ContactController {
 					() -> navigateToView(ContactDataView.VIEW_NAME, contact.getUuid(), false));
 		}
 
-		editComponent.restrictEditableComponentsOnEditView(UserRight.CONTACT_EDIT, UserRight.CONTACT_DELETE);
+		editComponent.restrictEditableComponentsOnEditView(UserRight.CONTACT_EDIT, UserRight.CONTACT_DELETE, null);
 
 		return editComponent;
 	}

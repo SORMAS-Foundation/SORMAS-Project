@@ -58,6 +58,7 @@ import com.vaadin.v7.ui.RichTextArea;
 import com.vaadin.v7.ui.TextArea;
 
 import de.symeda.sormas.api.CoreFacade;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -984,26 +985,28 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	}
 
 	//In case of having delete right without edit right the delete button should remain enabled
-	public void restrictEditableComponentsOnEditView(UserRight editRight, UserRight deleteRight) {
-		if (!UserProvider.getCurrent().hasUserRight(editRight)) {
-			if (UserProvider.getCurrent().hasUserRight(deleteRight)) {
+	public void restrictEditableComponentsOnEditView(UserRight editRight, UserRight deleteRight, EditPermissionType editPermissionType) {
+		boolean isEditAllowed = isEditAllowed(editRight, editPermissionType);
+
+		if (!isEditAllowed) {
+			if (isDeleteAllowed(deleteRight)) {
 				addButtonToExcludedList(CommitDiscardWrapperComponent.DELETE_UNDELETE);
 				this.setEditable(false, getExcludedButtons().stream().toArray(String[]::new));
 			} else {
-				//check if can already be excluded buttons at this point which should be added
 				this.setEditable(false);
 			}
 		}
 	}
 
-	//used for Tasks
-	public void restrictEditableComponentsOnEditView(boolean isEditingAllowed, UserRight deleteRight) {
-		if (!isEditingAllowed) {
-			if (UserProvider.getCurrent().hasUserRight(deleteRight)) {
-				this.setEditable(false, CommitDiscardWrapperComponent.DELETE_UNDELETE, ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
-			}
+	public boolean isDeleteAllowed(UserRight deleteRight) {
+		return UserProvider.getCurrent().hasUserRight(deleteRight);
+	}
+
+	public boolean isEditAllowed(UserRight editRight, EditPermissionType editPermissionType) {
+		if (editPermissionType != null) {
+			return UserProvider.getCurrent().hasUserRight(editRight) && editPermissionType == EditPermissionType.ALLOWED;
 		} else {
-			this.setEditable(true, ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+			return UserProvider.getCurrent().hasUserRight(editRight);
 		}
 	}
 
