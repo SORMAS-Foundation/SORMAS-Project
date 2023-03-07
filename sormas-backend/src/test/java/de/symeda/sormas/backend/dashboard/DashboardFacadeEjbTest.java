@@ -103,7 +103,7 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 
 		DashboardFacade dashboardFacade = getDashboardFacade();
 		// no existing samples
-		Map<PathogenTestResultType, Long> resultMap = dashboardFacade.getTestResultCountByResultType(dashboardCriteria);
+		Map<PathogenTestResultType, Long> resultMap = dashboardFacade.getNewCasesFinalLabResultCountByResultType(dashboardCriteria);
 		assertEquals(new Long(0), resultMap.values().stream().collect(Collectors.summingLong(Long::longValue)));
 		assertNull(resultMap.getOrDefault(PathogenTestResultType.INDETERMINATE, null));
 		assertNull(resultMap.getOrDefault(PathogenTestResultType.NEGATIVE, null));
@@ -114,7 +114,7 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 		Facility lab = creator.createFacility("facility", rdcf.region, rdcf.district, rdcf.community);
 		creator.createSample(case1.toReference(), user, lab);
 
-		resultMap = dashboardFacade.getTestResultCountByResultType(dashboardCriteria);
+		resultMap = dashboardFacade.getNewCasesFinalLabResultCountByResultType(dashboardCriteria);
 		assertEquals(new Long(1), resultMap.values().stream().collect(Collectors.summingLong(Long::longValue)));
 		assertNull(resultMap.getOrDefault(PathogenTestResultType.INDETERMINATE, null));
 		assertNull(resultMap.getOrDefault(PathogenTestResultType.NEGATIVE, null));
@@ -124,7 +124,7 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 		// one pending sample in each of two cases
 		creator.createSample(case2.toReference(), user, lab);
 
-		resultMap = dashboardFacade.getTestResultCountByResultType(dashboardCriteria);
+		resultMap = dashboardFacade.getNewCasesFinalLabResultCountByResultType(dashboardCriteria);
 		assertEquals(new Long(2), resultMap.values().stream().collect(Collectors.summingLong(Long::longValue)));
 		assertNull(resultMap.getOrDefault(PathogenTestResultType.INDETERMINATE, null));
 		assertNull(resultMap.getOrDefault(PathogenTestResultType.NEGATIVE, null));
@@ -137,7 +137,7 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 		sample.setPathogenTestResult(PathogenTestResultType.POSITIVE);
 		getSampleFacade().saveSample(sample);
 
-		resultMap = dashboardFacade.getTestResultCountByResultType(dashboardCriteria);
+		resultMap = dashboardFacade.getNewCasesFinalLabResultCountByResultType(dashboardCriteria);
 		assertEquals(new Long(2), resultMap.values().stream().collect(Collectors.summingLong(Long::longValue)));
 		assertNull(resultMap.getOrDefault(PathogenTestResultType.INDETERMINATE, null));
 		assertNull(resultMap.getOrDefault(PathogenTestResultType.NEGATIVE, null));
