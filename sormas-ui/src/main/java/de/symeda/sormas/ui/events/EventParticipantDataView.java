@@ -49,7 +49,6 @@ import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponentLayout;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
-import de.symeda.sormas.ui.utils.ArchivingController;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
@@ -207,16 +206,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 		}
 
 		final boolean deleted = FacadeProvider.getEventParticipantFacade().isDeleted(uuid);
-
-		if (deleted) {
-			editComponent.addButtonToExcludedList(CommitDiscardWrapperComponent.DELETE_UNDELETE);
-			layout.disable();
-		} else if (eventParticipantEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
-			editComponent.addButtonToExcludedList(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
-			layout.disable();
-		} else if (eventParticipantEditAllowed.equals(EditPermissionType.REFUSED)) {
-			layout.disable();
-		}
+		layout.disableIfNecessary(deleted, eventParticipantEditAllowed);
 
 		if (!FacadeProvider.getPersonFacade().isEditAllowed(eventParticipant.getPerson().getUuid())) {
 			editComponent.getWrappedComponent().enablePersonFields(false);

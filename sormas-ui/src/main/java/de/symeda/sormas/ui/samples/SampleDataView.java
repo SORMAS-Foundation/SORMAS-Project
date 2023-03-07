@@ -155,17 +155,7 @@ public class SampleDataView extends AbstractSampleView {
 		final String uuid = sampleDto.getUuid();
 		final boolean deleted = FacadeProvider.getSampleFacade().isDeleted(uuid);
 
-		if (deleted) {
-			editComponent.addButtonToExcludedList(CommitDiscardWrapperComponent.DELETE_UNDELETE);
-			editComponent.setEditable(false, editComponent.getExcludedButtons().stream().toArray(String[]::new));
-			disableComponentIfNotNull(layout.getComponent(CASE_LOC));
-			disableComponentIfNotNull(layout.getComponent(CONTACT_LOC));
-			disableComponentIfNotNull(layout.getComponent(EVENT_PARTICIPANT_LOC));
-			disableComponentIfNotNull(layout.getComponent(PATHOGEN_TESTS_LOC));
-			disableComponentIfNotNull(layout.getComponent(ADDITIONAL_TESTS_LOC));
-			disableComponentIfNotNull(layout.getComponent(SORMAS_TO_SORMAS_LOC));
-		}
-
+		layout.disableIfNecessary(deleted, null);
 		editComponent.setEnabled(isEditAllowed());
 	}
 
@@ -215,6 +205,7 @@ public class SampleDataView extends AbstractSampleView {
 		return null;
 	}
 
+//check if is used
 	private void disableComponentIfNotNull(Component component) {
 		if (component != null) {
 			component.setEnabled(false);

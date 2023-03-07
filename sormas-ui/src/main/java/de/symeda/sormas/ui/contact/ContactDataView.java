@@ -56,7 +56,6 @@ import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponentLayout;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
-import de.symeda.sormas.ui.utils.ArchivingController;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -286,19 +285,7 @@ public class ContactDataView extends AbstractContactView {
 		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, contactDto, documentList);
 
 		final boolean deleted = FacadeProvider.getContactFacade().isDeleted(uuid);
-
-		if (deleted) {
-			editComponent.addButtonToExcludedList(CommitDiscardWrapperComponent.DELETE_UNDELETE);
-			layout.disable();
-		} else if (contactEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
-			editComponent.addButtonToExcludedList(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
-			layout.disableWithViewAllow();
-		} else if (contactEditAllowed.equals(EditPermissionType.REFUSED)) {
-			layout.disableWithViewAllow();
-		} else if (contactEditAllowed.equals(EditPermissionType.WITHOUT_OWNERSHIP)) {
-			editComponent.addButtonToExcludedList(CommitDiscardWrapperComponent.DELETE_UNDELETE);
-			layout.disableWithViewAllow();
-		}
+		layout.disableIfNecessary(deleted, contactEditAllowed);
 	}
 
 	private void addCreateFromCaseButtonLogic() {

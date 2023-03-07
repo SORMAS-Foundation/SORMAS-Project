@@ -19,7 +19,6 @@ import de.symeda.sormas.ui.caze.CaseInfoLayout;
 import de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent;
 import de.symeda.sormas.ui.document.DocumentListComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
-import de.symeda.sormas.ui.utils.ArchivingController;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -112,16 +111,7 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 		}
 
 		final boolean deleted = FacadeProvider.getTravelEntryFacade().isDeleted(uuid);
-
-		if (deleted) {
-			editComponent.addButtonToExcludedList(CommitDiscardWrapperComponent.DELETE_UNDELETE);
-			layout.disable();
-		} else if (travelEntryEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
-			editComponent.addButtonToExcludedList(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
-			layout.disable();
-		} else if (travelEntryEditAllowed.equals(EditPermissionType.REFUSED)) {
-			layout.disable();
-		}
+		layout.disableIfNecessary(deleted, travelEntryEditAllowed);
 	}
 
 	private CaseInfoLayout createCaseInfoLayout(String caseUuid) {

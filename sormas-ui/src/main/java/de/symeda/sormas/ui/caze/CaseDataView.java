@@ -44,7 +44,6 @@ import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponentLayout;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
-import de.symeda.sormas.ui.utils.ArchivingController;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
@@ -219,18 +218,6 @@ public class CaseDataView extends AbstractCaseView {
 		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, caze, documentList);
 
 		final boolean deleted = FacadeProvider.getCaseFacade().isDeleted(uuid);
-
-		if (deleted) {
-			editComponent.addButtonToExcludedList(CommitDiscardWrapperComponent.DELETE_UNDELETE);
-			layout.disable();
-		} else if (caseEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
-			editComponent.addButtonToExcludedList(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
-			layout.disableWithViewAllow();
-		} else if (caseEditAllowed.equals(EditPermissionType.REFUSED)) {
-			layout.disableWithViewAllow();
-		} else if (caseEditAllowed.equals(EditPermissionType.WITHOUT_OWNERSHIP)) {
-			editComponent.addButtonToExcludedList(CommitDiscardWrapperComponent.DELETE_UNDELETE);
-			layout.disableWithViewAllow();
-		}
+		layout.disableIfNecessary(deleted, caseEditAllowed);
 	}
 }

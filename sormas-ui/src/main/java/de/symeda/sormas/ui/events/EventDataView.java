@@ -46,7 +46,6 @@ import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceServi
 import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceShareComponent;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
-import de.symeda.sormas.ui.utils.ArchivingController;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -224,19 +223,7 @@ public class EventDataView extends AbstractEventView {
 		}
 
 		final boolean deleted = FacadeProvider.getEventFacade().isDeleted(uuid);
-
-		if (deleted) {
-			editComponent.addButtonToExcludedList(CommitDiscardWrapperComponent.DELETE_UNDELETE);
-			layout.disable();
-		} else if (eventEditAllowed == EditPermissionType.ARCHIVING_STATUS_ONLY) {
-			editComponent.addButtonToExcludedList(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
-			layout.disable();
-		} else if (eventEditAllowed == EditPermissionType.REFUSED) {
-			layout.disable();
-		} else if (eventEditAllowed == EditPermissionType.WITHOUT_OWNERSHIP) {
-			editComponent.addButtonToExcludedList(CommitDiscardWrapperComponent.DELETE_UNDELETE);
-			layout.disableWithViewAllow();
-		}
+		layout.disableIfNecessary(deleted, eventEditAllowed);
 	}
 
 	private void setExternalSurvToolLayoutVisibility(EventStatus eventStatus) {

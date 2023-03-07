@@ -15,10 +15,10 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
-import de.symeda.sormas.ui.utils.ArchivingController;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
+import de.symeda.sormas.ui.utils.LayoutWithSidePanel;
 
 public class CampaignView extends AbstractDetailView<CampaignReferenceDto> {
 
@@ -70,22 +70,15 @@ public class CampaignView extends AbstractDetailView<CampaignReferenceDto> {
 		editComponent.addStyleName(CssStyles.ROOT_COMPONENT);
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 
-		container.addComponent(editComponent);
+		LayoutWithSidePanel layout = new LayoutWithSidePanel(editComponent);
+		container.addComponent(layout);
 
 		getViewTitleLabel().setValue(campaignDto.getName());
 
 		final EditPermissionType campaignEditAllowed = FacadeProvider.getCampaignFacade().getEditPermissionType(campaignDto.getUuid());
 		final boolean deleted = FacadeProvider.getCampaignFacade().isDeleted(campaignDto.getUuid());
+		layout.disableIfNecessary(deleted, campaignEditAllowed);
 
-		if (deleted) {
-			editComponent.addButtonToExcludedList(CommitDiscardWrapperComponent.DELETE_UNDELETE);
-			editComponent.setEditable(false, editComponent.getExcludedButtons().stream().toArray(String[]::new));
-		} else if (campaignEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
-			editComponent.addButtonToExcludedList(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
-			editComponent.setEditable(false, editComponent.getExcludedButtons().stream().toArray(String[]::new));
-		} else if (campaignEditAllowed.equals(EditPermissionType.REFUSED)) {
-			editComponent.setEditable(false, "");
-		}
 	}
 
 	@Override
