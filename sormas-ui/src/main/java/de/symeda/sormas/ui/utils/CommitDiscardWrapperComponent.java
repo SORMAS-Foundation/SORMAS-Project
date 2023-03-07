@@ -1004,11 +1004,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	}
 
 	public boolean isEditAllowed(UserRight editRight, EditPermissionType editPermissionType) {
-		if (editPermissionType != null) {
-			return UserProvider.getCurrent().hasUserRight(editRight) && editPermissionType == EditPermissionType.ALLOWED;
-		} else {
-			return UserProvider.getCurrent().hasUserRight(editRight);
-		}
+		return UserProvider.getCurrent().hasUserRight(editRight) && (editPermissionType == null || editPermissionType == EditPermissionType.ALLOWED);
 	}
 
 	//excludedButtons: contains the buttons attached to the CommitDiscardWrapperComponent which we intend to
