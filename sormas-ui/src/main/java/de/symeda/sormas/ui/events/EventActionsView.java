@@ -130,8 +130,8 @@ public class EventActionsView extends AbstractEventView {
 			if (hasEventEditRight) {
 				listLayout.setEnabled(isEditAllowed() && !isEventDeleted());
 			} else {
-				listLayout.getComponent(getIndex(listLayout, topBar)).setEnabled(false);
-				listLayout.getComponent(getIndex(listLayout, filterBar)).setEnabled(false);
+				topBar.setEnabled(false);
+				filterBar.setEnabled(false);
 			}
 		}
 

@@ -118,16 +118,14 @@ public class TaskController {
 
 		EditPermissionType editPermissionType = FacadeProvider.getTaskFacade().getEditPermissionType(task.getUuid());
 		boolean isEditingAllowed = UserProvider.getCurrent().hasUserRight(UserRight.TASK_EDIT) && editPermissionType == EditPermissionType.ALLOWED;
-		boolean isEditingAllowedAndHasEditOrDeleteRight = isEditingAllowed || UserProvider.getCurrent().hasUserRight(UserRight.TASK_DELETE);
+		boolean isEditingOrDeletingAllowed = isEditingAllowed || UserProvider.getCurrent().hasUserRight(UserRight.TASK_DELETE);
 
 		final CommitDiscardWrapperComponent<TaskEditForm> editView =
 			new CommitDiscardWrapperComponent<TaskEditForm>(form, true, form.getFieldGroup());
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(
 			editView,
-			isEditingAllowedAndHasEditOrDeleteRight
-				? I18nProperties.getString(Strings.headingEditTask)
-				: I18nProperties.getString(Strings.headingViewTask));
+			isEditingOrDeletingAllowed ? I18nProperties.getString(Strings.headingEditTask) : I18nProperties.getString(Strings.headingViewTask));
 
 		editView.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {

@@ -22,7 +22,9 @@ import static java.util.Objects.nonNull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -77,7 +79,7 @@ import de.symeda.sormas.ui.person.PersonEditForm;
 public class CommitDiscardWrapperComponent<C extends Component> extends VerticalLayout implements DirtyStateComponent, Buffered {
 
 	private static final long serialVersionUID = 1L;
-	private List<String> excludedButtons = new ArrayList<>();
+	private Set<String> excludedButtons = new HashSet<>();
 
 	public static final String DELETE_UNDELETE = "deleteUndelete";
 
@@ -1023,22 +1025,20 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	}
 
 	public void addButtonToExcludedList(String button) {
-		List<String> excludedButtonsList = getExcludedButtons();
-		if (!excludedButtonsList.contains(button)) {
-			excludedButtonsList.add(button);
-			setExcludedButtons(excludedButtonsList);
-		}
+		Set<String> excludedButtons = getExcludedButtons();
+		excludedButtons.add(button);
+		setExcludedButtons(excludedButtons);
 	}
 
 	public void setButtonsVisible(boolean visible) {
 		buttonsPanel.setVisible(visible);
 	}
 
-	public List<String> getExcludedButtons() {
+	public Set<String> getExcludedButtons() {
 		return excludedButtons;
 	}
 
-	public void setExcludedButtons(List<String> excludedButtons) {
+	public void setExcludedButtons(Set<String> excludedButtons) {
 		this.excludedButtons = excludedButtons;
 	}
 }
