@@ -20,7 +20,10 @@ package de.symeda.sormas.ui.person;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -191,6 +194,62 @@ public class PersonController {
 
 		List<EventParticipantSelectionDto> eventParticipantsWithSameEvent =
 			FacadeProvider.getEventParticipantFacade().getEventParticipantsWithSameEvent(firstPersonUuid, secondPersonUuid);
+
+		Map<String, Map<String, Integer>> eventParticipantsByEvent = new HashMap<>();
+		Set<String> eventsWithDuplicatePersonEventParticipants = new HashSet<>();
+		eventParticipantsWithSameEvent.forEach(eventparticipant -> {
+			if (eventParticipantsByEvent.containsKey(eventparticipant.getEvent().getUuid())) {
+				Map<String, Integer> personsByEvent = eventParticipantsByEvent.get(eventparticipant.getEvent().getUuid());
+				if (personsByEvent.containsKey(eventparticipant.getPersonUuid())) {
+					personsByEvent.put(eventparticipant.getPersonUuid(), personsByEvent.get(eventparticipant.getPersonUuid()) + 1);
+					eventParticipantsByEvent.put(eventparticipant.getEvent().getUuid(), personsByEvent);
+					eventsWithDuplicatePersonEventParticipants.add(eventparticipant.getEvent().getUuid());
+				} else {
+					eventParticipantsByEvent.get(eventparticipant.getEvent().getUuid()).put(eventparticipant.getPersonUuid(), 1);
+				}
+			} else {
+				Map<String, Integer> eventParticipantByPersonCount = new HashMap<>();
+				eventParticipantByPersonCount.put(eventparticipant.getPersonUuid(), 1);
+				eventParticipantsByEvent.put(eventparticipant.getEvent().getUuid(), eventParticipantByPersonCount);
+			}
+		});
+
+		if (!eventsWithDuplicatePersonEventParticipants.isEmpty()) {
+
+			VerticalLayout component = new VerticalLayout();
+			component.addComponent(
+				VaadinUiUtil
+					.createInfoComponent(I18nProperties.getString(Strings.infoPickorMergeEventParticipantDuplicateEventParticipantByPersonByEvent)));
+
+			eventsWithDuplicatePersonEventParticipants.forEach(eventUuid -> {
+				Label eventUuidLabel = new Label(eventUuid);
+				component.addComponent(eventUuidLabel);
+			});
+
+			CommitDiscardWrapperComponent<VerticalLayout> eventsWithDuplicateEventParticipants = new CommitDiscardWrapperComponent<>(component);
+
+			eventsWithDuplicateEventParticipants.getButtonsPanel()
+				.getComponent(eventsWithDuplicateEventParticipants.getCommitButton().getTabIndex())
+				.setVisible(false);
+
+			eventsWithDuplicateEventParticipants.getWrappedComponent();
+
+			Window duplicateEventParticipantsInfoPopUp = VaadinUiUtil.showPopupWindowWithWidth(
+				eventsWithDuplicateEventParticipants,
+				I18nProperties.getString(Strings.headingMergeDuplicateEventParticipantSamePersonSameEvent),
+				60);
+
+			Button btnCancel = ButtonHelper.createButton(Captions.actionCancel, e -> {
+				duplicateEventParticipantsInfoPopUp.close();
+			});
+
+			eventsWithDuplicateEventParticipants.getButtonsPanel()
+				.replaceComponent(eventsWithDuplicateEventParticipants.getCommitButton(), btnCancel);
+			eventsWithDuplicateEventParticipants
+				.setComponentAlignment(eventsWithDuplicateEventParticipants.getButtonsPanel(), Alignment.BOTTOM_RIGHT);
+
+			return;
+		}
 
 		if (!eventParticipantsWithSameEvent.isEmpty()) {
 			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_VIEW)) {
