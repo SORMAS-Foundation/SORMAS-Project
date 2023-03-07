@@ -793,6 +793,7 @@ public interface Strings {
 	String infoCreateNewSampleDiscardsChangesContact = "infoCreateNewSampleDiscardsChangesContact";
 	String infoCreateNewSampleDiscardsChangesEventParticipant = "infoCreateNewSampleDiscardsChangesEventParticipant";
 	String infoCustomExport = "infoCustomExport";
+	String infoDashboardFinalLaboratoryResult = "infoDashboardFinalLaboratoryResult";
 	String infoDashboardIncidence = "infoDashboardIncidence";
 	String infoDatabaseExportTables = "infoDatabaseExportTables";
 	String infoDefineOutbreaks = "infoDefineOutbreaks";

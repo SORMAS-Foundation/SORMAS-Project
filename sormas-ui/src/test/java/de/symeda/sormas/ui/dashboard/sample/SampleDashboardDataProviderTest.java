@@ -75,6 +75,6 @@ public class SampleDashboardDataProviderTest extends AbstractBeanTest {
 
 		dataProvider.refreshData();
 
-		Assertions.assertEquals(1, dataProvider.getTestResultCountByResultType().size());
+		Assertions.assertEquals(1, dataProvider.getNewCasesFinalLabResultCountsByResultType().size());
 	}
 }
