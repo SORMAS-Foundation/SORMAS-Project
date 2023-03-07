@@ -38,13 +38,7 @@ import static org.sormas.e2etests.enums.CaseOutcome.UNKNOWN;
 import static org.sormas.e2etests.enums.CaseOutcome.VACCINATED_STATUS_UNKNOWN;
 import static org.sormas.e2etests.enums.CaseOutcome.VACCINATED_STATUS_UNVACCINATED;
 import static org.sormas.e2etests.enums.CaseOutcome.VACCINATED_STATUS_VACCINATED;
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_APPLY_FILTERS_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_CLASSIFICATION_FILTER_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_CLOSE_WINDOW_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_INFO_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONFIRM_POPUP;
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONTACTS_DATA_TAB;
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.EPIDEMIOLOGICAL_DATA_TAB;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_NO_POPUP_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
@@ -2718,6 +2712,22 @@ public class EditCaseSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(EditCasePage.UUID_INPUT);
           webDriverHelpers.isElementGreyedOut(EditCasePage.UUID_INPUT);
           webDriverHelpers.isElementGreyedOut(EditCasePage.SAVE_BUTTON);
+        });
+    And(
+        "I check if report side component in Edit Case has {string}",
+        (String text) -> {
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(checkTextInReportSideComponent(text)));
+          softly.assertAll();
+        });
+    And(
+        "I check if report side component in Edit Case has today date",
+        () -> {
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(
+                  checkTextInReportSideComponent(formatter.format(LocalDate.now()))));
+          softly.assertAll();
         });
   }
 
