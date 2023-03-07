@@ -421,4 +421,10 @@ public class EditCasePage {
   public static By SHARE_PENDING_WARNING_DE =
       By.xpath(
           "//div[@class='popupContent']//div[contains(text(),'Es gibt bereits eine ausstehende Anfrage an das gleiche Gesundheitsamt. Bitte widerrufen Sie die Anfrage, bevor Sie eine Neue senden.')]");
+
+  public static By checkTextInReportSideComponent(String text) {
+    return By.xpath(
+        String.format(
+            "//div[text()='Meldevorg\u00E4nge']/../../../../../..//div[text()='%s']", text));
+  }
 }
