@@ -15,9 +15,17 @@
 
 package de.symeda.sormas.api.dashboard.sample;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+
 public enum SampleShipmentStatus {
-	NOT_SHIPPED,
+
 	SHIPPED,
-	NOT_RECEIVED,
-	RECEIVED
+	NOT_SHIPPED,
+	RECEIVED,
+	NOT_RECEIVED;
+
+	@Override
+	public String toString() {
+		return I18nProperties.getEnumCaption(this);
+	}
 }

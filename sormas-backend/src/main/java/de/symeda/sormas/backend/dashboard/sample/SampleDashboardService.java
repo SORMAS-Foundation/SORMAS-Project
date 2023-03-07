@@ -92,7 +92,7 @@ public class SampleDashboardService {
 			Sample.SPECIMEN_CONDITION,
 			SpecimenCondition.class,
 			dashboardCriteria,
-			(cb, root) -> buildExternalSamplePredicate(cb, root));
+			(cb, root) -> cb.and(buildExternalSamplePredicate(cb, root), cb.equal(root.get(Sample.RECEIVED), true)));
 	}
 
 	private <T extends Enum<?>> Map<T, Long> getSampleCountsByEnumProperty(
