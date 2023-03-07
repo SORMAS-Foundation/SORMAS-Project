@@ -34,7 +34,10 @@ import java.lang.management.ManagementFactory;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -56,6 +59,7 @@ public class BaseSteps implements StepLifecycleListener {
   private final DriverManager driverManager;
   private final String imageType = "image/png";
   private final String pngValue = "png";
+  public static Map<String, Integer> tagCounts = new HashMap<>();
 
   @Inject
   public BaseSteps(DriverManager driverManager) {
@@ -69,6 +73,16 @@ public class BaseSteps implements StepLifecycleListener {
   @Before(order = 0)
   public void setRunningLocale(Scenario scenario) {
     setLocale(scenario);
+  }
+
+  @Before(order = 1)
+  public void countTags(Scenario scenario) {
+    ArrayList<String> tagNames = new ArrayList<>(scenario.getSourceTagNames());
+    for (String tagName : tagNames) {
+      tagCounts.putIfAbsent(tagName, 0);
+      tagCounts.put(tagName, tagCounts.get(tagName) + 1);
+    }
+    printTagCounts();
   }
 
   @Before(value = "@UI")
@@ -171,5 +185,12 @@ public class BaseSteps implements StepLifecycleListener {
 
   public void refreshCurrentPage() {
     driver.navigate().refresh();
+  }
+
+  public void printTagCounts() {
+    for (String tagName : tagCounts.keySet()) {
+      Integer count = tagCounts.get(tagName);
+      log.info(tagName + ": " + count);
+    }
   }
 }
