@@ -36,6 +36,7 @@ import static org.sormas.e2etests.pages.application.cases.EditContactsPage.COMMI
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.ACTION_CANCEL_POPUP;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.ARCHIVE_POPUP_WINDOW_HEADER;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.END_OF_PROCESSING_DATE_POPUP_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.POPUP_YES_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.REPORT_DATE;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CLOSE_IMPORT_TRAVEL_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CLOSE_IMPORT_TRAVEL_ENTRY_POPUP;
@@ -1260,6 +1261,8 @@ public class EditEventSteps implements En {
                   + "/sormas-webdriver/#!events/data/"
                   + apiState.getCreatedEvent().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_EVENT_URL);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              EditEventPage.UUID_INPUT);
         });
 
     When(
@@ -1498,6 +1501,9 @@ public class EditEventSteps implements En {
         () -> {
           webDriverHelpers.scrollToElement(EVENT_PARTICIPANTS_TAB);
           webDriverHelpers.clickOnWebElementBySelector(EVENT_PARTICIPANTS_TAB);
+          if (webDriverHelpers.isElementVisibleWithTimeout(POPUP_YES_BUTTON, 5)) {
+            webDriverHelpers.clickOnWebElementBySelector(POPUP_YES_BUTTON);
+          }
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(EVENT_PARTICIPANTS_GRID);
         });
 

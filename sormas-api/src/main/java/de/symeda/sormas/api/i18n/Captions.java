@@ -876,6 +876,7 @@ public interface Captions {
 	String dashboardNotACase = "dashboardNotACase";
 	String dashboardNotAContact = "dashboardNotAContact";
 	String dashboardNotAnEvent = "dashboardNotAnEvent";
+	String dashboardNotDone = "dashboardNotDone";
 	String dashboardNotExecutable = "dashboardNotExecutable";
 	String dashboardNotVisitedFor = "dashboardNotVisitedFor";
 	String dashboardNotYetClassified = "dashboardNotYetClassified";
@@ -1232,6 +1233,9 @@ public interface Captions {
 	String EventParticipantExport_personNationalHealthId = "EventParticipantExport.personNationalHealthId";
 	String EventParticipantExport_sampleInformation = "EventParticipantExport.sampleInformation";
 	String eventParticipantSelect = "eventParticipantSelect";
+	String EventParticipantSelection_eventParticipantUuidLink = "EventParticipantSelection.eventParticipantUuidLink";
+	String EventParticipantSelection_eventUuidLink = "EventParticipantSelection.eventUuidLink";
+	String EventParticipantSelection_resultingCaseUuidLink = "EventParticipantSelection.resultingCaseUuidLink";
 	String eventSearchEvent = "eventSearchEvent";
 	String eventSearchSpecificEvent = "eventSearchSpecificEvent";
 	String eventSelect = "eventSelect";
@@ -1764,6 +1768,7 @@ public interface Captions {
 	String personLinkToCases = "personLinkToCases";
 	String personLinkToContacts = "personLinkToContacts";
 	String personLinkToEvents = "personLinkToEvents";
+	String personLinkToSamples = "personLinkToSamples";
 	String personNoCaseLinkedToPerson = "personNoCaseLinkedToPerson";
 	String personNoContactLinkedToPerson = "personNoContactLinkedToPerson";
 	String personNoEventParticipantLinkedToPerson = "personNoEventParticipantLinkedToPerson";
@@ -1839,6 +1844,7 @@ public interface Captions {
 	String prescriptionNewPrescription = "prescriptionNewPrescription";
 	String prescriptionWithTreatment = "prescriptionWithTreatment";
 	String prescriptionWithTreatmentTitleDelete = "prescriptionWithTreatmentTitleDelete";
+	String QueryDetails_resultLimit = "QueryDetails.resultLimit";
 	String Region = "Region";
 	String Region_archived = "Region.archived";
 	String Region_country = "Region.country";
@@ -1916,6 +1922,8 @@ public interface Captions {
 	String sampleArchivedSamples = "sampleArchivedSamples";
 	String sampleAssociationType = "sampleAssociationType";
 	String sampleCreateNew = "sampleCreateNew";
+	String sampleDashboardAllSamples = "sampleDashboardAllSamples";
+	String sampleDashboardFinalLabResults = "sampleDashboardFinalLabResults";
 	String sampleDeletedSamples = "sampleDeletedSamples";
 	String SampleExport_additionalTestingRequested = "SampleExport.additionalTestingRequested";
 	String SampleExport_altSgpt = "SampleExport.altSgpt";
@@ -1931,6 +1939,9 @@ public interface Captions {
 	String SampleExport_caseOutcome = "SampleExport.caseOutcome";
 	String SampleExport_caseRegion = "SampleExport.caseRegion";
 	String SampleExport_caseReportDate = "SampleExport.caseReportDate";
+	String SampleExport_caseResponsibleCommunity = "SampleExport.caseResponsibleCommunity";
+	String SampleExport_caseResponsibleDistrict = "SampleExport.caseResponsibleDistrict";
+	String SampleExport_caseResponsibleRegion = "SampleExport.caseResponsibleRegion";
 	String SampleExport_caseUuid = "SampleExport.caseUuid";
 	String SampleExport_conjBilirubin = "SampleExport.conjBilirubin";
 	String SampleExport_contactCommunity = "SampleExport.contactCommunity";
@@ -1989,6 +2000,7 @@ public interface Captions {
 	String sampleNoSamplesForCase = "sampleNoSamplesForCase";
 	String sampleNoSamplesForContact = "sampleNoSamplesForContact";
 	String sampleNoSamplesForEventParticipant = "sampleNoSamplesForEventParticipant";
+	String sampleNoSamplesForPerson = "sampleNoSamplesForPerson";
 	String sampleNotShipped = "sampleNotShipped";
 	String sampleNotShippedLong = "sampleNotShippedLong";
 	String samplePending = "samplePending";

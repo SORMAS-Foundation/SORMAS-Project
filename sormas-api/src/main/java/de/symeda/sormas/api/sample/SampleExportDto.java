@@ -127,6 +127,9 @@ public class SampleExportDto extends AbstractUuidDto {
 	private final Date lastContactDate;
 	private final ContactClassification contactClassification;
 	private final ContactStatus contactStatus;
+	private String caseResponsibleRegion;
+	private String caseResponsibleDistrict;
+	private String caseResponsibleCommunity;
 
 	private SampleJurisdictionFlagsDto sampleJurisdictionFlagsDto;
 
@@ -149,7 +152,9 @@ public class SampleExportDto extends AbstractUuidDto {
 						   String eventAddressRegion, String eventAddressDistrict, String eventAddressCommunity, String eventAddressCity, String eventAddressStreet, String eventAddressHouseNumber, String eventAddressAdditionalInformation,
 						   Date caseReportDate, CaseClassification caseClassification, CaseOutcome caseOutcome, String caseRegion, String caseDistrict,
 						   String caseCommunity, String caseHealthFacility, String caseFacilityDetails, String contactRegion, String contactDistrict, String contactCommunity,
-						   Date contactReportDate, Date lastContactDate, ContactClassification contactClassification, ContactStatus contactStatus, String labUuid, String caseHealthFacilityUuid, boolean isInJurisdiction, boolean isCaseInJurisdiction, boolean isContactInJurisdiction,  boolean isContactCaseInJurisdiction, boolean isEventParticipantInJurisdiction) {
+						   Date contactReportDate, Date lastContactDate, ContactClassification contactClassification, ContactStatus contactStatus, String labUuid, String caseHealthFacilityUuid,
+						   String caseResponsibleRegion, String caseResponsibleDistrict, String caseResponsibleCommunity,
+						   boolean isInJurisdiction, boolean isCaseInJurisdiction, boolean isContactInJurisdiction,  boolean isContactCaseInJurisdiction, boolean isEventParticipantInJurisdiction) {
 	//@formatter:on
 		super(uuid);
 		this.id = id;
@@ -260,6 +265,9 @@ public class SampleExportDto extends AbstractUuidDto {
 		this.lastContactDate = lastContactDate;
 		this.contactClassification = contactClassification;
 		this.contactStatus = contactStatus;
+		this.caseResponsibleRegion = caseResponsibleRegion;
+		this.caseResponsibleDistrict = caseResponsibleDistrict;
+		this.caseResponsibleCommunity = caseResponsibleCommunity;
 
 		this.sampleJurisdictionFlagsDto = new SampleJurisdictionFlagsDto(
 			isInJurisdiction,
@@ -334,6 +342,21 @@ public class SampleExportDto extends AbstractUuidDto {
 
 	public void setDisease(String disease) {
 		this.disease = disease;
+	}
+
+	@Order(7)
+	public String getCaseResponsibleRegion() {
+		return caseResponsibleRegion;
+	}
+
+	@Order(8)
+	public String getCaseResponsibleDistrict() {
+		return caseResponsibleDistrict;
+	}
+
+	@Order(9)
+	public String getCaseResponsibleCommunity() {
+		return caseResponsibleCommunity;
 	}
 
 	@Order(10)

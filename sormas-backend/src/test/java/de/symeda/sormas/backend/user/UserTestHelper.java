@@ -30,6 +30,7 @@ public class UserTestHelper {
 		SecureRandom rand = new SecureRandom();
 		for (int i = 0; i < count; i++) {
 			User u = new User();
+			u.setUuid(DataHelper.createUuid());
 			u.setFirstName(UUID.randomUUID().toString());
 			u.setLastName(UUID.randomUUID().toString());
 			u.setUserName(UUID.randomUUID().toString());
@@ -68,6 +69,7 @@ public class UserTestHelper {
 
 	public static User createDefaultUser(DefaultUserRole role, DataHelper.Pair<String, String> userpass, TestDataCreator creator) {
 		User user = new User();
+		user.setUuid(DataHelper.createUuid());
 		user.setFirstName(userpass.getElement0());
 		user.setLastName(userpass.getElement0());
 		user.setUserName(userpass.getElement0());

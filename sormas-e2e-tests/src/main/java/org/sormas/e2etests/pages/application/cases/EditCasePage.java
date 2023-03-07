@@ -367,6 +367,11 @@ public class EditCasePage {
       By.cssSelector(".popupContent #organization div");
   public static final By HAND_THE_OWNERSHIP_CHECKBOX =
       By.cssSelector(".popupContent #handOverOwnership label");
+
+  public static final By SAHRE_SAMPLES_CHECKBOX =
+      By.cssSelector(".popupContent #withSamples label");
+  public static final By SHARE_REPORTS_CHECKBOX =
+      By.cssSelector(".popupContent #withSurveillanceReports label");
   public static final By SHARE_SORMAS_2_SORMAS_POPUP_BUTTON =
       By.cssSelector(".popupContent #commit");
   public static final By LINKED_SHARED_ORGANIZATION_SELECTED_VALUE =
@@ -374,6 +379,14 @@ public class EditCasePage {
           "//div[@location='sormasToSormas']//div[@class='v-slot v-slot-s-list-entry v-slot-s-list-entry-no-border']");
   public static final By CLINICAL_ASSESSMENTS_LABEL_DE =
       By.xpath("//div[contains(text(), 'Klinische Bewertungen')]");
+  public static final By REJECT_SHARED_CASE_BUTTON = By.cssSelector("#sormasToSormasRevokeShare");
+  public static final By REVOKE_CASE_POPUP_HEADER =
+      By.xpath("//*[contains(text(),'Anfrage widerrufen')]");
+  public static final By ERROR_IN_HANDOVER_HEADER_DE =
+      By.xpath("//*[contains(text(),'Fehler bei \u00DCbergabe')]");
+  public static final By ERROR_DESCRIPTION_REQUEST_PROCESSED =
+      By.xpath(
+          "//*[contains(text(),'Die Anfrage wurde bereits bearbeitet. Bitte laden Sie die Seite neu, um die neuesten \u00C4nderungen zu sehen.')]");
 
   public static By getPreExistingConditionCombobox_DE(String id) {
     return By.xpath(
@@ -404,4 +417,8 @@ public class EditCasePage {
   public static By checkIfTextExists(String text) {
     return By.xpath(String.format("//div[contains(text(),'%s')]", text));
   }
+
+  public static By SHARE_PENDING_WARNING_DE =
+      By.xpath(
+          "//div[@class='popupContent']//div[contains(text(),'Es gibt bereits eine ausstehende Anfrage an das gleiche Gesundheitsamt. Bitte widerrufen Sie die Anfrage, bevor Sie eine Neue senden.')]");
 }

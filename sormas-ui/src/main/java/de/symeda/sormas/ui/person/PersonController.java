@@ -17,10 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.person;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.StringUtils;
@@ -44,12 +46,14 @@ import com.vaadin.v7.data.Validator;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.event.EventParticipantSelectionDto;
 import de.symeda.sormas.api.externaljournal.ExternalJournalSyncResponseDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonContext;
+import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonHelper;
@@ -61,7 +65,10 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.CaseDataView;
+import de.symeda.sormas.ui.events.eventParticipantMerge.PickLeadEventParticipant;
+import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
@@ -162,7 +169,7 @@ public class PersonController {
 		final PersonIndexDto leadPerson = selectedItems.iterator().next();
 		final PersonIndexDto otherPerson = personIndexDtos.stream().filter(p -> p.getUuid() != leadPerson.getUuid()).findFirst().get();
 
-		String confirmationMessage = I18nProperties.getString(Strings.infoPersonMergeConfirmation);
+		final String confirmationMessage;
 
 		if (FacadeProvider.getPersonFacade().isSharedOrReceived(otherPerson.getUuid())) {
 			if (FacadeProvider.getPersonFacade().isSharedOrReceived(leadPerson.getUuid())) {
@@ -175,9 +182,49 @@ public class PersonController {
 					false).show(Page.getCurrent());
 				return;
 			}
+		} else {
+			confirmationMessage = I18nProperties.getString(Strings.infoPersonMergeConfirmation);
 		}
 
-		VaadinUiUtil.showConfirmationPopup(
+		String firstPersonUuid = personIndexDtos.get(0).getUuid();
+		String secondPersonUuid = personIndexDtos.get(1).getUuid();
+
+		List<EventParticipantSelectionDto> eventParticipantsWithSameEvent =
+			FacadeProvider.getEventParticipantFacade().getEventParticipantsWithSameEvent(firstPersonUuid, secondPersonUuid);
+
+		if (!eventParticipantsWithSameEvent.isEmpty()) {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_VIEW)) {
+				selectLeadEventParticipantByEvent(
+					eventParticipantsWithSameEvent,
+					(selectedEventParticipants, mergeEventParticipantProperties) -> pickOrMergeConfirmationPopUp(
+						popupWindow,
+						mergeProperties,
+						leadPerson,
+						otherPerson,
+						confirmationMessage,
+						selectedEventParticipants,
+						mergeEventParticipantProperties));
+				return;
+			} else {
+				VaadinUiUtil.showSimplePopupWindow(
+					I18nProperties.getString(Strings.headingMergePersonError),
+					I18nProperties.getString(Strings.messagePersonMergeNoEventParticipantRights));
+				return;
+			}
+		}
+
+		pickOrMergeConfirmationPopUp(popupWindow, mergeProperties, leadPerson, otherPerson, confirmationMessage, new ArrayList<>(), false);
+	}
+
+	private Window pickOrMergeConfirmationPopUp(
+		Window popupWindow,
+		boolean mergePersonProperties,
+		PersonIndexDto leadPerson,
+		PersonIndexDto otherPerson,
+		String confirmationMessage,
+		List<String> selectedEventParticipantUuids,
+		boolean mergeEventParticipantProperties) {
+		Window mergeWindow = VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getString(Strings.headingPickOrMergePersonConfirmation),
 			new Label(confirmationMessage, ContentMode.HTML),
 			I18nProperties.getCaption(Captions.actionConfirm),
@@ -185,11 +232,61 @@ public class PersonController {
 			800,
 			confirm -> {
 				if (Boolean.TRUE.equals(confirm)) {
-					FacadeProvider.getPersonFacade().mergePerson(leadPerson.getUuid(), otherPerson.getUuid(), mergeProperties);
+					FacadeProvider.getPersonFacade()
+						.mergePerson(
+							leadPerson.getUuid(),
+							otherPerson.getUuid(),
+							mergePersonProperties,
+							selectedEventParticipantUuids,
+							mergeEventParticipantProperties);
 					popupWindow.close();
 					SormasUI.refreshView();
 				}
 			});
+
+		return mergeWindow;
+	}
+
+	private void selectLeadEventParticipantByEvent(
+		List<EventParticipantSelectionDto> eventParticipantSelectionDtos,
+		BiConsumer<List<String>, Boolean> callback) {
+
+		PickLeadEventParticipant pickLeadEventParticipant = new PickLeadEventParticipant(eventParticipantSelectionDtos);
+
+		final CommitDiscardWrapperComponent<PickLeadEventParticipant> component = new CommitDiscardWrapperComponent<>(pickLeadEventParticipant);
+
+		component.getCommitButton().setCaption(I18nProperties.getCaption((Captions.actionPick)));
+
+		final Button mergeButton = ButtonHelper.createButton(Captions.actionMerge);
+		component.getButtonsPanel().addComponent(mergeButton);
+		mergeButton.removeStyleName(ValoTheme.BUTTON_LINK);
+		mergeButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+
+		mergeButton.addClickListener(clickEvent -> {
+			pickLeadEventParticipant.setPickOrMerge(PickLeadEventParticipant.PickOrMerge.MERGE);
+			component.commit();
+		});
+
+		component.setPreCommitListener(preCommitCallback -> {
+			List<String> pickedEventParticipants = component.getWrappedComponent().getValue();
+
+			if (eventParticipantSelectionDtos.size() / 2 > pickedEventParticipants.size()) {
+				VaadinUiUtil.showSimplePopupWindow(
+					I18nProperties.getString(Strings.headingPickEventParticipantsIncompleteSelection),
+					I18nProperties.getString(Strings.messagePickEventParticipantsIncompleteSelection));
+			} else {
+				preCommitCallback.run();
+			}
+		});
+
+		component.addCommitListener(() -> {
+			List<String> pickedEventParticipants = component.getWrappedComponent().getValue();
+			callback.accept(pickedEventParticipants, pickLeadEventParticipant.getPickOrMerge() == PickLeadEventParticipant.PickOrMerge.MERGE);
+		});
+
+		component.setWidth(1500, Unit.PIXELS);
+
+		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickEventParticipants));
 	}
 
 	public void selectOrCreatePerson(final PersonDto person, String infoText, Consumer<PersonReferenceDto> resultConsumer, boolean saveNewPerson) {
@@ -410,6 +507,14 @@ public class PersonController {
 
 	public void navigateToPersons() {
 		SormasUI.get().getNavigator().navigateTo(PersonsView.VIEW_NAME);
+	}
+
+	public void navigateToPersons(PersonCriteria criteria) {
+		ViewModelProviders.of(PersonsView.class).remove(PersonCriteria.class);
+		ViewModelProviders.of(PersonsView.class).get(PersonCriteria.class, criteria);
+
+		String navigationState = AbstractView.buildNavigationState(PersonsView.VIEW_NAME, criteria);
+		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 
 	public void navigateToPerson(String uuid) {

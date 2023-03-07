@@ -202,7 +202,9 @@ public class EventDirectorySteps implements En {
     When(
         "I fill EVENT ID filter by API",
         () -> {
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
           String eventUuid = apiState.getCreatedEvent().getUuid();
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(SEARCH_EVENT_BY_FREE_TEXT);
           webDriverHelpers.fillInWebElement(
               SEARCH_EVENT_BY_FREE_TEXT,
               dataOperations.getPartialUuidFromAssociatedLink(eventUuid));
@@ -405,8 +407,10 @@ public class EventDirectorySteps implements En {
         "^I click on ([^\"]*) Radiobutton on Event Directory Page$",
         (String buttonName) -> {
           TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(EVENTS_RADIO_BUTTON);
           webDriverHelpers.clickWebElementByText(EVENTS_RADIO_BUTTON, buttonName);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
         });
 
     When(
@@ -901,8 +905,9 @@ public class EventDirectorySteps implements En {
     When(
         "I apply on the APPLY FILTERS button from Event",
         () -> {
+          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              APPLY_FILTERS_BUTTON, 30);
+              APPLY_FILTERS_BUTTON, 60);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
           TimeUnit.SECONDS.sleep(3);
         });

@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.contact;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -14,7 +15,7 @@ public class ContactSimilarityCriteria extends BaseCriteria implements Cloneable
 	private static final long serialVersionUID = 6902101244020083789L;
 
 	private PersonReferenceDto person;
-	private List<PersonReferenceDto> persons;
+	private Collection<PersonReferenceDto> persons;
 	private CaseReferenceDto caze;
 	private List<CaseReferenceDto> resultingCases;
 	private Disease disease;
@@ -52,11 +53,11 @@ public class ContactSimilarityCriteria extends BaseCriteria implements Cloneable
 		return this;
 	}
 
-	public List<PersonReferenceDto> getPersons() {
+	public Collection<PersonReferenceDto> getPersons() {
 		return persons;
 	}
 
-	public ContactSimilarityCriteria withPersons(List<PersonReferenceDto> persons) {
+	public ContactSimilarityCriteria withPersons(Collection<PersonReferenceDto> persons) {
 		this.persons = persons;
 		return this;
 	}

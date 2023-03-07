@@ -32,6 +32,7 @@ import org.sormas.e2etests.entities.pojo.web.Case;
 import org.sormas.e2etests.entities.services.CaseService;
 import org.sormas.e2etests.enums.CaseClassification;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.steps.api.demisSteps.DemisSteps;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
@@ -358,6 +359,31 @@ public class EditCasePersonSteps implements En {
               lastName,
               "Last names is incorrect!");
           softly.assertAll();
+        });
+
+    And(
+        "I check that first and last name are equal to data form {int} result in laboratory notification",
+        (Integer resultNumber) -> {
+          softly.assertEquals(
+              DemisSteps.firstNames.get(resultNumber - 1),
+              webDriverHelpers.getValueFromWebElement(FIRST_NAME_INPUT),
+              "First name is incorrect!");
+          softly.assertAll();
+          softly.assertEquals(
+              DemisSteps.lastNames.get(resultNumber - 1),
+              webDriverHelpers.getValueFromWebElement(LAST_NAME_INPUT),
+              "Last name is incorrect!");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check if editable fields are read only for person case/contact tab$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
+          webDriverHelpers.isElementGreyedOut(UUID_INPUT);
+          webDriverHelpers.isElementGreyedOut(FIRST_NAME_INPUT);
+          webDriverHelpers.isElementGreyedOut(LAST_NAME_INPUT);
+          webDriverHelpers.isElementGreyedOut(SAVE_BUTTON);
         });
   }
 

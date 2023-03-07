@@ -7,16 +7,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Query;
 import javax.validation.ConstraintViolationException;
 
 import org.apache.commons.lang3.time.DateUtils;
-import org.hibernate.internal.SessionImpl;
-import org.hibernate.query.spi.QueryImplementor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -93,11 +91,10 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
 		creator.createSurveillanceReport(user.toReference(), caze.toReference());
 
-		byte[] contentAsBytes =  ("%PDF-1.0\n1 0 obj<</Type/Catalog/Pages " +
-				"2 0 R>>endobj 2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj 3 0 obj<</Ty" +
-				"pe/Page/MediaBox[0 0 3 3]>>endobj\nxref\n0 4\n0000000000 65535 f\n000000001" +
-				"0 00000 n\n0000000053 00000 n\n0000000102 00000 n\ntrailer<</Size 4/Root 1 " +
-				"0 R>>\nstartxref\n149\n%EOF").getBytes();
+		byte[] contentAsBytes =
+			("%PDF-1.0\n1 0 obj<</Type/Catalog/Pages " + "2 0 R>>endobj 2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj 3 0 obj<</Ty"
+				+ "pe/Page/MediaBox[0 0 3 3]>>endobj\nxref\n0 4\n0000000000 65535 f\n000000001"
+				+ "0 00000 n\n0000000053 00000 n\n0000000102 00000 n\ntrailer<</Size 4/Root 1 " + "0 R>>\nstartxref\n149\n%EOF").getBytes();
 
 		creator.createDocument(
 			user.toReference(),
@@ -155,13 +152,14 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		getVisitFacade().saveVisit(visit);
 
 		final Date tenYearsPlusAgo = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
-		SessionImpl em = (SessionImpl) getEntityManager();
-		QueryImplementor query = em.createQuery("select c from cases c where c.uuid=:uuid");
-		query.setParameter("uuid", caze.getUuid());
-		Case singleResult = (Case) query.getSingleResult();
-		singleResult.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
-		singleResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
-		em.save(singleResult);
+		executeInTransaction(em -> {
+			Query query = em.createQuery("select c from cases c where c.uuid=:uuid");
+			query.setParameter("uuid", caze.getUuid());
+			Case singleResult = (Case) query.getSingleResult();
+			singleResult.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
+			singleResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
+			em.persist(singleResult);
+		});
 
 		assertEquals(2, getCaseService().count());
 
@@ -233,13 +231,14 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		getVisitFacade().saveVisit(visit2);
 
 		final Date tenYearsPlusAgo = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
-		SessionImpl em = (SessionImpl) getEntityManager();
-		QueryImplementor query = em.createQuery("select c from cases c where c.uuid=:uuid");
-		query.setParameter("uuid", caze.getUuid());
-		Case singleResult = (Case) query.getSingleResult();
-		singleResult.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
-		singleResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
-		em.save(singleResult);
+		executeInTransaction(em -> {
+			Query query = em.createQuery("select c from cases c where c.uuid=:uuid");
+			query.setParameter("uuid", caze.getUuid());
+			Case singleResult = (Case) query.getSingleResult();
+			singleResult.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
+			singleResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
+			em.persist(singleResult);
+		});
 
 		assertEquals(2, getCaseService().count());
 
@@ -266,13 +265,14 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		creator.createVaccination(user.toReference(), immunization.toReference());
 
 		final Date tenYearsPlusAgo = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
-		SessionImpl em = (SessionImpl) getEntityManager();
-		QueryImplementor query = em.createQuery("select i from immunization i where i.uuid=:uuid");
-		query.setParameter("uuid", immunization.getUuid());
-		Immunization singleResult = (Immunization) query.getSingleResult();
-		singleResult.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
-		singleResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
-		em.save(singleResult);
+		executeInTransaction(em -> {
+			Query query = em.createQuery("select i from immunization i where i.uuid=:uuid");
+			query.setParameter("uuid", immunization.getUuid());
+			Immunization singleResult = (Immunization) query.getSingleResult();
+			singleResult.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
+			singleResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
+			em.persist(singleResult);
+		});
 
 		assertEquals(1, getImmunizationService().count());
 
@@ -298,20 +298,21 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, user.toReference());
 
 		final Date tenYearsPlusAgo = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
-		SessionImpl em = (SessionImpl) getEntityManager();
-		QueryImplementor query = em.createQuery("select e from events e where e.uuid=:uuid");
-		query.setParameter("uuid", event.getUuid());
-		Event singleResult = (Event) query.getSingleResult();
-		singleResult.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
-		singleResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
-		em.save(singleResult);
+		executeInTransaction(em -> {
+			Query query = em.createQuery("select e from events e where e.uuid=:uuid");
+			query.setParameter("uuid", event.getUuid());
+			Event singleResult = (Event) query.getSingleResult();
+			singleResult.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
+			singleResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
+			em.persist(singleResult);
 
-		QueryImplementor evPQuery = em.createQuery("select ep from EventParticipant ep where ep.uuid=:uuid");
-		evPQuery.setParameter("uuid", eventParticipant.getUuid());
-		EventParticipant evPResult = (EventParticipant) evPQuery.getSingleResult();
-		evPResult.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
-		evPResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
-		em.save(evPResult);
+			Query evPQuery = em.createQuery("select ep from EventParticipant ep where ep.uuid=:uuid");
+			evPQuery.setParameter("uuid", eventParticipant.getUuid());
+			EventParticipant evPResult = (EventParticipant) evPQuery.getSingleResult();
+			evPResult.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
+			evPResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
+			em.persist(evPResult);
+		});
 
 		assertEquals(1, getEventService().count());
 		assertEquals(1, getEventParticipantService().count());
@@ -339,14 +340,14 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		SampleDto sampleDto = creator.createSample(eventParticipant.toReference(), user.toReference(), rdcf.facility);
 
 		final Date tenYearsPlusAgo = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
-		SessionImpl em = (SessionImpl) getEntityManager();
-
-		QueryImplementor evPQuery = em.createQuery("select ep from EventParticipant ep where ep.uuid=:uuid");
-		evPQuery.setParameter("uuid", eventParticipant.getUuid());
-		EventParticipant evPResult = (EventParticipant) evPQuery.getSingleResult();
-		evPResult.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
-		evPResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
-		em.save(evPResult);
+		executeInTransaction(em -> {
+			Query evPQuery = em.createQuery("select ep from EventParticipant ep where ep.uuid=:uuid");
+			evPQuery.setParameter("uuid", eventParticipant.getUuid());
+			EventParticipant evPResult = (EventParticipant) evPQuery.getSingleResult();
+			evPResult.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
+			evPResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
+			em.persist(evPResult);
+		});
 
 		Sample sample = getSampleService().getByUuid(sampleDto.getUuid());
 
@@ -381,14 +382,14 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		});
 
 		final Date tenYearsPlusAgo = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
-		SessionImpl em = (SessionImpl) getEntityManager();
-
-		QueryImplementor evPQuery = em.createQuery("select ep from EventParticipant ep where ep.uuid=:uuid");
-		evPQuery.setParameter("uuid", eventParticipant.getUuid());
-		EventParticipant evPResult = (EventParticipant) evPQuery.getSingleResult();
-		evPResult.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
-		evPResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
-		em.save(evPResult);
+		executeInTransaction(em -> {
+			Query evPQuery = em.createQuery("select ep from EventParticipant ep where ep.uuid=:uuid");
+			evPQuery.setParameter("uuid", eventParticipant.getUuid());
+			EventParticipant evPResult = (EventParticipant) evPQuery.getSingleResult();
+			evPResult.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
+			evPResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
+			em.persist(evPResult);
+		});
 
 		Sample sample = getSampleService().getByUuid(sampleDto.getUuid());
 
@@ -419,13 +420,14 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		TravelEntryDto travelEntry = creator.createTravelEntry(person.toReference(), user.toReference(), rdcf, null);
 
 		final Date tenYearsPlusAgo = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
-		SessionImpl em = (SessionImpl) getEntityManager();
-		QueryImplementor query = em.createQuery("select t from travelentry t where t.uuid=:uuid");
-		query.setParameter("uuid", travelEntry.getUuid());
-		TravelEntry singleResult = (TravelEntry) query.getSingleResult();
-		singleResult.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
-		singleResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
-		em.save(singleResult);
+		executeInTransaction(em -> {
+			Query query = em.createQuery("select t from travelentry t where t.uuid=:uuid");
+			query.setParameter("uuid", travelEntry.getUuid());
+			TravelEntry singleResult = (TravelEntry) query.getSingleResult();
+			singleResult.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
+			singleResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
+			em.persist(singleResult);
+		});
 
 		assertEquals(1, getTravelEntryService().count());
 
@@ -454,17 +456,18 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		// alongside the person
 		caze = getCaseFacade().getByUuid(caze.getUuid());
 		caze.setDisease(Disease.CHOLERA);
-		getCaseFacade().save(caze);
+		CaseDataDto finalCaze = getCaseFacade().save(caze);
 		ImmunizationDto immunization = creator.createImmunization(Disease.EVD, person.toReference(), user.toReference(), rdcf);
 
 		final Date tenYearsPlusAgoCases = DateUtils.addDays(new Date(), (-1) * caseCoreEntityTypeConfig.deletionPeriod - 1);
-		SessionImpl em = (SessionImpl) getEntityManager();
-		QueryImplementor query = em.createQuery("select c from cases c where c.uuid=:uuid");
-		query.setParameter("uuid", caze.getUuid());
-		Case singleResultCase = (Case) query.getSingleResult();
-		singleResultCase.setCreationDate(new Timestamp(tenYearsPlusAgoCases.getTime()));
-		singleResultCase.setChangeDate(new Timestamp(tenYearsPlusAgoCases.getTime()));
-		em.save(singleResultCase);
+		executeInTransaction(em -> {
+			Query query = em.createQuery("select c from cases c where c.uuid=:uuid");
+			query.setParameter("uuid", finalCaze.getUuid());
+			Case singleResultCase = (Case) query.getSingleResult();
+			singleResultCase.setCreationDate(new Timestamp(tenYearsPlusAgoCases.getTime()));
+			singleResultCase.setChangeDate(new Timestamp(tenYearsPlusAgoCases.getTime()));
+			em.persist(singleResultCase);
+		});
 
 		assertEquals(1, getPersonService().count());
 
@@ -475,13 +478,14 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		assertEquals(1, getPersonService().count());
 
 		final Date tenYearsPlusAgoImmunizations = DateUtils.addDays(new Date(), (-1) * immunizationCoreEntityTypeConfig.deletionPeriod - 1);
-		em = (SessionImpl) getEntityManager();
-		query = em.createQuery("select i from immunization i where i.uuid=:uuid");
-		query.setParameter("uuid", immunization.getUuid());
-		Immunization singleResultImmunization = (Immunization) query.getSingleResult();
-		singleResultImmunization.setCreationDate(new Timestamp(tenYearsPlusAgoImmunizations.getTime()));
-		singleResultImmunization.setChangeDate(new Timestamp(tenYearsPlusAgoImmunizations.getTime()));
-		em.save(singleResultImmunization);
+		executeInTransaction(em -> {
+			Query query = em.createQuery("select i from immunization i where i.uuid=:uuid");
+			query.setParameter("uuid", immunization.getUuid());
+			Immunization singleResultImmunization = (Immunization) query.getSingleResult();
+			singleResultImmunization.setCreationDate(new Timestamp(tenYearsPlusAgoImmunizations.getTime()));
+			singleResultImmunization.setChangeDate(new Timestamp(tenYearsPlusAgoImmunizations.getTime()));
+			em.persist(singleResultImmunization);
+		});
 
 		useSystemUser();
 		getCoreEntityDeletionService().executeAutomaticDeletion();
@@ -513,13 +517,12 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		assertEquals(1, getImmunizationService().count());
 
 		final Date ninetyDaysPlusAgo = DateUtils.addDays(new Date(), (-1) * deletionConfig.deletionPeriod - 1);
-		SessionImpl em = (SessionImpl) getEntityManager();
-		QueryImplementor query = em.createQuery("update immunization i set changedate=:date where i.uuid=:uuid");
-		em.getTransaction().begin();
-		query.setParameter("date", new Timestamp(ninetyDaysPlusAgo.getTime()));
-		query.setParameter("uuid", immunization.getUuid());
-		query.executeUpdate();
-		em.getTransaction().commit();
+		executeInTransaction(em -> {
+			Query query = em.createQuery("update immunization i set changedate=:date where i.uuid=:uuid");
+			query.setParameter("date", new Timestamp(ninetyDaysPlusAgo.getTime()));
+			query.setParameter("uuid", immunization.getUuid());
+			query.executeUpdate();
+		});
 
 		useSystemUser();
 		getCoreEntityDeletionService().executeAutomaticDeletion();
@@ -598,14 +601,15 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		assertEquals(2, getSampleService().count());
 		assertEquals(2, getVisitService().count());
 
-		SessionImpl em = (SessionImpl) getEntityManager();
 		final Date tenYearsPlusAgo = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
-		QueryImplementor query = em.createQuery("select i from contact i where i.uuid=:uuid");
-		query.setParameter("uuid", contactDto.getUuid());
-		Contact singleResult = (Contact) query.getSingleResult();
-		singleResult.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
-		singleResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
-		em.save(singleResult);
+		executeInTransaction(em -> {
+			Query query = em.createQuery("select i from contact i where i.uuid=:uuid");
+			query.setParameter("uuid", contactDto.getUuid());
+			Contact singleResult = (Contact) query.getSingleResult();
+			singleResult.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
+			singleResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
+			em.persist(singleResult);
+		});
 
 		useSystemUser();
 		getCoreEntityDeletionService().executeAutomaticDeletion();
@@ -630,13 +634,14 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		VisitDto visitDto3 = creator.createVisit(contactDto3.getDisease(), contactDto3.getPerson(), contactDto3.getReportDateTime());
 
 		final Date tenYearsPlusAgoSecondContact = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
-		SessionImpl emSecondContact = (SessionImpl) getEntityManager();
-		QueryImplementor query2 = emSecondContact.createQuery("select i from contact i where i.uuid=:uuid");
-		query2.setParameter("uuid", contactDto2.getUuid());
-		Contact singleResult2 = (Contact) query2.getSingleResult();
-		singleResult2.setCreationDate(new Timestamp(tenYearsPlusAgoSecondContact.getTime()));
-		singleResult2.setChangeDate(new Timestamp(tenYearsPlusAgoSecondContact.getTime()));
-		emSecondContact.save(singleResult2);
+		executeInTransaction(em -> {
+			Query query2 = em.createQuery("select i from contact i where i.uuid=:uuid");
+			query2.setParameter("uuid", contactDto2.getUuid());
+			Contact singleResult2 = (Contact) query2.getSingleResult();
+			singleResult2.setCreationDate(new Timestamp(tenYearsPlusAgoSecondContact.getTime()));
+			singleResult2.setChangeDate(new Timestamp(tenYearsPlusAgoSecondContact.getTime()));
+			em.persist(singleResult2);
+		});
 
 		useSystemUser();
 		getCoreEntityDeletionService().executeAutomaticDeletion();
@@ -649,13 +654,14 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		assertEquals(2, getVisitService().count());
 
 		final Date tenYearsPlusAgoThirdContact = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
-		SessionImpl emThirdContact = (SessionImpl) getEntityManager();
-		QueryImplementor query3 = emThirdContact.createQuery("select i from contact i where i.uuid=:uuid");
-		query3.setParameter("uuid", contactDto3.getUuid());
-		Contact singleResult3 = (Contact) query3.getSingleResult();
-		singleResult3.setCreationDate(new Timestamp(tenYearsPlusAgoThirdContact.getTime()));
-		singleResult3.setChangeDate(new Timestamp(tenYearsPlusAgoThirdContact.getTime()));
-		emThirdContact.save(singleResult3);
+		executeInTransaction(em -> {
+			Query query3 = em.createQuery("select i from contact i where i.uuid=:uuid");
+			query3.setParameter("uuid", contactDto3.getUuid());
+			Contact singleResult3 = (Contact) query3.getSingleResult();
+			singleResult3.setCreationDate(new Timestamp(tenYearsPlusAgoThirdContact.getTime()));
+			singleResult3.setChangeDate(new Timestamp(tenYearsPlusAgoThirdContact.getTime()));
+			em.persist(singleResult3);
+		});
 
 		useSystemUser();
 		getCoreEntityDeletionService().executeAutomaticDeletion();
@@ -717,13 +723,14 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		assertEquals(2, getVisitService().count());
 
 		final Date tenYearsPlusAgo = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
-		SessionImpl em = (SessionImpl) getEntityManager();
-		QueryImplementor query = em.createQuery("select i from contact i where i.uuid=:uuid");
-		query.setParameter("uuid", contactDto.getUuid());
-		Contact singleResult = (Contact) query.getSingleResult();
-		singleResult.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
-		singleResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
-		em.save(singleResult);
+		executeInTransaction(em -> {
+			Query query = em.createQuery("select i from contact i where i.uuid=:uuid");
+			query.setParameter("uuid", contactDto.getUuid());
+			Contact singleResult = (Contact) query.getSingleResult();
+			singleResult.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
+			singleResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
+			em.persist(singleResult);
+		});
 
 		useSystemUser();
 		getCoreEntityDeletionService().executeAutomaticDeletion();
@@ -735,13 +742,14 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		assertEquals(1, getSampleService().count());
 		assertEquals(2, getVisitService().count());
 
-		SessionImpl em2 = (SessionImpl) getEntityManager();
-		QueryImplementor query2 = em2.createQuery("select i from contact i where i.uuid=:uuid");
-		query2.setParameter("uuid", contactDto2.getUuid());
-		Contact singleResult2 = (Contact) query2.getSingleResult();
-		singleResult2.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
-		singleResult2.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
-		em2.save(singleResult2);
+		executeInTransaction(em -> {
+			Query query2 = em.createQuery("select i from contact i where i.uuid=:uuid");
+			query2.setParameter("uuid", contactDto2.getUuid());
+			Contact singleResult2 = (Contact) query2.getSingleResult();
+			singleResult2.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
+			singleResult2.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
+			em.persist(singleResult2);
+		});
 
 		useSystemUser();
 		getCoreEntityDeletionService().executeAutomaticDeletion();
@@ -834,13 +842,14 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		assertEquals(1, getSormasToSormasShareRequestService().count());
 
 		final Date tenYearsPlusAgoForCase = DateUtils.addDays(new Date(), (-1) * caseDeletionConfiguration.deletionPeriod - 1);
-		SessionImpl em1 = (SessionImpl) getEntityManager();
-		QueryImplementor query1 = em1.createQuery("select i from cases i where i.uuid=:uuid");
-		query1.setParameter("uuid", caze.getUuid());
-		Case singleResult1 = (Case) query1.getSingleResult();
-		singleResult1.setCreationDate(new Timestamp(tenYearsPlusAgoForCase.getTime()));
-		singleResult1.setChangeDate(new Timestamp(tenYearsPlusAgoForCase.getTime()));
-		em1.save(singleResult1);
+		executeInTransaction(em -> {
+			Query query1 = em.createQuery("select i from cases i where i.uuid=:uuid");
+			query1.setParameter("uuid", caze.getUuid());
+			Case singleResult1 = (Case) query1.getSingleResult();
+			singleResult1.setCreationDate(new Timestamp(tenYearsPlusAgoForCase.getTime()));
+			singleResult1.setChangeDate(new Timestamp(tenYearsPlusAgoForCase.getTime()));
+			em.persist(singleResult1);
+		});
 
 		useSystemUser();
 		getCoreEntityDeletionService().executeAutomaticDeletion();
@@ -849,13 +858,14 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		assertEquals(1, getSormasToSormasShareRequestService().count());
 
 		final Date tenYearsPlusAgoForContact = DateUtils.addDays(new Date(), (-1) * contactDeletionConfiguration.deletionPeriod - 1);
-		SessionImpl em2 = (SessionImpl) getEntityManager();
-		QueryImplementor query2 = em2.createQuery("select i from contact i where i.uuid=:uuid");
-		query2.setParameter("uuid", contact.getUuid());
-		Contact singleResult2 = (Contact) query2.getSingleResult();
-		singleResult2.setCreationDate(new Timestamp(tenYearsPlusAgoForContact.getTime()));
-		singleResult2.setChangeDate(new Timestamp(tenYearsPlusAgoForContact.getTime()));
-		em2.save(singleResult2);
+		executeInTransaction(em -> {
+			Query query2 = em.createQuery("select i from contact i where i.uuid=:uuid");
+			query2.setParameter("uuid", contact.getUuid());
+			Contact singleResult2 = (Contact) query2.getSingleResult();
+			singleResult2.setCreationDate(new Timestamp(tenYearsPlusAgoForContact.getTime()));
+			singleResult2.setChangeDate(new Timestamp(tenYearsPlusAgoForContact.getTime()));
+			em.persist(singleResult2);
+		});
 
 		useSystemUser();
 		getCoreEntityDeletionService().executeAutomaticDeletion();
@@ -865,13 +875,14 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		assertEquals(1, getSormasToSormasShareRequestService().count());
 
 		final Date tenYearsPlusAgoForEvent = DateUtils.addDays(new Date(), (-1) * eventDeletionConfiguration.deletionPeriod - 1);
-		SessionImpl em3 = (SessionImpl) getEntityManager();
-		QueryImplementor query3 = em3.createQuery("select i from events i where i.uuid=:uuid");
-		query3.setParameter("uuid", event.getUuid());
-		Event singleResult3 = (Event) query3.getSingleResult();
-		singleResult3.setCreationDate(new Timestamp(tenYearsPlusAgoForEvent.getTime()));
-		singleResult3.setChangeDate(new Timestamp(tenYearsPlusAgoForEvent.getTime()));
-		em2.save(singleResult3);
+		executeInTransaction(em -> {
+			Query query3 = em.createQuery("select i from events i where i.uuid=:uuid");
+			query3.setParameter("uuid", event.getUuid());
+			Event singleResult3 = (Event) query3.getSingleResult();
+			singleResult3.setCreationDate(new Timestamp(tenYearsPlusAgoForEvent.getTime()));
+			singleResult3.setChangeDate(new Timestamp(tenYearsPlusAgoForEvent.getTime()));
+			em.persist(singleResult3);
+		});
 
 		useSystemUser();
 		getCoreEntityDeletionService().executeAutomaticDeletion();
@@ -920,13 +931,14 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		assertEquals(2, getSormasToSormasShareInfoService().count());
 
 		final Date tenYearsPlusAgoForCase = DateUtils.addDays(new Date(), (-1) * caseDeletionConfiguration.deletionPeriod - 1);
-		SessionImpl em1 = (SessionImpl) getEntityManager();
-		QueryImplementor query1 = em1.createQuery("select i from cases i where i.uuid=:uuid");
-		query1.setParameter("uuid", caze.getUuid());
-		Case singleResult1 = (Case) query1.getSingleResult();
-		singleResult1.setCreationDate(new Timestamp(tenYearsPlusAgoForCase.getTime()));
-		singleResult1.setChangeDate(new Timestamp(tenYearsPlusAgoForCase.getTime()));
-		em1.save(singleResult1);
+		executeInTransaction(em -> {
+			Query query1 = em.createQuery("select i from cases i where i.uuid=:uuid");
+			query1.setParameter("uuid", caze.getUuid());
+			Case singleResult1 = (Case) query1.getSingleResult();
+			singleResult1.setCreationDate(new Timestamp(tenYearsPlusAgoForCase.getTime()));
+			singleResult1.setChangeDate(new Timestamp(tenYearsPlusAgoForCase.getTime()));
+			em.persist(singleResult1);
+		});
 
 		useSystemUser();
 		getCoreEntityDeletionService().executeAutomaticDeletion();

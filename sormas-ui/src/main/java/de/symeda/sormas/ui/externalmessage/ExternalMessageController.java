@@ -379,7 +379,7 @@ public class ExternalMessageController {
 			Button shareButton = ButtonHelper.createIconButton(
 				Captions.sormasToSormasSendLabMessage,
 				VaadinIcons.SHARE,
-				e -> ControllerProvider.getSormasToSormasController().shareLabMessage(externalMessage, callback));
+				e -> ControllerProvider.getSormasToSormasController().shareExternalMessage(externalMessage, callback));
 
 			buttonsPanel.addComponent(shareButton);
 		}

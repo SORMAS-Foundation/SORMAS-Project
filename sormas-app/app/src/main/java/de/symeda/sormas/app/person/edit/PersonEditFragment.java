@@ -398,7 +398,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		onAddressItemClickListener = (v, item) -> {
 			final Location address = (Location) item;
 			final Location addressClone = (Location) address.clone();
-			final LocationDialog dialog = new LocationDialog(BaseActivity.getActiveActivity(), addressClone, null);
+			final LocationDialog dialog = new LocationDialog(BaseActivity.getActiveActivity(), addressClone, getFieldAccessCheckers());
 
 			dialog.setPositiveCallback(() -> {
 				record.getAddresses().set(record.getAddresses().indexOf(address), addressClone);

@@ -119,7 +119,7 @@ Feature: Contact filter functionality
     When I create a new case for contact with specific data for DE
     Then I check case created from created contact is correctly displayed on Edit Case page for DE
     And I click on the Contacts button from navbar
-    And I open the last created contact in Contact directory page
+    And I search and open  last created contact in Contact directory page
     And I click on the CHOOSE SOURCE CASE button from CONTACT page
     And I click yes on the DISCARD UNSAVED CHANGES popup from CONTACT page
     And I search for the last case uuid created by UI in the CHOOSE SOURCE Contact window
@@ -216,7 +216,7 @@ Feature: Contact filter functionality
     When I create a new case for contact with specific data for DE
     Then I check case created from created contact is correctly displayed on Edit Case page for DE
     And I click on the Contacts button from navbar
-    And I open the last created contact in Contact directory page
+    And I search and open  last created contact in Contact directory page
     And I click on the CHOOSE SOURCE CASE button from CONTACT page
     And I click yes on the DISCARD UNSAVED CHANGES popup from CONTACT page
     And I search for the last case uuid created by UI in the CHOOSE SOURCE Contact window
@@ -286,8 +286,7 @@ Feature: Contact filter functionality
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
-    When I click on the Contacts button from navbar
-    Then I search after last created contact via API by UUID and open
+    Then I open the last created contact via API
     And I set contact vaccination status to <status>
     When I click on the Contacts button from navbar
     And I click SHOW MORE FILTERS button on Contact directory page

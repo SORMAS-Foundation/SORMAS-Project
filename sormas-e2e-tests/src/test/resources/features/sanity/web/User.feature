@@ -80,6 +80,7 @@ Feature: Create user
     Then I create new user password and save it on Edit User page
     Then I click on logout button from navbar
     And I login first time as a last edited user from keycloak instance
+    And I check if GDPR message appears and close it if it appears
     Then I click on logout button from navbar
 
   @#10111 @env_main

@@ -21,7 +21,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -936,9 +935,9 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 				postBody.getSamples().get(0).getEntity().setUuid(uuid);
 
 				SormasToSormasEncryptedDataDto encryptedData = encryptShareData(new ShareRequestAcceptData(null, null));
-				when(MockProducer.getPrincipal().getName()).thenReturn(s2sClientUser.getUserName());
+				loginWith(s2sClientUser);
 				getSormasToSormasCaseFacade().saveSharedEntities(encryptShareData(postBody));
-				when(MockProducer.getPrincipal().getName()).thenReturn(officer.getUserName());
+				loginWith(officer);
 				return encryptedData;
 			});
 

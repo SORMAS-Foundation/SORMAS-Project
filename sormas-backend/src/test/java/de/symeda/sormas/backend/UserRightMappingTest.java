@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda;
+package de.symeda.sormas.backend;
 
 import java.io.File;
 import java.io.IOException;

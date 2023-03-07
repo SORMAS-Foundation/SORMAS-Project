@@ -792,6 +792,7 @@ public class UserFacadeEjb implements UserFacade {
 
 	@Override
 	@RightsAllowed({
+		UserRight._USER_CREATE,
 		UserRight._USER_EDIT })
 	public String resetPassword(String uuid) {
 		String resetPassword = userService.resetPassword(uuid);

@@ -239,6 +239,7 @@ public class ControlTextReadField extends ControlPropertyField<String> {
 	public void setInaccessibleValue(String value) {
 		this.inaccessibleValue = value;
 		setValue(null);
+		applyDefaultValueStyle();
 	}
 
 	@Override

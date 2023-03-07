@@ -206,7 +206,7 @@ public abstract class PaginationList<T> extends VerticalLayout {
 		this.entries = entries;
 	}
 
-	protected List<T> getEntries() {
+	public List<T> getEntries() {
 		return entries;
 	}
 

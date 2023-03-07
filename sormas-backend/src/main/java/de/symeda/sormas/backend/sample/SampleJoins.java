@@ -152,6 +152,10 @@ public class SampleJoins extends QueryJoins<Sample> {
 		this.contactJoins = contactJoins;
 	}
 
+	public CaseJoins getContactCaseJoins() {
+		return getContactJoins().getCaseJoins();
+	}
+
 	public Join<Sample, EventParticipant> getEventParticipant() {
 		return getOrCreate(eventParticipant, Sample.ASSOCIATED_EVENT_PARTICIPANT, JoinType.LEFT, this::setEventParticipant);
 	}

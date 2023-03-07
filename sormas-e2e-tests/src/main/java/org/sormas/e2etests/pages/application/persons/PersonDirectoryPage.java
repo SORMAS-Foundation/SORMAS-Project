@@ -61,4 +61,6 @@ public class PersonDirectoryPage {
   public static final By getPersonResultsUuidLocator(String uuid) {
     return By.cssSelector(String.format("[title = '%s']", uuid));
   }
+
+  public static final By FIRST_RESULT_IN_PERSON_DIRECTORY_TABLE = By.xpath("//td//a");
 }

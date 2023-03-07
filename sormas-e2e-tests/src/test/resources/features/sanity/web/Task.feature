@@ -123,7 +123,7 @@ Feature: Tasks functionalities
     And I click to bulk change priority for selected tasks
     And I click to bulk change status for selected tasks
     And I click on Save button in New Task form
-    And I check if popup message from Edit Task Form after bulk edit is "All tasks have been edited"
+    And I check if popup message from Edit Task Form after bulk edit is "All entries have been edited"
     And I check that number of displayed tasks results is 0
 
   @tmsLink=SORDEV-9156 @env_main

@@ -44,7 +44,7 @@ import fish.payara.security.openid.OpenIdAuthenticationMechanism;
  * Sormas provider uses the {@link CustomFormAuthenticationMechanism}. The {@link SormasIdentityStore} validated the credentials and obtains
  * the user's roles.
  * <p/>
- * Keycloak provider uses the {@link OpenIdAuthenticationMechanism} which configures itself automatically trough the Keycloak Open ID URL.
+ * Keycloak provider uses the {@link OpenIdAuthenticationMechanism} which configures itself automatically through the Keycloak Open ID URL.
  * The token validation and it's roles are obtained by {@link SormasOpenIdIdentityStore}.<br/>
  *
  * @author Alex Vidrean
@@ -107,6 +107,7 @@ public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism
 
 		return authenticationStatus;
 	}
+
 	@Override
 	public AuthenticationStatus secureResponse(HttpServletRequest request, HttpServletResponse response, HttpMessageContext httpMessageContext)
 		throws AuthenticationException {

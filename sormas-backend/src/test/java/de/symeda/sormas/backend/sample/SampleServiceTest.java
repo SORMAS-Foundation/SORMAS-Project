@@ -52,7 +52,8 @@ public class SampleServiceTest extends AbstractBeanTest {
 		assertNotNull(getSampleService().getByUuid(referralSample.getUuid()).getReferredTo());
 		assertNotNull(getSampleReportService().getByUuid(labMessage.getSampleReports().get(0).getUuid()).getSample());
 
-		getSampleService().deletePermanent(getEntityAttached(sampleEntity));
+		sampleEntity = getSampleService().getByUuid(sample.getUuid());
+		getSampleService().deletePermanent(mergeToEntityManager(sampleEntity));
 
 		assertEquals(1, getSampleService().count());
 		assertEquals(0, getPathogenTestService().count());

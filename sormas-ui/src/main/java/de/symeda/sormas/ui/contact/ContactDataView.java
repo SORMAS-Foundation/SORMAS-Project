@@ -294,7 +294,7 @@ public class ContactDataView extends AbstractContactView {
 		} else if (contactEditAllowed.equals(EditPermissionType.REFUSED)) {
 			layout.disableWithViewAllow();
 		} else if (contactEditAllowed.equals(EditPermissionType.WITHOUT_OWNERSHIP)) {
-			layout.disableWithViewAllow();
+			layout.disableWithViewAllow(CommitDiscardWrapperComponent.DELETE_UNDELETE);
 		}
 	}
 

@@ -2,12 +2,14 @@ package de.symeda.sormas.ui.dashboard.surveillance.components.statistics;
 
 import java.util.Map;
 
+import com.vaadin.ui.Label;
+
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.ui.dashboard.statistics.CountElementStyle;
 import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsCountElement;
+import de.symeda.sormas.ui.utils.CssStyles;
 
 public class TestResultsStatisticsComponent extends DiseaseSectionStatisticsComponent {
 
@@ -15,9 +17,19 @@ public class TestResultsStatisticsComponent extends DiseaseSectionStatisticsComp
 	private final DashboardStatisticsCountElement testResultNegative;
 	private final DashboardStatisticsCountElement testResultPending;
 	private final DashboardStatisticsCountElement testResultIndeterminate;
+	private final boolean showNotDoneCount;
+	private DashboardStatisticsCountElement testResultNotDone;
 
-	public TestResultsStatisticsComponent() {
-		super(Captions.dashboardNewTestResults, Descriptions.descDashboardNewTestResults);
+	public TestResultsStatisticsComponent(String titleCaption, String description, String subtitleCaption, boolean showNotDoneCount) {
+		super(titleCaption, description);
+
+		this.showNotDoneCount = showNotDoneCount;
+
+		if (subtitleCaption != null) {
+			Label subTitleLabel = new Label(I18nProperties.getCaption(subtitleCaption));
+			CssStyles.style(subTitleLabel, CssStyles.H3, CssStyles.VSPACE_TOP_NONE);
+			addComponent(subTitleLabel);
+		}
 
 		// Count layout
 		testResultPositive = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardPositive), CountElementStyle.CRITICAL);
@@ -25,7 +37,14 @@ public class TestResultsStatisticsComponent extends DiseaseSectionStatisticsComp
 		testResultPending = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardPending), CountElementStyle.IMPORTANT);
 		testResultIndeterminate =
 			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardIndeterminate), CountElementStyle.MINOR);
-		buildCountLayout(testResultPositive, testResultNegative, testResultPending, testResultIndeterminate);
+
+		if (showNotDoneCount) {
+			testResultNotDone = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardNotDone), CountElementStyle.NEUTRAL);
+
+			buildCountLayout(testResultPositive, testResultNegative, testResultPending, testResultIndeterminate, testResultNotDone);
+		} else {
+			buildCountLayout(testResultPositive, testResultNegative, testResultPending, testResultIndeterminate);
+		}
 	}
 
 	public void update(Map<PathogenTestResultType, Long> testResults) {
@@ -36,6 +55,9 @@ public class TestResultsStatisticsComponent extends DiseaseSectionStatisticsComp
 			testResultNegative.updateCountLabel(testResults.getOrDefault(PathogenTestResultType.NEGATIVE, 0L).toString());
 			testResultPending.updateCountLabel(testResults.getOrDefault(PathogenTestResultType.PENDING, 0L).toString());
 			testResultIndeterminate.updateCountLabel(testResults.getOrDefault(PathogenTestResultType.INDETERMINATE, 0L).toString());
+			if (showNotDoneCount) {
+				testResultNotDone.updateCountLabel(testResults.getOrDefault(PathogenTestResultType.NOT_DONE, 0L).toString());
+			}
 		}
 	}
 }

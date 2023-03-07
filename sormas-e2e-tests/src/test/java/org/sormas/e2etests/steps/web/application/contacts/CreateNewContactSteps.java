@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.contacts;
 
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CONFIRM_BUTTON_POPUP;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CREATE_A_NEW_PERSON_CONFIRMATION_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LINE_LISTING_DISCARD_BUTTON;
@@ -61,7 +62,7 @@ public class CreateNewContactSteps implements En {
   private final SoftAssert softly;
   public static Contact collectedContactUUID;
   protected static Contact duplicatedContact;
-  protected static Contact samePersonDataContact;
+  public static Contact samePersonDataContact;
   private final Faker faker;
 
   @Inject
@@ -225,6 +226,17 @@ public class CreateNewContactSteps implements En {
         });
 
     When(
+        "I fill a new contact form with same person data with {string} region and {string} district for DE version",
+        (String region, String district) -> {
+          fillFirstName(samePersonDataContact.getFirstName());
+          fillLastName(samePersonDataContact.getLastName());
+          fillDateOfBirth(samePersonDataContact.getDateOfBirth(), Locale.GERMAN);
+          selectSex(samePersonDataContact.getSex());
+          selectResponsibleRegion(region);
+          selectResponsibleDistrict(district);
+        });
+
+    When(
         "^I fill a new contact form with specific person data$",
         () -> {
           contact =
@@ -309,6 +321,16 @@ public class CreateNewContactSteps implements En {
           fillDiseaseOfSourceCase(contact.getDiseaseOfSourceCase());
           selectResponsibleRegion(contact.getResponsibleRegion());
           selectResponsibleDistrict(contact.getResponsibleDistrict());
+        });
+
+    When(
+        "^I fill a mandatory fields for a new contact form$",
+        () -> {
+          contact = contactService.buildGeneratedContact();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          fillFirstName(contact.getFirstName());
+          fillLastName(contact.getLastName());
+          selectSex(contact.getSex());
         });
 
     When(
@@ -550,6 +572,21 @@ public class CreateNewContactSteps implements En {
           fillDiseaseOfSourceCase(contact.getDiseaseOfSourceCase());
           selectResponsibleRegion(contact.getResponsibleRegion());
           selectResponsibleDistrict(contact.getResponsibleDistrict());
+        });
+
+    And(
+        "^I choose same contact in duplicate detection and save for DE$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(SELECT_EXISTING_CONTACT_DE);
+          webDriverHelpers.clickOnWebElementBySelector(SELECT_EXISTING_CONTACT_DE);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+        });
+
+    And(
+        "^I choose create new contact in Pick or create entry form for DE$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_CONTACT_CONFIRMATION_BUTTON_DE);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON_POPUP);
         });
   }
 

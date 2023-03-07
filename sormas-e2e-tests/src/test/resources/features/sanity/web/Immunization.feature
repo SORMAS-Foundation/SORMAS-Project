@@ -212,7 +212,8 @@ Feature: Immunization end to end tests
     And I click on Save button in Case form
     And I click on New Sample
     Then I create a new Sample with positive test result with COVID-19 as disease
-    Then I confirm case with positive test result
+    And I confirm case with positive test result
+    And I click on yes in Confirm case popup window
     And I click on the NEW IMMUNIZATION button in Edit case
     Then I fill only mandatory fields in immunization popup with means of immunization as a "Recovery"
     Then I click on Link Case button

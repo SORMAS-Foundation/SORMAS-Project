@@ -22,6 +22,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePersonPage.CASE_OF_DEATH_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePersonPage.DATE_OF_DEATH_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.ALL_BUTTON_CONTACT;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.ALL_BUTTON_CONTACT_DE;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.*;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.*;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
@@ -175,13 +176,12 @@ public class PersonDirectorySteps implements En {
     When(
         "^I open the last created Person via API",
         () -> {
-          String personUUID = apiState.getLastCreatedPerson().getUuid();
-          TimeUnit.SECONDS.sleep(5); // waiting for event table grid reloaded
-          webDriverHelpers.fillAndSubmitInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, personUUID);
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              getPersonResultsUuidLocator(personUUID));
-          webDriverHelpers.clickOnWebElementBySelector(getPersonResultsUuidLocator(personUUID));
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
+          String LAST_CREATED_PERSON_URL =
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
+                  + "/sormas-webdriver/#!persons/data/"
+                  + apiState.getLastCreatedPerson().getUuid();
+          webDriverHelpers.accessWebSite(LAST_CREATED_PERSON_URL);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
         });
 
     When(
@@ -592,6 +592,18 @@ public class PersonDirectorySteps implements En {
           TimeUnit.SECONDS.sleep(1); // wait for reaction
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.clickOnWebElementBySelector(ALL_BUTTON_CONTACT);
+          TimeUnit.SECONDS.sleep(5); // needed for table refresh
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(120);
+        });
+
+    And(
+        "^I search by copied uuid of the person in Person Directory for DE$",
+        () -> {
+          webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, copiedPersonUUID);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
+          TimeUnit.SECONDS.sleep(1); // wait for reaction
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.clickOnWebElementBySelector(ALL_BUTTON_CONTACT_DE);
           TimeUnit.SECONDS.sleep(5); // needed for table refresh
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(120);
         });

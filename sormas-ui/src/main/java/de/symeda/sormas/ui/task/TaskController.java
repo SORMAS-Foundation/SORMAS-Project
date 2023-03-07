@@ -17,9 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.task;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.apache.commons.collections.CollectionUtils;
 
 import com.vaadin.server.Page;
 import com.vaadin.ui.Alignment;
@@ -41,12 +44,16 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
+import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.task.TaskIndexDto;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.BulkOperationResults;
+import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ArchivingController;
+import de.symeda.sormas.ui.utils.BulkOperationHelper;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.DirtyCheckPopup;
@@ -205,8 +212,9 @@ public class TaskController {
 		}
 	}
 
-	public void showBulkTaskDataEditComponent(Collection<? extends TaskIndexDto> selectedTasks, Runnable callback) {
-		if (selectedTasks.size() == 0) {
+	public void showBulkTaskDataEditComponent(Collection<TaskIndexDto> selectedTasks, TaskGrid taskGrid, Runnable noEntriesRemainingCallback) {
+
+		if (selectedTasks.isEmpty()) {
 			new Notification(
 				I18nProperties.getString(Strings.headingNoTasksSelected),
 				I18nProperties.getString(Strings.messageNoTasksSelected),
@@ -216,36 +224,48 @@ public class TaskController {
 		}
 
 		// Create a temporary task in order to use the CommitDiscardWrapperComponent
-		TaskBulkEditData bulkEditData = new TaskBulkEditData();
+		TaskDto tempTask = new TaskDto();
 		BulkTaskDataForm form = new BulkTaskDataForm(selectedTasks);
-		form.setValue(bulkEditData);
+		form.setValue(tempTask);
 		final CommitDiscardWrapperComponent<BulkTaskDataForm> editView = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditTask));
 
 		editView.addCommitListener(() -> {
-			TaskBulkEditData updatedBulkEditData = form.getValue();
-			for (TaskIndexDto indexDto : selectedTasks) {
-				TaskDto dto = FacadeProvider.getTaskFacade().getByUuid(indexDto.getUuid());
-				if (form.getPriorityCheckbox().getValue()) {
-					dto.setPriority(updatedBulkEditData.getTaskPriority());
-				}
-				if (form.getAssigneeCheckbox().getValue()) {
-					dto.setAssigneeUser(updatedBulkEditData.getTaskAssignee());
-					dto.setAssignedByUser(UserProvider.getCurrent().getUserReference());
-				}
-				if (form.getTaskStatusCheckbox().getValue()) {
-					dto.setTaskStatus(updatedBulkEditData.getTaskStatus());
-				}
+			TaskDto updatedTempTask = form.getValue();
+			TaskFacade taskFacade = FacadeProvider.getTaskFacade();
 
-				FacadeProvider.getTaskFacade().saveTask(dto);
-			}
-			popupWindow.close();
-			Notification.show(I18nProperties.getString(Strings.messageTasksEdited), Type.HUMANIZED_MESSAGE);
-			callback.run();
+			List<TaskIndexDto> selectedTasksCpy = new ArrayList<>(selectedTasks);
+			BulkOperationHelper.doBulkOperation(
+				selectedEntries -> taskFacade.saveBulkTasks(
+					selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
+					updatedTempTask,
+					form.getPriorityCheckbox().getValue(),
+					form.getAssigneeCheckbox().getValue(),
+					form.getTaskStatusCheckbox().getValue()),
+				selectedTasksCpy,
+				selectedTasksCpy.size(),
+				results -> handleBulkOperationDone(results, popupWindow, taskGrid, selectedTasks, noEntriesRemainingCallback));
 		});
 
 		editView.addDiscardListener(popupWindow::close);
+	}
+
+	private void handleBulkOperationDone(
+		BulkOperationResults<?> results,
+		Window popupWindow,
+		TaskGrid taskGrid,
+		Collection<TaskIndexDto> selectedTasks,
+		Runnable noEntriesRemainingCallback) {
+
+		popupWindow.close();
+		taskGrid.reload();
+		if (CollectionUtils.isNotEmpty(results.getRemainingEntries())) {
+			taskGrid.asMultiSelect()
+				.selectItems(selectedTasks.stream().filter(t -> results.getRemainingEntries().contains(t.getUuid())).toArray(TaskIndexDto[]::new));
+		} else {
+			noEntriesRemainingCallback.run();
+		}
 	}
 
 	private void archiveOrDearchive(TaskDto task, boolean archive, Runnable callback) {

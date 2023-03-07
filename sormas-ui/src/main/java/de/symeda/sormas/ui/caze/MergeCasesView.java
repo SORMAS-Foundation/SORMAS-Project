@@ -1,5 +1,8 @@
 package de.symeda.sormas.ui.caze;
 
+import static de.symeda.sormas.ui.utils.AbstractMergeGrid.DUPLICATE_MERGING_LIMIT_DEFAULT;
+import static de.symeda.sormas.ui.utils.AbstractMergeGrid.DUPLICATE_MERGING_LIMIT_MAX;
+
 import java.util.Date;
 
 import com.vaadin.icons.VaadinIcons;
@@ -24,6 +27,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.QueryDetails;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
@@ -37,8 +41,9 @@ public class MergeCasesView extends AbstractView {
 	public MergeCasesView() {
 		super(VIEW_NAME);
 
-		boolean criteriaUninitialized = !ViewModelProviders.of(MergeCasesView.class).has(CaseCriteria.class);
+		MergeCasesViewConfiguration viewConfiguration = ViewModelProviders.of(MergeCasesView.class).get(MergeCasesViewConfiguration.class);
 
+		boolean criteriaUninitialized = !ViewModelProviders.of(MergeCasesView.class).has(CaseCriteria.class);
 		CaseCriteria criteria = ViewModelProviders.of(MergeCasesView.class).get(CaseCriteria.class);
 		if (criteriaUninitialized) {
 			criteria.creationDateFrom(DateHelper.subtractDays(new Date(), 30))
@@ -46,17 +51,23 @@ public class MergeCasesView extends AbstractView {
 				.setRegion(UserProvider.getCurrent().getUser().getRegion());
 		}
 
+		boolean queryDetailsUninitialized = !ViewModelProviders.of(MergeCasesView.class).has(QueryDetails.class);
+		QueryDetails queryDetails = ViewModelProviders.of(MergeCasesView.class).get(QueryDetails.class);
+		if (queryDetailsUninitialized || queryDetails.getResultLimit() == null) {
+			queryDetails.setResultLimit(DUPLICATE_MERGING_LIMIT_DEFAULT);
+		}
+
 		grid = new MergeCasesGrid();
 		grid.setCriteria(criteria);
+		grid.setQueryDetails(queryDetails);
 
 		VerticalLayout gridLayout = new VerticalLayout();
-		filterComponent = new MergeCasesFilterComponent(criteria);
+		filterComponent = new MergeCasesFilterComponent(criteria, queryDetails);
 		filterComponent.setFiltersUpdatedCallback(() -> {
 			if (ViewModelProviders.of(MergeCasesView.class).has(CaseCriteria.class)) {
-				grid.reload();
-				filterComponent.updateDuplicateCountLabel(grid.getTreeData().getRootItems().size());
+				navigateTo(criteria, queryDetails);
 			} else {
-				navigateTo(null);
+				navigateTo();
 			}
 		});
 		filterComponent.setIgnoreRegionCallback(grid::reload);
@@ -85,6 +96,15 @@ public class MergeCasesView extends AbstractView {
 			ValoTheme.BUTTON_PRIMARY);
 
 		addHeaderComponent(btnBack);
+
+		if (viewConfiguration.isFiltersApplied()) {
+			reloadAndUpdateDuplicateCount();
+		}
+	}
+
+	private void reloadAndUpdateDuplicateCount() {
+		grid.reload();
+		filterComponent.updateDuplicateCountLabel(grid.getTreeData().getRootItems().size());
 	}
 
 	private void buildAndOpenMergeInstructions() {
@@ -111,11 +131,33 @@ public class MergeCasesView extends AbstractView {
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-		filterComponent.updateDuplicateCountLabel(0);
-		VaadinUiUtil.showSimplePopupWindow(
-			I18nProperties.getString(Strings.headingCaution),
-			I18nProperties.getString(Strings.infoMergeFiltersHint),
-			ContentMode.HTML,
-			640);
+
+		String params = event.getParameters().trim();
+		if (params.startsWith("?")) {
+			params = params.substring(1);
+
+			CaseCriteria criteria = ViewModelProviders.of(MergeCasesView.class).get(CaseCriteria.class);
+			criteria.fromUrlParams(params);
+			QueryDetails queryDetails = ViewModelProviders.of(MergeCasesView.class).get(QueryDetails.class);
+			queryDetails.fromUrlParams(params);
+
+			queryDetails.setResultLimit(
+				queryDetails.getResultLimit() != null
+					? Math.max(1, Math.min(queryDetails.getResultLimit(), DUPLICATE_MERGING_LIMIT_MAX))
+					: DUPLICATE_MERGING_LIMIT_DEFAULT);
+
+			filterComponent.setValue(criteria, queryDetails);
+		}
+
+		if (!ViewModelProviders.of(MergeCasesView.class).get(MergeCasesViewConfiguration.class).isFiltersApplied()) {
+			VaadinUiUtil.showSimplePopupWindow(
+				I18nProperties.getString(Strings.headingCaution),
+				I18nProperties.getString(Strings.infoMergeFiltersHint),
+				ContentMode.HTML,
+				640);
+			ViewModelProviders.of(MergeCasesView.class).get(MergeCasesViewConfiguration.class).setFiltersApplied(true);
+		} else {
+			reloadAndUpdateDuplicateCount();
+		}
 	}
 }

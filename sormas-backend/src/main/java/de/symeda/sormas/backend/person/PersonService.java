@@ -17,6 +17,7 @@ package de.symeda.sormas.backend.person;
 import static de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect.SIMILARITY_OPERATOR;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.and;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.andEquals;
+import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.andInValues;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -413,6 +414,7 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 		filter = andEquals(cb, () -> personJoins.getAddressJoins().getRegion(), filter, personCriteria.getRegion());
 		filter = andEquals(cb, () -> personJoins.getAddressJoins().getDistrict(), filter, personCriteria.getDistrict());
 		filter = andEquals(cb, () -> personJoins.getAddressJoins().getCommunity(), filter, personCriteria.getCommunity());
+		filter = andInValues(personCriteria.getUuids(), filter, cb, personFrom.get(Person.UUID));
 
 		return filter;
 	}
@@ -638,7 +640,7 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 		return q.getSingleResult() > 0;
 	}
 
-	public List<SimilarPersonDto> getSimilarPersonDtos(PersonSimilarityCriteria criteria, Integer limit) {
+	public List<SimilarPersonDto> getSimilarPersonDtos(Integer limit, PersonSimilarityCriteria criteria) {
 
 		setSimilarityThresholdQuery();
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -648,6 +650,7 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 
 		// Find similar persons by permitted associations, optionally limited to active entries
 		Predicate personSimilarityFilter = buildSimilarityCriteriaFilter(criteria, cb, personRoot);
+
 		Predicate associationFilter = buildAssociationFilter(queryContext, configFacade.isDuplicateChecksExcludePersonsOfArchivedEntries());
 		personQuery.where(and(cb, personSimilarityFilter, associationFilter));
 		personQuery.distinct(true);
@@ -843,6 +846,24 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 
 		Boolean matchMissingInfo = criteria.getMatchMissingInfo();
 
+		if (!StringUtils.isBlank(criteria.getFirstName()) && !StringUtils.isBlank(criteria.getLastName())) {
+			Expression<String> nameExpr = cb.concat(personFrom.get(Person.FIRST_NAME), " ");
+			nameExpr = cb.concat(nameExpr, personFrom.get(Person.LAST_NAME));
+
+			String name = criteria.getFirstName() + " " + criteria.getLastName();
+
+			filter = and(cb, filter, cb.isTrue(cb.function(SIMILARITY_OPERATOR, boolean.class, nameExpr, cb.literal(name))));
+		} else if (!StringUtils.isBlank(criteria.getFirstName())) {
+			filter = and(
+				cb,
+				filter,
+				cb.isTrue(cb.function(SIMILARITY_OPERATOR, boolean.class, personFrom.get(Person.FIRST_NAME), cb.literal(criteria.getFirstName()))));
+		} else if (!StringUtils.isBlank(criteria.getLastName())) {
+			filter = and(
+				cb,
+				filter,
+				cb.isTrue(cb.function(SIMILARITY_OPERATOR, boolean.class, personFrom.get(Person.LAST_NAME), cb.literal(criteria.getLastName()))));
+		}
 		if (criteria.getSex() != null) {
 			Expression<Sex> sexExpr = cb.literal(criteria.getSex());
 
@@ -853,7 +874,6 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 
 			filter = and(cb, filter, sexFilter);
 		}
-
 		if (criteria.getBirthdateYYYY() != null) {
 			final Predicate yearEquals = cb.equal(personFrom.get(Person.BIRTHDATE_YYYY), criteria.getBirthdateYYYY());
 			filter = and(cb, filter, matchMissingInfo ? yearEquals : cb.or(cb.isNull(personFrom.get(Person.BIRTHDATE_YYYY)), yearEquals));
@@ -884,15 +904,21 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 					continue;
 				}
 
-				Predicate likeFilters = cb.or(
-					CriteriaBuilderHelper.unaccentedIlike(cb, personFrom.get(Person.FIRST_NAME), textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, personFrom.get(Person.LAST_NAME), textFilter),
-					cb.isTrue(cb.function(SIMILARITY_OPERATOR, boolean.class, personFrom.get(Person.FIRST_NAME), cb.literal(textFilter))),
-					cb.isTrue(cb.function(SIMILARITY_OPERATOR, boolean.class, personFrom.get(Person.LAST_NAME), cb.literal(textFilter))),
+				boolean strictNameComparison = criteria.getStrictNameComparison() != null ? criteria.getStrictNameComparison() : false;
+				Predicate likeFilters = CriteriaBuilderHelper.or(
+					cb,
 					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.UUID), textFilter),
 					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.INTERNAL_TOKEN), textFilter),
 					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.EXTERNAL_ID), textFilter),
-					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.EXTERNAL_TOKEN), textFilter));
+					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.EXTERNAL_TOKEN), textFilter),
+					!strictNameComparison ? CriteriaBuilderHelper.unaccentedIlike(cb, personFrom.get(Person.FIRST_NAME), textFilter) : null,
+					!strictNameComparison ? CriteriaBuilderHelper.unaccentedIlike(cb, personFrom.get(Person.LAST_NAME), textFilter) : null,
+					!strictNameComparison
+						? cb.isTrue(cb.function(SIMILARITY_OPERATOR, boolean.class, personFrom.get(Person.FIRST_NAME), cb.literal(textFilter)))
+						: null,
+					!strictNameComparison
+						? cb.isTrue(cb.function(SIMILARITY_OPERATOR, boolean.class, personFrom.get(Person.LAST_NAME), cb.literal(textFilter)))
+						: null);
 
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}

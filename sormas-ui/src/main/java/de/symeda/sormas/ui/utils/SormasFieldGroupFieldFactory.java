@@ -87,7 +87,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 					if (!AbstractSelect.class.isAssignableFrom(fieldType)) {
 						fieldType = (Class<T>) ComboBox.class;
 					}
-					T field = super.createField(type, fieldType);
+					T field = ComboBoxWithPlaceholder.class == fieldType ? (T) new ComboBoxWithPlaceholder() : super.createField(type, fieldType);
 					if (field instanceof OptionGroup) {
 						CssStyles.style(field, ValoTheme.OPTIONGROUP_HORIZONTAL);
 					} else if (fieldType.isAssignableFrom(NullableOptionGroup.class)) {
@@ -174,6 +174,9 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 	protected AbstractSelect createCompatibleSelect(Class<? extends AbstractSelect> fieldType) {
 		if (NullableOptionGroup.class.isAssignableFrom(fieldType)) {
 			return new NullableOptionGroup();
+		}
+		if (ComboBoxWithPlaceholder.class.isAssignableFrom(fieldType)) {
+			return new ComboBoxWithPlaceholder();
 		}
 		return super.createCompatibleSelect(fieldType);
 	}

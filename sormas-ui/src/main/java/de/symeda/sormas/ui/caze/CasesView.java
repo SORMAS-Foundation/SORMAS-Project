@@ -715,7 +715,8 @@ public class CasesView extends AbstractView {
 					final List<MenuBarHelper.MenuBarItem> menuBarItems = new ArrayList<>();
 
 					menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkEdit), VaadinIcons.ELLIPSIS_H, mi -> {
-						grid.bulkActionHandler(items -> ControllerProvider.getCaseController().showBulkCaseDataEditComponent(items));
+						grid.bulkActionHandler(
+							items -> ControllerProvider.getCaseController().showBulkCaseDataEditComponent(items, (AbstractCaseGrid<?>) grid));
 					}, hasBulkOperationsRight));
 					menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, mi -> {
 						grid.bulkActionHandler(

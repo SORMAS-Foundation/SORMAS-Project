@@ -94,15 +94,13 @@ public class DemisApiService {
   }
 
   @SneakyThrows
-  public Boolean sendLabRequest(String fileName, String loginToken) {
+  public Boolean sendLabRequest(String data, String loginToken) {
 
     DemisData demisData = runningConfiguration.getDemisData(locale);
 
     OkHttpClient client =
         SormasOkHttpClient.getClient(
             demisData.getCertificatePath(), demisData.getCertificatePassword());
-
-    String json = readFileAsString("./demisFiles/" + fileName);
 
     MediaType JSON = MediaType.parse(CONTENT_TYPE_APPLICATION_JSON + "; charset=utf-8");
 
@@ -112,7 +110,7 @@ public class DemisApiService {
             .addHeader(CACHE_CONTROL_HEADER, CACHE_CONTROL_NO_CACHE)
             .addHeader(AUTHORIZATION_HEADER, "Bearer " + loginToken)
             .addHeader(CONTENT_TYPE, CONTENT_TYPE_APPLICATION_JSON)
-            .post(RequestBody.create(json, JSON))
+            .post(RequestBody.create(data, JSON))
             .build();
     try {
       Response response = client.newCall(request).execute();
@@ -128,6 +126,40 @@ public class DemisApiService {
     }
   }
 
+  @SneakyThrows
+  public String prepareLabNotificationFile(String patientFirstName, String patientLastName) {
+    DemisData demisData = runningConfiguration.getDemisData(locale);
+    String file = "src/main/resources/demisJsonTemplates/labNotificationTemplate.json";
+    String json = readFileAsString(file);
+    json = json.replace("\"<postal_code_to_change>\"", "\"" + demisData.getPostalCode() + "\"");
+    json = json.replace("\"<last_name_to_change>\"", "\"" + patientLastName + "\"");
+    json = json.replace("\"<first_name_to_change>\"", "\"" + patientFirstName + "\"");
+    return json;
+  }
+
+  public String prepareLabNotificationFileWithLoinc(
+      String patientFirstName, String patientLastName, String loincCode) {
+    DemisData demisData = runningConfiguration.getDemisData(locale);
+    String file = "src/main/resources/demisJsonTemplates/labNotificationWithLoincTemplate.json";
+    String json = readFileAsString(file);
+    json = json.replace("\"<postal_code_to_change>\"", "\"" + demisData.getPostalCode() + "\"");
+    json = json.replace("\"<last_name_to_change>\"", "\"" + patientLastName + "\"");
+    json = json.replace("\"<first_name_to_change>\"", "\"" + patientFirstName + "\"");
+    json = json.replace("\"<lonic_code_to_change>\"", "\"" + loincCode + "\"");
+    return json;
+  }
+
+  public String prepareLabNotificationFileWithTelcom(
+      String patientFirstName, String patientLastName) {
+    DemisData demisData = runningConfiguration.getDemisData(locale);
+    String file = "src/main/resources/demisJsonTemplates/labNotificationTemplateTelcom.json";
+    String json = readFileAsString(file);
+    json = json.replace("\"<postal_code_to_change>\"", "\"" + demisData.getPostalCode() + "\"");
+    json = json.replace("\"<last_name_to_change>\"", "\"" + patientLastName + "\"");
+    json = json.replace("\"<first_name_to_change>\"", "\"" + patientFirstName + "\"");
+    return json;
+  }
+
   /** Delete method once we start adding tests */
   @SneakyThrows
   public String loginRequest() {
@@ -135,7 +167,7 @@ public class DemisApiService {
   }
 
   @SneakyThrows
-  public static String readFileAsString(String file) throws Exception {
+  public static String readFileAsString(String file) {
     return new String(Files.readAllBytes(Paths.get(file)));
   }
 }

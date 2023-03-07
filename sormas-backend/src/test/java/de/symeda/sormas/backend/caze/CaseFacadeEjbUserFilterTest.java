@@ -27,8 +27,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import org.hibernate.internal.SessionImpl;
-import org.hibernate.query.spi.QueryImplementor;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
@@ -50,6 +48,8 @@ import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.feature.FeatureConfiguration;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
+
+import javax.persistence.Query;
 
 public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 
@@ -149,14 +149,15 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
 		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.LIMITED_SYNCHRONIZATION);
 
-		SessionImpl em = (SessionImpl) getEntityManager();
-		QueryImplementor query = em.createQuery("select f from featureconfiguration f");
-		FeatureConfiguration singleResult = (FeatureConfiguration) query.getSingleResult();
-		HashMap<FeatureTypeProperty, Object> properties = new HashMap<>();
-		properties.put(FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES, true);
-		properties.put(FeatureTypeProperty.MAX_CHANGE_DATE_PERIOD, 30);
-		singleResult.setProperties(properties);
-		em.save(singleResult);
+		executeInTransaction(em -> {
+					Query query = em.createQuery("select f from featureconfiguration f");
+					FeatureConfiguration singleResult = (FeatureConfiguration) query.getSingleResult();
+					HashMap<FeatureTypeProperty, Object> properties = new HashMap<>();
+					properties.put(FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES, true);
+					properties.put(FeatureTypeProperty.MAX_CHANGE_DATE_PERIOD, 30);
+					singleResult.setProperties(properties);
+					em.persist(singleResult);
+				});
 
 		MockProducer.setMobileSync(true);
 

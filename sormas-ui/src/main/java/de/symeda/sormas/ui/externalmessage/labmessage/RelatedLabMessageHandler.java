@@ -209,7 +209,7 @@ public class RelatedLabMessageHandler extends AbstractRelatedLabMessageHandler {
 		int caseSampleCount = ControllerProvider.getSampleController().caseSampleCountOf(sample);
 
 		CommitDiscardWrapperComponent<PathogenTestForm> pathogenTestCreateComponent =
-			ControllerProvider.getPathogenTestController().getPathogenTestCreateComponent(sample, caseSampleCount, (savedPathogenTest, callback) -> {
+			ControllerProvider.getPathogenTestController().getPathogenTestCreateComponent(sample, caseSampleCount, (savedPathogenTest) -> {
 				chain.next(true);
 				window.close();
 			}, true);
