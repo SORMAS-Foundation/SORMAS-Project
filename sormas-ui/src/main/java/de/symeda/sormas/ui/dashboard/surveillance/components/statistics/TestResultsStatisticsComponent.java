@@ -6,6 +6,7 @@ import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.ui.dashboard.statistics.CountElementStyle;
 import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsCountElement;
@@ -21,7 +22,7 @@ public class TestResultsStatisticsComponent extends DiseaseSectionStatisticsComp
 	private DashboardStatisticsCountElement testResultNotDone;
 
 	public TestResultsStatisticsComponent(String titleCaption, String description, String subtitleCaption, boolean showNotDoneCount) {
-		super(titleCaption, description);
+		super(titleCaption, description, I18nProperties.getString(Strings.infoDashboardFinalLaboratoryResult));
 
 		this.showNotDoneCount = showNotDoneCount;
 

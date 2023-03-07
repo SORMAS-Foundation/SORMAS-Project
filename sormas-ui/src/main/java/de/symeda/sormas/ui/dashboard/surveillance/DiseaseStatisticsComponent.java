@@ -58,8 +58,11 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		caseStatisticsComponent = new CaseStatisticsComponent();
 		diseaseSummaryComponent = new DiseaseSummaryComponent();
 		eventStatisticsComponent = new EventStatisticsComponent();
-		testResultsStatisticsComponent =
-			new TestResultsStatisticsComponent(Captions.dashboardNewTestResults, Descriptions.descDashboardNewTestResults, null, false);
+		testResultsStatisticsComponent = new TestResultsStatisticsComponent(
+			Captions.dashboardNewFinalLaboratoryResults,
+			Descriptions.descDashboardNewFinalLaboratoryResults,
+			null,
+			false);
 
 		addComponent(caseStatisticsComponent, CASE_LOC);
 		addComponent(diseaseSummaryComponent, OUTBREAK_LOC);

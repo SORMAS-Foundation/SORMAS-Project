@@ -870,7 +870,7 @@ public interface Captions {
 	String dashboardNew = "dashboardNew";
 	String dashboardNewCases = "dashboardNewCases";
 	String dashboardNewEvents = "dashboardNewEvents";
-	String dashboardNewTestResults = "dashboardNewTestResults";
+	String dashboardNewFinalLaboratoryResults = "dashboardNewFinalLaboratoryResults";
 	String dashboardNoPopulationData = "dashboardNoPopulationData";
 	String dashboardNormal = "dashboardNormal";
 	String dashboardNotACase = "dashboardNotACase";
