@@ -992,11 +992,15 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		if (!isEditAllowed) {
 			if (isDeleteAllowed(deleteRight)) {
 				addToActiveButtonsList(CommitDiscardWrapperComponent.DELETE_UNDELETE);
-				this.setEditable(false, activeButtons.stream().toArray(String[]::new));
+				this.setNonEditable();
 			} else {
-				this.setEditable(false);
+				this.setNonEditable();
 			}
 		}
+	}
+
+	public void setNonEditable() {
+		this.setEditable(false, activeButtons.stream().toArray(String[]::new));
 	}
 
 	public boolean isDeleteAllowed(UserRight deleteRight) {
