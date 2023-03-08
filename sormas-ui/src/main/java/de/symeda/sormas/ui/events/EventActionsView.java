@@ -140,10 +140,6 @@ public class EventActionsView extends AbstractEventView {
 		reload();
 	}
 
-	private int getIndex(DetailSubComponentWrapper listLayout, HorizontalLayout component) {
-		return listLayout.getComponentIndex(component);
-	}
-
 	/**
 	 * Update filter form values.
 	 */
