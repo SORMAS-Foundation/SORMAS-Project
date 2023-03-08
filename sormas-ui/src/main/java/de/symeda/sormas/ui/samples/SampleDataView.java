@@ -16,7 +16,6 @@ package de.symeda.sormas.ui.samples;
 
 import java.util.function.Consumer;
 
-import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.Disease;
@@ -203,12 +202,5 @@ public class SampleDataView extends AbstractSampleView {
 			return (AbstractInfoLayout) eventParticipantInfoLayout;
 		}
 		return null;
-	}
-
-//check if is used
-	private void disableComponentIfNotNull(Component component) {
-		if (component != null) {
-			component.setEnabled(false);
-		}
 	}
 }
