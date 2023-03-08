@@ -179,7 +179,7 @@ public class TaskController {
 			editView.getButtonsPanel().setComponentAlignment(archiveButton, Alignment.BOTTOM_LEFT);
 		}
 
-		editView.addButtonToExcludedList(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+		editView.addToActiveButtonsList(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
 		editView.restrictEditableComponentsOnEditView(UserRight.TASK_EDIT, UserRight.TASK_DELETE, editPermissionType);
 	}
 

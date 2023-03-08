@@ -65,7 +65,7 @@ public class LayoutWithSidePanel extends CustomLayout {
 
 	//excludeButtons: represent the buttons from the CommitDiscardComponent that we intend to exclude from disabling
 	public void disableWithViewAllow() {
-		editComponent.setEditable(false, editComponent.getExcludedButtons().stream().toArray(String[]::new));
+		editComponent.setEditable(false, editComponent.getActiveButtons().stream().toArray(String[]::new));
 	}
 
 	//excludeButtons: represent the buttons from the CommitDiscardComponent that we intend to exclude from disabling
@@ -86,7 +86,7 @@ public class LayoutWithSidePanel extends CustomLayout {
 
 	public void disableIfNecessary(boolean deleted, EditPermissionType editAllowed) {
 		if (deleted) {
-			editComponent.addButtonToExcludedList(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+			editComponent.addToActiveButtonsList(CommitDiscardWrapperComponent.DELETE_UNDELETE);
 			disable();
 		} else if (editAllowed != null) {
 			disableBasedOnPermissionTypes(editAllowed);
@@ -95,12 +95,12 @@ public class LayoutWithSidePanel extends CustomLayout {
 
 	public void disableBasedOnPermissionTypes(EditPermissionType editAllowed) {
 		if (editAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
-			editComponent.addButtonToExcludedList(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+			editComponent.addToActiveButtonsList(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
 			disableWithViewAllow();
 		} else if (editAllowed.equals(EditPermissionType.REFUSED)) {
 			disableWithViewAllow();
 		} else if (editAllowed.equals(EditPermissionType.WITHOUT_OWNERSHIP)) {
-			editComponent.addButtonToExcludedList(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+			editComponent.addToActiveButtonsList(CommitDiscardWrapperComponent.DELETE_UNDELETE);
 			disableWithViewAllow();
 		}
 	}

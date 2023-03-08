@@ -79,7 +79,7 @@ import de.symeda.sormas.ui.person.PersonEditForm;
 public class CommitDiscardWrapperComponent<C extends Component> extends VerticalLayout implements DirtyStateComponent, Buffered {
 
 	private static final long serialVersionUID = 1L;
-	private Set<String> excludedButtons = new HashSet<>();
+	private Set<String> activeButtons = new HashSet<>();
 
 	public static final String DELETE_UNDELETE = "deleteUndelete";
 
@@ -991,8 +991,8 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		boolean isEditAllowed = isEditAllowed(editRight, editPermissionType);
 		if (!isEditAllowed) {
 			if (isDeleteAllowed(deleteRight)) {
-				addButtonToExcludedList(CommitDiscardWrapperComponent.DELETE_UNDELETE);
-				this.setEditable(false, getExcludedButtons().stream().toArray(String[]::new));
+				addToActiveButtonsList(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+				this.setEditable(false, activeButtons.stream().toArray(String[]::new));
 			} else {
 				this.setEditable(false);
 			}
@@ -1020,21 +1020,15 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		}
 	}
 
-	public void addButtonToExcludedList(String button) {
-		Set<String> excludedButtons = getExcludedButtons();
-		excludedButtons.add(button);
-		setExcludedButtons(excludedButtons);
+	public void addToActiveButtonsList(String button) {
+		activeButtons.add(button);
 	}
 
 	public void setButtonsVisible(boolean visible) {
 		buttonsPanel.setVisible(visible);
 	}
 
-	public Set<String> getExcludedButtons() {
-		return excludedButtons;
-	}
-
-	public void setExcludedButtons(Set<String> excludedButtons) {
-		this.excludedButtons = excludedButtons;
+	public Set<String> getActiveButtons() {
+		return activeButtons;
 	}
 }
