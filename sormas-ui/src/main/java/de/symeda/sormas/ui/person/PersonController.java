@@ -21,9 +21,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -47,6 +49,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.event.EventParticipantSelectionDto;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.externaljournal.ExternalJournalSyncResponseDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -191,6 +194,41 @@ public class PersonController {
 
 		List<EventParticipantSelectionDto> eventParticipantsWithSameEvent =
 			FacadeProvider.getEventParticipantFacade().getEventParticipantsWithSameEvent(firstPersonUuid, secondPersonUuid);
+
+		Set<String> eventsWithMoreDuplicateThanAllowed = eventParticipantsWithSameEvent.stream()
+			.collect(Collectors.groupingBy(EventParticipantSelectionDto::getEvent, Collectors.counting()))
+			.entrySet()
+			.stream()
+			.filter(entry -> entry.getValue() > 2)
+			.map(Map.Entry::getKey)
+			.map(EventReferenceDto::getUuid)
+			.collect(Collectors.toSet());
+
+		if (!eventsWithMoreDuplicateThanAllowed.isEmpty()) {
+			VerticalLayout popUpContent = new VerticalLayout();
+			popUpContent.addComponent(
+				VaadinUiUtil
+					.createInfoComponent(I18nProperties.getString(Strings.infoPickorMergeEventParticipantDuplicateEventParticipantByPersonByEvent)));
+			eventsWithMoreDuplicateThanAllowed.forEach(eventUuid -> {
+				Label eventUuidLabel = new Label(eventUuid);
+				popUpContent.addComponent(eventUuidLabel);
+			});
+
+			Window popupMoreDuplicatesThanAllowedWindow = VaadinUiUtil
+				.showPopupWindow(popUpContent, I18nProperties.getString(Strings.headingMergeDuplicateEventParticipantSamePersonSameEvent));
+
+			Button.ClickListener cancelListener = clickEvent -> {
+				popupMoreDuplicatesThanAllowedWindow.close();
+			};
+
+			popUpContent.setSpacing(false);
+
+			Button cancelButton = ButtonHelper.createButton(Captions.actionCancel, cancelListener);
+			popUpContent.addComponent(cancelButton);
+			popUpContent.setComponentAlignment(cancelButton, Alignment.BOTTOM_RIGHT);
+
+			return;
+		}
 
 		if (!eventParticipantsWithSameEvent.isEmpty()) {
 			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_VIEW)) {

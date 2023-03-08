@@ -604,6 +604,7 @@ public interface Strings {
 	String headingLoginFailed = "headingLoginFailed";
 	String headingMaternalHistory = "headingMaternalHistory";
 	String headingMedicalInformation = "headingMedicalInformation";
+	String headingMergeDuplicateEventParticipantSamePersonSameEvent = "headingMergeDuplicateEventParticipantSamePersonSameEvent";
 	String headingMergeGuide = "headingMergeGuide";
 	String headingMergePersonError = "headingMergePersonError";
 	String headingMissingDateFilter = "headingMissingDateFilter";
@@ -882,6 +883,7 @@ public interface Strings {
 	String infoPickOrCreatePathogenTest = "infoPickOrCreatePathogenTest";
 	String infoPickOrCreateSample = "infoPickOrCreateSample";
 	String infoPickOrCreateSuperordinateEventForEvent = "infoPickOrCreateSuperordinateEventForEvent";
+	String infoPickorMergeEventParticipantDuplicateEventParticipantByPersonByEvent = "infoPickorMergeEventParticipantDuplicateEventParticipantByPersonByEvent";
 	String infoPlaceOfStayInHospital = "infoPlaceOfStayInHospital";
 	String infoPopulationCollectionDate = "infoPopulationCollectionDate";
 	String infoPopulationDataView = "infoPopulationDataView";
