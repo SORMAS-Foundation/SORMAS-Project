@@ -61,7 +61,7 @@ public class DashboardResource extends EntityDtoResource {
 	@POST
 	@Path("/testResults")
 	public Map<PathogenTestResultType, Long> getTestResultCountByResultType(@RequestBody DashboardCriteria dashboardCriteria) {
-		return FacadeProvider.getDashboardFacade().getTestResultCountByResultType(dashboardCriteria);
+		return FacadeProvider.getDashboardFacade().getNewCasesFinalLabResultCountByResultType(dashboardCriteria);
 	}
 
 	@POST

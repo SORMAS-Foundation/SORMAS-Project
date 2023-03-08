@@ -1929,6 +1929,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 							}
 							if ((leadEventParticipant.getInvolvementDescription() == null
 								|| leadEventParticipant.getInvolvementDescription().isEmpty())
+								&& otherEventParticipant.getInvolvementDescription() != null
 								&& !otherEventParticipant.getInvolvementDescription().isEmpty()) {
 								leadEventParticipant.setInvolvementDescription(otherEventParticipant.getInvolvementDescription());
 							}
@@ -1947,6 +1948,19 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 							}
 						}
 						eventParticipantService.deletePermanent(otherEventParticipant);
+
+						List<EventParticipant> mergedEventParticipants = new ArrayList<>();
+						mergedEventParticipants.add(leadEventParticipant);
+						mergedEventParticipants.add(otherEventParticipant);
+
+						if (participantsToSameEvent.size() > 2) {
+							participantsToSameEvent.stream()
+								.filter(participant -> !mergedEventParticipants.contains(participant))
+								.forEach(softDeletedEventParticipant -> {
+									softDeletedEventParticipant.setPerson(leadPerson);
+									eventParticipantService.ensurePersisted(softDeletedEventParticipant);
+								});
+						}
 					}
 				}
 			});
