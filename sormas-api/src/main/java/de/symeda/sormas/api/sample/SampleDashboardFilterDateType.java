@@ -19,9 +19,9 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum SampleDashboardFilterDateType {
 
+	MOST_RELEVANT,
 	SAMPLE_DATE_TIME,
-	ASSOCIATED_ENTITY_REPORT_DATE,
-	MOST_RELEVANT;
+	ASSOCIATED_ENTITY_REPORT_DATE;
 
 	@Override
 	public String toString() {
