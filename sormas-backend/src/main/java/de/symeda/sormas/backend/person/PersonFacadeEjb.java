@@ -1895,9 +1895,8 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 			Set<Event> singleEvents = eventParticipants.stream().map(EventParticipant::getEvent).collect(Collectors.toSet());
 			singleEvents.stream().forEach(event -> {
 
-				List<EventParticipant> participantsToSameEvent = eventParticipants.stream()
-					.filter(eventParticipant -> eventParticipant.getEvent().equals(event) /* && !eventParticipant.isDeleted() */)
-					.collect(Collectors.toList());
+				List<EventParticipant> participantsToSameEvent =
+					eventParticipants.stream().filter(eventParticipant -> eventParticipant.getEvent().equals(event)).collect(Collectors.toList());
 
 				if (participantsToSameEvent.size() == 1) {
 					if (!participantsToSameEvent.get(0).getPerson().getUuid().equals(leadPerson.getUuid())) {
@@ -1957,10 +1956,9 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 						if (participantsToSameEvent.size() > 2) {
 							participantsToSameEvent.stream()
 								.filter(participant -> !mergedEventParticipants.contains(participant))
-								.collect(Collectors.toList())
-								.forEach(deletedEventParticipant -> {
-									deletedEventParticipant.setPerson(leadPerson);
-									eventParticipantService.ensurePersisted(deletedEventParticipant);
+								.forEach(softDeletedEventParticipant -> {
+									softDeletedEventParticipant.setPerson(leadPerson);
+									eventParticipantService.ensurePersisted(softDeletedEventParticipant);
 								});
 						}
 					}
