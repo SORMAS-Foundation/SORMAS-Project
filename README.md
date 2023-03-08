@@ -21,7 +21,7 @@
 ## FAQ (Frequently Asked Questions)
 
 ### How Does it Work?
-You can give SORMAS a try on our demo server at <https://demoversion.sormas-oegd.de>!
+You can give SORMAS a try on our demo server at <https://demo.sormas.org>!
 
 ### How Can I Get Involved?
 Read through our [*Contributing Readme*](docs/CONTRIBUTING.md) and contact us at sormas@helmholtz-hzi.de or join our [developer chat on Gitter](https://gitter.im/SORMAS-Project) to learn how you can help to drive the development of SORMAS forward and to get development support from our core developers. SORMAS is a community-driven project, and we'd love to have you on board!

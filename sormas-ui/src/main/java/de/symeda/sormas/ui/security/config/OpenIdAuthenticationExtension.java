@@ -41,7 +41,7 @@ import fish.payara.security.openid.domain.OpenIdConfiguration;
  * producer found in {@link ConfigurationController} will fail with a NPE. <br/>
  * <br/>
  * 
- * This extension counters this behavior by overiding the producer and checking if the {@link OpenIdAuthenticationDefinition} is
+ * This extension counters this behavior by overriding the producer and checking if the {@link OpenIdAuthenticationDefinition} is
  * <code>null</code>, then it will use the default definition ({@link DefaultOpenIdAuthenticationDefinition}).
  * 
  */

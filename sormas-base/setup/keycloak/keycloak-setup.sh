@@ -100,6 +100,10 @@ ASADMIN="${PAYARA_HOME}/bin/asadmin --port ${PORT_ADMIN}"
 
 # Keycloak settings
 KEYCLOAK_PORT=7080
+if [[ -z "$KEYCLOAK_HOSTNAME" ]]; then
+  $KEYCLOAK_HOSTNAME="localhost:${KEYCLOAK_PORT}"
+  echo "Using default KEYCLOAK_HOSTNAME ${KEYCLOAK_HOSTNAME}"
+fi
 
 DB_HOST=localhost
 
@@ -151,14 +155,14 @@ fi
 
 echo "Running Keycloak as a docker image"
 
-KEYCLOAK_DOCKER_CMD="-e KEYCLOAK_USER=${KEYCLOAK_ADMIN_USER} "
-KEYCLOAK_DOCKER_CMD+="-e KEYCLOAK_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD} "
-KEYCLOAK_DOCKER_CMD+="-e DB_VENDOR=${KEYCLOAK_DB_VENDOR} "
-KEYCLOAK_DOCKER_CMD+="-e DB_ADDR=${KEYCLOAK_DB_HOST} "
-KEYCLOAK_DOCKER_CMD+="-e DB_PORT=${KEYCLOAK_DB_PORT} "
-KEYCLOAK_DOCKER_CMD+="-e DB_USER=${KEYCLOAK_DB_USER} "
-KEYCLOAK_DOCKER_CMD+="-e DB_PASSWORD=${KEYCLOAK_DB_PASSWORD} "
+KEYCLOAK_DOCKER_CMD="-e KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN_USER} "
+KEYCLOAK_DOCKER_CMD+="-e KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD} "
+KEYCLOAK_DOCKER_CMD+="-e KC_DB_URL_HOST=${KEYCLOAK_DB_HOST} "
+KEYCLOAK_DOCKER_CMD+="-e KC_DB_PORT=${KEYCLOAK_DB_PORT} "
+KEYCLOAK_DOCKER_CMD+="-e KC_DB_USERNAME=${KEYCLOAK_DB_USER} "
+KEYCLOAK_DOCKER_CMD+="-e KC_DB_PASSWORD=${KEYCLOAK_DB_PASSWORD} "
 KEYCLOAK_DOCKER_CMD+="-e PROXY_ADDRESS_FORWARDING=true "
+KEYCLOAK_DOCKER_CMD+="-e KC_HOSTNAME=${KEYCLOAK_HOSTNAME} "
 KEYCLOAK_DOCKER_CMD+="-e SORMAS_SERVER_URL=${SORMAS_SERVER_URL} "
 KEYCLOAK_DOCKER_CMD+="-e KEYCLOAK_SORMAS_UI_SECRET=${KEYCLOAK_SORMAS_UI_SECRET} "
 KEYCLOAK_DOCKER_CMD+="-e KEYCLOAK_SORMAS_REST_SECRET=${KEYCLOAK_SORMAS_REST_SECRET} "
@@ -178,7 +182,7 @@ ${ASADMIN} set-config-property --propertyName=payara.security.openid.providerURI
 ${ASADMIN} set-config-property --propertyName=payara.security.openid.provider.notify.logout --propertyValue=true --source=domain
 ${ASADMIN} set-config-property --propertyName=payara.security.openid.logout.redirectURI --propertyValue=http://${SORMAS_SERVER_URL}/sormas-ui
 ${ASADMIN} set-config-property --propertyName=sormas.rest.security.oidc.json --propertyValue="{\"realm\":\"SORMAS\",\"auth-server-url\":\"http://localhost:${KEYCLOAK_PORT}/keycloak\",\"ssl-required\":\"external\",\"resource\":\"sormas-rest\",\"credentials\":{\"secret\":\"${KEYCLOAK_SORMAS_REST_SECRET}\"},\"confidential-port\":0,\"principal-attribute\":\"preferred_username\",\"enable-basic-auth\":true}" --source=domain
-${ASADMIN} set-config-property --propertyName=sormas.backend.security.oidc.json --propertyValue="{\"realm\":\"SORMAS\",\"auth-server-url\":\"http://localhost:${KEYCLOAK_PORT}/keycloak/\",\"ssl-required\":\"external\",\"resource\":\"sormas-backend\",\"credentials\":{\"secret\":\"${KEYCLOAK_SORMAS_BACKEND_SECRET}\"},\"confidential-port\":0}" --source=domain
+${ASADMIN} set-config-property --propertyName=sormas.backend.security.oidc.json --propertyValue="{\"realm\":\"SORMAS\",\"auth-server-url\":\"http://localhost:${KEYCLOAK_PORT}/keycloak\",\"ssl-required\":\"external\",\"resource\":\"sormas-backend\",\"credentials\":{\"secret\":\"${KEYCLOAK_SORMAS_BACKEND_SECRET}\"},\"confidential-port\":0}" --source=domain
 
 echo "Setup is done and Keycloak is starting up (in case of any error you can go again trough the keycloak_setup.sh script)"
 echo "You can start Keycloak by using the following command"
