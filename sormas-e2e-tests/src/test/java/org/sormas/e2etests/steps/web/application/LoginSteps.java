@@ -230,5 +230,16 @@ public class LoginSteps implements En {
           LanguageDetectorHelper.checkLanguage(
               webDriverHelpers.getTextFromWebElement(APPLICATION_DESCRIPTION_TEXT), language);
         });
+
+    And(
+        "^I check if GDPR message appears and close it if it appears$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          if (webDriverHelpers.isElementVisibleWithTimeout(GDPR_MESSAGE_DE, 5)) {
+            webDriverHelpers.clickOnWebElementBySelector(
+                DO_NOT_SHOW_THIS_AGAIN_GDPR_MESSAGE_CHECKBOX);
+            webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON_DE);
+          }
+        });
   }
 }

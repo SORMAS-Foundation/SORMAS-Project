@@ -63,5 +63,13 @@ public class SharesDirectorySteps implements En {
               "UUID are equal!!");
           softly.assertAll();
         });
+
+    And(
+        "^I click on the shortened case/contact ID to open the case$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SHARE_UUID_CASE_TITLE);
+          webDriverHelpers.clickOnWebElementBySelector(SHARE_UUID_CASE_TITLE);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+        });
   }
 }

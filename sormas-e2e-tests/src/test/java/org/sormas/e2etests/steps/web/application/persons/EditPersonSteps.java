@@ -110,8 +110,12 @@ import org.sormas.e2etests.entities.services.PersonService;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.contacts.EditContactPersonPage;
+import org.sormas.e2etests.pages.application.persons.EditPersonPage;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
+import org.sormas.e2etests.steps.web.application.cases.CreateNewCaseSteps;
+import org.sormas.e2etests.steps.web.application.contacts.CreateNewContactSteps;
 import org.sormas.e2etests.steps.web.application.contacts.EditContactPersonSteps;
 import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
 import org.sormas.e2etests.steps.web.application.immunizations.EditImmunizationSteps;
@@ -124,6 +128,7 @@ public class EditPersonSteps implements En {
   protected Person previousCreatedPerson = null;
   protected Person collectedPerson;
   public static Person newGeneratedPerson;
+  private static String personFirstName;
 
   @Inject
   public EditPersonSteps(
@@ -542,6 +547,64 @@ public class EditPersonSteps implements En {
           Assert.assertTrue(
               webDriverHelpers.isElementEnabled(GENERAL_COMMENT_FIELD),
               "There is no resizable General comment field on page");
+        });
+
+    And(
+        "^I change first name of person from Edit person page$",
+        () -> {
+          personFirstName = faker.name().firstName();
+          fillFirstName(personFirstName);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+        });
+
+    And(
+        "^I check if first name of person has been changed$",
+        () -> {
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(EditContactPersonPage.FIRST_NAME_INPUT),
+              personFirstName,
+              "Name is incorrect!");
+          softly.assertAll();
+        });
+
+    Then(
+        "^I check if editable fields are read only for person$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
+          webDriverHelpers.isElementGreyedOut(UUID_INPUT);
+          webDriverHelpers.isElementGreyedOut(FIRST_NAME_INPUT);
+          webDriverHelpers.isElementGreyedOut(LAST_NAME_INPUT);
+          webDriverHelpers.isElementGreyedOut(EditPersonPage.SAVE_BUTTON);
+        });
+
+    And(
+        "^I check if first name of person from contact has not been changed$",
+        () -> {
+          softly.assertNotEquals(
+              webDriverHelpers.getValueFromWebElement(FIRST_NAME_INPUT),
+              personFirstName,
+              "Names are equal!!");
+          softly.assertAll();
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(FIRST_NAME_INPUT),
+              CreateNewContactSteps.samePersonDataContact.getFirstName(),
+              "Names are not equal!!");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check if first name of person from case has not been changed$",
+        () -> {
+          softly.assertNotEquals(
+              webDriverHelpers.getValueFromWebElement(FIRST_NAME_INPUT),
+              personFirstName,
+              "Names are equal!!");
+          softly.assertAll();
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(FIRST_NAME_INPUT),
+              CreateNewCaseSteps.oneCaseDe.getFirstName(),
+              "Names are not equal!!");
+          softly.assertAll();
         });
   }
 

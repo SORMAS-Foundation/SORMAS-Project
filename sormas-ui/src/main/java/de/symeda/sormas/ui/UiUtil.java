@@ -1,5 +1,7 @@
 package de.symeda.sormas.ui;
 
+import java.util.Set;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.user.UserRight;
@@ -10,15 +12,22 @@ public class UiUtil {
 	}
 
 	public static boolean permitted(FeatureType feature, UserRight userRight) {
-		return (feature == null || !FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(feature))
-			&& (userRight == null || UserProvider.getCurrent().hasUserRight(userRight));
+		return (feature == null || enabled(feature)) && (userRight == null || permitted(userRight));
+	}
+
+	public static boolean permitted(Set<FeatureType> features, UserRight userRight) {
+		return enabled(features) && permitted(userRight);
 	}
 
 	public static boolean permitted(UserRight userRight) {
-		return permitted(null, userRight);
+		return UserProvider.getCurrent().hasUserRight(userRight);
 	}
 
 	public static boolean enabled(FeatureType featureType) {
-		return permitted(featureType, null);
+		return !FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(featureType);
+	}
+
+	public static boolean enabled(Set<FeatureType> features) {
+		return FacadeProvider.getFeatureConfigurationFacade().areAllFeatureEnabled(features.toArray(new FeatureType[] {}));
 	}
 }

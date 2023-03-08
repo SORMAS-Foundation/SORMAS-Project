@@ -1,9 +1,14 @@
 package org.sormas.e2etests.steps.web.application.messages;
 
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.ACTION_CONFIRM_POPUP_BUTTON;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.ACTION_YES_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CLOSE_POPUP;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CREATE_NEW_CASE_POPUP_WINDOW_DE;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CREATE_NEW_SAMPLE_POPUP_WINDOW_DE;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FETCH_MESSAGES_BUTTON;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FETCH_MESSAGES_NULL_DATE;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FETCH_MESSAGES_NULL_TIME_COMBOBOX;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FIRST_TIME_FETCH_MESSAGE_POPUP;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FORWARDED_MESSAGE_COUNTER;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.GET_NEW_MESSAGES_POPUP;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MARK_AS_FORWARDED_BUTTON;
@@ -11,6 +16,14 @@ import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPa
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGE_DELETE_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGE_DIRECTORY_HEADER_DE;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGE_UUID_TEXT;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_CASE_EMAIL_ADDRESS_INPUT;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_CASE_PHONE_NUMBER_INPUT;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_DATE_OF_REPORT_INPUT;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_SPECIMEN_CONDITION_INPUT;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_TESTED_DISEASE_INPUT;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_TEST_RESULT_INPUT;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_TEST_RESULT_VERIFIED_RADIOBUTTON;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_TEST_RESULT_VERIFIED_SELECTED_VALUE;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NO_NEW_REPORTS_POPUP;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.PATHOGEN_DETECTION_REPORTING_PROCESS_HEADER_DE;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_CONFIRM_BUTTON;
@@ -28,6 +41,8 @@ import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPa
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.getProcessStatusByIndex;
 
 import cucumber.api.java8.En;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -67,6 +82,14 @@ public class MessagesDirectorySteps implements En {
           if (webDriverHelpers.isElementVisibleWithTimeout(GET_NEW_MESSAGES_POPUP, 1)) {
             webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT_FIRST_BUTTON);
           }
+          if (webDriverHelpers.isElementVisibleWithTimeout(FIRST_TIME_FETCH_MESSAGE_POPUP, 1)) {
+            webDriverHelpers.clickOnWebElementBySelector(ACTION_YES_BUTTON);
+            webDriverHelpers.fillInWebElement(
+                FETCH_MESSAGES_NULL_DATE,
+                LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+            webDriverHelpers.selectFromCombobox(FETCH_MESSAGES_NULL_TIME_COMBOBOX, "00:00");
+            webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM_POPUP_BUTTON);
+          }
         });
 
     And(
@@ -88,6 +111,7 @@ public class MessagesDirectorySteps implements En {
         "^I check that new sample form with pathogen detection reporting process is displayed$",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(CREATE_NEW_SAMPLE_POPUP_WINDOW_DE);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
         });
 
     And(
@@ -251,6 +275,97 @@ public class MessagesDirectorySteps implements En {
                       Integer.parseInt(textFromCounter),
                       number.intValue(),
                       "Number of displayed messages is not correct"));
+        });
+
+    And(
+        "I check if {string} is prefilled in New sample form while processing a DEMIS LabMessage",
+        (String option) -> {
+          switch (option) {
+            case "date of report":
+              softly.assertFalse(
+                  webDriverHelpers
+                      .getValueFromWebElement(NEW_SAMPLE_DATE_OF_REPORT_INPUT)
+                      .isEmpty(),
+                  "Date of report is empty!");
+              softly.assertAll();
+              break;
+            case "test result":
+              softly.assertFalse(
+                  webDriverHelpers.getValueFromWebElement(NEW_SAMPLE_TEST_RESULT_INPUT).isEmpty(),
+                  "Tested result is empty!");
+              softly.assertAll();
+              break;
+            case "specimen condition":
+              softly.assertFalse(
+                  webDriverHelpers
+                      .getValueFromWebElement(NEW_SAMPLE_SPECIMEN_CONDITION_INPUT)
+                      .isEmpty(),
+                  "Specimen condition is empty!");
+              softly.assertAll();
+              break;
+            case "test result verified":
+              softly.assertFalse(
+                  webDriverHelpers.isElementChecked(NEW_SAMPLE_TEST_RESULT_VERIFIED_RADIOBUTTON),
+                  "Test result verified is not checked!");
+              softly.assertAll();
+              break;
+            case "tested disease":
+              softly.assertFalse(
+                  webDriverHelpers
+                      .getValueFromWebElement(NEW_SAMPLE_TESTED_DISEASE_INPUT)
+                      .isEmpty(),
+                  "Tested disease is empty!");
+              softly.assertAll();
+              break;
+          }
+        });
+
+    And(
+        "^I check if \"([^\"]*)\" is prefilled in New case form while processing a DEMIS LabMessage$",
+        (String option) -> {
+          switch (option) {
+            case "email address":
+              softly.assertFalse(
+                  webDriverHelpers.getValueFromWebElement(NEW_CASE_EMAIL_ADDRESS_INPUT).isEmpty(),
+                  "Email address is empty!");
+              softly.assertAll();
+              break;
+            case "phone number":
+              softly.assertFalse(
+                  webDriverHelpers.getValueFromWebElement(NEW_CASE_PHONE_NUMBER_INPUT).isEmpty(),
+                  "Phone number is empty!");
+              softly.assertAll();
+              break;
+          }
+        });
+
+    Then(
+        "^I check if \"([^\"]*)\" is set to \"([^\"]*)\"$",
+        (String option, String value) -> {
+          switch (option) {
+            case "specimen condition":
+              softly.assertEquals(
+                  webDriverHelpers.getValueFromWebElement(NEW_SAMPLE_SPECIMEN_CONDITION_INPUT),
+                  value,
+                  "Value in specimen condition is incorrect!");
+              softly.assertAll();
+              break;
+            case "test result verified":
+              softly.assertEquals(
+                  webDriverHelpers.getTextFromWebElement(
+                      NEW_SAMPLE_TEST_RESULT_VERIFIED_SELECTED_VALUE),
+                  value,
+                  "Value in test result verified is incorrect!");
+              softly.assertAll();
+              break;
+            case "tested disease":
+              softly.assertEquals(
+                  webDriverHelpers.getValueFromWebElement(NEW_SAMPLE_TESTED_DISEASE_INPUT),
+                  value,
+                  "Value in tested disease is incorrect!");
+              softly.assertAll();
+              break;
+          }
         });
   }
 }

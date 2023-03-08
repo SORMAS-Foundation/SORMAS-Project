@@ -206,6 +206,10 @@ public class EditSampleSteps implements En {
     When(
         "I click on Save Button in Sample Edit page",
         () -> webDriverHelpers.clickOnWebElementBySelector(SAVE_EDIT_SAMPLE_BUTTON));
+
+    When(
+        "I check if sample material has a option {string}",
+        (String option) -> webDriverHelpers.selectFromCombobox(SAMPLE_TYPE_COMBOBOX, option));
   }
 
   private void selectPurposeOfSample(String samplePurpose, By element) {

@@ -15,6 +15,7 @@ public class Constants {
 				"count",
 				"get",
 				"is",
+				"are",
 				"has",
 				"does",
 				"validate",

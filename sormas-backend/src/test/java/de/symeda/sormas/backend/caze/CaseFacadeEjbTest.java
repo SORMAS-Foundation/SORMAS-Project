@@ -47,14 +47,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.persistence.Query;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.MatcherAssert;
-import org.hibernate.internal.SessionImpl;
-import org.hibernate.query.spi.QueryImplementor;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.CaseMeasure;
@@ -68,10 +67,10 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.CaseExportType;
-import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseLogic;
+import de.symeda.sormas.api.caze.CaseMergeIndexDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CasePersonDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -288,14 +287,15 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			today,
 			rdcf);
 
-		SessionImpl em = (SessionImpl) getEntityManager();
-		QueryImplementor query = em.createQuery("select c from cases c where c.uuid=:uuid");
-		query.setParameter("uuid", caze.getUuid());
-		Case singleResult = (Case) query.getSingleResult();
+		executeInTransaction(em -> {
+			Query query = em.createQuery("select c from cases c where c.uuid=:uuid");
+			query.setParameter("uuid", caze.getUuid());
+			Case singleResult = (Case) query.getSingleResult();
 
-		singleResult.setCreationDate(new Timestamp(threeDaysAgo.getTime()));
-		singleResult.setReportDate(threeDaysAgo);
-		em.save(singleResult);
+			singleResult.setCreationDate(new Timestamp(threeDaysAgo.getTime()));
+			singleResult.setReportDate(threeDaysAgo);
+			em.persist(singleResult);
+		});
 
 		PersonDto cazePerson2 = creator.createPerson("Case", "Person", Sex.MALE, 1980, 1, 1);
 		CaseDataDto case2 = creator.createCase(
@@ -307,14 +307,10 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			DateUtils.addMinutes(today, -3),
 			rdcf);
 
-		final List<CaseIndexDto[]> casesForDuplicateMergingToday = getCaseFacade().getCasesForDuplicateMerging(
-			new CaseCriteria().creationDateFrom(today).creationDateTo(today),
-			CaseFacade.DUPLICATE_MERGING_LIMIT_DEFAULT,
-			true);
-		final List<CaseIndexDto[]> casesForDuplicateMergingThreeDaysAgo = getCaseFacade().getCasesForDuplicateMerging(
-			new CaseCriteria().creationDateFrom(threeDaysAgo).creationDateTo(threeDaysAgo),
-			CaseFacade.DUPLICATE_MERGING_LIMIT_DEFAULT,
-			true);
+		final List<CaseMergeIndexDto[]> casesForDuplicateMergingToday =
+			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), 100, true);
+		final List<CaseMergeIndexDto[]> casesForDuplicateMergingThreeDaysAgo =
+			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(threeDaysAgo).creationDateTo(threeDaysAgo), 100, true);
 		assertEquals(1, casesForDuplicateMergingToday.size());
 		assertEquals(1, casesForDuplicateMergingThreeDaysAgo.size());
 	}
@@ -354,12 +350,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		assertEquals(
 			0,
-			getCaseFacade()
-				.getCasesForDuplicateMerging(
-					new CaseCriteria().creationDateFrom(today).creationDateTo(today),
-					CaseFacade.DUPLICATE_MERGING_LIMIT_DEFAULT,
-					true)
-				.size());
+			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), 100, true).size());
 	}
 
 	@Test
@@ -400,7 +391,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			getCaseFacade()
 				.getCasesForDuplicateMerging(
 					new CaseCriteria().creationDateFrom(today).creationDateTo(today),
-					CaseFacade.DUPLICATE_MERGING_LIMIT_DEFAULT,
+					100,
 					true)
 				.size());
 	}
@@ -443,7 +434,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			getCaseFacade()
 				.getCasesForDuplicateMerging(
 					new CaseCriteria().creationDateFrom(today).creationDateTo(today),
-					CaseFacade.DUPLICATE_MERGING_LIMIT_DEFAULT,
+					100,
 					true)
 				.size());
 	}
@@ -2749,12 +2740,13 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			DateUtils.addMinutes(new Date(), -3),
 			rdcf);
 
-		SessionImpl em = (SessionImpl) getEntityManager();
-		QueryImplementor query2 = em.createQuery("select c from cases c where c.uuid=:uuid");
-		query2.setParameter("uuid", caseWithCompleteness.getUuid());
-		Case caseWithCompletenessSingleResult = (Case) query2.getSingleResult();
-		caseWithCompletenessSingleResult.setCompleteness(0.7f);
-		em.save(caseWithCompletenessSingleResult);
+		executeInTransaction(em -> {
+			Query query2 = em.createQuery("select c from cases c where c.uuid=:uuid");
+			query2.setParameter("uuid", caseWithCompleteness.getUuid());
+			Case caseWithCompletenessSingleResult = (Case) query2.getSingleResult();
+			caseWithCompletenessSingleResult.setCompleteness(0.7f);
+			em.persist(caseWithCompletenessSingleResult);
+		});
 
 		int changedCases = getCaseFacade().updateCompleteness();
 

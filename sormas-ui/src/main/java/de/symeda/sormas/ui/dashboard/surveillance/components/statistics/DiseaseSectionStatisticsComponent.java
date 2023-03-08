@@ -1,5 +1,9 @@
 package de.symeda.sormas.ui.dashboard.surveillance.components.statistics;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -14,6 +18,14 @@ public class DiseaseSectionStatisticsComponent extends DashboardStatisticsSubCom
 	private final Label totalLabel;
 
 	public DiseaseSectionStatisticsComponent(String titleCaption) {
+		this(titleCaption, null, null);
+	}
+
+	public DiseaseSectionStatisticsComponent(String titleCaption, String description) {
+		this(titleCaption, description, null);
+	}
+
+	public DiseaseSectionStatisticsComponent(String titleCaption, String description, String infoIconText) {
 		// Header
 		HorizontalLayout headerLayout = new HorizontalLayout();
 		headerLayout.setMargin(false);
@@ -28,18 +40,23 @@ public class DiseaseSectionStatisticsComponent extends DashboardStatisticsSubCom
 			CssStyles.LABEL_BOLD,
 			CssStyles.VSPACE_4,
 			CssStyles.VSPACE_TOP_NONE);
+		if (StringUtils.isNotBlank(description)) {
+			totalLabel.setDescription(I18nProperties.getDescription(description));
+		}
 		headerLayout.addComponent(totalLabel);
 		// title
 		Label titleLabel = new Label(I18nProperties.getCaption(titleCaption));
 		CssStyles.style(titleLabel, CssStyles.H2, CssStyles.HSPACE_LEFT_4);
 		headerLayout.addComponent(titleLabel);
 
-		addComponent(headerLayout);
-	}
+		if (StringUtils.isNotBlank(infoIconText)) {
+			Label infoIcon = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+			CssStyles.style(infoIcon, CssStyles.LABEL_LARGE, CssStyles.LABEL_SECONDARY, "statistics-info-label", CssStyles.HSPACE_LEFT_4);
+			infoIcon.setDescription(infoIconText, ContentMode.HTML);
+			headerLayout.addComponent(infoIcon);
+		}
 
-	public DiseaseSectionStatisticsComponent(String titleCaption, String description) {
-		this(titleCaption);
-		totalLabel.setDescription(I18nProperties.getDescription(description));
+		addComponent(headerLayout);
 	}
 
 	protected void updateTotalLabel(String value) {

@@ -16,6 +16,7 @@
 package de.symeda.sormas.api.uuid;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -68,5 +69,20 @@ public class AbstractUuidDto implements HasUuid, HasCaption, Serializable {
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + StringUtils.SPACE + this.getUuid();
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		AbstractUuidDto that = (AbstractUuidDto) o;
+		return uuid.equals(that.uuid);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(uuid);
 	}
 }

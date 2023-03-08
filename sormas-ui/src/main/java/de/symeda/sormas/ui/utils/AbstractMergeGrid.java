@@ -41,6 +41,9 @@ import de.symeda.sormas.ui.SormasUI;
 
 public abstract class AbstractMergeGrid<T1 extends MergeableIndexDto, T2 extends BaseCriteria> extends TreeGrid<T1> {
 
+	public static final int DUPLICATE_MERGING_LIMIT_DEFAULT = 100;
+	public static final int DUPLICATE_MERGING_LIMIT_MAX = 1000;
+
 	public static final String COLUMN_ACTIONS = "actions";
 	public static final String COLUMN_COMPLETENESS = "completenessValue";
 	public static final String COLUMN_UUID = "uuidLink";
@@ -206,7 +209,12 @@ public abstract class AbstractMergeGrid<T1 extends MergeableIndexDto, T2 extends
 			hiddenUuidPairs = new ArrayList<>();
 		}
 
-		List<T1[]> itemPairs = getItemForDuplicateMerging();
+		int limit = DUPLICATE_MERGING_LIMIT_DEFAULT;
+		if (queryDetails != null && queryDetails.getResultLimit() != null) {
+			limit = Math.max(1, Math.min(queryDetails.getResultLimit(), DUPLICATE_MERGING_LIMIT_MAX));
+		}
+
+		List<T1[]> itemPairs = getItemsForDuplicateMerging(limit);
 		for (T1[] itemPair : itemPairs) {
 			boolean uuidPairExists = false;
 			for (String[] hiddenUuidPair : hiddenUuidPairs) {
@@ -233,7 +241,7 @@ public abstract class AbstractMergeGrid<T1 extends MergeableIndexDto, T2 extends
 		reload();
 	}
 
-	protected abstract List<T1[]> getItemForDuplicateMerging();
+	protected abstract List<T1[]> getItemsForDuplicateMerging(int limit);
 
 	protected abstract void merge(T1 targetedItem, T1 itemToMergeAndDelete);
 

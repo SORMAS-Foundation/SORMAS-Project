@@ -285,16 +285,16 @@ public class ContactsView extends AbstractView {
 		}
 
 		if (isBulkEditAllowed()) {
-			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(
-				Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null, ValoTheme.BUTTON_PRIMARY);
+			Button btnEnterBulkEditMode =
+				ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null, ValoTheme.BUTTON_PRIMARY);
 			{
 				btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
 				btnEnterBulkEditMode.setWidth(100, Unit.PERCENTAGE);
 				moreButton.addMenuEntry(btnEnterBulkEditMode);
 			}
 
-			Button btnLeaveBulkEditMode = ButtonHelper.createIconButton(
-					Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
+			Button btnLeaveBulkEditMode =
+				ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
 			{
 				btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
 				btnLeaveBulkEditMode.setWidth(100, Unit.PERCENTAGE);
@@ -514,8 +514,9 @@ public class ContactsView extends AbstractView {
 						new MenuBarHelper.MenuBarItem(
 							I18nProperties.getCaption(Captions.bulkEdit),
 							VaadinIcons.ELLIPSIS_H,
-							mi -> grid
-								.bulkActionHandler(items -> ControllerProvider.getContactController().showBulkContactDataEditComponent(items, null)),
+							mi -> grid.bulkActionHandler(
+								items -> ControllerProvider.getContactController()
+									.showBulkContactDataEditComponent(items, null, (AbstractContactGrid<?>) grid)),
 							hasBulkOperationsRight),
 						new MenuBarHelper.MenuBarItem(
 							I18nProperties.getCaption(Captions.bulkCancelFollowUp),

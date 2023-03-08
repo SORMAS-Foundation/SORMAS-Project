@@ -84,6 +84,7 @@ public class ContactDirectoryPage {
   public static final By CONTACTS_FROM_OTHER_INSTANCES_CHECKBOX =
       By.id("onlyContactsFromOtherInstances");
   public static final By ALL_BUTTON_CONTACT = By.id("All");
+  public static final By ALL_BUTTON_CONTACT_DE = By.id("Alle");
   public static final By ACTIVE_CONTACT_BUTTON = By.id("status-Active contact");
   public static final By CONVERTED_TO_CASE_BUTTON = By.id("status-Converted to case");
   public static final By DROPPED_BUTTON = By.id("status-Dropped");

@@ -389,6 +389,7 @@ public interface Strings {
 	String headingArchiveTravelEntry = "headingArchiveTravelEntry";
 	String headingArchivingNotPossible = "headingArchivingNotPossible";
 	String headingAutomaticDeletionStarted = "headingAutomaticDeletionStarted";
+	String headingBulkOperationProgress = "headingBulkOperationProgress";
 	String headingBurialDetails = "headingBurialDetails";
 	String headingCampaignBasics = "headingCampaignBasics";
 	String headingCampaignDashboard = "headingCampaignDashboard";
@@ -603,6 +604,7 @@ public interface Strings {
 	String headingLoginFailed = "headingLoginFailed";
 	String headingMaternalHistory = "headingMaternalHistory";
 	String headingMedicalInformation = "headingMedicalInformation";
+	String headingMergeDuplicateEventParticipantSamePersonSameEvent = "headingMergeDuplicateEventParticipantSamePersonSameEvent";
 	String headingMergeGuide = "headingMergeGuide";
 	String headingMergePersonError = "headingMergePersonError";
 	String headingMissingDateFilter = "headingMissingDateFilter";
@@ -640,6 +642,8 @@ public interface Strings {
 	String headingPersonData = "headingPersonData";
 	String headingPersonInformation = "headingPersonInformation";
 	String headingPersonOccupation = "headingPersonOccupation";
+	String headingPickEventParticipants = "headingPickEventParticipants";
+	String headingPickEventParticipantsIncompleteSelection = "headingPickEventParticipantsIncompleteSelection";
 	String headingPickOrCreateCase = "headingPickOrCreateCase";
 	String headingPickOrCreateContact = "headingPickOrCreateContact";
 	String headingPickOrCreateEntry = "headingPickOrCreateEntry";
@@ -790,6 +794,7 @@ public interface Strings {
 	String infoCreateNewSampleDiscardsChangesContact = "infoCreateNewSampleDiscardsChangesContact";
 	String infoCreateNewSampleDiscardsChangesEventParticipant = "infoCreateNewSampleDiscardsChangesEventParticipant";
 	String infoCustomExport = "infoCustomExport";
+	String infoDashboardFinalLaboratoryResult = "infoDashboardFinalLaboratoryResult";
 	String infoDashboardIncidence = "infoDashboardIncidence";
 	String infoDatabaseExportTables = "infoDatabaseExportTables";
 	String infoDefineOutbreaks = "infoDefineOutbreaks";
@@ -863,6 +868,7 @@ public interface Strings {
 	String infoPersonMergeConfirmationForNonSimilarPersons = "infoPersonMergeConfirmationForNonSimilarPersons";
 	String infoPersonMergeDescription = "infoPersonMergeDescription";
 	String infoPersonMergeSharedMustLead = "infoPersonMergeSharedMustLead";
+	String infoPickEventParticipantsForPersonMerge = "infoPickEventParticipantsForPersonMerge";
 	String infoPickOrCreateCase = "infoPickOrCreateCase";
 	String infoPickOrCreateCaseNewCase = "infoPickOrCreateCaseNewCase";
 	String infoPickOrCreateEventForCase = "infoPickOrCreateEventForCase";
@@ -877,6 +883,7 @@ public interface Strings {
 	String infoPickOrCreatePathogenTest = "infoPickOrCreatePathogenTest";
 	String infoPickOrCreateSample = "infoPickOrCreateSample";
 	String infoPickOrCreateSuperordinateEventForEvent = "infoPickOrCreateSuperordinateEventForEvent";
+	String infoPickorMergeEventParticipantDuplicateEventParticipantByPersonByEvent = "infoPickorMergeEventParticipantDuplicateEventParticipantByPersonByEvent";
 	String infoPlaceOfStayInHospital = "infoPlaceOfStayInHospital";
 	String infoPopulationCollectionDate = "infoPopulationCollectionDate";
 	String infoPopulationDataView = "infoPopulationDataView";
@@ -963,6 +970,8 @@ public interface Strings {
 	String messageBulkContactsWithDifferentDiseasesSelected = "messageBulkContactsWithDifferentDiseasesSelected";
 	String messageBulkDontShareWithReportingToolWarning = "messageBulkDontShareWithReportingToolWarning";
 	String messageBulkLinkEventHint = "messageBulkLinkEventHint";
+	String messageBulkOperationEntryLimitReached = "messageBulkOperationEntryLimitReached";
+	String messageBulkOperationTimeLimitReached = "messageBulkOperationTimeLimitReached";
 	String messageCampaignArchived = "messageCampaignArchived";
 	String messageCampaignCreated = "messageCampaignCreated";
 	String messageCampaignDearchived = "messageCampaignDearchived";
@@ -986,8 +995,6 @@ public interface Strings {
 	String messageCaseSavedClassificationChanged = "messageCaseSavedClassificationChanged";
 	String messageCasesDearchived = "messageCasesDearchived";
 	String messageCasesDeleted = "messageCasesDeleted";
-	String messageCasesEdited = "messageCasesEdited";
-	String messageCasesEditedExceptArchived = "messageCasesEditedExceptArchived";
 	String messageCasesMerged = "messageCasesMerged";
 	String messageCasesNotDeletedReasonExternalSurveillanceTool = "messageCasesNotDeletedReasonExternalSurveillanceTool";
 	String messageCaseTransfered = "messageCaseTransfered";
@@ -1021,8 +1028,6 @@ public interface Strings {
 	String messageContactOutsideJurisdictionDeletionDenied = "messageContactOutsideJurisdictionDeletionDenied";
 	String messageContactSaved = "messageContactSaved";
 	String messageContactsDeleted = "messageContactsDeleted";
-	String messageContactsEdited = "messageContactsEdited";
-	String messageContactsEditedExceptArchived = "messageContactsEditedExceptArchived";
 	String messageContactsMerged = "messageContactsMerged";
 	String messageContactToCaseConfirmationRequired = "messageContactToCaseConfirmationRequired";
 	String messageContinentArchived = "messageContinentArchived";
@@ -1066,6 +1071,8 @@ public interface Strings {
 	String messageDontShareWithReportingToolWarning = "messageDontShareWithReportingToolWarning";
 	String messageEnterSms = "messageEnterSms";
 	String messageEntityNotFound = "messageEntityNotFound";
+	String messageEntriesEdited = "messageEntriesEdited";
+	String messageEntriesEditedExceptArchived = "messageEntriesEditedExceptArchived";
 	String messageEntryCreated = "messageEntryCreated";
 	String messageEpiDataHint = "messageEpiDataHint";
 	String messageEpidNumberWarning = "messageEpidNumberWarning";
@@ -1190,8 +1197,10 @@ public interface Strings {
 	String messagePersonContactDetailsPrimaryDuplicate = "messagePersonContactDetailsPrimaryDuplicate";
 	String messagePersonExternalTokenWarning = "messagePersonExternalTokenWarning";
 	String messagePersonMergedAddressDescription = "messagePersonMergedAddressDescription";
+	String messagePersonMergeNoEventParticipantRights = "messagePersonMergeNoEventParticipantRights";
 	String messagePersonSaved = "messagePersonSaved";
 	String messagePersonSavedClassificationChanged = "messagePersonSavedClassificationChanged";
+	String messagePickEventParticipantsIncompleteSelection = "messagePickEventParticipantsIncompleteSelection";
 	String messagePlagueTypeChange = "messagePlagueTypeChange";
 	String messagePointOfEntryArchived = "messagePointOfEntryArchived";
 	String messagePointOfEntryDearchived = "messagePointOfEntryDearchived";
@@ -1417,6 +1426,7 @@ public interface Strings {
 	String promptPrescriptionTextFilter = "promptPrescriptionTextFilter";
 	String promptRegion = "promptRegion";
 	String promptRelatedPersonLikeField = "promptRelatedPersonLikeField";
+	String promptSampleDashboardFilterDateType = "promptSampleDashboardFilterDateType";
 	String promptSampleDateFrom = "promptSampleDateFrom";
 	String promptSampleDateTo = "promptSampleDateTo";
 	String promptSampleEpiWeekFrom = "promptSampleEpiWeekFrom";
@@ -1446,6 +1456,7 @@ public interface Strings {
 	String reloadPageToSeeChanges = "reloadPageToSeeChanges";
 	String reportedBy = "reportedBy";
 	String reportedOn = "reportedOn";
+	String sampleDashboardWarning = "sampleDashboardWarning";
 	String setTo = "setTo";
 	String sormasToSormasLoadingShares = "sormasToSormasLoadingShares";
 	String step = "step";

@@ -179,7 +179,7 @@ public class TaskGridComponent extends VerticalLayout {
 						I18nProperties.getCaption(Captions.bulkEdit),
 						VaadinIcons.ELLIPSIS_H,
 						mi -> ControllerProvider.getTaskController()
-							.showBulkTaskDataEditComponent(this.grid.asMultiSelect().getSelectedItems(), () -> tasksView.navigateTo(criteria)),
+							.showBulkTaskDataEditComponent(this.grid.asMultiSelect().getSelectedItems(), grid, () -> tasksView.navigateTo(criteria)),
 						hasBulkOperationsRight));
 				menuBarItems.add(
 					new MenuBarHelper.MenuBarItem(

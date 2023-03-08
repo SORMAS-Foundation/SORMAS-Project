@@ -367,6 +367,11 @@ public class EditCasePage {
       By.cssSelector(".popupContent #organization div");
   public static final By HAND_THE_OWNERSHIP_CHECKBOX =
       By.cssSelector(".popupContent #handOverOwnership label");
+
+  public static final By SAHRE_SAMPLES_CHECKBOX =
+      By.cssSelector(".popupContent #withSamples label");
+  public static final By SHARE_REPORTS_CHECKBOX =
+      By.cssSelector(".popupContent #withSurveillanceReports label");
   public static final By SHARE_SORMAS_2_SORMAS_POPUP_BUTTON =
       By.cssSelector(".popupContent #commit");
   public static final By LINKED_SHARED_ORGANIZATION_SELECTED_VALUE =
@@ -411,5 +416,15 @@ public class EditCasePage {
 
   public static By checkIfTextExists(String text) {
     return By.xpath(String.format("//div[contains(text(),'%s')]", text));
+  }
+
+  public static By SHARE_PENDING_WARNING_DE =
+      By.xpath(
+          "//div[@class='popupContent']//div[contains(text(),'Es gibt bereits eine ausstehende Anfrage an das gleiche Gesundheitsamt. Bitte widerrufen Sie die Anfrage, bevor Sie eine Neue senden.')]");
+
+  public static By checkTextInReportSideComponent(String text) {
+    return By.xpath(
+        String.format(
+            "//div[text()='Meldevorg\u00E4nge']/../../../../../..//div[text()='%s']", text));
   }
 }

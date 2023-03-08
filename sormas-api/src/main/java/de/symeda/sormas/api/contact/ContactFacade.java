@@ -24,6 +24,7 @@ import java.util.Map;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.CoreFacade;
@@ -40,6 +41,7 @@ import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.BulkOperationResults;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.visit.VisitSummaryExportDto;
@@ -144,13 +146,16 @@ public interface ContactFacade extends CoreFacade<ContactDto, ContactIndexDto, C
 
 	void deleteContactAsDuplicate(String uuid, String duplicateOfUuid);
 
-	List<MergeContactIndexDto[]> getContactsForDuplicateMerging(ContactCriteria criteria, boolean showDuplicatesWithDifferentRegion);
+	List<MergeContactIndexDto[]> getContactsForDuplicateMerging(
+		ContactCriteria criteria,
+		@Min(1) Integer limit,
+		boolean showDuplicatesWithDifferentRegion);
 
 	void updateCompleteness(String uuid);
 
 	void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException;
 
-	int saveBulkContacts(
+	BulkOperationResults<String> saveBulkContacts(
 		List<String> contactUuidlist,
 		@Valid ContactBulkEditData updatedContacBulkEditData,
 		boolean classificationChange,

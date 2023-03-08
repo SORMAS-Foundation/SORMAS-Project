@@ -57,7 +57,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 
-public class BulkTaskDataForm extends AbstractEditForm<TaskBulkEditData> {
+public class BulkTaskDataForm extends AbstractEditForm<TaskDto> {
 
 	public static final String ASSIGNEE_CHECKBOX = "assigneeCheckbox";
 	public static final String ASSIGNEE_HINT = "assigneeHint";
@@ -66,9 +66,9 @@ public class BulkTaskDataForm extends AbstractEditForm<TaskBulkEditData> {
 	private static final long serialVersionUID = 1L;
 	private static final String HTML_LAYOUT = fluidRowLocsCss(VSPACE_4, ASSIGNEE_CHECKBOX)
 		+ fluidRowLocs(ASSIGNEE_HINT)
-		+ fluidRowLocs(TaskBulkEditData.TASK_ASSIGNEE)
+		+ fluidRowLocs(TaskBulkEditData.ASSIGNEE_USER)
 		+ fluidRowLocsCss(VSPACE_4, PRORITY_CHECKBOX)
-		+ fluidRowLocs(TaskBulkEditData.TASK_PRIORITY)
+		+ fluidRowLocs(TaskBulkEditData.PRIORITY)
 		+ fluidRowLocsCss(VSPACE_4, STATUS_CHECKBOX)
 		+ fluidRowLocs(TaskBulkEditData.TASK_STATUS);
 
@@ -83,7 +83,7 @@ public class BulkTaskDataForm extends AbstractEditForm<TaskBulkEditData> {
 	private InfrastructureDataReferenceDto commonJurisdictionReference = null;
 
 	public BulkTaskDataForm(Collection<? extends TaskIndexDto> selectedTasks) {
-		super(TaskBulkEditData.class, TaskDto.I18N_PREFIX);
+		super(TaskDto.class, TaskDto.I18N_PREFIX);
 		this.selectedTasks = selectedTasks;
 		setWidth(680, Unit.PIXELS);
 		hideValidationUntilNextCommit();
@@ -109,17 +109,17 @@ public class BulkTaskDataForm extends AbstractEditForm<TaskBulkEditData> {
 
 		priorityCheckbox = new CheckBox(I18nProperties.getCaption(Captions.bulkTaskPriority));
 		getContent().addComponent(priorityCheckbox, PRORITY_CHECKBOX);
-		NullableOptionGroup priority = addField(TaskBulkEditData.TASK_PRIORITY, NullableOptionGroup.class);
+		NullableOptionGroup priority = addField(TaskBulkEditData.PRIORITY, NullableOptionGroup.class);
 		priority.setEnabled(false);
-		FieldHelper.setRequiredWhen(getFieldGroup(), priorityCheckbox, Arrays.asList(TaskBulkEditData.TASK_PRIORITY), Arrays.asList(true));
+		FieldHelper.setRequiredWhen(getFieldGroup(), priorityCheckbox, Arrays.asList(TaskBulkEditData.PRIORITY), Arrays.asList(true));
 		priorityCheckbox.addValueChangeListener(e -> priority.setEnabled((boolean) e.getProperty().getValue()));
 
 		assigneeCheckbox = new CheckBox(I18nProperties.getCaption(Captions.bulkTaskAssignee));
 		getContent().addComponent(assigneeCheckbox, ASSIGNEE_CHECKBOX);
-		ComboBox assignee = addField(TaskBulkEditData.TASK_ASSIGNEE, ComboBox.class);
+		ComboBox assignee = addField(TaskBulkEditData.ASSIGNEE_USER, ComboBox.class);
 		assignee.setEnabled(false);
 		FieldHelper
-			.addSoftRequiredStyleWhen(getFieldGroup(), assigneeCheckbox, Arrays.asList(TaskBulkEditData.TASK_ASSIGNEE), Arrays.asList(true), null);
+			.addSoftRequiredStyleWhen(getFieldGroup(), assigneeCheckbox, Arrays.asList(TaskBulkEditData.ASSIGNEE_USER), Arrays.asList(true), null);
 
 		Label assigneeHint = new Label();
 		getContent().addComponent(assigneeHint, ASSIGNEE_HINT);
