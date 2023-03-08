@@ -1879,7 +1879,7 @@ Feature: Case end to end tests
     And I click on the Cases button from navbar
     And I filter by CaseID on Case directory page
     And I apply "Alle" to ownership combobox on Case Directory Page
-    And I apply "Alle Fälle" to combobox on Case Directory Page
+    And I apply "Alle aktiven und archivierten Fälle" to combobox on Case Directory Page
     And I click APPLY BUTTON in Case Directory Page
     And I click on the More button on Case directory page
     And I click Enter Bulk Edit Mode on Case directory page
@@ -1892,7 +1892,7 @@ Feature: Case end to end tests
     Then I navigate to "s2s_2" environment
     And I click on the Cases button from navbar
     And I apply "Alle" to ownership combobox on Case Directory Page
-    And I apply "Alle Fälle" to combobox on Case Directory Page
+    And I apply "Alle aktiven und archivierten Fälle" to combobox on Case Directory Page
     Then I click on the APPLY FILTERS button
     And I select first created case for person from Cases list
     Then I check if editable fields are read only for an archived case
@@ -1925,7 +1925,7 @@ Feature: Case end to end tests
     Then I navigate to "s2s_1" environment
     And I click on the Cases button from navbar
     And I apply "Alle" to ownership combobox on Case Directory Page
-    And I apply "Alle Fälle" to combobox on Case Directory Page
+    And I apply "Alle aktiven und archivierten Fälle" to combobox on Case Directory Page
     Then I click on the APPLY FILTERS button
     And I select first created case for person from Cases list
     Then I check if editable fields are read only for an archived case
@@ -1957,7 +1957,7 @@ Feature: Case end to end tests
     Then I navigate to "s2s_2" environment
     And I click on the Cases button from navbar
     And I apply "Alle" to ownership combobox on Case Directory Page
-    And I apply "Alle Fälle" to combobox on Case Directory Page
+    And I apply "Alle aktiven und archivierten Fälle" to combobox on Case Directory Page
     Then I click on the APPLY FILTERS button
     And I select first created case for person from Cases list
     Then I check if editable fields are read only for an archived case
@@ -1984,7 +1984,7 @@ Feature: Case end to end tests
     And I click on the Cases button from navbar
     And I filter by CaseID on Case directory page
     And I apply "Alle" to ownership combobox on Case Directory Page
-    And I apply "Alle Fälle" to combobox on Case Directory Page
+    And I apply "Alle aktiven und archivierten Fälle" to combobox on Case Directory Page
     And I click APPLY BUTTON in Case Directory Page
     And I click on the More button on Case directory page
     And I click Enter Bulk Edit Mode on Case directory page
