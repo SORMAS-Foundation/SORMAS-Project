@@ -1,4 +1,4 @@
-@UI @Sanity @Statistics @UI
+@UI @Sanity @Statistics
 Feature: Statistics tab tests
 
   @tmsLink=SORDEV-5978 @env_main
