@@ -1,7 +1,7 @@
 @UI @Sanity @TravelEntries @Filters
 Feature: Travel entry filters
 
-@tmsLink=SORDEV-8267 @env_de @testIt
+@tmsLink=SORDEV-8267 @env_de
 Scenario: Check Travel Entry filters
   Given I log in as a National User
   And I click on the Entries button from navbar
