@@ -1734,7 +1734,7 @@ Feature: Case end to end tests
     And I click on New Task from Case page
     And I check that there is only user with Bayern region for task
 
-   @8558 @env_main
+   @#8558 @env_main
    Scenario: Verify that Page can not be saved if a future date is set for Date of symptom onset
      Given API: I create a new person
      And API: I check that POST call body is "OK"
