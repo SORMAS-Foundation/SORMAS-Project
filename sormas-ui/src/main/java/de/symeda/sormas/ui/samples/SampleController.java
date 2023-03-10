@@ -132,6 +132,7 @@ public class SampleController {
 
 		editView.setPostCommitListener(() -> {
 			pathogenTestHandler.saveAll(sampleDto.toReference());
+			SormasUI.refreshView();
 		});
 
 		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreateNewSample));
