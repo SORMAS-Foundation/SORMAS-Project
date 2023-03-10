@@ -52,6 +52,7 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
@@ -85,7 +86,7 @@ public class EventParticipantsView extends AbstractEventView {
 	public static final String EVENTPARTICIPANTS = "eventparticipants";
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/" + EVENTPARTICIPANTS;
 
-	private final EventParticipantCriteria criteria;
+	private EventParticipantCriteria criteria;
 	private ViewConfiguration viewConfiguration;
 
 	private EventParticipantsGrid grid;
@@ -105,7 +106,6 @@ public class EventParticipantsView extends AbstractEventView {
 		setSizeFull();
 		addStyleName("crud-view");
 
-		criteria = ViewModelProviders.of(EventParticipantsView.class).get(EventParticipantCriteria.class);
 		viewConfiguration = ViewModelProviders.of(getClass()).get(ViewConfiguration.class);
 	}
 
@@ -309,8 +309,14 @@ public class EventParticipantsView extends AbstractEventView {
 
 	@Override
 	protected void initView(String params) {
+		EventReferenceDto eventRef = getEventRef();
 
-		criteria.withEvent(getEventRef());
+		criteria = ViewModelProviders.of(EventParticipantsView.class).get(EventParticipantCriteria.class);
+		criteria.withEvent(eventRef);
+		criteria.relevanceStatus(
+			FacadeProvider.getEventFacade().isArchived(eventRef.getUuid())
+				? EntityRelevanceStatus.ACTIVE_AND_ARCHIVED
+				: EntityRelevanceStatus.ACTIVE);
 
 		if (grid == null) {
 			grid = new EventParticipantsGrid(criteria);
@@ -438,13 +444,7 @@ public class EventParticipantsView extends AbstractEventView {
 		updateStatusButtons();
 
 		if (eventParticipantRelevanceStatusFilter != null) {
-			if (criteria.getRelevanceStatus() == null) {
-				criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
-				boolean archived = FacadeProvider.getEventFacade().isArchived(getEventRef().getUuid());
-				eventParticipantRelevanceStatusFilter.setValue(archived ? EntityRelevanceStatus.ACTIVE_AND_ARCHIVED : criteria.getRelevanceStatus());
-			} else {
-				eventParticipantRelevanceStatusFilter.setValue(criteria.getRelevanceStatus());
-			}
+			eventParticipantRelevanceStatusFilter.setValue(criteria.getRelevanceStatus());
 		}
 
 		filterForm.setValue(criteria);
