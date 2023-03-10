@@ -150,4 +150,21 @@ public class ExternalMessageGridFilterForm extends AbstractFilterForm<ExternalMe
 			}
 		}
 	}
+
+	@Override
+	protected void applyDependenciesOnNewValue(ExternalMessageCriteria criteria) {
+
+		ComboBox diseaseField = getField(ExternalMessageDto.DISEASE);
+		ComboBox diseaseVariantField = getField(ExternalMessageDto.DISEASE_VARIANT);
+		Disease disease = (Disease) diseaseField.getValue();
+		if (disease == null) {
+			FieldHelper.updateItems(diseaseVariantField, Collections.emptyList());
+			FieldHelper.setEnabled(false, diseaseVariantField);
+		} else {
+			List<DiseaseVariant> diseaseVariants =
+				FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
+			FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
+			FieldHelper.setEnabled(CollectionUtils.isNotEmpty(diseaseVariants), diseaseVariantField);
+		}
+	}
 }

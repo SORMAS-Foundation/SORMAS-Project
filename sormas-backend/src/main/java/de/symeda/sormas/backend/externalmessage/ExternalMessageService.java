@@ -84,6 +84,12 @@ public class ExternalMessageService extends AdoServiceWithUserFilterAndJurisdict
 		if (criteria.getType() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(labMessage.get(ExternalMessage.TYPE), criteria.getType()));
 		}
+		if (criteria.getDisease() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(labMessage.get(ExternalMessage.DISEASE), criteria.getDisease()));
+		}
+		if (criteria.getDiseaseVariant() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(labMessage.get(ExternalMessage.DISEASE_VARIANT), criteria.getDiseaseVariant()));
+		}
 		if (criteria.getExternalMessageStatus() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(labMessage.get(ExternalMessage.STATUS), criteria.getExternalMessageStatus()));
 		}
