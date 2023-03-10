@@ -25,7 +25,6 @@ import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
-import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
@@ -35,14 +34,9 @@ public class CasePartialUpdateTest extends AbstractBeanTest {
 	@Test
 	public void testDiseaseChangePartialUpdates() {
 
-		TestDataCreator.RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(
-			rdcf.region.getUuid(),
-			rdcf.district.getUuid(),
-			rdcf.facility.getUuid(),
-			"Surv",
-			"Sup",
-			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		rdcf.pointOfEntry = null;
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -87,14 +81,9 @@ public class CasePartialUpdateTest extends AbstractBeanTest {
 	@Test
 	public void testPersonReferenceChange() {
 
-		TestDataCreator.RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(
-			rdcf.region.getUuid(),
-			rdcf.district.getUuid(),
-			rdcf.facility.getUuid(),
-			"Surv",
-			"Sup",
-			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		rdcf.pointOfEntry = null;
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -142,14 +131,9 @@ public class CasePartialUpdateTest extends AbstractBeanTest {
 	@Test
 	public void testSetValueWhenNullBefore() throws JsonProcessingException {
 
-		TestDataCreator.RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(
-			rdcf.region.getUuid(),
-			rdcf.district.getUuid(),
-			rdcf.facility.getUuid(),
-			"Surv",
-			"Sup",
-			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		rdcf.pointOfEntry = null;
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
 
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
@@ -197,14 +181,9 @@ public class CasePartialUpdateTest extends AbstractBeanTest {
 	@Test
 	public void testResetValue() {
 
-		TestDataCreator.RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(
-			rdcf.region.getUuid(),
-			rdcf.district.getUuid(),
-			rdcf.facility.getUuid(),
-			"Surv",
-			"Sup",
-			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		rdcf.pointOfEntry = null;
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -255,14 +234,9 @@ public class CasePartialUpdateTest extends AbstractBeanTest {
 	@Test
 	public void testPatchingListElements() throws JsonProcessingException {
 
-		TestDataCreator.RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(
-			rdcf.region.getUuid(),
-			rdcf.district.getUuid(),
-			rdcf.facility.getUuid(),
-			"Surv",
-			"Sup",
-			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		rdcf.pointOfEntry = null;
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
 
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(

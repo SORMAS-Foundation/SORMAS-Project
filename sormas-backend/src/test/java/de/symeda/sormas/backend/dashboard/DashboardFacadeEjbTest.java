@@ -25,6 +25,7 @@ import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -35,23 +36,18 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
-import de.symeda.sormas.backend.TestDataCreator;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.TestDataCreator.RDCF;
 
 public class DashboardFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetCasesForDashboard() {
 
-		TestDataCreator.RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		TestDataCreator.RDCFEntities rdcf2 = creator.createRDCFEntities("Region2", "District2", "Community2", "Facility2");
-		UserDto user = creator.createUser(
-			rdcf.region.getUuid(),
-			rdcf.district.getUuid(),
-			rdcf.facility.getUuid(),
-			"Surv",
-			"Sup",
-			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		RDCF rdcf = creator.createRDCF();
+		RDCF rdcf2 = creator.createRDCF("Region2", "District2", "Community2", "Facility2");
+
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
+
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -87,12 +83,13 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetTestResultCountByResultType() {
 
-		TestDataCreator.RDCFEntities rdcf = creator.createRDCFEntities();
-		UserReferenceDto user = creator.createUser(rdcf).toReference();
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceOfficer(rdcf);
+
 		PersonReferenceDto person1 = creator.createPerson("Heinz", "First").toReference();
 		PersonReferenceDto person2 = creator.createPerson("Heinz", "Second").toReference();
-		CaseDataDto case1 = creator.createCase(user, person1, rdcf);
-		CaseDataDto case2 = creator.createCase(user, person2, rdcf);
+		CaseDataDto case1 = creator.createCase(user.toReference(), person1, rdcf);
+		CaseDataDto case2 = creator.createCase(user.toReference(), person2, rdcf);
 
 		Date date = new Date();
 		DashboardCriteria dashboardCriteria = new DashboardCriteria().region(case1.getResponsibleRegion())
@@ -111,8 +108,8 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 		assertNull(resultMap.getOrDefault(PathogenTestResultType.POSITIVE, null));
 
 		// one pending sample with in one case
-		Facility lab = creator.createFacility("facility", rdcf.region, rdcf.district, rdcf.community);
-		creator.createSample(case1.toReference(), user, lab);
+		FacilityDto lab = creator.createFacility("lab", rdcf.region, rdcf.district, rdcf.community);
+		creator.createSample(case1.toReference(), user.toReference(), lab.toReference());
 
 		resultMap = dashboardFacade.getTestResultCountByResultType(dashboardCriteria);
 		assertEquals(new Long(1), resultMap.values().stream().collect(Collectors.summingLong(Long::longValue)));
@@ -122,7 +119,7 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 		assertNull(resultMap.getOrDefault(PathogenTestResultType.POSITIVE, null));
 
 		// one pending sample in each of two cases
-		creator.createSample(case2.toReference(), user, lab);
+		creator.createSample(case2.toReference(), user.toReference(), lab.toReference());
 
 		resultMap = dashboardFacade.getTestResultCountByResultType(dashboardCriteria);
 		assertEquals(new Long(2), resultMap.values().stream().collect(Collectors.summingLong(Long::longValue)));
@@ -133,7 +130,7 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 
 		// one pending sample in each of two cases
 		// and one positive sample in one of the two cases
-		SampleDto sample = creator.createSample(case1.toReference(), user, lab);
+		SampleDto sample = creator.createSample(case1.toReference(), user.toReference(), lab.toReference());
 		sample.setPathogenTestResult(PathogenTestResultType.POSITIVE);
 		getSampleFacade().saveSample(sample);
 
@@ -148,14 +145,9 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testDashboardEventListCreation() {
 
-		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(
-			rdcf.region.getUuid(),
-			rdcf.district.getUuid(),
-			rdcf.facility.getUuid(),
-			"Surv",
-			"Sup",
-			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
+
 		EventDto event = creator.createEvent(
 			EventStatus.SIGNAL,
 			EventInvestigationStatus.PENDING,
@@ -187,9 +179,9 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 
 		Date referenceDate = new Date();
 
-		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		CommunityDto community2 = creator.createCommunity("Community2", rdcf.district);
-		TestDataCreator.RDCF rdcf2 = new TestDataCreator.RDCF(
+		RDCF rdcf2 = new RDCF(
 			rdcf.region,
 			rdcf.district,
 			community2.toReference(),
@@ -261,8 +253,8 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetCasesForDashboardPerPerson() {
 
-		TestDataCreator.RDCFEntities rdcf = creator.createRDCFEntities();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createNationalUser();
 
 		PersonDto undefinedPerson = creator.createPerson();
 		CaseDataDto caze = creator.createCase(
@@ -301,11 +293,7 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(6, dashboardCaseDtos.get(PresentCondition.UNKNOWN).intValue());
 	}
 
-	private void createCasesForPersonWithCondition(
-		PresentCondition presentCondition,
-		UserReferenceDto userReferenceDto,
-		TestDataCreator.RDCFEntities rdcf,
-		int nrOfCases) {
+	private void createCasesForPersonWithCondition(PresentCondition presentCondition, UserReferenceDto userReferenceDto, RDCF rdcf, int nrOfCases) {
 		PersonDto personDto = creator.createPerson("James Smith", presentCondition.name(), p -> {
 			p.setPresentCondition(presentCondition);
 		});

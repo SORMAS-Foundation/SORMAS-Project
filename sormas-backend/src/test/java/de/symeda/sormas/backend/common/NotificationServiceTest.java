@@ -184,7 +184,7 @@ public class NotificationServiceTest extends AbstractBeanTest {
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 
-		UserDto survSup = creator.createUser(rdcf, "Surv", "Sup", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		UserDto survSup = creator.createSurveillanceSupervisor(rdcf);
 		User survSupUser = getEagerUser(survSup.getUuid());
 
 		Mockito.when(configurationFacade.isFeatureEnabled(FeatureType.TASK_NOTIFICATIONS)).thenReturn(false);

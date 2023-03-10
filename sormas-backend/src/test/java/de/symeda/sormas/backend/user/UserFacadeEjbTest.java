@@ -291,8 +291,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 
 		RDCF rdcf = creator.createRDCF();
 
-		UserDto generalSurveillanceOfficer =
-			creator.createUser(rdcf, "General ", "SURVEILLANCE_OFFICER", creator.getUserRoleReference(SURVEILLANCE_OFFICER));
+		UserDto generalSurveillanceOfficer = creator.createSurveillanceOfficer(rdcf);
 		UserDto limitedSurveillanceOfficer =
 			creator.createUser(rdcf, "Limited Dengue", "SURVEILLANCE_OFFICER", Disease.DENGUE, creator.getUserRoleReference(SURVEILLANCE_OFFICER));
 
@@ -306,17 +305,15 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetUserRefsByDistrictsForResponsibleSurveillanceOfficer() {
-		RDCF rdcfDefault = creator.createRDCF();
+		RDCF rdcf = creator.createRDCF();
 		RDCF rdcfOther = creator.createRDCF("otherRegion", "oderDistrict", "otherCommunity", "otherFacility");
 
-		UserDto surveilanceOfficerDefault =
-			creator.createUser(rdcfDefault, "Surveillance", "Officer", creator.getUserRoleReference(SURVEILLANCE_OFFICER));
-		UserDto surveilanceSupervisorDefault =
-			creator.createUser(rdcfDefault, "Surveillance", "Supervisor", creator.getUserRoleReference(SURVEILLANCE_SUPERVISOR));
-		UserDto adminSupervisorDefault = creator.createUser(rdcfDefault, "Admin", "Supervisor", creator.getUserRoleReference(ADMIN_SUPERVISOR));
+		UserDto surveilanceOfficerDefault = creator.createSurveillanceOfficer(rdcf);
+		UserDto surveilanceSupervisorDefault = creator.createSurveillanceSupervisor(rdcf);
+		UserDto adminSupervisorDefault = creator.createUser(rdcf, "Admin", "Supervisor", creator.getUserRoleReference(ADMIN_SUPERVISOR));
 		UserDto adminSupervisorOther = creator.createUser(rdcfOther, "Admin", "Supervisor Other", creator.getUserRoleReference(ADMIN_SUPERVISOR));
 
-		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUserRefsByDistricts(Arrays.asList(rdcfDefault.district), Disease.CORONAVIRUS);
+		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUserRefsByDistricts(Arrays.asList(rdcf.district), Disease.CORONAVIRUS);
 		assertNotNull(userReferenceDtos);
 		assertEquals(3, userReferenceDtos.size());
 		List<String> userReferenceUUIDs = userReferenceDtos.stream().map(u -> u.getUuid()).collect(Collectors.toList());
@@ -331,8 +328,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 
 		RDCF rdcf = creator.createRDCF();
 
-		UserDto generalSurveillanceOfficer =
-			creator.createUser(rdcf, "General ", "SURVEILLANCE_OFFICER", creator.getUserRoleReference(SURVEILLANCE_OFFICER)); // has TRAVEL_ENTRY_MANAGEMENT_ACCESS, but not the EXTERNAL_MESSAGES right
+		UserDto generalSurveillanceOfficer = creator.createSurveillanceOfficer(rdcf); // has TRAVEL_ENTRY_MANAGEMENT_ACCESS, but not the EXTERNAL_MESSAGES right
 		UserDto limitedSurveillanceOfficer =
 			creator.createUser(rdcf, "Limited Dengue", "SURVEILLANCE_OFFICER", Disease.DENGUE, creator.getUserRoleReference(SURVEILLANCE_OFFICER)); // has TRAVEL_ENTRY_MANAGEMENT_ACCESS, but not the EXTERNAL_MESSAGES right
 
@@ -391,8 +387,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 
 		RDCF rdcf = creator.createRDCF();
 
-		UserDto generalSurveillanceOfficer =
-			creator.createUser(rdcf, "General ", "SURVEILLANCE_OFFICER", creator.getUserRoleReference(SURVEILLANCE_OFFICER)); // has TRAVEL_ENTRY_MANAGEMENT_ACCESS
+		UserDto generalSurveillanceOfficer = creator.createSurveillanceOfficer(rdcf); // has TRAVEL_ENTRY_MANAGEMENT_ACCESS
 		UserDto limitedSurveillanceOfficer =
 			creator.createUser(rdcf, "Limited Dengue", "SURVEILLANCE_OFFICER", Disease.DENGUE, creator.getUserRoleReference(SURVEILLANCE_OFFICER)); // has TRAVEL_ENTRY_MANAGEMENT_ACCESS
 		UserDto generalRestUser = creator.createUser(rdcf, "REST", "USER", creator.getUserRoleReference(REST_EXTERNAL_VISITS_USER)); // does not have TRAVEL_ENTRY_MANAGEMENT_ACCESS

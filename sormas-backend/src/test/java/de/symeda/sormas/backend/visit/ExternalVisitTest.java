@@ -57,7 +57,7 @@ import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.AbstractBeanTest;
-import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
@@ -72,17 +72,14 @@ public class ExternalVisitTest extends AbstractBeanTest {
 
 	private UserDto externalVisitsUser;
 	private UserDto nationalUser;
-	private TestDataCreator.RDCF rdcf;
-	private TestDataCreator.RDCFEntities rdcfEntities;
+	private RDCF rdcf;
 
 	public void init() {
 		super.init();
 
-		rdcfEntities = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		rdcf = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1");
-
-		externalVisitsUser = creator.createUser(rdcfEntities, creator.getUserRoleReference(DefaultUserRole.REST_EXTERNAL_VISITS_USER));
-		nationalUser = creator.createUser(rdcfEntities, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		rdcf = creator.createRDCF();
+		externalVisitsUser = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.REST_EXTERNAL_VISITS_USER));
+		nationalUser = creator.createNationalUser();
 	}
 
 	@Test
@@ -383,9 +380,9 @@ public class ExternalVisitTest extends AbstractBeanTest {
 		creator.createPerson(); // Person without contact
 		final PersonDto person1 = creator.createPerson();
 		final PersonDto person2 = creator.createPerson();
-		final CaseDataDto case11 = creator.createCase(externalVisitsUser.toReference(), person1.toReference(), rdcfEntities);
-		final CaseDataDto case12 = creator.createCase(externalVisitsUser.toReference(), person1.toReference(), rdcfEntities);
-		final CaseDataDto case2 = creator.createCase(externalVisitsUser.toReference(), person2.toReference(), rdcfEntities);
+		final CaseDataDto case11 = creator.createCase(externalVisitsUser.toReference(), person1.toReference(), rdcf);
+		final CaseDataDto case12 = creator.createCase(externalVisitsUser.toReference(), person1.toReference(), rdcf);
+		final CaseDataDto case2 = creator.createCase(externalVisitsUser.toReference(), person2.toReference(), rdcf);
 
 		Date now = new Date();
 		case11.getSymptoms().setOnsetDate(DateHelper.subtractDays(now, 41));
@@ -436,11 +433,11 @@ public class ExternalVisitTest extends AbstractBeanTest {
 		final ContactDto contact2 = creator.createContact(externalVisitsUser.toReference(), person2.toReference(), DateHelper.subtractDays(now, 22));
 		final ContactDto contact3 = creator.createContact(externalVisitsUser.toReference(), person4.toReference());
 		final ContactDto contact4 = creator.createContact(externalVisitsUser.toReference(), person4.toReference(), DateHelper.subtractDays(now, 21));
-		final CaseDataDto case1 = creator.createCase(externalVisitsUser.toReference(), person1.toReference(), rdcfEntities);
-		final CaseDataDto case2 = creator.createCase(externalVisitsUser.toReference(), person2.toReference(), rdcfEntities);
-		final CaseDataDto case3 = creator.createCase(externalVisitsUser.toReference(), person2.toReference(), rdcfEntities);
-		final CaseDataDto case4 = creator.createCase(externalVisitsUser.toReference(), person3.toReference(), rdcfEntities);
-		final CaseDataDto case5 = creator.createCase(externalVisitsUser.toReference(), person3.toReference(), rdcfEntities);
+		final CaseDataDto case1 = creator.createCase(externalVisitsUser.toReference(), person1.toReference(), rdcf);
+		final CaseDataDto case2 = creator.createCase(externalVisitsUser.toReference(), person2.toReference(), rdcf);
+		final CaseDataDto case3 = creator.createCase(externalVisitsUser.toReference(), person2.toReference(), rdcf);
+		final CaseDataDto case4 = creator.createCase(externalVisitsUser.toReference(), person3.toReference(), rdcf);
+		final CaseDataDto case5 = creator.createCase(externalVisitsUser.toReference(), person3.toReference(), rdcf);
 
 		contact1.setOverwriteFollowUpUntil(true);
 		contact2.setOverwriteFollowUpUntil(true);

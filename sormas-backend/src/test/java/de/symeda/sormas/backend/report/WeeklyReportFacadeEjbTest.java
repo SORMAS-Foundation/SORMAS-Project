@@ -52,7 +52,7 @@ public class WeeklyReportFacadeEjbTest extends AbstractBeanTest {
 	@BeforeEach
 	public void setupData() {
 
-		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		RDCFEntities rdcf = creator.createRDCFEntities();
 		officer = creator.createUser(
 			rdcf.region.getUuid(),
 			rdcf.district.getUuid(),

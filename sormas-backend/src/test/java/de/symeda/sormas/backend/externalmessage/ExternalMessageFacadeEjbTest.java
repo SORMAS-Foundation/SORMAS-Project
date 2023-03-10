@@ -39,7 +39,6 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageIndexDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -116,7 +115,7 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testExistsLabMessageForEntityCase() {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createNationalUser();
 		PersonDto person = creator.createPerson();
 		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
 
@@ -142,7 +141,7 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testExistsLabMessageForEntityContact() {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createNationalUser();
 		PersonDto person = creator.createPerson();
 		ContactDto contact = creator.createContact(user.toReference(), person.toReference());
 
@@ -168,7 +167,7 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testExistsLabMessageForEntityEventParticipant() {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createNationalUser();
 		PersonDto person = creator.createPerson();
 		EventDto event = creator.createEvent(user.toReference());
 		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, user.toReference());
@@ -195,7 +194,7 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testCountAndIndexListDoesNotReturnMessagesLinkedToDeletedEntities() {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createNationalUser();
 		PersonDto person = creator.createPerson();
 
 		CaseDataDto externalMessageCase = creator.createCase(user.toReference(), person.toReference(), rdcf);

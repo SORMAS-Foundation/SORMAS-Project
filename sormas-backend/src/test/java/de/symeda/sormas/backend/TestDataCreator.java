@@ -131,7 +131,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.PasswordHelper;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
@@ -193,23 +192,44 @@ public class TestDataCreator {
 		return userRoleMap.get(userRole);
 	}
 
-	public UserDto createTestUser() {
+	public UserDto createNationalUser() {
+		return createUser("", "", "", "Nat", "Usr", getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+	}
 
-		User user = new User();
-		user.setUuid(DataHelper.createUuid());
-		user.setFirstName("ad");
-		user.setLastName("min");
-		user.setUserName("admin");
+	public UserDto createSurveillanceSupervisor(RDCF rdcf) {
+		if (rdcf == null) {
+			rdcf = createRDCF("Region", "District", "Community", "Facility");
+		}
 
-		String password = PasswordHelper.createPass(12);
-		user.setSeed(PasswordHelper.createPass(16));
-		user.setPassword(PasswordHelper.encodePassword(password, user.getSeed()));
+		return createUser(rdcf.region.getUuid(), null, null, "Surv", "Sup", getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+	}
 
-		user.setUserRoles(new HashSet<>(Arrays.asList(getUserRole(DefaultUserRole.ADMIN), getUserRole(DefaultUserRole.NATIONAL_USER))));
+	public UserDto createSurveillanceOfficer(RDCF rdcf) {
+		if (rdcf == null) {
+			rdcf = createRDCF("Region", "District", "Community", "Facility");
+		}
 
-		beanTest.getUserService().persist(user);
+		return createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Off",
+			getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+	}
 
-		return beanTest.getUserFacade().getByUuid(user.getUuid());
+	public UserDto createContactOfficer(RDCF rdcf) {
+		if (rdcf == null) {
+			rdcf = createRDCF("Region", "District", "Community", "Facility");
+		}
+
+		return createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Cont",
+			"Off",
+			getUserRoleReference(DefaultUserRole.CONTACT_OFFICER));
 	}
 
 	public UserDto createUser(RDCF rdcf, UserRoleReferenceDto userRole, Consumer<UserDto> customConfig) {
@@ -229,16 +249,6 @@ public class TestDataCreator {
 		}
 
 		return beanTest.getUserFacade().saveUser(user, false);
-	}
-
-	public UserDto createUser(RDCFEntities rdcf, UserRoleReferenceDto... roles) {
-		return createUser(
-			rdcf.region.getUuid(),
-			rdcf.district.getUuid(),
-			rdcf.facility.getUuid(),
-			roles.length > 0 ? roles[0].getCaption() : "First",
-			"User",
-			roles);
 	}
 
 	public UserDto createUser(RDCF rdcf, UserRoleReferenceDto... roles) {
@@ -330,17 +340,6 @@ public class TestDataCreator {
 		user.setCommunity(beanTest.getCommunityFacade().getReferenceByUuid(communityUuid));
 		user.setHealthFacility(beanTest.getFacilityFacade().getReferenceByUuid(facilityUuid));
 		return beanTest.getUserFacade().saveUser(user, false);
-	}
-
-	public UserReferenceDto createUserRef(
-		String regionUuid,
-		String districtUuid,
-		String communityUuid,
-		String facilityUuid,
-		String firstName,
-		String lastName,
-		UserRoleReferenceDto... roles) {
-		return createUser(regionUuid, districtUuid, communityUuid, facilityUuid, firstName, lastName, roles).toReference();
 	}
 
 	public PersonDto createPerson() {
@@ -471,16 +470,10 @@ public class TestDataCreator {
 
 	public CaseDataDto createUnclassifiedCase(Disease disease) {
 
-		RDCFEntities rdcf = createRDCFEntities("Region", "District", "Community", "Facility");
+		RDCF rdcf = createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = beanTest.getUserFacade().getByUserName("SurvSup");
 		if (user == null) {
-			user = createUser(
-				rdcf.region.getUuid(),
-				rdcf.district.getUuid(),
-				rdcf.facility.getUuid(),
-				"Surv",
-				"Sup",
-				getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			user = createSurveillanceSupervisor(rdcf);
 		}
 
 		PersonDto cazePerson = createPerson("Case", "Person", Sex.UNKNOWN);
@@ -492,10 +485,6 @@ public class TestDataCreator {
 			InvestigationStatus.PENDING,
 			new Date(),
 			rdcf);
-	}
-
-	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto person, RDCFEntities rdcf) {
-		return createCase(user, person, Disease.EVD, CaseClassification.SUSPECT, InvestigationStatus.PENDING, new Date(), rdcf);
 	}
 
 	public CaseDataDto createCase(UserReferenceDto user, RDCF rdcf, Consumer<CaseDataDto> setCustomFields) {
@@ -516,33 +505,6 @@ public class TestDataCreator {
 
 	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto person, RDCF rdcf, Consumer<CaseDataDto> setCustomFields) {
 		return createCase(user, person, Disease.EVD, CaseClassification.SUSPECT, InvestigationStatus.PENDING, new Date(), rdcf, setCustomFields);
-	}
-
-	public CaseDataDto createCase(
-		UserReferenceDto user,
-		PersonReferenceDto cazePerson,
-		Disease disease,
-		CaseClassification caseClassification,
-		InvestigationStatus investigationStatus,
-		Date reportAndOnsetDate,
-		RDCFEntities rdcf) {
-
-		return createCase(user, cazePerson, disease, caseClassification, investigationStatus, reportAndOnsetDate, new RDCF(rdcf));
-	}
-
-	public CaseDataDto createCase(
-		UserReferenceDto user,
-		PersonReferenceDto cazePerson,
-		Disease disease,
-		CaseClassification caseClassification,
-		InvestigationStatus investigationStatus,
-		Date reportAndOnsetDate,
-		RDCFEntities rdcf,
-		String healthFacilityDetails) {
-
-		final CaseDataDto aCase = createCase(user, cazePerson, disease, caseClassification, investigationStatus, reportAndOnsetDate, new RDCF(rdcf));
-		aCase.setHealthFacilityDetails(healthFacilityDetails);
-		return beanTest.getCaseFacade().save(aCase);
 	}
 
 	public CaseDataDto createCase(
@@ -867,6 +829,10 @@ public class TestDataCreator {
 
 	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson, CaseDataDto caze) {
 		return createContact(reportingUser, null, contactPerson, caze, new Date(), null, null, null);
+	}
+
+	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson, CaseDataDto caze, RDCF rdcf) {
+		return createContact(reportingUser, null, contactPerson, caze, new Date(), null, null, rdcf);
 	}
 
 	public ContactDto createContact(
@@ -1426,7 +1392,7 @@ public class TestDataCreator {
 		PathogenTestType testType,
 		Disease testedDisease,
 		Date testDateTime,
-		Facility lab,
+		FacilityReferenceDto lab,
 		UserReferenceDto labUser,
 		PathogenTestResultType testResult,
 		String testResultText,
@@ -1497,7 +1463,7 @@ public class TestDataCreator {
 	}
 
 	public PathogenTestDto createPathogenTest(SampleReferenceDto sample, CaseDataDto associatedCase) {
-		RDCFEntities rdcf = createRDCFEntities("LabRegion", "LabDistrict", "LabCommunity", "LabFacilty");
+		RDCF rdcf = createRDCF("LabRegion", "LabDistrict", "LabCommunity", "LabFacilty");
 
 		return createPathogenTest(
 			sample,
@@ -1517,7 +1483,7 @@ public class TestDataCreator {
 		PathogenTestType testType,
 		PathogenTestResultType resultType) {
 
-		RDCFEntities rdcf = createRDCFEntities("Region", "District", "Community", "Facility");
+		RDCF rdcf = createRDCF("Region", "District", "Community", "Facility");
 		SampleDto sample = createSample(
 			new CaseReferenceDto(associatedCase.getUuid()),
 			new Date(),
@@ -1537,7 +1503,7 @@ public class TestDataCreator {
 			true);
 	}
 
-	public PathogenTestDto buildPathogenTestDto(RDCFEntities rdcf, UserDto user, SampleDto sample, Disease disease, Date testDateTime) {
+	public PathogenTestDto buildPathogenTestDto(RDCF rdcf, UserDto user, SampleDto sample, Disease disease, Date testDateTime) {
 
 		final PathogenTestDto newPathogenTest = new PathogenTestDto();
 

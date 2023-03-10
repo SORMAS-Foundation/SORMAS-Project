@@ -16,9 +16,9 @@
 package de.symeda.sormas.backend.event;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -66,7 +66,6 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.criteria.ExternalShareDateType;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
-import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 
@@ -99,14 +98,8 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 
 		Date since = new Date();
 
-		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(
-			rdcf.region.getUuid(),
-			rdcf.district.getUuid(),
-			rdcf.facility.getUuid(),
-			"Surv",
-			"Sup",
-			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
 		UserDto admin = getUserFacade().getByUserName("admin");
 		EventDto event = creator.createEvent(
 			EventStatus.SIGNAL,
@@ -153,14 +146,8 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testEventUpdate() {
 
-		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(
-			rdcf.region.getUuid(),
-			rdcf.district.getUuid(),
-			rdcf.facility.getUuid(),
-			"Surv",
-			"Sup",
-			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
 		UserDto admin = getUserFacade().getByUserName("admin");
 		EventDto event = creator.createEvent(
 			EventStatus.SIGNAL,
@@ -191,14 +178,8 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetIndexList() {
 
-		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(
-			rdcf.region.getUuid(),
-			rdcf.district.getUuid(),
-			rdcf.facility.getUuid(),
-			"Surv",
-			"Sup",
-			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
 		creator.createEvent(
 			EventStatus.SIGNAL,
 			EventInvestigationStatus.PENDING,
@@ -251,7 +232,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 	public void testGetExportList() {
 
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
 
 		creator.createEvent(
 			EventStatus.SIGNAL,
@@ -279,14 +260,8 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testArchiveOrDearchiveEvent() {
-		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(
-			rdcf.region.getUuid(),
-			rdcf.district.getUuid(),
-			rdcf.facility.getUuid(),
-			"Surv",
-			"Sup",
-			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
 		EventDto eventDto = creator.createEvent(
 			EventStatus.SIGNAL,
 			EventInvestigationStatus.PENDING,
@@ -338,9 +313,8 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testArchiveAllArchivableEvents() {
 
-		RDCFEntities rdcfEntities = creator.createRDCFEntities();
 		RDCF rdcf = creator.createRDCF();
-		UserReferenceDto user = creator.createUser(rdcfEntities).toReference();
+		UserReferenceDto user = creator.createUser(rdcf).toReference();
 
 		// One archived event
 		EventDto eventDto1 = creator.createEvent(
@@ -400,7 +374,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		EventDto event = new EventDto();
 		event.setEventStatus(EventStatus.EVENT);
 		event.setReportDateTime(new Date());
-		event.setReportingUser(creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference());
+		event.setReportingUser(creator.createSurveillanceOfficer(rdcf).toReference());
 		event.setEventTitle("Test event");
 		LocationDto eventLocation = LocationDto.build();
 		eventLocation.setRegion(rdcf.region);
@@ -409,14 +383,14 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		event.setEventInvestigationStatus(EventInvestigationStatus.PENDING);
 		EventDto savedEvent = getEventFacade().save(event);
 
-		MatcherAssert.assertThat(savedEvent.getUuid(), not(isEmptyOrNullString()));
-		MatcherAssert.assertThat(savedEvent.getEventLocation().getUuid(), not(isEmptyOrNullString()));
+		MatcherAssert.assertThat(savedEvent.getUuid(), not(emptyOrNullString()));
+		MatcherAssert.assertThat(savedEvent.getEventLocation().getUuid(), not(emptyOrNullString()));
 	}
 
 	@Test
 	public void testEventCriteriaSharedWithReportingTool() {
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createNationalUser();
 
 		EventDto sharedEvent = creator.createEvent(user.toReference());
 		ExternalShareInfo shareInfo = new ExternalShareInfo();
@@ -445,7 +419,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testEventCriteriaChangedSinceLastShareWithReportingTool() {
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createNationalUser();
 
 		EventDto sharedEvent = creator.createEvent(user.toReference());
 		ExternalShareInfo shareInfo = new ExternalShareInfo();
@@ -472,7 +446,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testEventCriteriaLastShareWithReportingToolBetweenDates() {
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createNationalUser();
 
 		EventDto sharedEvent = creator.createEvent(user.toReference());
 		ExternalShareInfo shareInfoMarch = new ExternalShareInfo();
@@ -528,7 +502,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetSubordinateEventUuids() {
 		RDCF rdcf = creator.createRDCF();
-		UserDto reportingUser = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+		UserDto reportingUser = creator.createSurveillanceOfficer(rdcf);
 
 		EventDto event1 = creator.createEvent(reportingUser.toReference());
 		EventDto event2 = creator.createEvent(reportingUser.toReference());
@@ -560,7 +534,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 	public void testGetEventUsersWithoutUsesLimitedToOthersDiseses() {
 		RDCF rdcf = creator.createRDCF();
 		useNationalAdminLogin();
-		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto userDto = creator.createNationalUser();
 		EventDto event = creator.createEvent(userDto.toReference(), Disease.CORONAVIRUS);
 
 		UserDto limitedCovidNationalUser = creator.createUser(

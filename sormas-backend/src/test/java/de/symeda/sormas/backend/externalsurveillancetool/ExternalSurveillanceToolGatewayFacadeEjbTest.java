@@ -129,7 +129,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 	@Test
 	public void testSendingCasesOneCaseOk() throws ExternalSurveillanceToolException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserReferenceDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		UserReferenceDto user = creator.createSurveillanceOfficer(rdcf).toReference();
 		CaseDataDto case1 = creator.createCase(user, rdcf, null);
 
 		stubFor(
@@ -146,7 +146,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 	@Test
 	public void testSendingCasesOk() throws ExternalSurveillanceToolException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserReferenceDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		UserReferenceDto user = creator.createSurveillanceOfficer(rdcf).toReference();
 		CaseDataDto case1 = creator.createCase(user, rdcf, null);
 		CaseDataDto case2 = creator.createCase(user, rdcf, null);
 
@@ -401,7 +401,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 	@Test
 	public void testIsSharedCase() throws ExternalSurveillanceToolException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserReferenceDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		UserReferenceDto user = creator.createSurveillanceOfficer(rdcf).toReference();
 		CaseDataDto case1 = creator.createCase(user, rdcf, null);
 		CaseDataDto case2 = creator.createCase(user, rdcf, null);
 
@@ -692,8 +692,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 
 	@Test
 	public void testShareCase_WithCaseNotAllowedToBeSharedWithReportingTool(WireMockRuntimeInfo wireMockRuntime) throws SormasToSormasException {
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
-		useSurveillanceOfficerLogin(rdcf);
+		UserReferenceDto officer = useSurveillanceOfficerLogin(rdcf).toReference();
 
 		PersonDto person = creator.createPerson();
 		CaseDataDto caze = creator.createCase(officer, rdcf, dto -> {
@@ -756,7 +755,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 	@Test
 	public void testGetCasesWithExternalToolFilters() throws ExternalSurveillanceToolException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserReferenceDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		UserReferenceDto user = creator.createSurveillanceOfficer(rdcf).toReference();
 		CaseDataDto sharedCase1 = creator.createCase(user, rdcf, null);
 		CaseDataDto sharedCase2 = creator.createCase(user, rdcf, null);
 		CaseDataDto case3 = creator.createCase(user, rdcf, null);

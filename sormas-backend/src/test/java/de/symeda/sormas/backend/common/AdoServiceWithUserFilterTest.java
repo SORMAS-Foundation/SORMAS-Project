@@ -20,7 +20,6 @@ import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -50,7 +49,7 @@ public class AdoServiceWithUserFilterTest extends AbstractBeanTest {
 		Date startDate = new Date();
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+		UserDto user = creator.createSurveillanceOfficer(rdcf);
 		loginWith(user);
 		PersonDto person = creator.createPerson();
 		CaseDataDto caze1 = creator.createCase(user.toReference(), person.toReference(), rdcf);

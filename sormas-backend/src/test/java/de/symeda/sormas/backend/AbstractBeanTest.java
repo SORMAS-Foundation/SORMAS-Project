@@ -21,6 +21,7 @@ import static org.mockito.Mockito.when;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -107,6 +108,8 @@ import de.symeda.sormas.api.travelentry.TravelEntryFacade;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.PasswordHelper;
 import de.symeda.sormas.api.vaccination.VaccinationFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.backend.action.ActionFacadeEjb;
@@ -251,7 +254,8 @@ import de.symeda.sormas.backend.visit.VisitService;
 public abstract class AbstractBeanTest {
 
 	protected final TestDataCreator creator = new TestDataCreator(this);
-	public static final String CONFIDENTIAL = "Confidential";
+
+	protected UserDto nationalAdmin;
 
 	@BeforeAll
 	public static void beforeAll() {
@@ -287,8 +291,7 @@ public abstract class AbstractBeanTest {
 			e.printStackTrace();
 		}
 
-		UserDto user = creator.createTestUser();
-		loginWith(user);
+		useNationalAdminLogin();
 
 		when(MockProducer.getSessionContext().isCallerInRole(any(String.class))).thenAnswer(invocationOnMock -> {
 			String role = invocationOnMock.getArgument(0);
@@ -784,38 +787,6 @@ public abstract class AbstractBeanTest {
 		return getBean(ReceivedSampleProcessor.class);
 	}
 
-	protected UserDto useSurveillanceOfficerLogin(TestDataCreator.RDCF rdcf) {
-		if (rdcf == null) {
-			rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		}
-
-		UserDto survOff = creator.createUser(
-			rdcf.region.getUuid(),
-			rdcf.district.getUuid(),
-			rdcf.facility.getUuid(),
-			"Surv",
-			"Off",
-			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
-		loginWith(survOff);
-		return survOff;
-	}
-
-	protected UserDto useCaseOfficerLogin(TestDataCreator.RDCF rdcf) {
-		if (rdcf == null) {
-			rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		}
-
-		UserDto caseOff = creator.createUser(
-			rdcf.region.getUuid(),
-			rdcf.district.getUuid(),
-			rdcf.facility.getUuid(),
-			"Case",
-			"Off",
-			creator.getUserRoleReference(DefaultUserRole.CASE_OFFICER));
-		loginWith(caseOff);
-		return caseOff;
-	}
-
 	public CampaignFormDataFacade getCampaignFormDataFacade() {
 		return getBean(CampaignFormDataFacadeEjbLocal.class);
 	}
@@ -828,29 +799,39 @@ public abstract class AbstractBeanTest {
 		return getBean(CampaignDiagramDefinitionFacadeEjb.CampaignDiagramDefinitionFacadeEjbLocal.class);
 	}
 
-	protected UserDto useNationalUserLogin() {
-		UserDto natUser = creator.createUser("", "", "", "Nat", "Usr", creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
-		loginWith(natUser);
-		return natUser;
-	}
-
-	protected UserDto useNationalAdminLogin() {
-		UserDto natUser = creator.createUser(
-			"",
-			"",
-			"",
-			"National",
-			"Admin",
-			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER),
-			creator.getUserRoleReference(DefaultUserRole.ADMIN));
-		loginWith(natUser);
-		return natUser;
-	}
-
-	protected void loginWith(UserDto user) {
+	protected UserDto loginWith(UserDto user) {
 		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName());
 		// load into cache, to work-around CurrentUserService.fetchUser @Transactional annotation not working in tests
 		getCurrentUserService().getCurrentUser();
+		return user;
+	}
+
+	protected UserDto useNationalUserLogin() {
+		return loginWith(creator.createNationalUser());
+	}
+
+	protected UserDto useNationalAdminLogin() {
+		if (nationalAdmin == null) {
+			// we don't use TestDataCreator.createUser here, because we first need any user to have the user right to access backend facades
+			User user = new User();
+			user.setUuid(DataHelper.createUuid());
+			user.setFirstName("ad");
+			user.setLastName("min");
+			user.setUserName("admin");
+			String password = PasswordHelper.createPass(12);
+			user.setSeed(PasswordHelper.createPass(16));
+			user.setPassword(PasswordHelper.encodePassword(password, user.getSeed()));
+			user.setUserRoles(
+				new HashSet<>(Arrays.asList(creator.getUserRole(DefaultUserRole.ADMIN), creator.getUserRole(DefaultUserRole.NATIONAL_USER))));
+
+			getUserService().persist(user);
+			nationalAdmin = getUserFacade().getByUuid(user.getUuid());
+		}
+		return loginWith(nationalAdmin);
+	}
+
+	protected UserDto useSurveillanceOfficerLogin(TestDataCreator.RDCF rdcf) {
+		return loginWith(creator.createSurveillanceOfficer(rdcf));
 	}
 
 	protected void useSystemUser() {
