@@ -53,7 +53,7 @@ public class KeycloakAdminConsoleSteps implements En {
         () -> {
           String KEYCLOAK_USERS_TAB =
               runningConfiguration.getEnvironmentUrlForMarket(locale)
-                  + "/keycloak/auth/admin/master/console/#/realms/SORMAS/users";
+                  + "/keycloak/admin/master/console/#/realms/SORMAS/users";
           webDriverHelpers.accessWebSite(KEYCLOAK_USERS_TAB);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(VIEW_ALL_USERS_BUTTON);
         });
