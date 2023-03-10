@@ -256,13 +256,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		HandlerCallback<EventParticipantDto> callback) {
 		Window window = VaadinUiUtil.createPopupWindow();
 
-		EventParticipantEditForm createForm = new EventParticipantEditForm(
-			event,
-			false,
-			true,
-			eventParticipant.getPerson().isPseudonymized(),
-			eventParticipant.getPerson().isInJurisdiction(),
-			false);
+		EventParticipantEditForm createForm = new EventParticipantEditForm(event, false, true);
 		createForm.setValue(eventParticipant);
 		final CommitDiscardWrapperComponent<EventParticipantEditForm> createComponent = new CommitDiscardWrapperComponent<>(
 			createForm,

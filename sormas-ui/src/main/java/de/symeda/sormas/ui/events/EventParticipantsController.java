@@ -22,6 +22,7 @@ import java.util.function.Consumer;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Label;
@@ -64,6 +65,13 @@ public class EventParticipantsController {
 
 	private final EventParticipantFacade eventParticipantFacade = FacadeProvider.getEventParticipantFacade();
 	private final PersonFacade personFacade = FacadeProvider.getPersonFacade();
+
+	public void registerViews(Navigator navigator) {
+
+		navigator.addView(EventParticipantsView.VIEW_NAME, EventParticipantsView.class);
+		navigator.addView(EventParticipantDataView.VIEW_NAME, EventParticipantDataView.class);
+		navigator.addView(EventParticipantPersonView.VIEW_NAME, EventParticipantPersonView.class);
+	}
 
 	public EventParticipantDto createEventParticipant(EventReferenceDto eventRef, Consumer<EventParticipantReferenceDto> doneConsumer) {
 		final EventParticipantDto eventParticipant = EventParticipantDto.build(eventRef, UserProvider.getCurrent().getUserReference());
@@ -203,18 +211,14 @@ public class EventParticipantsController {
 	}
 
 	public CommitDiscardWrapperComponent<EventParticipantEditForm> getEventParticipantDataEditComponent(String eventParticipantUuid) {
+
 		final EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantUuid);
 		final EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid(), false);
 		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getEventParticipantFacade().getAutomaticDeletionInfo(eventParticipantUuid);
 		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getEventParticipantFacade().getManuallyDeletionInfo(eventParticipantUuid);
 
-		final EventParticipantEditForm editForm = new EventParticipantEditForm(
-			event,
-			eventParticipant.isPseudonymized(),
-			eventParticipant.isInJurisdiction(),
-			eventParticipant.getPerson().isPseudonymized(),
-			eventParticipant.getPerson().isInJurisdiction(),
-			false);
+		final EventParticipantEditForm editForm =
+			new EventParticipantEditForm(event, eventParticipant.isPseudonymized(), eventParticipant.isInJurisdiction());
 		editForm.setValue(eventParticipant);
 		editForm.setWidth(100, Unit.PERCENTAGE);
 
