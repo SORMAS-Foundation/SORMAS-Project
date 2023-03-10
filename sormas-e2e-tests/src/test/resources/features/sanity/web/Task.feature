@@ -282,7 +282,7 @@ Feature: Tasks functionalities
     And I click on first edit Task
     Then I check the created task is correctly displayed on Edit task page
 
-  @tmsLink=SORDEV-13927 @env_main @testIt
+  @tmsLink=SORDEV-13927 @env_main
   Scenario: Test Manual archiving of tasks [2]
     Given I log in as a National User
     And I click on the Tasks button from navbar
