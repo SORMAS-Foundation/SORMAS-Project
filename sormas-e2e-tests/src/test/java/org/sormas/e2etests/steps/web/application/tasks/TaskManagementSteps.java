@@ -20,12 +20,19 @@ package org.sormas.e2etests.steps.web.application.tasks;
 
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.LEAVE_BULK_EDIT_MODE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.TOTAL_CASES_COUNTER;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_CASE_BUTTON;
+import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.CONFIRM_ARCHIVING_COMMUNITY_TEXT;
+import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.CONFIRM_ARCHIVING_YES_BUTTON;
+import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.CONFIRM_DEARCHIVING_COMMUNITY_TEXT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.NOTIFICATION_MESSAGE_POPUP;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.POPUP_YES_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.APPLY_FILTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BULK_ACTIONS_EVENT_DIRECTORY;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_STATUS_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.RESET_FILTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.ACTION_CANCEL_BUTTON;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.CONFIRM_BUTTON;
 import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.*;
 import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.*;
 
@@ -154,18 +161,6 @@ public class TaskManagementSteps implements En {
               GENERAL_SEARCH_INPUT, 50);
           webDriverHelpers.fillAndSubmitInWebElement(GENERAL_SEARCH_INPUT, lastCreatedCaseUUID);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
-
-          //                  By lastTaskEditButton =
-          //                          By.xpath(
-          //                                  String.format(
-          //                                          EDIT_BUTTON_XPATH_BY_TEXT,
-          // CreateNewTaskSteps.task.getCommentsOnTask()));
-          //
-          // webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(lastTaskEditButton,
-          // 20);
-          //                  webDriverHelpers.clickOnWebElementBySelector(lastTaskEditButton);
-          //                  webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-          //                          COMMENTS_ON_EXECUTION_TEXTAREA);
         });
 
     When(
@@ -631,6 +626,64 @@ public class TaskManagementSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(
               TaskManagementPage.getEditTaskButtonByNumber(taskNumber));
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+        });
+
+    When(
+        "I click on the Archive task button",
+        () -> {
+          webDriverHelpers.scrollToElement(ARCHIVE_CASE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ARCHIVE_CASE_BUTTON);
+        });
+
+    When(
+        "I click on No option in popup window",
+        () -> webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL_BUTTON));
+
+    And(
+        "^I click on yes in archive task popup window$",
+        () -> {
+          TimeUnit.SECONDS.sleep(2); // wait for popup to load
+          webDriverHelpers.isElementVisibleWithTimeout(CONFIRM_ARCHIVING_COMMUNITY_TEXT, 10);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CONFIRM_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
+        });
+
+    And(
+        "I apply {string} to combobox on Task Directory Page",
+        (String taskParameter) -> {
+          webDriverHelpers.selectFromCombobox(EVENT_STATUS_FILTER_COMBOBOX, taskParameter);
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "^I open last created task from Tasks Directory without click on show more filters$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              ASSIGNED_USER_FILTER_INPUT);
+          String assignedUser = CreateNewTaskSteps.task.getAssignedTo();
+          webDriverHelpers.fillInWebElement(ASSIGNED_USER_FILTER_INPUT, assignedUser);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
+          webDriverHelpers.clickOnWebElementBySelector(
+              getLastCreatedEditTaskButton(CreateNewTaskSteps.task.getCommentsOnExecution()));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
+        });
+
+    When(
+        "I click on De-Archive task button",
+        () -> {
+          webDriverHelpers.scrollToElement(ARCHIVE_CASE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ARCHIVE_CASE_BUTTON);
+        });
+
+    When(
+        "I click on yes in de-archive task popup window",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              CONFIRM_DEARCHIVING_COMMUNITY_TEXT);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_ARCHIVING_YES_BUTTON);
         });
   }
 
