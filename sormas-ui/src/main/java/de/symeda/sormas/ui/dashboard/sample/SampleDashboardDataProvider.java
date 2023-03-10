@@ -35,14 +35,15 @@ public class SampleDashboardDataProvider extends AbstractDashboardDataProvider<S
 
 	private Boolean withNoDisease;
 
-	private Map<PathogenTestResultType, Long> testResultCountByResultType;
+	private Map<PathogenTestResultType, Long> newCasesFinalLabResultCountsByResultType;
 	private Map<SamplePurpose, Long> testResultCountByPurpose;
 	private Map<SpecimenCondition, Long> testResultCountBySpecimenCondition;
 	private Map<SampleShipmentStatus, Long> testResultCountByShipmentStatus;
 
 	@Override
 	public void refreshData() {
-		testResultCountByResultType = FacadeProvider.getSampleDashboardFacade().getSampleCountsByResultType(buildDashboardCriteriaWithDates());
+		newCasesFinalLabResultCountsByResultType =
+			FacadeProvider.getSampleDashboardFacade().getSampleCountsByResultType(buildDashboardCriteriaWithDates());
 		testResultCountByPurpose = FacadeProvider.getSampleDashboardFacade().getSampleCountsByPurpose(buildDashboardCriteriaWithDates());
 		testResultCountBySpecimenCondition =
 			FacadeProvider.getSampleDashboardFacade().getSampleCountsBySpecimenCondition(buildDashboardCriteriaWithDates());
@@ -89,8 +90,8 @@ public class SampleDashboardDataProvider extends AbstractDashboardDataProvider<S
 		this.withNoDisease = withNoDisease;
 	}
 
-	public Map<PathogenTestResultType, Long> getTestResultCountByResultType() {
-		return testResultCountByResultType;
+	public Map<PathogenTestResultType, Long> getNewCasesFinalLabResultCountsByResultType() {
+		return newCasesFinalLabResultCountsByResultType;
 	}
 
 	public Map<SamplePurpose, Long> getTestResultCountByPurpose() {

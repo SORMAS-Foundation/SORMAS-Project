@@ -17,6 +17,8 @@ package de.symeda.sormas.ui.dashboard.sample;
 
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.dashboard.sample.SampleShipmentStatus;
 import de.symeda.sormas.api.i18n.Captions;
@@ -27,7 +29,8 @@ import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
 import de.symeda.sormas.ui.dashboard.DashboardType;
 import de.symeda.sormas.ui.dashboard.components.DashboardHeadingComponent;
 import de.symeda.sormas.ui.dashboard.sample.components.SampleCountTilesComponent;
-import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.TestResultsStatisticsComponent;
+import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.FinalLaboratoryResultsStatisticsComponent;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -43,6 +46,7 @@ public class SampleDashboardView extends AbstractDashboardView {
 
 	private final SampleDashboardDataProvider dataProvider;
 	private final TestResultsStatisticsComponent countsByResultType;
+	private final FinalLaboratoryResultsStatisticsComponent labResultsStatisticsComponent;
 	private final SampleCountTilesComponent<SamplePurpose> countsByPurpose;
 	private final SampleCountTilesComponent<SpecimenCondition> countsBySpecimenCondition;
 	private final SampleCountTilesComponent<SampleShipmentStatus> countsByShipmentStatus;
@@ -79,12 +83,20 @@ public class SampleDashboardView extends AbstractDashboardView {
 			new TestResultsStatisticsComponent(Captions.sampleDashboardAllSamples, null, Captions.sampleDashboardFinalLabResults, true);
 		countsByResultType.hideHeading();
 		sampleCountsLayout.addComponent(countsByResultType, LAB_RESULTS);
+		labResultsStatisticsComponent =
+				new FinalLaboratoryResultsStatisticsComponent(Captions.sampleDashboardAllSamples, null, Captions.sampleDashboardFinalLabResults, true);
+		VerticalLayout labResultStatisticsLayout = new VerticalLayout(warningMessage, labResultsStatisticsComponent);
+		labResultStatisticsLayout.setMargin(false);
+		labResultStatisticsLayout.setSpacing(false);
+		sampleCountsLayout.addComponent(labResultStatisticsLayout, LAB_RESULTS);
 
 		countsByPurpose =
 			new SampleCountTilesComponent<>(SamplePurpose.class, Captions.sampleDashboardSamplePurpose, this::getBackgroundStyleForPurpose, null);
 		countsByPurpose.setTitleStyleNames(CssStyles.H3, CssStyles.VSPACE_TOP_NONE);
 		countsByPurpose.setGroupLabelStyle(CssStyles.LABEL_LARGE);
 		sampleCountsLayout.addComponent(countsByPurpose, SAMPLE_PURPOSE);
+		Label warningMessage = new Label(I18nProperties.getString(Strings.sampleDashboardWarning));
+		warningMessage.addStyleNames(CssStyles.HSPACE_LEFT_2, CssStyles.VSPACE_TOP_2, CssStyles.LABEL_WARNING);
 
 		countsByShipmentStatus = new SampleCountTilesComponent<>(
 			SampleShipmentStatus.class,
@@ -113,7 +125,7 @@ public class SampleDashboardView extends AbstractDashboardView {
 
 		heading.updateTotalLabel(String.valueOf(dataProvider.getTestResultCountByResultType().values().stream().mapToLong(Long::longValue).sum()));
 
-		countsByResultType.update(dataProvider.getTestResultCountByResultType());
+		countsByResultType.update(dataProvider.getNewCasesFinalLabResultCountsByResultType());
 		countsByPurpose.update(dataProvider.getTestResultCountByPurpose());
 		countsBySpecimenCondition.update(dataProvider.getTestResultCountBySpecimenCondition());
 		countsByShipmentStatus.update(dataProvider.getTestResultCountByShipmentStatus());

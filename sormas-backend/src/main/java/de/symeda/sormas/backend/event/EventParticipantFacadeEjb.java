@@ -358,6 +358,7 @@ public class EventParticipantFacadeEjb
 	 * @param secondPersonUuid
 	 * @return
 	 */
+	@RightsAllowed(UserRight._PERSON_MERGE)
 	public List<EventParticipantSelectionDto> getEventParticipantsWithSameEvent(String firstPersonUuid, String secondPersonUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -389,7 +390,8 @@ public class EventParticipantFacadeEjb
 			cb.and(
 				isPersonParticipantInEvent(firstPersonUuid, eventRoot, cq, cb),
 				isPersonParticipantInEvent(secondPersonUuid, eventRoot, cq, cb),
-				cb.in(personJoin.get(Person.UUID)).value(Arrays.asList(firstPersonUuid, secondPersonUuid))));
+				cb.in(personJoin.get(Person.UUID)).value(Arrays.asList(firstPersonUuid, secondPersonUuid)),
+				cb.isFalse(eventParticipantJoin.get(EventParticipant.DELETED))));
 
 		List<EventParticipantSelectionDto> resultList = em.createQuery(cq).getResultList();
 
@@ -419,7 +421,11 @@ public class EventParticipantFacadeEjb
 		Join<EventParticipant, Person> personJoin = eventParticipantJoin.join(EventParticipant.PERSON, JoinType.INNER);
 
 		personSubquery.select(eventRoot.get(Event.UUID));
-		personSubquery.where(cb.and(cb.equal(personJoin.get(Person.UUID), personUuid), cb.equal(eventRoot.get(Event.UUID), event.get(Event.UUID))));
+		personSubquery.where(
+			cb.and(
+				cb.equal(personJoin.get(Person.UUID), personUuid),
+				cb.equal(eventRoot.get(Event.UUID), event.get(Event.UUID)),
+				cb.isFalse(eventParticipantJoin.get(EventParticipant.DELETED))));
 		return cb.exists(personSubquery);
 	}
 

@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.ui.dashboard.sample;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -109,7 +110,8 @@ public class SampleDashboardFilterLayout extends DashboardFilterLayout<SampleDas
 		ComboBox sampleMaterialFilter = ComboBoxHelper.createComboBoxV7();
 		sampleMaterialFilter.setWidth(200, Unit.PIXELS);
 		sampleMaterialFilter.setInputPrompt(I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_MATERIAL));
-		sampleMaterialFilter.addItems(SampleMaterial.values());
+		sampleMaterialFilter
+			.addItems(Stream.of(SampleMaterial.values()).sorted(Comparator.comparing(SampleMaterial::toString)).collect(Collectors.toList()));
 		sampleMaterialFilter.setValue(dashboardDataProvider.getSampleMaterial());
 
 		sampleMaterialFilter.addValueChangeListener(e -> {

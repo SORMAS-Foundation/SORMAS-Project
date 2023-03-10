@@ -870,7 +870,7 @@ public interface Captions {
 	String dashboardNew = "dashboardNew";
 	String dashboardNewCases = "dashboardNewCases";
 	String dashboardNewEvents = "dashboardNewEvents";
-	String dashboardNewTestResults = "dashboardNewTestResults";
+	String dashboardNewFinalLaboratoryResults = "dashboardNewFinalLaboratoryResults";
 	String dashboardNoPopulationData = "dashboardNoPopulationData";
 	String dashboardNormal = "dashboardNormal";
 	String dashboardNotACase = "dashboardNotACase";
@@ -2594,6 +2594,7 @@ public interface Captions {
 	String View_contacts_visits = "View.contacts.visits";
 	String View_dashboard_campaigns = "View.dashboard.campaigns";
 	String View_dashboard_contacts = "View.dashboard.contacts";
+	String View_dashboard_samples = "View.dashboard.samples";
 	String View_dashboard_surveillance = "View.dashboard.surveillance";
 	String View_events = "View.events";
 	String View_events_archive = "View.events.archive";

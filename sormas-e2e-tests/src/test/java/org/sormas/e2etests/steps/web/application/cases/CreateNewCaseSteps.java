@@ -86,6 +86,8 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.RESP
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.RESPONSIBLE_JURISDICTION_LABEL;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.RESPONSIBLE_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SELECT_EXISTING_CASE_DE;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SELECT_MATCHING_PERSON_CHECKBOX_DE;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SELECT_PERSON_WINDOW_CONFIRM_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SEX_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.START_DATA_IMPORT_BUTTON;
@@ -99,6 +101,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_C
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_CREATE_PERSON_POPUP_HEADER;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_CREATE_PERSON_TITLE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPUP_CONTENT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.SELECT_MATCHING_PERSON_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.FollowUpTabPage.CONTACT_PERSONS_PHONE_NUMBER;
 import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_DETAILED_COLUMN_HEADERS;
@@ -159,6 +162,7 @@ public class CreateNewCaseSteps implements En {
   private final SoftAssert softly;
   private static BaseSteps baseSteps;
   protected static Case oneCase;
+  public static Case oneCaseDe;
   public static final String userDirPath = System.getProperty("user.dir");
   public static List<String> casesUUID = new ArrayList<>();
   private static String currentUrl;
@@ -195,6 +199,9 @@ public class CreateNewCaseSteps implements En {
     oneCase = caseService.buildGeneratedCaseForOnePerson(firstName, lastName, dateOfBirth);
     oneCase = oneCase.toBuilder().disease("COVID-19").build();
 
+    oneCaseDe = caseService.buildGeneratedCaseForOnePersonDE(firstName, lastName, dateOfBirth);
+    oneCaseDe = oneCaseDe.toBuilder().disease("COVID-19").build();
+
     When(
         "I fill new case data for duplicates merge with for one person data",
         () -> {
@@ -210,6 +217,21 @@ public class CreateNewCaseSteps implements En {
           selectSex(oneCase.getSex());
           selectPresentConditionOfPerson(oneCase.getPresentConditionOfPerson());
           fillDateOfReport(oneCase.getDateOfReport(), Locale.ENGLISH);
+        });
+
+    When(
+        "I fill new case data for duplicates merge with for one person data for DE",
+        () -> {
+          selectCaseOrigin(oneCaseDe.getCaseOrigin());
+          fillDisease(oneCaseDe.getDisease());
+          selectResponsibleRegion(oneCaseDe.getResponsibleRegion());
+          selectResponsibleDistrict(oneCaseDe.getResponsibleDistrict());
+          selectPlaceOfStay(oneCaseDe.getPlaceOfStay());
+          fillFirstName(oneCaseDe.getFirstName());
+          fillLastName(oneCaseDe.getLastName());
+          fillDateOfBirth(oneCaseDe.getDateOfBirth(), Locale.GERMAN);
+          selectSex(oneCaseDe.getSex());
+          fillDateOfReport(oneCaseDe.getDateOfReport(), Locale.GERMAN);
         });
 
     When(
@@ -1358,13 +1380,41 @@ public class CreateNewCaseSteps implements En {
         });
     When(
         "I accept first case in Shares Page",
-        () -> webDriverHelpers.clickOnWebElementBySelector(ACCEPT_BUTTON));
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ACCEPT_BUTTON);
+          TimeUnit.SECONDS.sleep(2); // wait for results to reload
+        });
 
     And(
         "^I choose create new case in Pick or create entry form for DE$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_CASE_CONFIRMATION_BUTTON_DE);
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON_POPUP);
+        });
+
+    And(
+        "^I click on SAVE new case button and choose same person in duplicate detection$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_POPUP_HEADER, 5)) {
+            webDriverHelpers.clickOnWebElementBySelector(SELECT_MATCHING_PERSON_CHECKBOX);
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+            TimeUnit.SECONDS.sleep(1);
+          }
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_HEADER_DE, 5)) {
+            webDriverHelpers.clickOnWebElementBySelector(SELECT_MATCHING_PERSON_CHECKBOX_DE);
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+            TimeUnit.SECONDS.sleep(1);
+          }
+        });
+
+    And(
+        "^I choose same case in duplicate detection and save for DE$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(SELECT_EXISTING_CASE_DE);
+          webDriverHelpers.clickOnWebElementBySelector(SELECT_EXISTING_CASE_DE);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
         });
   }
 

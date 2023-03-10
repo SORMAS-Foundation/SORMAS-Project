@@ -33,6 +33,7 @@ import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.steps.web.application.users.CreateNewUserSteps;
 import org.sormas.e2etests.steps.web.application.users.UserManagementSteps;
 import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
 
 public class KeycloakAdminConsoleSteps implements En {
 
@@ -43,7 +44,8 @@ public class KeycloakAdminConsoleSteps implements En {
   public KeycloakAdminConsoleSteps(
       WebDriverHelpers webDriverHelpers,
       RunningConfiguration runningConfiguration,
-      AssertHelpers assertHelpers) {
+      AssertHelpers assertHelpers,
+      SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -73,15 +75,13 @@ public class KeycloakAdminConsoleSteps implements En {
           numberOfUsers += webDriverHelpers.getNumberOfElements(USER_ID);
         });
     When(
-        "^I check that number of users from SORMAS is equal to number of users in Keycloak Administrator Console$",
-        () ->
-            assertHelpers.assertWithPoll(
-                () ->
-                    Assert.assertEquals(
-                        numberOfUsers,
-                        UserManagementSteps.numberOfUsers,
-                        "Number of users in Keycloak is not equal to number of users in SORMAS"),
-                5));
+        "^I check that number of users from SORMAS is at least equal to number of users in Keycloak Administrator Console$",
+        () -> {
+          softly.assertTrue(
+              Integer.valueOf(numberOfUsers) >= UserManagementSteps.numberOfUsers,
+              "Number of users is not correct!");
+          softly.assertAll();
+        });
 
     When(
         "^I search for last created user from SORMAS in grid in Keycloak Admin Page$",

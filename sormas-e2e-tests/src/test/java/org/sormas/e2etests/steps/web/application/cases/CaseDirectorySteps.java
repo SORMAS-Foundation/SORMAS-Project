@@ -1339,6 +1339,27 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_POPUP);
           TimeUnit.SECONDS.sleep(2); // wait for reaction
         });
+
+    And(
+        "^I filter Cases by collected case uuid$",
+        () -> {
+          webDriverHelpers.fillAndSubmitInWebElement(
+              CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, CreateNewCaseSteps.casesUUID.get(0));
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    And(
+        "^I open the last created case via API and check if Edit case page is read only$",
+        () -> {
+          String LAST_CREATED_CASE_URL =
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
+                  + "/sormas-webdriver/#!cases/data/"
+                  + apiState.getCreatedCase().getUuid();
+          webDriverHelpers.accessWebSite(LAST_CREATED_CASE_URL);
+          webDriverHelpers.isElementGreyedOut(EditCasePage.UUID_INPUT);
+          webDriverHelpers.isElementGreyedOut(EditCasePage.SAVE_BUTTON);
+        });
   }
 
   private Number getRandomNumberForBirthDateDifferentThanCreated(Number created, int min, int max) {

@@ -1,4 +1,4 @@
-@UI @Sanity @Event @EventAction @UI
+@UI @Sanity @Event @EventAction
 Feature: Create event actions
 
 

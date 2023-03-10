@@ -33,7 +33,7 @@ Scenario: Check Travel Entry filters
   And I click "Nur in Fälle konvertierte Einreisen" checkbox on Travel Entry directory page
   And I apply "Abgeschlossene Einreisen" to aggregation combobox on Travel Entry directory page
   And I check that number of displayed Travel Entry results is 0
-  And I apply "Alle Einreisen" to aggregation combobox on Travel Entry directory page
+  And I apply "Alle aktiven und archivierten Einreisemeldungen" to aggregation combobox on Travel Entry directory page
   And I check that number of displayed Travel Entry results is 1
   And I apply "Aktive Einreisen" to aggregation combobox on Travel Entry directory page
   And I check that number of displayed Travel Entry results is 1

@@ -4,7 +4,7 @@
 Please consult this collection of solutions to common problems if you have any issues before issuing a support request or asking developers for help. Also note that this resource has only been added recently and will be extended in the future. If you have encountered (and fixed) any issue that you think would be worth adding to this list, please don't hesitate to let us know!
 
 - [Android Application FAQ](#android-application-faq)
-- [Identify Performance Problems in Production](#identify-performance-problems-in-production)
+- [Identify Performance Problems](#identify-performance-problems)
   - [Log Slow Database Queries](#log-slow-database-queries)
   - [Create Analysis of Slow Database Query (SORMAS-Docker)](#create-analysis-of-slow-database-query-sormas-docker)
   - [Log Slow Java Code](#log-slow-java-code)
@@ -32,7 +32,7 @@ Please consult this collection of solutions to common problems if you have any i
 4. Open it and search for de.symeda.sormas to identify the process id. E.g. `de.symeda.sormas.app/de.symeda.sormas.app.login.LoginActivity$_11109#0` -> 11109 is the id
 5. Search for all occurences of the process id to filter the file down to lines that contain the actual log of sormas
 
-## Identify Performance Problems in Production
+## Identify Performance Problems
 
 There are two main sources of bad performance in the application: 
 

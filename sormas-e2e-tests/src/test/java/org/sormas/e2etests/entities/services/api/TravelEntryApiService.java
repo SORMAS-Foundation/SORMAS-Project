@@ -96,7 +96,7 @@ public class TravelEntryApiService {
                 .build())
         .pointOfEntry(
             PointOfEntry.builder()
-                .uuid("XM7STG-3C4LCN-EEXEDE-LDJPKIMA")
+                .uuid("SORMAS-CONSTID-OTHERS-AIRPORTX")
                 .pointOfEntryType("AIRPORT")
                 .build())
         .pointOfEntryDetails("test details")

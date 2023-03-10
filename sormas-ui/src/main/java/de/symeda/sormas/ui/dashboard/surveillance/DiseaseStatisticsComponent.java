@@ -24,7 +24,7 @@ import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.CaseStatisticsComponent;
 import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.EventStatisticsComponent;
-import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.TestResultsStatisticsComponent;
+import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.FinalLaboratoryResultsStatisticsComponent;
 import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.summary.DiseaseSummaryComponent;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -37,7 +37,7 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 	private final CaseStatisticsComponent caseStatisticsComponent;
 	private final DiseaseSummaryComponent diseaseSummaryComponent;
 	private final EventStatisticsComponent eventStatisticsComponent;
-	private final TestResultsStatisticsComponent testResultsStatisticsComponent;
+	private final FinalLaboratoryResultsStatisticsComponent labResultsStatisticsComponent;
 
 	private static final String CASE_LOC = "case";
 	private static final String OUTBREAK_LOC = "outbreak";
@@ -58,19 +58,22 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		caseStatisticsComponent = new CaseStatisticsComponent();
 		diseaseSummaryComponent = new DiseaseSummaryComponent();
 		eventStatisticsComponent = new EventStatisticsComponent();
-		testResultsStatisticsComponent =
-			new TestResultsStatisticsComponent(Captions.dashboardNewTestResults, Descriptions.descDashboardNewTestResults, null, false);
+		labResultsStatisticsComponent = new FinalLaboratoryResultsStatisticsComponent(
+			Captions.dashboardNewFinalLaboratoryResults,
+			Descriptions.descDashboardNewFinalLaboratoryResults,
+			null,
+			false);
 
 		addComponent(caseStatisticsComponent, CASE_LOC);
 		addComponent(diseaseSummaryComponent, OUTBREAK_LOC);
 		addComponent(eventStatisticsComponent, EVENT_LOC);
-		addComponent(testResultsStatisticsComponent, SAMPLE_LOC);
+		addComponent(labResultsStatisticsComponent, SAMPLE_LOC);
 	}
 
 	public void refresh() {
 		caseStatisticsComponent.update(dashboardDataProvider.getCasesCountByClassification());
 		diseaseSummaryComponent.update(dashboardDataProvider);
 		eventStatisticsComponent.update(dashboardDataProvider.getEventCountByStatus());
-		testResultsStatisticsComponent.update(dashboardDataProvider.getTestResultCountByResultType());
+		labResultsStatisticsComponent.update(dashboardDataProvider.getNewCasesFinalLabResultCountByResultType());
 	}
 }

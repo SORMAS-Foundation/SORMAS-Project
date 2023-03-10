@@ -62,7 +62,7 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 	private Long outbreakDistrictCount = 0L;
 	private String lastReportedDistrict = "";
 	private List<DashboardEventDto> events = new ArrayList<>();
-	private Map<PathogenTestResultType, Long> testResultCountByResultType;
+	private Map<PathogenTestResultType, Long> newCasesFinalLabResultCountByResultType;
 	private Map<EventStatus, Long> eventCountByStatus;
 
 	private Long contactsInQuarantineCount = 0L;
@@ -195,7 +195,8 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 
 			// test results
 			if (getDashboardType() != DashboardType.CONTACTS) {
-				setTestResultCountByResultType(FacadeProvider.getDashboardFacade().getTestResultCountByResultType(caseDashboardCriteria));
+				setNewCasesFinalLabResultCountByResultType(
+					FacadeProvider.getDashboardFacade().getNewCasesFinalLabResultCountByResultType(caseDashboardCriteria));
 			}
 		}
 
@@ -262,12 +263,12 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 		this.eventCountByStatus = events;
 	}
 
-	public Map<PathogenTestResultType, Long> getTestResultCountByResultType() {
-		return testResultCountByResultType;
+	public Map<PathogenTestResultType, Long> getNewCasesFinalLabResultCountByResultType() {
+		return newCasesFinalLabResultCountByResultType;
 	}
 
-	public void setTestResultCountByResultType(Map<PathogenTestResultType, Long> testResults) {
-		this.testResultCountByResultType = testResults;
+	public void setNewCasesFinalLabResultCountByResultType(Map<PathogenTestResultType, Long> labResults) {
+		this.newCasesFinalLabResultCountByResultType = labResults;
 	}
 
 	public List<DashboardContactDto> getContacts() {
