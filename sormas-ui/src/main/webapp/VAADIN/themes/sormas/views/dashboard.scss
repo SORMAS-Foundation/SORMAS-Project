@@ -116,6 +116,16 @@
 		}
 	}
 
+	.background-specimen-condition-not-specified {
+		background-color: #8C45AD;
+		fill: #8C45AD;
+
+		&.background-darker {
+			background-color: #7E3E9C;
+			fill: #7E3E9C;
+		}
+	}
+
 	.background-shipment-status-shipped {
 		background-color: #44BEC7;
 		fill: #44BEC7;
@@ -141,15 +151,6 @@
 		&.background-darker {
 			background-color: #CBBE1D;
 			fill: #CBBE1D;
-		}
-	}
-	.background-shipment-status-not-received {
-		background-color: #8C45AD;
-		fill: #8C45AD;
-
-		&.background-darker {
-			background-color: #7E3E9C;
-			fill: #7E3E9C;
 		}
 	}
 }

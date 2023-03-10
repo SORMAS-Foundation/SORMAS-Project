@@ -81,8 +81,8 @@ public class SampleDashboardService {
 	private static Map<Pair<Boolean, Boolean>, SampleShipmentStatus> shipmentStatusMapping = new HashMap<>();
 
 	static {
-		shipmentStatusMapping.put(Pair.of(true, true), SampleShipmentStatus.SHIPPED);
-		shipmentStatusMapping.put(Pair.of(true, false), SampleShipmentStatus.NOT_RECEIVED);
+		shipmentStatusMapping.put(Pair.of(true, true), SampleShipmentStatus.RECEIVED);
+		shipmentStatusMapping.put(Pair.of(true, false), SampleShipmentStatus.SHIPPED);
 		shipmentStatusMapping.put(Pair.of(false, true), SampleShipmentStatus.RECEIVED);
 		shipmentStatusMapping.put(Pair.of(false, false), SampleShipmentStatus.NOT_SHIPPED);
 	}

@@ -21,8 +21,7 @@ public enum SampleShipmentStatus {
 
 	SHIPPED,
 	NOT_SHIPPED,
-	RECEIVED,
-	NOT_RECEIVED;
+	RECEIVED;
 
 	@Override
 	public String toString() {

@@ -305,11 +305,25 @@ public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 
 		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
 			s.setSamplePurpose(SamplePurpose.EXTERNAL);
+			s.setReceived(true);
 			s.setSpecimenCondition(SpecimenCondition.ADEQUATE);
 		});
 
 		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
 			s.setSamplePurpose(SamplePurpose.EXTERNAL);
+			s.setReceived(true);
+			s.setSpecimenCondition(SpecimenCondition.NOT_ADEQUATE);
+		});
+
+		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
+			s.setSamplePurpose(SamplePurpose.EXTERNAL);
+			s.setReceived(true);
+		});
+
+		// not received sample should not be counted
+		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
+			s.setSamplePurpose(SamplePurpose.EXTERNAL);
+			s.setReceived(false);
 			s.setSpecimenCondition(SpecimenCondition.NOT_ADEQUATE);
 		});
 
@@ -322,6 +336,7 @@ public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 
 		assertEquals(1, sampleCounts.get(SpecimenCondition.ADEQUATE));
 		assertEquals(1, sampleCounts.get(SpecimenCondition.NOT_ADEQUATE));
+		assertEquals(1, sampleCounts.get(null));
 	}
 
 	@Test
@@ -358,20 +373,20 @@ public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 		creator.createSample(caze.toReference(), user.toReference(), lab, s -> {
 			s.setSamplePurpose(SamplePurpose.EXTERNAL);
 			s.setShipped(true);
-			s.setReceived(true);
 		});
 
-		// not received sample
-		creator.createSample(caze.toReference(), user.toReference(), lab, s -> {
-			s.setSamplePurpose(SamplePurpose.EXTERNAL);
-			s.setShipped(true);
-		});
-
-		// not received sample
+		// shipped sample
 		creator.createSample(caze.toReference(), user.toReference(), lab, s -> {
 			s.setSamplePurpose(SamplePurpose.EXTERNAL);
 			s.setShipped(true);
 			s.setReceived(false);
+		});
+
+		// received sample
+		creator.createSample(caze.toReference(), user.toReference(), lab, s -> {
+			s.setSamplePurpose(SamplePurpose.EXTERNAL);
+			s.setShipped(true);
+			s.setReceived(true);
 		});
 
 		// received sample
@@ -389,8 +404,7 @@ public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 		Map<SampleShipmentStatus, Long> sampleCounts = getSampleDashboardFacade().getSampleCountsByShipmentStatus(new SampleDashboardCriteria());
 
 		assertEquals(4, sampleCounts.get(SampleShipmentStatus.NOT_SHIPPED));
-		assertEquals(1, sampleCounts.get(SampleShipmentStatus.SHIPPED));
-		assertEquals(2, sampleCounts.get(SampleShipmentStatus.NOT_RECEIVED));
-		assertEquals(1, sampleCounts.get(SampleShipmentStatus.RECEIVED));
+		assertEquals(2, sampleCounts.get(SampleShipmentStatus.SHIPPED));
+		assertEquals(2, sampleCounts.get(SampleShipmentStatus.RECEIVED));
 	}
 }

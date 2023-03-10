@@ -35,19 +35,19 @@ public class SampleDashboardDataProvider extends AbstractDashboardDataProvider<S
 
 	private Boolean withNoDisease;
 
-	private Map<PathogenTestResultType, Long> newCasesFinalLabResultCountsByResultType;
-	private Map<SamplePurpose, Long> testResultCountByPurpose;
-	private Map<SpecimenCondition, Long> testResultCountBySpecimenCondition;
-	private Map<SampleShipmentStatus, Long> testResultCountByShipmentStatus;
+	private Map<PathogenTestResultType, Long> sampleCountsByResultType;
+	private Map<SamplePurpose, Long> sampleCountsByPurpose;
+	private Map<SpecimenCondition, Long> sampleCountsBySpecimenCondition;
+	private Map<SampleShipmentStatus, Long> sampleCountsByShipmentStatus;
 
 	@Override
 	public void refreshData() {
-		newCasesFinalLabResultCountsByResultType =
+		sampleCountsByResultType =
 			FacadeProvider.getSampleDashboardFacade().getSampleCountsByResultType(buildDashboardCriteriaWithDates());
-		testResultCountByPurpose = FacadeProvider.getSampleDashboardFacade().getSampleCountsByPurpose(buildDashboardCriteriaWithDates());
-		testResultCountBySpecimenCondition =
+		sampleCountsByPurpose = FacadeProvider.getSampleDashboardFacade().getSampleCountsByPurpose(buildDashboardCriteriaWithDates());
+		sampleCountsBySpecimenCondition =
 			FacadeProvider.getSampleDashboardFacade().getSampleCountsBySpecimenCondition(buildDashboardCriteriaWithDates());
-		testResultCountByShipmentStatus =
+		sampleCountsByShipmentStatus =
 			FacadeProvider.getSampleDashboardFacade().getSampleCountsByShipmentStatus(buildDashboardCriteriaWithDates());
 	}
 
@@ -90,19 +90,19 @@ public class SampleDashboardDataProvider extends AbstractDashboardDataProvider<S
 		this.withNoDisease = withNoDisease;
 	}
 
-	public Map<PathogenTestResultType, Long> getNewCasesFinalLabResultCountsByResultType() {
-		return newCasesFinalLabResultCountsByResultType;
+	public Map<PathogenTestResultType, Long> getSampleCountsByResultType() {
+		return sampleCountsByResultType;
 	}
 
-	public Map<SamplePurpose, Long> getTestResultCountByPurpose() {
-		return testResultCountByPurpose;
+	public Map<SamplePurpose, Long> getSampleCountsByPurpose() {
+		return sampleCountsByPurpose;
 	}
 
-	public Map<SpecimenCondition, Long> getTestResultCountBySpecimenCondition() {
-		return testResultCountBySpecimenCondition;
+	public Map<SpecimenCondition, Long> getSampleCountsBySpecimenCondition() {
+		return sampleCountsBySpecimenCondition;
 	}
 
-	public Map<SampleShipmentStatus, Long> getTestResultCountByShipmentStatus() {
-		return testResultCountByShipmentStatus;
+	public Map<SampleShipmentStatus, Long> getSampleCountsByShipmentStatus() {
+		return sampleCountsByShipmentStatus;
 	}
 }

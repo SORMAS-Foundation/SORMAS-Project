@@ -16,6 +16,7 @@
 package de.symeda.sormas.ui.dashboard.sample.components;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.Map;
 import java.util.function.Function;
@@ -32,6 +33,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -98,20 +100,30 @@ public class SampleCountTilesComponent<T extends Enum<?>> extends VerticalLayout
 
 	private void addTiles(Map<T, Long> counts, @Nullable Long total) {
 		for (T group : groupType.getEnumConstants()) {
-			Long count = counts.getOrDefault(group, 0L);
-
-			BigDecimal percentage = null;
-			if (total != null) {
-				percentage = total == 0 ? BigDecimal.ZERO : new BigDecimal(count / total).multiply(new BigDecimal(100));
-				percentage = percentage.setScale(0, RoundingMode.HALF_UP);
-			}
-
-			TileComponent<T> tile = new TileComponent<>(group, count, percentage, groupLabelStyle, tileBackgroundFactory.apply(group));
-			tile.setWidthFull();
-
-			countsLayout.addComponent(tile);
-			countsLayout.setExpandRatio(tile, 1);
+			addTileForGroup(counts, group, total, String.valueOf(group));
 		}
+
+		if (counts.containsKey(null)) {
+			addTileForGroup(counts, null, total, I18nProperties.getCaption(Captions.notSpecified));
+		}
+	}
+
+	private void addTileForGroup(Map<T, Long> counts, T group, Long total, String groupCaption) {
+		Long count = counts.getOrDefault(group, 0L);
+
+		BigDecimal percentage = null;
+		if (total != null) {
+			percentage = total == 0
+				? BigDecimal.ZERO
+				: BigDecimal.valueOf(count).divide(BigDecimal.valueOf(total), MathContext.DECIMAL32).multiply(new BigDecimal(100));
+			percentage = percentage.setScale(0, RoundingMode.HALF_UP);
+		}
+
+		TileComponent<T> tile = new TileComponent<>(groupCaption, count, percentage, groupLabelStyle, tileBackgroundFactory.apply(group));
+		tile.setWidthFull();
+
+		countsLayout.addComponent(tile);
+		countsLayout.setExpandRatio(tile, 1);
 	}
 
 	public void setTitleStyleNames(String... styleNames) {
@@ -138,7 +150,7 @@ public class SampleCountTilesComponent<T extends Enum<?>> extends VerticalLayout
 
 		private static final long serialVersionUID = 5055236377479070515L;
 
-		TileComponent(T group, Long count, @Nullable BigDecimal percentage, String groupLabelStyle, String backgroundStyle) {
+		TileComponent(String group, Long count, @Nullable BigDecimal percentage, String groupLabelStyle, String backgroundStyle) {
 			setSpacing(false);
 			setMargin(false);
 
@@ -164,7 +176,7 @@ public class SampleCountTilesComponent<T extends Enum<?>> extends VerticalLayout
 				numbersLayout.setComponentAlignment(percentageLabel, Alignment.MIDDLE_CENTER);
 			}
 
-			Label groupLabel = new Label(String.valueOf(group));
+			Label groupLabel = new Label(group);
 			groupLabel.addStyleNames(
 				CssStyles.LABEL_WHITE,
 				CssStyles.LABEL_BOLD,

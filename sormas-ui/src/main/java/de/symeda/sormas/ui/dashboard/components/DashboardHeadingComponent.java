@@ -15,6 +15,10 @@
 
 package de.symeda.sormas.ui.dashboard.components;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 
@@ -25,7 +29,7 @@ public class DashboardHeadingComponent extends HorizontalLayout {
 
 	private final Label totalLabel;
 
-	public DashboardHeadingComponent(String titleCaption) {
+	public DashboardHeadingComponent(String titleCaption, String infoIconText) {
 		setSpacing(false);
 
 		// count
@@ -42,6 +46,13 @@ public class DashboardHeadingComponent extends HorizontalLayout {
 		Label titleLabel = new Label(I18nProperties.getCaption(titleCaption));
 		CssStyles.style(titleLabel, "heading-title-label", CssStyles.H2, CssStyles.HSPACE_LEFT_4);
 		addComponent(titleLabel);
+
+		if (StringUtils.isNotBlank(infoIconText)) {
+			Label infoIcon = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+			CssStyles.style(infoIcon, CssStyles.LABEL_LARGE, CssStyles.LABEL_SECONDARY, "statistics-info-label", CssStyles.HSPACE_LEFT_4);
+			infoIcon.setDescription(infoIconText, ContentMode.HTML);
+			addComponent(infoIcon);
+		}
 	}
 
 	public void updateTotalLabel(String value) {
