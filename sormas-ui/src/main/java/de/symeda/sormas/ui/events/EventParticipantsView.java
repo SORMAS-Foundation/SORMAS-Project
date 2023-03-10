@@ -62,6 +62,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ExportType;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -312,11 +313,13 @@ public class EventParticipantsView extends AbstractEventView {
 		EventReferenceDto eventRef = getEventRef();
 
 		criteria = ViewModelProviders.of(EventParticipantsView.class).get(EventParticipantCriteria.class);
+		boolean isEventArchived = FacadeProvider.getEventFacade().isArchived(eventRef.getUuid());
+
+		if (!DataHelper.isSame(eventRef, criteria.getEvent())
+			|| (isEventArchived && criteria.getRelevanceStatus() != EntityRelevanceStatus.ACTIVE_AND_ARCHIVED)) {
+			criteria.relevanceStatus(isEventArchived ? EntityRelevanceStatus.ACTIVE_AND_ARCHIVED : EntityRelevanceStatus.ACTIVE);
+		}
 		criteria.withEvent(eventRef);
-		criteria.relevanceStatus(
-			FacadeProvider.getEventFacade().isArchived(eventRef.getUuid())
-				? EntityRelevanceStatus.ACTIVE_AND_ARCHIVED
-				: EntityRelevanceStatus.ACTIVE);
 
 		if (grid == null) {
 			grid = new EventParticipantsGrid(criteria);
