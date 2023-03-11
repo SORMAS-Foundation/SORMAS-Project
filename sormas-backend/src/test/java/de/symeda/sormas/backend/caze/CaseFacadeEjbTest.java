@@ -2007,7 +2007,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		CaseDataDto caze = creator.createCase(informant, person, rdcf);
 
 		List<TaskDto> caseTasks = getTaskFacade().getAllPendingByCase(caze.toReference());
-		assertEquals(surveillanceOfficer, caseTasks.get(0).getAssigneeUser());
+		assertEquals(surveillanceOfficer.toReference(), caseTasks.get(0).getAssigneeUser());
 	}
 
 	@Test
