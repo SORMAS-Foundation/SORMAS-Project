@@ -1,4 +1,4 @@
-# SORMAS Backend 
+# SORMAS Backend
 
 The SORMAS backend layer is the implementation of the `sormas-api` and gives access to the data and logic of SORMAS. It contains a big set of facades and services that are origanized based on the different entities and their domains, like case surveillance and contact tracing.
 
