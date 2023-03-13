@@ -25,5 +25,6 @@ public class KeycloakLoginPage {
   public static final By LOGIN_KEYCLOAK_BUTTON = By.id("kc-login");
   public static final By USERNAME_TEXT =
       By.xpath("//*[@data-ouia-component-id='OUIA-Generated-DropdownToggle-2']");
-  public static final By LOGOUT_BUTTON = By.cssSelector("a.ng-binding");
+  public static final By LOGOUT_BUTTON =
+      By.xpath("//*[@data-ouia-component-id='OUIA-Generated-DropdownItem-3']");
 }
