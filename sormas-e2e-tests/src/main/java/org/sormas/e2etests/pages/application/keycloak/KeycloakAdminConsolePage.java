@@ -21,8 +21,10 @@ import org.openqa.selenium.By;
 
 public class KeycloakAdminConsolePage {
   public static final By VIEW_ALL_USERS_BUTTON = By.id("viewAllUsers");
-  public static final By USER_ID = By.cssSelector("td.clip a");
-  public static final By NEXT_PAGE_BUTTON = By.cssSelector("button.next.ng-binding");
+  public static final By USER_ID =
+      By.cssSelector("#options-menu-top-pagination > div.pf-c-options-menu > div > span > b");
+  public static final By NEXT_PAGE_BUTTON =
+      By.cssSelector("#options-menu-top-pagination > nav > div:nth-child(2) > button");
   public static final By USER_ENABLE_DISABLE_SWITCH = By.cssSelector("#userEnabled");
   public static final By USER_DISABLED =
       By.xpath("//input[@id=\"userEnabled\" and contains(@class,\"ng-empty\")]");

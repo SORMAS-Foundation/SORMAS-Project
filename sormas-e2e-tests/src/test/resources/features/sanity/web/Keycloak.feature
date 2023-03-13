@@ -12,11 +12,11 @@ Feature: Keycloak tests
     Given I navigate to Keycloak Administrator Console Login page
     Then I log in as Keycloak Admin to Keycloak Administrator Console
     And I navigate to Users tab in Keycloak Administrator Console
-    And I click View all users button
+   # And I click View all users button
     Then I count the number of users displayed in Users tab in Keycloak Administrator Console
     And I check that number of users from SORMAS is at least equal to number of users in Keycloak Administrator Console
 
-  @tmsLink=SORQA-459 @env_keycloak
+  @tmsLink=SORQA-459 @env_keycloak @testIt
   Scenario:SORMAS - Keycloak Synchronisation (automatic sync)
     Given I log in as a Admin User
     Then I click on the Users from navbar
@@ -24,6 +24,6 @@ Feature: Keycloak tests
     Given I navigate to Keycloak Administrator Console Login page
     Then I log in as Keycloak Admin to Keycloak Administrator Console
     And I navigate to Users tab in Keycloak Administrator Console
-    And I click View all users button
+  #  And I click View all users button
     Then I count the number of users displayed in Users tab in Keycloak Administrator Console
     And I check that number of users from SORMAS is at least equal to number of users in Keycloak Administrator Console

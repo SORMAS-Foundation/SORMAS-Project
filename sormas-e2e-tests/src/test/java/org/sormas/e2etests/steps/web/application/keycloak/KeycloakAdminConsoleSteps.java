@@ -53,9 +53,9 @@ public class KeycloakAdminConsoleSteps implements En {
         () -> {
           String KEYCLOAK_USERS_TAB =
               runningConfiguration.getEnvironmentUrlForMarket(locale)
-                  + "/keycloak/admin/master/console/#/realms/SORMAS/users";
+                  + "/keycloak/admin/master/console/#/SORMAS/users";
           webDriverHelpers.accessWebSite(KEYCLOAK_USERS_TAB);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(VIEW_ALL_USERS_BUTTON);
+          //    webDriverHelpers.waitUntilElementIsVisibleAndClickable(VIEW_ALL_USERS_BUTTON);
         });
     When(
         "^I click View all users button$",
@@ -72,6 +72,7 @@ public class KeycloakAdminConsoleSteps implements En {
             webDriverHelpers.clickOnWebElementBySelector(NEXT_PAGE_BUTTON);
             TimeUnit.SECONDS.sleep(2);
           } while (webDriverHelpers.isElementEnabled(NEXT_PAGE_BUTTON));
+          System.out.println("numberOfUsers:::::::::::: " + numberOfUsers);
           numberOfUsers += webDriverHelpers.getNumberOfElements(USER_ID);
         });
     When(
