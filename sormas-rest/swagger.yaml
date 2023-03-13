@@ -17401,9 +17401,9 @@ components:
           type: string
         community:
           type: string
-        region:
-          type: string
         address:
+          type: string
+        region:
           type: string
         inJurisdictionOrOwned:
           type: boolean
@@ -17416,9 +17416,9 @@ components:
           type: string
         community:
           type: string
-        region:
-          type: string
         address:
+          type: string
+        region:
           type: string
     PageEventIndexDto:
       type: object
@@ -21230,9 +21230,9 @@ components:
           type: string
         inJurisdiction:
           type: boolean
-        prescriptionRoute:
-          type: string
         prescriptionType:
+          type: string
+        prescriptionRoute:
           type: string
     PrescriptionIndexRoute:
       type: object
@@ -21842,9 +21842,9 @@ components:
     SampleJurisdictionFlagsDto:
       type: object
       properties:
-        inJurisdiction:
-          type: boolean
         caseInJurisdiction:
+          type: boolean
+        inJurisdiction:
           type: boolean
         contactInJurisdiction:
           type: boolean
@@ -23160,9 +23160,9 @@ components:
     TaskJurisdictionFlagsDto:
       type: object
       properties:
-        inJurisdiction:
-          type: boolean
         caseInJurisdiction:
+          type: boolean
+        inJurisdiction:
           type: boolean
         contactInJurisdiction:
           type: boolean
@@ -23724,9 +23724,9 @@ components:
           type: string
         inJurisdiction:
           type: boolean
-        treatmentRoute:
-          type: string
         treatmentType:
+          type: string
+        treatmentRoute:
           type: string
     TreatmentIndexRoute:
       type: object

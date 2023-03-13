@@ -18665,10 +18665,10 @@
           "community" : {
             "type" : "string"
           },
-          "region" : {
+          "address" : {
             "type" : "string"
           },
-          "address" : {
+          "region" : {
             "type" : "string"
           },
           "inJurisdictionOrOwned" : {
@@ -18688,10 +18688,10 @@
           "community" : {
             "type" : "string"
           },
-          "region" : {
+          "address" : {
             "type" : "string"
           },
-          "address" : {
+          "region" : {
             "type" : "string"
           }
         }
@@ -21491,10 +21491,10 @@
           "inJurisdiction" : {
             "type" : "boolean"
           },
-          "prescriptionRoute" : {
+          "prescriptionType" : {
             "type" : "string"
           },
-          "prescriptionType" : {
+          "prescriptionRoute" : {
             "type" : "string"
           }
         }
@@ -21997,10 +21997,10 @@
       "SampleJurisdictionFlagsDto" : {
         "type" : "object",
         "properties" : {
-          "inJurisdiction" : {
+          "caseInJurisdiction" : {
             "type" : "boolean"
           },
-          "caseInJurisdiction" : {
+          "inJurisdiction" : {
             "type" : "boolean"
           },
           "contactInJurisdiction" : {
@@ -23010,10 +23010,10 @@
       "TaskJurisdictionFlagsDto" : {
         "type" : "object",
         "properties" : {
-          "inJurisdiction" : {
+          "caseInJurisdiction" : {
             "type" : "boolean"
           },
-          "caseInJurisdiction" : {
+          "inJurisdiction" : {
             "type" : "boolean"
           },
           "contactInJurisdiction" : {
@@ -23589,10 +23589,10 @@
           "inJurisdiction" : {
             "type" : "boolean"
           },
-          "treatmentRoute" : {
+          "treatmentType" : {
             "type" : "string"
           },
-          "treatmentType" : {
+          "treatmentRoute" : {
             "type" : "string"
           }
         }
