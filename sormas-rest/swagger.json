@@ -18659,20 +18659,20 @@
           "otherDeletionReason" : {
             "type" : "string"
           },
-          "community" : {
+          "address" : {
             "type" : "string"
           },
           "region" : {
             "type" : "string"
           },
-          "address" : {
-            "type" : "string"
+          "inJurisdictionOrOwned" : {
+            "type" : "boolean"
           },
           "district" : {
             "type" : "string"
           },
-          "inJurisdictionOrOwned" : {
-            "type" : "boolean"
+          "community" : {
+            "type" : "string"
           },
           "caption" : {
             "type" : "string"
@@ -18682,16 +18682,16 @@
       "EventIndexLocation" : {
         "type" : "object",
         "properties" : {
-          "community" : {
+          "address" : {
             "type" : "string"
           },
           "region" : {
             "type" : "string"
           },
-          "address" : {
+          "district" : {
             "type" : "string"
           },
-          "district" : {
+          "community" : {
             "type" : "string"
           }
         }
@@ -21491,10 +21491,10 @@
           "inJurisdiction" : {
             "type" : "boolean"
           },
-          "prescriptionRoute" : {
+          "prescriptionType" : {
             "type" : "string"
           },
-          "prescriptionType" : {
+          "prescriptionRoute" : {
             "type" : "string"
           }
         }
@@ -21997,10 +21997,10 @@
       "SampleJurisdictionFlagsDto" : {
         "type" : "object",
         "properties" : {
-          "inJurisdiction" : {
+          "caseInJurisdiction" : {
             "type" : "boolean"
           },
-          "caseInJurisdiction" : {
+          "inJurisdiction" : {
             "type" : "boolean"
           },
           "contactInJurisdiction" : {
@@ -23010,22 +23010,22 @@
       "TaskJurisdictionFlagsDto" : {
         "type" : "object",
         "properties" : {
-          "inJurisdiction" : {
-            "type" : "boolean"
-          },
           "caseInJurisdiction" : {
-            "type" : "boolean"
-          },
-          "contactInJurisdiction" : {
-            "type" : "boolean"
-          },
-          "contactCaseInJurisdiction" : {
             "type" : "boolean"
           },
           "eventInJurisdiction" : {
             "type" : "boolean"
           },
           "travelEntryInJurisdiction" : {
+            "type" : "boolean"
+          },
+          "inJurisdiction" : {
+            "type" : "boolean"
+          },
+          "contactInJurisdiction" : {
+            "type" : "boolean"
+          },
+          "contactCaseInJurisdiction" : {
             "type" : "boolean"
           }
         }
