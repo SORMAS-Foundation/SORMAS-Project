@@ -12352,10 +12352,10 @@ components:
           maxLength: 1000000
           minLength: 0
           type: string
-        emailAddress:
+        phone:
           type: string
           readOnly: true
-        phone:
+        emailAddress:
           type: string
           readOnly: true
     AgeAndBirthDateDto:
@@ -21230,10 +21230,10 @@ components:
           type: string
         prescriptionType:
           type: string
-        prescriptionRoute:
-          type: string
         inJurisdiction:
           type: boolean
+        prescriptionRoute:
+          type: string
     PrescriptionIndexRoute:
       type: object
       properties:
@@ -21842,6 +21842,8 @@ components:
     SampleJurisdictionFlagsDto:
       type: object
       properties:
+        inJurisdiction:
+          type: boolean
         contactInJurisdiction:
           type: boolean
         contactCaseInJurisdiction:
@@ -21849,8 +21851,6 @@ components:
         evenParticipantInJurisdiction:
           type: boolean
         caseInJurisdiction:
-          type: boolean
-        inJurisdiction:
           type: boolean
     CriteriaWithSortingSampleCriteria:
       type: object
@@ -23160,6 +23160,8 @@ components:
     TaskJurisdictionFlagsDto:
       type: object
       properties:
+        inJurisdiction:
+          type: boolean
         contactInJurisdiction:
           type: boolean
         contactCaseInJurisdiction:
@@ -23169,8 +23171,6 @@ components:
         travelEntryInJurisdiction:
           type: boolean
         caseInJurisdiction:
-          type: boolean
-        inJurisdiction:
           type: boolean
     CriteriaWithSortingTaskCriteria:
       type: object
@@ -23722,12 +23722,12 @@ components:
           $ref: '#/components/schemas/TreatmentIndexRoute'
         executingClinician:
           type: string
+        inJurisdiction:
+          type: boolean
         treatmentType:
           type: string
         treatmentRoute:
           type: string
-        inJurisdiction:
-          type: boolean
     TreatmentIndexRoute:
       type: object
       properties:
