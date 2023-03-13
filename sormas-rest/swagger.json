@@ -14298,11 +14298,11 @@
             "minLength" : 0,
             "type" : "string"
           },
-          "emailAddress" : {
+          "phone" : {
             "type" : "string",
             "readOnly" : true
           },
-          "phone" : {
+          "emailAddress" : {
             "type" : "string",
             "readOnly" : true
           }
@@ -21488,10 +21488,10 @@
           "prescribingClinician" : {
             "type" : "string"
           },
-          "prescriptionRoute" : {
+          "prescriptionType" : {
             "type" : "string"
           },
-          "prescriptionType" : {
+          "prescriptionRoute" : {
             "type" : "string"
           },
           "inJurisdiction" : {
@@ -21997,12 +21997,6 @@
       "SampleJurisdictionFlagsDto" : {
         "type" : "object",
         "properties" : {
-          "caseInJurisdiction" : {
-            "type" : "boolean"
-          },
-          "inJurisdiction" : {
-            "type" : "boolean"
-          },
           "contactInJurisdiction" : {
             "type" : "boolean"
           },
@@ -22010,6 +22004,12 @@
             "type" : "boolean"
           },
           "evenParticipantInJurisdiction" : {
+            "type" : "boolean"
+          },
+          "caseInJurisdiction" : {
+            "type" : "boolean"
+          },
+          "inJurisdiction" : {
             "type" : "boolean"
           }
         }
@@ -23010,6 +23010,12 @@
       "TaskJurisdictionFlagsDto" : {
         "type" : "object",
         "properties" : {
+          "contactInJurisdiction" : {
+            "type" : "boolean"
+          },
+          "contactCaseInJurisdiction" : {
+            "type" : "boolean"
+          },
           "eventInJurisdiction" : {
             "type" : "boolean"
           },
@@ -23020,12 +23026,6 @@
             "type" : "boolean"
           },
           "inJurisdiction" : {
-            "type" : "boolean"
-          },
-          "contactInJurisdiction" : {
-            "type" : "boolean"
-          },
-          "contactCaseInJurisdiction" : {
             "type" : "boolean"
           }
         }
@@ -23586,14 +23586,14 @@
           "executingClinician" : {
             "type" : "string"
           },
-          "inJurisdiction" : {
-            "type" : "boolean"
+          "treatmentRoute" : {
+            "type" : "string"
           },
           "treatmentType" : {
             "type" : "string"
           },
-          "treatmentRoute" : {
-            "type" : "string"
+          "inJurisdiction" : {
+            "type" : "boolean"
           }
         }
       },
