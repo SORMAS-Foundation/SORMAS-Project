@@ -99,7 +99,7 @@ public class UserManagementSteps implements En {
     When(
         "^I check if sync message is correct in German$",
         () -> {
-          TimeUnit.SECONDS.sleep(15);
+          TimeUnit.SECONDS.sleep(25);
           assertHelpers.assertWithPoll(
               () ->
                   Assert.assertTrue(
