@@ -21230,9 +21230,9 @@ components:
           type: string
         inJurisdiction:
           type: boolean
-        prescriptionRoute:
-          type: string
         prescriptionType:
+          type: string
+        prescriptionRoute:
           type: string
     PrescriptionIndexRoute:
       type: object
@@ -21844,13 +21844,13 @@ components:
       properties:
         inJurisdiction:
           type: boolean
+        caseInJurisdiction:
+          type: boolean
         contactInJurisdiction:
           type: boolean
         contactCaseInJurisdiction:
           type: boolean
         evenParticipantInJurisdiction:
-          type: boolean
-        caseInJurisdiction:
           type: boolean
     CriteriaWithSortingSampleCriteria:
       type: object
@@ -23162,15 +23162,15 @@ components:
       properties:
         inJurisdiction:
           type: boolean
-        contactInJurisdiction:
-          type: boolean
-        contactCaseInJurisdiction:
+        caseInJurisdiction:
           type: boolean
         eventInJurisdiction:
           type: boolean
         travelEntryInJurisdiction:
           type: boolean
-        caseInJurisdiction:
+        contactInJurisdiction:
+          type: boolean
+        contactCaseInJurisdiction:
           type: boolean
     CriteriaWithSortingTaskCriteria:
       type: object
