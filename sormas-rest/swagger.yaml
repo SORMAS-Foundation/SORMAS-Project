@@ -12352,10 +12352,10 @@ components:
           maxLength: 1000000
           minLength: 0
           type: string
-        phone:
+        emailAddress:
           type: string
           readOnly: true
-        emailAddress:
+        phone:
           type: string
           readOnly: true
     AgeAndBirthDateDto:
@@ -17397,13 +17397,13 @@ components:
           - OTHER_REASON
         otherDeletionReason:
           type: string
-        community:
-          type: string
         district:
           type: string
         address:
           type: string
         region:
+          type: string
+        community:
           type: string
         inJurisdictionOrOwned:
           type: boolean
@@ -17412,13 +17412,13 @@ components:
     EventIndexLocation:
       type: object
       properties:
-        community:
-          type: string
         district:
           type: string
         address:
           type: string
         region:
+          type: string
+        community:
           type: string
     PageEventIndexDto:
       type: object
@@ -23166,11 +23166,11 @@ components:
           type: boolean
         contactCaseInJurisdiction:
           type: boolean
+        inJurisdiction:
+          type: boolean
         eventInJurisdiction:
           type: boolean
         travelEntryInJurisdiction:
-          type: boolean
-        inJurisdiction:
           type: boolean
     CriteriaWithSortingTaskCriteria:
       type: object

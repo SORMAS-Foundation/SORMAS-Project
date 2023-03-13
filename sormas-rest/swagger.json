@@ -14298,11 +14298,11 @@
             "minLength" : 0,
             "type" : "string"
           },
-          "phone" : {
+          "emailAddress" : {
             "type" : "string",
             "readOnly" : true
           },
-          "emailAddress" : {
+          "phone" : {
             "type" : "string",
             "readOnly" : true
           }
@@ -18659,9 +18659,6 @@
           "otherDeletionReason" : {
             "type" : "string"
           },
-          "community" : {
-            "type" : "string"
-          },
           "district" : {
             "type" : "string"
           },
@@ -18669,6 +18666,9 @@
             "type" : "string"
           },
           "region" : {
+            "type" : "string"
+          },
+          "community" : {
             "type" : "string"
           },
           "inJurisdictionOrOwned" : {
@@ -18682,9 +18682,6 @@
       "EventIndexLocation" : {
         "type" : "object",
         "properties" : {
-          "community" : {
-            "type" : "string"
-          },
           "district" : {
             "type" : "string"
           },
@@ -18692,6 +18689,9 @@
             "type" : "string"
           },
           "region" : {
+            "type" : "string"
+          },
+          "community" : {
             "type" : "string"
           }
         }
@@ -23019,13 +23019,13 @@
           "contactCaseInJurisdiction" : {
             "type" : "boolean"
           },
+          "inJurisdiction" : {
+            "type" : "boolean"
+          },
           "eventInJurisdiction" : {
             "type" : "boolean"
           },
           "travelEntryInJurisdiction" : {
-            "type" : "boolean"
-          },
-          "inJurisdiction" : {
             "type" : "boolean"
           }
         }
