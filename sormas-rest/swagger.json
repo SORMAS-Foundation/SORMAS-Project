@@ -18659,20 +18659,20 @@
           "otherDeletionReason" : {
             "type" : "string"
           },
-          "district" : {
+          "inJurisdictionOrOwned" : {
+            "type" : "boolean"
+          },
+          "address" : {
             "type" : "string"
           },
           "region" : {
             "type" : "string"
           },
-          "address" : {
+          "district" : {
             "type" : "string"
           },
           "community" : {
             "type" : "string"
-          },
-          "inJurisdictionOrOwned" : {
-            "type" : "boolean"
           },
           "caption" : {
             "type" : "string"
@@ -18682,13 +18682,13 @@
       "EventIndexLocation" : {
         "type" : "object",
         "properties" : {
-          "district" : {
+          "address" : {
             "type" : "string"
           },
           "region" : {
             "type" : "string"
           },
-          "address" : {
+          "district" : {
             "type" : "string"
           },
           "community" : {
@@ -22000,6 +22000,9 @@
           "inJurisdiction" : {
             "type" : "boolean"
           },
+          "caseInJurisdiction" : {
+            "type" : "boolean"
+          },
           "contactInJurisdiction" : {
             "type" : "boolean"
           },
@@ -22007,9 +22010,6 @@
             "type" : "boolean"
           },
           "evenParticipantInJurisdiction" : {
-            "type" : "boolean"
-          },
-          "caseInJurisdiction" : {
             "type" : "boolean"
           }
         }
@@ -23013,10 +23013,7 @@
           "inJurisdiction" : {
             "type" : "boolean"
           },
-          "contactInJurisdiction" : {
-            "type" : "boolean"
-          },
-          "contactCaseInJurisdiction" : {
+          "caseInJurisdiction" : {
             "type" : "boolean"
           },
           "eventInJurisdiction" : {
@@ -23025,7 +23022,10 @@
           "travelEntryInJurisdiction" : {
             "type" : "boolean"
           },
-          "caseInJurisdiction" : {
+          "contactInJurisdiction" : {
+            "type" : "boolean"
+          },
+          "contactCaseInJurisdiction" : {
             "type" : "boolean"
           }
         }

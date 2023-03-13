@@ -17397,26 +17397,26 @@ components:
           - OTHER_REASON
         otherDeletionReason:
           type: string
-        district:
+        inJurisdictionOrOwned:
+          type: boolean
+        address:
           type: string
         region:
           type: string
-        address:
+        district:
           type: string
         community:
           type: string
-        inJurisdictionOrOwned:
-          type: boolean
         caption:
           type: string
     EventIndexLocation:
       type: object
       properties:
-        district:
+        address:
           type: string
         region:
           type: string
-        address:
+        district:
           type: string
         community:
           type: string
@@ -21844,13 +21844,13 @@ components:
       properties:
         inJurisdiction:
           type: boolean
+        caseInJurisdiction:
+          type: boolean
         contactInJurisdiction:
           type: boolean
         contactCaseInJurisdiction:
           type: boolean
         evenParticipantInJurisdiction:
-          type: boolean
-        caseInJurisdiction:
           type: boolean
     CriteriaWithSortingSampleCriteria:
       type: object
@@ -23162,15 +23162,15 @@ components:
       properties:
         inJurisdiction:
           type: boolean
-        contactInJurisdiction:
-          type: boolean
-        contactCaseInJurisdiction:
+        caseInJurisdiction:
           type: boolean
         eventInJurisdiction:
           type: boolean
         travelEntryInJurisdiction:
           type: boolean
-        caseInJurisdiction:
+        contactInJurisdiction:
+          type: boolean
+        contactCaseInJurisdiction:
           type: boolean
     CriteriaWithSortingTaskCriteria:
       type: object
