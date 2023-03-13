@@ -14298,11 +14298,11 @@
             "minLength" : 0,
             "type" : "string"
           },
-          "phone" : {
+          "emailAddress" : {
             "type" : "string",
             "readOnly" : true
           },
-          "emailAddress" : {
+          "phone" : {
             "type" : "string",
             "readOnly" : true
           }
@@ -18659,14 +18659,14 @@
           "otherDeletionReason" : {
             "type" : "string"
           },
-          "inJurisdictionOrOwned" : {
-            "type" : "boolean"
+          "region" : {
+            "type" : "string"
           },
           "address" : {
             "type" : "string"
           },
-          "region" : {
-            "type" : "string"
+          "inJurisdictionOrOwned" : {
+            "type" : "boolean"
           },
           "district" : {
             "type" : "string"
@@ -18682,10 +18682,10 @@
       "EventIndexLocation" : {
         "type" : "object",
         "properties" : {
-          "address" : {
+          "region" : {
             "type" : "string"
           },
-          "region" : {
+          "address" : {
             "type" : "string"
           },
           "district" : {
@@ -19795,10 +19795,10 @@
             "minLength" : 0,
             "type" : "string"
           },
-          "otherPointOfEntry" : {
+          "nameOtherPointOfEntry" : {
             "type" : "boolean"
           },
-          "nameOtherPointOfEntry" : {
+          "otherPointOfEntry" : {
             "type" : "boolean"
           }
         }
@@ -22000,9 +22000,6 @@
           "inJurisdiction" : {
             "type" : "boolean"
           },
-          "caseInJurisdiction" : {
-            "type" : "boolean"
-          },
           "contactInJurisdiction" : {
             "type" : "boolean"
           },
@@ -22010,6 +22007,9 @@
             "type" : "boolean"
           },
           "evenParticipantInJurisdiction" : {
+            "type" : "boolean"
+          },
+          "caseInJurisdiction" : {
             "type" : "boolean"
           }
         }
@@ -23010,22 +23010,22 @@
       "TaskJurisdictionFlagsDto" : {
         "type" : "object",
         "properties" : {
-          "inJurisdiction" : {
-            "type" : "boolean"
-          },
-          "caseInJurisdiction" : {
-            "type" : "boolean"
-          },
           "eventInJurisdiction" : {
             "type" : "boolean"
           },
           "travelEntryInJurisdiction" : {
             "type" : "boolean"
           },
+          "inJurisdiction" : {
+            "type" : "boolean"
+          },
           "contactInJurisdiction" : {
             "type" : "boolean"
           },
           "contactCaseInJurisdiction" : {
+            "type" : "boolean"
+          },
+          "caseInJurisdiction" : {
             "type" : "boolean"
           }
         }
@@ -23586,14 +23586,14 @@
           "executingClinician" : {
             "type" : "string"
           },
-          "inJurisdiction" : {
-            "type" : "boolean"
-          },
           "treatmentRoute" : {
             "type" : "string"
           },
           "treatmentType" : {
             "type" : "string"
+          },
+          "inJurisdiction" : {
+            "type" : "boolean"
           }
         }
       },
