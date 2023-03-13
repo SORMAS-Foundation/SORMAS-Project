@@ -18659,20 +18659,20 @@
           "otherDeletionReason" : {
             "type" : "string"
           },
-          "inJurisdictionOrOwned" : {
-            "type" : "boolean"
-          },
           "district" : {
             "type" : "string"
           },
           "community" : {
             "type" : "string"
           },
+          "region" : {
+            "type" : "string"
+          },
           "address" : {
             "type" : "string"
           },
-          "region" : {
-            "type" : "string"
+          "inJurisdictionOrOwned" : {
+            "type" : "boolean"
           },
           "caption" : {
             "type" : "string"
@@ -18688,10 +18688,10 @@
           "community" : {
             "type" : "string"
           },
-          "address" : {
+          "region" : {
             "type" : "string"
           },
-          "region" : {
+          "address" : {
             "type" : "string"
           }
         }
@@ -21997,9 +21997,6 @@
       "SampleJurisdictionFlagsDto" : {
         "type" : "object",
         "properties" : {
-          "caseInJurisdiction" : {
-            "type" : "boolean"
-          },
           "contactInJurisdiction" : {
             "type" : "boolean"
           },
@@ -22010,6 +22007,9 @@
             "type" : "boolean"
           },
           "inJurisdiction" : {
+            "type" : "boolean"
+          },
+          "caseInJurisdiction" : {
             "type" : "boolean"
           }
         }
@@ -23010,9 +23010,6 @@
       "TaskJurisdictionFlagsDto" : {
         "type" : "object",
         "properties" : {
-          "caseInJurisdiction" : {
-            "type" : "boolean"
-          },
           "eventInJurisdiction" : {
             "type" : "boolean"
           },
@@ -23026,6 +23023,9 @@
             "type" : "boolean"
           },
           "inJurisdiction" : {
+            "type" : "boolean"
+          },
+          "caseInJurisdiction" : {
             "type" : "boolean"
           }
         }
