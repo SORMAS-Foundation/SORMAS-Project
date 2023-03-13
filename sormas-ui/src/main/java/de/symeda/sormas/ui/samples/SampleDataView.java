@@ -16,7 +16,6 @@ package de.symeda.sormas.ui.samples;
 
 import java.util.function.Consumer;
 
-import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.Disease;
@@ -155,17 +154,8 @@ public class SampleDataView extends AbstractSampleView {
 		final String uuid = sampleDto.getUuid();
 		final boolean deleted = FacadeProvider.getSampleFacade().isDeleted(uuid);
 
-		if (deleted) {
-			editComponent.setEditable(false, CommitDiscardWrapperComponent.DELETE_UNDELETE);
-			disableComponentIfNotNull(layout.getComponent(CASE_LOC));
-			disableComponentIfNotNull(layout.getComponent(CONTACT_LOC));
-			disableComponentIfNotNull(layout.getComponent(EVENT_PARTICIPANT_LOC));
-			disableComponentIfNotNull(layout.getComponent(PATHOGEN_TESTS_LOC));
-			disableComponentIfNotNull(layout.getComponent(ADDITIONAL_TESTS_LOC));
-			disableComponentIfNotNull(layout.getComponent(SORMAS_TO_SORMAS_LOC));
-		}
-
-		editComponent.setEnabled(isEditAllowed() && UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT));
+		layout.disableIfNecessary(deleted, null);
+		editComponent.setEnabled(isEditAllowed());
 	}
 
 	private AbstractInfoLayout<EntityDto> getDependentSideComponent(SampleDto sampleDto) {
@@ -212,11 +202,5 @@ public class SampleDataView extends AbstractSampleView {
 			return (AbstractInfoLayout) eventParticipantInfoLayout;
 		}
 		return null;
-	}
-
-	private void disableComponentIfNotNull(Component component) {
-		if (component != null) {
-			component.setEnabled(false);
-		}
 	}
 }

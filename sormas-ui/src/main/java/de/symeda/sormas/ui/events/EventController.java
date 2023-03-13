@@ -834,7 +834,7 @@ public class EventController {
 		eventEditForm.setValue(event);
 		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(
 			eventEditForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EDIT),
+			true,
 			eventEditForm.getFieldGroup());
 
 		editView.getButtonsPanel()
@@ -908,6 +908,8 @@ public class EventController {
 			ControllerProvider.getArchiveController()
 				.addArchivingButton(event, FacadeProvider.getEventFacade(), CoreEntityArchiveMessages.EVENT, editView, () -> navigateToData(uuid));
 		}
+
+		editView.restrictEditableComponentsOnEditView(UserRight.EVENT_EDIT, UserRight.EVENT_DELETE, null);
 
 		return editView;
 	}

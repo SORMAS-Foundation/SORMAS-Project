@@ -28,9 +28,7 @@ import de.symeda.sormas.api.action.ActionCriteria;
 import de.symeda.sormas.api.action.ActionDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
 
 @SuppressWarnings("serial")
@@ -66,11 +64,9 @@ public class ActionList extends PaginationList<ActionDto> {
 		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
 			ActionDto action = displayedEntries.get(i);
 			ActionListEntry listEntry = new ActionListEntry(action);
-			if (UserProvider.getCurrent().hasUserRight(UserRight.ACTION_EDIT)) {
 				listEntry.addEditListener(
 					i,
 					(ClickListener) event -> ControllerProvider.getActionController().edit(listEntry.getAction(), ActionList.this::reload));
-			}
 			listLayout.addComponent(listEntry);
 		}
 	}

@@ -129,12 +129,12 @@ public class VaccinationController {
 		VaccinationEditForm form = new VaccinationEditForm(true, disease, fieldAccessCheckers);
 		form.setValue(vaccination);
 
-		final CommitDiscardWrapperComponent<VaccinationEditForm> createComponent =
+		final CommitDiscardWrapperComponent<VaccinationEditForm> editComponent =
 			getVaccinationEditComponent(vaccination, disease, fieldAccessCheckers, doSave, commitCallback, isEditAllowed);
-		Window popupWindow = VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getCaption(VaccinationDto.I18N_PREFIX));
+		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editComponent, I18nProperties.getCaption(VaccinationDto.I18N_PREFIX));
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_DELETE)) {
-			createComponent.addDeleteWithReasonOrUndeleteListener((deleteDetails) -> {
+			editComponent.addDeleteWithReasonOrUndeleteListener((deleteDetails) -> {
 				popupWindow.close();
 				if (doSave) {
 					List<CaseDataDto> cases = getCaseFacade().getRelevantCasesForVaccination(vaccination)
@@ -151,6 +151,8 @@ public class VaccinationController {
 				}
 			}, I18nProperties.getCaption(VaccinationDto.I18N_PREFIX));
 		}
+
+		editComponent.restrictEditableComponentsOnEditView(UserRight.IMMUNIZATION_EDIT, UserRight.IMMUNIZATION_DELETE, null);
 	}
 
 	public static void showUpdateStatusConfirmationPopup(List<CaseDataDto> cases) {
@@ -186,7 +188,7 @@ public class VaccinationController {
 
 		final CommitDiscardWrapperComponent<VaccinationEditForm> editComponent = new CommitDiscardWrapperComponent<>(
 			form,
-			UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_EDIT) && isEditAllowed,
+			isEditAllowed,
 			form.getFieldGroup());
 		editComponent.getCommitButton().setCaption(doSave ? I18nProperties.getCaption(Captions.actionSave) : I18nProperties.getString(Strings.done));
 
@@ -202,8 +204,6 @@ public class VaccinationController {
 				}
 			});
 		}
-		editComponent.getButtonsPanel().setVisible(isEditAllowed);
-
 		return editComponent;
 	}
 }
