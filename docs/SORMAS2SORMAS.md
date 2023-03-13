@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Sormas2Sormas (or S2S for short) is a feature that allows sharing of entities (e.g., cases, contacts, events, etc.) 
+Sormas2Sormas (or S2S for short) is a feature that allows sharing of entities (e.g., cases, contacts, events, etc.)
 between two or more SORMAS instances.
 
 ## Components
@@ -15,11 +15,11 @@ and the one that receives the shared entities. Each instance has a unique S2S id
 We do not enforce a certain scheme, but it is strongly encouraged to use a meaningful and consistent identifiers
 (e.g., `2.sormas.id.sormas_a`).
 
-####  Server Descriptors
+#### Server Descriptors
 
 A server descriptor is a struct which contains the information needed to connect to a SORMAS instance (see the
 `SormasServerDescriptor` class). It consists of the S2S id, a human-readable name used in the UI, and the hostname.
-Descriptors centrally distributed via a dedicated `etcd` keyspace (e.g., `/s2s/`). 
+Descriptors centrally distributed via a dedicated `etcd` keyspace (e.g., `/s2s/`).
 
 ```json
 {
@@ -95,7 +95,7 @@ The client scope _must_ be prefixed with `s2s-` and _must_ contain the S2S id of
 
 ### etcd
 
-#### Server Descriptors
+#### Server Descriptors stored in etcd
 
 etcd is a distributed key-value store. It is used to store the server descriptors of all S2S enabled instances. They are
 all stored under a dedicated S2S key space prefix (e.g., `/s2s/`) at a path like `/s2s/2.sormas.id.sormas_b`.
@@ -114,8 +114,8 @@ of the DTOs (e.g., `ContinentDto`, etc.).
 ## Secure Communication
 
 The S2S communication is expected to be secured by TLS. For additional security, the S2S communication is also
-encrypted. Each instance receives a dedicated keystore and truststore. The keystore contains the instance's private and 
-public key. The truststore contains a root CA certificate (i.e., `sormas2sormas.rootCaAlias`) which is used to sign all 
+encrypted. Each instance receives a dedicated keystore and truststore. The keystore contains the instance's private and
+public key. The truststore contains a root CA certificate (i.e., `sormas2sormas.rootCaAlias`) which is used to sign all
 instance certificates. The connection to Keycloak must be secured by TLS. The connection to etcd must be secured by
 TLS. The CA trusted by etcd clients when creating a TLS connection to the server is set via `central.etcd.caPath`.
 
@@ -129,7 +129,7 @@ Therefore, they cannot track if the case/contact was shared with/by another inst
    - `sormas2sormas.*`
    - `central.oidc.url`
    - Optional if GA wants to disable central infra sync: `central.*`. Strongly discouraged.
-4. Remove service descriptor of the deactivated instance from central `etcd` to prevent further discovery. 
+4. Remove service descriptor of the deactivated instance from central `etcd` to prevent further discovery.
 5. Reset feature configuration table.
 6. Remove client and client scope of the instance from central Keycloak.
 7. `shred` the instance's key material.
