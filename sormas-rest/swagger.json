@@ -14298,11 +14298,11 @@
             "minLength" : 0,
             "type" : "string"
           },
-          "phone" : {
+          "emailAddress" : {
             "type" : "string",
             "readOnly" : true
           },
-          "emailAddress" : {
+          "phone" : {
             "type" : "string",
             "readOnly" : true
           }
@@ -18659,9 +18659,6 @@
           "otherDeletionReason" : {
             "type" : "string"
           },
-          "inJurisdictionOrOwned" : {
-            "type" : "boolean"
-          },
           "address" : {
             "type" : "string"
           },
@@ -18673,6 +18670,9 @@
           },
           "community" : {
             "type" : "string"
+          },
+          "inJurisdictionOrOwned" : {
+            "type" : "boolean"
           },
           "caption" : {
             "type" : "string"
@@ -21997,6 +21997,9 @@
       "SampleJurisdictionFlagsDto" : {
         "type" : "object",
         "properties" : {
+          "caseInJurisdiction" : {
+            "type" : "boolean"
+          },
           "contactInJurisdiction" : {
             "type" : "boolean"
           },
@@ -22004,9 +22007,6 @@
             "type" : "boolean"
           },
           "evenParticipantInJurisdiction" : {
-            "type" : "boolean"
-          },
-          "caseInJurisdiction" : {
             "type" : "boolean"
           },
           "inJurisdiction" : {
@@ -23010,6 +23010,9 @@
       "TaskJurisdictionFlagsDto" : {
         "type" : "object",
         "properties" : {
+          "caseInJurisdiction" : {
+            "type" : "boolean"
+          },
           "contactInJurisdiction" : {
             "type" : "boolean"
           },
@@ -23020,9 +23023,6 @@
             "type" : "boolean"
           },
           "travelEntryInJurisdiction" : {
-            "type" : "boolean"
-          },
-          "caseInJurisdiction" : {
             "type" : "boolean"
           },
           "inJurisdiction" : {
@@ -23586,10 +23586,10 @@
           "executingClinician" : {
             "type" : "string"
           },
-          "treatmentRoute" : {
+          "treatmentType" : {
             "type" : "string"
           },
-          "treatmentType" : {
+          "treatmentRoute" : {
             "type" : "string"
           },
           "inJurisdiction" : {
