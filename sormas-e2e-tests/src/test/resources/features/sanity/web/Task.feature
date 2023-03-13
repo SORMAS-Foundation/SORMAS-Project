@@ -223,7 +223,7 @@ Feature: Tasks functionalities
     And I save Export Configuration for Custom Task Export
     And I delete last created custom task export config
 
-  @8561 @env_main
+  @#8561 @env_main
   Scenario: Verify that Task assignee cannot be left empty via bulk edit mode
     Given I log in as a Admin User
     And I click on the Tasks button from navbar
@@ -280,4 +280,25 @@ Feature: Tasks functionalities
     When I open last created case
     And I check that I get navigated to the Edit Case page
     And I click on first edit Task
+    Then I check the created task is correctly displayed on Edit task page
+
+  @tmsLink=SORDEV-13927 @env_main
+  Scenario: Test Manual archiving of tasks [2]
+    Given I log in as a National User
+    And I click on the Tasks button from navbar
+    And I click on the NEW TASK button
+    When I create a new task with specific data
+    And I open last created task from Tasks Directory
+    Then I check the created task is correctly displayed on Edit task page
+    Then I click on the Archive task button
+    And I click on No option in popup window
+    Then I click on the Archive task button
+    And I click on yes in archive task popup window
+    And I apply "Archived tasks" to combobox on Task Directory Page
+    And I open last created task from Tasks Directory without click on show more filters
+    Then I check the created task is correctly displayed on Edit task page
+    Then I click on De-Archive task button
+    And I click on yes in de-archive task popup window
+    And I apply "Active tasks" to combobox on Task Directory Page
+    And I open last created task from Tasks Directory without click on show more filters
     Then I check the created task is correctly displayed on Edit task page

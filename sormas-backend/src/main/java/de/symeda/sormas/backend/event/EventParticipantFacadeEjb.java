@@ -421,7 +421,11 @@ public class EventParticipantFacadeEjb
 		Join<EventParticipant, Person> personJoin = eventParticipantJoin.join(EventParticipant.PERSON, JoinType.INNER);
 
 		personSubquery.select(eventRoot.get(Event.UUID));
-		personSubquery.where(cb.and(cb.equal(personJoin.get(Person.UUID), personUuid), cb.equal(eventRoot.get(Event.UUID), event.get(Event.UUID))));
+		personSubquery.where(
+			cb.and(
+				cb.equal(personJoin.get(Person.UUID), personUuid),
+				cb.equal(eventRoot.get(Event.UUID), event.get(Event.UUID)),
+				cb.isFalse(eventParticipantJoin.get(EventParticipant.DELETED))));
 		return cb.exists(personSubquery);
 	}
 
