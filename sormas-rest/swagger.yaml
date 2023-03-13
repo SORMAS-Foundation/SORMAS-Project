@@ -12352,10 +12352,10 @@ components:
           maxLength: 1000000
           minLength: 0
           type: string
-        emailAddress:
+        phone:
           type: string
           readOnly: true
-        phone:
+        emailAddress:
           type: string
           readOnly: true
     AgeAndBirthDateDto:
@@ -17399,11 +17399,11 @@ components:
           type: string
         district:
           type: string
-        address:
+        community:
           type: string
         region:
           type: string
-        community:
+        address:
           type: string
         inJurisdictionOrOwned:
           type: boolean
@@ -17414,11 +17414,11 @@ components:
       properties:
         district:
           type: string
-        address:
+        community:
           type: string
         region:
           type: string
-        community:
+        address:
           type: string
     PageEventIndexDto:
       type: object
@@ -21228,12 +21228,12 @@ components:
           $ref: '#/components/schemas/PrescriptionIndexRoute'
         prescribingClinician:
           type: string
-        prescriptionType:
-          type: string
-        prescriptionRoute:
-          type: string
         inJurisdiction:
           type: boolean
+        prescriptionRoute:
+          type: string
+        prescriptionType:
+          type: string
     PrescriptionIndexRoute:
       type: object
       properties:
@@ -21842,6 +21842,8 @@ components:
     SampleJurisdictionFlagsDto:
       type: object
       properties:
+        inJurisdiction:
+          type: boolean
         caseInJurisdiction:
           type: boolean
         contactInJurisdiction:
@@ -21849,8 +21851,6 @@ components:
         contactCaseInJurisdiction:
           type: boolean
         evenParticipantInJurisdiction:
-          type: boolean
-        inJurisdiction:
           type: boolean
     CriteriaWithSortingSampleCriteria:
       type: object
@@ -23160,13 +23160,13 @@ components:
     TaskJurisdictionFlagsDto:
       type: object
       properties:
+        inJurisdiction:
+          type: boolean
         caseInJurisdiction:
           type: boolean
         contactInJurisdiction:
           type: boolean
         contactCaseInJurisdiction:
-          type: boolean
-        inJurisdiction:
           type: boolean
         eventInJurisdiction:
           type: boolean
@@ -23722,12 +23722,12 @@ components:
           $ref: '#/components/schemas/TreatmentIndexRoute'
         executingClinician:
           type: string
-        treatmentType:
-          type: string
-        treatmentRoute:
-          type: string
         inJurisdiction:
           type: boolean
+        treatmentRoute:
+          type: string
+        treatmentType:
+          type: string
     TreatmentIndexRoute:
       type: object
       properties:
