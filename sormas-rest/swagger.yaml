@@ -17399,9 +17399,9 @@ components:
           type: string
         community:
           type: string
-        region:
-          type: string
         address:
+          type: string
+        region:
           type: string
         district:
           type: string
@@ -17414,9 +17414,9 @@ components:
       properties:
         community:
           type: string
-        region:
-          type: string
         address:
+          type: string
+        region:
           type: string
         district:
           type: string
@@ -21228,9 +21228,9 @@ components:
           $ref: '#/components/schemas/PrescriptionIndexRoute'
         prescribingClinician:
           type: string
-        prescriptionType:
-          type: string
         prescriptionRoute:
+          type: string
+        prescriptionType:
           type: string
         inJurisdiction:
           type: boolean
@@ -21842,13 +21842,13 @@ components:
     SampleJurisdictionFlagsDto:
       type: object
       properties:
+        caseInJurisdiction:
+          type: boolean
         contactInJurisdiction:
           type: boolean
         contactCaseInJurisdiction:
           type: boolean
         evenParticipantInJurisdiction:
-          type: boolean
-        caseInJurisdiction:
           type: boolean
         inJurisdiction:
           type: boolean
@@ -23160,6 +23160,8 @@ components:
     TaskJurisdictionFlagsDto:
       type: object
       properties:
+        caseInJurisdiction:
+          type: boolean
         contactInJurisdiction:
           type: boolean
         contactCaseInJurisdiction:
@@ -23167,8 +23169,6 @@ components:
         eventInJurisdiction:
           type: boolean
         travelEntryInJurisdiction:
-          type: boolean
-        caseInJurisdiction:
           type: boolean
         inJurisdiction:
           type: boolean
@@ -23722,9 +23722,9 @@ components:
           $ref: '#/components/schemas/TreatmentIndexRoute'
         executingClinician:
           type: string
-        treatmentRoute:
-          type: string
         treatmentType:
+          type: string
+        treatmentRoute:
           type: string
         inJurisdiction:
           type: boolean
