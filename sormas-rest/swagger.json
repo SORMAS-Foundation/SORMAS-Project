@@ -18659,16 +18659,16 @@
           "otherDeletionReason" : {
             "type" : "string"
           },
-          "district" : {
+          "community" : {
             "type" : "string"
           },
-          "community" : {
+          "region" : {
             "type" : "string"
           },
           "address" : {
             "type" : "string"
           },
-          "region" : {
+          "district" : {
             "type" : "string"
           },
           "inJurisdictionOrOwned" : {
@@ -18682,16 +18682,16 @@
       "EventIndexLocation" : {
         "type" : "object",
         "properties" : {
-          "district" : {
+          "community" : {
             "type" : "string"
           },
-          "community" : {
+          "region" : {
             "type" : "string"
           },
           "address" : {
             "type" : "string"
           },
-          "region" : {
+          "district" : {
             "type" : "string"
           }
         }
@@ -19795,10 +19795,10 @@
             "minLength" : 0,
             "type" : "string"
           },
-          "nameOtherPointOfEntry" : {
+          "otherPointOfEntry" : {
             "type" : "boolean"
           },
-          "otherPointOfEntry" : {
+          "nameOtherPointOfEntry" : {
             "type" : "boolean"
           }
         }
@@ -23016,16 +23016,16 @@
           "caseInJurisdiction" : {
             "type" : "boolean"
           },
-          "eventInJurisdiction" : {
-            "type" : "boolean"
-          },
-          "travelEntryInJurisdiction" : {
-            "type" : "boolean"
-          },
           "contactInJurisdiction" : {
             "type" : "boolean"
           },
           "contactCaseInJurisdiction" : {
+            "type" : "boolean"
+          },
+          "eventInJurisdiction" : {
+            "type" : "boolean"
+          },
+          "travelEntryInJurisdiction" : {
             "type" : "boolean"
           }
         }
@@ -23589,10 +23589,10 @@
           "inJurisdiction" : {
             "type" : "boolean"
           },
-          "treatmentRoute" : {
+          "treatmentType" : {
             "type" : "string"
           },
-          "treatmentType" : {
+          "treatmentRoute" : {
             "type" : "string"
           }
         }

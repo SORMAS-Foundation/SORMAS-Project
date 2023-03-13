@@ -17397,13 +17397,13 @@ components:
           - OTHER_REASON
         otherDeletionReason:
           type: string
-        district:
-          type: string
         community:
+          type: string
+        region:
           type: string
         address:
           type: string
-        region:
+        district:
           type: string
         inJurisdictionOrOwned:
           type: boolean
@@ -17412,13 +17412,13 @@ components:
     EventIndexLocation:
       type: object
       properties:
-        district:
-          type: string
         community:
+          type: string
+        region:
           type: string
         address:
           type: string
-        region:
+        district:
           type: string
     PageEventIndexDto:
       type: object
@@ -19023,9 +19023,9 @@ components:
           maxLength: 512
           minLength: 0
           type: string
-        nameOtherPointOfEntry:
-          type: boolean
         otherPointOfEntry:
+          type: boolean
+        nameOtherPointOfEntry:
           type: boolean
     RegionDto:
       type: object
@@ -23164,13 +23164,13 @@ components:
           type: boolean
         caseInJurisdiction:
           type: boolean
-        eventInJurisdiction:
-          type: boolean
-        travelEntryInJurisdiction:
-          type: boolean
         contactInJurisdiction:
           type: boolean
         contactCaseInJurisdiction:
+          type: boolean
+        eventInJurisdiction:
+          type: boolean
+        travelEntryInJurisdiction:
           type: boolean
     CriteriaWithSortingTaskCriteria:
       type: object
@@ -23724,9 +23724,9 @@ components:
           type: string
         inJurisdiction:
           type: boolean
-        treatmentRoute:
-          type: string
         treatmentType:
+          type: string
+        treatmentRoute:
           type: string
     TreatmentIndexRoute:
       type: object
