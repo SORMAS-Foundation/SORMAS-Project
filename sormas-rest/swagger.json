@@ -14298,11 +14298,11 @@
             "minLength" : 0,
             "type" : "string"
           },
-          "emailAddress" : {
+          "phone" : {
             "type" : "string",
             "readOnly" : true
           },
-          "phone" : {
+          "emailAddress" : {
             "type" : "string",
             "readOnly" : true
           }
@@ -18659,16 +18659,16 @@
           "otherDeletionReason" : {
             "type" : "string"
           },
-          "region" : {
-            "type" : "string"
-          },
-          "address" : {
-            "type" : "string"
-          },
           "district" : {
             "type" : "string"
           },
           "community" : {
+            "type" : "string"
+          },
+          "region" : {
+            "type" : "string"
+          },
+          "address" : {
             "type" : "string"
           },
           "inJurisdictionOrOwned" : {
@@ -18682,16 +18682,16 @@
       "EventIndexLocation" : {
         "type" : "object",
         "properties" : {
-          "region" : {
-            "type" : "string"
-          },
-          "address" : {
-            "type" : "string"
-          },
           "district" : {
             "type" : "string"
           },
           "community" : {
+            "type" : "string"
+          },
+          "region" : {
+            "type" : "string"
+          },
+          "address" : {
             "type" : "string"
           }
         }
@@ -21488,10 +21488,10 @@
           "prescribingClinician" : {
             "type" : "string"
           },
-          "prescriptionType" : {
+          "prescriptionRoute" : {
             "type" : "string"
           },
-          "prescriptionRoute" : {
+          "prescriptionType" : {
             "type" : "string"
           },
           "inJurisdiction" : {
@@ -21997,12 +21997,6 @@
       "SampleJurisdictionFlagsDto" : {
         "type" : "object",
         "properties" : {
-          "inJurisdiction" : {
-            "type" : "boolean"
-          },
-          "caseInJurisdiction" : {
-            "type" : "boolean"
-          },
           "contactInJurisdiction" : {
             "type" : "boolean"
           },
@@ -22010,6 +22004,12 @@
             "type" : "boolean"
           },
           "evenParticipantInJurisdiction" : {
+            "type" : "boolean"
+          },
+          "caseInJurisdiction" : {
+            "type" : "boolean"
+          },
+          "inJurisdiction" : {
             "type" : "boolean"
           }
         }
@@ -23010,12 +23010,6 @@
       "TaskJurisdictionFlagsDto" : {
         "type" : "object",
         "properties" : {
-          "inJurisdiction" : {
-            "type" : "boolean"
-          },
-          "caseInJurisdiction" : {
-            "type" : "boolean"
-          },
           "contactInJurisdiction" : {
             "type" : "boolean"
           },
@@ -23026,6 +23020,12 @@
             "type" : "boolean"
           },
           "travelEntryInJurisdiction" : {
+            "type" : "boolean"
+          },
+          "caseInJurisdiction" : {
+            "type" : "boolean"
+          },
+          "inJurisdiction" : {
             "type" : "boolean"
           }
         }
@@ -23586,14 +23586,14 @@
           "executingClinician" : {
             "type" : "string"
           },
-          "inJurisdiction" : {
-            "type" : "boolean"
-          },
           "treatmentType" : {
             "type" : "string"
           },
           "treatmentRoute" : {
             "type" : "string"
+          },
+          "inJurisdiction" : {
+            "type" : "boolean"
           }
         }
       },
