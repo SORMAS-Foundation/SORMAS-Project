@@ -17399,9 +17399,9 @@ components:
           type: string
         inJurisdictionOrOwned:
           type: boolean
-        address:
-          type: string
         region:
+          type: string
+        address:
           type: string
         district:
           type: string
@@ -17412,9 +17412,9 @@ components:
     EventIndexLocation:
       type: object
       properties:
-        address:
-          type: string
         region:
+          type: string
+        address:
           type: string
         district:
           type: string
@@ -21228,12 +21228,12 @@ components:
           $ref: '#/components/schemas/PrescriptionIndexRoute'
         prescribingClinician:
           type: string
-        inJurisdiction:
-          type: boolean
         prescriptionType:
           type: string
         prescriptionRoute:
           type: string
+        inJurisdiction:
+          type: boolean
     PrescriptionIndexRoute:
       type: object
       properties:
@@ -23162,15 +23162,15 @@ components:
       properties:
         caseInJurisdiction:
           type: boolean
-        eventInJurisdiction:
-          type: boolean
-        travelEntryInJurisdiction:
-          type: boolean
         contactInJurisdiction:
           type: boolean
         contactCaseInJurisdiction:
           type: boolean
         inJurisdiction:
+          type: boolean
+        eventInJurisdiction:
+          type: boolean
+        travelEntryInJurisdiction:
           type: boolean
     CriteriaWithSortingTaskCriteria:
       type: object
@@ -23722,12 +23722,12 @@ components:
           $ref: '#/components/schemas/TreatmentIndexRoute'
         executingClinician:
           type: string
-        treatmentType:
-          type: string
-        treatmentRoute:
-          type: string
         inJurisdiction:
           type: boolean
+        treatmentRoute:
+          type: string
+        treatmentType:
+          type: string
     TreatmentIndexRoute:
       type: object
       properties:
