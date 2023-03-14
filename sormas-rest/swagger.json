@@ -18659,10 +18659,13 @@
           "otherDeletionReason" : {
             "type" : "string"
           },
-          "region" : {
-            "type" : "string"
+          "inJurisdictionOrOwned" : {
+            "type" : "boolean"
           },
           "address" : {
+            "type" : "string"
+          },
+          "region" : {
             "type" : "string"
           },
           "district" : {
@@ -18670,9 +18673,6 @@
           },
           "community" : {
             "type" : "string"
-          },
-          "inJurisdictionOrOwned" : {
-            "type" : "boolean"
           },
           "caption" : {
             "type" : "string"
@@ -18682,10 +18682,10 @@
       "EventIndexLocation" : {
         "type" : "object",
         "properties" : {
-          "region" : {
+          "address" : {
             "type" : "string"
           },
-          "address" : {
+          "region" : {
             "type" : "string"
           },
           "district" : {

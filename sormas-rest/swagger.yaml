@@ -17397,24 +17397,24 @@ components:
           - OTHER_REASON
         otherDeletionReason:
           type: string
-        region:
-          type: string
+        inJurisdictionOrOwned:
+          type: boolean
         address:
+          type: string
+        region:
           type: string
         district:
           type: string
         community:
           type: string
-        inJurisdictionOrOwned:
-          type: boolean
         caption:
           type: string
     EventIndexLocation:
       type: object
       properties:
-        region:
-          type: string
         address:
+          type: string
+        region:
           type: string
         district:
           type: string
