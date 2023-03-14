@@ -14298,11 +14298,11 @@
             "minLength" : 0,
             "type" : "string"
           },
-          "emailAddress" : {
+          "phone" : {
             "type" : "string",
             "readOnly" : true
           },
-          "phone" : {
+          "emailAddress" : {
             "type" : "string",
             "readOnly" : true
           }
@@ -18659,20 +18659,20 @@
           "otherDeletionReason" : {
             "type" : "string"
           },
+          "inJurisdictionOrOwned" : {
+            "type" : "boolean"
+          },
+          "district" : {
+            "type" : "string"
+          },
           "region" : {
             "type" : "string"
           },
           "address" : {
             "type" : "string"
           },
-          "district" : {
-            "type" : "string"
-          },
           "community" : {
             "type" : "string"
-          },
-          "inJurisdictionOrOwned" : {
-            "type" : "boolean"
           },
           "caption" : {
             "type" : "string"
@@ -18682,13 +18682,13 @@
       "EventIndexLocation" : {
         "type" : "object",
         "properties" : {
+          "district" : {
+            "type" : "string"
+          },
           "region" : {
             "type" : "string"
           },
           "address" : {
-            "type" : "string"
-          },
-          "district" : {
             "type" : "string"
           },
           "community" : {
@@ -19795,10 +19795,10 @@
             "minLength" : 0,
             "type" : "string"
           },
-          "otherPointOfEntry" : {
+          "nameOtherPointOfEntry" : {
             "type" : "boolean"
           },
-          "nameOtherPointOfEntry" : {
+          "otherPointOfEntry" : {
             "type" : "boolean"
           }
         }
@@ -21491,10 +21491,10 @@
           "inJurisdiction" : {
             "type" : "boolean"
           },
-          "prescriptionType" : {
+          "prescriptionRoute" : {
             "type" : "string"
           },
-          "prescriptionRoute" : {
+          "prescriptionType" : {
             "type" : "string"
           }
         }
@@ -22000,9 +22000,6 @@
           "inJurisdiction" : {
             "type" : "boolean"
           },
-          "caseInJurisdiction" : {
-            "type" : "boolean"
-          },
           "contactInJurisdiction" : {
             "type" : "boolean"
           },
@@ -22010,6 +22007,9 @@
             "type" : "boolean"
           },
           "evenParticipantInJurisdiction" : {
+            "type" : "boolean"
+          },
+          "caseInJurisdiction" : {
             "type" : "boolean"
           }
         }
@@ -23013,9 +23013,6 @@
           "inJurisdiction" : {
             "type" : "boolean"
           },
-          "caseInJurisdiction" : {
-            "type" : "boolean"
-          },
           "contactInJurisdiction" : {
             "type" : "boolean"
           },
@@ -23026,6 +23023,9 @@
             "type" : "boolean"
           },
           "travelEntryInJurisdiction" : {
+            "type" : "boolean"
+          },
+          "caseInJurisdiction" : {
             "type" : "boolean"
           }
         }
