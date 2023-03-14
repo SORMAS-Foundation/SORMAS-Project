@@ -18659,20 +18659,20 @@
           "otherDeletionReason" : {
             "type" : "string"
           },
-          "district" : {
-            "type" : "string"
+          "inJurisdictionOrOwned" : {
+            "type" : "boolean"
           },
-          "community" : {
+          "region" : {
             "type" : "string"
           },
           "address" : {
             "type" : "string"
           },
-          "region" : {
+          "community" : {
             "type" : "string"
           },
-          "inJurisdictionOrOwned" : {
-            "type" : "boolean"
+          "district" : {
+            "type" : "string"
           },
           "caption" : {
             "type" : "string"
@@ -18682,16 +18682,16 @@
       "EventIndexLocation" : {
         "type" : "object",
         "properties" : {
-          "district" : {
-            "type" : "string"
-          },
-          "community" : {
+          "region" : {
             "type" : "string"
           },
           "address" : {
             "type" : "string"
           },
-          "region" : {
+          "community" : {
+            "type" : "string"
+          },
+          "district" : {
             "type" : "string"
           }
         }
@@ -21491,10 +21491,10 @@
           "inJurisdiction" : {
             "type" : "boolean"
           },
-          "prescriptionType" : {
+          "prescriptionRoute" : {
             "type" : "string"
           },
-          "prescriptionRoute" : {
+          "prescriptionType" : {
             "type" : "string"
           }
         }
@@ -21997,10 +21997,10 @@
       "SampleJurisdictionFlagsDto" : {
         "type" : "object",
         "properties" : {
-          "inJurisdiction" : {
+          "caseInJurisdiction" : {
             "type" : "boolean"
           },
-          "caseInJurisdiction" : {
+          "inJurisdiction" : {
             "type" : "boolean"
           },
           "contactInJurisdiction" : {
@@ -23010,10 +23010,10 @@
       "TaskJurisdictionFlagsDto" : {
         "type" : "object",
         "properties" : {
-          "inJurisdiction" : {
+          "caseInJurisdiction" : {
             "type" : "boolean"
           },
-          "caseInJurisdiction" : {
+          "inJurisdiction" : {
             "type" : "boolean"
           },
           "contactInJurisdiction" : {
