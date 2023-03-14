@@ -88,7 +88,7 @@ public class EventParticipantsView extends AbstractEventView {
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/" + EVENTPARTICIPANTS;
 
 	private EventParticipantCriteria criteria;
-	private ViewConfiguration viewConfiguration;
+	private EventParticipantsViewConfiguration viewConfiguration;
 
 	private EventParticipantsGrid grid;
 	private Button addButton;
@@ -107,7 +107,7 @@ public class EventParticipantsView extends AbstractEventView {
 		setSizeFull();
 		addStyleName("crud-view");
 
-		viewConfiguration = ViewModelProviders.of(getClass()).get(ViewConfiguration.class);
+		viewConfiguration = ViewModelProviders.of(getClass()).get(EventParticipantsViewConfiguration.class);
 	}
 
 	public HorizontalLayout createTopBar() {
@@ -316,7 +316,9 @@ public class EventParticipantsView extends AbstractEventView {
 		boolean isEventArchived = FacadeProvider.getEventFacade().isArchived(eventRef.getUuid());
 
 		if (!DataHelper.isSame(eventRef, criteria.getEvent())
-			|| (isEventArchived && criteria.getRelevanceStatus() != EntityRelevanceStatus.ACTIVE_AND_ARCHIVED)) {
+			|| (!viewConfiguration.isRelevanceStatusChanged(eventRef)
+				&& isEventArchived
+				&& criteria.getRelevanceStatus() != EntityRelevanceStatus.ACTIVE_AND_ARCHIVED)) {
 			criteria.relevanceStatus(isEventArchived ? EntityRelevanceStatus.ACTIVE_AND_ARCHIVED : EntityRelevanceStatus.ACTIVE);
 		}
 		criteria.withEvent(eventRef);
@@ -391,6 +393,7 @@ public class EventParticipantsView extends AbstractEventView {
 				Captions.eventParticipantActiveAndArchivedEventParticipants);
 
 			eventParticipantRelevanceStatusFilter.addValueChangeListener(e -> {
+				viewConfiguration.setRelevanceStatusChangedEvent(getEventRef().getUuid());
 				if (relevanceStatusInfoLabel != null) {
 					relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
 				}
