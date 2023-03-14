@@ -18659,11 +18659,11 @@
           "otherDeletionReason" : {
             "type" : "string"
           },
-          "community" : {
+          "district" : {
             "type" : "string"
           },
-          "inJurisdictionOrOwned" : {
-            "type" : "boolean"
+          "community" : {
+            "type" : "string"
           },
           "address" : {
             "type" : "string"
@@ -18671,8 +18671,8 @@
           "region" : {
             "type" : "string"
           },
-          "district" : {
-            "type" : "string"
+          "inJurisdictionOrOwned" : {
+            "type" : "boolean"
           },
           "caption" : {
             "type" : "string"
@@ -18682,6 +18682,9 @@
       "EventIndexLocation" : {
         "type" : "object",
         "properties" : {
+          "district" : {
+            "type" : "string"
+          },
           "community" : {
             "type" : "string"
           },
@@ -18689,9 +18692,6 @@
             "type" : "string"
           },
           "region" : {
-            "type" : "string"
-          },
-          "district" : {
             "type" : "string"
           }
         }
@@ -21488,10 +21488,10 @@
           "prescribingClinician" : {
             "type" : "string"
           },
-          "prescriptionType" : {
+          "prescriptionRoute" : {
             "type" : "string"
           },
-          "prescriptionRoute" : {
+          "prescriptionType" : {
             "type" : "string"
           },
           "inJurisdiction" : {
@@ -23010,16 +23010,16 @@
       "TaskJurisdictionFlagsDto" : {
         "type" : "object",
         "properties" : {
-          "eventInJurisdiction" : {
-            "type" : "boolean"
-          },
-          "travelEntryInJurisdiction" : {
-            "type" : "boolean"
-          },
           "contactInJurisdiction" : {
             "type" : "boolean"
           },
           "contactCaseInJurisdiction" : {
+            "type" : "boolean"
+          },
+          "eventInJurisdiction" : {
+            "type" : "boolean"
+          },
+          "travelEntryInJurisdiction" : {
             "type" : "boolean"
           },
           "inJurisdiction" : {
@@ -23586,14 +23586,14 @@
           "executingClinician" : {
             "type" : "string"
           },
+          "treatmentRoute" : {
+            "type" : "string"
+          },
           "treatmentType" : {
             "type" : "string"
           },
           "inJurisdiction" : {
             "type" : "boolean"
-          },
-          "treatmentRoute" : {
-            "type" : "string"
           }
         }
       },
