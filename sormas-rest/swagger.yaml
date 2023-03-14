@@ -12352,10 +12352,10 @@ components:
           maxLength: 1000000
           minLength: 0
           type: string
-        emailAddress:
+        phone:
           type: string
           readOnly: true
-        phone:
+        emailAddress:
           type: string
           readOnly: true
     AgeAndBirthDateDto:
@@ -17399,26 +17399,26 @@ components:
           type: string
         inJurisdictionOrOwned:
           type: boolean
-        region:
-          type: string
-        address:
-          type: string
         district:
           type: string
         community:
+          type: string
+        address:
+          type: string
+        region:
           type: string
         caption:
           type: string
     EventIndexLocation:
       type: object
       properties:
-        region:
-          type: string
-        address:
-          type: string
         district:
           type: string
         community:
+          type: string
+        address:
+          type: string
+        region:
           type: string
     PageEventIndexDto:
       type: object
@@ -21228,9 +21228,9 @@ components:
           $ref: '#/components/schemas/PrescriptionIndexRoute'
         prescribingClinician:
           type: string
-        prescriptionType:
-          type: string
         prescriptionRoute:
+          type: string
+        prescriptionType:
           type: string
         inJurisdiction:
           type: boolean
@@ -23160,6 +23160,10 @@ components:
     TaskJurisdictionFlagsDto:
       type: object
       properties:
+        eventInJurisdiction:
+          type: boolean
+        travelEntryInJurisdiction:
+          type: boolean
         caseInJurisdiction:
           type: boolean
         contactInJurisdiction:
@@ -23167,10 +23171,6 @@ components:
         contactCaseInJurisdiction:
           type: boolean
         inJurisdiction:
-          type: boolean
-        eventInJurisdiction:
-          type: boolean
-        travelEntryInJurisdiction:
           type: boolean
     CriteriaWithSortingTaskCriteria:
       type: object
@@ -23722,12 +23722,12 @@ components:
           $ref: '#/components/schemas/TreatmentIndexRoute'
         executingClinician:
           type: string
-        inJurisdiction:
-          type: boolean
         treatmentRoute:
           type: string
         treatmentType:
           type: string
+        inJurisdiction:
+          type: boolean
     TreatmentIndexRoute:
       type: object
       properties:
