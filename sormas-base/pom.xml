@@ -1535,7 +1535,7 @@
 		<module>../sormas-keycloak-service-provider</module>
 		<module>../sormas-rest</module>
 		<module>../sormas-ui</module>
-		<module>./dependencies/serverlibs.pom</module>
+		<module>../sormas-serverlibs</module>
 		<module>../sormas-cargoserver</module>
 	</modules>
 </project>
