@@ -30,6 +30,15 @@ vaadin-drawer-toggle[slot="navbar"] {
   flex-direction: column;
 }
 
+:host([active]) a{
+	color: white !important;
+	background: red !important;
+}
+
+a:active{
+	color: red !important;
+}
+
 vaadin-scroller[slot="drawer"] {
  background: #0D6938;
   flex: 1;
@@ -51,6 +60,9 @@ vaadin-scroller[slot="drawer"][overflow~="bottom"] {
   padding: var(--lumo-space-s) var(--lumo-space-m);
   min-height: var(--lumo-size-xl);
   box-sizing: border-box;
+}
+[part='icon'], [part='icon']::after, [part='icon']::before{
+	color: white !important;
 }
 
 [slot="drawer"]:is(header, footer):is(:empty) {
@@ -124,11 +136,12 @@ width: 100%;
     }
     
     .navScroller{
-    background: green
+    background: green;
+     color: white;
     }
     
     .menuNav{
-    color: white
+    color: white !important; 
     }
     
     .menuNav:active{
@@ -141,6 +154,10 @@ width: 100%;
     background: orange;
 
     }
+    
+    vcf-nav-item#navitem {
+    color: white;
+}
     
      #menuItems:active {
     background: orange !important; 
@@ -192,4 +209,35 @@ margin-top: 15px;
 
 :host{
 color:white !important;
+background-color: orange;
 }
+
+#label-vaadin-text-field-0, #label-vaadin-password-field-3{
+	color: white;
+	height:45px;
+}
+
+#input-vaadin-text-field-6, #input-vaadin-password-field-7 {
+    --_lumo-text-field-overflow-mask-image: () !important;
+    -webkit-mask-image: var(--_lumo-text-field-overflow-mask-image);
+    border-radius: 5px;
+    margin-left: -5px;
+    border: 1px solid white !important;
+    	color: white;
+    
+}
+
+label {
+    color: green !important;
+}
+
+a:active {
+    color: white !important;
+    background-color: orange !important;
+}
+
+a {
+    color: white !important;
+}
+
+

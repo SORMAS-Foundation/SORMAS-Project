@@ -73,9 +73,11 @@ public class AboutView extends VerticalLayout {
         message.getStyle().set("color", "green");
      //   binder.forField(message).bind(Feedback::getFeedback, Feedback::setFeedback);
 
-        Button sendFeedback = new Button("Send", new Icon("vaadin", "location-arrow"));
+        Button sendFeedback = new Button("Send", new Icon("vaadin", "location-arrow-circle-o"));
         sendFeedback.getStyle().set("color", "white");
         sendFeedback.getStyle().set("background", "green");
+        sendFeedback.getStyle().set("width", "10%");
+        sendFeedback.getStyle().set("border-radius", "8px");
 
         sendFeedback.addClickListener(click -> System.out.println("kkcvakvckavsckvackvakscvkasvckasvckasvckhavsckhavsckhv"));
      //   sendFeedback.setSuffixComponent(new Icon("vaadin", "building"));
