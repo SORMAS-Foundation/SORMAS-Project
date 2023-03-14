@@ -14298,11 +14298,11 @@
             "minLength" : 0,
             "type" : "string"
           },
-          "emailAddress" : {
+          "phone" : {
             "type" : "string",
             "readOnly" : true
           },
-          "phone" : {
+          "emailAddress" : {
             "type" : "string",
             "readOnly" : true
           }
@@ -15209,11 +15209,11 @@
         }, {
           "type" : "object",
           "properties" : {
-            "upperThreshold" : {
+            "lowerThreshold" : {
               "type" : "integer",
               "format" : "int32"
             },
-            "lowerThreshold" : {
+            "upperThreshold" : {
               "type" : "integer",
               "format" : "int32"
             }
@@ -18662,16 +18662,16 @@
           "inJurisdictionOrOwned" : {
             "type" : "boolean"
           },
-          "district" : {
-            "type" : "string"
-          },
-          "community" : {
+          "address" : {
             "type" : "string"
           },
           "region" : {
             "type" : "string"
           },
-          "address" : {
+          "district" : {
+            "type" : "string"
+          },
+          "community" : {
             "type" : "string"
           },
           "caption" : {
@@ -18682,16 +18682,16 @@
       "EventIndexLocation" : {
         "type" : "object",
         "properties" : {
-          "district" : {
-            "type" : "string"
-          },
-          "community" : {
+          "address" : {
             "type" : "string"
           },
           "region" : {
             "type" : "string"
           },
-          "address" : {
+          "district" : {
+            "type" : "string"
+          },
+          "community" : {
             "type" : "string"
           }
         }
@@ -19795,10 +19795,10 @@
             "minLength" : 0,
             "type" : "string"
           },
-          "nameOtherPointOfEntry" : {
+          "otherPointOfEntry" : {
             "type" : "boolean"
           },
-          "otherPointOfEntry" : {
+          "nameOtherPointOfEntry" : {
             "type" : "boolean"
           }
         }
@@ -21488,14 +21488,14 @@
           "prescribingClinician" : {
             "type" : "string"
           },
+          "prescriptionType" : {
+            "type" : "string"
+          },
           "prescriptionRoute" : {
             "type" : "string"
           },
           "inJurisdiction" : {
             "type" : "boolean"
-          },
-          "prescriptionType" : {
-            "type" : "string"
           }
         }
       },
@@ -23589,10 +23589,10 @@
           "inJurisdiction" : {
             "type" : "boolean"
           },
-          "treatmentRoute" : {
+          "treatmentType" : {
             "type" : "string"
           },
-          "treatmentType" : {
+          "treatmentRoute" : {
             "type" : "string"
           }
         }
