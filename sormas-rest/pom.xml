@@ -151,6 +151,7 @@
 					<outputFormat>JSONANDYAML</outputFormat>
 					<prettyPrint>true</prettyPrint>
 					<objectMapperProcessorClass>de.symeda.sormas.rest.swagger.SwaggerConfig</objectMapperProcessorClass>
+					<sortOutput>true</sortOutput>
 				</configuration>
 				<executions>
 					<execution>

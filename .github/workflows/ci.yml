@@ -112,8 +112,7 @@ jobs:
       - name: Commit openAPI spec to development
         # Privileged action needing a secret token. Since this only runs on development in our own repo
         # the token will be available through a privileged checkout.
-        # TODO #11553 re-activate this
-        if: false && github.event_name == 'push' && github.ref == 'refs/heads/development' && hashFiles('sormas-rest/target/swagger.yaml') != hashFiles('sormas-rest/swagger.yaml')
+        if: github.event_name == 'push' && github.ref == 'refs/heads/development' && hashFiles('sormas-rest/target/swagger.yaml') != hashFiles('sormas-rest/swagger.yaml')
         # https://stackoverflow.com/questions/59604922/authorize-bash-to-access-github-protected-branch
         run: |
             git config --global user.name "sormas-vitagroup"
