@@ -18659,20 +18659,20 @@
           "otherDeletionReason" : {
             "type" : "string"
           },
-          "district" : {
-            "type" : "string"
-          },
           "region" : {
             "type" : "string"
           },
           "address" : {
             "type" : "string"
           },
-          "inJurisdictionOrOwned" : {
-            "type" : "boolean"
+          "district" : {
+            "type" : "string"
           },
           "community" : {
             "type" : "string"
+          },
+          "inJurisdictionOrOwned" : {
+            "type" : "boolean"
           },
           "caption" : {
             "type" : "string"
@@ -18682,13 +18682,13 @@
       "EventIndexLocation" : {
         "type" : "object",
         "properties" : {
-          "district" : {
-            "type" : "string"
-          },
           "region" : {
             "type" : "string"
           },
           "address" : {
+            "type" : "string"
+          },
+          "district" : {
             "type" : "string"
           },
           "community" : {
@@ -23586,10 +23586,10 @@
           "executingClinician" : {
             "type" : "string"
           },
-          "treatmentRoute" : {
+          "treatmentType" : {
             "type" : "string"
           },
-          "treatmentType" : {
+          "treatmentRoute" : {
             "type" : "string"
           },
           "inJurisdiction" : {

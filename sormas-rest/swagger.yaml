@@ -17397,26 +17397,26 @@ components:
           - OTHER_REASON
         otherDeletionReason:
           type: string
-        district:
-          type: string
         region:
           type: string
         address:
           type: string
-        inJurisdictionOrOwned:
-          type: boolean
+        district:
+          type: string
         community:
           type: string
+        inJurisdictionOrOwned:
+          type: boolean
         caption:
           type: string
     EventIndexLocation:
       type: object
       properties:
-        district:
-          type: string
         region:
           type: string
         address:
+          type: string
+        district:
           type: string
         community:
           type: string
@@ -23722,9 +23722,9 @@ components:
           $ref: '#/components/schemas/TreatmentIndexRoute'
         executingClinician:
           type: string
-        treatmentRoute:
-          type: string
         treatmentType:
+          type: string
+        treatmentRoute:
           type: string
         inJurisdiction:
           type: boolean
