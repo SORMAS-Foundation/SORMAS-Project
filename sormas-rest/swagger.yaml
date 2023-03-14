@@ -15439,15 +15439,15 @@ components:
           format: int64
         lastReportedDistrictName:
           type: string
-        casesDifference:
-          type: integer
-          format: int64
         casesDifferencePercentage:
           type: number
           format: float
         caseFatalityRate:
           type: number
           format: float
+        casesDifference:
+          type: integer
+          format: int64
     DashboardCriteria:
       type: object
       properties:
@@ -17397,8 +17397,6 @@ components:
           - OTHER_REASON
         otherDeletionReason:
           type: string
-        inJurisdictionOrOwned:
-          type: boolean
         district:
           type: string
         community:
@@ -17407,6 +17405,8 @@ components:
           type: string
         address:
           type: string
+        inJurisdictionOrOwned:
+          type: boolean
         caption:
           type: string
     EventIndexLocation:
@@ -19023,9 +19023,9 @@ components:
           maxLength: 512
           minLength: 0
           type: string
-        nameOtherPointOfEntry:
-          type: boolean
         otherPointOfEntry:
+          type: boolean
+        nameOtherPointOfEntry:
           type: boolean
     RegionDto:
       type: object
@@ -21842,15 +21842,15 @@ components:
     SampleJurisdictionFlagsDto:
       type: object
       properties:
-        caseInJurisdiction:
-          type: boolean
-        inJurisdiction:
-          type: boolean
         contactInJurisdiction:
           type: boolean
         contactCaseInJurisdiction:
           type: boolean
         evenParticipantInJurisdiction:
+          type: boolean
+        inJurisdiction:
+          type: boolean
+        caseInJurisdiction:
           type: boolean
     CriteriaWithSortingSampleCriteria:
       type: object
@@ -23160,7 +23160,9 @@ components:
     TaskJurisdictionFlagsDto:
       type: object
       properties:
-        caseInJurisdiction:
+        contactInJurisdiction:
+          type: boolean
+        contactCaseInJurisdiction:
           type: boolean
         eventInJurisdiction:
           type: boolean
@@ -23168,9 +23170,7 @@ components:
           type: boolean
         inJurisdiction:
           type: boolean
-        contactInJurisdiction:
-          type: boolean
-        contactCaseInJurisdiction:
+        caseInJurisdiction:
           type: boolean
     CriteriaWithSortingTaskCriteria:
       type: object
