@@ -17397,14 +17397,14 @@ components:
           - OTHER_REASON
         otherDeletionReason:
           type: string
-        district:
+        inJurisdictionOrOwned:
+          type: boolean
+        region:
           type: string
         address:
           type: string
-        region:
+        district:
           type: string
-        inJurisdictionOrOwned:
-          type: boolean
         community:
           type: string
         caption:
@@ -17412,11 +17412,11 @@ components:
     EventIndexLocation:
       type: object
       properties:
-        district:
+        region:
           type: string
         address:
           type: string
-        region:
+        district:
           type: string
         community:
           type: string
@@ -21848,9 +21848,9 @@ components:
           type: boolean
         evenParticipantInJurisdiction:
           type: boolean
-        inJurisdiction:
-          type: boolean
         caseInJurisdiction:
+          type: boolean
+        inJurisdiction:
           type: boolean
     CriteriaWithSortingSampleCriteria:
       type: object
@@ -23164,13 +23164,13 @@ components:
           type: boolean
         contactCaseInJurisdiction:
           type: boolean
-        inJurisdiction:
-          type: boolean
-        caseInJurisdiction:
-          type: boolean
         eventInJurisdiction:
           type: boolean
         travelEntryInJurisdiction:
+          type: boolean
+        caseInJurisdiction:
+          type: boolean
+        inJurisdiction:
           type: boolean
     CriteriaWithSortingTaskCriteria:
       type: object
@@ -23722,12 +23722,12 @@ components:
           $ref: '#/components/schemas/TreatmentIndexRoute'
         executingClinician:
           type: string
-        inJurisdiction:
-          type: boolean
-        treatmentRoute:
-          type: string
         treatmentType:
           type: string
+        treatmentRoute:
+          type: string
+        inJurisdiction:
+          type: boolean
     TreatmentIndexRoute:
       type: object
       properties:

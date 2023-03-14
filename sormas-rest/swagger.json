@@ -18659,17 +18659,17 @@
           "otherDeletionReason" : {
             "type" : "string"
           },
-          "district" : {
+          "inJurisdictionOrOwned" : {
+            "type" : "boolean"
+          },
+          "region" : {
             "type" : "string"
           },
           "address" : {
             "type" : "string"
           },
-          "region" : {
+          "district" : {
             "type" : "string"
-          },
-          "inJurisdictionOrOwned" : {
-            "type" : "boolean"
           },
           "community" : {
             "type" : "string"
@@ -18682,13 +18682,13 @@
       "EventIndexLocation" : {
         "type" : "object",
         "properties" : {
-          "district" : {
+          "region" : {
             "type" : "string"
           },
           "address" : {
             "type" : "string"
           },
-          "region" : {
+          "district" : {
             "type" : "string"
           },
           "community" : {
@@ -22006,10 +22006,10 @@
           "evenParticipantInJurisdiction" : {
             "type" : "boolean"
           },
-          "inJurisdiction" : {
+          "caseInJurisdiction" : {
             "type" : "boolean"
           },
-          "caseInJurisdiction" : {
+          "inJurisdiction" : {
             "type" : "boolean"
           }
         }
@@ -23016,16 +23016,16 @@
           "contactCaseInJurisdiction" : {
             "type" : "boolean"
           },
-          "inJurisdiction" : {
+          "eventInJurisdiction" : {
+            "type" : "boolean"
+          },
+          "travelEntryInJurisdiction" : {
             "type" : "boolean"
           },
           "caseInJurisdiction" : {
             "type" : "boolean"
           },
-          "eventInJurisdiction" : {
-            "type" : "boolean"
-          },
-          "travelEntryInJurisdiction" : {
+          "inJurisdiction" : {
             "type" : "boolean"
           }
         }
@@ -23586,14 +23586,14 @@
           "executingClinician" : {
             "type" : "string"
           },
-          "inJurisdiction" : {
-            "type" : "boolean"
+          "treatmentType" : {
+            "type" : "string"
           },
           "treatmentRoute" : {
             "type" : "string"
           },
-          "treatmentType" : {
-            "type" : "string"
+          "inJurisdiction" : {
+            "type" : "boolean"
           }
         }
       },
