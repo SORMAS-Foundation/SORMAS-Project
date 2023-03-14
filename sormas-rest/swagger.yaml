@@ -12352,10 +12352,10 @@ components:
           maxLength: 1000000
           minLength: 0
           type: string
-        emailAddress:
+        phone:
           type: string
           readOnly: true
-        phone:
+        emailAddress:
           type: string
           readOnly: true
     AgeAndBirthDateDto:
@@ -13455,10 +13455,10 @@ components:
       - $ref: '#/components/schemas/ClassificationCriteriaDto'
       - type: object
         properties:
-          upperThreshold:
+          lowerThreshold:
             type: integer
             format: int32
-          lowerThreshold:
+          upperThreshold:
             type: integer
             format: int32
     ClassificationSymptomsCriteriaDto:
@@ -17397,28 +17397,28 @@ components:
           - OTHER_REASON
         otherDeletionReason:
           type: string
+        district:
+          type: string
+        community:
+          type: string
         region:
           type: string
         address:
           type: string
         inJurisdictionOrOwned:
           type: boolean
-        district:
-          type: string
-        community:
-          type: string
         caption:
           type: string
     EventIndexLocation:
       type: object
       properties:
-        region:
-          type: string
-        address:
-          type: string
         district:
           type: string
         community:
+          type: string
+        region:
+          type: string
+        address:
           type: string
     PageEventIndexDto:
       type: object
@@ -19023,9 +19023,9 @@ components:
           maxLength: 512
           minLength: 0
           type: string
-        nameOtherPointOfEntry:
-          type: boolean
         otherPointOfEntry:
+          type: boolean
+        nameOtherPointOfEntry:
           type: boolean
     RegionDto:
       type: object
@@ -21228,12 +21228,12 @@ components:
           $ref: '#/components/schemas/PrescriptionIndexRoute'
         prescribingClinician:
           type: string
-        prescriptionType:
-          type: string
         prescriptionRoute:
           type: string
         inJurisdiction:
           type: boolean
+        prescriptionType:
+          type: string
     PrescriptionIndexRoute:
       type: object
       properties:
@@ -21842,13 +21842,13 @@ components:
     SampleJurisdictionFlagsDto:
       type: object
       properties:
-        caseInJurisdiction:
-          type: boolean
         contactInJurisdiction:
           type: boolean
         contactCaseInJurisdiction:
           type: boolean
         evenParticipantInJurisdiction:
+          type: boolean
+        caseInJurisdiction:
           type: boolean
         inJurisdiction:
           type: boolean
@@ -23160,15 +23160,15 @@ components:
     TaskJurisdictionFlagsDto:
       type: object
       properties:
-        caseInJurisdiction:
+        contactInJurisdiction:
+          type: boolean
+        contactCaseInJurisdiction:
           type: boolean
         eventInJurisdiction:
           type: boolean
         travelEntryInJurisdiction:
           type: boolean
-        contactInJurisdiction:
-          type: boolean
-        contactCaseInJurisdiction:
+        caseInJurisdiction:
           type: boolean
         inJurisdiction:
           type: boolean
