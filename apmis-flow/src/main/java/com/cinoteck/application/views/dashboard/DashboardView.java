@@ -6,32 +6,16 @@ import java.util.Map;
 import com.vaadin.flow.component.accordion.Accordion;
 import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.dependency.StyleSheet;
-import com.vaadin.flow.component.page.Page;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.cinoteck.application.views.MainLayout;
-import com.cinoteck.application.views.admin.TestView1;
-//import com.cinoteck.application.views.admin.TestView2;
-import com.cinoteck.application.views.admin.TestView3;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.H3;
-import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
-import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.router.RouterLayout;
 
 @PageTitle("Campaign Dashboard")
@@ -52,7 +36,7 @@ public class DashboardView extends VerticalLayout implements RouterLayout{
 	}
 
 	public DashboardView() {
-		setSpacing(false);
+		setSpacing(true);
 
 
 		Select<String> campaign = new Select<>();
