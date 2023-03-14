@@ -12352,10 +12352,10 @@ components:
           maxLength: 1000000
           minLength: 0
           type: string
-        phone:
+        emailAddress:
           type: string
           readOnly: true
-        emailAddress:
+        phone:
           type: string
           readOnly: true
     AgeAndBirthDateDto:
@@ -17397,28 +17397,28 @@ components:
           - OTHER_REASON
         otherDeletionReason:
           type: string
-        inJurisdictionOrOwned:
-          type: boolean
-        region:
-          type: string
-        address:
-          type: string
         district:
           type: string
         community:
           type: string
+        address:
+          type: string
+        region:
+          type: string
+        inJurisdictionOrOwned:
+          type: boolean
         caption:
           type: string
     EventIndexLocation:
       type: object
       properties:
-        region:
-          type: string
-        address:
-          type: string
         district:
           type: string
         community:
+          type: string
+        address:
+          type: string
+        region:
           type: string
     PageEventIndexDto:
       type: object
@@ -21844,13 +21844,13 @@ components:
       properties:
         inJurisdiction:
           type: boolean
+        caseInJurisdiction:
+          type: boolean
         contactInJurisdiction:
           type: boolean
         contactCaseInJurisdiction:
           type: boolean
         evenParticipantInJurisdiction:
-          type: boolean
-        caseInJurisdiction:
           type: boolean
     CriteriaWithSortingSampleCriteria:
       type: object
@@ -23162,6 +23162,8 @@ components:
       properties:
         inJurisdiction:
           type: boolean
+        caseInJurisdiction:
+          type: boolean
         contactInJurisdiction:
           type: boolean
         contactCaseInJurisdiction:
@@ -23169,8 +23171,6 @@ components:
         eventInJurisdiction:
           type: boolean
         travelEntryInJurisdiction:
-          type: boolean
-        caseInJurisdiction:
           type: boolean
     CriteriaWithSortingTaskCriteria:
       type: object
@@ -23722,10 +23722,10 @@ components:
           $ref: '#/components/schemas/TreatmentIndexRoute'
         executingClinician:
           type: string
-        treatmentType:
-          type: string
         inJurisdiction:
           type: boolean
+        treatmentType:
+          type: string
         treatmentRoute:
           type: string
     TreatmentIndexRoute:
