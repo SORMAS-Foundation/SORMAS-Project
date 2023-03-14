@@ -15209,11 +15209,11 @@
         }, {
           "type" : "object",
           "properties" : {
-            "upperThreshold" : {
+            "lowerThreshold" : {
               "type" : "integer",
               "format" : "int32"
             },
-            "lowerThreshold" : {
+            "upperThreshold" : {
               "type" : "integer",
               "format" : "int32"
             }
@@ -18662,13 +18662,13 @@
           "inJurisdictionOrOwned" : {
             "type" : "boolean"
           },
-          "region" : {
+          "district" : {
             "type" : "string"
           },
           "address" : {
             "type" : "string"
           },
-          "district" : {
+          "region" : {
             "type" : "string"
           },
           "community" : {
@@ -18682,13 +18682,13 @@
       "EventIndexLocation" : {
         "type" : "object",
         "properties" : {
-          "region" : {
+          "district" : {
             "type" : "string"
           },
           "address" : {
             "type" : "string"
           },
-          "district" : {
+          "region" : {
             "type" : "string"
           },
           "community" : {
