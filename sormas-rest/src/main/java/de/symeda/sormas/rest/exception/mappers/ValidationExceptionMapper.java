@@ -13,24 +13,21 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.rest.resources;
+package de.symeda.sormas.rest.exception.mappers;
 
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.infrastructure.InfrastructureChangeDatesDto;
-import de.symeda.sormas.api.infrastructure.InfrastructureSyncDto;
+import org.apache.http.HttpStatus;
 
-@Path("/infrastructure")
-@Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
-public class InfrastructureResource {
+import de.symeda.sormas.api.utils.ValidationException;
 
-	@POST
-	@Path("/sync")
-	public InfrastructureSyncDto getInfrastructureSyncData(InfrastructureChangeDatesDto changeDates) {
-		return FacadeProvider.getInfrastructureSyncFacade().getInfrastructureSyncData(changeDates);
+@Provider
+public class ValidationExceptionMapper implements ExceptionMapper<ValidationException> {
+
+	@Override
+	public Response toResponse(ValidationException e) {
+		return Response.status(HttpStatus.SC_BAD_REQUEST).entity("The entity is not valid.").build();
 	}
 }

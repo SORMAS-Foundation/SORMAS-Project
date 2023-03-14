@@ -13,24 +13,35 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.rest.resources;
+package de.symeda.sormas.api;
 
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.infrastructure.InfrastructureChangeDatesDto;
-import de.symeda.sormas.api.infrastructure.InfrastructureSyncDto;
+public class PushResponse {
 
-@Path("/infrastructure")
-@Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
-public class InfrastructureResource {
+	private int statusCode;
 
-	@POST
-	@Path("/sync")
-	public InfrastructureSyncDto getInfrastructureSyncData(InfrastructureChangeDatesDto changeDates) {
-		return FacadeProvider.getInfrastructureSyncFacade().getInfrastructureSyncData(changeDates);
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	private Object body;
+
+	public PushResponse(int statusCode, Object body) {
+		this.statusCode = statusCode;
+		this.body = body;
+	}
+
+	public int getStatusCode() {
+		return statusCode;
+	}
+
+	public void setStatusCode(int statusCode) {
+		this.statusCode = statusCode;
+	}
+
+	public Object getBody() {
+		return body;
+	}
+
+	public void setBody(Object body) {
+		this.body = body;
 	}
 }

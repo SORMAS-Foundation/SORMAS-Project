@@ -16,23 +16,21 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.rest.exception;
+package de.symeda.sormas.rest.exception.mappers;
 
-import javax.ejb.EJBAccessException;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.http.HttpStatus;
 
+import de.symeda.sormas.api.utils.AccessDeniedException;
+
 @Provider
-@Produces(MediaType.APPLICATION_JSON)
-public class EJBAccessExceptionMapper implements ExceptionMapper<EJBAccessException> {
+public class AccessDeniedExceptionMapper implements ExceptionMapper<AccessDeniedException> {
 
 	@Override
-	public Response toResponse(EJBAccessException exception) {
+	public Response toResponse(AccessDeniedException exception) {
 		return Response.status(HttpStatus.SC_FORBIDDEN).entity("Access to the specified resource has been forbidden.").build();
 	}
 }

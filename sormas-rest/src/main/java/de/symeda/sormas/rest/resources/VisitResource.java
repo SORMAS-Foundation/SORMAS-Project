@@ -1,26 +1,24 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.rest.resources;
 
 import java.util.Date;
 import java.util.List;
+import java.util.function.UnaryOperator;
 
-import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -31,12 +29,12 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.visit.VisitCriteria;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitIndexDto;
+import de.symeda.sormas.rest.resources.base.EntityDtoResource;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
@@ -50,7 +48,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 @Path("/visits")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
-public class VisitResource extends EntityDtoResource {
+public class VisitResource extends EntityDtoResource<VisitDto> {
 
 	/**
 	 * Attention: For now this only returns the visits of contacts, since case visits are not yet implemented in the mobile app
@@ -64,24 +62,17 @@ public class VisitResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}/{size}/{lastSynchronizedUuid}")
-	public List<VisitDto> getAllVisits(@PathParam("since") long since, @PathParam("size") int size, @PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
+	public List<VisitDto> getAllVisits(
+		@PathParam("since") long since,
+		@PathParam("size") int size,
+		@PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
 		return FacadeProvider.getVisitFacade().getAllActiveVisitsAfter(new Date(since), size, lastSynchronizedUuid);
 	}
 
 	@POST
 	@Path("/query")
 	public List<VisitDto> getByUuids(List<String> uuids) {
-
-		List<VisitDto> result = FacadeProvider.getVisitFacade().getByUuids(uuids);
-		return result;
-	}
-
-	@POST
-	@Path("/push")
-	public List<PushResult> postVisits(@Valid List<VisitDto> dtos) {
-
-		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getVisitFacade()::saveVisit);
-		return result;
+		return FacadeProvider.getVisitFacade().getByUuids(uuids);
 	}
 
 	@GET
@@ -99,4 +90,8 @@ public class VisitResource extends EntityDtoResource {
 		return FacadeProvider.getVisitFacade().getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
 	}
 
+	@Override
+	public UnaryOperator<VisitDto> getSave() {
+		return FacadeProvider.getVisitFacade()::saveVisit;
+	}
 }
