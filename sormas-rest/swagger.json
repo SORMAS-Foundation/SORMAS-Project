@@ -18659,20 +18659,20 @@
           "otherDeletionReason" : {
             "type" : "string"
           },
+          "inJurisdictionOrOwned" : {
+            "type" : "boolean"
+          },
           "district" : {
             "type" : "string"
           },
           "community" : {
             "type" : "string"
           },
-          "region" : {
-            "type" : "string"
-          },
           "address" : {
             "type" : "string"
           },
-          "inJurisdictionOrOwned" : {
-            "type" : "boolean"
+          "region" : {
+            "type" : "string"
           },
           "caption" : {
             "type" : "string"
@@ -18688,10 +18688,10 @@
           "community" : {
             "type" : "string"
           },
-          "region" : {
+          "address" : {
             "type" : "string"
           },
-          "address" : {
+          "region" : {
             "type" : "string"
           }
         }
@@ -21997,9 +21997,6 @@
       "SampleJurisdictionFlagsDto" : {
         "type" : "object",
         "properties" : {
-          "inJurisdiction" : {
-            "type" : "boolean"
-          },
           "contactInJurisdiction" : {
             "type" : "boolean"
           },
@@ -22010,6 +22007,9 @@
             "type" : "boolean"
           },
           "caseInJurisdiction" : {
+            "type" : "boolean"
+          },
+          "inJurisdiction" : {
             "type" : "boolean"
           }
         }
@@ -23016,9 +23016,6 @@
           "travelEntryInJurisdiction" : {
             "type" : "boolean"
           },
-          "inJurisdiction" : {
-            "type" : "boolean"
-          },
           "contactInJurisdiction" : {
             "type" : "boolean"
           },
@@ -23026,6 +23023,9 @@
             "type" : "boolean"
           },
           "caseInJurisdiction" : {
+            "type" : "boolean"
+          },
+          "inJurisdiction" : {
             "type" : "boolean"
           }
         }
