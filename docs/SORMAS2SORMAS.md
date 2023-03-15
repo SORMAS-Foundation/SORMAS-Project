@@ -13,7 +13,7 @@ A SORMAS instance is a running instance of the SORMAS application. A SORMAS inst
 in S2S is obviously the main component of the Sormas2Sormas feature. It is the one that initiates the sharing process
 and the one that receives the shared entities. Each instance has a unique S2S identifier which is an arbitrary string.
 We do not enforce a certain scheme, but it is strongly encouraged to use a meaningful and consistent identifiers
-(e.g., `2.sormas.id.sormas_a`).
+(e.g., `2.sormas.id.sormas_a` in Germany which is the dedicated SurvNet ID for the public health office).
 
 #### Server Descriptors
 

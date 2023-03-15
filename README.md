@@ -41,6 +41,11 @@ Making use of the SORMAS web application through a mobile device web browser is 
 Yes! Please download the [latest release](https://github.com/hzi-braunschweig/SORMAS-Project/releases/latest) and copy the content of /deploy/openapi/sormas-rest.yaml to an editor that generates a visual API documentation(e.g. <https://editor.swagger.io/>).
 A runtime Swagger documentation of the External Visits Resource (used by external symptom journals such as CLIMEDO or PIA) is available at ``<<host>>/sormas-rest/openapi.json`` or ``<<host>>/sormas-rest/openapi.yaml``
 
+### Sormas2Sormas
+
+The Sormas2Sormas API is used to share entities between SORMAS instances. Please find a technical documentation
+[here](docs/SORMAS2SORMAS.md).
+
 ### Who is responsible for Data Protection and Data Security?
 We herewith explicitly would like to draw your attention to the fact, that the respective public health agency running SORMAS is in charge of data security and data protection and has to ensure compliance with national data protection and data security regulations in their respective jurisdiction.
 It has to ensure that state-of-the art requirements for data protection and data security are fulfilled. All those prerequisites and examinations have to be done in the context of the country and its respective legal framework.
