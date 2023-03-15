@@ -57,7 +57,6 @@ public class KeycloakAdminConsoleSteps implements En {
               runningConfiguration.getEnvironmentUrlForMarket(locale)
                   + "/keycloak/admin/master/console/#/SORMAS/users";
           webDriverHelpers.accessWebSite(KEYCLOAK_USERS_TAB);
-          //    webDriverHelpers.waitUntilElementIsVisibleAndClickable(VIEW_ALL_USERS_BUTTON);
         });
     When(
         "^I count the number of users displayed in Users tab in Keycloak Administrator Console$",
@@ -91,12 +90,6 @@ public class KeycloakAdminConsoleSteps implements En {
               SEARCH_USER_INPUT,
               CreateNewUserSteps.user.getFirstName() + " " + CreateNewUserSteps.user.getLastName());
           webDriverHelpers.clickOnWebElementBySelector(SEARCH_BUTTON);
-          //          while (webDriverHelpers.isElementVisibleWithTimeout(NEXT_PAGE_BUTTON, 5)) {
-          //            if (webDriverHelpers.isElementVisibleWithTimeout(
-          //                getUserIdByName(CreateNewUserSteps.userName.toLowerCase()), 5)) {
-          //              break;
-          //            } else webDriverHelpers.clickOnWebElementBySelector(NEXT_PAGE_BUTTON);
-          //          }
         });
     When(
         "^I check if user is disabled in Keycloak Admin Page$",
