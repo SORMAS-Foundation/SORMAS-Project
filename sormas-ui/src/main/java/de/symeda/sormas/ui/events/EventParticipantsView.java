@@ -62,6 +62,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ExportType;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -87,7 +88,7 @@ public class EventParticipantsView extends AbstractEventView {
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/" + EVENTPARTICIPANTS;
 
 	private EventParticipantCriteria criteria;
-	private ViewConfiguration viewConfiguration;
+	private EventParticipantsViewConfiguration viewConfiguration;
 
 	private EventParticipantsGrid grid;
 	private Button addButton;
@@ -106,7 +107,7 @@ public class EventParticipantsView extends AbstractEventView {
 		setSizeFull();
 		addStyleName("crud-view");
 
-		viewConfiguration = ViewModelProviders.of(getClass()).get(ViewConfiguration.class);
+		viewConfiguration = ViewModelProviders.of(getClass()).get(EventParticipantsViewConfiguration.class);
 	}
 
 	public HorizontalLayout createTopBar() {
@@ -312,11 +313,15 @@ public class EventParticipantsView extends AbstractEventView {
 		EventReferenceDto eventRef = getEventRef();
 
 		criteria = ViewModelProviders.of(EventParticipantsView.class).get(EventParticipantCriteria.class);
+		boolean isEventArchived = FacadeProvider.getEventFacade().isArchived(eventRef.getUuid());
+
+		if (!DataHelper.isSame(eventRef, criteria.getEvent())
+			|| (!viewConfiguration.isRelevanceStatusChanged(eventRef)
+				&& isEventArchived
+				&& criteria.getRelevanceStatus() != EntityRelevanceStatus.ACTIVE_AND_ARCHIVED)) {
+			criteria.relevanceStatus(isEventArchived ? EntityRelevanceStatus.ACTIVE_AND_ARCHIVED : EntityRelevanceStatus.ACTIVE);
+		}
 		criteria.withEvent(eventRef);
-		criteria.relevanceStatus(
-			FacadeProvider.getEventFacade().isArchived(eventRef.getUuid())
-				? EntityRelevanceStatus.ACTIVE_AND_ARCHIVED
-				: EntityRelevanceStatus.ACTIVE);
 
 		if (grid == null) {
 			grid = new EventParticipantsGrid(criteria);
@@ -388,6 +393,7 @@ public class EventParticipantsView extends AbstractEventView {
 				Captions.eventParticipantActiveAndArchivedEventParticipants);
 
 			eventParticipantRelevanceStatusFilter.addValueChangeListener(e -> {
+				viewConfiguration.setRelevanceStatusChangedEvent(getEventRef().getUuid());
 				if (relevanceStatusInfoLabel != null) {
 					relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
 				}
