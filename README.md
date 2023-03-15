@@ -23,7 +23,9 @@
 You can give SORMAS a try on our demo server at <https://demo.sormas.org>!
 
 ### How Can I Get Involved?
-Read through our [*Contributing Readme*](docs/CONTRIBUTING.md) and contact us at sormas@helmholtz-hzi.de to learn how you can help to drive the development of SORMAS forward, or check out our [Discussions](https://github.com/hzi-braunschweig/SORMAS-Project/discussions) to get development support from the core developers and other community members. SORMAS is a community-driven project, and we'd love to have you on board!
+Read through our [*Contributing Readme*](docs/CONTRIBUTING.md) and contact us at sormas@helmholtz-hzi.de to learn how you can help to drive the development of SORMAS forward,
+or check out our [Discussions](https://github.com/hzi-braunschweig/SORMAS-Project/discussions) to get development support from the core developers and other community members.
+SORMAS is a community-driven project, and we'd love to have you on board!
 
 If you want to contribute to the code, please strictly adhere to the [*Development Environment*](docs/DEVELOPMENT_ENVIRONMENT.md) guide to ensure that everything is set up correctly.
 Please also make sure that you've read the [*Development Contributing Guidelines*](docs/CONTRIBUTING.md#development-contributing-guidelines) before you start to develop.
