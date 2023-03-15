@@ -160,7 +160,7 @@ public class CompletionAnalysisTabSheets extends VerticalLayout implements View 
 		filterLayout = new HorizontalLayout();
 		filterLayout.setMargin(false);
 		filterLayout.setSpacing(true);
-		filterLayout.setWidth(100, Unit.PERCENTAGE);
+		//filterLayout.setWidth(100, Unit.PERCENTAGE);
 
 //		searchField = new SearchField();
 //		searchField.addTextChangeListener(e -> {
@@ -205,14 +205,9 @@ public class CompletionAnalysisTabSheets extends VerticalLayout implements View 
 //		filterLayout.addComponent(campaignFormPhaseSelector);
 //		campaignFormPhaseSelector.getValue().toLowerCase();
 //		
-		
-		
-		
 
 		areaFilter = ComboBoxHelper.createComboBoxV7();
 		areaFilter.setId(RegionDto.AREA);
-		
-		 
 		areaFilter.setWidth(140, Unit.PIXELS);
 		areaFilter.setCaption(I18nProperties.getPrefixCaption(RegionDto.I18N_PREFIX, RegionDto.AREA));
 		areaFilter.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());

@@ -88,6 +88,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
+import de.symeda.sormas.ui.utils.RowCount;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -106,6 +107,7 @@ public class CampaignDataView extends AbstractCampaignView {
 	private CampaignFormPhaseSelector campaignFormPhaseSelector;
 	private PopupButton newFormButton;
 	private PopupButton importCampaignButton;
+	private RowCount rowsCount;
 
 	@SuppressWarnings("deprecation")
 	public CampaignDataView() {
@@ -122,7 +124,7 @@ public class CampaignDataView extends AbstractCampaignView {
 		addHeaderComponent(campaignFormPhaseSelector);
 
 		grid = new CampaignDataGrid(criteria);
-
+		rowsCount = new RowCount(Strings.labelNumberDataRows, grid.getItemCount());
 		
 		VerticalLayout mainLayout = new VerticalLayout();
 		HorizontalLayout filtersLayout = new HorizontalLayout();
@@ -154,8 +156,12 @@ public class CampaignDataView extends AbstractCampaignView {
 			grid.reload();
 			createFormMetaChangedCallback().accept((CampaignFormMetaReferenceDto) filterForm
 					.getField(CampaignFormDataCriteria.CAMPAIGN_FORM_META).getValue());
+			rowsCount.update(grid.getItemCount());
 		});
+		
 
+		
+		mainLayout.addComponent(rowsCount);
 		mainLayout.addComponent(grid);
 		mainLayout.setMargin(true);
 		mainLayout.setSpacing(false);
@@ -277,6 +283,7 @@ public class CampaignDataView extends AbstractCampaignView {
 			// System.out.println("777777777777777777777 " +
 			// criteria.toUrlParams().toString());
 			grid.reload();
+			rowsCount.update(grid.getItemCount());
 		});
 
 		if (campaignSelector.getValue() == null) {
@@ -285,6 +292,7 @@ public class CampaignDataView extends AbstractCampaignView {
 		}
 
 		addComponent(mainLayout);
+		rowsCount.update(grid.getItemCount());
 
 		JavaScript js = Page.getCurrent().getJavaScript();
 		js.execute("$(document).ready(function() {\n" + "	if ($(window).width() <= 825) {\n"
@@ -439,6 +447,7 @@ public class CampaignDataView extends AbstractCampaignView {
 			ViewModelProviders.of(CampaignDataView.class).remove(CampaignFormDataCriteria.class);
 			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", "");
 			navigateTo(null, true);
+			rowsCount.update(grid.getItemCount());
 		});
 
 		// apply button action
@@ -448,19 +457,22 @@ public class CampaignDataView extends AbstractCampaignView {
 			grid.reload();
 			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
 			System.out.println(UI.getCurrent().getSession().getCurrent().getAttribute("lastcriteria"));
+			rowsCount.update(grid.getItemCount());
 		});
 		campaignSelector.addValueChangeListener(e -> {
 			criteria.setCampaign(campaignSelector.getValue());
 			grid.reload();
 			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
-		});
+			rowsCount.update(grid.getItemCount());
+			});
 
 		campaignFormPhaseSelector.addValueChangeListener(e -> {
 			criteria.setFormType(e.getValue().toString());
 			grid.reload();
 			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria",
 					Page.getCurrent().getLocation().toString());
-		});
+			rowsCount.update(grid.getItemCount());
+			});
 
 		filterForm.setFormMetaChangedCallback(createFormMetaChangedCallback());
 
@@ -536,6 +548,7 @@ public class CampaignDataView extends AbstractCampaignView {
 
 						if (caption != null) {
 							grid.addCustomColumn(element.getId(), caption);
+							rowsCount.update(grid.getItemCount());
 
 						}
 					}
@@ -599,6 +612,7 @@ public class CampaignDataView extends AbstractCampaignView {
 		applyingCriteria = false;
 
 		grid.reload();
+		rowsCount.update(grid.getItemCount());
 
 		super.enter(event);
 	}

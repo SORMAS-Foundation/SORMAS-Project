@@ -454,7 +454,7 @@ public class MainScreen extends HorizontalLayout {
 			   
 			    "   setupReset(); " +
 			    "   if (timeleft > 600) { " +
-			    "   setupReset(document.body.removeChild(modal)); " +
+//			    "   setupReset(document.body.removeChild(modal)); " +
 			    "   } else if (timeleft == 600) { " +
 			    "       showModal(); " +
 			    "   }  else if (timeleft == 0) { " +
