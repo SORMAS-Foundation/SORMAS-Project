@@ -30,6 +30,7 @@ public class TestReportDto extends EntityDto {
 	public static final String TEST_TYPE = "testType";
 	public static final String TEST_DATE_TIME = "testDateTime";
 	public static final String TEST_RESULT = "testResult";
+	public static final String DATE_OF_RESULT = "dateOfResult";
 	public static final String TEST_PCR_TEST_SPECIFICATION = "testPcrTestSpecification";
 
 	@Required
@@ -45,6 +46,7 @@ public class TestReportDto extends EntityDto {
 	private PathogenTestType testType;
 	private Date testDateTime;
 	private PathogenTestResultType testResult;
+	private Date dateOfResult;
 	private Boolean testResultVerified;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String testResultText;
@@ -124,6 +126,14 @@ public class TestReportDto extends EntityDto {
 
 	public void setTestResult(PathogenTestResultType testResult) {
 		this.testResult = testResult;
+	}
+
+	public Date getDateOfResult() {
+		return dateOfResult;
+	}
+
+	public void setDateOfResult(Date dateOfResult) {
+		this.dateOfResult = dateOfResult;
 	}
 
 	public Boolean isTestResultVerified() {
