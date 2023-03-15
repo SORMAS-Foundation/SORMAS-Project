@@ -26,4 +26,6 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 public interface SampleDashboardFacade {
 
 	Map<PathogenTestResultType, Long> getSampleCountByResultType(SampleDashboardCriteria dashboardCriteria);
+
+	Map<PathogenTestResultType, Long> getPathogenTestResultCountByResultType(SampleDashboardCriteria dashboardCriteria);
 }

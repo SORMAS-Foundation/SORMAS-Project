@@ -1926,6 +1926,7 @@ public interface Captions {
 	String sampleCreateNew = "sampleCreateNew";
 	String sampleDashboardAllSamples = "sampleDashboardAllSamples";
 	String sampleDashboardFinalLabResults = "sampleDashboardFinalLabResults";
+	String sampleDashboardTestResults = "sampleDashboardTestResults";
 	String sampleDeletedSamples = "sampleDeletedSamples";
 	String SampleExport_additionalTestingRequested = "SampleExport.additionalTestingRequested";
 	String SampleExport_altSgpt = "SampleExport.altSgpt";

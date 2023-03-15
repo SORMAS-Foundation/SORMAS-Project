@@ -39,6 +39,11 @@ public class SampleDashboardFacadeEjb implements SampleDashboardFacade {
 		return sampleDashboardService.getSampleCountByResultType(dashboardCriteria);
 	}
 
+	@Override
+	public Map<PathogenTestResultType, Long> getPathogenTestResultCountByResultType(SampleDashboardCriteria dashboardCriteria) {
+		return sampleDashboardService.getPathogenTestResultCountByResultType(dashboardCriteria);
+	}
+
 	@LocalBean
 	@Stateless
 	public static class SampleDashboardFacadeEjbLocal extends SampleDashboardFacadeEjb {

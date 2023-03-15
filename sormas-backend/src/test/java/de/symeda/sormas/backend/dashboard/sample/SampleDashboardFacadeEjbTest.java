@@ -227,4 +227,6 @@ public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 		assertNull(sampleCountsForMultipleFilters.get(PathogenTestResultType.NOT_DONE));
 	}
 
+	//TODO: add new unit test
+	//check if other tests are needed
 }

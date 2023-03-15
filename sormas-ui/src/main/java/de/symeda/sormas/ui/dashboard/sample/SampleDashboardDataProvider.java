@@ -34,10 +34,15 @@ public class SampleDashboardDataProvider extends AbstractDashboardDataProvider<S
 
 	private Map<PathogenTestResultType, Long> newCasesFinalLabResultCountsByResultType;
 
+	private Map<PathogenTestResultType, Long> pathogenTestResultCountsByResultType;
+
 	@Override
 	public void refreshData() {
 		newCasesFinalLabResultCountsByResultType =
 			FacadeProvider.getSampleDashboardFacade().getSampleCountByResultType(buildDashboardCriteriaWithDates());
+
+		pathogenTestResultCountsByResultType =
+			FacadeProvider.getSampleDashboardFacade().getPathogenTestResultCountByResultType(buildDashboardCriteriaWithDates());
 	}
 
 	@Override
@@ -81,5 +86,9 @@ public class SampleDashboardDataProvider extends AbstractDashboardDataProvider<S
 
 	public Map<PathogenTestResultType, Long> getNewCasesFinalLabResultCountsByResultType() {
 		return newCasesFinalLabResultCountsByResultType;
+	}
+
+	public Map<PathogenTestResultType, Long> getPathogenTestResultCountsByResultType() {
+		return pathogenTestResultCountsByResultType;
 	}
 }

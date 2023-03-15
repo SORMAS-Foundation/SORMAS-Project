@@ -24,6 +24,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
 import de.symeda.sormas.ui.dashboard.DashboardType;
+import de.symeda.sormas.ui.dashboard.sample.statistics.PathogenTestResultsStatisticsComponent;
 import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.FinalLaboratoryResultsStatisticsComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -40,6 +41,7 @@ public class SampleDashboardView extends AbstractDashboardView {
 
 	private final SampleDashboardDataProvider dataProvider;
 	private final FinalLaboratoryResultsStatisticsComponent labResultsStatisticsComponent;
+	private final PathogenTestResultsStatisticsComponent testResultsStatisticsComponent;
 
 	public SampleDashboardView() {
 		super(VIEW_NAME);
@@ -64,6 +66,7 @@ public class SampleDashboardView extends AbstractDashboardView {
 
 		Label warningMessage = new Label(I18nProperties.getString(Strings.sampleDashboardWarning));
 		warningMessage.addStyleNames(CssStyles.HSPACE_LEFT_2, CssStyles.VSPACE_TOP_2, CssStyles.LABEL_WARNING);
+
 		labResultsStatisticsComponent =
 			new FinalLaboratoryResultsStatisticsComponent(Captions.sampleDashboardAllSamples, null, Captions.sampleDashboardFinalLabResults, true);
 		VerticalLayout labResultStatisticsLayout = new VerticalLayout(warningMessage, labResultsStatisticsComponent);
@@ -71,6 +74,13 @@ public class SampleDashboardView extends AbstractDashboardView {
 		labResultStatisticsLayout.setSpacing(false);
 		sampleCountsLayout.addComponent(labResultStatisticsLayout, LAB_RESULTS);
 
+		testResultsStatisticsComponent = new PathogenTestResultsStatisticsComponent();
+		VerticalLayout testResultsStatisticsLayout = new VerticalLayout(testResultsStatisticsComponent);
+		testResultsStatisticsLayout.setMargin(false);
+		testResultsStatisticsLayout.setSpacing(false);
+		//TODO: add margin top 30px in dashboard.scss
+		//testResultsStatisticsLayout.addStyleName(CssStyles.VSPACE_TOP_0);
+		sampleCountsLayout.addComponent(testResultsStatisticsLayout, TEST_RESULTS);
 	}
 
 	@Override
@@ -78,5 +88,6 @@ public class SampleDashboardView extends AbstractDashboardView {
 		dataProvider.refreshData();
 
 		labResultsStatisticsComponent.update(dataProvider.getNewCasesFinalLabResultCountsByResultType());
+		testResultsStatisticsComponent.update(dataProvider.getPathogenTestResultCountsByResultType());
 	}
 }
