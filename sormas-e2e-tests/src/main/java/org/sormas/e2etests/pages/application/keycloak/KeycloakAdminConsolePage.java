@@ -30,8 +30,9 @@ public class KeycloakAdminConsolePage {
   public static final By NEXT_PAGE_BUTTON =
       By.cssSelector("#options-menu-top-pagination > nav > div:nth-child(2) > button");
   public static final By USER_ENABLE_DISABLE_SWITCH = By.cssSelector("#userEnabled");
-  public static final By USER_DISABLED =
-      By.xpath("//input[@id=\"userEnabled\" and contains(@class,\"ng-empty\")]");
+  public static final By USER_DISABLED = By.xpath("//span[contains(text(), 'Disabled')]");
+  public static final By SEARCH_USER_INPUT = By.xpath("//input[@placeholder='Search user']");
+  public static final By SEARCH_BUTTON = By.xpath("//button[@aria-label='Search']");
 
   public static By getUserIdByName(String name) {
     return By.xpath(String.format("//td[text()=\"%s\"]/../td/a", name));
