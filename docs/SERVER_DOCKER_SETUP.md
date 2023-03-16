@@ -32,7 +32,7 @@ Alternatively you can use the Docker image available in [SORMAS-Docker](https://
 
 ## SORMAS Server
 
-Install you own Payara server (see [installing SORMAS Server](SERVER_SETUP.md#sormas-server)) or run ``bash ./server-setup-dev-docker.sh``
+Install you own Payara server (see [installing SORMAS Server](SERVER_SETUP.md#sormas-server)).
 
 This script will download Payara (if needed) and install SORMAS in the Payara server.
 

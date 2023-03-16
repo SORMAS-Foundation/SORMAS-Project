@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 import com.vaadin.icons.VaadinIcons;
@@ -203,12 +204,22 @@ public class SampleGridComponent extends VerticalLayout {
 			sampleTypeFilter.setWidth(140, Unit.PERCENTAGE);
 			sampleTypeFilter.setId("sampleTypeFilter");
 			sampleTypeFilter.setNullSelectionAllowed(false);
-			sampleTypeFilter.addItems((Object[]) SampleAssociationType.values());
+			Object[] sampleAssociationTypes = SampleAssociationType.values();
+			boolean fromPersons = SampleAssociationType.PERSON.equals(criteria.getSampleAssociationType());
+			if (!fromPersons) {
+				sampleAssociationTypes = Arrays.stream(sampleAssociationTypes)
+					.filter(sampleAssociationType -> sampleAssociationType != SampleAssociationType.PERSON)
+					.toArray();
+			}
+			sampleTypeFilter.addItems((Object[]) sampleAssociationTypes);
 			sampleTypeFilter.setItemCaption(SampleAssociationType.ALL, I18nProperties.getEnumCaption(SampleAssociationType.ALL));
 			sampleTypeFilter.setItemCaption(SampleAssociationType.CASE, I18nProperties.getEnumCaption(SampleAssociationType.CASE));
 			sampleTypeFilter.setItemCaption(SampleAssociationType.CONTACT, I18nProperties.getEnumCaption(SampleAssociationType.CONTACT));
 			sampleTypeFilter
 				.setItemCaption(SampleAssociationType.EVENT_PARTICIPANT, I18nProperties.getEnumCaption(SampleAssociationType.EVENT_PARTICIPANT));
+			if (fromPersons) {
+				sampleTypeFilter.setItemCaption(SampleAssociationType.PERSON, I18nProperties.getEnumCaption(SampleAssociationType.PERSON));
+			}
 			sampleTypeFilter.addValueChangeListener(e -> {
 				criteria.sampleAssociationType(((SampleAssociationType) e.getProperty().getValue()));
 				samplesView.navigateTo(criteria);

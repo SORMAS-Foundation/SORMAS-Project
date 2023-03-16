@@ -654,7 +654,7 @@ public class ContactController {
 		editForm.setValue(contact);
 		final CommitDiscardWrapperComponent<ContactDataForm> editComponent = new CommitDiscardWrapperComponent<ContactDataForm>(
 			editForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT),
+			true,
 			editForm.getFieldGroup());
 
 		editComponent.getButtonsPanel()
@@ -697,6 +697,8 @@ public class ContactController {
 					editComponent,
 					() -> navigateToView(ContactDataView.VIEW_NAME, contact.getUuid(), false));
 		}
+
+		editComponent.restrictEditableComponentsOnEditView(UserRight.CONTACT_EDIT, UserRight.CONTACT_DELETE, null);
 
 		return editComponent;
 	}

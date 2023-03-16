@@ -1,16 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<artifactId>sormas-base</artifactId>
+		<groupId>de.symeda.sormas</groupId>
+		<version>1.82.0-SNAPSHOT</version>
+		<relativePath>../sormas-base</relativePath>
+	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>sormas-serverlibs</artifactId>
-	<description>Lists the jars that need to be deployed on the server (for example, in /lib) are set to provided in the projects. This is usually to jars that are not OSGI-compliant.</description>
+	<name>${project.artifactId}</name>
 	<packaging>pom</packaging>
-
-    <parent>
-        <artifactId>sormas-base</artifactId>
-        <groupId>de.symeda.sormas</groupId>
-        <version>1.81.0-SNAPSHOT</version>
-        <relativePath>../</relativePath>
-    </parent>
+	<description>Lists the jars that need to be deployed in the Payara domain (in /lib). They are set to provided in the deployable applications.</description>
 
 	<dependencies>
 
@@ -146,12 +147,6 @@
 			<scope>runtime</scope>
 		</dependency>
 
-		<!-- Fix invalid relative system path. This dependency is not part of the serverlibs, though
-		<dependency>
-			<groupId>info.novatec</groupId>
-			<artifactId>bean-test</artifactId>
-			<systemPath>${project.basedir}/bean-test-0.2.Final.jar</systemPath>
-		</dependency> -->
 	</dependencies>
 
 	<build>
@@ -178,4 +173,3 @@
 	</build>
 
 </project>
-

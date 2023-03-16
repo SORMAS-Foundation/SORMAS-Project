@@ -171,17 +171,7 @@ In addition to the guidelines covered in the Development Environment Setup Instr
 
 ### Picking Issues for Development
 
-When picking tasks for development, you can either search the repository for existing issues that you would like to work on, or you can submit your own issues if you don't find any that cover your topic of interest (see the "Submitting an Issue" section of this guide).
-While it is not mandatory, we heavily suggest to mark issues that you want to work on with the `approval requested` label and wait for one of the core developers to respond to the issue in one of the following ways. If you didn't create the issue yourself but picked an existing one, please also add a comment to indicate that you would like to work on it.
-
-* The developer might request clarification concerning the specifications of the issue; please try to to answer their questions or extend the issue description and wait for their feedback.
-* The developer might suggest changes to the functional or technical specifications to ensure that it fits the overall vision of the application; please confirm these suggestions or discuss them with the developer if you don't agree with them.
-* The developer might approve the issue by adding an approval comment and removing the `approval requested` label. This means that we believe that the specifications are complete and the purpose of the issue serves the overall vision of SORMAS. At this point you can start development on the issue.
-* The developer might ask you to pick another issue for development. This will usually only happen if the issue you have requested approval for is already planned to be developed by the core development team for the current or next milestone.
-* The developer might reject the issue altogether. This will usually only happen if it doesn't fit the overall vision of the application at all or is a duplicate, and most of the time we will discuss this with you before closing the issue.
-
-The advantage of adhering to this process is that you can be sure that there won't be any major change requests in terms of functional or technical specifications once you've submitted a pull request containing your work, and that discussions concerning these topics can be led and finished before starting development.
-If you have labeled an issue with `approval requested` but don't receive any feedback on it for a few days, please add a comment that directly tags [@MateStrysewske](https://github.com/MateStrysewske), [@MartinWahnschaffe](https://github.com/MartinWahnschaffe) or [@markusmann-vg](https://github.com/markusmann-vg).
+When picking tasks for development, you can either search the repository for existing issues that you would like to work on, or you can submit your own issues if you don't find any that cover your topic of interest (see the "Submitting an Issue" section of this guide). However, please note that issues need to fit our overall vision of the project; if you create an issue you want to work on yourself, it is recommended to first let a team member verify it to avoid submitting a pull request that requires a lot of functional changes or is rejected altogether.
 
 ### Submitting Pull Requests
 

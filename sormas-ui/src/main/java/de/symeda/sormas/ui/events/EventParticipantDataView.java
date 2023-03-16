@@ -44,6 +44,7 @@ import de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListCompone
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponentLayout;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
+import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.ArchivingController;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -181,14 +182,7 @@ public class EventParticipantDataView extends AbstractEventParticipantView {
 		}
 
 		final boolean deleted = FacadeProvider.getEventParticipantFacade().isDeleted(uuid);
-
-		if (deleted) {
-			layout.disable(CommitDiscardWrapperComponent.DELETE_UNDELETE);
-		} else if (eventParticipantEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
-			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
-		} else if (eventParticipantEditAllowed.equals(EditPermissionType.REFUSED)) {
-			layout.disable();
-		}
+		layout.disableIfNecessary(deleted, eventParticipantEditAllowed);
 	}
 
 }

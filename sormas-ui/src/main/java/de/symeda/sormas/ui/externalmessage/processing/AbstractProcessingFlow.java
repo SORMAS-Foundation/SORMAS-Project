@@ -111,6 +111,8 @@ public abstract class AbstractProcessingFlow {
 	protected CaseDataDto buildCase(PersonDto person, ExternalMessageDto labMessage) {
 
 		CaseDataDto caseDto = CaseDataDto.build(person.toReference(), labMessage.getDisease());
+		caseDto.setDiseaseVariant(labMessage.getDiseaseVariant());
+		caseDto.setDiseaseVariantDetails(labMessage.getDiseaseVariantDetails());
 		caseDto.setReportingUser(user.toReference());
 		return caseDto;
 	}
