@@ -120,3 +120,14 @@ jobs:
           disable-animations: true
           working-directory: ./sormas-app
           script: ./gradlew connectedAndroidTest
+
+      - name: mobsfscan
+        uses: MobSF/mobsfscan@main
+        with:
+          args: '. --sarif --output results.sarif || true'
+      - name: Upload mobsfscan report
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
+          # needed as codeQL also performs an upload, and they clash otherwise
+          category: 'code-scanning/mobsfscan'
