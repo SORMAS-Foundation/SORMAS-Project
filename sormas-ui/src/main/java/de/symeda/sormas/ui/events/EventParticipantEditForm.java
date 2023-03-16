@@ -45,7 +45,7 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 	private static final String MEDICAL_INFORMATION_LOC = "medicalInformationLoc";
 
 	private static final String HTML_LAYOUT = fluidRowLocs(EventParticipantDto.REGION, EventParticipantDto.DISTRICT)
-		+ fluidRowLocs(EventParticipantDto.REPORTING_USER)
+		+ fluidRowLocs(EventParticipantDto.UUID, EventParticipantDto.REPORTING_USER)
 		+ fluidRowLocs(EventParticipantDto.INVOLVEMENT_DESCRIPTION)
 		+ loc(MEDICAL_INFORMATION_LOC)
 		+ fluidRowLocs(EventParticipantDto.VACCINATION_STATUS)
@@ -93,8 +93,9 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 		region.setRequired(shouldBeRequired);
 		district.setRequired(shouldBeRequired);
 
+		addField(EventParticipantDto.UUID, TextField.class);
 		addField(EventParticipantDto.REPORTING_USER, ComboBox.class);
-		setReadOnly(true, EventParticipantDto.REPORTING_USER);
+		setReadOnly(true, EventParticipantDto.UUID, EventParticipantDto.REPORTING_USER);
 
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
