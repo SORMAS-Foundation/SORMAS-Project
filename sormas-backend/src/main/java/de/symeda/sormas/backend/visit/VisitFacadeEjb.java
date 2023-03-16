@@ -167,11 +167,6 @@ public class VisitFacadeEjb extends AbstractBaseEjb<Visit, VisitDto, VisitIndexD
 	}
 
 	@Override
-	protected void selectDtoFields(CriteriaQuery<VisitDto> cq, Root<Visit> root) {
-		// there is no shared multi-select in this class
-	}
-
-	@Override
 	public VisitDto getLastVisitByContact(ContactReferenceDto contactRef) {
 
 		Contact contact = contactService.getByReferenceDto(contactRef);
