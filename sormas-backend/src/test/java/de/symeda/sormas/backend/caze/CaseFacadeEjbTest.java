@@ -311,8 +311,12 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), 100, true);
 		final List<CaseMergeIndexDto[]> casesForDuplicateMergingThreeDaysAgo =
 			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(threeDaysAgo).creationDateTo(threeDaysAgo), 100, true);
-		assertEquals(1, casesForDuplicateMergingToday.size());
-		assertEquals(1, casesForDuplicateMergingThreeDaysAgo.size());
+		final List<CaseMergeIndexDto[]> casesForDuplicateMergingThreeDaysInterval =
+				getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(threeDaysAgo).creationDateTo(today), 100, true);
+
+		assertEquals(0, casesForDuplicateMergingToday.size());
+		assertEquals(0, casesForDuplicateMergingThreeDaysAgo.size());
+		assertEquals(1, casesForDuplicateMergingThreeDaysInterval.size());
 	}
 
 	@Test
