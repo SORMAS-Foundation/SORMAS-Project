@@ -45,9 +45,11 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.persistence.Query;
+import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
@@ -2764,11 +2766,14 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testStringLengthValidations() {
+	void testStringLengthValidations() {
 		RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 
 		CaseDataDto caze = creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
+		// todo these fields shouldn't be NotNull I guess?
+		caze.setRegion(rdcf.region);
+		caze.setDistrict(rdcf.district);
 
 		caze.setDisease(Disease.OTHER);
 		caze.setDiseaseDetails(randomString(600));
@@ -2776,7 +2781,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 		Validator validator = factory.getValidator();
 
-		MatcherAssert.assertThat(validator.validate(caze), hasSize(1));
+		final Set<ConstraintViolation<CaseDataDto>> validate = validator.validate(caze);
+		MatcherAssert.assertThat(validate, hasSize(1));
 	}
 
 	@Test
