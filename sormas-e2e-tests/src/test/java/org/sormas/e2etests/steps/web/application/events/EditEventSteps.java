@@ -1081,7 +1081,10 @@ public class EditEventSteps implements En {
         () -> webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL_POPUP));
     When(
         "I click on Yes option in Confirm deletion on Edit Event Page",
-        () -> webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM_POPUP_BUTTON));
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM_POPUP_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+        });
     When(
         "I check that error message is equal to {string} in Reason for Deletion in popup",
         (String expected) -> {
