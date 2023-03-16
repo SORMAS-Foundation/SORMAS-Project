@@ -55,7 +55,7 @@ Scenario: Create and send laboratory request via Demis
     | 95410-7            | Antikörper-Neutralisationstest                          |                                             |
     | 97097-0            | Antigen-Nachweistest                                    |                                             |
 
-  @tmsLink=SORDEV-8689 @env_d2s @LoginKeycloak @precon @LanguageRisk @haliCheck
+  @tmsLink=SORDEV-8689 @env_d2s @LoginKeycloak @precon @LanguageRisk
   Scenario: Test Handle New Profile: Process entities related to the same reportId
     Given API : Login to DEMIS server
     Then I create and send Laboratory Notification
@@ -146,7 +146,7 @@ Scenario: Create and send laboratory request via Demis
     And I search created message by birthday date
     Then I check if searched message has correct birthday date
 
-  @tmsLink=SORDEV-5588 @env_d2s @LoginKeycloak @haliCheck
+  @tmsLink=SORDEV-5588 @env_d2s @LoginKeycloak
   Scenario: Test delete option in Lab Messages
     Given API : Login to DEMIS server
     Then I create and send Laboratory Notification
@@ -192,7 +192,7 @@ Scenario: Create and send laboratory request via Demis
     And I check that number of displayed messages results for Weitergeleitet is 1
     Then I click on reset filters button from Message Directory
 
-  @tmsLink=SORDEV-5189 @env_d2s @LoginKeycloak @haliCheck
+  @tmsLink=SORDEV-5189 @env_d2s @LoginKeycloak
   Scenario: Test improvement of the mapping/prefilling the new sample forms when processing a DEMIS LabMessage
     Given API : Login to DEMIS server
     Then I create and send Laboratory Notification with patient's phone and email
@@ -217,7 +217,7 @@ Scenario: Create and send laboratory request via Demis
     And I check if "test result verified" is prefilled in New sample form while processing a DEMIS LabMessage
     And I check if "test result verified" is set to "JA"
 
-  @tmsLink=SORDEV-6171 @env_d2s @LoginKeycloak @haliCheck
+  @tmsLink=SORDEV-6171 @env_d2s @LoginKeycloak
   Scenario: Test [DEMIS2SORMAS] Prefill SampleMaterial
     Given API : Login to DEMIS server
     Then I create and send Laboratory Notification
@@ -251,7 +251,7 @@ Scenario: Create and send laboratory request via Demis
     And I check if "laboratory postal code" in received message is set to "12347"
     And I check if postal code for test instance in received message is set correctly
 
-  @tmsLink=SORDEV-8810 @env_d2s @LoginKeycloak @haliCheck
+  @tmsLink=SORDEV-8810 @env_d2s @LoginKeycloak
   Scenario: [DEMIS2SORMAS] Test messages directory status quick filters
     Given I log in as a Admin User
     When I click on the Messages button from navbar
