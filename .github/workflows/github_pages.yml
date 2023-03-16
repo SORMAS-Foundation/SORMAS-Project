@@ -1,3 +1,4 @@
+---
 name: Publish GitHub Pages
 on:
   push:
