@@ -215,7 +215,7 @@ public class VisitFacadeEjb extends AbstractBaseEjb<Visit, VisitDto, VisitIndexD
 		UserRight._VISIT_CREATE,
 		UserRight._VISIT_EDIT })
 	public VisitDto save(@Valid @NotNull VisitDto dto) {
-return saveVisit(dto, null, null);
+		return saveVisit(dto, null, null);
 	}
 
 	@Override
@@ -283,6 +283,11 @@ return saveVisit(dto, null, null);
 		onVisitChanged(existingDto, entity);
 
 		return toPseudonymizedDto(entity, createPseudonymizer());
+	}
+
+	@Override
+	public void validate(VisitDto dto) throws ValidationRuntimeException {
+		validate(dto, null, null);
 	}
 
 	@Override
