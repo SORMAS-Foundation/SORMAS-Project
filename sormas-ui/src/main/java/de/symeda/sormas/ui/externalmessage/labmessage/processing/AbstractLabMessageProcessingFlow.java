@@ -494,6 +494,8 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 	private CompletionStage<ProcessingResult<EventDto>> createEvent(ExternalMessageDto labMessage) {
 
 		EventDto event = EventDto.build(country, user, labMessage.getDisease());
+		event.setDiseaseVariant(labMessage.getDiseaseVariant());
+		event.setDiseaseVariantDetails(labMessage.getDiseaseVariantDetails());
 
 		HandlerCallback<EventDto> callback = new HandlerCallback<>();
 		handleCreateEvent(event, callback);
