@@ -3,6 +3,7 @@ package de.symeda.sormas.api.externalmessage.labmessage;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.EntityDto;
@@ -14,7 +15,6 @@ import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
-import de.symeda.sormas.api.utils.Required;
 
 @DependingOnFeatureType(featureType = FeatureType.EXTERNAL_MESSAGES)
 public class TestReportDto extends EntityDto {
@@ -33,7 +33,7 @@ public class TestReportDto extends EntityDto {
 	public static final String DATE_OF_RESULT = "dateOfResult";
 	public static final String TEST_PCR_TEST_SPECIFICATION = "testPcrTestSpecification";
 
-	@Required
+	@NotNull
 	private SampleReportReferenceDto sampleReport;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String testLabName;

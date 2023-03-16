@@ -1,10 +1,8 @@
 package de.symeda.sormas.api.person;
 
-import javax.validation.constraints.NotNull;
-
 import java.io.Serializable;
 
-import de.symeda.sormas.api.utils.Required;
+import javax.validation.constraints.NotNull;
 
 public class PersonSymptomJournalStatusDto implements Serializable {
 
@@ -19,7 +17,7 @@ public class PersonSymptomJournalStatusDto implements Serializable {
 		personSymptomJournalStatusDto.setStatus(status);
 		personSymptomJournalStatusDto.setStatusDateTime(statusDateTime);
 		return personSymptomJournalStatusDto;
-	};
+	}
 
 	public SymptomJournalStatus getStatus() {
 		return status;

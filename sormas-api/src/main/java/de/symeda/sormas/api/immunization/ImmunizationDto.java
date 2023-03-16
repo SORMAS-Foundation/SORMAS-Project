@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
@@ -44,7 +45,6 @@ import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
-import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
@@ -93,35 +93,35 @@ public class ImmunizationDto extends SormasToSormasShareableDto {
 	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 
 	@Outbreaks
-	@Required
+	@NotNull
 	private Disease disease;
 	@Outbreaks
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String diseaseDetails;
-	@Required
+	@NotNull
 	@EmbeddedPersonalData
 	private PersonReferenceDto person;
-	@Required
+	@NotNull
 	private Date reportDate;
 	private UserReferenceDto reportingUser;
 	private boolean archived;
-	@Required
+	@NotNull
 	private ImmunizationStatus immunizationStatus;
-	@Required
+	@NotNull
 	private MeansOfImmunization meansOfImmunization;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	@SensitiveData(mandatoryField = true)
 	private String meansOfImmunizationDetails;
-	@Required
+	@NotNull
 	private ImmunizationManagementStatus immunizationManagementStatus;
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	@SensitiveData(mandatoryField = true)
 	private String externalId;
 
-	@Required
+	@NotNull
 	private RegionReferenceDto responsibleRegion;
-	@Required
+	@NotNull
 	private DistrictReferenceDto responsibleDistrict;
 	@PersonalData
 	@SensitiveData

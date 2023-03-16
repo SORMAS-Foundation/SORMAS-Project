@@ -15,10 +15,9 @@
 
 package de.symeda.sormas.api;
 
-import javax.validation.constraints.NotNull;
-
 import java.io.Serializable;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -28,7 +27,6 @@ import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.HasCaption;
-import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.uuid.HasUuid;
 
 @AuditedClass
