@@ -25,6 +25,7 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleDashboardFilterDateType;
+import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
@@ -71,11 +72,14 @@ public class SampleDashboardDataProviderTest extends AbstractBeanTest {
 		PersonDto person = creator.createPerson();
 		ContactDto contact = creator.createContact(user.toReference(), person.toReference(), Disease.CORONAVIRUS, rdcf);
 
-		creator.createSample(contact.toReference(), user.toReference(), rdcf.facility.toReference(), null);
+		SampleDto sample = creator.createSample(contact.toReference(), user.toReference(), rdcf.facility.toReference(), null);
+		final String sampleExternalId = "test-sample-ext-id";
+		creator.createPathogenTest(sample.toReference(), user.toReference(), t -> {
+			t.setExternalId(sampleExternalId);
+		});
 
 		dataProvider.refreshData();
-
-		//add new test
 		Assertions.assertEquals(1, dataProvider.getNewCasesFinalLabResultCountsByResultType().size());
+		Assertions.assertEquals(1, dataProvider.getPathogenTestResultCountsByResultType().size());
 	}
 }
