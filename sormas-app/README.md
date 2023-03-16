@@ -100,7 +100,7 @@ Data within the framework of Firebase Performance Monitoring:
 Data that Firebase basically collects:
 
 | User dimension                                          | Type   | Description                                                                                          |
-| ------------------------------------------------------- | ------ | ---------------------------------------------------------------------------------------------------- |
+|---------------------------------------------------------|--------|------------------------------------------------------------------------------------------------------|
 | Age                                                     | Text   | Identifies users by six categories: 18-24, 25-34, 35-44, 45-54, 55-64, and 65+.                      |
 | App Store                                               | Text   | The store from which the app was downloaded and installed.                                           |
 | App Version                                             | Text   | The versionName (Android) or the Bundle version (iOS).                                               |
