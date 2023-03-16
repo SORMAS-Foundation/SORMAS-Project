@@ -16,6 +16,7 @@
 package de.symeda.sormas.ui.dashboard.sample;
 
 import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
@@ -23,6 +24,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
+import de.symeda.sormas.ui.dashboard.DashboardCssStyles;
 import de.symeda.sormas.ui.dashboard.DashboardType;
 import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.FinalLaboratoryResultsStatisticsComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -32,6 +34,8 @@ public class SampleDashboardView extends AbstractDashboardView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/samples";
 
+	private static final int EPI_CURVE_AND_MAP_HEIGHT = 555;
+
 	private static final String LAB_RESULTS = "labResults";
 	private static final String SAMPLE_PURPOSE = "samplePurpose";
 	private static final String TEST_RESULTS = "testResults";
@@ -39,7 +43,16 @@ public class SampleDashboardView extends AbstractDashboardView {
 	private static final String SHIPMENT_STATUS = "shipmentStatus";
 
 	private final SampleDashboardDataProvider dataProvider;
+
+	private final CustomLayout sampleCountsLayout;
+
 	private final FinalLaboratoryResultsStatisticsComponent labResultsStatisticsComponent;
+	private final HorizontalLayout epiCurveAndMapLayout;
+
+	private final VerticalLayout epiCurveLayout;
+	private final VerticalLayout mapLayout;
+
+	private final SampleEpiCurveComponent epiCurveComponent;
 
 	public SampleDashboardView() {
 		super(VIEW_NAME);
@@ -54,7 +67,7 @@ public class SampleDashboardView extends AbstractDashboardView {
 
 		dashboardLayout.addComponent(filterLayout);
 
-		CustomLayout sampleCountsLayout = new CustomLayout();
+		sampleCountsLayout = new CustomLayout();
 		sampleCountsLayout.setTemplateContents(
 			LayoutUtil.fluidRowLocs(LAB_RESULTS, SAMPLE_PURPOSE, TEST_RESULTS)
 				+ LayoutUtil
@@ -71,6 +84,12 @@ public class SampleDashboardView extends AbstractDashboardView {
 		labResultStatisticsLayout.setSpacing(false);
 		sampleCountsLayout.addComponent(labResultStatisticsLayout, LAB_RESULTS);
 
+		epiCurveComponent = new SampleEpiCurveComponent(dataProvider);
+
+		epiCurveLayout = createEpiCurveLayout();
+		mapLayout = createMapLayout();
+		epiCurveAndMapLayout = createEpiCurveAndMapLayout(epiCurveLayout, mapLayout);
+		dashboardLayout.addComponent(epiCurveAndMapLayout);
 	}
 
 	@Override
@@ -78,5 +97,57 @@ public class SampleDashboardView extends AbstractDashboardView {
 		dataProvider.refreshData();
 
 		labResultsStatisticsComponent.update(dataProvider.getNewCasesFinalLabResultCountsByResultType());
+		epiCurveComponent.clearAndFillEpiCurveChart();
+	}
+
+	protected HorizontalLayout createEpiCurveAndMapLayout(VerticalLayout epiCurveLayout, VerticalLayout mapLayout) {
+		HorizontalLayout layout = new HorizontalLayout(epiCurveLayout, mapLayout);
+		layout.addStyleName(DashboardCssStyles.CURVE_AND_MAP_LAYOUT);
+		layout.setWidth(100, Unit.PERCENTAGE);
+		layout.setMargin(false);
+		layout.setSpacing(false);
+
+		return layout;
+	}
+
+	protected VerticalLayout createEpiCurveLayout() {
+		if (epiCurveComponent == null) {
+			throw new UnsupportedOperationException("EpiCurveComponent needs to be initialized before calling createEpiCurveLayout");
+		}
+
+		VerticalLayout layout = new VerticalLayout();
+		layout.setMargin(false);
+		layout.setSpacing(false);
+		layout.setHeight(EPI_CURVE_AND_MAP_HEIGHT, Unit.PIXELS);
+
+		epiCurveComponent.setSizeFull();
+
+		layout.addComponent(epiCurveComponent);
+		layout.setExpandRatio(epiCurveComponent, 1);
+
+		epiCurveComponent.setExpandListener(expanded -> {
+			if (expanded) {
+				dashboardLayout.removeComponent(sampleCountsLayout);
+				epiCurveAndMapLayout.removeComponent(mapLayout);
+				setHeight(100, Unit.PERCENTAGE);
+				epiCurveAndMapLayout.setHeight(100, Unit.PERCENTAGE);
+				epiCurveLayout.setSizeFull();
+			} else {
+				dashboardLayout.addComponent(sampleCountsLayout, 1);
+				epiCurveAndMapLayout.addComponent(mapLayout, 1);
+				// TODO Should be uncommented when the map is added on the dashboard
+				//mapComponent.refreshMap();
+
+				epiCurveLayout.setHeight(EPI_CURVE_AND_MAP_HEIGHT, Unit.PIXELS);
+				this.setHeightUndefined();
+				epiCurveAndMapLayout.setHeightUndefined();
+			}
+		});
+
+		return layout;
+	}
+
+	private VerticalLayout createMapLayout() {
+		return new VerticalLayout();
 	}
 }
