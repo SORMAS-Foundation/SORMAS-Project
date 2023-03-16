@@ -188,6 +188,8 @@ public class CaseDirectoryPage {
       By.xpath("//div[@class='v-select-optiongroup v-widget']/span/label");
   public static final By POPUP_WINDOW_HEADER = By.xpath("//div[@class='v-window-closebox']");
   public static final By ACTION_REJECT_BUTTON = By.cssSelector("#actionReject");
+  public static final By POTENTIAL_DUPLICATE_POPUP_DE =
+      By.xpath("//*[contains(text(), 'Potentielle Duplikate erkannt')]");
 
   public static By getActionRejectButtonByCaseDescription(String description) {
     return By.xpath(
@@ -231,4 +233,31 @@ public class CaseDirectoryPage {
       By.xpath("//span[text()=\"\u00DCbergeben\"]");
   public static By REJECT_SHARED_CASE_HEADER_DE =
       By.xpath("//div[@class='popupContent']//*[contains(text(), 'Anfrage ablehnen')]");
+
+  public static By getMergeButtonForCaseForTargetSystem(String firstName, String lastName) {
+    return By.xpath(
+        String.format(
+            "(//td[contains(text(), '"
+                + firstName
+                + "')]/../td[contains(text(), '"
+                + lastName
+                + "')]/..//div[@id='actionMerge'])[1]"));
+  }
+
+  public static By getMergeButtonForCaseForSourceSystem(String firstName, String lastName) {
+    return By.xpath(
+        String.format(
+            "(//td[contains(text(), '"
+                + firstName
+                + "')]/../td[contains(text(), '"
+                + lastName
+                + "')]/..//div[@id='actionMerge'])[2]"));
+  }
+
+  public static By CONFIRM_YOUR_CHOICE_HEADER_DE =
+      By.xpath("//div[@class='popupContent']//div[contains(text(), 'Ihre Wahl best\u00E4tigen')]");
+  public static By MERGE_DUPLICATED_CASES_WARNING_POPUP_DE =
+      By.xpath("//p[contains(text(), 'Dieser Fall kann nicht mehr bearbeitet werden')]");
+  public static By ERROR_MESSAGE_HEADER_DE =
+      By.xpath("//div[@class='popupContent']//h1[contains(text(), 'Ein Fehler ist aufgetreten')]");
 }

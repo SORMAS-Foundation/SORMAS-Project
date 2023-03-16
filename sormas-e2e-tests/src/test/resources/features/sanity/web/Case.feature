@@ -2579,3 +2579,72 @@ Feature: Case end to end tests
     And I click on the Shares button from navbar
     And I click on the The Eye Icon located in the Shares Page
     And I check that "FALL-ID" column header is not visible in Share request details window for DE
+
+  @tmsLink=SORDEV-12094 @env_s2s_1
+  Scenario: [S2S] Mergen without hand over the ownership
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    Then I create a new case with specific person name and "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district for DE version
+    Then I click on save button in the case popup
+    Then I navigate to "s2s_2" environment in new driver tab
+    And I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    Then I create a new case with specific person name and "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district for DE version
+    Then I click on save button in the case popup
+    Then I back to tab number 1
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I back to tab number 2
+    And I click on the Shares button from navbar
+    And I click on "accept" shared case button with copied case description
+    Then I click on Okay button in Potential duplicate popup
+    And I click on the Cases button from navbar
+    And I click on the More button on Case directory page
+    Then I click on Merge Duplicates on Case directory page
+    And I click to CONFIRM FILTERS on Merge Duplicate Cases page
+    Then I click on Merge button for target system from received case
+    And I confirm merge duplicated case
+    Then I check if popup with merge duplicated case appears
+    And I click on cancel button in merge duplicated cases popup
+    Then I click on Merge button for source system from received case
+    And I confirm merge duplicated case
+    Then I check if popup with error message appears
+
+  @tmsLink=SORDEV-12094 @env_s2s_1 @testIt
+  Scenario: [S2S] Mergen with hand over the ownership
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    Then I create a new case with specific person name and "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district for DE version
+    Then I click on save button in the case popup
+    Then I navigate to "s2s_2" environment in new driver tab
+    And I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    Then I create a new case with specific person name and "Hessen" region and "LK Fulda" district for DE version
+    Then I click on save button in the case popup
+    Then I back to tab number 1
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I click to hand over the ownership of the case in Share popup
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I back to tab number 2
+    And I click on the Shares button from navbar
+    And I click on "accept" shared case button with copied case description
+    Then I click on Okay button in Potential duplicate popup
+    And I click on the Cases button from navbar
+    And I click on the More button on Case directory page
+    Then I click on Merge Duplicates on Case directory page
+    And I click to CONFIRM FILTERS on Merge Duplicate Cases page
+    Then I click on Merge button for target system from received case
+    And I confirm merge duplicated case
+    Then I check if popup with merge duplicated case appears
+    And I click on cancel button in merge duplicated cases popup
+    Then I click on Merge button for source system from received case
+    And I confirm merge duplicated case
+    Then I check if popup with error message appears
