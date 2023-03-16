@@ -2013,7 +2013,6 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 			creationDateFilter,
 			cb.notEqual(root.get(Case.ID), root2.get(Case.ID)),
 			cb.lessThanOrEqualTo(root.get(Case.CREATION_DATE), root2.get(Case.CREATION_DATE)));
-//			cb.lessThanOrEqualTo(root.get(Case.CREATION_DATE), criteria.getCreationDateTo()));
 
 		if (CollectionUtils.isNotEmpty(criteria.getCaseUuidsForMerge())) {
 			Set<String> caseUuidsForMerge = criteria.getCaseUuidsForMerge();
