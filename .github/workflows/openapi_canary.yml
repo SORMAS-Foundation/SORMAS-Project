@@ -1,3 +1,4 @@
+---
 name: OpenAPI Canary
 
 on:
@@ -13,12 +14,12 @@ jobs:
 
     steps:
       - name: Checkout development branch
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: head
 
       - name: Checkout master branch
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: master
           path: base
@@ -26,5 +27,6 @@ jobs:
       # --fail-on-incompatible is also possible
       - name: Run OpenAPI Diff for external journal API
         run: |
-          java -jar /app/openapi-diff.jar --fail-on-changed base/sormas-rest/swagger.yaml head/sormas-rest/swagger.yaml
+          java -jar /app/openapi-diff.jar --fail-on-changed base/sormas-rest/swagger.yaml \
+          head/sormas-rest/swagger.yaml
           
