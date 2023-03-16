@@ -125,6 +125,7 @@ public class DistrictsSteps implements En {
           fillEpidCode(districts.getEpidCode());
           selectCommunityRegion(districts.getRegion());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_NEW_ENTRY_DISTRICTS);
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
         });
 
     When(

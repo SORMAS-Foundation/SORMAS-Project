@@ -73,6 +73,7 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setTestType(source.getTestType());
 		target.setTestDateTime(source.getTestDateTime());
 		target.setTestResult(source.getTestResult());
+		target.setDateOfResult(source.getDateOfResult());
 		target.setTestResultVerified(source.isTestResultVerified());
 		target.setTestResultText(source.getTestResultText());
 		target.setTypingId(source.getTypingId());
@@ -97,6 +98,7 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setTestType(source.getTestType());
 		target.setTestDateTime(source.getTestDateTime());
 		target.setTestResult(source.getTestResult());
+		target.setDateOfResult(source.getDateOfResult());
 		target.setTestResultVerified(source.isTestResultVerified());
 		target.setTestResultText(source.getTestResultText());
 		target.setTypingId(source.getTypingId());

@@ -1443,7 +1443,10 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	public List<CaseMergeIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, @Min(1) Integer limit, boolean showDuplicatesWithDifferentRegion) {
+	public List<CaseMergeIndexDto[]> getCasesForDuplicateMerging(
+		CaseCriteria criteria,
+		@Min(1) Integer limit,
+		boolean showDuplicatesWithDifferentRegion) {
 		return service.getCasesForDuplicateMerging(criteria, limit, showDuplicatesWithDifferentRegion, configFacade.getNameSimilarityThreshold());
 	}
 
@@ -1723,15 +1726,20 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		if (sourceContact != null) {
 			final Contact contact = contactService.getByUuid(sourceContact.getUuid());
 			final Case caze = service.getByUuid(cazeRef.getUuid());
-			contact.getSamples().forEach(sample -> {
-				if (!sample.isDeleted()) {
+			List<Sample> samples = contact.getSamples().stream().filter(sample -> !sample.isDeleted()).collect(Collectors.toList());
+
+			if (samples.size() > 0) {
+				samples.forEach(sample -> {
 					if (contact.getDisease() == caze.getDisease() && sample.getAssociatedCase() == null) {
 						sample.setAssociatedCase(caze);
+						sampleService.ensurePersisted(sample);
 					} else if (!DataHelper.isSame(sample.getAssociatedCase(), cazeRef)) {
 						sampleFacade.cloneSampleForCase(sample, caze);
 					}
-				}
-			});
+				});
+
+				onCaseChanged(toDto(caze), caze);
+			}
 
 			// The samples for case are not persisted yet, so use the samples from contact since they are the same
 			caze.setFollowUpUntil(service.computeFollowUpuntilDate(caze, contact.getSamples()));
@@ -1747,15 +1755,20 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		if (sourceEventParticipant != null) {
 			final EventParticipant eventParticipant = eventParticipantService.getByUuid(sourceEventParticipant.getUuid());
 			final Case caze = service.getByUuid(cazeRef.getUuid());
-			eventParticipant.getSamples().forEach(sample -> {
-				if (!sample.isDeleted()) {
+			List<Sample> samples = eventParticipant.getSamples().stream().filter(sample -> !sample.isDeleted()).collect(Collectors.toList());
+
+			if (samples.size() > 0) {
+				samples.forEach(sample -> {
 					if (eventParticipant.getEvent().getDisease() == caze.getDisease() && sample.getAssociatedCase() == null) {
 						sample.setAssociatedCase(caze);
+						sampleService.ensurePersisted(sample);
 					} else if (!sample.getAssociatedCase().getUuid().equals(cazeRef.getUuid())) {
 						sampleFacade.cloneSampleForCase(sample, caze);
 					}
-				}
-			});
+				});
+
+				onCaseChanged(toDto(caze), caze);
+			}
 
 			// The samples for case are not persisted yet, so use the samples from event participant since they are the same
 			caze.setFollowUpUntil(service.computeFollowUpuntilDate(caze, eventParticipant.getSamples()));

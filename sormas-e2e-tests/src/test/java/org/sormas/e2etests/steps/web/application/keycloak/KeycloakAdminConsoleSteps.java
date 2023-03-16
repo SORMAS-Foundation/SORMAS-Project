@@ -17,11 +17,13 @@
  */
 package org.sormas.e2etests.steps.web.application.keycloak;
 
+import static org.sormas.e2etests.pages.application.keycloak.KeycloakAdminConsolePage.ITEMS_PER_PAGE_BUTTON;
 import static org.sormas.e2etests.pages.application.keycloak.KeycloakAdminConsolePage.NEXT_PAGE_BUTTON;
+import static org.sormas.e2etests.pages.application.keycloak.KeycloakAdminConsolePage.ONE_HUNDRED_PER_PAGE_BUTTON;
+import static org.sormas.e2etests.pages.application.keycloak.KeycloakAdminConsolePage.RESULT_IN_TABLE;
+import static org.sormas.e2etests.pages.application.keycloak.KeycloakAdminConsolePage.SEARCH_BUTTON;
+import static org.sormas.e2etests.pages.application.keycloak.KeycloakAdminConsolePage.SEARCH_USER_INPUT;
 import static org.sormas.e2etests.pages.application.keycloak.KeycloakAdminConsolePage.USER_DISABLED;
-import static org.sormas.e2etests.pages.application.keycloak.KeycloakAdminConsolePage.USER_ID;
-import static org.sormas.e2etests.pages.application.keycloak.KeycloakAdminConsolePage.VIEW_ALL_USERS_BUTTON;
-import static org.sormas.e2etests.pages.application.keycloak.KeycloakAdminConsolePage.getUserIdByName;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
@@ -53,26 +55,24 @@ public class KeycloakAdminConsoleSteps implements En {
         () -> {
           String KEYCLOAK_USERS_TAB =
               runningConfiguration.getEnvironmentUrlForMarket(locale)
-                  + "/keycloak/auth/admin/master/console/#/realms/SORMAS/users";
+                  + "/keycloak/admin/master/console/#/SORMAS/users";
           webDriverHelpers.accessWebSite(KEYCLOAK_USERS_TAB);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(VIEW_ALL_USERS_BUTTON);
-        });
-    When(
-        "^I click View all users button$",
-        () -> {
-          webDriverHelpers.clickOnWebElementBySelector(VIEW_ALL_USERS_BUTTON);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NEXT_PAGE_BUTTON);
         });
     When(
         "^I count the number of users displayed in Users tab in Keycloak Administrator Console$",
         () -> {
           numberOfUsers = 0;
+          webDriverHelpers.clickOnWebElementBySelector(ITEMS_PER_PAGE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ONE_HUNDRED_PER_PAGE_BUTTON);
+          TimeUnit.SECONDS.sleep(2);
+          numberOfUsers = webDriverHelpers.getNumberOfElements(RESULT_IN_TABLE);
+
           do {
-            numberOfUsers += webDriverHelpers.getNumberOfElements(USER_ID);
             webDriverHelpers.clickOnWebElementBySelector(NEXT_PAGE_BUTTON);
             TimeUnit.SECONDS.sleep(2);
+            numberOfUsers += webDriverHelpers.getNumberOfElements(RESULT_IN_TABLE);
           } while (webDriverHelpers.isElementEnabled(NEXT_PAGE_BUTTON));
-          numberOfUsers += webDriverHelpers.getNumberOfElements(USER_ID);
+          numberOfUsers += webDriverHelpers.getNumberOfElements(RESULT_IN_TABLE);
         });
     When(
         "^I check that number of users from SORMAS is at least equal to number of users in Keycloak Administrator Console$",
@@ -86,22 +86,15 @@ public class KeycloakAdminConsoleSteps implements En {
     When(
         "^I search for last created user from SORMAS in grid in Keycloak Admin Page$",
         () -> {
-          while (webDriverHelpers.isElementVisibleWithTimeout(NEXT_PAGE_BUTTON, 3)) {
-            if (webDriverHelpers.isElementVisibleWithTimeout(
-                getUserIdByName(CreateNewUserSteps.userName.toLowerCase()), 3)) {
-              break;
-            } else webDriverHelpers.clickOnWebElementBySelector(NEXT_PAGE_BUTTON);
-          }
+          webDriverHelpers.fillInWebElement(
+              SEARCH_USER_INPUT,
+              CreateNewUserSteps.user.getFirstName() + " " + CreateNewUserSteps.user.getLastName());
+          webDriverHelpers.clickOnWebElementBySelector(SEARCH_BUTTON);
         });
-    When(
-        "^I open last created user from SORMAS in Keycloak Admin Page$",
-        () ->
-            webDriverHelpers.clickOnWebElementBySelector(
-                getUserIdByName(CreateNewUserSteps.userName.toLowerCase())));
     When(
         "^I check if user is disabled in Keycloak Admin Page$",
         () -> {
-          boolean visible = webDriverHelpers.isElementEnabled(USER_DISABLED);
+          boolean visible = webDriverHelpers.isElementVisibleWithTimeout(USER_DISABLED, 3);
           assertHelpers.assertWithPoll(() -> Assert.assertTrue(visible, "User is enabled!"), 5);
         });
   }

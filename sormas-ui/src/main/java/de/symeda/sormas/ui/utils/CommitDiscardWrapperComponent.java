@@ -22,7 +22,9 @@ import static java.util.Objects.nonNull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -58,6 +60,7 @@ import com.vaadin.v7.ui.RichTextArea;
 import com.vaadin.v7.ui.TextArea;
 
 import de.symeda.sormas.api.CoreFacade;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -66,6 +69,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.events.EventDataForm;
 import de.symeda.sormas.ui.location.AccessibleTextField;
 import de.symeda.sormas.ui.location.LocationEditForm;
@@ -74,6 +79,8 @@ import de.symeda.sormas.ui.person.PersonEditForm;
 public class CommitDiscardWrapperComponent<C extends Component> extends VerticalLayout implements DirtyStateComponent, Buffered {
 
 	private static final long serialVersionUID = 1L;
+	private Set<String> activeButtons = new HashSet<>();
+
 	public static final String DELETE_UNDELETE = "deleteUndelete";
 
 	public static interface PreCommitListener {
@@ -979,6 +986,31 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		this.dirty = dirty;
 	}
 
+	//In case of having delete right without edit right the delete button should remain enabled
+	public void restrictEditableComponentsOnEditView(UserRight editRight, UserRight deleteRight, EditPermissionType editPermissionType) {
+		boolean isEditAllowed = isEditAllowed(editRight, editPermissionType);
+		if (!isEditAllowed) {
+			if (isDeleteAllowed(deleteRight)) {
+				addToActiveButtonsList(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+				this.setNonEditable();
+			} else {
+				this.setNonEditable();
+			}
+		}
+	}
+
+	public void setNonEditable() {
+		this.setEditable(false, activeButtons.stream().toArray(String[]::new));
+	}
+
+	public boolean isDeleteAllowed(UserRight deleteRight) {
+		return UserProvider.getCurrent().hasUserRight(deleteRight);
+	}
+
+	public boolean isEditAllowed(UserRight editRight, EditPermissionType editPermissionType) {
+		return UserProvider.getCurrent().hasUserRight(editRight) && (editPermissionType == null || editPermissionType == EditPermissionType.ALLOWED);
+	}
+
 	//excludedButtons: contains the buttons attached to the CommitDiscardWrapperComponent which we intend to
 	// exclude from applying a new editable status
 	public void setEditable(boolean editable, String... excludedButtons) {
@@ -990,6 +1022,10 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 				button.setEnabled(editable);
 			}
 		}
+	}
+
+	public void addToActiveButtonsList(String button) {
+		activeButtons.add(button);
 	}
 
 	public void setButtonsVisible(boolean visible) {

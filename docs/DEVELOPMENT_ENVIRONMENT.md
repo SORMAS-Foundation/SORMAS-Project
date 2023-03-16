@@ -3,7 +3,7 @@
 
 This step-by-step guide explains how to set up your development environment, using either Eclipse or IntelliJ for the backend and web UI and Android Studio for the mobile app. Please follow it strictly to make sure that development will run as smoothly as possible and your code adheres to our guidelines.
 
-**Please note that these instructions are optimized for Windows and Linux systems.** If you're developing on a Mac and, we would be glad to get your feedback about how this guide can be extended with OS-specific instructions in our developer chat on [Gitter](https://gitter.im/SORMAS-Project).
+**Please note that these instructions are optimized for Windows and Linux systems.** If you're developing on a Mac and, we would be glad to get your feedback about how this guide can be extended with OS-specific instructions through our [GitHub Discussions](https://github.com/hzi-braunschweig/SORMAS-Project/discussions).
 
 ## Step 1: Check Out the SORMAS Repository
 - [Download and install the latest Git version](https://git-scm.com/downloads) for your operating system
@@ -34,7 +34,6 @@ Please follow the [Server Installation Instructions](../docs/SERVER_SETUP.md#sor
 - Open the project in IntelliJ. Make sure the project is recognized by IntelliJ as a `maven project`; if not, right-click the `pom.xml` file in `sormas-base` and select `Add as maven project`.
 - Make sure that under `File -> Project Structure -> Modules` all modules EXCEPT sormas-app are recognized; if not, add the missing modules with the `+` button
 - Navigate to `File -> Settings -> Plugins` and make sure that Glassfish & Ant integrations are enabled
-- Install the [Vaadin 6-8 plugin](https://plugins.jetbrains.com/plugin/13199-vaadin-6-8); the commercial Vaadin Designer is not needed
 - Make a copy of `sormas-base/build.properties.example`, rename it to `build.properties` and set `glassfish.domain.root` to the location of the SORMAS domain inside your Payara installation
 - Run `mvn install` on the `sormas-base` project (e.g. by opening the Maven view and executing `sormas-base -> Lifecycle -> install`)
 - Add a Payara server to IntelliJ:

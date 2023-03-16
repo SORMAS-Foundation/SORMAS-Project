@@ -1,0 +1,3 @@
+# this file will be templated automatically by the build system, we do not need to track it,
+# only sormas-rest/build/templates/resources/openApiConfig.yml
+src/main/resources/openApiConfig.yml
