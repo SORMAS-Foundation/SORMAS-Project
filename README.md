@@ -43,11 +43,6 @@ Making use of the SORMAS web application through a mobile device web browser is 
 Yes! Please download the [latest release](https://github.com/hzi-braunschweig/SORMAS-Project/releases/latest) and copy the content of /deploy/openapi/sormas-rest.yaml to an editor that generates a visual API documentation(e.g. <https://editor.swagger.io/>).
 A runtime Swagger documentation of the External Visits Resource (used by external symptom journals such as CLIMEDO or PIA) is available at ``<<host>>/sormas-rest/openapi.json`` or ``<<host>>/sormas-rest/openapi.yaml``
 
-### Sormas2Sormas
-
-The Sormas2Sormas API is used to share entities between SORMAS instances. Please find a technical documentation
-[here](docs/SORMAS2SORMAS.md).
-
 ### Who is responsible for Data Protection and Data Security?
 We herewith explicitly would like to draw your attention to the fact, that the respective public health agency running SORMAS is in charge of data security and data protection and has to ensure compliance with national data protection and data security regulations in their respective jurisdiction.
 It has to ensure that state-of-the art requirements for data protection and data security are fulfilled. All those prerequisites and examinations have to be done in the context of the country and its respective legal framework.
@@ -65,6 +60,8 @@ If you want to learn more about the development and contribution process, settin
 * [Server Customization](docs/SERVER_CUSTOMIZATION.md) - If you are maintaining a SORMAS server or are a developer, this guide explains core concepts such as turning features on or off, importing infrastructure data or adjusting the configuration file.
 * [Internationalization](docs/I18N.md) - SORMAS can be translated in any language by using the open source tool [Crowdin](https://crowdin.com/project/sormas); this resource explains how this process is working.
 * [Disease Definition Instructions](docs/SOP_DISEASES.md) - We already support a large number of diseases, but not all of them are fully configured for case-based surveillance, and some might not be part of SORMAS at all yet; if you need SORMAS to support a specific disease, please use these instructions to give us all the information we need in order to extend the software with your requested disease.
+* [Sormas2Sormas](docs/SORMAS2SORMAS.md) - The Sormas2Sormas API is used to share entities between SORMAS instances.
+
 * [Security Policies](docs/SECURITY.md) - These contain important information about how to report security problems and the processes we are using to take care of them.
 * [3rd Party License Acknowledgement](docs/3RD_PARTY_ACK.md) - This resource contains the names and license copies of external resources that SORMAS is using.
 
