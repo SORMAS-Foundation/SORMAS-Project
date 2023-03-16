@@ -2519,3 +2519,14 @@ Feature: Case end to end tests
     And I fill comment in share popup with random string
     And I click to hand over the ownership of the case in Share popup
     Then I click on share button in s2s share popup and wait for share to finish
+
+  @tmsLink=SORDEV-12447 @env_s2s_1
+  Scenario: [S2S] S2S_deactivate share parameter 'share associated contacts' (for cases) [2]
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I open the last created Case via API
