@@ -18,7 +18,7 @@ For synchronisation, the Android app accesses the **SORMAS ReST** interface.
 
 First, all data that has changed since the last synchronisation is retrieved from the server.
 In the app, a three-way merge takes place for all data that the user has changed himself in the meantime.
-For each individual field (e.g. gender of a person), it is checked whether the value on the server has changed compared to the original status on the device. 
+For each individual field (e.g. gender of a person), it is checked whether the value on the server has changed compared to the original status on the device.
 If so, this change is adopted, otherwise any existing change of the user is retained.
 In this way, the data can be merged as automatically as possible.
 In the rare cases of an actual conflict, the users are informed accordingly about the discarded data.
