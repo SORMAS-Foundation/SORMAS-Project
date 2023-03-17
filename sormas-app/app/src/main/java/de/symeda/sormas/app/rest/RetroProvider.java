@@ -31,6 +31,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.fragment.app.FragmentActivity;
 
@@ -307,12 +308,17 @@ public final class RetroProvider {
 	public static void connect(Context context) throws ApiVersionException, ServerConnectionException, ServerCommunicationException {
 
 		if (RetroProvider.isConnected()) {
+			Toast.makeText(context, "Connection already established...",
+					Toast.LENGTH_LONG).show();
 			throw new IllegalStateException("Connection already established.");
 		}
-//		if (connecting) {
-//			disconnect();
-//		//	throw new IllegalStateException("Already connecting.");
-//		}
+		if (connecting) {
+			Toast.makeText(context, "Connection already established... now disconnecting...",
+					Toast.LENGTH_LONG).show();
+
+			disconnect();
+		//	throw new IllegalStateException("Already connecting.");
+		}
 
 		if (connecting) {
 			throw new IllegalStateException("Already connecting.");

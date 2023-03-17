@@ -7,12 +7,18 @@ import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import com.vladmihalcea.hibernate.type.util.SQLExtractor;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.backend.epidata.EpiData;
+import de.symeda.sormas.backend.exposure.Exposure;
+import de.symeda.sormas.backend.infrastructure.PopulationData;
+import de.symeda.sormas.backend.infrastructure.area.Area;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 public abstract class AbstractInfrastructureAdoService<ADO extends InfrastructureAdo> extends AdoServiceWithUserFilter<ADO> {
@@ -50,10 +56,10 @@ public abstract class AbstractInfrastructureAdoService<ADO extends Infrastructur
 		Root<ADO> from = cq.from(getElementClass());
 		cq.where(createBasicFilter(cb, from));
 		cq.orderBy(asc ? cb.asc(from.get(orderProperty)) : cb.desc(from.get(orderProperty)));
-		
+		System.out.println("DDDDDDDDDDDDDDDDDDDDdddddddddddddddddDDDDDDDDDDDDDDDDDDDDDDddd "+ SQLExtractor.from(em.createQuery(cq)));
 		return em.createQuery(cq).getResultList();
 	}
-
+	
 	public <T extends InfrastructureAdo> boolean isUsedInInfrastructureData(String uuid, String adoAttribute, Class<T> targetElementClass) {
 
 		List<String> uuidList = new ArrayList<>();

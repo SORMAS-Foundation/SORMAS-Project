@@ -287,10 +287,11 @@ public class CampaignFormDataFragmentUtils {
                 ? ""
                 : dependingOnFieldValue instanceof Boolean
                 ? YesNoUnknown.valueOf(((Boolean) dependingOnFieldValue).booleanValue()).name()
-                : dependingOnFieldValue.toString();
+                : dependingOnFieldValue.toString().equalsIgnoreCase("Yes") ? "true" : dependingOnFieldValue.toString().equalsIgnoreCase("No") ? "false" : dependingOnFieldValue.toString();
 
-
+        System.out.println(" = dddddddddddddddddddddddddddddddd   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@22>>>>>>>> dynamic = " + parsedDependingOnFieldValue);
         if (dependingOnValues.contains("!")) {
+
 
             dependingOnValues = dependingOnValues.replace("!", "");
             if (dependingOnValues.contains(parsedDependingOnFieldValue)) {

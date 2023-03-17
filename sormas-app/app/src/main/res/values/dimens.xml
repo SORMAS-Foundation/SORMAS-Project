@@ -224,7 +224,7 @@
 
     <!-- List Layoutrs -->
     <dimen name="rowListItemPadding">24dp</dimen>
-    <dimen name="rowListItemHorizontalMargin">24dp</dimen>
+    <dimen name="rowListItemHorizontalMargin">5dp</dimen>
     <dimen name="rowListItemVerticalPadding">24dp</dimen>
     <dimen name="rowListItemVerticalPaddingSmall">8dp</dimen>
     <dimen name="rowListItemParentElevationVerticalPadding">4dp</dimen>
@@ -373,7 +373,7 @@
     <dimen name="boldSeparatorThickness">2dp</dimen>
 
 
-    <dimen name="readControlSmallIconWidth">10dp</dimen>
+    <dimen name="readControlSmallIconWidth">5dp</dimen>
     <dimen name="readControlSmallIconHeight">10dp</dimen>
     <dimen name="listItemConentIndentRight">36dp</dimen>
     <dimen name="listItemBottomConentMarginTop">8dp</dimen>

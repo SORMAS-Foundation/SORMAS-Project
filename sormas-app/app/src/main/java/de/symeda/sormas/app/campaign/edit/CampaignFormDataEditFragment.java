@@ -278,6 +278,14 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                         dynamicLayout.addView(dynamicField, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
                         Boolean finalIsRangeandExpression = isRangeandExpression;
+                        final String dependingOnx = campaignFormElement.getDependingOn();
+
+                        Boolean isdependingOn = false;
+                        if (dependingOnx != null) {
+                            isdependingOn = true;
+                        }
+                        Boolean finalIsdependingOn = isdependingOn;
+
                         dynamicField.addValueChangedListener(field -> {
                             final Boolean isRangeandExpressionx = finalIsRangeandExpression;
                             Boolean okk = field.getFocusedChild() != null ? true : false;
@@ -296,6 +304,10 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                             } else if (field.isFocused()){
                                 System.out.println(">>>>>>>>>>>>>>>>>ONFOCUSSS>>>>>>>>>>>>>>>>>>>>" +fieldMap.get(campaignFormElement.getId()).getCaption());
 
+                            }
+
+                            if(finalIsdependingOn && isRangeandExpressionx){
+                                field.setVisibility(View.GONE);
                             }
 
                         });
@@ -364,6 +376,15 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                         dynamicField.setShowCaption(true);
                         dynamicLayout.addView(dynamicField, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
                         Boolean finalIsRangeandExpression = isRangeandExpression;
+
+                        final String dependingOnx = campaignFormElement.getDependingOn();
+
+                        Boolean isdependingOn = false;
+                        if (dependingOnx != null) {
+                            isdependingOn = true;
+                        }
+                        Boolean finalIsdependingOn = isdependingOn;
+
                         dynamicField.addValueChangedListener(field -> {
                             final Boolean isRangeandExpressionx = finalIsRangeandExpression;
                             Boolean okk = field.getFocusedChild() != null ? true : false;
@@ -382,6 +403,10 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                             } else if (field.isFocused()){
                                 System.out.println(">>>>>>>>>>>>>>>>>ONFOCUSSS>>>>>>>>>>>>>>>>>>>>" +fieldMap.get(campaignFormElement.getId()).getCaption());
 
+                            }
+
+                            if(finalIsdependingOn && isRangeandExpressionx){
+                                field.setVisibility(View.GONE);
                             }
 
                         });
@@ -450,6 +475,13 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                         dynamicLayout.addView(dynamicField, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
                         Boolean finalIsRangeandExpression = isRangeandExpression;
+                        final String dependingOnx = campaignFormElement.getDependingOn();
+
+                        Boolean isdependingOn = false;
+                        if (dependingOnx != null) {
+                            isdependingOn = true;
+                        }
+                        Boolean finalIsdependingOn = isdependingOn;
                         dynamicField.addValueChangedListener(field -> {
                             final Boolean isRangeandExpressionx = finalIsRangeandExpression;
                             Boolean okk = field.getFocusedChild() != null ? true : false;
@@ -468,6 +500,10 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                             } else if (field.isFocused()){
                                 System.out.println(">>>>>>>>>>>>>>>>>ONFOCUSSS>>>>>>>>>>>>>>>>>>>>" +fieldMap.get(campaignFormElement.getId()).getCaption());
 
+                            }
+
+                            if(finalIsdependingOn && isRangeandExpressionx){
+                                field.setVisibility(View.GONE);
                             }
 
                         });
@@ -536,6 +572,13 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                         dynamicLayout.addView(dynamicField, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
                         Boolean finalIsRangeandExpression = isRangeandExpression;
+                        final String dependingOnx = campaignFormElement.getDependingOn();
+
+                        Boolean isdependingOn = false;
+                        if (dependingOnx != null) {
+                            isdependingOn = true;
+                        }
+                        Boolean finalIsdependingOn = isdependingOn;
                         dynamicField.addValueChangedListener(field -> {
                             final Boolean isRangeandExpressionx = finalIsRangeandExpression;
                             Boolean okk = field.getFocusedChild() != null ? true : false;
@@ -554,6 +597,9 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                             } else if (field.isFocused()){
                                 System.out.println(">>>>>>>>>>>>>>>>>ONFOCUSSS>>>>>>>>>>>>>>>>>>>>" +fieldMap.get(campaignFormElement.getId()).getCaption());
 
+                            }
+                            if(finalIsdependingOn && isRangeandExpressionx){
+                                field.setVisibility(View.GONE);
                             }
 
                         });
@@ -621,6 +667,13 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                         dynamicField.setShowCaption(true);
                         dynamicLayout.addView(dynamicField, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
                         Boolean finalIsRangeandExpression = isRangeandExpression;
+                        final String dependingOnx = campaignFormElement.getDependingOn();
+
+                        Boolean isdependingOn = false;
+                        if (dependingOnx != null) {
+                            isdependingOn = true;
+                        }
+                        Boolean finalIsdependingOn = isdependingOn;
                         dynamicField.addValueChangedListener(field -> {
                             final Boolean isRangeandExpressionx = finalIsRangeandExpression;
                             Boolean okk = field.getFocusedChild() != null ? true : false;
@@ -639,6 +692,9 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                             } else if (field.isFocused()){
                                 System.out.println(">>>>>>>>>>>>>>>>>ONFOCUSSS>>>>>>>>>>>>>>>>>>>>" +fieldMap.get(campaignFormElement.getId()).getCaption());
 
+                            }
+                            if(finalIsdependingOn && isRangeandExpressionx){
+                                field.setVisibility(View.GONE);
                             }
 
                         });
@@ -706,6 +762,13 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                         dynamicField.setShowCaption(true);
                         dynamicLayout.addView(dynamicField, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
                         Boolean finalIsRangeandExpression = isRangeandExpression;
+                        final String dependingOnx = campaignFormElement.getDependingOn();
+
+                        Boolean isdependingOn = false;
+                        if (dependingOnx != null) {
+                            isdependingOn = true;
+                        }
+                        Boolean finalIsdependingOn = isdependingOn;
                         dynamicField.addValueChangedListener(field -> {
                             final Boolean isRangeandExpressionx = finalIsRangeandExpression;
                             Boolean okk = field.getFocusedChild() != null ? true : false;
@@ -724,6 +787,9 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                             } else if (field.isFocused()){
                                 System.out.println(">>>>>>>>>>>>>>>>>ONFOCUSSS>>>>>>>>>>>>>>>>>>>>" +fieldMap.get(campaignFormElement.getId()).getCaption());
 
+                            }
+                            if(finalIsdependingOn && isRangeandExpressionx){
+                                field.setVisibility(View.GONE);
                             }
 
                         });
@@ -791,6 +857,13 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                         dynamicField.setShowCaption(true);
                         dynamicLayout.addView(dynamicField, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
                         Boolean finalIsRangeandExpression = isRangeandExpression;
+                        final String dependingOnx = campaignFormElement.getDependingOn();
+
+                        Boolean isdependingOn = false;
+                        if (dependingOnx != null) {
+                            isdependingOn = true;
+                        }
+                        Boolean finalIsdependingOn = isdependingOn;
                         dynamicField.addValueChangedListener(field -> {
                             final Boolean isRangeandExpressionx = finalIsRangeandExpression;
                             Boolean okk = field.getFocusedChild() != null ? true : false;
@@ -809,6 +882,9 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                             } else if (field.isFocused()){
                                 System.out.println(">>>>>>>>>>>>>>>>>ONFOCUSSS>>>>>>>>>>>>>>>>>>>>" +fieldMap.get(campaignFormElement.getId()).getCaption());
 
+                            }
+                            if(finalIsdependingOn && isRangeandExpressionx){
+                                field.setVisibility(View.GONE);
                             }
 
                         });
@@ -876,6 +952,13 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                         dynamicField.setShowCaption(true);
                         dynamicLayout.addView(dynamicField, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
                         Boolean finalIsRangeandExpression = isRangeandExpression;
+                        final String dependingOnx = campaignFormElement.getDependingOn();
+
+                        Boolean isdependingOn = false;
+                        if (dependingOnx != null) {
+                            isdependingOn = true;
+                        }
+                        Boolean finalIsdependingOn = isdependingOn;
                         dynamicField.addValueChangedListener(field -> {
                             final Boolean isRangeandExpressionx = finalIsRangeandExpression;
                             Boolean okk = field.getFocusedChild() != null ? true : false;
@@ -894,6 +977,9 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                             } else if (field.isFocused()){
                                 System.out.println(">>>>>>>>>>>>>>>>>ONFOCUSSS>>>>>>>>>>>>>>>>>>>>" +fieldMap.get(campaignFormElement.getId()).getCaption());
 
+                            }
+                            if(finalIsdependingOn && isRangeandExpressionx){
+                                field.setVisibility(View.GONE);
                             }
 
                         });
@@ -963,6 +1049,13 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                     dynamicField.setShowCaption(true);
                     dynamicLayout.addView(dynamicField, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
                     Boolean finalIsRangeandExpression = isRangeandExpression;
+                    final String dependingOnx = campaignFormElement.getDependingOn();
+
+                    Boolean isdependingOn = false;
+                    if (dependingOnx != null) {
+                        isdependingOn = true;
+                    }
+                    Boolean finalIsdependingOn = isdependingOn;
                     dynamicField.addValueChangedListener(field -> {
                         final Boolean isRangeandExpressionx = finalIsRangeandExpression;
                         Boolean okk = field.getFocusedChild() != null ? true : false;
@@ -981,6 +1074,9 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                         } else if (field.isFocused()){
                             System.out.println(">>>>>>>>>>>>>>>>>ONFOCUSSS>>>>>>>>>>>>>>>>>>>>" +fieldMap.get(campaignFormElement.getId()).getCaption());
 
+                        }
+                        if(finalIsdependingOn && isRangeandExpressionx){
+                            field.setVisibility(View.GONE);
                         }
 
                     });
@@ -1050,6 +1146,7 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                         .setContent(R.id.tabSheet5);
                 mTabHost.addTab(spec);
                 mTabHost.getTabWidget().getChildAt(4).getLayoutParams().width = 140;
+                mTabHost.getTabWidget().getChildAt(4).setVisibility(View.GONE);
             }
            /*  if (dayy > 5) {
                 spec = mTabHost.newTabSpec("tab6").setIndicator("D6",//caption_1,

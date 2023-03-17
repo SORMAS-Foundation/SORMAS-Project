@@ -35,7 +35,7 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:gravity="center_vertical"
-        android:fontFamily="sans-serif-medium"
+        android:fontFamily="@font/rubikregular"
         android:textAllCaps="true"
         android:textSize="@dimen/activitySubHeadingTextSize"
         android:textColor="@color/activitySubHeadingText"/>

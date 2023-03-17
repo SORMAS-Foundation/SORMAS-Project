@@ -144,6 +144,7 @@ public class TextViewBindingAdapters {
 	@BindingAdapter(value = {
 		"htmlValue" })
 	public static void setHtmlValue(TextView view, String value) {
+		view.setTypeface(Typeface.create("@font/rubikregular", Typeface.NORMAL));
 		view.setText(!StringUtils.isBlank(value) ? Html.fromHtml(value) : "");
 	}
 

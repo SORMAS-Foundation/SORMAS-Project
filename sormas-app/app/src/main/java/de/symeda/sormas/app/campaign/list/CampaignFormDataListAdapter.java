@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.campaign.list;
 
+import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -32,7 +33,8 @@ public class CampaignFormDataListAdapter extends BindingPagedListAdapter<Campaig
 
             if (item.isModifiedOrChildModified()) {
                 pagedHolder.binding.imgSyncIcon.setVisibility(View.VISIBLE);
-                pagedHolder.binding.imgSyncIcon.setImageResource(R.drawable.ic_sync_blue_24dp);
+                pagedHolder.binding.rowItem.setBackgroundColor(R.drawable.background_list_activity_row_unsent);
+                pagedHolder.binding.imgSyncIcon.setImageResource(R.drawable.ic_sync_blue_24dp_white);
             } else {
                 pagedHolder.binding.imgSyncIcon.setVisibility(View.GONE);
             }

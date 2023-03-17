@@ -55,7 +55,7 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
 
 	// Constants
 
-	private static final String RADIO_BUTTON_FONT_FAMILY = "sans-serif-medium";
+	private static final String RADIO_BUTTON_FONT_FAMILY = "@font/rubikregular";
 	private Object valueBeforeChange = null;
 
 	// Views
