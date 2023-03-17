@@ -122,9 +122,10 @@ jobs:
           script: ./gradlew connectedAndroidTest
 
       - name: mobsfscan
-        uses: MobSF/mobsfscan@main
+        uses: MobSF/mobsfscan@0.2.0
         with:
           args: '. --sarif --output mobsf-results.sarif || true'
+
       - name: Upload mobsfscan report
         uses: github/codeql-action/upload-sarif@v2
         with:
