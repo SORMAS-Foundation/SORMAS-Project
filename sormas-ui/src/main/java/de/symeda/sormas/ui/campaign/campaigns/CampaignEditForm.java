@@ -287,7 +287,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 
 		parentTab1.addComponent(layout);
 		parentTab1.setCaption("Pre-Campaign Phase");
-		if (UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
+		if (UserProvider.getCurrent().hasUserType(UserType.WHO_USER) || UserProvider.getCurrent().hasUserType(UserType.EOC_USER)) {
 			tabsheetParent.addTab(parentTab1);
 		}
 
