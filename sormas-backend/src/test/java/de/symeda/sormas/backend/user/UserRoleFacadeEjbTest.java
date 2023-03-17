@@ -1,7 +1,5 @@
 package de.symeda.sormas.backend.user;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -25,7 +23,8 @@ public class UserRoleFacadeEjbTest extends AbstractBeanTest {
 
 		userRole.setJurisdictionLevel(JurisdictionLevel.COMMUNITY);
 		UserRoleDto finalUserRole = userRole;
-		assertThrowsWithMessage(ValidationRuntimeException.class,
+		assertThrowsWithMessage(
+			ValidationRuntimeException.class,
 			I18nProperties.getValidationError(Validations.jurisdictionChangeUserAssignment),
 			() -> getUserRoleFacade().saveUserRole(finalUserRole));
 	}

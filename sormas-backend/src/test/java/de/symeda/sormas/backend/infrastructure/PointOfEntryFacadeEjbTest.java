@@ -16,7 +16,6 @@ import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryCriteria;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryFacade;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
@@ -76,7 +75,7 @@ class PointOfEntryFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	void testGetPointOfEntryByCaseUuid() {
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createNationalUser();
 		PersonDto personDto = creator.createPerson("John", "Doe");
 
 		CaseDataDto case1 = creator.createCase(user.toReference(), personDto.toReference(), rdcf);
@@ -98,7 +97,7 @@ class PointOfEntryFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	void testExistForCase() {
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createNationalUser();
 		PersonDto personDto = creator.createPerson("John", "Doe");
 
 		CaseDataDto case1 = creator.createCase(user.toReference(), personDto.toReference(), rdcf);
