@@ -121,7 +121,7 @@ public class VisitController {
 
 		editView.addCommitListener(() -> {
 			if (!editForm.getFieldGroup().isModified()) {
-				FacadeProvider.getVisitFacade().save(editForm.getValue(), allowedStartDate, allowedEndDate);
+				FacadeProvider.getVisitFacade().saveVisit(editForm.getValue(), allowedStartDate, allowedEndDate);
 				if (doneConsumer != null) {
 					doneConsumer.accept(visitRef);
 				}
@@ -140,7 +140,7 @@ public class VisitController {
 	}
 
 	private void createVisit(VisitEditForm createForm, Consumer<VisitReferenceDto> doneConsumer, Date allowedStartDate, Date allowedEndDate) {
-		final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<VisitEditForm>(
+		final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<>(
 			createForm,
 			UserProvider.getCurrent().hasUserRight(UserRight.VISIT_CREATE),
 			createForm.getFieldGroup());
@@ -148,7 +148,7 @@ public class VisitController {
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
 				VisitDto dto = createForm.getValue();
-				dto = FacadeProvider.getVisitFacade().save(dto, allowedStartDate, allowedEndDate);
+				dto = FacadeProvider.getVisitFacade().saveVisit(dto, allowedStartDate, allowedEndDate);
 				if (doneConsumer != null) {
 					doneConsumer.accept(dto.toReference());
 				}
