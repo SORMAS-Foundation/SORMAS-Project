@@ -133,8 +133,8 @@ public class VisitFacadeEjb extends AbstractBaseEjb<Visit, VisitDto, VisitIndexD
 	}
 
 	@Inject
-	protected VisitFacadeEjb(VisitService service, UserService userService) {
-		super(Visit.class, VisitDto.class, service, userService);
+	protected VisitFacadeEjb(VisitService service) {
+		super(Visit.class, VisitDto.class, service);
 	}
 
 	@Override
@@ -694,8 +694,8 @@ public class VisitFacadeEjb extends AbstractBaseEjb<Visit, VisitDto, VisitIndexD
 		}
 
 		@Inject
-		protected VisitFacadeEjbLocal(VisitService service, UserService userService) {
-			super(service, userService);
+		protected VisitFacadeEjbLocal(VisitService service) {
+			super(service);
 		}
 
 	}
