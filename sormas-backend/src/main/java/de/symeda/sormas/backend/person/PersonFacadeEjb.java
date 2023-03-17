@@ -1915,7 +1915,8 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 					}
 
 					EventParticipant otherEventParticipant = participantsToSameEvent.stream()
-						.filter(eventParticipant -> !selectedEventParticipantUuids.contains(eventParticipant.getUuid()))
+						.filter(
+							eventParticipant -> !selectedEventParticipantUuids.contains(eventParticipant.getUuid()) && !eventParticipant.isDeleted())
 						.findFirst()
 						.orElse(null);
 
