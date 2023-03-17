@@ -46,7 +46,7 @@ public class SharesDirectorySteps implements En {
     When(
         "I click on the The Eye Icon located in the Shares Page",
         () -> {
-          TimeUnit.SECONDS.sleep(2);//wait for the page to load all records
+          TimeUnit.SECONDS.sleep(2); // wait for the page to load all records
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(SHARE_FIRST_EYE_ICON);
           webDriverHelpers.clickOnWebElementBySelector(SHARE_FIRST_EYE_ICON);
         });
@@ -84,18 +84,12 @@ public class SharesDirectorySteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(SHARE_OPTION_CHECKBOX);
           int numberOfCheckboxes = webDriverHelpers.getNumberOfElements(SHARE_OPTION_CHECKBOX);
-          System.out.println("Number of checkboxes: " + numberOfCheckboxes);
           for (int i = 1; i <= numberOfCheckboxes; i++) {
             softly.assertNotEquals(
                 webDriverHelpers.getTextFromWebElement(getCheckBoxFromShareFormByIndex(i)),
                 "Zugehörige Kontakte teilen",
                 "Share associated contacts checkbox is displayed!");
             softly.assertAll();
-            System.out.println(
-                "Text from checkbox "
-                    + i
-                    + " :"
-                    + webDriverHelpers.getTextFromWebElement(getCheckBoxFromShareFormByIndex(i)));
           }
         });
 
@@ -104,18 +98,12 @@ public class SharesDirectorySteps implements En {
         (String columnHeaderType) -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(POPUP_COLUMN_HEADER);
           int numberOfColumnHeaders = webDriverHelpers.getNumberOfElements(POPUP_COLUMN_HEADER);
-          System.out.println("Number of column headers: " + numberOfColumnHeaders);
           for (int i = 1; i <= numberOfColumnHeaders; i++) {
             softly.assertNotEquals(
                 webDriverHelpers.getTextFromWebElement(getPopupColumnHeaderByIndex(i)),
                 columnHeaderType,
                 "Contact column header is displayed!");
             softly.assertAll();
-            System.out.println(
-                "Text from first column header "
-                    + i
-                    + " "
-                    + webDriverHelpers.getTextFromWebElement(getPopupColumnHeaderByIndex(i)));
           }
         });
   }
