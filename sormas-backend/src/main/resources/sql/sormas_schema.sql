@@ -12306,4 +12306,18 @@ WHERE uu.userright = 'DASHBOARD_SURVEILLANCE_VIEW'
 
 INSERT INTO schema_version (version_number, comment) VALUES (509, 'Create basic samples dashboard #10721');
 
+-- 2023-03-06 Add diseaseVariant to ExternalMessages #11449
+ALTER TABLE externalmessage ADD COLUMN diseasevariant varchar(255);
+ALTER TABLE externalmessage ADD COLUMN diseasevariantdetails varchar(512);
+ALTER TABLE externalmessage_history ADD COLUMN diseasevariant varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN diseasevariantdetails varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (510, 'Add diseaseVariant to ExternalMessages #11449');
+
+-- 2023-03-15 Add dateOfResult to TestReports #11453
+ALTER TABLE testreport ADD COLUMN dateofresult varchar(255);
+ALTER TABLE testreport_history ADD COLUMN dateofresult varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (511, 'Add dateOfResult to TestReports #11453');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

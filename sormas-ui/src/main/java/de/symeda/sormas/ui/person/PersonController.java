@@ -147,8 +147,12 @@ public class PersonController {
 		pickButton.setEnabled(false);
 
 		personGrid.addItemClickListener(itemClick -> {
-			mergeButton.setEnabled(true);
-			pickButton.setEnabled(true);
+			if (!itemClick.getMouseEventDetails().isDoubleClick()) {
+				boolean enabled = personGrid.getSelectedItems().isEmpty()
+					|| !DataHelper.equal(itemClick.getItem(), personGrid.getSelectedItems().stream().findFirst().get());
+				mergeButton.setEnabled(enabled);
+				pickButton.setEnabled(enabled);
+			}
 		});
 
 		confirmationComponent.addExtraButton(

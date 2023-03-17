@@ -59,7 +59,6 @@ import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasShareReq
 import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
-import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.MockProducer;
@@ -69,6 +68,15 @@ import de.symeda.sormas.backend.sormastosormas.share.ShareRequestData;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 
 public class SormasToSormasShareRequestTest extends SormasToSormasTest {
+
+	private UserReferenceDto officer;
+
+	@Override
+	public void init() {
+		super.init();
+
+		officer = useSurveillanceOfficerLogin(rdcf).toReference();
+	}
 
 	@AfterEach
 	public void teardown() {
@@ -83,8 +91,6 @@ public class SormasToSormasShareRequestTest extends SormasToSormasTest {
 
 	@Test
 	public void testSendCaseShareRequest() throws SormasToSormasException {
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
-		useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto person = creator.createPerson("John", "Doe", Sex.MALE, 1964, 4, 12);
 		CaseDataDto caze = creator.createCase(officer, rdcf, dto -> {
@@ -145,8 +151,6 @@ public class SormasToSormasShareRequestTest extends SormasToSormasTest {
 
 	@Test
 	public void testResendCaseShareRequest() throws SormasToSormasException {
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
-		useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto person = creator.createPerson("John", "Doe", Sex.MALE, 1964, 4, 12);
 		CaseDataDto caze = creator.createCase(officer, rdcf, dto -> {
@@ -221,8 +225,6 @@ public class SormasToSormasShareRequestTest extends SormasToSormasTest {
 
 	@Test
 	public void testResendCaseShareRequestWithoutResponodingToFirstOne() throws SormasToSormasException {
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
-		useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto person = creator.createPerson("John", "Doe", Sex.MALE, 1964, 4, 12);
 		CaseDataDto caze = creator.createCase(officer, rdcf, dto -> {
@@ -262,8 +264,6 @@ public class SormasToSormasShareRequestTest extends SormasToSormasTest {
 
 	@Test
 	public void testShareWithModifiedOptions() throws SormasToSormasException {
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
-		useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto person = creator.createPerson("John", "Doe", Sex.MALE, 1964, 4, 12);
 		CaseDataDto caze = creator.createCase(officer, rdcf, dto -> {
@@ -338,7 +338,6 @@ public class SormasToSormasShareRequestTest extends SormasToSormasTest {
 
 	@Test
 	public void testAcceptShareRequest() throws SormasToSormasException, SormasToSormasValidationException {
-		useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto person = createPersonDto(rdcf);
 		CaseDataDto caze = createCaseDto(rdcf, person);
@@ -370,9 +369,6 @@ public class SormasToSormasShareRequestTest extends SormasToSormasTest {
 
 	@Test
 	public void testAcceptWithCaseDuplicate() throws SormasToSormasException, SormasToSormasValidationException {
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
-
-		useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto person = createPersonDto(rdcf);
 		getPersonFacade().save(person);
@@ -417,9 +413,6 @@ public class SormasToSormasShareRequestTest extends SormasToSormasTest {
 
 	@Test
 	public void testAcceptWithConvertedCaseDuplicate() throws SormasToSormasException, SormasToSormasValidationException {
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
-
-		useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto person = createPersonDto(rdcf);
 		getPersonFacade().save(person);
@@ -460,9 +453,6 @@ public class SormasToSormasShareRequestTest extends SormasToSormasTest {
 
 	@Test
 	public void testAcceptCaseHavingSimilarContact() throws SormasToSormasException, SormasToSormasValidationException {
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
-
-		useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto person = createPersonDto(rdcf);
 		getPersonFacade().save(person);
@@ -499,9 +489,6 @@ public class SormasToSormasShareRequestTest extends SormasToSormasTest {
 
 	@Test
 	public void testAcceptWithContactDuplicate() throws SormasToSormasException, SormasToSormasValidationException {
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
-
-		useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto person = createPersonDto(rdcf);
 		getPersonFacade().save(person);
@@ -546,9 +533,6 @@ public class SormasToSormasShareRequestTest extends SormasToSormasTest {
 
 	@Test
 	public void testAcceptWithConvertedContactDuplicate() throws SormasToSormasException, SormasToSormasValidationException {
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
-
-		useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto person = createPersonDto(rdcf);
 		getPersonFacade().save(person);
@@ -589,9 +573,6 @@ public class SormasToSormasShareRequestTest extends SormasToSormasTest {
 
 	@Test
 	public void testAcceptWithContactHavingSimilarCase() throws SormasToSormasException, SormasToSormasValidationException {
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
-
-		useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto person = createPersonDto(rdcf);
 		getPersonFacade().save(person);
@@ -629,9 +610,6 @@ public class SormasToSormasShareRequestTest extends SormasToSormasTest {
 
 	@Test
 	public void testAcceptCaseWithDuplicatePerson() throws SormasToSormasException, SormasToSormasValidationException {
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
-
-		useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto person = createPersonDto(rdcf);
 		getPersonFacade().save(person);
@@ -669,9 +647,6 @@ public class SormasToSormasShareRequestTest extends SormasToSormasTest {
 
 	@Test
 	public void testAcceptContactWithDuplicatePerson() throws SormasToSormasException, SormasToSormasValidationException {
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
-
-		useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto person = createPersonDto(rdcf);
 		getPersonFacade().save(person);

@@ -63,7 +63,7 @@ public class AdditionalTestController {
 
 		final CommitDiscardWrapperComponent<AdditionalTestForm> component = new CommitDiscardWrapperComponent<>(
 			form,
-			UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_EDIT) && isEditAllowed,
+			isEditAllowed,
 			form.getFieldGroup());
 
 		Window window = VaadinUiUtil.showModalPopupWindow(
@@ -97,6 +97,8 @@ public class AdditionalTestController {
 					}
 				}, I18nProperties.getString(Strings.entityAdditionalTest));
 			}
+
+			component.restrictEditableComponentsOnEditView(UserRight.ADDITIONAL_TEST_EDIT, UserRight.ADDITIONAL_TEST_DELETE, null);
 		}
 		component.getButtonsPanel().setVisible(isEditAllowed);
 	}

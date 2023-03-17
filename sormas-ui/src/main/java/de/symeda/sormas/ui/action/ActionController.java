@@ -77,7 +77,7 @@ public class ActionController {
 		ActionEditForm form = new ActionEditForm(false);
 		form.setValue(newDto);
 		final CommitDiscardWrapperComponent<ActionEditForm> editView =
-			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.ACTION_EDIT), form.getFieldGroup());
+			new CommitDiscardWrapperComponent<>(form, true, form.getFieldGroup());
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditAction));
 
@@ -101,6 +101,7 @@ public class ActionController {
 		}
 
 		editView.addDiscardListener(popupWindow::close);
+		editView.restrictEditableComponentsOnEditView(UserRight.ACTION_EDIT, UserRight.ACTION_DELETE, null);
 	}
 
 	private ActionDto createNewAction(ActionContext context, ReferenceDto entityRef) {

@@ -50,7 +50,6 @@ import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserRoleFacadeEjb.UserRoleFacadeEjbLocal;
-import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
@@ -73,8 +72,8 @@ public class CampaignFacadeEjb
 	}
 
 	@Inject
-	public CampaignFacadeEjb(CampaignService service, UserService userService) {
-		super(Campaign.class, CampaignDto.class, service, userService);
+	public CampaignFacadeEjb(CampaignService service) {
+		super(Campaign.class, CampaignDto.class, service);
 	}
 
 	@Override
@@ -426,8 +425,8 @@ public class CampaignFacadeEjb
 		}
 
 		@Inject
-		public CampaignFacadeEjbLocal(CampaignService service, UserService userService) {
-			super(service, userService);
+		public CampaignFacadeEjbLocal(CampaignService service) {
+			super(service);
 		}
 	}
 }

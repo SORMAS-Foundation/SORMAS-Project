@@ -1,0 +1,89 @@
+name: 4 - Finding
+description: Report an unexpected behavior you encountered while using or developing SORMAS.
+labels: 'finding'
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting an unexpected behavior in SORMAS! **Please make sure that your issue complies to our [Contributing guidelines](https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/docs/CONTRIBUTING.md)** before submitting it.
+  - type: textarea
+    id: problem-description
+    attributes:
+      label: Problem Description
+      description: Describe what exactly happened, where it happened and under which circumstances. Provide as many details as possible, even if they might seem irrelevant to you. **If you have access to the server logs, attach relevant log output in a .txt file here** as this helps us to identify whether the behavior is a bug and its source. Please don't copy and paste server logs directly unless they are very short. Also, if possible, attach at least one screenshot depicting the behavior (without exposing any protected data).
+      placeholder: You can attach server logs and screenshots by clicking this area to highlight it and then dragging them in.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: Reproduction Steps
+      description: If possible, provide step-by-step instructions of how you triggered the behavior, i.e. the order of actions you performed before it occurred. This helps us to reproduce it on our systems.
+      placeholder: |
+        1.
+        2.
+        ...
+      value: |
+        1.
+        2.
+        ...
+    validations:
+      required: false
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: Shortly describe what you think should have happened instead of the reported behavior. Not necessary when the error is identified by a crash or an error message, but likely relevant when the problem is the result of a misbehavior of the application that results in an unexpected outcome.
+    validations:
+      required: false
+  - type: dropdown
+    id: affected-area
+    attributes:
+      label: Affected Area(s)
+      description: Did you encounter the behavior in the web app, Android app, or by using the ReST interface? You can select multiple values.
+      multiple: true
+      options:
+        - Web app
+        - Android app
+        - ReST API
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: SORMAS Version
+      description: Which version or versions of the software have you encountered the behavior in?
+      placeholder: e.g. SORMAS 1.81.0
+    validations:
+      required: true
+  - type: input
+    id: android-browser
+    attributes:
+      label: Android version/Browser
+      description: Which Android version or web browser (depending on where this problem occurred) have you been using?
+      placeholder: e.g. Android 10 or Google Chrome
+    validations:
+      required: true
+  - type: input
+    id: user-roles
+    attributes:
+      label: User Role(s)
+      description: Please specify the user role(s) assigned to the user or users you have encountered the behavior with. If your server is using custom user roles, we might request additional details in order to reproduce the issue.
+      placeholder: e.g. Admin and National User
+    validations:
+      required: true
+  - type: input
+    id: server-url
+    attributes:
+      label: Server URL
+      description: Please specify the server URL if you've encountered the behavior on a test or demo server.
+      placeholder: e.g. https://test.sormas.netzlink.com
+    validations:
+      required: false
+  - type: textarea
+    id: additional-info
+    attributes:
+      label: Additional Information
+      description: If there is anything else you want to add to your request, you can put it here.
+    validations:
+      required: false

@@ -51,7 +51,7 @@ Feature: Create user
     Given I log in as a Admin User
     And I click on the Users from navbar
     Then I click on the NEW USER button
-    Then I create new Importierender Benutzer user for test on DE specific
+    Then I create new Nationale*r Benutzer*in user for test on DE specific
     And I click on logout button from navbar
     And I login first time as a new created user from keycloak instance
     And I click on logout button from navbar
@@ -66,9 +66,7 @@ Feature: Create user
     And  I navigate to Keycloak Administrator Console Login page
     Then I log in as Keycloak Admin to Keycloak Administrator Console
     And I navigate to Users tab in Keycloak Administrator Console
-    And I click View all users button
     Then I search for last created user from SORMAS in grid in Keycloak Admin Page
-    And I open last created user from SORMAS in Keycloak Admin Page
     And I check if user is disabled in Keycloak Admin Page
 
   @tmsLink=SORQA-460 @env_keycloak
@@ -86,6 +84,9 @@ Feature: Create user
   @#10111 @env_main
   Scenario: Change user password and login
     Given I log in as a Admin User
+    And I click on the Users from navbar
+    And I click on the NEW USER button
+    And I create new National User with limited disease to Cholera
     And I click on the Users from navbar
     And I select first user from list
     Then I create new user password and save it on Edit User page

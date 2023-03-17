@@ -19,6 +19,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
 
@@ -31,6 +32,7 @@ public class ExternalMessageIndexDto extends AbstractUuidDto {
 	public static final String REPORTER_NAME = "reporterName";
 	public static final String REPORTER_POSTAL_CODE = "reporterPostalCode";
 	public static final String DISEASE = "disease";
+	public static final String DISEASE_VARIANT = "diseaseVariant";
 	public static final String PERSON_FIRST_NAME = "personFirstName";
 	public static final String PERSON_LAST_NAME = "personLastName";
 	public static final String PERSON_BIRTH_DATE = "personBirthDate";
@@ -43,6 +45,7 @@ public class ExternalMessageIndexDto extends AbstractUuidDto {
 	private String reporterName;
 	private String reporterPostalCode;
 	private Disease disease;
+	private DiseaseVariant diseaseVariant;
 	private String personFirstName;
 	private String personLastName;
 	private Date personBirthDate;
@@ -57,6 +60,7 @@ public class ExternalMessageIndexDto extends AbstractUuidDto {
 		String reporterName,
 		String reporterPostalCode,
 		Disease disease,
+		DiseaseVariant diseaseVariant,
 		String personFirstName,
 		String personLastName,
 		Integer personBirthDateYYYY,
@@ -74,6 +78,7 @@ public class ExternalMessageIndexDto extends AbstractUuidDto {
 		this.reporterName = reporterName;
 		this.reporterPostalCode = reporterPostalCode;
 		this.disease = disease;
+		this.diseaseVariant = diseaseVariant;
 		this.personFirstName = personFirstName;
 		this.personLastName = personLastName;
 		this.personPostalCode = personPostalCode;
@@ -132,6 +137,14 @@ public class ExternalMessageIndexDto extends AbstractUuidDto {
 
 	public void setDisease(Disease disease) {
 		this.disease = disease;
+	}
+
+	public DiseaseVariant getDiseaseVariant() {
+		return diseaseVariant;
+	}
+
+	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
+		this.diseaseVariant = diseaseVariant;
 	}
 
 	public String getPersonFirstName() {

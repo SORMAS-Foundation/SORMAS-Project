@@ -251,6 +251,8 @@ public class EventParticipantsController {
 					() -> navigateToData(eventParticipant.getUuid()));
 		}
 
+		editComponent.restrictEditableComponentsOnEditView(UserRight.EVENTPARTICIPANT_EDIT, UserRight.EVENTPARTICIPANT_DELETE, null);
+
 		return editComponent;
 	}
 
@@ -259,7 +261,7 @@ public class EventParticipantsController {
 		Consumer<EventParticipantReferenceDto> doneConsumer) {
 		final CommitDiscardWrapperComponent<EventParticipantEditForm> editComponent = new CommitDiscardWrapperComponent<>(
 			editForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_EDIT),
+			true,
 			editForm.getFieldGroup());
 
 		editComponent.addCommitListener(() -> {

@@ -21,7 +21,6 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.security.DenyAll;
-import javax.ejb.EJB;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
@@ -49,7 +48,6 @@ import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.backend.deletionconfiguration.DeletionConfiguration;
 import de.symeda.sormas.backend.deletionconfiguration.DeletionConfigurationService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
-import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
 public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends ReferenceDto, SRV extends AbstractCoreAdoService<ADO, ? extends QueryJoins<ADO>>, CRITERIA extends BaseCriteria>
@@ -58,14 +56,14 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 
 	@Inject
 	private DeletionConfigurationService deletionConfigurationService;
-	@EJB
+	@Inject
 	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	protected AbstractCoreFacadeEjb() {
 	}
 
-	protected AbstractCoreFacadeEjb(Class<ADO> adoClass, Class<DTO> dtoClass, SRV service, UserService userService) {
-		super(adoClass, dtoClass, service, userService);
+	protected AbstractCoreFacadeEjb(Class<ADO> adoClass, Class<DTO> dtoClass, SRV service) {
+		super(adoClass, dtoClass, service);
 	}
 
 	@DenyAll

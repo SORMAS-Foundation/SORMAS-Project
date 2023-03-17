@@ -39,6 +39,7 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.EndOfQuarantineReason;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.person.PersonDto;
@@ -49,7 +50,6 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplingReason;
 import de.symeda.sormas.api.symptoms.SymptomState;
-import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -57,7 +57,6 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
 
 public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 
@@ -65,7 +64,7 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 	public void testCaseExport() {
 
 		final TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		final UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		final UserDto user = creator.createSurveillanceSupervisor(rdcf);
 
 		PersonDto personDto = creator.createPerson("James", "Smith", p -> {
 			LocationDto homeAddress = p.getAddress();
@@ -160,7 +159,7 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 			PathogenTestType.RAPID_TEST,
 			Disease.CORONAVIRUS,
 			testDate,
-			new Facility(),
+			FacilityDto.build().toReference(),
 			user.toReference(),
 			PathogenTestResultType.POSITIVE,
 			"",
@@ -248,7 +247,7 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 	public void testContactExport() {
 
 		final TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		final UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		final UserDto user = creator.createSurveillanceSupervisor(rdcf);
 
 		PersonDto personDto = creator.createPerson("James", "Smith", p -> {
 			LocationDto homeAddress = p.getAddress();
@@ -331,7 +330,7 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 			PathogenTestType.RAPID_TEST,
 			Disease.CORONAVIRUS,
 			testDate,
-			new Facility(),
+			FacilityDto.build().toReference(),
 			user.toReference(),
 			PathogenTestResultType.POSITIVE,
 			"",

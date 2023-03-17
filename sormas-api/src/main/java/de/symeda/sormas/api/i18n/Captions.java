@@ -1326,6 +1326,8 @@ public interface Captions {
 	String externalMessage_deleteNewlyCreatedContact = "externalMessage.deleteNewlyCreatedContact";
 	String externalMessage_deleteNewlyCreatedEventParticipant = "externalMessage.deleteNewlyCreatedEventParticipant";
 	String ExternalMessage_disease = "ExternalMessage.disease";
+	String ExternalMessage_diseaseVariant = "ExternalMessage.diseaseVariant";
+	String ExternalMessage_diseaseVariantDetails = "ExternalMessage.diseaseVariantDetails";
 	String ExternalMessage_labExternalId = "ExternalMessage.labExternalId";
 	String ExternalMessage_labMessageDetails = "ExternalMessage.labMessageDetails";
 	String ExternalMessage_labSampleId = "ExternalMessage.labSampleId";
@@ -2364,6 +2366,7 @@ public interface Captions {
 	String taskNoTasks = "taskNoTasks";
 	String taskOfficerTasks = "taskOfficerTasks";
 	String TestReport = "TestReport";
+	String TestReport_dateOfResult = "TestReport.dateOfResult";
 	String TestReport_testDateTime = "TestReport.testDateTime";
 	String TestReport_testLabCity = "TestReport.testLabCity";
 	String TestReport_testLabExternalId = "TestReport.testLabExternalId";

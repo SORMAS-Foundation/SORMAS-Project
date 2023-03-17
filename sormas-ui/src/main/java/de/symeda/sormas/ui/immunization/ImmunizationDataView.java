@@ -9,7 +9,6 @@ import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.immunization.components.form.ImmunizationDataForm;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
-import de.symeda.sormas.ui.utils.ArchivingController;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
@@ -70,13 +69,6 @@ public class ImmunizationDataView extends AbstractImmunizationView {
 		final String uuid = immunization.getUuid();
 		final EditPermissionType immunizationEditAllowed = FacadeProvider.getImmunizationFacade().getEditPermissionType(uuid);
 		final boolean deleted = FacadeProvider.getImmunizationFacade().isDeleted(uuid);
-
-		if (deleted) {
-			layout.disable(CommitDiscardWrapperComponent.DELETE_UNDELETE);
-		} else if (immunizationEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
-			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
-		} else if (immunizationEditAllowed.equals(EditPermissionType.REFUSED)) {
-			layout.disable();
-		}
+		layout.disableIfNecessary(deleted, immunizationEditAllowed);
 	}
 }

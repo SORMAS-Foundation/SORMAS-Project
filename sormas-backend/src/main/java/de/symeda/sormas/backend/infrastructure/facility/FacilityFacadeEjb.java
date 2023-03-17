@@ -69,7 +69,6 @@ import de.symeda.sormas.backend.infrastructure.district.DistrictService;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
-import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.util.RightsAllowed;
@@ -91,8 +90,8 @@ public class FacilityFacadeEjb
 	}
 
 	@Inject
-	protected FacilityFacadeEjb(FacilityService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
-		super(Facility.class, FacilityDto.class, service, featureConfiguration, userService, Validations.importFacilityAlreadyExists);
+	protected FacilityFacadeEjb(FacilityService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
+		super(Facility.class, FacilityDto.class, service, featureConfiguration, Validations.importFacilityAlreadyExists);
 	}
 
 	@Override
@@ -624,8 +623,8 @@ public class FacilityFacadeEjb
 		}
 
 		@Inject
-		protected FacilityFacadeEjbLocal(FacilityService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
-			super(service, featureConfiguration, userService);
+		protected FacilityFacadeEjbLocal(FacilityService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
+			super(service, featureConfiguration);
 		}
 	}
 }

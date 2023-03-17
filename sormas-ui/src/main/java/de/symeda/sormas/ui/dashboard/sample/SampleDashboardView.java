@@ -17,13 +17,10 @@ package de.symeda.sormas.ui.dashboard.sample;
 
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.dashboard.sample.SampleShipmentStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
@@ -31,7 +28,6 @@ import de.symeda.sormas.ui.dashboard.DashboardType;
 import de.symeda.sormas.ui.dashboard.components.DashboardHeadingComponent;
 import de.symeda.sormas.ui.dashboard.sample.components.SampleCountTilesComponent;
 import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.FinalLaboratoryResultsStatisticsComponent;
-import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 public class SampleDashboardView extends AbstractDashboardView {
@@ -63,10 +59,6 @@ public class SampleDashboardView extends AbstractDashboardView {
 		SampleDashboardFilterLayout filterLayout = new SampleDashboardFilterLayout(this, dataProvider);
 
 		dashboardLayout.addComponent(filterLayout);
-
-		Label warningMessage = new Label(I18nProperties.getString(Strings.sampleDashboardWarning));
-		warningMessage.addStyleNames(CssStyles.HSPACE_LEFT_2, CssStyles.VSPACE_TOP_2, CssStyles.LABEL_WARNING);
-		dashboardLayout.addComponent(warningMessage);
 
 		heading = new DashboardHeadingComponent(Captions.sampleDashboardAllSamples, null);
 		heading.setMargin(new MarginInfo(true, true, false, true));
