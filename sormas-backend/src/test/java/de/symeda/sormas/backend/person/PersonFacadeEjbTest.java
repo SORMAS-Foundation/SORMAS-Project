@@ -96,8 +96,7 @@ import de.symeda.sormas.backend.user.User;
 
 public class PersonFacadeEjbTest extends AbstractBeanTest {
 
-	protected TestDataCreator.RDCF rdcf;
-	protected TestDataCreator.RDCFEntities rdcfEntities;
+	protected RDCF rdcf;
 	protected UserDto nationalUser;
 
 	/**
@@ -109,16 +108,8 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	public void init() {
 		super.init();
 
-		rdcf = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1", "Point of entry 1");
-		rdcfEntities = creator.createRDCFEntities();
-		nationalUser = creator.createUser(
-			rdcf.region.getUuid(),
-			rdcf.district.getUuid(),
-			rdcf.community.getUuid(),
-			rdcf.facility.getUuid(),
-			"Nat",
-			"User",
-			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		rdcf = creator.createRDCF();
+		nationalUser = creator.createNationalUser();
 	}
 
 	/**
@@ -243,7 +234,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetIndexListByPresentCondition() {
-		final UserDto user = creator.createUser(rdcfEntities, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		final UserDto user = creator.createSurveillanceSupervisor(rdcf);
 		final PersonDto person1 = creator.createPerson("James", "Smith", Sex.MALE, 1920, 1, 1);
 		creator.createCase(
 			user.toReference(),
@@ -252,7 +243,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			CaseClassification.PROBABLE,
 			InvestigationStatus.PENDING,
 			new Date(),
-			rdcfEntities);
+			rdcf);
 		person1.setPresentCondition(PresentCondition.DEAD);
 		final PersonDto person2 = creator.createPerson("Maria", "Garcia", Sex.FEMALE, 1920, 1, 1);
 		creator.createCase(
@@ -262,7 +253,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			CaseClassification.PROBABLE,
 			InvestigationStatus.PENDING,
 			new Date(),
-			rdcfEntities);
+			rdcf);
 		getPersonFacade().save(person1);
 
 		assertEquals(1, getPersonFacade().getIndexList(new PersonCriteria().presentCondition(PresentCondition.DEAD), null, null, null).size());
@@ -271,8 +262,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetIndexListByName() {
-		final UserDto user = creator.createUser(rdcfEntities, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
-		user.setRegion(new RegionReferenceDto(rdcfEntities.region.getUuid()));
+		final UserDto user = creator.createSurveillanceSupervisor(rdcf);
 		user.setLimitedDisease(Disease.EVD);
 		getUserFacade().saveUser(user, false);
 		loginWith(user);
@@ -285,7 +275,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			CaseClassification.PROBABLE,
 			InvestigationStatus.PENDING,
 			new Date(),
-			rdcfEntities);
+			rdcf);
 		person1.setPresentCondition(PresentCondition.DEAD);
 		final PersonDto person2 = creator.createPerson("Maria", "Garcia", Sex.FEMALE, 1920, 1, 1);
 		creator.createCase(
@@ -295,7 +285,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			CaseClassification.PROBABLE,
 			InvestigationStatus.PENDING,
 			new Date(),
-			rdcfEntities);
+			rdcf);
 		getPersonFacade().save(person1);
 
 		PersonCriteria criteria = new PersonCriteria();
@@ -306,7 +296,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetIndexListPersonNotConsideredIfAssociatedEntitiesDeleted() throws ExternalSurveillanceToolRuntimeException {
-		final UserDto user = creator.createUser(rdcfEntities, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		final UserDto user = creator.createSurveillanceSupervisor(rdcf);
 
 		final PersonDto person1 = creator.createPerson("James", "Smith", Sex.MALE, 1920, 1, 1);
 		person1.setPresentCondition(PresentCondition.DEAD);
@@ -319,7 +309,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			CaseClassification.PROBABLE,
 			InvestigationStatus.PENDING,
 			new Date(),
-			rdcfEntities);
+			rdcf);
 		CaseDataDto caze2 = creator.createCase(
 			user.toReference(),
 			person1.toReference(),
@@ -327,7 +317,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS,
 			InvestigationStatus.PENDING,
 			new Date(),
-			rdcfEntities);
+			rdcf);
 		assertEquals(1, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
 
 		getCaseFacade().delete(caze.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
@@ -383,7 +373,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetMatchingNameDtos() {
-		UserDto user = creator.createUser(rdcfEntities, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
 
 		// 1-3 = Active persons; 4 = Person without reference; 5-7 = Inactive persons
 		PersonDto person1 = creator.createPerson("James", "Smith", Sex.MALE, 1980, 1, 1);
@@ -498,7 +488,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	 * https://gitter.im/SORMAS-Project!
 	 */
 	public void testGetFollowUpEndDatesContactsOnly() {
-		UserDto user = creator.createUser(rdcfEntities, creator.getUserRoleReference(DefaultUserRole.REST_EXTERNAL_VISITS_USER));
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.REST_EXTERNAL_VISITS_USER));
 
 		creator.createPerson(); // Person without contact
 		final PersonDto person1 = creator.createPerson();
@@ -541,7 +531,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	 * https://gitter.im/SORMAS-Project!
 	 */
 	public void testGetPersonForJournal() {
-		UserDto user = creator.createUser(rdcfEntities, creator.getUserRoleReference(DefaultUserRole.CONTACT_SUPERVISOR));
+		UserDto user = creator.createContactOfficer(rdcf);
 
 		String phoneNumber = "+496211218490";
 		String internationalPhoneNumber = "+49 621 1218490";
@@ -583,14 +573,14 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetFollowUpEndDatesCasesOnly() {
-		UserDto user = creator.createUser(rdcfEntities, creator.getUserRoleReference(DefaultUserRole.REST_EXTERNAL_VISITS_USER));
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.REST_EXTERNAL_VISITS_USER));
 
 		creator.createPerson(); // Person without contact
 		final PersonDto person1 = creator.createPerson();
 		final PersonDto person2 = creator.createPerson();
-		final CaseDataDto case11 = creator.createCase(user.toReference(), person1.toReference(), rdcfEntities);
-		final CaseDataDto case12 = creator.createCase(user.toReference(), person1.toReference(), rdcfEntities);
-		final CaseDataDto case2 = creator.createCase(user.toReference(), person2.toReference(), rdcfEntities);
+		final CaseDataDto case11 = creator.createCase(user.toReference(), person1.toReference(), rdcf);
+		final CaseDataDto case12 = creator.createCase(user.toReference(), person1.toReference(), rdcf);
+		final CaseDataDto case2 = creator.createCase(user.toReference(), person2.toReference(), rdcf);
 
 		Date now = new Date();
 		case11.getSymptoms().setOnsetDate(DateHelper.subtractDays(now, 41));
@@ -623,7 +613,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetFollowUpEndDatesContactsAndCases() {
-		UserDto user = creator.createUser(rdcfEntities, creator.getUserRoleReference(DefaultUserRole.REST_EXTERNAL_VISITS_USER));
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.REST_EXTERNAL_VISITS_USER));
 		Date now = new Date();
 
 		final PersonDto person1 = creator.createPerson();
@@ -634,11 +624,11 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		final ContactDto contact2 = creator.createContact(user.toReference(), person2.toReference(), DateHelper.subtractDays(now, 22));
 		final ContactDto contact3 = creator.createContact(user.toReference(), person4.toReference());
 		final ContactDto contact4 = creator.createContact(user.toReference(), person4.toReference(), DateHelper.subtractDays(now, 21));
-		final CaseDataDto case1 = creator.createCase(user.toReference(), person1.toReference(), rdcfEntities);
-		final CaseDataDto case2 = creator.createCase(user.toReference(), person2.toReference(), rdcfEntities);
-		final CaseDataDto case3 = creator.createCase(user.toReference(), person2.toReference(), rdcfEntities);
-		final CaseDataDto case4 = creator.createCase(user.toReference(), person3.toReference(), rdcfEntities);
-		final CaseDataDto case5 = creator.createCase(user.toReference(), person3.toReference(), rdcfEntities);
+		final CaseDataDto case1 = creator.createCase(user.toReference(), person1.toReference(), rdcf);
+		final CaseDataDto case2 = creator.createCase(user.toReference(), person2.toReference(), rdcf);
+		final CaseDataDto case3 = creator.createCase(user.toReference(), person2.toReference(), rdcf);
+		final CaseDataDto case4 = creator.createCase(user.toReference(), person3.toReference(), rdcf);
+		final CaseDataDto case5 = creator.createCase(user.toReference(), person3.toReference(), rdcf);
 
 		contact1.setOverwriteFollowUpUntil(true);
 		contact2.setOverwriteFollowUpUntil(true);
@@ -788,7 +778,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetMostRelevantFollowUpStatusByUuid() {
 		PersonDto person = creator.createPerson();
-		UserDto user = creator.createUser(rdcfEntities, creator.getUserRoleReference(DefaultUserRole.REST_EXTERNAL_VISITS_USER));
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.REST_EXTERNAL_VISITS_USER));
 
 		ContactDto contact1 = creator.createContact(user.toReference(), person.toReference());
 
@@ -805,7 +795,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		}
 
 		ContactDto contact2 = creator.createContact(user.toReference(), person.toReference());
-		CaseDataDto case1 = creator.createCase(user.toReference(), person.toReference(), rdcfEntities);
+		CaseDataDto case1 = creator.createCase(user.toReference(), person.toReference(), rdcf);
 
 		updateFollowUpStatus(contact1, FollowUpStatus.FOLLOW_UP);
 		for (FollowUpStatus status : FollowUpStatus.values()) {
@@ -955,10 +945,10 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		leadPerson.setEmailAddress("lead@hotmail.com");
 		otherPerson.setEmailAddress("other@yahoo.com");
 
-		TestDataCreator.RDCFEntities rdcf1 = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		TestDataCreator.RDCFEntities rdcf2 = creator.createRDCFEntities("Region2", "District2", "Community2", "Facility2");
-		TestDataCreator.RDCFEntities rdcf3 = creator.createRDCFEntities("Region3", "District3", "Community3", "Facility3");
-		TestDataCreator.RDCFEntities rdcf4 = creator.createRDCFEntities("Region4", "District4", "Community4", "Facility4");
+		RDCF rdcf1 = creator.createRDCF();
+		RDCF rdcf2 = creator.createRDCF("Region2", "District2", "Community2", "Facility2");
+		RDCF rdcf3 = creator.createRDCF("Region3", "District3", "Community3", "Facility3");
+		RDCF rdcf4 = creator.createRDCF("Region4", "District4", "Community4", "Facility4");
 
 		LocationDto leadPersonAddress = leadPerson.getAddress();
 		leadPersonAddress.setRegion(new RegionReferenceDto(rdcf1.region.getUuid()));
@@ -992,7 +982,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		final PersonReferenceDto otherPersonRef = otherPerson.toReference();
 		final UserReferenceDto natUserRef = nationalUser.toReference();
 
-		final CaseDataDto leadCase = creator.createCase(natUserRef, leadPersonRef, rdcfEntities);
+		final CaseDataDto leadCase = creator.createCase(natUserRef, leadPersonRef, rdcf);
 		creator.createContact(natUserRef, leadPersonRef);
 		final EventDto leadEvent = creator.createEvent(natUserRef);
 		creator.createEventParticipant(leadEvent.toReference(), leadPerson, natUserRef);
@@ -1000,7 +990,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		creator.createImmunization(Disease.CORONAVIRUS, leadPersonRef, natUserRef, rdcf);
 		creator.createTravelEntry(leadPersonRef, natUserRef, rdcf, te -> te.setResultingCase(leadCase.toReference()));
 
-		final CaseDataDto otherCase = creator.createCase(natUserRef, otherPersonRef, rdcfEntities);
+		final CaseDataDto otherCase = creator.createCase(natUserRef, otherPersonRef, rdcf);
 		creator.createContact(natUserRef, otherPersonRef);
 		final EventDto otherEvent = creator.createEvent(natUserRef);
 		creator.createEventParticipant(otherEvent.toReference(), otherPerson, natUserRef);
@@ -1055,9 +1045,9 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		leadPerson.setEmailAddress("lead@hotmail.com");
 		otherPerson.setEmailAddress("other@yahoo.com");
 
-		TestDataCreator.RDCFEntities rdcf1 = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		TestDataCreator.RDCFEntities rdcf3 = creator.createRDCFEntities("Region3", "District3", "Community3", "Facility3");
-		TestDataCreator.RDCFEntities rdcf4 = creator.createRDCFEntities("Region4", "District4", "Community4", "Facility4");
+		RDCF rdcf1 = creator.createRDCF();
+		RDCF rdcf3 = creator.createRDCF("Region3", "District3", "Community3", "Facility3");
+		RDCF rdcf4 = creator.createRDCF("Region4", "District4", "Community4", "Facility4");
 
 		LocationDto leadPersonAddress = leadPerson.getAddress();
 		leadPersonAddress.setRegion(new RegionReferenceDto(rdcf1.region.getUuid()));
@@ -1096,7 +1086,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		final PersonReferenceDto otherPersonRef = otherPerson.toReference();
 		final UserReferenceDto natUserRef = nationalUser.toReference();
 
-		final CaseDataDto leadCase = creator.createCase(natUserRef, leadPersonRef, rdcfEntities);
+		final CaseDataDto leadCase = creator.createCase(natUserRef, leadPersonRef, rdcf);
 		creator.createContact(natUserRef, leadPersonRef);
 		final EventDto leadEvent = creator.createEvent(natUserRef);
 		creator.createEventParticipant(leadEvent.toReference(), leadPerson, natUserRef);
@@ -1104,7 +1094,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		creator.createImmunization(Disease.CORONAVIRUS, leadPersonRef, natUserRef, rdcf);
 		creator.createTravelEntry(leadPersonRef, natUserRef, rdcf, te -> te.setResultingCase(leadCase.toReference()));
 
-		final CaseDataDto otherCase = creator.createCase(natUserRef, otherPersonRef, rdcfEntities);
+		final CaseDataDto otherCase = creator.createCase(natUserRef, otherPersonRef, rdcf);
 		creator.createContact(natUserRef, otherPersonRef);
 		final EventDto otherEvent = creator.createEvent(natUserRef);
 		creator.createEventParticipant(otherEvent.toReference(), otherPerson, natUserRef);
@@ -1157,10 +1147,10 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		Community community2 = creator.createCommunity("Community2", district);
 		Facility facility2 = creator.createFacility("Facility2", region, district, community2);
 
-		TestDataCreator.RDCFEntities rdcf1 = new TestDataCreator.RDCFEntities(region, district, community1, facility1);
-		TestDataCreator.RDCFEntities rdcf2 = new TestDataCreator.RDCFEntities(region, district, community2, facility2);
-		TestDataCreator.RDCFEntities rdcf3 = creator.createRDCFEntities("Region3", "District3", "Community3", "Facility3");
-		TestDataCreator.RDCFEntities rdcf4 = creator.createRDCFEntities("Region4", "District4", "Community4", "Facility4");
+		RDCF rdcf1 = new RDCF(new TestDataCreator.RDCFEntities(region, district, community1, facility1));
+		RDCF rdcf2 = new RDCF(new TestDataCreator.RDCFEntities(region, district, community2, facility2));
+		RDCF rdcf3 = creator.createRDCF("Region3", "District3", "Community3", "Facility3");
+		RDCF rdcf4 = creator.createRDCF("Region4", "District4", "Community4", "Facility4");
 
 		LocationDto leadPersonAddress = leadPerson.getAddress();
 		leadPersonAddress.setRegion(new RegionReferenceDto(rdcf1.region.getUuid()));
@@ -1232,16 +1222,16 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		PersonDto leadPerson = creator.createPerson("John", "Doe", Sex.MALE, 1980, 1, 1, "000111222", null);
 		PersonDto otherPerson = creator.createPerson("James", "Smith", Sex.MALE, 1990, 1, 1, "444555666", "123456789");
 
-		TestDataCreator.RDCFEntities rdcf1 = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		TestDataCreator.RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 
 		LocationDto leadPersonAddress = leadPerson.getAddress();
-		leadPersonAddress.setRegion(new RegionReferenceDto(rdcf1.region.getUuid()));
-		leadPersonAddress.setDistrict(new DistrictReferenceDto(rdcf1.district.getUuid()));
+		leadPersonAddress.setRegion(new RegionReferenceDto(rdcf.region.getUuid()));
+		leadPersonAddress.setDistrict(new DistrictReferenceDto(rdcf.district.getUuid()));
 		leadPersonAddress.setFacilityType(FacilityType.HOSPITAL);
 
 		LocationDto otherPersonAddress = otherPerson.getAddress();
-		otherPersonAddress.setRegion(new RegionReferenceDto(rdcf1.region.getUuid()));
-		otherPersonAddress.setDistrict(new DistrictReferenceDto(rdcf1.district.getUuid()));
+		otherPersonAddress.setRegion(new RegionReferenceDto(rdcf.region.getUuid()));
+		otherPersonAddress.setDistrict(new DistrictReferenceDto(rdcf.district.getUuid()));
 		otherPersonAddress.setFacilityType(FacilityType.BAR);
 
 		leadPerson.setAddress(leadPersonAddress);
@@ -1254,7 +1244,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		leadPerson = getPersonFacade().getByUuid(leadPerson.getUuid());
 
-		assertEquals(rdcf1.region.getUuid(), leadPerson.getAddress().getRegion().getUuid());
+		assertEquals(rdcf.region.getUuid(), leadPerson.getAddress().getRegion().getUuid());
 		assertNull(leadPerson.getAddress().getCommunity());
 		assertEquals(1, leadPerson.getAddresses().size());
 		assertEquals(
@@ -1365,7 +1355,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		final UserReferenceDto natUserRef = nationalUser.toReference();
 		TestDataCreator.RDCFEntities rdcf2 = creator.createRDCFEntities("Region2", "District2", "Community2", "Facility2");
 
-		final CaseDataDto leadCase = creator.createCase(natUserRef, leadPersonRef, rdcfEntities);
+		final CaseDataDto leadCase = creator.createCase(natUserRef, leadPersonRef, rdcf);
 		creator.createContact(natUserRef, leadPersonRef);
 		final EventDto leadEvent = creator.createEvent(natUserRef);
 		EventParticipantDto leadEventParticipant = creator.createEventParticipant(leadEvent.toReference(), leadPerson, natUserRef);
@@ -1383,7 +1373,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		EventParticipantDto secondLeadEventParticipant = creator.createEventParticipant(secondLeadEvent.toReference(), leadPerson, natUserRef);
 		creator.createSample(new EventParticipantReferenceDto(secondLeadEventParticipant.getUuid()), natUserRef, rdcf.facility);
 
-		final CaseDataDto otherCase = creator.createCase(natUserRef, otherPersonRef, rdcfEntities);
+		final CaseDataDto otherCase = creator.createCase(natUserRef, otherPersonRef, rdcf);
 		creator.createContact(natUserRef, otherPersonRef);
 		final EventDto otherEvent = creator.createEvent(natUserRef);
 		EventParticipantDto firstOtherEventParticipant = creator.createEventParticipant(otherEvent.toReference(), otherPerson, natUserRef);
@@ -1439,7 +1429,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		final UserReferenceDto natUserRef = nationalUser.toReference();
 		TestDataCreator.RDCFEntities rdcf2 = creator.createRDCFEntities("Region2", "District2", "Community2", "Facility2");
 
-		final CaseDataDto leadCase = creator.createCase(natUserRef, leadPersonRef, rdcfEntities);
+		final CaseDataDto leadCase = creator.createCase(natUserRef, leadPersonRef, rdcf);
 		creator.createContact(natUserRef, leadPersonRef);
 		final EventDto leadEvent = creator.createEvent(natUserRef);
 		EventParticipantDto leadEventParticipant = creator.createEventParticipant(leadEvent.toReference(), leadPerson, natUserRef);
@@ -1456,7 +1446,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		EventParticipantDto secondLeadEventParticipant = creator.createEventParticipant(secondLeadEvent.toReference(), leadPerson, natUserRef);
 		creator.createSample(new EventParticipantReferenceDto(secondLeadEventParticipant.getUuid()), natUserRef, rdcf.facility);
 
-		final CaseDataDto otherCase = creator.createCase(natUserRef, otherPersonRef, rdcfEntities);
+		final CaseDataDto otherCase = creator.createCase(natUserRef, otherPersonRef, rdcf);
 		creator.createContact(natUserRef, otherPersonRef);
 		final EventDto otherEvent = creator.createEvent(natUserRef);
 		EventParticipantDto firstOtherEventParticipant = creator.createEventParticipant(otherEvent.toReference(), otherPerson, natUserRef);
@@ -1597,10 +1587,9 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetPersonByContext() {
-		UserReferenceDto userRef =
-			creator.createUser(rdcfEntities, creator.getUserRoleReference(DefaultUserRole.REST_EXTERNAL_VISITS_USER)).toReference();
+		UserReferenceDto userRef = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.REST_EXTERNAL_VISITS_USER)).toReference();
 		PersonDto casePerson = creator.createPerson();
-		CaseDataDto caze = creator.createCase(userRef, casePerson.toReference(), rdcfEntities);
+		CaseDataDto caze = creator.createCase(userRef, casePerson.toReference(), rdcf);
 		assertThat(getPersonFacade().getByContext(PersonContext.CASE, caze.getUuid()), equalTo(casePerson));
 
 		PersonDto contactPerson = creator.createPerson();
@@ -1674,7 +1663,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testPersonAssociatedWithCases() {
-		UserDto userDto = creator.createUser(rdcfEntities, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto userDto = nationalUser;
 		PersonDto personDto = creator.createPerson("Person", "Test");
 		CaseDataDto caseDataDto = creator.createCase(
 			userDto.toReference(),
@@ -1695,7 +1684,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testPersonAssociatedWithContacts() {
-		UserDto userDto = creator.createUser(rdcfEntities, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto userDto = nationalUser;
 		PersonDto personDto = creator.createPerson("Person", "Test");
 		ContactDto contactDto = creator.createContact(rdcf, userDto.toReference(), personDto.toReference());
 
@@ -1709,7 +1698,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testPersonAssociatedWithTravelEntry() {
-		UserDto userDto = creator.createUser(rdcfEntities, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto userDto = nationalUser;
 		PersonDto personDto = creator.createPerson("Person", "Test");
 		TravelEntryDto travelEntryDto = creator.createTravelEntry(personDto.toReference(), userDto.toReference(), rdcf, null);
 
@@ -1723,7 +1712,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testPersonAssociatedWithEventParticipant() {
-		UserDto userDto = creator.createUser(rdcfEntities, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto userDto = nationalUser;
 		PersonDto personDto = creator.createPerson("Person", "Test");
 		EventDto eventDto = creator.createEvent(userDto.toReference());
 		EventParticipantDto eventParticipantDto = creator.createEventParticipant(eventDto.toReference(), personDto, userDto.toReference());
@@ -1738,7 +1727,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testPersonAssociatedWithImmunization() {
-		UserDto userDto = creator.createUser(rdcfEntities, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto userDto = nationalUser;
 		PersonDto personDto = creator.createPerson("Person", "Test");
 		ImmunizationDto immunizationDto = creator.createImmunization(Disease.CORONAVIRUS, personDto.toReference(), userDto.toReference(), rdcf);
 
@@ -1752,8 +1741,8 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void searchPersonsByPersonPhone() {
-		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = nationalUser;
+
 		PersonDto personWithPhone = creator.createPerson("personWithPhone", "test");
 		PersonDto personWithoutPhone = creator.createPerson("personWithoutPhone", "test");
 
@@ -1788,8 +1777,8 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void searchPersonsByPersonEmail() {
-		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = nationalUser;
+
 		PersonDto personWithEmail = creator.createPerson("personWithEmail", "test");
 		PersonDto personWithoutEmail = creator.createPerson("personWithoutEmail", "test");
 
@@ -1824,8 +1813,8 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void searchPersonsByPersonOtherDetail() {
-		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = nationalUser;
+
 		PersonDto personWithOtherDetail = creator.createPerson("personWithOtherDetail", "test");
 		PersonDto personWithoutOtherDetail = creator.createPerson("personWithoutOtherDetail", "test");
 
@@ -1860,24 +1849,23 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testIsEditAllowedLinkedToCase() {
-		RDCF rdcf = creator.createRDCF();
-		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
-		User user = getUserService().getByUuid(userDto.getUuid());
+		UserDto user = nationalUser;
+		User userEntity = getUserService().getByUuid(user.getUuid());
 
 		PersonDto person = creator.createPerson();
-		creator.createCase(userDto.toReference(), person.toReference(), rdcf);
+		creator.createCase(user.toReference(), person.toReference(), rdcf);
 
 		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
 
 		// person case not yet shared
 		person = creator.createPerson();
-		creator.createCase(userDto.toReference(), person.toReference(), rdcf);
+		creator.createCase(user.toReference(), person.toReference(), rdcf);
 
 		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
 
 		// person of incoming case without ownership
 		person = creator.createPerson();
-		creator.createCase(userDto.toReference(), person.toReference(), rdcf, (c -> {
+		creator.createCase(user.toReference(), person.toReference(), rdcf, (c -> {
 			c.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", false, null));
 		}));
 
@@ -1885,7 +1873,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		// person of incoming case with ownership
 		person = creator.createPerson();
-		creator.createCase(userDto.toReference(), person.toReference(), rdcf, (c -> {
+		creator.createCase(user.toReference(), person.toReference(), rdcf, (c -> {
 			c.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", true, null));
 		}));
 
@@ -1893,22 +1881,22 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		//person of case shared without ownership
 		person = creator.createPerson();
-		creator.createSharedCase(userDto.toReference(), person.toReference(), rdcf, false);
+		creator.createSharedCase(user.toReference(), person.toReference(), rdcf, false);
 
 		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
 
 		//person of case shared with ownership
 		person = creator.createPerson();
-		CaseDataDto handedOverCase = creator.createSharedCase(userDto.toReference(), person.toReference(), rdcf, true);
+		CaseDataDto handedOverCase = creator.createSharedCase(user.toReference(), person.toReference(), rdcf, true);
 
 		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
 
 		//person of case shared with ownership but pending
 		person = creator.createPerson();
-		CaseDataDto pendingShareCase = creator.createCase(userDto.toReference(), person.toReference(), rdcf);
+		CaseDataDto pendingShareCase = creator.createCase(user.toReference(), person.toReference(), rdcf);
 		creator.createShareRequestInfo(
 			ShareRequestDataType.CASE,
-			user,
+			userEntity,
 			"target_id",
 			true,
 			ShareRequestStatus.PENDING,
@@ -1918,10 +1906,10 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		//person of case shared with ownership but rejected
 		person = creator.createPerson();
-		CaseDataDto rejectedShareCase = creator.createCase(userDto.toReference(), person.toReference(), rdcf);
+		CaseDataDto rejectedShareCase = creator.createCase(user.toReference(), person.toReference(), rdcf);
 		creator.createShareRequestInfo(
 			ShareRequestDataType.CASE,
-			user,
+			userEntity,
 			"target_id",
 			true,
 			ShareRequestStatus.REJECTED,
@@ -1931,10 +1919,10 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		//person of case shared with ownership but revoked
 		person = creator.createPerson();
-		CaseDataDto revokedShareCase = creator.createCase(userDto.toReference(), person.toReference(), rdcf);
+		CaseDataDto revokedShareCase = creator.createCase(user.toReference(), person.toReference(), rdcf);
 		creator.createShareRequestInfo(
 			ShareRequestDataType.CASE,
-			user,
+				userEntity,
 			"target_id",
 			true,
 			ShareRequestStatus.REVOKED,
@@ -1945,19 +1933,17 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testIsEditAllowedLinkedToContact() {
-		RDCF rdcf = creator.createRDCF();
-		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
-		User user = getUserService().getByUuid(userDto.getUuid());
+		UserDto user = nationalUser;
 
 		// person of contact not yet shared
 		PersonDto person = creator.createPerson();
-		creator.createContact(userDto.toReference(), person.toReference(), Disease.CORONAVIRUS);
+		creator.createContact(user.toReference(), person.toReference(), Disease.CORONAVIRUS);
 
 		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
 
 		// person of incoming contact without ownership
 		person = creator.createPerson();
-		creator.createContact(userDto.toReference(), person.toReference(), Disease.CORONAVIRUS, (c -> {
+		creator.createContact(user.toReference(), person.toReference(), Disease.CORONAVIRUS, (c -> {
 			c.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", false, null));
 		}));
 
@@ -1965,7 +1951,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		// person of incoming contact with ownership
 		person = creator.createPerson();
-		creator.createContact(userDto.toReference(), person.toReference(), Disease.CORONAVIRUS, (c -> {
+		creator.createContact(user.toReference(), person.toReference(), Disease.CORONAVIRUS, (c -> {
 			c.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", true, null));
 		}));
 
@@ -1973,32 +1959,31 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		//person of contact shared without ownership
 		person = creator.createPerson();
-		creator.createSharedContact(userDto.toReference(), person.toReference(), false);
+		creator.createSharedContact(user.toReference(), person.toReference(), false);
 
 		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
 
 		//person of contact shared with ownership
 		person = creator.createPerson();
-		ContactDto handedOverContact = creator.createSharedContact(userDto.toReference(), person.toReference(), true);
+		ContactDto handedOverContact = creator.createSharedContact(user.toReference(), person.toReference(), true);
 
 		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
 	}
 
 	@Test
 	public void testIsEditAllowedLinkedToEventParticipant() {
-		RDCF rdcf = creator.createRDCF();
-		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
-		User user = getUserService().getByUuid(userDto.getUuid());
+		UserDto user = nationalUser;
+		User userEntity = getUserService().getByUuid(user.getUuid());
 
 		// person of event participant not yet shared
 		PersonDto person = creator.createPerson();
-		creator.createEventParticipant(creator.createEvent(user.toReference()).toReference(), person, "Test event", userDto.toReference(), rdcf);
+		creator.createEventParticipant(creator.createEvent(user.toReference()).toReference(), person, "Test event", user.toReference(), rdcf);
 
 		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
 
 		// person of incoming event participant without ownership
 		person = creator.createPerson();
-		creator.createEventParticipant(creator.createEvent(user.toReference()).toReference(), person, "Test event", userDto.toReference(), e -> {
+		creator.createEventParticipant(creator.createEvent(user.toReference()).toReference(), person, "Test event", user.toReference(), e -> {
 			e.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", false, null));
 		}, rdcf);
 
@@ -2006,7 +1991,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		// person of incoming event participant with ownership
 		person = creator.createPerson();
-		creator.createEventParticipant(creator.createEvent(user.toReference()).toReference(), person, "Test event", userDto.toReference(), e -> {
+		creator.createEventParticipant(creator.createEvent(user.toReference()).toReference(), person, "Test event", user.toReference(), e -> {
 			e.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", true, null));
 		}, rdcf);
 
@@ -2015,11 +2000,11 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		//person of event participant shared without ownership
 		person = creator.createPerson();
 		EventParticipantDto sharedEventParticipant =
-			creator.createEventParticipant(creator.createEvent(user.toReference()).toReference(), person, userDto.toReference());
+			creator.createEventParticipant(creator.createEvent(user.toReference()).toReference(), person, user.toReference());
 
 		creator.createShareRequestInfo(
 			ShareRequestDataType.EVENT,
-			user,
+			userEntity,
 			"target_id",
 			false,
 			ShareRequestStatus.ACCEPTED,
@@ -2030,10 +2015,10 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		//person of event participant shared with ownership
 		person = creator.createPerson();
 		EventParticipantDto handedOverEventParticipant =
-			creator.createEventParticipant(creator.createEvent(user.toReference()).toReference(), person, userDto.toReference());
+			creator.createEventParticipant(creator.createEvent(user.toReference()).toReference(), person, user.toReference());
 		creator.createShareRequestInfo(
 			ShareRequestDataType.EVENT,
-			user,
+			userEntity,
 			"target_id",
 			true,
 			ShareRequestStatus.ACCEPTED,
@@ -2044,19 +2029,18 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testIsEditAllowedLinkedToImmunization() {
-		RDCF rdcf = creator.createRDCF();
-		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
-		User user = getUserService().getByUuid(userDto.getUuid());
+		UserDto user = nationalUser;
+		User userEntity = getUserService().getByUuid(user.getUuid());
 
 		// person of immunization not yet shared
 		PersonDto person = creator.createPerson();
-		creator.createImmunization(Disease.CORONAVIRUS, person.toReference(), userDto.toReference(), rdcf);
+		creator.createImmunization(Disease.CORONAVIRUS, person.toReference(), user.toReference(), rdcf);
 
 		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
 
 		// person of incoming immunization without ownership
 		person = creator.createPerson();
-		creator.createImmunization(Disease.CORONAVIRUS, person.toReference(), userDto.toReference(), rdcf, i -> {
+		creator.createImmunization(Disease.CORONAVIRUS, person.toReference(), user.toReference(), rdcf, i -> {
 			i.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", false, null));
 		});
 
@@ -2064,7 +2048,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		// person of incoming immunization with ownership
 		person = creator.createPerson();
-		creator.createImmunization(Disease.CORONAVIRUS, person.toReference(), userDto.toReference(), rdcf, i -> {
+		creator.createImmunization(Disease.CORONAVIRUS, person.toReference(), user.toReference(), rdcf, i -> {
 			i.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", true, null));
 		});
 
@@ -2072,11 +2056,11 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		//person of immunization shared without ownership
 		person = creator.createPerson();
-		ImmunizationDto sharedImmuniztion = creator.createImmunization(Disease.CORONAVIRUS, person.toReference(), userDto.toReference(), rdcf);
+		ImmunizationDto sharedImmuniztion = creator.createImmunization(Disease.CORONAVIRUS, person.toReference(), user.toReference(), rdcf);
 
 		creator.createShareRequestInfo(
 			ShareRequestDataType.CASE,
-			user,
+			userEntity,
 			"target_id",
 			false,
 			ShareRequestStatus.ACCEPTED,
@@ -2086,10 +2070,10 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		//person of immunization shared with ownership
 		person = creator.createPerson();
-		ImmunizationDto handedOverImmunization = creator.createImmunization(Disease.CORONAVIRUS, person.toReference(), userDto.toReference(), rdcf);;
+		ImmunizationDto handedOverImmunization = creator.createImmunization(Disease.CORONAVIRUS, person.toReference(), user.toReference(), rdcf);;
 		creator.createShareRequestInfo(
 			ShareRequestDataType.CASE,
-			user,
+			userEntity,
 			"target_id",
 			true,
 			ShareRequestStatus.ACCEPTED,
@@ -2100,77 +2084,72 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testIseEditAllowedLinkedToTravelEntry() {
-		RDCF rdcf = creator.createRDCF();
-		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = nationalUser;
 
 		PersonDto person = creator.createPerson();
 
 		// person of owned travel entry
-		creator.createTravelEntry(person.toReference(), userDto.toReference(), rdcf, null);
+		creator.createTravelEntry(person.toReference(), user.toReference(), rdcf, null);
 
 		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
 
 		// person of incoming readonly contact and owned travel entry
 		person = creator.createPerson();
-		creator.createContact(userDto.toReference(), person.toReference(), Disease.CORONAVIRUS, (c -> {
+		creator.createContact(user.toReference(), person.toReference(), Disease.CORONAVIRUS, (c -> {
 			c.setSormasToSormasOriginInfo(creator.createSormasToSormasOriginInfo("source_id", false, null));
 		}));
-		creator.createTravelEntry(person.toReference(), userDto.toReference(), rdcf, null);
+		creator.createTravelEntry(person.toReference(), user.toReference(), rdcf, null);
 
 		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
 	}
 
 	@Test
 	public void testIsEditAllowedLinkedToMultipleObjects() {
-		RDCF rdcf = creator.createRDCF();
-		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
-		User user = getUserService().getByUuid(userDto.getUuid());
+		UserDto user = nationalUser;
 
 		// person of incoming readonly case and owned contact
 		PersonDto person = creator.createPerson();
-		creator.createReceivedCase(userDto.toReference(), person.toReference(), rdcf, false);
-		creator.createContact(userDto.toReference(), person.toReference(), Disease.CORONAVIRUS);
+		creator.createReceivedCase(user.toReference(), person.toReference(), rdcf, false);
+		creator.createContact(user.toReference(), person.toReference(), Disease.CORONAVIRUS);
 
 		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
 
 		// person of handed over case and owned contact
 		person = creator.createPerson();
-		CaseDataDto handedOverCase2 = creator.createSharedCase(userDto.toReference(), person.toReference(), rdcf, true);
+		CaseDataDto handedOverCase2 = creator.createSharedCase(user.toReference(), person.toReference(), rdcf, true);
 
-		creator.createContact(userDto.toReference(), person.toReference(), Disease.CORONAVIRUS);
+		creator.createContact(user.toReference(), person.toReference(), Disease.CORONAVIRUS);
 
 		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
 
 		// person of incoming readonly case and handed over contact
 		person = creator.createPerson();
-		creator.createReceivedCase(userDto.toReference(), person.toReference(), rdcf, false);
+		creator.createReceivedCase(user.toReference(), person.toReference(), rdcf, false);
 
-		creator.createSharedContact(userDto.toReference(), person.toReference(), true);
+		creator.createSharedContact(user.toReference(), person.toReference(), true);
 		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
 
 		// person of readonly case, contact and owned event participant
 		person = creator.createPerson();
-		creator.createReceivedCase(userDto.toReference(), person.toReference(), rdcf, false);
+		creator.createReceivedCase(user.toReference(), person.toReference(), rdcf, false);
 
-		creator.createReceivedContact(userDto.toReference(), person.toReference(), false);
+		creator.createReceivedContact(user.toReference(), person.toReference(), false);
 
-		creator.createEventParticipant(creator.createEvent(user.toReference()).toReference(), person, userDto.toReference());
+		creator.createEventParticipant(creator.createEvent(user.toReference()).toReference(), person, user.toReference());
 
 		assertTrue(getPersonFacade().isEditAllowed(person.getUuid()));
 	}
 
 	@Test
 	public void testIsEditAllowedLinkedToSharedAndDeletedObject() {
-		RDCF rdcf = creator.createRDCF();
-		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
-		User user = getUserService().getByUuid(userDto.getUuid());
+		UserDto user = nationalUser;
 
 		PersonDto person = creator.createPerson();
 
 		// share case with ownership
 		// then delete it
 		// ==> the person should not be editable
-		CaseDataDto caze = creator.createSharedCase(userDto.toReference(), person.toReference(), rdcf, true);
+		CaseDataDto caze = creator.createSharedCase(user.toReference(), person.toReference(), rdcf, true);
 		getCaseFacade().delete(caze.getUuid(), new DeletionDetails());
 
 		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
@@ -2186,12 +2165,10 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testIsEditAllowedLinkedToNotOwnedCaseAndDeletedAssociatedObject() {
-		RDCF rdcf = creator.createRDCF();
-		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
-		User user = getUserService().getByUuid(userDto.getUuid());
+		UserDto user = nationalUser;
 
 		PersonDto person = creator.createPerson();
-		creator.createSharedCase(userDto.toReference(), person.toReference(), rdcf, true);
+		creator.createSharedCase(user.toReference(), person.toReference(), rdcf, true);
 
 		assertFalse(getPersonFacade().isEditAllowed(person.getUuid()));
 
@@ -2223,19 +2200,18 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testIsSharedOrReceived() {
-		RDCF rdcf = creator.createRDCF();
-		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
-		User user = getUserService().getByUuid(userDto.getUuid());
+		UserDto user = nationalUser;
+		User userEntity = getUserService().getByUuid(user.getUuid());
 
 		PersonDto person = creator.createPerson();
-		CaseDataDto sharedCase = creator.createCase(userDto.toReference(), person.toReference(), rdcf, null);
+		CaseDataDto sharedCase = creator.createCase(user.toReference(), person.toReference(), rdcf, null);
 
 		assertFalse(getPersonFacade().isSharedOrReceived(person.getUuid()));
 
 		// shared case
 		creator.createShareRequestInfo(
 			ShareRequestDataType.CASE,
-			user,
+			userEntity,
 			"target_id",
 			false,
 			ShareRequestStatus.ACCEPTED,
@@ -2245,7 +2221,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		// received case
 		person = creator.createPerson();
-		creator.createReceivedCase(userDto.toReference(), person.toReference(), rdcf, false);
+		creator.createReceivedCase(user.toReference(), person.toReference(), rdcf, false);
 
 		assertTrue(getPersonFacade().isSharedOrReceived(person.getUuid()));
 
@@ -2257,7 +2233,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		creator.createShareRequestInfo(
 			ShareRequestDataType.CONTACT,
-			user,
+			userEntity,
 			"target_id",
 			false,
 			ShareRequestStatus.ACCEPTED,
@@ -2280,7 +2256,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		creator.createShareRequestInfo(
 			ShareRequestDataType.EVENT,
-			user,
+			userEntity,
 			"target_id",
 			false,
 			ShareRequestStatus.ACCEPTED,
@@ -2290,7 +2266,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		// received event participant
 		person = creator.createPerson();
-		creator.createReceivedEventParticipant(person, userDto.toReference(), rdcf);
+		creator.createReceivedEventParticipant(person, user.toReference(), rdcf);
 
 		assertTrue(getPersonFacade().isSharedOrReceived(person.getUuid()));
 
@@ -2302,7 +2278,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		creator.createShareRequestInfo(
 			ShareRequestDataType.CASE,
-			user,
+			userEntity,
 			"target_id",
 			false,
 			ShareRequestStatus.ACCEPTED,
@@ -2312,7 +2288,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		// received immunization
 		person = creator.createPerson();
-		creator.createReceivedImmunization(person.toReference(), userDto.toReference(), rdcf);
+		creator.createReceivedImmunization(person.toReference(), user.toReference(), rdcf);
 
 		assertTrue(getPersonFacade().isSharedOrReceived(person.getUuid()));
 
@@ -2324,7 +2300,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		// shared immunization and shared contact
 		creator.createShareRequestInfo(
 			ShareRequestDataType.CONTACT,
-			user,
+			userEntity,
 			"target_id",
 			false,
 			ShareRequestStatus.ACCEPTED,

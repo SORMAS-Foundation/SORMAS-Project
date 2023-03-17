@@ -26,10 +26,9 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
-import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
-import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
+import de.symeda.sormas.backend.TestDataCreator.RDCF;
 
 public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
 
@@ -38,8 +37,8 @@ public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetBySampleUuids() {
 
-		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
 		PersonDto person = creator.createPerson();
 		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
 
@@ -61,8 +60,8 @@ public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testSaveAndUpdatePathogenTestAssociatedToCase() {
 
-		final RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		final UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		final RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		final UserDto user = creator.createSurveillanceSupervisor(rdcf);
 		final PersonDto person = creator.createPerson();
 		final CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
 		final SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
@@ -75,8 +74,8 @@ public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testSaveAndUpdatePathogenTestAssociatedToContact() {
 
-		final RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		final UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		final RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		final UserDto user = creator.createSurveillanceSupervisor(rdcf);
 		final PersonDto person = creator.createPerson();
 		final CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
 		final ContactDto contact = creator.createContact(user.toReference(), person.toReference(), caze);
@@ -91,8 +90,8 @@ public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testSaveAndUpdatePathogenTestAssociatedToBothCaseAndContact() {
 
-		final RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		final UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		final RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		final UserDto user = creator.createSurveillanceSupervisor(rdcf);
 		final PersonDto person = creator.createPerson();
 		final CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
 		final ContactDto contact = creator.createContact(user.toReference(), person.toReference(), caze);
@@ -102,7 +101,7 @@ public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
 		final CaseDataDto caseDataDto = CaseDataDto.buildFromContact(contact);
 		caseDataDto.setResponsibleRegion(new RegionReferenceDto(rdcf.region.getUuid(), null, null));
 		caseDataDto.setResponsibleDistrict(new DistrictReferenceDto(rdcf.district.getUuid(), null, null));
-		caseDataDto.setFacilityType(rdcf.facility.getType());
+		caseDataDto.setFacilityType(getFacilityFacade().getByUuid(rdcf.facility.getUuid()).getType());
 		caseDataDto.setHealthFacility(new FacilityReferenceDto(rdcf.facility.getUuid(), null, null));
 		caseDataDto.setReportingUser(user.toReference());
 		final CaseDataDto caseConvertedFromContact = getCaseFacade().save(caseDataDto);

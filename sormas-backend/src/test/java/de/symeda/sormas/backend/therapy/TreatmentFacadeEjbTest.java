@@ -20,14 +20,14 @@ import de.symeda.sormas.api.therapy.TreatmentIndexDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
-import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
+import de.symeda.sormas.backend.TestDataCreator.RDCF;
 
 public class TreatmentFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testTreatmentDeletion() {
 
-		RDCFEntities rdcf = creator.createRDCFEntities();
+		RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(
 			rdcf,
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR),
@@ -49,7 +49,7 @@ public class TreatmentFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testTreatmentIndexListGeneration() {
 
-		RDCFEntities rdcf = creator.createRDCFEntities();
+		RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(
 			rdcf,
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR),
@@ -66,7 +66,7 @@ public class TreatmentFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testTreatmentForPrescription() {
 
-		RDCFEntities rdcf = creator.createRDCFEntities();
+		RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(
 			rdcf,
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR),
@@ -97,7 +97,7 @@ public class TreatmentFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testDeleteTreatmentsByUuids() {
-		RDCFEntities rdcf = creator.createRDCFEntities();
+		RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(
 			rdcf,
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR),
@@ -126,7 +126,7 @@ public class TreatmentFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testUnbindTreatmentsFromPrescription() {
 
-		RDCFEntities rdcf = creator.createRDCFEntities();
+		RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(
 			rdcf,
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR),

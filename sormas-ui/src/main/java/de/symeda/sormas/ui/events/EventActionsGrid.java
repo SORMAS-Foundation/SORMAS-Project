@@ -17,7 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import com.vaadin.navigator.View;
 import com.vaadin.ui.renderers.DateRenderer;
@@ -65,28 +68,34 @@ public class EventActionsGrid extends FilteredGrid<EventActionIndexDto, EventCri
 
 		createDeletionReasonColumn();
 
-		setColumns(
-			EventActionIndexDto.EVENT_UUID,
-			EventActionIndexDto.EVENT_TITLE,
-			createDiseaseColumn(this),
-			EventActionIndexDto.EVENT_DISEASE_VARIANT,
-			EventActionIndexDto.EVENT_IDENTIFICATION_SOURCE,
-			createEventDateColumn(this),
-			createEventEvolutionDateColumn(this),
-			EventActionIndexDto.EVENT_STATUS,
-			EventActionIndexDto.EVENT_RISK_LEVEL,
-			EventActionIndexDto.EVENT_INVESTIGATION_STATUS,
-			EventActionIndexDto.EVENT_MANAGEMENT_STATUS,
-			EventActionIndexDto.EVENT_REPORTING_USER,
-			EventActionIndexDto.EVENT_RESPONSIBLE_USER,
-			EventActionIndexDto.ACTION_TITLE,
-			EventActionIndexDto.ACTION_CREATION_DATE,
-			EventActionIndexDto.ACTION_CHANGE_DATE,
-			EventActionIndexDto.ACTION_DATE,
-			EventActionIndexDto.ACTION_STATUS,
-			EventActionIndexDto.ACTION_PRIORITY,
-			createLastModifiedByOrCreatorColumn(this),
-			DELETE_REASON_COLUMN);
+		List<String> columnIds = new ArrayList<>(
+			Arrays.asList(
+				EventActionIndexDto.EVENT_UUID,
+				EventActionIndexDto.EVENT_TITLE,
+				createDiseaseColumn(this),
+				EventActionIndexDto.EVENT_DISEASE_VARIANT,
+				EventActionIndexDto.EVENT_IDENTIFICATION_SOURCE,
+				createEventDateColumn(this),
+				createEventEvolutionDateColumn(this),
+				EventActionIndexDto.EVENT_STATUS,
+				EventActionIndexDto.EVENT_RISK_LEVEL,
+				EventActionIndexDto.EVENT_INVESTIGATION_STATUS,
+				EventActionIndexDto.EVENT_MANAGEMENT_STATUS,
+				EventActionIndexDto.EVENT_REPORTING_USER,
+				EventActionIndexDto.EVENT_RESPONSIBLE_USER,
+				EventActionIndexDto.ACTION_TITLE,
+				EventActionIndexDto.ACTION_CREATION_DATE,
+				EventActionIndexDto.ACTION_CHANGE_DATE,
+				EventActionIndexDto.ACTION_DATE,
+				EventActionIndexDto.ACTION_STATUS,
+				EventActionIndexDto.ACTION_PRIORITY,
+				createLastModifiedByOrCreatorColumn(this)));
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_DELETE)) {
+			columnIds.add(DELETE_REASON_COLUMN);
+		}
+
+		setColumns(columnIds.toArray(new String[columnIds.size()]));
 
 		((Column<EventActionIndexDto, String>) getColumn(EventActionIndexDto.EVENT_UUID)).setRenderer(new UuidRenderer());
 		((Column<EventActionIndexDto, Date>) getColumn(EventActionIndexDto.ACTION_CREATION_DATE))

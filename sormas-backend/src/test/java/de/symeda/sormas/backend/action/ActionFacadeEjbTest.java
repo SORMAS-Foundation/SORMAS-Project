@@ -34,7 +34,6 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -53,14 +52,7 @@ public class ActionFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetAllUuids() throws ParseException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-
-		UserDto user = creator.createUser(
-			rdcf.region.getUuid(),
-			rdcf.district.getUuid(),
-			rdcf.facility.getUuid(),
-			"Surv",
-			"Sup",
-			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
 
 		EventDto eventDto = creator.createEvent(
 			EventStatus.SIGNAL,
@@ -112,7 +104,8 @@ public class ActionFacadeEjbTest extends AbstractBeanTest {
 	public void testGetEventActionList() {
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		
 		EventDto eventDto = creator.createEvent(user.toReference());
 		creator.createAction(eventDto.toReference());
 		creator.createAction(eventDto.toReference());
