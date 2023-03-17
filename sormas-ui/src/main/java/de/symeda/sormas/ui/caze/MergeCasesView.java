@@ -97,7 +97,7 @@ public class MergeCasesView extends AbstractView {
 
 		addHeaderComponent(btnBack);
 
-		if (viewConfiguration.isFiltersApplied()) {
+		if (!viewConfiguration.isFiltersApplied()) {
 			reloadAndUpdateDuplicateCount();
 		}
 	}
