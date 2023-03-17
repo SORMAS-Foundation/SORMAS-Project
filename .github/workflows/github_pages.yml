@@ -12,6 +12,9 @@ jobs:
     steps:
       - name: Checkout development
         uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.SORMAS_VITAGROUP_TOKEN }}
+
       - name: Copy files
         run: |
           cp README.md docs/index.md
