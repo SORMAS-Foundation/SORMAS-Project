@@ -1,11 +1,14 @@
+---
 # This workflow will build a Java project with Maven
-# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+# For more information see:
+# https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
 name: Java CI with Maven
 
 env:
   JAVA: 11
-  PRIVILEGED_RUN: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/development') || github.event.pull_request.head.repo.full_name == github.repository }}
+  PRIVILEGED_RUN: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/development') 
+   || github.event.pull_request.head.repo.full_name == github.repository }}
   CODEQL_LANGUAGES: 'java' # FIXME(@JonasCir) add 'javascript'
 on:
   push:
@@ -28,43 +31,43 @@ jobs:
         # The token is only needed for privileged actions from within the repo, so no need
         # to make it available on 3rd party PRs
         if: ${{ fromJSON(env.PRIVILEGED_RUN) }}
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           token: ${{ secrets.SORMAS_VITAGROUP_TOKEN }}
 
       - name: Checkout repository (without token)
         # Check if PR results from a fork: if yes, we cannot access the token.
-        # The token is only needed for privileged actions from within the repo, so no need
-        # to make it available on 3rd party PRs
+        # The token is only needed for privileged actions from within the
+        # repo, so no need to make it available on 3rd party PRs
         if: ${{ !fromJSON(env.PRIVILEGED_RUN) }}
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v1
+        uses: github/codeql-action/init@v2
         with:
           languages: ${{ env.CODEQL_LANGUAGES }}
 
       - name: Set up JDK ${{ env.JAVA }}
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3
         with:
           java-version: ${{ env.JAVA }}
+          distribution: 'zulu'
 
       - name: Cache Maven packages
         # Check if PR results from the repository: if yes, it is safe to cache dependencies.
         # This is to keep us safe from cache poisoning through 3rd party PRs.
         if: ${{ fromJSON(env.PRIVILEGED_RUN) }}
-        # FIXME(@JonasCir) #3733 remove '**/*.pom' once serverlib pom is renamed
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.m2
-          key: ${{ runner.os }}-java-${{ env.JAVA }}-m2-${{ hashFiles('**/pom.xml', '**/*.pom') }}
+          key: ${{ runner.os }}-java-${{ env.JAVA }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-java-${{ env.JAVA }}-m2
 
       - name: Cache SonarCloud packages
         # Check if PR results from the repository: if yes, it is safe to cache dependencies.
         # This is to keep us safe from cache poisoning through 3rd party PRs.
         if: ${{ fromJSON(env.PRIVILEGED_RUN) }}
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
@@ -91,16 +94,16 @@ jobs:
             })
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v1
+        uses: github/codeql-action/analyze@v2
 
       - name: Run Trivy vulnerability scanner in repo mode
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.9.2
         with:
           scan-type: 'fs'
           ignore-unfixed: true
           format: 'sarif'
           output: 'trivy-results.sarif'
-          security-checks: 'vuln,secret,config'
+          scanners: 'vuln,secret,config'
 
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v2
@@ -112,7 +115,8 @@ jobs:
       - name: Commit openAPI spec to development
         # Privileged action needing a secret token. Since this only runs on development in our own repo
         # the token will be available through a privileged checkout.
-        if: github.event_name == 'push' && github.ref == 'refs/heads/development' && hashFiles('sormas-rest/target/swagger.yaml') != hashFiles('sormas-rest/swagger.yaml')
+        if: github.event_name == 'push' && github.ref == 'refs/heads/development' 
+         && hashFiles('sormas-rest/target/swagger.yaml') != hashFiles('sormas-rest/swagger.yaml')
         # https://stackoverflow.com/questions/59604922/authorize-bash-to-access-github-protected-branch
         run: |
             git config --global user.name "sormas-vitagroup"

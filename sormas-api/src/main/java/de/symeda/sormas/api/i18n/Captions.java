@@ -2364,6 +2364,7 @@ public interface Captions {
 	String taskNoTasks = "taskNoTasks";
 	String taskOfficerTasks = "taskOfficerTasks";
 	String TestReport = "TestReport";
+	String TestReport_dateOfResult = "TestReport.dateOfResult";
 	String TestReport_testDateTime = "TestReport.testDateTime";
 	String TestReport_testLabCity = "TestReport.testLabCity";
 	String TestReport_testLabExternalId = "TestReport.testLabExternalId";

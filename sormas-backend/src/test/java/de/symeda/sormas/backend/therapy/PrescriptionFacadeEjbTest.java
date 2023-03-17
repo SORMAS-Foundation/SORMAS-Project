@@ -15,19 +15,18 @@ import de.symeda.sormas.api.therapy.PrescriptionIndexDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
-import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
+import de.symeda.sormas.backend.TestDataCreator.RDCF;
 
 public class PrescriptionFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testPrescriptionDeletion() {
 
-		RDCFEntities rdcf = creator.createRDCFEntities();
+		RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(
 			rdcf,
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR),
 			creator.getUserRoleReference(DefaultUserRole.CASE_SUPERVISOR));
-		UserDto admin = getUserFacade().getByUserName("admin");
 		PersonDto casePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(user.toReference(), casePerson.toReference(), rdcf);
 		PrescriptionDto prescription = creator.createPrescription(caze);
@@ -44,7 +43,7 @@ public class PrescriptionFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testPrescriptionIndexListGeneration() {
 
-		RDCFEntities rdcf = creator.createRDCFEntities();
+		RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(
 			rdcf,
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR),

@@ -15,14 +15,14 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
-import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
+import de.symeda.sormas.backend.TestDataCreator.RDCF;
 
 public class ClinicalCourseFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testClinicalVisitDeletion() {
 
-		RDCFEntities rdcf = creator.createRDCFEntities();
+		RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(
 			rdcf,
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR),
@@ -44,7 +44,7 @@ public class ClinicalCourseFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testClinicalVisitIndexListGeneration() {
 
-		RDCFEntities rdcf = creator.createRDCFEntities();
+		RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(
 			rdcf,
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR),

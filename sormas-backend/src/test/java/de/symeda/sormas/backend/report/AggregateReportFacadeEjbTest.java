@@ -15,6 +15,12 @@
 
 package de.symeda.sormas.backend.report;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -45,12 +51,6 @@ import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 
@@ -477,12 +477,18 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		EpiWeek epiWeek = DateHelper.getEpiWeek(new Date());
 
 		loginWith(poeNatUser);
-		assertThrows(ValidationRuntimeException.class, () -> createAggregateReportDto(Disease.MALARIA, epiWeek, "1Y_100Y", rdcf.region, rdcf.district, null, null, 1, 1, 1));
+		assertThrows(
+			ValidationRuntimeException.class,
+			() -> createAggregateReportDto(Disease.MALARIA, epiWeek, "1Y_100Y", rdcf.region, rdcf.district, null, null, 1, 1, 1));
 
 		loginWith(poeSup);
-		assertThrows(ValidationRuntimeException.class, () -> createAggregateReportDto(Disease.MALARIA, epiWeek, "1Y_100Y", rdcf.region, rdcf.district, null, null, 1, 1, 1));
+		assertThrows(
+			ValidationRuntimeException.class,
+			() -> createAggregateReportDto(Disease.MALARIA, epiWeek, "1Y_100Y", rdcf.region, rdcf.district, null, null, 1, 1, 1));
 
 		loginWith(poeInfor);
-		assertThrows(ValidationRuntimeException.class, () -> createAggregateReportDto(Disease.MALARIA, epiWeek, "1Y_100Y", rdcf.region, rdcf.district, null, null, 1, 1, 1));
+		assertThrows(
+			ValidationRuntimeException.class,
+			() -> createAggregateReportDto(Disease.MALARIA, epiWeek, "1Y_100Y", rdcf.region, rdcf.district, null, null, 1, 1, 1));
 	}
 }

@@ -23,7 +23,6 @@ import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -89,7 +88,6 @@ import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInf
 import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.symptoms.SymptomState;
-import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -106,9 +104,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testShareCase() throws SormasToSormasException {
-
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
-		useSurveillanceOfficerLogin(rdcf);
+		UserReferenceDto officer = useSurveillanceOfficerLogin(rdcf).toReference();
 
 		PersonDto person = creator.createPerson();
 		CaseDataDto caze = creator.createCase(officer, rdcf, dto -> {
@@ -163,9 +159,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testShareCaseWithContacts() throws SormasToSormasException {
-
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
-		useSurveillanceOfficerLogin(rdcf);
+		UserReferenceDto officer = useSurveillanceOfficerLogin(rdcf).toReference();
 
 		PersonDto person = creator.createPerson();
 		CaseDataDto caze = creator.createCase(officer, rdcf, dto -> {
@@ -209,21 +203,20 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testShareCaseWithSamples() throws SormasToSormasException {
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+		UserReferenceDto officer = creator.createSurveillanceOfficer(rdcf).toReference();
 
 		PersonDto person = creator.createPerson();
-		UserReferenceDto officer = user.toReference();
 		CaseDataDto caze = creator.createCase(officer, rdcf, dto -> {
 			dto.setPerson(person.toReference());
 			dto.setSurveillanceOfficer(officer);
 			dto.setClassificationUser(officer);
 		});
 
-		ContactDto caseSampleContact = creator.createContact(user.toReference(), person.toReference());
+		ContactDto caseSampleContact = creator.createContact(officer, person.toReference());
 
 		Date sampleDateTime = new Date();
 		// Sample gets saved with associatedContact
-		SampleDto caseSample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
+		SampleDto caseSample = creator.createSample(caze.toReference(), officer, rdcf.facility, s -> {
 			s.setSampleDateTime(sampleDateTime);
 			s.setComment("Test case sample");
 			s.setAssociatedContact(caseSampleContact.toReference());
@@ -508,8 +501,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testShareCaseWithPseudonymizeData() throws SormasToSormasException {
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
-		useSurveillanceOfficerLogin(rdcf);
+		UserReferenceDto officer = useSurveillanceOfficerLogin(rdcf).toReference();
 
 		PersonDto person = creator.createPerson();
 		CaseDataDto caze = creator.createCase(officer, rdcf, dto -> {
@@ -549,8 +541,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testReturnCase() throws SormasToSormasException {
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
-		useSurveillanceOfficerLogin(rdcf);
+		UserReferenceDto officer = useSurveillanceOfficerLogin(rdcf).toReference();
 
 		SormasToSormasOriginInfoDto originInfo = createAndSaveSormasToSormasOriginInfo(DEFAULT_SERVER_ID, true, null);
 
@@ -612,7 +603,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testSaveReturnedCase() throws SormasToSormasException {
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		UserReferenceDto officer = creator.createSurveillanceOfficer(rdcf).toReference();
 
 		PersonDto person = creator.createPerson();
 		CaseDataDto caze = creator.createCase(officer, person.toReference(), rdcf);
@@ -753,7 +744,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testSaveReturnedCaseWithKnownOtherFacility() throws SormasToSormasException {
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		UserReferenceDto officer = creator.createSurveillanceOfficer(rdcf).toReference();
 
 		PersonDto person = creator.createPerson();
 		CaseDataDto caze = creator.createCase(officer, rdcf, c -> {
@@ -799,7 +790,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testSaveReturnedCaseWithKnownOtherPointOfEntry() throws SormasToSormasException {
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		UserReferenceDto officer = creator.createSurveillanceOfficer(rdcf).toReference();
 
 		PersonDto person = creator.createPerson();
 		CaseDataDto caze = creator.createCase(officer, rdcf, c -> {
@@ -840,7 +831,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testSyncCases() throws SormasToSormasException {
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		UserReferenceDto officer = creator.createSurveillanceOfficer(rdcf).toReference();
 
 		SormasToSormasOriginInfoDto originInfo =
 			createAndSaveSormasToSormasOriginInfo(DEFAULT_SERVER_ID, true, o -> o.setWithAssociatedContacts(true));
@@ -955,8 +946,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testGetAllShares() throws SormasToSormasException {
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
-		useSurveillanceOfficerLogin(rdcf);
+		UserReferenceDto officer = useSurveillanceOfficerLogin(rdcf).toReference();
 
 		CaseDataDto caze = creator.createCase(officer, creator.createPerson().toReference(), rdcf);
 
@@ -1001,8 +991,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testGetAllSharesOnMiddleLevel() throws SormasToSormasException {
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
-		useSurveillanceOfficerLogin(rdcf);
+		UserReferenceDto officer = useSurveillanceOfficerLogin(rdcf).toReference();
 
 		SormasToSormasOriginInfoDto originInfo = createAndSaveSormasToSormasOriginInfo(DEFAULT_SERVER_ID, true, o -> o.setComment("first share"));
 
@@ -1088,9 +1077,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testGetReShares() throws SormasToSormasException {
-
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
-		useSurveillanceOfficerLogin(rdcf);
+		UserReferenceDto officer = useSurveillanceOfficerLogin(rdcf).toReference();
 
 		CaseDataDto caze = creator.createCase(officer, creator.createPerson().toReference(), rdcf);
 
@@ -1142,9 +1129,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testReportingUserIsIncludedButUpdated() throws SormasToSormasException {
-		UserDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
-
-		useSurveillanceOfficerLogin(rdcf);
+		UserDto officer = useSurveillanceOfficerLogin(rdcf);
 
 		final PersonReferenceDto person = creator.createPerson().toReference();
 		CaseDataDto caze = creator.createCase(officer.toReference(), person, rdcf);
@@ -1199,7 +1184,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testSaveSyncedCase() throws SormasToSormasException, SormasToSormasValidationException {
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		UserReferenceDto officer = creator.createSurveillanceOfficer(rdcf).toReference();
 
 		final PersonDto person = creator.createPerson();
 		CaseDataDto caze = creator.createCase(officer, person.toReference(), rdcf, c -> {
@@ -1229,7 +1214,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testSyncNotUpdateOwnedPerson() throws SormasToSormasException, SormasToSormasValidationException {
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		UserReferenceDto officer = creator.createSurveillanceOfficer(rdcf).toReference();
 
 		final PersonDto person = creator.createPerson();
 		CaseDataDto caze = creator.createCase(officer, person.toReference(), rdcf, c -> {
@@ -1261,7 +1246,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testShareWithSurveillanceReports() throws SormasToSormasException {
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+		UserDto user = creator.createSurveillanceOfficer(rdcf);
 
 		PersonDto person = creator.createPerson();
 		UserReferenceDto officer = user.toReference();
@@ -1337,7 +1322,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testSharePseudonymizedWithSurveillanceReport() throws SormasToSormasException {
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+		UserDto user = creator.createSurveillanceOfficer(rdcf);
 
 		PersonDto person = creator.createPerson();
 		UserReferenceDto officer = user.toReference();
@@ -1386,7 +1371,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testShareWithSurveillanceReportAndExternalMessage() throws SormasToSormasException {
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+		UserDto user = creator.createSurveillanceOfficer(rdcf);
 
 		PersonDto person = creator.createPerson();
 		UserReferenceDto officer = user.toReference();

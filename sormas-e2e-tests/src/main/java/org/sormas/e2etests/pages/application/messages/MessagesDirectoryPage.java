@@ -56,11 +56,11 @@ public class MessagesDirectoryPage {
   }
 
   public static By getProcessMessageButtonByIndex(int index) {
-    return By.xpath(String.format("//table/tbody[1]/tr[%s]/td[14]", index));
+    return By.xpath(String.format("//table/tbody[1]/tr[%s]//div[@id='externalMessageProcess']", index));
   }
 
   public static By getProcessStatusByIndex(int index) {
-    return By.xpath(String.format("//table/tbody[1]/tr[%s]/td[12]", index));
+    return By.xpath(String.format("//table/tbody[1]/tr[%s]/td[13]", index));
   }
 
   public static final By CREATE_NEW_CASE_POPUP_WINDOW_DE =

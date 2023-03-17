@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.campaign.diagram;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,8 +11,6 @@ import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
 import de.symeda.sormas.api.campaign.diagram.DiagramType;
 import de.symeda.sormas.backend.AbstractBeanTest;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CampaignDiagramDefinitionFacadeEjbTest extends AbstractBeanTest {
 

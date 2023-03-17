@@ -22882,6 +22882,10 @@
             "type" : "string",
             "format" : "date-time"
           },
+          "dateOfResult" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
           "externalId" : {
             "type" : "string",
             "maxLength" : 512,

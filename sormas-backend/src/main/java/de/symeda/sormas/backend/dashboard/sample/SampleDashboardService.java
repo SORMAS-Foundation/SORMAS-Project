@@ -39,6 +39,7 @@ import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDashboardFilterDateType;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -108,9 +109,14 @@ public class SampleDashboardService {
 		From<?, Sample> sampleRoot = queryContext.getRoot();
 		SampleJoins joins = queryContext.getJoins();
 
-		Predicate filter = sampleService.buildCriteriaFilter(
-			new SampleCriteria().disease(criteria.getDisease()).region(criteria.getRegion()).district(criteria.getDistrict()),
-			queryContext);
+		Predicate filter = sampleService.createUserFilter(queryContext, new SampleCriteria().sampleAssociationType(SampleAssociationType.ALL));
+
+		filter = CriteriaBuilderHelper.and(
+			cb,
+			filter,
+			sampleService.buildCriteriaFilter(
+				new SampleCriteria().disease(criteria.getDisease()).region(criteria.getRegion()).district(criteria.getDistrict()),
+				queryContext));
 
 		if (criteria.getDateFrom() != null && criteria.getDateTo() != null) {
 			final Predicate dateFilter;
