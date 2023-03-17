@@ -1456,7 +1456,6 @@ public interface Strings {
 	String reloadPageToSeeChanges = "reloadPageToSeeChanges";
 	String reportedBy = "reportedBy";
 	String reportedOn = "reportedOn";
-	String sampleDashboardWarning = "sampleDashboardWarning";
 	String setTo = "setTo";
 	String sormasToSormasLoadingShares = "sormasToSormasLoadingShares";
 	String step = "step";
