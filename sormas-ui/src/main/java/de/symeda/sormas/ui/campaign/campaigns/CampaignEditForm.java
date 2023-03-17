@@ -23,6 +23,7 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -42,21 +43,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.TreeData;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.TreeDataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Page;
+import com.vaadin.server.VaadinService;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Grid.ItemClick;
 import com.vaadin.ui.Grid.SelectionMode;
+import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
+import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.TreeContextClickEvent;
+import com.vaadin.ui.TreeGrid;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.components.grid.MultiSelectionModel;
+import com.vaadin.ui.components.grid.MultiSelectionModel.SelectAllCheckBoxVisibility;
+import com.vaadin.ui.components.grid.SingleSelectionModel;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.util.converter.Converter;
@@ -71,6 +81,8 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.InfrastructureDataReferenceDto;
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignPhase;
+import de.symeda.sormas.api.campaign.CampaignTreeGridDto;
+import de.symeda.sormas.api.campaign.CampaignTreeGridDtoImpl;
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -79,7 +91,9 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.area.AreaDto;
 import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditableGrid;
@@ -107,6 +121,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 	private static final String POST_CAMPAIGN = "post-campaign";
 
 	private static final String ASSOCIATE_CAMPAIGN = "Associate Campaign";
+	private static final String POPULATION_CAMPAIGN = "Campaign Population";
 
 	private OptionGroup clusterfieldx;
 
@@ -135,8 +150,9 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 	private CampaignDashboardElementsGridComponent campaignDashboardGridComponent_1;
 	private CampaignDashboardElementsGridComponent campaignDashboardGridComponent_2;
 
-	private Tree<? super InfrastructureDataReferenceDto> tree = new Tree<>();
-	private TreeData<? super InfrastructureDataReferenceDto> treeData = new TreeData<>();
+	private TreeGrid<CampaignTreeGridDto> treeGrid = new TreeGrid<>();
+	//private Tree<? super InfrastructureDataReferenceDto> tree = new Tree<>();
+	//private TreeData<? super InfrastructureDataReferenceDto> treeData = new TreeData<>();
 
 	public CampaignEditForm(CampaignDto campaignDto) {
 
@@ -153,7 +169,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 		statusChangeLayout.setMargin(false);
 		getContent().addComponent(statusChangeLayout, STATUS_CHANGE);
 
-		tree.setSelectionMode(SelectionMode.MULTI);
+		//treeGrid.setSelectionMode(SelectionMode.MULTI);
 		addFields();
 	}
 
@@ -165,8 +181,6 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 			System.out.print("siCreateForm=null");
 			return;
 		}
-
-		// tree.asMultiSelect();
 		Label campaignBasicHeadingLabel = new Label(I18nProperties.getString(Strings.headingCampaignBasics));
 		campaignBasicHeadingLabel.addStyleName(H3);
 		getContent().addComponent(campaignBasicHeadingLabel, CAMPAIGN_BASIC_HEADING_LOC);
@@ -376,85 +390,205 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 		}
 
 		VerticalLayout parentTab4 = new VerticalLayout();
-		final HorizontalLayout layout4 = new HorizontalLayout();
-		layout4.setWidthFull();
+	//	final HorizontalLayout layout4 = new HorizontalLayout();
+	//	layout4.setWidthFull();
 
-		tree.setWidthFull();
-		tree.setHeightFull();
+		
+		
+		
+		treeGrid.setWidthFull();
+		treeGrid.setHeightFull();
+		
+		List<AreaDto> areas = FacadeProvider.getAreaFacade().getAllActiveAsReferenceAndPopulation();
+		//List<RegionDto> regions_ = FacadeProvider.getRegionFacade().getAllActiveAsReferenceAndPopulation());
+		
+		treeGrid.setItems(generateTreeGridData(), CampaignTreeGridDto::getRegionData);
+		
+		
+		treeGrid.addColumn(CampaignTreeGridDto::getName).setCaption("Location");
+	//  treeGrid.addColumn(CampaignTreeGridDto::getUuid).setCaption("uuid");
+	   // treeGrid.addColumn(CampaignTreeGridDto::getParentUuid).setCaption("parentuuid");
+	    treeGrid.addColumn(CampaignTreeGridDto::getPopulationData).setCaption("Population");
+	    
+	    
+	    MultiSelectionModel<CampaignTreeGridDto> selectionModel
+	      = (MultiSelectionModel<CampaignTreeGridDto>) treeGrid.setSelectionMode(SelectionMode.MULTI);
+//	    selectionModel.setSelectAllCheckBoxVisibility(SelectAllCheckBoxVisibility.HIDDEN);
+	    
+//	    TreeDataProvider<CampaignTreeGridDto> dataProvider = (TreeDataProvider<CampaignTreeGridDto>) treeGrid.getDataProvider();
+//	    
+//	    ArrayList<CampaignTreeGridDto> s1=(ArrayList<CampaignTreeGridDto>) dataProvider.getTreeData().contains(null);
+	  //  System.out.println("Value="+s1.get(0).getName());
+	    
+	    
+	    System.out.println("area: "+campaignDto.getAreas().size() +"====== region: "+campaignDto.getRegion().size()+"   ====   district:"+campaignDto.getRegion().size());
+	    
+		for (AreaReferenceDto root : campaignDto.getAreas()) {
 
-		// Items with hierarchy
-		List<AreaReferenceDto> areas = FacadeProvider.getAreaFacade().getAllActiveAsReference();
-		for (AreaReferenceDto area : areas) {
-			treeData.addItem(null, area);
-			List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveByArea(area.getUuid());
-			for (RegionReferenceDto region : regions) {
-				treeData.addItem(area, region);
-				List<DistrictReferenceDto> districts = FacadeProvider.getDistrictFacade()
-						.getAllActiveByRegion(region.getUuid());
-				for (DistrictReferenceDto district : districts) {
-					treeData.addItem(region, district);
+			for (CampaignTreeGridDto areax : treeGrid.getTreeData().getRootItems()) {
+
+				if (areax.getUuid().equals(root.getUuid())) {
+					treeGrid.select(areax);
+				}
+				
+				for (RegionReferenceDto region_root : campaignDto.getRegion()) {
+
+					for (CampaignTreeGridDto regionx : treeGrid.getTreeData().getChildren(areax)) {
+
+						if (regionx.getUuid().equals(region_root.getUuid())) {
+							treeGrid.select(regionx);
+						}
+						
+						for (DistrictReferenceDto district_root : campaignDto.getDistricts()) {
+
+							for (CampaignTreeGridDto districtx : treeGrid.getTreeData().getChildren(regionx)) {
+
+								if (districtx.getUuid().equals(district_root.getUuid())) {
+									treeGrid.select(districtx);
+								}
+							}
+						}
+					}
 				}
 			}
 		}
-		tree.setDataProvider(new TreeDataProvider(treeData));
+		
+		
+		
+		
+		
+		
+		
+	    
+	    
+	    
+	    
+	    
+////	    (treeGrid.getTreeData().getRootItems().stream().forEach(e -> e.getUuid() == ee.getUuid())) );
+//	    treeGrid.getTreeData().getRootItems().stream().forEach(e -> e.getUuid() == ee.getUuid())
+//	    treeGrid.getTreeData().getRootItems();
+//	    
+//	    treeGrid.select(null);
+	    
+	    
+		for (int i = 0; i < treeGrid.getTreeData().getRootItems().size(); i++) {
 
-		if (campaignDto != null && !campaignDto.getAreas().isEmpty() && campaignDto.getAreas() != null
-				&& campaignDto.getAreas().size() > 0) {
-			for (int i = 0; i <= campaignDto.getAreas().size() - 1; i++) {
-				tree.select((InfrastructureDataReferenceDto) campaignDto.getAreas().toArray()[i]);
-				System.out.println("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
-			}
+			// ftg.setIsClicked(777L);
 		}
-		if (campaignDto != null && !campaignDto.getRegion().isEmpty() && campaignDto.getAreas() != null) {
-			for (int i = 0; i <= campaignDto.getRegion().size() - 1; i++) {
-				tree.select((InfrastructureDataReferenceDto) campaignDto.getRegion().toArray()[i]);
+
+		treeGrid.addItemClickListener(e -> {
+
+			boolean isSelectedClicked = false;
+			// we set 777 to the clicked and selected items and check for it.
+
+			if (e.getItem().getIsClicked() != null) {
+				
+				if (e.getItem().getIsClicked() == 777L) {
+					
+					// deselect this item
+					treeGrid.deselect(e.getItem());
+
+					// deselect its children
+					treeGrid.getTreeData().getChildren(e.getItem())
+							.forEach(ee -> treeGrid.deselect((CampaignTreeGridDto) ee));
+
+					// deselect its grandchildren
+					for (CampaignTreeGridDto firstChildren : treeGrid.getTreeData().getChildren(e.getItem())) {
+
+						treeGrid.getTreeData().getChildren(firstChildren)
+								.forEach(ee -> treeGrid.deselect((CampaignTreeGridDto) ee));
+					}
+
+					if (!e.getItem().getParentUuid().equals("Area")) {
+						// treeGrid.deselect(treeGrid.getTreeData().getParent(e.getItem()));
+					}
+
+					e.getItem().setIsClicked(7L);
+					
+				} else {
+					
+					treeGrid.select(e.getItem());
+					e.getItem().setIsClicked(777L);
+					
+					treeGrid.getTreeData().getChildren(e.getItem())
+							.forEach(ee -> treeGrid.select((CampaignTreeGridDto) ee));
+					
+					for (CampaignTreeGridDto firstChildren : treeGrid.getTreeData().getChildren(e.getItem())) {
+
+						treeGrid.getTreeData().getChildren(firstChildren)
+								.forEach(ee -> treeGrid.select((CampaignTreeGridDto) ee));
+					}
+					
+					
+				}
+			} else {
+				
+				treeGrid.select(e.getItem());
+				e.getItem().setIsClicked(777L);
+				treeGrid.getTreeData().getChildren(e.getItem())
+						.forEach(ee -> treeGrid.select((CampaignTreeGridDto) ee));
+				
+				for (CampaignTreeGridDto firstChildren : treeGrid.getTreeData().getChildren(e.getItem())) {
+
+					treeGrid.getTreeData().getChildren(firstChildren)
+							.forEach(ee -> treeGrid.select((CampaignTreeGridDto) ee));
+				}
+				
 			}
-		}
-		if (campaignDto != null && !campaignDto.getDistricts().isEmpty() && campaignDto.getAreas() != null) {
-			for (int i = 0; i <= campaignDto.getDistricts().size() - 1; i++) {
-				tree.select((InfrastructureDataReferenceDto) campaignDto.getDistricts().toArray()[i]);
+
+			for (CampaignTreeGridDto ftg : treeGrid.getSelectionModel().getSelectedItems()) {
+				ftg.setIsClicked(777L);
 			}
-		}
-		if (campaignDto != null && !campaignDto.getCommunity().isEmpty() && campaignDto.getAreas() != null) {
-			for (int i = 0; i <= campaignDto.getCommunity().size() - 1; i++) {
-				tree.select((InfrastructureDataReferenceDto) campaignDto.getCommunity().toArray()[i]);
-			}
-		}
+		});
+	    
+	    
+	    
+//			if (campaignDto != null) {
+//				campaignDto.setAreas((Set<AreaReferenceDto>) areass);
+//				campaignDto.setRegion((Set<RegionReferenceDto>) region);
+//				campaignDto.setDistricts((Set<DistrictReferenceDto>) districts);
+//				campaignDto.setCommunity((Set<CommunityReferenceDto>) community);
+//			}
+		
+		
+		
 
 		// check class of selection and cast to the appropriate class v-tree8-expander collapsed .v-tree .v-tree .sormas .v-tree-expander
-		tree.addSelectionListener(event -> {
+		treeGrid.addSelectionListener(event -> {
 			areass.clear();
 			region.clear();
 			districts.clear();
 			community.clear();
-			System.out.println("jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj");
+			
+			System.out.println("jjjjjjjjjjjjjjjjjjjjjjjjjjj------------------jjjjjjjjjjjjjjjjjjjjjjjjjjjj");
 			for (int i = 0; i < event.getAllSelectedItems().size(); i++) {
-				System.out.println("iiiiiiiiiiiiiiiiiiiiiiiiiiiii " + i);
-				System.out.println("pppppppppppppppppppppppppppp " + event.getAllSelectedItems().size());
-				if (event.getAllSelectedItems().toArray()[i].getClass() == AreaReferenceDto.class) {
+				
+				System.out.println(((CampaignTreeGridDto) event.getAllSelectedItems().toArray()[i]).getName() + " = --- = "+ ((CampaignTreeGridDto) event.getAllSelectedItems().toArray()[i]).getLevelAssessed());
+				
+				
+				
+				if (((CampaignTreeGridDto) event.getAllSelectedItems().toArray()[i]).getLevelAssessed() == "area") {
 					AreaReferenceDto selectedArea = FacadeProvider.getAreaFacade().getAreaReferenceByUuid(
-							((AreaReferenceDto) event.getAllSelectedItems().toArray()[i]).getUuid());
+							((CampaignTreeGridDto) event.getAllSelectedItems().toArray()[i]).getUuid());
 					areass.add(selectedArea);
-					tree.getTreeData()
-							.getChildren((InfrastructureDataReferenceDto) event.getAllSelectedItems().toArray()[i])
-							.forEach(ee -> tree.select((InfrastructureDataReferenceDto) ee));
 				}
-				if (event.getAllSelectedItems().toArray()[i].getClass() == RegionReferenceDto.class) {
+				if (((CampaignTreeGridDto) event.getAllSelectedItems().toArray()[i]).getLevelAssessed() == "region") {
 					RegionReferenceDto selectedRegion = FacadeProvider.getRegionFacade().getRegionReferenceByUuid(
-							((RegionReferenceDto) event.getAllSelectedItems().toArray()[i]).getUuid());
+							((CampaignTreeGridDto) event.getAllSelectedItems().toArray()[i]).getUuid());
 					region.add(selectedRegion);
 				}
-				if (event.getAllSelectedItems().toArray()[i].getClass() == DistrictReferenceDto.class) {
+				if (((CampaignTreeGridDto) event.getAllSelectedItems().toArray()[i]).getLevelAssessed() == "district") {
 					DistrictReferenceDto selectedDistrict = FacadeProvider.getDistrictFacade()
 							.getDistrictReferenceByUuid(
-									((DistrictReferenceDto) event.getAllSelectedItems().toArray()[i]).getUuid());
+									((CampaignTreeGridDto) event.getAllSelectedItems().toArray()[i]).getUuid());
 					districts.add(selectedDistrict);
 				}
 //				if (event.getAllSelectedItems().toArray()[i].getClass() == CommunityReferenceDto.class) {
 //					CommunityReferenceDto selectedCommunity = FacadeProvider.getCommunityFacade()
 //							.getCommunityReferenceByUuid(
 //									((CommunityReferenceDto) event.getAllSelectedItems().toArray()[i]).getUuid());
-//					community.add(selectedCommunity);
+//					community.add(selectedCommunity); //analysis
+				
 //
 //				}
 
@@ -466,14 +600,23 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 				campaignDto.setCommunity((Set<CommunityReferenceDto>) community);
 			}
 		});
-		VerticalLayout layout5 = new VerticalLayout(tree);
-		layout.setMargin(true);
-		layout.setSpacing(true);
-
-		parentTab4.addComponent(layout5);
+		
+		parentTab4.addComponent(treeGrid);
 		parentTab4.setCaption(ASSOCIATE_CAMPAIGN);
 		tabsheetParent.addTab(parentTab4);
+		
+		//tab 5
+		VerticalLayout parentTab5 = new VerticalLayout();
+		
+		
 
+	//	parentTab5.addComponent(treeGrid);
+		parentTab5.setCaption(POPULATION_CAMPAIGN);
+		tabsheetParent.addTab(parentTab5);
+		
+		
+		layout.setMargin(true);
+		layout.setSpacing(true);
 		// style todo
 		tabsheetParent.setPrimaryStyleName("view-header");
 
@@ -481,6 +624,22 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 
 		final Label spacer = new Label();
 		getContent().addComponent(spacer, SPACE_LOC);
+		
+
+		tabsheetParent.addSelectedTabChangeListener(new SelectedTabChangeListener() {
+			@Override
+			public void selectedTabChange(SelectedTabChangeEvent event) {
+				int position = tabsheetParent.getTabPosition(tabsheetParent.getTab(tabsheetParent.getSelectedTab()));
+				VaadinService.getCurrentRequest().getWrappedSession().setAttribute("indexTab", position);
+			}
+		});
+
+		if (VaadinService.getCurrentRequest().getWrappedSession().getAttribute("indexTab") != null) {
+			tabsheetParent.setSelectedTab(
+					(int) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("indexTab"));
+		}
+		
+		
 	}
 
 	@Override
@@ -567,5 +726,31 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 		String currentYear = getYearFormat.format(dates);
 		return currentYear;
 	}
+	
+	
+	private List<CampaignTreeGridDto> generateTreeGridData() {
+        List<CampaignTreeGridDto> gridData = new ArrayList<>();
+        List<AreaDto> areas = FacadeProvider.getAreaFacade().getAllActiveAsReferenceAndPopulation();
+		
+        for (AreaDto area_ : areas) {
+        	CampaignTreeGridDto areaData = new CampaignTreeGridDto(area_.getName(), area_.getAreaid(), "Area", area_.getUuid_(), "area");
+        	List<RegionDto> regions_ = FacadeProvider.getRegionFacade().getAllActiveAsReferenceAndPopulation(area_.getAreaid());
+        	 for (RegionDto regions_x : regions_) {
+        		 CampaignTreeGridDto regionData = new CampaignTreeGridDto(regions_x.getName(), regions_x.getRegionId(), regions_x.getAreaUuid_(), regions_x.getUuid_(), "region");
+        		 List<DistrictDto> district_ = FacadeProvider.getDistrictFacade().getAllActiveAsReferenceAndPopulation(regions_x.getRegionId());
+        		 ArrayList arr = new ArrayList<>();
+        		 for (DistrictDto district_x : district_) {
+        			 arr.add(new CampaignTreeGridDtoImpl(district_x.getName(), district_x.getRegionId(), district_x.getPopulationData(), district_x.getRegionUuid_(), district_x.getUuid_(), "district"));
+        		};
+        		 
+        		 regionData.setRegionData(arr);
+        		 
+        		 areaData.addRegionData(regionData);
+            }
+        	
+        	 gridData.add(areaData);
+        }
+        return gridData;
+    }
 
 }

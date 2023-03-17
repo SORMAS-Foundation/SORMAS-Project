@@ -8704,6 +8704,16 @@ UPDATE users_formaccess  SET formaccess  = 'ARCHIVE' WHERE formaccess = 'REPORT'
 UPDATE campaignformmeta SET formcategory = 'ARCHIVE' WHERE formcategory = 'REPORT';
 
 INSERT INTO schema_version (version_number, comment) VALUES (437, 'renaming Report to Archive in form category');
+
+
+-- Associate population with campign schema #164
+ALTER TABLE public.populationdata ADD campaign_id varchar(225) NULL;
+ALTER TABLE public.populationdata ADD CONSTRAINT populationdata_campaign_fk FOREIGN KEY (campaign_id) REFERENCES public.campaigns(uuid);
+
+INSERT INTO schema_version (version_number, comment) VALUES (438, 'adding campaign id to population data');
+
+
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
 
 

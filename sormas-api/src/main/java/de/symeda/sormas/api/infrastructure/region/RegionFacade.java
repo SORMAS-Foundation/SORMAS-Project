@@ -37,6 +37,8 @@ public interface RegionFacade extends GeoLocationFacade<RegionDto, RegionIndexDt
 	List<RegionReferenceDto> getAllActiveByArea(String areaUuid);
 
 	List<RegionReferenceDto> getAllActiveAsReference();
+	
+	List<RegionDto> getAllActiveAsReferenceAndPopulation(Long areaId);
 
 	Page<RegionIndexDto> getIndexPage(RegionCriteria regionCriteria, Integer offset, Integer size, List<SortProperty> sortProperties);
 

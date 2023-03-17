@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.infrastructure.area;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -14,6 +15,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -23,6 +25,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.campaign.data.CampaignFormDataIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.area.AreaCriteria;
@@ -256,6 +259,37 @@ public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaService> 
 	@Override
 	public AreaReferenceDto getAreaReferenceByUuid(String uuid) {
 		return toReferenceDto(areaService.getByUuid(uuid));
+	}
+
+	@Override
+	public List<AreaDto> getAllActiveAsReferenceAndPopulation() {
+		
+		
+		String queryStringBuilder = "select a.\"name\", sum(p.population), a.id, a.uuid as mdis  from areas a \n"
+				+ "left outer join region r on r.area_id = a.id\n"
+				+ "left outer join populationdata p on r.id = p.region_id\r\n"
+				+ "where a.archived = false and p.agegroup = 'AGE_0_4'\n"
+				+ "group by a.\"name\", a.id, a.uuid ";
+		
+		
+		Query seriesDataQuery = em.createNativeQuery(queryStringBuilder);
+		
+		List<AreaDto> resultData = new ArrayList<>();
+		
+		
+		@SuppressWarnings("unchecked")
+		List<Object[]> resultList = seriesDataQuery.getResultList(); 
+		
+		System.out.println("starting....");
+		
+		resultData.addAll(resultList.stream()
+				.map((result) -> new AreaDto((String) result[0].toString(), ((BigInteger) result[1]).longValue(), ((BigInteger) result[2]).longValue(), (String) result[3].toString())).collect(Collectors.toList()));
+		
+		System.out.println("ending...." +resultData.size());
+	
+	
+	//System.out.println("resultData - "+ resultData.toString()); //SQLExtractor.from(seriesDataQuery));
+	return resultData;
 	}
 
 }

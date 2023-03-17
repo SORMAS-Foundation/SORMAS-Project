@@ -50,6 +50,12 @@ public class DistrictDto extends EntityDto {
 	private Float growthRate;
 	private RegionReferenceDto region;
 	private boolean archived;
+	
+	private Long populationData;
+	private Long regionId;
+	private String regionUuid_;
+	private String uuid_;
+	
 	//@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	
 	//@Min(2)
@@ -79,6 +85,14 @@ public class DistrictDto extends EntityDto {
 		this.region = new RegionReferenceDto(regionUuid, regionName, regionExternalId);
 		this.externalId = externalId;
 	}
+	
+	public DistrictDto(String name, Long populationData, Long regionId, String regionUuid_, String uuid_) {
+		this.name = name;
+		this.populationData = populationData;
+		this.regionId = regionId;
+		this.regionUuid_ = regionUuid_;
+		this.uuid_ = uuid_;
+	};
 
 	public DistrictDto() {
 		super();
@@ -172,4 +186,40 @@ public class DistrictDto extends EntityDto {
 		dto.setUuid(DataHelper.createUuid());
 		return dto;
 	}
+
+	public Long getPopulationData() {
+		return populationData;
+	}
+
+	public void setPopulationData(Long populationData) {
+		this.populationData = populationData;
+	}
+
+	public Long getRegionId() {
+		return regionId;
+	}
+
+	public void setRegionId(Long regionId) {
+		this.regionId = regionId;
+	}
+
+	public String getRegionUuid_() {
+		return regionUuid_;
+	}
+
+	public void setRegionUuid_(String regionUuid_) {
+		this.regionUuid_ = regionUuid_;
+	}
+
+	public String getUuid_() {
+		return uuid_;
+	}
+
+	public void setUuid_(String uuid_) {
+		this.uuid_ = uuid_;
+	}
+	
+	
+	
+	
 }

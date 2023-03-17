@@ -53,6 +53,7 @@ public interface Captions {
 	String actionBack = "actionBack";
 	String actionBackToNationOverview = "actionBackToNationOverview";
 	String actionCancel = "actionCancel";
+	String commomUser = "commomUser";
 	String actionClear = "actionClear";
 	String actionClearAll = "actionClearAll";
 	String actionClose = "actionClose";

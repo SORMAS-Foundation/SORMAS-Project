@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.backend.infrastructure.district;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -31,6 +32,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -54,6 +56,7 @@ import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictFacade;
 import de.symeda.sormas.api.infrastructure.district.DistrictIndexDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -499,5 +502,34 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 		protected DistrictFacadeEjbLocal(DistrictService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
 			super(service, featureConfiguration);
 		}
+	}
+	
+	@Override
+	public List<DistrictDto> getAllActiveAsReferenceAndPopulation(Long regionId) {
+		String queryStringBuilder = "select a.\"name\", sum(p.population), a.id, ar.uuid as umid, a.uuid as uimn from district a\n"
+				+ "left outer join populationdata p on a.id = p.district_id\n"
+				+ "left outer join region ar on ar.id = "+regionId+"\n"
+				+ "where a.archived = false and p.agegroup = 'AGE_0_4' and a.region_id = "+regionId+"\n"
+				+ "group by a.\"name\", a.id, ar.uuid, a.uuid";
+		
+		
+		Query seriesDataQuery = em.createNativeQuery(queryStringBuilder);
+		
+		List<DistrictDto> resultData = new ArrayList<>();
+		
+		
+		@SuppressWarnings("unchecked")
+		List<Object[]> resultList = seriesDataQuery.getResultList(); 
+		
+		System.out.println("starting....");
+		
+		resultData.addAll(resultList.stream()
+				.map((result) -> new DistrictDto((String) result[0].toString(), ((BigInteger) result[1]).longValue(), ((BigInteger) result[2]).longValue(), (String) result[3].toString(), (String) result[4].toString())).collect(Collectors.toList()));
+		
+		System.out.println("ending...." +resultData.size());
+	
+	
+	//System.out.println("resultData - "+ resultData.toString()); //SQLExtractor.from(seriesDataQuery));
+	return resultData;
 	}
 }
