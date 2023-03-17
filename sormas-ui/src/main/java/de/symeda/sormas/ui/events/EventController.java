@@ -404,11 +404,16 @@ public class EventController {
 				EventCriteria eventCriteria = new EventCriteria();
 				eventCriteria.setPerson(contact.getPerson());
 				eventCriteria.setUserFilterIncluded(false);
-				List<EventIndexDto> eventIndexDto = FacadeProvider.getEventFacade().getIndexList(eventCriteria, null, null, null);
+				List<EventIndexDto> personEvents = FacadeProvider.getEventFacade().getIndexList(eventCriteria, null, null, null);
 
 				EventReferenceDto eventReferenceDto = new EventReferenceDto(selectedEvent.getUuid());
-				if (!eventIndexDto.contains(selectedEvent)) {
+				if (!personEvents.contains(selectedEvent)) {
 					createEventParticipantWithContact(eventReferenceDto, contact);
+				} else {
+					Notification notification =
+						new Notification(I18nProperties.getString(Strings.messageThisPersonAlreadyEventParticipant), "", Type.HUMANIZED_MESSAGE);
+					notification.setDelayMsec(10000);
+					notification.show(Page.getCurrent());
 				}
 			} else {
 				create(contact);
@@ -832,10 +837,8 @@ public class EventController {
 
 		EventDataForm eventEditForm = new EventDataForm(false, event.isPseudonymized(), event.isInJurisdiction());
 		eventEditForm.setValue(event);
-		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(
-			eventEditForm,
-			true,
-			eventEditForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EventDataForm> editView =
+			new CommitDiscardWrapperComponent<EventDataForm>(eventEditForm, true, eventEditForm.getFieldGroup());
 
 		editView.getButtonsPanel()
 			.addComponentAsFirst(new DeletionLabel(automaticDeletionInfoDto, manuallyDeletionInfoDto, event.isDeleted(), EventDto.I18N_PREFIX));
