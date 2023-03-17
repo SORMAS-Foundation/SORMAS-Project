@@ -21,8 +21,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
 import de.symeda.sormas.ui.dashboard.DashboardCssStyles;
 import de.symeda.sormas.ui.dashboard.DashboardType;
-import de.symeda.sormas.ui.dashboard.sample.statistics.PathogenTestResultsStatisticsComponent;
-import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.FinalLaboratoryResultsStatisticsComponent;
+import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.TestResultsStatisticsComponent;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 public class SampleDashboardView extends AbstractDashboardView {
@@ -36,8 +35,8 @@ public class SampleDashboardView extends AbstractDashboardView {
 	private static final String SHIPMENT_STATUS = "shipmentStatus";
 
 	private final SampleDashboardDataProvider dataProvider;
-	private final FinalLaboratoryResultsStatisticsComponent labResultsStatisticsComponent;
-	private final PathogenTestResultsStatisticsComponent testResultsStatisticsComponent;
+	private final TestResultsStatisticsComponent labResultsStatisticsComponent;
+	private final TestResultsStatisticsComponent testResultsStatisticsComponent;
 
 	public SampleDashboardView() {
 		super(VIEW_NAME);
@@ -61,10 +60,10 @@ public class SampleDashboardView extends AbstractDashboardView {
 		dashboardLayout.addComponent(sampleCountsLayout);
 
 		labResultsStatisticsComponent =
-			new FinalLaboratoryResultsStatisticsComponent(Captions.sampleDashboardAllSamples, null, Captions.sampleDashboardFinalLabResults, true);
+			new TestResultsStatisticsComponent(Captions.sampleDashboardAllSamples, null, Captions.sampleDashboardFinalLabResults, true);
 		sampleCountsLayout.addComponent(labResultsStatisticsComponent, LAB_RESULTS);
 
-		testResultsStatisticsComponent = new PathogenTestResultsStatisticsComponent();
+		testResultsStatisticsComponent = new TestResultsStatisticsComponent(Captions.sampleDashboardTestResults, null, null, false);
 		testResultsStatisticsComponent.addStyleName(DashboardCssStyles.VSPACE_TOP);
 		sampleCountsLayout.addComponent(testResultsStatisticsComponent, TEST_RESULTS);
 	}
