@@ -16,10 +16,10 @@
 package de.symeda.sormas.ui.dashboard.sample;
 
 import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
+import de.symeda.sormas.ui.dashboard.DashboardCssStyles;
 import de.symeda.sormas.ui.dashboard.DashboardType;
 import de.symeda.sormas.ui.dashboard.sample.statistics.PathogenTestResultsStatisticsComponent;
 import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.FinalLaboratoryResultsStatisticsComponent;
@@ -64,13 +64,9 @@ public class SampleDashboardView extends AbstractDashboardView {
 			new FinalLaboratoryResultsStatisticsComponent(Captions.sampleDashboardAllSamples, null, Captions.sampleDashboardFinalLabResults, true);
 		sampleCountsLayout.addComponent(labResultsStatisticsComponent, LAB_RESULTS);
 
-        testResultsStatisticsComponent = new PathogenTestResultsStatisticsComponent();
-        VerticalLayout testResultsStatisticsLayout = new VerticalLayout(testResultsStatisticsComponent);
-        testResultsStatisticsLayout.setMargin(false);
-        testResultsStatisticsLayout.setSpacing(false);
-        //TODO: add margin top 30px in dashboard.scss
-        //testResultsStatisticsLayout.addStyleName(CssStyles.VSPACE_TOP_0);
-        sampleCountsLayout.addComponent(testResultsStatisticsLayout, TEST_RESULTS);
+		testResultsStatisticsComponent = new PathogenTestResultsStatisticsComponent();
+		testResultsStatisticsComponent.addStyleName(DashboardCssStyles.VSPACE_TOP);
+		sampleCountsLayout.addComponent(testResultsStatisticsComponent, TEST_RESULTS);
 	}
 
 	@Override
