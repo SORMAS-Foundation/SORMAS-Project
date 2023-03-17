@@ -56,7 +56,8 @@ public class MessagesDirectoryPage {
   }
 
   public static By getProcessMessageButtonByIndex(int index) {
-    return By.xpath(String.format("//table/tbody[1]/tr[%s]//div[@id='externalMessageProcess']", index));
+    return By.xpath(
+        String.format("//table/tbody[1]/tr[%s]//div[@id='externalMessageProcess']", index));
   }
 
   public static By getProcessStatusByIndex(int index) {
