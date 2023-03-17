@@ -133,6 +133,8 @@ public interface Descriptions {
 	String Person_sex = "Person.sex";
 	String Sample_associatedLabMessages = "Sample.associatedLabMessages";
 	String Sample_sampleDateTime = "Sample.sampleDateTime";
+	String sampleDashboardCountsByShipmentStatus = "sampleDashboardCountsByShipmentStatus";
+	String sampleDashboardCountsBySpecimenCondition = "sampleDashboardCountsBySpecimenCondition";
 	String sampleDashboardDiseaseFilter = "sampleDashboardDiseaseFilter";
 	String sampleDashboardDistrictFilter = "sampleDashboardDistrictFilter";
 	String sampleDashboardRegionFilter = "sampleDashboardRegionFilter";

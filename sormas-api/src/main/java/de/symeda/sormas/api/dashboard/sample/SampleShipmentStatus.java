@@ -15,23 +15,16 @@
 
 package de.symeda.sormas.api.dashboard.sample;
 
-import java.util.Map;
+import de.symeda.sormas.api.i18n.I18nProperties;
 
-import javax.ejb.Remote;
+public enum SampleShipmentStatus {
 
-import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.sample.SamplePurpose;
-import de.symeda.sormas.api.sample.SpecimenCondition;
+	SHIPPED,
+	NOT_SHIPPED,
+	RECEIVED;
 
-@Remote
-public interface SampleDashboardFacade {
-
-	Map<PathogenTestResultType, Long> getSampleCountsByResultType(SampleDashboardCriteria dashboardCriteria);
-
-	Map<SamplePurpose, Long> getSampleCountsByPurpose(SampleDashboardCriteria dashboardCriteria);
-
-	Map<SpecimenCondition, Long> getSampleCountsBySpecimenCondition(SampleDashboardCriteria dashboardCriteria);
-
-	Map<SampleShipmentStatus, Long> getSampleCountsByShipmentStatus(SampleDashboardCriteria dashboardCriteria);
+	@Override
+	public String toString() {
+		return I18nProperties.getEnumCaption(this);
+	}
 }
