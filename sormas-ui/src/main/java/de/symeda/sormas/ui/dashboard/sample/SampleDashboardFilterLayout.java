@@ -81,7 +81,7 @@ public class SampleDashboardFilterLayout extends DashboardFilterLayout<SampleDas
 		diseaseFilter.setWidth(200, Unit.PIXELS);
 		diseaseFilter.setInputPrompt(I18nProperties.getString(Strings.promptDisease));
 		diseaseFilter.setDescription(I18nProperties.getDescription(Descriptions.sampleDashboardDiseaseFilter));
-		List<?> availableDisease = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true);
+		List<?> availableDisease = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseasesWithFollowUp(true, true, true);
 
 		diseaseFilter
 			.addItems(Stream.concat(availableDisease.stream(), Stream.of(SampleDashboardCustomDiseaseFilter.values())).collect(Collectors.toList()));

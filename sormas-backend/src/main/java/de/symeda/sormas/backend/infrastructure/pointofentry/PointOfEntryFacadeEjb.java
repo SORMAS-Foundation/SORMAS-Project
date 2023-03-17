@@ -46,7 +46,6 @@ import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
-import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.util.RightsAllowed;
@@ -69,8 +68,8 @@ public class PointOfEntryFacadeEjb
 	}
 
 	@Inject
-	protected PointOfEntryFacadeEjb(PointOfEntryService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
-		super(PointOfEntry.class, PointOfEntryDto.class, service, featureConfiguration, userService, Validations.importPointOfEntryAlreadyExists);
+	protected PointOfEntryFacadeEjb(PointOfEntryService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
+		super(PointOfEntry.class, PointOfEntryDto.class, service, featureConfiguration, Validations.importPointOfEntryAlreadyExists);
 	}
 
 	public static PointOfEntryReferenceDto toReferenceDto(PointOfEntry entity) {
@@ -308,9 +307,8 @@ public class PointOfEntryFacadeEjb
 		@Inject
 		protected PointOfEntryFacadeEjbLocal(
 			PointOfEntryService service,
-			FeatureConfigurationFacadeEjbLocal featureConfiguration,
-			UserService userService) {
-			super(service, featureConfiguration, userService);
+			FeatureConfigurationFacadeEjbLocal featureConfiguration) {
+			super(service, featureConfiguration);
 		}
 	}
 }

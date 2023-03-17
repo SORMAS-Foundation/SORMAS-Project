@@ -778,7 +778,7 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		DeletionConfiguration eventDeletionConfiguration = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.EVENT);
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		UserReferenceDto officer = creator.createSurveillanceOfficer(rdcf).toReference();
 		UserDto user = creator
 			.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN), creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 
@@ -900,7 +900,7 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		DeletionConfiguration caseDeletionConfiguration = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.CASE);
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		UserReferenceDto officer = creator.createSurveillanceOfficer(rdcf).toReference();
 		UserDto user = creator
 			.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN), creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		PersonDto person = creator.createPerson();

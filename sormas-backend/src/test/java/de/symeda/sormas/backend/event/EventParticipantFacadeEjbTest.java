@@ -83,7 +83,6 @@ import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
-import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 
 public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 
@@ -199,7 +198,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 	public void testGetMatchingEventParticipants() {
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+		UserDto user = creator.createSurveillanceOfficer(rdcf);
 		user.setLaboratory(rdcf.facility);
 		getUserFacade().saveUser(user, false);
 		loginWith(user);
@@ -274,7 +273,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testCreateWithoutUuid() {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+		UserDto user = creator.createSurveillanceOfficer(rdcf);
 		EventParticipantDto eventParticipant = new EventParticipantDto();
 		eventParticipant.setEvent(creator.createEvent(user.toReference()).toReference());
 		eventParticipant.setPerson(creator.createPerson());
@@ -288,8 +287,8 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetByEventUuids() {
 
-		RDCFEntities rdcf = creator.createRDCFEntities();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
 
 		EventDto event1 = creator.createEvent(user.toReference());
 		EventDto event2 = creator.createEvent(user.toReference());
@@ -309,8 +308,8 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetByPersonUuids() {
 
-		RDCFEntities rdcf = creator.createRDCFEntities();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
 
 		EventDto event1 = creator.createEvent(user.toReference());
 		EventDto event2 = creator.createEvent(user.toReference());
@@ -329,8 +328,8 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testExistEventParticipantWithDeletedFalse() {
-		RDCFEntities rdcf = creator.createRDCFEntities();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
 		EventDto event = creator.createEvent(user.toReference());
 		PersonDto person = creator.createPerson();
 
@@ -342,8 +341,8 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testExistEventParticipantWithDeletedTrue() {
-		RDCFEntities rdcf = creator.createRDCFEntities();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
 		EventDto event = creator.createEvent(user.toReference());
 		PersonDto person = creator.createPerson();
 
@@ -357,7 +356,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testEventParticipantTestResultWithMultipleSamples() {
 		RDCF rdcf = new RDCF(creator.createRDCFEntities());
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createNationalUser();
 		EventDto event = creator.createEvent(user.toReference());
 		PersonDto person = creator.createPerson();
 
@@ -427,7 +426,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testEventParticipantWithArchivedEvent() {
 		RDCF rdcf = new RDCF(creator.createRDCFEntities());
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createNationalUser();
 		EventDto event = creator.createEvent(user.toReference());
 		PersonDto person = creator.createPerson();
 
@@ -486,7 +485,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testEventParticipantIndexListSorting() {
 		RDCF rdcf = new RDCF(creator.createRDCFEntities());
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createNationalUser();
 		EventDto event = creator.createEvent(user.toReference());
 		PersonDto person = creator.createPerson();
 
@@ -517,7 +516,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void searchEventParticipantsByPersonPhone() {
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createNationalUser();
 		PersonDto personWithPhone = creator.createPerson("personWithPhone", "test");
 		PersonDto personWithoutPhone = creator.createPerson("personWithoutPhone", "test");
 
@@ -555,7 +554,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void searchEventParticipantsByPersonEmail() {
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createNationalUser();
 		PersonDto personWithEmail = creator.createPerson("personWithEmail", "test");
 		PersonDto personWithoutEmail = creator.createPerson("personWithoutEmail", "test");
 
@@ -593,7 +592,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void searchEventParticipantsByPersonOtherDetail() {
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createNationalUser();
 		PersonDto personWithOtherDetail = creator.createPerson("personWithOtherDetail", "test");
 		PersonDto personWithoutOtherDetail = creator.createPerson("personWithoutOtherDetail", "test");
 

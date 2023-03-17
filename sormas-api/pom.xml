@@ -103,7 +103,15 @@
 			<artifactId>logback-classic</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-jaxrs2</artifactId>
+		</dependency>
 
+		<dependency>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-jaxrs2-servlet-initializer-v2</artifactId>
+		</dependency>
 	</dependencies>
 
 </project>

@@ -25,6 +25,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
@@ -43,6 +44,9 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String I18N_PREFIX = "ExternalMessage";
 
 	public static final String TYPE = "type";
+	public static final String DISEASE = "disease";
+	public static final String DISEASE_VARIANT = "diseaseVariant";
+	public static final String DISEASE_VARIANT_DETAILS = "diseaseVariantDetails";
 	public static final String MESSAGE_DATE_TIME = "messageDateTime";
 
 	public static final String REPORTER_NAME = "reporterName";
@@ -72,6 +76,9 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	@AuditIncludeProperty
 	private ExternalMessageType type;
 	private Disease disease;
+	private DiseaseVariant diseaseVariant;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String diseaseVariantDetails;
 	@AuditIncludeProperty
 	private Date messageDateTime;
 
@@ -140,6 +147,22 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	public void setDisease(Disease disease) {
 		this.disease = disease;
+	}
+
+	public DiseaseVariant getDiseaseVariant() {
+		return diseaseVariant;
+	}
+
+	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
+		this.diseaseVariant = diseaseVariant;
+	}
+
+	public String getDiseaseVariantDetails() {
+		return diseaseVariantDetails;
+	}
+
+	public void setDiseaseVariantDetails(String diseaseVariantDetails) {
+		this.diseaseVariantDetails = diseaseVariantDetails;
 	}
 
 	public Date getMessageDateTime() {

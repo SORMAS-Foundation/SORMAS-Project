@@ -31,7 +31,6 @@ import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryIndexDto;
 import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
@@ -267,7 +266,7 @@ public class TravelEntryService extends BaseTravelEntryService {
 	@Override
 	public EditPermissionType getEditPermissionType(TravelEntry travelEntry) {
 
-		if (!userService.hasRight(UserRight.TRAVEL_ENTRY_EDIT) || !inJurisdictionOrOwned(travelEntry)) {
+		if (!inJurisdictionOrOwned(travelEntry)) {
 			return EditPermissionType.REFUSED;
 		}
 

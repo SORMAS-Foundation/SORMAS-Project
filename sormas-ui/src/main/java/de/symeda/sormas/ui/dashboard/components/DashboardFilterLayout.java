@@ -157,9 +157,7 @@ public abstract class DashboardFilterLayout<P extends AbstractDashboardDataProvi
 			districtFilter.setDescription(description);
 			districtFilter
 				.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(UserProvider.getCurrent().getUser().getRegion().getUuid()));
-			districtFilter.addValueChangeListener(e -> {
-				dashboardDataProvider.setDistrict((DistrictReferenceDto) districtFilter.getValue());
-			});
+			districtFilter.addValueChangeListener(e -> dashboardDataProvider.setDistrict((DistrictReferenceDto) districtFilter.getValue()));
 			// save height
 			//districtFilter.setCaption(I18nProperties.getString(Strings.entityDistrict));
 			addCustomComponent(districtFilter, DISTRICT_FILTER);

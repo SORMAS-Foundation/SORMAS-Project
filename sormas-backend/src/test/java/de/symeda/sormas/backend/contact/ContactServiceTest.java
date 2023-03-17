@@ -27,7 +27,6 @@ import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -36,7 +35,6 @@ import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
-import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 import de.symeda.sormas.backend.person.Person;
 
 public class ContactServiceTest extends AbstractBeanTest {
@@ -58,7 +56,7 @@ public class ContactServiceTest extends AbstractBeanTest {
 	@Test
 	public void testGetAllRelevantContacts() {
 
-		UserDto user = creator.createUser(creator.createRDCFEntities(), creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		UserDto user = creator.createSurveillanceSupervisor(creator.createRDCF());
 
 		Date referenceDate = DateHelper.subtractDays(new Date(), FollowUpLogic.ALLOWED_DATE_OFFSET * 2);
 		PersonDto contactPerson = creator.createPerson();
@@ -135,14 +133,8 @@ public class ContactServiceTest extends AbstractBeanTest {
 	@Test
 	public void testUpdateFollowUpUntilAndStatus() {
 
-		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(
-			rdcf.region.getUuid(),
-			rdcf.district.getUuid(),
-			rdcf.facility.getUuid(),
-			"Surv",
-			"Sup",
-			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),

@@ -96,7 +96,8 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		ExternalMessageIndexDto.REPORTER_POSTAL_CODE,
 		ExternalMessageIndexDto.MESSAGE_DATE_TIME,
 		ExternalMessageIndexDto.STATUS,
-		ExternalMessageIndexDto.DISEASE);
+		ExternalMessageIndexDto.DISEASE,
+		ExternalMessageIndexDto.DISEASE_VARIANT);
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
@@ -128,6 +129,8 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setType(source.getType());
 		target.setExternalMessageDetails(source.getExternalMessageDetails());
 		target.setDisease(source.getDisease());
+		target.setDiseaseVariant(source.getDiseaseVariant());
+		target.setDiseaseVariantDetails(source.getDiseaseVariantDetails());
 		target.setMessageDateTime(source.getMessageDateTime());
 		target.setPersonBirthDateDD(source.getPersonBirthDateDD());
 		target.setPersonBirthDateMM(source.getPersonBirthDateMM());
@@ -236,6 +239,8 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setType(source.getType());
 		target.setExternalMessageDetails(source.getExternalMessageDetails());
 		target.setDisease(source.getDisease());
+		target.setDiseaseVariant(source.getDiseaseVariant());
+		target.setDiseaseVariantDetails(source.getDiseaseVariantDetails());
 		target.setMessageDateTime(source.getMessageDateTime());
 		target.setPersonBirthDateDD(source.getPersonBirthDateDD());
 		target.setPersonBirthDateMM(source.getPersonBirthDateMM());
@@ -365,6 +370,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 				externalMessage.get(ExternalMessage.REPORTER_NAME),
 				externalMessage.get(ExternalMessage.REPORTER_POSTAL_CODE),
 				externalMessage.get(ExternalMessage.DISEASE),
+				externalMessage.get(ExternalMessage.DISEASE_VARIANT),
 				externalMessage.get(ExternalMessage.PERSON_FIRST_NAME),
 				externalMessage.get(ExternalMessage.PERSON_LAST_NAME),
 				externalMessage.get(ExternalMessage.PERSON_BIRTH_DATE_YYYY),

@@ -132,6 +132,7 @@ public class SampleController {
 
 		editView.setPostCommitListener(() -> {
 			pathogenTestHandler.saveAll(sampleDto.toReference());
+			SormasUI.refreshView();
 		});
 
 		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreateNewSample));
@@ -367,7 +368,7 @@ public class SampleController {
 		form.setValue(dto);
 		final CommitDiscardWrapperComponent<SampleEditForm> editView = new CommitDiscardWrapperComponent<SampleEditForm>(
 			form,
-			UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT),
+			true,
 			form.getFieldGroup());
 
 		editView.addCommitListener(() -> {
@@ -411,6 +412,8 @@ public class SampleController {
 				editView.getWrappedComponent().getField(SampleDto.OTHER_DELETION_REASON).setVisible(true);
 			}
 		}
+
+		editView.restrictEditableComponentsOnEditView(UserRight.SAMPLE_EDIT, UserRight.SAMPLE_DELETE, null);
 
 		return editView;
 	}

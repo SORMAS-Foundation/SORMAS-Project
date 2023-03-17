@@ -180,7 +180,7 @@ public class EditContactsSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(DETAILED_EXPORT_CASE_CONTACT_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(CLOSE_POPUP_BUTTON);
-          TimeUnit.SECONDS.sleep(5); // time for file to be downloaded
+          TimeUnit.SECONDS.sleep(10); // time for file to be downloaded
         });
     When(
         "I close popup after export in Case Contacts directory",

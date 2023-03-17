@@ -1,5 +1,8 @@
 
 @mixin sormas-dashboard-view {
+  .heading-title-label {
+	  margin-top: 12px;
+  }
 
   .dashboard-screen {
 	  overflow-x: hidden;
@@ -82,5 +85,72 @@
 
 	.map-overlay {
 		z-index: 3;
+	}
+
+	.background-external-lab-samples {
+		background-color: #3E489B;
+		fill: #3E489B;
+	}
+	.background-internal-lab-samples {
+		background-color: #7565B8;
+		fill: #7565B8;
+	}
+
+	.background-specimen-condition-adequate {
+		background-color: #5a95f4;
+		fill: #5a95f4;
+
+		&.background-darker {
+			background-color: #3b7fed;
+			fill: #3b7fed;
+		}
+	}
+
+	.background-specimen-condition-inadequate {
+		background-color: #FEBA01;
+		fill: #FEBA01;
+
+		&.background-darker {
+			background-color: #E5A701;
+			fill: #E5A701;
+		}
+	}
+
+	.background-specimen-condition-not-specified {
+		background-color: #8C45AD;
+		fill: #8C45AD;
+
+		&.background-darker {
+			background-color: #7E3E9C;
+			fill: #7E3E9C;
+		}
+	}
+
+	.background-shipment-status-shipped {
+		background-color: #44BEC7;
+		fill: #44BEC7;
+
+		&.background-darker {
+			background-color: #3DABB3;
+			fill: #3DABB3;
+		}
+	}
+	.background-shipment-status-not-shipped {
+		background-color: #ef5a6c;
+		fill: #ef5a6c;
+
+		&.background-darker {
+			background-color: #e04a5b;
+			fill: #e04a5b;
+		}
+	}
+	.background-shipment-status-received {
+		background-color: #E2D320;
+		fill: #E2D320;
+
+		&.background-darker {
+			background-color: #CBBE1D;
+			fill: #CBBE1D;
+		}
 	}
 }

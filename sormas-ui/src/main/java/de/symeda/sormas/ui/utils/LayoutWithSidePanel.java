@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.ui.caze.CaseDataView;
 import de.symeda.sormas.ui.document.DocumentListComponent;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
@@ -57,14 +58,14 @@ public class LayoutWithSidePanel extends CustomLayout {
 		return sidePanel;
 	}
 
-	//excludeButtons: represent the buttons from the CommitDiscardComponent that we intend to exclude from disabling
-	public void disable(String... excludedButtons) {
-		disableWithViewAllow(excludedButtons);
+	public void disable() {
+		disableWithViewAllow();
 		sidePanel.setEnabled(false);
 	}
 
-	public void disableWithViewAllow(String... excludedButtons) {
-		editComponent.setEditable(false, excludedButtons);
+	//excludeButtons: represent the buttons from the CommitDiscardComponent that we intend to exclude from disabling
+	public void disableWithViewAllow() {
+		editComponent.setNonEditable();
 	}
 
 	//excludeButtons: represent the buttons from the CommitDiscardComponent that we intend to exclude from disabling
@@ -80,6 +81,27 @@ public class LayoutWithSidePanel extends CustomLayout {
 			});
 		} else {
 			sidePanel.setEnabled(false);
+		}
+	}
+
+	public void disableIfNecessary(boolean deleted, EditPermissionType editAllowed) {
+		if (deleted) {
+			editComponent.addToActiveButtonsList(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+			disable();
+		} else if (editAllowed != null) {
+			disableBasedOnPermissionTypes(editAllowed);
+		}
+	}
+
+	public void disableBasedOnPermissionTypes(EditPermissionType editAllowed) {
+		if (editAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
+			editComponent.addToActiveButtonsList(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+			disableWithViewAllow();
+		} else if (editAllowed.equals(EditPermissionType.REFUSED)) {
+			disableWithViewAllow();
+		} else if (editAllowed.equals(EditPermissionType.WITHOUT_OWNERSHIP)) {
+			editComponent.addToActiveButtonsList(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+			disableWithViewAllow();
 		}
 	}
 }

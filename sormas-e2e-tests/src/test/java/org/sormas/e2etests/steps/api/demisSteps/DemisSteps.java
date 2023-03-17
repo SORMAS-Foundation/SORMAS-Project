@@ -514,7 +514,7 @@ public class DemisSteps implements En {
     And(
         "^I check that the Status column is filtered by \"([^\"]*)\" on Message directory page$",
         (String quickFilterOption) -> {
-          List<String> statusColumnData = getTableColumnDataByIndex(12, 10);
+          List<String> statusColumnData = getTableColumnDataByIndex(13, 10);
           for (int i = 1; i < statusColumnData.size(); i++) {
             softly.assertEquals(
                 statusColumnData.get(i),

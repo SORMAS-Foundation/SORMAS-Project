@@ -26,6 +26,7 @@ import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleDashboardFilterDateType;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -65,16 +66,25 @@ public class SampleDashboardDataProviderTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void refreshData() {
+	public void testRefreshData() {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto person = creator.createPerson();
 		ContactDto contact = creator.createContact(user.toReference(), person.toReference(), Disease.CORONAVIRUS, rdcf);
 
-		creator.createSample(contact.toReference(), user.toReference(), rdcf.facility.toReference(), null);
+		creator.createSample(contact.toReference(), user.toReference(), rdcf.facility.toReference(), s -> {
+			s.setSamplePurpose(SamplePurpose.INTERNAL);
+		});
+		creator.createSample(contact.toReference(), user.toReference(), rdcf.facility.toReference(), s -> {
+			s.setSamplePurpose(SamplePurpose.EXTERNAL);
+			s.setReceived(true);
+		});
 
 		dataProvider.refreshData();
 
-		Assertions.assertEquals(1, dataProvider.getNewCasesFinalLabResultCountsByResultType().size());
+		Assertions.assertEquals(1, dataProvider.getSampleCountsByResultType().size());
+		Assertions.assertEquals(2, dataProvider.getSampleCountsByPurpose().size());
+		Assertions.assertEquals(1, dataProvider.getSampleCountsBySpecimenCondition().size());
+		Assertions.assertEquals(1, dataProvider.getSampleCountsByShipmentStatus().size());
 	}
 }

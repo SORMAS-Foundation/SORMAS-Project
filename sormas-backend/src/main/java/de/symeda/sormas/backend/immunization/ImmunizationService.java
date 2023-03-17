@@ -47,7 +47,6 @@ import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -570,10 +569,6 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 
 	@Override
 	public EditPermissionType getEditPermissionType(Immunization immunization) {
-
-		if (!userService.hasRight(UserRight.IMMUNIZATION_EDIT)) {
-			return EditPermissionType.REFUSED;
-		}
 
 		if (immunization.getSormasToSormasOriginInfo() != null && !immunization.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
 			return EditPermissionType.REFUSED;

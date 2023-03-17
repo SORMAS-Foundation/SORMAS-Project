@@ -3,8 +3,10 @@ package de.symeda.sormas.api.externalmessage;
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
@@ -20,6 +22,9 @@ public class ExternalMessageCriteria extends BaseCriteria implements Serializabl
 	public static final String BIRTH_DATE_TO = "birthDateTo";
 	public static final String ASSIGNEE = "assignee";
 	public static final String TYPE = "type";
+	public static final String DISEASE = "disease";
+	public static final String DISEASE_VARIANT = "diseaseVariant";
+
 	@AuditIncludeProperty
 	private String uuid;
 	private ExternalMessageType type;
@@ -32,6 +37,8 @@ public class ExternalMessageCriteria extends BaseCriteria implements Serializabl
 	private Date birthDateFrom;
 	private Date birthDateTo;
 	private UserReferenceDto assignee;
+	private Disease disease;
+	private DiseaseVariant diseaseVariant;
 
 	public String getUuid() {
 		return uuid;
@@ -120,5 +127,21 @@ public class ExternalMessageCriteria extends BaseCriteria implements Serializabl
 
 	public void setAssignee(UserReferenceDto assignee) {
 		this.assignee = assignee;
+	}
+
+	public Disease getDisease() {
+		return disease;
+	}
+
+	public void setDisease(Disease disease) {
+		this.disease = disease;
+	}
+
+	public DiseaseVariant getDiseaseVariant() {
+		return diseaseVariant;
+	}
+
+	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
+		this.diseaseVariant = diseaseVariant;
 	}
 }

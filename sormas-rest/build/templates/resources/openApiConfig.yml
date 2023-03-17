@@ -1,0 +1,10 @@
+openAPI:
+  info:
+    title: SORMAS REST API
+    description: https://github.com/hzi-braunschweig/SORMAS-Project/tree/development/sormas-rest
+    version: ${project.version}
+    license:
+      name: GPL v3
+      url: https://www.gnu.org/licenses/gpl-3.0.html
+  servers:
+    - url: /sormas-rest

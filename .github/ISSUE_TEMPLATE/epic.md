@@ -1,5 +1,5 @@
 ---
-name: Epic
+name: 6 - Epic
 about: Document a epic to be done by the development team. It does not change the software directly, but will lead to other tickets.
 title: ''
 labels: epic
