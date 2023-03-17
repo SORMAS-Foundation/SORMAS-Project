@@ -58,6 +58,7 @@ import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
@@ -308,11 +309,11 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcf);
 
 		final List<CaseMergeIndexDto[]> casesForDuplicateMergingToday =
-			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), 100, true);
+			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(new Date()), 100, true);
 		final List<CaseMergeIndexDto[]> casesForDuplicateMergingThreeDaysAgo =
 			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(threeDaysAgo).creationDateTo(threeDaysAgo), 100, true);
 		final List<CaseMergeIndexDto[]> casesForDuplicateMergingThreeDaysInterval =
-				getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(threeDaysAgo).creationDateTo(today), 100, true);
+			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(threeDaysAgo).creationDateTo(new Date()), 100, true);
 
 		assertEquals(0, casesForDuplicateMergingToday.size());
 		assertEquals(0, casesForDuplicateMergingThreeDaysAgo.size());
@@ -392,12 +393,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		assertEquals(
 			0,
-			getCaseFacade()
-				.getCasesForDuplicateMerging(
-					new CaseCriteria().creationDateFrom(today).creationDateTo(today),
-					100,
-					true)
-				.size());
+			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(today), 100, true).size());
 	}
 
 	@Test
@@ -435,12 +431,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		assertEquals(
 			1,
-			getCaseFacade()
-				.getCasesForDuplicateMerging(
-					new CaseCriteria().creationDateFrom(today).creationDateTo(today),
-					100,
-					true)
-				.size());
+			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(new Date()), 100, true).size());
 	}
 
 	@Test
