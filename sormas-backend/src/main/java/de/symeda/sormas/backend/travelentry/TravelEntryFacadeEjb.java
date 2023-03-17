@@ -54,7 +54,6 @@ import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.travelentry.services.TravelEntryListService;
 import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.RightsAllowed;
@@ -100,8 +99,8 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Inject
-	public TravelEntryFacadeEjb(TravelEntryService service, UserService userService) {
-		super(TravelEntry.class, TravelEntryDto.class, service, userService);
+	public TravelEntryFacadeEjb(TravelEntryService service) {
+		super(TravelEntry.class, TravelEntryDto.class, service);
 	}
 
 	@Override
@@ -431,8 +430,8 @@ public class TravelEntryFacadeEjb
 		}
 
 		@Inject
-		public TravelEntryFacadeEjbLocal(TravelEntryService service, UserService userService) {
-			super(service, userService);
+		public TravelEntryFacadeEjbLocal(TravelEntryService service) {
+			super(service);
 		}
 	}
 }

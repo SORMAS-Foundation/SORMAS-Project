@@ -85,6 +85,9 @@ Feature: Create user
   Scenario: Change user password and login
     Given I log in as a Admin User
     And I click on the Users from navbar
+    And I click on the NEW USER button
+    And I create new National User with limited disease to Cholera
+    And I click on the Users from navbar
     And I select first user from list
     Then I create new user password and save it on Edit User page
     Then I click on logout button from navbar
