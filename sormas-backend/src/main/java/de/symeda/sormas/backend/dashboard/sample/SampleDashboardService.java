@@ -90,7 +90,7 @@ public class SampleDashboardService {
 
 		Predicate filter = sampleService.createUserFilter(queryContext, new SampleCriteria().sampleAssociationType(SampleAssociationType.ALL));
 
-		CriteriaBuilderHelper.and(
+		filter = CriteriaBuilderHelper.and(
 			cb,
 			filter,
 			sampleService.buildCriteriaFilter(
