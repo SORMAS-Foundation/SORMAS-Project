@@ -132,7 +132,7 @@
     <string name="caption_case_hospitalization">Info o Hospitalizaci</string>
     <string name="caption_case_information">Informace o případu</string>
     <string name="caption_case_maternal_history">Historie matky</string>
-    <string name="caption_case_port_health_info">Port Health Info</string>
+    <string name="caption_case_port_health_info">Informace vstupní hygienické kontroly</string>
     <string name="caption_case_prescriptions">Předpisy</string>
     <string name="caption_case_samples">Vzorky případu</string>
     <string name="caption_case_tasks">Úkoly případu</string>
