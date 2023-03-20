@@ -42,7 +42,8 @@ public class SampleDashboardView extends AbstractDashboardView {
 	private static final String SHIPMENT_STATUS = "shipmentStatus";
 
 	private final SampleDashboardDataProvider dataProvider;
-	private final FinalLaboratoryResultsStatisticsComponent countsByResultType;
+	private final FinalLaboratoryResultsStatisticsComponent testCountsByResultType;
+	private final FinalLaboratoryResultsStatisticsComponent sampleCountsByResultType;
 	private final SampleCountTilesComponent<SamplePurpose> countsByPurpose;
 	private final SampleCountTilesComponent<SpecimenCondition> countsBySpecimenCondition;
 	private final SampleCountTilesComponent<SampleShipmentStatus> countsByShipmentStatus;
@@ -75,10 +76,14 @@ public class SampleDashboardView extends AbstractDashboardView {
 
 		dashboardLayout.addComponent(sampleCountsLayout);
 
-		countsByResultType =
-			new FinalLaboratoryResultsStatisticsComponent(Captions.sampleDashboardAllSamples, null, Captions.sampleDashboardFinalLabResults, true);
-		countsByResultType.hideHeading();
-		sampleCountsLayout.addComponent(countsByResultType, LAB_RESULTS);
+		sampleCountsByResultType = new FinalLaboratoryResultsStatisticsComponent(
+			Captions.sampleDashboardAllSamples,
+			null,
+			Captions.sampleDashboardFinalLabResults,
+			true,
+			false);
+		sampleCountsByResultType.hideHeading();
+		sampleCountsLayout.addComponent(sampleCountsByResultType, LAB_RESULTS);
 
 		countsByPurpose =
 			new SampleCountTilesComponent<>(SamplePurpose.class, Captions.sampleDashboardSamplePurpose, this::getBackgroundStyleForPurpose, null);
@@ -105,6 +110,13 @@ public class SampleDashboardView extends AbstractDashboardView {
 		countsBySpecimenCondition.setWithPercentage(true);
 		countsBySpecimenCondition.setGroupLabelStyle(CssStyles.LABEL_UPPERCASE);
 		sampleCountsLayout.addComponent(countsBySpecimenCondition, SPECIMEN_CONDITION);
+
+		testCountsByResultType = new FinalLaboratoryResultsStatisticsComponent(Captions.sampleDashboardTestResults, null, null, false, false);
+		testCountsByResultType.addStyleName(CssStyles.H4);
+		testCountsByResultType.addStyleName(CssStyles.LABEL_UPPERCASE);
+
+		//testCountsByResultType.addStyleName(DashboardCssStyles.VSPACE_TOP);
+		sampleCountsLayout.addComponent(testCountsByResultType, TEST_RESULTS);
 	}
 
 	@Override
@@ -113,10 +125,11 @@ public class SampleDashboardView extends AbstractDashboardView {
 
 		heading.updateTotalLabel(String.valueOf(dataProvider.getSampleCountsByResultType().values().stream().mapToLong(Long::longValue).sum()));
 
-		countsByResultType.update(dataProvider.getSampleCountsByResultType());
+		sampleCountsByResultType.update(dataProvider.getSampleCountsByResultType());
 		countsByPurpose.update(dataProvider.getSampleCountsByPurpose());
 		countsBySpecimenCondition.update(dataProvider.getSampleCountsBySpecimenCondition());
 		countsByShipmentStatus.update(dataProvider.getSampleCountsByShipmentStatus());
+		testCountsByResultType.update(dataProvider.getTestResultCountsByResultType());
 	}
 
 	private String getBackgroundStyleForPurpose(SamplePurpose purpose) {

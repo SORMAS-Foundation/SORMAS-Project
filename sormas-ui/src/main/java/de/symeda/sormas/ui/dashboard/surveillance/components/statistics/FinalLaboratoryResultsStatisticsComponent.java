@@ -21,8 +21,13 @@ public class FinalLaboratoryResultsStatisticsComponent extends DiseaseSectionSta
 	private final boolean showNotDoneCount;
 	private DashboardStatisticsCountElement labResultNotDone;
 
-	public FinalLaboratoryResultsStatisticsComponent(String titleCaption, String description, String subtitleCaption, boolean showNotDoneCount) {
-		super(titleCaption, description, I18nProperties.getString(Strings.infoDashboardFinalLaboratoryResult));
+	public FinalLaboratoryResultsStatisticsComponent(
+		String titleCaption,
+		String description,
+		String subtitleCaption,
+		boolean showNotDoneCount,
+		boolean showInfoIcon) {
+		super(titleCaption, description, showInfoIcon == true ? I18nProperties.getString(Strings.infoDashboardFinalLaboratoryResult) : "");
 
 		this.showNotDoneCount = showNotDoneCount;
 

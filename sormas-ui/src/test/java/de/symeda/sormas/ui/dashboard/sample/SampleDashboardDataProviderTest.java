@@ -25,6 +25,7 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleDashboardFilterDateType;
+import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.user.DefaultUserRole;
@@ -75,9 +76,14 @@ public class SampleDashboardDataProviderTest extends AbstractBeanTest {
 		creator.createSample(contact.toReference(), user.toReference(), rdcf.facility.toReference(), s -> {
 			s.setSamplePurpose(SamplePurpose.INTERNAL);
 		});
-		creator.createSample(contact.toReference(), user.toReference(), rdcf.facility.toReference(), s -> {
+
+		final String sampleExternalId = "test-sample-ext-id";
+		SampleDto sample = creator.createSample(contact.toReference(), user.toReference(), rdcf.facility.toReference(), s -> {
 			s.setSamplePurpose(SamplePurpose.EXTERNAL);
 			s.setReceived(true);
+		});
+		creator.createPathogenTest(sample.toReference(), user.toReference(), t -> {
+			t.setExternalId(sampleExternalId);
 		});
 
 		dataProvider.refreshData();
@@ -86,5 +92,6 @@ public class SampleDashboardDataProviderTest extends AbstractBeanTest {
 		Assertions.assertEquals(2, dataProvider.getSampleCountsByPurpose().size());
 		Assertions.assertEquals(1, dataProvider.getSampleCountsBySpecimenCondition().size());
 		Assertions.assertEquals(1, dataProvider.getSampleCountsByShipmentStatus().size());
+		Assertions.assertEquals(1, dataProvider.getTestResultCountsByResultType().size());
 	}
 }

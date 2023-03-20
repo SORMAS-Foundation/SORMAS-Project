@@ -62,7 +62,8 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 			Captions.dashboardNewFinalLaboratoryResults,
 			Descriptions.descDashboardNewFinalLaboratoryResults,
 			null,
-			false);
+			false,
+			true);
 
 		addComponent(caseStatisticsComponent, CASE_LOC);
 		addComponent(diseaseSummaryComponent, OUTBREAK_LOC);
