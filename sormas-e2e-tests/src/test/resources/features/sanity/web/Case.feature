@@ -2585,7 +2585,7 @@ Feature: Case end to end tests
     Given I log in as a Admin User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
-    Then I create a new case with specific person name and "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district for DE version
+    Then I create a new case with specific person name and "Hessen" region and "LK Fulda" district for DE version
     Then I click on save button in the case popup
     Then I navigate to "s2s_2" environment in new driver tab
     And I log in as a Admin User
@@ -2614,7 +2614,7 @@ Feature: Case end to end tests
     And I confirm merge duplicated case
     Then I check if popup with error message appears
 
-  @tmsLink=SORDEV-12094 @env_s2s_1 @testIt
+  @tmsLink=SORDEV-12094 @env_s2s_1
   Scenario: [S2S] Mergen with hand over the ownership
     Given I log in as a Admin User
     And I click on the Cases button from navbar
