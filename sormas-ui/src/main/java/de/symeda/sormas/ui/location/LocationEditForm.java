@@ -125,6 +125,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	private ComboBox continent;
 	private ComboBox subcontinent;
 	private ComboBox country;
+	private ComboBox region;
 	private TextField contactPersonFirstName;
 	private TextField contactPersonLastName;
 	private TextField contactPersonPhone;
@@ -251,7 +252,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		continent = addInfrastructureField(LocationDto.CONTINENT);
 		subcontinent = addInfrastructureField(LocationDto.SUB_CONTINENT);
 		country = addInfrastructureField(LocationDto.COUNTRY);
-		ComboBox region = addInfrastructureField(LocationDto.REGION);
+		region = addInfrastructureField(LocationDto.REGION);
 		ComboBox district = addInfrastructureField(LocationDto.DISTRICT);
 		ComboBox community = addInfrastructureField(LocationDto.COMMUNITY);
 
@@ -711,6 +712,9 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 	public void setDistrictRequiredOnDefaultCountry(boolean required) {
 		this.districtRequiredOnDefaultCountry = required;
+		if (required) {
+			updateRegionCombo(region, country);
+		}
 	}
 
 	public void setCountryDisabledWithHint(String hint) {

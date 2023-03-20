@@ -338,7 +338,6 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserReference;
 import de.symeda.sormas.backend.user.UserRoleFacadeEjb;
 import de.symeda.sormas.backend.user.UserRoleService;
-import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.BulkOperationHelper;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -499,8 +498,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Inject
-	public CaseFacadeEjb(CaseService service, UserService userService) {
-		super(Case.class, CaseDataDto.class, service, userService);
+	public CaseFacadeEjb(CaseService service) {
+		super(Case.class, CaseDataDto.class, service);
 	}
 
 	@Override
@@ -3264,11 +3263,10 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			caze.setInvestigatedDate(null);
 
 			// Create a new investigation task if none is present
-			long pendingCount = existingCase != null
-				? taskService.getCount(new TaskCriteria().taskType(TaskType.CASE_INVESTIGATION).caze(caseRef).taskStatus(TaskStatus.PENDING))
-				: 0;
+			long investigationTaskCount =
+				existingCase != null ? taskService.getCount(new TaskCriteria().taskType(TaskType.CASE_INVESTIGATION).caze(caseRef)) : 0;
 
-			if (pendingCount == 0 && featureConfigurationFacade.isTaskGenerationFeatureEnabled(TaskType.CASE_INVESTIGATION)) {
+			if (investigationTaskCount == 0 && featureConfigurationFacade.isTaskGenerationFeatureEnabled(TaskType.CASE_INVESTIGATION)) {
 				createInvestigationTask(caze);
 			}
 		}
@@ -4276,8 +4274,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 
 		@Inject
-		public CaseFacadeEjbLocal(CaseService service, UserService userService) {
-			super(service, userService);
+		public CaseFacadeEjbLocal(CaseService service) {
+			super(service);
 		}
 	}
 }

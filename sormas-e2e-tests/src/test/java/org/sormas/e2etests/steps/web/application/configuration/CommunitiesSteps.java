@@ -130,6 +130,8 @@ public class CommunitiesSteps implements En {
           selectCommunityRegion(communities.getRegion());
           selectCommunityDistrict(communities.getDistrict());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_NEW_ENTRY_COMMUNITIES);
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
     When(

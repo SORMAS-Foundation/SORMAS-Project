@@ -57,7 +57,12 @@ public class UserManagementSteps implements En {
           TimeUnit.SECONDS.sleep(2); // needed for table to refresh
         });
 
-    When("^I select first user from list$", () -> selectFirstElementFromList());
+    When(
+        "^I select first user from list$",
+        () -> {
+          TimeUnit.SECONDS.sleep(1);
+          selectFirstElementFromList();
+        });
 
     When(
         "^I search for created user$",

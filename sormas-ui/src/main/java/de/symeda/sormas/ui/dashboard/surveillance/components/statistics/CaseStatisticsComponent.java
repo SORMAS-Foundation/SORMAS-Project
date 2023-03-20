@@ -21,7 +21,7 @@ public class CaseStatisticsComponent extends DiseaseSectionStatisticsComponent {
 	private final DashboardStatisticsCountElement caseClassificationNotYetClassified;
 
 	public CaseStatisticsComponent() {
-		super(Captions.dashboardNewCases);
+		super(Captions.dashboardNewCases, null);
 
 		// Count layout
 		caseClassificationConfirmed =

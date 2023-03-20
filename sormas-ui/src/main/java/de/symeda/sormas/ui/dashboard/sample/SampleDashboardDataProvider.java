@@ -19,9 +19,12 @@ import java.util.Map;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
+import de.symeda.sormas.api.dashboard.sample.SampleShipmentStatus;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDashboardFilterDateType;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SamplePurpose;
+import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardDataProvider;
 
 public class SampleDashboardDataProvider extends AbstractDashboardDataProvider<SampleDashboardCriteria> {
@@ -32,17 +35,23 @@ public class SampleDashboardDataProvider extends AbstractDashboardDataProvider<S
 
 	private Boolean withNoDisease;
 
-	private Map<PathogenTestResultType, Long> newCasesFinalLabResultCountsByResultType;
-
+	private Map<PathogenTestResultType, Long> sampleCountsByResultType;
+	private Map<SamplePurpose, Long> sampleCountsByPurpose;
+	private Map<SpecimenCondition, Long> sampleCountsBySpecimenCondition;
+	private Map<SampleShipmentStatus, Long> sampleCountsByShipmentStatus;
 	private Map<PathogenTestResultType, Long> pathogenTestResultCountsByResultType;
 
 	@Override
 	public void refreshData() {
-		newCasesFinalLabResultCountsByResultType =
-			FacadeProvider.getSampleDashboardFacade().getSampleCountByResultType(buildDashboardCriteriaWithDates());
-
-		pathogenTestResultCountsByResultType =
-			FacadeProvider.getSampleDashboardFacade().getPathogenTestResultCountByResultType(buildDashboardCriteriaWithDates());
+		sampleCountsByResultType =
+			FacadeProvider.getSampleDashboardFacade().getSampleCountsByResultType(buildDashboardCriteriaWithDates());
+		sampleCountsByPurpose = FacadeProvider.getSampleDashboardFacade().getSampleCountsByPurpose(buildDashboardCriteriaWithDates());
+		sampleCountsBySpecimenCondition =
+			FacadeProvider.getSampleDashboardFacade().getSampleCountsBySpecimenCondition(buildDashboardCriteriaWithDates());
+		sampleCountsByShipmentStatus =
+			FacadeProvider.getSampleDashboardFacade().getSampleCountsByShipmentStatus(buildDashboardCriteriaWithDates());
+        pathogenTestResultCountsByResultType =
+                FacadeProvider.getSampleDashboardFacade().getPathogenTestResultCountByResultType(buildDashboardCriteriaWithDates());
 	}
 
 	@Override
@@ -84,8 +93,20 @@ public class SampleDashboardDataProvider extends AbstractDashboardDataProvider<S
 		this.withNoDisease = withNoDisease;
 	}
 
-	public Map<PathogenTestResultType, Long> getNewCasesFinalLabResultCountsByResultType() {
-		return newCasesFinalLabResultCountsByResultType;
+	public Map<PathogenTestResultType, Long> getSampleCountsByResultType() {
+		return sampleCountsByResultType;
+	}
+
+	public Map<SamplePurpose, Long> getSampleCountsByPurpose() {
+		return sampleCountsByPurpose;
+	}
+
+	public Map<SpecimenCondition, Long> getSampleCountsBySpecimenCondition() {
+		return sampleCountsBySpecimenCondition;
+	}
+
+	public Map<SampleShipmentStatus, Long> getSampleCountsByShipmentStatus() {
+		return sampleCountsByShipmentStatus;
 	}
 
 	public Map<PathogenTestResultType, Long> getPathogenTestResultCountsByResultType() {
