@@ -1616,7 +1616,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 			.calculateFollowUpUntilDate(
 				CaseFacadeEjb.toCaseDto(caze),
 				CaseLogic.getFollowUpStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate(), earliestSampleDate),
-				caze.getVisits().stream().map(VisitFacadeEjb::toDto).collect(Collectors.toList()),
+				caze.getVisits().stream().map(VisitFacadeEjb::toVisitDto).collect(Collectors.toList()),
 				diseaseConfigurationFacade.getCaseFollowUpDuration(caze.getDisease()),
 				false,
 				featureConfigurationFacade.isPropertyValueTrue(FeatureType.CASE_FOLLOWUP, FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE))

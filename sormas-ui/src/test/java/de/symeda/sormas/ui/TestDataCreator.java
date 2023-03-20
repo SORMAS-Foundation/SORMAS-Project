@@ -380,7 +380,7 @@ public class TestDataCreator {
 		VisitDto visit = VisitDto.build(contactPerson, disease, VisitOrigin.USER);
 		visit.setVisitDateTime(visitDateTime);
 		visit.setVisitStatus(visitStatus);
-		visit = FacadeProvider.getVisitFacade().saveVisit(visit);
+		visit = FacadeProvider.getVisitFacade().save(visit);
 
 		return visit;
 	}
