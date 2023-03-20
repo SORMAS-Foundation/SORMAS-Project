@@ -65,7 +65,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.contact.ContactCreateForm;
 import de.symeda.sormas.ui.events.EventDataForm;
-import de.symeda.sormas.ui.events.EventParticipantEditForm;
+import de.symeda.sormas.ui.events.EventParticipantCreateForm;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractLabMessageProcessingFlow;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.LabMessageProcessingHelper;
@@ -256,9 +256,11 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		HandlerCallback<EventParticipantDto> callback) {
 		Window window = VaadinUiUtil.createPopupWindow();
 
-		EventParticipantEditForm createForm = new EventParticipantEditForm(event, false, true);
+		EventParticipantCreateForm createForm = new EventParticipantCreateForm(
+			event.getEventLocation().getRegion() == null && event.getEventLocation().getDistrict() == null,
+			eventParticipant.getPerson().getCreationDate() == null);
 		createForm.setValue(eventParticipant);
-		final CommitDiscardWrapperComponent<EventParticipantEditForm> createComponent = new CommitDiscardWrapperComponent<>(
+		final CommitDiscardWrapperComponent<EventParticipantCreateForm> createComponent = new CommitDiscardWrapperComponent<>(
 			createForm,
 			UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE),
 			createForm.getFieldGroup());

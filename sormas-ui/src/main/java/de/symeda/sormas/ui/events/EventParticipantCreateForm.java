@@ -52,6 +52,7 @@ public class EventParticipantCreateForm extends PersonDependentEditForm<EventPar
 		+ fluidRowLocs(EventParticipantDto.REGION, EventParticipantDto.DISTRICT);
 
 	private boolean jurisdictionFieldsRequired;
+	private boolean personDetailsAlwaysEditable;
 	private Button searchPersonButton;
 
 	public EventParticipantCreateForm(boolean jurisdictionFieldsRequired) {
@@ -60,6 +61,12 @@ public class EventParticipantCreateForm extends PersonDependentEditForm<EventPar
 		this.jurisdictionFieldsRequired = jurisdictionFieldsRequired;
 		setWidth(540, Unit.PIXELS);
 		hideValidationUntilNextCommit();
+	}
+
+	public EventParticipantCreateForm(boolean jurisdictionFieldsRequired, boolean personDetailsAlwaysEditable) {
+
+		this(jurisdictionFieldsRequired);
+		this.personDetailsAlwaysEditable = personDetailsAlwaysEditable;
 	}
 
 	@Override
@@ -105,7 +112,13 @@ public class EventParticipantCreateForm extends PersonDependentEditForm<EventPar
 				firstNameField.setVisible(false);
 				lastNameField.setRequired(false);
 				lastNameField.setVisible(false);
+				personSexField.setEnabled(false);
+				personSexField.setValue(person.getSex());
 				searchPersonButton.setVisible(false);
+			} else if (personDetailsAlwaysEditable) {
+				firstNameField.setValue(person.getFirstName());
+				lastNameField.setValue(person.getLastName());
+				personSexField.setValue(person.getSex());
 			} else {
 				firstNameField.setEnabled(false);
 				firstNameField.setValue(person.getFirstName());
@@ -115,8 +128,6 @@ public class EventParticipantCreateForm extends PersonDependentEditForm<EventPar
 				personSexField.setValue(person.getSex());
 				searchPersonButton.setEnabled(false);
 			}
-			personSexField.setEnabled(false);
-			personSexField.setValue(person.getSex());
 		}
 
 		setRequired(jurisdictionFieldsRequired, EventParticipantDto.REGION, EventParticipantDto.DISTRICT);
