@@ -24,6 +24,7 @@ import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
+import de.symeda.sormas.ui.dashboard.DashboardCssStyles;
 import de.symeda.sormas.ui.dashboard.DashboardType;
 import de.symeda.sormas.ui.dashboard.components.DashboardHeadingComponent;
 import de.symeda.sormas.ui.dashboard.sample.components.SampleCountTilesComponent;
@@ -83,6 +84,7 @@ public class SampleDashboardView extends AbstractDashboardView {
 			true,
 			false);
 		sampleCountsByResultType.hideHeading();
+		sampleCountsByResultType.setWithPercentage(true);
 		sampleCountsLayout.addComponent(sampleCountsByResultType, LAB_RESULTS);
 
 		countsByPurpose =
@@ -111,11 +113,13 @@ public class SampleDashboardView extends AbstractDashboardView {
 		countsBySpecimenCondition.setGroupLabelStyle(CssStyles.LABEL_UPPERCASE);
 		sampleCountsLayout.addComponent(countsBySpecimenCondition, SPECIMEN_CONDITION);
 
-		testCountsByResultType = new FinalLaboratoryResultsStatisticsComponent(Captions.sampleDashboardTestResults, null, null, false, false);
-		testCountsByResultType.addStyleName(CssStyles.H4);
-		testCountsByResultType.addStyleName(CssStyles.LABEL_UPPERCASE);
+		testCountsByResultType = new FinalLaboratoryResultsStatisticsComponent("", null, Captions.sampleDashboardTestResults, false, false);
+		testCountsByResultType.setWithPercentage(true);
+		//TODO: fix the styling
+		//testCountsByResultType.addStyleName(CssStyles.H4);
+		//testCountsByResultType.addStyleName(CssStyles.LABEL_UPPERCASE);
 
-		//testCountsByResultType.addStyleName(DashboardCssStyles.VSPACE_TOP);
+		testCountsByResultType.addStyleName(DashboardCssStyles.VSPACE_TOP);
 		sampleCountsLayout.addComponent(testCountsByResultType, TEST_RESULTS);
 	}
 

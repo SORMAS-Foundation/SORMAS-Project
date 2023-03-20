@@ -12,6 +12,7 @@ import de.symeda.sormas.ui.dashboard.statistics.CountElementStyle;
 import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsCountElement;
 import de.symeda.sormas.ui.utils.CssStyles;
 
+// TODO: Rename the class to LaboratoryResultsStatisticsComponent
 public class FinalLaboratoryResultsStatisticsComponent extends DiseaseSectionStatisticsComponent {
 
 	private final DashboardStatisticsCountElement labResultPositive;
@@ -19,6 +20,7 @@ public class FinalLaboratoryResultsStatisticsComponent extends DiseaseSectionSta
 	private final DashboardStatisticsCountElement labResultPending;
 	private final DashboardStatisticsCountElement labResultIndeterminate;
 	private final boolean showNotDoneCount;
+	private boolean withPercentage;
 	private DashboardStatisticsCountElement labResultNotDone;
 
 	public FinalLaboratoryResultsStatisticsComponent(
@@ -53,17 +55,49 @@ public class FinalLaboratoryResultsStatisticsComponent extends DiseaseSectionSta
 		}
 	}
 
+	//TODO: refactor this method
 	public void update(Map<PathogenTestResultType, Long> testResults) {
 		if (testResults != null) {
-			updateTotalLabel(((Long) testResults.values().stream().mapToLong(Long::longValue).sum()).toString());
+			Long totalCount = null;
+			Long labResultPositiveCount = testResults.getOrDefault(PathogenTestResultType.POSITIVE, 0L);
+			Long labResultNegativeCount = testResults.getOrDefault(PathogenTestResultType.NEGATIVE, 0L);
+			Long labResultPendingCount = testResults.getOrDefault(PathogenTestResultType.PENDING, 0L);
+			Long labResultIndeterminateCount = testResults.getOrDefault(PathogenTestResultType.INDETERMINATE, 0L);
+			Long labResultNotDoneCount = showNotDoneCount ? testResults.getOrDefault(PathogenTestResultType.NOT_DONE, 0L) : null;
 
-			labResultPositive.updateCountLabel(testResults.getOrDefault(PathogenTestResultType.POSITIVE, 0L).toString());
-			labResultNegative.updateCountLabel(testResults.getOrDefault(PathogenTestResultType.NEGATIVE, 0L).toString());
-			labResultPending.updateCountLabel(testResults.getOrDefault(PathogenTestResultType.PENDING, 0L).toString());
-			labResultIndeterminate.updateCountLabel(testResults.getOrDefault(PathogenTestResultType.INDETERMINATE, 0L).toString());
-			if (showNotDoneCount) {
-				labResultNotDone.updateCountLabel(testResults.getOrDefault(PathogenTestResultType.NOT_DONE, 0L).toString());
+			if (withPercentage) {
+				totalCount = testResults.values().stream().reduce(0L, Long::sum);
+
+				labResultPositive.updateCountLabel(labResultPositiveCount + " (" + calculatePercentage(totalCount, labResultPositiveCount) + " %)");
+				labResultNegative.updateCountLabel(labResultNegativeCount + " (" + calculatePercentage(totalCount, labResultNegativeCount) + " %)");
+				labResultPending.updateCountLabel(labResultPendingCount + " (" + calculatePercentage(totalCount, labResultPendingCount) + " %)");
+				labResultIndeterminate
+					.updateCountLabel(labResultIndeterminateCount + " (" + calculatePercentage(totalCount, labResultIndeterminateCount) + " %)");
+
+				if (labResultNotDoneCount != null) {
+					labResultNotDone.updateCountLabel(labResultNotDoneCount + " (" + calculatePercentage(totalCount, labResultNotDoneCount) + " %)");
+				}
+
+			} else {
+				updateTotalLabel(((Long) testResults.values().stream().mapToLong(Long::longValue).sum()).toString());
+
+				labResultPositive.updateCountLabel(labResultPositiveCount.toString());
+				labResultNegative.updateCountLabel(labResultNegativeCount.toString());
+				labResultPending.updateCountLabel(labResultPendingCount.toString());
+				labResultIndeterminate.updateCountLabel(labResultIndeterminateCount.toString());
+				if (labResultNotDoneCount != null) {
+					labResultNotDone.updateCountLabel(labResultNotDoneCount.toString());
+				}
 			}
 		}
 	}
+
+	public int calculatePercentage(Long totalCount, Long labResultCount) {
+		return totalCount == 0 ? 0 : (int) ((labResultCount * 100.0f) / totalCount);
+	}
+
+	public void setWithPercentage(boolean withPercentage) {
+		this.withPercentage = withPercentage;
+	}
+
 }

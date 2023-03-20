@@ -64,6 +64,7 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 			null,
 			false,
 			true);
+		labResultsStatisticsComponent.setWithPercentage(false);
 
 		addComponent(caseStatisticsComponent, CASE_LOC);
 		addComponent(diseaseSummaryComponent, OUTBREAK_LOC);
