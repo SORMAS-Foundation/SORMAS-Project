@@ -77,7 +77,7 @@ public class SampleDashboardView extends AbstractDashboardView {
 		heading.setMargin(new MarginInfo(true, true, false, true));
 		dashboardLayout.addComponent(heading);
 
-		CustomLayout sampleCountsLayout = new CustomLayout();
+		sampleCountsLayout = new CustomLayout();
 		sampleCountsLayout.setTemplateContents(
 			LayoutUtil.fluidRowLocs(LAB_RESULTS, SAMPLE_PURPOSE, TEST_RESULTS)
 				+ LayoutUtil.fluidRowCss(
@@ -119,10 +119,12 @@ public class SampleDashboardView extends AbstractDashboardView {
 		sampleCountsLayout.addComponent(countsBySpecimenCondition, SPECIMEN_CONDITION);
 
 		epiCurveComponent = new SampleEpiCurveComponent(dataProvider);
-
 		epiCurveLayout = createEpiCurveLayout();
+
 		mapLayout = createMapLayout();
+
 		epiCurveAndMapLayout = createEpiCurveAndMapLayout(epiCurveLayout, mapLayout);
+		epiCurveAndMapLayout.addStyleName(CssStyles.VSPACE_TOP_1);
 		dashboardLayout.addComponent(epiCurveAndMapLayout);
 	}
 

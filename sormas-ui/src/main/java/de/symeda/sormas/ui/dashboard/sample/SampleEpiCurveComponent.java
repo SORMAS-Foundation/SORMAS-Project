@@ -79,7 +79,7 @@ public class SampleEpiCurveComponent extends AbstractEpiCurveComponent<SampleDas
 					criteria.dateBetween(DateHelper.getStartOfMonth(date), DateHelper.getEndOfMonth(date));
 				}
 
-				Map<PathogenTestResultType, Long> sampleCounts = FacadeProvider.getSampleDashboardFacade().getSampleCountByResultType(criteria);
+				Map<PathogenTestResultType, Long> sampleCounts = FacadeProvider.getSampleDashboardFacade().getSampleCountsByResultType(criteria);
 
 				Long positiveCount = sampleCounts.get(PathogenTestResultType.POSITIVE);
 				Long negativeCount = sampleCounts.get(PathogenTestResultType.NEGATIVE);
