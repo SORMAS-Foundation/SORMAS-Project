@@ -17,7 +17,7 @@
 		<pushHotfixes>true</pushHotfixes>
 
 		<!-- *** Payara module versions *** -->
-		<jackson.version>2.12.4</jackson.version>
+		<jackson.version>2.12.7.1</jackson.version>
 		<jakarta.activation.version>1.2.1</jakarta.activation.version>
 		<javaee.version>8.0.1</javaee.version>
 		<jersey.version>2.34</jersey.version>
