@@ -279,39 +279,40 @@
 	<build>
 		<finalName>${project.artifactId}</finalName>
 		<plugins>
-			<plugin>
-				<groupId>com.googlecode.maven-download-plugin</groupId>
-				<artifactId>download-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>download-temporal-tables-versioning_function</id>
-						<!-- the wget goal actually binds itself to this phase by default -->
-						<phase>process-resources</phase>
-						<goals>
-							<goal>wget</goal>
-						</goals>
-						<configuration>
-							<url>https://raw.githubusercontent.com/nearform/temporal_tables/v${temportal-tables.version}/versioning_function.sql</url>
-							<outputFileName>versioning_function.sql</outputFileName>
-							<outputDirectory>${project.basedir}/src/main/resources/sql/temporal_tables</outputDirectory>
-							<overwrite>true</overwrite>
-						</configuration>
-					</execution>
-					<execution>
-						<id>download-temporal-tables-license</id>
-						<phase>process-resources</phase>
-						<goals>
-							<goal>wget</goal>
-						</goals>
-						<configuration>
-							<url>https://raw.githubusercontent.com/nearform/temporal_tables/v${temportal-tables.version}/LICENSE</url>
-							<outputFileName>LICENSE</outputFileName>
-							<outputDirectory>${project.basedir}/src/main/resources/sql/temporal_tables</outputDirectory>
-							<overwrite>true</overwrite>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+			<!-- TODO #11655 -->
+<!--			<plugin>-->
+<!--				<groupId>com.googlecode.maven-download-plugin</groupId>-->
+<!--				<artifactId>download-maven-plugin</artifactId>-->
+<!--				<executions>-->
+<!--					<execution>-->
+<!--						<id>download-temporal-tables-versioning_function</id>-->
+<!--						&lt;!&ndash; the wget goal actually binds itself to this phase by default &ndash;&gt;-->
+<!--						<phase>process-resources</phase>-->
+<!--						<goals>-->
+<!--							<goal>wget</goal>-->
+<!--						</goals>-->
+<!--						<configuration>-->
+<!--							<url>https://raw.githubusercontent.com/nearform/temporal_tables/v${temportal-tables.version}/versioning_function.sql</url>-->
+<!--							<outputFileName>versioning_function.sql</outputFileName>-->
+<!--							<outputDirectory>${project.basedir}/src/main/resources/sql/temporal_tables</outputDirectory>-->
+<!--							<overwrite>true</overwrite>-->
+<!--						</configuration>-->
+<!--					</execution>-->
+<!--					<execution>-->
+<!--						<id>download-temporal-tables-license</id>-->
+<!--						<phase>process-resources</phase>-->
+<!--						<goals>-->
+<!--							<goal>wget</goal>-->
+<!--						</goals>-->
+<!--						<configuration>-->
+<!--							<url>https://raw.githubusercontent.com/nearform/temporal_tables/v${temportal-tables.version}/LICENSE</url>-->
+<!--							<outputFileName>LICENSE</outputFileName>-->
+<!--							<outputDirectory>${project.basedir}/src/main/resources/sql/temporal_tables</outputDirectory>-->
+<!--							<overwrite>true</overwrite>-->
+<!--						</configuration>-->
+<!--					</execution>-->
+<!--				</executions>-->
+<!--			</plugin>-->
 		</plugins>
 	</build>
 </project>

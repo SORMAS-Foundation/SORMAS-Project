@@ -2519,3 +2519,63 @@ Feature: Case end to end tests
     And I fill comment in share popup with random string
     And I click to hand over the ownership of the case in Share popup
     Then I click on share button in s2s share popup and wait for share to finish
+
+  @tmsLink=SORDEV-12447 @env_s2s_1
+  Scenario: [S2S] S2S_deactivate share parameter 'share associated contacts' (for cases) [1]
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I open the last created Case via API
+    When I open the Case Contacts tab
+    Then I click on new contact button from Case Contacts tab
+    And I create a new basic contact to from Cases Contacts tab for DE
+    And I open the last created Case via API
+    Then I click on share case button
+    And I check that share associated contacts checkbox is not visible in Share form for DE
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment
+    Given I log in as a Admin User
+    And I click on the Shares button from navbar
+    And I click on the The Eye Icon located in the Shares Page
+    And I check that "KONTAKT-ID" column header is not visible in Share request details window for DE
+
+  @tmsLink=SORDEV-12447 @env_s2s_1
+  Scenario: [S2S] S2S_deactivate share parameter 'share associated contacts' (for cases) [2]
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I open the last created Case via API
+    When I open the Case Contacts tab
+    Then I click on new contact button from Case Contacts tab
+    And I create a new basic contact to from Cases Contacts tab for DE
+    And I open the last created Case via API
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment in new driver tab
+    Given I log in as a Admin User
+    And I click on the Shares button from navbar
+    And I accept first case in Shares Page
+    Then I back to tab number 1
+    When I open the Case Contacts tab
+    And I click on the first Contact ID from Contacts Directory in Contacts in Case
+    And I click on share contact button
+    And I check that share associated contacts checkbox is not visible in Share form for DE
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    And I back to tab number 2
+    And I click on the Shares button from navbar
+    And I click on the The Eye Icon located in the Shares Page
+    And I check that "FALL-ID" column header is not visible in Share request details window for DE

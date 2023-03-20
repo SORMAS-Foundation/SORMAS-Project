@@ -593,6 +593,10 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 	}
 
 	private String tryPrintFromAnnotation(Object object) {
+		if (object == null) {
+			return "null";
+		}
+
 		StringBuilder finalValue = new StringBuilder();
 
 		final Class<?> clazz = object.getClass();

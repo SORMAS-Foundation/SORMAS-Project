@@ -54,7 +54,6 @@ import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.country.CountryService;
 import de.symeda.sormas.backend.infrastructure.subcontinent.Subcontinent;
 import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentService;
-import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.util.RightsAllowed;
@@ -74,8 +73,8 @@ public class ContinentFacadeEjb
 	}
 
 	@Inject
-	protected ContinentFacadeEjb(ContinentService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
-		super(Continent.class, ContinentDto.class, service, featureConfiguration, userService, Validations.importContinentAlreadyExists);
+	protected ContinentFacadeEjb(ContinentService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
+		super(Continent.class, ContinentDto.class, service, featureConfiguration, Validations.importContinentAlreadyExists);
 	}
 
 	public static ContinentReferenceDto toReferenceDto(Continent entity) {
@@ -246,9 +245,8 @@ public class ContinentFacadeEjb
 		@Inject
 		protected ContinentFacadeEjbLocal(
 			ContinentService service,
-			FeatureConfigurationFacadeEjbLocal featureConfiguration,
-			UserService userService) {
-			super(service, featureConfiguration, userService);
+			FeatureConfigurationFacadeEjbLocal featureConfiguration) {
+			super(service, featureConfiguration);
 		}
 	}
 }

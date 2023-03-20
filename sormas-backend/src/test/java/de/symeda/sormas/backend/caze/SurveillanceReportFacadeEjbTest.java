@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.surveillancereport.ReportingType;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
-import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
@@ -34,7 +33,7 @@ public class SurveillanceReportFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testSaveSurveillanceReport() {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+		UserDto user = creator.createSurveillanceOfficer(rdcf);
 
 		CaseDataDto caze = creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
 		SurveillanceReportDto newReport = SurveillanceReportDto.build(caze.toReference(), user.toReference());

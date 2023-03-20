@@ -21,7 +21,6 @@ import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
@@ -32,7 +31,7 @@ public class DashboardServiceTest extends AbstractBeanTest {
 	@Test
 	public void testGetEventCountByStatusWithArchivingAndDeletion() {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createNationalUser();
 		EventDto signal = creator.createEvent(user.toReference(), EventStatus.SIGNAL);
 		EventDto event1 = creator.createEvent(user.toReference(), EventStatus.EVENT);
 		creator.createEvent(user.toReference(), EventStatus.EVENT);

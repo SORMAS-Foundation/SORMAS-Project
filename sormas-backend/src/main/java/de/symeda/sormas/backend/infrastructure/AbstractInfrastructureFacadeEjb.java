@@ -27,7 +27,6 @@ import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
 import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.RightsAllowed;
@@ -49,9 +48,8 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 		Class<DTO> dtoClass,
 		SRV service,
 		FeatureConfigurationFacadeEjb featureConfiguration,
-		UserService userService,
 		String duplicateErrorMessageProperty) {
-		super(adoClass, dtoClass, service, userService);
+		super(adoClass, dtoClass, service);
 		this.featureConfiguration = featureConfiguration;
 		this.duplicateErrorMessageProperty = duplicateErrorMessageProperty;
 	}

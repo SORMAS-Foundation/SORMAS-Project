@@ -1,0 +1,29 @@
+name: 5 - Task
+description: Document a task to be done by the development team that does not change the software.
+labels: 'task'
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for contributing to SORMAS! **Please make sure that your issue complies to our [Contributing guidelines](https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/docs/CONTRIBUTING.md)** before submitting it.
+  - type: textarea
+    id: problem-description
+    attributes:
+      label: Problem Description
+      description: Describe the requirement or problem that is supposed to be solved.
+    validations:
+      required: true
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed Solution
+      description: Describe in as much detail as possible how the proposed solution should look like and what should be done in order to achieve it. If possible, provide alternative solutions in case your proposed change can not be realized for any reason.
+    validations:
+      required: true
+  - type: textarea
+    id: additional-info
+    attributes:
+      label: Additional Information
+      description: If there is anything else you want to add to your request, you can put it here.
+    validations:
+      required: false

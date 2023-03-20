@@ -295,8 +295,8 @@ public class ContactFacadeEjb
 	}
 
 	@Inject
-	public ContactFacadeEjb(ContactService service, UserService userService) {
-		super(Contact.class, ContactDto.class, service, userService);
+	public ContactFacadeEjb(ContactService service) {
+		super(Contact.class, ContactDto.class, service);
 	}
 
 	@Override
@@ -2437,8 +2437,8 @@ public class ContactFacadeEjb
 		}
 
 		@Inject
-		public ContactFacadeEjbLocal(ContactService service, UserService userService) {
-			super(service, userService);
+		public ContactFacadeEjbLocal(ContactService service) {
+			super(service);
 		}
 	}
 

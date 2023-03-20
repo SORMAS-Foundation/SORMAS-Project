@@ -23,7 +23,9 @@
 You can give SORMAS a try on our demo server at <https://demo.sormas.org>!
 
 ### How Can I Get Involved?
-Read through our [*Contributing Readme*](docs/CONTRIBUTING.md) and contact us at sormas@helmholtz-hzi.de to learn how you can help to drive the development of SORMAS forward, or check out our [Discussions](https://github.com/hzi-braunschweig/SORMAS-Project/discussions) to get development support from the core developers and other community members. SORMAS is a community-driven project, and we'd love to have you on board!
+Read through our [*Contributing Readme*](docs/CONTRIBUTING.md) and contact us at sormas@helmholtz-hzi.de to learn how you can help to drive the development of SORMAS forward,
+or check out our [Discussions](https://github.com/hzi-braunschweig/SORMAS-Project/discussions) to get development support from the core developers and other community members.
+SORMAS is a community-driven project, and we'd love to have you on board!
 
 If you want to contribute to the code, please strictly adhere to the [*Development Environment*](docs/DEVELOPMENT_ENVIRONMENT.md) guide to ensure that everything is set up correctly.
 Please also make sure that you've read the [*Development Contributing Guidelines*](docs/CONTRIBUTING.md#development-contributing-guidelines) before you start to develop.
@@ -58,6 +60,8 @@ If you want to learn more about the development and contribution process, settin
 * [Server Customization](docs/SERVER_CUSTOMIZATION.md) - If you are maintaining a SORMAS server or are a developer, this guide explains core concepts such as turning features on or off, importing infrastructure data or adjusting the configuration file.
 * [Internationalization](docs/I18N.md) - SORMAS can be translated in any language by using the open source tool [Crowdin](https://crowdin.com/project/sormas); this resource explains how this process is working.
 * [Disease Definition Instructions](docs/SOP_DISEASES.md) - We already support a large number of diseases, but not all of them are fully configured for case-based surveillance, and some might not be part of SORMAS at all yet; if you need SORMAS to support a specific disease, please use these instructions to give us all the information we need in order to extend the software with your requested disease.
+* [Sormas2Sormas](docs/SORMAS2SORMAS.md) - The Sormas2Sormas API is used to share entities between SORMAS instances.
+
 * [Security Policies](docs/SECURITY.md) - These contain important information about how to report security problems and the processes we are using to take care of them.
 * [3rd Party License Acknowledgement](docs/3RD_PARTY_ACK.md) - This resource contains the names and license copies of external resources that SORMAS is using.
 
