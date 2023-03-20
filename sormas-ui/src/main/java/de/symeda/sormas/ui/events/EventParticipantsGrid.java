@@ -53,7 +53,7 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 		super(EventParticipantIndexDto.class);
 		setSizeFull();
 
-		ViewConfiguration viewConfiguration = ViewModelProviders.of(EventParticipantsView.class).get(ViewConfiguration.class);
+		ViewConfiguration viewConfiguration = ViewModelProviders.of(EventParticipantsView.class).get(EventParticipantsViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
 
 		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT)) {
@@ -167,7 +167,7 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 			deselectAll();
 		}
 
-		if (ViewModelProviders.of(EventParticipantsView.class).get(ViewConfiguration.class).isInEagerMode()) {
+		if (ViewModelProviders.of(EventParticipantsView.class).get(EventParticipantsViewConfiguration.class).isInEagerMode()) {
 			setEagerDataProvider();
 		}
 

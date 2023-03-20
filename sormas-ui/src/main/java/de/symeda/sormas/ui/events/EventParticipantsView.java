@@ -78,7 +78,6 @@ import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public class EventParticipantsView extends AbstractEventView {
 
@@ -201,7 +200,7 @@ public class EventParticipantsView extends AbstractEventView {
 			}
 		});
 		filterForm.addResetHandler(e -> {
-			ViewModelProviders.of(EventParticipantsView.class).remove(EventParticipantCriteria.class);
+			ViewModelProviders.of(EventParticipantsView.class).remove(EventParticipantsViewConfiguration.class);
 			navigateTo(null);
 		});
 		filterForm.addApplyHandler(e -> grid.reload());
@@ -278,14 +277,14 @@ public class EventParticipantsView extends AbstractEventView {
 
 			btnEnterBulkEditMode.addClickListener(e -> {
 				bulkOperationsDropdown.setVisible(true);
-				ViewModelProviders.of(EventParticipantsView.class).get(ViewConfiguration.class).setInEagerMode(true);
+				ViewModelProviders.of(EventParticipantsView.class).get(EventParticipantsViewConfiguration.class).setInEagerMode(true);
 				btnEnterBulkEditMode.setVisible(false);
 				btnLeaveBulkEditMode.setVisible(true);
 				grid.reload();
 			});
 			btnLeaveBulkEditMode.addClickListener(e -> {
 				bulkOperationsDropdown.setVisible(false);
-				ViewModelProviders.of(EventParticipantsView.class).get(ViewConfiguration.class).setInEagerMode(false);
+				ViewModelProviders.of(EventParticipantsView.class).get(EventParticipantsViewConfiguration.class).setInEagerMode(false);
 				btnLeaveBulkEditMode.setVisible(false);
 				btnEnterBulkEditMode.setVisible(true);
 				navigateTo(criteria);
