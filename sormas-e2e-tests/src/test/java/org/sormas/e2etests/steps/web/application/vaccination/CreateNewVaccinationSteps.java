@@ -28,6 +28,7 @@ import static org.sormas.e2etests.pages.application.vaccinations.CreateNewVaccin
 import static org.sormas.e2etests.pages.application.vaccinations.CreateNewVaccinationPage.SAVE_VACCINATION_FORM_BUTTON;
 import static org.sormas.e2etests.pages.application.vaccinations.CreateNewVaccinationPage.UNII_CODE_INPUT;
 import static org.sormas.e2etests.pages.application.vaccinations.CreateNewVaccinationPage.VACCINATION_DATE_INPUT;
+import static org.sormas.e2etests.pages.application.vaccinations.CreateNewVaccinationPage.VACCINATION_EDIT_BUTTON;
 import static org.sormas.e2etests.pages.application.vaccinations.CreateNewVaccinationPage.VACCINATION_INFO_SOURCE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.vaccinations.CreateNewVaccinationPage.VACCINATION_INFO_SOURCE_INPUT;
 import static org.sormas.e2etests.pages.application.vaccinations.CreateNewVaccinationPage.VACCINATION_MANUFACTURER_COMBOBOX;
@@ -271,6 +272,22 @@ public class CreateNewVaccinationSteps implements En {
           webDriverHelpers.scrollToElement(REPORT_DATE_INPUT);
           webDriverHelpers.fillAndSubmitInWebElement(
               REPORT_DATE_INPUT, formatterDE.format(LocalDate.now().minusDays(day)));
+        });
+
+    And(
+        "I set vaccine manufacturer to {string}",
+        (String option) -> selectVaccineManufacturer(option));
+
+    And(
+        "I click on first vaccination edit button",
+        () -> webDriverHelpers.clickOnWebElementBySelector(VACCINATION_EDIT_BUTTON));
+
+    And(
+        "I check vaccine manufacturer is set to {string}",
+        (String option) -> {
+          softly.assertEquals(
+              webDriverHelpers.getValueFromCombobox(VACCINATION_MANUFACTURER_COMBOBOX), option);
+          softly.assertAll();
         });
   }
 

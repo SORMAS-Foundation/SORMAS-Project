@@ -35,6 +35,7 @@ import org.sormas.e2etests.entities.services.SampleService;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
+import org.testng.asserts.SoftAssert;
 
 public class EditSampleSteps implements En {
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
@@ -48,7 +49,8 @@ public class EditSampleSteps implements En {
       WebDriverHelpers webDriverHelpers,
       RunningConfiguration runningConfiguration,
       SampleService sampleService,
-      ApiState apiState) {
+      ApiState apiState,
+      SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -210,6 +212,18 @@ public class EditSampleSteps implements En {
     When(
         "I check if sample material has a option {string}",
         (String option) -> webDriverHelpers.selectFromCombobox(SAMPLE_TYPE_COMBOBOX, option));
+
+    When(
+        "I set type of sample to {string}",
+        (String sampleType) ->
+            webDriverHelpers.selectFromCombobox(SAMPLE_TYPE_COMBOBOX, sampleType));
+
+    And(
+        "I check if type of sample is set to {string}",
+        (String option) -> {
+          softly.assertEquals(webDriverHelpers.getValueFromCombobox(SAMPLE_TYPE_COMBOBOX), option);
+          softly.assertAll();
+        });
   }
 
   private void selectPurposeOfSample(String samplePurpose, By element) {
