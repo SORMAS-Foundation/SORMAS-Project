@@ -34,6 +34,4 @@ public interface SampleDashboardFacade {
 	Map<SpecimenCondition, Long> getSampleCountsBySpecimenCondition(SampleDashboardCriteria dashboardCriteria);
 
 	Map<SampleShipmentStatus, Long> getSampleCountsByShipmentStatus(SampleDashboardCriteria dashboardCriteria);
-
-	Map<PathogenTestResultType, Long> getPathogenTestResultCountByResultType(SampleDashboardCriteria dashboardCriteria);
 }
