@@ -831,7 +831,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.and(cb.notEqual(from.get(Case.QUARANTINE_HELP_NEEDED), ""), cb.isNotNull(from.get(Case.QUARANTINE_HELP_NEEDED))));
 		}
-		filter = CriteriaBuilderHelper.and(cb, filter, addRelevanceStatusFilter(caseCriteria, caseQueryContext));
+		filter = CriteriaBuilderHelper.and(cb, filter, createRelevanceStatusFilter(caseCriteria, caseQueryContext));
 
 		if (!DataHelper.isNullOrEmpty(caseCriteria.getPersonLike())) {
 			Predicate likeFilters = CriteriaBuilderHelper.buildFreeTextSearchPredicate(
@@ -947,7 +947,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		return filter;
 	}
 
-	private Predicate addRelevanceStatusFilter(CaseCriteria caseCriteria, CaseQueryContext caseQueryContext) {
+	private Predicate createRelevanceStatusFilter(CaseCriteria caseCriteria, CaseQueryContext caseQueryContext) {
 
 		final From<?, Case> from = caseQueryContext.getRoot();
 		final CriteriaBuilder cb = caseQueryContext.getCriteriaBuilder();
@@ -1955,7 +1955,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 		Predicate userFilter = createUserFilter(caseQueryContext);
 		Predicate criteriaFilter = criteria != null ? createCriteriaFilter(criteria, caseQueryContext) : null;
-		Predicate relevanceStatusRoot2Filter = addRelevanceStatusFilter(criteria, caseQueryContext2);
+		Predicate relevanceStatusRoot2Filter = createRelevanceStatusFilter(criteria, caseQueryContext2);
 		Expression<String> nameSimilarityExpr = cb.concat(person.get(Person.FIRST_NAME), " ");
 		nameSimilarityExpr = cb.concat(nameSimilarityExpr, person.get(Person.LAST_NAME));
 		Expression<String> nameSimilarityExpr2 = cb.concat(person2.get(Person.FIRST_NAME), " ");
@@ -2024,7 +2024,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 			creationDateFilter,
 			cb.notEqual(root.get(Case.ID), root2.get(Case.ID)),
 			cb.lessThanOrEqualTo(root.get(Case.CREATION_DATE), root2.get(Case.CREATION_DATE)),
-			cb.lessThanOrEqualTo(root2.get(Case.CREATION_DATE), criteria.getCreationDateTo()));
+			cb.lessThanOrEqualTo(root2.get(Case.CREATION_DATE), DateHelper.getEndOfDay(criteria.getCreationDateTo())));
 
 		if (CollectionUtils.isNotEmpty(criteria.getCaseUuidsForMerge())) {
 			Set<String> caseUuidsForMerge = criteria.getCaseUuidsForMerge();
