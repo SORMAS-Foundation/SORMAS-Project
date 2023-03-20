@@ -190,28 +190,13 @@ public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetSampleCountsWithNoDiseaseFlag() {
 		EventDto eventWithNoDisease = creator.createEvent(user.toReference());
-		EventParticipantDto eventParticipantWithNoDisease =
-			creator.createEventParticipant(eventWithNoDisease.toReference(), creator.createPerson(), user.toReference());
-		creator.createSample(
-			eventParticipantWithNoDisease.toReference(),
-			new Date(),
-			new Date(),
-			user.toReference(),
-			SampleMaterial.CRUST,
-			rdcf.facility);
-		creator.createSample(
-			eventParticipantWithNoDisease.toReference(),
-			new Date(),
-			new Date(),
-			user.toReference(),
-			SampleMaterial.CRUST,
-			rdcf.facility);
+		EventParticipantDto eventParticipantWithNoDisease = createEventParticipant(eventWithNoDisease);
+		createSample(eventParticipantWithNoDisease, SampleMaterial.CRUST);
+		createSample(eventParticipantWithNoDisease, SampleMaterial.CRUST);
 
 		EventDto eventWithDisease = creator.createEvent(user.toReference(), Disease.CORONAVIRUS);
-		EventParticipantDto eventParticipantWithDisease =
-			creator.createEventParticipant(eventWithDisease.toReference(), creator.createPerson(), user.toReference());
-		creator
-			.createSample(eventParticipantWithDisease.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.CRUST, rdcf.facility);
+		EventParticipantDto eventParticipantWithDisease = createEventParticipant(eventWithDisease);
+		createSample(eventParticipantWithDisease, SampleMaterial.CRUST);
 
 		Map<PathogenTestResultType, Long> counts =
 			getSampleDashboardFacade().getSampleCountsByResultType(new SampleDashboardCriteria().withNoDisease(null));
@@ -229,13 +214,8 @@ public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetSampleCountsByPurpose() {
-		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
-			s.setSamplePurpose(SamplePurpose.INTERNAL);
-		});
-
-		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
-			s.setSamplePurpose(SamplePurpose.EXTERNAL);
-		});
+		createSampleByPurpose(caze, rdcf.facility, SamplePurpose.INTERNAL, null, null, null);
+		createSampleByPurpose(caze, rdcf.facility, SamplePurpose.EXTERNAL, null, null, null);
 
 		Map<SamplePurpose, Long> sampleCounts = getSampleDashboardFacade().getSampleCountsByPurpose(new SampleDashboardCriteria());
 
@@ -245,34 +225,13 @@ public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetSampleCountsBySpecimenCondition() {
-		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
-			s.setSamplePurpose(SamplePurpose.EXTERNAL);
-			s.setReceived(true);
-			s.setSpecimenCondition(SpecimenCondition.ADEQUATE);
-		});
-
-		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
-			s.setSamplePurpose(SamplePurpose.EXTERNAL);
-			s.setReceived(true);
-			s.setSpecimenCondition(SpecimenCondition.NOT_ADEQUATE);
-		});
-
-		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
-			s.setSamplePurpose(SamplePurpose.EXTERNAL);
-			s.setReceived(true);
-		});
+		createSampleByPurpose(caze, rdcf.facility, SamplePurpose.EXTERNAL, SpecimenCondition.ADEQUATE, true, null);
+		createSampleByPurpose(caze, rdcf.facility, SamplePurpose.EXTERNAL, SpecimenCondition.NOT_ADEQUATE, true, null);
+		createSampleByPurpose(caze, rdcf.facility, SamplePurpose.EXTERNAL, null, true, null);
 
 		// not received sample should not be counted
-		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
-			s.setSamplePurpose(SamplePurpose.EXTERNAL);
-			s.setReceived(false);
-			s.setSpecimenCondition(SpecimenCondition.NOT_ADEQUATE);
-		});
-
-		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
-			s.setSamplePurpose(SamplePurpose.INTERNAL);
-			s.setSpecimenCondition(SpecimenCondition.NOT_ADEQUATE);
-		});
+		createSampleByPurpose(caze, rdcf.facility, SamplePurpose.EXTERNAL, SpecimenCondition.NOT_ADEQUATE, false, null);
+		createSampleByPurpose(caze, rdcf.facility, SamplePurpose.INTERNAL, SpecimenCondition.NOT_ADEQUATE, null, null);
 
 		Map<SpecimenCondition, Long> sampleCounts = getSampleDashboardFacade().getSampleCountsBySpecimenCondition(new SampleDashboardCriteria());
 
@@ -286,59 +245,31 @@ public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 		FacilityReferenceDto lab = creator.createFacility("lab", rdcf.region, rdcf.district, null, FacilityType.LABORATORY).toReference();
 
 		// not shipped sample
-		creator.createSample(caze.toReference(), user.toReference(), lab, s -> {
-			s.setSamplePurpose(SamplePurpose.EXTERNAL);
-		});
-		// not shipped sample
-		creator.createSample(caze.toReference(), user.toReference(), lab, s -> {
-			s.setSamplePurpose(SamplePurpose.EXTERNAL);
-			s.setShipped(false);
-			s.setReceived(false);
-		});
+		createSampleByPurpose(caze, lab, SamplePurpose.EXTERNAL, null, null, null);
 
 		// not shipped sample
-		creator.createSample(caze.toReference(), user.toReference(), lab, s -> {
-			s.setSamplePurpose(SamplePurpose.EXTERNAL);
-			s.setShipped(false);
-		});
+		createSampleByPurpose(caze, lab, SamplePurpose.EXTERNAL, null, false, false);
 
 		// not shipped sample
-		creator.createSample(caze.toReference(), user.toReference(), lab, s -> {
-			s.setSamplePurpose(SamplePurpose.EXTERNAL);
-			s.setReceived(false);
-		});
+		createSampleByPurpose(caze, lab, SamplePurpose.EXTERNAL, null, null, false);
+
+		// not shipped sample
+		createSampleByPurpose(caze, lab, SamplePurpose.EXTERNAL, null, false, null);
 
 		// shipped sample
-		creator.createSample(caze.toReference(), user.toReference(), lab, s -> {
-			s.setSamplePurpose(SamplePurpose.EXTERNAL);
-			s.setShipped(true);
-		});
+		createSampleByPurpose(caze, lab, SamplePurpose.EXTERNAL, null, null, true);
 
 		// shipped sample
-		creator.createSample(caze.toReference(), user.toReference(), lab, s -> {
-			s.setSamplePurpose(SamplePurpose.EXTERNAL);
-			s.setShipped(true);
-			s.setReceived(false);
-		});
+		createSampleByPurpose(caze, lab, SamplePurpose.EXTERNAL, null, false, true);
 
 		// received sample
-		creator.createSample(caze.toReference(), user.toReference(), lab, s -> {
-			s.setSamplePurpose(SamplePurpose.EXTERNAL);
-			s.setShipped(true);
-			s.setReceived(true);
-		});
+		createSampleByPurpose(caze, lab, SamplePurpose.EXTERNAL, null, true, true);
 
 		// received sample
-		creator.createSample(caze.toReference(), user.toReference(), lab, s -> {
-			s.setSamplePurpose(SamplePurpose.EXTERNAL);
-			s.setReceived(true);
-		});
+		createSampleByPurpose(caze, lab, SamplePurpose.EXTERNAL, null, true, null);
 
 		// internal sample should not be counted
-		creator.createSample(caze.toReference(), user.toReference(), lab, s -> {
-			s.setSamplePurpose(SamplePurpose.INTERNAL);
-			s.setShipped(true);
-		});
+		createSampleByPurpose(caze, lab, SamplePurpose.INTERNAL, null, null, true);
 
 		Map<SampleShipmentStatus, Long> sampleCounts = getSampleDashboardFacade().getSampleCountsByShipmentStatus(new SampleDashboardCriteria());
 
@@ -383,6 +314,32 @@ public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 		});
 	}
 
+	public SampleDto createSampleByPurpose(
+		CaseDataDto caze,
+		FacilityReferenceDto facility,
+		SamplePurpose samplePurpose,
+		SpecimenCondition specimenCondition,
+		Boolean received,
+		Boolean shipped) {
+
+		return creator.createSample(caze.toReference(), user.toReference(), facility, s -> {
+			s.setSamplePurpose(samplePurpose);
+			if (received != null) {
+				s.setReceived(received);
+			}
+			if (shipped != null) {
+				s.setShipped(shipped);
+			}
+			if (specimenCondition != null) {
+				s.setSpecimenCondition(specimenCondition);
+			}
+		});
+	}
+
+	public SampleDto createSample(EventParticipantDto eventParticipantDto, SampleMaterial sampleMaterial) {
+		return creator.createSample(eventParticipantDto.toReference(), new Date(), new Date(), user.toReference(), sampleMaterial, rdcf.facility);
+	}
+
 	public PathogenTestDto createPathogenTestByResultType(
 		SampleDto sample,
 		Disease disease,
@@ -399,5 +356,9 @@ public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 			"",
 			true,
 			null);
+	}
+
+	public EventParticipantDto createEventParticipant(EventDto event) {
+		return creator.createEventParticipant(event.toReference(), creator.createPerson(), user.toReference());
 	}
 }
