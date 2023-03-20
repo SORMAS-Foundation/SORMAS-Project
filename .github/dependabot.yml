@@ -6,3 +6,94 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+
+  # Maintain dependencies for sormas-api
+  - package-ecosystem: "maven"
+    directory: "/sormas-api/"
+    open-pull-requests-limit: 2
+    schedule:
+      interval: "daily"
+
+  # Maintain maven dependencies for sormas-app
+  - package-ecosystem: "maven"
+    directory: "/sormas-app"
+    open-pull-requests-limit: 2
+    schedule:
+      interval: "daily"
+
+  # Maintain maven dependencies for sormas-backend
+  - package-ecosystem: "maven"
+    directory: "/sormas-backend"
+    open-pull-requests-limit: 2
+    schedule:
+      interval: "daily"
+
+  # Maintain maven dependencies for sormas-base
+  - package-ecosystem: "maven"
+    directory: "/sormas-base"
+    open-pull-requests-limit: 2
+    schedule:
+      interval: "daily"
+
+  # Maintain maven dependencies for sormas-cargoserver
+  - package-ecosystem: "maven"
+    directory: "/sormas-cargoserver"
+    open-pull-requests-limit: 2
+    schedule:
+      interval: "daily"
+
+  # Maintain maven dependencies for sormas-ear
+  - package-ecosystem: "maven"
+    directory: "/sormas-ear"
+    open-pull-requests-limit: 2
+    schedule:
+      interval: "daily"
+
+  # Maintain maven dependencies for sormas-keycloak-service-provider
+  - package-ecosystem: "maven"
+    directory: "/sormas-keycloak-service-provider"
+    open-pull-requests-limit: 2
+    schedule:
+      interval: "daily"
+
+  # Maintain maven dependencies for sormas-rest
+  - package-ecosystem: "maven"
+    directory: "/sormas-rest"
+    open-pull-requests-limit: 2
+    schedule:
+      interval: "daily"
+
+  # Maintain maven dependencies for sormas-serverlibs
+  - package-ecosystem: "maven"
+    directory: "/sormas-serverlibs"
+    open-pull-requests-limit: 2
+    schedule:
+      interval: "daily"
+
+  # Maintain maven dependencies for sormas-ui
+  - package-ecosystem: "maven"
+    directory: "/sormas-ui"
+    open-pull-requests-limit: 2
+    schedule:
+      interval: "daily"
+
+  # Maintain maven dependencies for sormas-widgetset
+  - package-ecosystem: "maven"
+    directory: "/sormas-widgetset"
+    open-pull-requests-limit: 2
+    schedule:
+      interval: "daily"
+
+  # Maintain gradle dependencies for sormas-app
+  - package-ecosystem: "gradle"
+    directory: "/sormas-app"
+    open-pull-requests-limit: 2
+    schedule:
+      interval: "daily"
+
+  # Maintain gradle dependencies for sormas-e2e-tests
+  - package-ecosystem: "gradle"
+    directory: "/sormas-e2e-tests"
+    open-pull-requests-limit: 2
+    schedule:
+      interval: "daily"
