@@ -23,6 +23,7 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CONFIRM;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_RELATED_CONTACTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BACK_TO_CASES_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_NEW_CASE_CHECKBOX;
@@ -1327,6 +1328,13 @@ public class CaseDirectorySteps implements En {
                   getActionAcceptButtonByCaseDescription(generatedRandomString));
               break;
           }
+        });
+
+    When(
+        "I click on Okay button in Potential duplicate popup",
+        () -> {
+          webDriverHelpers.isElementVisibleWithTimeout(POTENTIAL_DUPLICATE_POPUP_DE, 5);
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM);
         });
 
     When(
