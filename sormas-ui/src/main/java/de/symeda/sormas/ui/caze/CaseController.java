@@ -504,7 +504,7 @@ public class CaseController {
 
 		// force the grid to load as it is filtered, so it should not take too long to load
 		viewModelProvider.remove(MergeCasesViewConfiguration.class);
-		viewModelProvider.get(MergeCasesViewConfiguration.class, new MergeCasesViewConfiguration(false));
+		viewModelProvider.get(MergeCasesViewConfiguration.class, new MergeCasesViewConfiguration(true));
 
 		String navigationState = AbstractView.buildNavigationState(MergeCasesView.VIEW_NAME, criteria);
 		SormasUI.get().getNavigator().navigateTo(navigationState);

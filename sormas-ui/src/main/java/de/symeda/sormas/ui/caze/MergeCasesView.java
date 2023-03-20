@@ -96,10 +96,6 @@ public class MergeCasesView extends AbstractView {
 			ValoTheme.BUTTON_PRIMARY);
 
 		addHeaderComponent(btnBack);
-
-		if (!viewConfiguration.isFiltersApplied()) {
-			reloadAndUpdateDuplicateCount();
-		}
 	}
 
 	private void reloadAndUpdateDuplicateCount() {
