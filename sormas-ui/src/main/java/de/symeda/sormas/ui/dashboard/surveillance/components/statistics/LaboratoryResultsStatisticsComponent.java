@@ -55,7 +55,6 @@ public class LaboratoryResultsStatisticsComponent extends DiseaseSectionStatisti
 		}
 	}
 
-	//TODO: refactor this method
 	public void update(Map<PathogenTestResultType, Long> testResults) {
 		if (testResults != null) {
 			Long totalCount = null;
@@ -66,16 +65,13 @@ public class LaboratoryResultsStatisticsComponent extends DiseaseSectionStatisti
 			Long labResultNotDoneCount = showNotDoneCount ? testResults.getOrDefault(PathogenTestResultType.NOT_DONE, 0L) : null;
 
 			updateTotalLabel(((Long) testResults.values().stream().mapToLong(Long::longValue).sum()).toString());
-
 			if (withPercentage) {
 				totalCount = testResults.values().stream().reduce(0L, Long::sum);
-
 				labResultPositive.updateCountLabel(labResultPositiveCount + " (" + calculatePercentage(totalCount, labResultPositiveCount) + " %)");
 				labResultNegative.updateCountLabel(labResultNegativeCount + " (" + calculatePercentage(totalCount, labResultNegativeCount) + " %)");
 				labResultPending.updateCountLabel(labResultPendingCount + " (" + calculatePercentage(totalCount, labResultPendingCount) + " %)");
 				labResultIndeterminate
 					.updateCountLabel(labResultIndeterminateCount + " (" + calculatePercentage(totalCount, labResultIndeterminateCount) + " %)");
-
 				if (labResultNotDoneCount != null) {
 					labResultNotDone.updateCountLabel(labResultNotDoneCount + " (" + calculatePercentage(totalCount, labResultNotDoneCount) + " %)");
 				}
