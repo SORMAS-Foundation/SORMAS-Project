@@ -30,5 +30,4 @@ public final class DashboardCssStyles {
 	public static final String MAP_COMPONENT = "map-component";
 	public static final String MAP_OVERLAY = "map-overlay";
 	public static final String MAP_OVERLAY_BACKGROUND = "map-overlay-background";
-	public static final String VSPACE_TOP = "vspace-top";
 }
