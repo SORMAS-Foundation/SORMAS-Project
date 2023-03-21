@@ -65,10 +65,10 @@ The following properties are required to be set in the `sormas.properties` file:
 | `sormas2sormas.oidc.clientId`                    | The client ID used in authentication of the instance towards the OIDC server.                                                                          |
 | `sormas2sormas.oidc.clientSecret`                | The client secret used in authorization of the instance towards the OIDC server.                                                                       |
 | `sormas2sormas.etcd.keyPrefix`                   | The etcd key space prefix which is used to store s2s related information.                                                                              |
-| `sormas2sormas.ignoreProperty.additionalDetails` | Business logic switch to control if the value is ignored when shared/overwritten trough S2S.                                                           |
-| `sormas2sormas.ignoreProperty.externalId`        | Business logic switch to control if the value is ignored when shared/overwritten trough S2S.                                                           |
-| `sormas2sormas.ignoreProperty.externalToken`     | Business logic switch to control if the value is ignored when shared/overwritten trough S2S.                                                           |
-| `sormas2sormas.ignoreProperty.internalToken`     | Business logic switch to control if the value is ignored when shared/overwritten trough S2S.                                                           |
+| `sormas2sormas.ignoreProperty.additionalDetails` | Controls whether the value in `additionalDetails` field should be sent or not to the other instances. Possible values: true/false(default).            |
+| `sormas2sormas.ignoreProperty.externalId`        | Controls whether the value in `externalId` field should be sent or not to the other instances. Possible values: true/false(default).                   |
+| `sormas2sormas.ignoreProperty.externalToken`     | Controls whether the value in `externalToken` field should be sent or not to the other instances.  Possible values: true/false(default).               |
+| `sormas2sormas.ignoreProperty.internalToken`     | Controls whether the value in `internalToken` field should be sent or not to the other instances.  Possible values: true/false(default).               |
 | `#sormas2sormas.districtExternalId`              | External ID of the district to which the cases/contacts to be assigned when accepting a share request                                                  |
 
 
