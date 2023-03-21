@@ -2721,6 +2721,8 @@ Feature: Case end to end tests
 
     @tmsLink=SORDEV-12095 @env_s2s_1 @testIt
     Scenario: [S2S] Sample and Immunization [1]
+    @tmsLink=SORDEV-12095 @env_s2s_1
+    Scenario: [S2S] Sample and Immunization - Change sample and immunization in target system
       Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
       Then API: I check that POST call body is "OK"
       And API: I check that POST call status code is 200
@@ -2766,3 +2768,63 @@ Feature: Case end to end tests
       Then I click on save button in New Immunization form
       And I click on edit Sample
       Then I check if type of sample is set to "Blut"
+
+  @tmsLink=SORDEV-12095 @env_s2s_1 @testIt
+  Scenario: [S2S] Sample and Immunization - Add sample and immunization in target system
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I open the last created Case via API
+    Then I click on save button in the case popup
+    And I click NEW VACCINATION button for DE
+    And I fill new vaccination data in new Vaccination form for DE
+    And I click SAVE button in new Vaccination form
+    And I open the last created Case via API
+    When I click on New Sample in German
+    And I create a new Sample with positive test result for DE version
+    And I select the German words for Rapid Antigen Detection Test as Type of Test in the Create New Sample popup
+    And I save the created sample with pathogen test
+    And I open the last created Case via API
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I click to hand over the ownership of the case in Share popup
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment in new driver tab
+    And I log in as a Admin User
+    And I click on the Shares button from navbar
+    And I click on "accept" shared case button with copied case description
+    And I click on the Cases button from navbar
+    And I filter by CaseID on Case directory page
+    And I check that number of displayed cases results is 1
+    Then I click on the first Case ID from Case Directory
+
+    When I click on New Sample in German
+    And I create a new Sample with positive test result for DE version
+    And I save the created sample with pathogen test
+    Then I navigate to case tab
+    And I click NEW VACCINATION button for DE
+    And I fill new vaccination data in new Vaccination form for DE
+    And I click SAVE button in new Vaccination form
+    Then I back to tab number 1
+    And I open the last created Case via API
+
+
+#    And I click on edit Sample
+#    Then I set type of sample to "Blut"
+#    And I click on Save Button in Sample Edit page
+#    Then I navigate to case tab
+#    And I click on first vaccination edit button
+#    And I set vaccine manufacturer to "Valneva"
+#    Then I click on save button in New Immunization form
+#    Then I back to tab number 1
+#    And I open the last created Case via API
+#    And I click on first vaccination edit button
+#    Then I check vaccine manufacturer is set to "Valneva"
+#    Then I click on save button in New Immunization form
+#    And I click on edit Sample
+#    Then I check if type of sample is set to "Blut"
