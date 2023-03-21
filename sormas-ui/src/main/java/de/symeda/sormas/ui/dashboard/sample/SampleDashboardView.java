@@ -72,6 +72,7 @@ public class SampleDashboardView extends AbstractDashboardView {
 		SampleDashboardFilterLayout filterLayout = new SampleDashboardFilterLayout(this, dataProvider);
 
 		dashboardLayout.addComponent(filterLayout);
+		dashboardLayout.setExpandRatio(filterLayout, 0);
 
 		heading = new DashboardHeadingComponent(Captions.sampleDashboardAllSamples, null);
 		heading.setMargin(new MarginInfo(true, true, false, true));
@@ -126,6 +127,7 @@ public class SampleDashboardView extends AbstractDashboardView {
 		epiCurveAndMapLayout = createEpiCurveAndMapLayout(epiCurveLayout, mapLayout);
 		epiCurveAndMapLayout.addStyleName(CssStyles.VSPACE_TOP_1);
 		dashboardLayout.addComponent(epiCurveAndMapLayout);
+		dashboardLayout.setExpandRatio(epiCurveAndMapLayout, 1);
 	}
 
 	@Override
@@ -198,20 +200,24 @@ public class SampleDashboardView extends AbstractDashboardView {
 
 		epiCurveComponent.setExpandListener(expanded -> {
 			if (expanded) {
+				dashboardLayout.removeComponent(heading);
 				dashboardLayout.removeComponent(sampleCountsLayout);
 				epiCurveAndMapLayout.removeComponent(mapLayout);
 				setHeight(100, Unit.PERCENTAGE);
 				epiCurveAndMapLayout.setHeight(100, Unit.PERCENTAGE);
 				epiCurveLayout.setSizeFull();
+				dashboardLayout.setHeightFull();
 			} else {
-				dashboardLayout.addComponent(sampleCountsLayout, 1);
+				dashboardLayout.addComponent(heading, 1);
+				dashboardLayout.addComponent(sampleCountsLayout, 2);
 				epiCurveAndMapLayout.addComponent(mapLayout, 1);
 				// TODO Should be uncommented when the map is added on the dashboard
 				//mapComponent.refreshMap();
 
 				epiCurveLayout.setHeight(EPI_CURVE_AND_MAP_HEIGHT, Unit.PIXELS);
-				this.setHeightUndefined();
+				setHeightUndefined();
 				epiCurveAndMapLayout.setHeightUndefined();
+				dashboardLayout.setHeightUndefined();
 			}
 		});
 
