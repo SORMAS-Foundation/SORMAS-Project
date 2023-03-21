@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.PermitAll;
@@ -41,6 +43,9 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.customizableenum.CustomEnumNotFoundException;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageAdapterFacade;
 import de.symeda.sormas.api.externalmessage.ExternalMessageCriteria;
@@ -51,12 +56,15 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageIndexDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageReferenceDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageResult;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
+import de.symeda.sormas.api.externalmessage.ExternalMessageType;
 import de.symeda.sormas.api.externalmessage.NewMessagesState;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
+import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.systemevents.SystemEventDto;
 import de.symeda.sormas.api.systemevents.SystemEventType;
@@ -70,6 +78,7 @@ import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportFacade
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportFacadeEjb;
 import de.symeda.sormas.backend.sample.SampleService;
@@ -122,6 +131,9 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	@EJB
 	private UserService userService;
 
+	@EJB
+	private CustomizableEnumFacadeEjb.CustomizableEnumFacadeEjbLocal customizableEnumFacade;
+
 	ExternalMessage fillOrBuildEntity(@NotNull ExternalMessageDto source, ExternalMessage target, boolean checkChangeDate) {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, ExternalMessage::new, checkChangeDate);
@@ -129,8 +141,36 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setType(source.getType());
 		target.setExternalMessageDetails(source.getExternalMessageDetails());
 		target.setDisease(source.getDisease());
-		target.setDiseaseVariant(source.getDiseaseVariant());
-		target.setDiseaseVariantDetails(source.getDiseaseVariantDetails());
+		// If it is a LabMessage and it has not set a DiseaseVariant, an attempt is made to determine this from the attached TestReports.
+		if (ExternalMessageType.LAB_MESSAGE.equals(source.getType()) && source.getDiseaseVariant() == null && source.getSampleReports() != null) {
+			Set<TestReportDto> testReports = new HashSet<>();
+			source.getSampleReports().stream().map(SampleReportDto::getTestReports).forEach(testReportDtos -> testReports.addAll(testReportDtos));
+			Set<String> positiveTestedDiseaseVariants = new HashSet<>();
+			List<TestReportDto> positiveTestReports = new ArrayList<>();
+			testReports.stream()
+				.filter(
+					testReportDto -> PathogenTestResultType.POSITIVE.equals(testReportDto.getTestResult())
+						&& testReportDto.getTestedDiseaseVariant() != null)
+				.forEach(testReportDto -> {
+					positiveTestedDiseaseVariants.add(testReportDto.getTestedDiseaseVariant());
+					positiveTestReports.add(testReportDto);
+				});
+			if (positiveTestedDiseaseVariants.size() == 1) {
+				DiseaseVariant diseaseVariant = null;
+				try {
+					target.setDiseaseVariant(
+						customizableEnumFacade.getEnumValue(
+							CustomizableEnumType.DISEASE_VARIANT,
+							positiveTestedDiseaseVariants.stream().findFirst().get(),
+							source.getDisease()));
+					target.setDiseaseVariantDetails(positiveTestReports.get(0).getTestedDiseaseVariantDetails());
+				} catch (CustomEnumNotFoundException e) {
+				}
+			}
+		} else {
+			target.setDiseaseVariant(source.getDiseaseVariant());
+			target.setDiseaseVariantDetails(source.getDiseaseVariantDetails());
+		}
 		target.setMessageDateTime(source.getMessageDateTime());
 		target.setPersonBirthDateDD(source.getPersonBirthDateDD());
 		target.setPersonBirthDateMM(source.getPersonBirthDateMM());
