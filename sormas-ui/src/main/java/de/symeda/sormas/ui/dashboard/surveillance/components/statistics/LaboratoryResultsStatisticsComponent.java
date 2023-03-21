@@ -13,8 +13,7 @@ import de.symeda.sormas.ui.dashboard.statistics.CountElementStyle;
 import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsCountElement;
 import de.symeda.sormas.ui.utils.CssStyles;
 
-// TODO: Rename the class to LaboratoryResultsStatisticsComponent
-public class FinalLaboratoryResultsStatisticsComponent extends DiseaseSectionStatisticsComponent {
+public class LaboratoryResultsStatisticsComponent extends DiseaseSectionStatisticsComponent {
 
 	private final DashboardStatisticsCountElement labResultPositive;
 	private final DashboardStatisticsCountElement labResultNegative;
@@ -24,7 +23,7 @@ public class FinalLaboratoryResultsStatisticsComponent extends DiseaseSectionSta
 	private boolean withPercentage;
 	private DashboardStatisticsCountElement labResultNotDone;
 
-	public FinalLaboratoryResultsStatisticsComponent(
+	public LaboratoryResultsStatisticsComponent(
 		String titleCaption,
 		String description,
 		String subtitleCaption,

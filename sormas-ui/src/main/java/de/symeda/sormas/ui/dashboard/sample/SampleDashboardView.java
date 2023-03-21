@@ -30,7 +30,7 @@ import de.symeda.sormas.ui.dashboard.DashboardCssStyles;
 import de.symeda.sormas.ui.dashboard.DashboardType;
 import de.symeda.sormas.ui.dashboard.components.DashboardHeadingComponent;
 import de.symeda.sormas.ui.dashboard.sample.components.SampleCountTilesComponent;
-import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.FinalLaboratoryResultsStatisticsComponent;
+import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.LaboratoryResultsStatisticsComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -54,8 +54,8 @@ public class SampleDashboardView extends AbstractDashboardView {
 	private final VerticalLayout mapLayout;
 
 	private final DashboardHeadingComponent heading;
-	private final FinalLaboratoryResultsStatisticsComponent sampleCountsByResultType;
-    private final FinalLaboratoryResultsStatisticsComponent testCountsByResultType;
+	private final LaboratoryResultsStatisticsComponent sampleCountsByResultType;
+    private final LaboratoryResultsStatisticsComponent testCountsByResultType;
 	private final SampleCountTilesComponent<SamplePurpose> countsByPurpose;
 	private final SampleCountTilesComponent<SpecimenCondition> countsBySpecimenCondition;
 	private final SampleCountTilesComponent<SampleShipmentStatus> countsByShipmentStatus;
@@ -89,7 +89,7 @@ public class SampleDashboardView extends AbstractDashboardView {
 
 		dashboardLayout.addComponent(sampleCountsLayout);
 
-        sampleCountsByResultType = new FinalLaboratoryResultsStatisticsComponent(
+        sampleCountsByResultType = new LaboratoryResultsStatisticsComponent(
                 Captions.sampleDashboardAllSamples,
                 null,
                 Captions.sampleDashboardFinalLabResults,
@@ -126,7 +126,7 @@ public class SampleDashboardView extends AbstractDashboardView {
 		countsBySpecimenCondition.setGroupLabelStyle(CssStyles.LABEL_UPPERCASE);
 		sampleCountsLayout.addComponent(countsBySpecimenCondition, SPECIMEN_CONDITION);
 
-        testCountsByResultType = new FinalLaboratoryResultsStatisticsComponent(Captions.sampleDashboardTestResults, null, null, false, false);
+        testCountsByResultType = new LaboratoryResultsStatisticsComponent(Captions.sampleDashboardTestResults, null, null, false, false);
         testCountsByResultType.setWithPercentage(true);
         testCountsByResultType.setTitleStyleNamesOnTitleLabel(CssStyles.H3, CssStyles.VSPACE_TOP_5);
         testCountsByResultType.setTitleStyleNamesOnTotalLabel(
