@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2023 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -30,7 +30,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import de.symeda.sormas.rest.resources.base.EntityDtoResource;
 import org.apache.http.HttpStatus;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -51,6 +50,7 @@ import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.utils.Experimental;
+import de.symeda.sormas.rest.resources.base.EntityDtoResource;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @Path("/cases")
