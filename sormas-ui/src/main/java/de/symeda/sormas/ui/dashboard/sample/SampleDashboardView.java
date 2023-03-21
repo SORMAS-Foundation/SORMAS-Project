@@ -130,6 +130,7 @@ public class SampleDashboardView extends AbstractDashboardView {
         testCountsByResultType.setWithPercentage(true);
         testCountsByResultType.setTitleStyleNamesOnTitleLabel(CssStyles.H3, CssStyles.VSPACE_TOP_5);
         testCountsByResultType.setTitleStyleNamesOnTotalLabel(
+                CssStyles.LABEL_PRIMARY,
                 CssStyles.LABEL_XXLARGE,
                 CssStyles.LABEL_BOLD,
                 CssStyles.VSPACE_NONE,
