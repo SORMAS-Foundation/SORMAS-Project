@@ -18,6 +18,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -65,6 +66,7 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 	private Consumer<Boolean> ignoreRegionCallback;
 
 	private Label lblNumberOfDuplicates;
+	private ComboBox<EntityRelevanceStatus> relevanceStatusFilter;
 
 	public MergeCasesFilterComponent(CaseCriteria criteria, QueryDetails queryDetails) {
 
@@ -281,6 +283,29 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		thirdRowLayout.addComponent(lblNumberOfDuplicates);
 		thirdRowLayout.setComponentAlignment(lblNumberOfDuplicates, Alignment.MIDDLE_RIGHT);
 		thirdRowLayout.setExpandRatio(lblNumberOfDuplicates, 1);
+
+		relevanceStatusFilter = new ComboBox<>();
+		relevanceStatusFilter.setId(CaseCriteria.ENTITY_RELEVANCE_STATUS);
+		relevanceStatusFilter.setWidth(210, Unit.PIXELS);
+		relevanceStatusFilter.setEnabled(true);
+		relevanceStatusFilter.setEmptySelectionAllowed(false);
+		relevanceStatusFilter.setItems(EntityRelevanceStatus.getAllExceptDeleted());
+		relevanceStatusFilter.setItemCaptionGenerator(item -> {
+			switch (item) {
+			case ACTIVE:
+				return I18nProperties.getCaption(Captions.caseActiveCases);
+			case ARCHIVED:
+				return I18nProperties.getCaption(Captions.caseArchivedCases);
+			case ACTIVE_AND_ARCHIVED:
+				return I18nProperties.getCaption(Captions.caseAllActiveAndArchivedCases);
+			default:
+				return item.toString();
+			}
+		});
+
+		criteriaBinder.bind(relevanceStatusFilter, CaseCriteria.ENTITY_RELEVANCE_STATUS);
+
+		thirdRowLayout.addComponent(relevanceStatusFilter);
 
 		addComponent(thirdRowLayout);
 	}

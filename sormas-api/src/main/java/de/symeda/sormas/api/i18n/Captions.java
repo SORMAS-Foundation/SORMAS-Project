@@ -883,6 +883,7 @@ public interface Captions {
 	String dashboardNotYetClassifiedOnly = "dashboardNotYetClassifiedOnly";
 	String dashboardNumberOfCases = "dashboardNumberOfCases";
 	String dashboardNumberOfContacts = "dashboardNumberOfContacts";
+	String dashboardNumberOfSamples = "dashboardNumberOfSamples";
 	String dashboardOneDay = "dashboardOneDay";
 	String dashboardOutbreak = "dashboardOutbreak";
 	String dashboardPending = "dashboardPending";

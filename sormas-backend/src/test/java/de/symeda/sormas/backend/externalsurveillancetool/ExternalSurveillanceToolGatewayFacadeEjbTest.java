@@ -644,7 +644,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 
 		VisitDto visit = creator.createVisit(caze.getDisease(), caze.getPerson(), caze.getReportDate());
 		visit.getSymptoms().setAnorexiaAppetiteLoss(SymptomState.YES);
-		getVisitFacade().saveVisit(visit);
+		getVisitFacade().save(visit);
 
 		final Date tenYearsPlusAgo = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
 		executeInTransaction(em -> {

@@ -3719,10 +3719,10 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		// 5 Attach otherCase visits to leadCase
 		// (set the person and the disease of the visit, saveVisit does the rest)
-		for (VisitDto otherVisit : otherCase.getVisits().stream().map(VisitFacadeEjb::toDto).collect(Collectors.toList())) {
+		for (VisitDto otherVisit : otherCase.getVisits().stream().map(VisitFacadeEjb::toVisitDto).collect(Collectors.toList())) {
 			otherVisit.setPerson(leadCaseData.getPerson());
 			otherVisit.setDisease(leadCaseData.getDisease());
-			visitFacade.saveVisit(otherVisit);
+			visitFacade.save(otherVisit);
 		}
 
 		// 6 Documents
