@@ -1228,17 +1228,6 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		return t -> seen.add(keyExtractor.apply(t));
 	}
 
-	public Subquery createSubqueryLatestSample(CriteriaQuery cq, CriteriaBuilder cb, Root<EventParticipant> eventParticipant) {
-		final Subquery subquery = cq.subquery(Date.class);
-		final Root<Sample> subRoot = subquery.from(Sample.class);
-
-		subquery.select(cb.max(subRoot.get(Sample.SAMPLE_DATE_TIME)));
-		subquery.where(
-			cb.and(cb.isFalse(subRoot.get(Sample.DELETED))),
-			cb.equal(subRoot.get(Sample.ASSOCIATED_EVENT_PARTICIPANT), eventParticipant.get(AbstractDomainObject.ID)));
-		return subquery;
-	}
-
 	public List<DiseaseVariant> getAssociatedDiseaseVariants(String sampleUuid) {
 		if (DataHelper.isNullOrEmpty(sampleUuid)) {
 			return Collections.emptyList();
