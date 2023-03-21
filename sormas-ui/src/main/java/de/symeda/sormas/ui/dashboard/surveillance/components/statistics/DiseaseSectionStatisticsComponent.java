@@ -35,4 +35,8 @@ public class DiseaseSectionStatisticsComponent extends DashboardStatisticsSubCom
 		}
 		addComponent(countLayout);
 	}
+
+	public DashboardHeadingComponent getHeading() {
+		return heading;
+	}
 }

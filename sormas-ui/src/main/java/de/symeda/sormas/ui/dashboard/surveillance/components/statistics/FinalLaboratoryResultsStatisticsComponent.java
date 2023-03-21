@@ -8,6 +8,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.ui.dashboard.components.DashboardHeadingComponent;
 import de.symeda.sormas.ui.dashboard.statistics.CountElementStyle;
 import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsCountElement;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -29,13 +30,13 @@ public class FinalLaboratoryResultsStatisticsComponent extends DiseaseSectionSta
 		String subtitleCaption,
 		boolean showNotDoneCount,
 		boolean showInfoIcon) {
-		super(titleCaption, description, showInfoIcon == true ? I18nProperties.getString(Strings.infoDashboardFinalLaboratoryResult) : "");
+		super(titleCaption, description, showInfoIcon ? I18nProperties.getString(Strings.infoDashboardFinalLaboratoryResult) : "");
 
 		this.showNotDoneCount = showNotDoneCount;
 
 		if (subtitleCaption != null) {
 			Label subTitleLabel = new Label(I18nProperties.getCaption(subtitleCaption));
-			CssStyles.style(subTitleLabel, CssStyles.H3, CssStyles.VSPACE_TOP_NONE);
+			CssStyles.style(subTitleLabel, CssStyles.H3, CssStyles.VSPACE_TOP_5);
 			addComponent(subTitleLabel);
 		}
 
@@ -65,6 +66,8 @@ public class FinalLaboratoryResultsStatisticsComponent extends DiseaseSectionSta
 			Long labResultIndeterminateCount = testResults.getOrDefault(PathogenTestResultType.INDETERMINATE, 0L);
 			Long labResultNotDoneCount = showNotDoneCount ? testResults.getOrDefault(PathogenTestResultType.NOT_DONE, 0L) : null;
 
+			updateTotalLabel(((Long) testResults.values().stream().mapToLong(Long::longValue).sum()).toString());
+
 			if (withPercentage) {
 				totalCount = testResults.values().stream().reduce(0L, Long::sum);
 
@@ -79,8 +82,6 @@ public class FinalLaboratoryResultsStatisticsComponent extends DiseaseSectionSta
 				}
 
 			} else {
-				updateTotalLabel(((Long) testResults.values().stream().mapToLong(Long::longValue).sum()).toString());
-
 				labResultPositive.updateCountLabel(labResultPositiveCount.toString());
 				labResultNegative.updateCountLabel(labResultNegativeCount.toString());
 				labResultPending.updateCountLabel(labResultPendingCount.toString());
@@ -100,4 +101,19 @@ public class FinalLaboratoryResultsStatisticsComponent extends DiseaseSectionSta
 		this.withPercentage = withPercentage;
 	}
 
+	public void setTitleStyleNamesOnTitleLabel(String... styleNames) {
+		DashboardHeadingComponent dashboardHeadingComponent = this.getHeading();
+		Label titleLabel = dashboardHeadingComponent.getTitleLabel();
+
+		titleLabel.removeStyleNames(dashboardHeadingComponent.getTitleStyleNames());
+		titleLabel.addStyleNames(styleNames);
+	}
+
+	public void setTitleStyleNamesOnTotalLabel(String... styleNames) {
+		DashboardHeadingComponent dashboardHeadingComponent = this.getHeading();
+		Label totalLabel = dashboardHeadingComponent.getTotalLabel();
+
+		totalLabel.removeStyleNames(dashboardHeadingComponent.getTotalLabelStyleNames());
+		totalLabel.addStyleNames(styleNames);
+	}
 }

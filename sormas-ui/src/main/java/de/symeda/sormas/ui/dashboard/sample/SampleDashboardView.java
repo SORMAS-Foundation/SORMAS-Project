@@ -24,7 +24,6 @@ import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
-import de.symeda.sormas.ui.dashboard.DashboardCssStyles;
 import de.symeda.sormas.ui.dashboard.DashboardType;
 import de.symeda.sormas.ui.dashboard.components.DashboardHeadingComponent;
 import de.symeda.sormas.ui.dashboard.sample.components.SampleCountTilesComponent;
@@ -89,7 +88,8 @@ public class SampleDashboardView extends AbstractDashboardView {
 
 		countsByPurpose =
 			new SampleCountTilesComponent<>(SamplePurpose.class, Captions.sampleDashboardSamplePurpose, this::getBackgroundStyleForPurpose, null);
-		countsByPurpose.setTitleStyleNames(CssStyles.H3, CssStyles.VSPACE_TOP_NONE);
+		countsByPurpose.setTitleStyleNames(CssStyles.H3, CssStyles.VSPACE_TOP_5);
+
 		countsByPurpose.setGroupLabelStyle(CssStyles.LABEL_LARGE);
 		sampleCountsLayout.addComponent(countsByPurpose, SAMPLE_PURPOSE);
 
@@ -113,13 +113,15 @@ public class SampleDashboardView extends AbstractDashboardView {
 		countsBySpecimenCondition.setGroupLabelStyle(CssStyles.LABEL_UPPERCASE);
 		sampleCountsLayout.addComponent(countsBySpecimenCondition, SPECIMEN_CONDITION);
 
-		testCountsByResultType = new FinalLaboratoryResultsStatisticsComponent("", null, Captions.sampleDashboardTestResults, false, false);
+		testCountsByResultType = new FinalLaboratoryResultsStatisticsComponent(Captions.sampleDashboardTestResults, null, null, false, false);
 		testCountsByResultType.setWithPercentage(true);
-		//TODO: fix the styling
-		//testCountsByResultType.addStyleName(CssStyles.H4);
-		//testCountsByResultType.addStyleName(CssStyles.LABEL_UPPERCASE);
-
-		testCountsByResultType.addStyleName(DashboardCssStyles.VSPACE_TOP);
+		testCountsByResultType.setTitleStyleNamesOnTitleLabel(CssStyles.H3, CssStyles.VSPACE_TOP_5);
+		testCountsByResultType.setTitleStyleNamesOnTotalLabel(
+			CssStyles.LABEL_XXLARGE,
+			CssStyles.LABEL_BOLD,
+			CssStyles.VSPACE_NONE,
+			CssStyles.HSPACE_RIGHT_5,
+			CssStyles.VSPACE_TOP_NONE);
 		sampleCountsLayout.addComponent(testCountsByResultType, TEST_RESULTS);
 	}
 
