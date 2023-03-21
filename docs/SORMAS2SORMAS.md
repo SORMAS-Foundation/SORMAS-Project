@@ -18,7 +18,7 @@ We do not enforce a certain scheme, but it is strongly encouraged to use a meani
 #### Server Descriptors
 
 A server descriptor is a struct which contains the information needed to connect to a SORMAS instance (see the
-`SormasServerDescriptor` class). It consists of the S2S id, a human-readable name used in the UI, and the hostname.
+`SormasServerDescriptor` class). It consists of the S2S ID, a human-readable name used in the UI, and the hostname.
 Descriptors centrally distributed via a dedicated `etcd` keyspace (e.g., `/s2s/`).
 
 ```json
@@ -33,7 +33,7 @@ Descriptors centrally distributed via a dedicated `etcd` keyspace (e.g., `/s2s/`
 
 Each instance receives a dedicated x509 certificate and private key pair which is used to encrypt all S2S communication.
 The certificate is signed by a common S2S CA. The certificate and private key are stored in a `pkcs12` keystore under the
-S2S id of the instance. See [here](https://github.com/hzi-braunschweig/S2S-Testbed/blob/main/docker/certs/sormas_a/generate-cert-a.sh)
+S2S ID of the instance. See [here](https://github.com/hzi-braunschweig/S2S-Testbed/blob/main/docker/certs/sormas_a/generate-cert-a.sh)
 for an example of how to generate a keystore.
 
 #### Truststore
@@ -69,7 +69,7 @@ The following properties are required to be set in the `sormas.properties` file:
 | `sormas2sormas.ignoreProperty.externalId`        | Business logic switch to control if the value is ignored when shared/overwritten trough S2S.                                                           |
 | `sormas2sormas.ignoreProperty.externalToken`     | Business logic switch to control if the value is ignored when shared/overwritten trough S2S.                                                           |
 | `sormas2sormas.ignoreProperty.internalToken`     | Business logic switch to control if the value is ignored when shared/overwritten trough S2S.                                                           |
-| `#sormas2sormas.districtExternalId`              | External id of the district to which the cases/contacts to be assigned when accepting a share request                                                  |
+| `#sormas2sormas.districtExternalId`              | External ID of the district to which the cases/contacts to be assigned when accepting a share request                                                  |
 
 
 ### Keycloak
@@ -89,7 +89,7 @@ use the OIDC client credentials.
 
 For each client, a similar client scope is created. Each S2S instance `A` which should be able to send data to another
 instance `B` must be assigned the client scope of instance `B`. This way, instance `A` is allowed to send data to instance `B`.
-The client scope _must_ be prefixed with `s2s-` and _must_ contain the S2S id of the instance it is assigned to (e.g.,
+The client scope _must_ be prefixed with `s2s-` and _must_ contain the S2S ID of the instance it is assigned to (e.g.,
 `s2s-2.sormas.id.sormas_b`).
 
 
