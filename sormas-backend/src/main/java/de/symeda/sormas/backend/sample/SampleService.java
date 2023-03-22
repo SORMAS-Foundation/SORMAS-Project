@@ -619,7 +619,10 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 			return filter;
 		}
 
-		if (criteria != null && criteria.getSampleAssociationType() != null && criteria.getSampleAssociationType() != SampleAssociationType.ALL) {
+		if (criteria != null
+			&& criteria.getSampleAssociationType() != null
+			&& criteria.getSampleAssociationType() != SampleAssociationType.ALL
+			&& criteria.getSampleAssociationType() != SampleAssociationType.PERSON) {
 			final SampleAssociationType sampleAssociationType = criteria.getSampleAssociationType();
 			if (sampleAssociationType == SampleAssociationType.CASE) {
 				filter = CriteriaBuilderHelper.or(cb, filter, caseService.createUserFilter(new CaseQueryContext(cb, cq, joins.getCaseJoins()), null));
