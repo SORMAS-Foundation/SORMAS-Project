@@ -32,6 +32,8 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -143,6 +145,25 @@ public class SampleDashboardService {
 
 	private SampleShipmentStatus getSampleShipmentStatusByFlags(Boolean shipped, Boolean received) {
 		return shipmentStatusMapping.get(Pair.of(Boolean.TRUE.equals(shipped), Boolean.TRUE.equals(received)));
+	}
+
+	public Map<PathogenTestResultType, Long> getTestResultCountsByResultType(SampleDashboardCriteria dashboardCriteria) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Tuple> cq = cb.createTupleQuery();
+		final Root<Sample> sample = cq.from(Sample.class);
+		Join<Sample, PathogenTest> pathogenTestJoin = sample.join(Sample.PATHOGENTESTS, JoinType.LEFT);
+		final Path<Object> pathogenTestResult = pathogenTestJoin.get(PathogenTest.TEST_RESULT);
+
+		cq.multiselect(pathogenTestResult, cb.count(pathogenTestJoin));
+
+		final Predicate criteriaFilter = createSampleFilter(new SampleQueryContext(cb, cq, sample), dashboardCriteria);
+		cq.where(criteriaFilter);
+
+		cq.groupBy(pathogenTestResult);
+
+		return QueryHelper.getResultList(em, cq, null, null, Function.identity())
+			.stream()
+			.collect(Collectors.toMap(t -> (PathogenTestResultType) t.get(0), t -> (Long) t.get(1)));
 	}
 
 	private <T extends AbstractDomainObject> Predicate createSampleFilter(SampleQueryContext queryContext, SampleDashboardCriteria criteria) {
