@@ -24,13 +24,18 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.customizableenum.CustomEnumNotFoundException;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageCriteria;
@@ -38,11 +43,13 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageIndexDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.customizableenum.CustomizableEnumValue;
 
 public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 
@@ -251,7 +258,41 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 
 	}
 
-//	This test currently does not work because the bean tests used don't support @TransactionAttribute tags.
+	@Test
+	public void testDiseaseVariantDeterminationOnSave() {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createNationalUser();
+
+		CustomizableEnumValue entry = new CustomizableEnumValue();
+		entry.setDataType(CustomizableEnumType.DISEASE_VARIANT);
+		entry.setValue("BF.1.2");
+		entry.setDiseases(Arrays.asList(Disease.CORONAVIRUS));
+		entry.setCaption("BF.1.2 variant");
+		getCustomizableEnumValueService().ensurePersisted(entry);
+		DiseaseVariant diseaseVariant = null;
+		try {
+			diseaseVariant = getCustomizableEnumFacade().getEnumValue(CustomizableEnumType.DISEASE_VARIANT, "BF.1.2", Disease.CORONAVIRUS);
+		} catch (CustomEnumNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+		SampleDto labMessageSample = creator.createSample(
+			creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf).toReference(),
+			user.toReference(),
+			rdcf.facility);
+		ExternalMessageDto labMessage = creator.createLabMessageWithTestReport(labMessageSample.toReference());
+		labMessage.setDisease(Disease.CORONAVIRUS);
+		labMessage = getExternalMessageFacade().save(labMessage);
+		labMessage.getSampleReports().stream().flatMap(sampleReportDto -> sampleReportDto.getTestReports().stream()).forEach(testReportDto -> {
+			testReportDto.setTestedDiseaseVariant("BF.1.2");
+			testReportDto.setTestResult(PathogenTestResultType.POSITIVE);
+			getTestReportFacade().saveTestReport(testReportDto);
+		});
+		getExternalMessageFacade().save(labMessage);
+
+		assertEquals(diseaseVariant, labMessage.getDiseaseVariant());
+	}
+
+	//	This test currently does not work because the bean tests used don't support @TransactionAttribute tags.
 //	This test should be enabled once there is a new test framework in use.
 //	@Test
 //	public void testSaveWithFallback() {

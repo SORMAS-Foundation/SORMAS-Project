@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -235,7 +236,9 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 					try {
 						externalMessage.setDiseaseVariant(
 							customizableEnumFacade.getEnumValue(CustomizableEnumType.DISEASE_VARIANT, diseaseVariant, externalMessage.getDisease()));
-						externalMessage.setDiseaseVariantDetails(diseaseVariantDetails.stream().findFirst().get());
+						if (diseaseVariantDetails.stream().allMatch(Objects::nonNull)) {
+							externalMessage.setDiseaseVariantDetails(diseaseVariantDetails.stream().findFirst().get());
+						}
 					} catch (CustomEnumNotFoundException e) {
 						throw new RuntimeException("Could not find DiseaseVariant " + diseaseVariant, e);
 					}
