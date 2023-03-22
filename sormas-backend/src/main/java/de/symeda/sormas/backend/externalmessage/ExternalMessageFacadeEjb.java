@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -216,47 +215,31 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		// If it is a LabMessage and it has not set a DiseaseVariant, an attempt is made to determine this from the attached TestReports.
 		if (ExternalMessageType.LAB_MESSAGE.equals(externalMessage.getType())
 			&& externalMessage.getDiseaseVariant() == null
-			&& externalMessage.getSampleReports() != null) {
-			Set<TestReport> testReports = externalMessage.getSampleReports()
+			&& CollectionUtils.isNotEmpty(externalMessage.getSampleReports())) {
+			Set<TestReport> positiveTestReportsWithDiseaseVariant = externalMessage.getSampleReports()
 				.stream()
 				.flatMap(sampleReport -> sampleReport.getTestReports().stream())
-				.collect(Collectors.toSet());
-			Set<String> positiveTestedDiseaseVariants = new HashSet<>();
-			List<TestReport> positiveTestReports = new ArrayList<>();
-			testReports.stream()
 				.filter(
 					testReportDto -> PathogenTestResultType.POSITIVE.equals(testReportDto.getTestResult())
 						&& testReportDto.getTestedDiseaseVariant() != null)
-				.forEach(testReport -> {
-					positiveTestedDiseaseVariants.add(testReport.getTestedDiseaseVariant());
-					positiveTestReports.add(testReport);
-				});
-			if (positiveTestedDiseaseVariants.size() == 1) {
-				testReports = testReports.stream()
-					.filter(
-						testReportDto -> PathogenTestResultType.POSITIVE.equals(testReportDto.getTestResult())
-							&& testReportDto.getTestedDiseaseVariant().equals(positiveTestedDiseaseVariants.stream().findFirst().get()))
-					.collect(Collectors.toSet());
-				Set<TestReport> finalTestReports = testReports;
-				if (testReports.size() == 1
-					|| testReports.stream().allMatch(testReport -> testReport.getTestedDiseaseVariantDetails() == null)
-					|| (testReports.stream().allMatch(testReport -> testReport.getTestedDiseaseVariantDetails() != null)
-						&& testReports.stream()
-							.allMatch(
-								testReport -> finalTestReports.stream()
-									.findFirst()
-									.get()
-									.getTestedDiseaseVariantDetails()
-									.equals(testReport.getTestedDiseaseVariantDetails()))))
+				.collect(Collectors.toSet());
+			Set<String> diseaseVariants =
+				positiveTestReportsWithDiseaseVariant.stream().map(TestReport::getTestedDiseaseVariant).collect(Collectors.toSet());
+			// If we can't determine exactly one DiseaseVariant then we don't need to continue because we can only set one "main" DiseaseVariant
+			if (diseaseVariants.size() == 1) {
+				Set<String> diseaseVariantDetails =
+					positiveTestReportsWithDiseaseVariant.stream().map(TestReport::getTestedDiseaseVariantDetails).collect(Collectors.toSet());
+				// If we can't determine exact disease variant details then we don't need to continue because we can only set one "main" disease variant details
+				if (diseaseVariantDetails.size() == 1) {
+					String diseaseVariant = diseaseVariants.stream().findFirst().get();
 					try {
 						externalMessage.setDiseaseVariant(
-							customizableEnumFacade.getEnumValue(
-								CustomizableEnumType.DISEASE_VARIANT,
-								positiveTestedDiseaseVariants.stream().findFirst().get(),
-								externalMessage.getDisease()));
-						externalMessage.setDiseaseVariantDetails(positiveTestReports.get(0).getTestedDiseaseVariantDetails());
+							customizableEnumFacade.getEnumValue(CustomizableEnumType.DISEASE_VARIANT, diseaseVariant, externalMessage.getDisease()));
+						externalMessage.setDiseaseVariantDetails(diseaseVariantDetails.stream().findFirst().get());
 					} catch (CustomEnumNotFoundException e) {
+						throw new RuntimeException("Could not find DiseaseVariant " + diseaseVariant, e);
 					}
+				}
 			}
 		}
 
