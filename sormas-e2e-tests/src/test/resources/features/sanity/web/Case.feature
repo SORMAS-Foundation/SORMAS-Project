@@ -2648,3 +2648,30 @@ Feature: Case end to end tests
     Then I click on Merge button for source system from received case
     And I confirm merge duplicated case
     Then I check if popup with error message appears
+
+  @tmsLink=SORDEV-12449 @env_s2s_1
+  Scenario: S2S_added sample after sharing a case/contact does not get shared [1]
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    Then I create a new case with specific person name and "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district for DE version
+    And I click on save button in the case popup
+    And I click on New Sample in German
+    And I create a new Sample with only required fields for DE version
+    And I click on save sample button
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I click to hand over the ownership of the case in Share popup
+    And I click to share samples of the case in Share popup
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    And I click on New Sample in German
+    And I create a new Sample with only required fields for DE version
+    And I click on save sample button
+    Then I navigate to "s2s_2" environment in new driver tab
+    And I log in as a Admin User
+    And I click on the Shares button from navbar
+    Then I accept first case in Shares Page
+    And I click on the The Eye Icon located in the Shares Page
+    And I click on the shortened case/contact ID to open the case
+    Then I check that the number of added samples on the Edit case page is 2
