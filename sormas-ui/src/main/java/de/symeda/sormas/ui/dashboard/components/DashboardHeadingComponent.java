@@ -27,28 +27,36 @@ import de.symeda.sormas.ui.utils.CssStyles;
 
 public class DashboardHeadingComponent extends HorizontalLayout {
 
-	private final Label totalLabel;
+	private Label totalLabel;
+	private Label titleLabel;
+	private Label infoIcon;
+
+	private String[] titleStyleNames = new String[] {
+		"heading-title-label",
+		CssStyles.H2,
+		CssStyles.HSPACE_LEFT_4 };
+
+	private String[] totalLabelStyleNames = new String[] {
+		CssStyles.LABEL_PRIMARY,
+		CssStyles.LABEL_XXXLARGE,
+		CssStyles.LABEL_BOLD,
+		CssStyles.VSPACE_3,
+		CssStyles.VSPACE_TOP_NONE };
 
 	public DashboardHeadingComponent(String titleCaption, String infoIconText) {
 		setSpacing(false);
 
 		// count
 		totalLabel = new Label();
-		CssStyles.style(
-			totalLabel,
-			CssStyles.LABEL_PRIMARY,
-			CssStyles.LABEL_XXXLARGE,
-			CssStyles.LABEL_BOLD,
-			CssStyles.VSPACE_4,
-			CssStyles.VSPACE_TOP_NONE);
+		totalLabel.addStyleNames(totalLabelStyleNames);
 		addComponent(totalLabel);
 		// title
-		Label titleLabel = new Label(I18nProperties.getCaption(titleCaption));
-		CssStyles.style(titleLabel, "heading-title-label", CssStyles.H2, CssStyles.HSPACE_LEFT_4);
+		titleLabel = new Label(I18nProperties.getCaption(titleCaption));
+		titleLabel.addStyleNames(titleStyleNames);
 		addComponent(titleLabel);
 
 		if (StringUtils.isNotBlank(infoIconText)) {
-			Label infoIcon = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+			infoIcon = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
 			CssStyles.style(infoIcon, CssStyles.LABEL_LARGE, CssStyles.LABEL_SECONDARY, "statistics-info-label", CssStyles.HSPACE_LEFT_4);
 			infoIcon.setDescription(infoIconText, ContentMode.HTML);
 			addComponent(infoIcon);
@@ -61,5 +69,25 @@ public class DashboardHeadingComponent extends HorizontalLayout {
 
 	public void setTotalLabelDescription(String description) {
 		totalLabel.setDescription(I18nProperties.getDescription(description));
+	}
+
+	public Label getTitleLabel() {
+		return titleLabel;
+	}
+
+	public Label getTotalLabel() {
+		return totalLabel;
+	}
+
+	public void setTitleStyleNames(String[] titleStyleNames) {
+		this.titleStyleNames = titleStyleNames;
+	}
+
+	public String[] getTitleStyleNames() {
+		return titleStyleNames;
+	}
+
+	public String[] getTotalLabelStyleNames() {
+		return totalLabelStyleNames;
 	}
 }
