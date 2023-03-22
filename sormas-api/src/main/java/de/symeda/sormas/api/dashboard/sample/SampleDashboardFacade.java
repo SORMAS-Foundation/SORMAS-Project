@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.api.dashboard.sample;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.ejb.Remote;
@@ -34,4 +35,8 @@ public interface SampleDashboardFacade {
 	Map<SpecimenCondition, Long> getSampleCountsBySpecimenCondition(SampleDashboardCriteria dashboardCriteria);
 
 	Map<SampleShipmentStatus, Long> getSampleCountsByShipmentStatus(SampleDashboardCriteria dashboardCriteria);
+
+	Long countSamplesForMap(SampleDashboardCriteria criteria);
+
+	List<SampleMapDto> getSamplesForMap(SampleDashboardCriteria criteria);
 }

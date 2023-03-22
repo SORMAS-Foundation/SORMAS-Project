@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.dashboard.sample;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.ejb.EJB;
@@ -23,6 +24,7 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
 import de.symeda.sormas.api.dashboard.sample.SampleDashboardFacade;
+import de.symeda.sormas.api.dashboard.sample.SampleMapDto;
 import de.symeda.sormas.api.dashboard.sample.SampleShipmentStatus;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SamplePurpose;
@@ -55,6 +57,16 @@ public class SampleDashboardFacadeEjb implements SampleDashboardFacade {
 	@Override
 	public Map<SampleShipmentStatus, Long> getSampleCountsByShipmentStatus(SampleDashboardCriteria dashboardCriteria) {
 		return sampleDashboardService.getSampleCountsByShipmentStatus(dashboardCriteria);
+	}
+
+	@Override
+	public Long countSamplesForMap(SampleDashboardCriteria criteria) {
+		return sampleDashboardService.countSamplesForMap(criteria);
+	}
+
+	@Override
+	public List<SampleMapDto> getSamplesForMap(SampleDashboardCriteria criteria) {
+		return sampleDashboardService.getSamplesForMap(criteria);
 	}
 
 	@LocalBean

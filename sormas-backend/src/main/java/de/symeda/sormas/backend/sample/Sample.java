@@ -82,6 +82,8 @@ public class Sample extends DeletableAdo implements SormasToSormasShareable {
 	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
+	public static final String REPORT_LAT = "reportLat";
+	public static final String REPORT_LON = "reportLon";
 	public static final String SAMPLE_MATERIAL = "sampleMaterial";
 	public static final String SAMPLE_PURPOSE = "samplePurpose";
 	public static final String SAMPLE_MATERIAL_TEXT = "sampleMaterialText";

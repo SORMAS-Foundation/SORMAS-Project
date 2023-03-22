@@ -677,6 +677,7 @@ public interface Strings {
 	String headingResults = "headingResults";
 	String headingRevokeSormasToSormasShareRequest = "headingRevokeSormasToSormasShareRequest";
 	String headingSampleDashboardEpiCurve = "headingSampleDashboardEpiCurve";
+	String headingSampleDashboardMap = "headingSampleDashboardMap";
 	String headingSamplesDeleted = "headingSamplesDeleted";
 	String headingSaveNotification = "headingSaveNotification";
 	String headingSaveUser = "headingSaveUser";

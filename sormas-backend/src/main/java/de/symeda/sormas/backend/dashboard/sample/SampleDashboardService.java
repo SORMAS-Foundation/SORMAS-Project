@@ -17,6 +17,7 @@ package de.symeda.sormas.backend.dashboard.sample;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -40,6 +41,7 @@ import javax.persistence.criteria.Subquery;
 import org.apache.commons.lang3.tuple.Pair;
 
 import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
+import de.symeda.sormas.api.dashboard.sample.SampleMapDto;
 import de.symeda.sormas.api.dashboard.sample.SampleShipmentStatus;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleAssociationType;
@@ -53,6 +55,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.sample.PathogenTest;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
@@ -143,6 +146,42 @@ public class SampleDashboardService {
 
 	private SampleShipmentStatus getSampleShipmentStatusByFlags(Boolean shipped, Boolean received) {
 		return shipmentStatusMapping.get(Pair.of(Boolean.TRUE.equals(shipped), Boolean.TRUE.equals(received)));
+	}
+
+	public Long countSamplesForMap(SampleDashboardCriteria criteria) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		final Root<Sample> sample = cq.from(Sample.class);
+		SampleJoins joins = new SampleJoins(sample);
+
+		cq.select(cb.count(sample));
+
+		final Predicate criteriaFilter = createSampleFilter(new SampleQueryContext(cb, cq, sample), criteria);
+		final Predicate latLonProvided = CriteriaBuilderHelper.or(
+			cb,
+			addressCoordinatesNotNull(cb, joins.getCaseJoins().getPersonJoins().getAddress()),
+			addressCoordinatesNotNull(cb, joins.getContactJoins().getPersonJoins().getAddress()),
+			addressCoordinatesNotNull(cb, joins.getEventParticipantJoins().getPersonJoins().getAddress()),
+			gpsCoordinatesNotNull(cb, joins.getCaze(), Case.REPORT_LON, Case.REPORT_LAT),
+			gpsCoordinatesNotNull(cb, joins.getContact(), Contact.REPORT_LON, Contact.REPORT_LAT),
+			gpsCoordinatesNotNull(cb, joins.getEventParticipantJoins().getEvent(), Contact.REPORT_LON, Contact.REPORT_LAT),
+			gpsCoordinatesNotNull(cb, sample, Sample.REPORT_LON, Sample.REPORT_LAT));
+
+		cq.where(CriteriaBuilderHelper.and(cb, criteriaFilter, latLonProvided));
+
+		return QueryHelper.getSingleResult(em, cq);
+	}
+
+	private Predicate addressCoordinatesNotNull(CriteriaBuilder cb, Path<Location> addressPath) {
+		return gpsCoordinatesNotNull(cb, addressPath, Location.LONGITUDE, Location.LATITUDE);
+	}
+
+	private Predicate gpsCoordinatesNotNull(CriteriaBuilder cb, Path<?> path, String longitudeProperty, String latitudeProperty) {
+		return CriteriaBuilderHelper.and(cb, cb.isNotNull(path.get(longitudeProperty)), cb.isNotNull(path.get(latitudeProperty)));
+	}
+
+	public List<SampleMapDto> getSamplesForMap(SampleDashboardCriteria criteria) {
+		return null;
 	}
 
 	private <T extends AbstractDomainObject> Predicate createSampleFilter(SampleQueryContext queryContext, SampleDashboardCriteria criteria) {

@@ -16,6 +16,7 @@
 package de.symeda.sormas.ui.dashboard.sample;
 
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
@@ -30,6 +31,7 @@ import de.symeda.sormas.ui.dashboard.DashboardCssStyles;
 import de.symeda.sormas.ui.dashboard.DashboardType;
 import de.symeda.sormas.ui.dashboard.components.DashboardHeadingComponent;
 import de.symeda.sormas.ui.dashboard.sample.components.SampleCountTilesComponent;
+import de.symeda.sormas.ui.dashboard.sample.components.SampleDashboardMapComponent;
 import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.FinalLaboratoryResultsStatisticsComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -59,6 +61,7 @@ public class SampleDashboardView extends AbstractDashboardView {
 	private final SampleCountTilesComponent<SpecimenCondition> countsBySpecimenCondition;
 	private final SampleCountTilesComponent<SampleShipmentStatus> countsByShipmentStatus;
 	private final SampleEpiCurveComponent epiCurveComponent;
+	private final SampleDashboardMapComponent mapComponent;
 
 	public SampleDashboardView() {
 		super(VIEW_NAME);
@@ -122,7 +125,8 @@ public class SampleDashboardView extends AbstractDashboardView {
 		epiCurveComponent = new SampleEpiCurveComponent(dataProvider);
 		epiCurveLayout = createEpiCurveLayout();
 
-		mapLayout = createMapLayout();
+		mapComponent = new SampleDashboardMapComponent(dataProvider);
+		mapLayout = createMapLayout(mapComponent);
 
 		epiCurveAndMapLayout = createEpiCurveAndMapLayout(epiCurveLayout, mapLayout);
 		epiCurveAndMapLayout.addStyleName(CssStyles.VSPACE_TOP_1);
@@ -199,32 +203,51 @@ public class SampleDashboardView extends AbstractDashboardView {
 		layout.setExpandRatio(epiCurveComponent, 1);
 
 		epiCurveComponent.setExpandListener(expanded -> {
-			if (expanded) {
-				dashboardLayout.removeComponent(heading);
-				dashboardLayout.removeComponent(sampleCountsLayout);
-				epiCurveAndMapLayout.removeComponent(mapLayout);
-				setHeight(100, Unit.PERCENTAGE);
-				epiCurveAndMapLayout.setHeight(100, Unit.PERCENTAGE);
-				epiCurveLayout.setSizeFull();
-				dashboardLayout.setHeightFull();
-			} else {
-				dashboardLayout.addComponent(heading, 1);
-				dashboardLayout.addComponent(sampleCountsLayout, 2);
-				epiCurveAndMapLayout.addComponent(mapLayout, 1);
-				// TODO Should be uncommented when the map is added on the dashboard
-				//mapComponent.refreshMap();
-
-				epiCurveLayout.setHeight(EPI_CURVE_AND_MAP_HEIGHT, Unit.PIXELS);
-				setHeightUndefined();
-				epiCurveAndMapLayout.setHeightUndefined();
-				dashboardLayout.setHeightUndefined();
-			}
+			setExpanded(expanded, layout, mapLayout, 1);
 		});
 
 		return layout;
 	}
 
-	private VerticalLayout createMapLayout() {
-		return new VerticalLayout();
+	private VerticalLayout createMapLayout(SampleDashboardMapComponent mapComponent) {
+		VerticalLayout layout = new VerticalLayout();
+		layout.setMargin(false);
+		layout.setSpacing(false);
+		layout.setHeight(EPI_CURVE_AND_MAP_HEIGHT, Unit.PIXELS);
+
+		mapComponent.setSizeFull();
+
+		layout.addComponent(mapComponent);
+		layout.setExpandRatio(mapComponent, 1);
+
+		mapComponent.setExpandListener(expanded -> {
+			setExpanded(expanded, layout, epiCurveLayout, 0);
+		});
+
+		return layout;
+	}
+
+	private void setExpanded(Boolean expanded, Component componentToExpand, Component componentToRemove, int removedComponentIndex) {
+		if (expanded) {
+			dashboardLayout.removeComponent(heading);
+			dashboardLayout.removeComponent(sampleCountsLayout);
+			epiCurveAndMapLayout.removeComponent(componentToRemove);
+			setHeight(100, Unit.PERCENTAGE);
+
+			epiCurveAndMapLayout.setHeightFull();
+			setHeightFull();
+			componentToExpand.setSizeFull();
+			dashboardLayout.setHeightFull();
+		} else {
+			dashboardLayout.addComponent(heading, 1);
+			dashboardLayout.addComponent(sampleCountsLayout, 2);
+			epiCurveAndMapLayout.addComponent(componentToRemove, removedComponentIndex);
+			mapComponent.refreshMap();
+
+			componentToExpand.setHeight(EPI_CURVE_AND_MAP_HEIGHT, Unit.PIXELS);
+			setHeightUndefined();
+			epiCurveAndMapLayout.setHeightUndefined();
+			dashboardLayout.setHeightUndefined();
+		}
 	}
 }

@@ -42,23 +42,16 @@ public class SampleDashboardDataProvider extends AbstractDashboardDataProvider<S
 
 	@Override
 	public void refreshData() {
-		sampleCountsByResultType =
-			FacadeProvider.getSampleDashboardFacade().getSampleCountsByResultType(buildDashboardCriteriaWithDates());
+		sampleCountsByResultType = FacadeProvider.getSampleDashboardFacade().getSampleCountsByResultType(buildDashboardCriteriaWithDates());
 		sampleCountsByPurpose = FacadeProvider.getSampleDashboardFacade().getSampleCountsByPurpose(buildDashboardCriteriaWithDates());
 		sampleCountsBySpecimenCondition =
 			FacadeProvider.getSampleDashboardFacade().getSampleCountsBySpecimenCondition(buildDashboardCriteriaWithDates());
-		sampleCountsByShipmentStatus =
-			FacadeProvider.getSampleDashboardFacade().getSampleCountsByShipmentStatus(buildDashboardCriteriaWithDates());
+		sampleCountsByShipmentStatus = FacadeProvider.getSampleDashboardFacade().getSampleCountsByShipmentStatus(buildDashboardCriteriaWithDates());
 	}
 
 	@Override
 	protected SampleDashboardCriteria newCriteria() {
 		return new SampleDashboardCriteria();
-	}
-
-	@Override
-	protected SampleDashboardCriteria buildDashboardCriteriaWithDates() {
-		return super.buildDashboardCriteriaWithDates();
 	}
 
 	@Override
