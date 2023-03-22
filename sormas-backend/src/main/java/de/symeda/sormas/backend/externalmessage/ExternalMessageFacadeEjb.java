@@ -45,7 +45,6 @@ import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.customizableenum.CustomEnumNotFoundException;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
-import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageAdapterFacade;
 import de.symeda.sormas.api.externalmessage.ExternalMessageCriteria;
@@ -59,7 +58,6 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageType;
 import de.symeda.sormas.api.externalmessage.NewMessagesState;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
-import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -81,6 +79,7 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportFacadeEjb;
+import de.symeda.sormas.backend.externalmessage.labmessage.TestReport;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
 import de.symeda.sormas.backend.user.User;
@@ -141,36 +140,8 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setType(source.getType());
 		target.setExternalMessageDetails(source.getExternalMessageDetails());
 		target.setDisease(source.getDisease());
-		// If it is a LabMessage and it has not set a DiseaseVariant, an attempt is made to determine this from the attached TestReports.
-		if (ExternalMessageType.LAB_MESSAGE.equals(source.getType()) && source.getDiseaseVariant() == null && source.getSampleReports() != null) {
-			Set<TestReportDto> testReports = new HashSet<>();
-			source.getSampleReports().stream().map(SampleReportDto::getTestReports).forEach(testReportDtos -> testReports.addAll(testReportDtos));
-			Set<String> positiveTestedDiseaseVariants = new HashSet<>();
-			List<TestReportDto> positiveTestReports = new ArrayList<>();
-			testReports.stream()
-				.filter(
-					testReportDto -> PathogenTestResultType.POSITIVE.equals(testReportDto.getTestResult())
-						&& testReportDto.getTestedDiseaseVariant() != null)
-				.forEach(testReportDto -> {
-					positiveTestedDiseaseVariants.add(testReportDto.getTestedDiseaseVariant());
-					positiveTestReports.add(testReportDto);
-				});
-			if (positiveTestedDiseaseVariants.size() == 1) {
-				DiseaseVariant diseaseVariant = null;
-				try {
-					target.setDiseaseVariant(
-						customizableEnumFacade.getEnumValue(
-							CustomizableEnumType.DISEASE_VARIANT,
-							positiveTestedDiseaseVariants.stream().findFirst().get(),
-							source.getDisease()));
-					target.setDiseaseVariantDetails(positiveTestReports.get(0).getTestedDiseaseVariantDetails());
-				} catch (CustomEnumNotFoundException e) {
-				}
-			}
-		} else {
-			target.setDiseaseVariant(source.getDiseaseVariant());
-			target.setDiseaseVariantDetails(source.getDiseaseVariantDetails());
-		}
+		target.setDiseaseVariant(source.getDiseaseVariant());
+		target.setDiseaseVariantDetails(source.getDiseaseVariantDetails());
 		target.setMessageDateTime(source.getMessageDateTime());
 		target.setPersonBirthDateDD(source.getPersonBirthDateDD());
 		target.setPersonBirthDateMM(source.getPersonBirthDateMM());
@@ -241,6 +212,54 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		validate(dto);
 
 		externalMessage = fillOrBuildEntity(dto, externalMessage, checkChangeDate);
+
+		// If it is a LabMessage and it has not set a DiseaseVariant, an attempt is made to determine this from the attached TestReports.
+		if (ExternalMessageType.LAB_MESSAGE.equals(externalMessage.getType())
+			&& externalMessage.getDiseaseVariant() == null
+			&& externalMessage.getSampleReports() != null) {
+			Set<TestReport> testReports = externalMessage.getSampleReports()
+				.stream()
+				.flatMap(sampleReport -> sampleReport.getTestReports().stream())
+				.collect(Collectors.toSet());
+			Set<String> positiveTestedDiseaseVariants = new HashSet<>();
+			List<TestReport> positiveTestReports = new ArrayList<>();
+			testReports.stream()
+				.filter(
+					testReportDto -> PathogenTestResultType.POSITIVE.equals(testReportDto.getTestResult())
+						&& testReportDto.getTestedDiseaseVariant() != null)
+				.forEach(testReport -> {
+					positiveTestedDiseaseVariants.add(testReport.getTestedDiseaseVariant());
+					positiveTestReports.add(testReport);
+				});
+			if (positiveTestedDiseaseVariants.size() == 1) {
+				testReports = testReports.stream()
+					.filter(
+						testReportDto -> PathogenTestResultType.POSITIVE.equals(testReportDto.getTestResult())
+							&& testReportDto.getTestedDiseaseVariant().equals(positiveTestedDiseaseVariants.stream().findFirst().get()))
+					.collect(Collectors.toSet());
+				Set<TestReport> finalTestReports = testReports;
+				if (testReports.size() == 1
+					|| testReports.stream().allMatch(testReport -> testReport.getTestedDiseaseVariantDetails() == null)
+					|| (testReports.stream().allMatch(testReport -> testReport.getTestedDiseaseVariantDetails() != null)
+						&& testReports.stream()
+							.allMatch(
+								testReport -> finalTestReports.stream()
+									.findFirst()
+									.get()
+									.getTestedDiseaseVariantDetails()
+									.equals(testReport.getTestedDiseaseVariantDetails()))))
+					try {
+						externalMessage.setDiseaseVariant(
+							customizableEnumFacade.getEnumValue(
+								CustomizableEnumType.DISEASE_VARIANT,
+								positiveTestedDiseaseVariants.stream().findFirst().get(),
+								externalMessage.getDisease()));
+						externalMessage.setDiseaseVariantDetails(positiveTestReports.get(0).getTestedDiseaseVariantDetails());
+					} catch (CustomEnumNotFoundException e) {
+					}
+			}
+		}
+
 		if (newTransaction) {
 			externalMessageService.ensurePersistedInNewTransaction(externalMessage);
 		} else {
