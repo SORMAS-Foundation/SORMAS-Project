@@ -515,6 +515,11 @@ public class EventParticipantFacadeEjb
 	@RightsAllowed(UserRight._EVENTPARTICIPANT_DELETE)
 	public void delete(String uuid, DeletionDetails deletionDetails) throws ExternalSurveillanceToolRuntimeException {
 		EventParticipant eventParticipant = service.getByUuid(uuid);
+
+		if (!service.inJurisdictionOrOwned(eventParticipant)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.messageEventParticipantOutsideJurisdictionDeletionDenied));
+		}
+
 		service.delete(eventParticipant, deletionDetails);
 	}
 
