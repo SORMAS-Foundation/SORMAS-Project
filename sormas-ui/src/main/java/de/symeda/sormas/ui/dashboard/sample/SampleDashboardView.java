@@ -145,6 +145,7 @@ public class SampleDashboardView extends AbstractDashboardView {
 		countsBySpecimenCondition.update(dataProvider.getSampleCountsBySpecimenCondition());
 		countsByShipmentStatus.update(dataProvider.getSampleCountsByShipmentStatus());
 		epiCurveComponent.clearAndFillEpiCurveChart();
+		mapComponent.refreshMap();
 	}
 
 	private String getBackgroundStyleForPurpose(SamplePurpose purpose) {

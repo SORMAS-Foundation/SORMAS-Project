@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -54,6 +55,7 @@ public abstract class BaseDashboardMapComponent<C extends BaseDashboardCriteria<
 	protected final LeafletMap map;
 	// Layouts and components
 	private final String headingStringTag;
+	private final String headingInfoTag;
 	private final CssLayout overlayBackground;
 	private final VerticalLayout overlayLayout;
 	private final Label overlayMessageLabel;
@@ -61,9 +63,10 @@ public abstract class BaseDashboardMapComponent<C extends BaseDashboardCriteria<
 
 	private Consumer<Boolean> externalExpandListener;
 
-	public BaseDashboardMapComponent(String headingStringTag, P dashboardDataProvider) {
+	public BaseDashboardMapComponent(String headingStringTag, P dashboardDataProvider, String headingInfoTag) {
 		this.headingStringTag = headingStringTag;
 		this.dashboardDataProvider = dashboardDataProvider;
+		this.headingInfoTag = headingInfoTag;
 
 		setMargin(false);
 		setSpacing(false);
@@ -191,9 +194,23 @@ public abstract class BaseDashboardMapComponent<C extends BaseDashboardCriteria<
 		mapLabel.setSizeUndefined();
 		CssStyles.style(mapLabel, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 
-		mapHeaderLayout.addComponent(mapLabel);
-		mapHeaderLayout.setComponentAlignment(mapLabel, Alignment.BOTTOM_LEFT);
-		mapHeaderLayout.setExpandRatio(mapLabel, 1);
+		Component mapLabelComponent = mapLabel;
+
+		if (headingInfoTag != null) {
+			Label infoIcon = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+			CssStyles.style(infoIcon, CssStyles.H3, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE, CssStyles.HSPACE_LEFT_4);
+			infoIcon.setDescription(I18nProperties.getString(headingInfoTag));
+
+			HorizontalLayout mapLabelLayout = new HorizontalLayout(mapLabel, infoIcon);
+			mapLabelLayout.setMargin(false);
+			mapLabelLayout.setSpacing(false);
+
+			mapLabelComponent = mapLabelLayout;
+		}
+
+		mapHeaderLayout.addComponent(mapLabelComponent);
+		mapHeaderLayout.setComponentAlignment(mapLabelComponent, Alignment.BOTTOM_LEFT);
+		mapHeaderLayout.setExpandRatio(mapLabelComponent, 1);
 
 		// "Expand" and "Collapse" buttons
 		Button expandMapButton =

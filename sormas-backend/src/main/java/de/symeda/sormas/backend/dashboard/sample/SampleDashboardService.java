@@ -41,7 +41,7 @@ import javax.persistence.criteria.Subquery;
 import org.apache.commons.lang3.tuple.Pair;
 
 import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
-import de.symeda.sormas.api.dashboard.sample.SampleMapDto;
+import de.symeda.sormas.api.dashboard.sample.MapSampleDto;
 import de.symeda.sormas.api.dashboard.sample.SampleShipmentStatus;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleAssociationType;
@@ -157,19 +157,50 @@ public class SampleDashboardService {
 		cq.select(cb.count(sample));
 
 		final Predicate criteriaFilter = createSampleFilter(new SampleQueryContext(cb, cq, sample), criteria);
-		final Predicate latLonProvided = CriteriaBuilderHelper.or(
+		final Predicate latLonProvided = getLatLonProcidedPredicate(cb, joins);
+
+		cq.where(CriteriaBuilderHelper.and(cb, criteriaFilter, latLonProvided));
+
+		return QueryHelper.getSingleResult(em, cq);
+	}
+
+	public List<MapSampleDto> getSamplesForMap(SampleDashboardCriteria criteria) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<MapSampleDto> cq = cb.createQuery(MapSampleDto.class);
+		final Root<Sample> sample = cq.from(Sample.class);
+		SampleJoins joins = new SampleJoins(sample);
+
+		cq.multiselect(
+			joins.getCaseJoins().getPersonJoins().getAddress().get(Location.LONGITUDE),
+			joins.getCaseJoins().getPersonJoins().getAddress().get(Location.LATITUDE),
+			joins.getCaze().get(Case.REPORT_LON),
+			joins.getCaze().get(Case.REPORT_LAT),
+			joins.getContactJoins().getPersonJoins().getAddress().get(Location.LONGITUDE),
+			joins.getContactJoins().getPersonJoins().getAddress().get(Location.LATITUDE),
+			joins.getContact().get(Contact.REPORT_LON),
+			joins.getContact().get(Contact.REPORT_LAT),
+			joins.getEventParticipantJoins().getPersonJoins().getAddress().get(Location.LONGITUDE),
+			joins.getEventParticipantJoins().getPersonJoins().getAddress().get(Location.LATITUDE),
+			joins.getEventParticipantJoins().getEvent().get(Event.REPORT_LON),
+			joins.getEventParticipantJoins().getEvent().get(Event.REPORT_LAT));
+
+		final Predicate criteriaFilter = createSampleFilter(new SampleQueryContext(cb, cq, sample), criteria);
+		final Predicate latLonProvided = getLatLonProcidedPredicate(cb, joins);
+
+		cq.where(CriteriaBuilderHelper.and(cb, criteriaFilter, latLonProvided));
+
+		return QueryHelper.getResultList(em, cq, null, null);
+	}
+
+	private Predicate getLatLonProcidedPredicate(CriteriaBuilder cb, SampleJoins joins) {
+		return CriteriaBuilderHelper.or(
 			cb,
 			addressCoordinatesNotNull(cb, joins.getCaseJoins().getPersonJoins().getAddress()),
 			addressCoordinatesNotNull(cb, joins.getContactJoins().getPersonJoins().getAddress()),
 			addressCoordinatesNotNull(cb, joins.getEventParticipantJoins().getPersonJoins().getAddress()),
 			gpsCoordinatesNotNull(cb, joins.getCaze(), Case.REPORT_LON, Case.REPORT_LAT),
 			gpsCoordinatesNotNull(cb, joins.getContact(), Contact.REPORT_LON, Contact.REPORT_LAT),
-			gpsCoordinatesNotNull(cb, joins.getEventParticipantJoins().getEvent(), Contact.REPORT_LON, Contact.REPORT_LAT),
-			gpsCoordinatesNotNull(cb, sample, Sample.REPORT_LON, Sample.REPORT_LAT));
-
-		cq.where(CriteriaBuilderHelper.and(cb, criteriaFilter, latLonProvided));
-
-		return QueryHelper.getSingleResult(em, cq);
+			gpsCoordinatesNotNull(cb, joins.getEventParticipantJoins().getEvent(), Event.REPORT_LON, Event.REPORT_LAT));
 	}
 
 	private Predicate addressCoordinatesNotNull(CriteriaBuilder cb, Path<Location> addressPath) {
@@ -178,10 +209,6 @@ public class SampleDashboardService {
 
 	private Predicate gpsCoordinatesNotNull(CriteriaBuilder cb, Path<?> path, String longitudeProperty, String latitudeProperty) {
 		return CriteriaBuilderHelper.and(cb, cb.isNotNull(path.get(longitudeProperty)), cb.isNotNull(path.get(latitudeProperty)));
-	}
-
-	public List<SampleMapDto> getSamplesForMap(SampleDashboardCriteria criteria) {
-		return null;
 	}
 
 	private <T extends AbstractDomainObject> Predicate createSampleFilter(SampleQueryContext queryContext, SampleDashboardCriteria criteria) {

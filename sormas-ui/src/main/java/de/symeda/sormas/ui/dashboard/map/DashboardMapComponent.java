@@ -126,7 +126,8 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 	public DashboardMapComponent(DashboardDataProvider dashboardDataProvider) {
 		super(
 			dashboardDataProvider.getDashboardType() == DashboardType.SURVEILLANCE ? Strings.headingCaseStatusMap : Strings.headingContactMap,
-			dashboardDataProvider);
+			dashboardDataProvider,
+			null);
 
 		if (dashboardDataProvider.getDashboardType() == DashboardType.SURVEILLANCE) {
 			showCases = true;

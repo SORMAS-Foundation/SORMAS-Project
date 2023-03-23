@@ -38,5 +38,5 @@ public interface SampleDashboardFacade {
 
 	Long countSamplesForMap(SampleDashboardCriteria criteria);
 
-	List<SampleMapDto> getSamplesForMap(SampleDashboardCriteria criteria);
+	List<MapSampleDto> getSamplesForMap(SampleDashboardCriteria criteria);
 }

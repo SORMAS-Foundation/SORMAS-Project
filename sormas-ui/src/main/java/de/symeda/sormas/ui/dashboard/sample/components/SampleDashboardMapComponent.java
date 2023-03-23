@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.ui.dashboard.sample.components;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -24,14 +25,17 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
+import de.symeda.sormas.api.dashboard.sample.MapSampleDto;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.dashboard.map.BaseDashboardMapComponent;
 import de.symeda.sormas.ui.dashboard.sample.SampleDashboardDataProvider;
+import de.symeda.sormas.ui.map.LeafletMarker;
+import de.symeda.sormas.ui.map.MarkerIcon;
 
 public class SampleDashboardMapComponent extends BaseDashboardMapComponent<SampleDashboardCriteria, SampleDashboardDataProvider> {
 
 	public SampleDashboardMapComponent(SampleDashboardDataProvider dashboardDataProvider) {
-		super(Strings.headingSampleDashboardMap, dashboardDataProvider);
+		super(Strings.headingSampleDashboardMap, dashboardDataProvider, Strings.infoHeadingSampleDashboardMap);
 	}
 
 	@Override
@@ -41,7 +45,29 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
 
 	@Override
 	protected void loadMapData(Date fromDate, Date toDate) {
+		List<MapSampleDto> samples =
+			FacadeProvider.getSampleDashboardFacade().getSamplesForMap(dashboardDataProvider.buildDashboardCriteriaWithDates());
 
+		List<LeafletMarker> markers = new ArrayList<>();
+		for (MapSampleDto sample : samples) {
+			LeafletMarker marker = new LeafletMarker();
+
+			switch (sample.getAssociationType()) {
+			case CASE:
+				marker.setIcon(MarkerIcon.SAMPLE_CASE);
+				break;
+			case CONTACT:
+				marker.setIcon(MarkerIcon.SAMPLE_CONTACT);
+				break;
+			default:
+				marker.setIcon(MarkerIcon.SAMPLE_EVENT_PARTICIPANT);
+			}
+			marker.setLatLon(sample.getLatitude(), sample.getLongitude());
+
+			markers.add(marker);
+		}
+
+		map.addMarkerGroup("samples", markers);
 	}
 
 	@Override

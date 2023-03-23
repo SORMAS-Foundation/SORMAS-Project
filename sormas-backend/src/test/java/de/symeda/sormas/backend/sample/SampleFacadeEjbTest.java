@@ -55,6 +55,7 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
+import de.symeda.sormas.api.dashboard.sample.MapSampleDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
@@ -1123,6 +1124,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 			SampleMaterial.BLOOD,
 			creator.createRDCF().facility);
 
+		// sample coordinates not taken
 		SampleDto sampleWithCoord = creator.createSample(
 			creator.createCase(user.toReference(), creator.createPerson().toReference(), creator.createRDCF()).toReference(),
 			user.toReference(),
@@ -1138,7 +1140,90 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		SampleDto sampleWithoutCoord = creator.createSample(caze.toReference(), user.toReference(), creator.createRDCF().facility);
 
 		Long count = getSampleDashboardFacade().countSamplesForMap(new SampleDashboardCriteria());
-		assertEquals(7, count);
+		assertEquals(6, count);
+	}
+
+	@Test
+	public void testGetSamplesForMap() {
+		UserDto user = creator.createSurveillanceSupervisor(creator.createRDCF());
+
+		PersonDto personWithCoord = creator.createPerson("New", "Person", Sex.UNKNOWN, p -> {
+			p.getAddress().setLongitude(45.342163);
+			p.getAddress().setLatitude(15.491076);
+		});
+
+		CaseDataDto cazeWithPersonCoord = creator.createCase(user.toReference(), personWithCoord.toReference(), creator.createRDCF());
+		creator.createSample(cazeWithPersonCoord.toReference(), user.toReference(), creator.createRDCF().facility);
+
+		CaseDataDto caseWithCoord = creator.createCase(user.toReference(), creator.createPerson().toReference(), creator.createRDCF(), c -> {
+			c.setReportLon(45.342163);
+			c.setReportLat(15.491076);
+		});
+		creator.createSample(caseWithCoord.toReference(), user.toReference(), creator.createRDCF().facility);
+
+		ContactDto contactWithParsonCoord = creator.createContact(user.toReference(), personWithCoord.toReference(), Disease.CORONAVIRUS, null);
+		creator.createSample(
+			contactWithParsonCoord.toReference(),
+			new Date(),
+			new Date(),
+			user.toReference(),
+			SampleMaterial.BLOOD,
+			creator.createRDCF().facility);
+
+		ContactDto contactWithCoord = creator.createContact(user.toReference(), creator.createPerson().toReference(), Disease.CORONAVIRUS, c -> {
+			c.setReportLon(45.342163);
+			c.setReportLat(15.491076);
+		});
+		creator.createSample(
+			contactWithCoord.toReference(),
+			new Date(),
+			new Date(),
+			user.toReference(),
+			SampleMaterial.BLOOD,
+			creator.createRDCF().facility);
+
+		EventDto event = creator.createEvent(user.toReference());
+		EventParticipantDto eventParticipantWithPersonCoord =
+			creator.createEventParticipant(event.toReference(), personWithCoord, user.toReference());
+		creator.createSample(
+			eventParticipantWithPersonCoord.toReference(),
+			new Date(),
+			new Date(),
+			user.toReference(),
+			SampleMaterial.BLOOD,
+			creator.createRDCF().facility);
+
+		EventDto eventWithCoord = creator.createEvent(user.toReference(), Disease.CORONAVIRUS, e -> {
+			e.setReportLon(45.342163);
+			e.setReportLat(15.491076);
+		});
+		EventParticipantDto eventParticipantWithEventCoord =
+			creator.createEventParticipant(eventWithCoord.toReference(), creator.createPerson(), user.toReference());
+		creator.createSample(
+			eventParticipantWithEventCoord.toReference(),
+			new Date(),
+			new Date(),
+			user.toReference(),
+			SampleMaterial.BLOOD,
+			creator.createRDCF().facility);
+
+		// sample coordinates not taken
+		SampleDto sampleWithCoord = creator.createSample(
+			creator.createCase(user.toReference(), creator.createPerson().toReference(), creator.createRDCF()).toReference(),
+			user.toReference(),
+			creator.createRDCF().facility,
+			s -> {
+				s.setReportLon(45.342163);
+				s.setReportLat(15.491076);
+			});
+
+		// sample without GPS coordinates should not be counted
+		PersonDto person = creator.createPerson();
+		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), creator.createRDCF());
+		SampleDto sampleWithoutCoord = creator.createSample(caze.toReference(), user.toReference(), creator.createRDCF().facility);
+
+		List<MapSampleDto> samples = getSampleDashboardFacade().getSamplesForMap(new SampleDashboardCriteria());
+		assertEquals(6, samples.size());
 	}
 
 }
