@@ -177,11 +177,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -755,13 +753,13 @@ public class EditEventSteps implements En {
                   faker.number().numberBetween(1, 12),
                   faker.number().numberBetween(1, 27));
 
-          webDriverHelpers.selectFromCombobox(
-              DATE_OF_BIRTH_YEAR_COMBOBOX, String.valueOf(dateOfBirth.getYear()));
-          webDriverHelpers.selectFromCombobox(
-              DATE_OF_BIRTH_MONTH_COMBOBOX,
-              dateOfBirth.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH));
-          webDriverHelpers.selectFromCombobox(
-              DATE_OF_BIRTH_DAY_COMBOBOX, String.valueOf(dateOfBirth.getDayOfMonth()));
+          //          webDriverHelpers.selectFromCombobox(
+          //              DATE_OF_BIRTH_YEAR_COMBOBOX, String.valueOf(dateOfBirth.getYear()));
+          //          webDriverHelpers.selectFromCombobox(
+          //              DATE_OF_BIRTH_MONTH_COMBOBOX,
+          //              dateOfBirth.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH));
+          //          webDriverHelpers.selectFromCombobox(
+          //              DATE_OF_BIRTH_DAY_COMBOBOX, String.valueOf(dateOfBirth.getDayOfMonth()));
           webDriverHelpers.clickOnWebElementBySelector(POPUP_SAVE);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(PERSON_DATA_SAVED);
         });
