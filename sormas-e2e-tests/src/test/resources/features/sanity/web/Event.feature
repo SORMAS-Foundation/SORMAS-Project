@@ -57,7 +57,7 @@ Feature: Create events
     And I collect the UUID displayed on Edit event page
     Given I add a participant to the event
     Then I check if participant appears in the event participants list
-    And I navigate via URL to last Person created from edit Event page
+    And I click on the first Person ID from Event Participants
     Then I check if event is available at person information
 
   @tmsLink=SORDEV-5475 @env_main
@@ -82,7 +82,7 @@ Feature: Create events
     And I discard changes in participant window
     Then I add a participant to the event
     Then I check if participant appears in the event participants list
-    And I navigate via URL to last Person created from edit Event page
+    And I click on the first Person ID from Event Participants
     Then I check if event is available at person information
 
   @env_main
