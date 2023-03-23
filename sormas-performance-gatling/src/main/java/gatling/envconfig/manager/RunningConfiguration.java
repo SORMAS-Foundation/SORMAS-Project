@@ -24,11 +24,13 @@ import gatling.envconfig.dto.Environment;
 import gatling.envconfig.dto.Environments;
 import gatling.envconfig.dto.demis.DemisData;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.testng.Assert;
 
 import java.io.IOException;
 import java.util.List;
 
+@Slf4j
 public class RunningConfiguration {
 
   private ObjectMapper objectMapper;
@@ -54,21 +56,8 @@ public class RunningConfiguration {
           .findFirst()
           .get()
           .getUrl();
-    } catch (NullPointerException e) {
+    } catch (Exception e) {
       throw new Exception(String.format("Unable to get Environment for market: %s", identifier));
-    }
-  }
-
-  @SneakyThrows
-  public String getEnvironmentLanguageForMarket(String identifier) {
-    try {
-      return environments.getEnvironments().stream()
-          .filter(env -> env.getIdentifier().equalsIgnoreCase(identifier))
-          .findFirst()
-          .get()
-          .getDefaultLanguage();
-    } catch (NullPointerException e) {
-      throw new Exception(String.format("Unable to get Language for market: %s", identifier));
     }
   }
 
@@ -103,24 +92,24 @@ public class RunningConfiguration {
 
   @SneakyThrows
   public EnvUser getUserByRole(String identifier, String role) {
+    List<EnvUser> users = getEnvironment(identifier).getUsers();
     try {
-      List<EnvUser> users = getEnvironment(identifier).getUsers();
       return users.stream()
           .filter(user -> user.getUserRole().equalsIgnoreCase(role))
           .findFirst()
           .get();
-    } catch (NullPointerException e) {
+    } catch (Exception e) {
       throw new Exception(
           String.format(
-              "Unable to get Environment User for market: %s, and role: %s", identifier, role));
+              "Unable to get Environment User for market: %s, and role: %s", identifier, role) + " -> " + e.getMessage());
     }
   }
 
+  @SneakyThrows
   private Environment getEnvironment(String identifier) {
     return environments.getEnvironments().stream()
         .filter(env -> env.getIdentifier().equalsIgnoreCase(identifier))
-        .findFirst()
-        .get();
+        .findFirst().orElseThrow(()-> new Exception("Unable to find environment for " + identifier));
   }
 
   private void validateJsonData() {
