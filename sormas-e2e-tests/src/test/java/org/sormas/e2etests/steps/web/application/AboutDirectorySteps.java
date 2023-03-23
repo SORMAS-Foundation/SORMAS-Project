@@ -129,7 +129,7 @@ public class AboutDirectorySteps implements En {
             case "Deutsch Data Dictionary":
               FilesHelper.deleteFile(DEUTSCH_DATA_DICTIONARY_FILE_PATH);
               break;
-            case "Deutsch Data Protection Directory":
+            case "Deutsch Data Protection Dictionary":
               FilesHelper.deleteFile(DEUTSCH_DATA_PROTECTION_DICTIONARY_FILE_PATH);
               break;
             case "Case Classification Html":
