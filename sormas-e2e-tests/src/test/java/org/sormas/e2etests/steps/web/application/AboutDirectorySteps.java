@@ -34,7 +34,7 @@ public class AboutDirectorySteps implements En {
   public static final String DEUTSCH_DATA_DICTIONARY_FILE_PATH =
       String.format("sormas_datenbeschreibungsverzeichnis_%s_.xlsx", LocalDate.now());
   public static final String DEUTSCH_DATA_PROTECTION_DICTIONARY_FILE_PATH =
-      String.format("sormas_datenschutzbeschreibungsverzeichnis_%s_.xls", LocalDate.now());
+      String.format("sormas_datenschutzbeschreibungsverzeichnis_%s_.xlsx", LocalDate.now());
   public static final String CASE_CLASSIFICATION_HTML_FILE_PATH = "classification_rules.html";
   private static final String RELEASE_PAGE =
       "https://github.com/hzi-braunschweig/SORMAS-Project/releases";
@@ -80,7 +80,8 @@ public class AboutDirectorySteps implements En {
               FilesHelper.waitForFileToDownload(DEUTSCH_DATA_DICTIONARY_FILE_PATH, 30);
               break;
             case "Deutsch Data Protection Dictionary":
-              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(DATA_PROTECTION_DICTIONARY_BUTTON);
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  DATA_PROTECTION_DICTIONARY_BUTTON);
               webDriverHelpers.clickOnWebElementBySelector(DATA_PROTECTION_DICTIONARY_BUTTON);
               FilesHelper.waitForFileToDownload(DEUTSCH_DATA_PROTECTION_DICTIONARY_FILE_PATH, 30);
               break;
