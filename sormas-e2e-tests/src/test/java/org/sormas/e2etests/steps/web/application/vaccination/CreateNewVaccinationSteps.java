@@ -289,6 +289,20 @@ public class CreateNewVaccinationSteps implements En {
               webDriverHelpers.getValueFromCombobox(VACCINATION_MANUFACTURER_COMBOBOX), option);
           softly.assertAll();
         });
+    When(
+        "I fill new vaccination data in new Vaccination form for DE with {string} as a vaccine name",
+        (String name) -> {
+          vaccination = vaccinationService.buildGeneratedVaccinationDE();
+          fillVaccinationDate(vaccination.getVaccinationDate(), Locale.GERMAN);
+          selectVaccineName(name);
+          fillVaccineType(vaccination.getVaccineType());
+          selectVaccinationInfoSource(vaccination.getVaccinationInfoSource());
+          fillVaccineDose(vaccination.getVaccineDose());
+          fillInn(vaccination.getInn());
+          fillUniiCode(vaccination.getUniiCode());
+          fillBatchNumber(vaccination.getBatchNumber());
+          fillAtcCode(vaccination.getAtcCode());
+        });
   }
 
   private void fillVaccinationDate(LocalDate date, Locale locale) {

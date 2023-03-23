@@ -2814,6 +2814,17 @@ public class EditCaseSteps implements En {
               "Number of samples added in sample ard is different then expected!");
           softly.assertAll();
         });
+
+    When("I refresh current page", () -> webDriverHelpers.refreshCurrentPage());
+
+    When(
+        "I check if Immunization area contains {string}",
+        (String name) -> {
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(checkTextInImmunizationSideComponent(name)),
+              "Element is not present");
+          softly.assertAll();
+        });
   }
 
   private Vaccination collectVaccinationData() {

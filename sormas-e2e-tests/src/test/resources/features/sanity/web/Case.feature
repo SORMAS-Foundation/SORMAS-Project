@@ -2802,16 +2802,18 @@ Feature: Case end to end tests
     And I filter by CaseID on Case directory page
     And I check that number of displayed cases results is 1
     Then I click on the first Case ID from Case Directory
-
     When I click on New Sample in German
-    And I create a new Sample with positive test result for DE version
+    And I create a new Sample with positive test result for DE version with "Testlabor DEMIS" as a labor
     And I save the created sample with pathogen test
+    And I confirm case with positive test result
     Then I navigate to case tab
     And I click NEW VACCINATION button for DE
-    And I fill new vaccination data in new Vaccination form for DE
+    And I fill new vaccination data in new Vaccination form for DE with "Comirnaty (COVID-19-mRNA Impfstoff)" as a vaccine name
     And I click SAVE button in new Vaccination form
     Then I back to tab number 1
-    And I open the last created Case via API
+    And I refresh current page
+    Then I check if Immunization area contains "Comirnaty (COVID-19-mRNA Impfstoff)"
+    Then I check if Immunization area contains "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)"
 
 
 #    And I click on edit Sample
