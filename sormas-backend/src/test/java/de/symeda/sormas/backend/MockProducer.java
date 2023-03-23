@@ -45,6 +45,7 @@ import javax.transaction.UserTransaction;
 
 import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.RequestContextTO;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.backend.central.EtcdCentralClient;
 import de.symeda.sormas.backend.central.EtcdCentralClientProducer;
@@ -74,6 +75,8 @@ public class MockProducer implements InitialContextFactory {
 	private static RequestContextTO requestContextTO = new RequestContextTO(false);
 	private static SormasToSormasRestClient s2sRestClient = mock(SormasToSormasRestClient.class);
 	private static final EtcdCentralClient etcdCentralClient = mock(EtcdCentralClient.class);
+	private static CustomizableEnumFacade customizableEnumFacadeForConverter = mock(CustomizableEnumFacade.class);
+
 	private static ManagedScheduledExecutorService managedScheduledExecutorService = mock(ManagedScheduledExecutorService.class);
 
 	// Receiving e-mail server is mocked: org. jvnet. mock_javamail. mailbox
@@ -136,9 +139,8 @@ public class MockProducer implements InitialContextFactory {
 		RequestContextHolder.setRequestContext(requestContextTO);
 	}
 
-	@Override
-	public Context getInitialContext(Hashtable<?, ?> environment) throws NamingException {
-		return initialContext;
+	public static CustomizableEnumFacade getCustomizableEnumFacadeForConverter() {
+		return customizableEnumFacadeForConverter;
 	}
 
 	@Produces
@@ -211,6 +213,13 @@ public class MockProducer implements InitialContextFactory {
 			return etcdCentralClient;
 		}
 
+	}
+
+	@Override
+	public Context getInitialContext(Hashtable<?, ?> environment) throws NamingException {
+		when(initialContext.lookup("java:module/CustomizableEnumFacade")).thenReturn(customizableEnumFacadeForConverter);
+
+		return initialContext;
 	}
 
 	@Produces
