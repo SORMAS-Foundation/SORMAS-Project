@@ -33,6 +33,8 @@ public class AboutDirectorySteps implements En {
       String.format("sormas_data_dictionary_%s_.xlsx", LocalDate.now());
   public static final String DEUTSCH_DATA_DICTIONARY_FILE_PATH =
       String.format("sormas_datenbeschreibungsverzeichnis_%s_.xlsx", LocalDate.now());
+  public static final String DEUTSCH_DATA_PROTECTION_DICTIONARY_FILE_PATH =
+      String.format("sormas_datenschutzbeschreibungsverzeichnis_%s_.xls", LocalDate.now());
   public static final String CASE_CLASSIFICATION_HTML_FILE_PATH = "classification_rules.html";
   private static final String RELEASE_PAGE =
       "https://github.com/hzi-braunschweig/SORMAS-Project/releases";
@@ -77,6 +79,11 @@ public class AboutDirectorySteps implements En {
               webDriverHelpers.clickOnWebElementBySelector(DATA_DICTIONARY_BUTTON);
               FilesHelper.waitForFileToDownload(DEUTSCH_DATA_DICTIONARY_FILE_PATH, 30);
               break;
+            case "Deutsch Data Protection Dictionary":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(DATA_DICTIONARY_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(DATA_DICTIONARY_BUTTON);
+              FilesHelper.waitForFileToDownload(DEUTSCH_DATA_PROTECTION_DICTIONARY_FILE_PATH, 30);
+              break;
             default:
               throw new Exception("No XLSX path provided!");
           }
@@ -94,6 +101,9 @@ public class AboutDirectorySteps implements En {
               break;
             case "Deutsch Data Dictionary":
               readXlsxDictionaryFile(DEUTSCH_DATA_DICTIONARY_FILE_PATH);
+              break;
+            case "Deutsch Data Protection Dictionary":
+              readXlsxDictionaryFile(DEUTSCH_DATA_PROTECTION_DICTIONARY_FILE_PATH);
               break;
             default:
               throw new Exception("No XLSX path provided!");
@@ -117,6 +127,9 @@ public class AboutDirectorySteps implements En {
               break;
             case "Deutsch Data Dictionary":
               FilesHelper.deleteFile(DEUTSCH_DATA_DICTIONARY_FILE_PATH);
+              break;
+            case "Deutsch Data Protection Directory":
+              FilesHelper.deleteFile(DEUTSCH_DATA_PROTECTION_DICTIONARY_FILE_PATH);
               break;
             case "Case Classification Html":
               FilesHelper.deleteFile(CASE_CLASSIFICATION_HTML_FILE_PATH);

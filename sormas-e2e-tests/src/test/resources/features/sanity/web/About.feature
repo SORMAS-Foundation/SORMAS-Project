@@ -33,9 +33,9 @@ Feature: About Directory end to end tests
   Scenario: Check Data Protection Dictionary existence and download
     Given  I log in as a Admin User
     And I click on the About button from navbar
-    And I click on Deutsch Data Dictionary hyperlink and download XLSX file from About directory
-    And I validate data from downloaded XLSX Deutsch Data Dictionary file
-    And I delete Deutsch Data Dictionary downloaded file from About Directory
+    And I click on Deutsch Data Protection Dictionary hyperlink and download XLSX file from About directory
+    And I validate data from downloaded XLSX Deutsch Data Protection Dictionary file
+    And I delete Deutsch Data Protection Dictionary downloaded file from About Directory
 
   @env_main @#9768
   Scenario: Check Data Dictionary existence and download
