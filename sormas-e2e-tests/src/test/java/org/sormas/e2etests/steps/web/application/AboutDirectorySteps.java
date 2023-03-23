@@ -80,8 +80,8 @@ public class AboutDirectorySteps implements En {
               FilesHelper.waitForFileToDownload(DEUTSCH_DATA_DICTIONARY_FILE_PATH, 30);
               break;
             case "Deutsch Data Protection Dictionary":
-              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(DATA_DICTIONARY_BUTTON);
-              webDriverHelpers.clickOnWebElementBySelector(DATA_DICTIONARY_BUTTON);
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(DATA_PROTECTION_DICTIONARY_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(DATA_PROTECTION_DICTIONARY_BUTTON);
               FilesHelper.waitForFileToDownload(DEUTSCH_DATA_PROTECTION_DICTIONARY_FILE_PATH, 30);
               break;
             default:
