@@ -132,13 +132,15 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		criteriaBinder.bind(tfSearch, CaseCriteria.CASE_LIKE);
 		firstRowLayout.addComponent(tfSearch);
 
-		eventSearch = new TextField();
-		eventSearch.setId(CaseCriteria.EVENT_LIKE);
-		eventSearch.setWidth(200, Unit.PIXELS);
-		CssStyles.style(eventSearch, CssStyles.FORCE_CAPTION);
-		eventSearch.setPlaceholder(I18nProperties.getString(Strings.promptCaseOrContactEventSearchField));
-		criteriaBinder.bind(eventSearch, CaseCriteria.EVENT_LIKE);
-		firstRowLayout.addComponent(eventSearch);
+		// Temporarily disabled because #9054 has introduced CaseService.hasAnyToManyJoin which leads to an error 
+		// when trying to search for duplicates by any property related to events (documented in #11712)
+//		eventSearch = new TextField();
+//		eventSearch.setId(CaseCriteria.EVENT_LIKE);
+//		eventSearch.setWidth(200, Unit.PIXELS);
+//		CssStyles.style(eventSearch, CssStyles.FORCE_CAPTION);
+//		eventSearch.setPlaceholder(I18nProperties.getString(Strings.promptCaseOrContactEventSearchField));
+//		criteriaBinder.bind(eventSearch, CaseCriteria.EVENT_LIKE);
+//		firstRowLayout.addComponent(eventSearch);
 
 		tfReportingUser = new TextField();
 		tfReportingUser.setId(CaseCriteria.REPORTING_USER_LIKE);
