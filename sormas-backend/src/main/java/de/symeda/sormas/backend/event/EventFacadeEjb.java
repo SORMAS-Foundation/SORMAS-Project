@@ -524,8 +524,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 			// Participant, Case and Death Count
 			List<Object[]> participantQueryList = new ArrayList<>();
-			CriteriaQuery<Object[]> participantCQ = cb.createQuery(Object[].class);
 			IterableHelper.executeBatched(eventUuids, ModelConstants.PARAMETER_LIMIT, batchedUuids -> {
+				CriteriaQuery<Object[]> participantCQ = cb.createQuery(Object[].class);
 				Root<EventParticipant> epRoot = participantCQ.from(EventParticipant.class);
 				Join<EventParticipant, Case> caseJoin = epRoot.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
 				Predicate notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
