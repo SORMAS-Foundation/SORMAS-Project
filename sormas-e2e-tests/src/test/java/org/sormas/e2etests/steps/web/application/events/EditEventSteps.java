@@ -783,6 +783,12 @@ public class EditEventSteps implements En {
         });
 
     When(
+        "I click on Event Participant Data tab",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EVENT_PARTICIPANT_DATA_TAB);
+        });
+
+    When(
         "I add a participant to the event in DE",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(EVENT_PARTICIPANTS_TAB);
