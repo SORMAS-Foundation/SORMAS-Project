@@ -1046,6 +1046,7 @@ Feature: Create events
     And I collect the UUID displayed on Edit event page
     Then I add a participant to the event
     And I copy url of current event participant
+    Then I click on Event Participant Data tab
     Then I click on Delete button from event participant
     And I check if reason for deletion as "Deletion request by affected person according to GDPR" is available
     And I check if reason for deletion as "Deletion request by another authority" is available
@@ -1066,7 +1067,9 @@ Feature: Create events
     And I set Reason for deletion as "Deletion request by affected person according to GDPR"
     And I click on Yes option in Confirm deletion popup
     When I back to deleted event participant by url
+    Then I click on Event Participant Data tab
     Then I check if reason of deletion is set to "Deletion request by affected person according to GDPR"
+    Then I click on Event Participant Person tab
     And I check if General comment on event participant edit page is disabled
     And I check if Passport number input on event participant edit page is disabled
 
@@ -1081,6 +1084,7 @@ Feature: Create events
     Then I add Participant to an Event with same person data
     And I click on save button in Add Participant form
     And I copy url of current event participant
+    Then I click on Event Participant Data tab
     Then I click on Delete button from event participant
     And I check if reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO" is available
     And I check if reason for deletion as "Löschen auf Anforderung einer anderen Behörde" is available
@@ -1101,9 +1105,10 @@ Feature: Create events
     And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
     And I click on Yes option in Confirm deletion popup
     When I back to deleted event participant by url
+    Then I click on Event Participant Data tab
     Then I check if reason of deletion is set to "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    Then I click on Event Participant Person tab
     And I check if General comment on event participant edit page is disabled
-    And I check if Involvement description input on event participant edit page is disabled
 
   @tmsLink=SORDEV-9792 @env_de
   Scenario: Test CoreAdo: Introduce "end of processing date" for events

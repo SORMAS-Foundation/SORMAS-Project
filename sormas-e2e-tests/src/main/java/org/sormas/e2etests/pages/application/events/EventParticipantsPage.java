@@ -74,6 +74,8 @@ public class EventParticipantsPage {
       By.xpath("//div[@class='v-grid v-widget v-has-width v-has-height']");
   public static final By EVENT_PARTICIPANT_PERSON_TAB =
       By.cssSelector("#tab-events-eventparticipants-person");
+  public static final By EVENT_PARTICIPANT_DATA_TAB =
+      By.cssSelector("#tab-events-eventparticipants-data");
   public static final By UNSAVED_CHANGES_HEADER =
       By.xpath("//*[contains(text(), 'Unsaved changes')]");
   public static final By UNSAVED_CHANGES_HEADER_DE =
