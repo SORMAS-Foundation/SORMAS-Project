@@ -1,9 +1,12 @@
 package de.symeda.sormas.backend.infrastructure.area;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -12,6 +15,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -21,16 +25,20 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.campaign.data.CampaignFormDataIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.area.AreaCriteria;
 import de.symeda.sormas.api.infrastructure.area.AreaDto;
 import de.symeda.sormas.api.infrastructure.area.AreaFacade;
 import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
+import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -211,6 +219,13 @@ public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaService> 
 		}
 		return new AreaReferenceDto(entity.getUuid(), entity.toString());
 	}
+	
+	public static AreaReferenceDto toReferenceDtox(Area entity) {
+		if (entity == null) {
+			return null;
+		}
+		return new AreaReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalId());
+	}
 
 	@Override
 	public List<AreaReferenceDto> getReferencesByName(String name, boolean includeArchived) {
@@ -230,5 +245,51 @@ public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaService> 
 		}
 	}
 
+
+	public static Set<AreaReferenceDto> toReferenceDto(HashSet<Area> areas) {
+		Set<AreaReferenceDto> dtos = new HashSet<AreaReferenceDto>();
+		for(Area area : areas) {	
+			AreaReferenceDto areaDto = new AreaReferenceDto(area.getUuid(), area.toString(), area.getExternalId());	
+			dtos.add(areaDto);
+		}
+		
+		return dtos;
+	}
 	
+	@Override
+	public AreaReferenceDto getAreaReferenceByUuid(String uuid) {
+		return toReferenceDto(areaService.getByUuid(uuid));
+	}
+
+	@Override
+	public List<AreaDto> getAllActiveAsReferenceAndPopulation() {
+		
+		
+		String queryStringBuilder = "select a.\"name\", sum(p.population), a.id, a.uuid as mdis  from areas a \n"
+				+ "left outer join region r on r.area_id = a.id\n"
+				+ "left outer join populationdata p on r.id = p.region_id\r\n"
+				+ "where a.archived = false and p.agegroup = 'AGE_0_4'\n"
+				+ "group by a.\"name\", a.id, a.uuid ";
+		
+		
+		Query seriesDataQuery = em.createNativeQuery(queryStringBuilder);
+		
+		List<AreaDto> resultData = new ArrayList<>();
+		
+		
+		@SuppressWarnings("unchecked")
+		List<Object[]> resultList = seriesDataQuery.getResultList(); 
+		
+		System.out.println("starting....");
+		
+		resultData.addAll(resultList.stream()
+				.map((result) -> new AreaDto((String) result[0].toString(), ((BigInteger) result[1]).longValue(), ((BigInteger) result[2]).longValue(), (String) result[3].toString())).collect(Collectors.toList()));
+		
+		System.out.println("ending...." +resultData.size());
+	
+	
+	//System.out.println("resultData - "+ resultData.toString()); //SQLExtractor.from(seriesDataQuery));
+	return resultData;
+	}
+
 }

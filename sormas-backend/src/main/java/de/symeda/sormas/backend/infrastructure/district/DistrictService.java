@@ -215,6 +215,11 @@ public class DistrictService extends AbstractInfrastructureAdoService<District> 
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(District.ARCHIVED), true));
 			}
 		}
+		
+		if(this.getCurrentUser().getArea() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter,
+					cb.equal(area.get(Area.UUID), this.getCurrentUser().getArea().getUuid()));
+		}
 		return filter;
 	}
 }

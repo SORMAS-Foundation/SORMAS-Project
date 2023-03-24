@@ -195,12 +195,12 @@ public class UserController {
 			public void onCommit() {
 				if (!createForm.getFieldGroup().isModified()) {
 					UserDto dto = createForm.getValue();
-					if (UserProvider.getCurrent().getUser().getUsertype().equals(UserType.EOC_USER)) {
-						dto.setUsertype(UserType.EOC_USER);
-					}
-					else {
-						dto.setUsertype(UserType.WHO_USER);
-					}
+//					if (UserProvider.getCurrent().getUser().getUsertype().equals(UserType.EOC_USER)) {
+//						dto.setUsertype(UserType.EOC_USER);
+//					}
+//					else {
+//						dto.setUsertype(UserType.WHO_USER);
+//					}
 					dto = FacadeProvider.getUserFacade().saveUser(dto);
 					refreshView();
 					makeInitialPassword(dto.getUuid(), dto.getUserEmail(), dto.getUserName());

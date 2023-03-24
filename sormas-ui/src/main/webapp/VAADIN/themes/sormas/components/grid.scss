@@ -185,10 +185,11 @@ $v-grid-cell-focused-border: none !default;
 	    border-bottom: none;
         background-color: #FEFEFE;
       }
+    
       
       .v-grid-column-header-content,
       .v-treegrid-column-header-content {
-        text-transform: uppercase;
+        text-transform: capitalize !important;
         font-weight: bolder;
 	    border-bottom: $v-border;
 	    min-height: $v-grid-row-height;

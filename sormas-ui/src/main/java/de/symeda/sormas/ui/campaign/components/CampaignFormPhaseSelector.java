@@ -42,11 +42,12 @@ public class CampaignFormPhaseSelector extends HorizontalLayout {
 		List<String> phases = new ArrayList();
 
 		// Set drop-down options based on User Type
-		if (UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
+		if (UserProvider.getCurrent().hasUserType(UserType.WHO_USER) || UserProvider.getCurrent().hasUserType(UserType.EOC_USER)) {
 			phases.add(WordUtils.capitalizeFully(CampaignPhase.PRE.toString()));
 		}
 		if (UserProvider.getCurrent().hasUserType(UserType.EOC_USER)
-				|| UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
+				|| UserProvider.getCurrent().hasUserType(UserType.WHO_USER)
+				|| UserProvider.getCurrent().hasUserType(UserType.COMMON_USER)) {
 			phases.add(WordUtils.capitalizeFully(CampaignPhase.INTRA.toString()));
 		}
 		if (UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
@@ -82,11 +83,12 @@ public class CampaignFormPhaseSelector extends HorizontalLayout {
 
 		List<String> phases = new ArrayList();
 
-		if (UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
+		if (UserProvider.getCurrent().hasUserType(UserType.WHO_USER) || UserProvider.getCurrent().hasUserType(UserType.EOC_USER)) {
 			phases.add(WordUtils.capitalizeFully(CampaignPhase.PRE.toString()));
 		}
 		if (UserProvider.getCurrent().hasUserType(UserType.EOC_USER)
-				|| UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
+				|| UserProvider.getCurrent().hasUserType(UserType.WHO_USER)
+				|| UserProvider.getCurrent().hasUserType(UserType.COMMON_USER)) {
 			phases.add(WordUtils.capitalizeFully(CampaignPhase.INTRA.toString()));
 		}
 		if (UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
@@ -94,7 +96,7 @@ public class CampaignFormPhaseSelector extends HorizontalLayout {
 		}
 		phaseComboBox.setItems(phases);
 		// set phase value based on the type of user
-		if (UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
+		if (UserProvider.getCurrent().hasUserType(UserType.WHO_USER) || UserProvider.getCurrent().hasUserType(UserType.EOC_USER)) {
 			phaseComboBox.setValue(WordUtils.capitalizeFully(CampaignPhase.PRE.toString()));
 		} else {
 			phaseComboBox.setValue(WordUtils.capitalizeFully(CampaignPhase.INTRA.toString()));
@@ -114,7 +116,7 @@ public class CampaignFormPhaseSelector extends HorizontalLayout {
 	}
 
 	public void clear() {
-		if (UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
+		if (UserProvider.getCurrent().hasUserType(UserType.WHO_USER) || UserProvider.getCurrent().hasUserType(UserType.EOC_USER)) {
 			phaseComboBox.setValue(WordUtils.capitalizeFully(CampaignPhase.PRE.toString()));
 		} else {
 			phaseComboBox.setValue(WordUtils.capitalizeFully(CampaignPhase.INTRA.toString()));

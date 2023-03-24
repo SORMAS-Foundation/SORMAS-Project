@@ -99,7 +99,7 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
 
 		target.setAddress(locationHelper.fillOrCreateFromDto(target.getAddress(), source.getAddress()));
 		target.setPhone(source.getPhone());
-		target.setLanguage(source.getLanguage());
+		//target.setLanguage(source.getLanguage());
 	}
 
 	@Override

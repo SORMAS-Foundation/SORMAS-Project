@@ -106,45 +106,19 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
         final Map<String, ControlPropertyField> fieldMap = new HashMap<>();
 
         boolean daywise = false;
-
         int dayy = 0;
+        int countr = 0;
+
         for (CampaignFormElement campaignFormElement : campaignFormMeta.getCampaignFormElements()) {
             CampaignFormElementType type = CampaignFormElementType.fromString(campaignFormElement.getType());
 
             if (type == CampaignFormElementType.DAYWISE) {
-                dayy++;
-                switch(dayy) {
-                    case 1:
-                        caption_1 = campaignFormElement.getCaption();
-                        break;
-                    case 2:
-                        caption_2 = campaignFormElement.getCaption();
-                        break;
-                    case 3:
-                        caption_3 = campaignFormElement.getCaption();
-                        break;
-                    case 4:
-                        caption_4 = campaignFormElement.getCaption();
-                        break;
-                    case 5:
-                        caption_5 = campaignFormElement.getCaption();
-                        break;
-                    case 6:
-                        caption_6 = campaignFormElement.getCaption();
-                        break;
-                    case 7:
-                        caption_7 = campaignFormElement.getCaption();
-                        break;
-                    case 8:
-                        caption_8 = campaignFormElement.getCaption();
-                        break;
-                }
-                daywise = true;
+             daywise = true;
+                System.out.println("checking dayesie --------------------------- "+daywise);
+             break;
             }
 
         }
-
-        int accrd_count = 0;
 
         Resources res = getResources();
         TabHost mTabHost = (TabHost) view.findViewById(R.id.tabhostxxxRd);
@@ -152,7 +126,7 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
 
         TabHost.TabSpec spec;
 
-        int countr = 0;
+        countr = 0;
 
         for (CampaignFormElement campaignFormElement : campaignFormMeta.getCampaignFormElements()) {
             CampaignFormElementType type = CampaignFormElementType.fromString(campaignFormElement.getType());
@@ -188,23 +162,28 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
 
             if (daywise) {
                 if (type == CampaignFormElementType.DAYWISE) {
+
                     countr++;
-                } else if (countr == 1) {
-                    final LinearLayout dynamicLayout = mTabHost.findViewById(R.id.tabSheet1);
+
+                 } else if (countr == 1) {
+                    final LinearLayout dynamicLayout = view.findViewById(R.id.tabSheet1);
                     if (type != CampaignFormElementType.SECTION && type != CampaignFormElementType.LABEL) {
                         String value = formValuesMap.get(campaignFormElement.getId());
                         ControlPropertyField dynamicField = createControlTextReadField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta));
                         dynamicField.setShowCaption(true);
 
 
+
+
                         if (value != null) {
 
                             if (type == CampaignFormElementType.YES_NO || type == CampaignFormElementType.CHECKBOX || type == CampaignFormElementType.RADIO || type == CampaignFormElementType.CHECKBOXBASIC || type == CampaignFormElementType.RADIOBASIC) {
-                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, Boolean.valueOf(value), null, null);
+                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, value, null, null);
                             } else if(type == CampaignFormElementType.DROPDOWN){
                                 ControlTextReadField.setValue((ControlTextReadField) dynamicField, optionsValues.get(value), null, null, null);
                                 //optionsValues.get(value)
                             }else{
+                                System.out.println(value +" ControlTextReadFieldControlTextReadFieldControlTextReadField");
                                 ControlTextReadField.setValue((ControlTextReadField) dynamicField, value, null, null, null);
                             }
                         }
@@ -231,11 +210,11 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                         if (expressionString != null) {
                             try {
                                 final Object expressionValue = getExpressionValue(expressionParser, formValues, expressionString);
-                                if (type == CampaignFormElementType.YES_NO) {
-                                    ControlTextReadField.setValue((ControlTextReadField) dynamicField, (Boolean) expressionValue, null, null);
-                                } else {
-                                    ControlTextReadField.setValue((ControlTextReadField) dynamicField, expressionValue.toString(), null, null, null);
-                                }
+//                            if (type == CampaignFormElementType.YES_NO) {
+//                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, (Boolean) expressionValue, null, null);
+//                            } else {
+                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, expressionValue.toString(), null, null, null);
+                                // }
                             } catch (SpelEvaluationException e) {
                                 Log.e("Error evaluating expression: " + expressionString, e.getMessage());
                             }
@@ -247,6 +226,7 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                         TextViewBindingAdapters.setHtmlValue(textView, campaignFormElement.getCaption());
                         dynamicLayout.addView(textView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
                     }
+
                 } else if (countr == 2) {
                     final LinearLayout dynamicLayout = mTabHost.findViewById(R.id.tabSheet2);
                     if (type != CampaignFormElementType.SECTION && type != CampaignFormElementType.LABEL) {
@@ -258,7 +238,7 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                         if (value != null) {
 
                             if (type == CampaignFormElementType.YES_NO || type == CampaignFormElementType.CHECKBOX || type == CampaignFormElementType.RADIO || type == CampaignFormElementType.CHECKBOXBASIC || type == CampaignFormElementType.RADIOBASIC) {
-                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, Boolean.valueOf(value), null, null);
+                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, value, null, null);
                             } else if(type == CampaignFormElementType.DROPDOWN){
                                 ControlTextReadField.setValue((ControlTextReadField) dynamicField, optionsValues.get(value), null, null, null);
                                 //optionsValues.get(value)
@@ -318,7 +298,7 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                         if (value != null) {
 
                             if (type == CampaignFormElementType.YES_NO || type == CampaignFormElementType.CHECKBOX || type == CampaignFormElementType.RADIO || type == CampaignFormElementType.CHECKBOXBASIC || type == CampaignFormElementType.RADIOBASIC) {
-                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, Boolean.valueOf(value), null, null);
+                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, value, null, null);
                             } else if(type == CampaignFormElementType.DROPDOWN){
                                 ControlTextReadField.setValue((ControlTextReadField) dynamicField, optionsValues.get(value), null, null, null);
                                 //optionsValues.get(value)
@@ -376,7 +356,7 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                         if (value != null) {
 
                             if (type == CampaignFormElementType.YES_NO || type == CampaignFormElementType.CHECKBOX || type == CampaignFormElementType.RADIO || type == CampaignFormElementType.CHECKBOXBASIC || type == CampaignFormElementType.RADIOBASIC) {
-                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, Boolean.valueOf(value), null, null);
+                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, value, null, null);
                             } else if(type == CampaignFormElementType.DROPDOWN){
                                 ControlTextReadField.setValue((ControlTextReadField) dynamicField, optionsValues.get(value), null, null, null);
                                 //optionsValues.get(value)
@@ -434,7 +414,7 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                         if (value != null) {
 
                             if (type == CampaignFormElementType.YES_NO || type == CampaignFormElementType.CHECKBOX || type == CampaignFormElementType.RADIO || type == CampaignFormElementType.CHECKBOXBASIC || type == CampaignFormElementType.RADIOBASIC) {
-                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, Boolean.valueOf(value), null, null);
+                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, value, null, null);
                             } else if(type == CampaignFormElementType.DROPDOWN){
                                 ControlTextReadField.setValue((ControlTextReadField) dynamicField, optionsValues.get(value), null, null, null);
                                 //optionsValues.get(value)
@@ -492,7 +472,7 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                         if (value != null) {
 
                             if (type == CampaignFormElementType.YES_NO || type == CampaignFormElementType.CHECKBOX || type == CampaignFormElementType.RADIO || type == CampaignFormElementType.CHECKBOXBASIC || type == CampaignFormElementType.RADIOBASIC) {
-                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, Boolean.valueOf(value), null, null);
+                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, value, null, null);
                             } else if(type == CampaignFormElementType.DROPDOWN){
                                 ControlTextReadField.setValue((ControlTextReadField) dynamicField, optionsValues.get(value), null, null, null);
                                 //optionsValues.get(value)
@@ -550,7 +530,7 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                         if (value != null) {
 
                             if (type == CampaignFormElementType.YES_NO || type == CampaignFormElementType.CHECKBOX || type == CampaignFormElementType.RADIO || type == CampaignFormElementType.CHECKBOXBASIC || type == CampaignFormElementType.RADIOBASIC) {
-                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, Boolean.valueOf(value), null, null);
+                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, value, null, null);
                             } else if(type == CampaignFormElementType.DROPDOWN){
                                 ControlTextReadField.setValue((ControlTextReadField) dynamicField, optionsValues.get(value), null, null, null);
                                 //optionsValues.get(value)
@@ -608,7 +588,7 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                         if (value != null) {
 
                             if (type == CampaignFormElementType.YES_NO || type == CampaignFormElementType.CHECKBOX || type == CampaignFormElementType.RADIO || type == CampaignFormElementType.CHECKBOXBASIC || type == CampaignFormElementType.RADIOBASIC) {
-                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, Boolean.valueOf(value), null, null);
+                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, value, null, null);
                             } else if(type == CampaignFormElementType.DROPDOWN){
                                 ControlTextReadField.setValue((ControlTextReadField) dynamicField, optionsValues.get(value), null, null, null);
                                 //optionsValues.get(value)
@@ -656,7 +636,8 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                         dynamicLayout.addView(textView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
                     }
                 }
-            }else {
+            }
+            else {
                 final LinearLayout dynamicLayout = view.findViewById(R.id.dynamicLayoutxXRd);
                 if (type != CampaignFormElementType.SECTION && type != CampaignFormElementType.LABEL) {
                     String value = formValuesMap.get(campaignFormElement.getId());
@@ -664,10 +645,12 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                     dynamicField.setShowCaption(true);
 
 
+
+
                     if (value != null) {
 
                         if (type == CampaignFormElementType.YES_NO || type == CampaignFormElementType.CHECKBOX || type == CampaignFormElementType.RADIO || type == CampaignFormElementType.CHECKBOXBASIC || type == CampaignFormElementType.RADIOBASIC) {
-                            ControlTextReadField.setValue((ControlTextReadField) dynamicField, Boolean.valueOf(value), null, null);
+                            ControlTextReadField.setValue((ControlTextReadField) dynamicField, value, null, null);
                         } else if(type == CampaignFormElementType.DROPDOWN){
                             ControlTextReadField.setValue((ControlTextReadField) dynamicField, optionsValues.get(value), null, null, null);
                             //optionsValues.get(value)
@@ -698,11 +681,11 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                     if (expressionString != null) {
                         try {
                             final Object expressionValue = getExpressionValue(expressionParser, formValues, expressionString);
-                            if (type == CampaignFormElementType.YES_NO) {
-                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, (Boolean) expressionValue, null, null);
-                            } else {
+//                            if (type == CampaignFormElementType.YES_NO) {
+//                                ControlTextReadField.setValue((ControlTextReadField) dynamicField, (Boolean) expressionValue, null, null);
+//                            } else {
                                 ControlTextReadField.setValue((ControlTextReadField) dynamicField, expressionValue.toString(), null, null, null);
-                            }
+                           // }
                         } catch (SpelEvaluationException e) {
                             Log.e("Error evaluating expression: " + expressionString, e.getMessage());
                         }
@@ -717,6 +700,8 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
 
             }
         }
+
+        dayy = countr;
 
         if (daywise) {
 
@@ -748,14 +733,15 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                 mTabHost.addTab(spec);
                 mTabHost.getTabWidget().getChildAt(3).getLayoutParams().width = 140;
             }
-          /*  if (dayy > 4) {
-                spec = mTabHost.newTabSpec("tab5").setIndicator("D5",//caption_1,
+           if (dayy > 4) {
+                spec = mTabHost.newTabSpec("tab5").setIndicator(" ",//caption_1,
                         res.getDrawable(R.drawable.ic_clear_black_24dp))
                         .setContent(R.id.tabSheet5);
                 mTabHost.addTab(spec);
                 mTabHost.getTabWidget().getChildAt(4).getLayoutParams().width = 140;
+               mTabHost.getTabWidget().getChildAt(4).setVisibility(View.GONE);
             }
-            if (dayy > 5) {
+         /*    if (dayy > 5) {
                 spec = mTabHost.newTabSpec("tab6").setIndicator("D6",//caption_1,
                         res.getDrawable(R.drawable.ic_clear_black_24dp))
                         .setContent(R.id.tabSheet6);

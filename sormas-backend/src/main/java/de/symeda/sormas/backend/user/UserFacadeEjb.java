@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.user;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,11 +35,13 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaBuilder.In;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.Valid;
@@ -54,6 +57,7 @@ import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.report.UserReportModelDto;
 import de.symeda.sormas.api.user.FormAccess;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserCriteria;
@@ -71,6 +75,7 @@ import de.symeda.sormas.api.utils.PasswordHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -145,7 +150,6 @@ public class UserFacadeEjb implements UserFacade {
 		if (source == null) {
 			return null;
 		}
-		
 
 		UserDto target = new UserDto();
 		DtoHelper.fillDto(target, source);
@@ -162,8 +166,7 @@ public class UserFacadeEjb implements UserFacade {
 		target.setArea(AreaFacadeEjb.toReferenceDto(source.getArea()));
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
-		target.setCommunity(CommunityFacadeEjb.toReferenceDto(new HashSet<Community>(source.getCommunity()))); 
-		//System.out.println(source.getDistrict()+" :@@@@@@@@@@@@@@@@@@@@@@@@@@ area: "+source.getArea()+" @@##########@@@@@@@@@@@@@@@"+source.getCommunity());
+		target.setCommunity(CommunityFacadeEjb.toReferenceDto(new HashSet<Community>(source.getCommunity())));
 		target.setHealthFacility(FacilityFacadeEjb.toReferenceDto(source.getHealthFacility()));
 		target.setAssociatedOfficer(toReferenceDto(source.getAssociatedOfficer()));
 		target.setLaboratory(FacilityFacadeEjb.toReferenceDto(source.getLaboratory()));
@@ -174,11 +177,73 @@ public class UserFacadeEjb implements UserFacade {
 
 		source.getUserRoles().size();
 		target.setUserRoles(new HashSet<UserRole>(source.getUserRoles()));
-		
+
 		source.getFormAccess().size();
 		target.setFormAccess(new HashSet<FormAccess>(source.getFormAccess()));
+
+		target.setUsertype(source.getUsertype());
 		
-		
+		if(source.getArea() != null && source.getArea().getExternalId() != null) {
+		target.setPcode(source.getArea().getExternalId().toString());
+		}
+		if(source.getDistrict() != null && source.getDistrict().getExternalId() != null) {
+		target.setDcode(source.getDistrict().getExternalId().toString());
+		}
+		if(source.getRegion() != null && source.getRegion().getExternalId() != null) {
+		target.setRcode(source.getRegion().getExternalId().toString());
+		}
+		if(source.getCommunity() != null && !source.getCommunity().isEmpty()) {
+			Set<String> communitynos = new HashSet<>();
+			for(Community c : source.getCommunity()) {
+				if(c.getClusterNumber() != null && c != null) {
+					communitynos.add(c.getClusterNumber().toString());
+				}
+			}
+			target.setCommunitynos(communitynos);
+		}
+		return target;
+	}
+
+	public static UserReportModelDto ListtoDto(User source) {
+
+		if (source == null) {
+			return null;
+		}
+		CommunityService comd = new CommunityService();
+		List<Community> comm = comd.getByAll();
+		return ListtoDtoCommunityReporter(source, comm);
+	}
+
+	public static UserReportModelDto ListtoDtoCommunityReporter(User source, List<Community> comm) {
+		UserReportModelDto target = new UserReportModelDto();
+		DtoHelper.fillDto(target, source);
+
+		target.setActive(source.isActive());
+		target.setUserName(source.getUserName());
+		target.setFirstName(source.getFirstName());
+		target.setLastName(source.getLastName());
+		target.setUserPosition(source.getUserPosition());
+		target.setUserOrganisation(source.getUserOrganisation());
+		target.setUserEmail(source.getUserEmail());
+		target.setPhone(source.getPhone());
+		target.setArea(AreaFacadeEjb.toReferenceDto(source.getArea()));
+		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
+		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
+		target.setCommunity(CommunityFacadeEjb.toReferenceDto(new HashSet<Community>(source.getCommunity())));
+//		//System.out.println(source.getDistrict()+" :@@@@@@@@@@@@@@@@@@@@@@@@@@ area: "+ source.getArea() +" ##########@@@@@@@@@@@@@@@"+source.getCommunity());
+//		target.setAssociatedOfficer(toReferenceDto(source.getAssociatedOfficer()));
+//		target.setLaboratory(FacilityFacadeEjb.toReferenceDto(source.getLaboratory()));
+//		target.setPointOfEntry(PointOfEntryFacadeEjb.toReferenceDto(source.getPointOfEntry()));
+//		target.setLimitedDisease(source.getLimitedDisease());
+//		target.setLanguage(source.getLanguage());
+//		target.setHasConsentedToGdpr(source.isHasConsentedToGdpr());
+
+		source.getUserRoles().size();
+		target.setUserRoles(new HashSet<UserRole>(source.getUserRoles()));
+
+		source.getFormAccess().size();
+		target.setFormAccess(new HashSet<FormAccess>(source.getFormAccess()));
+
 		target.setUsertype(source.getUsertype());
 		return target;
 	}
@@ -189,7 +254,8 @@ public class UserFacadeEjb implements UserFacade {
 			return null;
 		}
 
-		UserReferenceDto dto = new UserReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName(), entity.getUserRoles(), entity.getFormAccess(), entity.getUsertype());
+		UserReferenceDto dto = new UserReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName(),
+				entity.getUserRoles(), entity.getFormAccess(), entity.getUsertype());
 		return dto;
 	}
 
@@ -199,7 +265,8 @@ public class UserFacadeEjb implements UserFacade {
 			return null;
 		}
 
-		UserReferenceDto dto = new UserReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName(), entity.getUserRoles(), entity.getFormAccess(), entity.getUserType());
+		UserReferenceDto dto = new UserReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName(),
+				entity.getUserRoles(), entity.getFormAccess(), entity.getUserType());
 		return dto;
 	}
 
@@ -207,100 +274,75 @@ public class UserFacadeEjb implements UserFacade {
 
 		/*
 		 * Supports conversion of a null object into a list with one "null" value in it.
-		 * Uncertain if that use case exists, but wasn't suppose to be broken when replacing the Dto to Entity lookup.
+		 * Uncertain if that use case exists, but wasn't suppose to be broken when
+		 * replacing the Dto to Entity lookup.
 		 */
 		return Arrays.asList(hasUuid == null ? null : hasUuid.getUuid());
 	}
-	
+
 	@Override
 	public List<UserReferenceDto> getUsersByAreaAndRoles(AreaReferenceDto areaRef, UserRole... assignableRoles) {
 
-		return userService.getReferenceList(toUuidList(areaRef), null, false, true, true, assignableRoles)
-			.stream()
-			.map(f -> toReferenceDto(f))
-			.collect(Collectors.toList());
+		return userService.getReferenceList(toUuidList(areaRef), null, false, true, true, assignableRoles).stream()
+				.map(f -> toReferenceDto(f)).collect(Collectors.toList());
 	}
 
 	@Override
-	public List<UserReferenceDto> getUsersByAreasAndRoles(List<AreaReferenceDto> areaRefs, UserRole... assignableRoles) {
+	public List<UserReferenceDto> getUsersByAreasAndRoles(List<AreaReferenceDto> areaRefs,
+			UserRole... assignableRoles) {
 
 		return userService
-			.getReferenceList(
-				areaRefs.stream().map(AreaReferenceDto::getUuid).collect(Collectors.toList()),
-				null,
-				false,
-				true,
-				true,
-				assignableRoles)
-			.stream()
-			.map(UserFacadeEjb::toReferenceDto)
-			.collect(Collectors.toList());
+				.getReferenceList(areaRefs.stream().map(AreaReferenceDto::getUuid).collect(Collectors.toList()), null,
+						false, true, true, assignableRoles)
+				.stream().map(UserFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
-	
-	
 
 	@Override
 	public List<UserReferenceDto> getUsersByRegionAndRoles(RegionReferenceDto regionRef, UserRole... assignableRoles) {
 
-		return userService.getReferenceList(toUuidList(regionRef), null, false, true, true, assignableRoles)
-			.stream()
-			.map(f -> toReferenceDto(f))
-			.collect(Collectors.toList());
+		return userService.getReferenceList(toUuidList(regionRef), null, false, true, true, assignableRoles).stream()
+				.map(f -> toReferenceDto(f)).collect(Collectors.toList());
 	}
 
 	@Override
-	public List<UserReferenceDto> getUsersByRegionsAndRoles(List<RegionReferenceDto> regionRefs, UserRole... assignableRoles) {
+	public List<UserReferenceDto> getUsersByRegionsAndRoles(List<RegionReferenceDto> regionRefs,
+			UserRole... assignableRoles) {
 
 		return userService
-			.getReferenceList(
-				regionRefs.stream().map(RegionReferenceDto::getUuid).collect(Collectors.toList()),
-				null,
-				false,
-				true,
-				true,
-				assignableRoles)
-			.stream()
-			.map(UserFacadeEjb::toReferenceDto)
-			.collect(Collectors.toList());
+				.getReferenceList(regionRefs.stream().map(RegionReferenceDto::getUuid).collect(Collectors.toList()),
+						null, false, true, true, assignableRoles)
+				.stream().map(UserFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
 	@Override
 	/*
-	 * Get all users with the next higher jurisdiction, whose location contains the current users location
-	 * For facility users, this includes district and community users, if their district/community is identical with that of the facility
+	 * Get all users with the next higher jurisdiction, whose location contains the
+	 * current users location For facility users, this includes district and
+	 * community users, if their district/community is identical with that of the
+	 * facility
 	 */
 	public List<UserReferenceDto> getUsersWithSuperiorJurisdiction(UserDto user) {
-		JurisdictionLevel superordinateJurisdiction =
-			JurisdictionHelper.getSuperordinateJurisdiction(UserRole.getJurisdictionLevel(user.getUserRoles()));
+		JurisdictionLevel superordinateJurisdiction = JurisdictionHelper
+				.getSuperordinateJurisdiction(UserRole.getJurisdictionLevel(user.getUserRoles()));
 
 		List<UserReference> superiorUsersList = Collections.emptyList();
 		switch (superordinateJurisdiction) {
 		case NATION:
-			superiorUsersList =
-				userService.getReferenceList(null, null, null, false, false, true, UserRole.getWithJurisdictionLevels(superordinateJurisdiction));
+			superiorUsersList = userService.getReferenceList(null, null, null, false, false, true,
+					UserRole.getWithJurisdictionLevels(superordinateJurisdiction));
 			break;
 		case AREA:
-			superiorUsersList = userService.getReferenceList(
-				Arrays.asList(user.getArea().getUuid()),
-				null,
-				null,
-				false,
-				false,
-				true,
-				UserRole.getWithJurisdictionLevels(superordinateJurisdiction));
+			superiorUsersList = userService.getReferenceList(Arrays.asList(user.getArea().getUuid()), null, null, false,
+					false, true, UserRole.getWithJurisdictionLevels(superordinateJurisdiction));
 			break;
 		case REGION:
-			superiorUsersList = userService.getReferenceList(
-				Arrays.asList(user.getRegion().getUuid()),
-				null,
-				null,
-				false,
-				false,
-				true,
-				UserRole.getWithJurisdictionLevels(superordinateJurisdiction));
+			superiorUsersList = userService.getReferenceList(Arrays.asList(user.getRegion().getUuid()), null, null,
+					false, false, true, UserRole.getWithJurisdictionLevels(superordinateJurisdiction));
 			break;
 		case DISTRICT:
-			// if user is assigned to a facility, but that facility is not assigned to a district, show no superordinate users. Else, show users of the district (and community) in which the facility is located
+			// if user is assigned to a facility, but that facility is not assigned to a
+			// district, show no superordinate users. Else, show users of the district (and
+			// community) in which the facility is located
 
 			District district = null;
 			Community community = null;
@@ -315,17 +357,11 @@ public class UserFacadeEjb implements UserFacade {
 			}
 
 			if (community == null) {
-				superiorUsersList =
-					userService.getReferenceList(null, Arrays.asList(district.getUuid()), null, false, false, true, superordinateRoles);
+				superiorUsersList = userService.getReferenceList(null, Arrays.asList(district.getUuid()), null, false,
+						false, true, superordinateRoles);
 			} else if (district != null) {
-				superiorUsersList = userService.getReferenceList(
-					null,
-					Arrays.asList(district.getUuid()),
-					Arrays.asList(community.getUuid()),
-					false,
-					false,
-					true,
-					superordinateRoles);
+				superiorUsersList = userService.getReferenceList(null, Arrays.asList(district.getUuid()),
+						Arrays.asList(community.getUuid()), false, false, true, superordinateRoles);
 			}
 
 			break;
@@ -335,48 +371,42 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
-	public List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto districtRef, boolean includeSupervisors, UserRole... userRoles) {
+	public List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto districtRef, boolean includeSupervisors,
+			UserRole... userRoles) {
 
 		return userService.getReferenceList(null, toUuidList(districtRef), includeSupervisors, true, true, userRoles)
-			.stream()
-			.map(f -> toReferenceDto(f))
-			.collect(Collectors.toList());
+				.stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
 	}
 
 	@Override
-	public List<UserReferenceDto> getUserRefsByDistricts(List<DistrictReferenceDto> districtRefs, boolean includeSupervisors, UserRole... userRoles) {
+	public List<UserReferenceDto> getUserRefsByDistricts(List<DistrictReferenceDto> districtRefs,
+			boolean includeSupervisors, UserRole... userRoles) {
 
 		return userService
-			.getReferenceList(
-				null,
-				districtRefs.stream().map(DistrictReferenceDto::getUuid).collect(Collectors.toList()),
-				includeSupervisors,
-				true,
-				true,
-				userRoles)
-			.stream()
-			.map(UserFacadeEjb::toReferenceDto)
-			.collect(Collectors.toList());
+				.getReferenceList(null,
+						districtRefs.stream().map(DistrictReferenceDto::getUuid).collect(Collectors.toList()),
+						includeSupervisors, true, true, userRoles)
+				.stream().map(UserFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<UserReferenceDto> getAllUserRefs(boolean includeInactive) {
 
-		return userService.getReferenceList(null, null, false, true, !includeInactive)
-			.stream()
-			.map(c -> toReferenceDto(c))
-			.collect(Collectors.toList());
+		return userService.getReferenceList(null, null, false, true, !includeInactive).stream()
+				.map(c -> toReferenceDto(c)).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<UserDto> getUsersByAssociatedOfficer(UserReferenceDto associatedOfficerRef, UserRole... userRoles) {
 
 		User associatedOfficer = userService.getByReferenceDto(associatedOfficerRef);
-		return userService.getAllByAssociatedOfficer(associatedOfficer, userRoles).stream().map(f -> toDto(f)).collect(Collectors.toList());
+		return userService.getAllByAssociatedOfficer(associatedOfficer, userRoles).stream().map(f -> toDto(f))
+				.collect(Collectors.toList());
 	}
 
 	@Override
-	public Page<UserDto> getIndexPage(UserCriteria userCriteria, int offset, int size, List<SortProperty> sortProperties) {
+	public Page<UserDto> getIndexPage(UserCriteria userCriteria, int offset, int size,
+			List<SortProperty> sortProperties) {
 		List<UserDto> userIndexList = getIndexList(userCriteria, offset, size, sortProperties);
 		long totalElementCount = count(userCriteria);
 		return new Page<>(userIndexList, offset, size, totalElementCount);
@@ -384,7 +414,9 @@ public class UserFacadeEjb implements UserFacade {
 
 	@Override
 	public List<UserDto> getAllAfter(Date date) {
-		return userService.getAllAfter(date, null).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		return userService.getAllAfter(date, null).stream()
+				.filter(ft -> userService.getCurrentUser().getUuid().equals(ft.getUuid())).map(c -> toDto(c))
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -399,7 +431,8 @@ public class UserFacadeEjb implements UserFacade {
 			return Collections.emptyList();
 		}
 
-		return userService.getAllUuids();
+		return userService.getAllUuids().stream().filter(ftd -> userService.getCurrentUser().getUuid().equals(ftd))
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -428,7 +461,7 @@ public class UserFacadeEjb implements UserFacade {
 
 		try {
 			UserRole.validate(user.getUserRoles());
-		} catch (UserRoleValidationException e) { //POST
+		} catch (UserRoleValidationException e) { // POST
 			throw new ValidationException(e);
 		}
 
@@ -444,7 +477,103 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
-	public List<UserDto> getIndexList(UserCriteria userCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+	public List<UserReportModelDto> getIndexListToDto(UserCriteria userCriteria, Integer first, Integer max,
+			List<SortProperty> sortProperties) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<User> cq = cb.createQuery(User.class);
+		Root<User> user = cq.from(User.class);
+		Join<User, Area> area = user.join(User.AREA, JoinType.LEFT);
+		Join<User, Region> region = user.join(User.REGION, JoinType.LEFT);
+		Join<User, District> district = user.join(User.DISTRICT, JoinType.LEFT);
+		Join<User, Location> address = user.join(User.ADDRESS, JoinType.LEFT);
+		Join<User, Facility> facility = user.join(User.HEALTH_FACILITY, JoinType.LEFT);
+
+		// TODO: We'll need a user filter for users at some point, to make sure that
+		// users can edit their own details,
+		// but not those of others
+
+		Predicate filter = null;
+
+		if (userCriteria != null) {
+			// System.out.println("DEBUGGER: 45fffffffiiilibraryii = "+ userCriteria);
+			filter = userService.buildCriteriaFilter(userCriteria, cb, user);
+		}
+
+		if (filter != null) {
+			/*
+			 * No preemptive distinct because this does collide with ORDER BY
+			 * User.location.address (which is not part of the SELECT clause). UserType
+			 */
+			cq.where(filter);
+		}
+
+		if (sortProperties != null && sortProperties.size() > 0) {
+			List<Order> order = new ArrayList<Order>(sortProperties.size());
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+				switch (sortProperty.propertyName) {
+				case UserReportModelDto.UUID:
+				case UserReportModelDto.ACTIVE:
+				case UserReportModelDto.USER_NAME:
+				case UserReportModelDto.USER_EMAIL:
+					expression = user.get(sortProperty.propertyName);
+					break;
+				case UserReportModelDto.NAME:
+					expression = user.get(User.FIRST_NAME);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = user.get(User.LAST_NAME);
+					break;
+				case UserReportModelDto.DISTRICT:
+					// System.out.println("DEBUGGER: 456ddddddt67ujhgtyuikjhu");
+					expression = district.get(District.NAME);
+					break;
+				case UserReportModelDto.AREA:
+					// System.out.println("DEBUGGER:
+					// 4567uhgDdertgiiiiiiiiiilibraryiiiiiiiiiiifcwerfd9876543hgtyuikjhu");
+					expression = area.get(Area.NAME);
+					break;
+				case UserReportModelDto.REGION:
+					// System.out.println("DEBUGGER: 4567uhgfrt678456789ppppailed to load the
+					// bootstrap javascrippppppppppppppp876543hgtyuikjhu");
+					expression = region.get(Region.NAME);
+					break;
+				case UserReportModelDto.USER_ORGANISATION:
+					expression = user.get(User.USER_ORGANISATION);
+					// System.out.println("DEBUGGER:
+					// 4567uhgfrt6oooooooooooooooooooooo78uijhgft67ujhgtyuikjhu");
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					// expression = user.get(User.USER_ORGANISATION);
+					break;
+				case UserReportModelDto.USER_POSITION:
+					expression = user.get(User.USER_POSITION);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					// expression = user.get(User.USER_POSITION);
+
+					// expression = facility.get(User.USER_POSITION);
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+			}
+			cq.orderBy(order);
+		} else {
+			cq.orderBy(cb.desc(user.get(User.CHANGE_DATE)));
+		}
+
+		cq.select(user);
+
+		// System.out.println("sdafasdeeeeeeeeeeeeeSQLeeeeeeeeeeeeeesdfhsdfg
+		// "+SQLExtractor.from(em.createQuery(cq)));
+
+		// System.out.println();
+
+		return QueryHelper.getResultList(em, cq, first, max, UserFacadeEjb::ListtoDto);
+	}
+
+	@Override
+	public List<UserDto> getIndexList(UserCriteria userCriteria, Integer first, Integer max,
+			List<SortProperty> sortProperties) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<User> cq = cb.createQuery(User.class);
@@ -455,27 +584,47 @@ public class UserFacadeEjb implements UserFacade {
 		Join<User, Location> address = user.join(User.ADDRESS, JoinType.LEFT);
 		Join<User, Facility> facility = user.join(User.HEALTH_FACILITY, JoinType.LEFT);
 
-		// TODO: We'll need a user filter for users at some point, to make sure that users can edit their own details,
+		// TODO: We'll need a user filter for users at some point, to make sure that
+		// users can edit their own details,
 		// but not those of others
 
 		Predicate filter = null;
+//		Predicate predicateForRestUser = cb.isMember((UserRole.REST_USER), user.get(User.USER_ROLES));
+//		Predicate predicateForCommunityUser = cb.isMember((UserRole.COMMUNITY_OFFICER), user.get(User.USER_ROLES));
+//		Predicate predicateForMobileUser= cb.and(predicateForRestUser, predicateForCommunityUser);
 		
+		
+		
+		Set<UserRole> mobileuser = new HashSet<>();
+		mobileuser.add(UserRole.REST_USER);
+		mobileuser.add(UserRole.COMMUNITY_OFFICER);
+		
+		Predicate predicateForMobileUser= user.get(User.USER_ROLES).in(mobileuser);
 		
 		if (userCriteria != null) {
-			System.out.println("DEBUGGER: 45fffffffiiilibraryii = "+ userCriteria);
+			// System.out.println("DEBUGGER: 45fffffffiiilibraryii = "+ userCriteria);
 			filter = userService.buildCriteriaFilter(userCriteria, cb, user);
 		}
 
 		if (filter != null) {
 			/*
-			 * No preemptive distinct because this does collide with
-			 * ORDER BY User.location.address (which is not part of the SELECT clause). UserType
+			 * No preemptive distinct because this does collide with ORDER BY
+			 * User.location.address (which is not part of the SELECT clause). UserType
 			 */
+
+//	        Path<Object> path = user.get(User.USER_ROLES);
+//	        In<Object> in = cb.in(path);
+//	        for (UserRole conditionColumnValue : mobileuser) {
+//	        	System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+ conditionColumnValue);
+//	            in.value(conditionColumnValue);
+//	        }
+//			System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+ mobileuser.size());
 			cq.where(filter);
 		}
 		
+	
 		
-		
+
 		if (sortProperties != null && sortProperties.size() > 0) {
 			List<Order> order = new ArrayList<Order>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
@@ -493,30 +642,32 @@ public class UserFacadeEjb implements UserFacade {
 					expression = user.get(User.LAST_NAME);
 					break;
 				case UserDto.DISTRICT:
-					System.out.println("DEBUGGER: 456ddddddt67ujhgtyuikjhu");
+					// System.out.println("DEBUGGER: 456ddddddt67ujhgtyuikjhu");
 					expression = district.get(District.NAME);
 					break;
 				case UserDto.AREA:
-					System.out.println("DEBUGGER: 4567uhgDdertgiiiiiiiiiilibraryiiiiiiiiiiifcwerfd9876543hgtyuikjhu");
+					// System.out.println("DEBUGGER:
+					// 4567uhgDdertgiiiiiiiiiilibraryiiiiiiiiiiifcwerfd9876543hgtyuikjhu");
 					expression = area.get(Area.NAME);
 					break;
 				case UserDto.REGION:
-					System.out.println("DEBUGGER: 4567uhgfrt678456789ppppailed to load the bootstrap javascrippppppppppppppp876543hgtyuikjhu");
+					// System.out.println("DEBUGGER: 4567uhgfrt678456789ppppailed to load the
+					// bootstrap javascrippppppppppppppp876543hgtyuikjhu");
 					expression = region.get(Region.NAME);
 					break;
 				case UserDto.USER_ORGANISATION:
 					expression = user.get(User.USER_ORGANISATION);
-					System.out.println("DEBUGGER: 4567uhgfrt6oooooooooooooooooooooo78uijhgft67ujhgtyuikjhu");
+					// System.out.println("DEBUGGER:
+					// 4567uhgfrt6oooooooooooooooooooooo78uijhgft67ujhgtyuikjhu");
 					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					//expression = user.get(User.USER_ORGANISATION);
+					// expression = user.get(User.USER_ORGANISATION);
 					break;
 				case UserDto.USER_POSITION:
 					expression = user.get(User.USER_POSITION);
 					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					//expression = user.get(User.USER_POSITION);
-					
-					
-					//expression = facility.get(User.USER_POSITION);
+					// expression = user.get(User.USER_POSITION);
+
+					// expression = facility.get(User.USER_POSITION);
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
@@ -528,11 +679,9 @@ public class UserFacadeEjb implements UserFacade {
 			cq.orderBy(cb.desc(user.get(User.CHANGE_DATE)));
 		}
 
-		cq.select(user);
-		
-		System.out.println("sdafasdeeeeeeeeeeeeeSQLeeeeeeeeeeeeeesdfhsdfg "+SQLExtractor.from(em.createQuery(cq)));
-		
-		System.out.println();
+			
+			cq.select(user);
+
 
 		return QueryHelper.getResultList(em, cq, first, max, UserFacadeEjb::toDto);
 	}
@@ -559,10 +708,11 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	private User fromDto(UserDto source, boolean checkChangeDate) {
-		
-		System.out.println("77777");
 
-		User target = DtoHelper.fillOrBuildEntity(source, userService.getByUuid(source.getUuid()), userService::createUser, checkChangeDate);
+		// System.out.println("77777");
+
+		User target = DtoHelper.fillOrBuildEntity(source, userService.getByUuid(source.getUuid()),
+				userService::createUser, checkChangeDate);
 
 		target.setActive(source.isActive());
 		target.setFirstName(source.getFirstName());
@@ -578,7 +728,8 @@ public class UserFacadeEjb implements UserFacade {
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setCommunity(communityService.getByReferenceDto(source.getCommunity()));
-	//	System.out.println(source.getDistrict()+" :@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"+source.getCommunity());
+		// //System.out.println(source.getDistrict()+"
+		// :@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"+source.getCommunity());
 		target.setHealthFacility(facilityService.getByReferenceDto(source.getHealthFacility()));
 		target.setAssociatedOfficer(userService.getByReferenceDto(source.getAssociatedOfficer()));
 		target.setLaboratory(facilityService.getByReferenceDto(source.getLaboratory()));
@@ -621,7 +772,7 @@ public class UserFacadeEjb implements UserFacade {
 
 		User user = userService.getByUserName(userName);
 		if (user != null && user.isActive()) {
-			if (DataHelper.equal(user.getPassword(), PasswordHelper.encodePassword(password, user.getSeed()))) { 
+			if (DataHelper.equal(user.getPassword(), PasswordHelper.encodePassword(password, user.getSeed()))) {
 				return new HashSet<UserRole>(user.getUserRoles());
 			}
 		}
@@ -680,17 +831,16 @@ public class UserFacadeEjb implements UserFacade {
 		if (currentUser.getUserRoles().stream().anyMatch(r -> r.hasDefaultRight(UserRight.USER_EDIT))) {
 			// user is allowed to change all passwords
 			// a list of all users with a default password is returned
-			return userService.getAllDefaultUsers()
-				.stream()
-				.filter(user -> DefaultEntityHelper.usesDefaultPassword(user.getUserName(), user.getPassword(), user.getSeed()))
-				.map(UserFacadeEjb::toDto)
-				.collect(Collectors.toList());
+			return userService
+					.getAllDefaultUsers().stream().filter(user -> DefaultEntityHelper
+							.usesDefaultPassword(user.getUserName(), user.getPassword(), user.getSeed()))
+					.map(UserFacadeEjb::toDto).collect(Collectors.toList());
 
 		} else {
 			// user has only access to himself
 			// the list will include him/her or will be empty
-			if (DefaultEntityHelper.isDefaultUser(currentUser.getUserName())
-				&& DefaultEntityHelper.usesDefaultPassword(currentUser.getUserName(), currentUser.getPassword(), currentUser.getSeed())) {
+			if (DefaultEntityHelper.isDefaultUser(currentUser.getUserName()) && DefaultEntityHelper
+					.usesDefaultPassword(currentUser.getUserName(), currentUser.getPassword(), currentUser.getSeed())) {
 				return Collections.singletonList(UserFacadeEjb.toDto(currentUser));
 			} else {
 				return Collections.emptyList();
@@ -744,6 +894,4 @@ public class UserFacadeEjb implements UserFacade {
 		return "Changed";
 	}
 
-	
-	
 }

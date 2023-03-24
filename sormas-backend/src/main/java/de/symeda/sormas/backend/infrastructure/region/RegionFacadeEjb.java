@@ -14,11 +14,14 @@
  */
 package de.symeda.sormas.backend.infrastructure.region;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -28,6 +31,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -44,6 +48,8 @@ import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.area.AreaDto;
+import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -111,6 +117,36 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionSer
 
 			return null;
 		});
+	}
+	
+
+	@Override
+	public List<RegionDto> getAllActiveAsReferenceAndPopulation(Long areaId) {
+		String queryStringBuilder = "select a.\"name\", sum(p.population), a.id, ar.uuid as umid, a.uuid as uimn from region a\n"
+				+ "left outer join populationdata p on a.id = p.region_id\n"
+				+ "left outer join areas ar on ar.id = "+areaId+"\n"
+				+ "where a.archived = false and p.agegroup = 'AGE_0_4' and a.area_id = "+areaId+"\n"
+				+ "group by a.\"name\", a.id, ar.uuid, a.uuid";
+		
+		
+		Query seriesDataQuery = em.createNativeQuery(queryStringBuilder);
+		
+		List<RegionDto> resultData = new ArrayList<>();
+		
+		
+		@SuppressWarnings("unchecked")
+		List<Object[]> resultList = seriesDataQuery.getResultList(); 
+		
+		System.out.println("starting....");
+		
+		resultData.addAll(resultList.stream()
+				.map((result) -> new RegionDto((String) result[0].toString(), ((BigInteger) result[1]).longValue(), ((BigInteger) result[2]).longValue(), (String) result[3].toString(), (String) result[4].toString())).collect(Collectors.toList()));
+		
+		System.out.println("ending...." +resultData.size());
+	
+	
+	//System.out.println("resultData - "+ resultData.toString()); //SQLExtractor.from(seriesDataQuery));
+	return resultData;
 	}
 
 	@Override
@@ -196,8 +232,10 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionSer
 					expression = region.get(sortProperty.propertyName);
 					break;
 				case Region.AREA:
+				case RegionIndexDto.REGION_EXTERNAL_ID:
 					expression = area.get(Area.NAME);
 					break;
+				
 				case RegionIndexDto.COUNTRY:
 					expression = country.get(Country.DEFAULT_NAME);
 					break;
@@ -334,7 +372,8 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionSer
 		dto.setPopulation(populationDataFacade.getRegionPopulation(dto.getUuid()));
 		dto.setGrowthRate(entity.getGrowthRate());
 		dto.setExternalId(entity.getExternalId());
-		dto.setArea(AreaFacadeEjb.toReferenceDto(entity.getArea()));
+		dto.setArea(AreaFacadeEjb.toReferenceDtox(entity.getArea()));
+		dto.setAreaexternalId(entity.getArea().getExternalId());
 		dto.setCountry(CountryFacadeEjb.toReferenceDto(entity.getCountry()));
 
 		return dto;
@@ -431,4 +470,12 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionSer
 		}
 	}
 
+	public static Set<RegionReferenceDto> toReferenceDto(HashSet<Region> regions) {
+		Set<RegionReferenceDto> dtos = new HashSet<RegionReferenceDto>();
+		for(Region region : regions) {	
+			RegionReferenceDto regionDto = new RegionReferenceDto(region.getUuid(), region.toString(), region.getExternalId());	
+			dtos.add(regionDto);
+		}	
+		return dtos;
+	}
 }

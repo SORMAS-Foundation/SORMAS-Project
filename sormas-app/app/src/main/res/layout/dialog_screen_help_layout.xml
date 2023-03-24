@@ -49,7 +49,7 @@
                 android:layout_margin="@dimen/simple_dialog_button_margin"
                 android:paddingLeft="@dimen/dialog_panel_horizontal_padding"
                 android:paddingRight="@dimen/dialog_panel_horizontal_padding"
-                android:text="@string/heading_help"
+                android:text="@string/action_delete"
                 android:textSize="@dimen/textSizeXXLarge"
                 style="@style/HeadingStyle" />
 
@@ -62,7 +62,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="52dp"
-            android:layout_marginBottom="64dp">
+            android:layout_marginBottom="64dp"
+            >
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -74,7 +75,7 @@
                     android:id="@+id/help_string"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@{data}"
+                    android:text="@string/confirmation_delete"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="@color/normalText"
                     android:textSize="@dimen/textSizeLarge" />
@@ -82,29 +83,47 @@
             </LinearLayout>
 
         </ScrollView>
-
         <LinearLayout
-            android:id="@+id/button_panel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_gravity="bottom">
-
-            <ImageView style="@style/FullHorizontalDividerStyleNoDefaultMargin"/>
+            android:orientation="horizontal"
+            android:padding="@dimen/fragment_padding"
+            android:layout_marginTop="110dp"
+            >
 
             <de.symeda.sormas.app.component.controls.ControlButton
-                android:id="@+id/button_dismiss"
+                android:id="@+id/button_positive"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:layout_margin="@dimen/simple_dialog_button_margin"
-                android:text="@string/action_dismiss"
+                android:layout_marginStart="@dimen/control_spacing_slim"
+                android:layout_marginEnd="100dp"
+                android:text="@string/yes"
                 android:onClickListener="@{(view) -> dismissCallback.call()}"
-                app:iconStart="@drawable/ic_clear_black_24dp"
-                app:slim="true"
-                app:buttonType="@{ControlButtonType.PRIMARY}" />
+                android:visibility="visible"
+                app:buttonType="@{ControlButtonType.DANGER}"
+                app:iconStart="@drawable/ic_check_blue_24dp"
+                app:rounded="true"
+                app:slim="true" />
+
+            <de.symeda.sormas.app.component.controls.ControlButton
+                android:id="@+id/button_negative"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginStart="@dimen/simple_dialog_button_margin"
+                android:layout_marginTop="@dimen/simple_dialog_button_margin"
+                android:onClickListener="@{(view) -> dismissCallback.call()}"
+                android:layout_marginBottom="@dimen/simple_dialog_button_margin"
+                android:text="@string/no"
+                android:visibility="visible"
+                app:buttonType="@{ControlButtonType.PRIMARY}"
+                app:iconStart="@drawable/ic_back_arrow_blue_24dp"
+                app:rounded="true"
+                app:slim="true" />
 
         </LinearLayout>
+
 
     </FrameLayout>
 

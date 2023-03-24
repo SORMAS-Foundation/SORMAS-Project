@@ -98,9 +98,10 @@ public class SettingsFragment extends BaseLandingFragment {
 		binding.syncCaseLbds.setOnClickListener(v -> LbdsIntentSender.sendNewCasesLbds(getContext()));
 		binding.settingsLbdsDebugUrl.setValue(ConfigProvider.getServerLbdsDebugUrl());
 
-		binding.apmisAppVersion.setText("APMIS APK Version: " + HoldVersions.getAppVersionFromUrl());
-		binding.apmisEngineVersion.setText("APMIS REST Engine Version: " + HoldVersions.getServerVersionFromURL());
-
+		binding.apmisAppVersion.setText("APMIS APP Version: " + ConfigProvider.APPVERSIONNUMBER);
+		if(HoldVersions.getServerVersionFromURL() == null) {
+		//	binding.apmisEngineVersion.setText("APMIS REST Engine Version: " + HoldVersions.getServerVersionFromURL());
+		}
 		binding.sormasVersion.setText("APMIS Server Version: " + InfoProvider.InfoProvider_apmis());//HoldVersions
 		binding.sormasVersion.setOnClickListener(v -> {
 			versionClickedCount++;
@@ -120,18 +121,26 @@ public class SettingsFragment extends BaseLandingFragment {
 		});
 
 		binding.setData(ConfigProvider.getUser());
-		Language initialLanguage = binding.getData() != null ? I18nProperties.getUserLanguage() : LocaleManager.getLanguagePref(getContext());
+		Language initialLanguage = LocaleManager.getLanguagePref(getContext());// binding.getData() != null ? I18nProperties.getUserLanguage() : LocaleManager.getLanguagePref(getContext());
+
+
+
 		ValueChangeListener languageValueChangeListener = e -> {
-			Language currentLanguage = LocaleManager.getLanguagePref(getContext());
+			 Language currentLanguage = LocaleManager.getLanguagePref(getContext());
+
+			System.out.println(currentLanguage + "currenttttttttttttttt");
 			if (e.getValue() == null) {
-				// This happens e.g. when the user is not logged in
+				// This happens e.g. when the user is not logged in6f4AW8fFDqXj
 				e.setValue(LocaleManager.getLanguagePref(getContext()));
+
+
 			}
 			Language newLanguage = (Language) e.getValue();
 			if (!LocaleManager.getLanguagePref(getContext()).equals(e.getValue())) {
 				try {
 					User user = binding.getData();
 					if (user != null) {
+						System.out.println("________________________________"+newLanguage);
 						user.setLanguage(newLanguage);
 						DatabaseHelper.getUserDao().saveAndSnapshot(user);
 					}
@@ -215,61 +224,61 @@ public class SettingsFragment extends BaseLandingFragment {
 
 		confirmationDialog.setPositiveCallback(() -> {
 			// Collect unsynchronized changes
-			final List<Case> modifiedCases = DatabaseHelper.getCaseDao().getModifiedEntities();
-			final List<Contact> modifiedContacts = DatabaseHelper.getContactDao().getModifiedEntities();
-			final List<Person> modifiedPersons = DatabaseHelper.getPersonDao().getModifiedEntities();
-			final List<Event> modifiedEvents = DatabaseHelper.getEventDao().getModifiedEntities();
-			final List<EventParticipant> modifiedEventParticipants = DatabaseHelper.getEventParticipantDao().getModifiedEntities();
-			final List<Sample> modifiedSamples = DatabaseHelper.getSampleDao().getModifiedEntities();
-			final List<Visit> modifiedVisits = DatabaseHelper.getVisitDao().getModifiedEntities();
+		//	final List<Case> modifiedCases = DatabaseHelper.getCaseDao().getModifiedEntities();
+		//	final List<Contact> modifiedContacts = DatabaseHelper.getContactDao().getModifiedEntities();
+		//	final List<Person> modifiedPersons = DatabaseHelper.getPersonDao().getModifiedEntities();
+		//	final List<Event> modifiedEvents = DatabaseHelper.getEventDao().getModifiedEntities();
+		//	final List<EventParticipant> modifiedEventParticipants = DatabaseHelper.getEventParticipantDao().getModifiedEntities();
+		//	final List<Sample> modifiedSamples = DatabaseHelper.getSampleDao().getModifiedEntities();
+		//	final List<Visit> modifiedVisits = DatabaseHelper.getVisitDao().getModifiedEntities();
 
 			getBaseActivity().synchronizeData(SynchronizeDataAsync.SyncMode.CompleteAndRepull, true, true, null, new Callback() {
 
 				@Override
 				public void call() {
 					// Add deleted entities that had unsynchronized changes to sync log
-					for (Case caze : modifiedCases) {
-						if (DatabaseHelper.getCaseDao().queryUuidReference(caze.getUuid()) == null) {
-							DatabaseHelper.getSyncLogDao()
-								.createWithParentStack(caze.toString(), getResources().getString(R.string.caption_changed_data_lost));
-						}
-					}
-					for (Contact contact : modifiedContacts) {
-						if (DatabaseHelper.getContactDao().queryUuidReference(contact.getUuid()) == null) {
-							DatabaseHelper.getSyncLogDao()
-								.createWithParentStack(contact.toString(), getResources().getString(R.string.caption_changed_data_lost));
-						}
-					}
-					for (Person person : modifiedPersons) {
-						if (DatabaseHelper.getPersonDao().queryUuidReference(person.getUuid()) == null) {
-							DatabaseHelper.getSyncLogDao()
-								.createWithParentStack(person.toString(), getResources().getString(R.string.caption_changed_data_lost));
-						}
-					}
-					for (Event event : modifiedEvents) {
-						if (DatabaseHelper.getEventDao().queryUuidReference(event.getUuid()) == null) {
-							DatabaseHelper.getSyncLogDao()
-								.createWithParentStack(event.toString(), getResources().getString(R.string.caption_changed_data_lost));
-						}
-					}
-					for (EventParticipant eventParticipant : modifiedEventParticipants) {
-						if (DatabaseHelper.getEventParticipantDao().queryUuidReference(eventParticipant.getUuid()) == null) {
-							DatabaseHelper.getSyncLogDao()
-								.createWithParentStack(eventParticipant.toString(), getResources().getString(R.string.caption_changed_data_lost));
-						}
-					}
-					for (Sample sample : modifiedSamples) {
-						if (DatabaseHelper.getSampleDao().queryUuidReference(sample.getUuid()) == null) {
-							DatabaseHelper.getSyncLogDao()
-								.createWithParentStack(sample.toString(), getResources().getString(R.string.caption_changed_data_lost));
-						}
-					}
-					for (Visit visit : modifiedVisits) {
-						if (DatabaseHelper.getVisitDao().queryUuidReference(visit.getUuid()) == null) {
-							DatabaseHelper.getSyncLogDao()
-								.createWithParentStack(visit.toString(), getResources().getString(R.string.caption_changed_data_lost));
-						}
-					}
+//					for (Case caze : modifiedCases) {
+//						if (DatabaseHelper.getCaseDao().queryUuidReference(caze.getUuid()) == null) {
+//							DatabaseHelper.getSyncLogDao()
+//								.createWithParentStack(caze.toString(), getResources().getString(R.string.caption_changed_data_lost));
+//						}
+//					}
+//					for (Contact contact : modifiedContacts) {
+//						if (DatabaseHelper.getContactDao().queryUuidReference(contact.getUuid()) == null) {
+//							DatabaseHelper.getSyncLogDao()
+//								.createWithParentStack(contact.toString(), getResources().getString(R.string.caption_changed_data_lost));
+//						}
+//					}
+//					for (Person person : modifiedPersons) {
+//						if (DatabaseHelper.getPersonDao().queryUuidReference(person.getUuid()) == null) {
+//							DatabaseHelper.getSyncLogDao()
+//								.createWithParentStack(person.toString(), getResources().getString(R.string.caption_changed_data_lost));
+//						}
+//					}
+//					for (Event event : modifiedEvents) {
+//						if (DatabaseHelper.getEventDao().queryUuidReference(event.getUuid()) == null) {
+//							DatabaseHelper.getSyncLogDao()
+//								.createWithParentStack(event.toString(), getResources().getString(R.string.caption_changed_data_lost));
+//						}
+//					}
+//					for (EventParticipant eventParticipant : modifiedEventParticipants) {
+//						if (DatabaseHelper.getEventParticipantDao().queryUuidReference(eventParticipant.getUuid()) == null) {
+//							DatabaseHelper.getSyncLogDao()
+//								.createWithParentStack(eventParticipant.toString(), getResources().getString(R.string.caption_changed_data_lost));
+//						}
+//					}
+//					for (Sample sample : modifiedSamples) {
+//						if (DatabaseHelper.getSampleDao().queryUuidReference(sample.getUuid()) == null) {
+//							DatabaseHelper.getSyncLogDao()
+//								.createWithParentStack(sample.toString(), getResources().getString(R.string.caption_changed_data_lost));
+//						}
+//					}
+//					for (Visit visit : modifiedVisits) {
+//						if (DatabaseHelper.getVisitDao().queryUuidReference(visit.getUuid()) == null) {
+//							DatabaseHelper.getSyncLogDao()
+//								.createWithParentStack(visit.toString(), getResources().getString(R.string.caption_changed_data_lost));
+//						}
+//					}
 				}
 			}, new Callback() {
 
@@ -290,6 +299,7 @@ public class SettingsFragment extends BaseLandingFragment {
 
 	public void logout() {
 		checkAndShowUnsynchronizedChangesDialog(() -> {
+			DatabaseHelper.dropDatabase();
 			ConfigProvider.clearUserLogin();
 			ConfigProvider.clearPin();
 			Intent intent = new Intent(getActivity(), LoginActivity.class);

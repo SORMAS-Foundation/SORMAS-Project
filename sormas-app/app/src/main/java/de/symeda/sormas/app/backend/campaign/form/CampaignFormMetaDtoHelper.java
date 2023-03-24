@@ -66,6 +66,7 @@ public class CampaignFormMetaDtoHelper extends AdoDtoHelper<CampaignFormMeta, Ca
     @Override
     protected void fillInnerFromDto(CampaignFormMeta target, CampaignFormMetaDto source) {
         target.setFormId(source.getFormId());
+        target.setFormCategory(source.getFormCategory() != null ? source.getFormCategory().toString() : null );
         target.setFormName(source.getFormName());
         target.setCampaignFormElements(source.getCampaignFormElements());
         target.setCampaignFormTranslations(source.getCampaignFormTranslations());

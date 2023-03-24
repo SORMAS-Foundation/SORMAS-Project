@@ -20,7 +20,9 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape android:shape="rectangle">
-            <solid android:color="@color/listActivityRowBackground"/>
+            <solid android:color="@color/listActivityRowBorder"/>
+
+            <corners android:radius="@dimen/readControlSmallIconWidth"/>
         </shape>
     </item>
     <item
@@ -28,20 +30,13 @@
         android:right="@dimen/listActivityRowItemBorderRight"
         android:top="@dimen/listActivityRowItemBorderTop">
         <shape>
-            <solid android:color="@android:color/transparent"/>
+            <solid android:color="@color/transparent"/>
             <stroke
                 android:width="@dimen/listActivityRowItemBorderWidth"
                 android:color="@color/listActivityRowBorder"/>
         </shape>
     </item>
-    <!-- TODO #704 - causes problems with pre 23 SDK versions
-    <item
-        android:id="@+id/unreadListItemIndicator"
-        android:width="@dimen/unreadListItemIndicatorWidth"
-        android:height="@dimen/unreadListItemIndicatorHeight"
-        android:drawable="@drawable/ic_unread_24dp"
-        android:gravity="top|right"
-        android:right="@dimen/unreadListItemIndicatorRight"
-        android:top="@dimen/unreadListItemIndicatorTop"/>
-        -->
+
+
+
 </layer-list>

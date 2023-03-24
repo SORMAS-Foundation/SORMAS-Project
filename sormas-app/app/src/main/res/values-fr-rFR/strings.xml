@@ -108,7 +108,7 @@
     <string name="action_set_cleared_to_unknown">Définir manquant pour \"Inconnu\"</string>
     <string name="action_show_classification_rules">Voir les règles de classification</string>
     <string name="action_submit_report">Soumettre le rapport hebdomadaire</string>
-    <string name="action_sync">Sync</string>
+    <string name="action_sync">Submit Data</string>
     <string name="action_transfer_case">Transférer le cas</string>
     <string name="action_try_again">Réessayez</string>
     <string name="action_turn_on_gps">Activez le GPS</string>

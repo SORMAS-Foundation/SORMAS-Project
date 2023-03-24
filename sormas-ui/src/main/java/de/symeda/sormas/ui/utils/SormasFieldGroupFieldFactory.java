@@ -163,7 +163,6 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 
 			CampaignFormElementOptions campaignFormElementOptions = new CampaignFormElementOptions();
 			HashMap<String, String> data = (HashMap<String, String>) campaignFormElementOptions.getOptionsListValues();
-			 System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>> "+data);
 			//select.addItems(data);
 			 for(Entry<String, String> e : data.entrySet()){ 
 			select.addItem(e.getKey());

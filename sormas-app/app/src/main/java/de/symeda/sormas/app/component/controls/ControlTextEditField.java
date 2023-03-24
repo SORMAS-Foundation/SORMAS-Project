@@ -41,6 +41,8 @@ import androidx.databinding.BindingAdapter;
 import androidx.databinding.InverseBindingAdapter;
 import androidx.databinding.InverseBindingListener;
 
+import org.springframework.core.env.SystemEnvironmentPropertySource;
+
 import java.math.BigDecimal;
 
 import de.symeda.sormas.api.utils.FieldConstraints;
@@ -311,44 +313,59 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 
         CharSequence valx = input.getText();
         if (valx == null && required) {
-            setSoftRequired(true);
+          //  setSoftRequired(true);
 
-            input.setError("!");
+         //   input.setError("!");
             return;
         }
 
 
         input.addTextChangedListener(new TextWatcher() {
 
+            String beforeData = "";
+            String onChangeData = "";
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
+                beforeData = charSequence+"";
+              }
+
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                onChangeData = charSequence+"";
+
+                /*if (isRange && isExpression && isRequired){
+                    System.out.println((onChangeData.length() == 0) +" =XXXXXXXXXXX ENTERSSSSS XXXXXXXX =" +(beforeData.length() > 0));
+                    if(beforeData.length() > 0 && onChangeData.length() == 0) {
+                        enableErrorState("Number not in provided range!");
+                        System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx");
+
+                    }*/
+          //  }
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
+
                 if (inverseBindingListener != null) {
                     inverseBindingListener.onChange();
                 }
                 onValueChanged();
-                System.out.println("range: " + isRange + ", minVla = " + minValue + ", maxValue = " + maxValue);
+
                 if (isRange && minValue != null && maxValue != null) {
-                    System.out.println(minValue + "--------%%%11%%%------------" + maxValue);
+            //        System.out.println(minValue + "--------%%%11%%%------------" + maxValue);
                     if (minValue != null && maxValue != null && input.getText() != null) {
-                        System.out.println(minValue + "--------%%%22%%%------------" + maxValue);
+                 //      System.out.println(minValue + "--------%%%22%%%------------" + maxValue);
                         if (!input.getText().toString().equals("") || !input.getText().toString().isEmpty()) {
-                            System.out.println(minValue + "--------%%%333%%%------------" + maxValue);
+                   //         System.out.println(minValue + "--------%%%333%%%------------" + maxValue);
                             int valxx = Integer.parseInt(input.getText().toString());
                             if (valxx >= minValue && valxx <= maxValue) {
-                                System.out.println(minValue + "--------%%%444%%%------------" + maxValue);
+                     //           System.out.println(minValue + "--------%%%444%%%------------" + maxValue);
                             } else if (warnOnError) {
-                                System.out.println(minValue + "--------%%555%%%%------------" + maxValue);
+                      //          System.out.println(minValue + "--------%%555%%%%------------" + maxValue);
                                 NotificationHelper.showNotification((NotificationContext) input.getContext(), WARNING, "Number not in provided range! i.e min: " + minValue + " and max: " + maxValue);
                             } else {
-                                System.out.println(minValue + "Number not in provided range!" + maxValue);
+                         //       System.out.println(minValue + "Number not in provided range!" + maxValue);
                                 input.setError("Number not in provided range! i.e min: " + minValue + " and max: " + maxValue);
                                 setErrorIfEmptyRange();
                                 enableErrorState("Number not in provided range! i.e min: " + minValue + " and max: " + maxValue);
@@ -358,6 +375,13 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 
                     }
 
+                }
+
+                if (isRange && isExpression && isRequired){
+                     if(beforeData.length() > 0 && onChangeData.length() == 0) {
+                        enableErrorState("Number not in provided range!");
+
+                    }
                 }
             }
         });
@@ -484,6 +508,19 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
     public static void setValue(ControlTextEditField view, String text) {
         view.setFieldValue(text);
     }
+
+/*
+    @BindingAdapter("value")
+    public static void setValue(ControlTextEditField view, String text, Boolean hasErrorNow) {
+        view.setFieldValue(text);
+
+        if (hasErrorNow) {
+            changeVisualState(VisualState.ERROR);
+        } else {
+            changeVisualState(VisualState.NORMAL);
+        }
+    }
+*/
 
     @BindingAdapter("value")
     public static void setValue(ControlTextEditField view, Integer integerValue) {

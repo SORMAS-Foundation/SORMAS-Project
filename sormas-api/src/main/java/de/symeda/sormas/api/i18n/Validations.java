@@ -138,6 +138,7 @@ public interface Validations {
 	String numberTooSmall = "numberTooSmall";
 	String onlyDecimalNumbersAllowed = "onlyDecimalNumbersAllowed";
 	String onlyGeoCoordinatesAllowed = "onlyGeoCoordinatesAllowed";
+	String zerosCannotBeVillageCode = "zerosCannotBeVillageCode";
 	String onlyNumbersAllowed = "onlyNumbersAllowed";
 	String patchNoSuchFieldException = "patchNoSuchFieldException";
 	String patchUnsupportedCollectionFieldType = "patchUnsupportedCollectionFieldType";

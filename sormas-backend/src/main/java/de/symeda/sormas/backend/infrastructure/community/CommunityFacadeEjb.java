@@ -1,17 +1,3 @@
-/*
- * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
 package de.symeda.sormas.backend.infrastructure.community;
 
 import java.util.ArrayList;
@@ -42,26 +28,36 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.vladmihalcea.hibernate.type.util.SQLExtractor;
+
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.campaign.CampaignPhase;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityCriteriaNew;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityFacade;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.report.CommunityUserReportModelDto;
+import de.symeda.sormas.api.user.FormAccess;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
+import de.symeda.sormas.backend.infrastructure.area.Area;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
+import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -69,6 +65,10 @@ import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "CommunityFacade")
 public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, CommunityService> implements CommunityFacade {
+	
+	private FormAccess frmsAccess;
+	
+
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
@@ -133,11 +133,110 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 			root.get(Community.EXTERNAL_ID),
 			root.get(Community.CLUSTER_NUMBER));
 	}
+	
+	
+
+	@Override
+	public long countReportGrid(CommunityCriteriaNew criteria, FormAccess formacc) {
+
+		//System.out.println("zzzzzzzyyyyyyyejsrtykjstykstykstukszzzzzzzzzzzzzzzzzzzzzzzzz ");
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Community> root = cq.from(Community.class);
+
+		
+		Predicate filter = null;
+	//	if (criteria != null) {
+			
+			filter = service.buildCriteriaFilter(criteria, cb, root);
+		//}else {
+		//	criteria.fromUrlParams("area=W5R34K-APYPCA-4GZXDO-IVJWKGIM");
+	//		filter = service.buildCriteriaFilter(criteria, cb, root);
+		//}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.select(cb.count(root));
+		System.out.println("DEBUGGER r567ujhgty8ijyu8dfrf COUNTERs  " + SQLExtractor.from(em.createQuery(cq)));
+		return em.createQuery(cq).getSingleResult();
+	}
+	
+
+	@Override
+	public List<CommunityUserReportModelDto> getAllActiveCommunitytoRerence(CommunityCriteriaNew criteria, Integer first, Integer max, List<SortProperty> sortProperties, FormAccess formacc) {
+	System.out.println("22222222222222222222222222222 1.0.3 222222222222222222222222222222222222222222222222222222222222 "+criteria.getArea().getUuid());
+		frmsAccess = formacc;
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Community> cq = cb.createQuery(Community.class);
+			Root<Community> community = cq.from(Community.class);
+			Join<Community, District> district = community.join(Community.DISTRICT, JoinType.LEFT);
+			Join<District, Region> region = district.join(District.REGION, JoinType.LEFT);
+	
+					
+			Predicate filter = null;
+			if (criteria != null) {
+				filter = service.buildCriteriaFilter(criteria, cb, community);
+			} 
+
+			if (filter != null) {
+				cq.where(filter);
+			}
+			
+			cq.orderBy(cb.asc(region.get(Region.NAME)), cb.asc(district.get(District.NAME)), cb.asc(community.get(Community.NAME)));
+			
+			cq.select(community);
+
+			System.out.println("DEBUGGER r567ujhgty8ijyu8dfrf  " + SQLExtractor.from(em.createQuery(cq)));
+			//if(isCounter)
+			return QueryHelper.getResultList(em, cq, first, max, this::toDtoList);//.stream().filter(e -> e.getMessage() != "Correctly assigned").collect(Collectors.toList());
+		}
+	
+	
+	
+	@Override
+	public Integer getAllActiveCommunitytoRerenceCount(CommunityCriteriaNew criteria, Integer first, Integer max, List<SortProperty> sortProperties, FormAccess formacc) {
+	System.out.println(max+"----"+criteria.getArea().getUuid()+".........getAllActiveCommunitytoRerenceCount--- "+criteria.getArea().getUuid());
+		frmsAccess = formacc;
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Community> cq = cb.createQuery(Community.class);
+			Root<Community> community = cq.from(Community.class);
+			Join<Community, District> district = community.join(Community.DISTRICT, JoinType.LEFT);
+			Join<District, Region> region = district.join(District.REGION, JoinType.LEFT);
+	
+					
+			Predicate filter = null;
+			if (criteria != null) {
+				filter = service.buildCriteriaFilter(criteria, cb, community);
+			} 
+
+			if (filter != null) {
+				cq.where(filter);
+			}
+			
+			cq.orderBy(cb.asc(region.get(Region.NAME)), cb.asc(district.get(District.NAME)), cb.asc(community.get(Community.NAME)));
+			
+			cq.select(community);
+			
+			Integer finalResult = QueryHelper.getResultList(em, cq, first, max, this::toDtoList).size();
+			System.out.println("================ "+finalResult);
+			
+			//System.out.println("DEBUGGER r567ujhgty8ijyu8dfrf  " + SQLExtractor.from(em.createQuery(cq)));
+			//if(isCounter)
+			return finalResult;
+			//.stream().filter(e -> e.getMessage() != "Correctly assigned").collect(Collectors.toList());
+		}
+	
+	
+	
 
 	@Override
 	public List<CommunityDto> getIndexList(CommunityCriteriaNew criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		
-		System.out.println("22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222 "+criteria.getArea());
+		System.out.println("2222222222222222222222222444444444444444444442222222222222222222222222222 "+criteria.getArea());
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Community> cq = cb.createQuery(Community.class);
@@ -166,9 +265,13 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 					expression = community.get(sortProperty.propertyName);
 					break;
 				case District.REGION:
+				case CommunityDto.REGION_EXTERNALID:
+				case CommunityDto.AREA_NAME:
+				case CommunityDto.AREA_EXTERNAL_ID:
 					expression = region.get(Region.NAME);
 					break;
 				case Community.DISTRICT:
+				case CommunityDto.DISTRICT_EXTERNALID:
 					expression = district.get(District.NAME);
 					break;
 				default:
@@ -217,6 +320,8 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 		cq.select(cb.count(root));
 		return em.createQuery(cq).getSingleResult();
 	}
+	
+	
 
 	@Override
 	public List<String> getAllUuids() {
@@ -377,14 +482,68 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 		dto.setName(entity.getName());
 		dto.setGrowthRate(entity.getGrowthRate());
 		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
+		dto.setDistrictexternalId(entity.getDistrict().getExternalId());
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getDistrict().getRegion()));
+		dto.setRegionexternalId(entity.getDistrict().getRegion().getExternalId());
 		dto.setArchived(entity.isArchived());
 		dto.setExternalId(entity.getExternalId());
 		dto.setClusterNumber(entity.getClusterNumber());
+		dto.setAreaname(entity.getDistrict().getRegion().getArea().getName());
+		dto.setAreaexternalId(entity.getDistrict().getRegion().getArea().getExternalId());
 
 		return dto;
 	}
+	
+	
+	private CommunityUserReportModelDto toDtoList(Community entity) {
+		
+//	System.out.println("22222222222222222222222222 "+frmsAccess);
 
+		if (entity == null) {
+			return null;
+		}
+		
+		//userService = new UserService();
+		
+		CommunityUserReportModelDto dto = new CommunityUserReportModelDto();
+		DtoHelper.fillDto(dto, entity);
+
+		dto.setRegion(entity.getDistrict().getRegion().getName());
+		dto.setDistrict(entity.getDistrict().getName());
+		dto.setCommunity(entity.getName());
+		dto.setClusterNumber(entity.getClusterNumber().toString());
+		dto.setcCode(entity.getExternalId().toString());
+		dto.setArea(entity.getDistrict().getRegion().getArea().getName());
+		
+		List<String> usersd = new ArrayList<>();
+		Set<FormAccess> formss = new HashSet<>();
+		
+		for(User usr : userService.getAllByCommunity()) {
+			if(usr.getFormAccess().contains(frmsAccess)) {
+			usr.getCommunity().stream().filter(ee -> ee.getUuid().equals(entity.getUuid())).findFirst().ifPresent(ef -> usersd.add(usr.getUserName()));
+			usr.getCommunity().stream().filter(ee -> ee.getUuid().equals(entity.getUuid())).findFirst().ifPresent(ef -> formss.add(frmsAccess));
+		}
+			}
+		
+		if(usersd.isEmpty()) {
+			dto.setMessage("ClusterNumber: "+ entity.getClusterNumber()+" is not assigned to any user");
+			dto.setUsername("no user");
+		}else if(usersd.size() > 1){
+			dto.setMessage("ClusterNumber: "+ entity.getClusterNumber()+" is assigned to more than one user");
+			dto.setUsername(usersd.toString());
+		} else {
+			dto.setMessage("Correctly assigned");
+			dto.setUsername(usersd.toString());
+		}
+		
+		dto.setFormAccess(formss);
+		
+		return dto;
+		
+	}
+
+	
+	
 	private Community fillOrBuildEntity(@NotNull CommunityDto source, Community target, boolean checkChangeDate) {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, Community::new, checkChangeDate);
@@ -423,4 +582,40 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 		
 		return dtos;
 	}
+
+	@Override
+	public List<CommunityUserReportModelDto> getAllActiveCommunitytoRerencexx(CommunityCriteriaNew criteria,
+			Integer first, Integer max, List<SortProperty> sortProperties, FormAccess formacc) {
+		System.out.println("22222222222222222222222222222 1.0.3 222222222222222222222222222222222222222222222222222222222222 "+criteria.getArea().getUuid());
+		frmsAccess = formacc;
+		first = 1;
+		max = 100;
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Community> cq = cb.createQuery(Community.class);
+			Root<Community> community = cq.from(Community.class);
+			Join<Community, District> district = community.join(Community.DISTRICT, JoinType.LEFT);
+			Join<District, Region> region = district.join(District.REGION, JoinType.LEFT);
+	
+					
+			Predicate filter = null;
+			if (criteria != null) {
+				filter = service.buildCriteriaFilter(criteria, cb, community);
+			} 
+
+			if (filter != null) {
+				cq.where(filter);
+			}
+			
+			cq.orderBy(cb.asc(region.get(Region.NAME)), cb.asc(district.get(District.NAME)), cb.asc(community.get(Community.NAME)),  cb.asc(community.get(Community.EXTERNAL_ID)));
+			
+			cq.select(community);
+
+			System.out.println("DEBUGGER r567ujhgty8ijyu8dfrf  " + SQLExtractor.from(em.createQuery(cq)));
+			//if(isCounter)
+			return QueryHelper.getResultList(em, cq, null, null, this::toDtoList);
+		// TODO Auto-generated method stub
+	
+	}
+
 }

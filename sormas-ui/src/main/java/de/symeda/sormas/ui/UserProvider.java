@@ -52,7 +52,8 @@ public class UserProvider {
 	public Set<UserRight> getUserRights() {
 
 		if (userRights == null) {
-			userRights = FacadeProvider.getUserRoleConfigFacade().getEffectiveUserRights(getUser().getUserRoles().toArray(new UserRole[] {}));
+			userRights = FacadeProvider.getUserRoleConfigFacade()
+					.getEffectiveUserRights(getUser().getUserRoles().toArray(new UserRole[] {}));
 		}
 		return userRights;
 	}
@@ -60,9 +61,7 @@ public class UserProvider {
 	public Set<UserRole> getUserRoles() {
 		return getUser().getUserRoles();
 	}
-	
-	
-	
+
 //	public UserType getUsertype() {
 //		if (usertype == null) {
 //			usertype = FacadeProvider.getUserRoleConfigFacade().get;
@@ -77,11 +76,11 @@ public class UserProvider {
 	public boolean hasUserRole(UserRole userRole) {
 		return getUser().getUserRoles().contains(userRole);
 	}
-	
+
 	public boolean hasFormAccess(FormAccess formAccess) {
 		return getUser().getFormAccess().contains(formAccess);
 	}
-	
+
 	public boolean hasUserType(UserType userType) {
 		return getUser().getUsertype().equals(userType);
 	}
@@ -93,7 +92,7 @@ public class UserProvider {
 		Set<UserRole> currentUserRoles = getUser().getUserRoles();
 		return Arrays.stream(userRoles).anyMatch(currentUserRoles::contains);
 	}
-	
+
 	/**
 	 * Checks if the User possesses any of the specified formAccess
 	 */
@@ -112,6 +111,22 @@ public class UserProvider {
 
 	public boolean hasNationalJurisdictionLevel() {
 		return UserRole.getJurisdictionLevel(getCurrent().getUserRoles()) == JurisdictionLevel.NATION;
+	}
+
+	public boolean hasAreaJurisdictionLevel() {
+		return UserRole.getJurisdictionLevel(getCurrent().getUserRoles()) == JurisdictionLevel.AREA;
+	}
+
+	public boolean hasRegionJurisdictionLevel() {
+		return UserRole.getJurisdictionLevel(getCurrent().getUserRoles()) == JurisdictionLevel.REGION;
+	}
+
+	public boolean hasDistrictJurisdictionLevel() {
+		return UserRole.getJurisdictionLevel(getCurrent().getUserRoles()) == JurisdictionLevel.DISTRICT;
+	}
+	
+	public boolean hasCommunityJurisdictionLevel() {
+		return UserRole.getJurisdictionLevel(getCurrent().getUserRoles()) == JurisdictionLevel.COMMUNITY;
 	}
 
 	public boolean hasRegion(RegionReferenceDto regionReference) {

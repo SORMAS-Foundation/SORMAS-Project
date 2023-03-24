@@ -27,6 +27,8 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.components.grid.HeaderCell;
+import com.vaadin.ui.components.grid.HeaderRow;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 
@@ -44,6 +46,7 @@ import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -106,6 +109,25 @@ public class DistrictsView extends AbstractConfigurationView {
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
+		
+		HeaderRow mainHeader = grid.getDefaultHeaderRow();
+		
+		HeaderCell regionNameHeader = mainHeader.getCell("areaname");
+		regionNameHeader.setDescription("Region");
+		HeaderCell rCodeHeader = mainHeader.getCell("areaexternalId");
+		rCodeHeader.setDescription("RCode");
+		HeaderCell provinceNameHeader = mainHeader.getCell("region");
+		provinceNameHeader.setDescription("Province");
+		HeaderCell pCodeHeader = mainHeader.getCell("regionexternalId");
+		pCodeHeader.setDescription("PCode");
+		HeaderCell districtNameHeader = mainHeader.getCell("name");
+		districtNameHeader.setDescription("District");
+		HeaderCell dCodeHeader = mainHeader.getCell("externalId");
+		dCodeHeader.setDescription("DCode");
+		HeaderCell populationHeader = mainHeader.getCell("population");
+		populationHeader.setDescription("Population");
+		HeaderCell riskeHeader = mainHeader.getCell("risk");
+		riskeHeader.setDescription("Risk");
 
 		boolean infrastructureDataEditable = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA);
 		
@@ -127,7 +149,7 @@ public class DistrictsView extends AbstractConfigurationView {
 			addHeaderComponent(infrastructureDataLocked);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT) && UserProvider.getCurrent().hasAnyUserRole(UserRole.ADMIN)) {
 			Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.TABLE, null, ValoTheme.BUTTON_PRIMARY);
 			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			addHeaderComponent(exportButton);
@@ -204,7 +226,11 @@ public class DistrictsView extends AbstractConfigurationView {
 		areaFilter.setId(RegionDto.AREA);
 		areaFilter.setWidth(140, Unit.PIXELS);
 		areaFilter.setCaption(I18nProperties.getPrefixCaption(RegionDto.I18N_PREFIX, RegionDto.AREA));
-		areaFilter.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
+		if(UserProvider.getCurrent().getUser().getArea() != null) {
+			areaFilter.addItems(UserProvider.getCurrent().getUser().getArea());
+		}else {
+			areaFilter.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
+		}
 		areaFilter.addValueChangeListener(e -> {
 			AreaReferenceDto area = (AreaReferenceDto) e.getProperty().getValue();
 			criteria.area(area);

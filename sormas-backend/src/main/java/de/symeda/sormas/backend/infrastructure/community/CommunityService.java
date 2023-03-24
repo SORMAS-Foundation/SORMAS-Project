@@ -78,6 +78,15 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 
 		return em.createQuery(cq).getResultList();
 	}
+	
+	public List<Community> getByAll() {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Community> cq = cb.createQuery(getElementClass());
+		Root<Community> from = cq.from(getElementClass());
+
+		return em.createQuery(cq).getResultList();
+	}
 
 	public List<Community> getByExternalId(Long ext_id, District district_ext, boolean includeArchivedEntities) {
 
@@ -125,6 +134,7 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 			Predicate countryFilter = cb.equal(countryUuid, country.getUuid());
 
 			if (country.equals(serverCountry)) {
+				
 				filter = CriteriaBuilderHelper.and(cb, filter,
 						CriteriaBuilderHelper.or(cb, countryFilter, countryUuid.isNull()));
 			} else {
@@ -132,7 +142,7 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 			}
 		}
 
-		System.out.println("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz ");
+		System.out.println("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz "+criteria.getArea());
 
 		AreaReferenceDto aread = criteria.getArea();
 
@@ -167,6 +177,11 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Community.ARCHIVED), true));
 			}
+		}
+		
+		if(this.getCurrentUser().getArea() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter,
+					cb.equal(area.get(Area.UUID), this.getCurrentUser().getArea().getUuid()));
 		}
 		return filter;
 	}

@@ -42,8 +42,8 @@ public class SettingsActivity extends BaseLandingActivity {
 
 		super.onCreateOptionsMenu(menu);
 
-		MenuItem syncMenuItem = menu.findItem(R.id.action_sync);
-		syncMenuItem.setVisible(false);
+//		MenuItem syncMenuItem = menu.findItem(R.id.action_sync);
+//		syncMenuItem.setVisible(false);
 
 		return true;
 	}

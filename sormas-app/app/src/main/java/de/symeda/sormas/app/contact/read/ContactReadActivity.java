@@ -143,4 +143,6 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
 		ContactSection section = ContactSection.fromOrdinal(getActivePage().getPosition());
 		ContactEditActivity.startActivity(ContactReadActivity.this, getRootUuid(), section);
 	}
+	@Override
+	public void goToDeleteRecord() {}
 }

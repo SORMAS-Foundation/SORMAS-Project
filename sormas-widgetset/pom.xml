@@ -3,13 +3,14 @@
     <parent>
         <artifactId>sormas-base</artifactId>
         <groupId>de.symeda.sormas</groupId>
-       <version>1.0.15</version>
+       <version>1.0.28</version>
         <relativePath>../sormas-base</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>sormas-widgetset</artifactId>
 	<name>${project.artifactId}</name>
+	
 
 	<properties>
 		<vaadin-widgetsets-dir>src/main/webapp/VAADIN/widgetsets</vaadin-widgetsets-dir>

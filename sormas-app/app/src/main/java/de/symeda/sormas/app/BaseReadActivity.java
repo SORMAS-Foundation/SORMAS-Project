@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.app;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
@@ -26,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentTransaction;
 
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.enumeration.StatusElaborator;
@@ -141,16 +144,49 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
 		setSubHeadingTitle(title);
 	}
 
+	public void showDeleteConfirmationDialog() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage("Are you sure you want to delete this item?");
+		builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				// User clicked the "Delete" button, delete the item.
+				try {
+					goToDeleteRecord();
+				} catch (DaoException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				// User clicked the "Cancel" button, dismiss the dialog.
+				if (dialog != null) {
+					dialog.dismiss();
+				}
+			}
+		});
+		// Create and show the AlertDialog.
+		AlertDialog alertDialog = builder.create();
+		alertDialog.show();
+	}
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_edit:
 			goToEditView();
 			return true;
+//newly inserted to fix delete
+			case R.id.action_help:
+				showDeleteConfirmationDialog();
+
+				return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
 
+
+//goToDeleteRecord
 	@Override
 	protected int getRootActivityLayout() {
 		return R.layout.activity_root_with_title_layout;
@@ -246,6 +282,9 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
 
 	public abstract void goToEditView();
 
+	public abstract void goToDeleteRecord() throws DaoException;
+
+
 	protected abstract BaseReadFragment buildReadFragment(PageMenuItem menuItem, ActivityRootEntity activityRootData);
 
 	@Override
@@ -255,4 +294,5 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
 		if (getRootEntityTask != null && !getRootEntityTask.isCancelled())
 			getRootEntityTask.cancel(true);
 	}
+
 }

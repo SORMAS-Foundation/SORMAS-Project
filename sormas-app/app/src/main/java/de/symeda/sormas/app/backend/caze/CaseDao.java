@@ -227,7 +227,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
 		if (user.hasUserRole(UserRole.COMMUNITY_OFFICER)) {
 			caze.setSurveillanceOfficer(user);
 		} else if (user.hasUserRole(UserRole.HOSPITAL_INFORMANT)
-			|| user.hasUserRole(UserRole.COMMUNITY_INFORMANT)
+			|| user.hasUserRole(UserRole.HOSPITAL_INFORMANT)
 			|| user.hasUserRole(UserRole.POE_INFORMANT)) {
 			caze.setSurveillanceOfficer(user.getAssociatedOfficer());
 		}

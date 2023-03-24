@@ -12,6 +12,8 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.components.grid.HeaderCell;
+import com.vaadin.ui.components.grid.HeaderRow;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
@@ -22,6 +24,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.InfrastructureType;
 import de.symeda.sormas.api.infrastructure.area.AreaCriteria;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -72,6 +75,12 @@ public class AreasView extends AbstractConfigurationView {
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
+		HeaderRow mainHeader = grid.getDefaultHeaderRow();
+		
+		HeaderCell provinceHeader = mainHeader.getCell("name");
+		provinceHeader.setDescription("Province");
+		HeaderCell rCodeHeader = mainHeader.getCell("externalId");
+		rCodeHeader.setDescription("RCode");
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
 			btnImport = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
@@ -85,7 +94,7 @@ public class AreasView extends AbstractConfigurationView {
 			addHeaderComponent(btnImport);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT) && UserProvider.getCurrent().hasAnyUserRole(UserRole.ADMIN)) {
 			Button btnExport = ButtonHelper.createIconButton(Captions.export, VaadinIcons.TABLE, null, ValoTheme.BUTTON_PRIMARY);
 			btnExport.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			addHeaderComponent(btnExport);

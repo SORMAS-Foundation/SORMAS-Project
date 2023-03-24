@@ -1,5 +1,5 @@
-/*
- * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+
+ /* SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,10 +28,13 @@ import java.util.stream.Collectors;
 import javax.persistence.NoResultException;
 
 import com.vaadin.server.Page;
+import com.vaadin.server.VaadinService;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.data.Validator;
+import com.vaadin.v7.data.Validator.EmptyValueException;
+import com.vaadin.v7.data.Validator.InvalidValueException;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
@@ -204,13 +207,12 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 //			FieldHelper.updateItems(cbCommunity,
 //					district != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid())
 //							: null);
-//			
+//			//dataform
 //		});
 //	}
 
 	@SuppressWarnings("deprecation")
-	private void addInfrastructureListenerx(ComboBox cbArea, ComboBox cbRegion, ComboBox cbDistrict,
-			ComboBox cbCommunity) {
+	private void addInfrastructureListenerx(ComboBox cbArea, ComboBox cbRegion, ComboBox cbDistrict, ComboBox cbCommunity) {
 		cbArea.addValueChangeListener(e -> {
 			AreaReferenceDto area = (AreaReferenceDto) e.getProperty().getValue();
 			FieldHelper.updateItems(cbRegion,
@@ -272,13 +274,20 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 							.getByUuid(super.getValue().getCampaign().getUuid());
 
 					CommunityReferenceDto community = (CommunityReferenceDto) cbCommunity.getValue();
-
-//					System.out.println(community.getCaption() + "??????????????????>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "
-//							+ campaignForm.getFormName() + campaign.getName());
+					
+					CommunityDto comdto = FacadeProvider.getCommunityFacade().getByUuid(community.getUuid());
+					
 					String formuuid = FacadeProvider.getCampaignFormDataFacade().getByClusterDropDown(community,
 							campaignForm, campaign);
+					
+					VaadinService.getCurrentRequest().getWrappedSession().setAttribute("Clusternumber", comdto.getExternalId());
+					
+					System.out.println(comdto.getExternalId() + "?comdto.getExternalId() going to session>>>>>>"+comdto.getClusterNumber());
+					
 
 					if (!formuuid.equals("nul")) {
+//						System.out.println(
+//								">>>>>>>>>>>>>>>>>>>>>>>>>>>>------------------------");
 						// Page.getCurrent().get
 						ControllerProvider.getCampaignController().navigateToFormDataView(formuuid);
 					} else {
@@ -322,6 +331,9 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 
 		buildCampaignForm(newFieldValue);
 	}
+	
+	private Boolean isCommitClicked;
+	
 
 	@Override
 	public void validate() throws Validator.InvalidValueException {
@@ -330,8 +342,15 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		if (campaignFormBuilder == null) {
 			throw new RuntimeException("Campaign form builder has not been initialized");
 		}
-
+		//validateFieldsCommit
+	//	System.out.println("{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{"+isCommitClicked);
+		
+		if(isCommitClicked != null) {
+			if(isCommitClicked) {
 		campaignFormBuilder.validateFields();
+			}
+		}
+		
 	}
 
 	public void resetFormValues() {
@@ -356,6 +375,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		expressionProcessor.disableExpressionFieldsForEditing();
 		expressionProcessor.configureExpressionFieldsWithTooltip();
 		expressionProcessor.addExpressionListener();
+		expressionProcessor.addExpressionListenerIgnorable();
 
 		getContent().addComponent(campaignFormLayout, CAMPAIGN_FORM_LOC);
 	}
@@ -363,5 +383,10 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 	@Override
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
+	}
+
+	public void setCommitterBoolen() {
+		isCommitClicked = true;
+		
 	}
 }

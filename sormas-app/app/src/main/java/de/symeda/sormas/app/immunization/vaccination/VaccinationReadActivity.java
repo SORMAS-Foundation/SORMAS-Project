@@ -88,5 +88,7 @@ public class VaccinationReadActivity extends BaseReadActivity<Vaccination> {
 		getEditMenu().setTitle(R.string.action_edit_vaccination);
 		return result;
 	}
+	@Override
+	public void goToDeleteRecord() {}
 
 }

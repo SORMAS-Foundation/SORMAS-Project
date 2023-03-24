@@ -32,6 +32,7 @@ public class RegionIndexDto extends EntityDto {
 	public static final String POPULATION = "population";
 	public static final String GROWTH_RATE = "growthRate";
 	public static final String EXTERNAL_ID = "externalId";
+	public static final String REGION_EXTERNAL_ID = "areaexternalId";
 	public static final String AREA = "area";
 	public static final String COUNTRY = "country"; //AREA
 
@@ -40,6 +41,7 @@ public class RegionIndexDto extends EntityDto {
 	private Integer population;
 	private Float growthRate;
 	private Long externalId;
+	private Long areaexternalId;
 	private AreaReferenceDto area;
 	private CountryReferenceDto country;
 
@@ -94,6 +96,14 @@ public class RegionIndexDto extends EntityDto {
 
 	public void setArea(AreaReferenceDto area) {
 		this.area = area;
+	}
+	
+	public Long getAreaexternalId() {
+		return areaexternalId;
+	}
+	
+	public void setAreaexternalId(Long areaexternalId) {
+		this.areaexternalId = areaexternalId;
 	}
 
 	public CountryReferenceDto getCountry() {

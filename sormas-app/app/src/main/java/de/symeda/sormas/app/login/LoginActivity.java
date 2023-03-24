@@ -206,6 +206,7 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 				boolean needsSync = ConfigProvider.getUser() == null || DatabaseHelper.getCaseDao().isEmpty();
 
 				if (needsSync) {
+					//System.out.println(">>>>>>>>>>>>>>>>>1>>>>>>>>>>>>>>"+ConfigProvider.getUser().getLanguage());
 					SynchronizeDataAsync.call(SynchronizeDataAsync.SyncMode.Changes, getApplicationContext(), (syncFailed, syncFailedMessage) -> {
 
 						RetroProvider.disconnect();
@@ -222,6 +223,8 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 						if (ConfigProvider.getUser() != null) {
 							initializeFirebase();
 							if (ConfigProvider.getUser().getLanguage() != null) {
+								System.out.println(">>>>>>>>>>>>>>>>>1>>>>>>>>>>>>>>"+ConfigProvider.getUser().getLanguage());
+
 								setNewLocale(this, ConfigProvider.getUser().getLanguage());
 							}
 							openLandingActivity();
@@ -230,6 +233,7 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 						}
 					});
 				} else {
+					System.out.println(">>>>>>>>>>>>>>>>2>>>>>>>>>>>>>>>"+ConfigProvider.getUser().getLanguage());
 
 					RetroProvider.disconnect();
 
@@ -245,6 +249,7 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 					openLandingActivity();
 				}
 			} else {
+			//	System.out.println(">>>>>>>>>>>>>>>3>>>>>>>>>>>>>>>>"+ConfigProvider.getUser().getLanguage());
 				if (progressDialog != null && progressDialog.isShowing()) {
 					progressDialog.dismiss();
 					progressDialog = null;
@@ -280,7 +285,7 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 				&& (user.hasUserRole(UserRole.COMMUNITY_OFFICER)
 					|| user.hasUserRole(UserRole.CASE_OFFICER)
 					|| user.hasUserRole(UserRole.POE_INFORMANT)
-					|| user.hasUserRole(UserRole.COMMUNITY_INFORMANT)
+					|| user.hasUserRole(UserRole.HOSPITAL_INFORMANT)
 					|| user.hasUserRole(UserRole.HOSPITAL_INFORMANT))) {
 				NavigationHelper.goToCases(LoginActivity.this);
 			} else if (ConfigProvider.hasUserRight(UserRight.CONTACT_VIEW) && user.hasUserRole(UserRole.CONTACT_OFFICER)) {

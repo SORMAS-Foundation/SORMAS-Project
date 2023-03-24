@@ -11,12 +11,16 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.user.User;
+
 import org.apache.commons.lang3.StringUtils;
 
 import com.vladmihalcea.hibernate.type.util.SQLExtractor;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.infrastructure.area.AreaCriteria;
+import de.symeda.sormas.api.user.JurisdictionLevel;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -83,6 +87,11 @@ public class AreaService extends AbstractInfrastructureAdoService<Area> {
 			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(areaRoot.get(Area.ARCHIVED), true));
 			}
+		}
+		
+		if(this.getCurrentUser().getJurisdictionLevel() == JurisdictionLevel.AREA) {
+			filter = CriteriaBuilderHelper.and(cb, filter,
+					cb.equal(areaRoot.get(Area.UUID), this.getCurrentUser().getArea().getUuid()));
 		}
 		return filter;
 	}

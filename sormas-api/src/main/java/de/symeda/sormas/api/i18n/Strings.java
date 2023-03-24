@@ -12,6 +12,7 @@ public interface Strings {
 
 	String active = "active";
 	String address = "address";
+	String alluserstype = "alluserstype";
 	String aggregateReportLegend = "aggregateReportLegend";
 	String and = "and";
 	String at = "at";
@@ -800,6 +801,7 @@ public interface Strings {
 	String infoWeeklyReportsView = "infoWeeklyReportsView";
 	String labelActualLongSeed = "labelActualLongSeed";
 	String labelNumberOfAreas = "labelNumberOfAreas";
+	String labelNumberDataRows = "labelNumberDataRows";
 	String labelNumberOfCommunities = "labelNumberOfCommunities";
 	String labelNumberOfContinents = "labelNumberOfContinents";
 	String labelNumberOfCountries = "labelNumberOfCountries";
@@ -810,6 +812,7 @@ public interface Strings {
 	String labelNumberOfSubcontinents = "labelNumberOfSubcontinents";
 	String labelNumberOfTemplates = "labelNumberOfTemplates";
 	String labelNumberOfUsers = "labelNumberOfUsers";
+	String labelNumberOfDataRows = "labelNumberOfDataRows";
 	String lastTwoDays = "lastTwoDays";
 	String lastTwoWeeks = "lastTwoWeeks";
 	String lastTwoYears = "lastTwoYears";

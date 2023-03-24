@@ -113,4 +113,59 @@ public class V7GridExportStreamResource extends StreamResource {
 		setMIMEType("text/csv");
 		setCacheTime(0);
 	}
+	
+	
+	public V7GridExportStreamResource(
+			List<String> gridColumns,
+			String filename
+			) {
+
+			super(new StreamSource() {
+
+				@Override
+				public InputStream getStream() {
+					List<String> columns = new ArrayList<>(gridColumns);
+					List<String> headerRow = columns.stream().collect(toList());
+					
+					List<String> finalList = new ArrayList<>();
+
+					try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {
+						try (CSVWriter writer = CSVUtils.createCSVWriter(
+							new OutputStreamWriter(byteStream, StandardCharsets.UTF_8.name()),
+							FacadeProvider.getConfigFacade().getCsvSeparator())) {
+							
+							  for (int i = 1; i <= headerRow.size(); i++) {
+								  
+								  String[] headerx = headerRow.toArray(new String[] {});
+								  
+								  writer.writeNext(headerx);
+						        }
+
+							String[] header = { "Name", "Class", "Marks" };
+					        writer.writeNext(header);
+					  
+					        // add data to csv
+					        String[] data1 = { "Aman", "10", "620" };
+					        writer.writeNext(data1);
+					        String[] data2 = { "Suraj", "10", "630" };
+					        writer.writeNext(data2);
+
+							writer.flush();
+						}
+						return new ByteArrayInputStream(byteStream.toByteArray());
+					} catch (IOException e) {
+						// TODO This currently requires the user to click the "Export" button again or reload the page as the UI
+						// is not automatically updated; this should be changed once Vaadin push is enabled (see #516)
+						new Notification(
+							I18nProperties.getString(Strings.headingExportFailed),
+							I18nProperties.getString(Strings.messageExportFailed),
+							Type.ERROR_MESSAGE,
+							false).show(Page.getCurrent());
+						return null;
+					}
+				}
+			}, filename);
+			setMIMEType("text/csv");
+			setCacheTime(0);
+		}
 }

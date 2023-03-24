@@ -23,10 +23,12 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import com.vaadin.v7.data.util.converter.Converter;
+import com.vaadin.v7.data.validator.RegexpValidator;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -39,7 +41,7 @@ public class RegionEditForm extends AbstractEditForm<RegionDto> {
 
 	//@formatter:off
 	private static final String HTML_LAYOUT = 
-			fluidRowLocs(RegionDto.NAME, RegionDto.EXTERNAL_ID) +
+			fluidRowLocs(RegionDto.NAME, RegionDto.EXTERNAL_ID_DUMMY) +
 			//		fluidRowLocs(RegionDto.COUNTRY) +
 					fluidRowLocs(RegionDto.AREA);
 				//	fluidRowLocs(RegionDto.EPID_CODEp);
@@ -74,7 +76,9 @@ public class RegionEditForm extends AbstractEditForm<RegionDto> {
 		}
 
 		addField(RegionDto.NAME, TextField.class);
-		addField(RegionDto.EXTERNAL_ID, TextField.class).setCaption("PCode");;
+		TextField tfe = addField(RegionDto.EXTERNAL_ID_DUMMY, TextField.class);
+		tfe.addValidator( new RegexpValidator("^[0-9]\\d*$", "Not a valid input"));
+		tfe.setCaption("CCode");
 		//addField(RegionDto.EPID_CODE, TextField.class);
 		//ComboBox country = addInfrastructureField(RegionDto.COUNTRY);
 		ComboBox area = addInfrastructureField(RegionDto.AREA);
@@ -85,7 +89,7 @@ public class RegionEditForm extends AbstractEditForm<RegionDto> {
 
 		initializeVisibilitiesAndAllowedVisibilities();
 
-		setRequired(true, RegionDto.NAME, RegionDto.EXTERNAL_ID);
+		setRequired(true, RegionDto.NAME, RegionDto.EXTERNAL_ID_DUMMY);
 
 	//	country.addItems(FacadeProvider.getCountryFacade().getAllActiveAsReference());
 

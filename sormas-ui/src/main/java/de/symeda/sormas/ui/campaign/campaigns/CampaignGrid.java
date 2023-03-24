@@ -80,11 +80,11 @@ public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteri
 			addItemClickListener(new ShowDetailsListener<>(CampaignIndexDto.START_DATE, e -> ControllerProvider.getCampaignController().navigateToCampaign(e.getUuid())));
 			addItemClickListener(new ShowDetailsListener<>(CampaignIndexDto.END_DATE, e -> ControllerProvider.getCampaignController().navigateToCampaign(e.getUuid())));
 			addItemClickListener(new ShowDetailsListener<>(CampaignIndexDto.CAMPAIGN_YEAR, e -> ControllerProvider.getCampaignController().navigateToCampaign(e.getUuid())));
-			
+			addItemClickListener(new ShowDetailsListener<>(CampaignIndexDto.CAMPAIGN_STATUS, e -> ControllerProvider.getCampaignController().navigateToCampaign(e.getUuid())));
 			}
 
 		//setColumns(, CampaignIndexDto.NAME, CampaignIndexDto.START_DATE, CampaignIndexDto.END_DATE);
-		setColumns(CampaignIndexDto.NAME, CampaignIndexDto.START_DATE, CampaignIndexDto.END_DATE, CampaignIndexDto.CAMPAIGN_YEAR);
+		setColumns(CampaignIndexDto.NAME, CampaignIndexDto.CAMPAIGN_STATUS, CampaignIndexDto.START_DATE, CampaignIndexDto.END_DATE, CampaignIndexDto.CAMPAIGN_YEAR);
 		Language userLanguage = I18nProperties.getUserLanguage();
 		((Column<CampaignIndexDto, Date>) getColumn(CampaignIndexDto.START_DATE))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateFormat(userLanguage)));
@@ -93,6 +93,7 @@ public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteri
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(CampaignIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
+			column.setDescriptionGenerator(CampaignIndexDto -> column.getCaption());
 		}
 		//getColumn(navigateToCampaignColumnId).setWidth(100).setStyleGenerator(item -> CssStyles.GRID_CELL_LINK);
 	}

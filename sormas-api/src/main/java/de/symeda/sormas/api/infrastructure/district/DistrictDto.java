@@ -40,6 +40,7 @@ public class DistrictDto extends EntityDto {
 	public static final String GROWTH_RATE = "growthRate";
 	public static final String REGION = "region";
 	public static final String EXTERNAL_ID = "externalId";
+	public static final String EXTERNAL_ID_DUMMY = "externalIddummy";
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String name;
@@ -49,10 +50,17 @@ public class DistrictDto extends EntityDto {
 	private Float growthRate;
 	private RegionReferenceDto region;
 	private boolean archived;
+	
+	private Long populationData;
+	private Long regionId;
+	private String regionUuid_;
+	private String uuid_;
+	
 	//@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	
 	//@Min(2)
 	private Long externalId;
+	private String externalIddummy;
 
 	public DistrictDto(
 		Date creationDate,
@@ -77,6 +85,14 @@ public class DistrictDto extends EntityDto {
 		this.region = new RegionReferenceDto(regionUuid, regionName, regionExternalId);
 		this.externalId = externalId;
 	}
+	
+	public DistrictDto(String name, Long populationData, Long regionId, String regionUuid_, String uuid_) {
+		this.name = name;
+		this.populationData = populationData;
+		this.regionId = regionId;
+		this.regionUuid_ = regionUuid_;
+		this.uuid_ = uuid_;
+	};
 
 	public DistrictDto() {
 		super();
@@ -92,6 +108,23 @@ public class DistrictDto extends EntityDto {
 
 	public String getEpidCode() {
 		return epidCode;
+	}
+	
+	public String getExternalIddummy() {
+		
+		if(externalId != null) {
+			externalIddummy = externalId+"";
+		}
+		
+		return externalIddummy;
+	}
+
+	public void setExternalIddummy(String externalIddummy) {
+		
+		if(externalIddummy != null) {
+			this.externalId = Long.parseLong(externalIddummy);
+		}
+				
 	}
 
 	public void setEpidCode(String epidCode) {
@@ -153,4 +186,40 @@ public class DistrictDto extends EntityDto {
 		dto.setUuid(DataHelper.createUuid());
 		return dto;
 	}
+
+	public Long getPopulationData() {
+		return populationData;
+	}
+
+	public void setPopulationData(Long populationData) {
+		this.populationData = populationData;
+	}
+
+	public Long getRegionId() {
+		return regionId;
+	}
+
+	public void setRegionId(Long regionId) {
+		this.regionId = regionId;
+	}
+
+	public String getRegionUuid_() {
+		return regionUuid_;
+	}
+
+	public void setRegionUuid_(String regionUuid_) {
+		this.regionUuid_ = regionUuid_;
+	}
+
+	public String getUuid_() {
+		return uuid_;
+	}
+
+	public void setUuid_(String uuid_) {
+		this.uuid_ = uuid_;
+	}
+	
+	
+	
+	
 }

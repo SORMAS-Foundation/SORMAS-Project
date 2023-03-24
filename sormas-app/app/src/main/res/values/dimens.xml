@@ -64,7 +64,7 @@
     <dimen name="defaultControlVerticalPadding">16dp</dimen>
     <dimen name="defaultControlHorizontalPadding">16dp</dimen>
     <dimen name="defaultControlRadius">5dp</dimen>
-    <dimen name="defaultControlStrokeWidth">3dp</dimen>
+    <dimen name="defaultControlStrokeWidth">1dp</dimen>
     <dimen name="defaultControlTextSize">16sp</dimen>
     <dimen name="defaultPageHintTextSize">14sp</dimen>
     <dimen name="defaultSubHeadingDescriptionTextSize">14sp</dimen>
@@ -108,7 +108,7 @@
     <dimen name="pinButtonElevation">16dp</dimen>
 
 
-    <dimen name="pinInputStrokeWidth">3dp</dimen>
+    <dimen name="pinInputStrokeWidth">2dp</dimen>
     <dimen name="pinInputStrokeWidthOffset">-3dp</dimen>
     <dimen name="pinInputLastStrokeWidthOffset">-4dp</dimen>
 
@@ -224,7 +224,7 @@
 
     <!-- List Layoutrs -->
     <dimen name="rowListItemPadding">24dp</dimen>
-    <dimen name="rowListItemHorizontalMargin">24dp</dimen>
+    <dimen name="rowListItemHorizontalMargin">5dp</dimen>
     <dimen name="rowListItemVerticalPadding">24dp</dimen>
     <dimen name="rowListItemVerticalPaddingSmall">8dp</dimen>
     <dimen name="rowListItemParentElevationVerticalPadding">4dp</dimen>
@@ -252,7 +252,7 @@
     <dimen name="headingSubEnterPinTextSize">14sp</dimen>
     <dimen name="headingSubEnterPinMarginBottom">40dp</dimen>
     <dimen name="enterPinInputDisplayMarginBottom">12dp</dimen>
-    <dimen name="enterPinInputDisplayWidth">80dp</dimen>
+    <dimen name="enterPinInputDisplayWidth">70dp</dimen>
     <dimen name="enterPinInputDisplayHeight">80dp</dimen>
     <dimen name="enterPinInputDisplayTextSize">56sp</dimen>
 
@@ -373,7 +373,7 @@
     <dimen name="boldSeparatorThickness">2dp</dimen>
 
 
-    <dimen name="readControlSmallIconWidth">10dp</dimen>
+    <dimen name="readControlSmallIconWidth">5dp</dimen>
     <dimen name="readControlSmallIconHeight">10dp</dimen>
     <dimen name="listItemConentIndentRight">36dp</dimen>
     <dimen name="listItemBottomConentMarginTop">8dp</dimen>

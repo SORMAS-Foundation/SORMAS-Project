@@ -59,7 +59,10 @@ public class DistrictsGrid extends FilteredGrid<DistrictIndexDto, DistrictCriter
 		}
 
 		setColumns(
+				DistrictIndexDto.AREA_NAME,
+				DistrictIndexDto.AREA_EXTERNAL_ID,
 			DistrictIndexDto.REGION,
+			DistrictIndexDto.REGION_EXTERNALID,
 			DistrictIndexDto.NAME,
 			//DistrictIndexDto.EPID_CODE,
 			DistrictIndexDto.EXTERNAL_ID,
@@ -80,12 +83,22 @@ public class DistrictsGrid extends FilteredGrid<DistrictIndexDto, DistrictCriter
 		}
 
 		for (Column<?, ?> column : getColumns()) {
+			column.setDescriptionGenerator(DistrictIndexDto -> column.getCaption());
 			column.setCaption(I18nProperties.getPrefixCaption(DistrictIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
 			if(column.getCaption().equalsIgnoreCase("Name")) {
 				column.setCaption("District");
 			}
 			if(column.getCaption().equalsIgnoreCase("External ID")) {
 				column.setCaption("DCode");
+			}
+			if(column.getCaption().equalsIgnoreCase("Areaname")) { 
+				column.setCaption("Region");
+			}
+			if(column.getCaption().equalsIgnoreCase("Areaexternal Id")) { 
+				column.setCaption("RCode");
+			}
+			if(column.getCaption().equalsIgnoreCase("Regionexternal Id")) { 
+				column.setCaption("PCode");
 			}
 		}
 	}

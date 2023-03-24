@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>sormas-base</artifactId>
 		<groupId>de.symeda.sormas</groupId>
-		<version>1.0.15</version>
+		<version>1.0.28</version>
 		<relativePath>../sormas-base</relativePath>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
@@ -32,6 +32,11 @@
 			<artifactId>sormas-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		 <dependency>
+            <groupId>com.vladmihalcea</groupId>
+            <artifactId>hibernate-types-52</artifactId>
+            <version>2.11.1</version>
+        </dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>sormas-widgetset</artifactId>
@@ -132,10 +137,7 @@
 			<artifactId>h2</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>info.novatec</groupId>
-			<artifactId>bean-test</artifactId>
-		</dependency>
+		
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-client</artifactId>

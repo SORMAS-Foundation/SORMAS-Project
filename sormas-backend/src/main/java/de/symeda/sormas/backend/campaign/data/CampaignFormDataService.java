@@ -112,6 +112,9 @@ public class CampaignFormDataService extends AdoServiceWithUserFilter<CampaignFo
 			// "+criteria.getCampaignFormMeta().getUuid());
 			filter = CriteriaBuilderHelper.and(cb, filter,
 					cb.equal(campaignFormJoin.get(CampaignFormMeta.UUID), criteria.getCampaignFormMeta().getUuid()));
+			
+			filter = CriteriaBuilderHelper.and(cb, filter,
+					cb.isFalse(root.get(CampaignFormData.ARCHIVED)));
 		}
 		if (criteria.getArea() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter,
@@ -135,6 +138,7 @@ public class CampaignFormDataService extends AdoServiceWithUserFilter<CampaignFo
 							DateHelper.getStartOfDay(criteria.getFormDate())),
 					cb.lessThanOrEqualTo(root.get(CampaignFormData.FORM_DATE),
 							DateHelper.getEndOfDay(criteria.getFormDate())));
+			
 		}
 
 		// System.out.println(filter);

@@ -33,6 +33,7 @@ import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.user.FormAccess;
 import de.symeda.sormas.api.utils.SortProperty;
 
 
@@ -58,11 +59,16 @@ public interface CampaignFormDataFacade {
 
 	List<CampaignFormDataIndexDto> getIndexList(CampaignFormDataCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
+	List<CampaignFormDataIndexDto> getByCompletionAnalysis(CampaignFormDataCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties, FormAccess frm);
+	
+	String getByCompletionAnalysisCount(CampaignFormDataCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties, FormAccess frm);
+
 	CampaignFormDataDto getExistingData(CampaignFormDataCriteria criteria);
 
 	long count(CampaignFormDataCriteria criteria);
 
 	List<CampaignDiagramDataDto> getDiagramData(List<CampaignDiagramSeries> diagramSeries, CampaignDiagramCriteria campaignDiagramCriteria);
+	List<CampaignDiagramDataDto> getDiagramDataCard(List<CampaignDiagramSeries> diagramSeries, CampaignDiagramCriteria campaignDiagramCriteria);
 	List<CampaignDiagramDataDto> getDiagramDataByGroups(List<CampaignDiagramSeries> diagramSeries, CampaignDiagramCriteria campaignDiagramCriteria);
 
 	List<CampaignDiagramDataDto> getDiagramDataByAgeGroup(

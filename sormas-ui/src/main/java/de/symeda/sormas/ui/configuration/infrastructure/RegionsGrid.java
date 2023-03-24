@@ -64,7 +64,8 @@ public class RegionsGrid extends FilteredGrid<RegionIndexDto, RegionCriteria> {
 		}
 
 		String[] columns = new String[] {
-			RegionIndexDto.AREA };
+			RegionIndexDto.AREA,
+			RegionIndexDto.REGION_EXTERNAL_ID};
 		if (FacadeProvider.getFeatureConfigurationFacade().isCountryEnabled()) {
 			columns = ArrayUtils.add(columns, RegionIndexDto.COUNTRY);
 		}
@@ -95,12 +96,16 @@ public class RegionsGrid extends FilteredGrid<RegionIndexDto, RegionCriteria> {
 		}
 
 		for (Column<?, ?> column : getColumns()) {
+			column.setDescriptionGenerator(RegionIndexDto -> column.getCaption());
 			column.setCaption(I18nProperties.getPrefixCaption(RegionIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
 			if(column.getCaption().equalsIgnoreCase("Name")) {
 				column.setCaption("Province");
 			}
 			if(column.getCaption().equalsIgnoreCase("External ID")) { 
 				column.setCaption("PCode");
+			}
+			if(column.getCaption().equalsIgnoreCase("Areaexternal Id")) { 
+				column.setCaption("RCode");
 			}
 
 		}

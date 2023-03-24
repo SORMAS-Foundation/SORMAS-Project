@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.configuration.infrastructure;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
+import com.vaadin.v7.data.validator.RegexpValidator;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
@@ -27,6 +28,7 @@ import de.symeda.sormas.api.InfrastructureDataReferenceDto;
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -36,7 +38,7 @@ public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
 	private static final long serialVersionUID = 7573666294384000190L;
 
 	private static final String HTML_LAYOUT =
-		fluidRowLocs(DistrictDto.NAME, DistrictDto.EXTERNAL_ID)
+		fluidRowLocs(DistrictDto.NAME, DistrictDto.EXTERNAL_ID_DUMMY)
 		+ fluidRowLocs(DistrictDto.REGION, DistrictDto.RISK); // ,DistrictDto.GROWTH_RATE,+ fluidRowLocs(RegionDto.EXTERNAL_ID);
 
 	private final boolean create;
@@ -58,7 +60,10 @@ public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
 	protected void addFields() {
 
 		addField(DistrictDto.NAME, TextField.class);
-		addField(RegionDto.EXTERNAL_ID, TextField.class).setCaption("DCode");;
+		
+		TextField tfe = addField(DistrictDto.EXTERNAL_ID_DUMMY, TextField.class);
+		tfe.addValidator( new RegexpValidator("^[0-9]\\d*$", "Not a valid input"));
+		tfe.setCaption("DCode");
 		//addField(DistrictDto.EPID_CODE, TextField.class);
 		ComboBox region = addInfrastructureField(DistrictDto.REGION);
 		
@@ -74,7 +79,7 @@ public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
 //		growthRate.setConverter(new StringToFloatConverter());
 //		growthRate.setConversionError(I18nProperties.getValidationError(Validations.onlyDecimalNumbersAllowed, growthRate.getCaption()));
 
-		setRequired(true, DistrictDto.NAME, DistrictDto.EXTERNAL_ID, DistrictDto.REGION);
+		setRequired(true, DistrictDto.NAME, DistrictDto.EXTERNAL_ID_DUMMY, DistrictDto.REGION);
 
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 

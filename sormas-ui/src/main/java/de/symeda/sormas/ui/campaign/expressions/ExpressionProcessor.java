@@ -41,7 +41,7 @@ public class ExpressionProcessor {
 
 	public ExpressionProcessor(CampaignFormBuilder campaignFormBuilder) {
 		this.campaignFormBuilder = campaignFormBuilder;
-		checkExpression();
+		checkExpression(false);
 	}
 
 	public void disableExpressionFieldsForEditing() {
@@ -61,9 +61,20 @@ public class ExpressionProcessor {
 		final List<CampaignFormElement> formElements = campaignFormBuilder.getFormElements();
 		formElements.stream()
 			//.filter(formElement -> formElement.getExpression() == null)
+		//.filter(formElement -> !formElement.isIgnoredisable())
 			.filter(formElement -> fields.get(formElement.getId()) != null)
 			.forEach(formElement -> {
-				fields.get(formElement.getId()).addValueChangeListener((Property.ValueChangeListener) valueChangeEvent -> checkExpression());
+				fields.get(formElement.getId()).addValueChangeListener((Property.ValueChangeListener) valueChangeEvent -> checkExpression(false));
+			});
+	}
+	
+	public void addExpressionListenerIgnorable() {
+		final Map<String, Field<?>> fields = campaignFormBuilder.getFields();
+		final List<CampaignFormElement> formElements = campaignFormBuilder.getFormElements();
+		formElements.stream()
+			.filter(formElement -> formElement.isIgnoredisable())
+			.forEach(formElement -> {
+				fields.get(formElement.getId()).addValueChangeListener((Property.ValueChangeListener) valueChangeEvent -> checkExpression(true));
 			});
 	}
 
@@ -90,37 +101,48 @@ public class ExpressionProcessor {
 		field.setDescription(String.format("%s: %s", I18nProperties.getDescription(Descriptions.Campaign_calculatedBasedOn), StringUtils.join(fieldNamesInExpression, ", ")));
 	}
 
-	private void checkExpression() {
+	private void checkExpression(boolean isIgnorable) {
+//		for(CampaignFormDataEntry dfv : campaignFormBuilder.getFormValues()) {
+//		System.out.println(dfv.getId() +" ===== "+dfv.getValue());
+//		}
+//		
 		EvaluationContext context = refreshEvaluationContext(campaignFormBuilder.getFormValues());
 		final List<CampaignFormElement> formElements = campaignFormBuilder.getFormElements();
 		formElements.stream().filter(element -> element.getExpression() != null).forEach(e -> {
 			try {
+				
 				final Expression expression = expressionParser.parseExpression(e.getExpression());
+				
+				
 				final Class<?> valueType = expression.getValueType(context);
 				final Object value = expression.getValue(context, valueType); 
 				//final Object valx = Precision.round((double) value, 3);
 				//final List <String> opt = null;
-				//System.out.println(value + "| range? "+e.getType().toString().equals("range")+ " value:  "+expression.getValue(context));
+			//	System.out.println(value + "| range? "+e.getType().toString().equals("range")+ " value:  "+expression.getValue(context) +" == "+e.getCaption());
 				String valuex = value +"";
-			
+				System.out.println(value+" +++++++++++++++++++++++++============================ "+e.getType().toString());
+				
 				if(!valuex.isBlank() && value != null) {
 				if(e.getType().toString().equals("range")) {
+					System.out.println(value + "| range? "+e.getType().toString().equals("range")+ " value:  "+expression.getValue(context) +" == "+e.getCaption());
 					
 					if(value.toString().equals("0")) { 
-
 						campaignFormBuilder
 						.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
 								CampaignFormElementType.fromString(e.getType()),
 								null,
-								null, null);
+								null, null, false, e.getErrormessage() != null ? e.getCaption() +" : "+e.getErrormessage() +".." : "..");
 						//return;
 					} else {
-
+						
+						Boolean isErrored = value.toString().endsWith(".0");
+						System.out.println(e.getCaption() +" : "+value+" = naija bet: Success vs Mathew " + isErrored);
+						
 						campaignFormBuilder
 						.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
 								CampaignFormElementType.fromString(e.getType()),
 								value.toString().endsWith(".0") ? value.toString().replace(".0", "") : value,
-								null, null);
+								null, null, isErrored, e.getErrormessage() != null ? e.getCaption() +" : "+e.getErrormessage() +".." : "..");
 						//return;
 					}
 					
@@ -128,35 +150,43 @@ public class ExpressionProcessor {
 				
 						
 					} else if(valueType.isAssignableFrom(Double.class)) {
-					System.out.println("yes double detected "+Double.isFinite((double) value) +" = "+ value);
+					//System.out.println("yes double detected "+Double.isFinite((double) value) +" = "+ value);
 				campaignFormBuilder
 					.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
 							CampaignFormElementType.fromString(e.getType()),
 							!Double.isFinite((double) value) ? 0 : value.toString().endsWith(".0") ? value.toString().replace(".0", "") : Precision.round((double) value, 2),
-									null, null);
+									null, null, false, e.getErrormessage() != null ? e.getCaption() +" : "+e.getErrormessage() : null);
 			//	return;
+				} else if(e.getType().toString().equals("yes-no")) {
+					
+					if(!isIgnorable) {
+						campaignFormBuilder
+						.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
+								CampaignFormElementType.fromString(e.getType()), value,
+										null, null, false, e.getErrormessage() != null ? e.getCaption() +" : "+e.getErrormessage() : null);
+					}
 				} else if(valueType.isAssignableFrom(Boolean.class)) {
-					campaignFormBuilder
-					.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
-							CampaignFormElementType.fromString(e.getType()), value,
-									null, null);
-				//	return;
-				//	
-				} else {
 					
 					campaignFormBuilder
 					.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
 							CampaignFormElementType.fromString(e.getType()), value,
-									null, null);
+									null, null, false, e.getErrormessage() != null ? e.getCaption() +" : "+e.getErrormessage() : null);
+			
+				}else {
+					
+					campaignFormBuilder
+					.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
+							CampaignFormElementType.fromString(e.getType()), value,
+									null, null, false, e.getErrormessage() != null ? e.getCaption() +" : "+e.getErrormessage() : null);
 					
 				}
 				} else if(e.getType().toString().equals("range") && valuex == null && e.getDefaultvalue() != null) {
 					
-					System.out.println("++++++++++++++++++++++++++++++++++++++++++++++============================");
+					//System.out.println("++++++++++++++++++++++++++++++++++++++++++++++============================");
 					
 				}
 			} catch (SpelEvaluationException evaluationException) {
-				//LOG.error("Error evaluating expression: {} / {}", evaluationEx0rception.getMessageCode(), evaluationException.getMessage());
+				LOG.error("Error evaluating expression: {} / {}", evaluationException.getMessageCode(), evaluationException.getMessage());
 			}
 		});
 	}

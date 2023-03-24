@@ -17,6 +17,7 @@ package de.symeda.sormas.app;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
@@ -35,12 +36,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.navigation.NavigationView;
+import com.jakewharton.processphoenix.ProcessPhoenix;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -73,6 +76,7 @@ import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.ExitActivity;
 import de.symeda.sormas.app.util.LocationService;
 import de.symeda.sormas.app.util.NavigationHelper;
 
@@ -321,15 +325,15 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 		});
 
 		taskNotificationCounter =
-			(TextView) navigationView.getMenu().findItem(R.id.menu_item_tasks).getActionView().findViewById(R.id.main_menu_notification_counter);
+				(TextView) navigationView.getMenu().findItem(R.id.menu_item_tasks).getActionView().findViewById(R.id.main_menu_notification_counter);
 		caseNotificationCounter =
-			(TextView) navigationView.getMenu().findItem(R.id.menu_item_cases).getActionView().findViewById(R.id.main_menu_notification_counter);
+				(TextView) navigationView.getMenu().findItem(R.id.menu_item_cases).getActionView().findViewById(R.id.main_menu_notification_counter);
 		contactNotificationCounter =
-			(TextView) navigationView.getMenu().findItem(R.id.menu_item_contacts).getActionView().findViewById(R.id.main_menu_notification_counter);
+				(TextView) navigationView.getMenu().findItem(R.id.menu_item_contacts).getActionView().findViewById(R.id.main_menu_notification_counter);
 		eventNotificationCounter =
-			(TextView) navigationView.getMenu().findItem(R.id.menu_item_events).getActionView().findViewById(R.id.main_menu_notification_counter);
+				(TextView) navigationView.getMenu().findItem(R.id.menu_item_events).getActionView().findViewById(R.id.main_menu_notification_counter);
 		sampleNotificationCounter =
-			(TextView) navigationView.getMenu().findItem(R.id.menu_item_samples).getActionView().findViewById(R.id.main_menu_notification_counter);
+				(TextView) navigationView.getMenu().findItem(R.id.menu_item_samples).getActionView().findViewById(R.id.main_menu_notification_counter);
 	}
 
 	protected abstract boolean isSubActivity();
@@ -340,32 +344,40 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 		}
 
 		switch (item.getItemId()) {
-		case android.R.id.home:
-			if (finishInsteadOfUpNav) {
-				finish();
-			} else {
-				NavigationHelper.navigateUpFrom(this);
-			}
-			return true;
+			case android.R.id.home:
+				if (finishInsteadOfUpNav) {
+					finish();
+				} else {
+					NavigationHelper.navigateUpFrom(this);
+				}
+				return true;
 
-		case R.id.action_sync:
-			synchronizeChangedData();
-			return true;
+			case R.id.action_sync:
+				synchronizeChangedData();
+				return true;
 
-		case R.id.action_new:
-			goToNewView();
-			return true;
+			case R.id.action_new:
+				goToNewView();
+				return true;
 
-		case R.id.action_readAll:
-			// TODO
-			return true;
+			case R.id.action_readAll:
+				// TODO
+				restartAndUpdateApplication();
+				return true;
 
-		case R.id.action_help:
-			StringBuilder helpStringBuilder = new StringBuilder();
-			extendHelpString(helpStringBuilder, (ViewGroup) this.findViewById(R.id.main_content));
-			InfoDialog infoDialog = new InfoDialog(getContext(), R.layout.dialog_screen_help_layout, Html.fromHtml(helpStringBuilder.toString()));
-			infoDialog.show();
-			return true;
+			case R.id.action_closeApp:
+				// TODO
+				exitApplication();
+				return true;
+
+
+
+//		case R.id.action_help:
+//			StringBuilder helpStringBuilder = new StringBuilder();
+//			extendHelpString(helpStringBuilder, (ViewGroup) this.findViewById(R.id.main_content));
+//			InfoDialog infoDialog = new InfoDialog(getContext(), R.layout.dialog_screen_help_layout, Html.fromHtml(helpStringBuilder.toString()));
+//			infoDialog.show();
+//			return true;
 		}
 
 		return super.onOptionsItemSelected(item);
@@ -419,49 +431,49 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 
 			if (taskMenu != null)
 				taskMenu.setVisible(
-					ConfigProvider.hasUserRight(UserRight.TASK_VIEW)
-						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.TASK_MANAGEMENT));
+						ConfigProvider.hasUserRight(UserRight.TASK_VIEW)
+								&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.TASK_MANAGEMENT));
 
 			if (caseMenu != null)
 				caseMenu.setVisible(
-					ConfigProvider.hasUserRight(UserRight.CASE_VIEW)
-						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CASE_SURVEILANCE));
+						ConfigProvider.hasUserRight(UserRight.CASE_VIEW)
+								&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CASE_SURVEILANCE));
 
 			if (aggregateReportsMenu != null)
 				aggregateReportsMenu.setVisible(
-					ConfigProvider.hasUserRight(UserRight.AGGREGATE_REPORT_EDIT)
-						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.AGGREGATE_REPORTING));
+						ConfigProvider.hasUserRight(UserRight.AGGREGATE_REPORT_EDIT)
+								&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.AGGREGATE_REPORTING));
 
 			if (sampleMenu != null)
 				sampleMenu.setVisible(
-					ConfigProvider.hasUserRight(UserRight.SAMPLE_VIEW)
-						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.SAMPLES_LAB));
+						ConfigProvider.hasUserRight(UserRight.SAMPLE_VIEW)
+								&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.SAMPLES_LAB));
 
 
 			if (immunizationMenu != null)
 				immunizationMenu.setVisible(
-					ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)
-						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.IMMUNIZATION_MANAGEMENT));
+						ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)
+								&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.IMMUNIZATION_MANAGEMENT));
 
 			if (eventMenu != null)
 				eventMenu.setVisible(
-					ConfigProvider.hasUserRight(UserRight.EVENT_VIEW)
-						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.EVENT_SURVEILLANCE));
+						ConfigProvider.hasUserRight(UserRight.EVENT_VIEW)
+								&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.EVENT_SURVEILLANCE));
 
 			if (contactMenu != null)
 				contactMenu.setVisible(
-					ConfigProvider.hasUserRight(UserRight.CONTACT_VIEW)
-						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CONTACT_TRACING));
+						ConfigProvider.hasUserRight(UserRight.CONTACT_VIEW)
+								&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CONTACT_TRACING));
 
 			if (reportMenu != null)
 				reportMenu.setVisible(
-					ConfigProvider.hasUserRight(UserRight.WEEKLYREPORT_VIEW)
-						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.WEEKLY_REPORTING));
+						ConfigProvider.hasUserRight(UserRight.WEEKLYREPORT_VIEW)
+								&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.WEEKLY_REPORTING));
 
 			if (campaignMenu != null)
 				campaignMenu.setVisible(
-					ConfigProvider.hasUserRight(UserRight.CAMPAIGN_VIEW)
-						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS));
+						ConfigProvider.hasUserRight(UserRight.CAMPAIGN_VIEW)
+								&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS));
 
 		}
 
@@ -600,12 +612,12 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 	}
 
 	public void synchronizeData(
-		final SynchronizeDataAsync.SyncMode syncMode,
-		final boolean showUpgradePrompt,
-		final boolean showProgressDialog,
-		final SwipeRefreshLayout swipeRefreshLayout,
-		final Callback resultCallback,
-		final Callback beforeSyncCallback) {
+			final SynchronizeDataAsync.SyncMode syncMode,
+			final boolean showUpgradePrompt,
+			final boolean showProgressDialog,
+			final SwipeRefreshLayout swipeRefreshLayout,
+			final Callback resultCallback,
+			final Callback beforeSyncCallback) {
 		if (!checkActiveUser())
 			return;
 
@@ -627,10 +639,10 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 			if (progressDialog == null || !progressDialog.isShowing()) {
 				boolean isInitialSync = DatabaseHelper.getFacilityDao().isEmpty();
 				progressDialog = ProgressDialog.show(
-					this,
-					getString(R.string.heading_synchronization),
-					getString(isInitialSync ? R.string.info_initial_synchronization : R.string.info_synchronizing),
-					true);
+						this,
+						getString(R.string.heading_synchronization),
+						getString(isInitialSync ? R.string.info_initial_synchronization : R.string.info_synchronizing),
+						true);
 			}
 		} else {
 			progressDialog = null;
@@ -736,6 +748,40 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 	public void goToNewView() {
 		throw new NotImplementedException("goToNewView");
 	}
+
+	public void restartAndUpdateApplication() {
+		ProcessPhoenix.triggerRebirth(getApplicationContext());
+		ProcessPhoenix.triggerRebirth(getActiveActivity());
+
+
+
+	}
+
+	public void exitApplication() {
+		final AlertDialog.Builder builder = new AlertDialog.Builder(BaseActivity.this);
+		builder.setTitle("Exit");
+		builder.setMessage("Do you want to exit? ");
+		builder.setPositiveButton("Yes. Exit Now!", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialogInterface, int i){
+				finishAffinity();
+				System.exit(0);
+			}
+
+		});
+		builder.setNegativeButton("Not now", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialogInterface, int i) {
+				dialogInterface.dismiss();
+			}
+		});
+		AlertDialog dialog= builder.create();
+		dialog.show();
+	}
+
+
+
+
 
 	@Override
 	public View getRootView() {

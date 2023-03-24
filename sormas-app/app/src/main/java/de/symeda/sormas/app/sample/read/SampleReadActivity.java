@@ -127,4 +127,6 @@ public class SampleReadActivity extends BaseReadActivity<Sample> {
 		SampleSection section = SampleSection.fromOrdinal(getActivePage().getPosition());
 		SampleEditActivity.startActivity(getContext(), getRootUuid(), section);
 	}
+	@Override
+	public void goToDeleteRecord() {}
 }

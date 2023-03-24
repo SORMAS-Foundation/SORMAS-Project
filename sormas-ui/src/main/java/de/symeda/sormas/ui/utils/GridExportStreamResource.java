@@ -113,6 +113,7 @@ public class GridExportStreamResource {
 		private final Supplier<Set<?>> getSelectedRows;
 
 		GridExportStreamSource(Grid<?> grid, Supplier<Set<?>> getSelectedRows, List<String> excludePropertyIds, List<String> includePropertyIds) {
+			
 			this.grid = grid;
 			this.excludePropertyIds = excludePropertyIds;
 			this.includePropertyIds = includePropertyIds;
@@ -131,6 +132,8 @@ public class GridExportStreamResource {
 
 			try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream(); CSVWriter writer = createCsvWriter(byteStream)) {
 				writer.writeNext(headerRow);
+				System.out.println("????????????????????????????????????????111111111111?" + labelsRow.toString());
+				System.out.println("???????????????????????????????????????222222222?" + labelsRow.toString());
 				writer.writeNext(labelsRow, false);
 
 				String[] rowValues = new String[columnValueProviders.length];
@@ -141,13 +144,14 @@ public class GridExportStreamResource {
 					int totalRowCount = dataProvider.size(new Query());
 					for (int i = 0; i < totalRowCount; i += 100) {
 						dataProvider.fetch(new Query(i, 100, sortOrder, null, null)).forEach(row -> {
-							writeLine(writer, columnValueProviders, row, rowValues);
+							System.out.println("??????????????????????????333333333333?" + labelsRow.toString());
+							writeLine(writer, columnValueProviders, row, rowValues, labelsRow);
 						});
 						writer.flush();
 					}
 				} else {
 					selectedRows.forEach(row -> {
-						writeLine(writer, columnValueProviders, row, rowValues);
+						writeLine(writer, columnValueProviders, row, rowValues, labelsRow);
 					});
 					writer.flush();
 				}
@@ -165,11 +169,11 @@ public class GridExportStreamResource {
 			}
 		}
 
-		private static void writeLine(CSVWriter writer, ValueProvider[] columnValueProviders, Object row, String[] rowValues) {
+		private static void writeLine(CSVWriter writer, ValueProvider[] columnValueProviders, Object row, String[] rowValues, String[] headerRow) {
 			for (int c = 0; c < columnValueProviders.length; c++) {
 				Object value = columnValueProviders[c].apply(row);
 
-				final String valueString;
+				 String valueString;
 				if (value == null) {
 					valueString = "";
 				} else if (value instanceof Date) {
@@ -192,7 +196,24 @@ public class GridExportStreamResource {
 					valueString = ((Label) value).getValue();
 				} else {
 					valueString = value.toString();
+					valueString = valueString.replace("[", "");
+					valueString = valueString.replace("]", "");
 				}
+				
+				if(headerRow.toString().equalsIgnoreCase("area")) {
+					valueString = "hackkkk";
+				}
+				if(headerRow.toString().equalsIgnoreCase("##Region")) {
+					valueString = "hackkkk";
+					
+				}
+				if(headerRow.toString().equalsIgnoreCase("Province")) {
+					valueString = "hackkkk";
+					
+				}
+					
+
+				
 				rowValues[c] = valueString;
 			}
 			writer.writeNext(rowValues);

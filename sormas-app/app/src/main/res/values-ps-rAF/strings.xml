@@ -65,7 +65,7 @@
     <string name="action_login_default_user">Sign in as demo user</string>
     <string name="action_logout">Logout</string>
     <string name="action_logout_anyway">Logout anyway</string>
-    <string name="action_markAllAsRead">Mark all as read</string>
+    <string name="action_markAllAsRead">Sync &amp; Reload Settings</string>
     <string name="action_new">New</string>
     <string name="action_new_case">New Case</string>
     <string name="action_new_immunization">New Immunization</string>
@@ -89,7 +89,7 @@
     <string name="action_redownload_app_later">Redownload later</string>
     <string name="action_refer_case_from_poe">Refer case from Point of Entry</string>
     <string name="action_report">Report Problem</string>
-    <string name="action_repull_data">Re-synchronize System Settings</string>
+    <string name="action_repull_data">Re-sync Settings</string>
     <string name="action_reset_filters">Reset filters</string>
     <string name="action_save">Save</string>
     <string name="action_save_case">Save Case</string>
@@ -191,7 +191,7 @@
     <string name="caption_new_task">New Task</string>
     <string name="caption_not_a_contact">Not a Contact</string>
     <string name="caption_not_an_event">Not an Event</string>
-    <string name="caption_outbreak">Outbreaks</string>
+    <string name="caption_outbreak"></string>
     <string name="caption_password">Password</string>
     <string name="caption_patient_information">Patient Information</string>
     <string name="caption_pending">Pending</string>

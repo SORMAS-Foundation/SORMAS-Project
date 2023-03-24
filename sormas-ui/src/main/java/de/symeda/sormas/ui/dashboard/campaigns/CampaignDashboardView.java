@@ -69,7 +69,7 @@ public class CampaignDashboardView extends AbstractDashboardView {
 		filterLayout.setHeightUndefined();
 		filterLayout.setWidthFull();
 		filterLayout.setSizeUndefined();
-		//filterLayout.setMargin(new MarginInfo(false, true));
+		filterLayout.setMargin(new MarginInfo(false, true));
 	//	filterLayout.setSpacing(false);
 		
 		

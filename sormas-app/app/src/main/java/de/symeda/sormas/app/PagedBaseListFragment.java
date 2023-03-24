@@ -89,7 +89,7 @@ public abstract class PagedBaseListFragment<TListAdapter extends RecyclerView.Ad
 			((HasOnListItemClickListener) this.adapter).setOnListItemClickListener(this);
 		} else {
 			throw new NotImplementedException(
-				"setOnListItemClickListener is not supported by the adapter; " + "implement HasOnListItemClickListener");
+					"setOnListItemClickListener is not supported by the adapter; " + "implement HasOnListItemClickListener");
 		}
 
 		return view;
@@ -147,7 +147,7 @@ public abstract class PagedBaseListFragment<TListAdapter extends RecyclerView.Ad
 
 		if (adapter.getItemCount() == 0) {
 			emptyListHintView
-				.setText(getResources().getString(canAddToList() ? R.string.hint_no_records_found_add_new : R.string.hint_no_records_found));
+					.setText(getResources().getString(canAddToList() ? R.string.hint_no_records_found_add_new : R.string.hint_no_records_found));
 			emptyListHintView.setVisibility(View.VISIBLE);
 		} else {
 			emptyListHintView.setVisibility(View.GONE);

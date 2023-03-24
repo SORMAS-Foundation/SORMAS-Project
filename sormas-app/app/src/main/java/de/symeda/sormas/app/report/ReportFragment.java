@@ -85,7 +85,7 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
 		Resources r = getResources();
 		String defaultValue = r.getString(R.string.hint_report_not_submitted);
 		boolean isInformant =
-			ConfigProvider.getUser().hasUserRole(UserRole.HOSPITAL_INFORMANT) || ConfigProvider.getUser().hasUserRole(UserRole.COMMUNITY_INFORMANT);
+			ConfigProvider.getUser().hasUserRole(UserRole.HOSPITAL_INFORMANT) || ConfigProvider.getUser().hasUserRole(UserRole.HOSPITAL_INFORMANT);
 		if (DataHelper.isNullOrEmpty(reportDate)) {
 			if (isInformant) {
 				return defaultValue;

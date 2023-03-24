@@ -65,11 +65,11 @@
     <string name="action_login_default_user">Sign in as demo user</string>
     <string name="action_logout">Logout</string>
     <string name="action_logout_anyway">Logout anyway</string>
-    <string name="action_markAllAsRead">Mark all as read</string>
+    <string name="action_markAllAsRead">Sync &amp; Reload Settings</string>
     <string name="action_new">New</string>
     <string name="action_new_case">New Case</string>
     <string name="action_new_immunization">New Immunization</string>
-    <string name="action_new_campaign_form_data">New Campaign Form Data</string>
+    <string name="action_new_campaign_form_data">داده های فرم کمپین جدید</string>
     <string name="action_new_contact">New Contact</string>
     <string name="action_new_event">New Event</string>
     <string name="action_new_sample">New Sample</string>
@@ -89,7 +89,7 @@
     <string name="action_redownload_app_later">Redownload later</string>
     <string name="action_refer_case_from_poe">Refer case from Point of Entry</string>
     <string name="action_report">Report Problem</string>
-    <string name="action_repull_data">Re-synchronize System Settings</string>
+    <string name="action_repull_data">Re-sync Settings</string>
     <string name="action_reset_filters">Reset filters</string>
     <string name="action_save">Save</string>
     <string name="action_save_case">Save Case</string>
@@ -108,7 +108,7 @@
     <string name="action_set_cleared_to_unknown">Set Cleared to Unknown</string>
     <string name="action_show_classification_rules">View classification rules</string>
     <string name="action_submit_report">Submit Weekly Report</string>
-    <string name="action_sync">Submit Data</string>
+    <string name="action_sync">ارسال داده ها</string>
     <string name="action_transfer_case">Transfer case</string>
     <string name="action_try_again">Try again</string>
     <string name="action_turn_on_gps">Turn On GPS</string>
@@ -191,7 +191,7 @@
     <string name="caption_new_task">New Task</string>
     <string name="caption_not_a_contact">Not a Contact</string>
     <string name="caption_not_an_event">Not an Event</string>
-    <string name="caption_outbreak">Outbreaks</string>
+    <string name="caption_outbreak"></string>
     <string name="caption_password">Password</string>
     <string name="caption_patient_information">Patient Information</string>
     <string name="caption_pending">Pending</string>
@@ -378,7 +378,7 @@
     <string name="heading_social_events">Social Events</string>
     <string name="heading_source_case">Source Case</string>
     <string name="heading_source_of_information">Source of Information</string>
-    <string name="heading_surveillance_outbreak">Surveillance Outbreak</string>
+    <string name="heading_surveillance_outbreak">Afghanistan Polio</string>
     <string name="heading_symptoms">Signs &amp; Symptoms</string>
     <string name="heading_sync_conflicts">Synchronization Conflicts</string>
     <string name="heading_synchronization">Synchronization</string>

@@ -32,18 +32,18 @@
         android:title="@string/action_new"
         app:showAsAction="always"/>
 
-    <item
-        android:icon="@drawable/ic_more_option_menu_24dp"
-        android:title="@string/action_options"
-        app:showAsAction="always">
+<!--    <item-->
+<!--        android:icon="@drawable/ic_more_option_menu_24dp"-->
+<!--        android:title="@string/action_options"-->
+<!--        app:showAsAction="always">-->
 
-        <menu>
-            <item
-                android:id="@+id/action_sync"
-                android:icon="@drawable/ic_sync_option_menu_24dp"
-                android:title="@string/action_sync"
-                app:showAsAction="always|withText"/>
-        </menu>
+<!--        <menu>-->
+<!--            <item-->
+<!--                android:id="@+id/action_sync"-->
+<!--                android:icon="@drawable/ic_sync_option_menu_24dp"-->
+<!--                android:title="@string/action_sync"-->
+<!--                app:showAsAction="always|withText"/>-->
+<!--        </menu>-->
 
-    </item>
+<!--    </item>-->
 </menu>

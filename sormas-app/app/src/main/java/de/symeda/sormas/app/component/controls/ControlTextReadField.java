@@ -260,6 +260,7 @@ public class ControlTextReadField extends ControlPropertyField<String> {
 		String valueFormat,
 		String defaultValue,
 		Object originalValue) {
+		System.out.println(stringValue +"stringValuestringValuestringValuestringValue");
 		if (StringUtils.isEmpty(stringValue)) {
 			textField.setValue(textField.getDefaultValue(defaultValue), originalValue);
 			textField.applyDefaultValueStyle();
@@ -283,6 +284,7 @@ public class ControlTextReadField extends ControlPropertyField<String> {
 		"valueFormat",
 		"defaultValue" }, requireAll = false)
 	public static void setValue(ControlTextReadField textField, String stringValue, String appendValue, String valueFormat, String defaultValue) {
+		System.out.println(stringValue +" setValuesetValuesetValue");
 		setValue(textField, stringValue, appendValue, valueFormat, defaultValue, stringValue);
 	}
 

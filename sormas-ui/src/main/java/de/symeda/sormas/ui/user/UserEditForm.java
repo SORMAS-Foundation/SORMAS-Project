@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.vaadin.ui.Label;
+import com.vaadin.ui.UI;
 import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.CheckBox;
@@ -41,6 +42,7 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -48,14 +50,17 @@ import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.FormAccess;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserHelper;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserType;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -68,13 +73,14 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 
 	private static final String PERSON_DATA_HEADING_LOC = "personDataHeadingLoc";
 	private static final String ADDRESS_HEADING_LOC = "addressHeadingLoc";
+	private static final String USER_TYPE_HEADING_LOC = "userTypeHeadingLoc";
 	private static final String USER_DATA_HEADING_LOC = "userDataHeadingLoc";
 	private static final String USER_EMAIL_DESC_LOC = "userEmailDescLoc";
 	private static final String USER_PHONE_DESC_LOC = "userPhoneDescLoc";
 	private String communityUUID;
 
 	//@formatter:off
-    private static final String HTML_LAYOUT =
+    private static final String HTML_LAYOUT = 
             loc(PERSON_DATA_HEADING_LOC) +
                     fluidRowLocs(UserDto.FIRST_NAME, UserDto.LAST_NAME) +
                     fluidRowLocs(UserDto.USER_EMAIL, UserDto.PHONE) +
@@ -84,6 +90,10 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 
                     loc(ADDRESS_HEADING_LOC) +
                     fluidRowLocs(UserDto.ADDRESS) +
+                    
+                    loc(USER_TYPE_HEADING_LOC) +
+                    fluidRowLocs(UserDto.COMMON_USER) +
+                 //  fluidRowLocs(UserDto.TABLE_NAME_USERTYPES) +
 					
                     loc(USER_DATA_HEADING_LOC) +
                     fluidRowLocs(UserDto.ACTIVE) +
@@ -118,6 +128,10 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         Label addressHeadingLabel = new Label(I18nProperties.getString(Strings.address));
         addressHeadingLabel.addStyleName(H3);
         getContent().addComponent(addressHeadingLabel, ADDRESS_HEADING_LOC);
+        
+        Label userTypeHeadingLabel = new Label(I18nProperties.getString(Strings.alluserstype));
+        userTypeHeadingLabel.addStyleName(H3);
+        getContent().addComponent(userTypeHeadingLabel, USER_TYPE_HEADING_LOC);
 
 		Label userDataHeadingLabel = new Label(I18nProperties.getString(Strings.headingUserData));
 		userDataHeadingLabel.addStyleName(H3);
@@ -134,6 +148,37 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
             addDiseaseField(UserDto.LIMITED_DISEASE, false);
         }
         
+        CheckBox commusr = addField(UserDto.COMMON_USER, CheckBox.class);
+        
+        ComboBox userTypes = addField(UserDto.TABLE_NAME_USERTYPES, ComboBox.class);
+        userTypes.setNullSelectionAllowed(true);
+        
+        commusr.addValueChangeListener(e -> {
+        	System.out.println((boolean) e.getProperty().getValue());
+        	if ((boolean) e.getProperty().getValue() ==  true ) {
+            	 userTypes.setValue(UserType.COMMON_USER);
+            	// final Field userRolesField = getFieldGroup().getField(UserDto.USER_ROLES);
+            	 
+            	 final OptionGroup userRolesRemoval = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
+            	 UserDto userDto = FacadeProvider.getUserFacade().getCurrentUser();
+            	 userRolesRemoval.removeAllItems();
+            	 userRolesRemoval.addItems(UserUiHelper.getAssignableRoles(userDto.getUserRoles() ));
+            	 userRolesRemoval.removeItem(UserRole.ADMIN);
+            	 userRolesRemoval.removeItem(UserRole.COMMUNITY_INFORMANT);
+            	 userRolesRemoval.removeItem(UserRole.AREA_ADMIN_SUPERVISOR);
+                 
+    		}
+    		else {
+    			 userTypes.setValue(UserProvider.getCurrent().getUser().getUsertype());
+    			 final OptionGroup userRolesRemoval = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
+            	 UserDto userDto = FacadeProvider.getUserFacade().getCurrentUser();
+            	 userRolesRemoval.removeAllItems();
+            	 userRolesRemoval.addItems(UserUiHelper.getAssignableRoles(userDto.getUserRoles() ));
+            	// userRolesRemoval.removeItem(UserRole.ADMIN);
+    		} 	
+        	
+        });
+        
         Label userEmailDesc = new Label(I18nProperties.getString(Strings.infoUserEmail));
         getContent().addComponent(userEmailDesc, USER_EMAIL_DESC_LOC);
         Label userPhoneDesc = new Label(I18nProperties.getString(Strings.infoUserPhoneNumber));
@@ -149,16 +194,17 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         addField(UserDto.ACTIVE, CheckBox.class);
         addField(UserDto.USER_NAME, TextField.class);
         
-        addField(UserDto.FORM_ACCESS, OptionGroup.class);
-        OptionGroup formAccess = (OptionGroup) getFieldGroup().getField(UserDto.FORM_ACCESS);
-        formAccess.setMultiSelect(true);
+  	  	addField(UserDto.FORM_ACCESS, OptionGroup.class).setCaption(I18nProperties.getCaption(Captions.formAccess)); 
+  	  	OptionGroup formAccess = (OptionGroup) getFieldGroup().getField(UserDto.FORM_ACCESS);
+  	  	formAccess.setMultiSelect(true);
         
         addField(UserDto.USER_ROLES, OptionGroup.class).addValidator(new UserRolesValidator());
         OptionGroup userRoles = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
+        //userRoles.removeItem(UserRole.IMPORT_USER); 
         userRoles.setMultiSelect(true); 
                
      
-        
+        //User name
         
         ComboBox area = addInfrastructureField(UserDto.AREA);
         ComboBox region = addInfrastructureField(UserDto.REGION);
@@ -261,7 +307,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 		final OptionGroup community = (OptionGroup) getFieldGroup().getField(UserDto.COMMUNITY);
 		community.setVisible(useCommunity);
 		setRequired(useCommunity, UserDto.COMMUNITY);
-		System.out.println("))))))))))))))))))(((((((((((((((( : "+useCommunity);
+
 		
 		if (useCommunity) {
 			community.clear();
@@ -382,9 +428,20 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         userRoles.addItems(UserUiHelper.getAssignableRoles(userDto.getUserRoles()));
         
         OptionGroup formAccess = (OptionGroup) getFieldGroup().getField(UserDto.FORM_ACCESS);
-        formAccess.removeAllItems();
-        formAccess.addItems(UserUiHelper.getAssignableForms());
+       // formAccess.removeAllItems();
 
+       formAccess.addItems(UserUiHelper.getAssignableForms());
+        
+       if ((UserProvider.getCurrent().getUser().getUsertype().equals(UserType.EOC_USER))) {
+           
+       	formAccess.removeItem(FormAccess.TRAINING);
+       	formAccess.removeItem(FormAccess.PCA);
+       	formAccess.removeItem(FormAccess.FLW);
+       	formAccess.removeItem(FormAccess.FMS);
+       	formAccess.removeItem(FormAccess.LQAS);
+       	
+       	
+       }
         super.setValue(userDto);
     }
 }

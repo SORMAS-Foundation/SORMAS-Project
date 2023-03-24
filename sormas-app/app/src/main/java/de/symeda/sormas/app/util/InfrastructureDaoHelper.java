@@ -179,7 +179,7 @@ public final class InfrastructureDaoHelper {
 		District initialDistrict,
 		final ControlSpinnerField communityField,
 		List<Item> initialCommunities,
-		Community initialCommunity) {
+		Community initialCommunity, Boolean isEdit) {
 
 		Item areaItem = initialArea != null ? DataUtils.toItem(initialArea) : null;
 		Item regionItem = initialRegion != null ? DataUtils.toItem(initialRegion) : null;
@@ -238,8 +238,14 @@ public final class InfrastructureDaoHelper {
 						newCommunities.add(communityItem);
 					}
 					communityField.setSpinnerData(newCommunities, communityField.getValue());
+					if(isEdit){
+						communityField.setEnabled(false);
+					}
 				} else {
 					communityField.setSpinnerData(null);
+					if(isEdit){
+						communityField.setEnabled(false);
+					}
 				}
 			});
 		} else {
@@ -248,6 +254,9 @@ public final class InfrastructureDaoHelper {
 
 		if (communityField != null) {
 			communityField.initializeSpinner(initialCommunities);
+			if(isEdit){
+				communityField.setEnabled(false);
+			}
 		}
 	}
 

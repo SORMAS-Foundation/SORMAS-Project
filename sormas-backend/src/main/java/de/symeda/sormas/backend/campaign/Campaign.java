@@ -20,8 +20,16 @@ import org.hibernate.annotations.Type;
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
+import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.infrastructure.area.Area;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
 
@@ -29,10 +37,14 @@ import de.symeda.sormas.backend.util.ModelConstants;
 @Audited
 public class Campaign extends CoreAdo {
 
-	private static final long serialVersionUID = -2744033662114826543L;
+	private static final long serialVersionUID = -2744033662114826543L; 
 
 	public static final String TABLE_NAME = "campaigns";
 	public static final String CAMPAIGN_CAMPAIGNFORMMETA_TABLE_NAME = "campaign_campaignformmeta";
+	public static final String CAMPAIGN_AREA_TABLE_NAME = "campaign_area";
+	public static final String CAMPAIGN_REGION_TABLE_NAME = "campaign_region";
+	public static final String CAMPAIGN_DISTRICT_TABLE_NAME = "campaign_district";
+	public static final String CAMPAIGN_COMMUNITY_TABLE_NAME = "campaign_community";
 
 	public static final String NAME = "name";
 	public static final String ROUND = "round";
@@ -57,6 +69,13 @@ public class Campaign extends CoreAdo {
 	private boolean openandclose;
 	private List<CampaignDashboardElement> dashboardElements;
 	private Set<CampaignFormMeta> campaignFormMetas = new HashSet<>();
+	
+	private Set<Area> areas= new HashSet<>();
+	private Set<Region> regions= new HashSet<>();
+	private Set<District> districts= new HashSet<>();
+	private Set<Community> communities= new HashSet<>();
+	
+	
 
 	@Column(length = 255)
 	public String getName() {
@@ -168,4 +187,58 @@ public class Campaign extends CoreAdo {
 	public void setCampaignFormMetas(Set<CampaignFormMeta> campaignFormMetas) {
 		this.campaignFormMetas = campaignFormMetas;
 	}
+	
+	@AuditedIgnore
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = CAMPAIGN_AREA_TABLE_NAME,
+		joinColumns = @JoinColumn(name = "campaign_id"),
+		inverseJoinColumns = @JoinColumn(name = "area_id"))
+	public Set<Area> getAreas() {
+		return areas;
+	}
+	
+	public void setAreas(Set<Area> areas) {
+		this.areas = areas;
+	}
+
+	@AuditedIgnore
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = CAMPAIGN_REGION_TABLE_NAME,
+		joinColumns = @JoinColumn(name = "campaign_id"),
+		inverseJoinColumns = @JoinColumn(name = "region_id"))
+	public Set<Region> getRegion() {
+		return regions;
+	}
+
+	public void setRegion(Set<Region> regions) {
+		this.regions = regions;
+	}
+
+	@AuditedIgnore
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = CAMPAIGN_DISTRICT_TABLE_NAME,
+		joinColumns = @JoinColumn(name = "campaign_id"),
+		inverseJoinColumns = @JoinColumn(name = "district_id"))
+	public Set<District> getDistricts() {
+		return districts;
+	}
+
+	public void setDistricts(Set<District> districts) {
+		this.districts = districts;
+	}
+
+	@AuditedIgnore
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = CAMPAIGN_COMMUNITY_TABLE_NAME,
+		joinColumns = @JoinColumn(name = "campaign_id"),
+		inverseJoinColumns = @JoinColumn(name = "community_id"))
+	public Set<Community> getCommunity() {
+		return communities;
+	}
+
+	public void setCommunity(Set<Community> communities) {
+		this.communities = communities;
+	}
+
+	
 }

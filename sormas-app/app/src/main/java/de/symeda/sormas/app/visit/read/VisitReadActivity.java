@@ -103,4 +103,6 @@ public class VisitReadActivity extends BaseReadActivity<Visit> {
 		VisitSection section = VisitSection.fromOrdinal(getActivePage().getPosition());
 		VisitEditActivity.startActivity(getContext(), getRootUuid(), contactUuid, section);
 	}
+	@Override
+	public void goToDeleteRecord() {}
 }

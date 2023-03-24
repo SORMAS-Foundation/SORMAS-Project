@@ -11,6 +11,8 @@ public interface Captions {
 	 */
 
 	String about = "ABOUT APMIS";
+	String clusterNumber = "Cluster Number";
+	String formAccess = "Form Access";
 	String aboutGuides= "GUIDES";
 	String aboutvideos= "Videos";
 	String apmisaboutguides = "User Guides";
@@ -51,6 +53,7 @@ public interface Captions {
 	String actionBack = "actionBack";
 	String actionBackToNationOverview = "actionBackToNationOverview";
 	String actionCancel = "actionCancel";
+	String commomUser = "commomUser";
 	String actionClear = "actionClear";
 	String actionClearAll = "actionClearAll";
 	String actionClose = "actionClose";
