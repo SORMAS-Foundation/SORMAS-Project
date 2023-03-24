@@ -151,6 +151,7 @@ import static org.sormas.e2etests.pages.application.immunizations.EditImmunizati
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DATE_OF_BIRTH_DAY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DATE_OF_BIRTH_MONTH_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DATE_OF_BIRTH_YEAR_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DISTRICT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DISTRICT_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PERSON_DATA_ADDED_AS_A_PARTICIPANT_MESSAGE;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PERSON_DATA_SAVED;
@@ -158,9 +159,8 @@ import static org.sormas.e2etests.pages.application.persons.EditPersonPage.POPUP
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.POPUP_RESPONSIBLE_DISTRICT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.POPUP_RESPONSIBLE_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.POPUP_SAVE;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.REGION_INPUT;
-import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SECOND_DISTRICT_COMBOBOX;
-import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SECOND_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SEE_EVENTS_FOR_PERSON;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_SAMPLE_REASON_POPUP;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
@@ -776,6 +776,10 @@ public class EditEventSteps implements En {
         "I click on Event Participant Person tab",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(EVENT_PARTICIPANT_PERSON_TAB);
+          if (webDriverHelpers.isElementVisibleWithTimeout(UNSAVED_CHANGES_HEADER, 2))
+            webDriverHelpers.clickOnWebElementBySelector(CONFIRM_POPUP);
+          if (webDriverHelpers.isElementVisibleWithTimeout(UNSAVED_CHANGES_HEADER_DE, 2))
+            webDriverHelpers.clickOnWebElementBySelector(CONFIRM_POPUP);
         });
 
     When(
@@ -1567,8 +1571,8 @@ public class EditEventSteps implements En {
     When(
         "I set Region to {string} and District to {string} in Event Participant edit page",
         (String aRegion, String aDistrict) -> {
-          webDriverHelpers.selectFromCombobox(SECOND_REGION_COMBOBOX, aRegion);
-          webDriverHelpers.selectFromCombobox(SECOND_DISTRICT_COMBOBOX, aDistrict);
+          webDriverHelpers.selectFromCombobox(REGION_COMBOBOX, aRegion);
+          webDriverHelpers.selectFromCombobox(DISTRICT_COMBOBOX, aDistrict);
         });
 
     When(

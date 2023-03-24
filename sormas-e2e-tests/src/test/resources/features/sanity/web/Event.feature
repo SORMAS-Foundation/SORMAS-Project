@@ -841,6 +841,7 @@ Feature: Create events
     And I check if data for created facility is automatically imported to the correct fields in Case Person tab
     Then I navigate to EVENT PARTICIPANT from edit event page
     And I add only required data for event participant creation for DE
+    Then I click on Event Participant Person tab
     And I set Region to "Voreingestellte Bundesländer" and District to "Voreingestellter Landkreis" in Event Participant edit page
     Then I set Facility Category to "Medizinische Einrichtung" and  Facility Type to "Krankenhaus"
     And I set facility name to created facility
