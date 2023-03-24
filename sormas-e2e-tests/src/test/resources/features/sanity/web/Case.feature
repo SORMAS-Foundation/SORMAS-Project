@@ -2307,7 +2307,7 @@ Feature: Case end to end tests
     And I check that new sample form with pathogen detection reporting process is displayed
     And I click on save sample button
     And I click on save sample button
-    And I click on YES button in Update case disease variant popup window
+#    And I click on YES button in Update case disease variant popup window
     And I click on the Cases button from navbar
     And I search the case by last created person via Demis message
     Then I click on the first Case ID from Case Directory
