@@ -35,6 +35,7 @@ import com.google.common.collect.Sets;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.Page;
 import com.vaadin.server.UserError;
+import com.vaadin.server.VaadinService;
 import com.vaadin.server.Page.Styles;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.AbstractComponent;
@@ -423,37 +424,38 @@ public class CampaignFormBuilder {
 			}
 
 			if (type == CampaignFormElementType.NUMBER) {
-
-				/*
-				 * ((TextField) field).addValueChangeListener(e -> { if
-				 * (e.getProperty().getValue() != null &&
-				 * e.getProperty().getValue().toString().contains(".0")) {
-				 * e.getProperty().setValue(e.getProperty().getValue().toString().replace(".0",
-				 * "")); } });
-				 */
-				// ((TextField) field).addValidator(
-				// new RegexpValidator("^[0-9]\\d*$", errormsg == null ?
-				// Validations.onlyNumbersAllowed : errormsg ));
-
-				((TextField) field).addValidator(new NumberNumericValueValidator(I18nProperties.getValidationError(
-						errormsg == null ? caption + ": " + Validations.onlyNumbersAllowed : errormsg, caption)));
-			}
-			if (type == CampaignFormElementType.DECIMAL) {
-
-				/*
-				 * ((TextField) field).addValueChangeListener(e -> { if
-				 * (e.getProperty().getValue() != null &&
-				 * !e.getProperty().getValue().toString().contains(".")) {
-				 * e.getProperty().setValue(e.getProperty().getValue().toString() + ".0"); } });
-				 */
-
-				// ((TextField) field).addValidator(
-				// new RegexpValidator("^[0-9]\\d*$", errormsg == null ?
-				// Validations.onlyDecimalNumbersAllowed : errormsg ));
-
+				
+				
 				((TextField) field).addValidator(new NumberNumericValueValidator(I18nProperties.getValidationError(
 						errormsg == null ? caption + ": " + Validations.onlyDecimalNumbersAllowed : errormsg, caption),
 						null, null, true));
+				
+				if(fieldId.equalsIgnoreCase("Villagecode")) {
+					
+					 ((TextField) field).addValidator(
+							 new RegexpValidator("(?!.*000$).*", I18nProperties.getValidationError(
+										errormsg == null ? caption + ": " + Validations.onlyDecimalNumbersAllowed : errormsg, caption) ));
+					 
+					((TextField) field).addValueChangeListener(e -> {
+						if (e.getProperty().getValue() != null && e.getProperty().getValue().toString().length() > 2 && e.getProperty().getValue().toString().length() < 8) {
+							if (VaadinService.getCurrentRequest().getWrappedSession()
+									.getAttribute("Clusternumber") != null) {
+								
+								final String des = VaadinService.getCurrentRequest().getWrappedSession()
+										.getAttribute("Clusternumber") + e.getProperty().getValue().toString().substring(0, 3);
+								e.getProperty().setValue(des);
+
+							}
+							}
+//						else if (e.getProperty().getValue() != null && e.getProperty().getValue().toString().length() > 4) {
+//							//	((TextField) e.getProperty()).setCaption("<b>Village Number Assigned:<b>");
+//								//((TextField) e.getProperty()).setCaptionAsHtml(true);
+//								//((TextField) e.getProperty()).setEnabled(false);
+//							}
+					});
+				
+				}
+				
 			}
 
 			if (type == CampaignFormElementType.RANGE) {
