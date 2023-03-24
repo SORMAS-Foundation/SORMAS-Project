@@ -5,12 +5,17 @@ import java.io.IOException;
 import com.opencsv.exceptions.CsvValidationException;
 import com.vaadin.server.ClassResource;
 import com.vaadin.server.Page;
+import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.campaign.CampaignDto;
+import de.symeda.sormas.api.campaign.CampaignReferenceDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ImportFacade;
@@ -22,6 +27,7 @@ import de.symeda.sormas.ui.importer.DataImporter;
 import de.symeda.sormas.ui.importer.ImportReceiver;
 import de.symeda.sormas.ui.importer.InfrastructureImporter;
 import de.symeda.sormas.ui.importer.PopulationDataImporter;
+import de.symeda.sormas.ui.utils.ComboBoxHelper;
 
 @SuppressWarnings("serial")
 public class InfrastructureImportLayout extends AbstractImportLayout {
@@ -29,14 +35,26 @@ public class InfrastructureImportLayout extends AbstractImportLayout {
 	public InfrastructureImportLayout(InfrastructureType infrastructureType) {
 
 		super();
+		
+		
 
-		DateField dfCollectionDate = new DateField();
+		ComboBox campaignFilter = ComboBoxHelper.createComboBoxV7();
 		if (infrastructureType == InfrastructureType.POPULATION_DATA) {
+			
+			
+			campaignFilter.setId(CampaignDto.NAME);
+			campaignFilter.setRequired(true);
+			campaignFilter.setNullSelectionAllowed(false);
+			campaignFilter.setCaption(I18nProperties.getCaption(Captions.Campaign));
+			campaignFilter.setWidth(200, Unit.PIXELS);
+			campaignFilter.setInputPrompt(I18nProperties.getString(Strings.promptCampaign));
+			campaignFilter.addItems(FacadeProvider.getCampaignFacade().getAllActiveCampaignsAsReference());
+			
+			
 			Label lblCollectionDateInfo = new Label(I18nProperties.getString(Strings.infoPopulationCollectionDate));
 			addComponent(lblCollectionDateInfo);
-			addComponent(dfCollectionDate);
-			dfCollectionDate.setRequired(true);
-			dfCollectionDate.addValueChangeListener(e -> upload.setEnabled(e.getProperty().getValue() != null));
+			addComponent(campaignFilter);
+			campaignFilter.addValueChangeListener(e -> upload.setEnabled(e.getProperty().getValue() != null));
 		}
 
 		String templateFilePath;
@@ -98,7 +116,7 @@ public class InfrastructureImportLayout extends AbstractImportLayout {
 			throw new UnsupportedOperationException("Import is currently not implemented for infrastructure type " + infrastructureType.name());
 		}
 
-		addDownloadResourcesComponent(1, new ClassResource("/SORMAS_Infrastructure_Import_Guide.pdf"));
+	//	addDownloadResourcesComponent(1, new ClassResource("/SORMAS_Infrastructure_Import_Guide.pdf"));
 		addDownloadImportTemplateComponent(2, templateFilePath, templateFileName);
 
 		if (infrastructureType == InfrastructureType.POPULATION_DATA) {
@@ -107,7 +125,7 @@ public class InfrastructureImportLayout extends AbstractImportLayout {
 
 				try {
 					DataImporter importer =
-						new PopulationDataImporter(file, currentUser, dfCollectionDate.getValue(), (ValueSeparator) separator.getValue());
+						new PopulationDataImporter(file, currentUser, (CampaignReferenceDto) campaignFilter.getValue(), (ValueSeparator) separator.getValue());
 					importer.startImport(this::extendDownloadErrorReportButton, currentUI, true);
 				} catch (IOException | CsvValidationException e) {
 					new Notification(

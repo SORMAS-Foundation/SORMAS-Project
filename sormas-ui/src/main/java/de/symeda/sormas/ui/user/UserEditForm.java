@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.vaadin.ui.Label;
+import com.vaadin.ui.UI;
 import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.CheckBox;
@@ -156,9 +157,24 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         	System.out.println((boolean) e.getProperty().getValue());
         	if ((boolean) e.getProperty().getValue() ==  true ) {
             	 userTypes.setValue(UserType.COMMON_USER);
+            	// final Field userRolesField = getFieldGroup().getField(UserDto.USER_ROLES);
+            	 
+            	 final OptionGroup userRolesRemoval = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
+            	 UserDto userDto = FacadeProvider.getUserFacade().getCurrentUser();
+            	 userRolesRemoval.removeAllItems();
+            	 userRolesRemoval.addItems(UserUiHelper.getAssignableRoles(userDto.getUserRoles() ));
+            	 userRolesRemoval.removeItem(UserRole.ADMIN);
+            	 userRolesRemoval.removeItem(UserRole.COMMUNITY_INFORMANT);
+            	 userRolesRemoval.removeItem(UserRole.AREA_ADMIN_SUPERVISOR);
+                 
     		}
     		else {
     			 userTypes.setValue(UserProvider.getCurrent().getUser().getUsertype());
+    			 final OptionGroup userRolesRemoval = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
+            	 UserDto userDto = FacadeProvider.getUserFacade().getCurrentUser();
+            	 userRolesRemoval.removeAllItems();
+            	 userRolesRemoval.addItems(UserUiHelper.getAssignableRoles(userDto.getUserRoles() ));
+            	// userRolesRemoval.removeItem(UserRole.ADMIN);
     		} 	
         	
         });
