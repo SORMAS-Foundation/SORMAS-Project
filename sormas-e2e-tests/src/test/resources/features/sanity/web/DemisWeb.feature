@@ -77,7 +77,7 @@ Scenario: Create and send laboratory request via Demis
     And I check that new sample form with pathogen detection reporting process is displayed
     And I click on save sample button
     And I click on save sample button
-    And I click on YES button in Update case disease variant popup window
+#    And I click on YES button in Update case disease variant popup window
     And I click on the Cases button from navbar
     And I click on the first Case ID from Case Directory
     And I check that case created from laboratory message contains a sample with one test
