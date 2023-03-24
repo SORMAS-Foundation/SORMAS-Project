@@ -44,6 +44,7 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinService;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.Panel;
@@ -149,13 +150,17 @@ public class CampaignDataView extends AbstractCampaignView {
 		filterForm.getField(CampaignFormDataCriteria.CAMPAIGN_FORM_META).addValueChangeListener(e -> {
 			Object value = e.getProperty().getValue();
 			importanceFilterSwitcher.setVisible(value != null);
+			executeJavaScript();
 			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
+			grid.reload();
 			
 			executeJavaScript();
 		});
 
 		importanceFilterSwitcher.addValueChangeListener(e -> {
 			grid.reload();
+			executeJavaScript();
+			//navigateTo(criteria);
 			createFormMetaChangedCallback().accept((CampaignFormMetaReferenceDto) filterForm
 					.getField(CampaignFormDataCriteria.CAMPAIGN_FORM_META).getValue());
 			rowsCount.update(grid.getItemCount());
@@ -438,6 +443,8 @@ public class CampaignDataView extends AbstractCampaignView {
 			if (!filterForm.hasFilter() && campaignSelector == null) {
 				navigateTo(null);
 				executeJavaScript();
+			}else {
+				executeJavaScript();
 			}
 		});
 		filterForm.addResetHandler(e -> {
@@ -447,12 +454,13 @@ public class CampaignDataView extends AbstractCampaignView {
 			executeJavaScript();
 			rowsCount.update(grid.getItemCount());
 		});
-
+		
 		// apply button action
 		filterForm.addApplyHandler(e -> {
 			criteria.setCampaign(campaignSelector.getValue());
 			criteria.setFormType(campaignFormPhaseSelector.getValue().toString());
 			grid.reload();
+			//navigateTo(criteria, true);
 			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
 			System.out.println(UI.getCurrent().getSession().getCurrent().getAttribute("lastcriteria"));
 			executeJavaScript();
@@ -627,6 +635,7 @@ public class CampaignDataView extends AbstractCampaignView {
 	}
 
 	public void executeJavaScript() {
+		
 		JavaScript jss = Page.getCurrent().getJavaScript();
 		jss.execute("$(document).ready(function() {\n" + "document.querySelectorAll(\".v-grid-column-header-content.v-grid-column-default-header-content\").forEach(function (elem) {\r\n"
 				+ "  if (parseFloat(window.getComputedStyle(elem).width) === parseFloat(window.getComputedStyle(elem.parentElement).width)) {\r\n"
@@ -647,4 +656,6 @@ public class CampaignDataView extends AbstractCampaignView {
 			    + "});");
 			});
 	}
+	
+	
 }
