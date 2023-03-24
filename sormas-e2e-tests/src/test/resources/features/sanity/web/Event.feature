@@ -1240,6 +1240,7 @@ Feature: Create events
     Then I click on Save Button in Edit Event directory
     And I navigate to EVENT PARTICIPANT from edit event page
     And I click on the first row from event participant list
+    Then I click on Event Participant Person tab
     Then I check if Present condition of person combobox has value "Alive"
     And I check if Present condition of person combobox has value "Dead"
     And I check if Present condition of person combobox has value "Unknown"
