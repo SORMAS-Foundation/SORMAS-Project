@@ -76,6 +76,8 @@ public class EventParticipantsPage {
       By.cssSelector("#tab-events-eventparticipants-person");
   public static final By UNSAVED_CHANGES_HEADER =
       By.xpath("//*[contains(text(), 'Unsaved changes')]");
+  public static final By UNSAVED_CHANGES_HEADER_DE =
+      By.xpath("//*[contains(text(), 'Ungespeicherte \u00C4nderungen')]");
 
   public static final By getEventParticipantByPersonUuid(String uuid) {
     return By.xpath(String.format("//a[@title='%s']//parent::td//parent::tr//td[1]/a", uuid));
