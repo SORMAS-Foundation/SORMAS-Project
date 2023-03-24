@@ -686,6 +686,7 @@ Feature: Create events
     And I check that the value selected from Disease combobox is "COVID-19" on Edit Event page
     And I navigate to Event Participants tab in Edit case page
     Then I add a participant to the event
+    Then I click on Event Participant Data tab
     And I click on New Sample
     And I check if value "Urine p.m" is unavailable in Type of Sample combobox on Create new Sample page
 
