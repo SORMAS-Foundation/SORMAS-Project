@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import javax.persistence.NoResultException;
 
 import com.vaadin.server.Page;
+import com.vaadin.server.VaadinService;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
@@ -206,13 +207,12 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 //			FieldHelper.updateItems(cbCommunity,
 //					district != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid())
 //							: null);
-//			
+//			//dataform
 //		});
 //	}
 
 	@SuppressWarnings("deprecation")
-	private void addInfrastructureListenerx(ComboBox cbArea, ComboBox cbRegion, ComboBox cbDistrict,
-			ComboBox cbCommunity) {
+	private void addInfrastructureListenerx(ComboBox cbArea, ComboBox cbRegion, ComboBox cbDistrict, ComboBox cbCommunity) {
 		cbArea.addValueChangeListener(e -> {
 			AreaReferenceDto area = (AreaReferenceDto) e.getProperty().getValue();
 			FieldHelper.updateItems(cbRegion,
@@ -274,13 +274,20 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 							.getByUuid(super.getValue().getCampaign().getUuid());
 
 					CommunityReferenceDto community = (CommunityReferenceDto) cbCommunity.getValue();
-
-//					System.out.println(community.getCaption() + "??????????????????>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "
-//							+ campaignForm.getFormName() + campaign.getName());
+					
+					CommunityDto comdto = FacadeProvider.getCommunityFacade().getByUuid(community.getUuid());
+					
 					String formuuid = FacadeProvider.getCampaignFormDataFacade().getByClusterDropDown(community,
 							campaignForm, campaign);
+					
+					VaadinService.getCurrentRequest().getWrappedSession().setAttribute("Clusternumber", comdto.getExternalId());
+					
+					System.out.println(comdto.getExternalId() + "?comdto.getExternalId() going to session>>>>>>"+comdto.getClusterNumber());
+					
 
 					if (!formuuid.equals("nul")) {
+//						System.out.println(
+//								">>>>>>>>>>>>>>>>>>>>>>>>>>>>------------------------");
 						// Page.getCurrent().get
 						ControllerProvider.getCampaignController().navigateToFormDataView(formuuid);
 					} else {
@@ -336,7 +343,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 			throw new RuntimeException("Campaign form builder has not been initialized");
 		}
 		//validateFieldsCommit
-		System.out.println("{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{"+isCommitClicked);
+	//	System.out.println("{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{"+isCommitClicked);
 		
 		if(isCommitClicked != null) {
 			if(isCommitClicked) {

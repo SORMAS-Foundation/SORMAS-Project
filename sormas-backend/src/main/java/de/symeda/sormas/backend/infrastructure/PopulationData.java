@@ -11,6 +11,7 @@ import javax.persistence.TemporalType;
 
 import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.backend.campaign.Campaign;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -26,6 +27,7 @@ public class PopulationData extends AbstractDomainObject {
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
+	public static final String CAMPAIGN = "campaigns";
 	public static final String SEX = "sex";
 	public static final String AGE_GROUP = "ageGroup";
 	public static final String POPULATION = "population";
@@ -38,6 +40,7 @@ public class PopulationData extends AbstractDomainObject {
 	private AgeGroup ageGroup;
 	private Integer population;
 	private Date collectionDate;
+	private Campaign campigns;
 
 	@ManyToOne(cascade = {})
 	public Region getRegion() {
@@ -100,4 +103,14 @@ public class PopulationData extends AbstractDomainObject {
 	public void setCollectionDate(Date collectionDate) {
 		this.collectionDate = collectionDate;
 	}
+
+	public Campaign getCampigns() {
+		return campigns;
+	}
+
+	public void setCampigns(Campaign campigns) {
+		this.campigns = campigns;
+	}
+	
+	
 }

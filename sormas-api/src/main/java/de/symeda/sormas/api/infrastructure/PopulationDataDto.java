@@ -4,6 +4,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -24,6 +25,7 @@ public class PopulationDataDto extends EntityDto {
 	public static final String AGE_GROUP = "ageGroup";
 	public static final String POPULATION = "population";
 	public static final String COLLECTION_DATE = "collectionDate";
+	public static final String CAMPAIGN = "campaign";
 
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
@@ -32,6 +34,7 @@ public class PopulationDataDto extends EntityDto {
 	private AgeGroup ageGroup;
 	private Integer population;
 	private Date collectionDate;
+	private CampaignReferenceDto campaign;
 
 	public static PopulationDataDto build(Date collectionDate) {
 
@@ -96,4 +99,14 @@ public class PopulationDataDto extends EntityDto {
 	public void setCollectionDate(Date collectionDate) {
 		this.collectionDate = collectionDate;
 	}
+
+	public CampaignReferenceDto getCampaign() {
+		return campaign;
+	}
+
+	public void setCampaign(CampaignReferenceDto campaign) {
+		this.campaign = campaign;
+	}
+	
+	
 }
