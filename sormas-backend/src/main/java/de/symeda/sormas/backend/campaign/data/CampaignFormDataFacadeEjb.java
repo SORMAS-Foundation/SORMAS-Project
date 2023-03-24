@@ -385,12 +385,34 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 	public String getByCompletionAnalysisCount(CampaignFormDataCriteria criteria, Integer first, Integer max,
 			List<SortProperty> sortProperties, FormAccess frms) {
 		
+
+		//System.out.println("======firstfirstfirstfirstfirst===== "+first);
+		
+		//System.out.println("=====maxmaxmaxmaxmamaxmaxmaxx======= "+max);
+		//System.out.println("--------------");
+		final AreaReferenceDto area = criteria.getArea();
+		final RegionReferenceDto region = criteria.getRegion();
+		final DistrictReferenceDto district = criteria.getDistrict();
+		final CampaignReferenceDto campaign = criteria.getCampaign();
+		
+		//@formatter:off
+		
+		String joiner = "";
+		final String areaFilter = area != null ? " area3_x.uuid = '"+area.getUuid()+"'" : "";
+		final String regionFilter = region != null ? " AND region4_x.uuid = '"+region.getUuid()+"'" : "";
+		final String districtFilter = district != null ? " AND district5_x.uuid = '"+district.getUuid()+"'" : "";
+		final String campaignFilter = campaign != null ? " AND campaignfo0_x.uuid = '"+campaign.getUuid()+"'" : "";
+		joiner = areaFilter + regionFilter + districtFilter;// +campaignFilter;
+		//System.out.println(campaignFilter+" ===================== "+joiner);
+		
+		
 		String joinBuilder = "select count(campaignfo0_x.id) from community campaignfo0_x\n"
 				+ "left outer join District district5_x on campaignfo0_x.district_id=district5_x.id\n"
 				+ "left outer join Region region4_x on district5_x.region_id=region4_x.id\n"
 				+ "left outer join areas area3_x on region4_x.area_id=area3_x.id\n"
-				+ "where area3_x.uuid='W5R34K-APYPCA-4GZXDO-IVJWKGIM' and campaignfo0_x.archived = false;";
-		
+				//+ "where area3_x.uuid='W5R34K-APYPCA-4GZXDO-IVJWKGIM' and campaignfo0_x.archived = false;";
+				+ "where "+joiner+" and campaignfo0_x.archived = false\n"
+				+ "limit "+max+" offset "+first+";";
 		
 		
 	//	Query seriesDataQuery = em.createNativeQuery(joinBuilder);
@@ -418,10 +440,27 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 	@Override
 	public List<CampaignFormDataIndexDto> getByCompletionAnalysis(CampaignFormDataCriteria criteria, Integer first, Integer max,
 			List<SortProperty> sortProperties, FormAccess frms) {
-	
-		System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!firstfirstfirst "+first);
-		System.out.println("!!!!!!!!@@@@@@@@@@@@@@@@@@@!!!!!!!!!!maxmaxmax "+max);
-		String joinBuilder = "\n"
+		
+		System.out.println("======firstfirstfirstfirstfirst===== "+first);
+		
+		System.out.println("=====maxmaxmaxmaxmamaxmaxmaxx======= "+max);
+		System.out.println("--------------");
+		final AreaReferenceDto area = criteria.getArea();
+		final RegionReferenceDto region = criteria.getRegion();
+		final DistrictReferenceDto district = criteria.getDistrict();
+		final CampaignReferenceDto campaign = criteria.getCampaign();
+		
+		//@formatter:off
+		
+		String joiner = "";
+		final String areaFilter = area != null ? " area3_x.uuid = '"+area.getUuid()+"'" : "";
+		final String regionFilter = region != null ? " AND region4_x.uuid = '"+region.getUuid()+"'" : "";
+		final String districtFilter = district != null ? " AND district5_x.uuid = '"+district.getUuid()+"'" : "";
+		final String campaignFilter = campaign != null ? " AND campaignfo0_x.uuid = '"+campaign.getUuid()+"'" : "";
+		joiner = areaFilter + regionFilter + districtFilter;// +campaignFilter;
+		System.out.println(campaignFilter+" ===================== "+joiner);
+		
+		final String joinBuilder = "\n"
 				+ "select area3_x.\"name\" as area_, region4_x.\"name\" as region_, district5_x.\"name\" as district_, campaignfo0_x.clusternumber as clusternumber_, campaignfo0_x.externalid as ccode, COALESCE((\n"
 				+ "select count(campaignfo0_.formvalues)\n"
 				+ "from campaignFormData campaignfo0_\n"
@@ -462,8 +501,11 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 				+ "left outer join District district5_x on campaignfo0_x.district_id=district5_x.id\n"
 				+ "left outer join Region region4_x on district5_x.region_id=region4_x.id\n"
 				+ "left outer join areas area3_x on region4_x.area_id=area3_x.id\n"
-				+ "where area3_x.uuid='W5R34K-APYPCA-4GZXDO-IVJWKGIM' and campaignfo0_x.archived = false\n"
+				+ "where "+joiner+" and campaignfo0_x.archived = false\n"
 				+ "limit "+max+" offset "+first+";";
+		
+	//	System.out.println("=====seriesDataQuery======== "+joinBuilder);
+		
 		
 		Query seriesDataQuery = em.createNativeQuery(joinBuilder);
 		

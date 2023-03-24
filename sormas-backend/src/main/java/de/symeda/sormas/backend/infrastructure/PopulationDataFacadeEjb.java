@@ -17,6 +17,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.Valid;
@@ -37,6 +38,10 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.campaign.Campaign;
+import de.symeda.sormas.backend.campaign.CampaignFacadeEjb;
+import de.symeda.sormas.backend.campaign.CampaignService;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.infrastructure.area.Area;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
@@ -65,6 +70,8 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 	private DistrictService districtService;
 	@EJB
 	private CommunityService communityService;
+	@EJB
+	private CampaignService campaignService;
 
 	@Override
 	public Integer getRegionPopulation(String regionUuid) {
@@ -176,8 +183,9 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 		Root<PopulationData> root = cq.from(PopulationData.class);
 
 		Predicate filter = service.buildCriteriaFilter(criteria, cb, root);
-		cq.where(filter);
-	//	System.out.println("DEBUGGER 5678ijhyuio _______TOtalpopulation____________________________ "+SQLExtractor.from(em.createQuery(cq)));
+		Predicate filterx = CriteriaBuilderHelper.and(cb, filter, cb.equal(root.join(PopulationData.CAMPAIGN, JoinType.LEFT).get(Campaign.UUID), criteria.getCampaign().getUuid()));
+		cq.where(filterx);
+		System.out.println("DEBUGGER 5678ijhyuio _______TOtalpopulation____________________________ "+SQLExtractor.from(em.createQuery(cq)));
 
 		return em.createQuery(cq).getResultStream().map(populationData -> toDto(populationData)).collect(Collectors.toList());
 	}
@@ -376,6 +384,7 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setCommunity(communityService.getByReferenceDto(source.getCommunity()));
+		target.setCampigns(campaignService.getByReferenceDto(source.getCampaign()));
 		target.setAgeGroup(source.getAgeGroup());
 		target.setSex(source.getSex());
 		target.setPopulation(source.getPopulation());
@@ -395,6 +404,7 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
 		target.setCommunity(CommunityFacadeEjb.toReferenceDto(source.getCommunity()));
+		target.setCampaign(CampaignFacadeEjb.toReferenceDto(source.getCampigns()));
 		target.setAgeGroup(source.getAgeGroup());
 		target.setSex(source.getSex());
 		target.setPopulation(source.getPopulation());

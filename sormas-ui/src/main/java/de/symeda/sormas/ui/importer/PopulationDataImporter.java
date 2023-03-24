@@ -10,6 +10,8 @@ import java.util.function.Function;
 
 import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.campaign.CampaignDto;
+import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
@@ -44,10 +46,13 @@ public class PopulationDataImporter extends DataImporter {
 	private static final String TOTAL_HEADER_PATTERN = "[A-Z]+_TOTAL";
 
 	private final Date collectionDate;
+	private final CampaignReferenceDto campaignReferenceDto;
 
-	public PopulationDataImporter(File inputFile, UserDto currentUser, Date collectionDate, ValueSeparator csvSeparator) throws IOException {
+	public PopulationDataImporter(File inputFile, UserDto currentUser, CampaignReferenceDto campaignReferenceDto, ValueSeparator csvSeparator) throws IOException {
+		
 		super(inputFile, false, currentUser, csvSeparator);
-		this.collectionDate = collectionDate;
+		this.collectionDate = new Date();
+		this.campaignReferenceDto = campaignReferenceDto;
 	}
 
 	@Override
@@ -69,6 +74,8 @@ public class PopulationDataImporter extends DataImporter {
 		RegionReferenceDto region = null;
 		DistrictReferenceDto district = null;
 		CommunityReferenceDto community = null;
+		
+		CampaignReferenceDto campaigns = campaignReferenceDto;
 
 		// Retrieve the region and district from the database or throw an error if more or less than one entry have been retrieved
 		for (int i = 0; i < entityProperties.length; i++) {
@@ -131,16 +138,37 @@ public class PopulationDataImporter extends DataImporter {
 				}
 					}
 				}
-			}
+			
 		
+//		
+//		//Enable campaign based population import
+//		if (PopulationDataDto.CAMPAIGN.equalsIgnoreCase(entityProperties[i])) { 
+//			if (DataHelper.isNullOrEmpty(values[i])) {
+//				campaign = null;
+//			} else {
+//				if(values[i].toString().length() > 20 && values[i].toString().contains("-")) {
+//				campaign = FacadeProvider.getCampaignFacade().getReferenceByUuid(values[i]);
+//				
+//			} else {
+//				writeImportError(values, new ImportErrorException(values[i], entityProperties[i]).getMessage());
+//				System.out.println(new ImportErrorException(values[i], entityProperties[i]).getMessage() +" campaginttttttttttttttttt 1111"+values[i]);
+//				return ImportLineResult.ERROR;
+//			}
+//				}
+//			}
+		}
+//	
 
 		// The region and district that will be used to save the population data to the database
 		final RegionReferenceDto finalRegion = region;
 		final DistrictReferenceDto finalDistrict = district;
 		final CommunityReferenceDto finalCommunity = community;
+		
+		final CampaignReferenceDto finalCampaign = campaignReferenceDto;
 
 		// Retrieve the existing population data for the region and district
 		PopulationDataCriteria criteria = new PopulationDataCriteria().region(finalRegion);
+		criteria.setCampaign(finalCampaign);
 		if (finalCommunity == null) {
 			criteria.communityIsNull(true);
 		} else {

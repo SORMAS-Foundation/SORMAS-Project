@@ -1,6 +1,7 @@
 package de.symeda.sormas.api.infrastructure;
 
 import de.symeda.sormas.api.AgeGroup;
+import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -14,8 +15,10 @@ public class PopulationDataCriteria extends BaseCriteria implements Cloneable {
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
+	private CampaignReferenceDto campaign;
 	private boolean districtIsNull;
 	private boolean communityIsNull;
+	private boolean campaignIsNull;
 	private Sex sex;
 	private boolean sexIsNull;
 	private AgeGroup ageGroup;
@@ -100,4 +103,19 @@ public class PopulationDataCriteria extends BaseCriteria implements Cloneable {
 		this.ageGroupIsNull = ageGroupIsNull;
 		return this;
 	}
+
+	public CampaignReferenceDto getCampaign() {
+		return campaign;
+	}
+
+	public boolean isCampaignIsNull() {
+		return campaignIsNull;
+	}
+
+	public void setCampaign(CampaignReferenceDto campaign) {
+		this.campaign = campaign;
+	}	
+	
+	
+	
 }

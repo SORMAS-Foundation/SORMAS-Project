@@ -37,6 +37,9 @@ import java.util.stream.Collectors;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserType;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.configuration.infrastructure.InfrastructureImportLayout;
+import de.symeda.sormas.ui.configuration.infrastructure.PopulationDataView;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.text.WordUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,12 +49,15 @@ import com.vaadin.data.TreeData;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.TreeDataProvider;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Page;
+import com.vaadin.server.StreamResource;
 import com.vaadin.server.VaadinService;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Grid.ItemClick;
 import com.vaadin.ui.Grid.SelectionMode;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
@@ -64,6 +70,7 @@ import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.TreeContextClickEvent;
 import com.vaadin.ui.TreeGrid;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.components.grid.MultiSelectionModel;
 import com.vaadin.ui.components.grid.MultiSelectionModel.SelectAllCheckBoxVisibility;
 import com.vaadin.ui.components.grid.SingleSelectionModel;
@@ -85,9 +92,11 @@ import de.symeda.sormas.api.campaign.CampaignTreeGridDto;
 import de.symeda.sormas.api.campaign.CampaignTreeGridDtoImpl;
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.InfrastructureType;
 import de.symeda.sormas.api.infrastructure.area.AreaDto;
 import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
@@ -97,9 +106,12 @@ import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditableGrid;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
+import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 
@@ -606,14 +618,50 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 		tabsheetParent.addTab(parentTab4);
 		
 		//tab 5
-		VerticalLayout parentTab5 = new VerticalLayout();
 		
-		
+		if (UserProvider.getCurrent().hasUserRight(UserRight.POPULATION_MANAGE)) {
+			
+			
+			VerticalLayout parentTab5 = new VerticalLayout();
+			
+			
+			VerticalLayout poplayout = new VerticalLayout();
+			poplayout.setSpacing(false);
+			CssStyles.style(poplayout, CssStyles.VSPACE_TOP_1);
 
-	//	parentTab5.addComponent(treeGrid);
-		parentTab5.setCaption(POPULATION_CAMPAIGN);
-		tabsheetParent.addTab(parentTab5);
+			Label lblIntroduction = new Label(I18nProperties.getString(Strings.infoPopulationDataView));
+			CssStyles.style(lblIntroduction, CssStyles.VSPACE_2, "v-wrapper-apmis");
+			poplayout.addComponent(lblIntroduction);
+			
+			poplayout.setComponentAlignment(lblIntroduction, Alignment.MIDDLE_CENTER);
+
+			Button btnImport = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
+				Window window = VaadinUiUtil.showPopupWindow(new InfrastructureImportLayout(InfrastructureType.POPULATION_DATA));
+				window.setCaption(I18nProperties.getString(Strings.headingImportPopulationData));
+			}, CssStyles.VSPACE_4, ValoTheme.BUTTON_PRIMARY);
+			
+			
+			poplayout.addComponent(btnImport);
+			poplayout.setComponentAlignment(btnImport, Alignment.MIDDLE_CENTER);
+
+			Button btnExport = ButtonHelper.createIconButton(Captions.export, VaadinIcons.DOWNLOAD, null, ValoTheme.BUTTON_PRIMARY);
+			poplayout.addComponent(btnExport);
+			poplayout.setComponentAlignment(btnExport, Alignment.MIDDLE_CENTER);
+
+			StreamResource populationDataExportResource = DownloadUtil.createPopulationDataExportResource();
+			new FileDownloader(populationDataExportResource).extend(btnExport);
+
+			parentTab5.addComponent(poplayout);
+			
+
+		//	parentTab5.addComponent(treeGrid);
+			parentTab5.setCaption(POPULATION_CAMPAIGN);
+			tabsheetParent.addTab(parentTab5);
+			
+			
+		}
 		
+	
 		
 		layout.setMargin(true);
 		layout.setSpacing(true);

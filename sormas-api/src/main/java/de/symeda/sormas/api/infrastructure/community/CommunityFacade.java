@@ -44,6 +44,8 @@ public interface CommunityFacade extends GeoLocationFacade<CommunityDto, Communi
 	
 	List<CommunityUserReportModelDto> getAllActiveCommunitytoRerence(CommunityCriteriaNew criteria, Integer first, Integer max, List<SortProperty> sortProperties, FormAccess formacc);
 	
+	Integer getAllActiveCommunitytoRerenceCount(CommunityCriteriaNew criteria, Integer first, Integer max, List<SortProperty> sortProperties, FormAccess formacc);
+
 	List<CommunityUserReportModelDto> getAllActiveCommunitytoRerencexx(CommunityCriteriaNew criteria, Integer first, Integer max, List<SortProperty> sortProperties,  FormAccess formacc);
 
 

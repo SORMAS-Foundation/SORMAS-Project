@@ -8453,7 +8453,7 @@ CREATE TABLE IF NOT EXISTS public.user_account
     CONSTRAINT ukhl02wv5hym99ys465woijmfib UNIQUE (email)
 )
 WITH (
-    OIDS = FALSE //novatec
+    OIDS = FALSE
 )
 TABLESPACE pg_default;
 
