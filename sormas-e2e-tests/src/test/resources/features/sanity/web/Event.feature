@@ -1219,7 +1219,7 @@ Feature: Create events
     And I click on close button in Create Quarantine Order form
     And I check if downloaded zip file for Quarantine Order is correct for DE version
 
-  @tmsLink=SORDEV-10361 @env_main
+  @tmsLink=SORDEV-10361 @env_main @testIt
   Scenario: Test Hide "buried" within Person present condition for Covid-19 for Events
     Given I log in as a Admin User
     And I click on the Events button from navbar
@@ -1240,6 +1240,7 @@ Feature: Create events
     Then I click on Save Button in Edit Event directory
     And I navigate to EVENT PARTICIPANT from edit event page
     And I click on the first row from event participant list
+    Then I click on Event Participant Person tab
     Then I check if Present condition of person combobox has value "Alive"
     And I check if Present condition of person combobox has value "Dead"
     And I check if Present condition of person combobox has value "Unknown"
