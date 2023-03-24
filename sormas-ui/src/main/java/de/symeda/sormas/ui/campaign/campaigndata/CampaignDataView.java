@@ -150,6 +150,8 @@ public class CampaignDataView extends AbstractCampaignView {
 			Object value = e.getProperty().getValue();
 			importanceFilterSwitcher.setVisible(value != null);
 			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
+			
+			executeJavaScript();
 		});
 
 		importanceFilterSwitcher.addValueChangeListener(e -> {
@@ -264,7 +266,8 @@ public class CampaignDataView extends AbstractCampaignView {
 			criteria.setCampaignFormMeta(null);
 			filterForm.setValue(criteria);
 			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
-			// System.out.println("5555555555555555 " + criteria.toUrlParams().toString());
+			executeJavaScript();
+	
 		});
 
 		campaignFormPhaseSelector.addValueChangeListener(e -> {
@@ -311,17 +314,9 @@ public class CampaignDataView extends AbstractCampaignView {
 //
 //				+ "});"
 				+ "});");
-		
-		JavaScript jss = Page.getCurrent().getJavaScript();
-		jss.execute("$(document).ready(function() {\n" + "document.querySelectorAll(\".v-grid-column-header-content\").forEach(function (elem) {\r\n"
-				+ "  if (parseFloat(window.getComputedStyle(elem).width) === parseFloat(window.getComputedStyle(elem.parentElement).width)) {\r\n"
-				+ "    elem.setAttribute(\"title\", elem.textContent);\r\n"
-				+ "  }\r\n"
-				+ "    elem.setAttribute(\"title\", elem.textContent);\r\n"
 
-				+ "});"
-				+ "});");
-		
+		executeJavaScript();
+//		
 
 	}
 
@@ -436,17 +431,20 @@ public class CampaignDataView extends AbstractCampaignView {
 			criteria.setRegion(criteria.getRegion());
 			criteria.setDistrict(criteria.getDistrict());
 			criteria.setCommunity(criteria.getCommunity());
+			executeJavaScript();
 		}
 
 		filterForm.addValueChangeListener(e -> {
 			if (!filterForm.hasFilter() && campaignSelector == null) {
 				navigateTo(null);
+				executeJavaScript();
 			}
 		});
 		filterForm.addResetHandler(e -> {
 			ViewModelProviders.of(CampaignDataView.class).remove(CampaignFormDataCriteria.class);
 			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", "");
 			navigateTo(null, true);
+			executeJavaScript();
 			rowsCount.update(grid.getItemCount());
 		});
 
@@ -457,12 +455,14 @@ public class CampaignDataView extends AbstractCampaignView {
 			grid.reload();
 			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
 			System.out.println(UI.getCurrent().getSession().getCurrent().getAttribute("lastcriteria"));
+			executeJavaScript();
 			rowsCount.update(grid.getItemCount());
 		});
 		campaignSelector.addValueChangeListener(e -> {
 			criteria.setCampaign(campaignSelector.getValue());
 			grid.reload();
 			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
+			executeJavaScript();
 			rowsCount.update(grid.getItemCount());
 			});
 
@@ -471,6 +471,7 @@ public class CampaignDataView extends AbstractCampaignView {
 			grid.reload();
 			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria",
 					Page.getCurrent().getLocation().toString());
+			executeJavaScript();
 			rowsCount.update(grid.getItemCount());
 			});
 
@@ -483,6 +484,7 @@ public class CampaignDataView extends AbstractCampaignView {
 		return formMetaReference -> {
 			grid.removeAllColumns();
 			grid.addDefaultColumns();
+			executeJavaScript();
 			if (formMetaReference != null) {
 				CampaignFormMetaDto formMeta = FacadeProvider.getCampaignFormMetaFacade()
 						.getCampaignFormMetaByUuid(formMetaReference.getUuid());
@@ -522,6 +524,7 @@ public class CampaignDataView extends AbstractCampaignView {
 		return formMetaReference -> {
 			grid.removeAllColumns();
 			grid.addDefaultColumns();
+			executeJavaScript();
 			if (formMetaReference != null) {
 				CampaignFormMetaDto formMeta = FacadeProvider.getCampaignFormMetaFacade()
 						.getCampaignFormMetaByUuid(formMetaReference.getUuid());
@@ -548,11 +551,13 @@ public class CampaignDataView extends AbstractCampaignView {
 
 						if (caption != null) {
 							grid.addCustomColumn(element.getId(), caption);
+					
 							rowsCount.update(grid.getItemCount());
 
 						}
 					}
 				}
+			
 			}
 		};
 	}
@@ -588,6 +593,7 @@ public class CampaignDataView extends AbstractCampaignView {
 				}
 				if (queryParameter.contains("formType")) {
 					criteria.setFormType(innerSplit[1]);
+					executeJavaScript();
 				}
 				if (queryParameter.contains("campaign")) {
 					CampaignReferenceDto campaign = FacadeProvider.getCampaignFacade()
@@ -603,18 +609,42 @@ public class CampaignDataView extends AbstractCampaignView {
 					criteria.setCampaignFormMeta(campaignsmeta);
 					filterForm.cbCampaignForm.setValue(campaignsmeta);
 					filterForm.cbCampaignForm.setInputPrompt(campaignsmeta.getCaption());
+					executeJavaScript();
 				}
 			}
 		}
 
 		applyingCriteria = true;
+	
 		filterForm.setValue(criteria);
 		applyingCriteria = false;
 
 		grid.reload();
+		
 		rowsCount.update(grid.getItemCount());
 
 		super.enter(event);
 	}
 
+	public void executeJavaScript() {
+		JavaScript jss = Page.getCurrent().getJavaScript();
+		jss.execute("$(document).ready(function() {\n" + "document.querySelectorAll(\".v-grid-column-header-content.v-grid-column-default-header-content\").forEach(function (elem) {\r\n"
+				+ "  if (parseFloat(window.getComputedStyle(elem).width) === parseFloat(window.getComputedStyle(elem.parentElement).width)) {\r\n"
+				+ "    elem.setAttribute(\"title\", elem.textContent);\r\n"
+				+ "  }\r\n"
+				+ "    elem.setAttribute(\"title\", elem.textContent);\r\n"
+
+				+ "});"
+				+ "});");
+		
+		grid.addColumnReorderListener(e -> {
+			  JavaScript jsss = Page.getCurrent().getJavaScript();
+			  jsss.execute("document.querySelectorAll(\".v-grid-column-header-content.v-grid-column-default-header-content\").forEach(function (elem) {\r\n"
+			    + "  if (parseFloat(window.getComputedStyle(elem).width) === parseFloat(window.getComputedStyle(elem.parentElement).width)) {\r\n"
+			    + "    elem.setAttribute(\"title\", elem.textContent);\r\n"
+			    + "  }\r\n"
+			    + "    elem.setAttribute(\"title\", elem.textContent);\r\n"
+			    + "});");
+			});
+	}
 }
