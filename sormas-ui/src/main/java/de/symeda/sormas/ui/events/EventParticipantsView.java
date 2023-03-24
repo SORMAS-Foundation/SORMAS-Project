@@ -200,7 +200,7 @@ public class EventParticipantsView extends AbstractEventView {
 			}
 		});
 		filterForm.addResetHandler(e -> {
-			ViewModelProviders.of(EventParticipantsView.class).remove(EventParticipantsViewConfiguration.class);
+			ViewModelProviders.of(EventParticipantsView.class).remove(EventParticipantCriteria.class);
 			navigateTo(null);
 		});
 		filterForm.addApplyHandler(e -> grid.reload());
