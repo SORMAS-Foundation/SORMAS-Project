@@ -1219,7 +1219,7 @@ Feature: Create events
     And I click on close button in Create Quarantine Order form
     And I check if downloaded zip file for Quarantine Order is correct for DE version
 
-  @tmsLink=SORDEV-10361 @env_main @testIt
+  @tmsLink=SORDEV-10361 @env_main
   Scenario: Test Hide "buried" within Person present condition for Covid-19 for Events
     Given I log in as a Admin User
     And I click on the Events button from navbar
