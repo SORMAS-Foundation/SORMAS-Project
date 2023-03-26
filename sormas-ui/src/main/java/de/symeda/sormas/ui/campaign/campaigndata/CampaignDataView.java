@@ -53,6 +53,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.components.grid.HeaderCell;
 import com.vaadin.ui.components.grid.HeaderRow;
+import com.vaadin.v7.ui.Grid;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
@@ -126,7 +127,7 @@ public class CampaignDataView extends AbstractCampaignView {
 
 		grid = new CampaignDataGrid(criteria);
 		rowsCount = new RowCount(Strings.labelNumberDataRows, grid.getItemCount());
-		
+
 		VerticalLayout mainLayout = new VerticalLayout();
 		HorizontalLayout filtersLayout = new HorizontalLayout();
 
@@ -150,7 +151,6 @@ public class CampaignDataView extends AbstractCampaignView {
 		filterForm.getField(CampaignFormDataCriteria.CAMPAIGN_FORM_META).addValueChangeListener(e -> {
 			Object value = e.getProperty().getValue();
 			importanceFilterSwitcher.setVisible(value != null);
-			executeJavaScript();
 			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
 			grid.reload();
 			
@@ -167,7 +167,6 @@ public class CampaignDataView extends AbstractCampaignView {
 		});
 		
 
-		
 		mainLayout.addComponent(rowsCount);
 		mainLayout.addComponent(grid);
 		mainLayout.setMargin(true);
@@ -272,7 +271,7 @@ public class CampaignDataView extends AbstractCampaignView {
 			filterForm.setValue(criteria);
 			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
 			executeJavaScript();
-	
+
 		});
 
 		campaignFormPhaseSelector.addValueChangeListener(e -> {
@@ -283,14 +282,15 @@ public class CampaignDataView extends AbstractCampaignView {
 			} else {
 				newFormButton.setEnabled(false);
 			}
-
 			criteria.setFormType(e.getValue().toString());
 			filterForm.setPhaseFilterContent(e.getValue().toString());
 			filterForm.setValue(criteria);
 			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
 			// System.out.println("777777777777777777777 " +
 			// criteria.toUrlParams().toString());
-			grid.reload();
+
+			//grid.reload();
+			executeJavaScript();
 			rowsCount.update(grid.getItemCount());
 		});
 
@@ -300,6 +300,7 @@ public class CampaignDataView extends AbstractCampaignView {
 		}
 
 		addComponent(mainLayout);
+		executeJavaScript();
 		rowsCount.update(grid.getItemCount());
 
 		JavaScript js = Page.getCurrent().getJavaScript();
@@ -432,21 +433,15 @@ public class CampaignDataView extends AbstractCampaignView {
 		filterForm = new CampaignFormDataFilterForm();
 
 		if (filterForm.hasFilter()) {
+			executeJavaScript();
 			criteria.setArea(criteria.getArea());
 			criteria.setRegion(criteria.getRegion());
 			criteria.setDistrict(criteria.getDistrict());
 			criteria.setCommunity(criteria.getCommunity());
-			executeJavaScript();
+			
 		}
 
-		filterForm.addValueChangeListener(e -> {
-			if (!filterForm.hasFilter() && campaignSelector == null) {
-				navigateTo(null);
-				executeJavaScript();
-			}else {
-				executeJavaScript();
-			}
-		});
+
 		filterForm.addResetHandler(e -> {
 			ViewModelProviders.of(CampaignDataView.class).remove(CampaignFormDataCriteria.class);
 			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", "");
@@ -454,25 +449,15 @@ public class CampaignDataView extends AbstractCampaignView {
 			executeJavaScript();
 			rowsCount.update(grid.getItemCount());
 		});
+
 		
-		// apply button action
-		filterForm.addApplyHandler(e -> {
-			criteria.setCampaign(campaignSelector.getValue());
-			criteria.setFormType(campaignFormPhaseSelector.getValue().toString());
-			grid.reload();
-			//navigateTo(criteria, true);
-			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
-			System.out.println(UI.getCurrent().getSession().getCurrent().getAttribute("lastcriteria"));
-			executeJavaScript();
-			rowsCount.update(grid.getItemCount());
-		});
 		campaignSelector.addValueChangeListener(e -> {
 			criteria.setCampaign(campaignSelector.getValue());
 			grid.reload();
 			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
 			executeJavaScript();
 			rowsCount.update(grid.getItemCount());
-			});
+		});
 
 		campaignFormPhaseSelector.addValueChangeListener(e -> {
 			criteria.setFormType(e.getValue().toString());
@@ -481,11 +466,39 @@ public class CampaignDataView extends AbstractCampaignView {
 					Page.getCurrent().getLocation().toString());
 			executeJavaScript();
 			rowsCount.update(grid.getItemCount());
-			});
-
-		filterForm.setFormMetaChangedCallback(createFormMetaChangedCallback());
-
+		});
+		
+		// apply button action
+				filterForm.addApplyHandler(e -> {
+					criteria.setCampaign(campaignSelector.getValue());
+					criteria.setFormType(campaignFormPhaseSelector.getValue().toString());
+					UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
+					System.out.println(UI.getCurrent().getSession().getCurrent().getAttribute("lastcriteria"));
+					grid.reload();
+					executeJavaScript();
+					rowsCount.update(grid.getItemCount());
+					
+				});
+				filterForm.addValueChangeListener(e -> {
+					if (!filterForm.hasFilter() && campaignSelector == null) {
+						navigateTo(null);
+						executeJavaScript();
+					} else if (filterForm.hasFilter() && campaignSelector != null){
+//						filterForm.setValue(criteria);
+						callBackFormData();
+					}
+				});
+				
+		callBackFormData();
+	
 		return filterForm;
+		
+	}
+	
+	public void callBackFormData() {
+		filterForm.setFormMetaChangedCallback(createFormMetaChangedCallback());
+		grid.reload();
+		executeJavaScript();
 	}
 
 	private Consumer<CampaignFormMetaReferenceDto> createFormMetaChangedCallback() {
@@ -494,6 +507,7 @@ public class CampaignDataView extends AbstractCampaignView {
 			grid.addDefaultColumns();
 			executeJavaScript();
 			if (formMetaReference != null) {
+				
 				CampaignFormMetaDto formMeta = FacadeProvider.getCampaignFormMetaFacade()
 						.getCampaignFormMetaByUuid(formMetaReference.getUuid());
 				Language userLanguage = UserProvider.getCurrent().getUser().getLanguage();
@@ -519,12 +533,15 @@ public class CampaignDataView extends AbstractCampaignView {
 
 						if (caption != null) {
 							grid.addCustomColumn(element.getId(), caption);
-
+							executeJavaScript();
 						}
 					}
 				}
-			}
-		};
+				executeJavaScript();
+				}
+			executeJavaScript();
+			};
+		
 	}
 
 	private Consumer<CampaignFormMetaReferenceDto> createFormMetaChangedCallbackPhase() {
@@ -555,17 +572,18 @@ public class CampaignDataView extends AbstractCampaignView {
 						}
 						if (caption == null) {
 							caption = element.getCaption();
+									executeJavaScript();
 						}
 
 						if (caption != null) {
 							grid.addCustomColumn(element.getId(), caption);
-					
+							executeJavaScript();
 							rowsCount.update(grid.getItemCount());
 
 						}
 					}
 				}
-			
+
 			}
 		};
 	}
@@ -623,41 +641,37 @@ public class CampaignDataView extends AbstractCampaignView {
 		}
 
 		applyingCriteria = true;
-	
+		executeJavaScript();
 		filterForm.setValue(criteria);
+		executeJavaScript();
 		applyingCriteria = false;
 
 		grid.reload();
-		
+		executeJavaScript();
 		rowsCount.update(grid.getItemCount());
 
 		super.enter(event);
 	}
 
 	public void executeJavaScript() {
-		
+
 		JavaScript jss = Page.getCurrent().getJavaScript();
-		jss.execute("$(document).ready(function() {\n" + "document.querySelectorAll(\".v-grid-column-header-content.v-grid-column-default-header-content\").forEach(function (elem) {\r\n"
+		jss.execute("$(document).ready(function() {\n"
+				+ "document.querySelectorAll(\".v-grid-column-header-content.v-grid-column-default-header-content\").forEach(function (elem) {\r\n"
 				+ "  if (parseFloat(window.getComputedStyle(elem).width) === parseFloat(window.getComputedStyle(elem.parentElement).width)) {\r\n"
-				+ "    elem.setAttribute(\"title\", elem.textContent);\r\n"
-				+ "  }\r\n"
+				+ "    elem.setAttribute(\"title\", elem.textContent);\r\n" + "  }\r\n"
 				+ "    elem.setAttribute(\"title\", elem.textContent);\r\n"
 
-				+ "});"
-				+ "});");
-		
+				+ "});" + "});");
+
 		grid.addColumnReorderListener(e -> {
-			  JavaScript jsss = Page.getCurrent().getJavaScript();
-			  jsss.execute("document.querySelectorAll(\".v-grid-column-header-content.v-grid-column-default-header-content\").forEach(function (elem) {\r\n"
-			    + "  if (parseFloat(window.getComputedStyle(elem).width) === parseFloat(window.getComputedStyle(elem.parentElement).width)) {\r\n"
-			    + "    elem.setAttribute(\"title\", elem.textContent);\r\n"
-			    + "  }\r\n"
-			    + "    elem.setAttribute(\"title\", elem.textContent);\r\n"
-			    + "});");
-			});
+			JavaScript jsss = Page.getCurrent().getJavaScript();
+			jsss.execute(
+					"document.querySelectorAll(\".v-grid-column-header-content.v-grid-column-default-header-content\").forEach(function (elem) {\r\n"
+							+ "  if (parseFloat(window.getComputedStyle(elem).width) === parseFloat(window.getComputedStyle(elem.parentElement).width)) {\r\n"
+							+ "    elem.setAttribute(\"title\", elem.textContent);\r\n" + "  }\r\n"
+							+ "    elem.setAttribute(\"title\", elem.textContent);\r\n" + "});");
+		});
 	}
-	
-	
-	
-	
+
 }
