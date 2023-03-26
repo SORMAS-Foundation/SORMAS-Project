@@ -137,12 +137,12 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionSer
 		@SuppressWarnings("unchecked")
 		List<Object[]> resultList = seriesDataQuery.getResultList(); 
 		
-		System.out.println("starting....");
+		//System.out.println("starting....");
 		
 		resultData.addAll(resultList.stream()
 				.map((result) -> new RegionDto((String) result[0].toString(), ((BigInteger) result[1]).longValue(), ((BigInteger) result[2]).longValue(), (String) result[3].toString(), (String) result[4].toString())).collect(Collectors.toList()));
 		
-		System.out.println("ending...." +resultData.size());
+		//System.out.println("ending...." +resultData.size());
 	
 	
 	//System.out.println("resultData - "+ resultData.toString()); //SQLExtractor.from(seriesDataQuery));
@@ -369,7 +369,7 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionSer
 
 		dto.setName(entity.getName());
 		dto.setEpidCode(entity.getEpidCode());
-		dto.setPopulation(populationDataFacade.getRegionPopulation(dto.getUuid()));
+	//	dto.setPopulation(populationDataFacade.getRegionPopulation(dto.getUuid()));
 		dto.setGrowthRate(entity.getGrowthRate());
 		dto.setExternalId(entity.getExternalId());
 		dto.setArea(AreaFacadeEjb.toReferenceDtox(entity.getArea()));

@@ -280,12 +280,12 @@ public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaService> 
 		@SuppressWarnings("unchecked")
 		List<Object[]> resultList = seriesDataQuery.getResultList(); 
 		
-		System.out.println("starting....");
+		//System.out.println("starting....");
 		
 		resultData.addAll(resultList.stream()
 				.map((result) -> new AreaDto((String) result[0].toString(), ((BigInteger) result[1]).longValue(), ((BigInteger) result[2]).longValue(), (String) result[3].toString())).collect(Collectors.toList()));
 		
-		System.out.println("ending...." +resultData.size());
+		//System.out.println("ending...." +resultData.size());
 	
 	
 	//System.out.println("resultData - "+ resultData.toString()); //SQLExtractor.from(seriesDataQuery));

@@ -14,6 +14,7 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.PopulationDataDto;
 import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -62,6 +63,8 @@ public class CampaignDto extends EntityDto {
 	private Set<RegionReferenceDto> region = new HashSet<RegionReferenceDto>();
 	private Set<DistrictReferenceDto> districts = new HashSet<DistrictReferenceDto>();
 	private Set<CommunityReferenceDto> community = new HashSet<CommunityReferenceDto>();
+	
+	private Set<PopulationDataDto> populationdata = new HashSet<PopulationDataDto>();
 	
 	@Valid
 	private List<CampaignDashboardElement> campaignDashboardElements;
@@ -207,4 +210,16 @@ public class CampaignDto extends EntityDto {
 	public void setCampaignDashboardElements(List<CampaignDashboardElement> campaignDashboardElements) {
 		this.campaignDashboardElements = campaignDashboardElements;
 	}
+
+	public Set<PopulationDataDto> getPopulationdata() {
+		return populationdata;
+	}
+
+	public void setPopulationdata(Set<PopulationDataDto> populationdata) {
+		this.populationdata = populationdata;
+	}
+	
+	
+	
+	
 }

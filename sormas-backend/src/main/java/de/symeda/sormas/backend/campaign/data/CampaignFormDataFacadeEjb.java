@@ -515,7 +515,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		@SuppressWarnings("unchecked")
 		List<Object[]> resultList = seriesDataQuery.getResultList(); 
 		
-		System.out.println("starting....");
+	//	System.out.println("starting....");
 		
 		resultData.addAll(resultList.stream()
 				.map((result) -> new CampaignFormDataIndexDto((String) result[0].toString(), (String) result[1].toString(),
@@ -527,7 +527,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 						((BigInteger) result[8]).longValue()
 				)).collect(Collectors.toList()));
 		
-		System.out.println("ending...." +resultData.size());
+	//	System.out.println("ending...." +resultData.size());
 	
 	
 	//System.out.println("resultData - "+ resultData.toString()); //SQLExtractor.from(seriesDataQuery));
@@ -669,7 +669,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			List<Area> areas = areaService.getAll();
 			areas.forEach(areaItem -> {
 				Integer population = populationDataFacadeEjb.getAreaPopulation(areaItem.getUuid(),
-						diagramSeriesTotal.getPopulationGroup());
+						diagramSeriesTotal.getPopulationGroup(), campaignDiagramCriteria);
 				if (population == 0) {
 					resultData.add(new CampaignDiagramDataDto(areaItem.getName(), 0, areaItem.getUuid(),
 							areaItem.getName(), diagramSeries.getFieldId(), diagramSeries.getFormId(), false));
@@ -696,12 +696,14 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		final DistrictReferenceDto district = campaignDiagramCriteria.getDistrict();
 		final CampaignJurisdictionLevel grouping = campaignDiagramCriteria.getCampaignJurisdictionLevelGroupBy();
 		// final String formTyper = campaignDiagramCriteria.getFormType();
+		
+		
 
 		if (grouping == CampaignJurisdictionLevel.AREA) {
 			List<Area> areas = areaService.getAll();
 			areas.forEach(areaItem -> {
 				Integer population = populationDataFacadeEjb.getAreaPopulation(areaItem.getUuid(),
-						diagramSeriesTotal.getPopulationGroup());
+						diagramSeriesTotal.getPopulationGroup(), campaignDiagramCriteria);
 			//	//System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>> "+population);
 				if (population == 0) {
 					resultData.add(new CampaignDiagramDataDto(areaItem.getName(), 0, areaItem.getUuid(),
@@ -718,23 +720,12 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			else
 				regions = regionFacadeEjb.getAllActiveAsReference();
 
-			// this should not be needed
-//			if (regions.isEmpty()) {
-//				resultData.add(
-//					new CampaignDiagramDataDto(
-//						area.getCaption(),
-//						0,
-//						area.getUuid(),
-//						area.getCaption(),
-//						diagramSeries.getFieldId(),
-//						diagramSeries.getFormId(),
-//						false));
-//			} else {
 			regions.stream().forEach(regionReferenceDto -> {
 				PopulationDataCriteria criteria = new PopulationDataCriteria();
 				criteria.sexIsNull(true);
 				criteria.region(regionReferenceDto);
 				criteria.ageGroup(diagramSeriesTotal.getPopulationGroup());
+				criteria.setCampaign(campaignDiagramCriteria.getCampaign());
 				List<PopulationDataDto> populationDataDto = populationDataFacadeEjb.getPopulationData(criteria);
 				Integer populationSum = 0;
 				if (!populationDataDto.isEmpty()) {
@@ -760,24 +751,13 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 				districts = districtFacadeEjb.getAllActiveAsReference();
 			}
 
-			// this should not be needed
-//			if (districts.isEmpty()) {
-//				resultData.add(
-//					new CampaignDiagramDataDto(
-//						region.getCaption(),
-//						0,
-//						region.getUuid(),
-//						region.getCaption(),
-//						diagramSeries.getFieldId(),
-//						diagramSeries.getFormId(),
-//						false));
-//			} else {
 			districts.stream().forEach(districtReferenceDto -> {
 				PopulationDataCriteria criteria = new PopulationDataCriteria();
 				criteria.sexIsNull(true);
 				criteria.district(districtReferenceDto);
 				criteria.region(region);
 				criteria.ageGroup(diagramSeriesTotal.getPopulationGroup());
+				criteria.setCampaign(campaignDiagramCriteria.getCampaign());
 				List<PopulationDataDto> populationDataDtoList = populationDataFacadeEjb.getPopulationData(criteria);
 				Integer populationSum = 0;
 				if (!populationDataDtoList.isEmpty()) {
@@ -797,14 +777,13 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 					district.getCaption(), diagramSeries.getFieldId(), diagramSeries.getFormId(), true));
 		}
 		
-		////System.out.println("dddddddddddddddddddddd"+resultData);
 		return resultData;
 	}
 
 	public List<CampaignDiagramDataDto> getDiagramDataByAgeGroupCard(
 			CampaignDiagramSeries diagramSeriesTotal, CampaignDiagramSeries diagramSeries,
 			CampaignDiagramCriteria campaignDiagramCriteria) {
-		System.out.println(campaignDiagramCriteria.getArea() + " dddddddddddddddddddddd getDiagramDataByAgeGroupCard "+campaignDiagramCriteria.getRegion());
+		System.out.println(campaignDiagramCriteria.getArea() + " dddddddddddddddddddddd getDiagramDataByAgeGroupCard "+campaignDiagramCriteria.getCampaign());
 		List<CampaignDiagramDataDto> resultData = new ArrayList<>();
 		final AreaReferenceDto area = campaignDiagramCriteria.getArea();
 		final RegionReferenceDto region = campaignDiagramCriteria.getRegion();
@@ -817,7 +796,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			areas.forEach(areaItem -> {
 			
 				Integer	population = populationDataFacadeEjb.getAreaPopulationByUuid(areaItem.getUuid(),
-						diagramSeriesTotal.getPopulationGroup());
+						diagramSeriesTotal.getPopulationGroup(), campaignDiagramCriteria);
 				if (population == 0) {
 					resultData.add(new CampaignDiagramDataDto(areaItem.getName(), 0, areaItem.getUuid(),
 							areaItem.getName(), diagramSeries.getFieldId(), diagramSeries.getFormId(), false));
@@ -825,6 +804,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 					resultData.add(new CampaignDiagramDataDto(areaItem.getName(), population, areaItem.getUuid(),
 							areaItem.getName(), diagramSeries.getFieldId(), diagramSeries.getFormId(), true));
 				}
+				return;
 			});
 			
 			System.out.println(resultData.size());
@@ -832,7 +812,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			List<Area> areas = areaService.getAll();
 			areas.forEach(areaItem -> {
 				Integer	population = populationDataFacadeEjb.getAreaPopulationParent(areaItem.getUuid(),
-						diagramSeriesTotal.getPopulationGroup());
+						diagramSeriesTotal.getPopulationGroup(), campaignDiagramCriteria);
 				
 		System.out.println(diagramSeriesTotal.getPopulationGroup()+">>>>>>>>>>>>>>>YEAH - population = "+population);
 				
@@ -855,6 +835,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 				criteria.sexIsNull(true);
 				criteria.region(regionReferenceDto);
 				criteria.ageGroup(diagramSeriesTotal.getPopulationGroup());
+				criteria.setCampaign(campaignDiagramCriteria.getCampaign());
 				List<PopulationDataDto> populationDataDto = populationDataFacadeEjb.getPopulationData(criteria);
 				Integer populationSum = 0;
 				if (!populationDataDto.isEmpty()) {
@@ -880,6 +861,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 				criteria.district(districtReferenceDto);
 				criteria.region(region);
 				criteria.ageGroup(diagramSeriesTotal.getPopulationGroup());
+				criteria.setCampaign(campaignDiagramCriteria.getCampaign());
 				List<PopulationDataDto> populationDataDtoList = populationDataFacadeEjb.getPopulationData(criteria);
 				Integer populationSum = 0;
 				if (!populationDataDtoList.isEmpty()) {
@@ -1100,7 +1082,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 				seriesDataQuery.setParameter("campaignFormDataId", series.getFieldId());
 			}
 			
-			System.out.println("seriesDataQuery = "  +selectBuilder.toString() + " FROM " + CampaignFormData.TABLE_NAME + joinBuilder + whereBuilder + groupByBuilder);
+			System.out.println("getDiagramDataCard seriesDataQuery = "  +selectBuilder.toString() + " FROM " + CampaignFormData.TABLE_NAME + joinBuilder + whereBuilder + groupByBuilder);
 
 			
 			@SuppressWarnings("unchecked")
@@ -1307,7 +1289,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 				seriesDataQuery.setParameter("campaignFormDataId", series.getFieldId());
 			}
 			
-			System.out.println("seriesDataQuery = " +selectBuilder.toString() + " FROM " + CampaignFormData.TABLE_NAME + joinBuilder + whereBuilder + groupByBuilder);
+			System.out.println(" getDiagramData seriesDataQuery = " +selectBuilder.toString() + " FROM " + CampaignFormData.TABLE_NAME + joinBuilder + whereBuilder + groupByBuilder);
 
 			
 			@SuppressWarnings("unchecked")
