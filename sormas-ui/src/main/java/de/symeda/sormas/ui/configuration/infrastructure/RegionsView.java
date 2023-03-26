@@ -117,10 +117,10 @@ public class RegionsView extends AbstractConfigurationView {
 		provinceNameHeader.setDescription("Province");
 		HeaderCell pCodeHeader = mainHeader.getCell("externalId");
 		pCodeHeader.setDescription("PCode");
-		HeaderCell populationHeader = mainHeader.getCell("population");
-		populationHeader.setDescription("Population");
-		HeaderCell growthRateHeader = mainHeader.getCell("growthRate");
-		growthRateHeader.setDescription("Growth Rate");
+//		HeaderCell populationHeader = mainHeader.getCell("population");
+//		populationHeader.setDescription("Population");
+//		HeaderCell growthRateHeader = mainHeader.getCell("growthRate");
+//		growthRateHeader.setDescription("Growth Rate");
 
 		boolean infrastructureDataEditable = FacadeProvider.getFeatureConfigurationFacade()
 				.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA);

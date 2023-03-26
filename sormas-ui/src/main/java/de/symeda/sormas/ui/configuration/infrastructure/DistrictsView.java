@@ -124,8 +124,8 @@ public class DistrictsView extends AbstractConfigurationView {
 		districtNameHeader.setDescription("District");
 		HeaderCell dCodeHeader = mainHeader.getCell("externalId");
 		dCodeHeader.setDescription("DCode");
-		HeaderCell populationHeader = mainHeader.getCell("population");
-		populationHeader.setDescription("Population");
+//		HeaderCell populationHeader = mainHeader.getCell("population");
+//		populationHeader.setDescription("Population");
 		HeaderCell riskeHeader = mainHeader.getCell("risk");
 		riskeHeader.setDescription("Risk");
 
@@ -259,9 +259,9 @@ public class DistrictsView extends AbstractConfigurationView {
 		riskFilter.setWidth(140, Unit.PIXELS);
 		riskFilter.setCaption(I18nProperties.getPrefixCaption(DistrictDto.I18N_PREFIX, DistrictDto.RISK));
 		
-		riskFilter.addItem("None Risk District (NRD)");
-		riskFilter.addItem("High Risk District (HRD)");
-		riskFilter.addItem("Very High Risk District (VHRD)");
+		riskFilter.addItem("Low Risk (LR)");
+		riskFilter.addItem("Middle Risk (MR)");
+		riskFilter.addItem("High Risk (HR)");
 		
 	//	riskFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 		riskFilter.addValueChangeListener(e -> {
