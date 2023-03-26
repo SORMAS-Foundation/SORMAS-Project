@@ -52,6 +52,8 @@ public class DistrictDto extends EntityDto {
 	private boolean archived;
 	
 	private Long populationData;
+	private Long campaignPopulationData;
+	private boolean selectedPopulationData;
 	private Long regionId;
 	private String regionUuid_;
 	private String uuid_;
@@ -86,12 +88,13 @@ public class DistrictDto extends EntityDto {
 		this.externalId = externalId;
 	}
 	
-	public DistrictDto(String name, Long populationData, Long regionId, String regionUuid_, String uuid_) {
+	public DistrictDto(String name, Long populationData, Long regionId, String regionUuid_, String uuid_, boolean selectedPopulationData) {
 		this.name = name;
 		this.populationData = populationData;
 		this.regionId = regionId;
 		this.regionUuid_ = regionUuid_;
 		this.uuid_ = uuid_;
+		this.selectedPopulationData = selectedPopulationData;
 	};
 
 	public DistrictDto() {
@@ -217,6 +220,22 @@ public class DistrictDto extends EntityDto {
 
 	public void setUuid_(String uuid_) {
 		this.uuid_ = uuid_;
+	}
+
+	public Long getCampaignPopulationData() {
+		return campaignPopulationData;
+	}
+
+	public void setCampaignPopulationData(Long campaignPopulationData) {
+		this.campaignPopulationData = campaignPopulationData;
+	}
+
+	public boolean isSelectedPopulationData() {
+		return selectedPopulationData;
+	}
+
+	public void setSelectedPopulationData(boolean selectedPopulationData) {
+		this.selectedPopulationData = selectedPopulationData;
 	}
 	
 	

@@ -308,6 +308,7 @@ public class CampaignController {
 		campaignComponent.addCommitListener(() -> {
 			if (!campaignEditForm.getFieldGroup().isModified()) {
 				CampaignDto dto = campaignEditForm.getValue();
+				System.out.println(dto.getName() +" +++++++++++++++++++++++++++++ "+dto.getPopulationdata().size());
 				FacadeProvider.getCampaignFacade().saveCampaign(dto);
 				SormasUI.refreshView();
 				callback.run();

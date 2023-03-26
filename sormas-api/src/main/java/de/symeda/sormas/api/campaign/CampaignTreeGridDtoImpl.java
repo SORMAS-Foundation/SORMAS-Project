@@ -17,14 +17,22 @@ import de.symeda.sormas.api.utils.FieldConstraints;
 public class CampaignTreeGridDtoImpl extends CampaignTreeGridDto {
 	
 	private Long populationData;
+	private boolean savedSelectionData;
 
-	public CampaignTreeGridDtoImpl(String name, Long populationData, Long id, String parentUuid, String uuid, String levelAssessed) {
+	public CampaignTreeGridDtoImpl(String name, Long populationData, Long id, String parentUuid, String uuid, String levelAssessed, boolean savedSelectionData) {
         super(name, id, parentUuid, uuid, levelAssessed);
         this.populationData = populationData;
+        this.savedSelectionData = savedSelectionData;
     }
 	
 	 @Override
      public Long getPopulationData() {
          return populationData;
      }
+	 
+	 @Override
+     public boolean isSavedData() {
+         return savedSelectionData;
+     }
+	 
 }
