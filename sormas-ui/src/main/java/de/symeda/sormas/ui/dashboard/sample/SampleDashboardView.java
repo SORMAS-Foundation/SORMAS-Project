@@ -130,7 +130,7 @@ public class SampleDashboardView extends AbstractDashboardView {
 			CssStyles.LABEL_XXLARGE,
 			CssStyles.LABEL_BOLD,
 			CssStyles.VSPACE_NONE,
-			CssStyles.HSPACE_RIGHT_5,
+			CssStyles.HSPACE_RIGHT_4,
 			CssStyles.VSPACE_TOP_NONE);
 		sampleCountsLayout.addComponent(testCountsByResultType, TEST_RESULTS);
 
