@@ -12320,4 +12320,10 @@ ALTER TABLE testreport_history ADD COLUMN dateofresult varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (511, 'Add dateOfResult to TestReports #11453');
 
+-- 2023-03-27 Limit case duplicate merging comparison based on creation date and archived status #11465
+-- the index idx_cases_disease was remove to improve merge duplicate cases query this will force to use idx_cases_creationdate_desc in the query plan which is a lot more efficient
+DROP INDEX idx_cases_disease;
+
+INSERT INTO schema_version (version_number, comment) VALUES (512, 'Limit case duplicate merging comparison based on creation date and archived status #11465');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
