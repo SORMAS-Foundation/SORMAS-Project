@@ -218,6 +218,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.SHARE_PEN
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SHARE_REPORTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SHARE_SORMAS_2_SORMAS_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SHARE_SORMAS_2_SORMAS_POPUP_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.SHOW_SAMPLE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SURVEILLANCE_OFFICER_FIELD_ABOVE_GENERAL_COMMENT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SYMPTOMS_TAB;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.TRIMESTER_OPTIONS;
@@ -232,6 +233,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATI
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_UPDATE_POPUP_HEADER;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.checkIfTextExists;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.checkTextInImmunizationSideComponent;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.checkTextInReportSideComponent;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.getByImmunizationUuid;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.getEditTaskButtonByNumber;
@@ -1425,6 +1427,12 @@ public class EditCaseSteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(EDIT_SAMPLE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(EDIT_SAMPLE_BUTTON);
+        });
+
+    When(
+        "I click on view Sample",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SHOW_SAMPLE_BUTTON);
         });
 
     When(

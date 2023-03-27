@@ -275,6 +275,14 @@ public class CreateNewVaccinationSteps implements En {
         });
 
     And(
+        "^I change the vaccination date for minus (\\d+) day from today$",
+        (Integer day) -> {
+          webDriverHelpers.scrollToElement(VACCINATION_DATE_INPUT);
+          webDriverHelpers.fillAndSubmitInWebElement(
+              VACCINATION_DATE_INPUT, formatterDE.format(LocalDate.now().minusDays(day)));
+        });
+
+    And(
         "I set vaccine manufacturer to {string}",
         (String option) -> selectVaccineManufacturer(option));
 
@@ -302,6 +310,18 @@ public class CreateNewVaccinationSteps implements En {
           fillUniiCode(vaccination.getUniiCode());
           fillBatchNumber(vaccination.getBatchNumber());
           fillAtcCode(vaccination.getAtcCode());
+        });
+
+    When(
+        "I check if vaccination date is set for (\\d+) day ago from today on Edit Vaccination page for DE version",
+        (Integer days) -> {
+          DateTimeFormatter formattrerDE = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(VACCINATION_DATE_INPUT),
+              formattrerDE.format(LocalDate.now().minusDays(days)),
+              "Date is incorrect");
+          softly.assertAll();
         });
   }
 
