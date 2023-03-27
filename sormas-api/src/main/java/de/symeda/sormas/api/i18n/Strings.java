@@ -947,6 +947,7 @@ public interface Strings {
 	String mapOf = "mapOf";
 	String max = "max";
 	String messageAcceptRequestToNavigate = "messageAcceptRequestToNavigate";
+	String messageActionOutsideJurisdictionDeletionDenied = "messageActionOutsideJurisdictionDeletionDenied";
 	String messageActivateAccount = "messageActivateAccount";
 	String messageAdditionalTestDeleted = "messageAdditionalTestDeleted";
 	String messageAdditionalTestSaved = "messageAdditionalTestSaved";
@@ -979,6 +980,7 @@ public interface Strings {
 	String messageCampaignCreated = "messageCampaignCreated";
 	String messageCampaignDearchived = "messageCampaignDearchived";
 	String messageCampaignDeleted = "messageCampaignDeleted";
+	String messageCampaignFormOutsideJurisdictionDeletionDenied = "messageCampaignFormOutsideJurisdictionDeletionDenied";
 	String messageCampaignFormSaved = "messageCampaignFormSaved";
 	String messageCampaignSaved = "messageCampaignSaved";
 	String messageCannotMergeMoreThanTwoPersons = "messageCannotMergeMoreThanTwoPersons";
@@ -1092,9 +1094,11 @@ public interface Strings {
 	String messageEventLinkedAsSubordinate = "messageEventLinkedAsSubordinate";
 	String messageEventLinkedAsSuperordinate = "messageEventLinkedAsSuperordinate";
 	String messageEventLinkedToGroup = "messageEventLinkedToGroup";
+	String messageEventOutsideJurisdictionDeletionDenied = "messageEventOutsideJurisdictionDeletionDenied";
 	String messageEventParticipantArchived = "messageEventParticipantArchived";
 	String messageEventParticipantCreated = "messageEventParticipantCreated";
 	String messageEventParticipantDearchived = "messageEventParticipantDearchived";
+	String messageEventParticipantOutsideJurisdictionDeletionDenied = "messageEventParticipantOutsideJurisdictionDeletionDenied";
 	String messageEventParticipantResponsibleJurisdictionUpdated = "messageEventParticipantResponsibleJurisdictionUpdated";
 	String messageEventParticipantSaved = "messageEventParticipantSaved";
 	String messageEventParticipantsDeleted = "messageEventParticipantsDeleted";
@@ -1136,6 +1140,7 @@ public interface Strings {
 	String messageGdprCheck = "messageGdprCheck";
 	String messageImmunizationArchived = "messageImmunizationArchived";
 	String messageImmunizationDearchived = "messageImmunizationDearchived";
+	String messageImmunizationOutsideJurisdictionDeletionDenied = "messageImmunizationOutsideJurisdictionDeletionDenied";
 	String messageImmunizationSaved = "messageImmunizationSaved";
 	String messageImmunizationSavedVaccinationStatusUpdated = "messageImmunizationSavedVaccinationStatusUpdated";
 	String messageImportCanceled = "messageImportCanceled";
@@ -1262,6 +1267,7 @@ public interface Strings {
 	String messageTravelEntriesDeleted = "messageTravelEntriesDeleted";
 	String messageTravelEntryArchived = "messageTravelEntryArchived";
 	String messageTravelEntryDearchived = "messageTravelEntryDearchived";
+	String messageTravelEntryOutsideJurisdictionDeletionDenied = "messageTravelEntryOutsideJurisdictionDeletionDenied";
 	String messageTravelEntryPOEFilledBySystem = "messageTravelEntryPOEFilledBySystem";
 	String messageTravelEntrySaved = "messageTravelEntrySaved";
 	String messageTreatmentCreated = "messageTreatmentCreated";
@@ -1289,6 +1295,7 @@ public interface Strings {
 	String messageVaccinationNotRelevantForCase = "messageVaccinationNotRelevantForCase";
 	String messageVaccinationNotRelevantForContact = "messageVaccinationNotRelevantForContact";
 	String messageVaccinationNotRelevantForEventParticipant = "messageVaccinationNotRelevantForEventParticipant";
+	String messageVaccinationOutsideJurisdictionDeletionDenied = "messageVaccinationOutsideJurisdictionDeletionDenied";
 	String messageVisitsDeleted = "messageVisitsDeleted";
 	String messageWrongFileType = "messageWrongFileType";
 	String messageWrongTemplateFileType = "messageWrongTemplateFileType";

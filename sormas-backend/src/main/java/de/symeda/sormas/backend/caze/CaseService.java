@@ -2008,9 +2008,9 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		Predicate filter = CriteriaBuilderHelper.and(cb, userFilter, criteriaFilter, relevanceStatusRoot2Filter, nameSimilarityFilter, diseaseFilter);
 
 		if (!showDuplicatesWithDifferentRegion) {
-			Predicate regionFilter = cb.and(
+			Predicate regionFilter = cb.or(
 				cb.equal(root.get(Case.RESPONSIBLE_REGION), root2.get(Case.RESPONSIBLE_REGION)),
-				cb.or(cb.and(cb.isNull(root.get(Case.REGION))), cb.equal(root.get(Case.REGION), root2.get(Case.REGION))));
+				cb.and(cb.isNotNull(root.get(Case.REGION)), cb.equal(root.get(Case.REGION), root2.get(Case.REGION))));
 			filter = CriteriaBuilderHelper.and(cb, filter, regionFilter);
 		}
 

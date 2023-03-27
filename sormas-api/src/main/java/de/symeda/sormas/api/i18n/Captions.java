@@ -1936,6 +1936,7 @@ public interface Captions {
 	String sampleDashboardShowContactSamples = "sampleDashboardShowContactSamples";
 	String sampleDashboardShowEventParticipantSamples = "sampleDashboardShowEventParticipantSamples";
 	String sampleDashboardSpecimenCondition = "sampleDashboardSpecimenCondition";
+	String sampleDashboardTestResults = "sampleDashboardTestResults";
 	String sampleDeletedSamples = "sampleDeletedSamples";
 	String SampleExport_additionalTestingRequested = "SampleExport.additionalTestingRequested";
 	String SampleExport_altSgpt = "SampleExport.altSgpt";

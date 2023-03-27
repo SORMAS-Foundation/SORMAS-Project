@@ -730,6 +730,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		laboratoryDiagnosticEvidenceCheckBoxTree.setValues(newFieldValue.getLaboratoryDiagnosticEvidenceDetails());
 
 		if (!isCreateForm && FacadeProvider.getEventFacade().hasAnyEventParticipantWithoutJurisdiction(newFieldValue.getUuid())) {
+			locationForm.setHasEventParticipantsWithoutJurisdiction(true);
 			locationForm.setFieldsRequirement(true, LocationDto.REGION, LocationDto.DISTRICT);
 			locationForm.setCountryDisabledWithHint(I18nProperties.getString(Strings.infoCountryNotEditableEventParticipantsWithoutJurisdiction));
 		}

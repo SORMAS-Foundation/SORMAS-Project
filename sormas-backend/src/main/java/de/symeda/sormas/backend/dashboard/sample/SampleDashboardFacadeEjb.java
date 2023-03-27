@@ -62,6 +62,11 @@ public class SampleDashboardFacadeEjb implements SampleDashboardFacade {
 	}
 
 	@Override
+	public Map<PathogenTestResultType, Long> getTestResultCountsByResultType(SampleDashboardCriteria dashboardCriteria) {
+		return sampleDashboardService.getTestResultCountsByResultType(dashboardCriteria);
+	}
+
+	@Override
 	public Long countSamplesForMap(SampleDashboardCriteria criteria, Set<SampleAssociationType> associationTypes) {
 		return sampleDashboardService.countSamplesForMap(criteria, associationTypes);
 	}

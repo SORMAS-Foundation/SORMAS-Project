@@ -32,7 +32,7 @@ import de.symeda.sormas.ui.dashboard.DashboardType;
 import de.symeda.sormas.ui.dashboard.components.DashboardHeadingComponent;
 import de.symeda.sormas.ui.dashboard.sample.components.SampleCountTilesComponent;
 import de.symeda.sormas.ui.dashboard.sample.components.SampleDashboardMapComponent;
-import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.FinalLaboratoryResultsStatisticsComponent;
+import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.LaboratoryResultsStatisticsComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -56,7 +56,8 @@ public class SampleDashboardView extends AbstractDashboardView {
 	private final VerticalLayout mapLayout;
 
 	private final DashboardHeadingComponent heading;
-	private final FinalLaboratoryResultsStatisticsComponent countsByResultType;
+	private final LaboratoryResultsStatisticsComponent sampleCountsByResultType;
+	private final LaboratoryResultsStatisticsComponent testCountsByResultType;
 	private final SampleCountTilesComponent<SamplePurpose> countsByPurpose;
 	private final SampleCountTilesComponent<SpecimenCondition> countsBySpecimenCondition;
 	private final SampleCountTilesComponent<SampleShipmentStatus> countsByShipmentStatus;
@@ -91,14 +92,16 @@ public class SampleDashboardView extends AbstractDashboardView {
 
 		dashboardLayout.addComponent(sampleCountsLayout);
 
-		countsByResultType =
-			new FinalLaboratoryResultsStatisticsComponent(Captions.sampleDashboardAllSamples, null, Captions.sampleDashboardFinalLabResults, true);
-		countsByResultType.hideHeading();
-		sampleCountsLayout.addComponent(countsByResultType, LAB_RESULTS);
+		sampleCountsByResultType =
+			new LaboratoryResultsStatisticsComponent(Captions.sampleDashboardAllSamples, null, Captions.sampleDashboardFinalLabResults, true, false);
+		sampleCountsByResultType.hideHeading();
+		sampleCountsByResultType.setWithPercentage(true);
+		sampleCountsLayout.addComponent(sampleCountsByResultType, LAB_RESULTS);
 
 		countsByPurpose =
 			new SampleCountTilesComponent<>(SamplePurpose.class, Captions.sampleDashboardSamplePurpose, this::getBackgroundStyleForPurpose, null);
-		countsByPurpose.setTitleStyleNames(CssStyles.H3, CssStyles.VSPACE_TOP_NONE);
+		countsByPurpose.setTitleStyleNames(CssStyles.H3, CssStyles.VSPACE_TOP_5);
+
 		countsByPurpose.setGroupLabelStyle(CssStyles.LABEL_LARGE);
 		sampleCountsLayout.addComponent(countsByPurpose, SAMPLE_PURPOSE);
 
@@ -122,6 +125,18 @@ public class SampleDashboardView extends AbstractDashboardView {
 		countsBySpecimenCondition.setGroupLabelStyle(CssStyles.LABEL_UPPERCASE);
 		sampleCountsLayout.addComponent(countsBySpecimenCondition, SPECIMEN_CONDITION);
 
+		testCountsByResultType = new LaboratoryResultsStatisticsComponent(Captions.sampleDashboardTestResults, null, null, false, false);
+		testCountsByResultType.setWithPercentage(true);
+		testCountsByResultType.setTitleStyleNamesOnTitleLabel(CssStyles.H3, CssStyles.VSPACE_TOP_5);
+		testCountsByResultType.setTitleStyleNamesOnTotalLabel(
+			CssStyles.LABEL_PRIMARY,
+			CssStyles.LABEL_XXLARGE,
+			CssStyles.LABEL_BOLD,
+			CssStyles.VSPACE_NONE,
+			CssStyles.HSPACE_RIGHT_5,
+			CssStyles.VSPACE_TOP_NONE);
+		sampleCountsLayout.addComponent(testCountsByResultType, TEST_RESULTS);
+
 		epiCurveComponent = new SampleEpiCurveComponent(dataProvider);
 		epiCurveLayout = createEpiCurveLayout();
 
@@ -140,10 +155,11 @@ public class SampleDashboardView extends AbstractDashboardView {
 
 		heading.updateTotalLabel(String.valueOf(dataProvider.getSampleCountsByResultType().values().stream().mapToLong(Long::longValue).sum()));
 
-		countsByResultType.update(dataProvider.getSampleCountsByResultType());
+		sampleCountsByResultType.update(dataProvider.getSampleCountsByResultType());
 		countsByPurpose.update(dataProvider.getSampleCountsByPurpose());
 		countsBySpecimenCondition.update(dataProvider.getSampleCountsBySpecimenCondition());
 		countsByShipmentStatus.update(dataProvider.getSampleCountsByShipmentStatus());
+		testCountsByResultType.update(dataProvider.getTestResultCountsByResultType());
 		epiCurveComponent.clearAndFillEpiCurveChart();
 		mapComponent.refreshMap();
 	}

@@ -38,6 +38,8 @@ public interface SampleDashboardFacade {
 
 	Map<SampleShipmentStatus, Long> getSampleCountsByShipmentStatus(SampleDashboardCriteria dashboardCriteria);
 
+	Map<PathogenTestResultType, Long> getTestResultCountsByResultType(SampleDashboardCriteria dashboardCriteria);
+
 	Long countSamplesForMap(SampleDashboardCriteria criteria, Set<SampleAssociationType> associationTypes);
 
 	List<MapSampleDto> getSamplesForMap(SampleDashboardCriteria criteria, Set<SampleAssociationType> associationTypes);

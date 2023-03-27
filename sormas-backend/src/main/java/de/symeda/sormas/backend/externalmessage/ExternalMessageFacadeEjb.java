@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.PermitAll;
@@ -41,6 +43,8 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.customizableenum.CustomEnumNotFoundException;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageAdapterFacade;
 import de.symeda.sormas.api.externalmessage.ExternalMessageCriteria;
@@ -51,12 +55,14 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageIndexDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageReferenceDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageResult;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
+import de.symeda.sormas.api.externalmessage.ExternalMessageType;
 import de.symeda.sormas.api.externalmessage.NewMessagesState;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.systemevents.SystemEventDto;
 import de.symeda.sormas.api.systemevents.SystemEventType;
@@ -70,8 +76,10 @@ import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportFacade
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportFacadeEjb;
+import de.symeda.sormas.backend.externalmessage.labmessage.TestReport;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
 import de.symeda.sormas.backend.user.User;
@@ -121,6 +129,9 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	private CaseService caseService;
 	@EJB
 	private UserService userService;
+
+	@EJB
+	private CustomizableEnumFacadeEjb.CustomizableEnumFacadeEjbLocal customizableEnumFacade;
 
 	ExternalMessage fillOrBuildEntity(@NotNull ExternalMessageDto source, ExternalMessage target, boolean checkChangeDate) {
 
@@ -201,6 +212,40 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		validate(dto);
 
 		externalMessage = fillOrBuildEntity(dto, externalMessage, checkChangeDate);
+
+		// If it is a LabMessage and it has not set a DiseaseVariant, an attempt is made to determine this from the attached TestReports.
+		if (ExternalMessageType.LAB_MESSAGE.equals(externalMessage.getType())
+			&& externalMessage.getDiseaseVariant() == null
+			&& CollectionUtils.isNotEmpty(externalMessage.getSampleReports())) {
+			Set<TestReport> positiveTestReportsWithDiseaseVariant = externalMessage.getSampleReports()
+				.stream()
+				.flatMap(sampleReport -> sampleReport.getTestReports().stream())
+				.filter(
+					testReportDto -> PathogenTestResultType.POSITIVE.equals(testReportDto.getTestResult())
+						&& testReportDto.getTestedDiseaseVariant() != null)
+				.collect(Collectors.toSet());
+			Set<String> diseaseVariants =
+				positiveTestReportsWithDiseaseVariant.stream().map(TestReport::getTestedDiseaseVariant).collect(Collectors.toSet());
+			// If we can't determine exactly one DiseaseVariant then we don't need to continue because we can only set one "main" DiseaseVariant
+			if (diseaseVariants.size() == 1) {
+				Set<String> diseaseVariantDetails =
+					positiveTestReportsWithDiseaseVariant.stream().map(TestReport::getTestedDiseaseVariantDetails).collect(Collectors.toSet());
+				// If we can't determine exact disease variant details then we don't need to continue because we can only set one "main" disease variant details
+				if (diseaseVariantDetails.size() == 1) {
+					String diseaseVariant = diseaseVariants.stream().findFirst().get();
+					try {
+						externalMessage.setDiseaseVariant(
+							customizableEnumFacade.getEnumValue(CustomizableEnumType.DISEASE_VARIANT, diseaseVariant, externalMessage.getDisease()));
+						if (diseaseVariantDetails.stream().allMatch(Objects::nonNull)) {
+							externalMessage.setDiseaseVariantDetails(diseaseVariantDetails.stream().findFirst().get());
+						}
+					} catch (CustomEnumNotFoundException e) {
+						throw new RuntimeException("Could not find DiseaseVariant " + diseaseVariant, e);
+					}
+				}
+			}
+		}
+
 		if (newTransaction) {
 			externalMessageService.ensurePersistedInNewTransaction(externalMessage);
 		} else {
