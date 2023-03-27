@@ -1179,6 +1179,7 @@ Feature: Create events
     Then I open the last created event via api
     Then I navigate to EVENT PARTICIPANT from edit event page
     And I add only required data for event participant creation for DE
+    And I click on Event Participant Person tab
     And I collect the event participant person UUID displayed on Edit Event Participant page
     And I click on the Persons button from navbar
     Then I filter the last created person linked with Event Participant
