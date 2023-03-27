@@ -207,6 +207,7 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 
 	private void addThirdRowLayout() {
 		thirdRowLayout = new HorizontalLayout();
+		thirdRowLayout.setSpacing(true);
 		thirdRowLayout.setMargin(false);
 		thirdRowLayout.setWidth(100, Unit.PERCENTAGE);
 
@@ -283,7 +284,7 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 			CssStyles.LABEL_BACKGROUND_FOCUS_LIGHT,
 			CssStyles.LABEL_BOLD);
 		thirdRowLayout.addComponent(lblNumberOfDuplicates);
-		thirdRowLayout.setComponentAlignment(lblNumberOfDuplicates, Alignment.MIDDLE_RIGHT);
+		thirdRowLayout.setComponentAlignment(lblNumberOfDuplicates, Alignment.BOTTOM_RIGHT);
 		thirdRowLayout.setExpandRatio(lblNumberOfDuplicates, 1);
 
 		relevanceStatusFilter = new ComboBox<>();
@@ -306,8 +307,8 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		});
 
 		criteriaBinder.bind(relevanceStatusFilter, CaseCriteria.ENTITY_RELEVANCE_STATUS);
-
 		thirdRowLayout.addComponent(relevanceStatusFilter);
+		thirdRowLayout.setComponentAlignment(relevanceStatusFilter, Alignment.BOTTOM_RIGHT);
 
 		addComponent(thirdRowLayout);
 	}
