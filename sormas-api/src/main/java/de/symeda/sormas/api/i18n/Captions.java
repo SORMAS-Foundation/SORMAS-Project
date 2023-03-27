@@ -1926,9 +1926,15 @@ public interface Captions {
 	String sampleAssociationType = "sampleAssociationType";
 	String sampleCreateNew = "sampleCreateNew";
 	String sampleDashboardAllSamples = "sampleDashboardAllSamples";
+	String sampleDashboardCaseSamples = "sampleDashboardCaseSamples";
+	String sampleDashboardContactSamples = "sampleDashboardContactSamples";
+	String sampleDashboardEventParticipantSamples = "sampleDashboardEventParticipantSamples";
 	String sampleDashboardFinalLabResults = "sampleDashboardFinalLabResults";
 	String sampleDashboardSamplePurpose = "sampleDashboardSamplePurpose";
 	String sampleDashboardShipmentStatus = "sampleDashboardShipmentStatus";
+	String sampleDashboardShowCaseSamples = "sampleDashboardShowCaseSamples";
+	String sampleDashboardShowContactSamples = "sampleDashboardShowContactSamples";
+	String sampleDashboardShowEventParticipantSamples = "sampleDashboardShowEventParticipantSamples";
 	String sampleDashboardSpecimenCondition = "sampleDashboardSpecimenCondition";
 	String sampleDeletedSamples = "sampleDeletedSamples";
 	String SampleExport_additionalTestingRequested = "SampleExport.additionalTestingRequested";

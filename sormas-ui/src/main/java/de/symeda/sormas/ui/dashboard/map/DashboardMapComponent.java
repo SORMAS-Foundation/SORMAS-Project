@@ -32,7 +32,6 @@ import java.util.function.Consumer;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
@@ -41,7 +40,6 @@ import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.shared.ui.grid.HeightMode;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.OptionGroup;
@@ -128,7 +126,10 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 			dashboardDataProvider.getDashboardType() == DashboardType.SURVEILLANCE ? Strings.headingCaseStatusMap : Strings.headingContactMap,
 			dashboardDataProvider,
 			null);
+	}
 
+	@Override
+	protected void addComponents() {
 		if (dashboardDataProvider.getDashboardType() == DashboardType.SURVEILLANCE) {
 			showCases = true;
 			caseClassificationOption = MapCaseClassificationOption.ALL_CASES;
@@ -147,6 +148,8 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 
 		hideOtherCountries = false;
 		showCurrentEpiSituation = false;
+
+		super.addComponents();
 	}
 
 	protected void refreshMap(boolean forced) {
@@ -533,28 +536,11 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 		return legendComponents;
 	}
 
-	public static HorizontalLayout buildMarkerLegendEntry(MarkerIcon icon, String labelCaption) {
-		return buildLegendEntry(new Label(icon.getHtmlElement("16px"), ContentMode.HTML), labelCaption);
-	}
-
 	public static HorizontalLayout buildMapIconLegendEntry(String iconName, String labelCaption) {
 		Image icon = new Image(null, new ExternalResource("VAADIN/map/marker/" + iconName + ".png"));
 		icon.setWidth(12.375f, Unit.PIXELS);
 		icon.setHeight(16.875f, Unit.PIXELS);
 		return buildLegendEntry(icon, labelCaption);
-	}
-
-	private static HorizontalLayout buildLegendEntry(AbstractComponent icon, String labelCaption) {
-		HorizontalLayout entry = new HorizontalLayout();
-		entry.setSpacing(false);
-		entry.setSizeUndefined();
-		CssStyles.style(icon, CssStyles.HSPACE_RIGHT_4);
-		entry.addComponent(icon);
-		Label label = new Label(labelCaption);
-		label.setSizeUndefined();
-		label.addStyleName(ValoTheme.LABEL_SMALL);
-		entry.addComponent(label);
-		return entry;
 	}
 
 	public static AbstractOrderedLayout buildRegionLegend(

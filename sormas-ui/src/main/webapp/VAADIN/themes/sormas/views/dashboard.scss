@@ -153,4 +153,12 @@
 			fill: #CBBE1D;
 		}
 	}
+
+	.popupContent .marker.sample {
+		position: relative;
+	}
+
+	.popupContent .marker.sample:after {
+		font-size: 16px;
+	}
 }

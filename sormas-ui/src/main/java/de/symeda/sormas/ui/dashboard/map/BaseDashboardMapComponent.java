@@ -24,6 +24,7 @@ import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -31,6 +32,7 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.dashboard.BaseDashboardCriteria;
@@ -44,6 +46,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.DashboardCssStyles;
 import de.symeda.sormas.ui.map.LeafletMap;
+import de.symeda.sormas.ui.map.MarkerIcon;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -52,13 +55,13 @@ public abstract class BaseDashboardMapComponent<C extends BaseDashboardCriteria<
 
 	private static final long serialVersionUID = -5711484213147987231L;
 	protected final P dashboardDataProvider;
-	protected final LeafletMap map;
+	protected LeafletMap map;
 	// Layouts and components
 	private final String headingStringTag;
 	private final String headingInfoTag;
-	private final CssLayout overlayBackground;
-	private final VerticalLayout overlayLayout;
-	private final Label overlayMessageLabel;
+	private CssLayout overlayBackground;
+	private VerticalLayout overlayLayout;
+	private Label overlayMessageLabel;
 	private PopupButton legendDropdown;
 
 	private Consumer<Boolean> externalExpandListener;
@@ -72,71 +75,13 @@ public abstract class BaseDashboardMapComponent<C extends BaseDashboardCriteria<
 		setSpacing(false);
 		setSizeFull();
 
-		map = new LeafletMap();
-		map.setSizeFull();
-		map.addMarkerClickListener(event -> onMarkerClicked(event.getGroupId(), event.getMarkerIndex()));
-
-		{
-
-			GeoShapeProvider geoShapeProvider = FacadeProvider.getGeoShapeProvider();
-
-			final GeoLatLon mapCenter;
-			// If map.usecountrycenter=true, use config coordinates. Else try to calculate the center of the user region/country
-			if (FacadeProvider.getConfigFacade().isMapUseCountryCenter()) {
-				mapCenter = FacadeProvider.getConfigFacade().getCountryCenter();
-				map.setCenter(mapCenter);
-			} else {
-				UserDto user = UserProvider.getCurrent().getUser();
-				if (user.getRegion() != null) {
-					mapCenter = geoShapeProvider.getCenterOfRegion(user.getRegion());
-				} else {
-					mapCenter = geoShapeProvider.getCenterOfAllRegions();
-				}
-
-				GeoLatLon center = Optional.ofNullable(mapCenter).orElseGet(FacadeProvider.getConfigFacade()::getCountryCenter);
-				map.setCenter(center);
-			}
-
-		}
-
-		map.setZoom(FacadeProvider.getConfigFacade().getMapZoom());
-
 		this.setMargin(true);
 
-		// Add components
-		addComponent(createHeader());
+		addComponents();
+	}
 
-		CssLayout mapLayout = new CssLayout();
-		mapLayout.setSizeFull();
-		mapLayout.setStyleName(DashboardCssStyles.MAP_CONTAINER);
-
-		map.addStyleName(DashboardCssStyles.MAP_COMPONENT);
-		mapLayout.addComponent(map);
-
-		overlayBackground = new CssLayout();
-		overlayBackground.setStyleName(DashboardCssStyles.MAP_OVERLAY_BACKGROUND);
-		overlayBackground.setVisible(false);
-		mapLayout.addComponent(overlayBackground);
-
-		overlayMessageLabel = new Label();
-		overlayMessageLabel.addStyleNames(CssStyles.ALIGN_CENTER, CssStyles.LABEL_WHITE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
-
-		Button button = ButtonHelper.createButton(Captions.showPlacesOnMap, (e) -> refreshMap(true));
-
-		overlayLayout = new VerticalLayout(overlayMessageLabel, button);
-		overlayLayout.setStyleName(DashboardCssStyles.MAP_OVERLAY);
-		overlayLayout.setHeightFull();
-		overlayLayout.setComponentAlignment(overlayMessageLabel, Alignment.MIDDLE_CENTER);
-		overlayLayout.setExpandRatio(overlayMessageLabel, 0);
-		overlayLayout.setComponentAlignment(button, Alignment.MIDDLE_CENTER);
-		overlayLayout.setExpandRatio(button, 0);
-		overlayLayout.setVisible(false);
-		mapLayout.addComponent(overlayLayout);
-
-		addComponent(mapLayout);
-		setExpandRatio(mapLayout, 1);
-
-		addComponent(createFooter());
+	protected static HorizontalLayout buildMarkerLegendEntry(MarkerIcon icon, String labelCaption) {
+		return buildLegendEntry(new Label(icon.getHtmlElement("16px"), ContentMode.HTML), labelCaption);
 	}
 
 	protected void refreshMap(boolean forced) {
@@ -290,4 +235,83 @@ public abstract class BaseDashboardMapComponent<C extends BaseDashboardCriteria<
 	protected abstract List<Component> getLegendComponents();
 
 	protected abstract void onMarkerClicked(String groupId, int markerIndex);
+
+	protected static HorizontalLayout buildLegendEntry(AbstractComponent icon, String labelCaption) {
+		HorizontalLayout entry = new HorizontalLayout();
+		entry.setSpacing(false);
+		entry.setSizeUndefined();
+		CssStyles.style(icon, CssStyles.HSPACE_RIGHT_4);
+		entry.addComponent(icon);
+		Label label = new Label(labelCaption);
+		label.setSizeUndefined();
+		label.addStyleName(ValoTheme.LABEL_SMALL);
+		entry.addComponent(label);
+		return entry;
+	}
+
+	protected void addComponents() {
+		map = new LeafletMap();
+		map.setSizeFull();
+		map.addMarkerClickListener(event -> onMarkerClicked(event.getGroupId(), event.getMarkerIndex()));
+
+		{
+
+			GeoShapeProvider geoShapeProvider = FacadeProvider.getGeoShapeProvider();
+
+			final GeoLatLon mapCenter;
+			// If map.usecountrycenter=true, use config coordinates. Else try to calculate the center of the user region/country
+			if (FacadeProvider.getConfigFacade().isMapUseCountryCenter()) {
+				mapCenter = FacadeProvider.getConfigFacade().getCountryCenter();
+				map.setCenter(mapCenter);
+			} else {
+				UserDto user = UserProvider.getCurrent().getUser();
+				if (user.getRegion() != null) {
+					mapCenter = geoShapeProvider.getCenterOfRegion(user.getRegion());
+				} else {
+					mapCenter = geoShapeProvider.getCenterOfAllRegions();
+				}
+
+				GeoLatLon center = Optional.ofNullable(mapCenter).orElseGet(FacadeProvider.getConfigFacade()::getCountryCenter);
+				map.setCenter(center);
+			}
+
+		}
+
+		map.setZoom(FacadeProvider.getConfigFacade().getMapZoom());
+
+		// Add components
+		addComponent(createHeader());
+
+		CssLayout mapLayout = new CssLayout();
+		mapLayout.setSizeFull();
+		mapLayout.setStyleName(DashboardCssStyles.MAP_CONTAINER);
+
+		map.addStyleName(DashboardCssStyles.MAP_COMPONENT);
+		mapLayout.addComponent(map);
+
+		overlayBackground = new CssLayout();
+		overlayBackground.setStyleName(DashboardCssStyles.MAP_OVERLAY_BACKGROUND);
+		overlayBackground.setVisible(false);
+		mapLayout.addComponent(overlayBackground);
+
+		overlayMessageLabel = new Label();
+		overlayMessageLabel.addStyleNames(CssStyles.ALIGN_CENTER, CssStyles.LABEL_WHITE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
+
+		Button button = ButtonHelper.createButton(Captions.showPlacesOnMap, (e) -> refreshMap(true));
+
+		overlayLayout = new VerticalLayout(overlayMessageLabel, button);
+		overlayLayout.setStyleName(DashboardCssStyles.MAP_OVERLAY);
+		overlayLayout.setHeightFull();
+		overlayLayout.setComponentAlignment(overlayMessageLabel, Alignment.MIDDLE_CENTER);
+		overlayLayout.setExpandRatio(overlayMessageLabel, 0);
+		overlayLayout.setComponentAlignment(button, Alignment.MIDDLE_CENTER);
+		overlayLayout.setExpandRatio(button, 0);
+		overlayLayout.setVisible(false);
+		mapLayout.addComponent(overlayLayout);
+
+		addComponent(mapLayout);
+		setExpandRatio(mapLayout, 1);
+
+		addComponent(createFooter());
+	}
 }

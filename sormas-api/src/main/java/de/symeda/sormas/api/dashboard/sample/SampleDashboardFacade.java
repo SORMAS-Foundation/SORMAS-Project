@@ -17,11 +17,13 @@ package de.symeda.sormas.api.dashboard.sample;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 
@@ -36,7 +38,7 @@ public interface SampleDashboardFacade {
 
 	Map<SampleShipmentStatus, Long> getSampleCountsByShipmentStatus(SampleDashboardCriteria dashboardCriteria);
 
-	Long countSamplesForMap(SampleDashboardCriteria criteria);
+	Long countSamplesForMap(SampleDashboardCriteria criteria, Set<SampleAssociationType> associationTypes);
 
-	List<MapSampleDto> getSamplesForMap(SampleDashboardCriteria criteria);
+	List<MapSampleDto> getSamplesForMap(SampleDashboardCriteria criteria, Set<SampleAssociationType> associationTypes);
 }
