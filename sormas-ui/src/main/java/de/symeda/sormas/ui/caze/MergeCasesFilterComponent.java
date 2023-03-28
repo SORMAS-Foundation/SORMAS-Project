@@ -275,6 +275,8 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 
 		thirdRowLayout.addComponent(btnResetFilters);
 
+		HorizontalLayout relevanceStatusFilterLayout = new HorizontalLayout();
+
 		lblNumberOfDuplicates = new Label("");
 		lblNumberOfDuplicates.setId("numberOfDuplicates");
 		CssStyles.style(
@@ -283,9 +285,8 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 			CssStyles.LABEL_ROUNDED_CORNERS,
 			CssStyles.LABEL_BACKGROUND_FOCUS_LIGHT,
 			CssStyles.LABEL_BOLD);
-		thirdRowLayout.addComponent(lblNumberOfDuplicates);
-		thirdRowLayout.setComponentAlignment(lblNumberOfDuplicates, Alignment.BOTTOM_RIGHT);
-		thirdRowLayout.setExpandRatio(lblNumberOfDuplicates, 1);
+		relevanceStatusFilterLayout.addComponent(lblNumberOfDuplicates);
+		relevanceStatusFilterLayout.setComponentAlignment(lblNumberOfDuplicates, Alignment.BOTTOM_LEFT);
 
 		relevanceStatusFilter = new ComboBox<>();
 		relevanceStatusFilter.setId(CaseCriteria.ENTITY_RELEVANCE_STATUS);
@@ -307,8 +308,12 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		});
 
 		criteriaBinder.bind(relevanceStatusFilter, CaseCriteria.ENTITY_RELEVANCE_STATUS);
-		thirdRowLayout.addComponent(relevanceStatusFilter);
-		thirdRowLayout.setComponentAlignment(relevanceStatusFilter, Alignment.BOTTOM_RIGHT);
+		relevanceStatusFilterLayout.addComponent(relevanceStatusFilter);
+		relevanceStatusFilterLayout.setComponentAlignment(relevanceStatusFilter, Alignment.BOTTOM_LEFT);
+
+		thirdRowLayout.addComponent(relevanceStatusFilterLayout);
+		thirdRowLayout.setComponentAlignment(relevanceStatusFilterLayout, Alignment.BOTTOM_RIGHT);
+		thirdRowLayout.setExpandRatio(relevanceStatusFilterLayout, 1);
 
 		addComponent(thirdRowLayout);
 	}
