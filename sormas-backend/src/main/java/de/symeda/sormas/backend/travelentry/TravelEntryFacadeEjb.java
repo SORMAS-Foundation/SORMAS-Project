@@ -25,6 +25,7 @@ import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.travelentry.DeaContentEntry;
 import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
@@ -35,6 +36,7 @@ import de.symeda.sormas.api.travelentry.TravelEntryListCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryListEntryDto;
 import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.FacadeHelper;
@@ -107,6 +109,11 @@ public class TravelEntryFacadeEjb
 	@RightsAllowed(UserRight._TRAVEL_ENTRY_DELETE)
 	public void delete(String travelEntryUuid, DeletionDetails deletionDetails) {
 		TravelEntry travelEntry = service.getByUuid(travelEntryUuid);
+
+		if (!service.inJurisdictionOrOwned(travelEntry)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.messageTravelEntryOutsideJurisdictionDeletionDenied));
+		}
+
 		service.delete(travelEntry, deletionDetails);
 
 		if (travelEntry.getResultingCase() != null) {

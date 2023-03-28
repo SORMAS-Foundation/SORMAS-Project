@@ -71,7 +71,6 @@ import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
@@ -371,7 +370,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 		Calendar calendarDay15 = Calendar.getInstance();
 		calendarDay15.set(2022, 7, 15);
 
-		creator.createSample(
+		SampleDto sampleDto = creator.createSample(
 			eventParticipant.toReference(),
 			calendarDay1.getTime(),
 			new Date(),
@@ -398,22 +397,8 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 
 		eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
 		assertEquals(1, eventParticipantIndexDtos.size());
-		assertEquals(PathogenTestResultType.NEGATIVE, eventParticipantIndexDtos.get(0).getPathogenTestResult());
+		assertEquals(PathogenTestResultType.POSITIVE, eventParticipantIndexDtos.get(0).getPathogenTestResult());
 		assertEquals(calendarDay10.getTime(), eventParticipantIndexDtos.get(0).getSampleDateTime());
-
-		SampleDto sampleDto = creator.createSample(
-			eventParticipant.toReference(),
-			calendarDay15.getTime(),
-			new Date(),
-			user.toReference(),
-			SampleMaterial.BLOOD,
-			rdcf.facility,
-			s -> s.setPathogenTestResult(PathogenTestResultType.PENDING));
-
-		eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
-		assertEquals(1, eventParticipantIndexDtos.size());
-		assertEquals(PathogenTestResultType.PENDING, eventParticipantIndexDtos.get(0).getPathogenTestResult());
-		assertEquals(calendarDay15.getTime(), eventParticipantIndexDtos.get(0).getSampleDateTime());
 
 		getSampleFacade().deleteSample(sampleDto.toReference(), new DeletionDetails());
 
@@ -484,33 +469,20 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testEventParticipantIndexListSorting() {
-		RDCF rdcf = new RDCF(creator.createRDCFEntities());
 		UserDto user = creator.createNationalUser();
 		EventDto event = creator.createEvent(user.toReference());
 		PersonDto person = creator.createPerson();
 
-		EventParticipantDto eventParticipant1 = creator.createEventParticipant(event.toReference(), person, user.toReference());
-		EventParticipantDto eventParticipant2 = creator.createEventParticipant(event.toReference(), person, user.toReference());
-
-		Calendar calendarDay1 = Calendar.getInstance();
-		calendarDay1.set(2022, 7, 1);
-
-		creator.createSample(
-			eventParticipant1.toReference(),
-			calendarDay1.getTime(),
-			new Date(),
-			user.toReference(),
-			SampleMaterial.BLOOD,
-			rdcf.facility,
-			s -> s.setPathogenTestResult(PathogenTestResultType.POSITIVE));
+		creator.createEventParticipant(event.toReference(), person, "Z", user.toReference());
+		EventParticipantDto eventParticipant2 = creator.createEventParticipant(event.toReference(), person, "A", user.toReference());
 
 		EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
 		eventParticipantCriteria.setEvent(event.toReference());
-		SortProperty sortProperty = new SortProperty(SampleIndexDto.SAMPLE_DATE_TIME, false);
+		SortProperty sortProperty = new SortProperty(EventParticipantDto.INVOLVEMENT_DESCRIPTION, true);
 		List<EventParticipantIndexDto> eventParticipantIndexDtos =
-			getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, Arrays.asList(sortProperty));
+			getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, Collections.singletonList(sortProperty));
 		assertEquals(2, eventParticipantIndexDtos.size());
-		assertEquals(eventParticipant1.getUuid(), eventParticipantIndexDtos.get(0).getUuid());
+		assertEquals(eventParticipant2.getUuid(), eventParticipantIndexDtos.get(0).getUuid());
 	}
 
 	@Test

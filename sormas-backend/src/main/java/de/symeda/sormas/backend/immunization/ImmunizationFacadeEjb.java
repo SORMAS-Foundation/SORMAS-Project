@@ -298,6 +298,11 @@ public class ImmunizationFacadeEjb
 	@RightsAllowed(UserRight._IMMUNIZATION_DELETE)
 	public void delete(String uuid, DeletionDetails deletionDetails) {
 		Immunization immunization = service.getByUuid(uuid);
+
+		if (!service.inJurisdictionOrOwned(immunization)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.messageImmunizationOutsideJurisdictionDeletionDenied));
+		}
+
 		service.delete(immunization, deletionDetails);
 	}
 

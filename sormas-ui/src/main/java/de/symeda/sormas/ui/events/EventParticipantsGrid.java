@@ -78,12 +78,10 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 		});
 		caseIdColumn.setId(CASE_ID);
 		caseIdColumn.setSortProperty(EventParticipantIndexDto.CASE_UUID);
-		caseIdColumn.setRenderer(
-			new CaseUuidRenderer(
-				uuid -> {
-					// '!=' check is ok because the converter returns the constant when no case creation is allowed
-					return NO_CASE_CREATE != uuid;
-				}));
+		caseIdColumn.setRenderer(new CaseUuidRenderer(uuid -> {
+			// '!=' check is ok because the converter returns the constant when no case creation is allowed
+			return NO_CASE_CREATE != uuid;
+		}));
 
 		Column<EventParticipantIndexDto, String> deleteColumn = addColumn(entry -> {
 			if (entry.getDeletionReason() != null) {
@@ -125,8 +123,10 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 		}
 		getColumn(SampleIndexDto.PATHOGEN_TEST_RESULT)
 			.setCaption(I18nProperties.getPrefixCaption(SampleIndexDto.I18N_PREFIX, SampleIndexDto.PATHOGEN_TEST_RESULT));
+		getColumn(SampleIndexDto.PATHOGEN_TEST_RESULT).setSortable(false);
 		getColumn(SampleIndexDto.SAMPLE_DATE_TIME)
 			.setCaption(I18nProperties.getPrefixCaption(SampleIndexDto.I18N_PREFIX, SampleIndexDto.SAMPLE_DATE_TIME));
+		getColumn(SampleIndexDto.SAMPLE_DATE_TIME).setSortable(false);
 
 		getColumn(EventParticipantIndexDto.CONTACT_COUNT).setSortable(false);
 

@@ -105,7 +105,7 @@ public final class DtoHelper {
 						}
 
 						// If both entities have the same UUID, assign a new one to targetValue to create a new entity
-						if (((EntityDto) targetValue).getUuid().equals(((EntityDto) sourceValue).getUuid())) {
+						if (DataHelper.equal(((EntityDto) targetValue).getUuid(), (((EntityDto) sourceValue).getUuid()))) {
 							((EntityDto) targetValue).setUuid(DataHelper.createUuid());
 						}
 

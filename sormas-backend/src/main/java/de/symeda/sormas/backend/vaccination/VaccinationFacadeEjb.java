@@ -53,6 +53,7 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -101,6 +102,8 @@ public class VaccinationFacadeEjb
 	private CaseService caseService;
 	@EJB
 	private ContactService contactService;
+	@EJB
+	private VaccinationService vaccinationService;
 	@EJB
 	private EventParticipantService eventParticipantService;
 	@EJB
@@ -487,6 +490,11 @@ public class VaccinationFacadeEjb
 	@RightsAllowed(UserRight._IMMUNIZATION_DELETE)
 	public void deleteWithImmunization(String uuid, DeletionDetails deletionDetails) {
 		Vaccination vaccination = service.getByUuid(uuid);
+
+		if (!vaccinationService.inJurisdictionOrOwned(vaccination)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.messageVaccinationOutsideJurisdictionDeletionDenied));
+		}
+
 		Immunization immunization = vaccination.getImmunization();
 		immunization.getVaccinations().remove(vaccination);
 		immunizationService.incrementChangeDate(immunization);

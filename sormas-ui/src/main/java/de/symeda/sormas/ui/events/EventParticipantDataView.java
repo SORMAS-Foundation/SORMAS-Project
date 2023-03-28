@@ -44,8 +44,6 @@ import de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListCompone
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponentLayout;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
-import de.symeda.sormas.ui.utils.AbstractDetailView;
-import de.symeda.sormas.ui.utils.ArchivingController;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
@@ -103,6 +101,7 @@ public class EventParticipantDataView extends AbstractEventParticipantView {
 
 		EditPermissionType eventParticipantEditAllowed =
 			FacadeProvider.getEventParticipantFacade().getEditPermissionType(eventParticipantRef.getUuid());
+		boolean editAllowed = isEditAllowed();
 
 		SampleCriteria sampleCriteria = new SampleCriteria().eventParticipant(eventParticipantRef);
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
@@ -111,7 +110,7 @@ public class EventParticipantDataView extends AbstractEventParticipantView {
 					.disease(event.getDisease())
 					.sampleAssociationType(SampleAssociationType.EVENT_PARTICIPANT),
 				this::showUnsavedChangesPopup,
-				true);
+				editAllowed);
 			SampleListComponentLayout sampleListComponentLayout =
 				new SampleListComponentLayout(sampleList, I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesEventParticipant));
 			layout.addSidePanelComponent(sampleListComponentLayout, SAMPLES_LOC);
@@ -122,7 +121,7 @@ public class EventParticipantDataView extends AbstractEventParticipantView {
 			contactsLayout.setMargin(false);
 			contactsLayout.setSpacing(false);
 
-			ContactListComponent contactList = new ContactListComponent(eventParticipantRef, this::showUnsavedChangesPopup);
+			ContactListComponent contactList = new ContactListComponent(eventParticipantRef, this::showUnsavedChangesPopup, editAllowed);
 			contactList.addStyleName(CssStyles.SIDE_COMPONENT);
 			contactsLayout.addComponent(contactList);
 
@@ -162,7 +161,8 @@ public class EventParticipantDataView extends AbstractEventParticipantView {
 							() -> new ImmunizationListCriteria.Builder(eventParticipant.getPerson().toReference()).withDisease(event.getDisease())
 								.build(),
 							null,
-							this::showUnsavedChangesPopup)),
+							this::showUnsavedChangesPopup,
+							editAllowed)),
 					IMMUNIZATION_LOC);
 			} else {
 				layout.addSidePanelComponent(new SideComponentLayout(new VaccinationListComponent(() -> {
@@ -177,7 +177,7 @@ public class EventParticipantDataView extends AbstractEventParticipantView {
 						.eventParticipantReference(getReference())
 						.region(region)
 						.district(district);
-				}, null, this::showUnsavedChangesPopup, true)), VACCINATIONS_LOC);
+				}, null, this::showUnsavedChangesPopup, editAllowed)), VACCINATIONS_LOC);
 			}
 		}
 

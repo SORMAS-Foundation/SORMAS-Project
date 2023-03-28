@@ -77,7 +77,6 @@ Scenario: Create and send laboratory request via Demis
     And I check that new sample form with pathogen detection reporting process is displayed
     And I click on save sample button
     And I click on save sample button
-    And I click on YES button in Update case disease variant popup window
     And I click on the Cases button from navbar
     And I click on the first Case ID from Case Directory
     And I check that case created from laboratory message contains a sample with one test
@@ -104,7 +103,6 @@ Scenario: Create and send laboratory request via Demis
     And I check that new sample form with pathogen detection reporting process is displayed
     And I click on "save" button in new sample form with pathogen detection reporting process
     And I click on "save" button in new sample form with pathogen detection reporting process
-    And I click on YES button in Update case disease variant popup window
     And I verify that status for result 1 is set to processed in Message Directory page
     And I click on the RESET FILTERS button for Messages
     And I filter by the name of the 3 most recently created person in Messages Directory
@@ -114,7 +112,6 @@ Scenario: Create and send laboratory request via Demis
     And I fill only mandatory fields to convert laboratory message into a case for DE
     And I click on save button in the case popup
     And I click on "save and open case" button in new sample form with pathogen detection reporting process
-    And I click on YES button in Update case disease variant popup window
     Then I check that I get navigated to the Edit Case page
     And I check that case created from laboratory message contains a sample with one test
     And I navigate to case person tab

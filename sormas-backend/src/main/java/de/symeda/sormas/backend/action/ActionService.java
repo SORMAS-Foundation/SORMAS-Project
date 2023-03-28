@@ -622,4 +622,9 @@ public class ActionService extends AdoServiceWithUserFilterAndJurisdiction<Actio
 
 		super.deletePermanent(action);
 	}
+
+	@Override
+	public boolean inJurisdictionOrOwned(Action entity) {
+		return eventService.inJurisdictionOrOwned(entity.getEvent());
+	}
 }
