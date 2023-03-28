@@ -909,7 +909,12 @@ public class EventController {
 		// Initialize 'Archive' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_ARCHIVE)) {
 			ControllerProvider.getArchiveController()
-				.addArchivingButton(event, FacadeProvider.getEventFacade(), CoreEntityArchiveMessages.EVENT, editView, () -> navigateToData(uuid));
+				.addArchivingButton(event, FacadeProvider.getEventFacade(), CoreEntityArchiveMessages.EVENT, editView, () -> {
+					ViewModelProviders.of(EventParticipantsView.class)
+						.get(EventParticipantsViewConfiguration.class)
+						.setRelevanceStatusChangedEvent(null);
+					navigateToData(uuid);
+				});
 		}
 
 		editView.restrictEditableComponentsOnEditView(UserRight.EVENT_EDIT, UserRight.EVENT_DELETE, null);
