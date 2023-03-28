@@ -597,7 +597,8 @@ Feature: Create events
     And I click on the searched event
     And I collect the UUID displayed on Edit event page
     Given I add a participant to the event
-    Then I click on the Archive event participant button
+    Then I click on Event Participant Data tab
+    And I click on the Archive event participant button
     And I check if Archive event popup is displayed correctly
     Then I check the end of processing date in the archive popup
     And I check if Archive button changed name to De-Archive
