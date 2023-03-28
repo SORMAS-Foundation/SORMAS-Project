@@ -70,10 +70,6 @@
 	background-color: rgba(175, 227, 168, 0.8);
 }
 
-/*.marker.sample {*/
-/*	position: absolute;*/
-/*}*/
-
 .marker.sample:after {
 	content: "\e737";
 	font-family: "Vaadin-Icons";
