@@ -110,7 +110,6 @@ public class SampleDashboardView extends AbstractDashboardView {
 			Captions.sampleDashboardShipmentStatus,
 			this::getBackgroundStyleForShipmentStatus,
 			Descriptions.sampleDashboardCountsByShipmentStatus);
-		countsByShipmentStatus.setTitleStyleNames(CssStyles.H4);
 		countsByShipmentStatus.setWithPercentage(true);
 		countsByShipmentStatus.setGroupLabelStyle(CssStyles.LABEL_UPPERCASE);
 		sampleCountsLayout.addComponent(countsByShipmentStatus, SHIPMENT_STATUS);
@@ -120,7 +119,6 @@ public class SampleDashboardView extends AbstractDashboardView {
 			Captions.sampleDashboardSpecimenCondition,
 			this::getBackgroundStyleForSpecimenCondition,
 			Descriptions.sampleDashboardCountsBySpecimenCondition);
-		countsBySpecimenCondition.setTitleStyleNames(CssStyles.H4);
 		countsBySpecimenCondition.setWithPercentage(true);
 		countsBySpecimenCondition.setGroupLabelStyle(CssStyles.LABEL_UPPERCASE);
 		sampleCountsLayout.addComponent(countsBySpecimenCondition, SPECIMEN_CONDITION);
@@ -133,7 +131,7 @@ public class SampleDashboardView extends AbstractDashboardView {
 			CssStyles.LABEL_XXLARGE,
 			CssStyles.LABEL_BOLD,
 			CssStyles.VSPACE_NONE,
-			CssStyles.HSPACE_RIGHT_5,
+			CssStyles.HSPACE_RIGHT_4,
 			CssStyles.VSPACE_TOP_NONE);
 		sampleCountsLayout.addComponent(testCountsByResultType, TEST_RESULTS);
 

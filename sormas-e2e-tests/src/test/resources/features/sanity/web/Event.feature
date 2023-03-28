@@ -597,7 +597,8 @@ Feature: Create events
     And I click on the searched event
     And I collect the UUID displayed on Edit event page
     Given I add a participant to the event
-    Then I click on the Archive event participant button
+    Then I click on Event Participant Data tab
+    And I click on the Archive event participant button
     And I check if Archive event popup is displayed correctly
     Then I check the end of processing date in the archive popup
     And I check if Archive button changed name to De-Archive
@@ -1179,6 +1180,7 @@ Feature: Create events
     Then I open the last created event via api
     Then I navigate to EVENT PARTICIPANT from edit event page
     And I add only required data for event participant creation for DE
+    And I click on Event Participant Person tab
     And I collect the event participant person UUID displayed on Edit Event Participant page
     And I click on the Persons button from navbar
     Then I filter the last created person linked with Event Participant

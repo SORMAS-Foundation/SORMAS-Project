@@ -469,6 +469,7 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 
 		ContactDto contactDto = ContactDto.build(null, externalMessageDto.getDisease(), null, null);
 		contactDto.setReportingUser(user.toReference());
+		contactDto.setReportDateTime(externalMessageDto.getMessageDateTime());
 		contactDto.setPerson(person.toReference());
 		return contactDto;
 	}
