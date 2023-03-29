@@ -18,7 +18,7 @@ We do not enforce a certain scheme, but it is strongly encouraged to use a meani
 #### Server Descriptors
 
 A server descriptor is a struct which contains the information needed to connect to a SORMAS instance (see the
-`SormasServerDescriptor` class). It consists of the S2S id, a human-readable name used in the UI, and the hostname.
+`SormasServerDescriptor` class). It consists of the S2S ID, a human-readable name used in the UI, and the hostname.
 Descriptors centrally distributed via a dedicated `etcd` keyspace (e.g., `/s2s/`).
 
 ```json
@@ -33,7 +33,7 @@ Descriptors centrally distributed via a dedicated `etcd` keyspace (e.g., `/s2s/`
 
 Each instance receives a dedicated x509 certificate and private key pair which is used to encrypt all S2S communication.
 The certificate is signed by a common S2S CA. The certificate and private key are stored in a `pkcs12` keystore under the
-S2S id of the instance. See [here](https://github.com/hzi-braunschweig/S2S-Testbed/blob/main/docker/certs/sormas_a/generate-cert-a.sh)
+S2S ID of the instance. See [here](https://github.com/hzi-braunschweig/S2S-Testbed/blob/main/docker/certs/sormas_a/generate-cert-a.sh)
 for an example of how to generate a keystore.
 
 #### Truststore
@@ -46,30 +46,30 @@ how to generate a truststore.
 
 The following properties are required to be set in the `sormas.properties` file:
 
-| Property                                         | Description                                                                                                                                          |
-|--------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `central.oidc.url`                               | URL of the OIDC server authenticating instances and authorizing S2S requests.                                                                        |
-| `central.etcd.host=`                             | The hostname of the etcd instance providing data like server descriptors.                                                                            |
-| `central.etcd.clientName`                        | The client name of the instance used in authentication towards etcd.                                                                                 |
-| `central.etcd.clientPassword`                    | The client password of the instance used in authentication towards etcd.                                                                             |
-| `central.etcd.caPath`                            | The full filesystem path to the CA trusted by etcd clients when creating a TLS connection to the etcd server.                                        |
-| `central.location.sync`                          | If set to true, all infrastructure data from the central server will be synchronized into the local SORMAS database at startup and on a daily basis. |
-| `sormas2sormas.path`                             | Filesystem path to a directory where certificates and files related to SORMAS2SORMAS are stored.                                                     |
-| `sormas2sormas.id=`                              | The S2S ID of this instance. The identifier can be arbitrary, but should be meaningful.                                                              |
-| `sormas2sormas.keystoreName`                     | Name of the key store file relative to `sormas2sormas.path`.                                                                                         |
-| `sormas2sormas.keystorePass`                     | Password of the key store file.                                                                                                                      |
-| `sormas2sormas.rootCaAlias`                      | The alias of the trusted root CA which secures the S2S communication. This is NOT used for TLS.                                                      |
-| `sormas2sormas.truststoreName`                   | Name of the truststore file relative to `sormas2sormas.path`.                                                                                        |
-| `sormas2sormas.truststorePass`                   | Password of the truststore.                                                                                                                          |
-| `sormas2sormas.oidc.realm`                       | Name of our S2S authorization realm provided by the OIDC server.                                                                                     |
-| `sormas2sormas.oidc.clientId`                    | The client ID used in authentication of the instance towards the OIDC server.                                                                        |
-| `sormas2sormas.oidc.clientSecret`                | The client secret used in authorization of the instance towards the OIDC server.                                                                     |
-| `sormas2sormas.etcd.keyPrefix`                   | The etcd key space prefix which is used to store s2s related information.                                                                            |
-| `sormas2sormas.ignoreProperty.additionalDetails` | Business logic switch to control if the value is ignored when shared/overwritten trough S2S.                                                         |
-| `sormas2sormas.ignoreProperty.externalId`        | Business logic switch to control if the value is ignored when shared/overwritten trough S2S.                                                         |
-| `sormas2sormas.ignoreProperty.externalToken`     | Business logic switch to control if the value is ignored when shared/overwritten trough S2S.                                                         |
-| `sormas2sormas.ignoreProperty.internalToken`     | Business logic switch to control if the value is ignored when shared/overwritten trough S2S.                                                         |
-| `#sormas2sormas.districtExternalId`              | External id of the district to which the cases/contacts to be assigned when accepting a share request                                                |
+| Property                                         | Description                                                                                                                                            |
+|--------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `central.oidc.url`                               | URL of the OIDC server authenticating instances and authorizing S2S requests.                                                                          |
+| `central.etcd.host=`                             | The hostname of the etcd instance providing data like server descriptors.                                                                              |
+| `central.etcd.clientName`                        | The client name of the instance used in authentication towards etcd.                                                                                   |
+| `central.etcd.clientPassword`                    | The client password of the instance used in authentication towards etcd.                                                                               |
+| `central.etcd.caPath`                            | The full filesystem path to the CA trusted by etcd clients when creating a TLS connection to the etcd server.                                          |
+| `central.location.sync`                          | If set to true, all infrastructure data from the central server will be synchronized into the local SORMAS database at (re)start and on a daily basis. |
+| `sormas2sormas.path`                             | Filesystem path to a directory where certificates and files related to SORMAS2SORMAS are stored.                                                       |
+| `sormas2sormas.id=`                              | The S2S ID of this instance. The identifier can be arbitrary, but should be meaningful.                                                                |
+| `sormas2sormas.keystoreName`                     | Name of the key store file relative to `sormas2sormas.path`.                                                                                           |
+| `sormas2sormas.keystorePass`                     | Password of the key store file.                                                                                                                        |
+| `sormas2sormas.rootCaAlias`                      | The alias of the trusted root CA which secures the S2S communication. This is NOT used for TLS.                                                        |
+| `sormas2sormas.truststoreName`                   | Name of the truststore file relative to `sormas2sormas.path`.                                                                                          |
+| `sormas2sormas.truststorePass`                   | Password of the truststore.                                                                                                                            |
+| `sormas2sormas.oidc.realm`                       | Name of our S2S authorization realm provided by the OIDC server.                                                                                       |
+| `sormas2sormas.oidc.clientId`                    | The client ID used in authentication of the instance towards the OIDC server.                                                                          |
+| `sormas2sormas.oidc.clientSecret`                | The client secret used in authorization of the instance towards the OIDC server.                                                                       |
+| `sormas2sormas.etcd.keyPrefix`                   | The etcd key space prefix which is used to store s2s related information.                                                                              |
+| `sormas2sormas.ignoreProperty.additionalDetails` | Controls whether the value in `additionalDetails` field should be sent or not to the other instances. Possible values: true/false(default).            |
+| `sormas2sormas.ignoreProperty.externalId`        | Controls whether the value in `externalId` field should be sent or not to the other instances. Possible values: true/false(default).                   |
+| `sormas2sormas.ignoreProperty.externalToken`     | Controls whether the value in `externalToken` field should be sent or not to the other instances.  Possible values: true/false(default).               |
+| `sormas2sormas.ignoreProperty.internalToken`     | Controls whether the value in `internalToken` field should be sent or not to the other instances.  Possible values: true/false(default).               |
+| `#sormas2sormas.districtExternalId`              | External ID of the district to which the cases/contacts to be assigned when accepting a share request                                                  |
 
 
 ### Keycloak
@@ -89,7 +89,7 @@ use the OIDC client credentials.
 
 For each client, a similar client scope is created. Each S2S instance `A` which should be able to send data to another
 instance `B` must be assigned the client scope of instance `B`. This way, instance `A` is allowed to send data to instance `B`.
-The client scope _must_ be prefixed with `s2s-` and _must_ contain the S2S id of the instance it is assigned to (e.g.,
+The client scope _must_ be prefixed with `s2s-` and _must_ contain the S2S ID of the instance it is assigned to (e.g.,
 `s2s-2.sormas.id.sormas_b`).
 
 

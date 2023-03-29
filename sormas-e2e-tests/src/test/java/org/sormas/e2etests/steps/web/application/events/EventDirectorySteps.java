@@ -39,6 +39,7 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_A
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_EVENT_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_EVENT_PARTICIPANT_AFTER_IMPORT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_EVENT_PARTICIPANT_FROM_LIST;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_PERSON_ID_IN_EVENT_PARTICIPANT_TAB;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_RESULT_IN_EVENT_PARTICIPANT_TABLE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.UUID_EDIT_EVENT;
@@ -202,7 +203,7 @@ public class EventDirectorySteps implements En {
     When(
         "I fill EVENT ID filter by API",
         () -> {
-          TimeUnit.SECONDS.sleep(2); // wait for reaction
+          TimeUnit.SECONDS.sleep(5); // wait for reaction
           String eventUuid = apiState.getCreatedEvent().getUuid();
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(SEARCH_EVENT_BY_FREE_TEXT);
           webDriverHelpers.fillInWebElement(
@@ -1423,6 +1424,12 @@ public class EventDirectorySteps implements En {
         "I click on the first row from event participant list",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_PARTICIPANT_FROM_LIST);
+        });
+
+    When(
+        "I click on the first Person ID from Event Participants",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_PERSON_ID_IN_EVENT_PARTICIPANT_TAB);
         });
   }
 

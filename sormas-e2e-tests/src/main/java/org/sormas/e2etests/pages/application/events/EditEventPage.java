@@ -203,4 +203,5 @@ public class EditEventPage {
   public static final By FIRST_EVENT_PARTICIPANT_FROM_LIST = By.cssSelector("tr td a");
   public static final By CREATE_CASE_IN_EVENT_PARTICIPANT_LIST_BUTTON =
       By.xpath("(//tr//td//a)[3]");
+  public static final By FIRST_PERSON_ID_IN_EVENT_PARTICIPANT_TAB = By.xpath("//td[2]//a");
 }

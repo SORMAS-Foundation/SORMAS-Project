@@ -45,7 +45,8 @@ public class ContactListComponent extends VerticalLayout {
 
 	private final ContactList list;
 
-	public ContactListComponent(EventParticipantReferenceDto eventParticipantRef, Consumer<Runnable> actionCallback) {
+	public ContactListComponent(EventParticipantReferenceDto eventParticipantRef, Consumer<Runnable> actionCallback, boolean isEditAllowed) {
+
 		HorizontalLayout componentHeader = new HorizontalLayout();
 		componentHeader.setMargin(false);
 		componentHeader.setSpacing(false);
@@ -78,7 +79,7 @@ public class ContactListComponent extends VerticalLayout {
 		addComponent(list);
 		list.reload();
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE)) {
+		if (isEditAllowed && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE)) {
 			Button createButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.contactNewContact));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);

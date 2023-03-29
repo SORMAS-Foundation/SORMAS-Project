@@ -63,7 +63,7 @@ public class VisitController {
 		CaseReferenceDto caseRef,
 		Consumer<VisitReferenceDto> doneConsumer,
 		boolean isEditAllowed) {
-		VisitDto visit = FacadeProvider.getVisitFacade().getVisitByUuid(visitUuid);
+		VisitDto visit = FacadeProvider.getVisitFacade().getByUuid(visitUuid);
 		VisitEditForm editForm;
 		Date startDate = null;
 		Date endDate = null;
@@ -140,7 +140,7 @@ public class VisitController {
 	}
 
 	private void createVisit(VisitEditForm createForm, Consumer<VisitReferenceDto> doneConsumer, Date allowedStartDate, Date allowedEndDate) {
-		final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<VisitEditForm>(
+		final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<>(
 			createForm,
 			UserProvider.getCurrent().hasUserRight(UserRight.VISIT_CREATE),
 			createForm.getFieldGroup());

@@ -58,7 +58,6 @@ public class VisitResource extends EntityDtoResource {
 	@GET
 	@Path("/all/{since}")
 	public List<VisitDto> getAllVisits(@PathParam("since") long since) {
-
 		return FacadeProvider.getVisitFacade().getAllActiveVisitsAfter(new Date(since));
 	}
 
@@ -71,17 +70,13 @@ public class VisitResource extends EntityDtoResource {
 	@POST
 	@Path("/query")
 	public List<VisitDto> getByUuids(List<String> uuids) {
-
-		List<VisitDto> result = FacadeProvider.getVisitFacade().getByUuids(uuids);
-		return result;
+		return FacadeProvider.getVisitFacade().getByUuids(uuids);
 	}
 
 	@POST
 	@Path("/push")
 	public List<PushResult> postVisits(@Valid List<VisitDto> dtos) {
-
-		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getVisitFacade()::saveVisit);
-		return result;
+		return savePushedDto(dtos, FacadeProvider.getVisitFacade()::save);
 	}
 
 	@GET

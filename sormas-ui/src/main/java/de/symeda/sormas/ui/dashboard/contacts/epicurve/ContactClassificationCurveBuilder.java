@@ -2,6 +2,7 @@ package de.symeda.sormas.ui.dashboard.contacts.epicurve;
 
 import static de.symeda.sormas.api.dashboard.EpiCurveGrouping.DAY;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -11,9 +12,9 @@ import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.dashboard.EpiCurveGrouping;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
+import de.symeda.sormas.ui.dashboard.diagram.EpiCurveSeriesElement;
 
 public class ContactClassificationCurveBuilder extends ContactsEpiCurveBuilder {
 
@@ -22,7 +23,7 @@ public class ContactClassificationCurveBuilder extends ContactsEpiCurveBuilder {
 	}
 
 	@Override
-	public void buildEpiCurve(List<Date> datesGroupedBy, DashboardDataProvider dashboardDataProvider) {
+	protected List<EpiCurveSeriesElement> getEpiCurveElements(List<Date> datesGroupedBy, DashboardDataProvider dashboardDataProvider) {
 		int[] unconfirmedNumbers = new int[datesGroupedBy.size()];
 		int[] confirmedNumbers = new int[datesGroupedBy.size()];
 
@@ -48,26 +49,8 @@ public class ContactClassificationCurveBuilder extends ContactsEpiCurveBuilder {
 			confirmedNumbers[i] = confirmedCount != null ? confirmedCount.intValue() : 0;
 		}
 
-		hcjs.append("series: [");
-		hcjs.append(
-			"{ name: '" + I18nProperties.getCaption(Captions.dashboardUnconfirmedContact)
-				+ "', color: '#808080', dataLabels: { allowOverlap: false }, data: [");
-		for (int i = 0; i < unconfirmedNumbers.length; i++) {
-			if (i == unconfirmedNumbers.length - 1) {
-				hcjs.append(unconfirmedNumbers[i] + "]},");
-			} else {
-				hcjs.append(unconfirmedNumbers[i] + ", ");
-			}
-		}
-		hcjs.append(
-			"{ name: '" + I18nProperties.getCaption(Captions.dashboardConfirmedContact)
-				+ "', color: '#005A9C', dataLabels: { allowOverlap: false },  data: [");
-		for (int i = 0; i < confirmedNumbers.length; i++) {
-			if (i == confirmedNumbers.length - 1) {
-				hcjs.append(confirmedNumbers[i] + "]}],");
-			} else {
-				hcjs.append(confirmedNumbers[i] + ", ");
-			}
-		}
+		return Arrays.asList(
+			new EpiCurveSeriesElement(Captions.dashboardUnconfirmedContact, "#808080", unconfirmedNumbers),
+			new EpiCurveSeriesElement(Captions.dashboardConfirmedContact, "#005A9C", confirmedNumbers));
 	}
 }

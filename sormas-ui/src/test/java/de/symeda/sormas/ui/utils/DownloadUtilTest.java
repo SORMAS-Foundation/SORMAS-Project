@@ -60,16 +60,16 @@ public class DownloadUtilTest extends AbstractBeanTest {
 		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date());
 		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE);
 		visit.getSymptoms().setAbdominalPain(SymptomState.YES);
-		FacadeProvider.getVisitFacade().saveVisit(visit);
+		FacadeProvider.getVisitFacade().save(visit);
 
 		PersonDto contactPerson2 = creator.createPerson("Contact2", "Person2");
 		ContactDto contact2 = creator.createContact(user.toReference(), user.toReference(), contactPerson2.toReference(), caze, new Date(), null);
 		VisitDto visit21 = creator.createVisit(caze.getDisease(), contactPerson2.toReference(), new Date(), VisitStatus.COOPERATIVE);
 		visit21.getSymptoms().setAbdominalPain(SymptomState.YES);
-		FacadeProvider.getVisitFacade().saveVisit(visit21);
+		FacadeProvider.getVisitFacade().save(visit21);
 		VisitDto visit22 = creator.createVisit(caze.getDisease(), contactPerson2.toReference(), new Date(), VisitStatus.COOPERATIVE);
 		visit22.getSymptoms().setAgitation(SymptomState.YES);
-		FacadeProvider.getVisitFacade().saveVisit(visit22);
+		FacadeProvider.getVisitFacade().save(visit22);
 
 		// this visit is older than the allowed offset days - should not affect our export
 		VisitDto visit23 = creator.createVisit(
@@ -78,7 +78,7 @@ public class DownloadUtilTest extends AbstractBeanTest {
 			DateHelper.subtractDays(new Date(), FollowUpLogic.ALLOWED_DATE_OFFSET + 1),
 			VisitStatus.COOPERATIVE);
 		visit23.getSymptoms().setAgitation(SymptomState.YES);
-		FacadeProvider.getVisitFacade().saveVisit(visit23);
+		FacadeProvider.getVisitFacade().save(visit23);
 
 		PersonDto contactPerson3 = creator.createPerson("Contact3", "Person3");
 		ContactDto contact3 =

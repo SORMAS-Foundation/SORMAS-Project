@@ -619,7 +619,10 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 			return filter;
 		}
 
-		if (criteria != null && criteria.getSampleAssociationType() != null && criteria.getSampleAssociationType() != SampleAssociationType.ALL) {
+		if (criteria != null
+			&& criteria.getSampleAssociationType() != null
+			&& criteria.getSampleAssociationType() != SampleAssociationType.ALL
+			&& criteria.getSampleAssociationType() != SampleAssociationType.PERSON) {
 			final SampleAssociationType sampleAssociationType = criteria.getSampleAssociationType();
 			if (sampleAssociationType == SampleAssociationType.CASE) {
 				filter = CriteriaBuilderHelper.or(cb, filter, caseService.createUserFilter(new CaseQueryContext(cb, cq, joins.getCaseJoins()), null));
@@ -1226,17 +1229,6 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 	private <T> java.util.function.Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
 		Set<Object> seen = ConcurrentHashMap.newKeySet();
 		return t -> seen.add(keyExtractor.apply(t));
-	}
-
-	public Subquery createSubqueryLatestSample(CriteriaQuery cq, CriteriaBuilder cb, Root<EventParticipant> eventParticipant) {
-		final Subquery subquery = cq.subquery(Date.class);
-		final Root<Sample> subRoot = subquery.from(Sample.class);
-
-		subquery.select(cb.max(subRoot.get(Sample.SAMPLE_DATE_TIME)));
-		subquery.where(
-			cb.and(cb.isFalse(subRoot.get(Sample.DELETED))),
-			cb.equal(subRoot.get(Sample.ASSOCIATED_EVENT_PARTICIPANT), eventParticipant.get(AbstractDomainObject.ID)));
-		return subquery;
 	}
 
 	public List<DiseaseVariant> getAssociatedDiseaseVariants(String sampleUuid) {

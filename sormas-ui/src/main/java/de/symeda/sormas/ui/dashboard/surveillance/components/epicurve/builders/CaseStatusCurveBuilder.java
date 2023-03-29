@@ -11,6 +11,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.dashboard.EpiCurveGrouping;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.ui.dashboard.diagram.EpiCurveSeriesElement;
 
 public class CaseStatusCurveBuilder extends SurveillanceEpiCurveBuilder {
 

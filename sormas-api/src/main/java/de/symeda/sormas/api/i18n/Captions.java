@@ -883,6 +883,7 @@ public interface Captions {
 	String dashboardNotYetClassifiedOnly = "dashboardNotYetClassifiedOnly";
 	String dashboardNumberOfCases = "dashboardNumberOfCases";
 	String dashboardNumberOfContacts = "dashboardNumberOfContacts";
+	String dashboardNumberOfSamples = "dashboardNumberOfSamples";
 	String dashboardOneDay = "dashboardOneDay";
 	String dashboardOutbreak = "dashboardOutbreak";
 	String dashboardPending = "dashboardPending";
@@ -1929,6 +1930,7 @@ public interface Captions {
 	String sampleDashboardSamplePurpose = "sampleDashboardSamplePurpose";
 	String sampleDashboardShipmentStatus = "sampleDashboardShipmentStatus";
 	String sampleDashboardSpecimenCondition = "sampleDashboardSpecimenCondition";
+	String sampleDashboardTestResults = "sampleDashboardTestResults";
 	String sampleDeletedSamples = "sampleDeletedSamples";
 	String SampleExport_additionalTestingRequested = "SampleExport.additionalTestingRequested";
 	String SampleExport_altSgpt = "SampleExport.altSgpt";
