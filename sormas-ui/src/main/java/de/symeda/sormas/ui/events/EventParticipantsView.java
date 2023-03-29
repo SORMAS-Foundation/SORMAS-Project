@@ -314,10 +314,7 @@ public class EventParticipantsView extends AbstractEventView {
 		criteria = ViewModelProviders.of(EventParticipantsView.class).get(EventParticipantCriteria.class);
 		boolean isEventArchived = FacadeProvider.getEventFacade().isArchived(eventRef.getUuid());
 
-		if (!DataHelper.isSame(eventRef, criteria.getEvent())
-			|| (!viewConfiguration.isRelevanceStatusChanged(eventRef)
-				&& isEventArchived
-				&& criteria.getRelevanceStatus() != EntityRelevanceStatus.ACTIVE_AND_ARCHIVED)) {
+		if (!DataHelper.isSame(eventRef, criteria.getEvent()) || !viewConfiguration.isRelevanceStatusChanged(eventRef)) {
 			criteria.relevanceStatus(isEventArchived ? EntityRelevanceStatus.ACTIVE_AND_ARCHIVED : EntityRelevanceStatus.ACTIVE);
 		}
 		criteria.withEvent(eventRef);
