@@ -57,7 +57,12 @@ public class UserManagementSteps implements En {
           TimeUnit.SECONDS.sleep(2); // needed for table to refresh
         });
 
-    When("^I select first user from list$", () -> selectFirstElementFromList());
+    When(
+        "^I select first user from list$",
+        () -> {
+          TimeUnit.SECONDS.sleep(1);
+          selectFirstElementFromList();
+        });
 
     When(
         "^I search for created user$",
@@ -99,7 +104,7 @@ public class UserManagementSteps implements En {
     When(
         "^I check if sync message is correct in German$",
         () -> {
-          TimeUnit.SECONDS.sleep(15);
+          TimeUnit.SECONDS.sleep(25);
           assertHelpers.assertWithPoll(
               () ->
                   Assert.assertTrue(

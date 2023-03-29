@@ -68,6 +68,7 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -177,7 +178,6 @@ import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
-import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -257,8 +257,8 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	}
 
 	@Inject
-	protected PersonFacadeEjb(PersonService service, UserService userService) {
-		super(Person.class, PersonDto.class, service, userService);
+	protected PersonFacadeEjb(PersonService service) {
+		super(Person.class, PersonDto.class, service);
 	}
 
 	@Override
@@ -556,7 +556,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	}
 
 	private void validateUserRights(PersonDto person, PersonDto existingPerson) {
-		if (existingPerson != null) {
+		if (existingPerson != null && !RequestContextHolder.isMobileSync()) {
 			if (person.getSymptomJournalStatus() != existingPerson.getSymptomJournalStatus()
 				&& !(userService.hasRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL) || userService.hasRight(UserRight.EXTERNAL_VISITS))) {
 				throw new AccessDeniedException(
@@ -1740,7 +1740,10 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		target.setPassportNumber(source.getPassportNumber());
 		target.setNationalHealthId(source.getNationalHealthId());
 		target.setPlaceOfBirthFacilityType(source.getPlaceOfBirthFacilityType());
-		target.setSymptomJournalStatus(source.getSymptomJournalStatus());
+
+		if (!RequestContextHolder.isMobileSync()) {
+			target.setSymptomJournalStatus(source.getSymptomJournalStatus());
+		}
 
 		target.setHasCovidApp(source.isHasCovidApp());
 		target.setCovidCodeDelivered(source.isCovidCodeDelivered());
@@ -1915,7 +1918,8 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 					}
 
 					EventParticipant otherEventParticipant = participantsToSameEvent.stream()
-						.filter(eventParticipant -> !selectedEventParticipantUuids.contains(eventParticipant.getUuid()))
+						.filter(
+							eventParticipant -> !selectedEventParticipantUuids.contains(eventParticipant.getUuid()) && !eventParticipant.isDeleted())
 						.findFirst()
 						.orElse(null);
 
@@ -2041,8 +2045,8 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		}
 
 		@Inject
-		protected PersonFacadeEjbLocal(PersonService service, UserService userService) {
-			super(service, userService);
+		protected PersonFacadeEjbLocal(PersonService service) {
+			super(service);
 		}
 	}
 }

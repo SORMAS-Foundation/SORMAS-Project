@@ -295,8 +295,8 @@ public class ContactFacadeEjb
 	}
 
 	@Inject
-	public ContactFacadeEjb(ContactService service, UserService userService) {
-		super(Contact.class, ContactDto.class, service, userService);
+	public ContactFacadeEjb(ContactService service) {
+		super(Contact.class, ContactDto.class, service);
 	}
 
 	@Override
@@ -2138,10 +2138,10 @@ public class ContactFacadeEjb
 
 		// 3 Attach otherContact visits to leadContact
 		// (set the person and the disease of the visit, saveVisit does the rest)
-		for (VisitDto otherVisit : otherContact.getVisits().stream().map(VisitFacadeEjb::toDto).collect(Collectors.toList())) {
+		for (VisitDto otherVisit : otherContact.getVisits().stream().map(VisitFacadeEjb::toVisitDto).collect(Collectors.toList())) {
 			otherVisit.setPerson(leadContactDto.getPerson());
 			otherVisit.setDisease(leadContactDto.getDisease());
-			visitFacade.saveVisit(otherVisit);
+			visitFacade.save(otherVisit);
 		}
 
 		// 4 Documents
@@ -2437,8 +2437,8 @@ public class ContactFacadeEjb
 		}
 
 		@Inject
-		public ContactFacadeEjbLocal(ContactService service, UserService userService) {
-			super(service, userService);
+		public ContactFacadeEjbLocal(ContactService service) {
+			super(service);
 		}
 	}
 

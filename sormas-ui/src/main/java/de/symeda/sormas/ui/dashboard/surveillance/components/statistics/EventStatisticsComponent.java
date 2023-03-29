@@ -16,7 +16,7 @@ public class EventStatisticsComponent extends DiseaseSectionStatisticsComponent 
 	private final DashboardStatisticsCountElement eventStatusNotAnEvent;
 
 	public EventStatisticsComponent() {
-		super(Captions.dashboardNewEvents);
+		super(Captions.dashboardNewEvents, null);
 
 		// Count layout
 		eventStatusCluster = new DashboardStatisticsCountElement(EventStatus.CLUSTER.toString(), CountElementStyle.CRITICAL);

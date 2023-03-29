@@ -42,13 +42,14 @@ public abstract class AbstractProcessingFlow {
 		this.user = user;
 	}
 
-	protected FlowThen<Void> doInitialChecks(ExternalMessageDto labMessage) {
-		return new FlowThen<Void>().then(ignored -> checkDisease(labMessage)).then(ignored -> checkRelatedForwardedMessages(labMessage));
+	protected FlowThen<Void> doInitialChecks(ExternalMessageDto externalMessageDto) {
+		return new FlowThen<Void>().then(ignored -> checkDisease(externalMessageDto))
+			.then(ignored -> checkRelatedForwardedMessages(externalMessageDto));
 	}
 
-	private CompletionStage<ProcessingResult<Void>> checkDisease(ExternalMessageDto labMessage) {
+	private CompletionStage<ProcessingResult<Void>> checkDisease(ExternalMessageDto externalMessageDto) {
 
-		if (labMessage.getDisease() == null) {
+		if (externalMessageDto.getDisease() == null) {
 			return handleMissingDisease().thenCompose(
 				next -> ProcessingResult
 					.<Void> withStatus(Boolean.TRUE.equals(next) ? ProcessingResultStatus.CONTINUE : ProcessingResultStatus.CANCELED)
@@ -60,9 +61,9 @@ public abstract class AbstractProcessingFlow {
 
 	protected abstract CompletionStage<Boolean> handleMissingDisease();
 
-	private CompletionStage<ProcessingResult<Void>> checkRelatedForwardedMessages(ExternalMessageDto labMessage) {
+	private CompletionStage<ProcessingResult<Void>> checkRelatedForwardedMessages(ExternalMessageDto externalMessageDto) {
 
-		if (FacadeProvider.getExternalMessageFacade().existsForwardedExternalMessageWith(labMessage.getReportId())) {
+		if (FacadeProvider.getExternalMessageFacade().existsForwardedExternalMessageWith(externalMessageDto.getReportId())) {
 			return handleRelatedForwardedMessages().thenCompose(
 				next -> ProcessingResult
 					.<Void> withStatus(Boolean.TRUE.equals(next) ? ProcessingResultStatus.CONTINUE : ProcessingResultStatus.CANCELED)
@@ -74,9 +75,9 @@ public abstract class AbstractProcessingFlow {
 
 	protected abstract CompletionStage<Boolean> handleRelatedForwardedMessages();
 
-	protected CompletionStage<ProcessingResult<PersonDto>> pickOrCreatePerson(ExternalMessageDto labMessage) {
+	protected CompletionStage<ProcessingResult<PersonDto>> pickOrCreatePerson(ExternalMessageDto externalMessageDto) {
 
-		final PersonDto person = buildPerson(ExternalMessageMapper.forLabMessage(labMessage));
+		final PersonDto person = buildPerson(ExternalMessageMapper.forLabMessage(externalMessageDto));
 
 		AbstractLabMessageProcessingFlow.HandlerCallback<PersonDto> callback = new HandlerCallback<>();
 		handlePickOrCreatePerson(person, callback);
@@ -96,11 +97,11 @@ public abstract class AbstractProcessingFlow {
 		return personDto;
 	}
 
-	protected List<CaseSelectionDto> getSimilarCases(PersonReferenceDto selectedPerson, ExternalMessageDto labMessage) {
+	protected List<CaseSelectionDto> getSimilarCases(PersonReferenceDto selectedPerson, ExternalMessageDto externalMessageDto) {
 
 		CaseCriteria caseCriteria = new CaseCriteria();
 		caseCriteria.person(selectedPerson);
-		caseCriteria.disease(labMessage.getDisease());
+		caseCriteria.disease(externalMessageDto.getDisease());
 		CaseSimilarityCriteria caseSimilarityCriteria = new CaseSimilarityCriteria();
 		caseSimilarityCriteria.caseCriteria(caseCriteria);
 		caseSimilarityCriteria.personUuid(selectedPerson.getUuid());
@@ -108,10 +109,13 @@ public abstract class AbstractProcessingFlow {
 		return FacadeProvider.getCaseFacade().getSimilarCases(caseSimilarityCriteria);
 	}
 
-	protected CaseDataDto buildCase(PersonDto person, ExternalMessageDto labMessage) {
+	protected CaseDataDto buildCase(PersonDto person, ExternalMessageDto externalMessageDto) {
 
-		CaseDataDto caseDto = CaseDataDto.build(person.toReference(), labMessage.getDisease());
+		CaseDataDto caseDto = CaseDataDto.build(person.toReference(), externalMessageDto.getDisease());
+		caseDto.setDiseaseVariant(externalMessageDto.getDiseaseVariant());
+		caseDto.setDiseaseVariantDetails(externalMessageDto.getDiseaseVariantDetails());
 		caseDto.setReportingUser(user.toReference());
+		caseDto.setReportDate(externalMessageDto.getMessageDateTime());
 		return caseDto;
 	}
 

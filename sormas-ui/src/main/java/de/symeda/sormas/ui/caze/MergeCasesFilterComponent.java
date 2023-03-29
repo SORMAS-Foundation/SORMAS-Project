@@ -18,6 +18,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -65,6 +66,7 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 	private Consumer<Boolean> ignoreRegionCallback;
 
 	private Label lblNumberOfDuplicates;
+	private ComboBox<EntityRelevanceStatus> relevanceStatusFilter;
 
 	public MergeCasesFilterComponent(CaseCriteria criteria, QueryDetails queryDetails) {
 
@@ -130,13 +132,15 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		criteriaBinder.bind(tfSearch, CaseCriteria.CASE_LIKE);
 		firstRowLayout.addComponent(tfSearch);
 
-		eventSearch = new TextField();
-		eventSearch.setId(CaseCriteria.EVENT_LIKE);
-		eventSearch.setWidth(200, Unit.PIXELS);
-		CssStyles.style(eventSearch, CssStyles.FORCE_CAPTION);
-		eventSearch.setPlaceholder(I18nProperties.getString(Strings.promptCaseOrContactEventSearchField));
-		criteriaBinder.bind(eventSearch, CaseCriteria.EVENT_LIKE);
-		firstRowLayout.addComponent(eventSearch);
+		// Temporarily disabled because #9054 has introduced CaseService.hasAnyToManyJoin which leads to an error 
+		// when trying to search for duplicates by any property related to events (documented in #11712)
+//		eventSearch = new TextField();
+//		eventSearch.setId(CaseCriteria.EVENT_LIKE);
+//		eventSearch.setWidth(200, Unit.PIXELS);
+//		CssStyles.style(eventSearch, CssStyles.FORCE_CAPTION);
+//		eventSearch.setPlaceholder(I18nProperties.getString(Strings.promptCaseOrContactEventSearchField));
+//		criteriaBinder.bind(eventSearch, CaseCriteria.EVENT_LIKE);
+//		firstRowLayout.addComponent(eventSearch);
 
 		tfReportingUser = new TextField();
 		tfReportingUser.setId(CaseCriteria.REPORTING_USER_LIKE);
@@ -203,6 +207,7 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 
 	private void addThirdRowLayout() {
 		thirdRowLayout = new HorizontalLayout();
+		thirdRowLayout.setSpacing(true);
 		thirdRowLayout.setMargin(false);
 		thirdRowLayout.setWidth(100, Unit.PERCENTAGE);
 
@@ -270,6 +275,8 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 
 		thirdRowLayout.addComponent(btnResetFilters);
 
+		HorizontalLayout relevanceStatusFilterLayout = new HorizontalLayout();
+
 		lblNumberOfDuplicates = new Label("");
 		lblNumberOfDuplicates.setId("numberOfDuplicates");
 		CssStyles.style(
@@ -278,9 +285,35 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 			CssStyles.LABEL_ROUNDED_CORNERS,
 			CssStyles.LABEL_BACKGROUND_FOCUS_LIGHT,
 			CssStyles.LABEL_BOLD);
-		thirdRowLayout.addComponent(lblNumberOfDuplicates);
-		thirdRowLayout.setComponentAlignment(lblNumberOfDuplicates, Alignment.MIDDLE_RIGHT);
-		thirdRowLayout.setExpandRatio(lblNumberOfDuplicates, 1);
+		relevanceStatusFilterLayout.addComponent(lblNumberOfDuplicates);
+		relevanceStatusFilterLayout.setComponentAlignment(lblNumberOfDuplicates, Alignment.BOTTOM_LEFT);
+
+		relevanceStatusFilter = new ComboBox<>();
+		relevanceStatusFilter.setId(CaseCriteria.ENTITY_RELEVANCE_STATUS);
+		relevanceStatusFilter.setWidth(210, Unit.PIXELS);
+		relevanceStatusFilter.setEnabled(true);
+		relevanceStatusFilter.setEmptySelectionAllowed(false);
+		relevanceStatusFilter.setItems(EntityRelevanceStatus.getAllExceptDeleted());
+		relevanceStatusFilter.setItemCaptionGenerator(item -> {
+			switch (item) {
+			case ACTIVE:
+				return I18nProperties.getCaption(Captions.caseActiveCases);
+			case ARCHIVED:
+				return I18nProperties.getCaption(Captions.caseArchivedCases);
+			case ACTIVE_AND_ARCHIVED:
+				return I18nProperties.getCaption(Captions.caseAllActiveAndArchivedCases);
+			default:
+				return item.toString();
+			}
+		});
+
+		criteriaBinder.bind(relevanceStatusFilter, CaseCriteria.ENTITY_RELEVANCE_STATUS);
+		relevanceStatusFilterLayout.addComponent(relevanceStatusFilter);
+		relevanceStatusFilterLayout.setComponentAlignment(relevanceStatusFilter, Alignment.BOTTOM_LEFT);
+
+		thirdRowLayout.addComponent(relevanceStatusFilterLayout);
+		thirdRowLayout.setComponentAlignment(relevanceStatusFilterLayout, Alignment.BOTTOM_RIGHT);
+		thirdRowLayout.setExpandRatio(relevanceStatusFilterLayout, 1);
 
 		addComponent(thirdRowLayout);
 	}

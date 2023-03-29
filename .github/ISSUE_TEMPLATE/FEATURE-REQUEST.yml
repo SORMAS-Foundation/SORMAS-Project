@@ -1,0 +1,59 @@
+name: 3 - Feature Request
+description: Suggest a new feature that you'd like to see in SORMAS.
+labels: 'feature'
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for contributing to SORMAS! **Please make sure that your issue complies to our [Contributing guidelines](https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/docs/CONTRIBUTING.md)** before submitting it.
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: Feature Description
+      description: Describe the feature you would like to see in SORMAS, what it is supposed to do, and what function it fulfills. If possible and applicable, provide alternative solutions in case your proposed change can not be implemented in the way you outlined it for any reason.
+    validations:
+      required: true
+  - type: textarea
+    id: added-value
+    attributes:
+      label: Added Value/Benefit
+      description: Describe how the new feature would add value to SORMAS and how implementing it would benefit the software or its users.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: Provide a list that describes in as much detail as possible what exactly needs to be done in order to fulfill your request (and, if applicable, also what should explicitely not be done). Use a task list for this purpose because it allows developers to easily document which acceptance criteria have been implemented.
+      placeholder: |
+        - [ ]
+        - [ ]
+        - [ ]
+      value: |
+        - [ ]
+        - [ ]
+        - [ ]
+    validations:
+      required: true
+  - type: textarea
+    id: implementation-details
+    attributes:
+      label: Implementation Details
+      description: Information about how the implementation should be handled from a technical perspective. They are usually specified by the developers and can be left empty unless you want to suggest a specific way to implement your request.
+    validations:
+      required: false
+  - type: textarea
+    id: mockups
+    attributes:
+      label: Mockups
+      description: If your feature request requires non-trivial UI/UX work, please provide visual illustrations of how the result should look like. Depending on the complexity of the request, these can be e.g. edited screenshots, single mockups, or multiple mockups depicting a workflow.
+      placeholder: You can attach images by clicking this area to highlight it and then dragging them in.
+    validations:
+      required: false  
+  - type: textarea
+    id: additional-info
+    attributes:
+      label: Additional Information
+      description: If there is anything else you want to add to your request, you can put it here.
+    validations:
+      required: false

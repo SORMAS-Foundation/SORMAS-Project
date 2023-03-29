@@ -17,6 +17,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -37,6 +38,7 @@ public class MergeCasesView extends AbstractView {
 
 	private final MergeCasesGrid grid;
 	private final MergeCasesFilterComponent filterComponent;
+	private final CaseCriteria criteria;
 
 	public MergeCasesView() {
 		super(VIEW_NAME);
@@ -44,10 +46,11 @@ public class MergeCasesView extends AbstractView {
 		MergeCasesViewConfiguration viewConfiguration = ViewModelProviders.of(MergeCasesView.class).get(MergeCasesViewConfiguration.class);
 
 		boolean criteriaUninitialized = !ViewModelProviders.of(MergeCasesView.class).has(CaseCriteria.class);
-		CaseCriteria criteria = ViewModelProviders.of(MergeCasesView.class).get(CaseCriteria.class);
+		criteria = ViewModelProviders.of(MergeCasesView.class).get(CaseCriteria.class);
 		if (criteriaUninitialized) {
-			criteria.creationDateFrom(DateHelper.subtractDays(new Date(), 30))
+			criteria.creationDateFrom(DateHelper.getEpiWeekStart(DateHelper.getPreviousEpiWeek(new Date())))
 				.creationDateTo(new Date())
+				.relevanceStatus(EntityRelevanceStatus.ACTIVE)
 				.setRegion(UserProvider.getCurrent().getUser().getRegion());
 		}
 
@@ -96,10 +99,6 @@ public class MergeCasesView extends AbstractView {
 			ValoTheme.BUTTON_PRIMARY);
 
 		addHeaderComponent(btnBack);
-
-		if (viewConfiguration.isFiltersApplied()) {
-			reloadAndUpdateDuplicateCount();
-		}
 	}
 
 	private void reloadAndUpdateDuplicateCount() {

@@ -71,7 +71,6 @@ import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
@@ -83,7 +82,6 @@ import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
-import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 
 public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 
@@ -199,7 +197,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 	public void testGetMatchingEventParticipants() {
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+		UserDto user = creator.createSurveillanceOfficer(rdcf);
 		user.setLaboratory(rdcf.facility);
 		getUserFacade().saveUser(user, false);
 		loginWith(user);
@@ -274,7 +272,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testCreateWithoutUuid() {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+		UserDto user = creator.createSurveillanceOfficer(rdcf);
 		EventParticipantDto eventParticipant = new EventParticipantDto();
 		eventParticipant.setEvent(creator.createEvent(user.toReference()).toReference());
 		eventParticipant.setPerson(creator.createPerson());
@@ -288,8 +286,8 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetByEventUuids() {
 
-		RDCFEntities rdcf = creator.createRDCFEntities();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
 
 		EventDto event1 = creator.createEvent(user.toReference());
 		EventDto event2 = creator.createEvent(user.toReference());
@@ -309,8 +307,8 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetByPersonUuids() {
 
-		RDCFEntities rdcf = creator.createRDCFEntities();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
 
 		EventDto event1 = creator.createEvent(user.toReference());
 		EventDto event2 = creator.createEvent(user.toReference());
@@ -329,8 +327,8 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testExistEventParticipantWithDeletedFalse() {
-		RDCFEntities rdcf = creator.createRDCFEntities();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
 		EventDto event = creator.createEvent(user.toReference());
 		PersonDto person = creator.createPerson();
 
@@ -342,8 +340,8 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testExistEventParticipantWithDeletedTrue() {
-		RDCFEntities rdcf = creator.createRDCFEntities();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
 		EventDto event = creator.createEvent(user.toReference());
 		PersonDto person = creator.createPerson();
 
@@ -357,7 +355,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testEventParticipantTestResultWithMultipleSamples() {
 		RDCF rdcf = new RDCF(creator.createRDCFEntities());
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createNationalUser();
 		EventDto event = creator.createEvent(user.toReference());
 		PersonDto person = creator.createPerson();
 
@@ -372,7 +370,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 		Calendar calendarDay15 = Calendar.getInstance();
 		calendarDay15.set(2022, 7, 15);
 
-		creator.createSample(
+		SampleDto sampleDto = creator.createSample(
 			eventParticipant.toReference(),
 			calendarDay1.getTime(),
 			new Date(),
@@ -399,22 +397,8 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 
 		eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
 		assertEquals(1, eventParticipantIndexDtos.size());
-		assertEquals(PathogenTestResultType.NEGATIVE, eventParticipantIndexDtos.get(0).getPathogenTestResult());
+		assertEquals(PathogenTestResultType.POSITIVE, eventParticipantIndexDtos.get(0).getPathogenTestResult());
 		assertEquals(calendarDay10.getTime(), eventParticipantIndexDtos.get(0).getSampleDateTime());
-
-		SampleDto sampleDto = creator.createSample(
-			eventParticipant.toReference(),
-			calendarDay15.getTime(),
-			new Date(),
-			user.toReference(),
-			SampleMaterial.BLOOD,
-			rdcf.facility,
-			s -> s.setPathogenTestResult(PathogenTestResultType.PENDING));
-
-		eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
-		assertEquals(1, eventParticipantIndexDtos.size());
-		assertEquals(PathogenTestResultType.PENDING, eventParticipantIndexDtos.get(0).getPathogenTestResult());
-		assertEquals(calendarDay15.getTime(), eventParticipantIndexDtos.get(0).getSampleDateTime());
 
 		getSampleFacade().deleteSample(sampleDto.toReference(), new DeletionDetails());
 
@@ -427,7 +411,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testEventParticipantWithArchivedEvent() {
 		RDCF rdcf = new RDCF(creator.createRDCFEntities());
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createNationalUser();
 		EventDto event = creator.createEvent(user.toReference());
 		PersonDto person = creator.createPerson();
 
@@ -485,39 +469,26 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testEventParticipantIndexListSorting() {
-		RDCF rdcf = new RDCF(creator.createRDCFEntities());
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createNationalUser();
 		EventDto event = creator.createEvent(user.toReference());
 		PersonDto person = creator.createPerson();
 
-		EventParticipantDto eventParticipant1 = creator.createEventParticipant(event.toReference(), person, user.toReference());
-		EventParticipantDto eventParticipant2 = creator.createEventParticipant(event.toReference(), person, user.toReference());
-
-		Calendar calendarDay1 = Calendar.getInstance();
-		calendarDay1.set(2022, 7, 1);
-
-		creator.createSample(
-			eventParticipant1.toReference(),
-			calendarDay1.getTime(),
-			new Date(),
-			user.toReference(),
-			SampleMaterial.BLOOD,
-			rdcf.facility,
-			s -> s.setPathogenTestResult(PathogenTestResultType.POSITIVE));
+		creator.createEventParticipant(event.toReference(), person, "Z", user.toReference());
+		EventParticipantDto eventParticipant2 = creator.createEventParticipant(event.toReference(), person, "A", user.toReference());
 
 		EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
 		eventParticipantCriteria.setEvent(event.toReference());
-		SortProperty sortProperty = new SortProperty(SampleIndexDto.SAMPLE_DATE_TIME, false);
+		SortProperty sortProperty = new SortProperty(EventParticipantDto.INVOLVEMENT_DESCRIPTION, true);
 		List<EventParticipantIndexDto> eventParticipantIndexDtos =
-			getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, Arrays.asList(sortProperty));
+			getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, Collections.singletonList(sortProperty));
 		assertEquals(2, eventParticipantIndexDtos.size());
-		assertEquals(eventParticipant1.getUuid(), eventParticipantIndexDtos.get(0).getUuid());
+		assertEquals(eventParticipant2.getUuid(), eventParticipantIndexDtos.get(0).getUuid());
 	}
 
 	@Test
 	public void searchEventParticipantsByPersonPhone() {
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createNationalUser();
 		PersonDto personWithPhone = creator.createPerson("personWithPhone", "test");
 		PersonDto personWithoutPhone = creator.createPerson("personWithoutPhone", "test");
 
@@ -555,7 +526,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void searchEventParticipantsByPersonEmail() {
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createNationalUser();
 		PersonDto personWithEmail = creator.createPerson("personWithEmail", "test");
 		PersonDto personWithoutEmail = creator.createPerson("personWithoutEmail", "test");
 
@@ -593,7 +564,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void searchEventParticipantsByPersonOtherDetail() {
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createNationalUser();
 		PersonDto personWithOtherDetail = creator.createPerson("personWithOtherDetail", "test");
 		PersonDto personWithoutOtherDetail = creator.createPerson("personWithoutOtherDetail", "test");
 

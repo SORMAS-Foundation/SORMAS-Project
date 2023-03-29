@@ -19,7 +19,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.Mockito.when;
 
 import java.util.Calendar;
 import java.util.Collections;
@@ -44,7 +43,6 @@ import de.symeda.sormas.api.visit.VisitExportType;
 import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.AbstractBeanTest;
-import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 
@@ -93,14 +91,14 @@ public class VisitFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	public void testGetVisitInJurisdiction() {
 		VisitDto visit = createVisit(user2, person).visit;
 
-		assertNotPseudonymized(getVisitFacade().getVisitByUuid(visit.getUuid()));
+		assertNotPseudonymized(getVisitFacade().getByUuid(visit.getUuid()));
 	}
 
 	@Test
 	public void testGetVisitOutsideJurisdiction() {
 		VisitDto visit = createVisit(user1, person).visit;
 
-		assertPseudonymized(getVisitFacade().getVisitByUuid(visit.getUuid()));
+		assertPseudonymized(getVisitFacade().getByUuid(visit.getUuid()));
 	}
 
 	@Test
@@ -158,7 +156,7 @@ public class VisitFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		visit.getSymptoms().setPatientIllLocation(null);
 		visit.getSymptoms().setOtherHemorrhagicSymptomsText(null);
 
-		getVisitFacade().saveVisit(visit);
+		getVisitFacade().save(visit);
 
 		Visit updated = getVisitService().getByUuid(visit.getUuid());
 
@@ -180,7 +178,7 @@ public class VisitFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		visit.setReportLon(null);
 		visit.setReportLatLonAccuracy(20F);
 
-		getVisitFacade().saveVisit(visit);
+		getVisitFacade().save(visit);
 
 		Visit updated = getVisitService().getByUuid(visit.getUuid());
 

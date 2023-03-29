@@ -118,14 +118,8 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testSampleDeletion() {
 
-		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(
-			rdcf.region.getUuid(),
-			rdcf.district.getUuid(),
-			rdcf.facility.getUuid(),
-			"Surv",
-			"Sup",
-			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
 		UserDto admin = getUserFacade().getByUserName("admin");
 		String adminUuid = admin.getUuid();
 		TaskDto task = creator.createTask(
@@ -149,14 +143,8 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetIndexList() {
 
-		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(
-			rdcf.region.getUuid(),
-			rdcf.district.getUuid(),
-			rdcf.facility.getUuid(),
-			"Surv",
-			"Sup",
-			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
 		// Database should contain the created task
 		assertNotNull(getTaskFacade().getIndexList(null, 0, 100, null));
 	}
@@ -164,14 +152,8 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testArchivedTaskNotGettingTransfered() {
 
-		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(
-			rdcf.region.getUuid(),
-			rdcf.district.getUuid(),
-			rdcf.facility.getUuid(),
-			"Surv",
-			"Sup",
-			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -264,14 +246,8 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetAllActiveTasksBatched() {
-		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(
-			rdcf.region.getUuid(),
-			rdcf.district.getUuid(),
-			rdcf.facility.getUuid(),
-			"Surv",
-			"Sup",
-			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -505,7 +481,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 
 		// 1. one user with tasks, one without
 		RDCF rdcf = new RDCF(creator.createRDCFEntities());
-		UserDto user1 = creator.createUser(rdcf, "First", "User", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		UserDto user1 = creator.createSurveillanceSupervisor(rdcf);
 		UserDto user2 = creator.createUser(rdcf, "Second", "User", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		creator.createTask(user1.toReference());
@@ -554,7 +530,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetTaskListForUserWithoutEventViewRight() {
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createNationalUser();
 		PersonDto personDto = creator.createPerson();
 		CaseDataDto caze = creator.createCase(user.toReference(), personDto.toReference(), rdcf);
 
@@ -618,7 +594,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 				.containsAll(Arrays.asList(TaskContext.GENERAL, TaskContext.CASE, TaskContext.CONTACT, TaskContext.EVENT, TaskContext.TRAVEL_ENTRY)));
 
 		UserDto noEventNoCaseViewUser = creator.createUser(
-			rdcf,
+			"", "", "", "NoEve", "NoCase",
 			creator.createUserRole(
 				"NoEventNoCaseView",
 				JurisdictionLevel.NATION,
@@ -644,7 +620,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testUserWithoutEventViewRightSeeHisAssignTask() {
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createNationalUser();
 		UserDto noEventNoCaseViewUser = creator.createUser(
 			rdcf,
 			creator.createUserRole(
@@ -700,7 +676,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testUserWithoutEventViewRightSeeHisObservedTask() {
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createNationalUser();
 		UserDto noEventNoCaseViewUser = creator.createUser(
 			rdcf,
 			creator.createUserRole(
@@ -745,7 +721,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetIndexListArchived() {
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+		UserDto user = creator.createSurveillanceOfficer(rdcf);
 
 		TaskDto task =
 			creator.createTask(TaskContext.GENERAL, TaskType.ANIMAL_TESTING, TaskStatus.PENDING, null, null, null, new Date(), user.toReference());
@@ -789,7 +765,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetEditPermissionTypeOnGenericTask() {
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+		UserDto user = creator.createSurveillanceOfficer(rdcf);
 
 		TaskDto task =
 			creator.createTask(TaskContext.GENERAL, TaskType.ANIMAL_TESTING, TaskStatus.PENDING, null, null, null, new Date(), user.toReference());
@@ -805,7 +781,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetEditPermissionTypeOnCaseTask() {
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+		UserDto user = creator.createSurveillanceOfficer(rdcf);
 
 		CaseDataDto caseToArchive = creator.createCase(user.toReference(), rdcf, null);
 		TaskDto task = creator.createTask(TaskContext.CASE, caseToArchive.toReference(), null);
@@ -847,7 +823,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetEditPermissionTypeOnContactTask() {
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+		UserDto user = creator.createSurveillanceOfficer(rdcf);
 
 		ContactDto contactToArchive = creator.createContact(rdcf, user.toReference(), creator.createPerson().toReference());
 		TaskDto task = creator.createTask(TaskContext.CONTACT, contactToArchive.toReference(), null);
@@ -889,7 +865,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetEditPermissionTypeOnEventTask() {
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+		UserDto user = creator.createSurveillanceOfficer(rdcf);
 
 		EventDto eventToArchive = creator.createEvent(user.toReference());
 		TaskDto task = creator.createTask(TaskContext.EVENT, eventToArchive.toReference(), null);
@@ -931,7 +907,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetEditPermissionTypeOnTravelEntryTask() {
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+		UserDto user = creator.createSurveillanceOfficer(rdcf);
 
 		TravelEntryDto travelEntryToArchive = creator.createTravelEntry(creator.createPerson().toReference(), user.toReference(), rdcf, null);
 		TaskDto task = creator.createTask(TaskContext.TRAVEL_ENTRY, travelEntryToArchive.toReference(), null);

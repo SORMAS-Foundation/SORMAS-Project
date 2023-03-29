@@ -48,6 +48,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.EPID
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_NO_POPUP_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CONFIRM;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.ADDED_SAMPLES_IN_SAMPLE_CARD;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ADD_A_PARTICIPANT_HEADER_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_RELATED_CONTACTS_CHECKBOX;
@@ -2800,6 +2801,17 @@ public class EditCaseSteps implements En {
           softly.assertTrue(
               webDriverHelpers.isElementPresent(
                   checkTextInReportSideComponent(formatter.format(LocalDate.now()))));
+          softly.assertAll();
+        });
+    Then(
+        "^I check that the number of added samples on the Edit case page is (\\d+)$",
+        (Integer numberOfSamples) -> {
+          Integer actualNumberOfSamples =
+              webDriverHelpers.getNumberOfElements(ADDED_SAMPLES_IN_SAMPLE_CARD);
+          softly.assertEquals(
+              actualNumberOfSamples,
+              numberOfSamples,
+              "Number of samples added in sample ard is different then expected!");
           softly.assertAll();
         });
   }

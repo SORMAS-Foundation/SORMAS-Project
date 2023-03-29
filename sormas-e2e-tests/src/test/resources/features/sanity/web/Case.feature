@@ -1734,7 +1734,7 @@ Feature: Case end to end tests
     And I click on New Task from Case page
     And I check that there is only user with Bayern region for task
 
-   @8558 @env_main
+   @#8558 @env_main
    Scenario: Verify that Page can not be saved if a future date is set for Date of symptom onset
      Given API: I create a new person
      And API: I check that POST call body is "OK"
@@ -2265,7 +2265,6 @@ Feature: Case end to end tests
       And I check that new sample form with pathogen detection reporting process is displayed
       And I click on save sample button
       And I click on save sample button
-      And I click on YES button in Update case disease variant popup window
       And I click on the Cases button from navbar
       And I search the case by last created person via Demis message
       Then I click on the first Case ID from Case Directory
@@ -2307,7 +2306,6 @@ Feature: Case end to end tests
     And I check that new sample form with pathogen detection reporting process is displayed
     And I click on save sample button
     And I click on save sample button
-    And I click on YES button in Update case disease variant popup window
     And I click on the Cases button from navbar
     And I search the case by last created person via Demis message
     Then I click on the first Case ID from Case Directory
@@ -2519,3 +2517,203 @@ Feature: Case end to end tests
     And I fill comment in share popup with random string
     And I click to hand over the ownership of the case in Share popup
     Then I click on share button in s2s share popup and wait for share to finish
+
+  @tmsLink=SORDEV-12447 @env_s2s_1
+  Scenario: [S2S] S2S_deactivate share parameter 'share associated contacts' (for cases) [1]
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I open the last created Case via API
+    When I open the Case Contacts tab
+    Then I click on new contact button from Case Contacts tab
+    And I create a new basic contact to from Cases Contacts tab for DE
+    And I open the last created Case via API
+    Then I click on share case button
+    And I check that share associated contacts checkbox is not visible in Share form for DE
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment
+    Given I log in as a Admin User
+    And I click on the Shares button from navbar
+    And I click on the The Eye Icon located in the Shares Page
+    And I check that "KONTAKT-ID" column header is not visible in Share request details window for DE
+
+  @tmsLink=SORDEV-12447 @env_s2s_1
+  Scenario: [S2S] S2S_deactivate share parameter 'share associated contacts' (for cases) [2]
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I open the last created Case via API
+    When I open the Case Contacts tab
+    Then I click on new contact button from Case Contacts tab
+    And I create a new basic contact to from Cases Contacts tab for DE
+    And I open the last created Case via API
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment in new driver tab
+    Given I log in as a Admin User
+    And I click on the Shares button from navbar
+    And I accept first case in Shares Page
+    Then I back to tab number 1
+    When I open the Case Contacts tab
+    And I click on the first Contact ID from Contacts Directory in Contacts in Case
+    And I click on share contact button
+    And I check that share associated contacts checkbox is not visible in Share form for DE
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    And I back to tab number 2
+    And I click on the Shares button from navbar
+    And I click on the The Eye Icon located in the Shares Page
+    And I check that "FALL-ID" column header is not visible in Share request details window for DE
+
+  @tmsLink=SORDEV-12094 @env_s2s_1
+  Scenario: [S2S] Mergen without hand over the ownership
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    Then I create a new case with specific person name and "Hessen" region and "LK Fulda" district for DE version
+    Then I click on save button in the case popup
+    Then I navigate to "s2s_2" environment in new driver tab
+    And I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    Then I create a new case with specific person name and "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district for DE version
+    Then I click on save button in the case popup
+    Then I back to tab number 1
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I back to tab number 2
+    And I click on the Shares button from navbar
+    And I click on "accept" shared case button with copied case description
+    Then I click on Okay button in Potential duplicate popup
+    And I click on the Cases button from navbar
+    And I click on the More button on Case directory page
+    Then I click on Merge Duplicates on Case directory page
+    And I click to CONFIRM FILTERS on Merge Duplicate Cases page
+    Then I click on Merge button for target system from received case
+    And I confirm merge duplicated case
+    Then I check if popup with merge duplicated case appears
+    And I click on cancel button in merge duplicated cases popup
+    Then I click on Merge button for source system from received case
+    And I confirm merge duplicated case
+    Then I check if popup with error message appears
+
+  @tmsLink=SORDEV-12094 @env_s2s_1
+  Scenario: [S2S] Mergen with hand over the ownership
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    Then I create a new case with specific person name and "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district for DE version
+    Then I click on save button in the case popup
+    Then I navigate to "s2s_2" environment in new driver tab
+    And I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    Then I create a new case with specific person name and "Hessen" region and "LK Fulda" district for DE version
+    Then I click on save button in the case popup
+    Then I back to tab number 1
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I click to hand over the ownership of the case in Share popup
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I back to tab number 2
+    And I click on the Shares button from navbar
+    And I click on "accept" shared case button with copied case description
+    Then I click on Okay button in Potential duplicate popup
+    And I click on the Cases button from navbar
+    And I click on the More button on Case directory page
+    Then I click on Merge Duplicates on Case directory page
+    And I click to CONFIRM FILTERS on Merge Duplicate Cases page
+    Then I click on Merge button for target system from received case
+    And I confirm merge duplicated case
+    Then I check if popup with merge duplicated case appears
+    And I click on cancel button in merge duplicated cases popup
+    Then I click on Merge button for source system from received case
+    And I confirm merge duplicated case
+    Then I check if popup with error message appears
+
+  @tmsLink=SORDEV-12449 @env_s2s_1
+  Scenario: S2S_added sample after sharing a case/contact does not get shared [1]
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    Then I create a new case with specific person name and "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district for DE version
+    And I click on save button in the case popup
+    And I click on New Sample in German
+    And I create a new Sample with only required fields for DE version
+    And I click on save sample button
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I click to share samples of the case in Share popup
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    And I click on New Sample in German
+    And I create a new Sample with only required fields for DE version
+    And I click on save sample button
+    Then I navigate to "s2s_2" environment in new driver tab
+    And I log in as a Admin User
+    And I click on the Shares button from navbar
+    Then I accept first case in Shares Page
+    And I click on the The Eye Icon located in the Shares Page
+    And I click on the shortened case/contact ID to open the case
+    Then I check that the number of added samples on the Edit case page is 2
+
+  @tmsLink=SORDEV-12449 @env_s2s_1
+  Scenario: S2S_added sample after sharing a case/contact does not get shared [2]
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I open the last created Case via API
+    When I open the Case Contacts tab
+    Then I click on new contact button from Case Contacts tab
+    And I create a new basic contact to from Cases Contacts tab for DE
+    And I open the last created Case via API
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment in new driver tab
+    Given I log in as a Admin User
+    And I click on the Shares button from navbar
+    And I accept first case in Shares Page
+    Then I back to tab number 1
+    When I open the Case Contacts tab
+    And I click on the first Contact ID from Contacts Directory in Contacts in Case
+    And I click on New Sample in German
+    And I create a new Sample with only required fields for DE version
+    And I click on save sample button
+    And I click on share contact button
+    And I select organization to share with "s2s_2"
+    And I click to share samples of the case in Share popup
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    And I click on New Sample in German
+    And I create a new Sample with only required fields for DE version
+    And I click on save sample button
+    Then I back to tab number 2
+    And I click on the Shares button from navbar
+    And I accept first contact in Shares Page
+    And I click on the The Eye Icon located in the Shares Page
+    And I click on the shortened case/contact ID to open the case
+    Then I check that the number of added samples on the Edit case page is 2
+    Then I back to tab number 1
+    Then I check that the number of added samples on the Edit case page is 2

@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
-import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -28,7 +27,7 @@ public class CampaignFacadeEjbTest extends AbstractBeanTest {
 	public void testGetAllAfter() {
 
 		final TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		final UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		final UserDto user = creator.createSurveillanceSupervisor(rdcf);
 		loginWith(user);
 
 		// 0. no data
@@ -51,7 +50,7 @@ public class CampaignFacadeEjbTest extends AbstractBeanTest {
 	public void testGetLastStartedCampaign() {
 
 		final TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		final UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		final UserDto user = creator.createSurveillanceSupervisor(rdcf);
 		final CampaignDto campaign1 = creator.createCampaign(user);
 		campaign1.setStartDate(new Date(System.currentTimeMillis() - 7 * ONE_DAY_IN_MILLIS)); // last week
 		getCampaignFacade().save(campaign1);
@@ -70,7 +69,7 @@ public class CampaignFacadeEjbTest extends AbstractBeanTest {
 	public void testCampaignDashboardElementsValidation() {
 
 		final TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		final UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		final UserDto user = creator.createSurveillanceSupervisor(rdcf);
 
 		final CampaignDto campaign = creator.createCampaign(user);
 		final ArrayList<CampaignDashboardElement> campaignDashboardElements = new ArrayList<>();

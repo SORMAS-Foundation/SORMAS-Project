@@ -192,6 +192,11 @@ public class ExternalMessageMapper {
 							pathogenTest.getTestResult(),
 							sourceTestReport.getTestResult(),
 							PathogenTestDto.TEST_RESULT),
+						Mapping.of(
+							pathogenTest::setTestDateTime,
+							pathogenTest.getTestDateTime(),
+							sourceTestReport.getDateOfResult(),
+							PathogenTestDto.TEST_DATE_TIME),
 						Mapping.of(pathogenTest::setTestType, pathogenTest.getTestType(), sourceTestReport.getTestType(), PathogenTestDto.TEST_TYPE),
 						Mapping.of(
 							pathogenTest::setTestResultVerified,

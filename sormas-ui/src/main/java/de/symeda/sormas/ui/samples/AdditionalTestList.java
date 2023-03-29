@@ -8,9 +8,7 @@ import com.vaadin.ui.Label;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
 
 @SuppressWarnings("serial")
@@ -50,13 +48,12 @@ public class AdditionalTestList extends PaginationList<AdditionalTestDto> {
 		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
 			AdditionalTestDto additionalTest = displayedEntries.get(i);
 			AdditionalTestListEntry listEntry = new AdditionalTestListEntry(additionalTest);
-			boolean isEditableAndHasEditRight = isEditable && UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_EDIT);
 			listEntry.addActionButton(
 				additionalTest.getUuid(),
 				e -> actionCallback.accept(
 					() -> ControllerProvider.getAdditionalTestController()
-						.openEditComponent(additionalTest, AdditionalTestList.this::reload, isEditableAndHasEditRight)),
-				isEditableAndHasEditRight);
+						.openEditComponent(additionalTest, AdditionalTestList.this::reload, isEditable)),
+				isEditable);
 			listEntry.setEnabled(isEditable);
 			listLayout.addComponent(listEntry);
 		}

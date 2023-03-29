@@ -86,6 +86,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
@@ -107,6 +108,7 @@ import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToo
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb.CommunityFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
@@ -151,6 +153,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	@EJB
 	private SormasToSormasOriginInfoService originInfoService;
 	@EJB
+	private CountryFacadeEjbLocal countryFacade;
+	@EJB
 	private DistrictFacadeEjbLocal districtFacade;
 	@EJB
 	private CommunityFacadeEjbLocal communityFacade;
@@ -167,6 +171,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	@EJB
 	private SormasToSormasEventFacadeEjbLocal sormasToSormasEventFacade;
 	@EJB
+	private EventService eventService;
+	@EJB
 	private EventParticipantService eventParticipantService;
 	@EJB
 	private ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
@@ -177,8 +183,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	@Inject
-	public EventFacadeEjb(EventService service, UserService userService) {
-		super(Event.class, EventDto.class, service, userService);
+	public EventFacadeEjb(EventService service) {
+		super(Event.class, EventDto.class, service);
 	}
 
 	public static EventReferenceDto toReferenceDto(Event entity) {
@@ -336,6 +342,10 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	private void deleteEvent(Event event, DeletionDetails deletionDetails) throws ExternalSurveillanceToolException {
+		if (!eventService.inJurisdictionOrOwned(event)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.messageEventOutsideJurisdictionDeletionDenied));
+		}
+
 		if (event.getEventStatus() == EventStatus.CLUSTER
 			&& externalSurveillanceToolFacade.isFeatureEnabled()
 			&& externalShareInfoService.isEventShared(event.getId())) {
@@ -511,27 +521,29 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		if (CollectionUtils.isNotEmpty(indexList)) {
 			List<String> eventUuids = indexList.stream().map(EventIndexDto::getUuid).collect(Collectors.toList());
 			List<Long> eventIds = indexList.stream().map(EventIndexDto::getId).collect(Collectors.toList());
-			List<Object[]> objectQueryList = null;
 
 			// Participant, Case and Death Count
-			CriteriaQuery<Object[]> participantCQ = cb.createQuery(Object[].class);
-			Root<EventParticipant> epRoot = participantCQ.from(EventParticipant.class);
-			Join<EventParticipant, Case> caseJoin = epRoot.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
-			Predicate notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
-			Predicate isInIndexlist =
-				CriteriaBuilderHelper.andInValues(eventUuids, null, cb, epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
-			participantCQ.multiselect(
-				epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID),
-				cb.count(epRoot),
-				cb.sum(cb.selectCase().when(cb.isNotNull(epRoot.get(EventParticipant.RESULTING_CASE)), 1).otherwise(0).as(Long.class)),
-				cb.sum(cb.selectCase().when(cb.equal(caseJoin.get(Case.OUTCOME), CaseOutcome.DECEASED), 1).otherwise(0).as(Long.class)));
-			participantCQ.where(notDeleted, isInIndexlist);
-			participantCQ.groupBy(epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
+			List<Object[]> participantQueryList = new ArrayList<>();
+			IterableHelper.executeBatched(eventUuids, ModelConstants.PARAMETER_LIMIT, batchedUuids -> {
+				CriteriaQuery<Object[]> participantCQ = cb.createQuery(Object[].class);
+				Root<EventParticipant> epRoot = participantCQ.from(EventParticipant.class);
+				Join<EventParticipant, Case> caseJoin = epRoot.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
+				Predicate notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
+				Predicate isInIndexlist =
+					CriteriaBuilderHelper.andInValues(batchedUuids, null, cb, epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
+				participantCQ.multiselect(
+					epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID),
+					cb.count(epRoot),
+					cb.sum(cb.selectCase().when(cb.isNotNull(epRoot.get(EventParticipant.RESULTING_CASE)), 1).otherwise(0).as(Long.class)),
+					cb.sum(cb.selectCase().when(cb.equal(caseJoin.get(Case.OUTCOME), CaseOutcome.DECEASED), 1).otherwise(0).as(Long.class)));
+				participantCQ.where(notDeleted, isInIndexlist);
+				participantCQ.groupBy(epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
 
-			objectQueryList = em.createQuery(participantCQ).getResultList();
+				participantQueryList.addAll(QueryHelper.getResultList(em, participantCQ, null, null));
+			});
 
-			if (objectQueryList != null) {
-				objectQueryList.forEach(r -> {
+			if (participantQueryList != null) {
+				participantQueryList.forEach(r -> {
 					participantCounts.put((String) r[0], (Long) r[1]);
 					caseCounts.put((String) r[0], (Long) r[2]);
 					deathCounts.put((String) r[0], (Long) r[3]);
@@ -539,32 +551,36 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 			}
 
 			// Contact Count (with and without sourcecase in event) using theta join
-			CriteriaQuery<Object[]> contactCQ = cb.createQuery(Object[].class);
-			epRoot = contactCQ.from(EventParticipant.class);
-			Root<Contact> contactRoot = contactCQ.from(Contact.class);
-			Predicate participantPersonEqualsContactPerson = cb.equal(epRoot.get(EventParticipant.PERSON), contactRoot.get(Contact.PERSON));
-			notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
-			Predicate contactNotDeleted = cb.isFalse(contactRoot.get(Contact.DELETED));
-			isInIndexlist =
-				CriteriaBuilderHelper.andInValues(eventUuids, null, cb, epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
+			List<Object[]> contactQueryList = new ArrayList<>();
+			IterableHelper.executeBatched(eventUuids, ModelConstants.PARAMETER_LIMIT, batchedUuids -> {
+				CriteriaQuery<Object[]> contactCQ = cb.createQuery(Object[].class);
+				Root<EventParticipant> epRoot = contactCQ.from(EventParticipant.class);
+				Root<Contact> contactRoot = contactCQ.from(Contact.class);
+				Predicate participantPersonEqualsContactPerson = cb.equal(epRoot.get(EventParticipant.PERSON), contactRoot.get(Contact.PERSON));
+				Predicate notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
+				Predicate contactNotDeleted = cb.isFalse(contactRoot.get(Contact.DELETED));
+				Predicate isInIndexlist =
+					CriteriaBuilderHelper.andInValues(batchedUuids, null, cb, epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
 
-			Subquery<EventParticipant> sourceCaseSubquery = contactCQ.subquery(EventParticipant.class);
-			Root<EventParticipant> epr2 = sourceCaseSubquery.from(EventParticipant.class);
-			sourceCaseSubquery.select(epr2);
-			sourceCaseSubquery.where(
-				cb.equal(epr2.get(EventParticipant.RESULTING_CASE), contactRoot.get(Contact.CAZE)),
-				cb.equal(epr2.get(EventParticipant.EVENT), epRoot.get(EventParticipant.EVENT)));
+				Subquery<EventParticipant> sourceCaseSubquery = contactCQ.subquery(EventParticipant.class);
+				Root<EventParticipant> epr2 = sourceCaseSubquery.from(EventParticipant.class);
+				sourceCaseSubquery.select(epr2);
+				sourceCaseSubquery.where(
+					cb.equal(epr2.get(EventParticipant.RESULTING_CASE), contactRoot.get(Contact.CAZE)),
+					cb.equal(epr2.get(EventParticipant.EVENT), epRoot.get(EventParticipant.EVENT)));
 
-			contactCQ.multiselect(
-				epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID),
-				cb.count(epRoot),
-				cb.sum(cb.selectCase().when(cb.exists(sourceCaseSubquery), 1).otherwise(0).as(Long.class)));
-			contactCQ.where(participantPersonEqualsContactPerson, notDeleted, contactNotDeleted, isInIndexlist);
-			contactCQ.groupBy(epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
+				contactCQ.multiselect(
+					epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID),
+					cb.count(epRoot),
+					cb.sum(cb.selectCase().when(cb.exists(sourceCaseSubquery), 1).otherwise(0).as(Long.class)));
+				contactCQ.where(participantPersonEqualsContactPerson, notDeleted, contactNotDeleted, isInIndexlist);
+				contactCQ.groupBy(epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
 
-			objectQueryList = em.createQuery(contactCQ).getResultList();
-			if (objectQueryList != null) {
-				objectQueryList.forEach(r -> {
+				contactQueryList.addAll(em.createQuery(contactCQ).getResultList());
+			});
+
+			if (contactQueryList != null) {
+				contactQueryList.forEach(r -> {
 					contactCounts.put((String) r[0], ((Long) r[1]));
 					contactCountsSourceInEvent.put((String) r[0], ((Long) r[2]));
 				});
@@ -572,29 +588,32 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 			if (featureConfigurationFacade.isFeatureEnabled(FeatureType.EVENT_GROUPS)) {
 				// Get latest EventGroup with EventGroup count
-				CriteriaQuery<Object[]> latestEventCQ = cb.createQuery(Object[].class);
-				Root<Event> eventRoot = latestEventCQ.from(Event.class);
-				Join<Event, EventGroup> eventGroupJoin = eventRoot.join(Event.EVENT_GROUPS, JoinType.INNER);
-				isInIndexlist = CriteriaBuilderHelper.andInValues(eventUuids, null, cb, eventRoot.get(Event.UUID));
-				latestEventCQ.where(isInIndexlist);
-				latestEventCQ.multiselect(
-					eventRoot.get(Event.UUID),
-					CriteriaBuilderHelper.windowFirstValueDesc(
-						cb,
-						eventGroupJoin.get(EventGroup.UUID),
+				List<Object[]> eventGroupQueryList = new ArrayList<>();
+				IterableHelper.executeBatched(eventUuids, ModelConstants.PARAMETER_LIMIT, batchedUuids -> {
+					CriteriaQuery<Object[]> latestEventCQ = cb.createQuery(Object[].class);
+					Root<Event> eventRoot = latestEventCQ.from(Event.class);
+					Join<Event, EventGroup> eventGroupJoin = eventRoot.join(Event.EVENT_GROUPS, JoinType.INNER);
+					Predicate isInIndexlist = CriteriaBuilderHelper.andInValues(batchedUuids, null, cb, eventRoot.get(Event.UUID));
+					latestEventCQ.where(isInIndexlist);
+					latestEventCQ.multiselect(
 						eventRoot.get(Event.UUID),
-						eventGroupJoin.get(EventGroup.CREATION_DATE)),
-					CriteriaBuilderHelper.windowFirstValueDesc(
-						cb,
-						eventGroupJoin.get(EventGroup.NAME),
-						eventRoot.get(Event.UUID),
-						eventGroupJoin.get(EventGroup.CREATION_DATE)),
-					CriteriaBuilderHelper.windowCount(cb, eventGroupJoin.get(EventGroup.ID), eventRoot.get(Event.UUID)));
+						CriteriaBuilderHelper.windowFirstValueDesc(
+							cb,
+							eventGroupJoin.get(EventGroup.UUID),
+							eventRoot.get(Event.UUID),
+							eventGroupJoin.get(EventGroup.CREATION_DATE)),
+						CriteriaBuilderHelper.windowFirstValueDesc(
+							cb,
+							eventGroupJoin.get(EventGroup.NAME),
+							eventRoot.get(Event.UUID),
+							eventGroupJoin.get(EventGroup.CREATION_DATE)),
+						CriteriaBuilderHelper.windowCount(cb, eventGroupJoin.get(EventGroup.ID), eventRoot.get(Event.UUID)));
 
-				objectQueryList = em.createQuery(latestEventCQ).getResultList();
+					eventGroupQueryList.addAll(em.createQuery(latestEventCQ).getResultList());
+				});
 
-				if (objectQueryList != null) {
-					objectQueryList.forEach(r -> {
+				if (eventGroupQueryList != null) {
+					eventGroupQueryList.forEach(r -> {
 						EventGroupReferenceDto eventGroupReference = new EventGroupReferenceDto((String) r[1], (String) r[2]);
 						EventGroupsIndexDto eventGroups = new EventGroupsIndexDto(eventGroupReference, ((Number) r[3]).longValue());
 						eventGroupsByEventId.put((String) r[0], eventGroups);
@@ -1063,11 +1082,16 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	public void validate(@Valid EventDto event) throws ValidationRuntimeException {
 
 		LocationDto location = event.getEventLocation();
+		CountryReferenceDto locationCountry = location.getCountry();
+		CountryReferenceDto serverCountry = countryFacade.getServerCountry();
+		boolean regionAndDistrictRequired = serverCountry == null
+			? locationCountry == null
+			: locationCountry == null || serverCountry.getIsoCode().equalsIgnoreCase(locationCountry.getIsoCode());
 
-		if (location.getRegion() == null) {
+		if (location.getRegion() == null && regionAndDistrictRequired) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
 		}
-		if (location.getDistrict() == null) {
+		if (location.getDistrict() == null && regionAndDistrictRequired) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));
 		}
 
@@ -1076,7 +1100,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		}
 
 		// Check whether there are any infrastructure errors
-		if (!districtFacade.getByUuid(location.getDistrict().getUuid()).getRegion().equals(location.getRegion())) {
+		if (location.getDistrict() != null && !districtFacade.getByUuid(location.getDistrict().getUuid()).getRegion().equals(location.getRegion())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noDistrictInRegion));
 		}
 		if (location.getCommunity() != null
@@ -1469,8 +1493,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		}
 
 		@Inject
-		public EventFacadeEjbLocal(EventService service, UserService userService) {
-			super(service, userService);
+		public EventFacadeEjbLocal(EventService service) {
+			super(service);
 		}
 	}
 }

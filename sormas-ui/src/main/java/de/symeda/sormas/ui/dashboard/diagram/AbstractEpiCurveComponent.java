@@ -39,16 +39,16 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
+import de.symeda.sormas.ui.dashboard.AbstractDashboardDataProvider;
 import de.symeda.sormas.ui.highcharts.HighChart;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
-public abstract class AbstractEpiCurveComponent extends VerticalLayout {
+public abstract class AbstractEpiCurveComponent<P extends AbstractDashboardDataProvider<?>> extends VerticalLayout {
 
 	// Components
-	protected final DashboardDataProvider dashboardDataProvider;
+	protected final P dashboardDataProvider;
 	protected final HighChart epiCurveChart;
 	protected Label epiCurveLabel;
 
@@ -57,7 +57,7 @@ public abstract class AbstractEpiCurveComponent extends VerticalLayout {
 	private boolean showMinimumEntries;
 	private Consumer<Boolean> externalExpandListener;
 
-	public AbstractEpiCurveComponent(DashboardDataProvider dashboardDataProvider) {
+	public AbstractEpiCurveComponent(P dashboardDataProvider) {
 
 		this.dashboardDataProvider = dashboardDataProvider;
 
@@ -167,9 +167,11 @@ public abstract class AbstractEpiCurveComponent extends VerticalLayout {
 
 		// Epi curve mode
 		AbstractComponent epiCurveModeSelector = createEpiCurveModeSelector();
-		epiCurveFooterLayout.addComponent(epiCurveModeSelector);
-		epiCurveFooterLayout.setComponentAlignment(epiCurveModeSelector, Alignment.MIDDLE_RIGHT);
-		epiCurveFooterLayout.setExpandRatio(epiCurveModeSelector, 0);
+		if (epiCurveModeSelector != null) {
+			epiCurveFooterLayout.addComponent(epiCurveModeSelector);
+			epiCurveFooterLayout.setComponentAlignment(epiCurveModeSelector, Alignment.MIDDLE_RIGHT);
+			epiCurveFooterLayout.setExpandRatio(epiCurveModeSelector, 0);
+		}
 
 		return epiCurveFooterLayout;
 	}

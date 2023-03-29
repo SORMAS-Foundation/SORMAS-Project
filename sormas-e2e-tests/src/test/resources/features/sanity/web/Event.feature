@@ -57,7 +57,7 @@ Feature: Create events
     And I collect the UUID displayed on Edit event page
     Given I add a participant to the event
     Then I check if participant appears in the event participants list
-    And I navigate via URL to last Person created from edit Event page
+    And I click on the first Person ID from Event Participants
     Then I check if event is available at person information
 
   @tmsLink=SORDEV-5475 @env_main
@@ -82,7 +82,7 @@ Feature: Create events
     And I discard changes in participant window
     Then I add a participant to the event
     Then I check if participant appears in the event participants list
-    And I navigate via URL to last Person created from edit Event page
+    And I click on the first Person ID from Event Participants
     Then I check if event is available at person information
 
   @env_main
@@ -597,7 +597,8 @@ Feature: Create events
     And I click on the searched event
     And I collect the UUID displayed on Edit event page
     Given I add a participant to the event
-    Then I click on the Archive event participant button
+    Then I click on Event Participant Data tab
+    And I click on the Archive event participant button
     And I check if Archive event popup is displayed correctly
     Then I check the end of processing date in the archive popup
     And I check if Archive button changed name to De-Archive
@@ -686,6 +687,7 @@ Feature: Create events
     And I check that the value selected from Disease combobox is "COVID-19" on Edit Event page
     And I navigate to Event Participants tab in Edit case page
     Then I add a participant to the event
+    Then I click on Event Participant Data tab
     And I click on New Sample
     And I check if value "Urine p.m" is unavailable in Type of Sample combobox on Create new Sample page
 
@@ -841,6 +843,7 @@ Feature: Create events
     And I check if data for created facility is automatically imported to the correct fields in Case Person tab
     Then I navigate to EVENT PARTICIPANT from edit event page
     And I add only required data for event participant creation for DE
+    Then I click on Event Participant Person tab
     And I set Region to "Voreingestellte Bundesländer" and District to "Voreingestellter Landkreis" in Event Participant edit page
     Then I set Facility Category to "Medizinische Einrichtung" and  Facility Type to "Krankenhaus"
     And I set facility name to created facility
@@ -1045,6 +1048,7 @@ Feature: Create events
     And I collect the UUID displayed on Edit event page
     Then I add a participant to the event
     And I copy url of current event participant
+    Then I click on Event Participant Data tab
     Then I click on Delete button from event participant
     And I check if reason for deletion as "Deletion request by affected person according to GDPR" is available
     And I check if reason for deletion as "Deletion request by another authority" is available
@@ -1065,7 +1069,9 @@ Feature: Create events
     And I set Reason for deletion as "Deletion request by affected person according to GDPR"
     And I click on Yes option in Confirm deletion popup
     When I back to deleted event participant by url
+    Then I click on Event Participant Data tab
     Then I check if reason of deletion is set to "Deletion request by affected person according to GDPR"
+    Then I click on Event Participant Person tab
     And I check if General comment on event participant edit page is disabled
     And I check if Passport number input on event participant edit page is disabled
 
@@ -1080,6 +1086,7 @@ Feature: Create events
     Then I add Participant to an Event with same person data
     And I click on save button in Add Participant form
     And I copy url of current event participant
+    Then I click on Event Participant Data tab
     Then I click on Delete button from event participant
     And I check if reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO" is available
     And I check if reason for deletion as "Löschen auf Anforderung einer anderen Behörde" is available
@@ -1100,9 +1107,10 @@ Feature: Create events
     And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
     And I click on Yes option in Confirm deletion popup
     When I back to deleted event participant by url
+    Then I click on Event Participant Data tab
     Then I check if reason of deletion is set to "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    Then I click on Event Participant Person tab
     And I check if General comment on event participant edit page is disabled
-    And I check if Involvement description input on event participant edit page is disabled
 
   @tmsLink=SORDEV-9792 @env_de
   Scenario: Test CoreAdo: Introduce "end of processing date" for events
@@ -1172,6 +1180,7 @@ Feature: Create events
     Then I open the last created event via api
     Then I navigate to EVENT PARTICIPANT from edit event page
     And I add only required data for event participant creation for DE
+    And I click on Event Participant Person tab
     And I collect the event participant person UUID displayed on Edit Event Participant page
     And I click on the Persons button from navbar
     Then I filter the last created person linked with Event Participant
@@ -1234,6 +1243,7 @@ Feature: Create events
     Then I click on Save Button in Edit Event directory
     And I navigate to EVENT PARTICIPANT from edit event page
     And I click on the first row from event participant list
+    Then I click on Event Participant Person tab
     Then I check if Present condition of person combobox has value "Alive"
     And I check if Present condition of person combobox has value "Dead"
     And I check if Present condition of person combobox has value "Unknown"

@@ -5,7 +5,7 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.81.0</version>
+	<version>1.82.0</version>
 
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -31,7 +31,7 @@
 		<vaadin.version.warning>TODO: Remove bootstrap.js in widgetset</vaadin.version.warning>
 		<vaadin.version>8.14.3</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
-		<swagger.version>2.1.13</swagger.version>
+		<swagger.version>2.2.8</swagger.version>
 		<bouncycastle.version>1.70</bouncycastle.version>
 		<keycloak.version>21.0.1</keycloak.version>
 		<resteasy.version>3.15.3.Final</resteasy.version>
@@ -1249,29 +1249,6 @@
 					<artifactId>gradle-maven-plugin</artifactId>
 					<version>1.0.8</version>
 				</plugin>
-
-				<!-- Swagger -->
-				<plugin>
-					<groupId>io.openapitools.swagger</groupId>
-					<artifactId>swagger-maven-plugin</artifactId>
-					<version>2.1.2</version>
-					<executions>
-						<execution>
-							<goals>
-								<goal>generate</goal>
-							</goals>
-						</execution>
-					</executions>
-					<dependencies>
-						<!-- Currently necessary to get the latest bugfixes in swagger-core -->
-						<dependency>
-							<groupId>io.swagger.core.v3</groupId>
-							<artifactId>swagger-jaxrs2</artifactId>
-							<version>${swagger.version}</version>
-						</dependency>
-					</dependencies>
-				</plugin>
-
 				<!-- *** Plugins for generate-reports *** -->
 				<plugin>
 					<artifactId>maven-changelog-plugin</artifactId>
@@ -1304,6 +1281,11 @@
 				<plugin>
 					<artifactId>maven-surefire-report-plugin</artifactId>
 					<version>2.22.2</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>templating-maven-plugin</artifactId>
+					<version>1.0.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
@@ -1367,6 +1349,11 @@
 					<groupId>com.googlecode.maven-download-plugin</groupId>
 					<artifactId>download-maven-plugin</artifactId>
 					<version>1.6.8</version>
+				</plugin>
+				<plugin>
+					<groupId>io.swagger.core.v3</groupId>
+					<artifactId>swagger-maven-plugin</artifactId>
+					<version>${swagger.version}</version>
 				</plugin>
 				<!-- *** Plugins for generate-reports END *** -->
 
@@ -1548,7 +1535,7 @@
 		<module>../sormas-keycloak-service-provider</module>
 		<module>../sormas-rest</module>
 		<module>../sormas-ui</module>
-		<module>./dependencies/serverlibs.pom</module>
+		<module>../sormas-serverlibs</module>
 		<module>../sormas-cargoserver</module>
 	</modules>
 </project>

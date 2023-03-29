@@ -427,4 +427,7 @@ public class EditCasePage {
         String.format(
             "//div[text()='Meldevorg\u00E4nge']/../../../../../..//div[text()='%s']", text));
   }
+
+  public static final By ADDED_SAMPLES_IN_SAMPLE_CARD =
+      By.xpath("//*[@location='samples']//*[@class='v-slot v-slot-s-list']/div/div/div/div");
 }

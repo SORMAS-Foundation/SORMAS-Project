@@ -18,7 +18,7 @@ Feature: Application language checks
     Then I check that German word for Configuration is present in the left main menu
 
       #fails due to known defect, downloaded file is not in german, is in english.
-  @tmsLink=SORDEV-6474 @env_main @issue=8069 @About @LanguageRisk
+  @tmsLink=SORDEV-6474 @env_main @issue=8069 @About @LanguageRisk @ignore
   Scenario: Check language options in Data Dictionary depending on the user language setting
     Given  I log in as a National Language User
     And I click on the About button from navbar

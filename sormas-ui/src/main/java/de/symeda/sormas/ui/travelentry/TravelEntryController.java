@@ -136,7 +136,7 @@ public class TravelEntryController {
 
 		CommitDiscardWrapperComponent<TravelEntryDataForm> editComponent = new CommitDiscardWrapperComponent<>(
 			travelEntryEditForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_EDIT),
+			true,
 			travelEntryEditForm.getFieldGroup());
 
 		editComponent.getButtonsPanel()
@@ -179,6 +179,8 @@ public class TravelEntryController {
 					editComponent,
 					() -> navigateToTravelEntry(travelEntry.getUuid()));
 		}
+
+		editComponent.restrictEditableComponentsOnEditView(UserRight.TRAVEL_ENTRY_EDIT, UserRight.TRAVEL_ENTRY_DELETE, null);
 
 		return editComponent;
 	}

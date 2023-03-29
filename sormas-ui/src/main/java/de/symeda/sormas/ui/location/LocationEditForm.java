@@ -125,6 +125,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	private ComboBox continent;
 	private ComboBox subcontinent;
 	private ComboBox country;
+	private ComboBox region;
 	private TextField contactPersonFirstName;
 	private TextField contactPersonLastName;
 	private TextField contactPersonPhone;
@@ -134,6 +135,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	private boolean skipCountryValueChange;
 	private boolean skipFacilityTypeUpdate;
 	private boolean disableFacilityAddressCheck;
+	private boolean hasEventParticipantsWithoutJurisdiction;
 
 	public LocationEditForm(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(LocationDto.class, LocationDto.I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
@@ -251,7 +253,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		continent = addInfrastructureField(LocationDto.CONTINENT);
 		subcontinent = addInfrastructureField(LocationDto.SUB_CONTINENT);
 		country = addInfrastructureField(LocationDto.COUNTRY);
-		ComboBox region = addInfrastructureField(LocationDto.REGION);
+		region = addInfrastructureField(LocationDto.REGION);
 		ComboBox district = addInfrastructureField(LocationDto.DISTRICT);
 		ComboBox community = addInfrastructureField(LocationDto.COMMUNITY);
 
@@ -594,7 +596,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	private void updateRegionCombo(ComboBox region, ComboBox country) {
 		InfrastructureFieldsHelper.updateRegionBasedOnCountry(country, region, (isServerCountry) -> {
 			if (districtRequiredOnDefaultCountry) {
-				setFieldsRequirement(isServerCountry, LocationDto.REGION, LocationDto.DISTRICT);
+				setFieldsRequirement(hasEventParticipantsWithoutJurisdiction || isServerCountry, LocationDto.REGION, LocationDto.DISTRICT);
 			}
 		});
 	}
@@ -711,6 +713,9 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 	public void setDistrictRequiredOnDefaultCountry(boolean required) {
 		this.districtRequiredOnDefaultCountry = required;
+		if (required) {
+			updateRegionCombo(region, country);
+		}
 	}
 
 	public void setCountryDisabledWithHint(String hint) {
@@ -801,6 +806,10 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 	public void setDisableFacilityAddressCheck(boolean disableFacilityAddressCheck) {
 		this.disableFacilityAddressCheck = disableFacilityAddressCheck;
+	}
+
+	public void setHasEventParticipantsWithoutJurisdiction(boolean hasEventParticipantsWithoutJurisdiction) {
+		this.hasEventParticipantsWithoutJurisdiction = hasEventParticipantsWithoutJurisdiction;
 	}
 
 	private static class MapPopupView extends PopupView {

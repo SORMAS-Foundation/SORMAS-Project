@@ -48,6 +48,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -196,6 +197,8 @@ public class GridExportStreamResource {
 						ageAndBirthDate.getDateOfBirthYYYY());
 				} else if (value instanceof Label) {
 					valueString = ((Label) value).getValue();
+				} else if (value instanceof ReferenceDto) {
+					valueString = ((ReferenceDto) value).getCaption();
 				} else {
 					valueString = value.toString();
 				}

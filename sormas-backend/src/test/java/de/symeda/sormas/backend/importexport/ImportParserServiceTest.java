@@ -37,7 +37,6 @@ import de.symeda.sormas.api.importexport.ImportErrorException;
 import de.symeda.sormas.api.infrastructure.area.AreaDto;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -193,7 +192,7 @@ public class ImportParserServiceTest extends AbstractBeanTest {
 
 	@Test
 	public void testParseUserFieldValue() throws IntrospectionException, ImportErrorException {
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createNationalUser();
 
 		Object parsed = getImportParserService().parseValue(
 			new PropertyDescriptor(EventDto.REPORTING_USER, EventDto.class),

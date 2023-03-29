@@ -16,7 +16,9 @@
 package de.symeda.sormas.backend.dashboard.sample;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -30,15 +32,23 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
+import de.symeda.sormas.api.dashboard.sample.SampleShipmentStatus;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDashboardFilterDateType;
+import de.symeda.sormas.api.sample.SamplePurpose;
+import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -63,18 +73,93 @@ public class SampleDashboardService {
 	@EJB
 	private SampleService sampleService;
 
-	public Map<PathogenTestResultType, Long> getSampleCountByResultType(SampleDashboardCriteria dashboardCriteria) {
+	public Map<PathogenTestResultType, Long> getSampleCountsByResultType(SampleDashboardCriteria dashboardCriteria) {
+		return getSampleCountsByEnumProperty(Sample.PATHOGEN_TEST_RESULT, PathogenTestResultType.class, dashboardCriteria, null);
+	}
+
+	public Map<SamplePurpose, Long> getSampleCountsByPurpose(SampleDashboardCriteria dashboardCriteria) {
+		return getSampleCountsByEnumProperty(Sample.SAMPLE_PURPOSE, SamplePurpose.class, dashboardCriteria, null);
+	}
+
+	private static Map<Pair<Boolean, Boolean>, SampleShipmentStatus> shipmentStatusMapping = new HashMap<>();
+
+	static {
+		shipmentStatusMapping.put(Pair.of(true, true), SampleShipmentStatus.RECEIVED);
+		shipmentStatusMapping.put(Pair.of(true, false), SampleShipmentStatus.SHIPPED);
+		shipmentStatusMapping.put(Pair.of(false, true), SampleShipmentStatus.RECEIVED);
+		shipmentStatusMapping.put(Pair.of(false, false), SampleShipmentStatus.NOT_SHIPPED);
+	}
+
+	public Map<SpecimenCondition, Long> getSampleCountsBySpecimenCondition(SampleDashboardCriteria dashboardCriteria) {
+		return getSampleCountsByEnumProperty(
+			Sample.SPECIMEN_CONDITION,
+			SpecimenCondition.class,
+			dashboardCriteria,
+			(cb, root) -> cb.and(buildExternalSamplePredicate(cb, root), cb.equal(root.get(Sample.RECEIVED), true)));
+	}
+
+	private <T extends Enum<?>> Map<T, Long> getSampleCountsByEnumProperty(
+		String property,
+		Class<T> propertyType,
+		SampleDashboardCriteria dashboardCriteria,
+		BiFunction<CriteriaBuilder, Root<Sample>, Predicate> additionalFilters) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Tuple> cq = cb.createTupleQuery();
 		final Root<Sample> sample = cq.from(Sample.class);
-		final Path<Object> sampleTestResult = sample.get(Sample.PATHOGEN_TEST_RESULT);
+		final Path<Object> groupingProperty = sample.get(property);
 
-		cq.multiselect(sampleTestResult, cb.count(sample));
+		cq.multiselect(groupingProperty, cb.count(sample));
+
+		final Predicate criteriaFilter = createSampleFilter(new SampleQueryContext(cb, cq, sample), dashboardCriteria);
+		cq.where(CriteriaBuilderHelper.and(cb, criteriaFilter, additionalFilters != null ? additionalFilters.apply(cb, sample) : null));
+
+		cq.groupBy(groupingProperty);
+
+		return QueryHelper.getResultList(em, cq, null, null, Function.identity())
+			.stream()
+			.collect(Collectors.toMap(t -> propertyType.cast(t.get(0)), t -> (Long) t.get(1)));
+	}
+
+	private Predicate buildExternalSamplePredicate(CriteriaBuilder cb, Root<Sample> root) {
+		return cb.equal(root.get(Sample.SAMPLE_PURPOSE), SamplePurpose.EXTERNAL);
+	}
+
+	public Map<SampleShipmentStatus, Long> getSampleCountsByShipmentStatus(SampleDashboardCriteria dashboardCriteria) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Tuple> cq = cb.createTupleQuery();
+		final Root<Sample> sample = cq.from(Sample.class);
+
+		Path<Boolean> shipped = sample.get(Sample.SHIPPED);
+		Path<Boolean> received = sample.get(Sample.RECEIVED);
+		cq.multiselect(shipped, received, cb.count(sample));
+
+		final Predicate criteriaFilter = createSampleFilter(new SampleQueryContext(cb, cq, sample), dashboardCriteria);
+		cq.where(CriteriaBuilderHelper.and(cb, criteriaFilter, buildExternalSamplePredicate(cb, sample)));
+
+		cq.groupBy(shipped, received);
+
+		return QueryHelper.getResultList(em, cq, null, null, Function.identity())
+			.stream()
+			.collect(Collectors.toMap(t -> getSampleShipmentStatusByFlags((Boolean) t.get(0), (Boolean) t.get(1)), t -> (Long) t.get(2), Long::sum));
+	}
+
+	private SampleShipmentStatus getSampleShipmentStatusByFlags(Boolean shipped, Boolean received) {
+		return shipmentStatusMapping.get(Pair.of(Boolean.TRUE.equals(shipped), Boolean.TRUE.equals(received)));
+	}
+
+	public Map<PathogenTestResultType, Long> getTestResultCountsByResultType(SampleDashboardCriteria dashboardCriteria) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Tuple> cq = cb.createTupleQuery();
+		final Root<Sample> sample = cq.from(Sample.class);
+		Join<Sample, PathogenTest> pathogenTestJoin = sample.join(Sample.PATHOGENTESTS, JoinType.LEFT);
+		final Path<Object> pathogenTestResult = pathogenTestJoin.get(PathogenTest.TEST_RESULT);
+
+		cq.multiselect(pathogenTestResult, cb.count(pathogenTestJoin));
 
 		final Predicate criteriaFilter = createSampleFilter(new SampleQueryContext(cb, cq, sample), dashboardCriteria);
 		cq.where(criteriaFilter);
 
-		cq.groupBy(sampleTestResult);
+		cq.groupBy(pathogenTestResult);
 
 		return QueryHelper.getResultList(em, cq, null, null, Function.identity())
 			.stream()
@@ -87,9 +172,14 @@ public class SampleDashboardService {
 		From<?, Sample> sampleRoot = queryContext.getRoot();
 		SampleJoins joins = queryContext.getJoins();
 
-		Predicate filter = sampleService.buildCriteriaFilter(
-			new SampleCriteria().disease(criteria.getDisease()).region(criteria.getRegion()).district(criteria.getDistrict()),
-			queryContext);
+		Predicate filter = sampleService.createUserFilter(queryContext, new SampleCriteria().sampleAssociationType(SampleAssociationType.ALL));
+
+		filter = CriteriaBuilderHelper.and(
+			cb,
+			filter,
+			sampleService.buildCriteriaFilter(
+				new SampleCriteria().disease(criteria.getDisease()).region(criteria.getRegion()).district(criteria.getDistrict()),
+				queryContext));
 
 		if (criteria.getDateFrom() != null && criteria.getDateTo() != null) {
 			final Predicate dateFilter;
@@ -134,6 +224,9 @@ public class SampleDashboardService {
 
 		if (Boolean.TRUE.equals(criteria.getWithNoDisease())) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNotNull(joins.getEventParticipant()), cb.isNull(joins.getEvent().get(Event.DISEASE)));
+		} else if (Boolean.FALSE.equals(criteria.getWithNoDisease())) {
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.or(cb.isNull(joins.getEventParticipant()), cb.isNotNull(joins.getEvent().get(Event.DISEASE))));
 		}
 
 		return CriteriaBuilderHelper.and(
