@@ -2852,7 +2852,6 @@ public class EditCaseSteps implements En {
     When(
         "I check if sample card has {string} information",
         (String information) -> {
-          TimeUnit.SECONDS.sleep(6);
           softly.assertTrue(
               webDriverHelpers.isElementPresent(checkTextInSampleSideComponent(information)),
               "Element is present");
