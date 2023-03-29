@@ -18,7 +18,7 @@ body:
     id: reproduction-steps
     attributes:
       label: Reproduction Steps
-      description: If possible, provide step-by-step instructions of how you triggered this bug, i.e. the order of actions you performed before the problem occurred. This helps us to reproduce it on our systems.
+      description: Provide step-by-step instructions of how you triggered this bug, i.e. the order of actions you performed before the problem occurred. This helps us to reproduce it on our systems.
       placeholder: |
         1.
         2.
@@ -28,12 +28,12 @@ body:
         2.
         ...
     validations:
-      required: false
+      required: true
   - type: textarea
     id: expected-behavior
     attributes:
       label: Expected Behavior
-      description: Shortly describe what you think should have happened instead of the reported behavior. Not necessary when the error is identified by a crash or an error message, but likely relevant when the problem is the result of a misbehavior of the application that results in an unexpected outcome.
+      description: Shortly describe what you think should have happened instead of the reported behavior if the problem is the result of a misbehavior of the application that results in an unexpected outcome.
     validations:
       required: false
   - type: dropdown
