@@ -458,6 +458,22 @@ public class CreateNewSampleSteps implements En {
         });
 
     When(
+        "I create a new Sample with positive test result for DE version with {string} as a labor",
+        (String option) -> {
+          sample = sampleService.buildGeneratedPositiveSampleDE();
+          selectPurposeOfSample(sample.getPurposeOfTheSample(), SAMPLE_PURPOSE_OPTIONS);
+          fillDateOfCollectionDE(sample.getDateOfCollection());
+          selectSampleType(sample.getSampleType());
+          webDriverHelpers.clickOnWebElementBySelector(ADD_PATHOGEN_TEST_BUTTON);
+          selectTestedDisease(sample.getTestedDisease());
+          selectTestResult(sample.getSampleTestResults());
+          selectTypeOfTest("Kultur");
+          selectLaboratory(option);
+          selectResultVerifiedByLabSupervisor(
+              sample.getResultVerifiedByLabSupervisor(), RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
+        });
+
+    When(
         "^I save the created sample",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);

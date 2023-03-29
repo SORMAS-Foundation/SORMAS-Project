@@ -79,4 +79,5 @@ public class EditSamplePage {
       By.cssSelector(".popupContent [id='testedDiseaseVariant'] div");
   public static final By PCR_TEST_SPECIFICATION_INPUT =
       By.cssSelector("[class='popupContent'] [id='pcrTestSpecification'] input");
+  public static final By SEE_SAMPLES_FOR_THIS_PERSON_BUTTON = By.id("See samples for this person");
 }

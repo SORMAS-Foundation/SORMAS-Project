@@ -49,6 +49,9 @@ public class EditCasePage {
   public static final By NEW_SAMPLE_BUTTON_DE = By.cssSelector("[id='Neue Probe']");
   public static final By EDIT_SAMPLE_BUTTON = By.xpath("//div[contains(@id, 'edit-sample')]");
 
+  public static final By SHOW_SAMPLE_BUTTON =
+      By.xpath(
+          "//div[@location='samples']//div[@class='v-button v-widget link v-button-link compact v-button-compact caption-overflow-label v-button-caption-overflow-label']");
   public static final By REPORT_DATE_INPUT = By.cssSelector("#reportDate input");
   public static final By CASE_CLASSIFICATION_COMBOBOX = By.cssSelector("#caseClassification div");
   public static final By CASE_CLASSIFICATION_SPAN =
@@ -370,6 +373,8 @@ public class EditCasePage {
 
   public static final By SAHRE_SAMPLES_CHECKBOX =
       By.cssSelector(".popupContent #withSamples label");
+  public static final By SHARE_IMMUNIZATION_CHECKBOX =
+      By.cssSelector(".popupContent #withImmunizations label");
   public static final By SHARE_REPORTS_CHECKBOX =
       By.cssSelector(".popupContent #withSurveillanceReports label");
   public static final By SHARE_SORMAS_2_SORMAS_POPUP_BUTTON =
@@ -426,6 +431,17 @@ public class EditCasePage {
     return By.xpath(
         String.format(
             "//div[text()='Meldevorg\u00E4nge']/../../../../../..//div[text()='%s']", text));
+  }
+
+  public static By checkTextInImmunizationSideComponent(String text) {
+    return By.xpath(
+        String.format(
+            "//div[contains(@location,'vaccinations')]//div[contains(text(), '%s')]", text));
+  }
+
+  public static By checkTextInSampleSideComponent(String text) {
+    return By.xpath(
+        String.format("//div[contains(@location,'samples')]//div[contains(text(), '%s')]", text));
   }
 
   public static final By ADDED_SAMPLES_IN_SAMPLE_CARD =

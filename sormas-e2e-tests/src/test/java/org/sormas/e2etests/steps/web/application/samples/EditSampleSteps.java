@@ -35,9 +35,13 @@ import org.sormas.e2etests.entities.services.SampleService;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
+import org.testng.asserts.SoftAssert;
 
 public class EditSampleSteps implements En {
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
+  public static final DateTimeFormatter DATE_FORMATTER_DE =
+      DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
   public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
   public static Sample editedSample;
 
@@ -48,7 +52,8 @@ public class EditSampleSteps implements En {
       WebDriverHelpers webDriverHelpers,
       RunningConfiguration runningConfiguration,
       SampleService sampleService,
-      ApiState apiState) {
+      ApiState apiState,
+      SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -210,6 +215,47 @@ public class EditSampleSteps implements En {
     When(
         "I check if sample material has a option {string}",
         (String option) -> webDriverHelpers.selectFromCombobox(SAMPLE_TYPE_COMBOBOX, option));
+
+    When(
+        "I set type of sample to {string}",
+        (String sampleType) ->
+            webDriverHelpers.selectFromCombobox(SAMPLE_TYPE_COMBOBOX, sampleType));
+
+    And(
+        "I check if type of sample is set to {string}",
+        (String option) -> {
+          softly.assertEquals(webDriverHelpers.getValueFromCombobox(SAMPLE_TYPE_COMBOBOX), option);
+          softly.assertAll();
+        });
+
+    And(
+        "I check if type of sample is not set to {string}",
+        (String option) -> {
+          softly.assertNotEquals(
+              webDriverHelpers.getValueFromCombobox(SAMPLE_TYPE_COMBOBOX), option);
+          softly.assertAll();
+        });
+
+    When(
+        "I click on See samples for this person button",
+        () -> webDriverHelpers.clickOnWebElementBySelector(SEE_SAMPLES_FOR_THIS_PERSON_BUTTON));
+
+    When(
+        "I set date sample was collected minus (\\d+) days ago on Sample Edit page",
+        (Integer days) -> {
+          webDriverHelpers.clearAndFillInWebElement(
+              DATE_SAMPLE_COLLECTED, DATE_FORMATTER_DE.format(LocalDate.now().minusDays(days)));
+        });
+
+    When(
+        "I check if date of sample is set for (\\d+) day ago from today on Edit Sample page for DE version",
+        (Integer days) -> {
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(DATE_SAMPLE_COLLECTED),
+              DATE_FORMATTER_DE.format(LocalDate.now().minusDays(days)),
+              "Date is inncorect");
+          softly.assertAll();
+        });
   }
 
   private void selectPurposeOfSample(String samplePurpose, By element) {
