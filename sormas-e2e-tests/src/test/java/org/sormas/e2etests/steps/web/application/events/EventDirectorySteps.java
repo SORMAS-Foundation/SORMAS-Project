@@ -456,7 +456,10 @@ public class EventDirectorySteps implements En {
 
     When(
         "I click on the NEW EVENT button",
-        () -> webDriverHelpers.clickOnWebElementBySelector(EventDirectoryPage.NEW_EVENT_BUTTON));
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NEW_EVENT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(EventDirectoryPage.NEW_EVENT_BUTTON);
+        });
     And(
         "I apply {string} to combobox on Event Directory Page",
         (String eventParameter) -> {

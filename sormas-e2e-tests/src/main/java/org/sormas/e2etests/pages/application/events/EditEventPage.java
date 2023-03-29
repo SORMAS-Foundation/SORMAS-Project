@@ -185,6 +185,8 @@ public class EditEventPage {
   public static final By VACCINATION_STATUS_COMBOBOX =
       By.xpath("//div[@id='vaccinationStatus']/div");
   public static final By NEW_IMMUNIZATION_BUTTON = By.cssSelector("[id='New immunization']");
+  public static final By NEW_IMMUNIZATION_CARD_WITH_COVID =
+      By.xpath("//div[@location='immunizations']//*[contains(text(),'COVID-19')]");
   public static final By EYE_ICON =
       By.cssSelector("[class*='v-caption-on-top']>[class*='v-popupview']");
   public static final By EVENT_PARTICIPANT_STATUS =

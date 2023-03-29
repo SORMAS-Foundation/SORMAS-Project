@@ -178,6 +178,7 @@ Feature: Immunization end to end tests
     And I set Disease combobox to "" value from Edit Event Page
     And I click on Save Button in Edit Event directory
     And I add a participant to the event
+    And I click on Event Participant Person tab
     And I check that New immunization card is not available
     And I click on the Event participant tab
     And I back to the Event tab
