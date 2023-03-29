@@ -297,6 +297,14 @@ public class CreateNewVaccinationSteps implements En {
               webDriverHelpers.getValueFromCombobox(VACCINATION_MANUFACTURER_COMBOBOX), option);
           softly.assertAll();
         });
+
+    And(
+        "I check vaccine manufacturer is not set to {string}",
+        (String option) -> {
+          softly.assertNotEquals(
+              webDriverHelpers.getValueFromCombobox(VACCINATION_MANUFACTURER_COMBOBOX), option);
+          softly.assertAll();
+        });
     When(
         "I fill new vaccination data in new Vaccination form for DE with {string} as a vaccine name",
         (String name) -> {

@@ -228,6 +228,14 @@ public class EditSampleSteps implements En {
           softly.assertAll();
         });
 
+    And(
+        "I check if type of sample is not set to {string}",
+        (String option) -> {
+          softly.assertNotEquals(
+              webDriverHelpers.getValueFromCombobox(SAMPLE_TYPE_COMBOBOX), option);
+          softly.assertAll();
+        });
+
     When(
         "I click on See samples for this person button",
         () -> webDriverHelpers.clickOnWebElementBySelector(SEE_SAMPLES_FOR_THIS_PERSON_BUTTON));

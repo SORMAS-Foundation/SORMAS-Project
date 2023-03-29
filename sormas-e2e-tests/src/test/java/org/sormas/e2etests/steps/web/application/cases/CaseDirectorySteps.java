@@ -422,6 +422,17 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(EditCasePage.UUID_INPUT);
         });
 
+    When(
+        "I open last created Case via API on {string} instance",
+        (String instance) -> {
+          String LAST_CREATED_CASE_URL =
+              runningConfiguration.getEnvironmentUrlForMarket(instance)
+                  + "/sormas-webdriver/#!cases/data/"
+                  + apiState.getCreatedCase().getUuid();
+          webDriverHelpers.accessWebSite(LAST_CREATED_CASE_URL);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(EditCasePage.UUID_INPUT);
+        });
+
     Then(
         "I check that created Case is visible with ([^\"]*) status",
         (String vaccinationStatus) -> {

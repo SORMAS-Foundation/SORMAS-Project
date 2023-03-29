@@ -373,6 +373,8 @@ public class EditCasePage {
 
   public static final By SAHRE_SAMPLES_CHECKBOX =
       By.cssSelector(".popupContent #withSamples label");
+  public static final By SHARE_IMMUNIZATION_CHECKBOX =
+      By.cssSelector(".popupContent #withImmunizations label");
   public static final By SHARE_REPORTS_CHECKBOX =
       By.cssSelector(".popupContent #withSurveillanceReports label");
   public static final By SHARE_SORMAS_2_SORMAS_POPUP_BUTTON =
@@ -435,6 +437,11 @@ public class EditCasePage {
     return By.xpath(
         String.format(
             "//div[contains(@location,'vaccinations')]//div[contains(text(), '%s')]", text));
+  }
+
+  public static By checkTextInSampleSideComponent(String text) {
+    return By.xpath(
+        String.format("//div[contains(@location,'samples')]//div[contains(text(), '%s')]", text));
   }
 
   public static final By ADDED_SAMPLES_IN_SAMPLE_CARD =
