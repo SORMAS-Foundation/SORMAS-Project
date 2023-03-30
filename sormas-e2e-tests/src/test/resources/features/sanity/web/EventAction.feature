@@ -13,9 +13,9 @@ And I click on New Action from Event Actions tab
 And I create New Action from event tab
 Then I navigate to Event Action tab for created Event
 And I click on START DATA IMPORT button from NEW DOCUMENT in Event Action tab
-And I upload ImportContactPrio.xlsx file to the Event Action
-Then I check if ImportContactPrio.xlsx file is available in Event Action documents
+And I upload ImportContactPrio.csv file to the Event Action
+Then I check if ImportContactPrio.csv file is available in Event Action documents
 Then I download last updated document file from Event Action tab
-And I check if ImportContactPrio.xlsx file is downloaded correctly from Event Action tab
+And I check if ImportContactPrio.csv file is downloaded correctly from Event Action tab
 Then I delete last uploaded document file from Event Action tab
 And I check if last uploaded file was deleted from document files in Event Action tab
