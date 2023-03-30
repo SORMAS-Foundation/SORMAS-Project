@@ -119,6 +119,7 @@ import de.symeda.sormas.backend.campaign.CampaignFacadeEjb.CampaignFacadeEjbLoca
 import de.symeda.sormas.backend.campaign.data.CampaignFormDataFacadeEjb.CampaignFormDataFacadeEjbLocal;
 import de.symeda.sormas.backend.campaign.diagram.CampaignDiagramDefinitionFacadeEjb;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb.CampaignFormMetaFacadeEjbLocal;
+import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseStatisticsFacadeEjb.CaseStatisticsFacadeEjbLocal;
@@ -425,7 +426,7 @@ public abstract class AbstractBeanTest {
 	 * 
 	 * @return
 	 */
-	public CaseFacadeEjbLocal getCaseFacade() {
+	public CaseFacadeEjb getCaseFacade() {
 		return getBean(CaseFacadeEjbLocal.class);
 	}
 

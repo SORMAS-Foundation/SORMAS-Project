@@ -677,6 +677,7 @@ public interface Strings {
 	String headingResults = "headingResults";
 	String headingRevokeSormasToSormasShareRequest = "headingRevokeSormasToSormasShareRequest";
 	String headingSampleDashboardEpiCurve = "headingSampleDashboardEpiCurve";
+	String headingSampleDashboardMap = "headingSampleDashboardMap";
 	String headingSamplesDeleted = "headingSamplesDeleted";
 	String headingSaveNotification = "headingSaveNotification";
 	String headingSaveUser = "headingSaveUser";
@@ -828,6 +829,7 @@ public interface Strings {
 	String infoExposuresRiskAreaHint = "infoExposuresRiskAreaHint";
 	String infoFacilityCsvImport = "infoFacilityCsvImport";
 	String infoFacilityNeedsDistrict = "infoFacilityNeedsDistrict";
+	String infoHeadingSampleDashboardMap = "infoHeadingSampleDashboardMap";
 	String infoHowToMergeCases = "infoHowToMergeCases";
 	String infoHowToMergeContacts = "infoHowToMergeContacts";
 	String infoImmunizationPeriod = "infoImmunizationPeriod";
