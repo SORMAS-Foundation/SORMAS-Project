@@ -80,11 +80,11 @@ public class CampaignReportTabSheets extends VerticalLayout implements View {
 	private Button syncButton;
 	//check the diagram definition Selector
 	// Filter
-		private SearchField searchField;
+//		private SearchField searchField;
 		private ComboBox areaFilter;
 		private ComboBox regionFilter;
 		private ComboBox districtFilter;
-		private ComboBox relevanceStatusFilter;
+//		private ComboBox relevanceStatusFilter;
 		private Button resetButton;
 		protected boolean applyingCriteria;
 
@@ -142,12 +142,12 @@ public class CampaignReportTabSheets extends VerticalLayout implements View {
 		filterLayout.setSpacing(true);
 		filterLayout.setWidth(100, Unit.PERCENTAGE);
 
-		searchField = new SearchField();
-		searchField.addTextChangeListener(e -> {
-			criteria.nameLike(e.getText());
-			grid.reload();
-		});
-		filterLayout.addComponent(searchField);
+//		searchField = new SearchField();
+//		searchField.addTextChangeListener(e -> {
+//			criteria.nameLike(e.getText());
+//			grid.reload();
+//		});
+//		filterLayout.addComponent(searchField);
 		
 		
 		areaFilter = ComboBoxHelper.createComboBoxV7();
@@ -265,25 +265,25 @@ public class CampaignReportTabSheets extends VerticalLayout implements View {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show active/archived/all dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
-				relevanceStatusFilter = ComboBoxHelper.createComboBoxV7();
-				relevanceStatusFilter.setId("relevanceStatus");
-				relevanceStatusFilter.setWidth(220, Unit.PERCENTAGE);
-				relevanceStatusFilter.setNullSelectionAllowed(false);
-				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
-				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.communityActiveCommunities));
-				relevanceStatusFilter
-					.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.communityArchivedCommunities));
-				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.communityAllCommunities));
-				relevanceStatusFilter.addValueChangeListener(e -> {
-					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
-					navigateTo(criteria);
-					//grid.reload();
-				});
-				actionButtonsLayout.addComponent(relevanceStatusFilter);
-
-			
-			}
+//			if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
+//				relevanceStatusFilter = ComboBoxHelper.createComboBoxV7();
+//				relevanceStatusFilter.setId("relevanceStatus");
+//				relevanceStatusFilter.setWidth(220, Unit.PERCENTAGE);
+//				relevanceStatusFilter.setNullSelectionAllowed(false);
+//				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
+//				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.communityActiveCommunities));
+//				relevanceStatusFilter
+//					.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.communityArchivedCommunities));
+//				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.communityAllCommunities));
+//				relevanceStatusFilter.addValueChangeListener(e -> {
+//					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
+//					navigateTo(criteria);
+//					//grid.reload();
+//				});
+//				actionButtonsLayout.addComponent(relevanceStatusFilter);
+//
+//			
+//			}
 		}
 		filterLayout.addComponent(actionButtonsLayout);
 		filterLayout.setComponentAlignment(actionButtonsLayout, Alignment.BOTTOM_RIGHT);
@@ -320,10 +320,10 @@ public class CampaignReportTabSheets extends VerticalLayout implements View {
 
 		resetButton.setVisible(criteria.hasAnyFilterActive());
 
-		if (relevanceStatusFilter != null) {
-			relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
-		}
-		searchField.setValue(criteria.getNameLike());
+//		if (relevanceStatusFilter != null) {
+//			relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
+//		}
+//		searchField.setValue(criteria.getNameLike());
 		areaFilter.setValue(criteria.getArea());
 		regionFilter.setValue(criteria.getRegion());
 		districtFilter.setValue(criteria.getDistrict());

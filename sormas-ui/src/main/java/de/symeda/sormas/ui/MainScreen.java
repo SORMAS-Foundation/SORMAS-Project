@@ -219,6 +219,7 @@ public class MainScreen extends HorizontalLayout {
 			AbstractCampaignView.registerViews(navigator);
 			menu.addView(CampaignDataView.class, AbstractCampaignView.ROOT_VIEW_NAME,
 					I18nProperties.getCaption(Captions.mainMenuCampaigns), VaadinIcons.CLIPBOARD_CHECK);
+			if((permitted(UserType.WHO_USER) || permitted(UserType.EOC_USER)))
 			menu.addView(CampaignReportView.class, CampaignReportView.VIEW_NAME, I18nProperties.getCaption("Report"),
 				VaadinIcons.CHART);
 
@@ -244,11 +245,13 @@ public class MainScreen extends HorizontalLayout {
 						I18nProperties.getCaption(Captions.mainMenuConfiguration), VaadinIcons.COG_O);
 			}
 		}
-
+		if(permitted(UserType.WHO_USER) || permitted(UserType.EOC_USER)){
 		if ((permitted(UserRole.ADMIN) || permitted(UserRole.AREA_ADMIN_SUPERVISOR)
 				|| permitted(UserRole.ADMIN_SUPERVISOR) || permitted(UserRole.COMMUNITY_INFORMANT))) {
+			
 			menu.addView(UsersView.class, UsersView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuUsers),
 					VaadinIcons.USERS);
+			}
 		}
 
 		menu.createViewButtonx(Captions.actionSettings, I18nProperties.getCaption(Captions.language),

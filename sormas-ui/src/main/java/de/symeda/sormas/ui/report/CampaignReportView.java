@@ -69,10 +69,12 @@ public class CampaignReportView extends AbstractView {
 		}
 
 		tabsheetx.setHeightFull();
+		TabSheet tabsheetxr = new TabSheet();
+		tabsheet.addTab(tabsheetxr, "Completion Analysis");
 
 		tabsheet.addTab(tabsheetx, "User Analysis");
 
-		TabSheet tabsheetxr = new TabSheet();
+		
 		FormAccess frmss[] = FormAccess.values();
 	//	for (FormAccess lopper : frmss) {
 		{
@@ -102,8 +104,7 @@ public class CampaignReportView extends AbstractView {
 
 		tabsheetxr.setHeightFull();
 
-		tabsheet.addTab(tabsheetxr, "Completion Analysis");
-
+		
 		tabsheet.addSelectedTabChangeListener(new SelectedTabChangeListener() {
 			@Override
 			public void selectedTabChange(SelectedTabChangeEvent event) {
