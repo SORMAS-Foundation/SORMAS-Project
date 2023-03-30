@@ -59,7 +59,6 @@ public class KeycloakAdminConsoleSteps implements En {
               runningConfiguration.getEnvironmentUrlForMarket(locale)
                   + "/keycloak/admin/master/console/#/SORMAS/users";
           webDriverHelpers.accessWebSite(KEYCLOAK_USERS_TAB);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(VIEW_ALL_USERS_BUTTON);
         });
     When(
         "^I click View all users button$",

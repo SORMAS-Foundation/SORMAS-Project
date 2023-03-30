@@ -75,7 +75,7 @@ public class KeycloakLoginSteps implements En {
         "I click on logout button on Keycloak Administrator Console Page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(USERNAME_TEXT);
-          webDriverHelpers.clickWebElementByText(LOGOUT_BUTTON, "Sign Out");
+          webDriverHelpers.clickOnWebElementBySelector(LOGOUT_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(LOGIN_KEYCLOAK_BUTTON);
         });
   }
