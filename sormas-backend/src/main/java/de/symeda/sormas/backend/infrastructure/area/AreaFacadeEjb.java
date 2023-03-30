@@ -25,6 +25,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -262,13 +263,14 @@ public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaService> 
 	}
 
 	@Override
-	public List<AreaDto> getAllActiveAsReferenceAndPopulation() {
+	public List<AreaDto> getAllActiveAsReferenceAndPopulation(CampaignDto campaignDt) {
 		
 		
 		String queryStringBuilder = "select a.\"name\", sum(p.population), a.id, a.uuid as mdis  from areas a \n"
 				+ "left outer join region r on r.area_id = a.id\n"
-				+ "left outer join populationdata p on r.id = p.region_id\r\n"
-				+ "where a.archived = false and p.agegroup = 'AGE_0_4'\n"
+				+ "left outer join populationdata p on r.id = p.region_id\n"
+				+ "left outer join campaigns ca on p.campaign_id = ca.id \n"
+				+ "where a.archived = false and p.agegroup = 'AGE_0_4' and ca.uuid = '"+campaignDt.getUuid()+"'\n"
 				+ "group by a.\"name\", a.id, a.uuid ";
 		
 		

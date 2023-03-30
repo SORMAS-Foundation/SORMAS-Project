@@ -32,6 +32,7 @@ public class PopulationData extends AbstractDomainObject {
 	public static final String AGE_GROUP = "ageGroup";
 	public static final String POPULATION = "population";
 	public static final String COLLECTION_DATE = "collectionDate";
+	public static final String SELECTED = "selected";
 
 	private Region region;
 	private District district;
@@ -41,6 +42,7 @@ public class PopulationData extends AbstractDomainObject {
 	private Integer population;
 	private Date collectionDate;
 	private Campaign campaign;
+	private String selected;
 
 	@ManyToOne(cascade = {})
 	public Region getRegion() {
@@ -112,6 +114,14 @@ public class PopulationData extends AbstractDomainObject {
 
 	public void setCampaign(Campaign campaign) {
 		this.campaign = campaign;
+	}
+
+	public String getSelected() {
+		return selected;
+	}
+
+	public void setSelected(String selected) {
+		this.selected = selected;
 	}
 	
 	

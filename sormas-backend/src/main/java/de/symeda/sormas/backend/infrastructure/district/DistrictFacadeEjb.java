@@ -47,6 +47,7 @@ import javax.validation.constraints.NotNull;
 import com.vladmihalcea.hibernate.type.util.SQLExtractor;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -505,11 +506,12 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 	}
 	
 	@Override
-	public List<DistrictDto> getAllActiveAsReferenceAndPopulation(Long regionId) {
+	public List<DistrictDto> getAllActiveAsReferenceAndPopulation(Long regionId, CampaignDto campaignDt) {
 		String queryStringBuilder = "select a.\"name\", sum(p.population), a.id, ar.uuid as umid, a.uuid as uimn, p.selected from district a\n"
 				+ "left outer join populationdata p on a.id = p.district_id\n"
 				+ "left outer join region ar on ar.id = "+regionId+"\n"
-				+ "where a.archived = false and p.agegroup = 'AGE_0_4' and a.region_id = "+regionId+"\n"
+				+ "left outer join campaigns ca on p.campaign_id = ca.id \n"
+				+ "where a.archived = false and p.agegroup = 'AGE_0_4' and a.region_id = "+regionId+" and ca.uuid = '"+campaignDt.getUuid()+"'\n"
 				+ "group by a.\"name\", a.id, ar.uuid, a.uuid, p.selected";
 		
 		
@@ -524,7 +526,7 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 		//System.out.println("starting....");
 		
 		resultData.addAll(resultList.stream()
-				.map((result) -> new DistrictDto((String) result[0].toString(), ((BigInteger) result[1]).longValue(), ((BigInteger) result[2]).longValue(), (String) result[3].toString(), (String) result[4].toString(), (boolean) result[5] )).collect(Collectors.toList()));
+				.map((result) -> new DistrictDto((String) result[0].toString(), ((BigInteger) result[1]).longValue(), ((BigInteger) result[2]).longValue(), (String) result[3].toString(), (String) result[4].toString(), (String) result[5].toString())).collect(Collectors.toList()));
 		
 		//System.out.println("ending...." +resultData.size());
 	

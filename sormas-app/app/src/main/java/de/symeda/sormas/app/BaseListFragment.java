@@ -116,16 +116,16 @@ public abstract class BaseListFragment<TListAdapter extends RecyclerView.Adapter
 	public void onResume() {
 		super.onResume();
 
-		final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout) this.getView().findViewById(R.id.swiperefresh);
-		if (swiperefresh != null) {
-			swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-
-				@Override
-				public void onRefresh() {
-					getBaseActivity().synchronizeChangedData();
-				}
-			});
-		}
+//		final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout) this.getView().findViewById(R.id.swiperefresh);
+//		if (swiperefresh != null) {
+//			swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//
+//				@Override
+//				public void onRefresh() {
+//					getBaseActivity().synchronizeChangedData();
+//				}
+//			});
+//		}
 
 		subHeadingHandler.updateSubHeadingTitle();
 	}

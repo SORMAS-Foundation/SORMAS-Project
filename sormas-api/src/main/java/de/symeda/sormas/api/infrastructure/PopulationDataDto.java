@@ -26,6 +26,7 @@ public class PopulationDataDto extends EntityDto {
 	public static final String POPULATION = "population";
 	public static final String COLLECTION_DATE = "collectionDate";
 	public static final String CAMPAIGN = "campaign";
+	public static final String SELECTED = "selected";
 
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
@@ -35,6 +36,7 @@ public class PopulationDataDto extends EntityDto {
 	private Integer population;
 	private Date collectionDate;
 	private CampaignReferenceDto campaign;
+	private String selected;
 
 	public static PopulationDataDto build(Date collectionDate) {
 
@@ -107,6 +109,15 @@ public class PopulationDataDto extends EntityDto {
 	public void setCampaign(CampaignReferenceDto campaign) {
 		this.campaign = campaign;
 	}
+
+	public String getSelected() {
+		return selected;
+	}
+
+	public void setSelected(String selected) {
+		this.selected = selected;
+	}
+	
 	
 	
 }

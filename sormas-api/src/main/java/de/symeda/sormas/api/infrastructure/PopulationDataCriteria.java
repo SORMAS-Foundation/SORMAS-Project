@@ -46,6 +46,11 @@ public class PopulationDataCriteria extends BaseCriteria implements Cloneable {
 		this.community = community;
 		return this;
 	}
+	
+	public PopulationDataCriteria campaign(CampaignReferenceDto campaign) {
+		this.campaign = campaign;
+		return this;
+	}
 
 	public CommunityReferenceDto getCommunity() {
 		return community;
@@ -111,6 +116,13 @@ public class PopulationDataCriteria extends BaseCriteria implements Cloneable {
 	public boolean isCampaignIsNull() {
 		return campaignIsNull;
 	}
+	
+
+	public PopulationDataCriteria campaignIsNull(boolean campaignIsNull) {
+		this.campaignIsNull = campaignIsNull;
+		return this;
+	}
+	
 
 	public void setCampaign(CampaignReferenceDto campaign) {
 		this.campaign = campaign;
