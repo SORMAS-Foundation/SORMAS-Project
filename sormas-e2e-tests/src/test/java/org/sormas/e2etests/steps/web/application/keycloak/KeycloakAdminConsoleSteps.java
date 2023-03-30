@@ -21,6 +21,10 @@ import static org.sormas.e2etests.pages.application.keycloak.KeycloakAdminConsol
 import static org.sormas.e2etests.pages.application.keycloak.KeycloakAdminConsolePage.USER_DISABLED;
 import static org.sormas.e2etests.pages.application.keycloak.KeycloakAdminConsolePage.USER_ID;
 import static org.sormas.e2etests.pages.application.keycloak.KeycloakAdminConsolePage.VIEW_ALL_USERS_BUTTON;
+import static org.sormas.e2etests.pages.application.keycloak.KeycloakAdminConsolePage.ONE_HUNDRED_PER_PAGE_BUTTON;
+import static org.sormas.e2etests.pages.application.keycloak.KeycloakAdminConsolePage.RESULT_IN_TABLE;
+import static org.sormas.e2etests.pages.application.keycloak.KeycloakAdminConsolePage.ITEMS_PER_PAGE_BUTTON;
+
 import static org.sormas.e2etests.pages.application.keycloak.KeycloakAdminConsolePage.getUserIdByName;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
@@ -53,7 +57,7 @@ public class KeycloakAdminConsoleSteps implements En {
         () -> {
           String KEYCLOAK_USERS_TAB =
               runningConfiguration.getEnvironmentUrlForMarket(locale)
-                  + "/keycloak/auth/admin/master/console/#/realms/SORMAS/users";
+                  + "/keycloak/admin/master/console/#/SORMAS/users";
           webDriverHelpers.accessWebSite(KEYCLOAK_USERS_TAB);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(VIEW_ALL_USERS_BUTTON);
         });
@@ -64,16 +68,23 @@ public class KeycloakAdminConsoleSteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(NEXT_PAGE_BUTTON);
         });
     When(
-        "^I count the number of users displayed in Users tab in Keycloak Administrator Console$",
-        () -> {
-          numberOfUsers = 0;
-          do {
-            numberOfUsers += webDriverHelpers.getNumberOfElements(USER_ID);
-            webDriverHelpers.clickOnWebElementBySelector(NEXT_PAGE_BUTTON);
-            TimeUnit.SECONDS.sleep(2);
-          } while (webDriverHelpers.isElementEnabled(NEXT_PAGE_BUTTON));
-          numberOfUsers += webDriverHelpers.getNumberOfElements(USER_ID);
-        });
+      "^I count the number of users displayed in Users tab in Keycloak Administrator Console$",
+              () -> {
+                  numberOfUsers = 0;
+                  webDriverHelpers.clickOnWebElementBySelector(ITEMS_PER_PAGE_BUTTON);
+                  webDriverHelpers.clickOnWebElementBySelector(ONE_HUNDRED_PER_PAGE_BUTTON);
+                  TimeUnit.SECONDS.sleep(2);
+                  numberOfUsers = webDriverHelpers.getNumberOfElements(RESULT_IN_TABLE);
+
+                  do {
+                      numberOfUsers += webDriverHelpers.getNumberOfElements(USER_ID);
+                      webDriverHelpers.clickOnWebElementBySelector(NEXT_PAGE_BUTTON);
+                      TimeUnit.SECONDS.sleep(2);
+                      numberOfUsers += webDriverHelpers.getNumberOfElements(RESULT_IN_TABLE);
+                  } while (webDriverHelpers.isElementEnabled(NEXT_PAGE_BUTTON));
+                  numberOfUsers += webDriverHelpers.getNumberOfElements(USER_ID);
+                  numberOfUsers += webDriverHelpers.getNumberOfElements(RESULT_IN_TABLE);
+              });
     When(
         "^I check that number of users from SORMAS is at least equal to number of users in Keycloak Administrator Console$",
         () -> {
