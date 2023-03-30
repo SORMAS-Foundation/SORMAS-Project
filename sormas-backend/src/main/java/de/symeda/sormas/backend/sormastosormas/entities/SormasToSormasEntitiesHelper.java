@@ -18,6 +18,7 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
@@ -72,15 +73,17 @@ public class SormasToSormasEntitiesHelper {
 		if (districts.isPresent()) {
 			DistrictDto district = districts.get();
 
-			if (caze.getRegion() == null) {
-				caze.setRegion(caze.getResponsibleRegion());
-				caze.setDistrict(caze.getResponsibleDistrict());
-				caze.setCommunity(caze.getResponsibleCommunity());
-			}
+			if (!DataHelper.isSame(caze.getResponsibleDistrict(), district)) {
+				if (caze.getRegion() == null) {
+					caze.setRegion(caze.getResponsibleRegion());
+					caze.setDistrict(caze.getResponsibleDistrict());
+					caze.setCommunity(caze.getResponsibleCommunity());
+				}
 
-			caze.setResponsibleRegion(district.getRegion());
-			caze.setResponsibleDistrict(district.toReference());
-			caze.setResponsibleCommunity(null);
+				caze.setResponsibleRegion(district.getRegion());
+				caze.setResponsibleDistrict(district.toReference());
+				caze.setResponsibleCommunity(null);
+			}
 		}
 	}
 
