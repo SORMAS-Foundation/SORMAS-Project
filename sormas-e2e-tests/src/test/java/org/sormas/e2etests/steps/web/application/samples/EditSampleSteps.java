@@ -238,7 +238,7 @@ public class EditSampleSteps implements En {
 
     When(
         "I click on See samples for this person button",
-        () -> webDriverHelpers.clickOnWebElementBySelector(SEE_SAMPLES_FOR_THIS_PERSON_BUTTON));
+        () -> webDriverHelpers.clickOnWebElementBySelector(SEE_SAMPLES_FOR_THIS_PERSON_BUTTON_DE));
 
     When(
         "I set date sample was collected minus (\\d+) days ago on Sample Edit page",
