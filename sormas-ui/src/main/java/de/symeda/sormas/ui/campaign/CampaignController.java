@@ -96,34 +96,15 @@ public class CampaignController {
 				campaignComponent.addCloneListener(() -> {
 					String newUUId = FacadeProvider.getCampaignFacade().cloneCampaign(campaign.getUuid(),
 							UserProvider.getCurrent().getUuid());
+					
+					
 					campaignComponent.discard();
 					// UI.getCurrent().getNavigator().navigateTo(CampaignDataView.VIEW_NAME + "/?" +
 					// CAMPAIGN + "=" + newUUId);
 
-					// SormasUI.refreshView();
+					 SormasUI.refreshView();
 				}, I18nProperties.getString(Strings.entityCampaign));
 			}
-//			
-
-//			if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
-//				campaignComponent.addCloseOpenListener(() -> {
-//					
-//					FacadeProvider.getCampaignFacade().closeandOpenCampaign(campaign.getUuid(), false);
-//					campaignComponent.discard();
-//					SormasUI.refreshView();
-//				
-//				}, I18nProperties.getString(Strings.entityCampaign));
-//			}
-//			
-//			
-//			if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
-//				campaignComponent.addOpenCloseListener(() -> {
-//					FacadeProvider.getCampaignFacade().closeandOpenCampaign(campaign.getUuid(), true);
-//					campaignComponent.discard();
-//					SormasUI.refreshView();
-//				}, I18nProperties.getString(Strings.entityCampaign));
-//			}
-//			
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
 				final String campaignUuid = campaign.getUuid();
 				boolean closex = FacadeProvider.getCampaignFacade().isClosedd(campaignUuid);
@@ -150,6 +131,7 @@ public class CampaignController {
 				Button archiveCampaignButton = ButtonHelper
 						.createButton(archived ? Captions.actionDearchive : Captions.actionArchive, e -> {
 							campaignComponent.commit();
+							//SormasUI.refreshView();
 							archiveOrDearchiveCampaign(campaign.getUuid(), !archived);
 						}, ValoTheme.BUTTON_LINK);
 
@@ -243,7 +225,6 @@ public class CampaignController {
 
 		};
 
-		// System.out.println("LLLLLLLLLLLLLLLLLLLDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE) && !isCreate) {
 			CampaignDto finalCampaignDto = campaignDto;
@@ -308,10 +289,10 @@ public class CampaignController {
 		campaignComponent.addCommitListener(() -> {
 			if (!campaignEditForm.getFieldGroup().isModified()) {
 				CampaignDto dto = campaignEditForm.getValue();
-				System.out.println(dto.getName() +" +++++++++++++++++++++++++++++ "+dto.getPopulationdata().size());
 				FacadeProvider.getCampaignFacade().saveCampaign(dto);
-				SormasUI.refreshView();
+				//SormasUI.refreshView();
 				callback.run();
+				SormasUI.refreshView();
 			}
 		});
 
@@ -322,7 +303,8 @@ public class CampaignController {
 			CampaignFormDataDto campaignFormData, CampaignReferenceDto campaign,
 			CampaignFormMetaReferenceDto campaignForm, boolean revertFormOnDiscard, boolean showDeleteButton,
 			Runnable commitCallback, Runnable discardCallback) {
-
+		boolean closex = FacadeProvider.getCampaignFacade().isClosedd(campaign.getUuid());
+		
 		CampaignFormDataEditForm form = new CampaignFormDataEditForm(campaignFormData == null);
 		if (campaignFormData == null) {
 
@@ -335,7 +317,7 @@ public class CampaignController {
 
 		final CommitDiscardWrapperComponent<CampaignFormDataEditForm> component = new CommitDiscardWrapperComponent<>(
 				form, form.getFieldGroup());
-
+		if(!closex) {
 		component.addCommitListener(() -> {
 
 			if (!form.getFieldGroup().isModified()) {
@@ -393,25 +375,6 @@ public class CampaignController {
 					return;
 				}
 
-				// catch (InvalidValueException e) {
-
-//			for (Object property : form.getFieldGroup().getBoundPropertyIds()) {
-//				
-//				//System.out.println("_________222222222222222222222222________" +property.toString());
-//				
-//				
-//				Field field = form.getFieldGroup().getField(property);
-//				 if (field instanceof AbstractField) {
-//	                    AbstractField af = (AbstractField) field;
-//	                    af.setValidationVisible(true);
-//	                }
-//				
-//			}
-
-				// Notification.show(I18nProperties.getValidationError(Validations.errorsInForm),
-				// Type.ERROR_MESSAGE);
-				// return;
-				// }
 
 				CampaignFormDataDto formData = form.getValue();
 				FacadeProvider.getCampaignFormDataFacade().saveCampaignFormData(formData);
@@ -442,6 +405,22 @@ public class CampaignController {
 				UI.getCurrent().getNavigator().navigateTo(CampaignFormDataView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityCampaignDataForm));
 		}
+}else {
+	
+	component.addCommitListener(() -> {
+		Notification notf = new Notification("Campaign Closed","Apologies this campaign is no longer accepting data", Notification.TYPE_TRAY_NOTIFICATION, true);
+		notf.setPosition(Notification.POSITION_TOP_RIGHT);
+		notf.show(UI.getCurrent().getPage());
+		
+	});
+	
+	component.addDiscardListener(() -> {
+		Notification notf = new Notification("Campaign Closed","Apologies this campaign is no longer accepting data", Notification.TYPE_TRAY_NOTIFICATION, true);
+		notf.setPosition(Notification.POSITION_TOP_RIGHT);
+		notf.show(UI.getCurrent().getPage());
+		
+	});
+}
 
 		return component;
 	}
@@ -474,7 +453,12 @@ public class CampaignController {
 			CampaignFormDataDto campaignFormData, CampaignReferenceDto campaign,
 			CampaignFormMetaReferenceDto campaignForm, boolean revertFormOnDiscard, boolean showDeleteButton,
 			Runnable commitCallback, Runnable discardCallback, Runnable saveandcontdCallback, boolean showCloneButton) {
-
+		
+		boolean closex = FacadeProvider.getCampaignFacade().isClosedd(campaign.getUuid());
+//		
+//		System.out.println("========================================================= "+closex);
+//		
+//		if (closex) {
 		CampaignFormDataEditForm form = new CampaignFormDataEditForm(campaignFormData == null);
 		if (campaignFormData == null) {
 
@@ -490,68 +474,72 @@ public class CampaignController {
 		}
 		final UserDto currentUsex = UserProvider.getCurrent().getUser();
 		form.setValue(campaignFormData);
-
+		
+		
+		
+		
 		final CommitDiscardWrapperComponent<CampaignFormDataEditForm> component = new CommitDiscardWrapperComponent<>(
 				form, form.getFieldGroup());
+		
+		
+			component.addCommitListener(() -> {
 
-		component.addCommitListener(() -> {
+				if (!form.getFieldGroup().isModified()) {
 
-			if (!form.getFieldGroup().isModified()) {
+					try {
+						form.setCommitterBoolen();
+						form.validate();
+					} catch (InvalidValueException ex)
 
-				try {
-					form.setCommitterBoolen();
-					form.validate();
-				} catch (InvalidValueException ex)
+					{
 
-				{
+						StringBuilder htmlMsg = new StringBuilder();
+						String message = ex.getMessage();
+						if (message != null && !message.isEmpty()) {
+							htmlMsg.append(ex.getHtmlMessage());
+						} else {
 
-					StringBuilder htmlMsg = new StringBuilder();
-					String message = ex.getMessage();
-					if (message != null && !message.isEmpty()) {
-						htmlMsg.append(ex.getHtmlMessage());
-					} else {
+							InvalidValueException[] causes = ex.getCauses();
+							if (causes != null) {
 
-						InvalidValueException[] causes = ex.getCauses();
-						if (causes != null) {
-
-							InvalidValueException firstCause = null;
-							boolean multipleCausesFound = false;
-							for (int i = 0; i < causes.length; i++) {
-								if (!causes[i].isInvisible()) {
-									if (firstCause == null) {
-										firstCause = causes[i];
-									} else {
-										multipleCausesFound = true;
-										break;
-									}
-								}
-							}
-							if (multipleCausesFound) {
-								htmlMsg.append("<ul>");
-								// Alle nochmal
+								InvalidValueException firstCause = null;
+								boolean multipleCausesFound = false;
 								for (int i = 0; i < causes.length; i++) {
 									if (!causes[i].isInvisible()) {
-										htmlMsg.append("<li style=\"color: #FFF;\">").append(findHtmlMessage(causes[i]))
-												.append("</li>");
+										if (firstCause == null) {
+											firstCause = causes[i];
+										} else {
+											multipleCausesFound = true;
+											break;
+										}
 									}
 								}
-								htmlMsg.append("</ul>");
-							} else if (firstCause != null) {
-								htmlMsg.append(findHtmlMessage(firstCause));
-								String additionalInfo = findHtmlMessageDetails(firstCause);
-								if (nonNull(additionalInfo) && !additionalInfo.isEmpty()) {
-									htmlMsg.append(" : ");
-									htmlMsg.append(findHtmlMessageDetails(firstCause));
+								if (multipleCausesFound) {
+									htmlMsg.append("<ul>");
+									// Alle nochmal
+									for (int i = 0; i < causes.length; i++) {
+										if (!causes[i].isInvisible()) {
+											htmlMsg.append("<li style=\"color: #FFF;\">")
+													.append(findHtmlMessage(causes[i])).append("</li>");
+										}
+									}
+									htmlMsg.append("</ul>");
+								} else if (firstCause != null) {
+									htmlMsg.append(findHtmlMessage(firstCause));
+									String additionalInfo = findHtmlMessageDetails(firstCause);
+									if (nonNull(additionalInfo) && !additionalInfo.isEmpty()) {
+										htmlMsg.append(" : ");
+										htmlMsg.append(findHtmlMessageDetails(firstCause));
+									}
 								}
+
 							}
-
 						}
-					}
 
-					new Notification(I18nProperties.getString(Strings.messageCheckInputData), htmlMsg.toString(),
-							Type.ERROR_MESSAGE, true).show(Page.getCurrent());
-					return;
-				}
+						new Notification(I18nProperties.getString(Strings.messageCheckInputData), htmlMsg.toString(),
+								Type.ERROR_MESSAGE, true).show(Page.getCurrent());
+						return;
+					}
 
 //				{
 //					
@@ -560,122 +548,124 @@ public class CampaignController {
 //					return;
 //				}
 
-				CampaignFormDataDto formData = form.getValue();
-				FacadeProvider.getCampaignFormDataFacade().saveCampaignFormData(formData);
-				if (commitCallback != null) {
-					commitCallback.run();
-					UI.getCurrent().getNavigator()
-							.navigateTo(CampaignDataView.VIEW_NAME + "/?" + CAMPAIGN + "=" + campaign.getUuid());
+					CampaignFormDataDto formData = form.getValue();
+					FacadeProvider.getCampaignFormDataFacade().saveCampaignFormData(formData);
+					if (commitCallback != null) {
+						commitCallback.run();
+						UI.getCurrent().getNavigator()
+								.navigateTo(CampaignDataView.VIEW_NAME + "/?" + CAMPAIGN + "=" + campaign.getUuid());
+					}
 				}
-			}
-		});
+			});
 
-		// TODO duplicate form
-		component.addCommitandContListener(() -> {
+			// TODO duplicate form
+			component.addCommitandContListener(() -> {
 
-			if (!form.getFieldGroup().isModified()) {
+				if (!form.getFieldGroup().isModified()) {
 
-				try {
-					form.setCommitterBoolen();
-					form.validate();
-				} catch (InvalidValueException ex) {
+					try {
+						form.setCommitterBoolen();
+						form.validate();
+					} catch (InvalidValueException ex) {
 
-					StringBuilder htmlMsg = new StringBuilder();
-					String message = ex.getMessage();
-					if (message != null && !message.isEmpty()) {
-						htmlMsg.append(ex.getHtmlMessage());
-					} else {
+						StringBuilder htmlMsg = new StringBuilder();
+						String message = ex.getMessage();
+						if (message != null && !message.isEmpty()) {
+							htmlMsg.append(ex.getHtmlMessage());
+						} else {
 
-						InvalidValueException[] causes = ex.getCauses();
-						if (causes != null) {
+							InvalidValueException[] causes = ex.getCauses();
+							if (causes != null) {
 
-							InvalidValueException firstCause = null;
-							boolean multipleCausesFound = false;
-							for (int i = 0; i < causes.length; i++) {
-								if (!causes[i].isInvisible()) {
-									if (firstCause == null) {
-										firstCause = causes[i];
-									} else {
-										multipleCausesFound = true;
-										break;
-									}
-								}
-							}
-							if (multipleCausesFound) {
-								htmlMsg.append("<ul>");
-								// Alle nochmal
+								InvalidValueException firstCause = null;
+								boolean multipleCausesFound = false;
 								for (int i = 0; i < causes.length; i++) {
 									if (!causes[i].isInvisible()) {
-										htmlMsg.append("<li style=\"color: #FFF;\">").append(findHtmlMessage(causes[i]))
-												.append("</li>");
+										if (firstCause == null) {
+											firstCause = causes[i];
+										} else {
+											multipleCausesFound = true;
+											break;
+										}
 									}
 								}
-								htmlMsg.append("</ul>");
-							} else if (firstCause != null) {
-								htmlMsg.append(findHtmlMessage(firstCause));
-								String additionalInfo = findHtmlMessageDetails(firstCause);
-								if (nonNull(additionalInfo) && !additionalInfo.isEmpty()) {
-									htmlMsg.append(" : ");
-									htmlMsg.append(findHtmlMessageDetails(firstCause));
+								if (multipleCausesFound) {
+									htmlMsg.append("<ul>");
+									// Alle nochmal
+									for (int i = 0; i < causes.length; i++) {
+										if (!causes[i].isInvisible()) {
+											htmlMsg.append("<li style=\"color: #FFF;\">")
+													.append(findHtmlMessage(causes[i])).append("</li>");
+										}
+									}
+									htmlMsg.append("</ul>");
+								} else if (firstCause != null) {
+									htmlMsg.append(findHtmlMessage(firstCause));
+									String additionalInfo = findHtmlMessageDetails(firstCause);
+									if (nonNull(additionalInfo) && !additionalInfo.isEmpty()) {
+										htmlMsg.append(" : ");
+										htmlMsg.append(findHtmlMessageDetails(firstCause));
+									}
 								}
+
 							}
-
 						}
-					}
 
-					new Notification(I18nProperties.getString(Strings.messageCheckInputData), htmlMsg.toString(),
-							Type.ERROR_MESSAGE, true).show(Page.getCurrent());
-					return;
-				}
+						new Notification(I18nProperties.getString(Strings.messageCheckInputData), htmlMsg.toString(),
+								Type.ERROR_MESSAGE, true).show(Page.getCurrent());
+						return;
+					}
 
 //				{
 //					Notification.show(I18nProperties.getValidationError(Validations.errorsInForm), Type.ERROR_MESSAGE);
 //					return;
 //				}
 
-				CampaignFormDataDto formData = form.getValue();
-				FacadeProvider.getCampaignFormDataFacade().saveCampaignFormData(formData);
-				if (saveandcontdCallback != null) {
+					CampaignFormDataDto formData = form.getValue();
+					FacadeProvider.getCampaignFormDataFacade().saveCampaignFormData(formData);
+					if (saveandcontdCallback != null) {
 
-					saveandcontdCallback.run();
-					form.resetFormValues();
+						saveandcontdCallback.run();
+						form.resetFormValues();
 
-					discardCallback.run();
+						discardCallback.run();
 
-					ControllerProvider.getCampaignController().navigateToFormDataView(campaign.getUuid(),
-							campaignForm.getUuid());
-					// ControllerProvider.getCampaignController().createCampaignDataForm(campaign,
-					// campaignForm);
+						ControllerProvider.getCampaignController().navigateToFormDataView(campaign.getUuid(),
+								campaignForm.getUuid());
+						// ControllerProvider.getCampaignController().createCampaignDataForm(campaign,
+						// campaignForm);
 
-					// UI.getCurrent().getNavigator().navigateTo(CampaignDataView.VIEW_NAME + "/?" +
-					// CAMPAIGN + "=" + campaign.getUuid());
+						// UI.getCurrent().getNavigator().navigateTo(CampaignDataView.VIEW_NAME + "/?" +
+						// CAMPAIGN + "=" + campaign.getUuid());
+					}
 				}
-			}
-			// System.out.println("))))))111111111111111111111111111111))))))))))");
+				// System.out.println("))))))111111111111111111111111111111))))))))))");
 
-		}, I18nProperties.getString(Strings.entityCampaignDataForm));
-
-		component.addDiscardListener(() -> UI.getCurrent().getNavigator()
-				.navigateTo(CampaignDataView.VIEW_NAME + "/?" + CAMPAIGN + "=" + campaign.getUuid()));
-
-		if (revertFormOnDiscard) {
-			component.addDiscardListener(form::resetFormValues);
-		}
-
-		if (discardCallback != null) {
-			component.addDiscardListener(discardCallback::run);
-		}
-
-		if (showDeleteButton && UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
-			String campaignFormDataUuid = campaignFormData.getUuid();
-
-			component.addDeleteListener(() -> {
-				FacadeProvider.getCampaignFormDataFacade().deleteCampaignFormData(campaignFormDataUuid);
-				UI.getCurrent().getNavigator().navigateTo(CampaignFormDataView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityCampaignDataForm));
-		}
+
+			component.addDiscardListener(() -> UI.getCurrent().getNavigator()
+					.navigateTo(CampaignDataView.VIEW_NAME + "/?" + CAMPAIGN + "=" + campaign.getUuid()));
+
+			if (revertFormOnDiscard) {
+				component.addDiscardListener(form::resetFormValues);
+			}
+
+			if (discardCallback != null) {
+				component.addDiscardListener(discardCallback::run);
+			}
+
+			if (showDeleteButton && UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
+				String campaignFormDataUuid = campaignFormData.getUuid();
+
+				component.addDeleteListener(() -> {
+					FacadeProvider.getCampaignFormDataFacade().deleteCampaignFormData(campaignFormDataUuid);
+					UI.getCurrent().getNavigator().navigateTo(CampaignFormDataView.VIEW_NAME);
+				}, I18nProperties.getString(Strings.entityCampaignDataForm));
+			}
+		
 
 		return component;
+
 	}
 
 	private CampaignDto getCampaign(String uuid) {

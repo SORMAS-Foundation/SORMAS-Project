@@ -24,8 +24,9 @@ import javax.ejb.Remote;
 
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.infrastructure.GeoLocationFacade;
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
+
+import de.symeda.sormas.api.campaign.CampaignDto;
 
 @Remote
 public interface RegionFacade extends GeoLocationFacade<RegionDto, RegionIndexDto, RegionReferenceDto, RegionCriteria> {
@@ -38,7 +39,7 @@ public interface RegionFacade extends GeoLocationFacade<RegionDto, RegionIndexDt
 
 	List<RegionReferenceDto> getAllActiveAsReference();
 	
-	List<RegionDto> getAllActiveAsReferenceAndPopulation(Long areaId);
+	List<RegionDto> getAllActiveAsReferenceAndPopulation(Long areaId, String campaignDto);
 
 	Page<RegionIndexDto> getIndexPage(RegionCriteria regionCriteria, Integer offset, Integer size, List<SortProperty> sortProperties);
 

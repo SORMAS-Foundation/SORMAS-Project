@@ -28,20 +28,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/swiperefresh"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewForList"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/formListSectionBackground0"
                 />
-
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <TextView
             android:id="@+id/empty_list_hint"

@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserType;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.configuration.infrastructure.InfrastructureImportLayout;
 import de.symeda.sormas.ui.configuration.infrastructure.PopulationDataView;
@@ -418,7 +419,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 		treeGrid.setWidthFull();
 		treeGrid.setHeightFull();
 		
-		List<AreaDto> areas = FacadeProvider.getAreaFacade().getAllActiveAsReferenceAndPopulation();
+		List<AreaDto> areas = FacadeProvider.getAreaFacade().getAllActiveAsReferenceAndPopulation(campaignDto);
 		//List<RegionDto> regions_ = FacadeProvider.getRegionFacade().getAllActiveAsReferenceAndPopulation());
 		
 		treeGrid.setItems(generateTreeGridData(), CampaignTreeGridDto::getRegionData);
@@ -428,10 +429,9 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 	//  treeGrid.addColumn(CampaignTreeGridDto::getUuid).setCaption("uuid");
 	   // treeGrid.addColumn(CampaignTreeGridDto::getParentUuid).setCaption("parentuuid");
 	    treeGrid.addColumn(CampaignTreeGridDto::getPopulationData).setCaption("Population");
-	    treeGrid.addColumn(CampaignTreeGridDto::isSavedData).setCaption("Saved?");
+	   // treeGrid.addColumn(CampaignTreeGridDto::getSavedData).setCaption("Saved?");
 	    
-//	    ((Column<CampaignTreeGridDto, Boolean>) treeGrid.getColumn("Saved?")).setRenderer(value -> String.valueOf(value),
-//				new ActiveRenderer());
+	  //  treeGrid.getColumn("Saved?").setRenderer(value -> String.valueOf(value), new ActiveRenderer());
 	    
 	    
 	    MultiSelectionModel<CampaignTreeGridDto> selectionModel
@@ -624,7 +624,7 @@ if(campaignDto != null) {
 			poplayout.setComponentAlignment(lblIntroduction, Alignment.MIDDLE_CENTER);
 
 			Button btnImport = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
-				Window window = VaadinUiUtil.showPopupWindow(new InfrastructureImportLayout(InfrastructureType.POPULATION_DATA));
+				Window window = VaadinUiUtil.showPopupWindow(new InfrastructureImportLayout(InfrastructureType.POPULATION_DATA, campaignDto));
 				window.setCaption(I18nProperties.getString(Strings.headingImportPopulationData));
 			}, CssStyles.VSPACE_4, ValoTheme.BUTTON_PRIMARY);
 			
@@ -739,6 +739,7 @@ if(campaignDto != null) {
 		campaignDashboardGridComponent.discardGrid();
 		campaignDashboardGridComponent_1.discardGrid();
 		campaignDashboardGridComponent_2.discardGrid();
+		SormasUI.refreshView();
 	}
 
 	@Override
@@ -756,18 +757,19 @@ if(campaignDto != null) {
 	
 	private List<CampaignTreeGridDto> generateTreeGridData() {
         List<CampaignTreeGridDto> gridData = new ArrayList<>();
-        List<AreaDto> areas = FacadeProvider.getAreaFacade().getAllActiveAsReferenceAndPopulation();
+        List<AreaDto> areas = FacadeProvider.getAreaFacade().getAllActiveAsReferenceAndPopulation(campaignDto);
 		
         for (AreaDto area_ : areas) {
         	CampaignTreeGridDto areaData = new CampaignTreeGridDto(area_.getName(), area_.getAreaid(), "Area", area_.getUuid_(), "area");
-        	List<RegionDto> regions_ = FacadeProvider.getRegionFacade().getAllActiveAsReferenceAndPopulation(area_.getAreaid());
+        	List<RegionDto> regions_ = FacadeProvider.getRegionFacade().getAllActiveAsReferenceAndPopulation(area_.getAreaid(), campaignDto.getUuid());
         	 for (RegionDto regions_x : regions_) {
         		 CampaignTreeGridDto regionData = new CampaignTreeGridDto(regions_x.getName(), regions_x.getRegionId(), regions_x.getAreaUuid_(), regions_x.getUuid_(), "region");
-        		 List<DistrictDto> district_ = FacadeProvider.getDistrictFacade().getAllActiveAsReferenceAndPopulation(regions_x.getRegionId());
+        		 List<DistrictDto> district_ = FacadeProvider.getDistrictFacade().getAllActiveAsReferenceAndPopulation(regions_x.getRegionId(), campaignDto);
         		 ArrayList arr = new ArrayList<>();
         		 for (DistrictDto district_x : district_) {
-        			 arr.add(new CampaignTreeGridDtoImpl(district_x.getName(), district_x.getRegionId(), district_x.getPopulationData(), district_x.getRegionUuid_(), district_x.getUuid_(), "district", district_x.isSelectedPopulationData()));
-        		};
+        			 arr.add(new CampaignTreeGridDtoImpl(district_x.getName(), district_x.getPopulationData(), district_x.getRegionId(),
+        					 district_x.getRegionUuid_(), district_x.getUuid_(), "district", district_x.getSelectedPopulationData()));
+         		};
         		 
         		 regionData.setRegionData(arr);
         		 

@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.infrastructure.GeoLocationFacade;
 
 
@@ -13,7 +14,7 @@ public interface AreaFacade extends GeoLocationFacade<AreaDto, AreaDto, AreaRefe
 
 	List<AreaReferenceDto> getAllActiveAsReference();
 	
-	List<AreaDto> getAllActiveAsReferenceAndPopulation();
+	List<AreaDto> getAllActiveAsReferenceAndPopulation(CampaignDto campaignDto);
 
 	boolean isUsedInOtherInfrastructureData(Collection<String> areaUuids);
 

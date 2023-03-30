@@ -204,9 +204,9 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 		
 		Predicate filter = service.buildCriteriaFilter(criteria, cb, root);
 		if(criteria.getCampaign() != null) {
-			System.out.println("DEBUGGER -----============ "+criteria.getCampaign().getUuid());
+			Predicate filter_ = CriteriaBuilderHelper.and(cb, filter, cb.equal(root.join(PopulationData.CAMPAIGN, JoinType.LEFT).get(Campaign.UUID), criteria.getCampaign().getUuid()));
+			Predicate filterx = CriteriaBuilderHelper.and(cb, filter_, cb.equal(root.get("selected"), "true"));
 			
-			Predicate filterx = CriteriaBuilderHelper.and(cb, filter, cb.equal(root.join(PopulationData.CAMPAIGN, JoinType.LEFT).get(Campaign.UUID), criteria.getCampaign().getUuid()));
 			cq.where(filterx);
 		}else {
 			cq.where(filter);
@@ -222,9 +222,9 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 	public List<Object[]> getPopulationDataForExport() {
 //TODO addd campaign to the selection
 		//@formatter:off
-		return em.createNativeQuery("SELECT " + Campaign.TABLE_NAME + "." + Campaign.UUID + " AS campaignname, " + Region.TABLE_NAME + "." + Region.NAME + " AS regionname, "
+		return em.createNativeQuery("SELECT "+ Region.TABLE_NAME + "." + Region.NAME + " AS regionname, "
 				+ District.TABLE_NAME + "." + District.NAME + " AS districtname, "
-				+ Community.TABLE_NAME + "." + Community.NAME + " AS communityname, " + PopulationData.AGE_GROUP + ", "
+				+ Community.TABLE_NAME + "." + Community.NAME + " AS communityname," + Campaign.TABLE_NAME + "." + Campaign.UUID + " AS campaignname, " + PopulationData.AGE_GROUP + ", "
 				+ PopulationData.SEX + ", " + PopulationData.POPULATION
 				+ " FROM " + PopulationData.TABLE_NAME
 				+ " LEFT JOIN " + Campaign.TABLE_NAME + " ON " + PopulationData.CAMPAIGN + "_id = "
@@ -356,8 +356,9 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 		Predicate areaFilter = cb.equal(areaJoin.get(Area.UUID), areaUuid);
 		Predicate ageFilter = cb.and(cb.equal(root.get(PopulationData.AGE_GROUP), ageGroup));
 		Predicate campaignFilter = cb.and(cb.equal(campaignJoin.get(Campaign.UUID), criteria.getCampaign().getUuid()));
-
-		cq.where(areaFilter, ageFilter, campaignFilter);
+		Predicate filter_ = CriteriaBuilderHelper.and(cb, campaignFilter, cb.equal(root.get("selected"), "true"));
+			
+		cq.where(areaFilter, ageFilter, filter_);
 		cq.select(root.get(PopulationData.POPULATION));
 		System.out.println("DEBUGGER 5678ijhyuio ___xxxxxcccccc____TOtalpopulation____________________________ "+SQLExtractor.from(em.createQuery(cq)));
 
@@ -388,7 +389,9 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 			System.out.println("DEBUGGERccccccccc -----============ "+criteria.getCampaign().getUuid());
 			//campaignService
 			Predicate filterx = CriteriaBuilderHelper.and(cb, ageFilter, cb.equal(root.join(PopulationData.CAMPAIGN, JoinType.LEFT).get(Campaign.UUID), criteria.getCampaign().getUuid()));
-			cq.where(filterx);
+			Predicate filter_ = CriteriaBuilderHelper.and(cb, filterx, cb.equal(root.get("selected"), "true"));
+			
+			cq.where(filterx, filter_);
 		}else {
 			cq.where(ageFilter);
 		}
@@ -475,23 +478,26 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 				String buildsql = "";
 				String buildsql_ = "";
 				for(PopulationDataDto dfc : savePopulationList) {
-					buildsql = buildsql + districtService.getByUuid(dfc.getDistrict().getUuid())  +", ";
+				//	System.out.println("=============== ");
+					buildsql = buildsql + districtService.getByUuid(dfc.getDistrict().getUuid()).getId()  +", ";
 					buildsql_ = campaignService.getByUuid(dfc.getCampaign().getUuid()).getId() +"";
 					//dfc.getCampaign().getUuid()
 				}
 				buildsql = buildsql + "#";
 				
 				{
-				String sqlstatemtnt = "update populationdata set selected = false where campaign_id = "+buildsql_+";";
+					
+				String sqlstatemtnt = "update populationdata set selected = 'false' where campaign_id = "+buildsql_+";";
 				System.out.println(sqlstatemtnt);
-				em.createNativeQuery(sqlstatemtnt);
+				em.createNativeQuery(sqlstatemtnt).executeUpdate();
 				}
 				
 				{
-					String sqlstatemtnt_ = "update populationdata set selected = true where campaign_id = "+buildsql_+""
-							+ " and district_id in ("+buildsql.replace(",#", "") +");";
+					String sqlstatemtnt_ = "update populationdata set selected = 'true' where campaign_id = "+buildsql_+""
+							+ " and district_id in ("+buildsql.replace(", #", "") +");";
+					
 					System.out.println(sqlstatemtnt_);
-					em.createNativeQuery(sqlstatemtnt_);
+					em.createNativeQuery(sqlstatemtnt_).executeUpdate();
 				}
 				
 				
