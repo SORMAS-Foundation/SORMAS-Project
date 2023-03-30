@@ -33,7 +33,7 @@ public class EditActionPage {
   public static final By DOWNLOAD_LAST_UPDATED_DOCUMENT =
       By.xpath("(//div[@class='v-button v-widget caption-overflow-label v-button-caption-overflow-label'])[1]");
   public static final By DELETE_LAST_UPDATED_DOCUMENT =
-      By.xpath("(//div[@class='v-button v-widget'])[2]");
+      By.xpath("(//div[@class='v-button v-widget caption-overflow-label v-button-caption-overflow-label'])[2]");
   public static final By NO_DOCUMENT_TEXT =
       By.xpath("(//div[@class='v-label v-widget v-label-undef-w'])[3]");
 }
