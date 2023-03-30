@@ -153,19 +153,18 @@ public class CampaignDataView extends AbstractCampaignView {
 			importanceFilterSwitcher.setVisible(value != null);
 			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
 			grid.reload();
-			
+
 			executeJavaScript();
 		});
 
 		importanceFilterSwitcher.addValueChangeListener(e -> {
 			grid.reload();
 			executeJavaScript();
-			//navigateTo(criteria);
+			// navigateTo(criteria);
 			createFormMetaChangedCallback().accept((CampaignFormMetaReferenceDto) filterForm
 					.getField(CampaignFormDataCriteria.CAMPAIGN_FORM_META).getValue());
 			rowsCount.update(grid.getItemCount());
 		});
-		
 
 		mainLayout.addComponent(rowsCount);
 		mainLayout.addComponent(grid);
@@ -289,7 +288,7 @@ public class CampaignDataView extends AbstractCampaignView {
 			// System.out.println("777777777777777777777 " +
 			// criteria.toUrlParams().toString());
 
-			//grid.reload();
+			// grid.reload();
 			executeJavaScript();
 			rowsCount.update(grid.getItemCount());
 		});
@@ -438,9 +437,8 @@ public class CampaignDataView extends AbstractCampaignView {
 			criteria.setRegion(criteria.getRegion());
 			criteria.setDistrict(criteria.getDistrict());
 			criteria.setCommunity(criteria.getCommunity());
-			
-		}
 
+		}
 
 		filterForm.addResetHandler(e -> {
 			ViewModelProviders.of(CampaignDataView.class).remove(CampaignFormDataCriteria.class);
@@ -450,7 +448,6 @@ public class CampaignDataView extends AbstractCampaignView {
 			rowsCount.update(grid.getItemCount());
 		});
 
-		
 		campaignSelector.addValueChangeListener(e -> {
 			criteria.setCampaign(campaignSelector.getValue());
 			grid.reload();
@@ -467,34 +464,35 @@ public class CampaignDataView extends AbstractCampaignView {
 			executeJavaScript();
 			rowsCount.update(grid.getItemCount());
 		});
-		
+
 		// apply button action
-				filterForm.addApplyHandler(e -> {
-					criteria.setCampaign(campaignSelector.getValue());
-					criteria.setFormType(campaignFormPhaseSelector.getValue().toString());
-					UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
-					System.out.println(UI.getCurrent().getSession().getCurrent().getAttribute("lastcriteria"));
-					grid.reload();
-					executeJavaScript();
-					rowsCount.update(grid.getItemCount());
-					
-				});
-				filterForm.addValueChangeListener(e -> {
-					if (!filterForm.hasFilter() && campaignSelector == null) {
-						navigateTo(null);
-						executeJavaScript();
-					} else if (filterForm.hasFilter() && campaignSelector != null){
-//						filterForm.setValue(criteria);
-						callBackFormData();
-					}
-				});
-				
+		filterForm.addApplyHandler(e -> {
+			criteria.setCampaign(campaignSelector.getValue());
+			criteria.setFormType(campaignFormPhaseSelector.getValue().toString());
+			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
+			System.out.println(UI.getCurrent().getSession().getCurrent().getAttribute("lastcriteria"));
+			grid.reload();
+			executeJavaScript();
+			rowsCount.update(grid.getItemCount());
+
+		});
+		filterForm.addValueChangeListener(e -> {
+			if (!filterForm.hasFilter() && campaignSelector == null) {
+				navigateTo(null);
+				executeJavaScript();
+			} else if (filterForm.hasFilter() && campaignSelector != null) {
+				UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria",
+						criteria.toUrlParams().toString());
+				rowsCount.update(grid.getItemCount());
+			}
+		});
+
 		callBackFormData();
-	
+
 		return filterForm;
-		
+
 	}
-	
+
 	public void callBackFormData() {
 		filterForm.setFormMetaChangedCallback(createFormMetaChangedCallback());
 		grid.reload();
@@ -507,7 +505,7 @@ public class CampaignDataView extends AbstractCampaignView {
 			grid.addDefaultColumns();
 			executeJavaScript();
 			if (formMetaReference != null) {
-				
+
 				CampaignFormMetaDto formMeta = FacadeProvider.getCampaignFormMetaFacade()
 						.getCampaignFormMetaByUuid(formMetaReference.getUuid());
 				Language userLanguage = UserProvider.getCurrent().getUser().getLanguage();
@@ -538,10 +536,10 @@ public class CampaignDataView extends AbstractCampaignView {
 					}
 				}
 				executeJavaScript();
-				}
+			}
 			executeJavaScript();
-			};
-		
+		};
+
 	}
 
 	private Consumer<CampaignFormMetaReferenceDto> createFormMetaChangedCallbackPhase() {
@@ -572,18 +570,16 @@ public class CampaignDataView extends AbstractCampaignView {
 						}
 						if (caption == null) {
 							caption = element.getCaption();
-									executeJavaScript();
+							executeJavaScript();
 						}
 
 						if (caption != null) {
 							grid.addCustomColumn(element.getId(), caption);
 							executeJavaScript();
 							rowsCount.update(grid.getItemCount());
-
 						}
 					}
 				}
-
 			}
 		};
 	}
