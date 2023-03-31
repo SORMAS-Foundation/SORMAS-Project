@@ -19,6 +19,7 @@ package de.symeda.sormas.api.statistics;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.temporal.IsoFields;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -49,6 +50,7 @@ import de.symeda.sormas.api.user.UserRoleFacade;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.api.utils.UtilDate;
 
 public final class StatisticsHelper {
 
@@ -241,12 +243,9 @@ public final class StatisticsHelper {
 	 *            Needed for StatisticsCaseAttribute.ONSET_TIME, REPORT_TIME, OUTCOME_TIME
 	 * @return
 	 */
-	public static List<StatisticsGroupingKey> getTimeGroupingKeys(
-		StatisticsCaseSubAttribute subAttribute,
-		Date dateFrom,
-		Date dateTo) {
+	public static List<StatisticsGroupingKey> getTimeGroupingKeys(StatisticsCaseSubAttribute subAttribute, Date dateFrom, Date dateTo) {
 
-		if (dateFrom == null && dateTo == null){
+		if (dateFrom == null && dateTo == null) {
 			return new ArrayList<>();
 		}
 
@@ -276,25 +275,31 @@ public final class StatisticsHelper {
 			return epiWeeks;
 		case QUARTER_OF_YEAR:
 			List<StatisticsGroupingKey> quarterOfYearList = new ArrayList<>();
-			QuarterOfYear earliestQuarter = new QuarterOfYear(new Quarter(1), new Year(earliest.getYear()));
-			QuarterOfYear latestQuarter = new QuarterOfYear(new Quarter(4), new Year(latest.getYear()));
-			while (earliestQuarter.getYear().getValue() <= latestQuarter.getYear().getValue()) {
-				quarterOfYearList.add(new QuarterOfYear(earliestQuarter.getQuarter(), earliestQuarter.getYear()));
-				earliestQuarter.increaseQuarter();
+			QuarterOfYear earliestQuarter = new QuarterOfYear(new Quarter(earliest.get(IsoFields.QUARTER_OF_YEAR)), new Year(earliest.getYear()));
+			QuarterOfYear latestQuarter = new QuarterOfYear(new Quarter(latest.get(IsoFields.QUARTER_OF_YEAR)), new Year(latest.getYear()));
+			while (earliestQuarter.compareTo(latestQuarter) <= 0) {
+				quarterOfYearList.add(earliestQuarter);
+				earliestQuarter = earliestQuarter.createNextQuarter();
 			}
 			return quarterOfYearList;
 		case MONTH_OF_YEAR:
 			List<StatisticsGroupingKey> monthOfYearList = new ArrayList<>();
 			for (int year = earliest.getYear(); year <= latest.getYear(); year++) {
 				for (Month month : Month.values()) {
-					monthOfYearList.add(new MonthOfYear(month, year));
+					if ((earliest.getYear() == year && earliest.getMonth().getValue() <= month.getMonthNumber())
+						|| (latest.getYear() == year && latest.getMonth().getValue() >= month.getMonthNumber())
+						|| (year > earliest.getYear() && year < latest.getYear())) {
+						monthOfYearList.add(new MonthOfYear(month, year));
+					}
 				}
 			}
 			return monthOfYearList;
 		case EPI_WEEK_OF_YEAR:
 			List<StatisticsGroupingKey> epiWeekOfYearList = new ArrayList<>();
 			for (int year = earliest.getYear(); year <= latest.getYear(); year++) {
-				epiWeekOfYearList.addAll(DateHelper.createEpiWeekList(year));
+				epiWeekOfYearList.addAll(
+					DateHelper
+						.createEpiWeekListFromInterval(DateHelper.getEpiWeek(UtilDate.from(earliest)), DateHelper.getEpiWeek(UtilDate.from(latest))));
 			}
 			return epiWeekOfYearList;
 		default:

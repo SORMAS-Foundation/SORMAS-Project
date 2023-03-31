@@ -80,6 +80,11 @@ import de.symeda.sormas.backend.util.QueryHelper;
 @Stateless(name = "CaseStatisticsFacade")
 public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 
+	private static final String MISSING_ROW_MIN = "missingRowMin";
+	private static final String MISSING_ROW_MAX = "missingRowMax";
+	private static final String MISSING_COLUMN_MIN = "missingColumnMin";
+	private static final String MISSING_COLUMN_MAX = "missingColumnMax";
+
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
 
@@ -190,8 +195,8 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 						regionFacade,
 						districtFacade,
 						userRoleFacade,
-						(Date) caseGroupRangeResults[0],
-						(Date) caseGroupRangeResults[1]);
+						MISSING_ROW_MIN.equals(caseGroupRangeResults[0]) ? null : (Date) caseGroupRangeResults[0],
+						MISSING_ROW_MAX.equals(caseGroupRangeResults[1]) ? null : (Date) caseGroupRangeResults[1]);
 				}
 			} else {
 				allRowKeys = Arrays.asList((StatisticsGroupingKey) null);
@@ -208,8 +213,8 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 						regionFacade,
 						districtFacade,
 						userRoleFacade,
-						(Date) caseGroupRangeResults[2],
-						(Date) caseGroupRangeResults[3]);
+						MISSING_COLUMN_MIN.equals(caseGroupRangeResults[2]) ? null : (Date) caseGroupRangeResults[2],
+						MISSING_COLUMN_MAX.equals(caseGroupRangeResults[3]) ? null : (Date) caseGroupRangeResults[3]);
 				}
 			} else {
 				allColumnKeys = Arrays.asList((StatisticsGroupingKey) null);
@@ -325,11 +330,11 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 			queryBuilder.append(
 				rowSelect != null
 					? "min(" + rowSelect + ") as minRow," + " max(" + rowSelect + ") as maxRow, "
-					: "null as tempRowMin" + ", " + "null as tempRowMax" + ", ");
+					: " '" + MISSING_ROW_MIN + "' as tempRowMin" + ", '" + MISSING_ROW_MAX + "' as tempRowMax" + ", ");
 			queryBuilder.append(
 				columnSelect != null
 					? "min(" + columnSelect + ") as minColumn," + " max(" + columnSelect + ") as maxColumn, "
-					: "null as tempColumnMin" + ", " + "null as tempColumnMax" + ", ");
+					: " '" + MISSING_COLUMN_MIN + "' as tempColumnMin" + ", '" + MISSING_COLUMN_MAX + "' as tempColumnMax" + ", ");
 			queryBuilder.delete(queryBuilder.length() - 2, queryBuilder.length() - 1);
 		}
 
