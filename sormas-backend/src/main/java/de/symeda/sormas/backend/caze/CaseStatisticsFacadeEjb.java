@@ -80,6 +80,7 @@ import de.symeda.sormas.backend.util.QueryHelper;
 @Stateless(name = "CaseStatisticsFacade")
 public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 
+	// used as placeholder in case no row or column time attributes are used 
 	private static final String MISSING_ROW_MIN = "missingRowMin";
 	private static final String MISSING_ROW_MAX = "missingRowMax";
 	private static final String MISSING_COLUMN_MIN = "missingColumnMin";
