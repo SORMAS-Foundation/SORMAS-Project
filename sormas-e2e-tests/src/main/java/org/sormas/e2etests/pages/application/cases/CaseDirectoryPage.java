@@ -260,4 +260,8 @@ public class CaseDirectoryPage {
       By.xpath("//p[contains(text(), 'Dieser Fall kann nicht mehr bearbeitet werden')]");
   public static By ERROR_MESSAGE_HEADER_DE =
       By.xpath("//div[@class='popupContent']//h1[contains(text(), 'Ein Fehler ist aufgetreten')]");
+
+  public static By MERGE_MESSAGE_HEADER_DE =
+      By.xpath(
+          "//*[contains(text(), 'F\u00E4lle wurden zusammengef\u00FChrt und der doppelte Fall gel\u00F6scht')]");
 }

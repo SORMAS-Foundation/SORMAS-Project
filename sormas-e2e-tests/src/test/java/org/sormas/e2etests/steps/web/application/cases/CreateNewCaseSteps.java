@@ -28,6 +28,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONF
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ERROR_MESSAGE_HEADER_DE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FIRST_CASE_ID_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.MERGE_DUPLICATED_CASES_WARNING_POPUP_DE;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.MERGE_MESSAGE_HEADER_DE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SHOW_MORE_LESS_FILTERS;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getMergeButtonForCaseForSourceSystem;
@@ -1483,6 +1484,15 @@ public class CreateNewCaseSteps implements En {
         () -> {
           softly.assertTrue(
               webDriverHelpers.isElementVisibleWithTimeout(ERROR_MESSAGE_HEADER_DE, 5));
+          softly.assertAll();
+        });
+
+    When(
+        "I check if popup with merge message in german appears",
+        () -> {
+          softly.assertTrue(
+              webDriverHelpers.isElementVisibleWithTimeout(MERGE_MESSAGE_HEADER_DE, 5),
+              "element was not visible");
           softly.assertAll();
         });
 
