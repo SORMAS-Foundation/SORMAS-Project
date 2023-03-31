@@ -2,6 +2,8 @@ package gatling.simulator;
 
 import gatling.tests.GET.allUUIDS.GetAllUUIDS;
 import gatling.utils.TestingSpecs;
+import io.gatling.core.scenario.Scenario;
+import io.gatling.javaapi.core.ScenarioBuilder;
 import io.gatling.javaapi.core.Simulation;
 import io.gatling.javaapi.http.HttpProtocolBuilder;
 
@@ -19,6 +21,10 @@ public class SormasSimulation extends Simulation {
     public static final String USERNAME = TestingSpecs.getUsername();
     public static final String USER_PASSWORD = TestingSpecs.getPassword();
 
+    ScenarioBuilder scenarioBuilder = scenario("Sormas tests")
+            .exec(GetAllUUIDS.getAllUUIDSTests()
+            );
+
     HttpProtocolBuilder httpProtocol =
             http.baseUrl(BASE_URL)
             .header("Content-Type", "application/json")
@@ -26,11 +32,10 @@ public class SormasSimulation extends Simulation {
             .header("Accept-Encoding", "gzip")
             .basicAuth(USERNAME, USER_PASSWORD);
 
-    //this is the test runner, collects all tests that we want to trigger
     {
-        setUp(GetAllUUIDS.getScenario().injectOpen(rampUsers(USERS)
-                .during(Duration.ofSeconds(DURATION_SECONDS)))
-        //more tests here
-        ).protocols(httpProtocol);
+        setUp(scenarioBuilder.
+                        injectOpen(rampUsers(USERS).
+                                during(Duration.ofSeconds(DURATION_SECONDS)))).
+                protocols(httpProtocol);
     }
 }
