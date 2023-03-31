@@ -652,10 +652,8 @@ public class ContactController {
 
 		ContactDataForm editForm = new ContactDataForm(contact.getDisease(), viewMode, isPsuedonymized, contact.isInJurisdiction());
 		editForm.setValue(contact);
-		final CommitDiscardWrapperComponent<ContactDataForm> editComponent = new CommitDiscardWrapperComponent<ContactDataForm>(
-			editForm,
-			true,
-			editForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<ContactDataForm> editComponent =
+			new CommitDiscardWrapperComponent<ContactDataForm>(editForm, true, editForm.getFieldGroup());
 
 		editComponent.getButtonsPanel()
 			.addComponentAsFirst(new DeletionLabel(automaticDeletionInfoDto, manuallyDeletionInfoDto, contact.isDeleted(), ContactDto.I18N_PREFIX));
@@ -946,6 +944,38 @@ public class ContactController {
 				FacadeProvider.getContactFacade().delete(contact.getUuid(), deleteDetails);
 				callback.run();
 			});
+	}
+
+	public void archiveAllSelectedItems(Collection<ContactIndexDto> selectedRows, Runnable callback) {
+
+		List<String> contactUuids = selectedRows.stream().map(ContactIndexDto::getUuid).collect(Collectors.toList());
+
+		ControllerProvider.getArchiveController()
+			.archiveSelectedItems(
+				contactUuids,
+				FacadeProvider.getContactFacade(),
+				Strings.headingNoContactsSelected,
+				Strings.confirmationArchiveContacts,
+				Strings.headingContactsArchived,
+				Strings.messageContactsArchived,
+				callback);
+	}
+
+	public void dearchiveAllSelectedItems(Collection<ContactIndexDto> selectedRows, Runnable callback) {
+		List<String> contactUuids = selectedRows.stream().map(ContactIndexDto::getUuid).collect(Collectors.toList());
+
+		ControllerProvider.getArchiveController()
+			.dearchiveSelectedItems(
+				contactUuids,
+				FacadeProvider.getContactFacade(),
+				Strings.headingNoContactsSelected,
+				Strings.messageNoContactsSelected,
+				Strings.confirmationDearchiveContacts,
+				Strings.entityContact,
+				Strings.headingConfirmDearchiving,
+				Strings.headingContactsDearchived,
+				Strings.messageContactsDearchived,
+				callback);
 	}
 
 	public TitleLayout getContactViewTitleLayout(ContactDto contact) {
