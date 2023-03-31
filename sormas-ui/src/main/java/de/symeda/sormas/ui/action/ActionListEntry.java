@@ -69,8 +69,10 @@ public class ActionListEntry extends HorizontalLayout {
 		setExpandRatio(withContentLayout, 3);
 
 		titleLayout = new HorizontalLayout();
+		titleLayout.setMargin(false);
+		titleLayout.setSpacing(false);
 		Label title = new Label(MoreObjects.firstNonNull(Strings.emptyToNull(action.getTitle()), "-"));
-		title.addStyleName(CssStyles.H3);
+		title.addStyleNames(CssStyles.H3, CssStyles.HSPACE_LEFT_3);
 		titleLayout.addComponent(title);
 		withContentLayout.addComponent(titleLayout);
 
@@ -204,7 +206,7 @@ public class ActionListEntry extends HorizontalLayout {
 				CssStyles.LABEL_VERTICAL_ALIGN_TOP);
 
 			titleLayout.addComponent(editButton, 0);
-			editButton.addStyleNames(CssStyles.VSPACE_TOP_3, CssStyles.HSPACE_LEFT_4);
+			editButton.addStyleNames(CssStyles.LABEL_HEADING_TITLE, CssStyles.HSPACE_LEFT_4);
 			titleLayout.setComponentAlignment(editButton, Alignment.TOP_RIGHT);
 			titleLayout.setExpandRatio(editButton, 0);
 		}
