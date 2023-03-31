@@ -831,6 +831,7 @@ public class CaseController {
 				} else {
 					PersonDto searchedPerson = createForm.getSearchedPerson();
 					if (searchedPerson != null) {
+						updateHomeAddress(createForm, searchedPerson);
 						dto.setPerson(searchedPerson.toReference());
 						selectOrCreateCase(createForm, dto, searchedPerson.toReference());
 					} else {
@@ -871,6 +872,11 @@ public class CaseController {
 
 	private void transferDataToPerson(CaseCreateForm createForm, PersonDto person) {
 		createForm.getPersonCreateForm().transferDataToPerson(person);
+	}
+
+	private void updateHomeAddress(CaseCreateForm createForm, PersonDto person) {
+		createForm.getPersonCreateForm().updateHomeAddress(person);
+		FacadeProvider.getPersonFacade().save(person);
 	}
 
 	public void selectOrCreateCase(CaseDataDto caseDto, PersonDto person, Consumer<String> selectedCaseUuidConsumer) {
@@ -921,10 +927,8 @@ public class CaseController {
 			caze.isInJurisdiction());
 		caseEditForm.setValue(caze);
 
-		CommitDiscardWrapperComponent<CaseDataForm> editView = new CommitDiscardWrapperComponent<CaseDataForm>(
-			caseEditForm,
-			true,
-			caseEditForm.getFieldGroup());
+		CommitDiscardWrapperComponent<CaseDataForm> editView =
+			new CommitDiscardWrapperComponent<CaseDataForm>(caseEditForm, true, caseEditForm.getFieldGroup());
 
 		editView.getButtonsPanel()
 			.addComponentAsFirst(new DeletionLabel(automaticDeletionInfoDto, manuallyDeletionInfoDto, caze.isDeleted(), CaseDataDto.I18N_PREFIX));
