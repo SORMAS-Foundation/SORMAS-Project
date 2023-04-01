@@ -1574,7 +1574,12 @@ public enum UserRight {
 	),
 	TRAVEL_ENTRY_ARCHIVE(
 			ADMIN
-	), ;
+	),
+	REPORT_VIEW (
+			ADMIN,
+			COMMUNITY_INFORMANT, AREA_ADMIN_SUPERVISOR,
+			ADMIN_SUPERVISOR
+	),;
 	//@formatter:on
 
 	private final Set<UserRole> defaultUserRoles;
