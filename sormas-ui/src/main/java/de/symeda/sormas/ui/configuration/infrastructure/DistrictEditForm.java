@@ -71,7 +71,7 @@ public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
 		
 		//ComboBox riskField = addField(DistrictDto.RISK, ComboBox.class);
 		riskField.addItem("Low Risk (LR)");
-		riskField.addItem("Middle Risk (MR)");
+		riskField.addItem("Medium Risk (MR)");
 		riskField.addItem("High Risk (HR)");
 		riskField.setNullSelectionAllowed(true);
 		

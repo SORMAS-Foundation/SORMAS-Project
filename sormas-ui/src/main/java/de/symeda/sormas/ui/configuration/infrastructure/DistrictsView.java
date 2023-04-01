@@ -260,7 +260,7 @@ public class DistrictsView extends AbstractConfigurationView {
 		riskFilter.setCaption(I18nProperties.getPrefixCaption(DistrictDto.I18N_PREFIX, DistrictDto.RISK));
 		
 		riskFilter.addItem("Low Risk (LR)");
-		riskFilter.addItem("Middle Risk (MR)");
+		riskFilter.addItem("Medium Risk (MR)");
 		riskFilter.addItem("High Risk (HR)");
 		
 	//	riskFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());

@@ -661,7 +661,7 @@ public class CampaignFormBuilder {
 				try {
 
 					String vc = value + "";
-					// System.out.println(value);
+					// System.out.println("@@@===@@ date to parse"+value);
 					Date dst = vc.contains("00:00:00") ? dateFormatter(value) : dateFormatterLongAndMobile(value);
 
 					((DateField) field).setValue(value != null ? dst : null);
@@ -740,24 +740,37 @@ public class CampaignFormBuilder {
 
 		String dateStr = value + "";
 		DateFormat formatter = new SimpleDateFormat("MMM dd, yyyy HH:mm:ss a");
+		DateFormat formatter_ = new SimpleDateFormat("MMM d, yyyy HH:mm:ss");
+		DateFormat formatter_x = new SimpleDateFormat("MMM d, yyyy HH:mm:ss a");
 		DateFormat formattercx = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
 		DateFormat formatterx = new SimpleDateFormat("dd/MM/yyyy");
 		Date date;
-		//System.out.println("date in question " + value);
+		//System.out.println("date in question " + value); delteme meeeeee  +++++++++++++++++++++++===========
 
 		try {
 			date = (Date) formatter.parse(dateStr);
 		} catch (ParseException e) {
-
+			System.out.println("date wont parse on " + e.getMessage());
 			try {
-				date = (Date) formatterx.parse(dateStr);
-			} catch (ParseException ed) {
-
-				try {
-					date = (Date) formattercx.parse(dateStr);
-				} catch (ParseException edx) {
-
-					date = new Date((Long) value);
+				date = (Date) formatter_.parse(dateStr);
+					} catch (ParseException ex) {
+						System.out.println("date wont parse on " + ex.getMessage());
+						try {
+							date = (Date) formatter_x.parse(dateStr);
+						} catch (ParseException edz) {
+							System.out.println("date wont parse on " + edz.getMessage());
+					try {
+						date = (Date) formatterx.parse(dateStr);
+					} catch (ParseException ed) {
+						System.out.println("date wont parse on " + ed.getMessage());
+						
+						try {
+							date = (Date) formattercx.parse(dateStr);
+						} catch (ParseException edx) {
+							System.out.println("date wont parse on " + edx.getMessage());
+							date = new Date((Long) value);
+						}
+					}
 				}
 			}
 		}

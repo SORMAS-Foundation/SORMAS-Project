@@ -59,7 +59,7 @@ public class CampaignFormsGridComponent extends AbstractEditableGrid<CampaignFor
 		// gridItems.add(new CampaignFormMetaReferenceDto(null, " --Please select--"));
 		//tabsheetParent.addSelectedTabChangeListener(event -> Notification.show("changed " +event.getTabSheet().getSelectedTab().getCaption()));
 		
-		Notification.show("----" + event.getTabSheet().getSelectedTab().getCaption());
+	//	Notification.show("----" + event.getTabSheet().getSelectedTab().getCaption());
 		
 		System.out.println(event.getTabSheet().getSelectedTab().getCaption()  +" | ___________---______O___");
 

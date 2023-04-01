@@ -166,6 +166,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
             	 userRolesRemoval.removeItem(UserRole.ADMIN);
             	 userRolesRemoval.removeItem(UserRole.COMMUNITY_INFORMANT);
             	 userRolesRemoval.removeItem(UserRole.AREA_ADMIN_SUPERVISOR);
+            	 userRolesRemoval.removeItem(UserRole.ADMIN_SUPERVISOR);
                  
     		}
     		else {
