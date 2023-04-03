@@ -2584,13 +2584,13 @@ Feature: Case end to end tests
     Given I log in as a Admin User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
-    Then I create a new case with specific person name and "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district for DE version
+    Then I create a new case with mandatory data with person name and "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district for DE version
     Then I click on save button in the case popup
     Then I navigate to "s2s_2" environment in new driver tab
     And I log in as a Admin User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
-    Then I create a new case with specific person name and "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district for DE version
+    Then  I create a new case with mandatory data with person name and "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district for DE version
     Then I click on save button in the case popup
     Then I back to tab number 1
     Then I click on share case button
