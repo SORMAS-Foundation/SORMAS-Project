@@ -1414,6 +1414,7 @@ public interface Strings {
 	String promptEventsSearchFieldEventParticipants = "promptEventsSearchFieldEventParticipants";
 	String promptExternalIdExternalSurveillanceTool = "promptExternalIdExternalSurveillanceTool";
 	String promptExternalJournalForceDeletion = "promptExternalJournalForceDeletion";
+	String promptExternalMessagesContentSearchField = "promptExternalMessagesContentSearchField";
 	String promptExternalMessagesDateFrom = "promptExternalMessagesDateFrom";
 	String promptExternalMessagesDateTo = "promptExternalMessagesDateTo";
 	String promptExternalMessagesPersonBirthDateFrom = "promptExternalMessagesPersonBirthDateFrom";
