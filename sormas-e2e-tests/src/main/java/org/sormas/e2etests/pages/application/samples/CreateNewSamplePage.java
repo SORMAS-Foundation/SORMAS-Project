@@ -83,8 +83,7 @@ public class CreateNewSamplePage {
   public static final By PATHOGEN_LABORATORY_COMBOBOX =
       By.cssSelector("[class='v-panel v-widget'] [location='lab'] [class='v-filterselect-button']");
   public static final By PATHOGEN_LABORATORY_INPUT =
-      By.cssSelector(
-          "[location='lab'] [class='v-filterselect v-widget v-required v-filterselect-required v-has-width'] input");
+      By.cssSelector("[location='lab'] [class='v-filterselect v-widget v-has-width'] input");
   public static final By REQUEST_PATHOGEN_OPTION_BUTTON =
       By.cssSelector("[id='pathogenTestingRequested'] label");
   public static final By ANTIGEN_DETECTION_TEST_OPTION_BUTTON =
