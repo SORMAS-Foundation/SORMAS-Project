@@ -1447,6 +1447,23 @@ public class CreateNewCaseSteps implements En {
         });
 
     When(
+        "I create a new case with mandatory data with person name and {string} region and {string} district for DE version",
+        (String reg, String disctr) -> {
+          LocalDate reportDate = LocalDate.now();
+          caze =
+              caseService.buildGeneratedCaseDEForOnePerson(
+                  firstName, lastName, dateOfBirth, reportDate, personSex);
+          fillDisease(caze.getDisease());
+          selectResponsibleRegion(reg);
+          selectResponsibleDistrict(disctr);
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          fillFirstName(caze.getFirstName());
+          fillLastName(caze.getLastName());
+          selectSex(caze.getSex());
+          fillDateOfReport(caze.getDateOfReport(), Locale.GERMAN);
+        });
+
+    When(
         "I click on Merge button for target system from received case",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(
