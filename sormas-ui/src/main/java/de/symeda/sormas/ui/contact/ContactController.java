@@ -947,7 +947,6 @@ public class ContactController {
 	}
 
 	public void archiveAllSelectedItems(Collection<ContactIndexDto> selectedRows, Runnable callback) {
-
 		List<String> contactUuids = selectedRows.stream().map(ContactIndexDto::getUuid).collect(Collectors.toList());
 
 		ControllerProvider.getArchiveController()
