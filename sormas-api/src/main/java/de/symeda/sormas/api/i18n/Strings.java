@@ -768,6 +768,7 @@ public interface Strings {
 	String infoPickOrCreateSample = "infoPickOrCreateSample";
 	String infoPickOrCreateSuperordinateEventForEvent = "infoPickOrCreateSuperordinateEventForEvent";
 	String infoPopulationCollectionDate = "infoPopulationCollectionDate";
+	String infoSaveCampaignFirst = "infoSaveCampaignFirst";
 	String infoPopulationDataView = "infoPopulationDataView";
 	String infoPopulationReferenceYear = "infoPopulationReferenceYear";
 	String infoSampleAdditionalTesting = "infoSampleAdditionalTesting";

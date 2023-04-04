@@ -378,7 +378,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 		if (UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
 			tabsheetParent.addTab(parentTab2);
 		}
-
+		if(campaignDto != null) {
 		VerticalLayout parentTab4 = new VerticalLayout();
 	//	final HorizontalLayout layout4 = new HorizontalLayout();
 	//	layout4.setWidthFull();
@@ -389,7 +389,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 		treeGrid.setWidthFull();
 		treeGrid.setHeightFull();
 		
-if(campaignDto != null) {
+
 		List<AreaDto> areas = FacadeProvider.getAreaFacade().getAllActiveAsReferenceAndPopulation(campaignDto);
 		//List<RegionDto> regions_ = FacadeProvider.getRegionFacade().getAllActiveAsReferenceAndPopulation());
 		
@@ -443,9 +443,6 @@ if(campaignDto != null) {
 			}
 		}
 		
-} else {
-	Notification.show("New Campaign detected: Please save campaign configuration and upload population to access this Associate Campaign Tab", Notification.TYPE_WARNING_MESSAGE);
-}
 		
 	
 	    
@@ -621,7 +618,7 @@ if(campaignDto != null) {
 			
 			
 		}
-		
+		}
 	
 		
 		layout.setMargin(true);
@@ -642,7 +639,8 @@ if(campaignDto != null) {
 				VaadinService.getCurrentRequest().getWrappedSession().setAttribute("indexTab", position);
 			}
 		});
-
+		
+		
 		if (VaadinService.getCurrentRequest().getWrappedSession().getAttribute("indexTab") != null) {
 			tabsheetParent.setSelectedTab(
 					(int) VaadinService.getCurrentRequest().getWrappedSession().getAttribute("indexTab"));

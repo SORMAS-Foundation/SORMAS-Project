@@ -116,12 +116,14 @@ public class PopulationData extends AbstractDomainObject {
 		this.campaign = campaign;
 	}
 
+	
+	//selected default to false
 	public String getSelected() {
-		return selected;
+		return "false";
 	}
 
 	public void setSelected(String selected) {
-		this.selected = selected;
+		this.selected = "false";
 	}
 	
 	

@@ -37,7 +37,7 @@ public class InfrastructureImportLayout extends AbstractImportLayout {
 
 		super();
 		
-		
+		if(camapigndto!= null) {
 
 		ComboBox campaignFilter = ComboBoxHelper.createComboBoxV7();
 		if (infrastructureType == InfrastructureType.POPULATION_DATA) {
@@ -88,8 +88,13 @@ public class InfrastructureImportLayout extends AbstractImportLayout {
 			}));
 			upload.setEnabled(true);
 		}
+		
 
 		addDownloadErrorReportComponent(4);
+		} else {
+			Label lblCollectionDateInfo = new Label(I18nProperties.getString(Strings.infoSaveCampaignFirst));
+			addComponent(lblCollectionDateInfo);
+		}
 	}
 	
 

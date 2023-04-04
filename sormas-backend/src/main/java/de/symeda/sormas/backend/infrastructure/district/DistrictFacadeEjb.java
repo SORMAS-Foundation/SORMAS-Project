@@ -482,7 +482,6 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 
 	@Override
 	public String getFullEpidCodeForDistrict(String districtUuid) {
-
 		District district = service.getByUuid(districtUuid);
 		return getFullEpidCodeForDistrict(district);
 	}
