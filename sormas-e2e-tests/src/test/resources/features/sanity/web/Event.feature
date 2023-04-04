@@ -100,7 +100,7 @@ Feature: Create events
     And I click on the searched event
     Then I check the modified event data is correctly displayed
 
-  @env_main
+  @env_main @testIt
   Scenario: Add a New action from event and verify the fields
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -113,7 +113,7 @@ Feature: Create events
     And I open the Action recently created from Event tab
     And I check that Action created from Event tab is correctly displayed in Event Actions tab
 
-    @tmsLink=SORDEV-5520 @env_main
+    @tmsLink=SORDEV-5520 @env_main @testIt
   Scenario: Add a New action from Event Actions tab and verify the fields.
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
