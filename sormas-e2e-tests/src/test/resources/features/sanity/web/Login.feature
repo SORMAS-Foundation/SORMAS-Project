@@ -1,7 +1,7 @@
 @UI @Sanity @Login @precon
 Feature: Login with different type of users
 
-  @env_main @LoginMain
+  @env_main @LoginMain @LanguageChangedWithCapitalize
   Scenario Outline: Login with <user> user on Main Environment
     Given I navigate to SORMAS login page
     And I check that Login page is correctly displayed in English language
