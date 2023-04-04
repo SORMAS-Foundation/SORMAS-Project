@@ -27,6 +27,7 @@ import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -91,7 +92,9 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 
 		table.addGeneratedColumn(COMMUNITY, (Table.ColumnGenerator) (source, itemId, columnId) -> {
 			PreviousHospitalizationDto prevHospitalization = (PreviousHospitalizationDto) itemId;
-			return prevHospitalization.getCommunity();
+			CommunityReferenceDto community = prevHospitalization.getCommunity();
+
+			return community != null ? community.getCaption() : null;
 		});
 
 		table.addGeneratedColumn(DISTRICT, (Table.ColumnGenerator) (source, itemId, columnId) -> {
