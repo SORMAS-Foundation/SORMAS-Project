@@ -75,8 +75,9 @@ public final class LocationHelper {
 		try {
 			List<Method> methods = Arrays.stream(location.getClass().getDeclaredMethods())
 				.filter(
-					m -> !Modifier.isStatic(m.getModifiers()) && !Modifier.isPrivate(m.getModifiers()) && m.getName().startsWith("get")
-						|| m.getName().startsWith("is"))
+					m -> !Modifier.isStatic(m.getModifiers())
+						&& !Modifier.isPrivate(m.getModifiers())
+						&& (m.getName().startsWith("get") || m.getName().startsWith("is")))
 				.collect(Collectors.toList());
 
 			for (Method m : methods) {
