@@ -28,7 +28,7 @@ Feature: Login with different type of users
       | Hospital Informant            |
       | Clinician                     |
 
-  @env_de @LoginDe
+  @env_de @LoginDe @LanguageChangedWithCapitalize
   Scenario Outline: Login with <user> user on German Environment
     Given I navigate to SORMAS login page
     And I check that Login page is correctly displayed in German language
@@ -57,7 +57,7 @@ Feature: Login with different type of users
       | Hospital Informant            |
       | Clinician                     |
 
-  @env_keycloak @LoginKeycloak
+  @env_keycloak @LoginKeycloak @LanguageChangedWithCapitalize
   Scenario Outline: Login with <user> user on Keycloak Environment
     Given I navigate to SORMAS login page
     Then I log in as a <user>
@@ -77,7 +77,7 @@ Feature: Login with different type of users
     Then I am logged in Keycloak Administrator Console page
     And I click on logout button on Keycloak Administrator Console Page
 
-  @tmsLink=SORQA-772 @env_main
+  @tmsLink=SORQA-772 @env_main @LanguageChangedWithCapitalize
   Scenario: Automatize Login with National Language User on international environment
     Given I navigate to SORMAS login page
     And I check that Login page is correctly displayed in English language
@@ -88,7 +88,7 @@ Feature: Login with different type of users
     Then I check that Deutsch language is selected in User Settings
     And I click on logout button
 
-  @tmsLink=SORQA-772 @env_de
+  @tmsLink=SORQA-772 @env_de @LanguageChangedWithCapitalize
   Scenario: Automatize Login with National Language User on german environment
     Given I navigate to SORMAS login page
     And I check that Login page is correctly displayed in German language
