@@ -12328,6 +12328,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (512, 'Limit case du
 
 -- 2023-03-31 [DEMIS2SORMAS] Introduce a messages content search field #7647
 ALTER TABLE externalmessage ADD COLUMN tsv tsvector;
+ALTER TABLE externalmessage_history ADD COLUMN tsv tsvector;
 UPDATE externalmessage SET tsv = to_tsvector('simple', unaccent(regexp_replace(externalmessagedetails,  E'[<>]', ' ', 'g')));
 CREATE INDEX idx_externalmessage_tsv ON externalmessage USING GIN (tsv);
 CREATE OR REPLACE FUNCTION externalmessage_tsv_update() RETURNS TRIGGER AS $$
