@@ -23,9 +23,16 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_PRESENT_CONDITION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_RESET_FILTERS_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONFIRM_POPUP;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONFIRM_YOUR_CHOICE_HEADER_DE;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ERROR_MESSAGE_HEADER_DE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FIRST_CASE_ID_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.MERGE_DUPLICATED_CASES_WARNING_POPUP_DE;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.MERGE_MESSAGE_HEADER_DE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SHOW_MORE_LESS_FILTERS;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getMergeButtonForCaseForSourceSystem;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getMergeButtonForCaseForTargetSystem;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.ACTION_CONFIRM_POPUP_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE_DISEASE_VARIANT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE_DOCUMENT_EMPTY_TEXT;
@@ -92,6 +99,7 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SELE
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SEX_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.START_DATA_IMPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BACK_TO_THE_CASES_LIST_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_NEW_CASE_CHECKBOX;
@@ -1415,6 +1423,100 @@ public class CreateNewCaseSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(SELECT_EXISTING_CASE_DE);
           webDriverHelpers.clickOnWebElementBySelector(SELECT_EXISTING_CASE_DE);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+        });
+
+    When(
+        "I create a new case with specific person name and {string} region and {string} district for DE version",
+        (String reg, String disctr) -> {
+          LocalDate reportDate = LocalDate.now();
+          caze =
+              caseService.buildGeneratedCaseDEForOnePerson(
+                  firstName, lastName, dateOfBirth, reportDate, personSex);
+          selectCaseOrigin(caze.getCaseOrigin());
+          fillDisease(caze.getDisease());
+          fillDiseaseVariant(caze.getDiseaseVariant());
+          selectResponsibleRegion(reg);
+          selectResponsibleDistrict(disctr);
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          fillFirstName(caze.getFirstName());
+          fillLastName(caze.getLastName());
+          fillDateOfBirth(caze.getDateOfBirth(), Locale.GERMAN);
+          selectSex(caze.getSex());
+          selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
+          fillDateOfReport(caze.getDateOfReport(), Locale.GERMAN);
+        });
+
+    When(
+        "I create a new case with mandatory data with person name and {string} region and {string} district for DE version",
+        (String reg, String disctr) -> {
+          LocalDate reportDate = LocalDate.now();
+          caze =
+              caseService.buildGeneratedCaseDEForOnePerson(
+                  firstName, lastName, dateOfBirth, reportDate, personSex);
+          fillDisease(caze.getDisease());
+          selectResponsibleRegion(reg);
+          selectResponsibleDistrict(disctr);
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          fillFirstName(caze.getFirstName());
+          fillLastName(caze.getLastName());
+          selectSex(caze.getSex());
+          fillDateOfReport(caze.getDateOfReport(), Locale.GERMAN);
+        });
+
+    When(
+        "I click on Merge button for target system from received case",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(
+              getMergeButtonForCaseForTargetSystem(firstName, lastName));
+        });
+
+    When(
+        "I click on Merge button for source system from received case",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(
+              getMergeButtonForCaseForSourceSystem(firstName, lastName));
+        });
+
+    When(
+        "I confirm merge duplicated case",
+        () -> {
+          softly.assertTrue(
+              webDriverHelpers.isElementVisibleWithTimeout(CONFIRM_YOUR_CHOICE_HEADER_DE, 5));
+          softly.assertAll();
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_POPUP);
+        });
+
+    When(
+        "I check if popup with merge duplicated case appears",
+        () -> {
+          softly.assertTrue(
+              webDriverHelpers.isElementVisibleWithTimeout(
+                  MERGE_DUPLICATED_CASES_WARNING_POPUP_DE, 5));
+          softly.assertAll();
+          webDriverHelpers.clickOnWebElementBySelector(MERGE_DUPLICATED_CASES_WARNING_POPUP_DE);
+        });
+
+    When(
+        "I check if popup with error message appears",
+        () -> {
+          softly.assertTrue(
+              webDriverHelpers.isElementVisibleWithTimeout(ERROR_MESSAGE_HEADER_DE, 5));
+          softly.assertAll();
+        });
+
+    When(
+        "I check if popup with merge message in german appears",
+        () -> {
+          softly.assertTrue(
+              webDriverHelpers.isElementVisibleWithTimeout(MERGE_MESSAGE_HEADER_DE, 5),
+              "element was not visible");
+          softly.assertAll();
+        });
+
+    When(
+        "I click on cancel button in merge duplicated cases popup",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL);
         });
   }
 

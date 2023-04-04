@@ -31,7 +31,7 @@ import de.symeda.sormas.ui.dashboard.diagram.AbstractEpiCurveComponent;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
-public class ContactsEpiCurveComponent extends AbstractEpiCurveComponent {
+public class ContactsEpiCurveComponent extends AbstractEpiCurveComponent<DashboardDataProvider> {
 
 	private static final long serialVersionUID = 6582975657305031105L;
 

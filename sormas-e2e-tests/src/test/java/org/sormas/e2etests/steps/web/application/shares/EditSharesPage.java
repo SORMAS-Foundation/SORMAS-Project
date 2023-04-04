@@ -26,4 +26,22 @@ public class EditSharesPage {
   public static final By SHARE_UUID_CASE_TITLE =
       By.cssSelector(".popupContent [class='v-grid-cell v-grid-cell-focused'] a");
   public static final By ACCEPT_BUTTON = By.cssSelector("div #actionAccept");
+
+  public static By getCheckBoxFromShareFormByIndex(int index) {
+    return By.xpath(
+        String.format("(//*[@class='popupContent']//div[@class='row']//label)[%s]", index));
+  }
+
+  public static final By SHARE_OPTION_CHECKBOX =
+      By.xpath("//*[@class='popupContent']//input[@type='checkbox']");
+  public static final By POPUP_COLUMN_HEADER =
+      By.xpath(
+          "//*[@class='popupContent']//table//thead//tr/th//div[@class='v-grid-column-header-content v-grid-column-default-header-content']");
+
+  public static By getPopupColumnHeaderByIndex(int index) {
+    return By.xpath(
+        String.format(
+            "(//*[@class='popupContent']//table//thead//tr/th//div[@class='v-grid-column-header-content v-grid-column-default-header-content'])[%s]",
+            index));
+  }
 }

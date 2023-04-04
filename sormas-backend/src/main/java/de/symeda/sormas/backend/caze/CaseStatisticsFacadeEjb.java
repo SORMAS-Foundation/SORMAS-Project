@@ -80,6 +80,11 @@ import de.symeda.sormas.backend.util.QueryHelper;
 @Stateless(name = "CaseStatisticsFacade")
 public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 
+	private static final String MISSING_ROW_MIN = "missingRowMin";
+	private static final String MISSING_ROW_MAX = "missingRowMax";
+	private static final String MISSING_COLUMN_MIN = "missingColumnMin";
+	private static final String MISSING_COLUMN_MAX = "missingColumnMax";
+
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
 
@@ -125,7 +130,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 		Pair<String, List<Object>> caseCountQueryAndParams =
 			buildCaseCountQuery(caseCriteria, rowGrouping, rowSubGrouping, columnGrouping, columnSubGrouping);
 
-		Query caseCountQuery = em.createNativeQuery(caseCountQueryAndParams.getKey().toString());
+		Query caseCountQuery = em.createNativeQuery(caseCountQueryAndParams.getKey());
 		for (int i = 0; i < caseCountQueryAndParams.getValue().size(); i++) {
 			caseCountQuery.setParameter(i + 1, caseCountQueryAndParams.getValue().get(i));
 		}
@@ -162,7 +167,22 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 					userRoleProvider));
 		}).collect(Collectors.toList());
 
-		if (includeZeroValues) {
+		if (includeZeroValues && caseCountResults.size() > 0) {
+
+			Object[] caseGroupRangeResults = new Object[4];
+
+			if (rowSubGrouping != null || columnSubGrouping != null) {
+				Pair<String, List<Object>> caseCountQueryAndParamsForVisualization =
+					buildVisualizationQuery(caseCriteria, rowGrouping, rowSubGrouping, columnGrouping, columnSubGrouping);
+
+				Query caseCountQueryForVisualization = em.createNativeQuery(caseCountQueryAndParamsForVisualization.getKey());
+				for (int i = 0; i < caseCountQueryAndParamsForVisualization.getValue().size(); i++) {
+					caseCountQueryForVisualization.setParameter(i + 1, caseCountQueryAndParamsForVisualization.getValue().get(i));
+				}
+
+				caseGroupRangeResults = (Object[]) caseCountQueryForVisualization.getResultStream().findFirst().orElse(new Date[4]);
+			}
+
 			List<StatisticsGroupingKey> allRowKeys;
 			if (rowGrouping != null) {
 				allRowKeys = (List<StatisticsGroupingKey>) caseCriteria.getFilterValuesForGrouping(rowGrouping, rowSubGrouping);
@@ -174,7 +194,9 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 						caseFacade,
 						regionFacade,
 						districtFacade,
-						userRoleFacade);
+						userRoleFacade,
+						MISSING_ROW_MIN.equals(caseGroupRangeResults[0]) ? null : (Date) caseGroupRangeResults[0],
+						MISSING_ROW_MAX.equals(caseGroupRangeResults[1]) ? null : (Date) caseGroupRangeResults[1]);
 				}
 			} else {
 				allRowKeys = Arrays.asList((StatisticsGroupingKey) null);
@@ -190,7 +212,9 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 						caseFacade,
 						regionFacade,
 						districtFacade,
-						userRoleFacade);
+						userRoleFacade,
+						MISSING_COLUMN_MIN.equals(caseGroupRangeResults[2]) ? null : (Date) caseGroupRangeResults[2],
+						MISSING_COLUMN_MAX.equals(caseGroupRangeResults[3]) ? null : (Date) caseGroupRangeResults[3]);
 				}
 			} else {
 				allColumnKeys = Arrays.asList((StatisticsGroupingKey) null);
@@ -276,6 +300,67 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 	 * for (StatisticsCaseCountDto result : results) {
 	 * Builds SQL query string and list of parameters (for filters)
 	 */
+
+	public Pair<String, List<Object>> buildVisualizationQuery(
+		StatisticsCaseCriteria caseCriteria,
+		StatisticsCaseAttribute groupingA,
+		StatisticsCaseSubAttribute subGroupingA,
+		StatisticsCaseAttribute groupingB,
+		StatisticsCaseSubAttribute subGroupingB) {
+
+		StringBuilder caseJoinBuilder = buildStatisticsQueryJoins(caseCriteria, groupingA, subGroupingA, groupingB, subGroupingB);
+		StringBuilder caseFilterBuilder = new StringBuilder(" WHERE ");
+		List<Object> filterBuilderParameters = getFilterBuilderParameters(caseCriteria, caseFilterBuilder);
+
+		StringBuilder queryBuilder = new StringBuilder();
+
+		queryBuilder.append("SELECT ");
+
+		if ((groupingA != null && subGroupingA != null) || (groupingB != null && subGroupingB != null)) {
+			String rowSelect = null;
+			if (subGroupingA != null) {
+				rowSelect = getVisualizationSelection(groupingA);
+			}
+
+			String columnSelect = null;
+			if (subGroupingB != null) {
+				columnSelect = getVisualizationSelection(groupingB);
+			}
+
+			queryBuilder.append(
+				rowSelect != null
+					? "min(" + rowSelect + ") as minRow," + " max(" + rowSelect + ") as maxRow, "
+					: " '" + MISSING_ROW_MIN + "' as tempRowMin" + ", '" + MISSING_ROW_MAX + "' as tempRowMax" + ", ");
+			queryBuilder.append(
+				columnSelect != null
+					? "min(" + columnSelect + ") as minColumn," + " max(" + columnSelect + ") as maxColumn, "
+					: " '" + MISSING_COLUMN_MIN + "' as tempColumnMin" + ", '" + MISSING_COLUMN_MAX + "' as tempColumnMax" + ", ");
+			queryBuilder.delete(queryBuilder.length() - 2, queryBuilder.length() - 1);
+		}
+
+		queryBuilder.append(" FROM ").append(Case.TABLE_NAME).append(caseJoinBuilder).append(caseFilterBuilder);
+
+		return new ImmutablePair<>(queryBuilder.toString(), filterBuilderParameters);
+	}
+
+	private String getVisualizationSelection(StatisticsCaseAttribute groupingA) {
+		String select;
+		switch (groupingA) {
+		case ONSET_TIME:
+			select = Symptoms.ONSET_DATE;
+			break;
+		case REPORT_TIME:
+			select = Case.REPORT_DATE;
+			break;
+		case OUTCOME_TIME:
+			select = Case.OUTCOME_DATE;
+			break;
+		default:
+			select = null;
+		}
+		return select;
+	}
+
 	public Pair<String, List<Object>> buildCaseCountQuery(
 		StatisticsCaseCriteria caseCriteria,
 		StatisticsCaseAttribute groupingA,
@@ -289,148 +374,80 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 		// 3. Add selected groupings
 		// 4. Retrieve and prepare the results
 
+		StringBuilder caseJoinBuilder = buildStatisticsQueryJoins(caseCriteria, groupingA, subGroupingA, groupingB, subGroupingB);
+		StringBuilder caseFilterBuilder = new StringBuilder(" WHERE ");
+		List<Object> filterBuilderParameters = getFilterBuilderParameters(caseCriteria, caseFilterBuilder);
+
+		//////////////
+		// 3. Add selected groupings
 		/////////////
-		// 1. Join tables that cases are grouped by or that are used in the caseCriteria
+
+		String groupingSelectQueryA = null, groupingSelectQueryB = null;
+		StringBuilder caseGroupByBuilder = new StringBuilder();
+		StringBuilder orderByBuilder = new StringBuilder();
+		String groupAAlias = "groupA";
+		String groupBAlias = "groupB";
+
+		if (groupingA != null || groupingB != null) {
+			caseGroupByBuilder.append(" GROUP BY ");
+
+			if (groupingA != null) {
+				groupingSelectQueryA = buildCaseGroupingSelectQuery(groupingA, subGroupingA, groupAAlias);
+				caseGroupByBuilder.append(groupAAlias);
+			}
+			if (groupingB != null) {
+				groupingSelectQueryB = buildCaseGroupingSelectQuery(groupingB, subGroupingB, groupBAlias);
+				if (groupingA != null) {
+					caseGroupByBuilder.append(",");
+				}
+				caseGroupByBuilder.append(groupBAlias);
+			}
+		}
+
+		//////////////
+		// 4. Order results
 		/////////////
 
-		StringBuilder caseJoinBuilder = new StringBuilder();
-
-		if (subGroupingA == StatisticsCaseSubAttribute.FACILITY || subGroupingB == StatisticsCaseSubAttribute.FACILITY) {
-			caseJoinBuilder.append(" LEFT JOIN ")
-				.append(Facility.TABLE_NAME)
-				.append(" ON ")
-				.append(Case.TABLE_NAME)
-				.append(".")
-				.append(Case.HEALTH_FACILITY)
-				.append("_id = ")
-				.append(Facility.TABLE_NAME)
-				.append(".")
-				.append(Facility.ID);
+		orderByBuilder.append(" ORDER BY ");
+		if (groupingA != null) {
+			orderByBuilder.append(groupAAlias).append(" NULLS LAST");
 		}
-		if (subGroupingA == StatisticsCaseSubAttribute.COMMUNITY || subGroupingB == StatisticsCaseSubAttribute.COMMUNITY) {
-			caseJoinBuilder.append(" LEFT JOIN ")
-				.append(Community.TABLE_NAME)
-				.append(" ON ")
-				.append(Case.TABLE_NAME)
-				.append(".")
-				.append(Case.RESPONSIBLE_COMMUNITY)
-				.append("_id = ")
-				.append(Community.TABLE_NAME)
-				.append(".")
-				.append(Community.ID);
-		}
-		if (subGroupingA == StatisticsCaseSubAttribute.DISTRICT || subGroupingB == StatisticsCaseSubAttribute.DISTRICT) {
-			caseJoinBuilder.append(" LEFT JOIN ")
-				.append(District.TABLE_NAME)
-				.append(" ON ")
-				.append(Case.TABLE_NAME)
-				.append(".")
-				.append(Case.RESPONSIBLE_DISTRICT)
-				.append("_id = ")
-				.append(District.TABLE_NAME)
-				.append(".")
-				.append(District.ID);
-		}
-		if (subGroupingA == StatisticsCaseSubAttribute.REGION || subGroupingB == StatisticsCaseSubAttribute.REGION) {
-			caseJoinBuilder.append(" LEFT JOIN ")
-				.append(Region.TABLE_NAME)
-				.append(" ON ")
-				.append(Case.TABLE_NAME)
-				.append(".")
-				.append(Case.RESPONSIBLE_REGION)
-				.append("_id = ")
-				.append(Region.TABLE_NAME)
-				.append(".")
-				.append(Region.ID);
+		if (groupingB != null) {
+			if (groupingA != null) {
+				orderByBuilder.append(",");
+			}
+			orderByBuilder.append(groupBAlias).append(" NULLS LAST");
 		}
 
-		if (groupingA == StatisticsCaseAttribute.ONSET_TIME || groupingB == StatisticsCaseAttribute.ONSET_TIME || caseCriteria.hasOnsetDate()) {
-			caseJoinBuilder.append(" LEFT JOIN ")
-				.append(Symptoms.TABLE_NAME)
-				.append(" ON ")
-				.append(Case.TABLE_NAME)
-				.append(".")
-				.append(Case.SYMPTOMS)
-				.append("_id")
-				.append(" = ")
-				.append(Symptoms.TABLE_NAME)
-				.append(".")
-				.append(Symptoms.ID);
+		StringBuilder queryBuilder = new StringBuilder();
+
+		queryBuilder.append("SELECT COUNT(*) AS casecount ");
+
+		if (groupingSelectQueryA != null) {
+			queryBuilder.append(", ").append(groupingSelectQueryA);
+		} else {
+			queryBuilder.append(", null\\:\\:text AS ").append(groupAAlias);
+		}
+		if (groupingSelectQueryB != null) {
+			queryBuilder.append(", ").append(groupingSelectQueryB);
+		} else {
+			queryBuilder.append(", null\\:\\:text AS ").append(groupBAlias);
 		}
 
-		if (groupingA == StatisticsCaseAttribute.SEX
-			|| groupingB == StatisticsCaseAttribute.SEX
-			|| groupingA == StatisticsCaseAttribute.AGE_INTERVAL_1_YEAR
-			|| groupingB == StatisticsCaseAttribute.AGE_INTERVAL_1_YEAR
-			|| groupingA == StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS
-			|| groupingB == StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS
-			|| groupingA == StatisticsCaseAttribute.AGE_INTERVAL_CHILDREN_COARSE
-			|| groupingB == StatisticsCaseAttribute.AGE_INTERVAL_CHILDREN_COARSE
-			|| groupingA == StatisticsCaseAttribute.AGE_INTERVAL_CHILDREN_FINE
-			|| groupingB == StatisticsCaseAttribute.AGE_INTERVAL_CHILDREN_FINE
-			|| groupingA == StatisticsCaseAttribute.AGE_INTERVAL_CHILDREN_MEDIUM
-			|| groupingB == StatisticsCaseAttribute.AGE_INTERVAL_CHILDREN_MEDIUM
-			|| groupingA == StatisticsCaseAttribute.AGE_INTERVAL_BASIC
-			|| groupingB == StatisticsCaseAttribute.AGE_INTERVAL_BASIC
-			|| caseCriteria.getSexes() != null
-			|| caseCriteria.getAgeIntervals() != null
-			|| caseCriteria.getPersonRegions() != null
-			|| caseCriteria.getPersonDistricts() != null
-			|| caseCriteria.getPersonCommunities() != null
-			|| caseCriteria.getPersonCity() != null
-			|| caseCriteria.getPersonPostcode() != null) {
-			caseJoinBuilder.append(" LEFT JOIN ")
-				.append(Person.TABLE_NAME)
-				.append(" ON ")
-				.append(Case.TABLE_NAME)
-				.append(".")
-				.append(Case.PERSON)
-				.append("_id")
-				.append(" = ")
-				.append(Person.TABLE_NAME)
-				.append(".")
-				.append(Person.ID);
-		}
+		queryBuilder.append(" FROM ").append(Case.TABLE_NAME).append(caseJoinBuilder).append(caseFilterBuilder);
 
-		if (caseCriteria.getPersonRegions() != null
-			|| caseCriteria.getPersonDistricts() != null
-			|| caseCriteria.getPersonCommunities() != null
-			|| caseCriteria.getPersonCity() != null
-			|| caseCriteria.getPersonPostcode() != null) {
-			caseJoinBuilder.append(" LEFT JOIN ")
-				.append(Location.TABLE_NAME)
-				.append(" ON ")
-				.append(Person.TABLE_NAME)
-				.append(".")
-				.append(Person.ADDRESS)
-				.append("_id")
-				.append(" = ")
-				.append(Location.TABLE_NAME)
-				.append(".")
-				.append(Location.ID);
-		}
+		queryBuilder.append(caseGroupByBuilder);
 
-		if (CollectionUtils.isNotEmpty(caseCriteria.getReportingUserRoles())
-			|| groupingA == StatisticsCaseAttribute.REPORTING_USER_ROLE
-			|| groupingB == StatisticsCaseAttribute.REPORTING_USER_ROLE) {
-			caseJoinBuilder.append(" LEFT JOIN ")
-				.append(User.TABLE_NAME_USERS_USERROLES)
-				.append(" ON ")
-				.append(Case.TABLE_NAME)
-				.append(".")
-				.append(Case.REPORTING_USER)
-				.append("_id")
-				.append(" = ")
-				.append(User.TABLE_NAME_USERS_USERROLES)
-				.append(".")
-				.append(UserDto.COLUMN_NAME_USER_ID);
+		if (groupingA != null || groupingB != null) {
+			queryBuilder.append(orderByBuilder);
 		}
+		return new ImmutablePair<>(queryBuilder.toString(), filterBuilderParameters);
+	}
 
+	private List<Object> getFilterBuilderParameters(StatisticsCaseCriteria caseCriteria, StringBuilder caseFilterBuilder) {
 		/////////////
 		// 2. Build filter based on caseCriteria
 		/////////////
-
-		StringBuilder caseFilterBuilder = new StringBuilder(" WHERE ");
 
 		caseFilterBuilder.append("(").append(Case.TABLE_NAME).append(".").append(Case.DELETED).append(" = false");
 		// needed for the full join on population
@@ -893,70 +910,152 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 				userRoleIds,
 				entry -> entry);
 		}
+		return filterBuilderParameters;
+	}
 
-		//////////////
-		// 3. Add selected groupings
+	private StringBuilder buildStatisticsQueryJoins(
+		StatisticsCaseCriteria caseCriteria,
+		StatisticsCaseAttribute groupingA,
+		StatisticsCaseSubAttribute subGroupingA,
+		StatisticsCaseAttribute groupingB,
+		StatisticsCaseSubAttribute subGroupingB) {
+		/////////////
+		// 1. Join tables that cases are grouped by or that are used in the caseCriteria
 		/////////////
 
-		String groupingSelectQueryA = null, groupingSelectQueryB = null;
-		StringBuilder caseGroupByBuilder = new StringBuilder();
-		StringBuilder orderByBuilder = new StringBuilder();
-		String groupAAlias = "groupA";
-		String groupBAlias = "groupB";
+		StringBuilder caseJoinBuilder = new StringBuilder();
 
-		if (groupingA != null || groupingB != null) {
-			caseGroupByBuilder.append(" GROUP BY ");
-
-			if (groupingA != null) {
-				groupingSelectQueryA = buildCaseGroupingSelectQuery(groupingA, subGroupingA, groupAAlias);
-				caseGroupByBuilder.append(groupAAlias);
-			}
-			if (groupingB != null) {
-				groupingSelectQueryB = buildCaseGroupingSelectQuery(groupingB, subGroupingB, groupBAlias);
-				if (groupingA != null) {
-					caseGroupByBuilder.append(",");
-				}
-				caseGroupByBuilder.append(groupBAlias);
-			}
+		if (subGroupingA == StatisticsCaseSubAttribute.FACILITY || subGroupingB == StatisticsCaseSubAttribute.FACILITY) {
+			caseJoinBuilder.append(" LEFT JOIN ")
+				.append(Facility.TABLE_NAME)
+				.append(" ON ")
+				.append(Case.TABLE_NAME)
+				.append(".")
+				.append(Case.HEALTH_FACILITY)
+				.append("_id = ")
+				.append(Facility.TABLE_NAME)
+				.append(".")
+				.append(Facility.ID);
+		}
+		if (subGroupingA == StatisticsCaseSubAttribute.COMMUNITY || subGroupingB == StatisticsCaseSubAttribute.COMMUNITY) {
+			caseJoinBuilder.append(" LEFT JOIN ")
+				.append(Community.TABLE_NAME)
+				.append(" ON ")
+				.append(Case.TABLE_NAME)
+				.append(".")
+				.append(Case.RESPONSIBLE_COMMUNITY)
+				.append("_id = ")
+				.append(Community.TABLE_NAME)
+				.append(".")
+				.append(Community.ID);
+		}
+		if (subGroupingA == StatisticsCaseSubAttribute.DISTRICT || subGroupingB == StatisticsCaseSubAttribute.DISTRICT) {
+			caseJoinBuilder.append(" LEFT JOIN ")
+				.append(District.TABLE_NAME)
+				.append(" ON ")
+				.append(Case.TABLE_NAME)
+				.append(".")
+				.append(Case.RESPONSIBLE_DISTRICT)
+				.append("_id = ")
+				.append(District.TABLE_NAME)
+				.append(".")
+				.append(District.ID);
+		}
+		if (subGroupingA == StatisticsCaseSubAttribute.REGION || subGroupingB == StatisticsCaseSubAttribute.REGION) {
+			caseJoinBuilder.append(" LEFT JOIN ")
+				.append(Region.TABLE_NAME)
+				.append(" ON ")
+				.append(Case.TABLE_NAME)
+				.append(".")
+				.append(Case.RESPONSIBLE_REGION)
+				.append("_id = ")
+				.append(Region.TABLE_NAME)
+				.append(".")
+				.append(Region.ID);
 		}
 
-		//////////////
-		// 4. Order results
-		/////////////
-
-		orderByBuilder.append(" ORDER BY ");
-		if (groupingA != null) {
-			orderByBuilder.append(groupAAlias).append(" NULLS LAST");
-		}
-		if (groupingB != null) {
-			if (groupingA != null) {
-				orderByBuilder.append(",");
-			}
-			orderByBuilder.append(groupBAlias).append(" NULLS LAST");
-		}
-
-		StringBuilder queryBuilder = new StringBuilder();
-
-		queryBuilder.append("SELECT COUNT(*) AS casecount ");
-
-		if (groupingSelectQueryA != null) {
-			queryBuilder.append(", ").append(groupingSelectQueryA);
-		} else {
-			queryBuilder.append(", null\\:\\:text AS ").append(groupAAlias);
-		}
-		if (groupingSelectQueryB != null) {
-			queryBuilder.append(", ").append(groupingSelectQueryB);
-		} else {
-			queryBuilder.append(", null\\:\\:text AS ").append(groupBAlias);
+		if (groupingA == StatisticsCaseAttribute.ONSET_TIME || groupingB == StatisticsCaseAttribute.ONSET_TIME || caseCriteria.hasOnsetDate()) {
+			caseJoinBuilder.append(" LEFT JOIN ")
+				.append(Symptoms.TABLE_NAME)
+				.append(" ON ")
+				.append(Case.TABLE_NAME)
+				.append(".")
+				.append(Case.SYMPTOMS)
+				.append("_id")
+				.append(" = ")
+				.append(Symptoms.TABLE_NAME)
+				.append(".")
+				.append(Symptoms.ID);
 		}
 
-		queryBuilder.append(" FROM ").append(Case.TABLE_NAME).append(caseJoinBuilder).append(caseFilterBuilder).append(caseGroupByBuilder);
-
-		if (groupingA != null || groupingB != null) {
-			queryBuilder.append(orderByBuilder);
+		if (groupingA == StatisticsCaseAttribute.SEX
+			|| groupingB == StatisticsCaseAttribute.SEX
+			|| groupingA == StatisticsCaseAttribute.AGE_INTERVAL_1_YEAR
+			|| groupingB == StatisticsCaseAttribute.AGE_INTERVAL_1_YEAR
+			|| groupingA == StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS
+			|| groupingB == StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS
+			|| groupingA == StatisticsCaseAttribute.AGE_INTERVAL_CHILDREN_COARSE
+			|| groupingB == StatisticsCaseAttribute.AGE_INTERVAL_CHILDREN_COARSE
+			|| groupingA == StatisticsCaseAttribute.AGE_INTERVAL_CHILDREN_FINE
+			|| groupingB == StatisticsCaseAttribute.AGE_INTERVAL_CHILDREN_FINE
+			|| groupingA == StatisticsCaseAttribute.AGE_INTERVAL_CHILDREN_MEDIUM
+			|| groupingB == StatisticsCaseAttribute.AGE_INTERVAL_CHILDREN_MEDIUM
+			|| groupingA == StatisticsCaseAttribute.AGE_INTERVAL_BASIC
+			|| groupingB == StatisticsCaseAttribute.AGE_INTERVAL_BASIC
+			|| caseCriteria.getSexes() != null
+			|| caseCriteria.getAgeIntervals() != null
+			|| caseCriteria.getPersonRegions() != null
+			|| caseCriteria.getPersonDistricts() != null
+			|| caseCriteria.getPersonCommunities() != null
+			|| caseCriteria.getPersonCity() != null
+			|| caseCriteria.getPersonPostcode() != null) {
+			caseJoinBuilder.append(" LEFT JOIN ")
+				.append(Person.TABLE_NAME)
+				.append(" ON ")
+				.append(Case.TABLE_NAME)
+				.append(".")
+				.append(Case.PERSON)
+				.append("_id")
+				.append(" = ")
+				.append(Person.TABLE_NAME)
+				.append(".")
+				.append(Person.ID);
 		}
 
-		return new ImmutablePair<String, List<Object>>(queryBuilder.toString(), filterBuilderParameters);
+		if (caseCriteria.getPersonRegions() != null
+			|| caseCriteria.getPersonDistricts() != null
+			|| caseCriteria.getPersonCommunities() != null
+			|| caseCriteria.getPersonCity() != null
+			|| caseCriteria.getPersonPostcode() != null) {
+			caseJoinBuilder.append(" LEFT JOIN ")
+				.append(Location.TABLE_NAME)
+				.append(" ON ")
+				.append(Person.TABLE_NAME)
+				.append(".")
+				.append(Person.ADDRESS)
+				.append("_id")
+				.append(" = ")
+				.append(Location.TABLE_NAME)
+				.append(".")
+				.append(Location.ID);
+		}
+
+		if (CollectionUtils.isNotEmpty(caseCriteria.getReportingUserRoles())
+			|| groupingA == StatisticsCaseAttribute.REPORTING_USER_ROLE
+			|| groupingB == StatisticsCaseAttribute.REPORTING_USER_ROLE) {
+			caseJoinBuilder.append(" LEFT JOIN ")
+				.append(User.TABLE_NAME_USERS_USERROLES)
+				.append(" ON ")
+				.append(Case.TABLE_NAME)
+				.append(".")
+				.append(Case.REPORTING_USER)
+				.append("_id")
+				.append(" = ")
+				.append(User.TABLE_NAME_USERS_USERROLES)
+				.append(".")
+				.append(UserDto.COLUMN_NAME_USER_ID);
+		}
+		return caseJoinBuilder;
 	}
 
 	/**

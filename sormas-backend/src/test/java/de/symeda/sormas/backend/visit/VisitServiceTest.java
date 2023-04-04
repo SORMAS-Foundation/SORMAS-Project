@@ -35,7 +35,7 @@ public class VisitServiceTest extends AbstractBeanTest {
 		// Visits with a visit date before the start date should not be included
 		VisitDto visit = creator.createVisit(Disease.EVD, visitPerson.toReference());
 		visit.setVisitDateTime(DateHelper.subtractDays(startDate, FollowUpLogic.ALLOWED_DATE_OFFSET + 1));
-		getVisitFacade().saveVisit(visit);
+		getVisitFacade().save(visit);
 
 		Set<Visit> visits = getVisitService().getAllRelevantVisits(visitPersonEntity, visit.getDisease(), startDate, endDate);
 		assertThat(visits, empty());
@@ -43,59 +43,59 @@ public class VisitServiceTest extends AbstractBeanTest {
 		// Visits with a visit date before the start date should not be included
 		VisitDto visit4 = creator.createVisit(Disease.EVD, visitPerson3.toReference());
 		visit4.setVisitDateTime(DateHelper.subtractDays(startDate, FollowUpLogic.ALLOWED_DATE_OFFSET + 1));
-		getVisitFacade().saveVisit(visit4);
+		getVisitFacade().save(visit4);
 
 		Set<Visit> visits4 = getVisitService().getAllRelevantVisits(visitPersonEntity3, visit4.getDisease(), startDate3, endDate3);
 		assertThat(visits4, empty());
 
 		// Visits with a visit date before the start date but within the offset should be included
 		visit.setVisitDateTime(DateHelper.subtractDays(startDate, FollowUpLogic.ALLOWED_DATE_OFFSET));
-		getVisitFacade().saveVisit(visit);
+		getVisitFacade().save(visit);
 
 		visits = getVisitService().getAllRelevantVisits(visitPersonEntity, visit.getDisease(), startDate, endDate);
 		assertThat(visits, hasSize(1));
 
 		visit4.setVisitDateTime(DateHelper.subtractDays(startDate3, FollowUpLogic.ALLOWED_DATE_OFFSET));
-		getVisitFacade().saveVisit(visit4);
+		getVisitFacade().save(visit4);
 
 		visits4 = getVisitService().getAllRelevantVisits(visitPersonEntity3, visit4.getDisease(), startDate3, endDate3);
 		assertThat(visits4, hasSize(1));
 
 		// Visits with a visit date after the end date should not be included
 		visit.setVisitDateTime(DateHelper.addDays(endDate, FollowUpLogic.ALLOWED_DATE_OFFSET + 1));
-		getVisitFacade().saveVisit(visit);
+		getVisitFacade().save(visit);
 
 		visits = getVisitService().getAllRelevantVisits(visitPersonEntity, visit.getDisease(), startDate, endDate);
 		assertThat(visits, empty());
 
 		visit4.setVisitDateTime(DateHelper.addDays(endDate3, FollowUpLogic.ALLOWED_DATE_OFFSET + 1));
-		getVisitFacade().saveVisit(visit4);
+		getVisitFacade().save(visit4);
 
 		visits4 = getVisitService().getAllRelevantVisits(visitPersonEntity3, visit4.getDisease(), startDate3, endDate3);
 		assertThat(visits4, empty());
 
 		// Visits with a visit date after the end date but within the offset should be included
 		visit.setVisitDateTime(DateHelper.addDays(endDate, FollowUpLogic.ALLOWED_DATE_OFFSET));
-		getVisitFacade().saveVisit(visit);
+		getVisitFacade().save(visit);
 
 		visits = getVisitService().getAllRelevantVisits(visitPersonEntity, visit.getDisease(), startDate, endDate);
 		assertThat(visits, hasSize(1));
 
 		visit4.setVisitDateTime(DateHelper.addDays(endDate, FollowUpLogic.ALLOWED_DATE_OFFSET));
-		getVisitFacade().saveVisit(visit4);
+		getVisitFacade().save(visit4);
 
 		visits4 = getVisitService().getAllRelevantVisits(visitPersonEntity3, visit4.getDisease(), startDate3, endDate3);
 		assertThat(visits4, hasSize(1));
 
 		// Visits with a visit date between the start and end date should be included
 		visit.setVisitDateTime(DateHelper.addDays(startDate, 14));
-		getVisitFacade().saveVisit(visit);
+		getVisitFacade().save(visit);
 
 		visits = getVisitService().getAllRelevantVisits(visitPersonEntity, visit.getDisease(), startDate, endDate);
 		assertThat(visits, hasSize(1));
 
 		visit4.setVisitDateTime(DateHelper.addDays(startDate3, 14));
-		getVisitFacade().saveVisit(visit4);
+		getVisitFacade().save(visit4);
 
 		visits4 = getVisitService().getAllRelevantVisits(visitPersonEntity3, visit4.getDisease(), startDate3, endDate3);
 		assertThat(visits4, hasSize(1));
@@ -106,8 +106,8 @@ public class VisitServiceTest extends AbstractBeanTest {
 		VisitDto visit3 = creator.createVisit(Disease.CSM, visitPerson.toReference());
 		visit2.setVisitDateTime(DateHelper.addDays(startDate, 14));
 		visit3.setVisitDateTime(DateHelper.addDays(startDate, 14));
-		getVisitFacade().saveVisit(visit2);
-		getVisitFacade().saveVisit(visit3);
+		getVisitFacade().save(visit2);
+		getVisitFacade().save(visit3);
 
 		visits = getVisitService().getAllRelevantVisits(visitPersonEntity, visit.getDisease(), startDate, endDate);
 		assertThat(visits, hasSize(1));
@@ -116,8 +116,8 @@ public class VisitServiceTest extends AbstractBeanTest {
 		visit3 = creator.createVisit(Disease.CSM, visitPerson3.toReference());
 		visit2.setVisitDateTime(DateHelper.addDays(startDate3, 14));
 		visit3.setVisitDateTime(DateHelper.addDays(startDate3, 14));
-		getVisitFacade().saveVisit(visit2);
-		getVisitFacade().saveVisit(visit3);
+		getVisitFacade().save(visit2);
+		getVisitFacade().save(visit3);
 
 		visits4 = getVisitService().getAllRelevantVisits(visitPersonEntity3, visit4.getDisease(), startDate3, endDate3);
 		assertThat(visits4, hasSize(1));

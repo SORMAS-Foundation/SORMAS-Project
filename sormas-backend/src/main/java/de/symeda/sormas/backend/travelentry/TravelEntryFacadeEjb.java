@@ -25,6 +25,7 @@ import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.travelentry.DeaContentEntry;
 import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
@@ -35,6 +36,7 @@ import de.symeda.sormas.api.travelentry.TravelEntryListCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryListEntryDto;
 import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.FacadeHelper;
@@ -54,7 +56,6 @@ import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.travelentry.services.TravelEntryListService;
 import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.RightsAllowed;
@@ -100,14 +101,19 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Inject
-	public TravelEntryFacadeEjb(TravelEntryService service, UserService userService) {
-		super(TravelEntry.class, TravelEntryDto.class, service, userService);
+	public TravelEntryFacadeEjb(TravelEntryService service) {
+		super(TravelEntry.class, TravelEntryDto.class, service);
 	}
 
 	@Override
 	@RightsAllowed(UserRight._TRAVEL_ENTRY_DELETE)
 	public void delete(String travelEntryUuid, DeletionDetails deletionDetails) {
 		TravelEntry travelEntry = service.getByUuid(travelEntryUuid);
+
+		if (!service.inJurisdictionOrOwned(travelEntry)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.messageTravelEntryOutsideJurisdictionDeletionDenied));
+		}
+
 		service.delete(travelEntry, deletionDetails);
 
 		if (travelEntry.getResultingCase() != null) {
@@ -431,8 +437,8 @@ public class TravelEntryFacadeEjb
 		}
 
 		@Inject
-		public TravelEntryFacadeEjbLocal(TravelEntryService service, UserService userService) {
-			super(service, userService);
+		public TravelEntryFacadeEjbLocal(TravelEntryService service) {
+			super(service);
 		}
 	}
 }

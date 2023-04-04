@@ -160,4 +160,15 @@ public class CampaignFormDataService extends AdoServiceWithUserFilterAndJurisdic
 
 		return filter;
 	}
+
+	@Override
+	public boolean inJurisdictionOrOwned(CampaignFormData campaignFormData) {
+		return fulfillsCondition(campaignFormData, this::inJurisdictionOrOwned);
+	}
+
+	private Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, CampaignFormData> root) {
+
+		CampaignFormDataQueryContext queryContext = new CampaignFormDataQueryContext(cb, query, new CampaignFormDataJoins(root));
+		return CampaignFormDataJurisdictionPredicateValidator.of(queryContext, getCurrentUser()).inJurisdictionOrOwned();
+	}
 }

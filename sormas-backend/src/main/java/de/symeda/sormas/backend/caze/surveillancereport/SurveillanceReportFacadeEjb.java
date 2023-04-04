@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2023 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -64,7 +64,6 @@ import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFa
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareInfoHelper;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
@@ -106,8 +105,8 @@ public class SurveillanceReportFacadeEjb
 	}
 
 	@Inject
-	public SurveillanceReportFacadeEjb(SurveillanceReportService service, UserService userService) {
-		super(SurveillanceReport.class, SurveillanceReportDto.class, service, userService);
+	public SurveillanceReportFacadeEjb(SurveillanceReportService service) {
+		super(SurveillanceReport.class, SurveillanceReportDto.class, service);
 	}
 
 	public static SurveillanceReportReferenceDto toReferenceDto(SurveillanceReport entity) {
@@ -317,8 +316,8 @@ public class SurveillanceReportFacadeEjb
 		}
 
 		@Inject
-		public SurveillanceReportFacadeEjbLocal(SurveillanceReportService service, UserService userService) {
-			super(service, userService);
+		public SurveillanceReportFacadeEjbLocal(SurveillanceReportService service) {
+			super(service);
 		}
 	}
 }

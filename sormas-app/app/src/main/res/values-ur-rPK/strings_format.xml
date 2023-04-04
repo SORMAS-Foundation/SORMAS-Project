@@ -18,7 +18,7 @@
   -->
 <resources>
     <string name="age_with_birth_date_format">%1$s %2$s (%3$s)</string>
-    <string name="age_with_dob_and_prepend_format"><b>:</b>   ()></string>
+    <string name="age_with_dob_and_prepend_format"><b>:</b>   ()&gt;</string>
     <string name="date_range_format">- </string>
     <string name="due_timeago_format">واجب الادا</string>
     <string name="lbds_response_cases">LBS مطابقت پذیری کا جواب۔ منتقل شدہ کیسز:%1$d، نظر انداز کیا گیا:</string>

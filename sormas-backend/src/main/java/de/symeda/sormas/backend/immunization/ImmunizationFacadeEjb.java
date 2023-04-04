@@ -111,7 +111,6 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareInfoHelper;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
-import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.RightsAllowed;
@@ -171,8 +170,8 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Inject
-	public ImmunizationFacadeEjb(ImmunizationService service, UserService userService) {
-		super(Immunization.class, ImmunizationDto.class, service, userService);
+	public ImmunizationFacadeEjb(ImmunizationService service) {
+		super(Immunization.class, ImmunizationDto.class, service);
 	}
 
 	public static ImmunizationReferenceDto toReferenceDto(Immunization entity) {
@@ -299,6 +298,11 @@ public class ImmunizationFacadeEjb
 	@RightsAllowed(UserRight._IMMUNIZATION_DELETE)
 	public void delete(String uuid, DeletionDetails deletionDetails) {
 		Immunization immunization = service.getByUuid(uuid);
+
+		if (!service.inJurisdictionOrOwned(immunization)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.messageImmunizationOutsideJurisdictionDeletionDenied));
+		}
+
 		service.delete(immunization, deletionDetails);
 	}
 
@@ -729,8 +733,8 @@ public class ImmunizationFacadeEjb
 		}
 
 		@Inject
-		public ImmunizationFacadeEjbLocal(ImmunizationService service, UserService userService) {
-			super(service, userService);
+		public ImmunizationFacadeEjbLocal(ImmunizationService service) {
+			super(service);
 		}
 	}
 }

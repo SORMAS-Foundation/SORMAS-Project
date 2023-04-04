@@ -15,15 +15,22 @@
 
 package de.symeda.sormas.backend.dashboard.sample;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
+import de.symeda.sormas.api.dashboard.sample.MapSampleDto;
 import de.symeda.sormas.api.dashboard.sample.SampleDashboardFacade;
+import de.symeda.sormas.api.dashboard.sample.SampleShipmentStatus;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.SampleAssociationType;
+import de.symeda.sormas.api.sample.SamplePurpose;
+import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.util.RightsAllowed;
 
@@ -35,8 +42,38 @@ public class SampleDashboardFacadeEjb implements SampleDashboardFacade {
 	private SampleDashboardService sampleDashboardService;
 
 	@Override
-	public Map<PathogenTestResultType, Long> getSampleCountByResultType(SampleDashboardCriteria dashboardCriteria) {
-		return sampleDashboardService.getSampleCountByResultType(dashboardCriteria);
+	public Map<PathogenTestResultType, Long> getSampleCountsByResultType(SampleDashboardCriteria dashboardCriteria) {
+		return sampleDashboardService.getSampleCountsByResultType(dashboardCriteria);
+	}
+
+	@Override
+	public Map<SamplePurpose, Long> getSampleCountsByPurpose(SampleDashboardCriteria dashboardCriteria) {
+		return sampleDashboardService.getSampleCountsByPurpose(dashboardCriteria);
+	}
+
+	@Override
+	public Map<SpecimenCondition, Long> getSampleCountsBySpecimenCondition(SampleDashboardCriteria dashboardCriteria) {
+		return sampleDashboardService.getSampleCountsBySpecimenCondition(dashboardCriteria);
+	}
+
+	@Override
+	public Map<SampleShipmentStatus, Long> getSampleCountsByShipmentStatus(SampleDashboardCriteria dashboardCriteria) {
+		return sampleDashboardService.getSampleCountsByShipmentStatus(dashboardCriteria);
+	}
+
+	@Override
+	public Map<PathogenTestResultType, Long> getTestResultCountsByResultType(SampleDashboardCriteria dashboardCriteria) {
+		return sampleDashboardService.getTestResultCountsByResultType(dashboardCriteria);
+	}
+
+	@Override
+	public Long countSamplesForMap(SampleDashboardCriteria criteria, Set<SampleAssociationType> associationTypes) {
+		return sampleDashboardService.countSamplesForMap(criteria, associationTypes);
+	}
+
+	@Override
+	public List<MapSampleDto> getSamplesForMap(SampleDashboardCriteria criteria, Set<SampleAssociationType> associationTypes) {
+		return sampleDashboardService.getSamplesForMap(criteria, associationTypes);
 	}
 
 	@LocalBean

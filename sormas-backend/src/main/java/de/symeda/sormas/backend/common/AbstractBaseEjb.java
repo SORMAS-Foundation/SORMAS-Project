@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.validation.constraints.NotNull;
@@ -27,6 +28,7 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 	protected EntityManager em;
 
 	protected SRV service;
+	@Inject
 	protected UserService userService;
 	protected Class<ADO> adoClass;
 	protected Class<DTO> dtoClass;
@@ -34,11 +36,10 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 	protected AbstractBaseEjb() {
 	}
 
-	protected AbstractBaseEjb(Class<ADO> adoClass, Class<DTO> dtoClass, SRV service, UserService userService) {
+	protected AbstractBaseEjb(Class<ADO> adoClass, Class<DTO> dtoClass, SRV service) {
 		this.adoClass = adoClass;
 		this.dtoClass = dtoClass;
 		this.service = service;
-		this.userService = userService;
 	}
 
 	@Override

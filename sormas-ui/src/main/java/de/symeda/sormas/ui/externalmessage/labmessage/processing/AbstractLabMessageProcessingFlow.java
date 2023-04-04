@@ -469,6 +469,7 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 
 		ContactDto contactDto = ContactDto.build(null, externalMessageDto.getDisease(), null, null);
 		contactDto.setReportingUser(user.toReference());
+		contactDto.setReportDateTime(externalMessageDto.getMessageDateTime());
 		contactDto.setPerson(person.toReference());
 		return contactDto;
 	}
@@ -494,6 +495,8 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 	private CompletionStage<ProcessingResult<EventDto>> createEvent(ExternalMessageDto labMessage) {
 
 		EventDto event = EventDto.build(country, user, labMessage.getDisease());
+		event.setDiseaseVariant(labMessage.getDiseaseVariant());
+		event.setDiseaseVariantDetails(labMessage.getDiseaseVariantDetails());
 
 		HandlerCallback<EventDto> callback = new HandlerCallback<>();
 		handleCreateEvent(event, callback);

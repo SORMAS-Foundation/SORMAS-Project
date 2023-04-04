@@ -338,7 +338,6 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserReference;
 import de.symeda.sormas.backend.user.UserRoleFacadeEjb;
 import de.symeda.sormas.backend.user.UserRoleService;
-import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.BulkOperationHelper;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -499,8 +498,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Inject
-	public CaseFacadeEjb(CaseService service, UserService userService) {
-		super(Case.class, CaseDataDto.class, service, userService);
+	public CaseFacadeEjb(CaseService service) {
+		super(Case.class, CaseDataDto.class, service);
 	}
 
 	@Override
@@ -3264,11 +3263,10 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			caze.setInvestigatedDate(null);
 
 			// Create a new investigation task if none is present
-			long pendingCount = existingCase != null
-				? taskService.getCount(new TaskCriteria().taskType(TaskType.CASE_INVESTIGATION).caze(caseRef).taskStatus(TaskStatus.PENDING))
-				: 0;
+			long investigationTaskCount =
+				existingCase != null ? taskService.getCount(new TaskCriteria().taskType(TaskType.CASE_INVESTIGATION).caze(caseRef)) : 0;
 
-			if (pendingCount == 0 && featureConfigurationFacade.isTaskGenerationFeatureEnabled(TaskType.CASE_INVESTIGATION)) {
+			if (investigationTaskCount == 0 && featureConfigurationFacade.isTaskGenerationFeatureEnabled(TaskType.CASE_INVESTIGATION)) {
 				createInvestigationTask(caze);
 			}
 		}
@@ -3721,10 +3719,10 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		// 5 Attach otherCase visits to leadCase
 		// (set the person and the disease of the visit, saveVisit does the rest)
-		for (VisitDto otherVisit : otherCase.getVisits().stream().map(VisitFacadeEjb::toDto).collect(Collectors.toList())) {
+		for (VisitDto otherVisit : otherCase.getVisits().stream().map(VisitFacadeEjb::toVisitDto).collect(Collectors.toList())) {
 			otherVisit.setPerson(leadCaseData.getPerson());
 			otherVisit.setDisease(leadCaseData.getDisease());
-			visitFacade.saveVisit(otherVisit);
+			visitFacade.save(otherVisit);
 		}
 
 		// 6 Documents
@@ -4276,8 +4274,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 
 		@Inject
-		public CaseFacadeEjbLocal(CaseService service, UserService userService) {
-			super(service, userService);
+		public CaseFacadeEjbLocal(CaseService service) {
+			super(service);
 		}
 	}
 }

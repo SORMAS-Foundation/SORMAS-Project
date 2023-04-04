@@ -86,6 +86,7 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	public static final String ONLY_SHOW_CASES_WITH_FULFILLED_REFERENCE_DEFINITION = "onlyShowCasesWithFulfilledReferenceDefinition";
 	public static final String PERSON_LIKE = "personLike";
 	public static final String JURISDICTION_TYPE = "jurisdictionType";
+	public static final String ENTITY_RELEVANCE_STATUS = "relevanceStatus";
 
 	private UserRoleReferenceDto reportingUserRole;
 	private Disease disease;
@@ -447,8 +448,12 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	}
 
 	public CaseCriteria relevanceStatus(EntityRelevanceStatus relevanceStatus) {
-		this.relevanceStatus = relevanceStatus;
+		setRelevanceStatus(relevanceStatus);
 		return this;
+	}
+
+	public void setRelevanceStatus(EntityRelevanceStatus relevanceStatus) {
+		this.relevanceStatus = relevanceStatus;
 	}
 
 	@IgnoreForUrl

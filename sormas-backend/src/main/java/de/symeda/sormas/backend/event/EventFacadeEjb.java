@@ -86,6 +86,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
@@ -107,6 +108,7 @@ import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToo
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb.CommunityFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
@@ -151,6 +153,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	@EJB
 	private SormasToSormasOriginInfoService originInfoService;
 	@EJB
+	private CountryFacadeEjbLocal countryFacade;
+	@EJB
 	private DistrictFacadeEjbLocal districtFacade;
 	@EJB
 	private CommunityFacadeEjbLocal communityFacade;
@@ -167,6 +171,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	@EJB
 	private SormasToSormasEventFacadeEjbLocal sormasToSormasEventFacade;
 	@EJB
+	private EventService eventService;
+	@EJB
 	private EventParticipantService eventParticipantService;
 	@EJB
 	private ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
@@ -177,8 +183,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	@Inject
-	public EventFacadeEjb(EventService service, UserService userService) {
-		super(Event.class, EventDto.class, service, userService);
+	public EventFacadeEjb(EventService service) {
+		super(Event.class, EventDto.class, service);
 	}
 
 	public static EventReferenceDto toReferenceDto(Event entity) {
@@ -336,6 +342,10 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	private void deleteEvent(Event event, DeletionDetails deletionDetails) throws ExternalSurveillanceToolException {
+		if (!eventService.inJurisdictionOrOwned(event)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.messageEventOutsideJurisdictionDeletionDenied));
+		}
+
 		if (event.getEventStatus() == EventStatus.CLUSTER
 			&& externalSurveillanceToolFacade.isFeatureEnabled()
 			&& externalShareInfoService.isEventShared(event.getId())) {
@@ -514,8 +524,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 			// Participant, Case and Death Count
 			List<Object[]> participantQueryList = new ArrayList<>();
-			CriteriaQuery<Object[]> participantCQ = cb.createQuery(Object[].class);
 			IterableHelper.executeBatched(eventUuids, ModelConstants.PARAMETER_LIMIT, batchedUuids -> {
+				CriteriaQuery<Object[]> participantCQ = cb.createQuery(Object[].class);
 				Root<EventParticipant> epRoot = participantCQ.from(EventParticipant.class);
 				Join<EventParticipant, Case> caseJoin = epRoot.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
 				Predicate notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
@@ -1072,11 +1082,16 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	public void validate(@Valid EventDto event) throws ValidationRuntimeException {
 
 		LocationDto location = event.getEventLocation();
+		CountryReferenceDto locationCountry = location.getCountry();
+		CountryReferenceDto serverCountry = countryFacade.getServerCountry();
+		boolean regionAndDistrictRequired = serverCountry == null
+			? locationCountry == null
+			: locationCountry == null || serverCountry.getIsoCode().equalsIgnoreCase(locationCountry.getIsoCode());
 
-		if (location.getRegion() == null) {
+		if (location.getRegion() == null && regionAndDistrictRequired) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
 		}
-		if (location.getDistrict() == null) {
+		if (location.getDistrict() == null && regionAndDistrictRequired) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));
 		}
 
@@ -1085,7 +1100,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		}
 
 		// Check whether there are any infrastructure errors
-		if (!districtFacade.getByUuid(location.getDistrict().getUuid()).getRegion().equals(location.getRegion())) {
+		if (location.getDistrict() != null && !districtFacade.getByUuid(location.getDistrict().getUuid()).getRegion().equals(location.getRegion())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noDistrictInRegion));
 		}
 		if (location.getCommunity() != null
@@ -1478,8 +1493,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		}
 
 		@Inject
-		public EventFacadeEjbLocal(EventService service, UserService userService) {
-			super(service, userService);
+		public EventFacadeEjbLocal(EventService service) {
+			super(service);
 		}
 	}
 }

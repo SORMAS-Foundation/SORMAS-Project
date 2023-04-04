@@ -10,6 +10,7 @@ import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.dashboard.EpiCurveGrouping;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.ui.dashboard.diagram.EpiCurveSeriesElement;
 
 public class AliveOrDeadCurveBuilder extends SurveillanceEpiCurveBuilder {
 

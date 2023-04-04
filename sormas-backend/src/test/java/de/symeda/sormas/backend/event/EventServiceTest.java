@@ -89,8 +89,7 @@ public class EventServiceTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetEventSummaryDetailsByContactsEventArchivingAndDeletion() {
-		TestDataCreator.RDCFEntities rdcfEntities = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		TestDataCreator.RDCF rdcf = new TestDataCreator.RDCF(rdcfEntities);
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = useSurveillanceOfficerLogin(rdcf);
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
 
@@ -125,8 +124,7 @@ public class EventServiceTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetEventSummaryDetailsByCasesEventArchivingAndDeletion() {
-		TestDataCreator.RDCFEntities rdcfEntities = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		TestDataCreator.RDCF rdcf = new TestDataCreator.RDCF(rdcfEntities);
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = useSurveillanceOfficerLogin(rdcf);
 		PersonDto contactPerson = creator.createPerson("Case", "Person");
 

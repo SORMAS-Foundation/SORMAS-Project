@@ -33,9 +33,7 @@ public class UserTest extends AbstractBeanTest {
 			u.hasAnyUserRole(creator.getUserRole(DefaultUserRole.ADMIN), creator.getUserRole(DefaultUserRole.CASE_OFFICER)),
 			Matchers.is(true));
 		MatcherAssert.assertThat(
-			u.hasAnyUserRole(
-				creator.getUserRole(DefaultUserRole.CASE_OFFICER),
-				creator.getUserRole(DefaultUserRole.CASE_SUPERVISOR)),
+			u.hasAnyUserRole(creator.getUserRole(DefaultUserRole.CASE_OFFICER), creator.getUserRole(DefaultUserRole.CASE_SUPERVISOR)),
 			Matchers.is(true));
 	}
 }

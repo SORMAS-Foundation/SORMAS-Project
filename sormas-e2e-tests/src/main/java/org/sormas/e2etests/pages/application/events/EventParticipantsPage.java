@@ -72,6 +72,14 @@ public class EventParticipantsPage {
   public static final By ENTER_BULK_EDIT_MODE_BUTTON = By.id("actionEnterBulkEditMode");
   public static final By EVENT_PARTICIPANTS_GRID =
       By.xpath("//div[@class='v-grid v-widget v-has-width v-has-height']");
+  public static final By EVENT_PARTICIPANT_PERSON_TAB =
+      By.cssSelector("#tab-events-eventparticipants-person");
+  public static final By EVENT_PARTICIPANT_DATA_TAB =
+      By.cssSelector("#tab-events-eventparticipants-data");
+  public static final By UNSAVED_CHANGES_HEADER =
+      By.xpath("//*[contains(text(), 'Unsaved changes')]");
+  public static final By UNSAVED_CHANGES_HEADER_DE =
+      By.xpath("//*[contains(text(), 'Ungespeicherte \u00C4nderungen')]");
 
   public static final By getEventParticipantByPersonUuid(String uuid) {
     return By.xpath(String.format("//a[@title='%s']//parent::td//parent::tr//td[1]/a", uuid));
