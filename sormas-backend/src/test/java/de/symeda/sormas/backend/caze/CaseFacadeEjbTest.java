@@ -60,7 +60,6 @@ import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
@@ -2605,7 +2604,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		Validator validator = factory.getValidator();
 
 		final Set<ConstraintViolation<CaseDataDto>> validate = validator.validate(caze);
-		MatcherAssert.assertThat(validate, hasSize(1));
+		assertTrue(validate.stream().anyMatch(violation -> CaseDataDto.DISEASE_DETAILS.equals(violation.getPropertyPath().toString())));
 	}
 
 	@Test
