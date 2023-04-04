@@ -5,6 +5,7 @@ import static org.sormas.e2etests.pages.application.immunizations.EditImmunizati
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -128,9 +129,11 @@ public class EditImmunizationPersonSteps implements En {
 
   private LocalDate getUserBirthDate() {
     final String year = webDriverHelpers.getValueFromWebElement(DATE_OF_BIRTH_YEAR_INPUT);
-    final String month = webDriverHelpers.getValueFromWebElement(DATE_OF_BIRTH_MONTH_INPUT);
+    final String collectedMonth =
+        webDriverHelpers.getValueFromWebElement(DATE_OF_BIRTH_MONTH_INPUT).toUpperCase();
+    Month month = Month.valueOf(collectedMonth);
     final String day = webDriverHelpers.getValueFromWebElement(DATE_OF_BIRTH_DAY_INPUT);
-    final String date = month + "/" + day + "/" + year;
-    return LocalDate.parse(date, DATE_FORMATTER);
+    final String date = month.getValue() + "/" + day + "/" + year;
+    return LocalDate.parse(date, DATE_FORMATTER_EN);
   }
 }
