@@ -927,12 +927,8 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		Set<ConstraintViolation<T>> constraintViolations = validator.validate(entities);
 		if (constraintViolations.size() > 0) {
-			return ImportLineResultDto.errorResult(
-				ConstraintValidationHelper.getPropertyErrors(constraintViolations)
-					.entrySet()
-					.stream()
-					.map(e -> String.join(".", e.getKey().get(e.getKey().size() - 1)) + ": " + e.getValue())
-					.collect(Collectors.joining(";")));
+			return ImportLineResultDto
+				.errorResult(ConstraintValidationHelper.formatPropertyErrors(ConstraintValidationHelper.getPropertyErrors(constraintViolations)));
 		}
 
 		return ImportLineResultDto.successResult();
