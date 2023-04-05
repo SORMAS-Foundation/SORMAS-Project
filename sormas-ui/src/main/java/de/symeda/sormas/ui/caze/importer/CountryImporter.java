@@ -1,7 +1,5 @@
 package de.symeda.sormas.ui.caze.importer;
 
-import de.symeda.sormas.api.event.EventParticipantDto;
-import de.symeda.sormas.api.importexport.ImportErrorException;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.File;
@@ -18,6 +16,7 @@ import com.vaadin.ui.UI;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.importexport.ImportErrorException;
 import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.importexport.ValueSeparator;
@@ -56,7 +55,7 @@ public class CountryImporter extends InfrastructureImporter {
 		}
 
 		CountryDto newEntityDto = CountryDto.build();
-		boolean hasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, false, (cellData) -> {
+		boolean hasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, false, cellData -> {
 			try {
 				if (!StringUtils.isEmpty(cellData.getValue())) {
 					insertColumnEntryIntoData(newEntityDto, cellData.getValue(), cellData.getEntityPropertyPath());

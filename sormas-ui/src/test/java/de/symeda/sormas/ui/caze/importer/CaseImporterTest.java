@@ -76,6 +76,9 @@ import de.symeda.sormas.ui.importer.PersonImportSimilarityResult;
 
 public class CaseImporterTest extends AbstractBeanTest {
 
+	/**
+	 * This should be split into multiple tests. See #11618
+	 */
 	@Test
 	public void testImportAllCases() throws IOException, InvalidColumnException, InterruptedException, CsvException, URISyntaxException {
 

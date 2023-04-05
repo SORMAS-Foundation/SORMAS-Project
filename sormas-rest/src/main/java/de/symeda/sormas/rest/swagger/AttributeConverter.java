@@ -1,9 +1,7 @@
 package de.symeda.sormas.rest.swagger;
 
 import java.lang.annotation.Annotation;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
