@@ -184,7 +184,6 @@ public class ContactDto extends SormasToSormasShareableDto {
 	@NotNull
 	private boolean multiDayContact;
 	private Date firstContactDate;
-	@NotNull
 	private Date lastContactDate;
 	@HideForCountriesExcept
 	private ContactIdentificationSource contactIdentificationSource;

@@ -66,7 +66,6 @@ public class VaccinationDto extends PseudonymizableDto {
 
 	@NotNull
 	private ImmunizationReferenceDto immunization;
-	@NotNull
 	@Valid
 	@DependingOnFeatureType(featureType = FeatureType.IMMUNIZATION_MANAGEMENT,
 		properties = @FeatureProperty(property = FeatureTypeProperty.REDUCED, value = "true"),

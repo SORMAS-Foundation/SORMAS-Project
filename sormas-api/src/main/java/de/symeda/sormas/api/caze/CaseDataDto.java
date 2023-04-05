@@ -323,10 +323,8 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	private CommunityReferenceDto responsibleCommunity;
 
 	@Outbreaks
-	@NotNull
 	private RegionReferenceDto region;
 	@Outbreaks
-	@NotNull
 	private DistrictReferenceDto district;
 	@Outbreaks
 	@PersonalData

@@ -22,8 +22,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+
+import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -46,7 +53,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportErrorException;
-import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.importexport.ImportRelatedObjectsMapper;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.importexport.ValueSeparator;
@@ -155,6 +161,20 @@ public class EventParticipantImporter extends DataImporter {
 			} catch (ValidationRuntimeException e) {
 				eventParticipantHasImportError = true;
 				writeImportError(values, e.getMessage());
+			}
+		}
+
+		if (!eventParticipantHasImportError) {
+			ImportLineResultDto<EventParticipantDto> eventParticipantErrors = validateConstraints(newEventParticipantTemp);
+			if (eventParticipantErrors.isError()) {
+				eventParticipantHasImportError = true;
+				writeImportError(values, eventParticipantErrors.getMessage());
+			}
+
+			ImportLineResultDto<PersonDto> personErrors = validateConstraints(newPersonTemp);
+			if (personErrors.isError()) {
+				eventParticipantHasImportError = true;
+				writeImportError(values, personErrors.getMessage());
 			}
 		}
 
@@ -410,11 +430,6 @@ public class EventParticipantImporter extends DataImporter {
 				LOGGER.error("Unexpected error when trying to import an eventparticipant: " + e.getMessage(), e);
 				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importCasesUnexpectedError));
 			}
-		}
-
-		ImportLineResultDto<EventParticipantDto> constraintErrors = validateConstraints(eventParticipant);
-		if (constraintErrors.isError()) {
-			throw new ImportErrorException(constraintErrors.getMessage());
 		}
 	}
 

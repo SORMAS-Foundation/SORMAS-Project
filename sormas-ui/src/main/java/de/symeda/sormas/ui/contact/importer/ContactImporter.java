@@ -162,6 +162,20 @@ public class ContactImporter extends DataImporter {
 			}
 		}
 
+		if (!contactHasImportError) {
+			ImportLineResultDto<ContactDto> contactErrors = validateConstraints(newContactTemp);
+			if (contactErrors.isError()) {
+				contactHasImportError = true;
+				writeImportError(values, contactErrors.getMessage());
+			}
+
+			ImportLineResultDto<PersonDto> personErrors = validateConstraints(newPersonTemp);
+			if (personErrors.isError()) {
+				contactHasImportError = true;
+				writeImportError(values, personErrors.getMessage());
+			}
+		}
+
 		// Sanitize non-HOME address
 		PersonHelper.sanitizeNonHomeAddress(newPersonTemp);
 
@@ -457,16 +471,6 @@ public class ContactImporter extends DataImporter {
 				logger.error("Unexpected error when trying to import a contact: " + e.getMessage());
 				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importUnexpectedError));
 			}
-		}
-
-		ImportLineResultDto<ContactDto> contactErrors = validateConstraints(contact);
-		if (contactErrors.isError()) {
-			throw new ImportErrorException(contactErrors.getMessage());
-		}
-
-		ImportLineResultDto<PersonDto> personErrors = validateConstraints(person);
-		if (personErrors.isError()) {
-			throw new ImportErrorException(personErrors.getMessage());
 		}
 	}
 
