@@ -76,10 +76,10 @@ public class SormasToSormasEncryptionFacadeEjb implements SormasToSormasEncrypti
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
 
 	@Inject
-	SormasToSormasRestClient restClient;
+	private SormasToSormasRestClient restClient;
 
-	@EJB
-	SormasToSormasDiscoveryService discoveryService;
+	@Inject
+	private SormasToSormasDiscoveryService sormasToSormasDiscoveryService;
 
 	public SormasToSormasEncryptionFacadeEjb() {
 		objectMapper = new ObjectMapper();
@@ -167,7 +167,7 @@ public class SormasToSormasEncryptionFacadeEjb implements SormasToSormasEncrypti
 		// check if the received cert is issued to the ID we are talking to. In the future, we should only rely on a local trust store
 		// the idea was that the ID is the CN of the cert, however, NL put the hostname in the CN, so we have to check both unfortunately
 
-		SormasServerDescriptor otherDescriptor = discoveryService.getSormasServerDescriptorById(otherId);
+		SormasServerDescriptor otherDescriptor = sormasToSormasDiscoveryService.getSormasServerDescriptorById(otherId);
 		if (otherDescriptor == null) {
 			LOGGER.error("Unable to load server descriptor for {}", otherId);
 			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasCertNotGenerated);
