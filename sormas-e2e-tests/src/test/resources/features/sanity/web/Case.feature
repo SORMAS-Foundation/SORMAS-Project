@@ -3053,3 +3053,23 @@ Feature: Case end to end tests
     Then I check if Immunization area contains "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)"
     And I click on See samples for this person button
     And I check that number of displayed sample results is 2
+
+  @tmsLink=SORDEV-13953 @env_s2s_1
+  Scenario: S2S - Share a case that was Archived
+    Given I log in as a Admin User
+    When I click on the Cases button from navbar
+    Then I click on the NEW CASE button
+    #do zmiany kolejny krok
+#    And I fill only mandatory fields for a new case form for DE
+    And I save a new case
+    Then I click on the Archive case button
+    And I click on save button from Edit Case page
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment in new driver tab
+    When I log in as a Admin User
+    And I click on the Shares button from navbar
+    And I click on "accept" shared case button with copied case description
+    Then I open last created Case via API on "s2s_2" instance
