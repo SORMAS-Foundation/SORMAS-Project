@@ -95,4 +95,11 @@ public final class LocationHelper {
 
 		return true;
 	}
+
+	public static void resetContinentFieldsIfCountryRemoved(LocationDto newLocation, LocationDto oldLocation) {
+		if (newLocation.getCountry() == null && oldLocation.getCountry() != null) {
+			newLocation.setContinent(null);
+			newLocation.setSubcontinent(null);
+		}
+	}
 }
