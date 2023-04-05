@@ -3059,10 +3059,10 @@ Feature: Case end to end tests
     Given I log in as a Admin User
     When I click on the Cases button from navbar
     Then I click on the NEW CASE button
-    #do zmiany kolejny krok
-#    And I fill only mandatory fields for a new case form for DE
+    And I fill a new case form for DE version with mandatory data with "Berlin" as a region and "SK Berlin Mitte" as a district
     And I save a new case
-    Then I click on the Archive case button
+    And I collect uuid of the case
+    Then I click on the Archive case button and confirm popup
     And I click on save button from Edit Case page
     Then I click on share case button
     And I select organization to share with "s2s_2"
@@ -3072,4 +3072,4 @@ Feature: Case end to end tests
     When I log in as a Admin User
     And I click on the Shares button from navbar
     And I click on "accept" shared case button with copied case description
-    Then I open last created Case via API on "s2s_2" instance
+    And I open the last created case with collected UUID by url on "s2s_2" instance

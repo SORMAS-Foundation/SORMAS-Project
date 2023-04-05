@@ -1403,6 +1403,17 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.isElementGreyedOut(EditCasePage.UUID_INPUT);
           webDriverHelpers.isElementGreyedOut(EditCasePage.SAVE_BUTTON);
         });
+
+    And(
+        "I open the last created case with collected UUID by url on {string} instance",
+        (String instance) -> {
+          String LAST_CREATED_CASE_URL =
+              runningConfiguration.getEnvironmentUrlForMarket(instance)
+                  + "/sormas-ui/#!cases/data/"
+                  + CreateNewCaseSteps.casesUUID.get(0);
+          System.out.println("To jest web path: " + LAST_CREATED_CASE_URL);
+          webDriverHelpers.accessWebSite(LAST_CREATED_CASE_URL);
+        });
   }
 
   private Number getRandomNumberForBirthDateDifferentThanCreated(Number created, int min, int max) {

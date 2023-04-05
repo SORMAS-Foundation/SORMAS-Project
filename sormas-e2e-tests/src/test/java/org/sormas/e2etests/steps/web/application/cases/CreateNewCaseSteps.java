@@ -1518,6 +1518,20 @@ public class CreateNewCaseSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL);
         });
+
+    And(
+        "I fill a new case form for DE version with mandatory data with {string} as a region and {string} as a district",
+        (String region, String district) -> {
+          caze = caseService.buildGeneratedCaseDE();
+          fillFirstName(caze.getFirstName());
+          fillLastName(caze.getLastName());
+          selectSex(caze.getSex());
+          selectResponsibleRegion(region);
+          selectResponsibleDistrict(district);
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          fillDisease(caze.getDisease());
+          fillDateOfReport(caze.getDateOfReport(), Locale.GERMAN);
+        });
   }
 
   private void selectPlaceOfStayDistrict(String placeOfStayDistrict) {
