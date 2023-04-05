@@ -193,12 +193,30 @@ public class CaseDirectoryPage {
 
   public static By getActionRejectButtonByCaseDescription(String description) {
     return By.xpath(
-        String.format("//*[contains(text(), '%s')]/..//div[@id='actionReject']", description));
+        String.format(
+            "//td[contains(text(), 'Fall')]/../*[contains(text(), '%s')]/..//div[@id='actionReject']",
+            description));
   }
 
   public static By getActionAcceptButtonByCaseDescription(String description) {
     return By.xpath(
-        String.format("//*[contains(text(), '%s')]/..//div[@id='actionAccept']", description));
+        String.format(
+            "//td[contains(text(), 'Fall')]/../*[contains(text(), '%s')]/..//div[@id='actionAccept']",
+            description));
+  }
+
+  public static By getActionAcceptButtonByContactDescription(String description) {
+    return By.xpath(
+        String.format(
+            "//td[contains(text(), 'Kontakt')]/../*[contains(text(), '%s')]/..//div[@id='actionAccept']",
+            description));
+  }
+
+  public static By getActionRejectButtonByContactDescription(String description) {
+    return By.xpath(
+        String.format(
+            "//td[contains(text(), 'Kontakt')]/../*[contains(text(), '%s')]/..//div[@id='actionReject']",
+            description));
   }
 
   public static final By REJECT_SHARED_CASE_POPUP_TEXT_AREA =
@@ -264,4 +282,7 @@ public class CaseDirectoryPage {
   public static By MERGE_MESSAGE_HEADER_DE =
       By.xpath(
           "//*[contains(text(), 'F\u00E4lle wurden zusammengef\u00FChrt und der doppelte Fall gel\u00F6scht')]");
+  public static By WARNING_CASE_NOT_SHARED_SHARE_POPUP_DE =
+      By.xpath(
+          "//div[contains(text(), 'Wenn Sie diesen Kontakt teilen m\u00F6chten, m\u00FCssen Sie den zugeh\u00F6rigen Fall zuerst an das gleiche Zielsystem senden.')]");
 }
