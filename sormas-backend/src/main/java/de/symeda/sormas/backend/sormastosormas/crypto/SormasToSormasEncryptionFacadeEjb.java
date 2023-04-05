@@ -39,6 +39,11 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
+import org.bouncycastle.asn1.x500.RDN;
+import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.asn1.x500.style.IETFUtils;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +52,7 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
@@ -57,6 +63,7 @@ import de.symeda.sormas.backend.crypt.CmsCertificateConfig;
 import de.symeda.sormas.backend.crypt.CmsCreator;
 import de.symeda.sormas.backend.crypt.CmsPlaintext;
 import de.symeda.sormas.backend.crypt.CmsReader;
+import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoveryService;
 import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClient;
 
 @Stateless(name = "SormasToSormasEncryptionFacade")
@@ -69,7 +76,10 @@ public class SormasToSormasEncryptionFacadeEjb implements SormasToSormasEncrypti
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
 
 	@Inject
-	SormasToSormasRestClient restClient;
+	private SormasToSormasRestClient restClient;
+
+	@Inject
+	private SormasToSormasDiscoveryService sormasToSormasDiscoveryService;
 
 	public SormasToSormasEncryptionFacadeEjb() {
 		objectMapper = new ObjectMapper();
@@ -150,9 +160,29 @@ public class SormasToSormasEncryptionFacadeEjb implements SormasToSormasEncrypti
 		try {
 			receivedCert.verify(rootCA.getPublicKey());
 		} catch (CertificateException | NoSuchAlgorithmException | InvalidKeyException | NoSuchProviderException | SignatureException e) {
-			LOGGER.error(MessageFormat.format("Verification of received certificate failed: {}", e.toString()));
+			LOGGER.error(MessageFormat.format("SECURITY WARNING: Verification of received certificate failed: {}", e.toString()));
 			throw new CertificateException(e);
 		}
+
+		// check if the received cert is issued to the ID we are talking to. In the future, we should only rely on a local trust store
+		// the idea was that the ID is the CN of the cert, however, NL put the hostname in the CN, so we have to check both unfortunately
+
+		SormasServerDescriptor otherDescriptor = sormasToSormasDiscoveryService.getSormasServerDescriptorById(otherId);
+		if (otherDescriptor == null) {
+			LOGGER.error("Unable to load server descriptor for {}", otherId);
+			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasCertNotGenerated);
+		}
+
+		X500Name x500name = new JcaX509CertificateHolder(receivedCert).getSubject();
+		RDN cn = x500name.getRDNs(BCStyle.CN)[0];
+
+		String cnString = IETFUtils.valueToString(cn.getFirst().getValue());
+
+		if (!otherId.equals(cnString) && !otherDescriptor.getHostName().equals(cnString)) {
+			LOGGER.error("SECURITY WARNING: The received certificate from {} is not issued to the expected ID. The received ID was issued to {}.", otherId, cnString);
+			throw new SecurityException();
+		}
+
 		LOGGER.info("The certificate for {} has been retrieved successfully", otherId);
 		return receivedCert;
 	}

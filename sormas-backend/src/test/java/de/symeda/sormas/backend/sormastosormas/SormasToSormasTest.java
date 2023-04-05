@@ -114,6 +114,12 @@ public abstract class SormasToSormasTest extends AbstractBeanTest {
 
 		getFacilityService().createConstantFacilities();
 		getPointOfEntryService().createConstantPointsOfEntry();
+
+		Mockito.when(MockProducer.getSormasToSormasDiscoveryService().getSormasServerDescriptorById(eq(DEFAULT_SERVER_ID)))
+			.thenReturn(new SormasServerDescriptor(DEFAULT_SERVER_ID, "SORMAS A", "https://sormas-a.com"));
+
+		Mockito.when(MockProducer.getSormasToSormasDiscoveryService().getSormasServerDescriptorById(eq(SECOND_SERVER_ID)))
+			.thenReturn(new SormasServerDescriptor(SECOND_SERVER_ID, "SORMAS B", "https://sormas-b.com"));
 	}
 
 	@AfterEach
