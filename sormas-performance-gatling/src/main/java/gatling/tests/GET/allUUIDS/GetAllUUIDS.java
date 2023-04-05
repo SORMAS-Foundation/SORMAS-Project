@@ -76,11 +76,8 @@ public class GetAllUUIDS {
         private static ChainBuilder getCasesUUIDS = exec(
                 http("Get cases UUIDS")
                         .get(cases + "/" + uuids)
-                        .check(status().shouldBe(200), bodyString().exists()))
-                .exec(session -> {
-                    jsonPath("$[0]").saveAs("saved_case_uuid");
-                    return session;
-                });
+                        .check(jsonPath("$[0]").saveAs("saved_case_uuid"))
+                        .check(status().shouldBe(200), bodyString().exists()));
 
         private static ChainBuilder getClinicalvisitsUUIDS = exec(
                 http("Get clinicalvisits UUIDS")
@@ -103,11 +100,8 @@ public class GetAllUUIDS {
         private static ChainBuilder getContactsUUIDS = exec(
                 http("Get contacts UUIDS")
                         .get(contacts + "/" + uuids)
-                        .check(status().shouldBe(200), bodyString().exists()))
-                .exec(session -> {
-                    jsonPath("$[0]").saveAs("saved_contact_uuid");
-                    return session;
-                });
+                        .check(jsonPath("$[0]").saveAs("saved_contact_uuid"))
+                        .check(status().shouldBe(200), bodyString().exists()));
 
         private static ChainBuilder getContinentsUUIDS = exec(
                 http("Get continents UUIDS")
@@ -157,29 +151,20 @@ public class GetAllUUIDS {
         private static ChainBuilder getEventsUUIDS = exec(
                 http("Get events UUIDS")
                         .get(events + "/" + uuids)
-                        .check(status().shouldBe(200), bodyString().exists()))
-                .exec(session -> {
-                    jsonPath("$[0]").saveAs("saved_event_uuid");
-                    return session;
-                });
+                        .check(jsonPath("$[0]").saveAs("saved_event_uuid"))
+                        .check(status().shouldBe(200), bodyString().exists()));
 
         private static ChainBuilder getEventparticipantsUUIDS = exec(
                 http("Get eventparticipants UUIDS")
                         .get(eventparticipants + "/" + uuids)
-                        .check(status().shouldBe(200), bodyString().exists()))
-                .exec(session -> {
-                    jsonPath("$[0]").saveAs("saved_eventparticipant_uuid");
-                    return session;
-                });
+                        .check(jsonPath("$[0]").saveAs("saved_eventparticipant_uuid"))
+                        .check(status().shouldBe(200), bodyString().exists()));
 
         private static ChainBuilder getFacilitiesUUIDS = exec(
                 http("Get facilities UUIDS")
                         .get(facilities + "/" + uuids)
-                        .check(status().shouldBe(200), bodyString().exists()))
-                .exec(session -> {
-                    jsonPath("$[0]").saveAs("saved_facility_uuid");
-                    return session;
-                });
+                        .check(jsonPath("$[0]").saveAs("saved_facility_uuid"))
+                        .check(status().shouldBe(200), bodyString().exists()));
 
         private static ChainBuilder getFeatureconfigurationsUUIDS = exec(
                 http("Get featureconfigurations UUIDS")
@@ -193,11 +178,8 @@ public class GetAllUUIDS {
         private static ChainBuilder getImmunizationsUUIDS = exec(
                 http("Get immunizations UUIDS")
                         .get(immunizations + "/" + uuids)
-                        .check(status().shouldBe(200), bodyString().exists()))
-                .exec(session -> {
-                    jsonPath("$[0]").saveAs("saved_immunization_uuid");
-                    return session;
-                });
+                        .check(jsonPath("$[0]").saveAs("saved_immunization_uuid"))
+                        .check(status().shouldBe(200), bodyString().exists()));
 
         private static ChainBuilder getPathogentestsUUIDS = exec(
                 http("Get pathogentests UUIDS")
@@ -211,11 +193,8 @@ public class GetAllUUIDS {
         private static ChainBuilder getPersonsUUIDS = exec(
                 http("Get persons UUIDS")
                         .get(persons + "/" + uuids)
-                        .check(status().shouldBe(200), bodyString().exists()))
-                .exec(session -> {
-                    jsonPath("$[0]").saveAs("saved_person_uuid");
-                    return session;
-                });
+                        .check(jsonPath("$[0]").saveAs("saved_person_uuid"))
+                        .check(status().shouldBe(200), bodyString().exists()));
 
         private static ChainBuilder getPointsofentryUUIDS = exec(
                 http("Get pointsofentry UUIDS")
@@ -256,11 +235,8 @@ public class GetAllUUIDS {
         private static ChainBuilder getSamplesUUIDS = exec(
                 http("Get samples UUIDS")
                         .get(samples + "/" + uuids)
-                        .check(status().shouldBe(200), bodyString().exists()))
-                .exec(session -> {
-                    jsonPath("$[0]").saveAs("saved_sample_uuid");
-                    return session;
-                });
+                        .check(jsonPath("$[0]").saveAs("saved_sample_uuid"))
+                        .check(status().shouldBe(200), bodyString().exists()));
 
         private static ChainBuilder getSubcontinentsUUIDS = exec(
                 http("Get subcontinents UUIDS")
@@ -274,11 +250,8 @@ public class GetAllUUIDS {
         private static ChainBuilder getTasksUUIDS = exec(
                 http("Get tasks UUIDS")
                         .get(tasks + "/" + uuids)
-                        .check(status().shouldBe(200), bodyString().exists()))
-                .exec(session -> {
-                    jsonPath("$[0]").saveAs("saved_task_uuid");
-                    return session;
-                });
+                        .check(jsonPath("$[0]").saveAs("saved_task_uuid"))
+                        .check(status().shouldBe(200), bodyString().exists()));
 
         private static ChainBuilder getTreatmentsUUIDS = exec(
                 http("Get treatments UUIDS")
@@ -292,12 +265,8 @@ public class GetAllUUIDS {
         private static ChainBuilder getUsersUUIDS = exec(
                 http("Get users UUIDS")
                         .get(users + "/" + uuids)
-                        .check(status().shouldBe(200), bodyString().exists()))
-                .exec(session -> {
-                    jsonPath("$[0]").saveAs("saved_user_uuid");
-                    return session;
-                });
-
+                        .check(jsonPath("$[0]").saveAs("saved_user_uuid"))
+                        .check(status().shouldBe(200), bodyString().exists()));
         private static ChainBuilder getUsersRolesUUIDS = exec(
                 http("Get userroles UUIDS")
                         .get(userroles + "/" + uuids)

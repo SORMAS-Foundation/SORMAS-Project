@@ -1,6 +1,7 @@
 package gatling.simulator;
 
 import gatling.tests.GET.allUUIDS.GetAllUUIDS;
+import gatling.tests.GET.allUUIDS.GetSpecificEntity;
 import gatling.utils.TestingSpecs;
 import io.gatling.core.scenario.Scenario;
 import io.gatling.javaapi.core.ScenarioBuilder;
@@ -22,7 +23,9 @@ public class SormasSimulation extends Simulation {
     public static final String USER_PASSWORD = TestingSpecs.getPassword();
 
     ScenarioBuilder scenarioBuilder = scenario("Sormas tests")
-            .exec(GetAllUUIDS.getAllUUIDSTests()
+            .exec(
+                    GetAllUUIDS.getAllUUIDSTests(),
+                    GetSpecificEntity.getEntityByUUIDTests()
             );
 
     HttpProtocolBuilder httpProtocol =
