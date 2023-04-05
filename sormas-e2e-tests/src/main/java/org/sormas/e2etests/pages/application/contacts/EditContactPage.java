@@ -195,4 +195,9 @@ public class EditContactPage {
 
   public static final By OPEN_CASE_OF_THIS_CONTACT_PERSON_LINK =
       By.cssSelector("[location='toCaseBtnLoc'] div");
+
+  public static final By getHeaderText(String text) {
+    return By.xpath(
+        String.format("//div[contains(@class, 'v-window-header') and text()='%s']", text));
+  }
 }

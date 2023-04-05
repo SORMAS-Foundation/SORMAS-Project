@@ -133,6 +133,7 @@ public class CaseDirectorySteps implements En {
   private static String lastName;
   private static String receivedCaseUUID;
   private static String generatedRandomString;
+  private static String generatedRandomStringContact;
 
   @Inject
   public CaseDirectorySteps(
@@ -1326,6 +1327,14 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.fillInWebElement(EXTRA_COMMENT_INPUT_SHARE_POPUP, generatedRandomString);
         });
 
+    And(
+        "I fill comment in share popup for contact with random string",
+        () -> {
+          generatedRandomStringContact = faker.beer().name();
+          webDriverHelpers.fillInWebElement(
+              EXTRA_COMMENT_INPUT_SHARE_POPUP, generatedRandomStringContact);
+        });
+
     When(
         "I click on {string} shared case button with copied case description",
         (String option) -> {
@@ -1337,6 +1346,21 @@ public class CaseDirectorySteps implements En {
             case "accept":
               webDriverHelpers.clickOnWebElementBySelector(
                   getActionAcceptButtonByCaseDescription(generatedRandomString));
+              break;
+          }
+        });
+
+    When(
+        "I click on {string} shared contact button with copied contact description",
+        (String option) -> {
+          switch (option) {
+            case "reject":
+              webDriverHelpers.clickOnWebElementBySelector(
+                  getActionRejectButtonByContactDescription(generatedRandomStringContact));
+              break;
+            case "accept":
+              webDriverHelpers.clickOnWebElementBySelector(
+                  getActionAcceptButtonByContactDescription(generatedRandomStringContact));
               break;
           }
         });
