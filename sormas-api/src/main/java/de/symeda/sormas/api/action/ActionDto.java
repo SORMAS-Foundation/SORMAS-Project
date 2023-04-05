@@ -23,6 +23,7 @@ import static de.symeda.sormas.api.utils.HtmlHelper.cleanHtml;
 
 import java.util.Date;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.EntityDto;
@@ -35,7 +36,6 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.HtmlHelper;
-import javax.validation.constraints.NotNull;
 
 @DependingOnFeatureType(featureType = FeatureType.EVENT_SURVEILLANCE)
 public class ActionDto extends EntityDto {
@@ -53,13 +53,13 @@ public class ActionDto extends EntityDto {
 	public static final String ACTION_STATUS = "actionStatus";
 	public static final String ACTION_MEASURE = "actionMeasure";
 
-	@NotNull
+	@NotNull(message = Validations.requiredField)
 	private ActionContext actionContext;
 	private EventReferenceDto event;
 
 	private ActionMeasure actionMeasure;
 	private ActionPriority priority;
-	@NotNull
+	@NotNull(message = Validations.requiredField)
 	private Date date;
 	private ActionStatus actionStatus;
 	private Date statusChangeDate;

@@ -64,14 +64,14 @@ public class VaccinationDto extends PseudonymizableDto {
 	public static final String PREGNANT = "pregnant";
 	public static final String TRIMESTER = "trimester";
 
-	@NotNull
+	@NotNull(message = Validations.requiredField)
 	private ImmunizationReferenceDto immunization;
 	@Valid
 	@DependingOnFeatureType(featureType = FeatureType.IMMUNIZATION_MANAGEMENT,
 		properties = @FeatureProperty(property = FeatureTypeProperty.REDUCED, value = "true"),
 		hide = true)
 	private HealthConditionsDto healthConditions;
-	@NotNull
+	@NotNull(message = Validations.validReportDateTime)
 	private Date reportDate;
 	private UserReferenceDto reportingUser;
 	private Date vaccinationDate;

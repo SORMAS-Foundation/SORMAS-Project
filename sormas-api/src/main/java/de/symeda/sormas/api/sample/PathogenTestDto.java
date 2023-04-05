@@ -77,9 +77,9 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String DELETION_REASON = "deletionReason";
 	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 
-	@NotNull
+	@NotNull(message = Validations.validSample)
 	private SampleReferenceDto sample;
-	@NotNull
+	@NotNull(message = Validations.validDisease)
 	private Disease testedDisease;
 	private DiseaseVariant testedDiseaseVariant;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
@@ -88,27 +88,27 @@ public class PathogenTestDto extends PseudonymizableDto {
 	private String testedDiseaseVariantDetails;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String typingId;
-	@NotNull
+	@NotNull(message = Validations.requiredField)
 	private PathogenTestType testType;
 	private PCRTestSpecification pcrTestSpecification;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String testTypeText;
 	private Date testDateTime;
-	@NotNull
+	@NotNull(message = Validations.requiredField)
 	private FacilityReferenceDto lab;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String labDetails;
-	@NotNull
+	@NotNull(message = Validations.requiredField)
 	@SensitiveData
 	private UserReferenceDto labUser;
-	@NotNull
+	@NotNull(message = Validations.requiredField)
 	private PathogenTestResultType testResult;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String testResultText;
-	@NotNull
+	@NotNull(message = Validations.requiredField)
 	private Boolean testResultVerified;
 	private boolean fourFoldIncreaseAntibodyTiter;
 	@SensitiveData

@@ -35,7 +35,7 @@ public abstract class ReferenceDto implements Serializable, HasUuid, HasCaption,
 	public static final String CAPTION = "caption";
 	public static final String NO_REFERENCE_UUID = "SORMAS-CONSTID-NO-REFERENCE";
 
-	@NotNull
+	@NotNull(message = Validations.requiredField)
 	@AuditIncludeProperty
 	@Pattern(regexp = UUID_REGEX, message = Validations.uuidPatternNotMatching)
 	private String uuid;

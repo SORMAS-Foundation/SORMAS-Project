@@ -4,11 +4,13 @@ import java.io.Serializable;
 
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.i18n.Validations;
+
 public class PersonSymptomJournalStatusDto implements Serializable {
 
 	private static final long serialVersionUID = 6985497943624025440L;
 
-	@NotNull
+	@NotNull(message = Validations.requiredField)
 	private SymptomJournalStatus status;
 	private String statusDateTime; // is not used, but given according to API specification.
 

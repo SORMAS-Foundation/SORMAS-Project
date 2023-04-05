@@ -57,6 +57,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.ConstraintValidationHelper;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -130,11 +131,11 @@ public class ContactImporter extends DataImporter {
 		ImportRelatedObjectsMapper.Builder relatedObjectsMapperBuilder = new ImportRelatedObjectsMapper.Builder();
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
-		relatedObjectsMapperBuilder.addMapper(
-			VaccinationDto.class,
-			vaccinations,
-			() -> VaccinationDto.build(currentUser.toReference()),
-			this::insertColumnEntryIntoRelatedObject);
+			relatedObjectsMapperBuilder.addMapper(
+				VaccinationDto.class,
+				vaccinations,
+				() -> VaccinationDto.build(currentUser.toReference()),
+				this::insertColumnEntryIntoRelatedObject);
 		}
 
 		ImportRelatedObjectsMapper relatedMapper = relatedObjectsMapperBuilder.build();
@@ -273,7 +274,13 @@ public class ContactImporter extends DataImporter {
 					FacadeProvider.getContactFacade().save(newContact, true, false);
 
 					for (VaccinationDto vaccination : vaccinations) {
-						FacadeProvider.getVaccinationFacade().createWithImmunization(vaccination, newContact.getRegion(), newContact.getDistrict(), newContact.getPerson(), newContact.getDisease());
+						FacadeProvider.getVaccinationFacade()
+							.createWithImmunization(
+								vaccination,
+								newContact.getRegion(),
+								newContact.getDistrict(),
+								newContact.getPerson(),
+								newContact.getDisease());
 					}
 
 					consumer.result = null;

@@ -15,6 +15,7 @@
 package de.symeda.sormas.api.event;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
@@ -34,7 +35,6 @@ import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Outbreaks;
-import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.utils.SensitiveData;
 
 @DependingOnFeatureType(featureType = FeatureType.EVENT_SURVEILLANCE)
@@ -58,9 +58,9 @@ public class EventParticipantDto extends SormasToSormasShareableDto {
 	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 
 	private UserReferenceDto reportingUser;
-	@NotNull
+	@NotNull(message = Validations.requiredField)
 	private EventReferenceDto event;
-	@NotNull
+	@NotNull(message = Validations.validPerson)
 	@EmbeddedPersonalData
 	@Valid
 	private PersonDto person;

@@ -93,35 +93,35 @@ public class ImmunizationDto extends SormasToSormasShareableDto {
 	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 
 	@Outbreaks
-	@NotNull
+	@NotNull(message = Validations.validDisease)
 	private Disease disease;
 	@Outbreaks
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String diseaseDetails;
-	@NotNull
+	@NotNull(message = Validations.validPerson)
 	@EmbeddedPersonalData
 	private PersonReferenceDto person;
-	@NotNull
+	@NotNull(message = Validations.validReportDateTime)
 	private Date reportDate;
 	private UserReferenceDto reportingUser;
 	private boolean archived;
-	@NotNull
+	@NotNull(message = Validations.requiredField)
 	private ImmunizationStatus immunizationStatus;
-	@NotNull
+	@NotNull(message = Validations.requiredField)
 	private MeansOfImmunization meansOfImmunization;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	@SensitiveData(mandatoryField = true)
 	private String meansOfImmunizationDetails;
-	@NotNull
+	@NotNull(message = Validations.requiredField)
 	private ImmunizationManagementStatus immunizationManagementStatus;
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	@SensitiveData(mandatoryField = true)
 	private String externalId;
 
-	@NotNull
+	@NotNull(message = Validations.validResponsibleRegion)
 	private RegionReferenceDto responsibleRegion;
-	@NotNull
+	@NotNull(message = Validations.validResponsibleDistrict)
 	private DistrictReferenceDto responsibleDistrict;
 	@PersonalData
 	@SensitiveData

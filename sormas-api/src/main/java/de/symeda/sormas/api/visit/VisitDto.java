@@ -58,15 +58,15 @@ public class VisitDto extends PseudonymizableDto {
 	public static final String REPORT_LON = "reportLon";
 	public static final String ORIGIN = "origin";
 
-	@NotNull
+	@NotNull(message = Validations.validPerson)
 	private PersonReferenceDto person;
 	private Disease disease;
-	@NotNull
+	@NotNull(message = Validations.visitDate)
 	private Date visitDateTime;
-	@NotNull
+	@NotNull(message = Validations.requiredField)
 	@SensitiveData
 	private UserReferenceDto visitUser;
-	@NotNull
+	@NotNull(message = Validations.visitStatus)
 	private VisitStatus visitStatus;
 	@SensitiveData
 	private String visitRemarks;

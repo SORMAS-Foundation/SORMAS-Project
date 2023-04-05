@@ -135,7 +135,7 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.CSVCommentLineValidator;
 import de.symeda.sormas.api.utils.CSVUtils;
-import de.symeda.sormas.api.utils.ConstrainValidationHelper;
+import de.symeda.sormas.api.utils.ConstraintValidationHelper;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.FeatureTypeFieldVisibilityChecker;
@@ -501,7 +501,8 @@ public class ImportFacadeEjb implements ImportFacade {
 		generateImportTemplateFile(FacilityDto.class, Paths.get(getFacilityImportTemplateFilePath()), featureConfigurations);
 	}
 
-	private <T extends EntityDto> void generateImportTemplateFile(Class<T> clazz, Path filePath, List<FeatureConfigurationDto> featureConfigurations) throws IOException {
+	private <T extends EntityDto> void generateImportTemplateFile(Class<T> clazz, Path filePath, List<FeatureConfigurationDto> featureConfigurations)
+		throws IOException {
 
 		createExportDirectoryIfNecessary();
 
@@ -724,10 +725,15 @@ public class ImportFacadeEjb implements ImportFacade {
 	 * fields in the order of declaration (which is what we need here), but that could change
 	 * in the future.
 	 */
-	private void appendListOfFields(List<ImportColumn> importColumns, Class<?> clazz, String prefix, char separator, List<FeatureConfigurationDto> featureConfigurations) {
+	private void appendListOfFields(
+		List<ImportColumn> importColumns,
+		Class<?> clazz,
+		String prefix,
+		char separator,
+		List<FeatureConfigurationDto> featureConfigurations) {
 
-		FieldVisibilityCheckers visibilityChecker = FieldVisibilityCheckers.withCountry(configFacade.getCountryCode())
-				.add(new FeatureTypeFieldVisibilityChecker(featureConfigurations));
+		FieldVisibilityCheckers visibilityChecker =
+			FieldVisibilityCheckers.withCountry(configFacade.getCountryCode()).add(new FeatureTypeFieldVisibilityChecker(featureConfigurations));
 
 		for (Field field : clazz.getDeclaredFields()) {
 			if (Modifier.isStatic(field.getModifiers())) {
@@ -771,13 +777,15 @@ public class ImportFacadeEjb implements ImportFacade {
 					importColumns,
 					field.getType(),
 					StringUtils.isEmpty(prefix) ? field.getName() + "." : prefix + field.getName() + ".",
-					separator, featureConfigurations);
+					separator,
+					featureConfigurations);
 			} else if (PersonReferenceDto.class.isAssignableFrom(field.getType()) && !isInfrastructureClass(field.getType())) {
 				appendListOfFields(
 					importColumns,
 					PersonDto.class,
 					StringUtils.isEmpty(prefix) ? field.getName() + "." : prefix + field.getName() + ".",
-					separator, featureConfigurations);
+					separator,
+					featureConfigurations);
 				addPrimaryPhoneAndEmail(separator, importColumns);
 			} else {
 				importColumns.add(ImportColumn.from(clazz, prefix + field.getName(), field.getType(), separator));
@@ -920,7 +928,7 @@ public class ImportFacadeEjb implements ImportFacade {
 		Set<ConstraintViolation<T>> constraintViolations = validator.validate(entities);
 		if (constraintViolations.size() > 0) {
 			return ImportLineResultDto.errorResult(
-				ConstrainValidationHelper.getPropertyErrors(constraintViolations)
+				ConstraintValidationHelper.getPropertyErrors(constraintViolations)
 					.entrySet()
 					.stream()
 					.map(e -> String.join(".", e.getKey().get(e.getKey().size() - 1)) + ": " + e.getValue())

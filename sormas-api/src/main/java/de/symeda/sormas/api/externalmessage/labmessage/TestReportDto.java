@@ -33,7 +33,7 @@ public class TestReportDto extends EntityDto {
 	public static final String DATE_OF_RESULT = "dateOfResult";
 	public static final String TEST_PCR_TEST_SPECIFICATION = "testPcrTestSpecification";
 
-	@NotNull
+	@NotNull(message = Validations.requiredField)
 	private SampleReportReferenceDto sampleReport;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String testLabName;
