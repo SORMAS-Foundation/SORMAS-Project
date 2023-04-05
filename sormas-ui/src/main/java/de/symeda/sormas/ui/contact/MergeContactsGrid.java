@@ -22,6 +22,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.AbstractMergeGrid;
+import de.symeda.sormas.ui.utils.CaptionRenderer;
 
 public class MergeContactsGrid extends AbstractMergeGrid<MergeContactIndexDto, ContactCriteria> {
 
@@ -59,6 +60,7 @@ public class MergeContactsGrid extends AbstractMergeGrid<MergeContactIndexDto, C
 
 		getColumn(COLUMN_ACTIONS).setMinimumWidth(280);
 
+		getColumn(MergeContactIndexDto.CAZE).setRenderer(new CaptionRenderer());
 		Language userLanguage = I18nProperties.getUserLanguage();
 		((Column<MergeContactIndexDto, Date>) getColumn(MergeContactIndexDto.REPORT_DATE_TIME))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
@@ -78,11 +80,7 @@ public class MergeContactsGrid extends AbstractMergeGrid<MergeContactIndexDto, C
 
 	@Override
 	protected List<MergeContactIndexDto[]> getItemsForDuplicateMerging(int limit) {
-		return FacadeProvider.getContactFacade()
-			.getContactsForDuplicateMerging(
-				criteria,
-				limit,
-				ignoreRegion);
+		return FacadeProvider.getContactFacade().getContactsForDuplicateMerging(criteria, limit, ignoreRegion);
 	}
 
 	@Override
