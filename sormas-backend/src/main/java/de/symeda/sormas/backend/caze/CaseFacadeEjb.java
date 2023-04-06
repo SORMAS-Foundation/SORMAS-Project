@@ -1450,13 +1450,13 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			service.getCasesForDuplicateMerging(criteria, limit, showDuplicatesWithDifferentRegion, configFacade.getNameSimilarityThreshold());
 
 		for (CaseMergeIndexDto[] caze : cases) {
-			pseudonomyzeCasePairs(caze);
+			pseudonymizeCasePairs(caze);
 		}
 
 		return cases;
 	}
 
-	public void pseudonomyzeCasePairs(CaseMergeIndexDto[] cazePair) {
+	public void pseudonymizeCasePairs(CaseMergeIndexDto[] cazePair) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 
 		Arrays.stream(cazePair).forEach(caze -> {

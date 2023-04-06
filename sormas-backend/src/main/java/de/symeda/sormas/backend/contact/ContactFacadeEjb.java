@@ -2180,13 +2180,13 @@ public class ContactFacadeEjb
 		List<MergeContactIndexDto[]> contacts = service.getContactsForDuplicateMerging(criteria, limit, ignoreRegion);
 
 		for (MergeContactIndexDto[] contact : contacts) {
-			pseudonomyzeContactPairs(contact);
+			pseudonymizeContactPairs(contact);
 		}
 
 		return contacts;
 	}
 
-	public void pseudonomyzeContactPairs(MergeContactIndexDto[] contactPair) {
+	public void pseudonymizeContactPairs(MergeContactIndexDto[] contactPair) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 
 		Arrays.stream(contactPair).forEach(contact -> {
