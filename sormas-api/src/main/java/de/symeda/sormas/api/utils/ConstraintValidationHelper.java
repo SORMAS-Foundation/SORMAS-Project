@@ -30,6 +30,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 
 public class ConstraintValidationHelper {
 
+	private ConstraintValidationHelper() { }
+
 	public static Map<List<String>, String> getPropertyErrors(Set<? extends ConstraintViolation> constraintViolations) {
 		Map<List<String>, String> errors = new HashMap<>();
 
@@ -38,7 +40,7 @@ public class ConstraintValidationHelper {
 
 			for (Path.Node propertyNode : constraintViolation.getPropertyPath()) {
 				if (propertyNode.getKind() == ElementKind.PROPERTY) {
-					if (propertyNode.getIndex() != null && path.size() > 0) {
+					if (propertyNode.getIndex() != null && !path.isEmpty()) {
 						int pathSize = path.size();
 						path.set(pathSize - 1, path.get(pathSize - 1) + "[" + propertyNode.getIndex() + "]");
 					}
