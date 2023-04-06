@@ -18,7 +18,7 @@ package de.symeda.sormas.app.backend.person;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonDto;
@@ -62,7 +62,7 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 	}
 
 	@Override
-	protected Call<List<PushResult>> pushAll(List<PersonDto> personDtos) throws NoConnectionException {
+	protected Call<List<PostResponse>> pushAll(List<PersonDto> personDtos) throws NoConnectionException {
 		return RetroProvider.getPersonFacade().pushAll(personDtos);
 	}
 

@@ -18,7 +18,7 @@ package de.symeda.sormas.app.backend.immunization;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -74,7 +74,7 @@ public class ImmunizationDtoHelper extends PersonDependentDtoHelper<Immunization
 	}
 
 	@Override
-	protected Call<List<PushResult>> pushAll(List<ImmunizationDto> immunizationDtos) throws NoConnectionException {
+	protected Call<List<PostResponse>> pushAll(List<ImmunizationDto> immunizationDtos) throws NoConnectionException {
 		return RetroProvider.getImmunizationFacade().pushAll(immunizationDtos);
 	}
 

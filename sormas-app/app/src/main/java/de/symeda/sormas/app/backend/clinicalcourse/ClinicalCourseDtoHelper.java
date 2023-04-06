@@ -17,7 +17,7 @@ package de.symeda.sormas.app.backend.clinicalcourse;
 
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
@@ -47,7 +47,7 @@ public class ClinicalCourseDtoHelper extends AdoDtoHelper<ClinicalCourse, Clinic
 	}
 
 	@Override
-	protected Call<List<PushResult>> pushAll(List<ClinicalCourseDto> clinicalCourseDtos) throws NoConnectionException {
+	protected Call<List<PostResponse>> pushAll(List<ClinicalCourseDto> clinicalCourseDtos) throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is embedded");
 	}
 

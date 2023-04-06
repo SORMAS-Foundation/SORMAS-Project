@@ -2,7 +2,7 @@ package de.symeda.sormas.app.backend.sormastosormas;
 
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.rest.NoConnectionException;
@@ -31,7 +31,7 @@ public class SormasToSormasOriginInfoDtoHelper extends AdoDtoHelper<SormasToSorm
 	}
 
 	@Override
-	protected Call<List<PushResult>> pushAll(List<SormasToSormasOriginInfoDto> sormasToSormasSourceDtos) throws NoConnectionException {
+	protected Call<List<PostResponse>> pushAll(List<SormasToSormasOriginInfoDto> sormasToSormasSourceDtos) throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is embedded");
 	}
 

@@ -18,7 +18,7 @@ package de.symeda.sormas.app.backend.report;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.report.WeeklyReportDto;
 import de.symeda.sormas.api.report.WeeklyReportEntryDto;
 import de.symeda.sormas.api.report.WeeklyReportReferenceDto;
@@ -65,7 +65,7 @@ public class WeeklyReportDtoHelper extends AdoDtoHelper<WeeklyReport, WeeklyRepo
 	}
 
 	@Override
-	protected Call<List<PushResult>> pushAll(List<WeeklyReportDto> weeklyReportDtos) throws NoConnectionException {
+	protected Call<List<PostResponse>> pushAll(List<WeeklyReportDto> weeklyReportDtos) throws NoConnectionException {
 		return RetroProvider.getWeeklyReportFacade().pushAll(weeklyReportDtos);
 	}
 

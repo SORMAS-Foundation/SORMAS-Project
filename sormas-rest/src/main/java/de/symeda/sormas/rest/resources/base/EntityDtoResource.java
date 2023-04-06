@@ -64,7 +64,7 @@ public abstract class EntityDtoResource<DTO> {
 		}
 
 		if (dtos.size() == 1) {
-			return Response.status(results.get(0).getStatusCode()).entity(results.get(0)).build();
+			return Response.status(results.get(0).getStatusCode()).entity(results).build();
 		} else {
 			return Response.status(HttpStatus.SC_MULTI_STATUS).entity(results).build();
 		}

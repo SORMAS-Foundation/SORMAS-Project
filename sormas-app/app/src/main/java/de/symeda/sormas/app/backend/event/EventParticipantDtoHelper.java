@@ -17,7 +17,7 @@ package de.symeda.sormas.app.backend.event;
 
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
@@ -63,7 +63,7 @@ public class EventParticipantDtoHelper extends PersonDependentDtoHelper<EventPar
 	}
 
 	@Override
-	protected Call<List<PushResult>> pushAll(List<EventParticipantDto> eventParticipantDtos) throws NoConnectionException {
+	protected Call<List<PostResponse>> pushAll(List<EventParticipantDto> eventParticipantDtos) throws NoConnectionException {
 		return RetroProvider.getEventParticipantFacade().pushAll(eventParticipantDtos);
 	}
 

@@ -17,7 +17,7 @@ package de.symeda.sormas.app.backend.caze.maternalhistory;
 
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -50,7 +50,7 @@ public class MaternalHistoryDtoHelper extends AdoDtoHelper<MaternalHistory, Mate
 	}
 
 	@Override
-	protected Call<List<PushResult>> pushAll(List<MaternalHistoryDto> dtos) throws NoConnectionException {
+	protected Call<List<PostResponse>> pushAll(List<MaternalHistoryDto> dtos) throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is embedded");
 	}
 

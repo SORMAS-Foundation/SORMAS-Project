@@ -17,7 +17,7 @@ package de.symeda.sormas.app.backend.task;
 
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
@@ -59,7 +59,7 @@ public class TaskDtoHelper extends AdoDtoHelper<Task, TaskDto> {
 	}
 
 	@Override
-	protected Call<List<PushResult>> pushAll(List<TaskDto> taskDtos) throws NoConnectionException {
+	protected Call<List<PostResponse>> pushAll(List<TaskDto> taskDtos) throws NoConnectionException {
 		return RetroProvider.getTaskFacade().pushAll(taskDtos);
 	}
 
