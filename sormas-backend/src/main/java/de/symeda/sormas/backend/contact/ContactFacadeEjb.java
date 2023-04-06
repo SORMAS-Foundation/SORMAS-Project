@@ -2177,7 +2177,33 @@ public class ContactFacadeEjb
 
 	@Override
 	public List<MergeContactIndexDto[]> getContactsForDuplicateMerging(ContactCriteria criteria, @Min(1) Integer limit, boolean ignoreRegion) {
-		return service.getContactsForDuplicateMerging(criteria, limit, ignoreRegion);
+		List<MergeContactIndexDto[]> contacts = service.getContactsForDuplicateMerging(criteria, limit, ignoreRegion);
+
+		for (MergeContactIndexDto[] contact : contacts) {
+			pseudonomyzeContactPairs(contact);
+		}
+
+		return contacts;
+	}
+
+	public void pseudonomyzeContactPairs(MergeContactIndexDto[] contact) {
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+
+		//Pseudonomyzation without associated caze
+		Boolean isInJurisdiction0 = contact[0].isInJurisdiction();
+		pseudonymizer.pseudonymizeDto(MergeContactIndexDto.class, contact[0], isInJurisdiction0, null);
+
+		Boolean isInJurisdiction1 = contact[1].isInJurisdiction();
+		pseudonymizer.pseudonymizeDto(MergeContactIndexDto.class, contact[1], isInJurisdiction1, null);
+
+		/*
+		 * Pseudonomyzation with associated caze
+		 * pseudonymizer.pseudonymizeDto(MergeContactIndexDto.class, contact[1], isInJurisdiction1, c -> {
+		 * if (contact[1].getCaze() != null) {
+		 * pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, contact[1].getCaze(), contact[1].getCaseInJurisdiction(), null);
+		 * }
+		 * });
+		 */
 	}
 
 	@Override
