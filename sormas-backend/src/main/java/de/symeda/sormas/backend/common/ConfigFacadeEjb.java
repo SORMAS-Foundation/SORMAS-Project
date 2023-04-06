@@ -159,7 +159,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	private static final String SORMAS2SORMAS_ETCD_KEY_PREFIX = "sormas2sormas.etcd.keyPrefix";
 
-	private static final String SORMAS2SORMAS_DISTRICT_EXTERNAL_ID = "sormas2sormas.districtExternalId";
+	public static final String SORMAS2SORMAS_DISTRICT_EXTERNAL_ID = "sormas2sormas.districtExternalId";
 
 	private static final String EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL = "survnet.url";
 	private static final String EXTERNAL_SURVEILLANCE_TOOL_VERSION_ENDPOINT = "survnet.versionEndpoint";

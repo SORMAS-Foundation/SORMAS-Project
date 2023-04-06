@@ -15,9 +15,14 @@
 
 package de.symeda.sormas.backend.dashboard.sample;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -37,11 +42,13 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.tuple.Pair;
 
 import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
+import de.symeda.sormas.api.dashboard.sample.MapSampleDto;
 import de.symeda.sormas.api.dashboard.sample.SampleShipmentStatus;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleAssociationType;
@@ -55,6 +62,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.sample.PathogenTest;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
@@ -88,6 +96,19 @@ public class SampleDashboardService {
 		shipmentStatusMapping.put(Pair.of(true, false), SampleShipmentStatus.SHIPPED);
 		shipmentStatusMapping.put(Pair.of(false, true), SampleShipmentStatus.RECEIVED);
 		shipmentStatusMapping.put(Pair.of(false, false), SampleShipmentStatus.NOT_SHIPPED);
+	}
+
+	private static Map<SampleAssociationType, CoordinatesExtractor> coordinatesExtractors = new HashMap<>();
+	static {
+		coordinatesExtractors.put(
+			SampleAssociationType.CASE,
+			new CoordinatesExtractor(SampleJoins::getCasePersonAddress, SampleJoins::getCaze, Case.REPORT_LON, Case.REPORT_LAT));
+		coordinatesExtractors.put(
+			SampleAssociationType.CONTACT,
+			new CoordinatesExtractor(SampleJoins::getContactPersonAddress, SampleJoins::getContact, Contact.REPORT_LON, Contact.REPORT_LAT));
+		coordinatesExtractors.put(
+			SampleAssociationType.EVENT_PARTICIPANT,
+			new CoordinatesExtractor(SampleJoins::getEventParticipantAddress, SampleJoins::getEvent, Event.REPORT_LON, Event.REPORT_LAT));
 	}
 
 	public Map<SpecimenCondition, Long> getSampleCountsBySpecimenCondition(SampleDashboardCriteria dashboardCriteria) {
@@ -166,6 +187,100 @@ public class SampleDashboardService {
 			.collect(Collectors.toMap(t -> (PathogenTestResultType) t.get(0), t -> (Long) t.get(1)));
 	}
 
+	public Long countSamplesForMap(SampleDashboardCriteria criteria, Set<SampleAssociationType> associationTypes) {
+		if (associationTypes.isEmpty()) {
+			return 0L;
+		}
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		final Root<Sample> sample = cq.from(Sample.class);
+		SampleJoins joins = new SampleJoins(sample);
+
+		cq.select(cb.count(sample));
+
+		final Predicate criteriaFilter = createSampleFilter(new SampleQueryContext(cb, cq, sample), criteria);
+		final Predicate latLonProvided = getLatLonProvidedPredicate(cb, joins, associationTypes);
+
+		cq.where(CriteriaBuilderHelper.and(cb, criteriaFilter, latLonProvided));
+
+		return QueryHelper.getSingleResult(em, cq);
+	}
+
+	public List<MapSampleDto> getSamplesForMap(SampleDashboardCriteria criteria, Set<SampleAssociationType> associationTypes) {
+		if (associationTypes.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<MapSampleDto> cq = cb.createQuery(MapSampleDto.class);
+		final Root<Sample> sample = cq.from(Sample.class);
+		SampleJoins joins = new SampleJoins(sample);
+
+		List<Selection<?>> selections = new ArrayList<>();
+		selections.addAll(getCoordinatesSelection(SampleAssociationType.CASE, joins, cb, associationTypes));
+		selections.addAll(getCoordinatesSelection(SampleAssociationType.CONTACT, joins, cb, associationTypes));
+		selections.addAll(getCoordinatesSelection(SampleAssociationType.EVENT_PARTICIPANT, joins, cb, associationTypes));
+
+		cq.multiselect(selections);
+
+		final Predicate criteriaFilter = createSampleFilter(new SampleQueryContext(cb, cq, sample), criteria);
+		final Predicate latLonProvided = getLatLonProvidedPredicate(cb, joins, associationTypes);
+
+		cq.where(CriteriaBuilderHelper.and(cb, criteriaFilter, latLonProvided));
+
+		return QueryHelper.getResultList(em, cq, null, null);
+	}
+
+	private List<Selection<?>> getCoordinatesSelection(
+		SampleAssociationType associationType,
+		SampleJoins joins,
+		CriteriaBuilder cb,
+		Set<SampleAssociationType> allowedAssociationTypes) {
+		if (allowedAssociationTypes.contains(associationType)) {
+			CoordinatesExtractor coordinatesExtractor = coordinatesExtractors.get(associationType);
+			Path<Location> addressPath = coordinatesExtractor.addressPathProvider.apply(joins);
+			Path<?> fallbackPath = coordinatesExtractor.fallbackLocationHolderProvider.apply(joins);
+
+			return Arrays.asList(
+				addressPath.get(Location.LONGITUDE),
+				addressPath.get(Location.LATITUDE),
+				fallbackPath.get(coordinatesExtractor.fallbackLonField),
+				fallbackPath.get(coordinatesExtractor.fallbackLatField));
+		} else {
+			return Arrays
+				.asList(cb.nullLiteral(Double.class), cb.nullLiteral(Double.class), cb.nullLiteral(Double.class), cb.nullLiteral(Double.class));
+		}
+	}
+
+	private Predicate getLatLonProvidedPredicate(CriteriaBuilder cb, SampleJoins joins, Set<SampleAssociationType> associationTypes) {
+		List<Predicate> predicates = new ArrayList<>();
+
+		for (SampleAssociationType associationType : associationTypes) {
+			CoordinatesExtractor coordinatesExtractor = coordinatesExtractors.get(associationType);
+
+			Path<Location> addressPath = coordinatesExtractor.addressPathProvider.apply(joins);
+			Path<?> fallbackPath = coordinatesExtractor.fallbackLocationHolderProvider.apply(joins);
+
+			predicates.add(addressCoordinatesNotNull(cb, addressPath));
+			predicates.add(gpsCoordinatesNotNull(cb, fallbackPath, coordinatesExtractor.fallbackLonField, coordinatesExtractor.fallbackLatField));
+		}
+
+		if (predicates.isEmpty()) {
+			predicates.add(cb.disjunction());
+		}
+
+		return CriteriaBuilderHelper.or(cb, predicates.toArray(new Predicate[] {}));
+	}
+
+	private Predicate addressCoordinatesNotNull(CriteriaBuilder cb, Path<Location> addressPath) {
+		return gpsCoordinatesNotNull(cb, addressPath, Location.LONGITUDE, Location.LATITUDE);
+	}
+
+	private Predicate gpsCoordinatesNotNull(CriteriaBuilder cb, Path<?> path, String longitudeProperty, String latitudeProperty) {
+		return CriteriaBuilderHelper.and(cb, cb.isNotNull(path.get(longitudeProperty)), cb.isNotNull(path.get(latitudeProperty)));
+	}
+
 	private <T extends AbstractDomainObject> Predicate createSampleFilter(SampleQueryContext queryContext, SampleDashboardCriteria criteria) {
 		CriteriaBuilder cb = queryContext.getCriteriaBuilder();
 		CriteriaQuery<?> cq = queryContext.getQuery();
@@ -234,5 +349,25 @@ public class SampleDashboardService {
 			filter,
 			// Exclude deleted cases. Archived cases should stay included
 			cb.isFalse(sampleRoot.get(Case.DELETED)));
+	}
+
+	private final static class CoordinatesExtractor {
+
+		private final Function<SampleJoins, Path<Location>> addressPathProvider;
+
+		private final Function<SampleJoins, Path<?>> fallbackLocationHolderProvider;
+		private final String fallbackLonField;
+		private final String fallbackLatField;
+
+		private CoordinatesExtractor(
+			Function<SampleJoins, Path<Location>> addressPathProvider,
+			Function<SampleJoins, Path<?>> fallbackLocationHolderProvider,
+			String fallbackLonField,
+			String fallbackLatField) {
+			this.addressPathProvider = addressPathProvider;
+			this.fallbackLocationHolderProvider = fallbackLocationHolderProvider;
+			this.fallbackLonField = fallbackLonField;
+			this.fallbackLatField = fallbackLatField;
+		}
 	}
 }

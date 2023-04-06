@@ -157,8 +157,8 @@ Once you have chosen an issue that you want to work on, **please adhere to the f
 2. A member of the core development team will check the issue and might:
     - Turn the issue into a discussion if they're not sure whether it fits the overall SORMAS vision or there are a lot of discussion points.
     - Ask for additional details to be added to the issue description if you have created the issue yourself and there are questions e.g. concerning its added value or the proposed solution.
-    - Take the issue into internal refinement if it doesn't meet the [Definition of Done](DEFINITION_OF_DONE.md) yet.
-3. If the issue meets the Definition of Done, a member of the core development team adds the `ready` label and notifies you that you can start to implement it.
+    - Take the issue into internal refinement if it doesn't meet the [Definition of Ready](DEFINITION_OF_READY.md) yet.
+3. If the issue meets the Definition of Ready, a member of the core development team adds the `ready` label and notifies you that you can start to implement it.
 
 Issues that are already marked with the `ready` label can theoretically be picked up for development immediately. However, please note that these issues will usually already be planned for one of the upcoming iterations and it's possible that we'll start development on it ourselves. This is especially true for issues that are assigned to one of the sprint backlog projects.
 

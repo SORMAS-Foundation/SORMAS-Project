@@ -2457,17 +2457,17 @@ Feature: Case end to end tests
     And I open the first contact from contacts list
     And I click on revoke share button
     Then I click on Ja button in Revoke case popup
-    Then I click on share case button
+    Then I click on share contact button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for contact with random string
     And I click to hand over the ownership of the case in Share popup
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
     Given I log in as a Admin User
     And I click on the Shares button from navbar
-    And I click on "accept" shared case button with copied case description
+    And I click on "accept" shared contact button with copied contact description
 
-  @tmsLink=SORDEV-11838 @env_s2s_1
+  @tmsLink=SORDEV-11838 @env_s2s_1 @testIt
   Scenario: [S2S] Test Avoiding simultaneous work of two health departments - preventing sharing twice to the same target system as long as the target system has not yet accepted or rejected for contact without hand over the ownership [4]
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
     Then API: I check that POST call body is "OK"
@@ -2505,16 +2505,16 @@ Feature: Case end to end tests
     Then I click on Ja button in Revoke case popup
     Then I click on share contact button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for contact with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
     Given I log in as a Admin User
     And I click on the Shares button from navbar
-    And I click on "accept" shared case button with copied case description
+    And I click on "accept" shared contact button with copied contact description
     Then I back to tab number 1
     Then I click on share contact button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for contact with random string
     And I click to hand over the ownership of the case in Share popup
     Then I click on share button in s2s share popup and wait for share to finish
 
@@ -2583,13 +2583,13 @@ Feature: Case end to end tests
     Given I log in as a Admin User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
-    Then I create a new case with specific person name and "Hessen" region and "LK Fulda" district for DE version
+    Then I create a new case with mandatory data with person name and "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district for DE version
     Then I click on save button in the case popup
     Then I navigate to "s2s_2" environment in new driver tab
     And I log in as a Admin User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
-    Then I create a new case with specific person name and "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district for DE version
+    Then  I create a new case with mandatory data with person name and "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district for DE version
     Then I click on save button in the case popup
     Then I back to tab number 1
     Then I click on share case button
@@ -2610,14 +2610,14 @@ Feature: Case end to end tests
     And I click on cancel button in merge duplicated cases popup
     Then I click on Merge button for source system from received case
     And I confirm merge duplicated case
-    Then I check if popup with error message appears
+    Then I check if popup with merge message in german appears
 
   @tmsLink=SORDEV-12094 @env_s2s_1
-  Scenario: [S2S] Mergen with hand over the ownership
+  Scenario: [S2S] Mergen with hand over the ownership - merge for target system
     Given I log in as a Admin User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
-    Then I create a new case with specific person name and "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district for DE version
+    Then I create a new case with specific person name and "Hessen" region and "LK Fulda" district for DE version
     Then I click on save button in the case popup
     Then I navigate to "s2s_2" environment in new driver tab
     And I log in as a Admin User
@@ -2641,11 +2641,38 @@ Feature: Case end to end tests
     And I click to CONFIRM FILTERS on Merge Duplicate Cases page
     Then I click on Merge button for target system from received case
     And I confirm merge duplicated case
-    Then I check if popup with merge duplicated case appears
-    And I click on cancel button in merge duplicated cases popup
+    Then I check if popup with merge message in german appears
+
+  @tmsLink=SORDEV-12094 @env_s2s_1
+  Scenario: [S2S] Mergen with hand over the ownership - merge for source system
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    Then I create a new case with specific person name and "Hessen" region and "LK Fulda" district for DE version
+    Then I click on save button in the case popup
+    Then I navigate to "s2s_2" environment in new driver tab
+    And I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    Then I create a new case with specific person name and "Hessen" region and "LK Fulda" district for DE version
+    Then I click on save button in the case popup
+    Then I back to tab number 1
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I click to hand over the ownership of the case in Share popup
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I back to tab number 2
+    And I click on the Shares button from navbar
+    And I click on "accept" shared case button with copied case description
+    Then I click on Okay button in Potential duplicate popup
+    And I click on the Cases button from navbar
+    And I click on the More button on Case directory page
+    Then I click on Merge Duplicates on Case directory page
+    And I click to CONFIRM FILTERS on Merge Duplicate Cases page
     Then I click on Merge button for source system from received case
     And I confirm merge duplicated case
-    Then I check if popup with error message appears
+    Then I check if popup with merge message in german appears
 
   @tmsLink=SORDEV-12449 @env_s2s_1
   Scenario: S2S_added sample after sharing a case/contact does not get shared [1]
@@ -2717,3 +2744,337 @@ Feature: Case end to end tests
     Then I check that the number of added samples on the Edit case page is 2
     Then I back to tab number 1
     Then I check that the number of added samples on the Edit case page is 2
+
+    @tmsLink=SORDEV-12095 @env_s2s_1
+    Scenario: [S2S] Sample and Immunization - Change sample and immunization in target system
+      Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+      Then API: I check that POST call body is "OK"
+      And API: I check that POST call status code is 200
+      Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+      Then API: I check that POST call body is "OK"
+      And API: I check that POST call status code is 200
+      Given I log in as a Admin User
+      And I open the last created Case via API
+      Then I click on save button in the case popup
+      And I click NEW VACCINATION button for DE
+      And I fill new vaccination data in new Vaccination form for DE
+      And I click SAVE button in new Vaccination form
+      And I open the last created Case via API
+      When I click on New Sample in German
+      And I create a new Sample with positive test result for DE version
+      And I select the German words for Rapid Antigen Detection Test as Type of Test in the Create New Sample popup
+      And I save the created sample with pathogen test
+      And I open the last created Case via API
+      Then I click on share case button
+      And I select organization to share with "s2s_2"
+      And I click to hand over the ownership of the case in Share popup
+      And I fill comment in share popup with random string
+      Then I click on share button in s2s share popup and wait for share to finish
+      Then I navigate to "s2s_2" environment in new driver tab
+      And I log in as a Admin User
+      And I click on the Shares button from navbar
+      And I click on "accept" shared case button with copied case description
+      And I click on the Cases button from navbar
+      And I filter by CaseID on Case directory page
+      And I check that number of displayed cases results is 1
+      Then I click on the first Case ID from Case Directory
+      And I click on edit Sample
+      Then I set type of sample to "Blut"
+      And I click on Save Button in Sample Edit page
+      Then I navigate to case tab
+      And I click on first vaccination edit button
+      And I set vaccine manufacturer to "Valneva"
+      Then I click on save button in New Immunization form
+      Then I back to tab number 1
+      And I open the last created Case via API
+      And I click on first vaccination edit button
+      Then I check vaccine manufacturer is set to "Valneva"
+      Then I click on save button in New Immunization form
+      And I click on edit Sample
+      Then I check if type of sample is set to "Blut"
+
+  @tmsLink=SORDEV-12095 @env_s2s_1
+  Scenario: [S2S] Sample and Immunization - Add sample and immunization in target system
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I open the last created Case via API
+    Then I click on save button in the case popup
+    And I click NEW VACCINATION button for DE
+    And I fill new vaccination data in new Vaccination form for DE
+    And I click SAVE button in new Vaccination form
+    And I open the last created Case via API
+    When I click on New Sample in German
+    And I create a new Sample with positive test result for DE version
+    And I select the German words for Rapid Antigen Detection Test as Type of Test in the Create New Sample popup
+    And I save the created sample with pathogen test
+    And I open the last created Case via API
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I click to hand over the ownership of the case in Share popup
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment in new driver tab
+    And I log in as a Admin User
+    And I click on the Shares button from navbar
+    And I click on "accept" shared case button with copied case description
+    And I click on the Cases button from navbar
+    And I filter by CaseID on Case directory page
+    And I check that number of displayed cases results is 1
+    Then I click on the first Case ID from Case Directory
+    When I click on New Sample in German
+    And I create a new Sample with positive test result for DE version with "Testlabor DEMIS" as a labor
+    And I save the created sample with pathogen test
+    And I confirm case with positive test result
+    Then I navigate to case tab
+    And I click NEW VACCINATION button for DE
+    And I fill new vaccination data in new Vaccination form for DE with "Comirnaty (COVID-19-mRNA Impfstoff)" as a vaccine name
+    And I click SAVE button in new Vaccination form
+    Then I back to tab number 1
+    And I refresh current page
+    Then I check if Immunization area contains "Comirnaty (COVID-19-mRNA Impfstoff)"
+    Then I check if Immunization area contains "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)"
+    And I click on See samples for this person button
+    And I check that number of displayed sample results is 2
+
+  @tmsLink=SORDEV-12095 @env_s2s_1
+  Scenario: [S2S] Sample and Immunization - Change date of sample and immuniation
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I open the last created Case via API
+    Then I click on save button in the case popup
+    And I click NEW VACCINATION button for DE
+    And I fill new vaccination data in new Vaccination form for DE
+    And I click SAVE button in new Vaccination form
+    And I open the last created Case via API
+    When I click on New Sample in German
+    And I create a new Sample with positive test result for DE version
+    And I select the German words for Rapid Antigen Detection Test as Type of Test in the Create New Sample popup
+    And I save the created sample with pathogen test
+    And I open the last created Case via API
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I click to hand over the ownership of the case in Share popup
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment in new driver tab
+    And I log in as a Admin User
+    And I click on the Shares button from navbar
+    And I click on "accept" shared case button with copied case description
+    And I click on the Cases button from navbar
+    And I filter by CaseID on Case directory page
+    And I check that number of displayed cases results is 1
+    Then I click on the first Case ID from Case Directory
+    And I click on edit Sample
+    Then I set date sample was collected minus 4 days ago on Sample Edit page
+    And I click on Save Button in Sample Edit page
+    Then I navigate to case tab
+    And I click on first vaccination edit button
+    Then I change the vaccination date for minus 5 day from today
+    And I click SAVE button in new Vaccination form
+    Then I back to tab number 1
+    And I refresh current page
+    And I click on view Sample
+    And I check if date of sample is set for 4 day ago from today on Edit Sample page for DE version
+    Then I navigate to case tab
+    And I click on the Edit Vaccination icon on vaccination card on Edit contact page
+    Then I check if vaccination date is set for 5 day ago from today on Edit Vaccination page for DE version
+
+  @tmsLink=SORDEV-12095 @env_s2s_1
+  Scenario: [S2S] Sample and Immunization - Create sample and immuniation after share the case
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I open the last created Case via API
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I click to hand over the ownership of the case in Share popup
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    And I click NEW VACCINATION button for DE
+    And I fill new vaccination data in new Vaccination form for DE
+    And I click SAVE button in new Vaccination form
+    And I open the last created Case via API
+    When I click on New Sample in German
+    And I create a new Sample with positive test result for DE version
+    And I select the German words for Rapid Antigen Detection Test as Type of Test in the Create New Sample popup
+    And I save the created sample with pathogen test
+    And I open the last created Case via API
+    Then I navigate to "s2s_2" environment in new driver tab
+    And I log in as a Admin User
+    And I click on the Shares button from navbar
+    And I click on "accept" shared case button with copied case description
+    And I click on the Cases button from navbar
+    And I filter by CaseID on Case directory page
+    And I check that number of displayed cases results is 1
+    Then I click on the first Case ID from Case Directory
+    Then I check if Immunization area contains "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)"
+    And I click on See samples for this person button
+    And I check that number of displayed sample results is 1
+
+  @tmsLink=SORDEV-12095 @env_s2s_1
+  Scenario: [S2S] Sample and Immunization - Add sample and immunization in source system after accept s2s case without hand over the ownership
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I open the last created Case via API
+    Then I click on save button in the case popup
+    And I click NEW VACCINATION button for DE
+    And I fill new vaccination data in new Vaccination form for DE
+    And I click SAVE button in new Vaccination form
+    And I open the last created Case via API
+    When I click on New Sample in German
+    And I create a new Sample with positive test result for DE version
+    And I select the German words for Rapid Antigen Detection Test as Type of Test in the Create New Sample popup
+    And I save the created sample with pathogen test
+    And I open the last created Case via API
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment in new driver tab
+    And I log in as a Admin User
+    And I click on the Shares button from navbar
+    And I click on "accept" shared case button with copied case description
+    Then I open last created Case via API on "s2s_2" instance
+    Then I back to tab number 1
+    When I click on New Sample in German
+    And I create a new Sample with positive test result for DE version with "Voreingestelltes Labor" as a labor
+    And I save the created sample with pathogen test
+    And I confirm case with positive test result
+    Then I navigate to case tab
+    And I click NEW VACCINATION button for DE
+    And I fill new vaccination data in new Vaccination form for DE with "Comirnaty (COVID-19-mRNA Impfstoff)" as a vaccine name
+    And I click SAVE button in new Vaccination form
+    Then I back to tab number 2
+    And I refresh current page
+    Then I check if Immunization area does not contains "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)"
+    And I check if sample card has "Es gibt keine Proben für diesen Fall" information
+
+  @tmsLink=SORDEV-12095 @env_s2s_1
+  Scenario: [S2S] Sample and Immunization - Change sample and immunization in target system without hand over the ownership
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I open the last created Case via API
+    Then I click on save button in the case popup
+    And I click NEW VACCINATION button for DE
+    And I fill new vaccination data in new Vaccination form for DE
+    And I click SAVE button in new Vaccination form
+    And I open the last created Case via API
+    When I click on New Sample in German
+    And I create a new Sample with positive test result for DE version
+    And I select the German words for Rapid Antigen Detection Test as Type of Test in the Create New Sample popup
+    And I save the created sample with pathogen test
+    And I open the last created Case via API
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment in new driver tab
+    And I log in as a Admin User
+    And I click on the Shares button from navbar
+    And I click on "accept" shared case button with copied case description
+    Then I back to tab number 1
+    And I click on edit Sample
+    Then I set type of sample to "Blut"
+    And I click on Save Button in Sample Edit page
+    Then I navigate to case tab
+    And I click on first vaccination edit button
+    And I set vaccine manufacturer to "Valneva"
+    Then I click on save button in New Immunization form
+    Then I back to tab number 2
+    Then I open last created Case via API on "s2s_2" instance
+    And I check if sample card has "Es gibt keine Proben für diesen Fall" information
+    And I check if Immunization area contains "Es gibt keine Impfungen für diese Person und Krankheit"
+
+  @tmsLink=SORDEV-12095 @env_s2s_1
+  Scenario: [S2S] Sample and Immunization - Add sample and immunization in source system before accept s2s case without hand over the ownership
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I open the last created Case via API
+    Then I click on save button in the case popup
+    And I click NEW VACCINATION button for DE
+    And I fill new vaccination data in new Vaccination form for DE
+    And I click SAVE button in new Vaccination form
+    And I open the last created Case via API
+    When I click on New Sample in German
+    And I create a new Sample with positive test result for DE version
+    And I select the German words for Rapid Antigen Detection Test as Type of Test in the Create New Sample popup
+    And I save the created sample with pathogen test
+    And I open the last created Case via API
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with random string
+    And I click to share samples of the case in Share popup
+    And I click on share immunizations of the case in Share popup
+    Then I click on share button in s2s share popup and wait for share to finish
+    When I click on New Sample in German
+    And I create a new Sample with positive test result for DE version with "Voreingestelltes Labor" as a labor
+    And I save the created sample with pathogen test
+    And I confirm case with positive test result
+    Then I navigate to case tab
+    And I click NEW VACCINATION button for DE
+    And I fill new vaccination data in new Vaccination form for DE with "Comirnaty (COVID-19-mRNA Impfstoff)" as a vaccine name
+    And I click SAVE button in new Vaccination form
+    Then I navigate to "s2s_2" environment in new driver tab
+    And I log in as a Admin User
+    And I click on the Shares button from navbar
+    And I click on "accept" shared case button with copied case description
+    Then I open last created Case via API on "s2s_2" instance
+    And I refresh current page
+    Then I check if Immunization area contains "Comirnaty (COVID-19-mRNA Impfstoff)"
+    Then I check if Immunization area contains "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)"
+    And I click on See samples for this person button
+    And I check that number of displayed sample results is 2
+
+  @tmsLink=SORDEV-13953 @env_s2s_1
+  Scenario: S2S - Share a case that was Archived
+    Given I log in as a Admin User
+    When I click on the Cases button from navbar
+    Then I click on the NEW CASE button
+    And I fill a new case form for DE version with mandatory data with "Berlin" as a region and "SK Berlin Mitte" as a district
+    And I save a new case
+    And I collect uuid of the case
+    Then I click on the Archive case button and confirm popup
+    And I click on save button from Edit Case page
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I click to hand over the ownership of the case in Share popup
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment in new driver tab
+    When I log in as a Admin User
+    And I click on the Shares button from navbar
+    And I click on "accept" shared case button with copied case description
+    And I open the last created case with collected UUID by url on "s2s_2" instance
+    And I check if Archive button changed name to Abschließen
+    Then I back to tab number 1
+    And I open the last created case with collected UUID by url on "s2s_1" instance
+    And I check if Archive button changed name to Wiedereröffnen

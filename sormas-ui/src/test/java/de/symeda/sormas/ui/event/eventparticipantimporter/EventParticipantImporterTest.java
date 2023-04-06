@@ -64,6 +64,7 @@ import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.LocationHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
@@ -472,7 +473,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 			}
 			if ("Oona".equals(person.getFirstName())) {
 				foundOona = true;
-				assertTrue(person.getAddress().checkIsEmptyLocation());
+				assertTrue(LocationHelper.checkIsEmptyLocation(person.getAddress()));
 				assertEquals(1, person.getAddresses().size());
 				assertEquals("133", person.getAddresses().get(0).getHouseNumber());
 			}

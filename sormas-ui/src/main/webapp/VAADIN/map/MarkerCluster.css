@@ -70,6 +70,39 @@
 	background-color: rgba(175, 227, 168, 0.8);
 }
 
+.marker.sample:after {
+	content: "\e737";
+	font-family: "Vaadin-Icons";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: 0;
+	font-size: 25px;
+	margin-top: -6px;
+	z-index: -1;
+}
+.marker.sample div {
+	border-radius: 0;
+}
+.marker.sample.case div {
+ 	background-color: rgba(216, 49, 43, 0.6);
+}
+.marker.sample.case:after {
+	color: rgba(216, 49, 43, 0.8);
+}
+.marker.sample.contact div {
+	background-color: rgba(204, 173, 20, 0.6);
+}
+.marker.sample.contact:after {
+	color: rgba(204, 173, 20, 0.8);
+}
+.marker.sample.event-participant div {
+	background-color: rgba(0, 90, 156, 0.6);
+}
+.marker.sample.event-participant:after {
+	color: rgba(0, 90, 156, 0.8);
+}
+
 .marker.facility {
 	background-color: none;
 }

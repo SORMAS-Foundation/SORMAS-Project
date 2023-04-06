@@ -200,8 +200,7 @@ public class SampleController {
 		separator.setVisible(addSeparator);
 		sampleComponent.addComponent(separator, sampleComponent.getComponentCount() - 1);
 
-		PathogenTestForm pathogenTestForm =
-			new PathogenTestForm(sampleComponent.getWrappedComponent().getValue(), true, caseSampleCount, false, true);  // Valid because jurisdiction doesn't matter for entities that are about to be created
+		PathogenTestForm pathogenTestForm = new PathogenTestForm(sampleComponent.getWrappedComponent(), true, caseSampleCount, false, true);  // Valid because jurisdiction doesn't matter for entities that are about to be created
 		// prefill fields
 		if (pathogenTest != null) {
 			pathogenTestForm.setValue(pathogenTest);
@@ -366,10 +365,8 @@ public class SampleController {
 		form.setWidth(form.getWidth() * 10 / 12, Unit.PIXELS);
 		SampleDto dto = FacadeProvider.getSampleFacade().getSampleByUuid(sampleUuid);
 		form.setValue(dto);
-		final CommitDiscardWrapperComponent<SampleEditForm> editView = new CommitDiscardWrapperComponent<SampleEditForm>(
-			form,
-			true,
-			form.getFieldGroup());
+		final CommitDiscardWrapperComponent<SampleEditForm> editView =
+			new CommitDiscardWrapperComponent<SampleEditForm>(form, true, form.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {

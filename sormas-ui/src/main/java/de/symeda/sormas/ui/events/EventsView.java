@@ -171,7 +171,12 @@ public class EventsView extends AbstractView {
 
 		OptionGroup eventsViewSwitcher = new OptionGroup();
 		eventsViewSwitcher.setId("eventsViewSwitcher");
-		CssStyles.style(eventsViewSwitcher, CssStyles.FORCE_CAPTION, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
+		CssStyles.style(
+			eventsViewSwitcher,
+			CssStyles.FORCE_CAPTION,
+			ValoTheme.OPTIONGROUP_HORIZONTAL,
+			CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY,
+			CssStyles.VSPACE_TOP_3);
 		eventsViewSwitcher.addItem(EventsViewType.DEFAULT);
 		eventsViewSwitcher.setItemCaption(EventsViewType.DEFAULT, I18nProperties.getCaption(Captions.eventDefaultView));
 

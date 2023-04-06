@@ -43,6 +43,7 @@ public interface Countries {
 	String country_CHE_name = "country.CHE.name";
 	String country_CHL_name = "country.CHL.name";
 	String country_CHN_name = "country.CHN.name";
+	String country_CIV_name = "country.CIV.name";
 	String country_CMR_name = "country.CMR.name";
 	String country_COD_name = "country.COD.name";
 	String country_COG_name = "country.COG.name";

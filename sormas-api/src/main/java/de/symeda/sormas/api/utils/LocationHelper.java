@@ -15,8 +15,13 @@
 
 package de.symeda.sormas.api.utils;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -44,6 +49,7 @@ public final class LocationHelper {
 	}
 
 	public static String buildLocationString(LocationDto location) {
+
 		List<String> locationFields = new ArrayList<>();
 
 		String region = DataHelper.toStringNullable(location.getRegion());
@@ -62,5 +68,31 @@ public final class LocationHelper {
 		}
 
 		return StringUtils.join(locationFields, ", ");
+	}
+
+	public static boolean checkIsEmptyLocation(LocationDto location) {
+
+		try {
+			List<Method> methods = Arrays.stream(location.getClass().getDeclaredMethods())
+				.filter(
+					m -> !Modifier.isStatic(m.getModifiers())
+						&& !Modifier.isPrivate(m.getModifiers())
+						&& (m.getName().startsWith("get") || m.getName().startsWith("is")))
+				.collect(Collectors.toList());
+
+			for (Method m : methods) {
+				if (m.getReturnType() == String.class) {
+					if (StringUtils.isNotBlank((String) m.invoke(location))) {
+						return false;
+					}
+				} else if (m.invoke(location) != null) {
+					return false;
+				}
+			}
+		} catch (IllegalAccessException | InvocationTargetException e) {
+			throw new RuntimeException(e.getMessage());
+		}
+
+		return true;
 	}
 }

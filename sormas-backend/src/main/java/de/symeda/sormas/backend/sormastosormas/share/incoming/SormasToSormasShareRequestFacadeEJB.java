@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -68,7 +69,7 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 	@EJB
 	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
 
-	@EJB
+	@Inject
 	private SormasToSormasDiscoveryService sormasToSormasDiscoveryService;
 
 	@EJB

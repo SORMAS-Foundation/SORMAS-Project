@@ -7,7 +7,7 @@
       "url" : "https://www.gnu.org/licenses/gpl-3.0.html"
     },
     "title" : "SORMAS REST API",
-    "version" : "1.82.0-SNAPSHOT"
+    "version" : "1.83.0-SNAPSHOT"
   },
   "servers" : [ {
     "url" : "/sormas-rest"
@@ -9768,7 +9768,8 @@
             "minLength" : 20,
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "actionContext", "date" ]
       },
       "ActivityAsCaseDto" : {
         "type" : "object",
@@ -9875,7 +9876,8 @@
             "type" : "string",
             "enum" : [ "UNKNOWN", "OPEN_SPACE_OFFICE", "FOOD_SECTOR", "BUILDING_SECTOR", "LOGISTICS_CENTER", "OTHER" ]
           }
-        }
+        },
+        "required" : [ "activityAsCaseType" ]
       },
       "AdditionalTestCriteria" : {
         "type" : "object",
@@ -10246,7 +10248,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "CampaignDashboardElement" : {
         "type" : "object",
@@ -10506,7 +10509,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "CampaignFormTranslations" : {
         "type" : "object",
@@ -10534,7 +10538,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "CaseCriteria" : {
         "type" : "object",
@@ -11294,7 +11299,8 @@
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           }
-        }
+        },
+        "required" : [ "caseClassification", "disease", "healthFacility", "investigationStatus", "person", "reportDate", "responsibleDistrict", "responsibleRegion" ]
       },
       "CaseFollowUpCriteria" : {
         "type" : "object",
@@ -11990,7 +11996,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "ClassificationAllOfCriteriaDto" : {
         "type" : "object",
@@ -12216,7 +12223,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "ClinicalVisitCriteria" : {
         "type" : "object",
@@ -12395,7 +12403,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "ContactCriteria" : {
         "type" : "object",
@@ -12966,7 +12975,8 @@
             "type" : "string",
             "enum" : [ "VACCINATED", "UNVACCINATED", "UNKNOWN" ]
           }
-        }
+        },
+        "required" : [ "contactClassification", "disease", "epiData", "healthConditions", "multiDayContact", "person", "reportDateTime" ]
       },
       "ContactIndexDetailedDto" : {
         "type" : "object",
@@ -13290,7 +13300,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "ContinentCriteria" : {
         "type" : "object",
@@ -13390,7 +13401,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "CoreAndPersonDtoCaseDataDto" : {
         "type" : "object",
@@ -13573,7 +13585,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "CriteriaDateType" : {
         "type" : "object"
@@ -14911,7 +14924,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "DocumentCriteria" : {
         "type" : "object",
@@ -14979,7 +14993,8 @@
             "minLength" : 20,
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "mimeType", "name", "relatedEntityType", "relatedEntityUuid", "size", "uploadingUser" ]
       },
       "EpiDataDto" : {
         "type" : "object",
@@ -15687,7 +15702,8 @@
             "minLength" : 20,
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "name" ]
       },
       "EventGroupIndexDto" : {
         "type" : "object",
@@ -15721,7 +15737,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "EventGroupsIndexDto" : {
         "type" : "object",
@@ -16048,7 +16065,8 @@
             "type" : "string",
             "enum" : [ "VACCINATED", "UNVACCINATED", "UNKNOWN" ]
           }
-        }
+        },
+        "required" : [ "event", "person" ]
       },
       "EventParticipantIndexDto" : {
         "type" : "object",
@@ -16138,7 +16156,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "EventReferenceDto" : {
         "type" : "object",
@@ -16150,7 +16169,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "ExposureDto" : {
         "type" : "object",
@@ -16397,7 +16417,8 @@
             "type" : "string",
             "enum" : [ "UNKNOWN", "OPEN_SPACE_OFFICE", "FOOD_SECTOR", "BUILDING_SECTOR", "LOGISTICS_CENTER", "OTHER" ]
           }
-        }
+        },
+        "required" : [ "exposureType" ]
       },
       "ExternalDataDto" : {
         "type" : "object",
@@ -16703,7 +16724,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "ExternalVisitDto" : {
         "type" : "object",
@@ -16750,7 +16772,8 @@
             "type" : "string",
             "enum" : [ "UNAVAILABLE", "UNCOOPERATIVE", "COOPERATIVE" ]
           }
-        }
+        },
+        "required" : [ "disease", "personUuid", "visitDateTime", "visitStatus" ]
       },
       "FacilityCriteria" : {
         "type" : "object",
@@ -16965,7 +16988,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "FeatureConfigurationCriteria" : {
         "type" : "object",
@@ -17525,7 +17549,8 @@
             "type" : "string",
             "format" : "date-time"
           }
-        }
+        },
+        "required" : [ "disease", "immunizationManagementStatus", "immunizationStatus", "meansOfImmunization", "person", "reportDate", "responsibleDistrict", "responsibleRegion" ]
       },
       "ImmunizationIndexDto" : {
         "type" : "object",
@@ -17617,7 +17642,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "InfrastructureChangeDatesDto" : {
         "type" : "object",
@@ -19285,7 +19311,8 @@
           "viaLims" : {
             "type" : "boolean"
           }
-        }
+        },
+        "required" : [ "lab", "labUser", "sample", "testResult", "testResultVerified", "testType", "testedDisease" ]
       },
       "PeriodDto" : {
         "type" : "object",
@@ -19673,7 +19700,8 @@
             "minLength" : 20,
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "firstName", "lastName", "sex" ]
       },
       "PersonFollowUpEndDto" : {
         "type" : "object",
@@ -19772,7 +19800,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "PersonSimilarityCriteria" : {
         "type" : "object",
@@ -19829,7 +19858,8 @@
           "statusDateTime" : {
             "type" : "string"
           }
-        }
+        },
+        "required" : [ "status" ]
       },
       "PointOfEntryCriteria" : {
         "type" : "object",
@@ -19945,7 +19975,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "PortHealthInfoDto" : {
         "type" : "object",
@@ -20244,7 +20275,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "PreviousHospitalizationDto" : {
         "type" : "object",
@@ -20344,7 +20376,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "RegionCriteria" : {
         "type" : "object",
@@ -20466,7 +20499,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "SampleCriteria" : {
         "type" : "object",
@@ -20750,7 +20784,8 @@
             "minLength" : 20,
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "reportDateTime", "reportingUser", "sampleDateTime", "sampleMaterial", "samplePurpose" ]
       },
       "SampleIndexDto" : {
         "type" : "object",
@@ -20900,7 +20935,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "SampleReportDto" : {
         "type" : "object",
@@ -20973,7 +21009,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "ShareRequestCriteria" : {
         "type" : "object",
@@ -21659,7 +21696,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "SurveillanceDashboardCriteria" : {
         "type" : "object",
@@ -21796,7 +21834,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "SymptomsDto" : {
         "type" : "object",
@@ -22750,7 +22789,8 @@
             "minLength" : 20,
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "assigneeUser", "dueDate", "taskContext", "taskType" ]
       },
       "TaskIndexDto" : {
         "type" : "object",
@@ -22968,7 +23008,8 @@
             "minLength" : 20,
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "sampleReport" ]
       },
       "TherapyDto" : {
         "type" : "object",
@@ -22999,7 +23040,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "TranslationElement" : {
         "type" : "object",
@@ -23240,7 +23282,8 @@
           "vaccinated" : {
             "type" : "boolean"
           }
-        }
+        },
+        "required" : [ "person" ]
       },
       "TravelEntryIndexDto" : {
         "type" : "object",
@@ -23310,7 +23353,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "TreatmentCriteria" : {
         "type" : "object",
@@ -23591,7 +23635,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "UserReferenceWithTaskNumbersDto" : {
         "type" : "object",
@@ -23613,7 +23658,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "UserRoleDto" : {
         "type" : "object",
@@ -23698,7 +23744,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "VaccinationDto" : {
         "type" : "object",
@@ -23800,7 +23847,8 @@
             "maxLength" : 1000000,
             "minLength" : 0
           }
-        }
+        },
+        "required" : [ "immunization", "reportDate" ]
       },
       "VisitCriteria" : {
         "type" : "object",
@@ -23883,7 +23931,8 @@
           "visitUser" : {
             "$ref" : "#/components/schemas/UserReferenceDto"
           }
-        }
+        },
+        "required" : [ "person", "visitDateTime", "visitStatus", "visitUser" ]
       },
       "VisitIndexDto" : {
         "type" : "object",

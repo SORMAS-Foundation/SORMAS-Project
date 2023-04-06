@@ -13,21 +13,21 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas.rest;
+package de.symeda.sormas.backend.sormastosormas;
 
 import javax.enterprise.inject.Produces;
 
+import de.symeda.sormas.backend.central.EtcdCentralClient;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoveryService;
-import de.symeda.sormas.backend.sormastosormas.crypto.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
 
-public class SormasToSormasRestClientProducer {
+public class SormasToSormasDiscoveryServiceProducer {
 
 	@Produces
-	public SormasToSormasRestClient sormasToSormasClient(
-		SormasToSormasDiscoveryService sormasToSormasDiscoveryService,
-		SormasToSormasEncryptionFacadeEjbLocal sormasToSormasEncryptionEjb,
-		ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb) {
-		return new SormasToSormasRestClient(sormasToSormasDiscoveryService, sormasToSormasEncryptionEjb, configFacadeEjb);
+	public SormasToSormasDiscoveryService sormasToSormasDiscoveryService(
+		SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb,
+		ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb,
+		EtcdCentralClient centralClient) {
+		return new SormasToSormasDiscoveryService(sormasToSormasFacadeEjb, configFacadeEjb, centralClient);
 	}
 }

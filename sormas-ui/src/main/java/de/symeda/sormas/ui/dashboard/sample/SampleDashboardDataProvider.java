@@ -57,11 +57,6 @@ public class SampleDashboardDataProvider extends AbstractDashboardDataProvider<S
 	}
 
 	@Override
-	protected SampleDashboardCriteria buildDashboardCriteriaWithDates() {
-		return super.buildDashboardCriteriaWithDates();
-	}
-
-	@Override
 	protected SampleDashboardCriteria buildDashboardCriteria() {
 		return super.buildDashboardCriteria().sampleDateType(dateType).sampleMaterial(sampleMaterial).withNoDisease(withNoDisease);
 	}
