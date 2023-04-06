@@ -1456,23 +1456,17 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return cases;
 	}
 
-	public void pseudonomyzeCasePairs(CaseMergeIndexDto[] caze) {
+	public void pseudonomyzeCasePairs(CaseMergeIndexDto[] cazePair) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 
-		Boolean isInJurisdiction0 = caze[0].getInJurisdiction();
-		pseudonymizer.pseudonymizeDto(
-			CaseMergeIndexDto.class,
-			caze[0],
-			isInJurisdiction0,
-			c -> pseudonymizer.pseudonymizeDto(AgeAndBirthDateDto.class, caze[0].getAgeAndBirthDate(), isInJurisdiction0, null));
-
-		Boolean isInJurisdiction1 = caze[1].getInJurisdiction();
-		pseudonymizer.pseudonymizeDto(
-			CaseMergeIndexDto.class,
-			caze[1],
-			isInJurisdiction1,
-			c -> pseudonymizer.pseudonymizeDto(AgeAndBirthDateDto.class, caze[1].getAgeAndBirthDate(), isInJurisdiction1, null));
-
+		Arrays.stream(cazePair).forEach(caze -> {
+			Boolean isInJurisdiction = caze.getInJurisdiction();
+			pseudonymizer.pseudonymizeDto(
+				CaseMergeIndexDto.class,
+				caze,
+				isInJurisdiction,
+				c -> pseudonymizer.pseudonymizeDto(AgeAndBirthDateDto.class, caze.getAgeAndBirthDate(), isInJurisdiction, null));
+		});
 	}
 
 	@RightsAllowed(UserRight._CASE_EDIT)

@@ -2186,23 +2186,17 @@ public class ContactFacadeEjb
 		return contacts;
 	}
 
-	public void pseudonomyzeContactPairs(MergeContactIndexDto[] contact) {
+	public void pseudonomyzeContactPairs(MergeContactIndexDto[] contactPair) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 
-		Boolean isInJurisdiction0 = contact[0].isInJurisdiction();
-		pseudonymizer.pseudonymizeDto(MergeContactIndexDto.class, contact[0], isInJurisdiction0, c -> {
-			if (contact[0].getCaze() != null) {
-				pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, contact[0].getCaze(), contact[0].getCaseInJurisdiction(), null);
-			}
+		Arrays.stream(contactPair).forEach(contact -> {
+			Boolean isInJurisdiction = contact.getInJurisdiction();
+			pseudonymizer.pseudonymizeDto(MergeContactIndexDto.class, contact, isInJurisdiction, c -> {
+				if (contact.getCaze() != null) {
+					pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, contact.getCaze(), contact.getCaseInJurisdiction(), null);
+				}
+			});
 		});
-
-		Boolean isInJurisdiction1 = contact[1].isInJurisdiction();
-		pseudonymizer.pseudonymizeDto(MergeContactIndexDto.class, contact[1], isInJurisdiction1, c -> {
-			if (contact[1].getCaze() != null) {
-				pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, contact[1].getCaze(), contact[1].getCaseInJurisdiction(), null);
-			}
-		});
-
 	}
 
 	@Override
