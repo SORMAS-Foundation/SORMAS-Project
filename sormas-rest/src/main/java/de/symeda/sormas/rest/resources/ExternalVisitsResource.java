@@ -111,8 +111,8 @@ public class ExternalVisitsResource extends EntityDtoResource<ExternalVisitDto> 
 	@Path("/")
 	@Operation(summary = "Save visits", description = "Upload visits with all symptom and disease related data to SORMAS.")
 	@Override
-	public Response postEntity(List<ExternalVisitDto> dtos) {
-		return super.postEntity(dtos);
+	public Response postEntityDtos(List<ExternalVisitDto> dtos) {
+		return super.postEntityDtos(dtos);
 	}
 
 	@GET

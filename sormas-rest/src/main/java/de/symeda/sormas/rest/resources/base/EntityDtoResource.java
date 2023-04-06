@@ -32,8 +32,9 @@ import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.PushResponse;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.rest.TransactionWrapper;
+import io.swagger.v3.oas.annotations.Operation;
 
 public abstract class EntityDtoResource<DTO> {
 
@@ -45,47 +46,50 @@ public abstract class EntityDtoResource<DTO> {
 	@Context
 	private Providers providers;
 
-	protected <T> Response savePushedDtosNonAtomic(List<T> dtos, UnaryOperator<T> saveEntityDto) {
+	protected <T> Response savePostedDtosNonAtomic(List<T> dtos, UnaryOperator<T> saveEntityDto) {
 		if (dtos == null || dtos.isEmpty()) {
 			return Response.status(HttpStatus.SC_OK).build();
 		}
 
-		List<PushResponse> results = new ArrayList<>(dtos.size());
+		List<PostResponse> results = new ArrayList<>(dtos.size());
 
 		for (T dto : dtos) {
 			try {
 				transactionWrapper.execute(saveEntityDto, dto);
 				// save a few bytes by setting only the status code
-				results.add(new PushResponse(HttpStatus.SC_OK, null));
+				results.add(new PostResponse(HttpStatus.SC_OK, null));
 			} catch (Exception e) {
-				results.add(getPushResultError(e));
+				results.add(getPostResultError(e));
 			}
 		}
 
 		if (dtos.size() == 1) {
-			return Response.status(results.get(0).getStatusCode()).entity(results).build();
+			return Response.status(results.get(0).getStatusCode()).entity(results.get(0)).build();
 		} else {
 			return Response.status(HttpStatus.SC_MULTI_STATUS).entity(results).build();
 		}
 	}
 
-	private PushResponse getPushResultError(Exception e) {
+	private PostResponse getPostResultError(Exception e) {
 
 		logger.warn("{}", e.getMessage());
 
 		final ExceptionMapper<Exception> exceptionMapper = (ExceptionMapper<Exception>) providers.getExceptionMapper(e.getClass());
 		if (exceptionMapper != null) {
 			try (Response response = exceptionMapper.toResponse(e)) {
-				return new PushResponse(response.getStatus(), response.getEntity());
+				return new PostResponse(response.getStatus(), response.getEntity());
 			}
 		}
-		return new PushResponse(HttpStatus.SC_UNPROCESSABLE_ENTITY, "The entity could not be processed.");
+		return new PostResponse(HttpStatus.SC_UNPROCESSABLE_ENTITY, "The entity could not be processed.");
 	}
 
+	@Operation(summary = "Create or update one or multiple entities.",
+		description = "A uuid will be generated for any entity that doesn't have one yet. "
+			+ "Posting entities without uuid multiple times will also create them multiple times.")
 	@POST
 	@Path("/push")
-	public Response postEntity(@Valid List<DTO> dtos) {
-		return savePushedDtosNonAtomic(dtos, getSave());
+	public Response postEntityDtos(@Valid List<DTO> dtos) {
+		return savePostedDtosNonAtomic(dtos, getSave());
 	}
 
 	public abstract UnaryOperator<DTO> getSave();

@@ -17,14 +17,14 @@ package de.symeda.sormas.api;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-public class PushResponse {
+public class PostResponse {
 
 	private int statusCode;
 
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private Object body;
 
-	public PushResponse(int statusCode, Object body) {
+	public PostResponse(int statusCode, Object body) {
 		this.statusCode = statusCode;
 		this.body = body;
 	}
