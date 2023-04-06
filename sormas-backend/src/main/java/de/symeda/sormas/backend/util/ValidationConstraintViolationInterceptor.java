@@ -22,7 +22,7 @@ import javax.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.utils.ConstrainValidationHelper;
+import de.symeda.sormas.api.utils.ConstraintValidationHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 public class ValidationConstraintViolationInterceptor {
@@ -35,7 +35,7 @@ public class ValidationConstraintViolationInterceptor {
 			return context.proceed();
 		} catch (ConstraintViolationException e) {
 			logger.error(String.valueOf(e));
-			throw new ValidationRuntimeException(ConstrainValidationHelper.getPropertyErrors(e.getConstraintViolations()));
+			throw new ValidationRuntimeException(ConstraintValidationHelper.getPropertyErrors(e.getConstraintViolations()));
 		}
 	}
 }

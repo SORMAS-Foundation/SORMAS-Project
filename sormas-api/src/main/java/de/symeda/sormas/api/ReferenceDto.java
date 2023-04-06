@@ -17,6 +17,7 @@ package de.symeda.sormas.api;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -26,7 +27,6 @@ import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.HasCaption;
-import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.uuid.HasUuid;
 
 @AuditedClass
@@ -35,7 +35,7 @@ public abstract class ReferenceDto implements Serializable, HasUuid, HasCaption,
 	public static final String CAPTION = "caption";
 	public static final String NO_REFERENCE_UUID = "SORMAS-CONSTID-NO-REFERENCE";
 
-	@Required
+	@NotNull(message = Validations.requiredField)
 	@AuditIncludeProperty
 	@Pattern(regexp = UUID_REGEX, message = Validations.uuidPatternNotMatching)
 	private String uuid;

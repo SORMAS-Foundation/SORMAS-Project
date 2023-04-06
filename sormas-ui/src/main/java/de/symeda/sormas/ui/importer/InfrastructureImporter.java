@@ -1,6 +1,5 @@
 package de.symeda.sormas.ui.importer;
 
-import de.symeda.sormas.api.importexport.ImportErrorException;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.File;
@@ -14,6 +13,7 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.importexport.ImportErrorException;
 import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.importexport.ValueSeparator;
@@ -96,7 +96,7 @@ public class InfrastructureImporter extends DataImporter {
 			throw new IllegalArgumentException(type.toString());
 		}
 
-		boolean iHasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, false, (cellData) -> {
+		boolean hasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, false, (cellData) -> {
 			try {
 				// If the cell entry is not empty, try to insert it into the current infrastructure object
 				if (!StringUtils.isEmpty(cellData.getValue())) {
@@ -109,9 +109,17 @@ public class InfrastructureImporter extends DataImporter {
 			return null;
 		});
 
+		if (!hasImportError) {
+			ImportLineResultDto<EntityDto> constraintErrors = validateConstraints(newEntityDto);
+			if (constraintErrors.isError()) {
+				writeImportError(values, constraintErrors.getMessage());
+				hasImportError = true;
+			}
+		}
+
 		// Save the infrastructure object into the database if the import has no errors or throw an error
 		// if there is already an infrastructure object with this name in the database
-		if (!iHasImportError) {
+		if (!hasImportError) {
 			try {
 				switch (type) {
 				case COMMUNITY:
@@ -241,11 +249,6 @@ public class InfrastructureImporter extends DataImporter {
 				logger.error("Unexpected error when trying to import infrastructure data: " + e.getMessage());
 				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importUnexpectedError));
 			}
-		}
-
-		ImportLineResultDto<EntityDto> constraintErrors = validateConstraints(newEntityDto);
-		if (constraintErrors.isError()) {
-			throw new ImportErrorException(constraintErrors.getMessage());
 		}
 	}
 }
