@@ -177,7 +177,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		cq.distinct(true);
 
 		List<AdoAttributes> attributes = getBatchedAttributesQueryResults(cb, cq, from, batchSize);
-		List<Long> ids = attributes.stream().map(e -> e.getId()).limit(batchSize == null ? Long.MAX_VALUE : batchSize).collect(Collectors.toList());
+		List<Long> ids = attributes.stream().map(AdoAttributes::getId).limit(batchSize == null ? Long.MAX_VALUE : batchSize).collect(Collectors.toList());
 		logger.trace(
 			"getList: Unique ids identified. batchSize:{}, attributes:{}, ids:{}, {} ms",
 			batchSize,

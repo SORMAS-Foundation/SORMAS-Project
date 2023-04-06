@@ -398,27 +398,11 @@ public class LocationDto extends PseudonymizableDto {
 			additionalInformation);
 	}
 
-	public boolean checkIsEmptyLocation() {
-		return details == null
-			&& city == null
-			&& areaType == null
-			&& region == null
-			&& district == null
-			&& community == null
-			&& street == null
-			&& houseNumber == null
-			&& additionalInformation == null;
-	}
-
 	public static LocationDto build() {
 
 		LocationDto location = new LocationDto();
 		location.setUuid(DataHelper.createUuid());
 		return location;
-	}
-
-	public static String buildStreetAndHouseNumberCaption(String street, String houseNumber) {
-		return DataHelper.toStringNullable(street) + " " + DataHelper.toStringNullable(houseNumber);
 	}
 
 	public String buildAddressCaption() {

@@ -19,8 +19,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum SampleShipmentStatus {
 
-	SHIPPED,
 	NOT_SHIPPED,
+	SHIPPED,
 	RECEIVED;
 
 	@Override

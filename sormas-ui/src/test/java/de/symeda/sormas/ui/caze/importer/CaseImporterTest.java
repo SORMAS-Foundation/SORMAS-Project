@@ -57,6 +57,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.LocationHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.ui.AbstractBeanTest;
@@ -357,7 +358,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		assertTrue(CollectionUtils.isEmpty(casePerson2.getAddresses()));
 		assertEquals("132", casePerson2.getAddress().getHouseNumber());
 
-		assertTrue(casePerson3.getAddress().checkIsEmptyLocation());
+		assertTrue(LocationHelper.checkIsEmptyLocation(casePerson3.getAddress()));
 		assertEquals(1, casePerson3.getAddresses().size());
 		assertEquals("133", casePerson3.getAddresses().get(0).getHouseNumber());
 	}

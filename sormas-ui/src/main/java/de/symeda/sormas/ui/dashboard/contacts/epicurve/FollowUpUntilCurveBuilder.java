@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.dashboard.contacts.epicurve;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -7,9 +8,9 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.dashboard.EpiCurveGrouping;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
+import de.symeda.sormas.ui.dashboard.diagram.EpiCurveSeriesElement;
 
 public class FollowUpUntilCurveBuilder extends ContactsEpiCurveBuilder {
 
@@ -18,7 +19,7 @@ public class FollowUpUntilCurveBuilder extends ContactsEpiCurveBuilder {
 	}
 
 	@Override
-	public void buildEpiCurve(List<Date> datesGroupedBy, DashboardDataProvider dashboardDataProvider) {
+	protected List<EpiCurveSeriesElement> getEpiCurveElements(List<Date> datesGroupedBy, DashboardDataProvider dashboardDataProvider) {
 		int[] followUpUntilNumbers = new int[datesGroupedBy.size()];
 
 		for (int i = 0; i < datesGroupedBy.size(); i++) {
@@ -38,16 +39,6 @@ public class FollowUpUntilCurveBuilder extends ContactsEpiCurveBuilder {
 			followUpUntilNumbers[i] = FacadeProvider.getContactFacade().getFollowUpUntilCount(contactCriteria);
 		}
 
-		hcjs.append("series: [");
-		hcjs.append(
-			"{ name: '" + I18nProperties.getCaption(Captions.dashboardFollowUpUntilShort)
-				+ "', color: '#00BFFF', dataLabels: { allowOverlap: false },  data: [");
-		for (int i = 0; i < followUpUntilNumbers.length; i++) {
-			if (i == followUpUntilNumbers.length - 1) {
-				hcjs.append(followUpUntilNumbers[i] + "]}],");
-			} else {
-				hcjs.append(followUpUntilNumbers[i] + ", ");
-			}
-		}
+		return Collections.singletonList(new EpiCurveSeriesElement(Captions.dashboardFollowUpUntilShort, "#00BFFF", followUpUntilNumbers));
 	}
 }

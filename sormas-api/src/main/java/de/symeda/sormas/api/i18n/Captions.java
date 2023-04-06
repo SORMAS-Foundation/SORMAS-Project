@@ -883,6 +883,7 @@ public interface Captions {
 	String dashboardNotYetClassifiedOnly = "dashboardNotYetClassifiedOnly";
 	String dashboardNumberOfCases = "dashboardNumberOfCases";
 	String dashboardNumberOfContacts = "dashboardNumberOfContacts";
+	String dashboardNumberOfSamples = "dashboardNumberOfSamples";
 	String dashboardOneDay = "dashboardOneDay";
 	String dashboardOutbreak = "dashboardOutbreak";
 	String dashboardPending = "dashboardPending";
@@ -1925,10 +1926,17 @@ public interface Captions {
 	String sampleAssociationType = "sampleAssociationType";
 	String sampleCreateNew = "sampleCreateNew";
 	String sampleDashboardAllSamples = "sampleDashboardAllSamples";
+	String sampleDashboardCaseSamples = "sampleDashboardCaseSamples";
+	String sampleDashboardContactSamples = "sampleDashboardContactSamples";
+	String sampleDashboardEventParticipantSamples = "sampleDashboardEventParticipantSamples";
 	String sampleDashboardFinalLabResults = "sampleDashboardFinalLabResults";
 	String sampleDashboardSamplePurpose = "sampleDashboardSamplePurpose";
 	String sampleDashboardShipmentStatus = "sampleDashboardShipmentStatus";
+	String sampleDashboardShowCaseSamples = "sampleDashboardShowCaseSamples";
+	String sampleDashboardShowContactSamples = "sampleDashboardShowContactSamples";
+	String sampleDashboardShowEventParticipantSamples = "sampleDashboardShowEventParticipantSamples";
 	String sampleDashboardSpecimenCondition = "sampleDashboardSpecimenCondition";
+	String sampleDashboardTestResults = "sampleDashboardTestResults";
 	String sampleDeletedSamples = "sampleDeletedSamples";
 	String SampleExport_additionalTestingRequested = "SampleExport.additionalTestingRequested";
 	String SampleExport_altSgpt = "SampleExport.altSgpt";

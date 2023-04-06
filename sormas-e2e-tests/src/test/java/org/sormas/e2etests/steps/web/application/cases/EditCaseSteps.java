@@ -48,6 +48,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.EPID
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_NO_POPUP_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CONFIRM;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.ADDED_SAMPLES_IN_SAMPLE_CARD;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ADD_A_PARTICIPANT_HEADER_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_RELATED_CONTACTS_CHECKBOX;
@@ -212,11 +213,13 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_AND_
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPUP_CONTENT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SEQUELAE_DETAILS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SEQUELAE_OPTIONS;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.SHARE_IMMUNIZATION_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SHARE_ORGANIZATION_POPUP_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SHARE_PENDING_WARNING_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SHARE_REPORTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SHARE_SORMAS_2_SORMAS_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SHARE_SORMAS_2_SORMAS_POPUP_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.SHOW_SAMPLE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SURVEILLANCE_OFFICER_FIELD_ABOVE_GENERAL_COMMENT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SYMPTOMS_TAB;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.TRIMESTER_OPTIONS;
@@ -231,7 +234,9 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATI
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_UPDATE_POPUP_HEADER;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.checkIfTextExists;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.checkTextInImmunizationSideComponent;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.checkTextInReportSideComponent;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.checkTextInSampleSideComponent;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.getByImmunizationUuid;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.getEditTaskButtonByNumber;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.getPreExistingConditionComboboxWithValue_DE;
@@ -1427,6 +1432,12 @@ public class EditCaseSteps implements En {
         });
 
     When(
+        "I click on view Sample",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SHOW_SAMPLE_BUTTON);
+        });
+
+    When(
         "I click on the Create button from Case Document Templates",
         () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_DOCUMENT_BUTTON));
 
@@ -2560,6 +2571,10 @@ public class EditCaseSteps implements En {
         "I click to share samples of the case in Share popup",
         () -> webDriverHelpers.clickOnWebElementBySelector(SAHRE_SAMPLES_CHECKBOX));
     When(
+        "I click on share immunizations of the case in Share popup",
+        () -> webDriverHelpers.clickOnWebElementBySelector(SHARE_IMMUNIZATION_CHECKBOX));
+
+    When(
         "I click to share reports of the case in Share popup",
         () -> webDriverHelpers.clickOnWebElementBySelector(SHARE_REPORTS_CHECKBOX));
 
@@ -2800,6 +2815,46 @@ public class EditCaseSteps implements En {
           softly.assertTrue(
               webDriverHelpers.isElementPresent(
                   checkTextInReportSideComponent(formatter.format(LocalDate.now()))));
+          softly.assertAll();
+        });
+    Then(
+        "^I check that the number of added samples on the Edit case page is (\\d+)$",
+        (Integer numberOfSamples) -> {
+          Integer actualNumberOfSamples =
+              webDriverHelpers.getNumberOfElements(ADDED_SAMPLES_IN_SAMPLE_CARD);
+          softly.assertEquals(
+              actualNumberOfSamples,
+              numberOfSamples,
+              "Number of samples added in sample ard is different then expected!");
+          softly.assertAll();
+        });
+
+    When("I refresh current page", () -> webDriverHelpers.refreshCurrentPage());
+
+    When(
+        "I check if Immunization area contains {string}",
+        (String name) -> {
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(checkTextInImmunizationSideComponent(name)),
+              "Element is not present");
+          softly.assertAll();
+        });
+
+    When(
+        "I check if Immunization area does not contains {string}",
+        (String name) -> {
+          softly.assertFalse(
+              webDriverHelpers.isElementPresent(checkTextInImmunizationSideComponent(name)),
+              "Element is present");
+          softly.assertAll();
+        });
+
+    When(
+        "I check if sample card has {string} information",
+        (String information) -> {
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(checkTextInSampleSideComponent(information)),
+              "Element is present");
           softly.assertAll();
         });
   }

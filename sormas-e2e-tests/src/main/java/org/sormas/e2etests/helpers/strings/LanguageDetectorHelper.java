@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.tika.language.detect.LanguageDetector;
 import org.testng.Assert;
 
+import static org.apache.commons.lang3.StringUtils.capitalize;
+
 @Slf4j
 public abstract class LanguageDetectorHelper {
 
@@ -18,7 +20,7 @@ public abstract class LanguageDetectorHelper {
     if (isConfidenceStrong(textToScan)) {
       log.info("Check if text {} language is {}", textToScan, expectedLanguage);
       Assert.assertEquals(
-          scanLanguage(textToScan),
+          capitalize(scanLanguage(textToScan)),
           expectedLanguage,
           "Text: [" + textToScan + "] Language is not as expected");
     } else {

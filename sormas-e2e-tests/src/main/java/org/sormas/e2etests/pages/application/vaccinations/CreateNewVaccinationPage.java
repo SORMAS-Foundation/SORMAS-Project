@@ -44,4 +44,7 @@ public class CreateNewVaccinationPage {
   public static final By NEW_VACCINATION_DE_BUTTON = By.id("Neue Impfung");
   public static final By NEXT_PAGE_VACCINATION_TAB = By.id("nextPage");
   public static final By REPORT_DATE_INPUT = By.cssSelector(".v-window #reportDate input");
+  public static final By VACCINATION_EDIT_BUTTON =
+      By.xpath(
+          "//div[contains(@location, 'vaccinations')]//div[@class='v-slot v-slot-link v-slot-compact v-slot-caption-overflow-label v-align-right']");
 }

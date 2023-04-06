@@ -103,7 +103,7 @@ public abstract class SormasToSormasTest extends AbstractBeanTest {
 			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, isAcceptRejectFeatureEnabled(), null);
 		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT);
 		// in S2S we use external IDs
-		rdcf = createRDCF(true).centralRdcf;
+		rdcf = createRDCF("ExtId").centralRdcf;
 
 		s2sClientUser = creator.createUser(
 			rdcf,
@@ -114,6 +114,12 @@ public abstract class SormasToSormasTest extends AbstractBeanTest {
 
 		getFacilityService().createConstantFacilities();
 		getPointOfEntryService().createConstantPointsOfEntry();
+
+		Mockito.when(MockProducer.getSormasToSormasDiscoveryService().getSormasServerDescriptorById(eq(DEFAULT_SERVER_ID)))
+			.thenReturn(new SormasServerDescriptor(DEFAULT_SERVER_ID, "SORMAS A", "https://sormas-a.com"));
+
+		Mockito.when(MockProducer.getSormasToSormasDiscoveryService().getSormasServerDescriptorById(eq(SECOND_SERVER_ID)))
+			.thenReturn(new SormasServerDescriptor(SECOND_SERVER_ID, "SORMAS B", "https://sormas-b.com"));
 	}
 
 	@AfterEach
@@ -320,7 +326,7 @@ public abstract class SormasToSormasTest extends AbstractBeanTest {
 
 	}
 
-	protected MappableRdcf createRDCF(boolean withExternalId) {
+	protected MappableRdcf createRDCF(String externalIdSuffix) {
 
 		String regionName = "Region";
 		String districtName = "District";
@@ -334,12 +340,13 @@ public abstract class SormasToSormasTest extends AbstractBeanTest {
 		String facilityExternalId = null;
 		String pointOfEntryExternalId = null;
 
+		boolean withExternalId = externalIdSuffix != null;
 		if (withExternalId) {
-			regionExternalId = "RegionExtId";
-			districtExternalId = "DistrictExtId";
-			communityExternalId = "CommunityExtId";
-			facilityExternalId = "FacilityExtId";
-			pointOfEntryExternalId = "Point of EntryExtId";
+			regionExternalId = "Region" + externalIdSuffix;
+			districtExternalId = "District" + externalIdSuffix;
+			communityExternalId = "Community" + externalIdSuffix;
+			facilityExternalId = "Facility" + externalIdSuffix;
+			pointOfEntryExternalId = "Point of Entry" + externalIdSuffix;
 		}
 
 		MappableRdcf rdcf = new MappableRdcf();

@@ -37,7 +37,10 @@ import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.event.EventActionExportDto;
 import de.symeda.sormas.api.event.EventActionIndexDto;
 import de.symeda.sormas.api.event.EventCriteria;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
@@ -147,6 +150,11 @@ public class ActionFacadeEjb implements ActionFacade {
 	@RightsAllowed(UserRight._ACTION_DELETE)
 	public void deleteAction(ActionDto actionDto) {
 		Action action = actionService.getByUuid(actionDto.getUuid());
+
+		if (!actionService.inJurisdictionOrOwned(action)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.messageActionOutsideJurisdictionDeletionDenied));
+		}
+
 		actionService.deletePermanent(action);
 	}
 

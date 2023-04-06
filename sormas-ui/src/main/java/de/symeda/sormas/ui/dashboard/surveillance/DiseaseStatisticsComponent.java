@@ -24,7 +24,7 @@ import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.CaseStatisticsComponent;
 import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.EventStatisticsComponent;
-import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.FinalLaboratoryResultsStatisticsComponent;
+import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.LaboratoryResultsStatisticsComponent;
 import de.symeda.sormas.ui.dashboard.surveillance.components.statistics.summary.DiseaseSummaryComponent;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -37,7 +37,7 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 	private final CaseStatisticsComponent caseStatisticsComponent;
 	private final DiseaseSummaryComponent diseaseSummaryComponent;
 	private final EventStatisticsComponent eventStatisticsComponent;
-	private final FinalLaboratoryResultsStatisticsComponent labResultsStatisticsComponent;
+	private final LaboratoryResultsStatisticsComponent labResultsStatisticsComponent;
 
 	private static final String CASE_LOC = "case";
 	private static final String OUTBREAK_LOC = "outbreak";
@@ -58,11 +58,13 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		caseStatisticsComponent = new CaseStatisticsComponent();
 		diseaseSummaryComponent = new DiseaseSummaryComponent();
 		eventStatisticsComponent = new EventStatisticsComponent();
-		labResultsStatisticsComponent = new FinalLaboratoryResultsStatisticsComponent(
+		labResultsStatisticsComponent = new LaboratoryResultsStatisticsComponent(
 			Captions.dashboardNewFinalLaboratoryResults,
 			Descriptions.descDashboardNewFinalLaboratoryResults,
 			null,
-			false);
+			false,
+			true);
+		labResultsStatisticsComponent.setWithPercentage(false);
 
 		addComponent(caseStatisticsComponent, CASE_LOC);
 		addComponent(diseaseSummaryComponent, OUTBREAK_LOC);

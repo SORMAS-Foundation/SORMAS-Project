@@ -128,6 +128,7 @@ public final class CssStyles {
 	public static final String LABEL_WHITE_SPACE_NORMAL = "white-space-normal";
 	public static final String LABEL_TEXT_ALIGN_RIGHT = "text-align-right";
 	public static final String LABEL_CAPTION_TRUNCATED = "caption-truncated";
+	public static final String LABEL_HEADING_TITLE = "heading-title-label";
 
 	// Layout styles
 	public static final String LAYOUT_MINIMAL = "minimal";

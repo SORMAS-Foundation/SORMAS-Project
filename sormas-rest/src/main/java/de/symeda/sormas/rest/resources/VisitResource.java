@@ -56,7 +56,6 @@ public class VisitResource extends EntityDtoResource<VisitDto> {
 	@GET
 	@Path("/all/{since}")
 	public List<VisitDto> getAllVisits(@PathParam("since") long since) {
-
 		return FacadeProvider.getVisitFacade().getAllActiveVisitsAfter(new Date(since));
 	}
 
@@ -92,6 +91,6 @@ public class VisitResource extends EntityDtoResource<VisitDto> {
 
 	@Override
 	public UnaryOperator<VisitDto> getSave() {
-		return FacadeProvider.getVisitFacade()::saveVisit;
+		return FacadeProvider.getVisitFacade()::save;
 	}
 }

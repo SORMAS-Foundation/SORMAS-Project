@@ -23,6 +23,7 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CONFIRM;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_RELATED_CONTACTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BACK_TO_CASES_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_NEW_CASE_CHECKBOX;
@@ -132,6 +133,7 @@ public class CaseDirectorySteps implements En {
   private static String lastName;
   private static String receivedCaseUUID;
   private static String generatedRandomString;
+  private static String generatedRandomStringContact;
 
   @Inject
   public CaseDirectorySteps(
@@ -419,6 +421,17 @@ public class CaseDirectorySteps implements En {
                   + apiState.getCreatedCase().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_CASE_URL);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(EditCasePage.UUID_INPUT);
+        });
+
+    When(
+        "I open last created Case via API on {string} instance",
+        (String instance) -> {
+          String LAST_CREATED_CASE_URL =
+              runningConfiguration.getEnvironmentUrlForMarket(instance)
+                  + "/sormas-webdriver/#!cases/data/"
+                  + apiState.getCreatedCase().getUuid();
+          webDriverHelpers.accessWebSite(LAST_CREATED_CASE_URL);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(EditCasePage.UUID_INPUT);
         });
 
     Then(
@@ -1314,6 +1327,14 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.fillInWebElement(EXTRA_COMMENT_INPUT_SHARE_POPUP, generatedRandomString);
         });
 
+    And(
+        "I fill comment in share popup for contact with random string",
+        () -> {
+          generatedRandomStringContact = faker.beer().name();
+          webDriverHelpers.fillInWebElement(
+              EXTRA_COMMENT_INPUT_SHARE_POPUP, generatedRandomStringContact);
+        });
+
     When(
         "I click on {string} shared case button with copied case description",
         (String option) -> {
@@ -1327,6 +1348,28 @@ public class CaseDirectorySteps implements En {
                   getActionAcceptButtonByCaseDescription(generatedRandomString));
               break;
           }
+        });
+
+    When(
+        "I click on {string} shared contact button with copied contact description",
+        (String option) -> {
+          switch (option) {
+            case "reject":
+              webDriverHelpers.clickOnWebElementBySelector(
+                  getActionRejectButtonByContactDescription(generatedRandomStringContact));
+              break;
+            case "accept":
+              webDriverHelpers.clickOnWebElementBySelector(
+                  getActionAcceptButtonByContactDescription(generatedRandomStringContact));
+              break;
+          }
+        });
+
+    When(
+        "I click on Okay button in Potential duplicate popup",
+        () -> {
+          webDriverHelpers.isElementVisibleWithTimeout(POTENTIAL_DUPLICATE_POPUP_DE, 5);
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM);
         });
 
     When(

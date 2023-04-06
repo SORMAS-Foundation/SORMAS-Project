@@ -1458,3 +1458,50 @@ Feature: Contacts end to end tests
         And I click on the Contacts button from navbar
         And I filter with last created contact using contact UUID
         And I check that number of displayed contact results is 1
+
+  @tmsLink=SORDEV-13951 @env_s2s_1
+  Scenario: S2S - Share a Contact without having a sample
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in as a Admin User
+    When I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form for DE version with mandatory data with "Baden-Württemberg" as a region and "LK Alb-Donau-Kreis" as a disctrict
+    And I click on SAVE new contact button
+    And I copy url of current contact
+    And I click on share contact button
+    Then I check if popup with "Kontakt kann nicht geteilt werden" title appears
+    And I click on okay button
+    And I click on the CHOOSE SOURCE CASE button from CONTACT page
+    Then I search for the last case uuid created via Api in the CHOOSE SOURCE Contact window
+    And I open the first found result in the CHOOSE SOURCE window for DE version
+    Then I click SAVE button on Edit Contact Page
+    And I click on share contact button
+    And I select organization to share with "s2s_2"
+    Then I check if warning information with related to the associated case not being shared appears in share contact popup
+    And I click on discard button
+    Then I open the Case Contacts tab
+    And I navigate to case tab
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to Contacts tab in Edit case page
+    And I open the first contact from contacts list
+    And I click on share contact button
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup for contact with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment in new driver tab
+    And I log in as a Admin User
+    And I click on the Shares button from navbar
+    And I click on "accept" shared contact button with copied contact description
+    Then I check if a warning pop-up message appears that the Case should be accepted first
+    And I click on "accept" shared case button with copied case description
+    And I click on "accept" shared contact button with copied contact description
+    Then I open last created Case via API on "s2s_2" instance
+    And I check that the value selected from Disease combobox is "COVID-19" on Edit Case page

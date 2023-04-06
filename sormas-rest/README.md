@@ -51,7 +51,7 @@ The specification files are created at the path specified above.
 The purpose of this API is to enable communication between SORMAS and other symptom journals.
 Only users with the role `REST_EXTERNAL_VISITS_USER` are authorized to use the endpoints. Authentication is done using
 basic auth, with the user and password. For technical details please contact the dev team on
-[gitter](https://gitter.im/SORMAS-Project).
+[Github Discussions](https://github.com/hzi-braunschweig/SORMAS-Project/discussions).
 
 
 ### Workflow Description

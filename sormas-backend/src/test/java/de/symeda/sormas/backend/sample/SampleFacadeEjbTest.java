@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,6 +55,8 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
+import de.symeda.sormas.api.dashboard.sample.MapSampleDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
@@ -71,6 +74,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.AdditionalTestingStatus;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -1057,4 +1061,122 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(editable);
 	}
 
+	@Test
+	public void testCountAndGetSamplesForMap() {
+		UserDto user = creator.createSurveillanceSupervisor(creator.createRDCF());
+
+		PersonDto personWithCoord = creator.createPerson("New", "Person", Sex.UNKNOWN, p -> {
+			p.getAddress().setLongitude(45.342163);
+			p.getAddress().setLatitude(15.491076);
+		});
+
+		CaseDataDto cazeWithPersonCoord = creator.createCase(user.toReference(), personWithCoord.toReference(), creator.createRDCF());
+		creator.createSample(cazeWithPersonCoord.toReference(), user.toReference(), creator.createRDCF().facility);
+
+		CaseDataDto caseWithCoord = creator.createCase(user.toReference(), creator.createPerson().toReference(), creator.createRDCF(), c -> {
+			c.setReportLon(45.342163);
+			c.setReportLat(15.491076);
+		});
+		creator.createSample(caseWithCoord.toReference(), user.toReference(), creator.createRDCF().facility);
+
+		ContactDto contactWithParsonCoord = creator.createContact(user.toReference(), personWithCoord.toReference(), Disease.CORONAVIRUS, null);
+		creator.createSample(
+			contactWithParsonCoord.toReference(),
+			new Date(),
+			new Date(),
+			user.toReference(),
+			SampleMaterial.BLOOD,
+			creator.createRDCF().facility);
+
+		ContactDto contactWithCoord = creator.createContact(user.toReference(), creator.createPerson().toReference(), Disease.CORONAVIRUS, c -> {
+			c.setReportLon(45.342163);
+			c.setReportLat(15.491076);
+		});
+		creator.createSample(
+			contactWithCoord.toReference(),
+			new Date(),
+			new Date(),
+			user.toReference(),
+			SampleMaterial.BLOOD,
+			creator.createRDCF().facility);
+
+		EventDto event = creator.createEvent(user.toReference());
+		EventParticipantDto eventParticipantWithPersonCoord =
+			creator.createEventParticipant(event.toReference(), personWithCoord, user.toReference());
+		creator.createSample(
+			eventParticipantWithPersonCoord.toReference(),
+			new Date(),
+			new Date(),
+			user.toReference(),
+			SampleMaterial.BLOOD,
+			creator.createRDCF().facility);
+
+		EventDto eventWithCoord = creator.createEvent(user.toReference(), Disease.CORONAVIRUS, e -> {
+			e.setReportLon(45.342163);
+			e.setReportLat(15.491076);
+		});
+		EventParticipantDto eventParticipantWithEventCoord =
+			creator.createEventParticipant(eventWithCoord.toReference(), creator.createPerson(), user.toReference());
+		creator.createSample(
+			eventParticipantWithEventCoord.toReference(),
+			new Date(),
+			new Date(),
+			user.toReference(),
+			SampleMaterial.BLOOD,
+			creator.createRDCF().facility);
+
+		// sample coordinates not taken
+		SampleDto sampleWithCoord = creator.createSample(
+			creator.createCase(user.toReference(), creator.createPerson().toReference(), creator.createRDCF()).toReference(),
+			user.toReference(),
+			creator.createRDCF().facility,
+			s -> {
+				s.setReportLon(45.342163);
+				s.setReportLat(15.491076);
+			});
+
+		// sample without GPS coordinates should not be counted
+		PersonDto person = creator.createPerson();
+		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), creator.createRDCF());
+		SampleDto sampleWithoutCoord = creator.createSample(caze.toReference(), user.toReference(), creator.createRDCF().facility);
+
+		Long count = getSampleDashboardFacade().countSamplesForMap(new SampleDashboardCriteria(), Collections.emptySet());
+		List<MapSampleDto> samples = getSampleDashboardFacade().getSamplesForMap(new SampleDashboardCriteria(), Collections.emptySet());
+		assertEquals(0, count);
+		assertEquals(0, samples.size());
+
+		count = getSampleDashboardFacade().countSamplesForMap(new SampleDashboardCriteria(), Collections.singleton(SampleAssociationType.CASE));
+		samples = getSampleDashboardFacade().getSamplesForMap(new SampleDashboardCriteria(), Collections.singleton(SampleAssociationType.CASE));
+		assertEquals(2, count);
+		assertEquals(2, samples.size());
+
+		count = getSampleDashboardFacade().countSamplesForMap(new SampleDashboardCriteria(), Collections.singleton(SampleAssociationType.CONTACT));
+		samples = getSampleDashboardFacade().getSamplesForMap(new SampleDashboardCriteria(), Collections.singleton(SampleAssociationType.CONTACT));
+		assertEquals(2, count);
+		assertEquals(2, samples.size());
+
+		count = getSampleDashboardFacade()
+			.countSamplesForMap(new SampleDashboardCriteria(), Collections.singleton(SampleAssociationType.EVENT_PARTICIPANT));
+		samples = getSampleDashboardFacade()
+			.getSamplesForMap(new SampleDashboardCriteria(), Collections.singleton(SampleAssociationType.EVENT_PARTICIPANT));
+		assertEquals(2, count);
+		assertEquals(2, samples.size());
+
+		count = getSampleDashboardFacade().countSamplesForMap(
+			new SampleDashboardCriteria(),
+			new HashSet<>(Arrays.asList(SampleAssociationType.CASE, SampleAssociationType.CONTACT)));
+		samples = getSampleDashboardFacade()
+			.getSamplesForMap(new SampleDashboardCriteria(), new HashSet<>(Arrays.asList(SampleAssociationType.CASE, SampleAssociationType.CONTACT)));
+		assertEquals(4, count);
+		assertEquals(4, samples.size());
+
+		count = getSampleDashboardFacade().countSamplesForMap(
+			new SampleDashboardCriteria(),
+			new HashSet<>(Arrays.asList(SampleAssociationType.CASE, SampleAssociationType.CONTACT, SampleAssociationType.EVENT_PARTICIPANT)));
+		samples = getSampleDashboardFacade().getSamplesForMap(
+			new SampleDashboardCriteria(),
+			new HashSet<>(Arrays.asList(SampleAssociationType.CASE, SampleAssociationType.CONTACT, SampleAssociationType.EVENT_PARTICIPANT)));
+		assertEquals(6, count);
+		assertEquals(6, samples.size());
+	}
 }

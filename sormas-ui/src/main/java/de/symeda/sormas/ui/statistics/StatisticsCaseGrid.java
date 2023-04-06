@@ -24,6 +24,7 @@ import java.util.TreeMap;
 import com.vaadin.v7.shared.ui.grid.HeightMode;
 import com.vaadin.v7.ui.Grid;
 
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
@@ -124,7 +125,9 @@ public class StatisticsCaseGrid extends Grid {
 				if (StatisticsHelper.isNullOrUnknown(cellValue.getColumnKey())) {
 					addColumnUnknown = true;
 				} else {
-					columns.putIfAbsent((StatisticsGroupingKey) cellValue.getColumnKey(), cellValue.getColumnKey().toString());
+					StatisticsGroupingKey columnKey = cellValue.getColumnKey();
+					String columnCaption = columnKey instanceof ReferenceDto ? ((ReferenceDto) columnKey).buildCaption() : columnKey.toString();
+					columns.putIfAbsent(columnKey, columnCaption);
 				}
 			}
 
@@ -208,6 +211,8 @@ public class StatisticsCaseGrid extends Grid {
 				currentRowKey = (StatisticsGroupingKey) cellValue.getRowKey();
 				if (isUnknownRow) {
 					currentRow[0] = I18nProperties.getCaption(Captions.notSpecified);
+				} else if (currentRowKey instanceof ReferenceDto) {
+					currentRow[0] = ((ReferenceDto) cellValue.getRowKey()).buildCaption();
 				} else {
 					currentRow[0] = cellValue.getRowKey().toString();
 				}

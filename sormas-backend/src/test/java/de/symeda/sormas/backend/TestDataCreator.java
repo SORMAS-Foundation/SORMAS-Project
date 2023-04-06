@@ -985,7 +985,7 @@ public class TestDataCreator {
 			customConfig.accept(visit);
 		}
 
-		visit = beanTest.getVisitFacade().saveVisit(visit);
+		visit = beanTest.getVisitFacade().save(visit);
 
 		return visit;
 	}

@@ -149,7 +149,7 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 
 		VisitDto visit = creator.createVisit(caze.getDisease(), caze.getPerson(), caze.getReportDate());
 		visit.getSymptoms().setAnorexiaAppetiteLoss(SymptomState.YES);
-		getVisitFacade().saveVisit(visit);
+		getVisitFacade().save(visit);
 
 		final Date tenYearsPlusAgo = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
 		executeInTransaction(em -> {
@@ -213,7 +213,7 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 
 		VisitDto visit = creator.createVisit(caze.getDisease(), caze.getPerson(), caze.getReportDate());
 		visit.getSymptoms().setAnorexiaAppetiteLoss(SymptomState.YES);
-		getVisitFacade().saveVisit(visit);
+		getVisitFacade().save(visit);
 
 		CaseDataDto caze2 = creator.createCase(user.toReference(), person.toReference(), rdcf);
 		creator.createClinicalVisit(caze2, v -> {
@@ -228,7 +228,7 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 
 		VisitDto visit2 = creator.createVisit(caze2.getDisease(), caze2.getPerson(), caze2.getReportDate());
 		visit2.getSymptoms().setCough(SymptomState.YES);
-		getVisitFacade().saveVisit(visit2);
+		getVisitFacade().save(visit2);
 
 		final Date tenYearsPlusAgo = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
 		executeInTransaction(em -> {

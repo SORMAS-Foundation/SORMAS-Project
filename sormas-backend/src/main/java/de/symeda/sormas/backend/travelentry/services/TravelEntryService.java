@@ -98,22 +98,22 @@ public class TravelEntryService extends BaseTravelEntryService {
 			final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
 			final Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
 
-		cq.multiselect(
-			travelEntry.get(TravelEntry.UUID),
-			travelEntry.get(TravelEntry.EXTERNAL_ID),
-			person.get(Person.FIRST_NAME),
-			person.get(Person.LAST_NAME),
-			district.get(District.NAME),
-			pointOfEntry.get(PointOfEntry.NAME),
-			travelEntry.get(TravelEntry.POINT_OF_ENTRY_DETAILS),
-			travelEntry.get(TravelEntry.RECOVERED),
-			travelEntry.get(TravelEntry.VACCINATED),
-			travelEntry.get(TravelEntry.TESTED_NEGATIVE),
-			travelEntry.get(TravelEntry.QUARANTINE_TO),
-			travelEntry.get(TravelEntry.DELETION_REASON),
-			travelEntry.get(TravelEntry.OTHER_DELETION_REASON),
-			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(travelEntryQueryContext)),
-			travelEntry.get(TravelEntry.CHANGE_DATE));
+			cq.multiselect(
+				travelEntry.get(TravelEntry.UUID),
+				travelEntry.get(TravelEntry.EXTERNAL_ID),
+				person.get(Person.FIRST_NAME),
+				person.get(Person.LAST_NAME),
+				district.get(District.NAME),
+				pointOfEntry.get(PointOfEntry.NAME),
+				travelEntry.get(TravelEntry.POINT_OF_ENTRY_DETAILS),
+				travelEntry.get(TravelEntry.RECOVERED),
+				travelEntry.get(TravelEntry.VACCINATED),
+				travelEntry.get(TravelEntry.TESTED_NEGATIVE),
+				travelEntry.get(TravelEntry.QUARANTINE_TO),
+				travelEntry.get(TravelEntry.DELETION_REASON),
+				travelEntry.get(TravelEntry.OTHER_DELETION_REASON),
+				JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(travelEntryQueryContext)),
+				travelEntry.get(TravelEntry.CHANGE_DATE));
 
 			Predicate filter = travelEntry.get(TravelEntry.ID).in(batchedIds);
 
@@ -199,7 +199,7 @@ public class TravelEntryService extends BaseTravelEntryService {
 					expression = person.get(Person.LAST_NAME);
 					break;
 				case TravelEntryIndexDto.HOME_DISTRICT_NAME:
-					expression = location.get(District.NAME);
+					expression = district.get(District.NAME);
 					break;
 				case TravelEntryIndexDto.POINT_OF_ENTRY_NAME:
 					expression = travelEntryQueryContext.getJoins().getPointOfEntry().get(PointOfEntry.NAME);

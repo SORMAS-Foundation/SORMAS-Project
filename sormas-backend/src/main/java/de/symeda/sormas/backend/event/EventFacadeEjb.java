@@ -171,6 +171,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	@EJB
 	private SormasToSormasEventFacadeEjbLocal sormasToSormasEventFacade;
 	@EJB
+	private EventService eventService;
+	@EJB
 	private EventParticipantService eventParticipantService;
 	@EJB
 	private ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
@@ -340,6 +342,10 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	private void deleteEvent(Event event, DeletionDetails deletionDetails) throws ExternalSurveillanceToolException {
+		if (!eventService.inJurisdictionOrOwned(event)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.messageEventOutsideJurisdictionDeletionDenied));
+		}
+
 		if (event.getEventStatus() == EventStatus.CLUSTER
 			&& externalSurveillanceToolFacade.isFeatureEnabled()
 			&& externalShareInfoService.isEventShared(event.getId())) {
@@ -518,8 +524,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 			// Participant, Case and Death Count
 			List<Object[]> participantQueryList = new ArrayList<>();
-			CriteriaQuery<Object[]> participantCQ = cb.createQuery(Object[].class);
 			IterableHelper.executeBatched(eventUuids, ModelConstants.PARAMETER_LIMIT, batchedUuids -> {
+				CriteriaQuery<Object[]> participantCQ = cb.createQuery(Object[].class);
 				Root<EventParticipant> epRoot = participantCQ.from(EventParticipant.class);
 				Join<EventParticipant, Case> caseJoin = epRoot.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
 				Predicate notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));

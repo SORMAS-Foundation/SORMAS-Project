@@ -164,7 +164,7 @@ public class ContactServiceTest extends AbstractBeanTest {
 		assertEquals(LocalDate.now().plusDays(21 + 1), UtilDate.toLocalDate(contact.getFollowUpUntil()));
 
 		visit.setVisitStatus(VisitStatus.COOPERATIVE);
-		visit = getVisitFacade().saveVisit(visit);
+		visit = getVisitFacade().save(visit);
 
 		// Follow-up until should be back at the original date and follow-up should be completed
 		contact = getContactFacade().getByUuid(contact.getUuid());
@@ -181,7 +181,7 @@ public class ContactServiceTest extends AbstractBeanTest {
 		// Add a cooperative visit AFTER the follow-up until date; should set follow-up to completed
 		visit.setVisitStatus(VisitStatus.UNAVAILABLE);
 		visit.setVisitDateTime(contact.getFollowUpUntil());
-		getVisitFacade().saveVisit(visit);
+		getVisitFacade().save(visit);
 		contact = getContactFacade().getByUuid(contact.getUuid());
 		assertEquals(FollowUpStatus.FOLLOW_UP, contact.getFollowUpStatus());
 		creator.createVisit(
