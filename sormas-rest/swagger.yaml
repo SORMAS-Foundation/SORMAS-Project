@@ -6972,6 +6972,9 @@ components:
           maxLength: 36
           minLength: 20
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - actionContext
+      - date
     ActivityAsCaseDto:
       type: object
       properties:
@@ -7114,6 +7117,8 @@ components:
           - BUILDING_SECTOR
           - LOGISTICS_CENTER
           - OTHER
+      required:
+      - activityAsCaseType
     AdditionalTestCriteria:
       type: object
       properties:
@@ -7589,6 +7594,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     CampaignDashboardElement:
       type: object
       properties:
@@ -7784,6 +7791,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     CampaignFormTranslations:
       type: object
       properties:
@@ -7803,6 +7812,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     CaseCriteria:
       type: object
       properties:
@@ -8817,6 +8828,15 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+      required:
+      - caseClassification
+      - disease
+      - healthFacility
+      - investigationStatus
+      - person
+      - reportDate
+      - responsibleDistrict
+      - responsibleRegion
     CaseFollowUpCriteria:
       type: object
       properties:
@@ -9776,6 +9796,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     ClassificationAllOfCriteriaDto:
       type: object
       allOf:
@@ -9988,6 +10010,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     ClinicalVisitCriteria:
       type: object
       properties:
@@ -10180,6 +10204,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     ContactCriteria:
       type: object
       properties:
@@ -10856,6 +10882,14 @@ components:
           - VACCINATED
           - UNVACCINATED
           - UNKNOWN
+      required:
+      - contactClassification
+      - disease
+      - epiData
+      - healthConditions
+      - multiDayContact
+      - person
+      - reportDateTime
     ContactIndexDetailedDto:
       type: object
       properties:
@@ -11318,6 +11352,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     ContinentCriteria:
       type: object
       properties:
@@ -11394,6 +11430,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     CoreAndPersonDtoCaseDataDto:
       type: object
       properties:
@@ -11528,6 +11566,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     CriteriaDateType:
       type: object
     CriteriaWithSortingActionCriteria:
@@ -12837,6 +12877,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     DocumentCriteria:
       type: object
       properties:
@@ -12899,6 +12941,13 @@ components:
           maxLength: 36
           minLength: 20
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - mimeType
+      - name
+      - relatedEntityType
+      - relatedEntityUuid
+      - size
+      - uploadingUser
     EpiDataDto:
       type: object
       properties:
@@ -13871,6 +13920,8 @@ components:
           maxLength: 36
           minLength: 20
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - name
     EventGroupIndexDto:
       type: object
       properties:
@@ -13895,6 +13946,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     EventGroupsIndexDto:
       type: object
       properties:
@@ -14302,6 +14355,9 @@ components:
           - VACCINATED
           - UNVACCINATED
           - UNKNOWN
+      required:
+      - event
+      - person
     EventParticipantIndexDto:
       type: object
       properties:
@@ -14383,6 +14439,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     EventReferenceDto:
       type: object
       properties:
@@ -14391,6 +14449,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     ExposureDto:
       type: object
       properties:
@@ -14732,6 +14792,8 @@ components:
           - BUILDING_SECTOR
           - LOGISTICS_CENTER
           - OTHER
+      required:
+      - exposureType
     ExternalDataDto:
       type: object
       properties:
@@ -15165,6 +15227,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     ExternalVisitDto:
       type: object
       properties:
@@ -15265,6 +15329,11 @@ components:
           - UNAVAILABLE
           - UNCOOPERATIVE
           - COOPERATIVE
+      required:
+      - disease
+      - personUuid
+      - visitDateTime
+      - visitStatus
     FacilityCriteria:
       type: object
       properties:
@@ -15618,6 +15687,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     FeatureConfigurationCriteria:
       type: object
       properties:
@@ -16712,6 +16783,15 @@ components:
         validUntil:
           type: string
           format: date-time
+      required:
+      - disease
+      - immunizationManagementStatus
+      - immunizationStatus
+      - meansOfImmunization
+      - person
+      - reportDate
+      - responsibleDistrict
+      - responsibleRegion
     ImmunizationIndexDto:
       type: object
       properties:
@@ -16860,6 +16940,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     InfrastructureChangeDatesDto:
       type: object
       properties:
@@ -18432,6 +18514,14 @@ components:
           pattern: "^[0-9a-zA-Z-]*$"
         viaLims:
           type: boolean
+      required:
+      - lab
+      - labUser
+      - sample
+      - testResult
+      - testResultVerified
+      - testType
+      - testedDisease
     PeriodDto:
       type: object
       properties:
@@ -18898,6 +18988,10 @@ components:
           maxLength: 36
           minLength: 20
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - firstName
+      - lastName
+      - sex
     PersonFollowUpEndDto:
       type: object
       properties:
@@ -18969,6 +19063,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     PersonSimilarityCriteria:
       type: object
       properties:
@@ -19017,6 +19113,8 @@ components:
           - DELETED
         statusDateTime:
           type: string
+      required:
+      - status
     PointOfEntryCriteria:
       type: object
       properties:
@@ -19116,6 +19214,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     PortHealthInfoDto:
       type: object
       properties:
@@ -19379,6 +19479,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     PreviousHospitalizationDto:
       type: object
       properties:
@@ -19465,6 +19567,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     RegionCriteria:
       type: object
       properties:
@@ -19556,6 +19660,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     SampleCriteria:
       type: object
       properties:
@@ -19942,6 +20048,12 @@ components:
           maxLength: 36
           minLength: 20
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - reportDateTime
+      - reportingUser
+      - sampleDateTime
+      - sampleMaterial
+      - samplePurpose
     SampleIndexDto:
       type: object
       properties:
@@ -20185,6 +20297,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     SampleReportDto:
       type: object
       properties:
@@ -20269,6 +20383,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     ShareRequestCriteria:
       type: object
       properties:
@@ -21069,6 +21185,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     SurveillanceDashboardCriteria:
       type: object
       properties:
@@ -21308,6 +21426,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     SymptomsDto:
       type: object
       properties:
@@ -22565,6 +22685,11 @@ components:
           maxLength: 36
           minLength: 20
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - assigneeUser
+      - dueDate
+      - taskContext
+      - taskType
     TaskIndexDto:
       type: object
       properties:
@@ -22851,6 +22976,8 @@ components:
           maxLength: 36
           minLength: 20
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - sampleReport
     TherapyDto:
       type: object
       properties:
@@ -22873,6 +23000,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     TranslationElement:
       type: object
       properties:
@@ -23134,6 +23263,8 @@ components:
           pattern: "^[0-9a-zA-Z-]*$"
         vaccinated:
           type: boolean
+      required:
+      - person
     TravelEntryIndexDto:
       type: object
       properties:
@@ -23188,6 +23319,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     TreatmentCriteria:
       type: object
       properties:
@@ -23509,6 +23642,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     UserReferenceWithTaskNumbersDto:
       type: object
       properties:
@@ -23524,6 +23659,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     UserRoleDto:
       type: object
       properties:
@@ -23831,6 +23968,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     VaccinationDto:
       type: object
       properties:
@@ -23942,6 +24081,9 @@ components:
           type: string
           maxLength: 1000000
           minLength: 0
+      required:
+      - immunization
+      - reportDate
     VisitCriteria:
       type: object
       properties:
@@ -24068,6 +24210,11 @@ components:
           - COOPERATIVE
         visitUser:
           $ref: '#/components/schemas/UserReferenceDto'
+      required:
+      - person
+      - visitDateTime
+      - visitStatus
+      - visitUser
     VisitIndexDto:
       type: object
       properties:

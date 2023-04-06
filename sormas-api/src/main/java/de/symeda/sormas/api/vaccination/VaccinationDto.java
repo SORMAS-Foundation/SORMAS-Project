@@ -18,6 +18,7 @@ package de.symeda.sormas.api.vaccination;
 import java.util.Date;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.caze.Trimester;
@@ -34,7 +35,6 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.DependingOnFeatureType.FeatureProperty;
 import de.symeda.sormas.api.utils.FieldConstraints;
-import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
@@ -64,15 +64,14 @@ public class VaccinationDto extends PseudonymizableDto {
 	public static final String PREGNANT = "pregnant";
 	public static final String TRIMESTER = "trimester";
 
-	@Required
+	@NotNull(message = Validations.requiredField)
 	private ImmunizationReferenceDto immunization;
-	@Required
 	@Valid
 	@DependingOnFeatureType(featureType = FeatureType.IMMUNIZATION_MANAGEMENT,
 		properties = @FeatureProperty(property = FeatureTypeProperty.REDUCED, value = "true"),
 		hide = true)
 	private HealthConditionsDto healthConditions;
-	@Required
+	@NotNull(message = Validations.validReportDateTime)
 	private Date reportDate;
 	private UserReferenceDto reportingUser;
 	private Date vaccinationDate;

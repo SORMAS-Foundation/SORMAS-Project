@@ -125,6 +125,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
             locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE, CaseDataDto.DENGUE_FEVER_TYPE,
                 CaseDataDto.RABIES_TYPE)))
         + fluidRowLocs(CaseDataDto.DISEASE_VARIANT, CaseDataDto.DISEASE_VARIANT_DETAILS)
+		+ fluidRowLocs(CaseDataDto.RE_INFECTION)
         + fluidRowLocs(RESPONSIBLE_JURISDICTION_HEADING_LOC)
         + fluidRowLocs(CaseDataDto.RESPONSIBLE_REGION, CaseDataDto.RESPONSIBLE_DISTRICT, CaseDataDto.RESPONSIBLE_COMMUNITY)
         + fluidRowLocs(CaseDataDto.DONT_SHARE_WITH_REPORTING_TOOL)
@@ -193,6 +194,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		NullableOptionGroup plagueType = addField(CaseDataDto.PLAGUE_TYPE, NullableOptionGroup.class);
 		addField(CaseDataDto.DENGUE_FEVER_TYPE, NullableOptionGroup.class);
 		addField(CaseDataDto.RABIES_TYPE, NullableOptionGroup.class);
+
+		addField(CaseDataDto.RE_INFECTION, NullableOptionGroup.class);
 
 		personCreateForm = new PersonCreateForm(showHomeAddressForm, true, true, showPersonSearchButton);
 		personCreateForm.setWidth(100, Unit.PERCENTAGE);

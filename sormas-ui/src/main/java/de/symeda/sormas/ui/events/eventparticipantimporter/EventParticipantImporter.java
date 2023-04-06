@@ -158,6 +158,20 @@ public class EventParticipantImporter extends DataImporter {
 			}
 		}
 
+		if (!eventParticipantHasImportError) {
+			ImportLineResultDto<EventParticipantDto> eventParticipantErrors = validateConstraints(newEventParticipantTemp);
+			if (eventParticipantErrors.isError()) {
+				eventParticipantHasImportError = true;
+				writeImportError(values, eventParticipantErrors.getMessage());
+			}
+
+			ImportLineResultDto<PersonDto> personErrors = validateConstraints(newPersonTemp);
+			if (personErrors.isError()) {
+				eventParticipantHasImportError = true;
+				writeImportError(values, personErrors.getMessage());
+			}
+		}
+
 		// Sanitize non-HOME address
 		PersonHelper.sanitizeNonHomeAddress(newPersonTemp);
 
@@ -410,11 +424,6 @@ public class EventParticipantImporter extends DataImporter {
 				LOGGER.error("Unexpected error when trying to import an eventparticipant: " + e.getMessage(), e);
 				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importCasesUnexpectedError));
 			}
-		}
-
-		ImportLineResultDto<EventParticipantDto> constraintErrors = validateConstraints(eventParticipant);
-		if (constraintErrors.isError()) {
-			throw new ImportErrorException(constraintErrors.getMessage());
 		}
 	}
 

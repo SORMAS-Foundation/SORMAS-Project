@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.api.document;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
@@ -21,7 +22,6 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
-import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 public class DocumentDto extends PseudonymizableDto {
@@ -33,21 +33,21 @@ public class DocumentDto extends PseudonymizableDto {
 	public static final String RELATED_ENTITY_UUID = "relatedEntityUuid";
 	public static final String RELATED_ENTITY_CLASS = "relatedEntityClass";
 
-	@Required
+	@NotNull(message = Validations.requiredField)
 	private UserReferenceDto uploadingUser;
-	@Required
+	@NotNull(message = Validations.requiredField)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String name;
-	@Required
+	@NotNull(message = Validations.requiredField)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String mimeType;
-	@Required
+	@NotNull(message = Validations.requiredField)
 	private long size;
-	@Required
+	@NotNull(message = Validations.requiredField)
 	@Pattern(regexp = UUID_REGEX, message = Validations.patternNotMatching)
 	@Size(min = FieldConstraints.CHARACTER_LIMIT_UUID_MIN, max = FieldConstraints.CHARACTER_LIMIT_UUID_MAX, message = Validations.textSizeNotInRange)
 	private String relatedEntityUuid;
-	@Required
+	@NotNull(message = Validations.requiredField)
 	private DocumentRelatedEntityType relatedEntityType;
 
 	public static DocumentDto build() {
