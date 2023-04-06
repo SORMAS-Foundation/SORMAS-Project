@@ -34,7 +34,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
-import de.symeda.sormas.api.utils.Required;
+import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.utils.SensitiveData;
 
 @DependingOnFeatureType(featureType = FeatureType.SAMPLES_LAB)
@@ -86,12 +86,12 @@ public class SampleDto extends SormasToSormasShareableDto {
 	private String labSampleID;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String fieldSampleID;
-	@Required
+	@NotNull(message = Validations.requiredField)
 	private Date sampleDateTime;
 
-	@Required
+	@NotNull(message = Validations.validReportDateTime)
 	private Date reportDateTime;
-	@Required
+	@NotNull(message = Validations.validReportingUser)
 	private UserReferenceDto reportingUser;
 	@SensitiveData
 	@Min(value = -90, message = Validations.numberTooSmall)
@@ -104,12 +104,12 @@ public class SampleDto extends SormasToSormasShareableDto {
 
 	private Float reportLatLonAccuracy;
 
-	@Required
+	@NotNull(message = Validations.requiredField)
 	private SampleMaterial sampleMaterial;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String sampleMaterialText;
-	@Required
+	@NotNull(message = Validations.requiredField)
 	private SamplePurpose samplePurpose;
 
 	private FacilityReferenceDto lab;

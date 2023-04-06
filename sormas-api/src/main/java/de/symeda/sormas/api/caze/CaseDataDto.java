@@ -27,6 +27,7 @@ import java.util.Map;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.apache.commons.lang3.StringUtils;
@@ -77,7 +78,6 @@ import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
-import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
@@ -229,7 +229,7 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	// Fields are declared in the order they should appear in the import template
 
 	@Outbreaks
-	@Required
+	@NotNull(message = Validations.validDisease)
 	private Disease disease;
 	private DiseaseVariant diseaseVariant;
 	@Outbreaks
@@ -250,7 +250,7 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 		Disease.RABIES })
 	@Outbreaks
 	private RabiesType rabiesType;
-	@Required
+	@NotNull(message = Validations.validPerson)
 	@EmbeddedPersonalData
 	private PersonReferenceDto person;
 	@Outbreaks
@@ -260,7 +260,7 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String epidNumber;
 	@Outbreaks
-	@Required
+	@NotNull(message = Validations.validReportDateTime)
 	private Date reportDate;
 	@Outbreaks
 	private UserReferenceDto reportingUser;
@@ -281,7 +281,7 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 		COUNTRY_CODE_SWITZERLAND })
 	private Date districtLevelDate;
 	@Outbreaks
-	@Required
+	@NotNull(message = Validations.caseClassificationInvalid)
 	private CaseClassification caseClassification;
 	@HideForCountriesExcept
 	private CaseIdentificationSource caseIdentificationSource;
@@ -301,7 +301,7 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	private YesNoUnknown laboratoryDiagnosticConfirmation;
 
 	@Outbreaks
-	@Required
+	@NotNull(message = Validations.requiredField)
 	private InvestigationStatus investigationStatus;
 	@Outbreaks
 	private Date investigatedDate;
@@ -313,10 +313,9 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String sequelaeDetails;
-
-	@Required
+	@NotNull(message = Validations.validResponsibleRegion)
 	private RegionReferenceDto responsibleRegion;
-	@Required
+	@NotNull(message = Validations.validResponsibleDistrict)
 	private DistrictReferenceDto responsibleDistrict;
 	@Outbreaks
 	@PersonalData
@@ -324,10 +323,8 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	private CommunityReferenceDto responsibleCommunity;
 
 	@Outbreaks
-	@Required
 	private RegionReferenceDto region;
 	@Outbreaks
-	@Required
 	private DistrictReferenceDto district;
 	@Outbreaks
 	@PersonalData
@@ -337,7 +334,7 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	@SensitiveData(mandatoryField = true)
 	private FacilityType facilityType;
 	@Outbreaks
-	@Required
+	@NotNull(message = Validations.validFacility)
 	@PersonalData(mandatoryField = true)
 	@SensitiveData(mandatoryField = true)
 	private FacilityReferenceDto healthFacility;

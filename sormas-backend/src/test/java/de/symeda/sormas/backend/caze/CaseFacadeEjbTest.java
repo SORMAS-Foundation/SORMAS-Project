@@ -45,9 +45,11 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.persistence.Query;
+import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
@@ -58,7 +60,6 @@ import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
@@ -2602,7 +2603,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 		Validator validator = factory.getValidator();
 
-		MatcherAssert.assertThat(validator.validate(caze), hasSize(1));
+		final Set<ConstraintViolation<CaseDataDto>> validate = validator.validate(caze);
+		assertTrue(validate.stream().anyMatch(violation -> CaseDataDto.DISEASE_DETAILS.equals(violation.getPropertyPath().toString())));
 	}
 
 	@Test

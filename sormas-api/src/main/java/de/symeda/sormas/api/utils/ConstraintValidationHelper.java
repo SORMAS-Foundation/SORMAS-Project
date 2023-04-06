@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ElementKind;
@@ -27,7 +28,9 @@ import javax.validation.Path;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 
-public class ConstrainValidationHelper {
+public class ConstraintValidationHelper {
+
+	private ConstraintValidationHelper() { }
 
 	public static Map<List<String>, String> getPropertyErrors(Set<? extends ConstraintViolation> constraintViolations) {
 		Map<List<String>, String> errors = new HashMap<>();
@@ -37,7 +40,7 @@ public class ConstrainValidationHelper {
 
 			for (Path.Node propertyNode : constraintViolation.getPropertyPath()) {
 				if (propertyNode.getKind() == ElementKind.PROPERTY) {
-					if (propertyNode.getIndex() != null && path.size() > 0) {
+					if (propertyNode.getIndex() != null && !path.isEmpty()) {
 						int pathSize = path.size();
 						path.set(pathSize - 1, path.get(pathSize - 1) + "[" + propertyNode.getIndex() + "]");
 					}
@@ -52,5 +55,15 @@ public class ConstrainValidationHelper {
 		}
 
 		return errors;
+	}
+
+	public static String formatPropertyErrors(Map<List<String>, String> propertyErrors) {
+		if (propertyErrors == null) {
+			return "";
+		}
+		return propertyErrors.entrySet()
+			.stream()
+			.map(e -> String.join(".", e.getKey().get(e.getKey().size() - 1)) + ": " + e.getValue())
+			.collect(Collectors.joining("; "));
 	}
 }

@@ -25,7 +25,6 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import javax.ejb.EJBException;
 import javax.validation.ConstraintViolation;
@@ -74,7 +73,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.CSVCommentLineValidator;
 import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.api.utils.CharsetHelper;
-import de.symeda.sormas.api.utils.ConstrainValidationHelper;
+import de.symeda.sormas.api.utils.ConstraintValidationHelper;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.person.PersonSelectionField;
@@ -719,12 +718,8 @@ public abstract class DataImporter {
 
 		Set<ConstraintViolation<T>> constraintViolations = validator.validate(object);
 		if (constraintViolations.size() > 0) {
-			return ImportLineResultDto.errorResult(
-				ConstrainValidationHelper.getPropertyErrors(constraintViolations)
-					.entrySet()
-					.stream()
-					.map(e -> String.join(".", e.getKey().get(e.getKey().size() - 1)) + ": " + e.getValue())
-					.collect(Collectors.joining(";")));
+			return ImportLineResultDto
+				.errorResult(ConstraintValidationHelper.formatPropertyErrors(ConstraintValidationHelper.getPropertyErrors(constraintViolations)));
 		}
 
 		return ImportLineResultDto.successResult();

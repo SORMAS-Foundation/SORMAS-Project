@@ -27,7 +27,7 @@ import org.apache.http.HttpStatus;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.utils.ConstrainValidationHelper;
+import de.symeda.sormas.api.utils.ConstraintValidationHelper;
 import de.symeda.sormas.api.utils.DataHelper;
 
 @Provider
@@ -41,7 +41,7 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
 	}
 
 	private Map<String, String> getPropertyErrors(ConstraintViolationException e) {
-		return ConstrainValidationHelper.getPropertyErrors(e.getConstraintViolations())
+		return ConstraintValidationHelper.getPropertyErrors(e.getConstraintViolations())
 			.entrySet()
 			.stream()
 			.map(entry -> DataHelper.Pair.createPair(String.join(".", entry.getKey()), entry.getValue()))
