@@ -509,44 +509,57 @@ public class ContactsView extends AbstractView {
 
 				boolean hasBulkOperationsRight = UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS);
 
-				List<MenuBarHelper.MenuBarItem> bulkActions = new ArrayList<>(
-					Arrays.asList(
-						new MenuBarHelper.MenuBarItem(
-							I18nProperties.getCaption(Captions.bulkEdit),
-							VaadinIcons.ELLIPSIS_H,
-							mi -> grid.bulkActionHandler(
-								items -> ControllerProvider.getContactController()
-									.showBulkContactDataEditComponent(items, null, (AbstractContactGrid<?>) grid)),
-							hasBulkOperationsRight),
-						new MenuBarHelper.MenuBarItem(
-							I18nProperties.getCaption(Captions.bulkCancelFollowUp),
-							VaadinIcons.CLOSE,
-							mi -> grid.bulkActionHandler(
-								items -> ControllerProvider.getContactController()
-									.cancelFollowUpOfAllSelectedItems(items, () -> navigateTo(criteria))),
-							hasBulkOperationsRight),
-						new MenuBarHelper.MenuBarItem(
-							I18nProperties.getCaption(Captions.bulkLostToFollowUp),
-							VaadinIcons.UNLINK,
-							mi -> grid.bulkActionHandler(
-								items -> ControllerProvider.getContactController()
-									.setAllSelectedItemsToLostToFollowUp(items, () -> navigateTo(criteria))),
-							hasBulkOperationsRight),
-						new MenuBarHelper.MenuBarItem(
-							I18nProperties.getCaption(Captions.bulkDelete),
-							VaadinIcons.TRASH,
-							mi -> grid.bulkActionHandler(
-								items -> ControllerProvider.getContactController().deleteAllSelectedItems(items, () -> navigateTo(criteria)),
-								true),
-							hasBulkOperationsRight),
-						new MenuBarHelper.MenuBarItem(
-							I18nProperties.getCaption(Captions.sormasToSormasShare),
-							VaadinIcons.SHARE,
-							mi -> grid.bulkActionHandler(
-								items -> ControllerProvider.getSormasToSormasController().shareSelectedContacts(items, () -> navigateTo(criteria))),
-							FacadeProvider.getFeatureConfigurationFacade()
-								.isPropertyValueTrue(FeatureType.CASE_AND_CONTACT_BULK_ACTIONS, FeatureTypeProperty.S2S_SHARING)
-								&& FacadeProvider.getSormasToSormasFacade().isSharingContactsEnabledForUser())));
+				List<MenuBarHelper.MenuBarItem> bulkActions =
+					new ArrayList<>(
+						Arrays
+							.asList(
+								new MenuBarHelper.MenuBarItem(
+									I18nProperties.getCaption(Captions.bulkEdit),
+									VaadinIcons.ELLIPSIS_H,
+									mi -> grid.bulkActionHandler(
+										items -> ControllerProvider.getContactController()
+											.showBulkContactDataEditComponent(items, null, (AbstractContactGrid<?>) grid)),
+									hasBulkOperationsRight),
+								new MenuBarHelper.MenuBarItem(
+									I18nProperties.getCaption(Captions.bulkCancelFollowUp),
+									VaadinIcons.CLOSE,
+									mi -> grid.bulkActionHandler(
+										items -> ControllerProvider.getContactController()
+											.cancelFollowUpOfAllSelectedItems(items, () -> navigateTo(criteria))),
+									hasBulkOperationsRight),
+								new MenuBarHelper.MenuBarItem(
+									I18nProperties.getCaption(Captions.bulkLostToFollowUp),
+									VaadinIcons.UNLINK,
+									mi -> grid.bulkActionHandler(
+										items -> ControllerProvider.getContactController()
+											.setAllSelectedItemsToLostToFollowUp(items, () -> navigateTo(criteria))),
+									hasBulkOperationsRight),
+								criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED
+									? new MenuBarHelper.MenuBarItem(
+										I18nProperties.getCaption(Captions.bulkDelete),
+										VaadinIcons.TRASH,
+										mi -> grid.bulkActionHandler(
+											items -> ControllerProvider.getContactController()
+												.deleteAllSelectedItems(items, () -> navigateTo(criteria)),
+											true),
+										hasBulkOperationsRight)
+									: new MenuBarHelper.MenuBarItem(
+										I18nProperties.getCaption(Captions.bulkUndelete),
+										VaadinIcons.ARROW_BACKWARD,
+										mi -> grid.bulkActionHandler(
+											items -> ControllerProvider.getContactController()
+												.undeleteSelectedContacts(items, () -> navigateTo(criteria)),
+											true),
+										hasBulkOperationsRight),
+								new MenuBarHelper.MenuBarItem(
+									I18nProperties.getCaption(Captions.sormasToSormasShare),
+									VaadinIcons.SHARE,
+									mi -> grid.bulkActionHandler(
+										items -> ControllerProvider.getSormasToSormasController()
+											.shareSelectedContacts(items, () -> navigateTo(criteria))),
+									FacadeProvider.getFeatureConfigurationFacade()
+										.isPropertyValueTrue(FeatureType.CASE_AND_CONTACT_BULK_ACTIONS, FeatureTypeProperty.S2S_SHARING)
+										&& FacadeProvider.getSormasToSormasFacade().isSharingContactsEnabledForUser())));
 
 				if (isDocGenerationAllowed() && grid instanceof AbstractContactGrid) {
 					bulkActions.add(

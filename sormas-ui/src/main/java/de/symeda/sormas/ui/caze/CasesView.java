@@ -152,6 +152,8 @@ public class CasesView extends AbstractView {
 	private int followUpRangeInterval = 14;
 	private boolean buttonPreviousOrNextClick = false;
 	private Date followUpToDate;
+	final List<MenuBarHelper.MenuBarItem> menuBarItems = new ArrayList<>();
+	MenuBarHelper.MenuBarItem bulkDeleteMenuItem;
 
 	public CasesView() {
 
@@ -718,11 +720,20 @@ public class CasesView extends AbstractView {
 						grid.bulkActionHandler(
 							items -> ControllerProvider.getCaseController().showBulkCaseDataEditComponent(items, (AbstractCaseGrid<?>) grid));
 					}, hasBulkOperationsRight));
-					menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, mi -> {
-						grid.bulkActionHandler(
-							items -> ControllerProvider.getCaseController().deleteAllSelectedItems(items, () -> navigateTo(criteria)),
-							true);
-					}, hasBulkOperationsRight));
+					if (criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
+						menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, mi -> {
+							grid.bulkActionHandler(
+								items -> ControllerProvider.getCaseController().deleteAllSelectedItems(items, () -> navigateTo(criteria)),
+								true);
+						}, hasBulkOperationsRight));
+					} else {
+						menuBarItems
+							.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkUndelete), VaadinIcons.ARROW_BACKWARD, mi -> {
+								grid.bulkActionHandler(
+									items -> ControllerProvider.getCaseController().undeleteSelectedCases(items, () -> navigateTo(criteria)),
+									true);
+							}, hasBulkOperationsRight));
+					}
 					final boolean externalMessagesEnabled =
 						FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.MANUAL_EXTERNAL_MESSAGES);
 					final boolean isSmsServiceSetUp = FacadeProvider.getConfigFacade().isSmsServiceSetUp();

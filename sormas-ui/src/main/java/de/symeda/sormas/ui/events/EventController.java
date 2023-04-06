@@ -86,6 +86,7 @@ import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.BulkOperationHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
+import de.symeda.sormas.ui.utils.CoreEntityUndeleteMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DeletableUtils;
@@ -1084,6 +1085,15 @@ public class EventController {
 					}
 				});
 		}
+	}
+
+	public void undeleteSelectedEvents(Collection<? extends EventIndexDto> selectedRows, Runnable callback) {
+		ControllerProvider.getDeleteUndeleteController()
+			.undeleteSelectedItems(
+				selectedRows.stream().map(EventIndexDto::getUuid).collect(Collectors.toList()),
+				FacadeProvider.getEventFacade(),
+				CoreEntityUndeleteMessages.EVENT,
+				callback);
 	}
 
 	private Boolean existEventParticipantsLinkedToEvent(EventDto event) {

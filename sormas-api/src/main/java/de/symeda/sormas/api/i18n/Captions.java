@@ -233,6 +233,7 @@ public interface Captions {
 	String bulkTaskAssignee = "bulkTaskAssignee";
 	String bulkTaskPriority = "bulkTaskPriority";
 	String bulkTaskStatus = "bulkTaskStatus";
+	String bulkUndelete = "bulkUndelete";
 	String Campaign = "Campaign";
 	String Campaign_area = "Campaign.area";
 	String Campaign_community = "Campaign.community";

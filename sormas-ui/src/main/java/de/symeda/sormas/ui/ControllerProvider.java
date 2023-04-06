@@ -48,6 +48,7 @@ import de.symeda.sormas.ui.user.UserController;
 import de.symeda.sormas.ui.user.UserRoleController;
 import de.symeda.sormas.ui.utils.ArchivingController;
 import de.symeda.sormas.ui.utils.BaseControllerProvider;
+import de.symeda.sormas.ui.utils.DeleteUndeleController;
 import de.symeda.sormas.ui.vaccination.VaccinationController;
 import de.symeda.sormas.ui.visit.VisitController;
 
@@ -85,6 +86,7 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final VaccinationController vaccinationController;
 	private final ArchivingController archivingController;
 	private final CaseArchivingController caseArchivingController;
+	private final DeleteUndeleController deleteUndeleController;
 
 	public ControllerProvider() {
 		super();
@@ -121,6 +123,7 @@ public class ControllerProvider extends BaseControllerProvider {
 		vaccinationController = new VaccinationController();
 		archivingController = new ArchivingController();
 		caseArchivingController = new CaseArchivingController();
+		deleteUndeleController = new DeleteUndeleController();
 	}
 
 	protected static ControllerProvider get() {
@@ -254,4 +257,9 @@ public class ControllerProvider extends BaseControllerProvider {
 	public static CaseArchivingController getCaseArchivingController() {
 		return get().caseArchivingController;
 	}
+
+	public static DeleteUndeleController getDeleteUndeleteController() {
+		return get().deleteUndeleController;
+	}
+
 }

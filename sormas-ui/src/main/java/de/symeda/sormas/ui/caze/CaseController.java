@@ -137,6 +137,7 @@ import de.symeda.sormas.ui.utils.BulkOperationHelper;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
+import de.symeda.sormas.ui.utils.CoreEntityUndeleteMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DeletableUtils;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
@@ -1620,6 +1621,15 @@ public class CaseController {
 					}
 				});
 		}
+	}
+
+	public void undeleteSelectedCases(Collection<? extends CaseIndexDto> selectedRows, Runnable callback) {
+		ControllerProvider.getDeleteUndeleteController()
+			.undeleteSelectedItems(
+				selectedRows.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList()),
+				FacadeProvider.getCaseFacade(),
+				CoreEntityUndeleteMessages.CASE,
+				callback);
 	}
 
 	public void sendSmsToAllSelectedItems(Collection<? extends CaseIndexDto> selectedRows, Runnable callback) {
