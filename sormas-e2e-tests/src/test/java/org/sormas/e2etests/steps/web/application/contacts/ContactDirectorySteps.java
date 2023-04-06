@@ -114,6 +114,7 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_RESULTS_UUID_LOCATOR;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_VACCINATION_STATUS_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONVERTED_TO_CASE_BUTTON;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CREATE_CASE_FROM_POSITIVE_TEST_RESULT_HEADER_DE;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.DROPPED_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.EPIDEMIOLOGICAL_DATA_TAB;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.FIRST_CONTACT_ID_BUTTON;
@@ -151,6 +152,7 @@ import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPag
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_PLACE_DETAILS;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CLOSE_IMPORT_TRAVEL_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.IMPORT_SUCCESS_DE;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.CONFIRM_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static org.sormas.e2etests.steps.web.application.contacts.EditContactSteps.aContact;
 import static org.sormas.e2etests.steps.web.application.contacts.EditContactSteps.collectedContact;
@@ -1252,6 +1254,14 @@ public class ContactDirectorySteps implements En {
               webDriverHelpers.isElementVisibleWithTimeout(
                   getVaccinationStatusContactsByText(vaccinationStatus), 5),
               "There is no contact with expected status");
+        });
+
+    When(
+        "I confirm when a pop-up appears asking user about creating a Case from it in DE",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              CREATE_CASE_FROM_POSITIVE_TEST_RESULT_HEADER_DE);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
         });
   }
 

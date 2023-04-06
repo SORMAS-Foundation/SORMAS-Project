@@ -1505,3 +1505,22 @@ Feature: Contacts end to end tests
     And I click on "accept" shared contact button with copied contact description
     Then I open last created Case via API on "s2s_2" instance
     And I check that the value selected from Disease combobox is "COVID-19" on Edit Case page
+
+  @tmsLink=SORDEV-13952 @env_s2s_1 @testIt
+  Scenario: S2S - Share a Contact having a sample
+#    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+#    And API: I check that POST call body is "OK"
+#    And API: I check that POST call status code is 200
+#    Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+#    Then API: I check that POST call body is "OK"
+#    And API: I check that POST call status code is 200
+    Then I log in as a Admin User
+    When I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form for DE version with mandatory data with "Baden-Württemberg" as a region and "LK Alb-Donau-Kreis" as a disctrict
+    And I click on SAVE new contact button
+    Then I click on New Sample in German
+    And I create a new Sample with positive test result for DE version with "Voreingestelltes Labor" as a labor
+    And I save the created sample with pathogen test
+    And I confirm when a pop-up appears asking user about creating a Case from it in DE
+

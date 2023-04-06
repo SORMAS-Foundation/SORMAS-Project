@@ -102,6 +102,9 @@ public class ContactDirectoryPage {
   public static final By CONTACT_VACCINATION_STATUS_FILTER_COMBOBOX =
       By.cssSelector("[id='vaccinationStatus'] [class='v-filterselect-button']");
   public static final By FIRST_CONTACT_ID_FROM_CASE = By.xpath("(//td//a)[1]");
+  public static final By CREATE_CASE_FROM_POSITIVE_TEST_RESULT_HEADER_DE =
+      By.xpath(
+          "//*[contains(text(),'Soll ein Fall aus dem Kontakt mit positivem Testresultat erstellt werden?')]");
 
   public static By getCheckboxByUUID(String uuid) {
     return By.xpath(
