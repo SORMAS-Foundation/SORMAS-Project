@@ -58,7 +58,6 @@ import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
@@ -105,6 +104,7 @@ import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
@@ -149,8 +149,10 @@ import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.OutdatedEntityException;
@@ -410,6 +412,60 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(
 			1,
 			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(new Date()), 100, true).size());
+	}
+
+	@Test
+	public void testGetCasesForDuplicateMergingWithPseudonymization() {
+
+		RDCF rdcf = creator.createRDCF();
+		//User without SEE_PERSONAL_DATA_IN_JURISDICTION right
+		UserDto user = creator.createUser(
+			null,
+			null,
+			null,
+			"User",
+			"User",
+			"User",
+			JurisdictionLevel.NATION,
+			UserRight.CONTACT_VIEW,
+			UserRight.CONTACT_EDIT,
+			UserRight.CASE_VIEW,
+			UserRight.PERSON_VIEW,
+			UserRight.PERSON_EDIT,
+			UserRight.CONTACT_MERGE);
+
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze1 = creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		CaseDataDto caze2 = creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		CaseCriteria caseCriteria = new CaseCriteria();
+		caseCriteria.setIncludeCasesFromOtherJurisdictions(true);
+
+		loginWith(user);
+
+		List<CaseMergeIndexDto[]> cases = getCaseFacade().getCasesForDuplicateMerging(caseCriteria, 100, false);
+		CaseMergeIndexDto[] casePair = cases.get(0);
+
+		assertNotNull(cases);
+		assertEquals(I18nProperties.getCaption(Captions.inaccessibleValue), casePair[0].getPersonFirstName());
+		assertEquals(I18nProperties.getCaption(Captions.inaccessibleValue), casePair[0].getPersonLastName());
+		assertEquals(I18nProperties.getCaption(Captions.inaccessibleValue), casePair[1].getPersonFirstName());
+		assertEquals(I18nProperties.getCaption(Captions.inaccessibleValue), casePair[1].getPersonLastName());
 	}
 
 	@Test
