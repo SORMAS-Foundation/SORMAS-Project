@@ -80,6 +80,7 @@ import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.ViewModelProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.CaseContactsView;
 import de.symeda.sormas.ui.caze.components.caseselection.CaseSelectionField;
@@ -330,8 +331,15 @@ public class ContactController {
 	}
 
 	public void navigateToMergeContactsView(ContactCriteria criteria) {
-		ViewModelProviders.of(MergeContactsView.class).remove(ContactCriteria.class);
-		ViewModelProviders.of(MergeContactsView.class).get(ContactCriteria.class, criteria);
+		ViewModelProvider viewModelProvider = ViewModelProviders.of(MergeContactsView.class);
+
+		// update the current criteria
+		viewModelProvider.remove(ContactCriteria.class);
+		viewModelProvider.get(ContactCriteria.class, criteria);
+
+		// force the grid to load as it is filtered, so it should not take too long to load
+		viewModelProvider.remove(MergeContactsViewConfiguration.class);
+		viewModelProvider.get(MergeContactsViewConfiguration.class, new MergeContactsViewConfiguration(true));
 
 		String navigationState = AbstractView.buildNavigationState(MergeContactsView.VIEW_NAME, criteria);
 		SormasUI.get().getNavigator().navigateTo(navigationState);
