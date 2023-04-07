@@ -47,7 +47,7 @@ public class EventParticipantApiService {
   }
 
   public EventParticipant buildGeneratedEventParticipantWithCreationDate(
-      String eventUUID, String personUUID, String personSex, Integer days) {
+      String eventUUID, Person person, Integer days) {
     return EventParticipant.builder()
         .creationDate(
             LocalDateTime.parse(LocalDateTime.now().minusDays(days).toString())
@@ -62,7 +62,13 @@ public class EventParticipantApiService {
                         .getUserByRole(locale, UserRoles.RestUser.getRole())
                         .getUuid())
                 .build())
-        .person(Person.builder().uuid(personUUID).sex(personSex).build())
+        .person(
+            Person.builder()
+                .uuid(person.getUuid())
+                .sex(person.getSex())
+                .firstName(person.getFirstName())
+                .lastName(person.getLastName())
+                .build())
         .event(Event.builder().uuid(eventUUID).build())
         .build();
   }
