@@ -59,8 +59,7 @@ public class EventParticipantSteps implements En {
           EventParticipant evPart =
               eventParticipantApiService.buildGeneratedEventParticipantWithCreationDate(
                   apiState.getCreatedEvent().getUuid(),
-                  apiState.getLastCreatedPerson().getUuid(),
-                  apiState.getLastCreatedPerson().getSex(),
+                  apiState.getLastCreatedPerson(),
                   creationDate);
           eventParticipantHelper.createEventParticipant(evPart);
           apiState.setCreatedEventParticipant(evPart);
