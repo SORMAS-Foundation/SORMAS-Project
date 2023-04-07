@@ -172,6 +172,16 @@ public class CampaignStatisticsService {
 				.append(criteria.getCampaign().getUuid())
 				.append("'");
 		}
+		if (whereBuilder.length() > 0) {
+			whereBuilder.append(" AND ");
+		}
+		
+		
+		whereBuilder.append(Campaign.TABLE_NAME)
+		.append(".")
+		.append(Campaign.PUBLISHED)
+		.append(" = true");
+		
 		if (criteria.getCampaignFormMeta() != null) {
 			if (whereBuilder.length() > 0) {
 				whereBuilder.append(" AND ");
@@ -182,7 +192,8 @@ public class CampaignStatisticsService {
 				.append(" = '")
 				.append(criteria.getCampaignFormMeta().getUuid())
 				.append("'");
-		}
+		}		
+		
 		if (criteria.getRegion() != null) {
 			if (whereBuilder.length() > 0) {
 				whereBuilder.append(" AND ");
@@ -200,17 +211,23 @@ public class CampaignStatisticsService {
 				.append(criteria.getDistrict().getUuid())
 				.append("'");
 		}
-		if (criteria.getCommunity() != null) {
-			if (whereBuilder.length() > 0) {
-				whereBuilder.append(" AND ");
-			}
-			whereBuilder.append(Community.TABLE_NAME)
-				.append(".")
-				.append(Community.UUID)
-				.append(" = '")
-				.append(criteria.getCommunity().getUuid())
-				.append("'");
-		}
+		
+		
+	
+		
+//		if (criteria.getCommunity() != null) {
+//			if (whereBuilder.length() > 0) {
+//				whereBuilder.append(" AND ");
+//			}
+//			whereBuilder.append(Community.TABLE_NAME)
+//				.append(".")
+//				.append(Community.UUID)
+//				.append(" = '")
+//				.append(criteria.getCommunity().getUuid())
+//				.append("'");
+//		}
+		
+		System.out.println(whereBuilder.toString() + "rrrrrrruuuuuuuuuuuuuuuuuuuuuuuuuuuuuubbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
 		return whereBuilder.toString();
 	}
 

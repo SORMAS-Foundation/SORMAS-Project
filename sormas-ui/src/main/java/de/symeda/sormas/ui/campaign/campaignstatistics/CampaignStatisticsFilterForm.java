@@ -2,6 +2,8 @@ package de.symeda.sormas.ui.campaign.campaignstatistics;
 
 import java.util.function.Consumer;
 
+import javax.xml.registry.infomodel.User;
+
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.ComboBox;
@@ -32,7 +34,7 @@ public class CampaignStatisticsFilterForm extends AbstractFilterForm<CampaignSta
 	private ComboBox cbCampaignForm;
 	private ComboBox regionFilter;
 	private ComboBox districtFilter;
-	private ComboBox communityFilter;
+//	private ComboBox communityFilter;
 
 	protected CampaignStatisticsFilterForm() {
 
@@ -49,7 +51,8 @@ public class CampaignStatisticsFilterForm extends AbstractFilterForm<CampaignSta
 			CampaignStatisticsCriteria.CAMPAIGN_FORM_META,
 			CampaignStatisticsCriteria.REGION,
 			CampaignStatisticsCriteria.DISTRICT,
-			CampaignStatisticsCriteria.COMMUNITY };
+//			CampaignStatisticsCriteria.COMMUNITY 
+			};
 	}
 
 	@Override
@@ -61,9 +64,9 @@ public class CampaignStatisticsFilterForm extends AbstractFilterForm<CampaignSta
 				I18nProperties.getPrefixCaption(CampaignFormDataDto.I18N_PREFIX, CampaignFormDataDto.CAMPAIGN_FORM_META),
 				200));
 		
-		
 		cbCampaignForm.addItems(FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences());
-
+	
+			
 		FieldHelper.addSoftRequiredStyle(cbCampaignForm);
 
 		if (formMetaChangedCallback != null) {
@@ -82,11 +85,11 @@ public class CampaignStatisticsFilterForm extends AbstractFilterForm<CampaignSta
 				.withCaptionAndPixelSized(CampaignStatisticsCriteria.DISTRICT, I18nProperties.getCaption(Captions.Campaign_district), 200));
 		districtFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllDistricts));
 
-		communityFilter = addField(
-			FieldConfiguration
-				.withCaptionAndPixelSized(CampaignStatisticsCriteria.COMMUNITY, I18nProperties.getCaption(Captions.Campaign_community), 200));
-		communityFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllCommunities));
-
+//		communityFilter = addField(
+//			FieldConfiguration
+//				.withCaptionAndPixelSized(CampaignStatisticsCriteria.COMMUNITY, I18nProperties.getCaption(Captions.Campaign_community), 200));
+//		communityFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllCommunities));
+		
 		UserDto user = currentUserDto();
 		final RegionReferenceDto userRegion = user.getRegion();
 		final DistrictReferenceDto userDistrict = user.getDistrict();
@@ -96,10 +99,10 @@ public class CampaignStatisticsFilterForm extends AbstractFilterForm<CampaignSta
 			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(userRegion.getUuid()));
 			if (userDistrict != null) {
 				districtFilter.setEnabled(false);
-				communityFilter.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(userDistrict.getUuid()));
-				if (userCommunity != null) {
-					communityFilter.setEnabled(false);
-				}
+//				communityFilter.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(userDistrict.getUuid()));
+//				if (userCommunity != null) {
+//					communityFilter.setEnabled(false);
+//				}
 			}
 		}
 	}
@@ -136,13 +139,13 @@ public class CampaignStatisticsFilterForm extends AbstractFilterForm<CampaignSta
 		case CampaignFormDataDto.DISTRICT:
 			DistrictReferenceDto district = (DistrictReferenceDto) event.getProperty().getValue();
 
-			if (district != null) {
-				communityFilter.removeAllItems();
-				communityFilter.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()));
-			} else {
-				communityFilter.removeAllItems();
-				communityFilter.clear();
-			}
+//			if (district != null) {
+//				communityFilter.removeAllItems();
+//				communityFilter.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()));
+//			} else {
+//				communityFilter.removeAllItems();
+//				communityFilter.clear();
+//			}
 			break;
 		}
 	}
@@ -154,7 +157,7 @@ public class CampaignStatisticsFilterForm extends AbstractFilterForm<CampaignSta
 		if (criteria.getCampaign() != null) {
 			if (UserProvider.getCurrent().hasUserType(UserType.EOC_USER)) {
 				cbCampaignForm.addItems(FacadeProvider.getCampaignFormMetaFacade()
-						.getCampaignFormMetaAsReferencesByCampaignIntraCamapaign(criteria.getCampaign().getUuid()));
+						.getCampaignFormMetaAsReferencesByCampaignPostCamapaign(criteria.getCampaign().getUuid()));
 			} else {
 				cbCampaignForm.addItems(FacadeProvider.getCampaignFormMetaFacade()
 						.getCampaignFormMetasAsReferencesByCampaign(criteria.getCampaign().getUuid()));

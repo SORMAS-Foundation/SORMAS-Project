@@ -627,6 +627,21 @@ public class CampaignFacadeEjb implements CampaignFacade {
 	
 	
 	@Override
+	public void publishCampaign(String campaignUuid, boolean published) {
+
+		User user = userService.getCurrentUser();
+		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
+			.contains(UserRight.CAMPAIGN_PUBLISH)) {
+			throw new UnsupportedOperationException(
+				I18nProperties.getString(Strings.entityUser) + " " + user.getUuid() + " is not allowed to publish a campaign data  "
+					+ I18nProperties.getString(Strings.entityCampaigns).toLowerCase() + ".");
+		}
+		campaignService.campaignPublish(campaignUuid, published);
+	
+	}
+	
+	
+	@Override
 	public void closeandOpenCampaign(String campaignUuid, boolean openandclosebutton) {
 		campaignService.closeAndOpenForm(campaignUuid, openandclosebutton);  
 		

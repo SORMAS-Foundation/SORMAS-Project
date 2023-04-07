@@ -91,6 +91,12 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		void onDelete();
 	}
 	
+	public static interface PublishListener {
+
+		void onPublish();
+	}
+	
+	
 	public static interface CloneListener {
 
 		void onClone();
@@ -118,6 +124,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	private transient List<DiscardListener> discardListeners = new ArrayList<>();
 	private transient List<DoneListener> doneListeners = new ArrayList<>();
 	private transient List<DeleteListener> deleteListeners = new ArrayList<>();
+	private transient List<PublishListener> publishListeners = new ArrayList<>();
 	private transient List<CloneListener> cloneListeners = new ArrayList<>();
 	private transient List<OpenCloseCampaignListener> openCloseCampaignListeners = new ArrayList<>();
 	private transient List<CloseOpenCampaignListener> closeOpenCampaignListeners = new ArrayList<>();
@@ -138,6 +145,8 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	private Button discardButton;
 
 	private Button deleteButton;
+	
+	private Button publishButton;
 	
 	private Button cloneButton;
 	
@@ -445,6 +454,33 @@ System.out.print("afsdfasdfasdfasdfasdf");
 		}
 
 		return deleteButton;
+	}
+	
+	
+	//publish 
+	
+	public Button getPublishButton(String entityName) {
+		if (publishButton == null) {
+			publishButton = ButtonHelper.createButton("delete", I18nProperties.getCaption(Captions.actionPublish), new ClickListener() {
+
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void buttonClick(ClickEvent event) {
+					VaadinUiUtil.showPublishConfirmationWindow(
+						String.format(I18nProperties.getString(Strings.confirmationPublishEntity), entityName),
+						new Runnable() {
+
+							public void run() {
+								onPublish();
+							}
+						});
+				}
+			}, CssStyles.BUTTON_BORDER_NEUTRAL);
+			publishButton.setTabIndex(-1);
+		}
+
+		return publishButton;
 	}
 	//I18nProperties.getCaption(Captions.actionDelete)
 	public Button getCloneButton(String entityName) {
@@ -923,6 +959,13 @@ System.out.print("afsdfasdfasdfasdfasdf");
 			deleteListeners.add(listener);
 	}
 	
+	public void addPublishListener(PublishListener listener, String entityName) {
+		if (publishListeners.isEmpty())
+			buttonsPanel.addComponent(getPublishButton(entityName), 0);
+		if (!publishListeners.contains(listener))
+			publishListeners.add(listener);
+	}
+	
 	public void addCloneListener(CloneListener listener, String entityName) {
 		if (cloneListeners.isEmpty())
 			buttonsPanel.addComponent(getCloneButton(entityName), 0);
@@ -962,6 +1005,11 @@ System.out.print("afsdfasdfasdfasdfasdf");
 	private void onDelete() {
 		for (DeleteListener listener : deleteListeners)
 			listener.onDelete();
+	}
+	
+	private void onPublish() {
+		for (PublishListener listener : publishListeners)
+			listener.onPublish();
 	}
 	
 	

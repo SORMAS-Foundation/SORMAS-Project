@@ -233,6 +233,15 @@ public class CampaignController {
 				UI.getCurrent().getNavigator().navigateTo(CampaignsView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityCampaign));
 		}
+		
+		//publish 
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_PUBLISH)) {
+			CampaignDto finalCampaignDto = campaignDto;
+			campaignComponent.addPublishListener(() -> {
+				FacadeProvider.getCampaignFacade().publishCampaign(finalCampaignDto.getUuid(), false);
+				UI.getCurrent().getNavigator().navigateTo(CampaignsView.VIEW_NAME);
+			}, I18nProperties.getString(Strings.entityCampaign));
+		}
 
 		// Clone
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE) && !isCreate) {

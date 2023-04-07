@@ -55,4 +55,6 @@ public interface CampaignFacade { //CampaignFacadeEjb
 	void validate(CampaignReferenceDto campaignReferenceDto);
 	
 	void validate(CampaignReferenceDto campaignReferenceDto, String formType);
+
+	void publishCampaign(String campaignId, boolean published);
 }
