@@ -456,6 +456,26 @@ public class CampaignFormBuilder {
 				
 				}
 				
+				
+				
+				if(fieldId.equalsIgnoreCase("PopulationGroup_0_4")) {
+					
+					 
+					((TextField) field).addValueChangeListener(e -> {
+							if (VaadinService.getCurrentRequest().getWrappedSession()
+									.getAttribute("populationdata") != null) {
+								
+								final String des = VaadinService.getCurrentRequest().getWrappedSession().getAttribute("populationdata").toString();
+								e.getProperty().setValue(des);
+
+							}
+							
+					});
+				
+				}
+				
+				
+				
 			}
 
 			if (type == CampaignFormElementType.RANGE) {

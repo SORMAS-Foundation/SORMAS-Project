@@ -443,7 +443,7 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 		}
 
 		return new CampaignFormMetaReferenceDto(entity.getUuid(), entity.toString(), entity.getFormType(),
-				entity.getFormCategory());
+				entity.getFormCategory(), entity.getDaysExpired());
 	}
 
 	@LocalBean

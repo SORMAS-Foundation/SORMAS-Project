@@ -153,7 +153,26 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 
 		return QueryHelper.getSingleResult(em, cq);
 	}
+	
+	@Override
+	public Integer getDistrictPopulationByType(String districtUuid, String campaignUuid, AgeGroup ageGroup) {
 
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Integer> cq = cb.createQuery(Integer.class);
+		Root<PopulationData> root = cq.from(PopulationData.class);
+		Join<PopulationData, Campaign> campaignJoin = root.join(PopulationData.CAMPAIGN);
+		Join<PopulationData, District> districtJoin = root.join(PopulationData.DISTRICT);
+		
+		Predicate campaignFilter = cb.and(cb.equal(campaignJoin.get(Campaign.UUID), campaignUuid));
+		Predicate districtFilter = cb.and(cb.equal(districtJoin.get(District.UUID), districtUuid));
+		Predicate ageFilter = cb.and(cb.equal(root.get(PopulationData.AGE_GROUP), ageGroup));
+
+		cq.where(campaignFilter, districtFilter, ageFilter);
+		cq.select(root.get(PopulationData.POPULATION));
+
+		return QueryHelper.getSingleResult(em, cq);
+	}
+	
 	@Override
 	public Integer getProjectedDistrictPopulation(String districtUuid, PopulationDataCriteria critariax) {
 

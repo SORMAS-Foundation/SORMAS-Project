@@ -6,6 +6,7 @@ import java.util.Set;
 import javax.ejb.Remote;
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
@@ -13,6 +14,9 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 public interface PopulationDataFacade {
 
 	Integer getDistrictPopulation(String districtUuid, PopulationDataCriteria critariax);
+	
+	Integer getDistrictPopulationByType(String districtUuid, String campaignUuid, AgeGroup ageGroup);
+	
 
 	/**
 	 * Returns the population of the district, projected to the current point in time based on its growth rate

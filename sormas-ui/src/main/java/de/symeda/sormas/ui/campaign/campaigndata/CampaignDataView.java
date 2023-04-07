@@ -20,8 +20,10 @@ import static de.symeda.sormas.ui.utils.FilteredGrid.EDIT_BTN_ID;
 
 import java.io.IOException;
 import java.net.URI;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -31,6 +33,9 @@ import java.util.function.Consumer;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 
+import org.joda.time.DateMidnight;
+import org.joda.time.Days;
+import org.joda.time.LocalDate;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.flow.component.dependency.CssImport;
@@ -47,6 +52,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.JavaScript;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -57,6 +63,7 @@ import com.vaadin.v7.ui.Grid;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataIndexDto;
@@ -375,14 +382,22 @@ public class CampaignDataView extends AbstractCampaignView {
 	}
 
 	private void fillNewFormDropdown(Panel containerPanel) {
+		
 
 		CampaignReferenceDto campaignReferenceDtx = campaignSelector.getValue();
 		String phase = campaignFormPhaseSelector.getValue();
 		Set<FormAccess> userFormAccess = UserProvider.getCurrent().getFormAccess();
+		
+		CampaignDto campaignDto = FacadeProvider.getCampaignFacade().getByUuid(campaignReferenceDtx.getUuid());
 
 		((VerticalLayout) containerPanel.getContent()).removeAllComponents();
 
-		// System.out.println(phase + " #############################");
+		 SimpleDateFormat DateFor = new SimpleDateFormat("yyyy-MM-dd");
+		 String stringDate= DateFor.format(campaignDto.getStartDate());
+		
+		 	LocalDate date1 = LocalDate.parse(stringDate);
+	        LocalDate date2 = LocalDate.now();
+	        int days = Days.daysBetween(date1, date2).getDays();
 
 		if (phase != null && campaignReferenceDtx != null) {
 			List<CampaignFormMetaReferenceDto> campagaignFormReferences = FacadeProvider.getCampaignFormMetaFacade()
@@ -390,13 +405,19 @@ public class CampaignDataView extends AbstractCampaignView {
 							campaignReferenceDtx.getUuid(), userFormAccess);
 
 			Collections.sort(campagaignFormReferences);
+			
+			
+			
+			 
 
 			for (CampaignFormMetaReferenceDto campaignForm : campagaignFormReferences) {
+				int isShown = days - campaignForm.getDaysExpired();
+				boolean hideFromList = isShown < 0;
+				
+				if(hideFromList) {
 				Button campaignFormButton = ButtonHelper.createButton(campaignForm.toString(), el -> {
 
-//					System.out.println(campaignReferenceDtx.getUuid()
-//							+ " ####################################################################"
-//							+ campaignForm.getUuid());
+				
 
 					ControllerProvider.getCampaignController().navigateToFormDataView(campaignReferenceDtx.getUuid(),
 							campaignForm.getUuid());
@@ -409,6 +430,15 @@ public class CampaignDataView extends AbstractCampaignView {
 				campaignFormButton.removeStyleName("v-button");
 				campaignFormButton.setStyleName("nocapitalletter");
 				((VerticalLayout) containerPanel.getContent()).addComponent(campaignFormButton);
+				} else {
+				
+				Notification notf = new Notification(campaignForm.getCaption() +" is now closed for data entry");
+				notf.setPosition(Notification.POSITION_TOP_RIGHT);
+				notf.setDelayMsec(10000);
+				notf.show(UI.getCurrent().getPage());
+				
+				}
+				
 			}
 			if (campagaignFormReferences.size() >= 10) {
 				// setting a fixed height will enable a scrollbar. Increase width to accommodate

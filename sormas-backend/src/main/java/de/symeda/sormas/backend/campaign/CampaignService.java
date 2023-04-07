@@ -128,12 +128,14 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Campaign> cq = cb.createQuery(getElementClass());
-		Root<Campaign> from = cq.from(getElementClass());
-		cq.where(createActiveCampaignsFilter(cb, from));
-		cq.orderBy(cb.desc(from.get(AbstractDomainObject.CHANGE_DATE)));
+		Root<Campaign> root = cq.from(getElementClass());
+		cq.where(cb.and(cb.isFalse(root.get(Campaign.ARCHIVED)), cb.isFalse(root.get(Campaign.DELETED))));
+		cq.orderBy(cb.desc(root.get(AbstractDomainObject.CHANGE_DATE)));
 
 		return em.createQuery(cq).getResultList();
 	}
+	
+	
 
 	public String cloneForm(Campaign uuidx, Long userCreatingId) {
 

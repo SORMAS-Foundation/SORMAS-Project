@@ -20,6 +20,7 @@ public class CampaignFormMetaDto extends EntityDto {
 	public static final String LANGUAGE_CODE = "languageCode";
 	public static final String CAMPAIGN_FORM_ELEMENTS = "campaignFormElements";
 	public static final String FORM_CATEGORY = "formCategory";
+	public static final String DAYSTOEXPIRE = "daysExpired";
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String formId;
@@ -34,6 +35,8 @@ public class CampaignFormMetaDto extends EntityDto {
 	
 	@Enumerated(EnumType.STRING)
 	private FormAccess formCategory;
+	
+	private int daysExpired;
 
 	public String getFormId() {
 		return formId;
@@ -82,5 +85,15 @@ public class CampaignFormMetaDto extends EntityDto {
 	public void setFormCategory(FormAccess formCategory) {
 		this.formCategory = formCategory;
 	}
+
+	public int getDaysExpired() {
+		return daysExpired;
+	}
+
+	public void setDaysExpired(int daysExpired) {
+		this.daysExpired = daysExpired;
+	}
+	
+	
 
 }
