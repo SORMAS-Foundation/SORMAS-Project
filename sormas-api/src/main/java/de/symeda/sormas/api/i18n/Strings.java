@@ -118,6 +118,7 @@ public interface Strings {
 	String confirmationDeleteCases = "confirmationDeleteCases";
 	String confirmationDeleteContacts = "confirmationDeleteContacts";
 	String confirmationDeleteEntity = "confirmationDeleteEntity";
+	String confirmationPublishEntity = "confirmationPublishEntity";
 	String confirmationDeleteEventParticipants = "confirmationDeleteEventParticipants";
 	String confirmationDeleteEvents = "confirmationDeleteEvents";
 	String confirmationDeleteFile = "confirmationDeleteFile";
@@ -376,6 +377,7 @@ public interface Strings {
 	String headingConfirmChoice = "headingConfirmChoice";
 	String headingConfirmDearchiving = "headingConfirmDearchiving";
 	String headingConfirmDeletion = "headingConfirmDeletion";
+	String headingConfirmPublish = "headingConfirmPublish";
 	String headingConfirmDisabling = "headingConfirmDisabling";
 	String headingConfirmEnabling = "headingConfirmEnabling";
 	String headingConfirmManuallyForwardedLabMessage = "headingConfirmManuallyForwardedLabMessage";

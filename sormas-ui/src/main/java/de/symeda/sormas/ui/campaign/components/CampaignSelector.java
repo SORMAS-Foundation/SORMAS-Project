@@ -38,9 +38,16 @@ public class CampaignSelector extends HorizontalLayout {
 		//System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "+campaigns);
 		
 		
-		if (lastStartedCampaign != null) {
-			campaignCombo.setValue(lastStartedCampaign);
-		}
+		if(lastStartedCampaign != null && (campaignCombo.getValue() == lastStartedCampaign)) {
+			campaignCombo.addValueChangeListener(e -> {
+				campaignCombo.setValue(campaignCombo.getValue());
+				System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>ttttttttttttttttt>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "+campaignCombo.getValue().toString());
+				
+			});// .setItems(campaigns);
+			}else if (lastStartedCampaign != null) {
+				campaignCombo.setValue(lastStartedCampaign);
+				System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>tttttrrrrrrrrrrrrrrrrrrrrrrrtttttttttttt>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "+campaignCombo.getValue().toString());
+			}
 		CssStyles.style(campaignCombo, CssStyles.SOFT_REQUIRED);
 		addComponent(campaignCombo);
 	}

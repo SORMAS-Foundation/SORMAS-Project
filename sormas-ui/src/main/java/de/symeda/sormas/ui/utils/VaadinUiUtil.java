@@ -320,6 +320,49 @@ public final class VaadinUiUtil {
 		return popupWindow;
 	}
 
+	//publish 
+	
+	public static Window showPublishConfirmationWindow(String content, Runnable callback) {
+		Window popupWindow = VaadinUiUtil.createPopupWindow();
+
+		VerticalLayout publishLayout = new VerticalLayout();
+		publishLayout.setMargin(true);
+		publishLayout.setSizeUndefined();
+		publishLayout.setSpacing(true);
+
+		Label description = new Label(content);
+		description.setWidth(100, Unit.PERCENTAGE);
+		publishLayout.addComponent(description);
+
+		ConfirmationComponent publishConfirmationComponent = new ConfirmationComponent(false) {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			protected void onConfirm() {
+				popupWindow.close();
+				onDone();
+				callback.run();
+			}
+
+			@Override
+			protected void onCancel() {
+				popupWindow.close();
+			}
+		};
+		publishConfirmationComponent.getConfirmButton().setCaption(I18nProperties.getString(Strings.yes));
+		publishConfirmationComponent.getCancelButton().setCaption(I18nProperties.getString(Strings.no));
+		publishLayout.addComponent(publishConfirmationComponent);
+		publishLayout.setComponentAlignment(publishConfirmationComponent, Alignment.BOTTOM_RIGHT);
+
+		popupWindow.setCaption(I18nProperties.getString(Strings.headingConfirmPublish));
+		popupWindow.setContent(publishLayout);
+		UI.getCurrent().addWindow(popupWindow);
+
+		return popupWindow;
+	}
+	
+	
 	public static ConfirmationComponent buildYesNoConfirmationComponent() {
 		ConfirmationComponent requestTaskComponent = new ConfirmationComponent(false) {
 

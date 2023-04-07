@@ -57,6 +57,7 @@ public class Campaign extends CoreAdo {
 	public static final String CAMPAIGN_DASHBOARD_ELEMENTS = "dashboardElements";
 	public static final String ARCHIVED = "archived";
 	public static final String CLOSEOPEN = "openandclose";
+	public static final String PUBLISHED = "published";
 
 	private String name;
 	private String round;
@@ -67,6 +68,7 @@ public class Campaign extends CoreAdo {
 	private User creatingUser;
 	private boolean archived;
 	private boolean openandclose;
+	private boolean published;
 	private List<CampaignDashboardElement> dashboardElements;
 	private Set<CampaignFormMeta> campaignFormMetas = new HashSet<>();
 	
@@ -157,6 +159,16 @@ public class Campaign extends CoreAdo {
 
 	public void setOpenandclose(boolean openandclose) {
 		this.openandclose = openandclose;
+	}
+	
+	
+	@Column
+	public boolean isPublished() {
+		return published;
+	}
+
+	public void setPublished(boolean published) {
+		this.published = published;
 	}
 
 	@Override

@@ -8713,6 +8713,10 @@ ALTER TABLE public.populationdata ADD CONSTRAINT populationdata_campaign_fk FORE
 INSERT INTO schema_version (version_number, comment) VALUES (438, 'adding campaign id to population data');
 
 
+-- Ability to publish read-only post campaign data to eoc users #379
+ALTER TABLE campaigns ADD COLUMN "published" boolean default false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (439, 'Abilityt to publish read-only post campaign data to eoc users');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
 

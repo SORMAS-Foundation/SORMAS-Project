@@ -155,7 +155,22 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 		int notused = em.createNativeQuery(cdv).executeUpdate();
 		return cds;
 	}
+	
 
+	public int campaignPublish(String uuidx, boolean published) {
+
+		String cdvv = "";
+		if (published) {
+			cdvv = "update campaigns c set published = false where uuid = '" + uuidx + "' ";
+			
+		} else {
+			cdvv = "update campaigns c set published = true where uuid = '" + uuidx + "' ";
+		}
+		System.out.println(cdvv);
+		return em.createNativeQuery(cdvv).executeUpdate();
+	}
+	
+	
 	public int closeAndOpenForm(String uuidx, boolean close) {
 
 		String cdvv = "";
