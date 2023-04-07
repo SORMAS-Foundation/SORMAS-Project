@@ -2467,7 +2467,7 @@ Feature: Case end to end tests
     And I click on the Shares button from navbar
     And I click on "accept" shared contact button with copied contact description
 
-  @tmsLink=SORDEV-11838 @env_s2s_1 @testIt
+  @tmsLink=SORDEV-11838 @env_s2s_1
   Scenario: [S2S] Test Avoiding simultaneous work of two health departments - preventing sharing twice to the same target system as long as the target system has not yet accepted or rejected for contact without hand over the ownership [4]
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
     Then API: I check that POST call body is "OK"
