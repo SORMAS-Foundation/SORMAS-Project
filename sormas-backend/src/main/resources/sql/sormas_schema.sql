@@ -8713,10 +8713,19 @@ ALTER TABLE public.populationdata ADD CONSTRAINT populationdata_campaign_fk FORE
 INSERT INTO schema_version (version_number, comment) VALUES (438, 'adding campaign id to population data');
 
 
--- Ability to publish read-only post campaign data to eoc users #379
+-- Ability to publish read-only post campaign data to eoc users #379 
 ALTER TABLE campaigns ADD COLUMN "published" boolean default false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (439, 'Abilityt to publish read-only post campaign data to eoc users');
+
+-- limitation of form to expiry days
+
+ALTER TABLE public.campaignformmeta DROP COLUMN expiry_day_capaign;
+ALTER TABLE public.campaignformmeta ADD daysexpired int4 NOT NULL DEFAULT 0;
+
+INSERT INTO schema_version (version_number, comment) VALUES (440, 'limitation of form to expiry days');
+
+
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
 

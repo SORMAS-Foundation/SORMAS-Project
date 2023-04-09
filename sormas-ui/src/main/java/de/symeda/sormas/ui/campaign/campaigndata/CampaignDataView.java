@@ -400,49 +400,45 @@ public class CampaignDataView extends AbstractCampaignView {
 	        int days = Days.daysBetween(date1, date2).getDays();
 
 		if (phase != null && campaignReferenceDtx != null) {
+			
 			List<CampaignFormMetaReferenceDto> campagaignFormReferences = FacadeProvider.getCampaignFormMetaFacade()
 					.getAllCampaignFormMetasAsReferencesByRoundandCampaignandForm(phase.toLowerCase(),
 							campaignReferenceDtx.getUuid(), userFormAccess);
 
 			Collections.sort(campagaignFormReferences);
-			
-			
-			
-			 
 
 			for (CampaignFormMetaReferenceDto campaignForm : campagaignFormReferences) {
+				
 				int isShown = days - campaignForm.getDaysExpired();
 				boolean hideFromList = isShown < 0;
 				
-				if(hideFromList) {
 				Button campaignFormButton = ButtonHelper.createButton(campaignForm.toString(), el -> {
-
-				
-
+					if(hideFromList) {
 					ControllerProvider.getCampaignController().navigateToFormDataView(campaignReferenceDtx.getUuid(),
 							campaignForm.getUuid());
-
 					newFormButton.setPopupVisible(false);
+					}
 				});
 
 				campaignFormButton.setWidth(100, Unit.PERCENTAGE);
 				// campaignFormButton.removeStyleName(VIEW_NAME);
 				campaignFormButton.removeStyleName("v-button");
 				campaignFormButton.setStyleName("nocapitalletter");
-				((VerticalLayout) containerPanel.getContent()).addComponent(campaignFormButton);
-				} else {
 				
-				Notification notf = new Notification(campaignForm.getCaption() +" is now closed for data entry");
-				notf.setPosition(Notification.POSITION_TOP_RIGHT);
-				notf.setDelayMsec(10000);
-				notf.show(UI.getCurrent().getPage());
-				
+				if(!hideFromList) {
+					//campaignFormButton.setEnabled(false);
+					campaignFormButton.addClickListener(e -> {
+						Notification notf = new Notification(campaignForm.getCaption() +" is now closed for data entry");
+						notf.setPosition(Notification.POSITION_TOP_RIGHT);
+						notf.setDelayMsec(3000);
+						notf.show(UI.getCurrent().getPage());
+					});
 				}
 				
+				((VerticalLayout) containerPanel.getContent()).addComponent(campaignFormButton);
 			}
+			
 			if (campagaignFormReferences.size() >= 10) {
-				// setting a fixed height will enable a scrollbar. Increase width to accommodate
-				// it
 				containerPanel.setHeight(400, Unit.PIXELS);
 				containerPanel.setWidth(containerPanel.getContent().getWidth() + 20.0f, Unit.PIXELS);
 			} else {
