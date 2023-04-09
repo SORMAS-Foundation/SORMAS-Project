@@ -217,6 +217,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		target.setCampaignYear(source.getCampaignYear());
 		target.setStartDate(source.getStartDate());
 		
+		
 		final Set<AreaReferenceDto> areas = source.getAreas();
 		if (!CollectionUtils.isEmpty(areas)) {
 			target.setAreas(
@@ -460,6 +461,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		target.setDistricts(DistrictFacadeEjb.toReferenceDto(new HashSet<District>(source.getDistricts())));
 		target.setCommunity(CommunityFacadeEjb.toReferenceDto(new HashSet<Community>(source.getCommunity())));
 		target.setCampaignDashboardElements(source.getDashboardElements());
+		target.setPublished(source.isPublished());
 
 		return target;
 	}
