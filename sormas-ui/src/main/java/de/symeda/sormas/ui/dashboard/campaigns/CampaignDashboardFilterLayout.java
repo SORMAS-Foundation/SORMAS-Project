@@ -170,7 +170,7 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 	
 	
 	private void createCampaignPhaseFilter() {
-		campaignFormPhaseSelector = new CampaignFormPhaseSelector(null);
+		campaignFormPhaseSelector = new CampaignFormPhaseSelector((CampaignReferenceDto) campaignFilter.getValue());
 		campaignFormPhaseSelector.addValueChangeListener(e -> {
 			dashboardDataProvider.setCampaignFormPhase(campaignFormPhaseSelector.getValue().toLowerCase());
 			dashboardView.refreshDashboard();
