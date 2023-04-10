@@ -110,7 +110,7 @@ public class TherapyView extends AbstractCaseView {
 				headlineRow.addComponent(bulkOperationsDropdown);
 				headlineRow.setComponentAlignment(bulkOperationsDropdown, Alignment.MIDDLE_RIGHT);
 			}
-
+			//TODO: check if only for the CASE_EDIT right should work
 			if (isEditAllowed() && UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)) {
 				Button newPrescriptionButton = ButtonHelper.createButton(Captions.prescriptionNewPrescription, e -> {
 					ControllerProvider.getTherapyController()
@@ -277,7 +277,9 @@ public class TherapyView extends AbstractCaseView {
 		prescriptionGrid = new PrescriptionGrid(
 			this,
 			caze.isPseudonymized(),
-			isEditAllowed() && UserProvider.getCurrent().hasAllUserRights(UserRight.CASE_EDIT, UserRight.PRESCRIPTION_EDIT));
+			UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed(), UserRight.CASE_EDIT, UserRight.PRESCRIPTION_EDIT),
+			UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed(), UserRight.CASE_DELETE, UserRight.PRESCRIPTION_DELETE));
+
 		prescriptionGrid.setCriteria(prescriptionCriteria);
 		prescriptionGrid.setHeightMode(HeightMode.ROW);
 		CssStyles.style(prescriptionGrid, CssStyles.VSPACE_2);

@@ -38,10 +38,11 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 
 	private PrescriptionCriteria prescriptionCriteria = new PrescriptionCriteria();
 
-	public PrescriptionGrid(TherapyView parentView, boolean isPseudonymized, boolean isEditAllowed) {
+	public PrescriptionGrid(TherapyView parentView, boolean isPseudonymized, boolean isEditAllowed, boolean isDeleteAllowed) {
 
 		setSizeFull();
 
+		//TODO: talk with Adina about this - isEditAllowed or isEditOrDeleteAllowed
 		if (isEditAllowed && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setSelectionMode(SelectionMode.MULTI);
 		} else {
@@ -86,6 +87,7 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 			getColumn(DOCUMENT_TREATMENT_BTN_ID).setHeaderCaption("");
 		}
 
+		//TODO: clarifiy this one: isEditAllowed or isEditOrDeleteAllowed
 		getColumn(DOCUMENT_TREATMENT_BTN_ID)
 			.setHidden(isPseudonymized || !isEditAllowed || !UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_CREATE));
 
@@ -112,7 +114,7 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 				ControllerProvider.getTherapyController().openTreatmentCreateForm(prescription, (Runnable) () -> parentView.reloadTreatmentGrid());
 			} else if (ACTION_BTN_ID.equals(e.getPropertyId()) || e.isDoubleClick()) {
 				ControllerProvider.getTherapyController()
-					.openPrescriptionEditForm((PrescriptionIndexDto) e.getItemId(), this::reload, !isEditAllowed);
+					.openPrescriptionEditForm((PrescriptionIndexDto) e.getItemId(), this::reload, isEditAllowed, isDeleteAllowed);
 			}
 		});
 	}

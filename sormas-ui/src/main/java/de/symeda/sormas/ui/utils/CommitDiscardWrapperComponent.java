@@ -999,8 +999,34 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		}
 	}
 
+	public void restrictEditableChildComponentOnEditView(
+		UserRight editParentRight,
+		UserRight editChildRight,
+		UserRight deleteParentRight,
+		UserRight deleteChildRight,
+		EditPermissionType editPermissionType) {
+
+		String deleteUndeleteButton = CommitDiscardWrapperComponent.DELETE_UNDELETE;
+		boolean isEditAllowed = isEditChildAllowed(editParentRight, editChildRight, editPermissionType);
+
+		if (!isEditAllowed) {
+			if (isDeleteChildAllowed(deleteParentRight, deleteChildRight)) { // but is deletable
+				addToActiveButtonsList(deleteUndeleteButton);
+				this.setNonEditable();
+			} else {
+				this.setNonEditable();
+			}
+		} else if (!isDeleteChildAllowed(deleteChildRight, deleteParentRight)) {
+			this.getButtonsPanel().getComponent(0).setEnabled(false);
+		}
+	}
+
 	public void setNonEditable() {
 		this.setEditable(false, activeButtons.stream().toArray(String[]::new));
+	}
+
+	public boolean isDeleteChildAllowed(UserRight deleteParentRight, UserRight deleteChildRight) {
+		return UserProvider.getCurrent().hasUserRight(deleteParentRight) && UserProvider.getCurrent().hasUserRight(deleteChildRight);
 	}
 
 	public boolean isDeleteAllowed(UserRight deleteRight) {
@@ -1009,6 +1035,12 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 	public boolean isEditAllowed(UserRight editRight, EditPermissionType editPermissionType) {
 		return UserProvider.getCurrent().hasUserRight(editRight) && (editPermissionType == null || editPermissionType == EditPermissionType.ALLOWED);
+	}
+
+	public boolean isEditChildAllowed(UserRight editParentRight, UserRight editChildRight, EditPermissionType editPermissionType) {
+		return UserProvider.getCurrent().hasUserRight(editParentRight)
+			&& UserProvider.getCurrent().hasUserRight(editChildRight)
+			&& (editPermissionType == null || editPermissionType == EditPermissionType.ALLOWED);
 	}
 
 	//excludedButtons: contains the buttons attached to the CommitDiscardWrapperComponent which we intend to
