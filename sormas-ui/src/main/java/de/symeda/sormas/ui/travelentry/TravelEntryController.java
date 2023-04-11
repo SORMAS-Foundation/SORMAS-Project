@@ -233,7 +233,7 @@ public class TravelEntryController {
 		}
 	}
 
-	public void undeleteSelectedCases(Collection<? extends TravelEntryIndexDto> selectedRows, Runnable callback) {
+	public void undeleteSelectedTravelEntries(Collection<? extends TravelEntryIndexDto> selectedRows, Runnable callback) {
 		ControllerProvider.getDeleteUndeleteController()
 			.undeleteSelectedItems(
 				selectedRows.stream().map(TravelEntryIndexDto::getUuid).collect(Collectors.toList()),

@@ -13,31 +13,31 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.HtmlHelper;
 
-public class DeleteUndeleController<F extends DeletableFacade> {
+public class DeleteUndeleteController<F extends DeletableFacade> {
 
 	public void undeleteSelectedItems(List<String> entityUuids, F entityFacade, CoreEntityUndeleteMessages messages, Runnable callback) {
-		if (entityUuids.size() == 0) {
+		if (entityUuids.isEmpty()) {
 			new Notification(
 				I18nProperties.getString(messages.getHeadingNoSelection()),
 				I18nProperties.getString(messages.getMessageNoSelection()),
 				Notification.Type.WARNING_MESSAGE,
 				false).show(Page.getCurrent());
 		} else {
-			int countNotRestoredCases = 0;
-			StringBuilder notRestoredCases = new StringBuilder();
+			int countNotRestoredEntities = 0;
+			StringBuilder notRestoredEntities = new StringBuilder();
 			for (String selectedRow : entityUuids) {
 				try {
 					entityFacade.undelete(selectedRow);
 				} catch (Exception e) {
-					countNotRestoredCases++;
-					notRestoredCases.append(selectedRow, 0, 6).append(", ");
+					countNotRestoredEntities++;
+					notRestoredEntities.append(selectedRow, 0, 6).append(", ");
 				}
 			}
-			if (notRestoredCases.length() > 0) {
-				notRestoredCases = new StringBuilder(" " + notRestoredCases.substring(0, notRestoredCases.length() - 2) + ". ");
+			if (notRestoredEntities.length() > 0) {
+				notRestoredEntities = new StringBuilder(" " + notRestoredEntities.substring(0, notRestoredEntities.length() - 2) + ". ");
 			}
 			callback.run();
-			if (countNotRestoredCases == 0) {
+			if (countNotRestoredEntities == 0) {
 				new Notification(
 					I18nProperties.getString(messages.getHeadingEntitiesRestored()),
 					I18nProperties.getString(messages.getMessageEntitiesRestored()),
@@ -50,8 +50,8 @@ public class DeleteUndeleController<F extends DeletableFacade> {
 						"%1s <br/> <br/> %2s",
 						String.format(
 							I18nProperties.getString(messages.getMessageCountEntitiesNotRestored()),
-							String.format("<b>%s</b>", countNotRestoredCases),
-							String.format("<b>%s</b>", HtmlHelper.cleanHtml(notRestoredCases.toString()))),
+							String.format("<b>%s</b>", countNotRestoredEntities),
+							String.format("<b>%s</b>", HtmlHelper.cleanHtml(notRestoredEntities.toString()))),
 						I18nProperties.getString(Strings.messageCasesNotRestored)),
 					ContentMode.HTML);
 				response.setWidth(600, Sizeable.Unit.PIXELS);

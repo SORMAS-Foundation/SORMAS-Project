@@ -256,7 +256,7 @@ public class TravelEntriesView extends AbstractView {
 						I18nProperties.getCaption(Captions.bulkUndelete),
 						VaadinIcons.ARROW_BACKWARD,
 						mi -> grid.bulkActionHandler(
-							items -> ControllerProvider.getTravelEntryController().undeleteSelectedCases(items, () -> navigateTo(criteria)),
+							items -> ControllerProvider.getTravelEntryController().undeleteSelectedTravelEntries(items, () -> navigateTo(criteria)),
 							true)));
 			}
 
