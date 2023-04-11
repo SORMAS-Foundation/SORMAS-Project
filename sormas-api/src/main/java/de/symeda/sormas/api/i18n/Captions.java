@@ -64,6 +64,7 @@ public interface Captions {
 	String actionCreate = "actionCreate";
 	String actionCreatingLabel = "actionCreatingLabel";
 	String actionDearchive = "actionDearchive";
+	String actionUnpublish = "Unpublish";
 	String actionDelete = "actionDelete";
 	String actionPublish = "Publish";
 	String actionDeselectAll = "actionDeselectAll";
