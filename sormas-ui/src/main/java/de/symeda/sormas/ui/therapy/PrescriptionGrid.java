@@ -42,7 +42,6 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 
 		setSizeFull();
 
-		//TODO: talk with Adina about this - isEditAllowed or isEditOrDeleteAllowed
 		if (isEditAllowed && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setSelectionMode(SelectionMode.MULTI);
 		} else {
@@ -87,7 +86,6 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 			getColumn(DOCUMENT_TREATMENT_BTN_ID).setHeaderCaption("");
 		}
 
-		//TODO: clarifiy this one: isEditAllowed or isEditOrDeleteAllowed
 		getColumn(DOCUMENT_TREATMENT_BTN_ID)
 			.setHidden(isPseudonymized || !isEditAllowed || !UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_CREATE));
 
