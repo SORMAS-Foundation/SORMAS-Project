@@ -980,8 +980,9 @@ public class EventDirectorySteps implements En {
     When(
         "I click on last created UI result in grid in Event Directory for Bulk Action",
         () -> {
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
           webDriverHelpers.scrollToElement(getByEventUuid(CreateNewEventSteps.newEvent.getUuid()));
+          TimeUnit.SECONDS.sleep(5);
           webDriverHelpers.clickOnWebElementBySelector(
               getByEventUuid(CreateNewEventSteps.newEvent.getUuid()));
         });
@@ -1292,7 +1293,7 @@ public class EventDirectorySteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_POPUP_BUTTON);
           TimeUnit.SECONDS.sleep(2); // wait for spinner
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(80);
         });
 
     When(
@@ -1300,7 +1301,7 @@ public class EventDirectorySteps implements En {
         (String option) -> {
           webDriverHelpers.selectFromCombobox(EVENT_PARTICIPANT_DISPLAY_FILTER_COMBOBOX, option);
           TimeUnit.SECONDS.sleep(3); // wait for reaction
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
         });
 
     When(

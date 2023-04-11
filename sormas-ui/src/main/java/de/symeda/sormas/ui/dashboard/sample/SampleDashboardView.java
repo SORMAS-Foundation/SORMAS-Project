@@ -84,7 +84,10 @@ public class SampleDashboardView extends AbstractDashboardView {
 
 		sampleCountsLayout = new CustomLayout();
 		sampleCountsLayout.setTemplateContents(
-			LayoutUtil.fluidRowLocs(LAB_RESULTS, SAMPLE_PURPOSE, TEST_RESULTS)
+			LayoutUtil.fluidRow(
+				LayoutUtil.fluidColumnLoc(4, 0, 5, 0, LAB_RESULTS),
+				LayoutUtil.fluidColumnLoc(5, 0, 7, 0, SAMPLE_PURPOSE),
+				LayoutUtil.fluidColumnLoc(3, 0, 6, 0, TEST_RESULTS))
 				+ LayoutUtil.fluidRowCss(
 					CssStyles.VSPACE_TOP_1,
 					LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SHIPMENT_STATUS),
@@ -101,8 +104,7 @@ public class SampleDashboardView extends AbstractDashboardView {
 		countsByPurpose =
 			new SampleCountTilesComponent<>(SamplePurpose.class, Captions.sampleDashboardSamplePurpose, this::getBackgroundStyleForPurpose, null);
 		countsByPurpose.setTitleStyleNames(CssStyles.H3, CssStyles.VSPACE_TOP_5);
-
-		countsByPurpose.setGroupLabelStyle(CssStyles.LABEL_LARGE);
+		countsByPurpose.setGroupLabelStyle(CssStyles.LABEL_LARGE + " " + CssStyles.LABEL_WHITE_SPACE_NORMAL);
 		sampleCountsLayout.addComponent(countsByPurpose, SAMPLE_PURPOSE);
 
 		countsByShipmentStatus = new SampleCountTilesComponent<>(

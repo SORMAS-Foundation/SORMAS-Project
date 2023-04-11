@@ -5,6 +5,7 @@ import java.util.Date;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Page;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
@@ -68,7 +69,7 @@ public class MergeContactsView extends AbstractView {
 				navigateTo();
 			}
 		});
-		filterComponent.setIgnoreRegionCallback(ignoreRegion -> grid.reload(ignoreRegion));
+		filterComponent.setIgnoreRegionCallback(this::reloadAndUpdateDuplicateCount);
 		gridLayout.addComponent(filterComponent);
 
 		gridLayout.addComponent(grid);
@@ -121,8 +122,22 @@ public class MergeContactsView extends AbstractView {
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-		grid.reload();
+		if (!ViewModelProviders.of(MergeContactsView.class).get(MergeContactsViewConfiguration.class).isFiltersApplied()) {
+			VaadinUiUtil.showSimplePopupWindow(
+				I18nProperties.getString(Strings.headingCaution),
+				I18nProperties.getString(Strings.infoMergeFiltersHint),
+				ContentMode.HTML,
+				640);
+			ViewModelProviders.of(MergeContactsView.class).get(MergeContactsViewConfiguration.class).setFiltersApplied(true);
+		} else {
+			reloadAndUpdateDuplicateCount(false);
+		}
+	}
+
+	private void reloadAndUpdateDuplicateCount(boolean ignoreRegion) {
+		grid.reload(ignoreRegion);
 		filterComponent.updateDuplicateCountLabel(grid.getTreeData().getRootItems().size());
+
 	}
 
 }

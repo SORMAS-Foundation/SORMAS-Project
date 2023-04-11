@@ -43,8 +43,6 @@ public class MergeCasesView extends AbstractView {
 	public MergeCasesView() {
 		super(VIEW_NAME);
 
-		MergeCasesViewConfiguration viewConfiguration = ViewModelProviders.of(MergeCasesView.class).get(MergeCasesViewConfiguration.class);
-
 		boolean criteriaUninitialized = !ViewModelProviders.of(MergeCasesView.class).has(CaseCriteria.class);
 		criteria = ViewModelProviders.of(MergeCasesView.class).get(CaseCriteria.class);
 		if (criteriaUninitialized) {
