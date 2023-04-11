@@ -532,21 +532,21 @@ public class ContactsView extends AbstractView {
 								items -> ControllerProvider.getContactController()
 									.setAllSelectedItemsToLostToFollowUp(items, () -> navigateTo(criteria))),
 							hasBulkOperationsRight),
-							criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED
-									? new MenuBarHelper.MenuBarItem(
-							I18nProperties.getCaption(Captions.bulkDelete),
-							VaadinIcons.TRASH,
-							mi -> grid.bulkActionHandler(
-								items -> ControllerProvider.getContactController().deleteAllSelectedItems(items, () -> navigateTo(criteria)),
-								true),
-							hasBulkOperationsRight):new MenuBarHelper.MenuBarItem(
-									I18nProperties.getCaption(Captions.bulkUndelete),
-									VaadinIcons.ARROW_BACKWARD,
-									mi -> grid.bulkActionHandler(
-											items -> ControllerProvider.getContactController()
-													.undeleteSelectedContacts(items, () -> navigateTo(criteria)),
-											true),
-									hasBulkOperationsRight),
+						criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED
+							? new MenuBarHelper.MenuBarItem(
+								I18nProperties.getCaption(Captions.bulkDelete),
+								VaadinIcons.TRASH,
+								mi -> grid.bulkActionHandler(
+									items -> ControllerProvider.getContactController().deleteAllSelectedItems(items, () -> navigateTo(criteria)),
+									true),
+								hasBulkOperationsRight)
+							: new MenuBarHelper.MenuBarItem(
+								I18nProperties.getCaption(Captions.bulkUndelete),
+								VaadinIcons.ARROW_BACKWARD,
+								mi -> grid.bulkActionHandler(
+									items -> ControllerProvider.getContactController().undeleteSelectedContacts(items, () -> navigateTo(criteria)),
+									true),
+								hasBulkOperationsRight),
 						new MenuBarHelper.MenuBarItem(
 							I18nProperties.getCaption(Captions.actionArchiveCoreEntity),
 							VaadinIcons.ARCHIVE,
