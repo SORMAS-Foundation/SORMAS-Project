@@ -730,6 +730,7 @@ public class EditEventSteps implements En {
     When(
         "I add a participant to the event",
         () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(EVENT_PARTICIPANTS_TAB);
           webDriverHelpers.clickOnWebElementBySelector(EVENT_PARTICIPANTS_TAB);
           webDriverHelpers.clickOnWebElementBySelector(ADD_PARTICIPANT_BUTTON);
           webDriverHelpers.fillInWebElement(PARTICIPANT_FIRST_NAME_INPUT, faker.name().firstName());

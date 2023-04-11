@@ -5,16 +5,17 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class DocumentCriteria extends BaseCriteria implements Serializable {
 
 	private static final long serialVersionUID = -9174165215694877624L;
 
-	@NotNull
+	@NotNull(message = Validations.requiredField)
 	private DocumentRelatedEntityType documentRelatedEntityType;
 
-	@NotNull
+	@NotNull(message = Validations.requiredField)
 	private List<String> entityUuids;
 
 	public DocumentRelatedEntityType getDocumentRelatedEntityType() {

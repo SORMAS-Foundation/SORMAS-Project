@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2023 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,11 +19,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,20 +28,26 @@ import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.backend.central.EtcdCentralClient;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb;
 
-@Stateless
-@LocalBean
 public class SormasToSormasDiscoveryService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SormasToSormasDiscoveryService.class);
 
-	@EJB
-	private SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb;
-	@EJB
-	private ConfigFacadeEjbLocal configFacadeEjb;
-	@Inject
-	private EtcdCentralClient centralClient;
+	private final SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb;
+
+	private final ConfigFacadeEjbLocal configFacadeEjb;
+
+	private final EtcdCentralClient centralClient;
+
+	public SormasToSormasDiscoveryService(
+		SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb,
+		ConfigFacadeEjbLocal configFacadeEjb,
+		EtcdCentralClient centralClient) {
+		this.sormasToSormasFacadeEjb = sormasToSormasFacadeEjb;
+		this.configFacadeEjb = configFacadeEjb;
+		this.centralClient = centralClient;
+	}
 
 	public SormasServerDescriptor getSormasServerDescriptorById(String id) {
 		if (!sormasToSormasFacadeEjb.isFeatureConfigured()) {

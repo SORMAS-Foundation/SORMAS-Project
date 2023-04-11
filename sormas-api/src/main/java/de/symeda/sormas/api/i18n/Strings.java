@@ -61,6 +61,7 @@ public interface Strings {
 	String confirmationArchiveCommunities = "confirmationArchiveCommunities";
 	String confirmationArchiveCommunity = "confirmationArchiveCommunity";
 	String confirmationArchiveContact = "confirmationArchiveContact";
+	String confirmationArchiveContacts = "confirmationArchiveContacts";
 	String confirmationArchiveContinent = "confirmationArchiveContinent";
 	String confirmationArchiveContinents = "confirmationArchiveContinents";
 	String confirmationArchiveCountries = "confirmationArchiveCountries";
@@ -98,6 +99,7 @@ public interface Strings {
 	String confirmationDearchiveCommunities = "confirmationDearchiveCommunities";
 	String confirmationDearchiveCommunity = "confirmationDearchiveCommunity";
 	String confirmationDearchiveContact = "confirmationDearchiveContact";
+	String confirmationDearchiveContacts = "confirmationDearchiveContacts";
 	String confirmationDearchiveContinent = "confirmationDearchiveContinent";
 	String confirmationDearchiveContinents = "confirmationDearchiveContinents";
 	String confirmationDearchiveCountries = "confirmationDearchiveCountries";
@@ -441,6 +443,7 @@ public interface Strings {
 	String headingContactMergeGuide = "headingContactMergeGuide";
 	String headingContactsArchived = "headingContactsArchived";
 	String headingContactsCancelFollowUp = "headingContactsCancelFollowUp";
+	String headingContactsDearchived = "headingContactsDearchived";
 	String headingContactsDeleted = "headingContactsDeleted";
 	String headingContactsInQuarantine = "headingContactsInQuarantine";
 	String headingContactsLostToFollowUp = "headingContactsLostToFollowUp";
@@ -1048,7 +1051,9 @@ public interface Strings {
 	String messageContactDuplicateDeleted = "messageContactDuplicateDeleted";
 	String messageContactExternalTokenWarning = "messageContactExternalTokenWarning";
 	String messageContactOutsideJurisdictionDeletionDenied = "messageContactOutsideJurisdictionDeletionDenied";
+	String messageContactsArchived = "messageContactsArchived";
 	String messageContactSaved = "messageContactSaved";
+	String messageContactsDearchived = "messageContactsDearchived";
 	String messageContactsDeleted = "messageContactsDeleted";
 	String messageContactsMerged = "messageContactsMerged";
 	String messageContactsRestored = "messageContactsRestored";

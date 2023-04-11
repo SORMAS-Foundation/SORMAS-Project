@@ -2457,15 +2457,15 @@ Feature: Case end to end tests
     And I open the first contact from contacts list
     And I click on revoke share button
     Then I click on Ja button in Revoke case popup
-    Then I click on share case button
+    Then I click on share contact button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for contact with random string
     And I click to hand over the ownership of the case in Share popup
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
     Given I log in as a Admin User
     And I click on the Shares button from navbar
-    And I click on "accept" shared case button with copied case description
+    And I click on "accept" shared contact button with copied contact description
 
   @tmsLink=SORDEV-11838 @env_s2s_1
   Scenario: [S2S] Test Avoiding simultaneous work of two health departments - preventing sharing twice to the same target system as long as the target system has not yet accepted or rejected for contact without hand over the ownership [4]
@@ -2505,16 +2505,16 @@ Feature: Case end to end tests
     Then I click on Ja button in Revoke case popup
     Then I click on share contact button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for contact with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
     Given I log in as a Admin User
     And I click on the Shares button from navbar
-    And I click on "accept" shared case button with copied case description
+    And I click on "accept" shared contact button with copied contact description
     Then I back to tab number 1
     Then I click on share contact button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for contact with random string
     And I click to hand over the ownership of the case in Share popup
     Then I click on share button in s2s share popup and wait for share to finish
 
@@ -3053,3 +3053,28 @@ Feature: Case end to end tests
     Then I check if Immunization area contains "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)"
     And I click on See samples for this person button
     And I check that number of displayed sample results is 2
+
+  @tmsLink=SORDEV-13953 @env_s2s_1
+  Scenario: S2S - Share a case that was Archived
+    Given I log in as a Admin User
+    When I click on the Cases button from navbar
+    Then I click on the NEW CASE button
+    And I fill a new case form for DE version with mandatory data with "Berlin" as a region and "SK Berlin Mitte" as a district
+    And I save a new case
+    And I collect uuid of the case
+    Then I click on the Archive case button and confirm popup
+    And I click on save button from Edit Case page
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I click to hand over the ownership of the case in Share popup
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment in new driver tab
+    When I log in as a Admin User
+    And I click on the Shares button from navbar
+    And I click on "accept" shared case button with copied case description
+    And I open the last created case with collected UUID by url on "s2s_2" instance
+    And I check if Archive button changed name to Abschließen
+    Then I back to tab number 1
+    And I open the last created case with collected UUID by url on "s2s_1" instance
+    And I check if Archive button changed name to Wiedereröffnen

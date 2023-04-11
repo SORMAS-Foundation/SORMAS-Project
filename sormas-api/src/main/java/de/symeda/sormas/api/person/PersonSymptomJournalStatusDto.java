@@ -2,13 +2,15 @@ package de.symeda.sormas.api.person;
 
 import java.io.Serializable;
 
-import de.symeda.sormas.api.utils.Required;
+import javax.validation.constraints.NotNull;
+
+import de.symeda.sormas.api.i18n.Validations;
 
 public class PersonSymptomJournalStatusDto implements Serializable {
 
 	private static final long serialVersionUID = 6985497943624025440L;
 
-	@Required
+	@NotNull(message = Validations.requiredField)
 	private SymptomJournalStatus status;
 	private String statusDateTime; // is not used, but given according to API specification.
 
@@ -17,7 +19,7 @@ public class PersonSymptomJournalStatusDto implements Serializable {
 		personSymptomJournalStatusDto.setStatus(status);
 		personSymptomJournalStatusDto.setStatusDateTime(statusDateTime);
 		return personSymptomJournalStatusDto;
-	};
+	}
 
 	public SymptomJournalStatus getStatus() {
 		return status;

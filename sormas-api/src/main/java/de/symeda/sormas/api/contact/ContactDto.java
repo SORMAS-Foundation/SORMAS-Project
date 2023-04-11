@@ -23,6 +23,7 @@ import java.util.Date;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
@@ -53,7 +54,6 @@ import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Outbreaks;
-import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
@@ -155,16 +155,15 @@ public class ContactDto extends SormasToSormasShareableDto {
 	@SensitiveData
 	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String caseOrEventInformation;
-	@Required
+	@NotNull(message = Validations.validDisease)
 	private Disease disease;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String diseaseDetails;
 	@MappingException(reason = MappingException.FILLED_FROM_OTHER_ENTITY)
 	private DiseaseVariant diseaseVariant;
 
-	@Required
+	@NotNull(message = Validations.validReportDateTime)
 	private Date reportDateTime;
-
 	private UserReferenceDto reportingUser;
 	@SensitiveData
 	@Pseudonymizer(LatitudePseudonymizer.class)
@@ -182,10 +181,9 @@ public class ContactDto extends SormasToSormasShareableDto {
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
-	@Required
+	@NotNull(message = Validations.requiredField)
 	private boolean multiDayContact;
 	private Date firstContactDate;
-	@Required
 	private Date lastContactDate;
 	@HideForCountriesExcept
 	private ContactIdentificationSource contactIdentificationSource;
@@ -208,7 +206,7 @@ public class ContactDto extends SormasToSormasShareableDto {
 	@Diseases({
 		Disease.CORONAVIRUS })
 	private ContactCategory contactCategory;
-	@Required
+	@NotNull(message = Validations.requiredField)
 	private ContactClassification contactClassification;
 	private ContactStatus contactStatus;
 	private FollowUpStatus followUpStatus;
@@ -251,7 +249,7 @@ public class ContactDto extends SormasToSormasShareableDto {
 	private Date quarantineFrom;
 	private Date quarantineTo;
 
-	@Required
+	@NotNull(message = Validations.validPerson)
 	@EmbeddedPersonalData
 	private PersonReferenceDto person;
 
@@ -307,10 +305,10 @@ public class ContactDto extends SormasToSormasShareableDto {
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String additionalDetails;
-	@Required
+	@NotNull(message = Validations.requiredField)
 	private EpiDataDto epiData;
 	@Valid
-	@Required
+	@NotNull(message = Validations.validHealthConditions)
 	private HealthConditionsDto healthConditions;
 	private YesNoUnknown returningTraveler;
 

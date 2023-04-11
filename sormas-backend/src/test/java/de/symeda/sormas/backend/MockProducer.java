@@ -50,6 +50,8 @@ import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.backend.central.EtcdCentralClient;
 import de.symeda.sormas.backend.central.EtcdCentralClientProducer;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasDiscoveryServiceProducer;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoveryService;
 import de.symeda.sormas.backend.sormastosormas.crypto.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClient;
@@ -78,6 +80,8 @@ public class MockProducer implements InitialContextFactory {
 	private static CustomizableEnumFacade customizableEnumFacadeForConverter = mock(CustomizableEnumFacade.class);
 
 	private static ManagedScheduledExecutorService managedScheduledExecutorService = mock(ManagedScheduledExecutorService.class);
+
+	private static SormasToSormasDiscoveryService sormasToSormasDiscoveryService = mock(SormasToSormasDiscoveryService.class);
 
 	// Receiving e-mail server is mocked: org. jvnet. mock_javamail. mailbox
 	private static Session mailSession;
@@ -190,7 +194,6 @@ public class MockProducer implements InitialContextFactory {
 	@Specializes
 	public static class MockRestClientBuilderProducer extends SormasToSormasRestClientProducer {
 
-		@Override
 		@Produces
 		public SormasToSormasRestClient sormasToSormasClient(
 			SormasToSormasDiscoveryService sormasToSormasDiscoveryService,
@@ -225,6 +228,23 @@ public class MockProducer implements InitialContextFactory {
 	@Produces
 	public static ManagedScheduledExecutorService getManagedScheduledExecutorService() {
 		return managedScheduledExecutorService;
+	}
+
+	@Specializes
+	public static class MockSormasToSormasDiscoveryServiceProducer extends SormasToSormasDiscoveryServiceProducer {
+
+		@Override
+		@Produces
+		public SormasToSormasDiscoveryService sormasToSormasDiscoveryService(
+			SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb,
+			ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb,
+			EtcdCentralClient centralClient) {
+			return sormasToSormasDiscoveryService;
+		}
+	}
+
+	public static SormasToSormasDiscoveryService getSormasToSormasDiscoveryService() {
+		return sormasToSormasDiscoveryService;
 	}
 
 	public static void mockProperty(String property, String value) {
