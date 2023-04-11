@@ -1168,6 +1168,7 @@ public class EditContactSteps implements En {
         });
 
     When("I back to deleted contact by url", () -> webDriverHelpers.accessWebSite(currentUrl));
+    When("I back to contact by url", () -> webDriverHelpers.accessWebSite(currentUrl));
 
     When(
         "I check if External token input on case edit page is disabled",
@@ -1395,6 +1396,13 @@ public class EditContactSteps implements En {
     When(
         "I click on discard button",
         () -> webDriverHelpers.clickOnWebElementBySelector(DISCARD_BUTTON_POPUP));
+    When(
+        "I check if popup with {string} header appears",
+        (String text) -> {
+          softly.assertTrue(
+              webDriverHelpers.isElementVisibleWithTimeout(CONTACT_CAN_NOT_BE_SHARED_HEADER_DE, 2));
+          softly.assertAll();
+        });
   }
 
   private void selectContactClassification(String classification) {

@@ -39,6 +39,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_NE
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_CREATE_CASE_POPUP_HEADER;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_CREATE_PERSON_POPUP_HEADER;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPUP_CONTENT;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.COMMIT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.IMPORT_CASE_CONTACTS_BUTTON;
@@ -114,6 +115,7 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_RESULTS_UUID_LOCATOR;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_VACCINATION_STATUS_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONVERTED_TO_CASE_BUTTON;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CREATE_CASE_FROM_POSITIVE_TEST_RESULT_HEADER_DE;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.DROPPED_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.EPIDEMIOLOGICAL_DATA_TAB;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.FIRST_CONTACT_ID_BUTTON;
@@ -151,6 +153,9 @@ import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPag
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_PLACE_DETAILS;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CLOSE_IMPORT_TRAVEL_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.IMPORT_SUCCESS_DE;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.NEW_PERSON_RADIOBUTTON_DE;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.PICK_OR_CREATE_PERSON_HEADER_DE;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.CONFIRM_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static org.sormas.e2etests.steps.web.application.contacts.EditContactSteps.aContact;
 import static org.sormas.e2etests.steps.web.application.contacts.EditContactSteps.collectedContact;
@@ -200,6 +205,7 @@ import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.cases.EditCasePage;
 import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.Assert;
@@ -324,6 +330,20 @@ public class ContactDirectorySteps implements En {
           webDriverHelpers.scrollToElement(SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_POPUP_HEADER, 1)) {
+            webDriverHelpers.clickOnWebElementBySelector(EditCasePage.CREATE_NEW_PERSON_CHECKBOX);
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+            TimeUnit.SECONDS.sleep(1);
+            if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_CASE_POPUP_HEADER, 1)) {
+              webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_CASE_CHECKBOX);
+              webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+            }
+          }
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_HEADER_DE, 1)) {
+            webDriverHelpers.clickOnWebElementBySelector(NEW_PERSON_RADIOBUTTON_DE);
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+            TimeUnit.SECONDS.sleep(1);
+          }
         });
     When(
         "I collect the leading contact UUID displayed on Contact Directory Page",
@@ -1252,6 +1272,14 @@ public class ContactDirectorySteps implements En {
               webDriverHelpers.isElementVisibleWithTimeout(
                   getVaccinationStatusContactsByText(vaccinationStatus), 5),
               "There is no contact with expected status");
+        });
+
+    When(
+        "I confirm when a pop-up appears asking user about creating a Case from it in DE",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              CREATE_CASE_FROM_POSITIVE_TEST_RESULT_HEADER_DE);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
         });
   }
 
