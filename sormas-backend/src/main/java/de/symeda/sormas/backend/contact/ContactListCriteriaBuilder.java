@@ -143,6 +143,7 @@ public class ContactListCriteriaBuilder {
 	public List<Selection<?>> getMergeContactIndexSelections(Root<Contact> contact, ContactQueryContext contactQueryContext) {
 
 		ContactJoins joins = (ContactJoins) contactQueryContext.getJoins();
+		CriteriaBuilder cb = contactQueryContext.getCriteriaBuilder();
 
 		return Arrays.asList(
 			contact.get(Contact.ID),
@@ -166,7 +167,15 @@ public class ContactListCriteriaBuilder {
 			contact.get(Contact.CREATION_DATE),
 			contact.get(Contact.CONTACT_CLASSIFICATION),
 			contact.get(Contact.COMPLETENESS),
-			contact.get(Contact.REPORT_DATE_TIME));
+			contact.get(Contact.REPORT_DATE_TIME),
+			JurisdictionHelper.booleanSelector(cb, contactService.inJurisdictionOrOwned(contactQueryContext)),
+			JurisdictionHelper.booleanSelector(
+				cb,
+				caseService.inJurisdictionOrOwned(
+					new CaseQueryContext(
+						contactQueryContext.getCriteriaBuilder(),
+						contactQueryContext.getQuery(),
+						contactQueryContext.getJoins().getCaseJoins()))));
 	}
 
 	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Contact> contact, ContactJoins joins, CriteriaBuilder cb) {
