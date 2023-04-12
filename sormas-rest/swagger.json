@@ -23848,7 +23848,7 @@
             "minLength" : 0
           }
         },
-        "required" : [ "immunization", "reportDate" ]
+        "required" : [ "reportDate" ]
       },
       "VisitCriteria" : {
         "type" : "object",
