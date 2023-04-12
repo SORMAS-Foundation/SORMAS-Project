@@ -24082,7 +24082,6 @@ components:
           maxLength: 1000000
           minLength: 0
       required:
-      - immunization
       - reportDate
     VisitCriteria:
       type: object

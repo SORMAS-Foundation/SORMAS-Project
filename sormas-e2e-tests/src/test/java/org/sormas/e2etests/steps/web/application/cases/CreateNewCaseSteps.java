@@ -1532,6 +1532,25 @@ public class CreateNewCaseSteps implements En {
           fillDisease(caze.getDisease());
           fillDateOfReport(caze.getDateOfReport(), Locale.GERMAN);
         });
+
+    And(
+        "I fill a new case form for DE version with mandatory data forced by positive sample with {string} as a region and {string} as a district",
+        (String region, String district) -> {
+          caze = caseService.buildGeneratedCaseDE();
+          selectResponsibleRegion(region);
+          selectResponsibleDistrict(district);
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          fillDateOfReport(caze.getDateOfReport(), Locale.GERMAN);
+        });
+
+    When(
+        "I search for the last created case uuid in the CHOOSE SOURCE Contact window",
+        () -> {
+          webDriverHelpers.fillInWebElement(SOURCE_CASE_WINDOW_CASE_INPUT, casesUUID.get(0));
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
+        });
   }
 
   private void selectPlaceOfStayDistrict(String placeOfStayDistrict) {
