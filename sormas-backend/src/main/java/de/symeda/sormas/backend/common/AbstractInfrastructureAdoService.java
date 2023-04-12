@@ -56,7 +56,7 @@ public abstract class AbstractInfrastructureAdoService<ADO extends Infrastructur
 		Root<ADO> from = cq.from(getElementClass());
 		cq.where(createBasicFilter(cb, from));
 		cq.orderBy(asc ? cb.asc(from.get(orderProperty)) : cb.desc(from.get(orderProperty)));
-		System.out.println("DDDDDDDDDDDDDDDDDDDDdddddddddddddddddDDDDDDDDDDDDDDDDDDDDDDddd "+ SQLExtractor.from(em.createQuery(cq)));
+	//	System.out.println("DDDDDDDDDDDDDDDDDDDDdddddddddddddddddDDDDDDDDDDDDDDDDDDDDDDddd "+ SQLExtractor.from(em.createQuery(cq)));
 		return em.createQuery(cq).getResultList();
 	}
 	
