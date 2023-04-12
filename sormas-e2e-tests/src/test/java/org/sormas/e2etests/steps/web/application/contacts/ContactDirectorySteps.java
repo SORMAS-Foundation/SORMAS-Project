@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.contacts;
 
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ACTION_OKAY;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALL_RESULTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_ACTIONS;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_CONNECTION_NUMBER;
@@ -437,6 +438,8 @@ public class ContactDirectorySteps implements En {
         "I click on Merge Duplicates on Contact directory page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_MERGE_DUPLICATES);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(ACTION_OKAY);
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_OKAY);
           TimeUnit.SECONDS.sleep(2);
         });
     When(
@@ -1252,6 +1255,13 @@ public class ContactDirectorySteps implements En {
               webDriverHelpers.isElementVisibleWithTimeout(
                   getVaccinationStatusContactsByText(vaccinationStatus), 5),
               "There is no contact with expected status");
+        });
+
+    And(
+        "^I click to CONFIRM FILTERS on Merge Duplicate Contact page$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(By.id("actionConfirmFilters"));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(500);
         });
   }
 
