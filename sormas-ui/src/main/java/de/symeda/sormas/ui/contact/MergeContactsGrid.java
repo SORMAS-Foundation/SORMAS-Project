@@ -5,7 +5,9 @@ import java.util.List;
 
 import com.vaadin.data.TreeData;
 import com.vaadin.data.provider.TreeDataProvider;
+import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
+import com.vaadin.ui.Link;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.TextRenderer;
@@ -15,17 +17,21 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.MergeContactIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonHelper;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.caze.CaseDataView;
 import de.symeda.sormas.ui.utils.AbstractMergeGrid;
-import de.symeda.sormas.ui.utils.CaptionRenderer;
 
 public class MergeContactsGrid extends AbstractMergeGrid<MergeContactIndexDto, ContactCriteria> {
 
+	private static final String CASE_UUID = Captions.Contact_caze_uuid;
 	public static final String COLUMN_DISEASE = Captions.columnDiseaseShort;
 
 	public MergeContactsGrid() {
@@ -43,9 +49,19 @@ public class MergeContactsGrid extends AbstractMergeGrid<MergeContactIndexDto, C
 			addColumn(contact -> DiseaseHelper.toString(contact.getDisease(), contact.getDiseaseDetails()));
 		diseaseColumn.setId(COLUMN_DISEASE);
 
+		Column caseUuidColumn = addComponentColumn(indexDto -> {
+			Link link = new Link(
+				DataHelper.getShortUuid(indexDto.getCaseUuid()),
+				new ExternalResource(
+					SormasUI.get().getPage().getLocation().getRawPath() + "#!" + CaseDataView.VIEW_NAME + "/" + indexDto.getCaseUuid()));
+			link.setTargetName("_blank");
+			return link;
+		}).setId(CASE_UUID);
+		caseUuidColumn.setCaption(I18nProperties.getCaption(ContactDto.I18N_PREFIX, ContactDto.CAZE));
+
 		setColumns(
 			COLUMN_UUID,
-			MergeContactIndexDto.CAZE,
+			CASE_UUID,
 			COLUMN_DISEASE,
 			MergeContactIndexDto.CONTACT_CLASSIFICATION,
 			MergeContactIndexDto.PERSON_FIRST_NAME,
@@ -60,7 +76,6 @@ public class MergeContactsGrid extends AbstractMergeGrid<MergeContactIndexDto, C
 
 		getColumn(COLUMN_ACTIONS).setMinimumWidth(280);
 
-		getColumn(MergeContactIndexDto.CAZE).setRenderer(new CaptionRenderer());
 		Language userLanguage = I18nProperties.getUserLanguage();
 		((Column<MergeContactIndexDto, Date>) getColumn(MergeContactIndexDto.REPORT_DATE_TIME))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
