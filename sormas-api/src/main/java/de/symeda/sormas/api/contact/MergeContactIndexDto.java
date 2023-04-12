@@ -21,6 +21,7 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.MergeableIndexDto;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.PersonalData;
@@ -38,7 +39,7 @@ public class MergeContactIndexDto extends PseudonymizableIndexDto implements Mer
 	public static final String PERSON_LAST_NAME = "lastName";
 	public static final String SEX = "sex";
 	public static final String AGE_AND_BIRTH_DATE = "ageAndBirthDate";
-	public static final String CASE_UUID = "caseUuid";
+	public static final String CAZE = "caze";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String REGION_NAME = "regionName";
@@ -56,7 +57,7 @@ public class MergeContactIndexDto extends PseudonymizableIndexDto implements Mer
 	private String lastName;
 	private AgeAndBirthDateDto ageAndBirthDate;
 	private Sex sex;
-	private String caseUuid;
+	private CaseReferenceDto caze;
 	private Disease disease;
 	private String diseaseDetails;
 	private String regionName;
@@ -78,7 +79,7 @@ public class MergeContactIndexDto extends PseudonymizableIndexDto implements Mer
 		Integer birthdateMM,
 		Integer birthdateYYYY,
 		Sex sex,
-		String caseUuid,
+		String cazeUuid,
 		String caseFirstName,
 		String caseLastName,
 		Disease disease,
@@ -97,7 +98,9 @@ public class MergeContactIndexDto extends PseudonymizableIndexDto implements Mer
 		this.lastName = lastName;
 		this.ageAndBirthDate = new AgeAndBirthDateDto(age, ageType, birthdateDD, birthdateMM, birthdateYYYY);
 		this.sex = sex;
-		this.caseUuid = caseUuid;
+		if (cazeUuid != null) {
+			this.caze = new CaseReferenceDto(cazeUuid, caseFirstName, caseLastName);
+		}
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
 		this.regionName = regionName;
@@ -149,12 +152,12 @@ public class MergeContactIndexDto extends PseudonymizableIndexDto implements Mer
 		this.ageAndBirthDate = ageAndBirthDate;
 	}
 
-	public String getCaseUuid() {
-		return caseUuid;
+	public CaseReferenceDto getCaze() {
+		return caze;
 	}
 
-	public void setCaseUuid(String caseUuid) {
-		this.caseUuid = caseUuid;
+	public void setCaze(CaseReferenceDto caze) {
+		this.caze = caze;
 	}
 
 	public Disease getDisease() {
