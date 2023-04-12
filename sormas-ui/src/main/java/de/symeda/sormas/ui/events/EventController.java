@@ -917,7 +917,7 @@ public class EventController {
 				});
 		}
 
-		editView.restrictEditableComponentsOnEditView(UserRight.EVENT_EDIT, UserRight.EVENT_DELETE, null);
+		editView.restrictEditableComponentsOnEditView(UserRight.EVENT_EDIT, UserRight.EVENT_DELETE, null, event.isInJurisdiction());
 
 		return editView;
 	}
