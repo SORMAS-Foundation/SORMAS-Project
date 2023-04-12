@@ -17,7 +17,6 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
-import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.MergeContactIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -31,7 +30,7 @@ import de.symeda.sormas.ui.utils.AbstractMergeGrid;
 
 public class MergeContactsGrid extends AbstractMergeGrid<MergeContactIndexDto, ContactCriteria> {
 
-	private static final String CASE_UUID = Captions.Contact_caze_uuid;
+	private static final String CASE_UUID = Captions.Contact_caze;
 	public static final String COLUMN_DISEASE = Captions.columnDiseaseShort;
 
 	public MergeContactsGrid() {
@@ -49,15 +48,14 @@ public class MergeContactsGrid extends AbstractMergeGrid<MergeContactIndexDto, C
 			addColumn(contact -> DiseaseHelper.toString(contact.getDisease(), contact.getDiseaseDetails()));
 		diseaseColumn.setId(COLUMN_DISEASE);
 
-		Column caseUuidColumn = addComponentColumn(indexDto -> {
+		addComponentColumn(indexDto -> {
 			Link link = new Link(
-				DataHelper.getShortUuid(indexDto.getCaseUuid()),
+				DataHelper.getShortUuid(indexDto.getCaze().getUuid()),
 				new ExternalResource(
-					SormasUI.get().getPage().getLocation().getRawPath() + "#!" + CaseDataView.VIEW_NAME + "/" + indexDto.getCaseUuid()));
+					SormasUI.get().getPage().getLocation().getRawPath() + "#!" + CaseDataView.VIEW_NAME + "/" + indexDto.getCaze().getUuid()));
 			link.setTargetName("_blank");
 			return link;
 		}).setId(CASE_UUID);
-		caseUuidColumn.setCaption(I18nProperties.getCaption(ContactDto.I18N_PREFIX, ContactDto.CAZE));
 
 		setColumns(
 			COLUMN_UUID,
