@@ -60,7 +60,7 @@ public class CampaignFormMetaReferenceDto extends ReferenceDto {
 	}
 	
 	public CampaignFormMetaReferenceDto(String uuid, String caption, String type, FormAccess access, int daysExpired) {
-		 System.out.println("555555555555555555555555555555555555555");
+		// System.out.println("555555555555555555555555555555555555555");
 		setUuid(uuid);
 		setCaption(caption);
 		setFormType(type);

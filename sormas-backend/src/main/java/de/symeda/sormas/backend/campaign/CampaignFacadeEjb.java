@@ -151,7 +151,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		return campaignService.getAll()
 			.stream()
 			.filter(c -> !c.isDeleted() && !c.isArchived())
-			.map(CampaignFacadeEjb::toReferenceDto)
+			.map(CampaignFacadeEjb::toReferenceDtoYear)
 			.collect(Collectors.toList());
 	}
 	
@@ -171,7 +171,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		final TypedQuery<Campaign> q = em.createQuery(query);
 		final Campaign lastStartedCampaign = q.getResultList().stream().findFirst().orElse(null);
 
-		return toReferenceDto(lastStartedCampaign);
+		return toReferenceDtoYear(lastStartedCampaign);
 	}
 
 	@Override
@@ -660,7 +660,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 
 	@Override
 	public CampaignReferenceDto getReferenceByUuid(String uuid) {
-		return toReferenceDto(campaignService.getByUuid(uuid));
+		return toReferenceDtoYear(campaignService.getByUuid(uuid));
 	}
 
 	@Override
@@ -704,7 +704,15 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		if (entity == null) {
 			return null;
 		}
-		CampaignReferenceDto dto = new CampaignReferenceDto(entity.getUuid(), entity.toString());
+		CampaignReferenceDto dto = new CampaignReferenceDto(entity.getUuid(), entity.toString() );
+		return dto;
+	}
+	
+	public static CampaignReferenceDto toReferenceDtoYear(Campaign entity) {
+		if (entity == null) {
+			return null;
+		}
+		CampaignReferenceDto dto = new CampaignReferenceDto(entity.getUuid(), entity.toString(), entity.getCampaignYear() );
 		return dto;
 	}
 

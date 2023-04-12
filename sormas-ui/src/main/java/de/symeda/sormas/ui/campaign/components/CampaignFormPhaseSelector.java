@@ -28,6 +28,7 @@ public class CampaignFormPhaseSelector extends HorizontalLayout {
 	private final ComboBox phaseComboBox;
 
 	public CampaignFormPhaseSelector() {
+				
 		setMargin(false);
 		setSpacing(false);
 
@@ -93,9 +94,15 @@ public class CampaignFormPhaseSelector extends HorizontalLayout {
 				|| UserProvider.getCurrent().hasUserType(UserType.COMMON_USER)) {
 			phases.add(WordUtils.capitalizeFully(CampaignPhase.INTRA.toString()));
 		}
+		if(campaignReferenceDto == null) {
+			if (UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
+				phases.add(WordUtils.capitalizeFully(CampaignPhase.POST.toString()));
+			}
+		}else {
 		if (UserProvider.getCurrent().hasUserType(UserType.WHO_USER)
 				|| FacadeProvider.getCampaignFacade().getByUuid(campaignReferenceDto.getUuid()).isPublished()) {
 			phases.add(WordUtils.capitalizeFully(CampaignPhase.POST.toString()));
+		}
 		}
 		phaseComboBox.setItems(phases);
 		// set phase value based on the type of user

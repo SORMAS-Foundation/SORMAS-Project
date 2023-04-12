@@ -481,7 +481,7 @@ public class UserController {
 	}
 
 	public void disableAllSelectedItems(Collection<UserDto> selectedRows, Runnable callback) {
-
+  
 		if (selectedRows.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoUsersSelected),
 					I18nProperties.getString(Strings.messageNoUsersSelected), Notification.Type.WARNING_MESSAGE, false)

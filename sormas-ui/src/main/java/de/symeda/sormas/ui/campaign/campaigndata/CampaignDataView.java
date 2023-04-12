@@ -19,54 +19,39 @@ import static de.symeda.sormas.ui.UiUtil.permitted;
 import static de.symeda.sormas.ui.utils.FilteredGrid.EDIT_BTN_ID;
 
 import java.io.IOException;
-import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-
-import org.joda.time.DateMidnight;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.router.Location;
-import com.vaadin.flow.server.VaadinServletRequest;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinService;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.JavaScript;
+import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.components.grid.HeaderCell;
-import com.vaadin.ui.components.grid.HeaderRow;
-import com.vaadin.v7.ui.Grid;
+import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
-import de.symeda.sormas.api.campaign.data.CampaignFormDataIndexDto;
 import de.symeda.sormas.api.campaign.data.translation.TranslationElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
@@ -93,18 +78,23 @@ import de.symeda.sormas.ui.campaign.components.CampaignFormPhaseSelector;
 import de.symeda.sormas.ui.campaign.components.CampaignSelector;
 import de.symeda.sormas.ui.campaign.components.importancefilterswitcher.ImportanceFilterSwitcher;
 import de.symeda.sormas.ui.campaign.importer.CampaignFormDataImportLayout;
+import de.symeda.sormas.ui.user.UsersView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
+import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.RowCount;
-import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 @SuppressWarnings("serial")
 @com.vaadin.annotations.JavaScript("jquerymini.js")
 @CssImport("w3c.css")
 public class CampaignDataView extends AbstractCampaignView {
+	
+	// Bulk operations
+		private MenuBar bulkOperationsDropdown;
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/campaigndata";
 
@@ -255,6 +245,10 @@ public class CampaignDataView extends AbstractCampaignView {
 		}
 
 		campaignSelector.addValueChangeListener(e -> {
+			
+		//	System.out.println("44444444444444444 " + UI.getCurrent().getSession().getCurrent().getAttribute("lastcriteria"));
+			
+			
 			campaignFormPhaseSelector.clear();
 			((VerticalLayout) importFormPanel.getContent()).removeAllComponents();
 			if (!Objects.isNull(campaignSelector.getValue())) {
@@ -274,6 +268,10 @@ public class CampaignDataView extends AbstractCampaignView {
 				// System.out.println("44444444444444444 " + criteria.toUrlParams().toString());
 			}
 			criteria.setCampaignFormMeta(null);
+			
+			System.out.println("!!!!!!!! " + criteria.toUrlParams().toString());
+			
+			
 			filterForm.setValue(criteria);
 			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
 			executeJavaScript();
@@ -468,7 +466,7 @@ public class CampaignDataView extends AbstractCampaignView {
 
 		filterForm.addResetHandler(e -> {
 			ViewModelProviders.of(CampaignDataView.class).remove(CampaignFormDataCriteria.class);
-			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", "");
+			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", null);
 			navigateTo(null, true);
 			executeJavaScript();
 			rowsCount.update(grid.getItemCount());
@@ -477,6 +475,7 @@ public class CampaignDataView extends AbstractCampaignView {
 		campaignSelector.addValueChangeListener(e -> {
 			criteria.setCampaign(campaignSelector.getValue());
 			grid.reload();
+			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria_campigned", criteria.toUrlParams().toString());
 			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
 			executeJavaScript();
 			rowsCount.update(grid.getItemCount());
@@ -514,12 +513,61 @@ public class CampaignDataView extends AbstractCampaignView {
 		});
 
 		callBackFormData();
+		
+		
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
+			btnEnterBulkEditMode.setVisible(!ViewModelProviders.of(CampaignDataView.class).get(ViewConfiguration.class).isInEagerMode());
+
+			addHeaderComponent(btnEnterBulkEditMode);
+
+			Button btnLeaveBulkEditMode =
+				ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
+			btnLeaveBulkEditMode.setVisible(ViewModelProviders.of(CampaignDataView.class).get(ViewConfiguration.class).isInEagerMode());
+
+			addHeaderComponent(btnLeaveBulkEditMode); 
+
+			btnEnterBulkEditMode.addClickListener(e -> {
+				bulkOperationsDropdown.setVisible(true);
+				ViewModelProviders.of(CampaignDataView.class).get(ViewConfiguration.class).setInEagerMode(true);
+				btnEnterBulkEditMode.setVisible(false);
+				btnLeaveBulkEditMode.setVisible(true);
+				grid.reload();
+			});
+			btnLeaveBulkEditMode.addClickListener(e -> {
+				bulkOperationsDropdown.setVisible(false);
+				ViewModelProviders.of(CampaignDataView.class).get(ViewConfiguration.class).setInEagerMode(false);
+				btnLeaveBulkEditMode.setVisible(false);
+				btnEnterBulkEditMode.setVisible(true);
+				navigateTo(criteria);
+			});
+		}
+		
+		{
+			// Bulk operation dropdown
+			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+				bulkOperationsDropdown = MenuBarHelper.createDropDown(
+					Captions.bulkActions,
+					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionEnable), VaadinIcons.CHECK_SQUARE_O, selectedItem -> {
+//						ControllerProvider.getCampaignController()
+//							.enableAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
+					}, true),
+					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDisable), VaadinIcons.THIN_SQUARE, selectedItem -> {
+//						ControllerProvider.getUserController()
+//							.disableAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
+					}, true));
+
+				bulkOperationsDropdown.setVisible(ViewModelProviders.of(UsersView.class).get(ViewConfiguration.class).isInEagerMode());
+			//	actionButtonsLayout.addComponent(bulkOperationsDropdown);
+			}
+		}
 
 		return filterForm;
 
 	}
 
 	public void callBackFormData() {
+	//	System.out.println("111111111111111111__5555555555555555____11111111111111111111");
 		filterForm.setFormMetaChangedCallback(createFormMetaChangedCallback());
 		grid.reload();
 		executeJavaScript();
@@ -612,7 +660,8 @@ public class CampaignDataView extends AbstractCampaignView {
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-
+		String formtt = "";
+		String campp = "";
 		UserDto user = UserProvider.getCurrent().getUser();
 		if (event.getParameters() != null) {
 			// split at "&"
@@ -641,22 +690,34 @@ public class CampaignDataView extends AbstractCampaignView {
 				}
 				if (queryParameter.contains("formType")) {
 					criteria.setFormType(innerSplit[1]);
+					formtt = innerSplit[1].toString();
+					System.out.println(campp + "cammmm      formmmmtttt" +formtt);
+					
+					List<CampaignFormMetaReferenceDto> campaignsmeta_ = FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferencesByRoundandCampaign(formtt, campp);
+							filterForm.cbCampaignForm.addItems(campaignsmeta_);
+							
 					executeJavaScript();
 				}
 				if (queryParameter.contains("campaign")) {
 					CampaignReferenceDto campaign = FacadeProvider.getCampaignFacade()
 							.getReferenceByUuid(innerSplit[1]);
 					criteria.setCampaign(campaign);
+					campp = innerSplit[1].toString();
+					
 
 					// campaignSelector.setValue(criteria.getCampaign());
 
 				}
 				if (queryParameter.contains("campaignFormMeta")) {
+					
 					CampaignFormMetaReferenceDto campaignsmeta = FacadeProvider.getCampaignFormMetaFacade()
 							.getCampaignFormMetaReferenceByUuid(innerSplit[1]);
 					criteria.setCampaignFormMeta(campaignsmeta);
+					
+				//	System.out.println(innerSplit[1] + "111111111111111111__666666666____11111111111111111111" +campaignsmeta);
+					
 					filterForm.cbCampaignForm.setValue(campaignsmeta);
-					filterForm.cbCampaignForm.setInputPrompt(campaignsmeta.getCaption());
+//					filterForm.cbCampaignForm.setInputPrompt(campaignsmeta.getCaption());
 					executeJavaScript();
 				}
 			}
