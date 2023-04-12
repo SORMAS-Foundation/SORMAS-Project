@@ -96,7 +96,7 @@ public class TherapyController {
 
 			view.addDiscardListener(() -> popupWindow.close());
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PRESCRIPTION_DELETE)) {
+			if (isDeleteAllowed) {
 				view.addDeleteListener(new DeleteListener() {
 
 					@Override
@@ -120,8 +120,7 @@ public class TherapyController {
 				UserRight.CASE_EDIT,
 				UserRight.PRESCRIPTION_EDIT,
 				UserRight.CASE_DELETE,
-				UserRight.PRESCRIPTION_DELETE,
-				null);
+				UserRight.PRESCRIPTION_DELETE);
 		}
 		view.getButtonsPanel().setVisible(isEditOrDeleteAllowed);
 	}
@@ -208,7 +207,7 @@ public class TherapyController {
 		VaadinUiUtil.showModalPopupWindow(view, I18nProperties.getString(Strings.headingCreateNewTreatment));
 	}
 
-	public void openTreatmentEditForm(TreatmentIndexDto treatmentIndex, Runnable callback, boolean isEditAllowed) {
+	public void openTreatmentEditForm(TreatmentIndexDto treatmentIndex, Runnable callback, boolean isEditAllowed, boolean isDeleteAllowed) {
 		TreatmentDto treatment = FacadeProvider.getTreatmentFacade().getTreatmentByUuid(treatmentIndex.getUuid());
 		TreatmentForm form = new TreatmentForm(false, treatment.isPseudonymized(), treatment.isInJurisdiction());
 		form.setValue(treatment);
@@ -216,15 +215,13 @@ public class TherapyController {
 		final CommitDiscardWrapperComponent<TreatmentForm> view = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(view, I18nProperties.getString(Strings.headingEditTreatment));
 
-		for (int i = 0; i < view.getButtonsPanel().getComponentCount(); i++) {
-			view.getButtonsPanel().getComponent(i).setVisible(isEditAllowed);
-		}
-
+		//TODO: check this condition
 		if (!UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_EDIT) || !isEditAllowed) {
 			view.getWrappedComponent().setEnabled(false);
 		}
 
-		if (isEditAllowed) {
+		boolean isEditOrDeleteAllowed = isEditOrDeleteAllowed(isEditAllowed, isDeleteAllowed);
+		if (isEditOrDeleteAllowed) {
 			view.addCommitListener(() -> {
 				if (!form.getFieldGroup().isModified()) {
 					TreatmentDto dto = form.getValue();
@@ -237,13 +234,19 @@ public class TherapyController {
 
 			view.addDiscardListener(popupWindow::close);
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_DELETE) && isEditAllowed) {
+			if (isDeleteAllowed) {
 				view.addDeleteListener(() -> {
 					FacadeProvider.getTreatmentFacade().deleteTreatment(treatment.getUuid());
 					popupWindow.close();
 					callback.run();
 				}, I18nProperties.getString(Strings.entityTreatment));
 			}
+
+			view.restrictEditableChildComponentOnEditView(
+				UserRight.CASE_EDIT,
+				UserRight.TREATMENT_EDIT,
+				UserRight.CASE_DELETE,
+				UserRight.TREATMENT_DELETE);
 		}
 
 		if (treatment.getPrescription() != null) {
