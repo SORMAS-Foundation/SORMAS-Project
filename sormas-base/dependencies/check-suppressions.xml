@@ -134,6 +134,12 @@
 	<filePath regex="true">.*\bmaven-ant-tasks.*\.jar/META-INF/.*\bplexus-utils.*</filePath>
     <vulnerabilityName>Possible XML Injection</vulnerabilityName>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+    Payara is always used with JDK 11 as minimum, and iiop-listeners are not exposed via web server binding by default.
+    ]]></notes>
+    <cve>CVE-2023-28462</cve>
+  </suppress>
   <!-- *** Not exploitable END *** -->
 
 </suppressions>

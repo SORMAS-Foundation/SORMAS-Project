@@ -54,6 +54,8 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
+import de.symeda.sormas.api.caze.CaseOrigin;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
@@ -2371,6 +2373,27 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		caze1.setEpiData(epiData);
 
 		return getCaseFacade().save(caze1);
+	}
+
+	@Test
+	public void testCreatePointOfEntryCase() {
+		PersonReferenceDto personDto = creator.createPerson().toReference();
+		PointOfEntryDto newPointOfEntry = creator.createPointOfEntry("New point of entry", rdcf.region, rdcf.district);
+
+		CaseDataDto caze1 = CaseDataDto.build(personDto, Disease.CORONAVIRUS);
+		caze1.setReportDate(new Date());
+		caze1.setReportingUser(surveillanceOfficer.toReference());
+		caze1.setCaseClassification(CaseClassification.PROBABLE);
+		caze1.setInvestigationStatus(InvestigationStatus.PENDING);
+		caze1.setDisease(Disease.CORONAVIRUS);
+		caze1.setPerson(personDto);
+		caze1.setResponsibleRegion(rdcf.region);
+		caze1.setResponsibleDistrict(rdcf.district);
+		caze1.setCaseOrigin(CaseOrigin.POINT_OF_ENTRY);
+		caze1.setPointOfEntry(newPointOfEntry.toReference());
+		getCaseFacade().save(caze1);
+
+		MatcherAssert.assertThat(getCaseFacade().getIndexList(new CaseCriteria(), 0, 100, null), hasSize(1));
 	}
 
 	@Test

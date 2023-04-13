@@ -16464,6 +16464,9 @@
             "type" : "string",
             "enum" : [ "UNPROCESSED", "PROCESSED", "FORWARDED", "UNCLEAR" ]
           },
+          "messageContentLike" : {
+            "type" : "string"
+          },
           "messageDateFrom" : {
             "type" : "string",
             "format" : "date-time"
