@@ -142,7 +142,7 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 
 	@Test
 	public void testUpdateWithPseudonymizedDto() {
-		EventParticipantDto participant = createEventParticipant(user1, rdcf1);
+		EventParticipantDto participant = createEventParticipant(user2, rdcf2);
 
 		participant.setPseudonymized(true);
 		participant.setInvolvementDescription(null);
@@ -180,7 +180,7 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 			p.getAddress().setCity("Test City");
 		});
 
-		return creator.createEventParticipant(event.toReference(), person, "Test involvement descr", user.toReference());
+		return creator.createEventParticipant(event.toReference(), person, "Test involvement descr", user.toReference(), rdcf);
 	}
 
 	private void assertNotPseudonymized(EventParticipantDto eventParticipant) {
