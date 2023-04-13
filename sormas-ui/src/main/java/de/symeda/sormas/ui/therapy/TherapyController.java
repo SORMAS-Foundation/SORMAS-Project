@@ -209,18 +209,15 @@ public class TherapyController {
 
 	public void openTreatmentEditForm(TreatmentIndexDto treatmentIndex, Runnable callback, boolean isEditAllowed, boolean isDeleteAllowed) {
 		TreatmentDto treatment = FacadeProvider.getTreatmentFacade().getTreatmentByUuid(treatmentIndex.getUuid());
+
+		boolean isEditOrDeleteAllowed = isEditOrDeleteAllowed(isEditAllowed, isDeleteAllowed);
 		TreatmentForm form = new TreatmentForm(false, treatment.isPseudonymized(), treatment.isInJurisdiction());
 		form.setValue(treatment);
 
-		final CommitDiscardWrapperComponent<TreatmentForm> view = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
+		final CommitDiscardWrapperComponent<TreatmentForm> view =
+			new CommitDiscardWrapperComponent<>(form, isEditOrDeleteAllowed, form.getFieldGroup());
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(view, I18nProperties.getString(Strings.headingEditTreatment));
 
-		//TODO: check this condition
-		if (!UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_EDIT) || !isEditAllowed) {
-			view.getWrappedComponent().setEnabled(false);
-		}
-
-		boolean isEditOrDeleteAllowed = isEditOrDeleteAllowed(isEditAllowed, isDeleteAllowed);
 		if (isEditOrDeleteAllowed) {
 			view.addCommitListener(() -> {
 				if (!form.getFieldGroup().isModified()) {
@@ -248,10 +245,11 @@ public class TherapyController {
 				UserRight.CASE_DELETE,
 				UserRight.TREATMENT_DELETE);
 		}
+		view.getButtonsPanel().setVisible(isEditOrDeleteAllowed);
 
 		if (treatment.getPrescription() != null) {
 			Button openPrescriptionButton = ButtonHelper.createButton(Captions.treatmentOpenPrescription, e -> {
-				//TOCO: check if the parent right should also be checked
+				//TODO: check if the parent right should also be checked
 				openPrescriptionEditForm(
 					treatment.getPrescription(),
 					null,
