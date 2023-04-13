@@ -16,6 +16,7 @@ public class ExternalMessageCriteria extends BaseCriteria implements Serializabl
 	public static final String I18N_PREFIX = "ExternalMessageCriteria";
 
 	public static final String SEARCH_FIELD_LIKE = "searchFieldLike";
+	public static final String MESSAGE_CONTENT_LIKE = "messageContentLike";
 	public static final String MESSAGE_DATE_FROM = "messageDateFrom";
 	public static final String MESSAGE_DATE_TO = "messageDateTo";
 	public static final String BIRTH_DATE_FROM = "birthDateFrom";
@@ -32,6 +33,7 @@ public class ExternalMessageCriteria extends BaseCriteria implements Serializabl
 	private SampleReferenceDto sample;
 	private SurveillanceReportReferenceDto surveillanceReport;
 	private String searchFieldLike;
+	private String messageContentLike;
 	private Date messageDateFrom;
 	private Date messageDateTo;
 	private Date birthDateFrom;
@@ -87,6 +89,14 @@ public class ExternalMessageCriteria extends BaseCriteria implements Serializabl
 
 	public void setSearchFieldLike(String searchFieldLike) {
 		this.searchFieldLike = searchFieldLike;
+	}
+
+	public String getMessageContentLike() {
+		return messageContentLike;
+	}
+
+	public void setMessageContentLike(String messageContentLike) {
+		this.messageContentLike = messageContentLike;
 	}
 
 	public Date getMessageDateFrom() {
