@@ -64,7 +64,6 @@ public class VaccinationDto extends PseudonymizableDto {
 	public static final String PREGNANT = "pregnant";
 	public static final String TRIMESTER = "trimester";
 
-	@NotNull(message = Validations.requiredField)
 	private ImmunizationReferenceDto immunization;
 	@Valid
 	@DependingOnFeatureType(featureType = FeatureType.IMMUNIZATION_MANAGEMENT,

@@ -11300,7 +11300,7 @@
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           }
         },
-        "required" : [ "caseClassification", "disease", "healthFacility", "investigationStatus", "person", "reportDate", "responsibleDistrict", "responsibleRegion" ]
+        "required" : [ "caseClassification", "disease", "investigationStatus", "person", "reportDate", "responsibleDistrict", "responsibleRegion" ]
       },
       "CaseFollowUpCriteria" : {
         "type" : "object",
@@ -16463,6 +16463,9 @@
           "externalMessageStatus" : {
             "type" : "string",
             "enum" : [ "UNPROCESSED", "PROCESSED", "FORWARDED", "UNCLEAR" ]
+          },
+          "messageContentLike" : {
+            "type" : "string"
           },
           "messageDateFrom" : {
             "type" : "string",
@@ -23848,7 +23851,7 @@
             "minLength" : 0
           }
         },
-        "required" : [ "immunization", "reportDate" ]
+        "required" : [ "reportDate" ]
       },
       "VisitCriteria" : {
         "type" : "object",

@@ -109,6 +109,13 @@ public class EventParticipantSteps implements En {
               "Enter bulk edit mode button is not displayed");
           softly.assertAll();
         });
+
+    When(
+        "I click Enter Bulk Edit Mode on Event Participant directory page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ENTER_BULK_EDIT_MODE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
+        });
   }
 
   @SneakyThrows

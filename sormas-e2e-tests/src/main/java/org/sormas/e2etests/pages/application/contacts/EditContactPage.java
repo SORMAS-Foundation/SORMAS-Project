@@ -200,4 +200,7 @@ public class EditContactPage {
     return By.xpath(
         String.format("//div[contains(@class, 'v-window-header') and text()='%s']", text));
   }
+
+  public static final By CONTACT_CAN_NOT_BE_SHARED_HEADER_DE =
+      By.xpath("//div[contains(text(), 'Kontakt kann nicht geteilt werden')]");
 }
