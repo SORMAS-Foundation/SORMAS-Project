@@ -20788,7 +20788,7 @@
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
         },
-        "required" : [ "reportDateTime", "reportingUser", "sampleDateTime", "sampleMaterial", "samplePurpose" ]
+        "required" : [ "reportDateTime", "sampleDateTime", "sampleMaterial", "samplePurpose" ]
       },
       "SampleIndexDto" : {
         "type" : "object",
