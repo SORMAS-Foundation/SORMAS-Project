@@ -11300,7 +11300,7 @@
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           }
         },
-        "required" : [ "caseClassification", "disease", "healthFacility", "investigationStatus", "person", "reportDate", "responsibleDistrict", "responsibleRegion" ]
+        "required" : [ "caseClassification", "disease", "investigationStatus", "person", "reportDate", "responsibleDistrict", "responsibleRegion" ]
       },
       "CaseFollowUpCriteria" : {
         "type" : "object",

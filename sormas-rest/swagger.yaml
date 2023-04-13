@@ -8831,7 +8831,6 @@ components:
       required:
       - caseClassification
       - disease
-      - healthFacility
       - investigationStatus
       - person
       - reportDate
