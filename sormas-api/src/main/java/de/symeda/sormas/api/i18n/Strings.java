@@ -126,6 +126,7 @@ public interface Strings {
 	String confirmationDearchiveTravelEntry = "confirmationDearchiveTravelEntry";
 	String confirmationDeleteCaseContacts = "confirmationDeleteCaseContacts";
 	String confirmationDeleteCases = "confirmationDeleteCases";
+	String confirmationUndeleteEntities = "confirmationUndeleteEntities";
 	String confirmationDeleteContacts = "confirmationDeleteContacts";
 	String confirmationDeleteEntity = "confirmationDeleteEntity";
 	String confirmationDeleteEntityWithDetails = "confirmationDeleteEntityWithDetails";
@@ -496,6 +497,7 @@ public interface Strings {
 	String headingDearchivingNotPossible = "headingDearchivingNotPossible";
 	String headingDefineOutbreakDistricts = "headingDefineOutbreakDistricts";
 	String headingDeleteConfirmation = "headingDeleteConfirmation";
+	String headingUndeleteConfirmation = "headingUndeleteConfirmation";
 	String headingDeleteContacts = "headingDeleteContacts";
 	String headingDeleteUserRoleNotPossible = "headingDeleteUserRoleNotPossible";
 	String headingDeleteVaccinations = "headingDeleteVaccinations";

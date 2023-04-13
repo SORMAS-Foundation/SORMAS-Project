@@ -5,6 +5,7 @@ import java.util.List;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Window;
 
@@ -16,6 +17,27 @@ import de.symeda.sormas.api.utils.HtmlHelper;
 public class DeleteUndeleteController<F extends DeletableFacade> {
 
 	public void undeleteSelectedItems(List<String> entityUuids, F entityFacade, CoreEntityUndeleteMessages messages, Runnable callback) {
+		Label undeleteConfirmationMessage = new Label();
+		undeleteConfirmationMessage.setValue(
+			String.format(
+				I18nProperties.getString(Strings.confirmationUndeleteEntities),
+				entityUuids.size(),
+				I18nProperties.getString(messages.getEntities())));
+
+		VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getString(Strings.headingUndeleteConfirmation),
+			undeleteConfirmationMessage,
+			I18nProperties.getString(Strings.yes),
+			I18nProperties.getString(Strings.no),
+			500,
+			confirmed -> {
+				if (Boolean.TRUE.equals(confirmed)) {
+					performUndeleteSelectedItems(entityUuids, entityFacade, messages, callback);
+				}
+			});
+	}
+
+	public void performUndeleteSelectedItems(List<String> entityUuids, F entityFacade, CoreEntityUndeleteMessages messages, Runnable callback) {
 		if (entityUuids.isEmpty()) {
 			new Notification(
 				I18nProperties.getString(messages.getHeadingNoSelection()),
@@ -41,7 +63,7 @@ public class DeleteUndeleteController<F extends DeletableFacade> {
 				new Notification(
 					I18nProperties.getString(messages.getHeadingEntitiesRestored()),
 					I18nProperties.getString(messages.getMessageEntitiesRestored()),
-					Notification.Type.HUMANIZED_MESSAGE,
+					Notification.Type.TRAY_NOTIFICATION,
 					false).show(Page.getCurrent());
 			} else {
 				Window response = VaadinUiUtil.showSimplePopupWindow(
