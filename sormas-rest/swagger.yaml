@@ -8831,7 +8831,6 @@ components:
       required:
       - caseClassification
       - disease
-      - healthFacility
       - investigationStatus
       - person
       - reportDate
@@ -14892,6 +14891,8 @@ components:
           - PROCESSED
           - FORWARDED
           - UNCLEAR
+        messageContentLike:
+          type: string
         messageDateFrom:
           type: string
           format: date-time
@@ -24082,7 +24083,6 @@ components:
           maxLength: 1000000
           minLength: 0
       required:
-      - immunization
       - reportDate
     VisitCriteria:
       type: object

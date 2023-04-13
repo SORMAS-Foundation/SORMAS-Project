@@ -849,7 +849,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			null,
 			null);
 
-		EventParticipantDto event1Participant1 = creator.createEventParticipant(event1.toReference(), person1, user.toReference());
+		EventParticipantDto event1Participant1 = creator.createEventParticipant(event1.toReference(), person1, "Involved", user.toReference(), rdcf);
 		creator.createEventParticipant(event1.toReference(), person2, user.toReference());
 
 		CaseDataDto case1 = creator.createCase(

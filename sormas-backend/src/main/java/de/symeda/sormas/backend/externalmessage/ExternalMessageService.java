@@ -18,11 +18,14 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageCriteria;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -124,6 +127,20 @@ public class ExternalMessageService extends AdoServiceWithUserFilterAndJurisdict
 					CriteriaBuilderHelper.ilike(cb, labMessage.get(ExternalMessage.REPORTER_POSTAL_CODE), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
+		}
+		if (StringUtils.isNotBlank(criteria.getMessageContentLike())) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.equal(
+					cb.function(
+						ExtendedPostgreSQL94Dialect.FULLTEXT_SEARCH,
+						Boolean.class,
+						labMessage.get(ExternalMessage.TSV),
+						cb.literal(
+							// replace xml tag marks
+							criteria.getMessageContentLike().replaceAll("[<>]", " "))),
+					true));
 		}
 		if (criteria.getMessageDateFrom() != null) {
 			filter = CriteriaBuilderHelper

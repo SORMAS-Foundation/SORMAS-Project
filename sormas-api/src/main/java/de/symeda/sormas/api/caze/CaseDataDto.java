@@ -334,7 +334,6 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	@SensitiveData(mandatoryField = true)
 	private FacilityType facilityType;
 	@Outbreaks
-	@NotNull(message = Validations.validFacility)
 	@PersonalData(mandatoryField = true)
 	@SensitiveData(mandatoryField = true)
 	private FacilityReferenceDto healthFacility;
