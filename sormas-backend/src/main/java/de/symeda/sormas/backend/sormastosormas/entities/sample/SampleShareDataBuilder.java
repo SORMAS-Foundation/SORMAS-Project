@@ -93,7 +93,8 @@ public class SampleShareDataBuilder
 	protected SampleDto getDto(Sample sample, Pseudonymizer pseudonymizer) {
 
 		SampleDto sampleDto = sampleFacade.convertToDto(sample, pseudonymizer);
-		sampleDto.setReportingUser(null);
+		// reporting user is not set to null here as it would not pass the validation
+		// the receiver appears to set it to SORMAS2SORMAS Client anyway
 		sampleDto.setSormasToSormasOriginInfo(null);
 		// todo no dataBuilderHelper.clearIgnoredProperties(sampleDto); ?
 		return sampleDto;
