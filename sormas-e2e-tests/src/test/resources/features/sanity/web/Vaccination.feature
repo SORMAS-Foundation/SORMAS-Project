@@ -507,7 +507,7 @@ Feature: Vaccination tests
   #leading contact - only vaccination name
   #discarded contact - only vaccination name same as leading
   #expected - two vaccinations with same vaccination name
-  @tmsLink=SORDEV-11753 @env_de @hms_check
+  @tmsLink=SORDEV-11753 @env_de
   Scenario: Duplicate detection for vaccinations when merging contacts[4]
     Given API: I create a new person
     And API: I check that POST call body is "OK"
@@ -566,7 +566,7 @@ Feature: Vaccination tests
   #leading contact - everything but vaccination date and name
   #discarded contact - everything but vaccination date and name
   #expected - two vaccinations without vaccination name and date
-  @tmsLink=SORDEV-11753 @env_de @hms_check
+  @tmsLink=SORDEV-11753 @env_de
   Scenario: Duplicate detection for vaccinations when merging contacts[5]
     Given API: I create a new person
     And API: I check that POST call body is "OK"
