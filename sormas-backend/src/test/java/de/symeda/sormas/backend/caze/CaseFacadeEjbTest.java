@@ -766,7 +766,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			null,
 			null);
 
-		EventParticipantDto event1Participant1 = creator.createEventParticipant(event1.toReference(), person1, surveillanceSupervisor.toReference());
+		EventParticipantDto event1Participant1 =
+			creator.createEventParticipant(event1.toReference(), person1, "Involved", surveillanceSupervisor.toReference(), rdcf);
 		EventParticipantDto event1Participant2 = creator.createEventParticipant(event1.toReference(), person2, surveillanceSupervisor.toReference());
 
 		CaseDataDto case1 = creator.createCase(
