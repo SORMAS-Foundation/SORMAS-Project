@@ -38,7 +38,6 @@ public class DocumentDto extends PseudonymizableDto {
 	@NotNull(message = Validations.requiredField)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String name;
-	@NotNull(message = Validations.requiredField)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String mimeType;
 	@NotNull(message = Validations.requiredField)
