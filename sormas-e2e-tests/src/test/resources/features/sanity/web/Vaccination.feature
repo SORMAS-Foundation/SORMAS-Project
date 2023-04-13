@@ -335,7 +335,7 @@ Feature: Vaccination tests
   #leading contact - only vaccination date and name
   #discarded contact - all fields and same vaccination name and date
   #expected - one vaccination updated with the information given by the vaccination of the discarded contact
-  @tmsLink=SORDEV-11753 @env_de @hms_check
+  @tmsLink=SORDEV-11753 @env_de
   Scenario: Duplicate detection for vaccinations when merging contacts [1]
     Given API: I create a new person
     And API: I check that POST call body is "OK"
@@ -391,7 +391,7 @@ Feature: Vaccination tests
   #leading contact - all fields and same vaccination name and date
   #discarded contact - all fields with different value than leading contact and same vaccination name and date
   #expected - one vaccination updated with the information given by the vaccination of the leading contact
-  @tmsLink=SORDEV-11753 @env_de @hms_check
+  @tmsLink=SORDEV-11753 @env_de
   Scenario: Duplicate detection for vaccinations when merging contacts [2]
     Given API: I create a new person
     And API: I check that POST call body is "OK"
@@ -448,7 +448,7 @@ Feature: Vaccination tests
   #leading contact - only vaccination date
   #discarded contact - only vaccination date same as leading
   #expected - two vaccinations with same vaccination date
-  @tmsLink=SORDEV-11753 @env_de @hms_check
+  @tmsLink=SORDEV-11753 @env_de
   Scenario: Duplicate detection for vaccinations when merging contacts [3]
     Given API: I create a new person
     And API: I check that POST call body is "OK"
@@ -507,7 +507,7 @@ Feature: Vaccination tests
   #leading contact - only vaccination name
   #discarded contact - only vaccination name same as leading
   #expected - two vaccinations with same vaccination name
-  @tmsLink=SORDEV-11753 @env_de
+  @tmsLink=SORDEV-11753 @env_de @hms_check
   Scenario: Duplicate detection for vaccinations when merging contacts[4]
     Given API: I create a new person
     And API: I check that POST call body is "OK"
@@ -566,7 +566,7 @@ Feature: Vaccination tests
   #leading contact - everything but vaccination date and name
   #discarded contact - everything but vaccination date and name
   #expected - two vaccinations without vaccination name and date
-  @tmsLink=SORDEV-11753 @env_de
+  @tmsLink=SORDEV-11753 @env_de @hms_check
   Scenario: Duplicate detection for vaccinations when merging contacts[5]
     Given API: I create a new person
     And API: I check that POST call body is "OK"
