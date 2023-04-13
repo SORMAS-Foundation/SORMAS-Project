@@ -391,7 +391,7 @@ Feature: Vaccination tests
   #leading contact - all fields and same vaccination name and date
   #discarded contact - all fields with different value than leading contact and same vaccination name and date
   #expected - one vaccination updated with the information given by the vaccination of the leading contact
-  @tmsLink=SORDEV-11753 @env_de
+  @tmsLink=SORDEV-11753 @env_de @hms_check
   Scenario: Duplicate detection for vaccinations when merging contacts [2]
     Given API: I create a new person
     And API: I check that POST call body is "OK"
@@ -434,6 +434,7 @@ Feature: Vaccination tests
     And I collect the leading contact UUID displayed on Contact Directory Page
     And I click on the More button on Contact directory page
     Then I click on Merge Duplicates on Contact directory page
+    And I click to CONFIRM FILTERS on Merge Duplicate Contact page
     And I click on Merge button of leading duplicated line listing Contact in Merge Duplicate Contact page
     Then I click to Confirm action in Merge Duplicates Cases popup
     And I click on the Contacts button from navbar
@@ -447,7 +448,7 @@ Feature: Vaccination tests
   #leading contact - only vaccination date
   #discarded contact - only vaccination date same as leading
   #expected - two vaccinations with same vaccination date
-  @tmsLink=SORDEV-11753 @env_de
+  @tmsLink=SORDEV-11753 @env_de @hms_check
   Scenario: Duplicate detection for vaccinations when merging contacts [3]
     Given API: I create a new person
     And API: I check that POST call body is "OK"
@@ -489,6 +490,7 @@ Feature: Vaccination tests
     And I collect the leading contact UUID displayed on Contact Directory Page
     And I click on the More button on Contact directory page
     Then I click on Merge Duplicates on Contact directory page
+    And I click to CONFIRM FILTERS on Merge Duplicate Contact page
     And I click on Merge button of leading duplicated line listing Contact in Merge Duplicate Contact page
     Then I click to Confirm action in Merge Duplicates Cases popup
     And I click on the Contacts button from navbar
