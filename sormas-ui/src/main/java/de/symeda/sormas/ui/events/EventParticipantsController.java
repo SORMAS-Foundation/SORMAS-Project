@@ -266,7 +266,11 @@ public class EventParticipantsController {
 					() -> navigateToData(eventParticipant.getUuid()));
 		}
 
-		editComponent.restrictEditableComponentsOnEditView(UserRight.EVENTPARTICIPANT_EDIT, UserRight.EVENTPARTICIPANT_DELETE, null);
+		editComponent.restrictEditableComponentsOnEditView(
+			UserRight.EVENTPARTICIPANT_EDIT,
+			UserRight.EVENTPARTICIPANT_DELETE,
+			null,
+			eventParticipant.isInJurisdiction());
 
 		return editComponent;
 	}

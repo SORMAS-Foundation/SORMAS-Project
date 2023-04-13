@@ -1448,3 +1448,32 @@ Feature: Create events
 #    Then I click on save button in Add Participant form
     Then I click Save in Add Event Participant form on Edit Contact Page
     And I validate last created via API Event data is displayed under Linked Events section
+
+  @tmsLink=SORDEV-10280 @env_main
+  Scenario Outline: Test Allow "surveillance supervisor" and "contact supervisor" profiles to access the batch edit mode of the directory of participating events
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new event
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new event participant with creation date 2 days ago
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in as a <user>
+    Then I open the last created event via api
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    Then I click Enter Bulk Edit Mode on Event Participant directory page
+    And I select first 1 results in grid in Event Participant Directory
+    And I click on Bulk Actions combobox in Event Parcitipant Tab
+    And I click on Create Contacts button from bulk actions menu in Event Participant Tab
+    Then I check if Create Contacts Line listing window appears
+    And I click on discard button in line listing
+    And I click on Bulk Actions combobox in Event Parcitipant Tab
+    Then I click on Create Quarantine Order from Bulk Actions combobox on Event Participant Directory Page by button text
+    And I select "ExampleDocumentTemplateEventParticipant.docx" Quarantine Order in Create Quarantine Order form in Event Participant directory
+
+    Examples:
+      | user                      |
+      | Contact Supervisor        |
+      | Surveillance Supervisor   |

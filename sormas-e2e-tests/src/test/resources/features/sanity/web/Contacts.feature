@@ -644,6 +644,7 @@ Feature: Contacts end to end tests
     And I click on the Contacts button from navbar
     And I click on the More button on Contact directory page
     Then I click on Merge Duplicates on Contact directory page
+    And I click to CONFIRM FILTERS on Merge Duplicate Contact page
     And I click on Merge button of leading case in Merge Duplicate Contact page
     Then I click to Confirm action in Merge Duplicates Cases popup
     And I click on the Contacts button from navbar
@@ -886,6 +887,7 @@ Feature: Contacts end to end tests
     And I click on the Contacts button from navbar
     And I click on the More button on Contact directory page
     Then I click on Merge Duplicates on Contact directory page
+    And I click to CONFIRM FILTERS on Merge Duplicate Contact page
     And I click on Merge button of leading case in Merge Duplicate Contact page
     Then I click to Confirm action in Merge Duplicates Cases popup
     And I click on the Contacts button from navbar
@@ -1505,3 +1507,48 @@ Feature: Contacts end to end tests
     And I click on "accept" shared contact button with copied contact description
     Then I open last created Case via API on "s2s_2" instance
     And I check that the value selected from Disease combobox is "COVID-19" on Edit Case page
+
+  @tmsLink=SORDEV-13952 @env_s2s_1
+  Scenario: S2S - Share a Contact having a sample
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in as a Admin User
+    When I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form for DE version with mandatory data with "Baden-Württemberg" as a region and "LK Alb-Donau-Kreis" as a disctrict
+    And I click on SAVE new contact button
+    And I copy url of current contact
+    Then I click on New Sample in German
+    And I create a new Sample with positive test result for DE version with "Voreingestelltes Labor" as a labor
+    And I save the created sample with pathogen test
+    And I confirm when a pop-up appears asking user about creating a Case from it in DE
+    Then I fill a new case form for DE version with mandatory data forced by positive sample with "Berlin" as a region and "SK Berlin Mitte" as a district
+    And I save a new case
+    And I collect uuid of the case
+    Then I back to contact by url
+    And I click on share contact button
+    Then I check if popup with "Kontakt kann nicht geteilt werden" header appears
+    And I click on okay button
+    Then I click on the CHOOSE SOURCE CASE button from CONTACT page
+    And I search for the last case uuid created via Api in the CHOOSE SOURCE Contact window
+    And I open the first found result in the CHOOSE SOURCE window for DE version
+    Then I click SAVE button on Edit Contact Page
+    Then I open the Case Contacts tab
+    Then I navigate to case tab
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I click to hand over the ownership of the case in Share popup
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I open the Case Contacts tab
+    And I click on the first Contact ID from Contacts Directory in Contacts in Case
+    And I click on share contact button
+    And I select organization to share with "s2s_2"
+    And I click to hand over the ownership of the contact in Share popup
+    And I fill comment in share popup for contact with random string
+    Then I click on share button in s2s share popup
+    And I check if popup with error with handover header displays

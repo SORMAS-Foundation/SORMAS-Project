@@ -962,7 +962,7 @@ public class CaseController {
 
 		appendSpecialCommands(caze, editView);
 
-		editView.restrictEditableComponentsOnEditView(UserRight.CASE_EDIT, UserRight.CASE_DELETE, null);
+		editView.restrictEditableComponentsOnEditView(UserRight.CASE_EDIT, UserRight.CASE_DELETE, null, caze.isInJurisdiction());
 		return editView;
 	}
 
