@@ -110,12 +110,13 @@ public class PathogenTestController {
 		return editView;
 	}
 
-	public void edit(String pathogenTestUuid, Runnable doneCallback, boolean isEditAllowed) {
-		final CommitDiscardWrapperComponent<PathogenTestForm> editView = getPathogenTestEditComponent(pathogenTestUuid, doneCallback, isEditAllowed);
+	public void edit(String pathogenTestUuid, Runnable doneCallback, boolean isEditAllowed, boolean isDeleteAllowed) {
+		final CommitDiscardWrapperComponent<PathogenTestForm> editView =
+			getPathogenTestEditComponent(pathogenTestUuid, doneCallback, isEditAllowed, isDeleteAllowed);
 
 		Window popupWindow = VaadinUiUtil.createPopupWindow();
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_DELETE)) {
+		if (isDeleteAllowed) {
 			editView.addDeleteWithReasonOrUndeleteListener((deleteDetails) -> {
 				FacadeProvider.getPathogenTestFacade().deletePathogenTest(pathogenTestUuid, deleteDetails);
 				UI.getCurrent().removeWindow(popupWindow);
@@ -126,15 +127,19 @@ public class PathogenTestController {
 		editView.addDiscardListener(popupWindow::close);
 
 		popupWindow.setContent(editView);
-		popupWindow
-			.setCaption(I18nProperties.getString(isEditAllowed ? Strings.headingEditPathogenTestResult : Strings.headingViewPathogenTestResult));
+		popupWindow.setCaption(
+			I18nProperties.getString(
+				isEditOrDeleteAllowed(isEditAllowed, isDeleteAllowed)
+					? Strings.headingEditPathogenTestResult
+					: Strings.headingViewPathogenTestResult));
 		UI.getCurrent().addWindow(popupWindow);
 	}
 
 	public CommitDiscardWrapperComponent<PathogenTestForm> getPathogenTestEditComponent(
 		String pathogenTestUuid,
 		Runnable doneCallback,
-		boolean isEditAllowed) {
+		boolean isEditAllowed,
+		boolean isDeleteAllowed) {
 
 		// get fresh data
 		PathogenTestDto pathogenTest = facade.getByUuid(pathogenTestUuid);
@@ -142,12 +147,11 @@ public class PathogenTestController {
 		PathogenTestForm form = new PathogenTestForm(sample, false, 0, pathogenTest.isPseudonymized(), pathogenTest.isInJurisdiction());
 		form.setValue(pathogenTest);
 
-		final CommitDiscardWrapperComponent<PathogenTestForm> editView = new CommitDiscardWrapperComponent<>(
-			form,
-			UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_EDIT) && isEditAllowed,
-			form.getFieldGroup());
+		boolean isEditOrDeleteAllowed = isEditOrDeleteAllowed(isEditAllowed, isDeleteAllowed);
+		final CommitDiscardWrapperComponent<PathogenTestForm> editView =
+			new CommitDiscardWrapperComponent<>(form, isEditOrDeleteAllowed, form.getFieldGroup());
 
-		if (isEditAllowed) {
+		if (isEditOrDeleteAllowed) {
 			editView.addCommitListener(() -> {
 				if (!form.getFieldGroup().isModified()) {
 					savePathogenTest(form.getValue(), false);
@@ -162,8 +166,14 @@ public class PathogenTestController {
 					editView.getWrappedComponent().getField(PathogenTestDto.OTHER_DELETION_REASON).setVisible(true);
 				}
 			}
+			editView.restrictEditableChildComponentOnEditView(
+				UserRight.SAMPLE_EDIT,
+				UserRight.PATHOGEN_TEST_EDIT,
+				UserRight.SAMPLE_DELETE,
+				UserRight.PATHOGEN_TEST_DELETE);
+
 		}
-		editView.getButtonsPanel().setVisible(isEditAllowed);
+		editView.getButtonsPanel().setVisible(isEditOrDeleteAllowed);
 
 		return editView;
 	}
@@ -572,6 +582,10 @@ public class PathogenTestController {
 					ControllerProvider.getCaseController().navigateToCase(caseDataByUuid.getUuid());
 				}
 			});
+	}
+
+	public boolean isEditOrDeleteAllowed(boolean isEditAllowed, boolean isDeleteAllowed) {
+		return isEditAllowed || isDeleteAllowed;
 	}
 
 }

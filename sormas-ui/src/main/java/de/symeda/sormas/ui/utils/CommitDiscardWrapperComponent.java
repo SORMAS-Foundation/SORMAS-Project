@@ -1018,8 +1018,6 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 			} else {
 				this.setNonEditable();
 			}
-		} else if (!isDeleteChildAllowed(deleteChildRight, deleteParentRight)) {
-			//this.getButtonsPanel().getComponent(0).setEnabled(false);
 		}
 	}
 
