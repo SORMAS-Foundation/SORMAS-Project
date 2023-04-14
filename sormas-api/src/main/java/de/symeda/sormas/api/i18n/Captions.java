@@ -107,6 +107,7 @@ public interface Captions {
 	String actionReset = "actionReset";
 	String actionResetEnumCache = "actionResetEnumCache";
 	String actionResetFilters = "actionResetFilters";
+	String actionRestore = "actionRestore";
 	String actionSave = "actionSave";
 	String actionSaveAndContinue = "actionSaveAndContinue";
 	String actionSaveAndOpenCase = "actionSaveAndOpenCase";
@@ -123,7 +124,6 @@ public interface Captions {
 	String actionSkip = "actionSkip";
 	String actionStatusChangeDate = "actionStatusChangeDate";
 	String actionUnclearLabMessage = "actionUnclearLabMessage";
-	String actionUnDelete = "actionUnDelete";
 	String actionYes = "actionYes";
 	String actionYesAll = "actionYesAll";
 	String actionYesForAll = "actionYesForAll";
@@ -229,6 +229,7 @@ public interface Captions {
 	String bulkInvestigationStatus = "bulkInvestigationStatus";
 	String bulkLinkToEvent = "bulkLinkToEvent";
 	String bulkLostToFollowUp = "bulkLostToFollowUp";
+	String bulkRestore = "bulkRestore";
 	String bulkSurveillanceOfficer = "bulkSurveillanceOfficer";
 	String bulkTaskAssignee = "bulkTaskAssignee";
 	String bulkTaskPriority = "bulkTaskPriority";

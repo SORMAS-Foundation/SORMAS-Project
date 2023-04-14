@@ -1237,7 +1237,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		SampleDto sample1 = creator.createSample(caze.toReference(), surveillanceSupervisor.toReference(), rdcf.facility);
 		SampleDto sample2 = creator.createSample(caze.toReference(), surveillanceSupervisor.toReference(), rdcf.facility);
-		getSampleFacade().deleteSample(sample1.toReference(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
+		getSampleFacade().delete(sample1.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
 		List<CaseExportDto> results =
 			getCaseFacade().getExportList(new CaseCriteria(), Collections.emptySet(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);

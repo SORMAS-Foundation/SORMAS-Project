@@ -431,18 +431,22 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		Collection<Sample> entities = sampleService.findBy(criteria, userService.getCurrentUser(), AbstractDomainObject.CREATION_DATE, false)
 			.stream()
-			.collect(Collectors.toMap(s -> associatedObjectFn.apply(s).getUuid(), s -> s, (s1, s2) -> {
+			.collect(
+				Collectors.toMap(
+					s -> associatedObjectFn.apply(s).getUuid(),
+					s -> s,
+					(s1, s2) -> {
 
-				// keep the positive one
-				if (s1.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
-					return s1;
-				} else if (s2.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
-					return s2;
-				}
+						// keep the positive one
+						if (s1.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
+							return s1;
+						} else if (s2.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
+							return s2;
+						}
 
-				// ordered by creation date by default, so always keep the first one
-				return s1;
-			}))
+						// ordered by creation date by default, so always keep the first one
+						return s1;
+					}))
 			.values();
 
 		return toPseudonymizedDtos(new ArrayList<>(entities));
@@ -756,8 +760,8 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	@RightsAllowed(UserRight._SAMPLE_DELETE)
-	public void deleteSample(SampleReferenceDto sampleRef, DeletionDetails deletionDetails) {
-		Sample sample = sampleService.getByReferenceDto(sampleRef);
+	public void delete(String sampleUuid, DeletionDetails deletionDetails) {
+		Sample sample = sampleService.getByUuid(sampleUuid);
 		sampleService.delete(sample, deletionDetails);
 
 		handleAssociatedEntityChanges(sample, true);
@@ -765,8 +769,8 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	@RightsAllowed(UserRight._SAMPLE_DELETE)
-	public void undelete(SampleReferenceDto sampleRef) {
-		Sample sample = sampleService.getByReferenceDto(sampleRef);
+	public void undelete(String sampleUuid) {
+		Sample sample = sampleService.getByUuid(sampleUuid);
 		sampleService.undelete(sample);
 	}
 
