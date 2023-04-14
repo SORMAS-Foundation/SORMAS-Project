@@ -375,7 +375,7 @@ public class ExternalMessage extends AbstractDomainObject {
 		this.sampleReports = sampleReports;
 	}
 
-	@Column
+	@Column(insertable = false, updatable = false)
 	public String getTsv() {
 		return tsv;
 	}
