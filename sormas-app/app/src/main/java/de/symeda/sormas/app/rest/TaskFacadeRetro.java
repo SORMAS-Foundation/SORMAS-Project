@@ -17,7 +17,7 @@ package de.symeda.sormas.app.rest;
 
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.task.TaskDto;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -37,7 +37,7 @@ public interface TaskFacadeRetro {
 	Call<List<TaskDto>> pullByUuids(@Body List<String> uuids);
 
 	@POST("tasks/push")
-	Call<List<PushResult>> pushAll(@Body List<TaskDto> dtos);
+	Call<List<PostResponse>> pushAll(@Body List<TaskDto> dtos);
 
 	@GET("tasks/uuids")
 	Call<List<String>> pullUuids();

@@ -18,7 +18,7 @@ package de.symeda.sormas.app.backend.epidata;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.exposure.ExposureDto;
@@ -61,7 +61,7 @@ public class EpiDataDtoHelper extends AdoDtoHelper<EpiData, EpiDataDto> {
 	}
 
 	@Override
-	protected Call<List<PushResult>> pushAll(List<EpiDataDto> epiDataDtos) throws NoConnectionException {
+	protected Call<List<PostResponse>> pushAll(List<EpiDataDto> epiDataDtos) throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is embedded");
 	}
 

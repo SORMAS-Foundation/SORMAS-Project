@@ -17,7 +17,7 @@ package de.symeda.sormas.app.backend.contact;
 
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -73,7 +73,7 @@ public class ContactDtoHelper extends PersonDependentDtoHelper<Contact, ContactD
 	}
 
 	@Override
-	protected Call<List<PushResult>> pushAll(List<ContactDto> contactDtos) throws NoConnectionException {
+	protected Call<List<PostResponse>> pushAll(List<ContactDto> contactDtos) throws NoConnectionException {
 		return RetroProvider.getContactFacade().pushAll(contactDtos);
 	}
 

@@ -17,7 +17,7 @@ package de.symeda.sormas.app.backend.therapy;
 
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.therapy.PrescriptionDto;
 import de.symeda.sormas.api.therapy.PrescriptionReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
@@ -51,7 +51,7 @@ public class PrescriptionDtoHelper extends AdoDtoHelper<Prescription, Prescripti
 	}
 
 	@Override
-	protected Call<List<PushResult>> pushAll(List<PrescriptionDto> prescriptionDtos) throws NoConnectionException {
+	protected Call<List<PostResponse>> pushAll(List<PrescriptionDto> prescriptionDtos) throws NoConnectionException {
 		return RetroProvider.getPrescriptionFacade().pushAll(prescriptionDtos);
 	}
 

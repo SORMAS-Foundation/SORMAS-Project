@@ -17,7 +17,7 @@ package de.symeda.sormas.app.backend.hospitalization;
 
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -59,7 +59,7 @@ public class PreviousHospitalizationDtoHelper extends AdoDtoHelper<PreviousHospi
 	}
 
 	@Override
-	protected Call<List<PushResult>> pushAll(List<PreviousHospitalizationDto> previousHospitalizationDtos) throws NoConnectionException {
+	protected Call<List<PostResponse>> pushAll(List<PreviousHospitalizationDto> previousHospitalizationDtos) throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is embedded");
 	}
 

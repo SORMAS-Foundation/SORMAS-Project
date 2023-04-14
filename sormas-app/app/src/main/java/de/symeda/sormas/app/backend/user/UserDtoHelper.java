@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
@@ -61,7 +61,7 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
 	}
 
 	@Override
-	protected Call<List<PushResult>> pushAll(List<UserDto> userDtos) throws NoConnectionException {
+	protected Call<List<PostResponse>> pushAll(List<UserDto> userDtos) throws NoConnectionException {
 		throw new UnsupportedOperationException("Can't change users in app");
 	}
 
