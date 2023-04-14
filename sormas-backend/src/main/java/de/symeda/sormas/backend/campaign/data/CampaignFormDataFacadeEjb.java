@@ -760,6 +760,11 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		saveCampaignFormData(existingData);
 	}
 
+	@Override
+	public boolean isInJurisdiction(String campaignFormDataUuid) {
+		return campaignFormDataService.inJurisdictionOrOwned(campaignFormDataService.getByUuid(campaignFormDataUuid));
+	}
+
 	private CampaignFormDataReferenceDto toReferenceDto(CampaignFormData source) {
 		if (source == null) {
 			return null;
