@@ -541,7 +541,7 @@ public class ContactsView extends AbstractView {
 									true),
 								hasBulkOperationsRight)
 							: new MenuBarHelper.MenuBarItem(
-								I18nProperties.getCaption(Captions.bulkUndelete),
+								I18nProperties.getCaption(Captions.bulkRestore),
 								VaadinIcons.ARROW_BACKWARD,
 								mi -> grid.bulkActionHandler(
 									items -> ControllerProvider.getContactController().undeleteSelectedContacts(items, () -> navigateTo(criteria)),

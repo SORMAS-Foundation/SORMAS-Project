@@ -728,7 +728,7 @@ public class CasesView extends AbstractView {
 						}, hasBulkOperationsRight));
 					} else {
 						menuBarItems
-							.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkUndelete), VaadinIcons.ARROW_BACKWARD, mi -> {
+							.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkRestore), VaadinIcons.ARROW_BACKWARD, mi -> {
 								grid.bulkActionHandler(
 									items -> ControllerProvider.getCaseController().undeleteSelectedCases(items, () -> navigateTo(criteria)),
 									true);

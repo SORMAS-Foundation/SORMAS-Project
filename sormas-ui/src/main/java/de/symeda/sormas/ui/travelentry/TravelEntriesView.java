@@ -253,7 +253,7 @@ public class TravelEntriesView extends AbstractView {
 			} else {
 				bulkActions.add(
 					new MenuBarHelper.MenuBarItem(
-						I18nProperties.getCaption(Captions.bulkUndelete),
+						I18nProperties.getCaption(Captions.bulkRestore),
 						VaadinIcons.ARROW_BACKWARD,
 						mi -> grid.bulkActionHandler(
 							items -> ControllerProvider.getTravelEntryController().undeleteSelectedTravelEntries(items, () -> navigateTo(criteria)),

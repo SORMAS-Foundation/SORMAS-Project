@@ -227,12 +227,11 @@ public class EventParticipantsView extends AbstractEventView {
 						}, true);
 					}));
 				} else {
-					bulkActions
-						.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkUndelete), VaadinIcons.ARROW_BACKWARD, mi -> {
-							grid.bulkActionHandler(items -> {
-								ControllerProvider.getEventParticipantController().undeleteSelectedEventParticipants(items, () -> grid.reload());
-							}, true);
-						}));
+					bulkActions.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkRestore), VaadinIcons.ARROW_BACKWARD, mi -> {
+						grid.bulkActionHandler(items -> {
+							ControllerProvider.getEventParticipantController().undeleteSelectedEventParticipants(items, () -> grid.reload());
+						}, true);
+					}));
 				}
 			}
 			if (isDocGenerationAllowed()) {

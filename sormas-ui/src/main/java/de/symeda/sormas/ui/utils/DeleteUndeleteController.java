@@ -20,12 +20,12 @@ public class DeleteUndeleteController<F extends DeletableFacade> {
 		Label undeleteConfirmationMessage = new Label();
 		undeleteConfirmationMessage.setValue(
 			String.format(
-				I18nProperties.getString(Strings.confirmationUndeleteEntities),
+				I18nProperties.getString(Strings.confirmationRestoreEntities),
 				entityUuids.size(),
 				I18nProperties.getString(messages.getEntities())));
 
 		VaadinUiUtil.showConfirmationPopup(
-			I18nProperties.getString(Strings.headingUndeleteConfirmation),
+			I18nProperties.getString(Strings.headingRestoreConfirmation),
 			undeleteConfirmationMessage,
 			I18nProperties.getString(Strings.yes),
 			I18nProperties.getString(Strings.no),

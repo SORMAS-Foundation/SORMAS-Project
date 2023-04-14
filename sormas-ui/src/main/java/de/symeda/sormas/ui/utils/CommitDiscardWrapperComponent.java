@@ -461,7 +461,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 		Button deleteButton = ButtonHelper.createButton(
 			DELETE_UNDELETE,
-			deleted ? I18nProperties.getCaption(Captions.actionUnDelete) : I18nProperties.getCaption(Captions.actionDelete),
+			deleted ? I18nProperties.getCaption(Captions.actionRestore) : I18nProperties.getCaption(Captions.actionDelete),
 			e -> {
 				if (isDirty()) {
 					DirtyCheckPopup.show(this, () -> deletePopupCallback.run());
