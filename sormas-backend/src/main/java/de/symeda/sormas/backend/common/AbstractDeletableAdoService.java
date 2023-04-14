@@ -24,7 +24,7 @@ public abstract class AbstractDeletableAdoService<ADO extends DeletableAdo> exte
 		em.flush();
 	}
 
-	public void undelete(ADO ado) {
+	public void restore(ADO ado) {
 
 		ado.setDeletionReason(null);
 		ado.setOtherDeletionReason(null);

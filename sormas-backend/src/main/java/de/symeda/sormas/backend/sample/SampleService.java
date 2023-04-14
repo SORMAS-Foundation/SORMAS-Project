@@ -1044,12 +1044,12 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 	}
 
 	@Override
-	public void undelete(Sample sample) {
+	public void restore(Sample sample) {
 
 		for (PathogenTest pathogenTest : sample.getPathogenTests()) {
-			pathogenTestService.undelete(pathogenTest);
+			pathogenTestService.restore(pathogenTest);
 		}
-		super.undelete(sample);
+		super.restore(sample);
 	}
 
 	public void unlinkFromEventParticipant(Sample sample) {

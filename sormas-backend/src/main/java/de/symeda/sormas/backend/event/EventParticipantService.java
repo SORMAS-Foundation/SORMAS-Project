@@ -324,11 +324,11 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	}
 
 	@Override
-	public void undelete(EventParticipant eventParticipant) {
+	public void restore(EventParticipant eventParticipant) {
 
-		eventParticipant.getSamples().stream().forEach(sample -> sampleService.undelete(sample));
+		eventParticipant.getSamples().stream().forEach(sample -> sampleService.restore(sample));
 
-		super.undelete(eventParticipant);
+		super.restore(eventParticipant);
 	}
 
 	@Override
@@ -437,7 +437,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		return cb.isFalse(root.get(EventParticipant.DELETED));
 	}
 
-	public Predicate createDefaultInUndeletedEventsFilter(EventParticipantQueryContext eventParticipantQueryContext) {
+	public Predicate createDefaultInRestoredEventsFilter(EventParticipantQueryContext eventParticipantQueryContext) {
 
 		final EventParticipantJoins joins = eventParticipantQueryContext.getJoins();
 		final From<?, EventParticipant> eventParticipant = eventParticipantQueryContext.getRoot();

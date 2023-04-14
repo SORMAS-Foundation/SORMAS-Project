@@ -1683,11 +1683,11 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 	}
 
 	@Override
-	public void undelete(Contact contact) {
-		// undelete all samples only associated with this contact
-		contact.getSamples().stream().forEach(sample -> sampleService.undelete(sample));
+	public void restore(Contact contact) {
+		// restore all samples only associated with this contact
+		contact.getSamples().stream().forEach(sample -> sampleService.restore(sample));
 
-		super.undelete(contact);
+		super.restore(contact);
 	}
 
 	@Override

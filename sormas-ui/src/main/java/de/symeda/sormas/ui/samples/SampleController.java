@@ -82,7 +82,7 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
-import de.symeda.sormas.ui.utils.CoreEntityUndeleteMessages;
+import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
@@ -389,12 +389,12 @@ public class SampleController {
 		});
 
 		if (showDeleteButton && UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_DELETE)) {
-			editView.addDeleteWithReasonOrUndeleteListener((deleteDetails) -> {
+			editView.addDeleteWithReasonOrRestoreListener((deleteDetails) -> {
 				FacadeProvider.getSampleFacade().delete(dto.getUuid(), deleteDetails);
 				updateAssociationsForSample(dto);
 				UI.getCurrent().getNavigator().navigateTo(SamplesView.VIEW_NAME);
 			}, (deletionDetails) -> {
-				FacadeProvider.getSampleFacade().undelete(dto.getUuid());
+				FacadeProvider.getSampleFacade().restore(dto.getUuid());
 				updateAssociationsForSample(dto);
 				UI.getCurrent().getNavigator().navigateTo(SamplesView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entitySample), FacadeProvider.getSampleFacade().isDeleted(dto.getUuid()));
@@ -641,12 +641,12 @@ public class SampleController {
 		}
 	}
 
-	public void undeleteSelectedSamples(Collection<? extends SampleIndexDto> selectedRows, Runnable callback) {
-		ControllerProvider.getDeleteUndeleteController()
-			.undeleteSelectedItems(
+	public void restoreSelectedSamples(Collection<? extends SampleIndexDto> selectedRows, Runnable callback) {
+		ControllerProvider.getDeleteRestoreController()
+			.restoreSelectedItems(
 				selectedRows.stream().map(SampleIndexDto::getUuid).collect(Collectors.toList()),
 				FacadeProvider.getSampleFacade(),
-				CoreEntityUndeleteMessages.SAMPLE,
+				CoreEntityRestoreMessages.SAMPLE,
 				callback);
 	}
 

@@ -697,7 +697,7 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 					new EventParticipantQueryContext(cb, personQuery, joins.getEventParticipantJoins());
 				Predicate activeEventParticipantsFilter = activeEntriesOnly
 					? eventParticipantService.createActiveEventParticipantsInActiveEventsFilter(eventParticipantQueryContext)
-					: eventParticipantService.createDefaultInUndeletedEventsFilter(eventParticipantQueryContext);
+					: eventParticipantService.createDefaultInRestoredEventsFilter(eventParticipantQueryContext);
 				Predicate eventParticipantUserFilter = eventParticipantService.createUserFilter(eventParticipantQueryContext);
 				associationPredicates.add(
 					and(
