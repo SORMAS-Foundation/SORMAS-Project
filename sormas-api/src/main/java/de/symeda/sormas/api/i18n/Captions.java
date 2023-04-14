@@ -1449,6 +1449,7 @@ public interface Captions {
 	String LoginSidebar_outbreakResponse = "LoginSidebar.outbreakResponse";
 	String LoginSidebar_poweredBy = "LoginSidebar.poweredBy";
 	String mainMenuAbout = "mainMenuAbout";
+	String mainMenuSupport = "mainMenuSupport";
 	String mainMenuAggregateReports = "mainMenuAggregateReports";
 	String mainMenuCampaigns = "mainMenuCampaigns";
 	String mainMenuCases = "mainMenuCases";

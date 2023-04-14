@@ -57,6 +57,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserType;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -226,7 +227,7 @@ public class CampaignController {
 		};
 
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE) && !isCreate) {
+		if ( UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE) && !isCreate) {
 			CampaignDto finalCampaignDto = campaignDto;
 			campaignComponent.addDeleteListener(() -> {
 				FacadeProvider.getCampaignFacade().deleteCampaign(finalCampaignDto.getUuid());
@@ -275,7 +276,7 @@ public class CampaignController {
 		}
 		
 		//publish 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_PUBLISH)) {
+		if (UserProvider.getCurrent().getUser().getUsertype()==UserType.WHO_USER && UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_PUBLISH)) {
 			final String campaignUuid = campaignDto.getUuid();
 			CampaignDto finalCampaignDto = campaignDto;
 			
