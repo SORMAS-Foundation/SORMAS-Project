@@ -33,37 +33,37 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.InfoProvider;
 
 @SuppressWarnings("serial")
-public class AboutView extends VerticalLayout implements View {
+public class SupportView extends VerticalLayout implements View {
 
-	public static final String VIEW_NAME = "about";
+	public static final String VIEW_NAME = "support";
 
-	public AboutView() {
+	public SupportView() {
 		super();
 		setMargin(true);
 		
-		CustomLayout content = new CustomLayout("about");
+		CustomLayout content = new CustomLayout("support");
 		content.setSizeFull();
 		addComponent(content);
 		
-//		SormasUI.getCurrent().getPage().getJavaScript().execute("        var form = document.getElementById('my-form');\n"
-//				+ "        form.addEventListener(\"submit\", e => {\n"
-//				+ "            e.preventDefault();\n"
-//				+ "            fetch(form.action, {\n"
-//				+ "                method: \"POST\",\n"
-//				+ "                body: new FormData(document.getElementById(\"my-form\")),\n"
-//				+ "            }).then((response) => {\n"
-//				+ "   \n"
-//				+ "    alert(\"You have submitted this form \");\n"
-//				+ "    window.location.reload();\n"
-//				+ "\n"
-//				+ "  \n"
-//				+ "});\n"
-//				+ "        });");
-//		
-//		Label infoLabel = new Label(
-//				I18nProperties.getCaption(Captions.aboutApmisVersion) + " " + InfoProvider.InfoProvider_apmis(),
-//				ContentMode.HTML);
-//		addComponent(infoLabel);
+		SormasUI.getCurrent().getPage().getJavaScript().execute("        var form = document.getElementById('my-form');\n"
+				+ "        form.addEventListener(\"submit\", e => {\n"
+				+ "            e.preventDefault();\n"
+				+ "            fetch(form.action, {\n"
+				+ "                method: \"POST\",\n"
+				+ "                body: new FormData(document.getElementById(\"my-form\")),\n"
+				+ "            }).then((response) => {\n"
+				+ "   \n"
+				+ "    alert(\"You have submitted this form \");\n"
+				+ "    window.location.reload();\n"
+				+ "\n"
+				+ "  \n"
+				+ "});\n"
+				+ "        });");
+		
+		Label infoLabel = new Label(
+				I18nProperties.getCaption(Captions.aboutApmisVersion) + " " + InfoProvider.InfoProvider_apmis(),
+				ContentMode.HTML);
+		addComponent(infoLabel);
 		
 	}
 	

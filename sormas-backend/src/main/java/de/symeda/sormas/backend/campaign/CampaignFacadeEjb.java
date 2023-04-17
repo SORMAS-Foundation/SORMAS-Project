@@ -597,6 +597,15 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		return count.size() > 0;
 	}
 	
+	@Override
+	public boolean isPublished(String uuid) {
+		String cdvv = "select published from campaigns where uuid = '"+uuid+"' and published = false";
+	
+		List count = em.createNativeQuery(cdvv).getResultList();  
+		//System.out.println(cdvv +"  ++++++++++++++++   "+count.size());
+		return count.size() > 0;
+	}
+	
 
 	@Override
 	public void deleteCampaign(String campaignUuid) {
@@ -611,10 +620,8 @@ public class CampaignFacadeEjb implements CampaignFacade {
 
 		campaignService.delete(campaignService.getByUuid(campaignUuid));
 	}
-	
-	
 	@Override
-	public String cloneCampaign(String campaignUuid, String userCreating) {
+		public String cloneCampaign(String campaignUuid, String userCreating) {
 
 		User user = userService.getCurrentUser();
 		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
@@ -624,12 +631,17 @@ public class CampaignFacadeEjb implements CampaignFacade {
 					+ I18nProperties.getString(Strings.entityCampaigns).toLowerCase() + ".");
 		}
 		String newUuid = campaignService.cloneForm(campaignService.getByUuid(campaignUuid), user.getId());
+		
+		String newUuidx = campaignService.clonePopulationData(campaignService.getByUuid(campaignUuid), campaignService.getByUuid(newUuid));
+		
 		return newUuid;
 	}
 	
 	
+	
+	
 	@Override
-	public void publishCampaign(String campaignUuid, boolean published) {
+	public void publishandUnPublishCampaign(String campaignUuid, boolean publishedandunpublishbutton) {
 
 		User user = userService.getCurrentUser();
 		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
@@ -638,7 +650,9 @@ public class CampaignFacadeEjb implements CampaignFacade {
 				I18nProperties.getString(Strings.entityUser) + " " + user.getUuid() + " is not allowed to publish a campaign data  "
 					+ I18nProperties.getString(Strings.entityCampaigns).toLowerCase() + ".");
 		}
-		campaignService.campaignPublish(campaignUuid, published);
+		campaignService.campaignPublish(campaignUuid, publishedandunpublishbutton);
+		
+		
 	
 	}
 	

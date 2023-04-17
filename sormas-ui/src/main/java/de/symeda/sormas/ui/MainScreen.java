@@ -267,9 +267,15 @@ public class MainScreen extends HorizontalLayout {
 
 		// menu.addView(LanguageView.class, LanguageView.VIEW_NAME, "DashboardTest",
 		// VaadinIcons.GLOBE_WIRE);
+		
+		menu.addView(SupportView.class, "Support/Feedback", I18nProperties.getCaption(Captions.mainMenuSupport),
+				VaadinIcons.CHAT);
 
 		menu.addView(AboutView.class, AboutView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuAbout),
 				VaadinIcons.INFO_CIRCLE_O);
+
+		
+		
 
 		// menu.addView(CampaignGisView.class, CampaignGisView.VIEW_NAME,
 		// I18nProperties.getCaption("GIS"),
@@ -281,6 +287,7 @@ public class MainScreen extends HorizontalLayout {
 
 		menu.addViewx(LogoutTimeoutView.class, LogoutTimeoutView.VIEW_NAME);
 
+		
 		/*
 		 * //trying to include a javascript from this method MainScreenAbstract dd = new
 		 * MainScreenAbstract(); menu.addComponent(dd);

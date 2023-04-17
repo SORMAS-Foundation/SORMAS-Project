@@ -59,6 +59,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserType;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -228,7 +229,7 @@ public class CampaignController {
 		};
 
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE) && !isCreate) {
+		if ( UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE) && !isCreate) {
 			CampaignDto finalCampaignDto = campaignDto;
 			campaignComponent.addDeleteListener(() -> {
 				FacadeProvider.getCampaignFacade().deleteCampaign(finalCampaignDto.getUuid());
@@ -236,14 +237,7 @@ public class CampaignController {
 			}, I18nProperties.getString(Strings.entityCampaign));
 		}
 		
-		//publish 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_PUBLISH)) {
-			CampaignDto finalCampaignDto = campaignDto;
-			campaignComponent.addPublishListener(() -> {
-				FacadeProvider.getCampaignFacade().publishCampaign(finalCampaignDto.getUuid(), false);
-				UI.getCurrent().getNavigator().navigateTo(CampaignsView.VIEW_NAME);
-			}, I18nProperties.getString(Strings.entityCampaign));
-		}
+
 
 		// Clone
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE) && !isCreate) {
@@ -259,7 +253,7 @@ public class CampaignController {
 				// UI.getCurrent().getNavigator().navigateTo(CampaignsView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityCampaign));
 		}
-
+//close and open campaign 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
 			final String campaignUuid = campaignDto.getUuid();
 			CampaignDto finalCampaignDto = campaignDto;
@@ -282,6 +276,32 @@ public class CampaignController {
 
 			}
 		}
+		
+		//publish 
+		if (UserProvider.getCurrent().getUser().getUsertype()==UserType.WHO_USER && UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_PUBLISH)) {
+			final String campaignUuid = campaignDto.getUuid();
+			CampaignDto finalCampaignDto = campaignDto;
+			
+			boolean published = FacadeProvider.getCampaignFacade().isPublished(campaignUuid);
+			if (published) {
+				campaignComponent.addPublishListener(() -> {
+
+					FacadeProvider.getCampaignFacade().publishandUnPublishCampaign(finalCampaignDto.getUuid(), false);
+					campaignComponent.discard();
+					SormasUI.refreshView();
+				}, I18nProperties.getString(Strings.entityCampaign));
+
+			}else {
+				campaignComponent.addUnPublishListener(() -> {
+					FacadeProvider.getCampaignFacade().publishandUnPublishCampaign(finalCampaignDto.getUuid(), true);
+					campaignComponent.discard();
+					SormasUI.refreshView();
+				}, I18nProperties.getString(Strings.entityCampaign));
+
+			}
+		
+		}
+	
 
 		// Initialize 'Archive' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_ARCHIVE) && !isCreate) {
