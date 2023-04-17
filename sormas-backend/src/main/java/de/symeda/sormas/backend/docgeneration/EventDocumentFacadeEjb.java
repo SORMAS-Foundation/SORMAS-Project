@@ -21,6 +21,7 @@ import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.EventDocumentFacade;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
+import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -70,7 +71,7 @@ public class EventDocumentFacadeEjb implements EventDocumentFacade {
 			try {
 				helper.saveDocument(
 					helper.getDocumentFileName(eventReference, templateName),
-					null,// default type will be applied: "application/octet-stream" for /*"text/html"*/ it will work as well in the same way.
+					DocumentDto.MIME_TYPE_DEFAULT,
 					documentToSave.length,
 					helper.getDocumentRelatedEntityType(eventReference),
 					eventReference.getUuid(),
