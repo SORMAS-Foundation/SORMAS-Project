@@ -37,6 +37,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
@@ -64,6 +65,7 @@ import de.symeda.sormas.api.campaign.form.CampaignFormElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.PopulationDataCriteria;
 import de.symeda.sormas.api.infrastructure.PopulationDataDto;
@@ -73,6 +75,7 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.FormAccess;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.campaign.Campaign;
@@ -96,8 +99,10 @@ import de.symeda.sormas.backend.infrastructure.district.DistrictService;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
+import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
@@ -147,6 +152,9 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 
 	@EJB
 	private DistrictFacadeEjb.DistrictFacadeEjbLocal districtFacadeEjb;
+	
+	@EJB
+	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 
 	public CampaignFormData fromDto(@NotNull CampaignFormDataDto source, boolean checkChangeDate) {
 		CampaignFormData target = DtoHelper.fillOrBuildEntity(source, campaignFormDataService.getByUuid(source.getUuid()), CampaignFormData::new, checkChangeDate);
@@ -287,7 +295,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 	public List<CampaignFormDataIndexDto> getIndexList(CampaignFormDataCriteria criteria, Integer first, Integer max,
 			List<SortProperty> sortProperties) {
 
-		//System.out.println(criteria.getCampaignFormMeta().getUuid()+"sdddddddddddddfdsyu876456uiuytrertyuyttyukldsssssssssssssssss formValues"+sortProperties.get(1));
+		System.out.println((criteria == null) +" ---poiuhgfghj==__==kjhghyujkl--- "+criteria.getCampaign());
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CampaignFormDataIndexDto> cq = cb.createQuery(CampaignFormDataIndexDto.class);
@@ -309,7 +317,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 						districtJoin.get(District.NAME), districtJoin.get(District.EXTERNAL_ID),
 						communityJoin.get(Community.NAME), communityJoin.get(Community.CLUSTER_NUMBER), communityJoin.get(Community.EXTERNAL_ID),
 						root.get(CampaignFormData.FORM_DATE),
-				campaignFormMetaJoin.get(CampaignFormMeta.FORM_TYPE));
+						campaignFormMetaJoin.get(CampaignFormMeta.FORM_TYPE));
 
 		
 		Predicate filter = CriteriaBuilderHelper.and(cb,
@@ -1600,5 +1608,25 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		}
 		
 	}
+
+	@Override
+	public void deleteCampaignData(List<String> uuids) {
+		
+		User user = userService.getCurrentUser();
+		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
+			.contains(UserRight.CAMPAIGN_DELETE)) {
+			throw new UnsupportedOperationException(
+				I18nProperties.getString(Strings.entityUser) + " " + user.getUuid() + " is not allowed to delete "
+					+ I18nProperties.getString(Strings.entityCampaigns).toLowerCase() + ".");
+		}
+		
+		for(String uuidx : uuids) {
+				campaignFormDataService.delete(campaignFormDataService.getByUuid(uuidx));
+		}
+		
+	}
+	
+	
+	
 
 }

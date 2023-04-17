@@ -127,15 +127,22 @@ public class CampaignSelector extends HorizontalLayout {
 		}
 		yearFilter.setItems(camYearList.stream().distinct().collect(Collectors.toList()));
 		yearFilter.setEmptySelectionAllowed(false);
-		
+		yearFilter.addContextClickListener(ee -> {
+			
+			System.out.println("=================================");
+		});
 		yearFilter.addValueChangeListener(e -> {
 			boolean isCampaignChangedx = false;
 			
-			if(UI.getCurrent().getSession().getCurrent().getAttribute("lastcriteria") != null && UI.getCurrent().getSession().getCurrent().getAttribute("lastcriteria").toString().contains("campaign=")) {
+			if(UI.getCurrent().getSession().getCurrent().getAttribute("lastcriteria") != null 
+					&& UI.getCurrent().getSession().getCurrent().getAttribute("lastcriteria").toString().contains("campaign=")
+					&& e.getValue() == e.getOldValue()
+					) {
 				
 				isCampaignChangedx = true;
 			}
-			System.out.println("000000 = "+!isCampaignChangedx);
+			System.out.println(e.getValue() + "==000000 = "+!isCampaignChangedx);
+			System.out.println(e.getOldValue() + "==000000 = "+!isCampaignChangedx);
 		//not working well when already in session campaign=
 			
 			if (!isCampaignChangedx) {

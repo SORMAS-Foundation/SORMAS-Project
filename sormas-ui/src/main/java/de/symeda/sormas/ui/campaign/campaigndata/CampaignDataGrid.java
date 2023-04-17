@@ -25,7 +25,9 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
+import com.vaadin.ui.Grid.SelectionMode;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.NumberRenderer;
 import com.vaadin.ui.themes.ValoTheme;
@@ -33,22 +35,29 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignIndexDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataIndexDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.campaign.components.importancefilterswitcher.CriteriaPhase;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
+import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, CampaignFormDataCriteria> {
 
 	private static final long serialVersionUID = 8045806100043073638L;
+	private CampaignFormDataCriteria criteria_;
 
 	NumberRenderer numberRenderer = new NumberRenderer();
 
@@ -56,7 +65,10 @@ public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, Cam
 
 		super(CampaignFormDataIndexDto.class);
 		setSizeFull();
-
+		System.out.println("-----#######1111 "+(criteria == null));
+		System.out.println("-----#######2222 "+criteria.getCampaign());
+		this.criteria_ = criteria;
+		setEagerDataProvider();
 		setDataProvider();
 		setCriteria(criteria);
 
@@ -115,6 +127,7 @@ public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, Cam
 	}
 
 	public void setDataProvider() {
+		System.out.println("  %%%%%%%%%%%%%%%%%%%%%%%%%%% ");
 		DataProvider<CampaignFormDataIndexDto, CampaignFormDataCriteria> dataProvider = DataProvider
 				.fromFilteringCallbacks(
 						query -> FacadeProvider.getCampaignFormDataFacade()
@@ -128,7 +141,7 @@ public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, Cam
 						query -> (int) FacadeProvider.getCampaignFormDataFacade()
 								.count(query.getFilter().orElse(null)));
 		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.NONE);
+		//setSelectionMode(SelectionMode.MULTI);
 	}
 
 	public void addCustomColumn(String property, String caption) {
@@ -149,4 +162,62 @@ public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, Cam
 		}
 
 	}
+	
+	
+	public void setEagerDataProvider() {
+		ListDataProvider<CampaignFormDataIndexDto> dataProvider = null;
+		
+		System.out.println("dddddd---rrrr "+(getCriteria() == null));
+		
+		System.out.println("dddddd---eeee "+ getCriteria());
+		
+		if(getCriteria() != null) {
+
+		if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN_SUPERVISOR)) {
+			dataProvider = DataProvider.fromStream(
+					FacadeProvider.getCampaignFormDataFacade().getIndexList(getCriteria(), null, null, null).stream().filter(e -> e.getDistrict().equals(UserProvider.getCurrent().getUser().getDistrict())));
+		} else if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
+//			dataProvider = DataProvider.fromStream(
+//					FacadeProvider.getCampaignFormDataFacade().getIndexList(getCriteria(), null, null, null).stream().filter(e -> e.getDistrict().equals(UserProvider.getCurrent().getUser().getDistrict())));
+		
+			dataProvider =
+					DataProvider.fromStream(FacadeProvider.getCampaignFormDataFacade().getIndexList(getCriteria(), null, null, null).stream());
+				
+			
+		} else {
+			dataProvider = DataProvider.fromStream(
+					FacadeProvider.getCampaignFormDataFacade().getIndexList(getCriteria(), null, null, null).stream().filter(e -> e.getDistrict().equals(UserProvider.getCurrent().getUser().getDistrict())));
+		}
+		
+			}else {
+			
+			if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN_SUPERVISOR)) {
+				dataProvider = DataProvider.fromStream(
+						FacadeProvider.getCampaignFormDataFacade().getIndexList(criteria_, null, null, null).stream().filter(e -> e.getDistrict().equals(UserProvider.getCurrent().getUser().getDistrict())));
+			} else if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
+//				dataProvider = DataProvider.fromStream(
+//						FacadeProvider.getCampaignFormDataFacade().getIndexList(criteria_, null, null, null).stream().filter(e -> e.getDistrict().equals(UserProvider.getCurrent().getUser().getDistrict())));
+			
+				dataProvider =
+						DataProvider.fromStream(FacadeProvider.getCampaignFormDataFacade().getIndexList(criteria_, null, null, null).stream());
+					
+				
+				
+//				dataProvider = DataProvider.fromStream(
+//						FacadeProvider.getUserFacade().getIndexList(getCriteria(), null, null, null).stream().filter(null));
+			} else {
+				dataProvider = DataProvider.fromStream(
+						FacadeProvider.getCampaignFormDataFacade().getIndexList(criteria_, null, null, null).stream().filter(e -> e.getDistrict().equals(UserProvider.getCurrent().getUser().getDistrict())));
+			}
+			
+			
+		}
+		
+		
+		setDataProvider(dataProvider);
+		
+		
+		//
+	}
+
 }

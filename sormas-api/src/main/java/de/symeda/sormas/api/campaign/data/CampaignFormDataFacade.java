@@ -94,5 +94,7 @@ public interface CampaignFormDataFacade {
 	List<MapCampaignDataDto> getCampaignDataforMaps();
 	
 	String getByClusterDropDown(CommunityReferenceDto community, CampaignFormMetaDto campaignForm, CampaignDto campaign);
+
+	void deleteCampaignData(List<String> uuids);
 	
 }

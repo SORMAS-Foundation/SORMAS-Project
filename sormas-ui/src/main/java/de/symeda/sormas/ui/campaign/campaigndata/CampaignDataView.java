@@ -35,8 +35,11 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
+import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Grid.SelectionMode;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.MenuBar;
@@ -122,10 +125,15 @@ public class CampaignDataView extends AbstractCampaignView {
 		criteria.setFormType(campaignFormPhaseSelector.getValue().toString());
 		addHeaderComponent(campaignFormPhaseSelector);
 
+		System.out.println("-----####### "+criteria.getCampaign());
 		grid = new CampaignDataGrid(criteria);
 		rowsCount = new RowCount(Strings.labelNumberDataRows, grid.getItemCount());
 
 		VerticalLayout mainLayout = new VerticalLayout();
+		
+		Accordion accordion = new Accordion();
+		
+		
 		HorizontalLayout filtersLayout = new HorizontalLayout();
 
 		filtersLayout.setWidthFull();
@@ -136,13 +144,54 @@ public class CampaignDataView extends AbstractCampaignView {
 		filtersLayout.addComponent(filterBar);
 		filtersLayout.setComponentAlignment(filterBar, Alignment.TOP_LEFT);
 		filtersLayout.setExpandRatio(filterBar, 0.8f);
+		
+		{
+			// Bulk operation dropdown
+			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+				bulkOperationsDropdown = MenuBarHelper.createDropDown(
+					Captions.bulkActions,
+					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDelete), VaadinIcons.DEL, selectedItem -> {
+						ControllerProvider.getCampaignController()
+							.deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
+					}, true));
+
+				bulkOperationsDropdown.setVisible(ViewModelProviders.of(UsersView.class).get(ViewConfiguration.class).isInEagerMode());
+				filtersLayout.addComponent(bulkOperationsDropdown);
+			}
+		}
 
 		importanceFilterSwitcher = new ImportanceFilterSwitcher();
 		importanceFilterSwitcher.setVisible(false);
 		filtersLayout.addComponent(importanceFilterSwitcher);
 		filtersLayout.setComponentAlignment(importanceFilterSwitcher, Alignment.TOP_RIGHT);
 		filtersLayout.setExpandRatio(importanceFilterSwitcher, 0.2f);
-
+		//filtersLayout.setMargin(true);
+		
+		 HorizontalLayout filtersLayoutx = new HorizontalLayout();
+		 
+		 	Button button1 = new Button("Hide filters");
+	        button1.addStyleName(ValoTheme.BUTTON_LINK);
+	        button1.addClickListener(event -> {
+	        	filtersLayout.setVisible(false);
+	        	filtersLayoutx.setVisible(true);
+	        });
+	        filtersLayout.addComponent(button1);
+	        
+	       
+	        Button button12 = new Button("Show filters");
+	        button12.addStyleName(ValoTheme.BUTTON_LINK);
+	        button12.addClickListener(event -> {
+	        	filtersLayoutx.setVisible(false);
+	        	filtersLayout.setVisible(true);
+	        }
+	        		
+	        		);
+	       
+	        filtersLayoutx.addComponent(button12);
+	        filtersLayoutx.setComponentAlignment(button12, Alignment.TOP_RIGHT);
+	        filtersLayoutx.setVisible(false);
+				
+	    mainLayout.addComponent(filtersLayoutx);
 		mainLayout.addComponent(filtersLayout);
 
 		filterForm.getField(CampaignFormDataCriteria.CAMPAIGN_FORM_META).addValueChangeListener(e -> {
@@ -165,7 +214,7 @@ public class CampaignDataView extends AbstractCampaignView {
 
 		mainLayout.addComponent(rowsCount);
 		mainLayout.addComponent(grid);
-		mainLayout.setMargin(true);
+		//mainLayout.setMargin(true);
 		mainLayout.setSpacing(false);
 		mainLayout.setSizeFull();
 		mainLayout.setExpandRatio(grid, 1);
@@ -308,7 +357,9 @@ public class CampaignDataView extends AbstractCampaignView {
 		rowsCount.update(grid.getItemCount());
 
 		JavaScript js = Page.getCurrent().getJavaScript();
-		js.execute("$(document).ready(function() {\n" + "	if ($(window).width() <= 825) {\n"
+		js.execute("$(document).ready(function() {\n" + ""
+				+ "document.querySelector(\".v-label.v-widget.h1.v-label-h1.vspace-none.v-label-vspace-none.v-label-undef-w\").style.display='none';\n"
+				+ "	if ($(window).width() <= 825) {\n"
 				+ "document.querySelector(\".v-label.v-widget.h1.v-label-h1.vspace-none.v-label-vspace-none.v-label-undef-w\").style.display='none';\n"
 
 				+ "document.querySelector(\".v-horizontallayout-view-headerxxxx :nth-child(12)\").style.display='none';"
@@ -324,6 +375,55 @@ public class CampaignDataView extends AbstractCampaignView {
 //
 //				+ "});"
 				+ "});");
+		
+		
+		
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.bulkDelete, VaadinIcons.CHECK_SQUARE_O, null);
+			
+			btnEnterBulkEditMode.setVisible(!ViewModelProviders.of(CampaignDataView.class).get(ViewConfiguration.class).isInEagerMode());
+
+			addHeaderComponent(btnEnterBulkEditMode);
+
+			Button btnLeaveBulkEditMode =
+				ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
+			btnLeaveBulkEditMode.setVisible(ViewModelProviders.of(CampaignDataView.class).get(ViewConfiguration.class).isInEagerMode());
+			if(ViewModelProviders.of(CampaignDataView.class).get(ViewConfiguration.class).isInEagerMode()) {
+				grid.setSelectionMode(SelectionMode.MULTI);	
+			}else {
+				grid.setSelectionMode(SelectionMode.SINGLE);
+			}
+			
+
+			addHeaderComponent(btnLeaveBulkEditMode); 
+
+			btnEnterBulkEditMode.addClickListener(e -> {
+				bulkOperationsDropdown.setVisible(true);
+				ViewModelProviders.of(CampaignDataView.class).get(ViewConfiguration.class).setInEagerMode(true);
+				System.out.println("+++++++++ -----: "+!ViewModelProviders.of(CampaignDataView.class).get(ViewConfiguration.class).isInEagerMode());
+				
+				grid.setSelectionMode(SelectionMode.MULTI);
+				
+				btnEnterBulkEditMode.setVisible(false);
+				btnLeaveBulkEditMode.setVisible(true);
+				grid.reload();
+			});
+			btnLeaveBulkEditMode.addClickListener(e -> {
+				bulkOperationsDropdown.setVisible(false);
+				ViewModelProviders.of(CampaignDataView.class).get(ViewConfiguration.class).setInEagerMode(false);
+				System.out.println("+++++++++ -----: "+!ViewModelProviders.of(CampaignDataView.class).get(ViewConfiguration.class).isInEagerMode());
+				
+				grid.setSelectionMode(SelectionMode.SINGLE);
+				btnLeaveBulkEditMode.setVisible(false);
+				btnEnterBulkEditMode.setVisible(true);
+				navigateTo(criteria);
+			});
+		}
+		
+		
+		
+		
 
 		executeJavaScript();
 //		
@@ -514,57 +614,10 @@ public class CampaignDataView extends AbstractCampaignView {
 
 		callBackFormData();
 		
-		
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
-			btnEnterBulkEditMode.setVisible(!ViewModelProviders.of(CampaignDataView.class).get(ViewConfiguration.class).isInEagerMode());
-
-			addHeaderComponent(btnEnterBulkEditMode);
-
-			Button btnLeaveBulkEditMode =
-				ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
-			btnLeaveBulkEditMode.setVisible(ViewModelProviders.of(CampaignDataView.class).get(ViewConfiguration.class).isInEagerMode());
-
-			addHeaderComponent(btnLeaveBulkEditMode); 
-
-			btnEnterBulkEditMode.addClickListener(e -> {
-				bulkOperationsDropdown.setVisible(true);
-				ViewModelProviders.of(CampaignDataView.class).get(ViewConfiguration.class).setInEagerMode(true);
-				btnEnterBulkEditMode.setVisible(false);
-				btnLeaveBulkEditMode.setVisible(true);
-				grid.reload();
-			});
-			btnLeaveBulkEditMode.addClickListener(e -> {
-				bulkOperationsDropdown.setVisible(false);
-				ViewModelProviders.of(CampaignDataView.class).get(ViewConfiguration.class).setInEagerMode(false);
-				btnLeaveBulkEditMode.setVisible(false);
-				btnEnterBulkEditMode.setVisible(true);
-				navigateTo(criteria);
-			});
-		}
-		
-		{
-			// Bulk operation dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-				bulkOperationsDropdown = MenuBarHelper.createDropDown(
-					Captions.bulkActions,
-					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionEnable), VaadinIcons.CHECK_SQUARE_O, selectedItem -> {
-//						ControllerProvider.getCampaignController()
-//							.enableAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
-					}, true),
-					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDisable), VaadinIcons.THIN_SQUARE, selectedItem -> {
-//						ControllerProvider.getUserController()
-//							.disableAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
-					}, true));
-
-				bulkOperationsDropdown.setVisible(ViewModelProviders.of(UsersView.class).get(ViewConfiguration.class).isInEagerMode());
-			//	actionButtonsLayout.addComponent(bulkOperationsDropdown);
-			}
-		}
-
 		return filterForm;
 
 	}
+	
 
 	public void callBackFormData() {
 	//	System.out.println("111111111111111111__5555555555555555____11111111111111111111");
@@ -756,5 +809,6 @@ public class CampaignDataView extends AbstractCampaignView {
 							+ "    elem.setAttribute(\"title\", elem.textContent);\r\n" + "});");
 		});
 	}
+	
 
 }

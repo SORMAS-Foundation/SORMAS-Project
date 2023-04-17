@@ -22,6 +22,7 @@ import static java.util.Objects.nonNull;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -49,6 +50,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataIndexDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -722,4 +724,31 @@ public class CampaignController {
 		String navigationState = CampaignDataView.VIEW_NAME + "/?" + CampaignFormDataDto.CAMPAIGN + "=" + campaignUuid;
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
+	
+	
+	public void deleteAllSelectedItems(Collection<CampaignFormDataIndexDto> selectedRows, Runnable callback) {
+
+		if (selectedRows.size() == 0) {
+			new Notification(I18nProperties.getString(Strings.headingNoUsersSelected),
+					I18nProperties.getString(Strings.messageNoUsersSelected), Notification.Type.WARNING_MESSAGE, false)
+					.show(Page.getCurrent());
+		} else {
+			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.headingConfirmEnabling),
+					new Label(String.format(I18nProperties.getString(Strings.confirmationEnableUsers),
+							selectedRows.size())),
+					I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), null, confirmed -> {
+						if (!confirmed) {
+							return;
+						}
+						List<String> uuids = selectedRows.stream().map(CampaignFormDataIndexDto::getUuid).collect(Collectors.toList());
+						System.out.println("-----uuidsuuidsuuids---: "+uuids.size());
+						FacadeProvider.getCampaignFormDataFacade().deleteCampaignData(uuids);
+						callback.run();
+						new Notification(I18nProperties.getString(Strings.headingUsersEnabled),
+								I18nProperties.getString(Strings.messageUsersEnabled),
+								Notification.Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
+					});
+		}
+	}
+
 }

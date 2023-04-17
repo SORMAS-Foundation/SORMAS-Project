@@ -137,9 +137,15 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 		if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN_SUPERVISOR)) {
 			dataProvider = DataProvider.fromStream(
 					FacadeProvider.getUserFacade().getIndexList(getCriteria(), null, null, null).stream().filter(e -> e.getDistrict().equals(UserProvider.getCurrent().getUser().getDistrict())));
-		} else if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN_SUPERVISOR)) {
-			dataProvider = DataProvider.fromStream(
-					FacadeProvider.getUserFacade().getIndexList(getCriteria(), null, null, null).stream().filter(null));
+		} else if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
+			
+			dataProvider =
+					DataProvider.fromStream(FacadeProvider.getUserFacade().getIndexList(getCriteria(), null, null, null).stream());
+				
+			
+			
+//			dataProvider = DataProvider.fromStream(
+//					FacadeProvider.getUserFacade().getIndexList(getCriteria(), null, null, null).stream().filter(null));
 		} else {
 			dataProvider = DataProvider.fromStream(
 					FacadeProvider.getUserFacade().getIndexList(getCriteria(), null, null, null).stream().filter(e -> e.getDistrict().equals(UserProvider.getCurrent().getUser().getDistrict())));

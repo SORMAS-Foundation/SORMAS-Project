@@ -77,7 +77,7 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 		formActionButtonsComponent.style(CssStyles.FORCE_CAPTION);
 		formActionButtonsComponent.setSpacing(false);
 		formActionButtonsComponent.setSizeFull();
-		formActionButtonsComponent.setMargin(new MarginInfo(false, false, false, true)); /// campaigndata
+		formActionButtonsComponent.setMargin(new MarginInfo(false, false, false, true));
 	}
 
 
