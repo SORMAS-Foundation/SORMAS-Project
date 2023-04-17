@@ -134,8 +134,6 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 
 		return em.createQuery(cq).getResultList();
 	}
-	
-	
 
 	public String cloneForm(Campaign uuidx, Long userCreatingId) {
 
@@ -143,11 +141,11 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 		String cds = "";
 
 		final Long mill = ZonedDateTime.now().toInstant().toEpochMilli();
-		
+
 		try {
 			cds = cloneFormx1x(uuidx, mill, userCreatingId);
 		} finally {
-			cdv = "insert into campaign_campaignformmeta  (SELECT "+mill+" as id, "
+			cdv = "insert into campaign_campaignformmeta  (SELECT " + mill + " as id, "
 					+ "cd.campaignformmeta_id, cd.sys_period FROM campaigns dc inner join campaign_campaignformmeta cd on (dc.id = cd.campaign_id) where dc.name='"
 					+ uuidx + "' and deleted = false)";
 
@@ -155,22 +153,41 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 		int notused = em.createNativeQuery(cdv).executeUpdate();
 		return cds;
 	}
-	
+
+	public String clonePopulationData(Campaign uuidx, Campaign newCampaignUuid) {
+
+		String cdv = "";
+		String cds = "";
+
+		final Long mill = ZonedDateTime.now().toInstant().toEpochMilli();
+
+//	
+//			cdv = "insert into campaign_campaignformmeta  (SELECT " + mill + " as id, "
+//					+ "cd.campaignformmeta_id, cd.sys_period FROM campaigns dc inner join campaign_campaignformmeta cd on (dc.id = cd.campaign_id) where dc.name='"
+//					+ uuidx + "' and deleted = false)";
+
+		cdv = "INSERT INTO populationdata (id, uuid, changedate, creationdate, region_id, district_id, agegroup, population,collectiondate, campaign_id, selected)"
+				+ " SELECT " + mill
+				+ " as id, concat(uuid, '-DUP') as uuid, changedate, creationdate, region_id, district_id, agegroup, population, collectiondate, "+newCampaignUuid.getId()+", selected FROM populationdata "
+				+ "WHERE campaign_id = "+uuidx.getId()+";";
+
+		int notused = em.createNativeQuery(cdv).executeUpdate();
+		return cds;
+	}
 
 	public int campaignPublish(String uuidx, boolean published) {
 
 		String cdvv = "";
 		if (published) {
 			cdvv = "update campaigns c set published = false where uuid = '" + uuidx + "' ";
-			
+
 		} else {
 			cdvv = "update campaigns c set published = true where uuid = '" + uuidx + "' ";
 		}
 		System.out.println(cdvv);
 		return em.createNativeQuery(cdvv).executeUpdate();
 	}
-	
-	
+
 	public int closeAndOpenForm(String uuidx, boolean close) {
 
 		String cdvv = "";
@@ -187,23 +204,18 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 
 		UUID uuisd = UUID.randomUUID();
 
-		
-
-		String cdc = "insert into campaigns (SELECT "+mill+" as id, '"
-				+ uuisd.toString().toUpperCase()
+		String cdc = "insert into campaigns (SELECT " + mill + " as id, '" + uuisd.toString().toUpperCase()
 				+ "' as uuid, changedate, creationdate, CONCAT(name,'-DUP'), description, startdate, enddate, "
 				+ userCreatingId
 				+ ", deleted, archived, sys_period, dashboardelements, cluster, round, campaignyear FROM campaigns where name='"
 				+ uuidx + "' and archived = false and  deleted = false)";
-		
+
 		System.out.println(cdc);
-		
+
 		em.createNativeQuery(cdc).executeUpdate();
 
 		return uuisd.toString().toUpperCase();
 	}
-
-	
 
 	/*
 	 * public int cloneFormx(Campaign uuidx, int unix) { String cdv =
@@ -215,10 +227,9 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 	public Predicate createActiveCampaignsFilter(CriteriaBuilder cb, Root<Campaign> root) {
 		return cb.and(cb.isFalse(root.get(Campaign.ARCHIVED)), cb.isFalse(root.get(Campaign.DELETED)));
 	}
-	
-	
-	
+
 	public Predicate createActiveCampaignsFilterForMobile(CriteriaBuilder cb, Root<Campaign> root) {
-		return cb.and(cb.isFalse(root.get(Campaign.ARCHIVED)), cb.isTrue(root.get(Campaign.CLOSEOPEN)), cb.isFalse(root.get(Campaign.DELETED)));
+		return cb.and(cb.isFalse(root.get(Campaign.ARCHIVED)), cb.isTrue(root.get(Campaign.CLOSEOPEN)),
+				cb.isFalse(root.get(Campaign.DELETED)));
 	}
 }

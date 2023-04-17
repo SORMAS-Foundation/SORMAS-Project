@@ -620,10 +620,8 @@ public class CampaignFacadeEjb implements CampaignFacade {
 
 		campaignService.delete(campaignService.getByUuid(campaignUuid));
 	}
-	
-	
 	@Override
-	public String cloneCampaign(String campaignUuid, String userCreating) {
+		public String cloneCampaign(String campaignUuid, String userCreating) {
 
 		User user = userService.getCurrentUser();
 		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
@@ -633,8 +631,13 @@ public class CampaignFacadeEjb implements CampaignFacade {
 					+ I18nProperties.getString(Strings.entityCampaigns).toLowerCase() + ".");
 		}
 		String newUuid = campaignService.cloneForm(campaignService.getByUuid(campaignUuid), user.getId());
+		
+		String newUuidx = campaignService.clonePopulationData(campaignService.getByUuid(campaignUuid), campaignService.getByUuid(newUuid));
+		
 		return newUuid;
 	}
+	
+	
 	
 	
 	@Override
@@ -648,6 +651,8 @@ public class CampaignFacadeEjb implements CampaignFacade {
 					+ I18nProperties.getString(Strings.entityCampaigns).toLowerCase() + ".");
 		}
 		campaignService.campaignPublish(campaignUuid, publishedandunpublishbutton);
+		
+		
 	
 	}
 	
