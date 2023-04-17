@@ -7,18 +7,27 @@ ext.sormasVersion = getVersionName()
 ext.keystoreProperties = loadKeystoreProperties()
 
 android {
+
     // this avoids build errors as these files are present multiple times in the project dependencies,
     // however, as they do not need to be part of the artifact, they can be excluded
-    packagingOptions{
-        exclude 'META-INF/LICENSE.md'
-        exclude 'META-INF/NOTICE.md'
+    packagingOptions {
+        jniLibs {
+            excludes += ['META-INF/spring.*']
+        }
+        resources {
+            excludes += ['META-INF/LICENSE.md',
+                         'META-INF/NOTICE.md',
+                         'META-INF/maven/de.symeda.sormas/sormas-api/pom.properties',
+                         'META-INF/maven/de.symeda.sormas/sormas-api/pom.xml',
+                         'META-INF/license.txt',
+                         'META-INF/notice.txt',
+                         'META-INF/spring.*']
+        }
     }
 
     // https://medium.com/google-developers/picking-your-compilesdkversion-minsdkversion-targetsdkversion-a098a0341ebd
     // ideally: minSdkVersion (lowest possible) <= targetSdkVersion == compileSdkVersion (latest SDK)
     compileSdkVersion 31
-    // always use the latest
-    buildToolsVersion '30.0.2'
 
     defaultConfig {
         applicationId "de.symeda.sormas.app"
@@ -53,19 +62,9 @@ android {
             }
         }
     }
-    packagingOptions {
-        exclude 'META-INF/maven/de.symeda.sormas/sormas-api/pom.properties'
-        exclude 'META-INF/maven/de.symeda.sormas/sormas-api/pom.xml'
-        exclude 'META-INF/license.txt'
-        exclude 'META-INF/notice.txt'
-        exclude 'META-INF/spring.*'
-    }
     productFlavors {
     }
 
-    lintOptions {
-        abortOnError false
-    }
     defaultConfig {
         vectorDrawables.useSupportLibrary = true
     }
@@ -81,6 +80,10 @@ android {
     useLibrary 'android.test.runner'
     useLibrary 'android.test.base'
     useLibrary 'android.test.mock'
+    namespace 'de.symeda.sormas.app'
+    lint {
+        abortOnError false
+    }
 }
 
 repositories {
@@ -151,7 +154,7 @@ apply plugin: "jacoco"
 
 jacoco {
     toolVersion = "0.8.5"
-    reportsDir = file("$buildDir/reports")
+    reportsDirectory = file("$buildDir/reports")
 }
 task jacocoUnitTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) {
     def coverageSourceDirs = [
@@ -176,8 +179,8 @@ task jacocoUnitTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) 
             "jacoco/testDebugUnitTest.exec"
     ])
     reports {
-        xml.enabled = true
-        html.enabled = true
+        xml.required = true
+        html.required = true
     }
 }
 
