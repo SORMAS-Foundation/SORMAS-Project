@@ -236,7 +236,9 @@ public class EventImportFacadeEjb implements EventImportFacade {
 						}
 
 					} else if (DataHelper.equal(cellData.getEntityClass(), DataHelper.getHumanClassName(EventGroupReferenceDto.class))) {
-						eventGroupReferences.add(new EventGroupReferenceDto(cellData.getValue()));
+						if (!StringUtils.isEmpty(cellData.getValue())) {
+							eventGroupReferences.add(new EventGroupReferenceDto(cellData.getValue()));
+						}
 					} else if (!StringUtils.isEmpty(cellData.getValue())) {
 						// If the cell entry is not empty, try to insert it into the current event
 						insertColumnEntryIntoData(event, cellData.getValue(), cellData.getEntityPropertyPath());
