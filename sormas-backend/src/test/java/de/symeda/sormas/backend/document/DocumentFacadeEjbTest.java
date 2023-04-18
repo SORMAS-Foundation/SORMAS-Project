@@ -116,6 +116,6 @@ public class DocumentFacadeEjbTest extends AbstractBeanTest {
 		assertThrows(
 			FileExtensionNotAllowedException.class,
 			() -> creator
-				.createDocument(user.toReference(), "test.json", null, 42L, event.toReference(), "content".getBytes(StandardCharsets.UTF_8)));
+				.createDocument(user.toReference(), "test.json", DocumentDto.MIME_TYPE_DEFAULT, 42L, event.toReference(), "content".getBytes(StandardCharsets.UTF_8)));
 	}
 }

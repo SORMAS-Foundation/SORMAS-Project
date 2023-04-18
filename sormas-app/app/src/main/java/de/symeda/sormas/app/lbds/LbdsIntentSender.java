@@ -20,7 +20,7 @@ import com.googlecode.openbeans.IntrospectionException;
 import android.content.Context;
 import android.util.Log;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
@@ -204,7 +204,7 @@ public class LbdsIntentSender {
 
 		Retrofit retrofit = RetroProvider.buildRetrofit(getLbdsUrl());
 		PersonFacadeRetro personFacadeRetro = retrofit.create(PersonFacadeRetro.class);
-		Call<List<PushResult>> call = personFacadeRetro.pushAll(personsToSend);
+		Call<List<PostResponse>> call = personFacadeRetro.pushAll(personsToSend);
 
 		return toHttpMethod(call);
 	}
@@ -213,7 +213,7 @@ public class LbdsIntentSender {
 
 		Retrofit retrofit = RetroProvider.buildRetrofit(getLbdsUrl());
 		CaseFacadeRetro caseFacadeRetro = retrofit.create(CaseFacadeRetro.class);
-		Call<List<PushResult>> call = caseFacadeRetro.pushAll(casesToSend);
+		Call<List<PostResponse>> call = caseFacadeRetro.pushAll(casesToSend);
 
 		return toHttpMethod(call);
 	}

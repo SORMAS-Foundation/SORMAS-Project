@@ -17,7 +17,8 @@ package de.symeda.sormas.app.rest;
 
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.visit.VisitDto;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -37,7 +38,7 @@ public interface VisitFacadeRetro {
 	Call<List<VisitDto>> pullByUuids(@Body List<String> uuids);
 
 	@POST("visits/push")
-	Call<List<PushResult>> pushAll(@Body List<VisitDto> dtos);
+	Call<List<PostResponse>> pushAll(@Body List<VisitDto> dtos);
 
 	@GET("visits/uuids")
 	Call<List<String>> pullUuids();

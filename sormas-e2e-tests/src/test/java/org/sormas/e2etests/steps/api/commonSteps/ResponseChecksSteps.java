@@ -40,8 +40,13 @@ public class ResponseChecksSteps implements En {
                 "API call failed due to wrong data used in sent json! [TRANSACTIONROLLEDBACKEXCEPTION]");
           }
           String regexUpdatedResponseBody = responseBody.replaceAll("[^a-zA-Z0-9]", "");
-          Assert.assertEquals(
-              regexUpdatedResponseBody, expectedBody, "Request response body is not correct");
+          if (expectedBody.equals("OK")) {
+            Assert.assertEquals(
+                regexUpdatedResponseBody, "statusCode200", "Request response body is not correct");
+          } else {
+            Assert.assertEquals(
+                regexUpdatedResponseBody, expectedBody, "Request response body is not correct");
+          }
         });
 
     Then(

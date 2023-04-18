@@ -17,7 +17,7 @@ package de.symeda.sormas.app.rest;
 
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -37,7 +37,7 @@ public interface ImmunizationFacadeRetro {
 	Call<List<ImmunizationDto>> pullByUuids(@Body List<String> uuids);
 
 	@POST("immunizations/push")
-	Call<List<PushResult>> pushAll(@Body List<ImmunizationDto> dtos);
+	Call<List<PostResponse>> pushAll(@Body List<ImmunizationDto> dtos);
 
 	@GET("immunizations/uuids")
 	Call<List<String>> pullUuids();

@@ -55,7 +55,7 @@ public class CampaignFormDataView extends AbstractCampaignDataView {
 				campaignFormData.getCampaign(),
 				campaignFormData.getCampaignFormMeta(),
 				true,
-				true,
+				false,
 				() -> {
 					SormasUI.refreshView();
 					Notification.show(

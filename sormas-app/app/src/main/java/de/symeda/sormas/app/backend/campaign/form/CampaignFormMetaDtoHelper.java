@@ -20,7 +20,7 @@ package de.symeda.sormas.app.backend.campaign.form;
 
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
@@ -59,7 +59,7 @@ public class CampaignFormMetaDtoHelper extends AdoDtoHelper<CampaignFormMeta, Ca
     }
 
     @Override
-    protected Call<List<PushResult>> pushAll(List<CampaignFormMetaDto> campaignFormMetaDtos) throws NoConnectionException {
+    protected Call<List<PostResponse>> pushAll(List<CampaignFormMetaDto> campaignFormMetaDtos) throws NoConnectionException {
         throw new UnsupportedOperationException();
     }
 

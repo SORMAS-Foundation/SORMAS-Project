@@ -1,0 +1,28 @@
+[
+  {
+    "uuid": "#{contactGUID}",
+    "reportDateTime": #{todayDate},
+    "district": {
+      "uuid": "#{districtUUID}"
+    },
+    "epiData": {
+      "uuid": "#{epiDataUUID_forNewContact}"
+    },
+    "healthConditions": {
+      "uuid": "#{healthConditionUUID_forNewContact}"
+    },
+  "person": {
+  "uuid": "#{personGUID}"
+},
+  "region": {
+  "uuid": "#{regionUUID}"
+},
+  "reportingUser": {
+  "uuid": "#{nationalUserUUID}"
+},
+  "contactClassification": "UNCONFIRMED",
+  "disease": "CORONAVIRUS",
+  "followUpStatus": "FOLLOW_UP",
+  "relationToCase": "SAME_HOUSEHOLD"
+  }
+]

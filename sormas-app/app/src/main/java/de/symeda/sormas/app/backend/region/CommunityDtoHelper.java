@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 import android.content.Context;
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
@@ -60,7 +60,7 @@ public class CommunityDtoHelper extends AdoDtoHelper<Community, CommunityDto> {
 	}
 
 	@Override
-	protected Call<List<PushResult>> pushAll(List<CommunityDto> communityDtos) throws NoConnectionException {
+	protected Call<List<PostResponse>> pushAll(List<CommunityDto> communityDtos) throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is infrastructure");
 	}
 

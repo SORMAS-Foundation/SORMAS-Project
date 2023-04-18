@@ -322,3 +322,36 @@ Scenario: Create and send laboratory request via Demis
     And I check if report side component in Edit Case has "Labor"
     And I check if report side component in Edit Case has "Testlabor DEMIS"
     And I check if report side component in Edit Case has today date
+
+  @tmsLink=SORDEV-6170 @env_d2s @LoginKeycloak
+  Scenario: Test [Lab Message] Make person first- and lastName editable when processing a lab message for case
+    Given API : Login to DEMIS server
+    Then I create and send Laboratory Notification
+    And I log in as a Admin User
+    Then I click on the Messages button from navbar
+    And I click on fetch messages button
+    Then I filter by last created person via API in Messages Directory
+    And I click on Verarbeiten button in Messages Directory
+    Then I check if while creating new case from demis message there is a possibility to edit first and last name
+
+  @tmsLink=SORDEV-6170 @env_d2s @LoginKeycloak
+  Scenario: Test [Lab Message] Make person first- and lastName editable when processing a lab message for contact
+    Given API : Login to DEMIS server
+    Then I create and send Laboratory Notification
+    And I log in as a Admin User
+    Then I click on the Messages button from navbar
+    And I click on fetch messages button
+    Then I filter by last created person via API in Messages Directory
+    And I click on Verarbeiten button in Messages Directory
+    Then I check if while creating new contact from demis message there is a possibility to edit first and last name
+
+  @tmsLink=SORDEV-6170 @env_d2s @LoginKeycloak
+  Scenario: Test [Lab Message] Make person first- and lastName editable when processing a lab message for event participant
+    Given API : Login to DEMIS server
+    Then I create and send Laboratory Notification
+    And I log in as a Admin User
+    Then I click on the Messages button from navbar
+    And I click on fetch messages button
+    Then I filter by last created person via API in Messages Directory
+    And I click on Verarbeiten button in Messages Directory
+    Then I check if while creating new event participant from demis message there is a possibility to edit first and last name

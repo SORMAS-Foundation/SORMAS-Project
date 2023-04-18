@@ -17,7 +17,7 @@ package de.symeda.sormas.app.rest;
 
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.therapy.PrescriptionDto;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -37,7 +37,7 @@ public interface PrescriptionFacadeRetro {
 	Call<List<PrescriptionDto>> pullByUuids(@Body List<String> uuids);
 
 	@POST("prescriptions/push")
-	Call<List<PushResult>> pushAll(@Body List<PrescriptionDto> dtos);
+	Call<List<PostResponse>> pushAll(@Body List<PrescriptionDto> dtos);
 
 	@GET("prescriptions/uuids")
 	Call<List<String>> pullUuids();

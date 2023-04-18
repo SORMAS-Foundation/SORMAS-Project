@@ -17,7 +17,7 @@ package de.symeda.sormas.app.backend.clinicalcourse;
 
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -52,7 +52,7 @@ public class ClinicalVisitDtoHelper extends AdoDtoHelper<ClinicalVisit, Clinical
 	}
 
 	@Override
-	protected Call<List<PushResult>> pushAll(List<ClinicalVisitDto> clinicalVisitDtos) throws NoConnectionException {
+	protected Call<List<PostResponse>> pushAll(List<ClinicalVisitDto> clinicalVisitDtos) throws NoConnectionException {
 		return RetroProvider.getClinicalVisitFacade().pushAll(clinicalVisitDtos);
 	}
 

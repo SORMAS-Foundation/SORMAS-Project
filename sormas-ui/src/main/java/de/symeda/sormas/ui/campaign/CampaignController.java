@@ -101,7 +101,7 @@ public class CampaignController {
 		Window window = VaadinUiUtil.createPopupWindow();
 
 		CommitDiscardWrapperComponent<CampaignFormDataEditForm> component =
-			getCampaignFormDataComponent(null, campaign, campaignForm, false, false, () -> {
+			getCampaignFormDataComponent(null, campaign, campaignForm, false, true, () -> {
 				window.close();
 				SormasUI.refreshView();
 				Notification.show(
@@ -179,7 +179,7 @@ public class CampaignController {
 		CampaignReferenceDto campaign,
 		CampaignFormMetaReferenceDto campaignForm,
 		boolean revertFormOnDiscard,
-		boolean showDeleteButton,
+		boolean isCreate,
 		Runnable commitCallback,
 		Runnable discardCallback) {
 
@@ -225,8 +225,8 @@ public class CampaignController {
 			component.addDiscardListener(discardCallback::run);
 		}
 
-		if (showDeleteButton && UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
-			String campaignFormDataUuid = campaignFormData.getUuid();
+		String campaignFormDataUuid = campaignFormData.getUuid();
+		if (!isCreate && UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
 
 			component.addDeleteListener(() -> {
 				FacadeProvider.getCampaignFormDataFacade().deleteCampaignFormData(campaignFormDataUuid);
@@ -234,7 +234,9 @@ public class CampaignController {
 			}, I18nProperties.getString(Strings.entityCampaignDataForm));
 		}
 
-		component.restrictEditableComponentsOnEditView(UserRight.CAMPAIGN_FORM_DATA_EDIT, UserRight.CAMPAIGN_FORM_DATA_DELETE, null, true);
+		boolean isInJurisdiction = isCreate || FacadeProvider.getCampaignFormDataFacade().isInJurisdiction(campaignFormDataUuid);
+		component
+			.restrictEditableComponentsOnEditView(UserRight.CAMPAIGN_FORM_DATA_EDIT, UserRight.CAMPAIGN_FORM_DATA_DELETE, null, isInJurisdiction);
 		return component;
 	}
 

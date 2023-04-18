@@ -111,7 +111,8 @@
     },
     "/actions/push" : {
       "post" : {
-        "operationId" : "postActions",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -127,20 +128,13 @@
         "responses" : {
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
-                  }
-                }
-              }
+              "application/json; charset=UTF-8" : { }
             },
             "description" : "default response"
           }
         },
-        "tags" : [ "Action Controller" ]
+        "summary" : "Create or update one or multiple entities.",
+        "tags" : [ "Entity Dto Controller" ]
       }
     },
     "/actions/query" : {
@@ -307,7 +301,8 @@
     },
     "/additionaltests/push" : {
       "post" : {
-        "operationId" : "postAdditionalTests",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_1",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -323,20 +318,13 @@
         "responses" : {
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
-                  }
-                }
-              }
+              "application/json; charset=UTF-8" : { }
             },
             "description" : "default response"
           }
         },
-        "tags" : [ "Additional Test Controller" ]
+        "summary" : "Create or update one or multiple entities.",
+        "tags" : [ "Entity Dto Controller" ]
       }
     },
     "/additionaltests/query" : {
@@ -455,7 +443,8 @@
     },
     "/aggregatereports/push" : {
       "post" : {
-        "operationId" : "postAggregateReports",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_2",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -471,20 +460,13 @@
         "responses" : {
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
-                  }
-                }
-              }
+              "application/json; charset=UTF-8" : { }
             },
             "description" : "default response"
           }
         },
-        "tags" : [ "Aggregate Report Controller" ]
+        "summary" : "Create or update one or multiple entities.",
+        "tags" : [ "Entity Dto Controller" ]
       }
     },
     "/aggregatereports/query" : {
@@ -703,7 +685,8 @@
     },
     "/campaignFormData/push" : {
       "post" : {
-        "operationId" : "postCampaignFormData",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_3",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -719,20 +702,13 @@
         "responses" : {
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
-                  }
-                }
-              }
+              "application/json; charset=UTF-8" : { }
             },
             "description" : "default response"
           }
         },
-        "tags" : [ "Campaign Form Data Controller" ]
+        "summary" : "Create or update one or multiple entities.",
+        "tags" : [ "Entity Dto Controller" ]
       }
     },
     "/campaignFormData/query" : {
@@ -1386,7 +1362,8 @@
     },
     "/cases/push" : {
       "post" : {
-        "operationId" : "postCases",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_4",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -1402,20 +1379,13 @@
         "responses" : {
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
-                  }
-                }
-              }
+              "application/json; charset=UTF-8" : { }
             },
             "description" : "default response"
           }
         },
-        "tags" : [ "Case Controller" ]
+        "summary" : "Create or update one or multiple entities.",
+        "tags" : [ "Entity Dto Controller" ]
       }
     },
     "/cases/push-detailed" : {
@@ -1436,17 +1406,7 @@
         "responses" : {
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "object",
-                  "additionalProperties" : {
-                    "type" : "object",
-                    "additionalProperties" : {
-                      "type" : "string"
-                    }
-                  }
-                }
-              }
+              "application/json; charset=UTF-8" : { }
             },
             "description" : "default response"
           }
@@ -1760,7 +1720,8 @@
     },
     "/clinicalvisits/push" : {
       "post" : {
-        "operationId" : "postVisits",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_5",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -1776,20 +1737,13 @@
         "responses" : {
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
-                  }
-                }
-              }
+              "application/json; charset=UTF-8" : { }
             },
             "description" : "default response"
           }
         },
-        "tags" : [ "Clinical Visit Controller" ]
+        "summary" : "Create or update one or multiple entities.",
+        "tags" : [ "Entity Dto Controller" ]
       }
     },
     "/clinicalvisits/query" : {
@@ -1953,7 +1907,8 @@
     },
     "/communities/push" : {
       "post" : {
-        "operationId" : "postCommunities",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_6",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -1969,20 +1924,13 @@
         "responses" : {
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
-                  }
-                }
-              }
+              "application/json; charset=UTF-8" : { }
             },
             "description" : "default response"
           }
         },
-        "tags" : [ "Community Controller" ]
+        "summary" : "Create or update one or multiple entities.",
+        "tags" : [ "Entity Dto Controller" ]
       }
     },
     "/communities/query" : {
@@ -2331,7 +2279,8 @@
     },
     "/contacts/push" : {
       "post" : {
-        "operationId" : "postContacts",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_7",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -2347,20 +2296,13 @@
         "responses" : {
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
-                  }
-                }
-              }
+              "application/json; charset=UTF-8" : { }
             },
             "description" : "default response"
           }
         },
-        "tags" : [ "Contact Controller" ]
+        "summary" : "Create or update one or multiple entities.",
+        "tags" : [ "Entity Dto Controller" ]
       }
     },
     "/contacts/pushWithPerson" : {
@@ -2610,7 +2552,8 @@
     },
     "/continents/push" : {
       "post" : {
-        "operationId" : "postContinents",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_8",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -2626,20 +2569,13 @@
         "responses" : {
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
-                  }
-                }
-              }
+              "application/json; charset=UTF-8" : { }
             },
             "description" : "default response"
           }
         },
-        "tags" : [ "Continent Controller" ]
+        "summary" : "Create or update one or multiple entities.",
+        "tags" : [ "Entity Dto Controller" ]
       }
     },
     "/continents/query" : {
@@ -2803,7 +2739,8 @@
     },
     "/countries/push" : {
       "post" : {
-        "operationId" : "postCountries",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_9",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -2819,20 +2756,13 @@
         "responses" : {
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
-                  }
-                }
-              }
+              "application/json; charset=UTF-8" : { }
             },
             "description" : "default response"
           }
         },
-        "tags" : [ "Country Controller" ]
+        "summary" : "Create or update one or multiple entities.",
+        "tags" : [ "Entity Dto Controller" ]
       }
     },
     "/countries/query" : {
@@ -3537,7 +3467,8 @@
     },
     "/districts/push" : {
       "post" : {
-        "operationId" : "postDistricts",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_10",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -3553,20 +3484,13 @@
         "responses" : {
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
-                  }
-                }
-              }
+              "application/json; charset=UTF-8" : { }
             },
             "description" : "default response"
           }
         },
-        "tags" : [ "District Controller" ]
+        "summary" : "Create or update one or multiple entities.",
+        "tags" : [ "Entity Dto Controller" ]
       }
     },
     "/districts/query" : {
@@ -3717,20 +3641,30 @@
     },
     "/eventGroups/push" : {
       "post" : {
-        "operationId" : "postEventGroup",
-        "responses" : {
-          "default" : {
-            "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_11",
+        "requestBody" : {
+          "content" : {
+            "application/json; charset=UTF-8" : {
+              "schema" : {
+                "type" : "array",
+                "items" : {
                   "$ref" : "#/components/schemas/EventGroupDto"
                 }
               }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json; charset=UTF-8" : { }
             },
             "description" : "default response"
           }
         },
-        "tags" : [ "Event Group Controller" ]
+        "summary" : "Create or update one or multiple entities.",
+        "tags" : [ "Entity Dto Controller" ]
       }
     },
     "/eventGroups/{uuid}" : {
@@ -4029,7 +3963,8 @@
     },
     "/eventparticipants/push" : {
       "post" : {
-        "operationId" : "postEventParticipants",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_12",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -4045,20 +3980,13 @@
         "responses" : {
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
-                  }
-                }
-              }
+              "application/json; charset=UTF-8" : { }
             },
             "description" : "default response"
           }
         },
-        "tags" : [ "Event Participant Controller" ]
+        "summary" : "Create or update one or multiple entities.",
+        "tags" : [ "Entity Dto Controller" ]
       }
     },
     "/eventparticipants/query" : {
@@ -4499,7 +4427,8 @@
     },
     "/events/push" : {
       "post" : {
-        "operationId" : "postEvents",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_13",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -4515,20 +4444,13 @@
         "responses" : {
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
-                  }
-                }
-              }
+              "application/json; charset=UTF-8" : { }
             },
             "description" : "default response"
           }
         },
-        "tags" : [ "Event Controller" ]
+        "summary" : "Create or update one or multiple entities.",
+        "tags" : [ "Entity Dto Controller" ]
       }
     },
     "/events/query" : {
@@ -4796,7 +4718,8 @@
     },
     "/facilities/push" : {
       "post" : {
-        "operationId" : "postSubcontinents",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_15",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -4812,20 +4735,13 @@
         "responses" : {
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
-                  }
-                }
-              }
+              "application/json; charset=UTF-8" : { }
             },
             "description" : "default response"
           }
         },
-        "tags" : [ "Facility Controller" ]
+        "summary" : "Create or update one or multiple entities.",
+        "tags" : [ "Entity Dto Controller" ]
       }
     },
     "/facilities/query" : {
@@ -5319,7 +5235,8 @@
     },
     "/immunizations/push" : {
       "post" : {
-        "operationId" : "post",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_16",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -5335,20 +5252,13 @@
         "responses" : {
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
-                  }
-                }
-              }
+              "application/json; charset=UTF-8" : { }
             },
             "description" : "default response"
           }
         },
-        "tags" : [ "Immunization Controller" ]
+        "summary" : "Create or update one or multiple entities.",
+        "tags" : [ "Entity Dto Controller" ]
       }
     },
     "/immunizations/query" : {
@@ -5979,7 +5889,8 @@
     },
     "/outbreaks/push" : {
       "post" : {
-        "operationId" : "postOutbreak",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_17",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -5995,20 +5906,13 @@
         "responses" : {
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
-                  }
-                }
-              }
+              "application/json; charset=UTF-8" : { }
             },
             "description" : "default response"
           }
         },
-        "tags" : [ "Outbreak Controller" ]
+        "summary" : "Create or update one or multiple entities.",
+        "tags" : [ "Entity Dto Controller" ]
       }
     },
     "/outbreaks/uuids" : {
@@ -6172,7 +6076,8 @@
     },
     "/pathogentests/push" : {
       "post" : {
-        "operationId" : "postPathogenTests",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_18",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -6188,20 +6093,13 @@
         "responses" : {
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
-                  }
-                }
-              }
+              "application/json; charset=UTF-8" : { }
             },
             "description" : "default response"
           }
         },
-        "tags" : [ "Pathogen Test Controller" ]
+        "summary" : "Create or update one or multiple entities.",
+        "tags" : [ "Entity Dto Controller" ]
       }
     },
     "/pathogentests/query" : {
@@ -6427,7 +6325,8 @@
     },
     "/persons/push" : {
       "post" : {
-        "operationId" : "postPersons",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_19",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -6443,20 +6342,13 @@
         "responses" : {
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
-                  }
-                }
-              }
+              "application/json; charset=UTF-8" : { }
             },
             "description" : "default response"
           }
         },
-        "tags" : [ "Person Controller" ]
+        "summary" : "Create or update one or multiple entities.",
+        "tags" : [ "Entity Dto Controller" ]
       }
     },
     "/persons/query" : {
@@ -6700,7 +6592,8 @@
     },
     "/pointsofentry/push" : {
       "post" : {
-        "operationId" : "postPointOfEntries",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_20",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -6716,20 +6609,13 @@
         "responses" : {
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
-                  }
-                }
-              }
+              "application/json; charset=UTF-8" : { }
             },
             "description" : "default response"
           }
         },
-        "tags" : [ "Point Of Entry Controller" ]
+        "summary" : "Create or update one or multiple entities.",
+        "tags" : [ "Entity Dto Controller" ]
       }
     },
     "/pointsofentry/query" : {
@@ -6884,7 +6770,8 @@
     },
     "/prescriptions/push" : {
       "post" : {
-        "operationId" : "postPrescriptions",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_21",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -6900,20 +6787,13 @@
         "responses" : {
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
-                  }
-                }
-              }
+              "application/json; charset=UTF-8" : { }
             },
             "description" : "default response"
           }
         },
-        "tags" : [ "Prescription Controller" ]
+        "summary" : "Create or update one or multiple entities.",
+        "tags" : [ "Entity Dto Controller" ]
       }
     },
     "/prescriptions/query" : {
@@ -7077,7 +6957,8 @@
     },
     "/regions/push" : {
       "post" : {
-        "operationId" : "postRegions",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_22",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -7093,20 +6974,13 @@
         "responses" : {
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
-                  }
-                }
-              }
+              "application/json; charset=UTF-8" : { }
             },
             "description" : "default response"
           }
         },
-        "tags" : [ "Region Controller" ]
+        "summary" : "Create or update one or multiple entities.",
+        "tags" : [ "Entity Dto Controller" ]
       }
     },
     "/regions/query" : {
@@ -7366,7 +7240,8 @@
     },
     "/samples/push" : {
       "post" : {
-        "operationId" : "postSamples",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_23",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -7382,20 +7257,13 @@
         "responses" : {
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
-                  }
-                }
-              }
+              "application/json; charset=UTF-8" : { }
             },
             "description" : "default response"
           }
         },
-        "tags" : [ "Sample Controller" ]
+        "summary" : "Create or update one or multiple entities.",
+        "tags" : [ "Entity Dto Controller" ]
       }
     },
     "/samples/query" : {
@@ -8128,7 +7996,8 @@
     },
     "/subcontinents/push" : {
       "post" : {
-        "operationId" : "postSubcontinents_1",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_24",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -8144,20 +8013,13 @@
         "responses" : {
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
-                  }
-                }
-              }
+              "application/json; charset=UTF-8" : { }
             },
             "description" : "default response"
           }
         },
-        "tags" : [ "Subcontinent Controller" ]
+        "summary" : "Create or update one or multiple entities.",
+        "tags" : [ "Entity Dto Controller" ]
       }
     },
     "/subcontinents/query" : {
@@ -8216,7 +8078,8 @@
     },
     "/surveillancereports/push" : {
       "post" : {
-        "operationId" : "postCaseReports",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_25",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -8232,20 +8095,13 @@
         "responses" : {
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
-                  }
-                }
-              }
+              "application/json; charset=UTF-8" : { }
             },
             "description" : "default response"
           }
         },
-        "tags" : [ "Surveillance Report Controller" ]
+        "summary" : "Create or update one or multiple entities.",
+        "tags" : [ "Entity Dto Controller" ]
       }
     },
     "/surveillancereports/query/cases" : {
@@ -8484,7 +8340,8 @@
     },
     "/tasks/push" : {
       "post" : {
-        "operationId" : "postTasks",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_26",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -8500,20 +8357,13 @@
         "responses" : {
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
-                  }
-                }
-              }
+              "application/json; charset=UTF-8" : { }
             },
             "description" : "default response"
           }
         },
-        "tags" : [ "Task Controller" ]
+        "summary" : "Create or update one or multiple entities.",
+        "tags" : [ "Entity Dto Controller" ]
       }
     },
     "/tasks/query" : {
@@ -8631,7 +8481,8 @@
     },
     "/travelentries/push" : {
       "post" : {
-        "operationId" : "postTravelEntries",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_27",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -8647,20 +8498,13 @@
         "responses" : {
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
-                  }
-                }
-              }
+              "application/json; charset=UTF-8" : { }
             },
             "description" : "default response"
           }
         },
-        "tags" : [ "Travel Entry Controller" ]
+        "summary" : "Create or update one or multiple entities.",
+        "tags" : [ "Entity Dto Controller" ]
       }
     },
     "/travelentries/{uuid}" : {
@@ -8807,7 +8651,8 @@
     },
     "/treatments/push" : {
       "post" : {
-        "operationId" : "postTreatments",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_28",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -8823,20 +8668,13 @@
         "responses" : {
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
-                  }
-                }
-              }
+              "application/json; charset=UTF-8" : { }
             },
             "description" : "default response"
           }
         },
-        "tags" : [ "Treatment Controller" ]
+        "summary" : "Create or update one or multiple entities.",
+        "tags" : [ "Entity Dto Controller" ]
       }
     },
     "/treatments/query" : {
@@ -9141,7 +8979,7 @@
     "/visits-external" : {
       "post" : {
         "description" : "Upload visits with all symptom and disease related data to SORMAS.",
-        "operationId" : "postExternalVisits",
+        "operationId" : "postEntityDtos_14",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -9157,15 +8995,7 @@
         "responses" : {
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
-                  }
-                }
-              }
+              "application/json; charset=UTF-8" : { }
             },
             "description" : "default response"
           }
@@ -9436,7 +9266,8 @@
     },
     "/visits/push" : {
       "post" : {
-        "operationId" : "postVisits_1",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_29",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -9452,20 +9283,13 @@
         "responses" : {
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
-                  }
-                }
-              }
+              "application/json; charset=UTF-8" : { }
             },
             "description" : "default response"
           }
         },
-        "tags" : [ "Visit Controller" ]
+        "summary" : "Create or update one or multiple entities.",
+        "tags" : [ "Entity Dto Controller" ]
       }
     },
     "/visits/query" : {
@@ -9599,7 +9423,8 @@
     },
     "/weeklyreports/push" : {
       "post" : {
-        "operationId" : "postWeeklyReports",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_30",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -9615,20 +9440,13 @@
         "responses" : {
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
-                  }
-                }
-              }
+              "application/json; charset=UTF-8" : { }
             },
             "description" : "default response"
           }
         },
-        "tags" : [ "Weekly Report Controller" ]
+        "summary" : "Create or update one or multiple entities.",
+        "tags" : [ "Entity Dto Controller" ]
       }
     },
     "/weeklyreports/query" : {
@@ -20788,7 +20606,7 @@
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
         },
-        "required" : [ "reportDateTime", "reportingUser", "sampleDateTime", "sampleMaterial", "samplePurpose" ]
+        "required" : [ "reportDateTime", "sampleDateTime", "sampleMaterial", "samplePurpose" ]
       },
       "SampleIndexDto" : {
         "type" : "object",
