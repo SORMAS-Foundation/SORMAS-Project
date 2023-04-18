@@ -1,0 +1,22 @@
+[
+  {
+    "uuid": "#{sampleGUID}",
+    "labDetails": "Dexter's laboratory #{todayDate}",
+    "specimenCondition":"ADEQUATE",
+    "sampleMaterial":"BLOOD",
+    "samplePurpose":"EXTERNAL",
+    "associatedCase":{
+      "uuid": "#{caseGUID}"
+    },
+    "reportingUser":{
+      "uuid": "#{restUserUUID}"
+    },
+    "pathogenTestResult":"PENDING",
+    "sampleDateTime":#{todayDate},
+    "reportDateTime":#{todayDate},
+    "lab":{
+      "uuid": "#{laboratoryUUID}",
+      "caption": "Voreingestelltes Labor"
+    }
+  }
+]

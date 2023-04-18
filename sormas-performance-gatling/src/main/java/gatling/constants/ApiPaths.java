@@ -42,4 +42,5 @@ public class ApiPaths {
 
     //Common
     public static final String uuids = "uuids";
+    public static final String push = "push";
 }

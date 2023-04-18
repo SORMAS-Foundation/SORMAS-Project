@@ -4,6 +4,8 @@ import gatling.envconfig.manager.RunningConfiguration;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Objects;
+
 @Slf4j
 public class TestingSpecs {
 
@@ -44,12 +46,11 @@ public class TestingSpecs {
     }
 
     @SneakyThrows
-    private static String getEnvironment(){
-        try{
-           return System.getProperty("env");
-        }
-        catch (Exception any){
+    public static String getEnvironment(){
+        String env = System.getProperty("env");
+        if(Objects.isNull(env)){
             throw new Exception("Testing environment wasn't provided!");
         }
+        return env;
     }
 }

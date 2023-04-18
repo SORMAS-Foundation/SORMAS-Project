@@ -32,7 +32,8 @@ public abstract class ConfigFileReader {
         String jsonPath;
         try {
             log.info("Looking after environment environmentconfig file");
-            jsonPath = System.getProperty(systemVariableName);
+           // jsonPath = System.getProperty(systemVariableName);
+            jsonPath = "C:/Users/Razvan/Desktop/envData.json";
         } catch (NullPointerException e) {
             throw new Exception("Unable to find environment environmentconfig file: " + e.getMessage());
         }

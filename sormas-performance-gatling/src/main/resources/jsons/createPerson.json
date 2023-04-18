@@ -1,0 +1,8 @@
+[
+  {
+    "firstName": "Gatling#{timestamp}",
+    "lastName": "Wurst",
+    "sex": "OTHER",
+    "uuid": "#{personGUID}"
+  }
+]
