@@ -1,0 +1,18 @@
+[
+  {
+    "creationDate": #{todayDate},
+    "uuid": "#{eventParticipantGUID}",
+    "reportingUser": {
+      "uuid": "#{nationalUserUUID}"
+    },
+    "event": {
+      "uuid": "#{eventGUID}"
+    },
+    "person": {
+      "uuid": "#{personGUID}",
+      "firstName": "Gatling#{timestamp}",
+      "lastName": "Wurst",
+      "sex": "OTHER"
+    }
+  }
+]
