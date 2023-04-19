@@ -7,14 +7,14 @@ This step-by-step guide explains how to set up your development environment, usi
 
 ## Step 1: Check Out the SORMAS Repository
 - [Download and install the latest Git version](https://git-scm.com/downloads) for your operating system
-- *Optional:* Install a Git client such as [TortoiseGit](https://tortoisegit.org/) or [GitHub Desktop](https://desktop.github.com/) if you don't want to handle version control from the command line or within your IDE
+- *Optional:* Install a Git client such as [TortoiseGit](https://tortoisegit.org/) or [GitHub Desktop](https://desktop.github.com/) if you don't want to handle version control from the command-line or within your IDE
 - *Optional:* Clone the SORMAS-Project repository with `git clone https://github.com/hzi-braunschweig/SORMAS-Project.git`; if you want to use Git from within your IDE, you can also clone the repository in Step 4
 - Open Git Bash and execute the following command to ensure that rebase is used when pulling the development branch rather than merge: `git config --global branch.development.rebase true`
 
 ## Step 2: Install Java
 Download and install the **Java 11 JDK** (not JRE) for your operating system.
 We suggest using [Zulu OpenJDK](https://www.azul.com/downloads/?version=java-11-lts&package=jdk). If you're running Linux, please refer to the [official documentation](https://docs.azul.com/zulu/zuludocs/ZuluUserGuide/PrepareZuluPlatform/AttachAPTRepositoryUbuntuOrDebianSys.htm) on how to install Zulu OpenJDK on your system.
-If you plan to work on the Android App as well, you will also need the **Java 8 JDK** to use with Android Studio.
+Note: To work with the Android app Java JDK 17 is needed for the gradle build. The needed JDK is part of Android Studio, thus there is no need to manually install it.
 
 ## Step 3: Install Maven & Ant
 Download and install Maven for your operating system, see [binaries](https://dlcdn.apache.org/maven/maven-3/3.6.3/binaries/)
@@ -134,10 +134,10 @@ Optional, but strongly recommended:
 7. For eclipse formatted plugin, there is an issue for Idea: <https://plugins.jetbrains.com/plugin/6546-eclipse-code-formatter> - `cannot save settings Path to custom eclipse folder is not valid` - it works only when settings were saved from down to up. And not vice versa.
 
 If something is still not working:
- -> Stop the payara domain, run Ant deploy-serverlibs to update libs
- -> clean up (delete all from domains/sormas/autodeploy, domains/sormas/applications, domains/sormas/generated, and domains/sormas/osgi-cache) try to build again by executing `mvn clean install -DskipTests` on the `sormas-base` module
- -> start the domain and deploy again
- 
+  -> Stop the payara domain, run Ant deploy-serverlibs to update libs
+  -> clean up (delete all from domains/sormas/autodeploy, domains/sormas/applications, domains/sormas/generated, and domains/sormas/osgi-cache) try to build again by executing `mvn clean install -DskipTests` on the `sormas-base` module
+  -> start the domain and deploy again
+
 ## Avoid redeployment problems
 
 **Problem**: Due to currently a not mitigated problem, it is only possible to deploy the `sormas-ear.ear` (contains `sormas-backend`) once without problems. If you undeploy it and deploy `sormas-ear.ear` again, the other artifacts `sormas-ui`and `sormas-rest` cannot successfully call the backend.
