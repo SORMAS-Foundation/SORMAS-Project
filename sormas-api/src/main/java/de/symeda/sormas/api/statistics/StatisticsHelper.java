@@ -249,8 +249,12 @@ public final class StatisticsHelper {
 			return new ArrayList<>();
 		}
 
-		LocalDate earliest = dateFrom.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		LocalDate latest = dateTo.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		LocalDate earliest = dateFrom == null
+			? new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+			: dateFrom.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		LocalDate latest = dateTo == null
+			? new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+			: dateTo.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
 		switch (subAttribute) {
 		case YEAR:

@@ -251,7 +251,7 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 		assertThat(indexList.stream().filter(m -> DataHelper.isSame(m, messageWithEvent)).count(), is(1L));
 
 		getCaseFacade().delete(externalMessageCase.getUuid(), new DeletionDetails());
-		getSampleFacade().deleteSample(externalMessageSample.toReference(), new DeletionDetails());
+		getSampleFacade().delete(externalMessageSample.getUuid(), new DeletionDetails());
 		getCaseFacade().delete(caseWithSample.getUuid(), new DeletionDetails());
 		getContactFacade().delete(contactWithSample.getUuid(), new DeletionDetails());
 		getEventParticipantFacade().delete(eventParticipantWithSample.getUuid(), new DeletionDetails());

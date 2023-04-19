@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
@@ -60,7 +60,7 @@ public class CampaignDtoHelper extends AdoDtoHelper<Campaign, CampaignDto> {
 	}
 
 	@Override
-	protected Call<List<PushResult>> pushAll(List<CampaignDto> campaignDtos) throws NoConnectionException {
+	protected Call<List<PostResponse>> pushAll(List<CampaignDto> campaignDtos) throws NoConnectionException {
 		throw new UnsupportedOperationException();
 	}
 

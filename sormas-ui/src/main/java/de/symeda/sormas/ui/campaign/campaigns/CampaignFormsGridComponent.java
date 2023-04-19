@@ -61,6 +61,7 @@ public class CampaignFormsGridComponent extends AbstractEditableGrid<CampaignFor
 							grid.getDataProvider().refreshAll();
 						});
 		formCombo.setEmptySelectionAllowed(false);
+		formCombo.setItemCaptionGenerator(CampaignFormMetaReferenceDto::getCaption);
 
 		Grid.Column<CampaignFormMetaReferenceDto, String> formColumn =
 				grid.addColumn(ReferenceDto::getCaption)

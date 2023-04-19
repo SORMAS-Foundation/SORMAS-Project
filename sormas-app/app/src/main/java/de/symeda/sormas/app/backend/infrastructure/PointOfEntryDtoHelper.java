@@ -17,7 +17,7 @@ package de.symeda.sormas.app.backend.infrastructure;
 
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
@@ -53,7 +53,7 @@ public class PointOfEntryDtoHelper extends AdoDtoHelper<PointOfEntry, PointOfEnt
 	}
 
 	@Override
-	protected Call<List<PushResult>> pushAll(List<PointOfEntryDto> dtos) throws NoConnectionException {
+	protected Call<List<PostResponse>> pushAll(List<PointOfEntryDto> dtos) throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is infrastructure");
 	}
 

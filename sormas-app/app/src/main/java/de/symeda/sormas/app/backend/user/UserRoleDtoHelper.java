@@ -17,7 +17,7 @@ package de.symeda.sormas.app.backend.user;
 
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.rest.NoConnectionException;
@@ -47,7 +47,7 @@ public class UserRoleDtoHelper extends AdoDtoHelper<UserRole, UserRoleDto> {
 	}
 
 	@Override
-	protected Call<List<PushResult>> pushAll(List<UserRoleDto> userRoleDtos) throws NoConnectionException {
+	protected Call<List<PostResponse>> pushAll(List<UserRoleDto> userRoleDtos) throws NoConnectionException {
 		throw new UnsupportedOperationException("Can't change userroles in app");
 	}
 

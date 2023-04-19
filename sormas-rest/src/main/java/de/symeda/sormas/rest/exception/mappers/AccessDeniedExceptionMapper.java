@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2023 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,10 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.rest.exception;
+package de.symeda.sormas.rest.exception.mappers;
 
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
@@ -29,7 +27,6 @@ import org.apache.http.HttpStatus;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 
 @Provider
-@Produces(MediaType.APPLICATION_JSON)
 public class AccessDeniedExceptionMapper implements ExceptionMapper<AccessDeniedException> {
 
 	@Override

@@ -187,7 +187,7 @@ public class DocumentUploadFinishedHandler implements UploadFinishedHandler {
 		DocumentDto document = DocumentDto.build();
 		document.setUploadingUser(Objects.requireNonNull(UserProvider.getCurrent()).getUserReference());
 		document.setName(fileName);
-		document.setMimeType(mimeType);
+		document.setMimeType(mimeType != null ? mimeType : DocumentDto.MIME_TYPE_DEFAULT);
 		document.setSize(length);
 		document.setRelatedEntityType(relatedEntityType);
 		document.setRelatedEntityUuid(relatedEntityUuid);

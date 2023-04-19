@@ -78,7 +78,10 @@ paths:
       - Action Controller
   /actions/push:
     post:
-      operationId: postActions
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -89,20 +92,11 @@ paths:
       responses:
         default:
           content:
-            application/json; charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
+            application/json; charset=UTF-8: {}
           description: default response
+      summary: Create or update one or multiple entities.
       tags:
-      - Action Controller
+      - Entity Dto Controller
   /actions/query:
     post:
       operationId: getByUuids
@@ -216,7 +210,10 @@ paths:
       - Additional Test Controller
   /additionaltests/push:
     post:
-      operationId: postAdditionalTests
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_1
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -227,20 +224,11 @@ paths:
       responses:
         default:
           content:
-            application/json; charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
+            application/json; charset=UTF-8: {}
           description: default response
+      summary: Create or update one or multiple entities.
       tags:
-      - Additional Test Controller
+      - Entity Dto Controller
   /additionaltests/query:
     post:
       operationId: getByUuids_1
@@ -318,7 +306,10 @@ paths:
       - Aggregate Report Controller
   /aggregatereports/push:
     post:
-      operationId: postAggregateReports
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_2
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -329,20 +320,11 @@ paths:
       responses:
         default:
           content:
-            application/json; charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
+            application/json; charset=UTF-8: {}
           description: default response
+      summary: Create or update one or multiple entities.
       tags:
-      - Aggregate Report Controller
+      - Entity Dto Controller
   /aggregatereports/query:
     post:
       operationId: getByUuids_2
@@ -487,7 +469,10 @@ paths:
       - Campaign Form Data Controller
   /campaignFormData/push:
     post:
-      operationId: postCampaignFormData
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_3
       requestBody:
         content:
           '*/*':
@@ -498,20 +483,11 @@ paths:
       responses:
         default:
           content:
-            application/json; charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
+            application/json; charset=UTF-8: {}
           description: default response
+      summary: Create or update one or multiple entities.
       tags:
-      - Campaign Form Data Controller
+      - Entity Dto Controller
   /campaignFormData/query:
     post:
       operationId: getByUuids_4
@@ -952,7 +928,10 @@ paths:
       - Case Controller
   /cases/push:
     post:
-      operationId: postCases
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_4
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -963,20 +942,11 @@ paths:
       responses:
         default:
           content:
-            application/json; charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
+            application/json; charset=UTF-8: {}
           description: default response
+      summary: Create or update one or multiple entities.
       tags:
-      - Case Controller
+      - Entity Dto Controller
   /cases/push-detailed:
     post:
       operationId: postCasesDetailed
@@ -990,13 +960,7 @@ paths:
       responses:
         default:
           content:
-            application/json; charset=UTF-8:
-              schema:
-                type: object
-                additionalProperties:
-                  type: object
-                  additionalProperties:
-                    type: string
+            application/json; charset=UTF-8: {}
           description: default response
       tags:
       - Case Controller
@@ -1208,7 +1172,10 @@ paths:
       - Clinical Visit Controller
   /clinicalvisits/push:
     post:
-      operationId: postVisits
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_5
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -1219,20 +1186,11 @@ paths:
       responses:
         default:
           content:
-            application/json; charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
+            application/json; charset=UTF-8: {}
           description: default response
+      summary: Create or update one or multiple entities.
       tags:
-      - Clinical Visit Controller
+      - Entity Dto Controller
   /clinicalvisits/query:
     post:
       operationId: getByUuids_8
@@ -1342,7 +1300,10 @@ paths:
       - Community Controller
   /communities/push:
     post:
-      operationId: postCommunities
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_6
       requestBody:
         content:
           '*/*':
@@ -1353,20 +1314,11 @@ paths:
       responses:
         default:
           content:
-            application/json; charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
+            application/json; charset=UTF-8: {}
           description: default response
+      summary: Create or update one or multiple entities.
       tags:
-      - Community Controller
+      - Entity Dto Controller
   /communities/query:
     post:
       operationId: getByUuids_9
@@ -1604,7 +1556,10 @@ paths:
       - Contact Controller
   /contacts/push:
     post:
-      operationId: postContacts
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_7
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -1615,20 +1570,11 @@ paths:
       responses:
         default:
           content:
-            application/json; charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
+            application/json; charset=UTF-8: {}
           description: default response
+      summary: Create or update one or multiple entities.
       tags:
-      - Contact Controller
+      - Entity Dto Controller
   /contacts/pushWithPerson:
     post:
       operationId: postContact
@@ -1794,7 +1740,10 @@ paths:
       - Continent Controller
   /continents/push:
     post:
-      operationId: postContinents
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_8
       requestBody:
         content:
           '*/*':
@@ -1805,20 +1754,11 @@ paths:
       responses:
         default:
           content:
-            application/json; charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
+            application/json; charset=UTF-8: {}
           description: default response
+      summary: Create or update one or multiple entities.
       tags:
-      - Continent Controller
+      - Entity Dto Controller
   /continents/query:
     post:
       operationId: getByUuids_11
@@ -1928,7 +1868,10 @@ paths:
       - Country Controller
   /countries/push:
     post:
-      operationId: postCountries
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_9
       requestBody:
         content:
           '*/*':
@@ -1939,20 +1882,11 @@ paths:
       responses:
         default:
           content:
-            application/json; charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
+            application/json; charset=UTF-8: {}
           description: default response
+      summary: Create or update one or multiple entities.
       tags:
-      - Country Controller
+      - Entity Dto Controller
   /countries/query:
     post:
       operationId: getByUuids_12
@@ -2487,7 +2421,10 @@ paths:
       - District Controller
   /districts/push:
     post:
-      operationId: postDistricts
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_10
       requestBody:
         content:
           '*/*':
@@ -2498,20 +2435,11 @@ paths:
       responses:
         default:
           content:
-            application/json; charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
+            application/json; charset=UTF-8: {}
           description: default response
+      summary: Create or update one or multiple entities.
       tags:
-      - District Controller
+      - Entity Dto Controller
   /districts/query:
     post:
       operationId: getByUuids_15
@@ -2611,16 +2539,25 @@ paths:
       - Event Group Controller
   /eventGroups/push:
     post:
-      operationId: postEventGroup
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_11
+      requestBody:
+        content:
+          application/json; charset=UTF-8:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/EventGroupDto'
       responses:
         default:
           content:
-            application/json; charset=UTF-8:
-              schema:
-                $ref: '#/components/schemas/EventGroupDto'
+            application/json; charset=UTF-8: {}
           description: default response
+      summary: Create or update one or multiple entities.
       tags:
-      - Event Group Controller
+      - Entity Dto Controller
   /eventGroups/{uuid}:
     delete:
       operationId: delete_2
@@ -2831,7 +2768,10 @@ paths:
       - Event Participant Controller
   /eventparticipants/push:
     post:
-      operationId: postEventParticipants
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_12
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -2842,20 +2782,11 @@ paths:
       responses:
         default:
           content:
-            application/json; charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
+            application/json; charset=UTF-8: {}
           description: default response
+      summary: Create or update one or multiple entities.
       tags:
-      - Event Participant Controller
+      - Entity Dto Controller
   /eventparticipants/query:
     post:
       operationId: getByUuids_16
@@ -3151,7 +3082,10 @@ paths:
       - Event Controller
   /events/push:
     post:
-      operationId: postEvents
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_13
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -3162,20 +3096,11 @@ paths:
       responses:
         default:
           content:
-            application/json; charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
+            application/json; charset=UTF-8: {}
           description: default response
+      summary: Create or update one or multiple entities.
       tags:
-      - Event Controller
+      - Entity Dto Controller
   /events/query:
     post:
       operationId: getByUuids_17
@@ -3355,7 +3280,10 @@ paths:
       - Facility Controller
   /facilities/push:
     post:
-      operationId: postSubcontinents
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_15
       requestBody:
         content:
           '*/*':
@@ -3366,20 +3294,11 @@ paths:
       responses:
         default:
           content:
-            application/json; charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
+            application/json; charset=UTF-8: {}
           description: default response
+      summary: Create or update one or multiple entities.
       tags:
-      - Facility Controller
+      - Entity Dto Controller
   /facilities/query:
     post:
       operationId: getByUuids_18
@@ -3776,7 +3695,10 @@ paths:
       - Immunization Controller
   /immunizations/push:
     post:
-      operationId: post
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_16
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -3787,20 +3709,11 @@ paths:
       responses:
         default:
           content:
-            application/json; charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
+            application/json; charset=UTF-8: {}
           description: default response
+      summary: Create or update one or multiple entities.
       tags:
-      - Immunization Controller
+      - Entity Dto Controller
   /immunizations/query:
     post:
       operationId: getByUuids_20
@@ -4288,7 +4201,10 @@ paths:
       - Outbreak Controller
   /outbreaks/push:
     post:
-      operationId: postOutbreak
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_17
       requestBody:
         content:
           '*/*':
@@ -4299,20 +4215,11 @@ paths:
       responses:
         default:
           content:
-            application/json; charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
+            application/json; charset=UTF-8: {}
           description: default response
+      summary: Create or update one or multiple entities.
       tags:
-      - Outbreak Controller
+      - Entity Dto Controller
   /outbreaks/uuids:
     get:
       operationId: getActiveUuids
@@ -4426,7 +4333,10 @@ paths:
       - Pathogen Test Controller
   /pathogentests/push:
     post:
-      operationId: postPathogenTests
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_18
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -4437,20 +4347,11 @@ paths:
       responses:
         default:
           content:
-            application/json; charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
+            application/json; charset=UTF-8: {}
           description: default response
+      summary: Create or update one or multiple entities.
       tags:
-      - Pathogen Test Controller
+      - Entity Dto Controller
   /pathogentests/query:
     post:
       operationId: getByUuids_21
@@ -4602,7 +4503,10 @@ paths:
       - Person Controller
   /persons/push:
     post:
-      operationId: postPersons
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_19
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -4613,20 +4517,11 @@ paths:
       responses:
         default:
           content:
-            application/json; charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
+            application/json; charset=UTF-8: {}
           description: default response
+      summary: Create or update one or multiple entities.
       tags:
-      - Person Controller
+      - Entity Dto Controller
   /persons/query:
     post:
       operationId: getByUuids_22
@@ -4789,7 +4684,10 @@ paths:
       - Point Of Entry Controller
   /pointsofentry/push:
     post:
-      operationId: postPointOfEntries
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_20
       requestBody:
         content:
           '*/*':
@@ -4800,20 +4698,11 @@ paths:
       responses:
         default:
           content:
-            application/json; charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
+            application/json; charset=UTF-8: {}
           description: default response
+      summary: Create or update one or multiple entities.
       tags:
-      - Point Of Entry Controller
+      - Entity Dto Controller
   /pointsofentry/query:
     post:
       operationId: getByUuids_23
@@ -4918,7 +4807,10 @@ paths:
       - Prescription Controller
   /prescriptions/push:
     post:
-      operationId: postPrescriptions
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_21
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -4929,20 +4821,11 @@ paths:
       responses:
         default:
           content:
-            application/json; charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
+            application/json; charset=UTF-8: {}
           description: default response
+      summary: Create or update one or multiple entities.
       tags:
-      - Prescription Controller
+      - Entity Dto Controller
   /prescriptions/query:
     post:
       operationId: getByUuids_24
@@ -5052,7 +4935,10 @@ paths:
       - Region Controller
   /regions/push:
     post:
-      operationId: postRegions
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_22
       requestBody:
         content:
           '*/*':
@@ -5063,20 +4949,11 @@ paths:
       responses:
         default:
           content:
-            application/json; charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
+            application/json; charset=UTF-8: {}
           description: default response
+      summary: Create or update one or multiple entities.
       tags:
-      - Region Controller
+      - Entity Dto Controller
   /regions/query:
     post:
       operationId: getByUuids_25
@@ -5253,7 +5130,10 @@ paths:
       - Sample Controller
   /samples/push:
     post:
-      operationId: postSamples
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_23
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -5264,20 +5144,11 @@ paths:
       responses:
         default:
           content:
-            application/json; charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
+            application/json; charset=UTF-8: {}
           description: default response
+      summary: Create or update one or multiple entities.
       tags:
-      - Sample Controller
+      - Entity Dto Controller
   /samples/query:
     post:
       operationId: getByUuids_26
@@ -5762,7 +5633,10 @@ paths:
       - Subcontinent Controller
   /subcontinents/push:
     post:
-      operationId: postSubcontinents_1
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_24
       requestBody:
         content:
           '*/*':
@@ -5773,20 +5647,11 @@ paths:
       responses:
         default:
           content:
-            application/json; charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
+            application/json; charset=UTF-8: {}
           description: default response
+      summary: Create or update one or multiple entities.
       tags:
-      - Subcontinent Controller
+      - Entity Dto Controller
   /subcontinents/query:
     post:
       operationId: getByUuids_27
@@ -5824,7 +5689,10 @@ paths:
       - Subcontinent Controller
   /surveillancereports/push:
     post:
-      operationId: postCaseReports
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_25
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -5835,20 +5703,11 @@ paths:
       responses:
         default:
           content:
-            application/json; charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
+            application/json; charset=UTF-8: {}
           description: default response
+      summary: Create or update one or multiple entities.
       tags:
-      - Surveillance Report Controller
+      - Entity Dto Controller
   /surveillancereports/query/cases:
     post:
       operationId: getByCaseUuids_1
@@ -6011,7 +5870,10 @@ paths:
       - Task Controller
   /tasks/push:
     post:
-      operationId: postTasks
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_26
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -6022,20 +5884,11 @@ paths:
       responses:
         default:
           content:
-            application/json; charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
+            application/json; charset=UTF-8: {}
           description: default response
+      summary: Create or update one or multiple entities.
       tags:
-      - Task Controller
+      - Entity Dto Controller
   /tasks/query:
     post:
       operationId: getByUuids_28
@@ -6114,7 +5967,10 @@ paths:
       - Travel Entry Controller
   /travelentries/push:
     post:
-      operationId: postTravelEntries
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_27
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -6125,20 +5981,11 @@ paths:
       responses:
         default:
           content:
-            application/json; charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
+            application/json; charset=UTF-8: {}
           description: default response
+      summary: Create or update one or multiple entities.
       tags:
-      - Travel Entry Controller
+      - Entity Dto Controller
   /travelentries/{uuid}:
     delete:
       operationId: delete_7
@@ -6241,7 +6088,10 @@ paths:
       - Treatment Controller
   /treatments/push:
     post:
-      operationId: postTreatments
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_28
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -6252,20 +6102,11 @@ paths:
       responses:
         default:
           content:
-            application/json; charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
+            application/json; charset=UTF-8: {}
           description: default response
+      summary: Create or update one or multiple entities.
       tags:
-      - Treatment Controller
+      - Entity Dto Controller
   /treatments/query:
     post:
       operationId: getByUuids_29
@@ -6471,7 +6312,7 @@ paths:
   /visits-external:
     post:
       description: Upload visits with all symptom and disease related data to SORMAS.
-      operationId: postExternalVisits
+      operationId: postEntityDtos_14
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -6482,17 +6323,7 @@ paths:
       responses:
         default:
           content:
-            application/json; charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
+            application/json; charset=UTF-8: {}
           description: default response
       summary: Save visits
       tags:
@@ -6715,7 +6546,10 @@ paths:
       - Visit Controller
   /visits/push:
     post:
-      operationId: postVisits_1
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_29
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -6726,20 +6560,11 @@ paths:
       responses:
         default:
           content:
-            application/json; charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
+            application/json; charset=UTF-8: {}
           description: default response
+      summary: Create or update one or multiple entities.
       tags:
-      - Visit Controller
+      - Entity Dto Controller
   /visits/query:
     post:
       operationId: getByUuids_31
@@ -6830,7 +6655,10 @@ paths:
       - Weekly Report Controller
   /weeklyreports/push:
     post:
-      operationId: postWeeklyReports
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_30
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -6841,20 +6669,11 @@ paths:
       responses:
         default:
           content:
-            application/json; charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
+            application/json; charset=UTF-8: {}
           description: default response
+      summary: Create or update one or multiple entities.
       tags:
-      - Weekly Report Controller
+      - Entity Dto Controller
   /weeklyreports/query:
     post:
       operationId: getByUuids_32
@@ -20051,7 +19870,6 @@ components:
           pattern: "^[0-9a-zA-Z-]*$"
       required:
       - reportDateTime
-      - reportingUser
       - sampleDateTime
       - sampleMaterial
       - samplePurpose

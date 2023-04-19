@@ -544,13 +544,23 @@ public class EventsView extends AbstractView {
 								items -> ControllerProvider.getEventController().showBulkEventDataEditComponent(items, (EventGrid) grid))));
 				}
 				if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_DELETE)) {
-					bulkActions.add(
-						new MenuBarHelper.MenuBarItem(
-							I18nProperties.getCaption(Captions.bulkDelete),
-							VaadinIcons.TRASH,
-							mi -> grid.bulkActionHandler(
-								items -> ControllerProvider.getEventController().deleteAllSelectedItems(items, () -> navigateTo(eventCriteria)),
-								true)));
+					if (eventCriteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
+						bulkActions.add(
+							new MenuBarHelper.MenuBarItem(
+								I18nProperties.getCaption(Captions.bulkDelete),
+								VaadinIcons.TRASH,
+								mi -> grid.bulkActionHandler(
+									items -> ControllerProvider.getEventController().deleteAllSelectedItems(items, () -> navigateTo(eventCriteria)),
+									true)));
+					} else {
+						bulkActions.add(
+							new MenuBarHelper.MenuBarItem(
+								I18nProperties.getCaption(Captions.bulkRestore),
+								VaadinIcons.ARROW_BACKWARD,
+								mi -> grid.bulkActionHandler(
+									items -> ControllerProvider.getEventController().undeleteSelectedEvents(items, () -> navigateTo(eventCriteria)),
+									true)));
+					}
 				}
 				if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_ARCHIVE)) {
 					bulkActions.add(

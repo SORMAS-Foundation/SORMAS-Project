@@ -17,7 +17,7 @@ package de.symeda.sormas.app.backend.caze;
 
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -90,7 +90,7 @@ public class CaseDtoHelper extends PersonDependentDtoHelper<Case, CaseDataDto> {
 	}
 
 	@Override
-	protected Call<List<PushResult>> pushAll(List<CaseDataDto> caseDataDtos) throws NoConnectionException {
+	protected Call<List<PostResponse>> pushAll(List<CaseDataDto> caseDataDtos) throws NoConnectionException {
 		return RetroProvider.getCaseFacade().pushAll(caseDataDtos);
 	}
 

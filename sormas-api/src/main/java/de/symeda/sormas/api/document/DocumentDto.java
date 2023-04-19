@@ -26,6 +26,8 @@ import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 public class DocumentDto extends PseudonymizableDto {
 
+	public static final String MIME_TYPE_DEFAULT = "application/octet-stream";
+
 	public static final String UPLOADING_USER = "uploadingUser";
 	public static final String NAME = "name";
 	public static final String CONTENT_TYPE = "contentType";

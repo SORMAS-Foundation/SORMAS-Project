@@ -11,6 +11,7 @@ import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.person.PersonJoins;
 import de.symeda.sormas.backend.user.User;
 
 public class TravelEntryJoins extends QueryJoins<TravelEntry> {
@@ -24,6 +25,7 @@ public class TravelEntryJoins extends QueryJoins<TravelEntry> {
 	private Join<TravelEntry, District> pointOfEntryDistrict;
 	private Join<TravelEntry, PointOfEntry> pointOfEntry;
 	private Join<TravelEntry, Case> resultingCase;
+	private PersonJoins personJoins;
 
 	public TravelEntryJoins(From<?, TravelEntry> root) {
 		super(root);
@@ -99,5 +101,13 @@ public class TravelEntryJoins extends QueryJoins<TravelEntry> {
 
 	private void setResultingCase(Join<TravelEntry, Case> resultingCase) {
 		this.resultingCase = resultingCase;
+	}
+
+	public PersonJoins getPersonJoins() {
+		return getOrCreate(personJoins, () -> new PersonJoins(getPerson()), this::setPersonJoins);
+	}
+
+	private void setPersonJoins(PersonJoins personJoins) {
+		this.personJoins = personJoins;
 	}
 }

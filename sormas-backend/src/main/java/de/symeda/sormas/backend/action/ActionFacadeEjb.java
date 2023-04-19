@@ -29,6 +29,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.action.ActionCriteria;
 import de.symeda.sormas.api.action.ActionDto;
 import de.symeda.sormas.api.action.ActionFacade;
@@ -231,6 +232,20 @@ public class ActionFacadeEjb implements ActionFacade {
 	@Override
 	public long countActions(ActionCriteria criteria) {
 		return actionService.countActions(criteria);
+	}
+
+	@Override
+	public boolean isInJurisdiction(String uuid) {
+		return actionService.inJurisdictionOrOwned(actionService.getByUuid(uuid));
+	}
+
+	@Override
+	public EditPermissionType getEditPermissionType(String uuid) {
+		if (!isInJurisdiction(uuid)) {
+			return EditPermissionType.REFUSED;
+		}
+
+		return EditPermissionType.ALLOWED;
 	}
 
 	@LocalBean

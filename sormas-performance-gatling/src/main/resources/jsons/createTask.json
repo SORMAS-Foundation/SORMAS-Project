@@ -1,0 +1,14 @@
+[
+  {
+    "taskType": "WEEKLY_REPORT_GENERATION",
+    "dueDate": #{todayDate},
+    "assigneeUser": {
+      "uuid": "#{contactSupervisorUUID}"
+    },
+    "taskContext": "GENERAL",
+    "priority": "NORMAL",
+    "uuid": "#{taskGUID}",
+    "suggestedStart": #{todayDate},
+    "taskStatus": "PENDING"
+  }
+]

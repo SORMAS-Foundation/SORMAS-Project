@@ -2,7 +2,7 @@ package de.symeda.sormas.app.backend.feature;
 
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.rest.NoConnectionException;
@@ -32,7 +32,7 @@ public class FeatureConfigurationDtoHelper extends AdoDtoHelper<FeatureConfigura
 	}
 
 	@Override
-	protected Call<List<PushResult>> pushAll(List<FeatureConfigurationDto> dtos) throws NoConnectionException {
+	protected Call<List<PostResponse>> pushAll(List<FeatureConfigurationDto> dtos) throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is read-only");
 	}
 

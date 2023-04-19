@@ -220,13 +220,20 @@ public class EventParticipantsView extends AbstractEventView {
 					}, true);
 				}));
 			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
-				bulkActions.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, mi -> {
-					grid.bulkActionHandler(items -> {
-						ControllerProvider.getEventParticipantController().deleteAllSelectedItems(items, () -> grid.reload());
-					}, true);
-				}));
+				if (criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
+					bulkActions.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, mi -> {
+						grid.bulkActionHandler(items -> {
+							ControllerProvider.getEventParticipantController().deleteAllSelectedItems(items, () -> grid.reload());
+						}, true);
+					}));
+				} else {
+					bulkActions.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkRestore), VaadinIcons.ARROW_BACKWARD, mi -> {
+						grid.bulkActionHandler(items -> {
+							ControllerProvider.getEventParticipantController().undeleteSelectedEventParticipants(items, () -> grid.reload());
+						}, true);
+					}));
+				}
 			}
-
 			if (isDocGenerationAllowed()) {
 				bulkActions
 					.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkActionCreatDocuments), VaadinIcons.FILE_TEXT, mi -> {

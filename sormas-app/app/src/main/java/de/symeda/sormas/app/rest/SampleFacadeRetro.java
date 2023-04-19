@@ -17,7 +17,7 @@ package de.symeda.sormas.app.rest;
 
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.sample.SampleDto;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -38,7 +38,7 @@ public interface SampleFacadeRetro {
 	Call<List<SampleDto>> pullByUuids(@Body List<String> uuids);
 
 	@POST("samples/push")
-	Call<List<PushResult>> pushAll(@Body List<SampleDto> dtos);
+	Call<List<PostResponse>> pushAll(@Body List<SampleDto> dtos);
 
 	@GET("samples/uuids")
 	Call<List<String>> pullUuids();

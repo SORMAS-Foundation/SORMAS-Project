@@ -19,21 +19,14 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public interface CoreFacade<DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends ReferenceDto, CRITERIA extends BaseCriteria>
-	extends BaseFacade<DTO, INDEX_DTO, REF_DTO, CRITERIA> {
+	extends BaseFacade<DTO, INDEX_DTO, REF_DTO, CRITERIA>, DeletableFacade {
 
 	boolean isArchived(String uuid);
-
-	boolean isDeleted(String uuid);
-
-	void delete(String uuid, DeletionDetails deletionDetails);
-
-	void undelete(String uuid);
 
 	boolean exists(String uuid);
 

@@ -24,6 +24,7 @@ import java.util.List;
 import javax.ejb.Remote;
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.DeletableFacade;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
@@ -32,7 +33,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 @Remote
-public interface SampleFacade {
+public interface SampleFacade extends DeletableFacade {
 
 	List<SampleDto> getAllActiveSamplesAfter(Date date);
 
@@ -62,10 +63,6 @@ public interface SampleFacade {
 
 	List<SampleDto> getByUuids(List<String> uuids);
 
-	void deleteSample(SampleReferenceDto sampleRef, DeletionDetails deletionDetails);
-
-	void undelete(SampleReferenceDto sampleRef);
-
 	void deleteAllSamples(List<String> sampleUuids, DeletionDetails deletionDetails);
 
 	List<String> deleteSamples(List<String> sampleUuids, DeletionDetails deletionDetails);
@@ -75,8 +72,6 @@ public interface SampleFacade {
 	List<String> getDeletedUuidsSince(Date since);
 
 	List<String> getObsoleteUuidsSince(Date since);
-
-	boolean isDeleted(String sampleUuid);
 
 	List<SampleDto> getByCaseUuids(List<String> caseUuids);
 
