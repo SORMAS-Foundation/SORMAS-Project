@@ -4,6 +4,7 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        gradlePluginPortal()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:8.0.0'
@@ -16,6 +17,12 @@ buildscript {
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
+}
+
+plugins {
+    // Use "dependencyUpdates" task to list all updateable dependencies.
+    // For unknown reasons the Android Studio gradle tooling doesn't list all updates
+    id "com.github.ben-manes.versions" version "0.46.0"
 }
 
 allprojects {
@@ -46,9 +53,34 @@ allprojects {
     }
 }
 
+/**
+ * Returns an int representing how mature [version] is. Higher numbers are more mature.
+ * https://github.com/ben-manes/gradle-versions-plugin/issues/440#issuecomment-1410918392
+ */
+static def maturityLevel(String version) {
+    /**
+     * Version qualifiers, in order from least to most mature.
+     * The most mature is to have no qualifier at all.
+     */
+    def qualifiers = ["preview", "alpha", "beta", "m", "cr", "rc"]
+    def qualifiersRegex = qualifiers.collect { /(?i).*[.\-]$it[.\-\d]*/ }
+
+    def index = qualifiersRegex.findIndexOf { version ==~ it }
+    return (index < 0) ? qualifiers.size : index
+}
+
+tasks.named("dependencyUpdates").configure {
+    rejectVersionIf {
+        def candidateMaturity = maturityLevel(it.candidate.version)
+        def currentMaturity = maturityLevel(it.currentVersion)
+        candidateMaturity < currentMaturity
+    }
+}
+
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
 
 apply from: 'versioning.gradle'
 apply from: 'signing.gradle'
