@@ -80,10 +80,8 @@ public class ClinicalCourseController {
 		form.setValue(clinicalVisit);
 
 		boolean isEditOrDeleteAllowed = isEditOrDeleteAllowed(isEditAllowed, isDeleteAllowed);
-		final CommitDiscardWrapperComponent<ClinicalVisitForm> view = new CommitDiscardWrapperComponent<>(
-			form,
-			isEditOrDeleteAllowed,
-			form.getFieldGroup());
+		final CommitDiscardWrapperComponent<ClinicalVisitForm> view =
+			new CommitDiscardWrapperComponent<>(form, isEditOrDeleteAllowed, form.getFieldGroup());
 		view.setWidth(100, Unit.PERCENTAGE);
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(view, I18nProperties.getString(Strings.headingEditClinicalVisit));
 		// Clinical visit form is too big for typical screens
@@ -123,13 +121,9 @@ public class ClinicalCourseController {
 				UserRight.CASE_EDIT,
 				UserRight.CLINICAL_VISIT_EDIT,
 				UserRight.CASE_DELETE,
-				UserRight.CLINICAL_VISIT_DELETE); // CLINICAL_COURSE_EDIT
+				UserRight.CLINICAL_VISIT_DELETE);
 		}
-		//else {
-		//view.getCommitButton().setVisible(false);
-		//view.getDiscardButton().setVisible(false);
 		view.getButtonsPanel().setVisible(isEditOrDeleteAllowed);
-		//}
 	}
 
 	public void deleteAllSelectedClinicalVisits(Collection<Object> selectedRows, Runnable callback) {
@@ -156,6 +150,7 @@ public class ClinicalCourseController {
 		}
 	}
 
+	//TODO: check were should be included this method: A utility class or a BaseController
 	public boolean isEditOrDeleteAllowed(boolean isEditAllowed, boolean isDeleteAllowed) {
 		return isEditAllowed || isDeleteAllowed;
 	}
