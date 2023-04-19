@@ -515,8 +515,8 @@ public class EventParticipantFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._EVENTPARTICIPANT_DELETE)
-	public void undelete(String uuid) {
-		super.undelete(uuid);
+	public void restore(String uuid) {
+		super.restore(uuid);
 	}
 
 	@Override

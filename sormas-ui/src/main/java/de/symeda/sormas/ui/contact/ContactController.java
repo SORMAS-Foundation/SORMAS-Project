@@ -91,7 +91,7 @@ import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.BulkOperationHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
-import de.symeda.sormas.ui.utils.CoreEntityUndeleteMessages;
+import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DeletableUtils;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -686,7 +686,7 @@ public class ContactController {
 		});
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_DELETE)) {
-			editComponent.addDeleteWithReasonOrUndeleteListener(
+			editComponent.addDeleteWithReasonOrRestoreListener(
 				ContactsView.VIEW_NAME,
 				getDeleteConfirmationDetails(Collections.singletonList(contact.getUuid())),
 				I18nProperties.getString(Strings.entityContact),
@@ -831,12 +831,12 @@ public class ContactController {
 		}
 	}
 
-	public void undeleteSelectedContacts(Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {
-		ControllerProvider.getDeleteUndeleteController()
-			.undeleteSelectedItems(
+	public void restoreSelectedContacts(Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {
+		ControllerProvider.getDeleteRestoreController()
+			.restoreSelectedItems(
 				selectedRows.stream().map(ContactIndexDto::getUuid).collect(Collectors.toList()),
 				FacadeProvider.getContactFacade(),
-				CoreEntityUndeleteMessages.CONTACT,
+				CoreEntityRestoreMessages.CONTACT,
 				callback);
 	}
 

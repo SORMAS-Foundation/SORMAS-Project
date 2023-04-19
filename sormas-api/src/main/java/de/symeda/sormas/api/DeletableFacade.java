@@ -6,7 +6,7 @@ public interface DeletableFacade {
 
 	void delete(String uuid, DeletionDetails deletionDetails);
 
-	void undelete(String uuid);
+	void restore(String uuid);
 
 	boolean isDeleted(String uuid);
 }

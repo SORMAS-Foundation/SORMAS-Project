@@ -137,7 +137,7 @@ import de.symeda.sormas.ui.utils.BulkOperationHelper;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
-import de.symeda.sormas.ui.utils.CoreEntityUndeleteMessages;
+import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DeletableUtils;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
@@ -1094,7 +1094,7 @@ public class CaseController {
 	private void appendSpecialCommands(CaseDataDto caze, CommitDiscardWrapperComponent<? extends Component> editView) {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_DELETE)) {
-			editView.addDeleteWithReasonOrUndeleteListener((deleteDetails) -> {
+			editView.addDeleteWithReasonOrRestoreListener((deleteDetails) -> {
 				if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
 					long contactCount = FacadeProvider.getContactFacade().getContactCount(caze.toReference());
 					if (contactCount > 0) {
@@ -1120,7 +1120,7 @@ public class CaseController {
 					deleteCase(caze, false, deleteDetails);
 				}
 			}, getDeleteConfirmationDetails(Collections.singletonList(caze.getUuid())), (deleteDetails) -> {
-				FacadeProvider.getCaseFacade().undelete(caze.getUuid());
+				FacadeProvider.getCaseFacade().restore(caze.getUuid());
 				UI.getCurrent().getNavigator().navigateTo(CasesView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityCase), caze.getUuid(), FacadeProvider.getCaseFacade());
 		}
@@ -1623,12 +1623,12 @@ public class CaseController {
 		}
 	}
 
-	public void undeleteSelectedCases(Collection<? extends CaseIndexDto> selectedRows, Runnable callback) {
-		ControllerProvider.getDeleteUndeleteController()
-			.undeleteSelectedItems(
+	public void restoreSelectedCases(Collection<? extends CaseIndexDto> selectedRows, Runnable callback) {
+		ControllerProvider.getDeleteRestoreController()
+			.restoreSelectedItems(
 				selectedRows.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList()),
 				FacadeProvider.getCaseFacade(),
-				CoreEntityUndeleteMessages.CASE,
+				CoreEntityRestoreMessages.CASE,
 				callback);
 	}
 

@@ -61,12 +61,12 @@ public class CampaignController {
 			});
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
-				campaignComponent.addDeleteWithReasonOrUndeleteListener((deleteDetails) -> {
+				campaignComponent.addDeleteWithReasonOrRestoreListener((deleteDetails) -> {
 					FacadeProvider.getCampaignFacade().delete(campaign.getUuid(), deleteDetails);
 					campaignComponent.discard();
 					SormasUI.refreshView();
 				}, null, (deleteDetails) -> {
-					FacadeProvider.getCampaignFacade().undelete(campaign.getUuid());
+					FacadeProvider.getCampaignFacade().restore(campaign.getUuid());
 					campaignComponent.discard();
 					SormasUI.refreshView();
 				}, I18nProperties.getString(Strings.entityCampaign), campaign.getUuid(), FacadeProvider.getCampaignFacade());
@@ -137,11 +137,11 @@ public class CampaignController {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE) && !isCreate) {
 			CampaignDto finalCampaignDto = campaignDto;
-			campaignComponent.addDeleteWithReasonOrUndeleteListener((deleteDetails) -> {
+			campaignComponent.addDeleteWithReasonOrRestoreListener((deleteDetails) -> {
 				FacadeProvider.getCampaignFacade().delete(finalCampaignDto.getUuid(), deleteDetails);
 				UI.getCurrent().getNavigator().navigateTo(CampaignsView.VIEW_NAME);
 			}, null, (deleteDetails) -> {
-				FacadeProvider.getCampaignFacade().undelete(finalCampaignDto.getUuid());
+				FacadeProvider.getCampaignFacade().restore(finalCampaignDto.getUuid());
 				campaignComponent.discard();
 				SormasUI.refreshView();
 			}, I18nProperties.getString(Strings.entityCampaign), finalCampaignDto.getUuid(), FacadeProvider.getCampaignFacade());

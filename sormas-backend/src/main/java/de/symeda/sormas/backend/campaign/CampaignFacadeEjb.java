@@ -359,8 +359,8 @@ public class CampaignFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._CAMPAIGN_DELETE)
-	public void undelete(String uuid) {
-		super.undelete(uuid);
+	public void restore(String uuid) {
+		super.restore(uuid);
 	}
 
 	@Override
