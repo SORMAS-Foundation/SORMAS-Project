@@ -52,6 +52,8 @@ import de.symeda.sormas.backend.campaign.diagram.CampaignDiagramDefinitionFacade
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.infrastructure.PopulationData;
+import de.symeda.sormas.backend.infrastructure.PopulationDataService;
 import de.symeda.sormas.backend.infrastructure.area.Area;
 import de.symeda.sormas.backend.infrastructure.area.AreaFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.area.AreaService;
@@ -97,6 +99,10 @@ public class CampaignFacadeEjb implements CampaignFacade {
 	private DistrictService districtService;
 	@EJB
 	private CommunityService communityService;
+	
+	@EJB
+	private PopulationDataService popService;
+	
 	
 	@Override
 	public List<CampaignIndexDto> getIndexList(CampaignCriteria campaignCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
@@ -632,7 +638,21 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		}
 		String newUuid = campaignService.cloneForm(campaignService.getByUuid(campaignUuid), user.getId());
 		
-		String newUuidx = campaignService.clonePopulationData(campaignService.getByUuid(campaignUuid), campaignService.getByUuid(newUuid));
+		List<PopulationData> popList = campaignService.clonePopulationData(campaignService.getByUuid(campaignUuid), null);
+		final Campaign cmp = campaignService.getByUuid(newUuid);
+		for(PopulationData popListx : popList) {
+			PopulationData ppData = new PopulationData();
+			ppData.setAgeGroup(popListx.getAgeGroup());
+			ppData.setCampaign(cmp);
+			ppData.setDistrict(popListx.getDistrict());
+			ppData.setPopulation(popListx.getPopulation());
+			ppData.setRegion(popListx.getRegion());
+			ppData.setCollectionDate(popListx.getCollectionDate());
+			ppData.setSelected(popListx.getSelected());
+			
+	       em.persist(ppData);
+
+		}
 		
 		return newUuid;
 	}

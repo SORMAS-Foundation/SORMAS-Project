@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.campaign;
 
+import java.math.BigInteger;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
@@ -16,10 +17,12 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.campaign.CampaignCriteria;
+import de.symeda.sormas.api.infrastructure.PopulationDataDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.infrastructure.PopulationData;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
@@ -145,34 +148,35 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 		try {
 			cds = cloneFormx1x(uuidx, mill, userCreatingId);
 		} finally {
-			cdv = "insert into campaign_campaignformmeta  (SELECT " + mill + " as id, "
-					+ "cd.campaignformmeta_id, cd.sys_period FROM campaigns dc inner join campaign_campaignformmeta cd on (dc.id = cd.campaign_id) where dc.name='"
-					+ uuidx + "' and deleted = false)";
-
-		}
+			
+		cdv = "insert into campaign_campaignformmeta  (SELECT " + mill + " as id, "
+				+ "cd.campaignformmeta_id, cd.sys_period FROM campaigns dc inner join campaign_campaignformmeta cd on (dc.id = cd.campaign_id) where dc.name='"
+				+ uuidx + "' and deleted = false)";
+		
 		int notused = em.createNativeQuery(cdv).executeUpdate();
+		}
 		return cds;
 	}
-
-	public String clonePopulationData(Campaign uuidx, Campaign newCampaignUuid) {
-
-		String cdv = "";
-		String cds = "";
-
-		final Long mill = ZonedDateTime.now().toInstant().toEpochMilli();
-
 //	
-//			cdv = "insert into campaign_campaignformmeta  (SELECT " + mill + " as id, "
-//					+ "cd.campaignformmeta_id, cd.sys_period FROM campaigns dc inner join campaign_campaignformmeta cd on (dc.id = cd.campaign_id) where dc.name='"
-//					+ uuidx + "' and deleted = false)";
+//	public BigInteger countPopulationtoClone(Campaign uuidx) {
+//		String cdv = " SELECT count(*) from populationdata WHERE campaign_id = "+uuidx.getId()+";";
+//		return (BigInteger) em.createNativeQuery(cdv).getSingleResult();
+//	}
 
-		cdv = "INSERT INTO populationdata (id, uuid, changedate, creationdate, region_id, district_id, agegroup, population,collectiondate, campaign_id, selected)"
-				+ " SELECT " + mill
-				+ " as id, concat(uuid, '-DUP') as uuid, changedate, creationdate, region_id, district_id, agegroup, population, collectiondate, "+newCampaignUuid.getId()+", selected FROM populationdata "
-				+ "WHERE campaign_id = "+uuidx.getId()+";";
+	public List<PopulationData> clonePopulationData(Campaign uuidx, Campaign newCampaignUuid) {
 
-		int notused = em.createNativeQuery(cdv).executeUpdate();
-		return cds;
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<PopulationData> cq = cb.createQuery(PopulationData.class);
+		Root<PopulationData> root = cq.from(PopulationData.class);
+		cq.where(cb.and(cb.equal(root.get(PopulationData.CAMPAIGN), uuidx)));
+
+		return em.createQuery(cq).getResultList();
+		
+//		
+//		List<PopulationData> popdata = em.createNativeQuery("select from populationdata where campaign_id = "+uuidx.getId()).getResultList();
+
+//		return popdata;
 	}
 
 	public int campaignPublish(String uuidx, boolean published) {
