@@ -55,7 +55,7 @@ import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
-import de.symeda.sormas.ui.utils.CoreEntityUndeleteMessages;
+import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DeletableUtils;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -197,12 +197,12 @@ public class EventParticipantsController {
 		}
 	}
 
-	public void undeleteSelectedEventParticipants(Collection<? extends EventParticipantIndexDto> selectedRows, Runnable callback) {
-		ControllerProvider.getDeleteUndeleteController()
-			.undeleteSelectedItems(
+	public void restoreSelectedEventParticipants(Collection<? extends EventParticipantIndexDto> selectedRows, Runnable callback) {
+		ControllerProvider.getDeleteRestoreController()
+			.restoreSelectedItems(
 				selectedRows.stream().map(EventParticipantIndexDto::getUuid).collect(Collectors.toList()),
 				FacadeProvider.getEventParticipantFacade(),
-				CoreEntityUndeleteMessages.EVENT_PARTICIPANT,
+				CoreEntityRestoreMessages.EVENT_PARTICIPANT,
 				callback);
 	}
 
@@ -247,7 +247,7 @@ public class EventParticipantsController {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
-			editComponent.addDeleteWithReasonOrUndeleteListener(
+			editComponent.addDeleteWithReasonOrRestoreListener(
 				EventParticipantsView.VIEW_NAME + "/" + eventParticipant.getEvent().getUuid(),
 				null,
 				I18nProperties.getString(Strings.entityEventParticipant),

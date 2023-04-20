@@ -2,7 +2,7 @@ package de.symeda.sormas.ui.utils;
 
 import de.symeda.sormas.api.i18n.Strings;
 
-public enum CoreEntityUndeleteMessages {
+public enum CoreEntityRestoreMessages {
 
 	CASE(Strings.entityCases,
 		Strings.headingNoCasesSelected,
@@ -68,7 +68,7 @@ public enum CoreEntityUndeleteMessages {
 	private final String headingSomeEntitiesNotRestored;
 	private final String messageCountEntitiesNotRestored;
 
-	CoreEntityUndeleteMessages(
+	CoreEntityRestoreMessages(
 		String entities,
 		String headingNoSelection,
 		String messageNoSelection,

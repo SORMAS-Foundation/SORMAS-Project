@@ -98,12 +98,12 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	}
 
 	@DenyAll
-	public void undelete(String uuid) {
+	public void restore(String uuid) {
 		ADO ado = service.getByUuid(uuid);
 		if (ado == null) {
-			throw new IllegalArgumentException("Cannot undelete non existing entity: [" + getCoreEntityType() + "] - " + uuid);
+			throw new IllegalArgumentException("Cannot restore non existing entity: [" + getCoreEntityType() + "] - " + uuid);
 		}
-		service.undelete(ado);
+		service.restore(ado);
 	}
 
 	public boolean isArchived(String uuid) {

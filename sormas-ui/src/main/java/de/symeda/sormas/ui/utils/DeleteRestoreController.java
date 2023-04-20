@@ -14,11 +14,11 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.HtmlHelper;
 
-public class DeleteUndeleteController<F extends DeletableFacade> {
+public class DeleteRestoreController<F extends DeletableFacade> {
 
-	public void undeleteSelectedItems(List<String> entityUuids, F entityFacade, CoreEntityUndeleteMessages messages, Runnable callback) {
-		Label undeleteConfirmationMessage = new Label();
-		undeleteConfirmationMessage.setValue(
+	public void restoreSelectedItems(List<String> entityUuids, F entityFacade, CoreEntityRestoreMessages messages, Runnable callback) {
+		Label restoreConfirmationMessage = new Label();
+		restoreConfirmationMessage.setValue(
 			String.format(
 				I18nProperties.getString(Strings.confirmationRestoreEntities),
 				entityUuids.size(),
@@ -26,18 +26,18 @@ public class DeleteUndeleteController<F extends DeletableFacade> {
 
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getString(Strings.headingRestoreConfirmation),
-			undeleteConfirmationMessage,
+			restoreConfirmationMessage,
 			I18nProperties.getString(Strings.yes),
 			I18nProperties.getString(Strings.no),
 			500,
 			confirmed -> {
 				if (Boolean.TRUE.equals(confirmed)) {
-					performUndeleteSelectedItems(entityUuids, entityFacade, messages, callback);
+					performRestoreSelectedItems(entityUuids, entityFacade, messages, callback);
 				}
 			});
 	}
 
-	public void performUndeleteSelectedItems(List<String> entityUuids, F entityFacade, CoreEntityUndeleteMessages messages, Runnable callback) {
+	public void performRestoreSelectedItems(List<String> entityUuids, F entityFacade, CoreEntityRestoreMessages messages, Runnable callback) {
 		if (entityUuids.isEmpty()) {
 			new Notification(
 				I18nProperties.getString(messages.getHeadingNoSelection()),
@@ -49,7 +49,7 @@ public class DeleteUndeleteController<F extends DeletableFacade> {
 			StringBuilder notRestoredEntities = new StringBuilder();
 			for (String selectedRow : entityUuids) {
 				try {
-					entityFacade.undelete(selectedRow);
+					entityFacade.restore(selectedRow);
 				} catch (Exception e) {
 					countNotRestoredEntities++;
 					notRestoredEntities.append(selectedRow, 0, 6).append(", ");
