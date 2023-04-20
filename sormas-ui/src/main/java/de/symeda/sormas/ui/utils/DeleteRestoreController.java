@@ -17,6 +17,16 @@ import de.symeda.sormas.api.utils.HtmlHelper;
 public class DeleteRestoreController<F extends DeletableFacade> {
 
 	public void restoreSelectedItems(List<String> entityUuids, F entityFacade, CoreEntityRestoreMessages messages, Runnable callback) {
+
+		if (entityUuids.isEmpty()) {
+			new Notification(
+				I18nProperties.getString(messages.getHeadingNoSelection()),
+				I18nProperties.getString(messages.getMessageNoSelection()),
+				Notification.Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
+			return;
+		}
+
 		Label restoreConfirmationMessage = new Label();
 		restoreConfirmationMessage.setValue(
 			String.format(
@@ -37,47 +47,40 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 			});
 	}
 
-	public void performRestoreSelectedItems(List<String> entityUuids, F entityFacade, CoreEntityRestoreMessages messages, Runnable callback) {
-		if (entityUuids.isEmpty()) {
+	private void performRestoreSelectedItems(List<String> entityUuids, F entityFacade, CoreEntityRestoreMessages messages, Runnable callback) {
+
+		int countNotRestoredEntities = 0;
+		StringBuilder notRestoredEntities = new StringBuilder();
+		for (String selectedRow : entityUuids) {
+			try {
+				entityFacade.restore(selectedRow);
+			} catch (Exception e) {
+				countNotRestoredEntities++;
+				notRestoredEntities.append(selectedRow, 0, 6).append(", ");
+			}
+		}
+		if (notRestoredEntities.length() > 0) {
+			notRestoredEntities = new StringBuilder(" " + notRestoredEntities.substring(0, notRestoredEntities.length() - 2) + ". ");
+		}
+		callback.run();
+		if (countNotRestoredEntities == 0) {
 			new Notification(
-				I18nProperties.getString(messages.getHeadingNoSelection()),
-				I18nProperties.getString(messages.getMessageNoSelection()),
-				Notification.Type.WARNING_MESSAGE,
+				I18nProperties.getString(messages.getHeadingEntitiesRestored()),
+				I18nProperties.getString(messages.getMessageEntitiesRestored()),
+				Notification.Type.TRAY_NOTIFICATION,
 				false).show(Page.getCurrent());
 		} else {
-			int countNotRestoredEntities = 0;
-			StringBuilder notRestoredEntities = new StringBuilder();
-			for (String selectedRow : entityUuids) {
-				try {
-					entityFacade.restore(selectedRow);
-				} catch (Exception e) {
-					countNotRestoredEntities++;
-					notRestoredEntities.append(selectedRow, 0, 6).append(", ");
-				}
-			}
-			if (notRestoredEntities.length() > 0) {
-				notRestoredEntities = new StringBuilder(" " + notRestoredEntities.substring(0, notRestoredEntities.length() - 2) + ". ");
-			}
-			callback.run();
-			if (countNotRestoredEntities == 0) {
-				new Notification(
-					I18nProperties.getString(messages.getHeadingEntitiesRestored()),
-					I18nProperties.getString(messages.getMessageEntitiesRestored()),
-					Notification.Type.TRAY_NOTIFICATION,
-					false).show(Page.getCurrent());
-			} else {
-				Window response = VaadinUiUtil.showSimplePopupWindow(
-					I18nProperties.getString(messages.getHeadingSomeEntitiesNotRestored()),
+			Window response = VaadinUiUtil.showSimplePopupWindow(
+				I18nProperties.getString(messages.getHeadingSomeEntitiesNotRestored()),
+				String.format(
+					"%1s <br/> <br/> %2s",
 					String.format(
-						"%1s <br/> <br/> %2s",
-						String.format(
-							I18nProperties.getString(messages.getMessageCountEntitiesNotRestored()),
-							String.format("<b>%s</b>", countNotRestoredEntities),
-							String.format("<b>%s</b>", HtmlHelper.cleanHtml(notRestoredEntities.toString()))),
-						I18nProperties.getString(Strings.messageCasesNotRestored)),
-					ContentMode.HTML);
-				response.setWidth(600, Sizeable.Unit.PIXELS);
-			}
+						I18nProperties.getString(messages.getMessageCountEntitiesNotRestored()),
+						String.format("<b>%s</b>", countNotRestoredEntities),
+						String.format("<b>%s</b>", HtmlHelper.cleanHtml(notRestoredEntities.toString()))),
+					I18nProperties.getString(Strings.messageCasesNotRestored)),
+				ContentMode.HTML);
+			response.setWidth(600, Sizeable.Unit.PIXELS);
 		}
 	}
 
