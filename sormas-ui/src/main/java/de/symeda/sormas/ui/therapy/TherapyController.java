@@ -70,7 +70,7 @@ public class TherapyController {
 		PrescriptionForm form = new PrescriptionForm(false, !isEditAllowed, prescription.isPseudonymized(), prescription.isInJurisdiction());
 		form.setValue(prescription);
 
-		boolean isEditOrDeleteAllowed = isEditOrDeleteAllowed(isEditAllowed, isDeleteAllowed);
+		boolean isEditOrDeleteAllowed = CommitDiscardWrapperComponent.isEditOrDeleteAllowed(isEditAllowed, isDeleteAllowed);
 		final CommitDiscardWrapperComponent<PrescriptionForm> view =
 			new CommitDiscardWrapperComponent<>(form, isEditOrDeleteAllowed, form.getFieldGroup());
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(
@@ -123,10 +123,6 @@ public class TherapyController {
 				UserRight.PRESCRIPTION_DELETE);
 		}
 		view.getButtonsPanel().setVisible(isEditOrDeleteAllowed);
-	}
-
-	public boolean isEditOrDeleteAllowed(boolean isEditAllowed, boolean isDeleteAllowed) {
-		return isEditAllowed || isDeleteAllowed;
 	}
 
 	private void handleDeletePrescriptionWithTreatments(List<TreatmentIndexDto> treatmentIndexDtos, List<String> prescriptionUuids) {
@@ -210,7 +206,7 @@ public class TherapyController {
 	public void openTreatmentEditForm(TreatmentIndexDto treatmentIndex, Runnable callback, boolean isEditAllowed, boolean isDeleteAllowed) {
 		TreatmentDto treatment = FacadeProvider.getTreatmentFacade().getTreatmentByUuid(treatmentIndex.getUuid());
 
-		boolean isEditOrDeleteAllowed = isEditOrDeleteAllowed(isEditAllowed, isDeleteAllowed);
+		boolean isEditOrDeleteAllowed = CommitDiscardWrapperComponent.isEditOrDeleteAllowed(isEditAllowed, isDeleteAllowed);
 		TreatmentForm form = new TreatmentForm(false, treatment.isPseudonymized(), treatment.isInJurisdiction());
 		form.setValue(treatment);
 

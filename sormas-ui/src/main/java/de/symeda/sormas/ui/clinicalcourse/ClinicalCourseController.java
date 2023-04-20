@@ -79,7 +79,7 @@ public class ClinicalCourseController {
 			clinicalVisit.isInJurisdiction());
 		form.setValue(clinicalVisit);
 
-		boolean isEditOrDeleteAllowed = isEditOrDeleteAllowed(isEditAllowed, isDeleteAllowed);
+		boolean isEditOrDeleteAllowed = CommitDiscardWrapperComponent.isEditOrDeleteAllowed(isEditAllowed, isDeleteAllowed);
 		final CommitDiscardWrapperComponent<ClinicalVisitForm> view =
 			new CommitDiscardWrapperComponent<>(form, isEditOrDeleteAllowed, form.getFieldGroup());
 		view.setWidth(100, Unit.PERCENTAGE);
@@ -148,10 +148,5 @@ public class ClinicalCourseController {
 						false).show(Page.getCurrent());
 				});
 		}
-	}
-
-	//TODO: check were should be included this method: A utility class or a BaseController
-	public boolean isEditOrDeleteAllowed(boolean isEditAllowed, boolean isDeleteAllowed) {
-		return isEditAllowed || isDeleteAllowed;
 	}
 }

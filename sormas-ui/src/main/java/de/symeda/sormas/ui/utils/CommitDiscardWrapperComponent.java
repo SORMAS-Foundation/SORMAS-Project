@@ -943,6 +943,10 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		}
 	}
 
+	public static boolean isEditOrDeleteAllowed(boolean isEditAllowed, boolean isDeleteAllowed) {
+		return isEditAllowed || isDeleteAllowed;
+	}
+
 	@Override
 	public void setWidth(float width, Unit unit) {
 		super.setWidth(width, unit);
@@ -1040,10 +1044,6 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	public boolean isEditChildAllowed(UserRight editParentRight, UserRight editChildRight) {
 		return UserProvider.getCurrent().hasUserRight(editParentRight)
 			&& UserProvider.getCurrent().hasUserRight(editChildRight);
-	}
-
-	public boolean isEditOrDeleteAllowed(boolean isEditAllowed, boolean isDeleteAllowed) {
-		return isEditAllowed || isDeleteAllowed;
 	}
 
 	//excludedButtons: contains the buttons attached to the CommitDiscardWrapperComponent which we intend to

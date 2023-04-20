@@ -129,7 +129,7 @@ public class PathogenTestController {
 		popupWindow.setContent(editView);
 		popupWindow.setCaption(
 			I18nProperties.getString(
-				isEditOrDeleteAllowed(isEditAllowed, isDeleteAllowed)
+				CommitDiscardWrapperComponent.isEditOrDeleteAllowed(isEditAllowed, isDeleteAllowed)
 					? Strings.headingEditPathogenTestResult
 					: Strings.headingViewPathogenTestResult));
 		UI.getCurrent().addWindow(popupWindow);
@@ -147,7 +147,7 @@ public class PathogenTestController {
 		PathogenTestForm form = new PathogenTestForm(sample, false, 0, pathogenTest.isPseudonymized(), pathogenTest.isInJurisdiction());
 		form.setValue(pathogenTest);
 
-		boolean isEditOrDeleteAllowed = isEditOrDeleteAllowed(isEditAllowed, isDeleteAllowed);
+		boolean isEditOrDeleteAllowed = CommitDiscardWrapperComponent.isEditOrDeleteAllowed(isEditAllowed, isDeleteAllowed);
 		final CommitDiscardWrapperComponent<PathogenTestForm> editView =
 			new CommitDiscardWrapperComponent<>(form, isEditOrDeleteAllowed, form.getFieldGroup());
 
@@ -583,9 +583,4 @@ public class PathogenTestController {
 				}
 			});
 	}
-
-	public boolean isEditOrDeleteAllowed(boolean isEditAllowed, boolean isDeleteAllowed) {
-		return isEditAllowed || isDeleteAllowed;
-	}
-
 }
