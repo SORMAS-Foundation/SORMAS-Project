@@ -751,10 +751,12 @@ public interface Strings {
 	String headingUserSettings = "headingUserSettings";
 	String headingVaccination = "headingVaccination";
 	String headingViewAdditionalTest = "headingViewAdditionalTest";
+	String headingViewClinicalVisit = "headingViewClinicalVisit";
 	String headingViewNotFound = "headingViewNotFound";
 	String headingViewPathogenTestResult = "headingViewPathogenTestResult";
 	String headingViewSurveillanceReport = "headingViewSurveillanceReport";
 	String headingViewTask = "headingViewTask";
+	String headingViewTreatment = "headingViewTreatment";
 	String headingViewVisit = "headingViewVisit";
 	String headingVisits = "headingVisits";
 	String headingVisitsDeleted = "headingVisitsDeleted";

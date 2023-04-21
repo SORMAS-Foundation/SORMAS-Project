@@ -83,8 +83,11 @@ public class ClinicalCourseController {
 		final CommitDiscardWrapperComponent<ClinicalVisitForm> view =
 			new CommitDiscardWrapperComponent<>(form, isEditOrDeleteAllowed, form.getFieldGroup());
 		view.setWidth(100, Unit.PERCENTAGE);
-		Window popupWindow = VaadinUiUtil.showModalPopupWindow(view, I18nProperties.getString(Strings.headingEditClinicalVisit));
-		// Clinical visit form is too big for typical screens
+
+		Window popupWindow = VaadinUiUtil.showModalPopupWindow(
+			view,
+			I18nProperties.getString(!isEditOrDeleteAllowed ? Strings.headingViewClinicalVisit : Strings.headingEditClinicalVisit));
+
 		popupWindow.setWidth(form.getWidth() + 90, Unit.PIXELS);
 		popupWindow.setHeight(80, Unit.PERCENTAGE);
 
