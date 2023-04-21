@@ -87,7 +87,6 @@ public class ClinicalCourseController {
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(
 			view,
 			I18nProperties.getString(!isEditOrDeleteAllowed ? Strings.headingViewClinicalVisit : Strings.headingEditClinicalVisit));
-
 		popupWindow.setWidth(form.getWidth() + 90, Unit.PIXELS);
 		popupWindow.setHeight(80, Unit.PERCENTAGE);
 

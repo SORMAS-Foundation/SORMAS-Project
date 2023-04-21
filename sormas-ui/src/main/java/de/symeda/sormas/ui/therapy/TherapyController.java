@@ -248,12 +248,11 @@ public class TherapyController {
 
 		if (treatment.getPrescription() != null) {
 			Button openPrescriptionButton = ButtonHelper.createButton(Captions.treatmentOpenPrescription, e -> {
-				//TODO: check if the parent right should also be checked
 				openPrescriptionEditForm(
 					treatment.getPrescription(),
 					null,
 					true,
-					UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed, UserRight.TREATMENT_DELETE));
+					UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed, UserRight.PRESCRIPTION_DELETE));
 				popupWindow.close();
 				callback.run();
 			});
