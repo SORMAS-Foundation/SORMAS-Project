@@ -119,11 +119,11 @@ public class ClinicalCourseController {
 				}, I18nProperties.getString(Strings.entityClinicalVisit));
 			}
 
-			view.restrictEditableChildComponentOnEditView(
-				UserRight.CASE_EDIT,
+			view.restrictEditableComponentsOnEditView(
 				UserRight.CLINICAL_VISIT_EDIT,
-				UserRight.CASE_DELETE,
-				UserRight.CLINICAL_VISIT_DELETE);
+				UserRight.CLINICAL_VISIT_DELETE,
+				null,
+				clinicalVisit.isInJurisdiction());
 		}
 		view.getButtonsPanel().setVisible(isEditOrDeleteAllowed);
 	}

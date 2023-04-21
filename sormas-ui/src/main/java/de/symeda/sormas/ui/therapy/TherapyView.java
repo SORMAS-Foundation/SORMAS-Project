@@ -110,7 +110,7 @@ public class TherapyView extends AbstractCaseView {
 				headlineRow.addComponent(bulkOperationsDropdown);
 				headlineRow.setComponentAlignment(bulkOperationsDropdown, Alignment.MIDDLE_RIGHT);
 			}
-			//TODO: check if only for the CASE_EDIT right should work
+
 			if (isEditAllowed() && UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)) {
 				Button newPrescriptionButton = ButtonHelper.createButton(Captions.prescriptionNewPrescription, e -> {
 					ControllerProvider.getTherapyController()

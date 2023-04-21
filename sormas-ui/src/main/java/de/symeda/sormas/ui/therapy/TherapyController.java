@@ -116,11 +116,11 @@ public class TherapyController {
 					}
 				}, I18nProperties.getString(Strings.entityPrescription));
 			}
-			view.restrictEditableChildComponentOnEditView(
-				UserRight.CASE_EDIT,
+			view.restrictEditableComponentsOnEditView(
 				UserRight.PRESCRIPTION_EDIT,
-				UserRight.CASE_DELETE,
-				UserRight.PRESCRIPTION_DELETE);
+				UserRight.PRESCRIPTION_DELETE,
+				null,
+				prescription.isInJurisdiction());
 		}
 		view.getButtonsPanel().setVisible(isEditOrDeleteAllowed);
 	}
@@ -238,11 +238,7 @@ public class TherapyController {
 				}, I18nProperties.getString(Strings.entityTreatment));
 			}
 
-			view.restrictEditableChildComponentOnEditView(
-				UserRight.CASE_EDIT,
-				UserRight.TREATMENT_EDIT,
-				UserRight.CASE_DELETE,
-				UserRight.TREATMENT_DELETE);
+			view.restrictEditableComponentsOnEditView(UserRight.TREATMENT_EDIT, UserRight.TREATMENT_DELETE, null, treatment.isInJurisdiction());
 		}
 		view.getButtonsPanel().setVisible(isEditOrDeleteAllowed);
 

@@ -1006,32 +1006,34 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		}
 	}
 
-	public void restrictEditableChildComponentOnEditView(
-		UserRight editParentRight,
-		UserRight editChildRight,
-		UserRight deleteParentRight,
-		UserRight deleteChildRight) {
-
-		String deleteUndeleteButton = CommitDiscardWrapperComponent.DELETE_RESTORE;
-		boolean isEditAllowed = isEditChildAllowed(editParentRight, editChildRight);
-
-		if (!isEditAllowed) {
-			if (isDeleteChildAllowed(deleteParentRight, deleteChildRight)) { // but is deletable
-				addToActiveButtonsList(deleteUndeleteButton);
-				this.setNonEditable();
-			} else {
-				this.setNonEditable();
-			}
-		}
-	}
+	/*
+	 * public void restrictEditableChildComponentOnEditView(
+	 * UserRight editParentRight,
+	 * UserRight editChildRight,
+	 * UserRight deleteParentRight,
+	 * UserRight deleteChildRight) {
+	 * String deleteUndeleteButton = CommitDiscardWrapperComponent.DELETE_RESTORE;
+	 * boolean isEditAllowed = isEditChildAllowed(editParentRight, editChildRight);
+	 * if (!isEditAllowed) {
+	 * if (isDeleteChildAllowed(deleteParentRight, deleteChildRight)) { // but is deletable
+	 * addToActiveButtonsList(deleteUndeleteButton);
+	 * this.setNonEditable();
+	 * } else {
+	 * this.setNonEditable();
+	 * }
+	 * }
+	 * }
+	 */
 
 	public void setNonEditable() {
 		this.setEditable(false, activeButtons.stream().toArray(String[]::new));
 	}
 
-	public boolean isDeleteChildAllowed(UserRight deleteParentRight, UserRight deleteChildRight) {
-		return UserProvider.getCurrent().hasUserRight(deleteParentRight) && UserProvider.getCurrent().hasUserRight(deleteChildRight);
-	}
+	/*
+	 * public boolean isDeleteChildAllowed(UserRight deleteParentRight, UserRight deleteChildRight) {
+	 * return UserProvider.getCurrent().hasUserRight(deleteParentRight) && UserProvider.getCurrent().hasUserRight(deleteChildRight);
+	 * }
+	 */
 
 	public boolean isDeleteAllowed(UserRight deleteRight) {
 		return UserProvider.getCurrent().hasUserRight(deleteRight);
@@ -1041,10 +1043,12 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		return UserProvider.getCurrent().hasUserRight(editRight) && (editPermissionType == null || editPermissionType == EditPermissionType.ALLOWED);
 	}
 
-	public boolean isEditChildAllowed(UserRight editParentRight, UserRight editChildRight) {
-		return UserProvider.getCurrent().hasUserRight(editParentRight)
-			&& UserProvider.getCurrent().hasUserRight(editChildRight);
-	}
+	/*
+	 * public boolean isEditChildAllowed(UserRight editParentRight, UserRight editChildRight) {
+	 * return UserProvider.getCurrent().hasUserRight(editParentRight)
+	 * && UserProvider.getCurrent().hasUserRight(editChildRight);
+	 * }
+	 */
 
 	//excludedButtons: contains the buttons attached to the CommitDiscardWrapperComponent which we intend to
 	// exclude from applying a new editable status
