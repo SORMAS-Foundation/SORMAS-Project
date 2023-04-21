@@ -35,6 +35,11 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.rest.TransactionWrapper;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 public abstract class EntityDtoResource<DTO> {
 
@@ -83,9 +88,23 @@ public abstract class EntityDtoResource<DTO> {
 		return new PostResponse(HttpStatus.SC_UNPROCESSABLE_ENTITY, "The entity could not be processed.");
 	}
 
+	/**
+	 * Currently needs to be overridden in inherited classes for correct grouping in swagger doc.
+	 * See https://github.com/swagger-api/swagger-core/issues/3916
+	 */
 	@Operation(summary = "Create or update one or multiple entities.",
 		description = "A uuid will be generated for any entity that doesn't have one yet. "
 			+ "Posting entities without uuid multiple times will also create them multiple times.")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "207",
+			description = "Array of responses, matching the posted array of entities. "
+				+ "Provides an HTML status code for every entity and an optional body (e.g. a string with an error message).",
+			content = {
+				@Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = PostResponse.class))) }),
+		@ApiResponse(description = "When the request body has one or no entry. "
+			+ "The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message).",
+			content = {
+				@Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = PostResponse.class))) }) })
 	@POST
 	@Path("/push")
 	public Response postEntityDtos(@Valid List<DTO> dtos) {
