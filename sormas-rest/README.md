@@ -20,9 +20,9 @@ The user needs to have a user role having the SORMAS_REST user right.
 The SORMAS REST API is documented automatically. The OpenAPI specification files are generated during the build process
 and can be found at `${Project Root}/sormas-rest/target/swagger.{json,yaml}`.
 
-You can render the OpenAPI specification with tools like [editor.swagger.io](https://editor.swagger.io/). This allows
-you to inspect endpoints and example payloads, generate a matching API client for many languages, and to easily interact
-with the API of a live instance.
+You can render the OpenAPI specification with tools like 
+[editor.swagger.io](https://editor.swagger.io/?url=https://raw.githubusercontent.com/hzi-braunschweig/SORMAS-Project/development/sormas-rest/swagger.yaml).
+This allows you to inspect endpoints and example payloads, generate a matching API client for many languages, and to easily interact with the API of a live instance.
 
 ## OpenAPI / Swagger
 The OpenAPI files are generated with the [`swagger-maven-plugin`](https://github.com/swagger-api/swagger-core/tree/master/modules/swagger-maven-plugin)
