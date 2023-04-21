@@ -62,33 +62,42 @@ public class VisitController {
 		ContactReferenceDto contactRef,
 		CaseReferenceDto caseRef,
 		Consumer<VisitReferenceDto> doneConsumer,
-		boolean isEditAllowed) {
+		boolean isEditAllowed,
+		boolean isDeleteAllowed) {
+
 		VisitDto visit = FacadeProvider.getVisitFacade().getByUuid(visitUuid);
 		VisitEditForm editForm;
 		Date startDate = null;
 		Date endDate = null;
+		boolean hasContactAsParentEntity = false;
+
 		if (contactRef != null) {
 			ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactRef.getUuid());
 			PersonDto visitPerson = FacadeProvider.getPersonFacade().getByUuid(visit.getPerson().getUuid());
 			editForm = new VisitEditForm(visit.getDisease(), contact, visitPerson, false);
 			startDate = ContactLogic.getStartDate(contact);
 			endDate = ContactLogic.getEndDate(contact);
+			hasContactAsParentEntity = true;
 		} else if (caseRef != null) {
 			CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
 			PersonDto visitPerson = FacadeProvider.getPersonFacade().getByUuid(visit.getPerson().getUuid());
 			editForm = new VisitEditForm(visit.getDisease(), caze, visitPerson, false);
 			startDate = CaseLogic.getStartDate(caze);
 			endDate = CaseLogic.getEndDate(caze);
+			hasContactAsParentEntity = false;
 		} else {
 			throw new IllegalArgumentException("Cannot edit a visit without contact nor case");
 		}
 		editForm.setValue(visit);
 		boolean canEdit = VisitOrigin.USER.equals(visit.getOrigin()) && isEditAllowed;
+		boolean canDelete = VisitOrigin.USER.equals(visit.getOrigin()) && isDeleteAllowed;
 		editVisit(
 			editForm,
 			visit.toReference(),
 			doneConsumer,
 			canEdit,
+			canDelete,
+			hasContactAsParentEntity,
 			VisitLogic.getAllowedStartDate(startDate),
 			VisitLogic.getAllowedEndDate(endDate));
 	}
@@ -98,45 +107,57 @@ public class VisitController {
 		VisitReferenceDto visitRef,
 		Consumer<VisitReferenceDto> doneConsumer,
 		boolean canEdit,
+		boolean canDelete,
+		boolean hasContactAsParentEntity,
 		Date allowedStartDate,
 		Date allowedEndDate) {
 
-		final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<>(
-			editForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EDIT) && canEdit,
-			editForm.getFieldGroup());
+		boolean isEditOrDeleteAllowed = CommitDiscardWrapperComponent.isEditOrDeleteAllowed(canEdit, canDelete);
+		final CommitDiscardWrapperComponent<VisitEditForm> editView =
+			new CommitDiscardWrapperComponent<>(editForm, isEditOrDeleteAllowed, editForm.getFieldGroup());
 		editView.setWidth(100, Unit.PERCENTAGE);
 
-		Window window;
-		if (!canEdit) {
-			editView.getButtonsPanel().setVisible(false);
-			window = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingViewVisit));
-		} else {
-			window = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditVisit));
-		}
-
-		// visit form is too big for typical screens
+		Window window = VaadinUiUtil
+			.showModalPopupWindow(editView, I18nProperties.getString(!isEditOrDeleteAllowed ? Strings.headingViewVisit : Strings.headingEditVisit));
 		window.setWidth(editForm.getWidth() + 90, Unit.PIXELS);
 		window.setHeight(80, Unit.PERCENTAGE);
 
-		editView.addCommitListener(() -> {
-			if (!editForm.getFieldGroup().isModified()) {
-				FacadeProvider.getVisitFacade().saveVisit(editForm.getValue(), allowedStartDate, allowedEndDate);
-				if (doneConsumer != null) {
-					doneConsumer.accept(visitRef);
+		if (isEditOrDeleteAllowed) {
+			editView.addCommitListener(() -> {
+				if (!editForm.getFieldGroup().isModified()) {
+					FacadeProvider.getVisitFacade().saveVisit(editForm.getValue(), allowedStartDate, allowedEndDate);
+					if (doneConsumer != null) {
+						doneConsumer.accept(visitRef);
+					}
 				}
-			}
-		});
+			});
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_DELETE)) {
-			editView.addDeleteListener(() -> {
-				FacadeProvider.getVisitFacade().deleteVisit(visitRef.getUuid());
-				UI.getCurrent().removeWindow(window);
-				if (doneConsumer != null) {
-					doneConsumer.accept(visitRef);
-				}
-			}, I18nProperties.getCaption(VisitDto.I18N_PREFIX));
+			if (canDelete) {
+				editView.addDeleteListener(() -> {
+					FacadeProvider.getVisitFacade().deleteVisit(visitRef.getUuid());
+					UI.getCurrent().removeWindow(window);
+					if (doneConsumer != null) {
+						doneConsumer.accept(visitRef);
+					}
+				}, I18nProperties.getCaption(VisitDto.I18N_PREFIX));
+			}
+
+			if (hasContactAsParentEntity) {
+				editView.restrictEditableChildComponentOnEditView(
+					UserRight.CONTACT_EDIT,
+					UserRight.VISIT_EDIT,
+					UserRight.CONTACT_DELETE,
+					UserRight.VISIT_DELETE);
+			} else {
+				editView.restrictEditableChildComponentOnEditView(
+					UserRight.CASE_EDIT,
+					UserRight.VISIT_EDIT,
+					UserRight.CASE_DELETE,
+					UserRight.VISIT_DELETE);
+			}
+
 		}
+		editView.getButtonsPanel().setVisible(isEditOrDeleteAllowed);
 	}
 
 	private void createVisit(VisitEditForm createForm, Consumer<VisitReferenceDto> doneConsumer, Date allowedStartDate, Date allowedEndDate) {
