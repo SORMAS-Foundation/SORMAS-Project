@@ -189,7 +189,7 @@ public class ContactVisitsView extends AbstractContactView {
 			grid = new VisitGrid(
 				criteria,
 				UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed(), UserRight.CONTACT_EDIT, UserRight.VISIT_EDIT),
-				UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed(), UserRight.CONTACT_DELETE, UserRight.VISIT_DELETE));
+				UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed(), UserRight.VISIT_DELETE));
 
 			gridLayout = new DetailSubComponentWrapper(() -> null);
 			gridLayout.setSizeFull();

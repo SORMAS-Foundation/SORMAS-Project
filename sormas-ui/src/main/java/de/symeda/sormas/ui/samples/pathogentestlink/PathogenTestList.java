@@ -73,7 +73,7 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 			boolean isEditableAndHasEditRight =
 				UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditable, UserRight.SAMPLE_EDIT, UserRight.PATHOGEN_TEST_EDIT);
 			boolean isEditableAndHasDeleteRight =
-				UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditable, UserRight.SAMPLE_DELETE, UserRight.PATHOGEN_TEST_DELETE);
+				UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditable, UserRight.PATHOGEN_TEST_DELETE);
 
 			listEntry.addActionButton(
 				pathogenTestUuid,

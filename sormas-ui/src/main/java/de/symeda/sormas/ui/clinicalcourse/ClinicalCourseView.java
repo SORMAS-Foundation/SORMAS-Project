@@ -146,7 +146,7 @@ public class ClinicalCourseView extends AbstractCaseView {
 			getCaseRef(),
 			caze.isPseudonymized(),
 			UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed(), UserRight.CASE_EDIT, UserRight.CLINICAL_VISIT_EDIT),
-			UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed(), UserRight.CASE_DELETE, UserRight.CLINICAL_VISIT_DELETE));
+			UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed(), UserRight.CLINICAL_VISIT_DELETE));
 		clinicalVisitGrid.setCriteria(clinicalVisitCriteria);
 		clinicalVisitGrid.setHeightMode(HeightMode.ROW);
 		CssStyles.style(clinicalVisitGrid, CssStyles.VSPACE_3);
