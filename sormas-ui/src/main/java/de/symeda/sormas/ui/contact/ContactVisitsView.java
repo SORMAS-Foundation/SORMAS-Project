@@ -174,22 +174,6 @@ public class ContactVisitsView extends AbstractContactView {
 		return topLayout;
 	}
 
-//	private void updateActiveStatusButtonCaption() {
-//		if (activeStatusButton != null) {
-//			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getContainer().size())));
-//		}
-//	}
-
-//	private void processStatusChangeVisuals(Button button) {
-//		statusButtons.keySet().forEach(b -> {
-//			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
-//			b.setCaption(statusButtons.get(b));
-//		});
-//		CssStyles.removeStyles(button, CssStyles.BUTTON_FILTER_LIGHT);
-//		activeStatusButton = button;
-//		updateActiveStatusButtonCaption();
-//	}
-
 	@Override
 	protected void initView(String params) {
 
@@ -218,6 +202,5 @@ public class ContactVisitsView extends AbstractContactView {
 		}
 
 		grid.reload();
-//		updateActiveStatusButtonCaption();
 	}
 }
