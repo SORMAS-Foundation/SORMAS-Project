@@ -126,4 +126,9 @@ public class PersonResource extends EntityDtoResource<PersonDto> {
 	public UnaryOperator<PersonDto> getSave() {
 		return FacadeProvider.getPersonFacade()::save;
 	}
+
+	@Override
+	public Response postEntityDtos(List<PersonDto> personDtos) {
+		return super.postEntityDtos(personDtos);
+	}
 }

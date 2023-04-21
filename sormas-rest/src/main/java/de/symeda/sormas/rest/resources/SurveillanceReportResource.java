@@ -23,6 +23,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
@@ -42,5 +43,10 @@ public class SurveillanceReportResource extends EntityDtoResource<SurveillanceRe
 	@Override
 	public UnaryOperator<SurveillanceReportDto> getSave() {
 		return FacadeProvider.getSurveillanceReportFacade()::save;
+	}
+
+	@Override
+	public Response postEntityDtos(List<SurveillanceReportDto> surveillanceReportDtos) {
+		return super.postEntityDtos(surveillanceReportDtos);
 	}
 }

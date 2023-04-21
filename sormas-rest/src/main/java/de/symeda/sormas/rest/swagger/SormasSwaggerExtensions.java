@@ -9,41 +9,47 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.rest.swagger;
+
+import java.lang.reflect.Method;
+import java.util.Iterator;
 
 import io.swagger.v3.jaxrs2.ext.AbstractOpenAPIExtension;
 import io.swagger.v3.jaxrs2.ext.OpenAPIExtension;
 import io.swagger.v3.oas.models.Operation;
-
-import java.lang.reflect.Method;
-import java.util.Iterator;
 
 /**
  * Provides Swagger documentation support for SORMAS' custom annotations.
  */
 public class SormasSwaggerExtensions extends AbstractOpenAPIExtension {
 
-    @Override
-    public void decorateOperation(Operation operation, Method method, Iterator<OpenAPIExtension> chain) {
-        super.decorateOperation(operation, method, chain);
+	@Override
+	public void decorateOperation(Operation operation, Method method, Iterator<OpenAPIExtension> chain) {
+		super.decorateOperation(operation, method, chain);
 
-        if (operation.getTags() == null || operation.getTags().size() == 0) {
-            // Add name of the declaring controller as tag for operation grouping
-            operation.addTagsItem(this.getControllerLabel(method.getDeclaringClass()));
-        }
-    }
+		// Unfortunately this does not work as needed with abstract classes
+		// See https://github.com/swagger-api/swagger-core/issues/3916
+		if (operation.getTags() == null || operation.getTags().size() == 0) {
+			// Add name of the declaring controller as tag for operation grouping
+			operation.addTagsItem(this.getControllerLabel(method.getDeclaringClass()));
+		}
+	}
 
+	@Override
+	protected boolean shouldIgnoreClass(Class<?> cls) {
+		return super.shouldIgnoreClass(cls);
+	}
 
-    /**
-     * Generate a user-friendly name label for the given controller class.
-     */
-    public String getControllerLabel(Class<?> clazz) {
-        return clazz.getSimpleName().replaceAll("Resource$", "").replaceAll("(?<!^)[A-Z]", " $0") + " Controller";
-    }
+	/**
+	 * Generate a user-friendly name label for the given controller class.
+	 */
+	public String getControllerLabel(Class<?> clazz) {
+		return clazz.getSimpleName().replaceAll("Resource$", "").replaceAll("(?<!^)[A-Z]", " $0") + " Controller";
+	}
 }
