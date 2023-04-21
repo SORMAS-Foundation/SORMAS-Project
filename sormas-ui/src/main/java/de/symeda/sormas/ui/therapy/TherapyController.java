@@ -212,7 +212,10 @@ public class TherapyController {
 
 		final CommitDiscardWrapperComponent<TreatmentForm> view =
 			new CommitDiscardWrapperComponent<>(form, isEditOrDeleteAllowed, form.getFieldGroup());
-		Window popupWindow = VaadinUiUtil.showModalPopupWindow(view, I18nProperties.getString(Strings.headingEditTreatment));
+
+		Window popupWindow = VaadinUiUtil.showModalPopupWindow(
+			view,
+			I18nProperties.getString(!isEditOrDeleteAllowed ? Strings.headingViewTreatment : Strings.headingEditTreatment));
 
 		if (isEditOrDeleteAllowed) {
 			view.addCommitListener(() -> {
