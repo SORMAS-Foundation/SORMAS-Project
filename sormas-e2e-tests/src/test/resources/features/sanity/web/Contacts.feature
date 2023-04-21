@@ -12,7 +12,7 @@ Feature: Contacts end to end tests
     Then I open Contact Person tab
     And I check the created data is correctly displayed on Edit Contact Person page
 
-  @tmsLink=SORDEV-5476mk @env_main
+  @env_main
   Scenario: Delete created contact
     When API: I create a new person
     Then API: I check that POST call body is "OK"
