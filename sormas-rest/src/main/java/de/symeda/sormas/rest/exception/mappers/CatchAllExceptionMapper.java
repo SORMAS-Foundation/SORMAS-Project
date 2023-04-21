@@ -19,6 +19,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,9 +30,11 @@ public class CatchAllExceptionMapper implements ExceptionMapper<Exception> {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Override
-	public Response toResponse(Exception e) {
-
-		logger.warn("A specialized ExceptionMapper for {} is missing.", e.getClass().getName());
-		return Response.status(HttpStatus.SC_UNPROCESSABLE_ENTITY).entity("The entity could not be processed.").build();
+	public Response toResponse(Exception exception) {
+		logger.warn("A specialized ExceptionMapper for {} is missing.", exception.getClass().getName());
+		String message = exception.getLocalizedMessage();
+		return Response.status(HttpStatus.SC_UNPROCESSABLE_ENTITY)
+			.entity(StringUtils.isNotBlank(message) ? message : "The entity could not be processed.")
+			.build();
 	}
 }

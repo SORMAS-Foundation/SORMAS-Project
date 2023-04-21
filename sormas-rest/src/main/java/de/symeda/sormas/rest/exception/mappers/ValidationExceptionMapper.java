@@ -19,6 +19,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 
 import de.symeda.sormas.api.utils.ValidationException;
@@ -27,7 +28,8 @@ import de.symeda.sormas.api.utils.ValidationException;
 public class ValidationExceptionMapper implements ExceptionMapper<ValidationException> {
 
 	@Override
-	public Response toResponse(ValidationException e) {
-		return Response.status(HttpStatus.SC_BAD_REQUEST).entity("The entity is not valid.").build();
+	public Response toResponse(ValidationException exception) {
+		String message = exception.getLocalizedMessage();
+		return Response.status(HttpStatus.SC_BAD_REQUEST).entity(StringUtils.isNotBlank(message) ? message : "The entity is not valid.").build();
 	}
 }
