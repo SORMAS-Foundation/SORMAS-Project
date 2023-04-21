@@ -143,7 +143,7 @@ Scenario: Create and send laboratory request via Demis
     And I search created message by birthday date
     Then I check if searched message has correct birthday date
 
-  @tmsLink=SORDEV-5588 @env_d2s @LoginKeycloak
+  @tmsLink=SORDEV-5588 @env_d2s @LoginKeycloak @testIt
   Scenario: Test delete option in Lab Messages
     Given API : Login to DEMIS server
     Then I create and send Laboratory Notification
@@ -158,6 +158,7 @@ Scenario: Create and send laboratory request via Demis
     And I collect message uuid
     Then I click Delete button in Message form
     And I confirm message deletion
+    And I refresh current page
     And I check that number of displayed messages results is 0
     And I click on reset filters button from Message Directory
     And I filter by the name of the 2 most recently created person in Messages Directory

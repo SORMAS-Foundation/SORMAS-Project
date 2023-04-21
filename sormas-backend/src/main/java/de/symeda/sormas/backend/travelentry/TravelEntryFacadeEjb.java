@@ -123,8 +123,8 @@ public class TravelEntryFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._TRAVEL_ENTRY_DELETE)
-	public void undelete(String uuid) {
-		super.undelete(uuid);
+	public void restore(String uuid) {
+		super.restore(uuid);
 	}
 
 	@Override

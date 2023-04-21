@@ -44,7 +44,7 @@ public class Constants {
 				"write",
 				"cleanup",
 				"mark",
-				"undelete")));
+				"restore")));
 	public static final Set<String> deletePrefix = Collections.unmodifiableSet(new HashSet<>(Arrays.asList("delete", "merge", "remove")));
 	public static final Set<String> executePrefix = Collections.unmodifiableSet(
 		new HashSet<>(
