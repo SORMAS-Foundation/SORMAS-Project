@@ -5,11 +5,10 @@
 */
 
 /* Example: the style is applied only to the textfields which has the `bordered` theme attribute. */
-:host([active]) a{
-	color: white !important;
-	background: red !important;
-}
 
-a:active{
-	color: red !important;
+
+:host([active]) a:hover{
+	background: #6D5D4F !important;
+    color: #ffffff !important;
+    text-shadow: none !important;
 }

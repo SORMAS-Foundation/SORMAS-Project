@@ -620,6 +620,15 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		return campaignFormDataService.getAllActive().stream().map(c -> convertToDto(c)).collect(Collectors.toList());
 	}
 	
+	@Override
+	public List<CampaignFormDataDto> getAllActiveRef() {
+		if (userService.getCurrentUser() == null) {
+			return Collections.emptyList();
+		}
+//		return campaignFormDataService.getAllActiveRef().stream().map(c -> convertToDto(c)).collect(Collectors.toList());
+		return null;
+	}
+	
 	public List<CampaignDiagramDataDto> getDiagramDataByFieldGroup(CampaignDiagramSeries diagramSeriesTotal, CampaignDiagramSeries diagramSeries,
 			CampaignDiagramCriteria campaignDiagramCriteria) {
 		List<CampaignDiagramDataDto> resultData = new ArrayList<>();

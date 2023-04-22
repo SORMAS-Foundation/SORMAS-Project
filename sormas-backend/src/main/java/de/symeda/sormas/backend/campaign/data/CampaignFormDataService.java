@@ -20,6 +20,7 @@
 
 package de.symeda.sormas.backend.campaign.data;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -40,6 +41,8 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataIndexDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataReferenceDto;
 import de.symeda.sormas.api.campaign.data.MapCampaignDataDto;
 import de.symeda.sormas.api.caze.MapCaseDto;
@@ -295,6 +298,19 @@ public class CampaignFormDataService extends AdoServiceWithUserFilter<CampaignFo
 		result = em.createQuery(cq).getResultList();
 
 		return result;
+	}
+
+	public List<CampaignFormDataIndexDto> getAllActiveRef() {
+		// TODO Auto-generated method stub
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<CampaignFormDataIndexDto> cq = cb.createQuery(CampaignFormDataIndexDto.class);
+		Root<CampaignFormData> from = cq.from(getElementClass());
+
+		Predicate filter = cb.and();
+		cq.where(filter);
+		cq.orderBy(cb.desc(from.get(AbstractDomainObject.CREATION_DATE)));
+
+		return em.createQuery(cq).getResultList();
 	}
 
 }
