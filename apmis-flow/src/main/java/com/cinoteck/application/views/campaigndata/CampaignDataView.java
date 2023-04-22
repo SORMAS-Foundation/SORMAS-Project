@@ -55,6 +55,8 @@ public class CampaignDataView extends VerticalLayout {
 	Grid<CampaignFormDataDto> grid = new Grid<>(CampaignFormDataDto.class, true);
 	private GridListDataView<CampaignFormMetaDto> dataView;
 
+	
+	
 	public CampaignDataView() {
 
 		add(camapignDataFilter);
