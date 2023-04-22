@@ -211,7 +211,7 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 		String cdc = "insert into campaigns (SELECT " + mill + " as id, '" + uuisd.toString().toUpperCase()
 				+ "' as uuid, changedate, creationdate, CONCAT(name,'-DUP'), description, startdate, enddate, "
 				+ userCreatingId
-				+ ", deleted, archived, sys_period, dashboardelements, cluster, round, campaignyear FROM campaigns where name='"
+				+ ", deleted, archived, sys_period, dashboardelements, cluster, round, campaignyear, openandclose FROM campaigns where name='"
 				+ uuidx + "' and archived = false and  deleted = false)";
 
 		System.out.println(cdc);

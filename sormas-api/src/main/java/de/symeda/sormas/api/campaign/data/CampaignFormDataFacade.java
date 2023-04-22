@@ -48,8 +48,6 @@ public interface CampaignFormDataFacade {
 	CampaignFormDataDto getCampaignFormDataByUuid(String campaignFormDataUuid);
 
 	void deleteCampaignFormData(String campaignFormDataUuid);
-	
-	//void cloneCampaignFormData(String campaignFormDataUuid);
 
 	boolean isArchived(String campaignFormDataUuid);
 
@@ -90,6 +88,8 @@ public interface CampaignFormDataFacade {
 	void overwriteCampaignFormData(CampaignFormDataDto existingData, CampaignFormDataDto newData);
 	
 	List<CampaignFormDataDto> getCampaignFormData(String campaignformuuid, String formuuid);
+	
+	List<CampaignAggregateDataDto> getCampaignFormDataAggregatetoCSV(String campaignformuuid);
 	
 	List<MapCampaignDataDto> getCampaignDataforMaps();
 	

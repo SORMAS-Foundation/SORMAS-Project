@@ -1,15 +1,8 @@
 package de.symeda.sormas.rest;
 
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
+import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -20,10 +13,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.StreamingOutput;
+import javax.ws.rs.core.Response;
+import com.opencsv.CSVWriter;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignDto;
+import de.symeda.sormas.api.campaign.data.CampaignAggregateDataDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
@@ -31,10 +26,11 @@ import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 
 @Path("/apmisrestserver")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
-@Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
+//@Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @RolesAllowed({
 	"USER",
-	"REST_USER" })
+	"REST_USER",
+	"ADMIN" })
 public class ApmisCampaignResource extends EntityDtoResource {
 	
 	@GET
@@ -131,5 +127,60 @@ public class ApmisCampaignResource extends EntityDtoResource {
 	  writer.flush();
 	}
 	*/
+	
+	
+	@GET
+    @Path("/aggregate/{campaigns_uuid}")
+    @Produces("text/csv")
+	//@Path("/campaigns/{campaigns_uuid}/forms/{forms_uuid}") //should return the data for the specific form //I should write a custom query here that checks the campaign by meta and campaign
+	//public List<CampaignFormDataEntry> getCampaignFormData(@PathParam("campaigns_uuid") String campaign_uuid, @PathParam("forms_uuid") String form_uuid) {
+	
+    public Response getDataAsCsv(@PathParam("campaigns_uuid") String campaign_uuid) {
+		System.err.println("connecting to db");
+		List<CampaignAggregateDataDto> resultsCSV = FacadeProvider.getCampaignFormDataFacade().getCampaignFormDataAggregatetoCSV(campaign_uuid);	
+	System.err.println("runing result to CSV");
+        String csv = toCsv(resultsCSV);
+
+        return Response.ok(csv).header("Content-Disposition", "attachment; filename=data.csv").build();
+    }
+	
+	
+	 private String toCsv(List<CampaignAggregateDataDto> data) {
+
+	        StringWriter stringWriter = new StringWriter();
+
+	        try (CSVWriter writer = new CSVWriter(stringWriter)) {
+
+	            // Define the header row
+	        	//String formUuid, String formId, String formField, String formCaption, String area,String region, String district, Long sumValue
+	        	
+	            String[] header = {"FormUUID", "FormID", "FieldName", "Province", "Region", "District", "Aggregate"};
+	            writer.writeNext(header);
+
+	            // Add the data rows
+	            for (CampaignAggregateDataDto formData : data) {
+	                String[] row = {
+	                		formData.getFormUuid(), formData.getFormId(), formData.getFormCaption(), formData.getArea(), formData.getRegion(), formData.getDistrict(), formData.getSumValue().toString()
+	                		};
+	                writer.writeNext(row);
+	            }
+
+	            // Flush the writer and return the CSV data
+	            writer.flush();
+	            return stringWriter.toString();
+
+	        } catch (IOException e) {
+	            throw new RuntimeException("Error converting data to CSV", e);
+	        }
+	    }
+	
+
+
+
+
+
+	
+	
+	
 	
 }
