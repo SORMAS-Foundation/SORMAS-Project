@@ -2,6 +2,7 @@ vaadin-app-layout[primary-section="navbar"]::part(navbar)::before {
   background: var(--lumo-base-color) linear-gradient(var(--lumo-contrast-5pct), var(--lumo-contrast-5pct));
 }
 
+
 vaadin-app-layout[primary-section="drawer"]::part(navbar)::before {
   background: var(--lumo-base-color);
 }
@@ -18,7 +19,7 @@ vaadin-app-layout[primary-section="drawer"]:not([overlay])::part(drawer) {
 }
 
 vaadin-drawer-toggle[slot="navbar"] {
-  color: var(--lumo-secondary-text-color);
+  color: white;
 }
 
 ::part(navbar) {
@@ -30,19 +31,10 @@ vaadin-drawer-toggle[slot="navbar"] {
   flex-direction: column;
 }
 
-:host([active]) a{
-	color: white !important;
-	background: red !important;
-}
-
-a:active{
-	color: red !important;
-}
-
 vaadin-scroller[slot="drawer"] {
  background: #0D6938;
   flex: 1;
-  padding: var(--lumo-space-s);
+  
 }
 
 vaadin-scroller[slot="drawer"][overflow~="top"] {
@@ -73,24 +65,16 @@ textarea{
 	height: 40vh !important;
 }
 
-.emma{
-	    width: 100%;
-    justify-content: space-between;
-}
-
-.Sholadiv2{
-	    display: flex;
-}
 
 
-.actions{
+/*.actions{
 width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
     align-items: flex-end;
     }
-    
+    */
     .campFilter{
     width:100%;
     display: flex;
@@ -149,17 +133,62 @@ width: 100%;
     background: orange  
     }
     
-    
+   
     #menuItems:hover{
     background: orange;
 
     }
-    
+   
     vcf-nav-item#navitem {
     color: white;
+    font-family: Lato;
+}
+     vcf-nav-item#navitem vaadin-icon{
+    height: 15px;
+}
+     vcf-nav-item#navitem a, vcf-nav-item#navitem a:hover{
+    color: white;
+}
+
+     vcf-nav-item#navitem a slot, vcf-nav-item#navitem a slot:hover{
+    color: white;
+} 
+   vcf-nav {
+    color: white;
+}
+ vcf-nav:hover {
+    color: white;
+}
+
+ vcf-nav-item#navitem:hover, vcf-nav-item#navitem:active, vcf-nav-item#navitem:focus-visible {
+   	background: #6D5D4F !important;
+    color: #ffffff !important;
+    text-shadow: none !important;
 }
     
      #menuItems:active {
+    background: orange !important; 
+    color: white !important;
+    
+    }
+    
+    input{
+    font-weight: 300;
+    }
+    
+    #pageHeader{
+    color: green;
+    width: 100%;
+    font-size: 31px;
+    font-family: 'Lato';
+    padding-top: 16px;
+    padding-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    }
+    
+    #menuItems:hover {
     background: orange !important; 
     color: white !important;
     
@@ -214,11 +243,11 @@ background-color: orange;
 
 #label-vaadin-text-field-0, #label-vaadin-password-field-3{
 	color: white;
-	height:45px;
+	
 }
 
 #input-vaadin-text-field-6, #input-vaadin-password-field-7 {
-    --_lumo-text-field-overflow-mask-image: () !important;
+    -_lumo-text-field-overflow-mask-image: () !important;
     -webkit-mask-image: var(--_lumo-text-field-overflow-mask-image);
     border-radius: 5px;
     margin-left: -5px;
@@ -229,15 +258,71 @@ background-color: orange;
 
 label {
     color: green !important;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    font-family: Lato;
 }
 
 a:active {
     color: white !important;
     background-color: orange !important;
+    transition: none;
+}
+
+a:hover {
+    color: white !important;
+    background-color: orange !important;
+    transition: none;
 }
 
 a {
     color: white !important;
+    transition: none;
+}
+
+.col, .col-1, .col-10, .col-11, .col-12, .col-2, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-auto, .col-lg, .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-lg-auto, .col-md, .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-auto, .col-sm, .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-auto, .col-xl, .col-xl-1, .col-xl-10, .col-xl-11, .col-xl-12, .col-xl-2, .col-xl-3, .col-xl-4, .col-xl-5, .col-xl-6, .col-xl-7, .col-xl-8, .col-xl-9, .col-xl-auto{
+	padding-left: 0px !important;
+	padding-right: 0px !important;
 }
 
 
+
+vaadin-icon{
+	color: white !important;
+}
+
+vaadin-tab{
+	
+	margin-right: 20px;
+	font-weight: 300;
+	font-family: Lato;
+}
+
+
+
+a:selected{
+	color: white;
+}
+
+:host([selected])::before, :host([selected])::after{
+	width: 100% !important;
+	background: orange !important;
+}
+
+/*
+vaadin-icon#fghf , #signInIcon{
+	color: green !important;
+}
+*/
+
+vaadin-input-container{
+	    border: 1px solid green !important;
+    background: white !important;
+}
+
+#signInText{
+	align-self: center;
+    color: white;
+    font-size: 2em;
+    margin-bottom: 1em;
+}

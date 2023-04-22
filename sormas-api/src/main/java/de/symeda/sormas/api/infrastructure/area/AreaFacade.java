@@ -13,6 +13,8 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 public interface AreaFacade extends GeoLocationFacade<AreaDto, AreaDto, AreaReferenceDto, AreaCriteria> {
 
 	List<AreaReferenceDto> getAllActiveAsReference();
+	
+	List<AreaDto> getAllActiveAsReferenceAndPopulation();
 
 	boolean isUsedInOtherInfrastructureData(Collection<String> areaUuids);
 

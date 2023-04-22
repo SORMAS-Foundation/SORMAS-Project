@@ -7,7 +7,7 @@
     <groupId>de.symeda.sormas</groupId>
     <artifactId>apmis-flow</artifactId>
     <name>${project.artifactId}</name>
-   <version>1.0.27</version>
+   <version>1.0.28</version>
     <packaging>war</packaging>
 
     <properties>
@@ -123,6 +123,10 @@
             <version>5.1.0</version>
             <scope>test</scope>
         </dependency>
+        
+       
+ 
+        
     </dependencies>
 
     <build>

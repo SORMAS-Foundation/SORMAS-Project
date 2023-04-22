@@ -3,6 +3,8 @@ package de.symeda.sormas.api.common;
 import java.io.Serializable;
 import java.util.List;
 
+import org.checkerframework.checker.guieffect.qual.UI;
+
 public class Page<T> implements Serializable {
 
 	List<T> elements;
@@ -65,4 +67,5 @@ public class Page<T> implements Serializable {
 	public void setHasNext(boolean hasNext) {
 		this.hasNext = hasNext;
 	}
+
 }

@@ -59,10 +59,12 @@ public class AboutView extends VerticalLayout {
 
         TextField firstName = new TextField("First name");
         firstName.getStyle().set("color", "green");
+       
      //   binder.forField(firstName).bind(Feedback::getFirstName, Feedback::setFirstName);
 
         TextField lastName = new TextField("Last name");
         lastName.getStyle().set("color", "green");
+       
      //   binder.forField(lastName).bind(Feedback::getLastName, Feedback::setLastName);
 
         TextField email = new TextField("Email");

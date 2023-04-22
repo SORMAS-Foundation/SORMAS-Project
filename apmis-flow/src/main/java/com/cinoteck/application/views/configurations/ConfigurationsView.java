@@ -14,6 +14,7 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
@@ -33,10 +34,10 @@ public class ConfigurationsView extends VerticalLayout implements RouterLayout {
 
     private Tabs createTabss() {
         tabComponentMap.put(new Tab("Regions"), new RegionView());
-//        tabComponentMap.put(new Tab("Province"), new TestView2());
-        tabComponentMap.put(new Tab("District"), new TestView3());
-        tabComponentMap.put(new Tab("Cluster"), new TestView1());
-        tabComponentMap.put(new Tab("Population"), new TestView1());
+        tabComponentMap.put(new Tab("Province"), new ProvinceView());
+        tabComponentMap.put(new Tab("District"), new DistrictView());
+        tabComponentMap.put(new Tab("Cluster"), new ClusterView());
+       
         return new Tabs(tabComponentMap.keySet().toArray(new Tab[] {}));
 
     }
@@ -47,6 +48,7 @@ public class ConfigurationsView extends VerticalLayout implements RouterLayout {
 
         Tabs tabs = createTabss();
         tabs.getStyle().set("background", "#434343");
+        tabs.getStyle().set("width", "100%");
         Div contentContainer = new Div();
         contentContainer.setWidthFull();
 
@@ -57,52 +59,63 @@ public class ConfigurationsView extends VerticalLayout implements RouterLayout {
         });
         // Set initial content
         contentContainer.add(tabComponentMap.get(tabs.getSelectedTab()));
+        
+
+        HorizontalLayout configActionLayput = new HorizontalLayout();
+        configActionLayput.getStyle().set("margin-right", "1em");
+        configActionLayput.setMargin(false);
+        configActionLayput.setJustifyContentMode(JustifyContentMode.END);
+		
+        Button importButton = new Button("Import", new Icon(VaadinIcon.DOWNLOAD_ALT));
+		importButton.getStyle().set("color", "white");
+		importButton.getStyle().set("background", "#0C5830");
+		importButton.setVisible(false);
+		configActionLayput.add(importButton);
+		
+
+		Button exportButton = new Button("Export", new Icon(VaadinIcon.UPLOAD_ALT));
+		exportButton.getStyle().set("color", "white");
+		exportButton.getStyle().set("background", "#0C5830");
+		exportButton.setVisible(false);
+		configActionLayput.add(exportButton);
+		
+		
+
+		Button newEntryButton = new Button("New Entry", new Icon(VaadinIcon.PLUS_CIRCLE_O));
+		newEntryButton.getStyle().set("color", "white");
+		newEntryButton.getStyle().set("background", "#0C5830");
+		newEntryButton.setVisible(false);
+		configActionLayput.add(newEntryButton);
+
+		Button bulkEditMode = new Button("Enter Bulk Mode", new Icon(VaadinIcon.CHECK));
+		bulkEditMode.getStyle().set("color", "white");
+		bulkEditMode.getStyle().set("background", "#0C5830");
+		bulkEditMode.setVisible(false);
+		configActionLayput.add(bulkEditMode);
+		
+		Button displayActionButtons = new Button("Show Action Buttons", new Icon(VaadinIcon.SLIDERS));
+		displayActionButtons.addClickListener(e->{
+			if (bulkEditMode.isVisible() == false) {
+				importButton.setVisible(true);
+				exportButton.setVisible(true);
+				newEntryButton.setVisible(true);
+				bulkEditMode.setVisible(true);
+				displayActionButtons.setText("Hide Action Buttons");
+			}else {
+				importButton.setVisible(false);
+				exportButton.setVisible(false);
+				newEntryButton.setVisible(false);
+				bulkEditMode.setVisible(false);
+				displayActionButtons.setText("Show Action Buttons");
+			}
+		});
+		configActionLayput.add(displayActionButtons);
+
+	
+        campDatFill.add(tabs, configActionLayput);
 
 
-        Button addNewFormm = new Button("Export");
-        Button importButton = new Button("New Entry");
-        Button exportButton = new Button("Enter Bulk Mode");
-
-        Div actionLayout = new Div(addNewFormm, importButton, exportButton);
-        actionLayout.setClassName("actionLayout");
-
-        campDatFill.add(tabs,actionLayout);
-
-        HorizontalLayout configAction = new HorizontalLayout();
-        configAction.setWidthFull();
-        configAction.getStyle().set("display", "flex");
-        configAction.getStyle().set("justify-content", "flex-end");
-
-
-
-
-        TextField searchField = new TextField();
-        searchField.setLabel("Search Campaign");
-        searchField.setPlaceholder("Search");
-        searchField.setPrefixComponent(new Icon(VaadinIcon.SEARCH));
-        searchField.setValueChangeMode(ValueChangeMode.EAGER);
-
-        Button clear = new Button("Clear");
-
-        Select<String> activeRegions = new Select<>();
-        activeRegions.setLabel("Region");
-        activeRegions.setItems("Most recent first", "Rating: high to low",
-                "Rating: low to high", "Price: high to low",
-                "Price: low to high");
-        activeRegions.setValue("");
-
-        Div configActionLayout = new Div(searchField, clear, activeRegions);
-
-        configActionLayout.setWidthFull();
-        configActionLayout.getStyle().set("display", "flex");
-        configActionLayout.getStyle().set("justify-content", "flex-end");
-        configActionLayout.getStyle().set("align-items", "flex-end");
-
-        configAction.add(configActionLayout);
-
-
-
-        add(campDatFill, configAction, contentContainer);
+        add(campDatFill,contentContainer);
     }
 
 }

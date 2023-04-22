@@ -581,6 +581,27 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 			return QueryHelper.getResultList(em, cq, null, null, this::toDtoList);
 		// TODO Auto-generated method stub
 	
+	}@Override
+	public List<CommunityDto> getAllCommunities() {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Community> cq = cb.createQuery(Community.class);
+		Root<Community> comununity = cq.from(Community.class);
+		Join<Community, District> district = comununity.join(Community.DISTRICT, JoinType.LEFT);
+		Join<District, Region> region = district.join(District.REGION, JoinType.LEFT);
+		Join<Region, Area> area = region.join(Region.AREA, JoinType.LEFT);
+		
+		Predicate filter = cb.equal(comununity.get(Community.ARCHIVED), false);
+		cq.where(filter);
+		cq.select(comununity); 
+		List<Community> communities = em.createQuery(cq).getResultList();
+		List<CommunityDto> dtos = new ArrayList();
+		
+		for (Community com : communities) {
+			if (!com.equals(null)) {
+				dtos.add(this.toDto(com));
+			}
+		}
+		return dtos;
 	}
 
 }

@@ -1,14 +1,21 @@
 package com.cinoteck.application.views;
 
 import com.nimbusds.jose.shaded.ow2asm.Label;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.Notification.Position;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
@@ -20,6 +27,8 @@ public class LoginFormInput extends VerticalLayout {
 	private TextField username;
 	private PasswordField password;
 	private Button loginButton;
+	private Icon signInIcon;
+	private Anchor resetPassword;
 
 	public LoginFormInput() {
 		setAlignItems(Alignment.CENTER);
@@ -30,17 +39,24 @@ public class LoginFormInput extends VerticalLayout {
 		username.setPlaceholder("Username");
 		username.getStyle().set("width", "100%");
 		username.getStyle().set("font-weight", "200");
+		username.getStyle().set("margin-bottom", "1.5em");
 
 		password = new PasswordField();
 		password.setRevealButtonVisible(false);
 		password.getStyle().set("width", "100%");
 		password.setPlaceholder("Password");
 		password.getStyle().set("font-weight", "200");
+		password.getStyle().set("margin-bottom", "1.5em");
 
-		loginButton = new Button("Sign In", new Icon(VaadinIcon.ARROW_RIGHT));
+		signInIcon = new Icon(VaadinIcon.SIGN_OUT_ALT);
+		signInIcon.getStyle().set("color", "green");
+		signInIcon.setId("signInIcon");
+
+		loginButton = new Button("Sign In", signInIcon);
 		loginButton.getStyle().set("width", "100%");
 		loginButton.getStyle().set("background", "white");
 		loginButton.getStyle().set("color", "green");
+		loginButton.getStyle().set("margin-bottom", "1em");
 
 		// Setting the login button action
 		loginButton.addClickListener(event -> {
@@ -51,11 +67,31 @@ public class LoginFormInput extends VerticalLayout {
 				loginButton.getUI().ifPresent(ui -> ui.navigate("dashboard"));
 
 			} else {
-				Notification.show("Invalid username or password");
+				Notification notification = new Notification();
+				notification.setPosition(Position.MIDDLE);
+				notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+				Div text = new Div(new Text("Login Failed : Please Check your Username and Password and try again."));
+
+				Button closeButton = new Button(new Icon("lumo", "cross"));
+				closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+				closeButton.getElement().setAttribute("aria-label", "Close");
+				closeButton.addClickListener(e -> {
+					notification.close();
+				});
+
+				HorizontalLayout layout = new HorizontalLayout(text, closeButton);
+				layout.setAlignItems(Alignment.CENTER);
+
+				notification.add(layout);
+				notification.open();
 			}
 		});
-
-		VerticalLayout fieldsLayout = new VerticalLayout(username, password, loginButton);
+		
+		resetPassword = new Anchor("#", "Reset Password");
+		resetPassword.getStyle().set("color", "white");
+		
+		
+		VerticalLayout fieldsLayout = new VerticalLayout(username, password, loginButton, resetPassword);
 		fieldsLayout.setAlignItems(Alignment.CENTER);
 		add(fieldsLayout);
 
