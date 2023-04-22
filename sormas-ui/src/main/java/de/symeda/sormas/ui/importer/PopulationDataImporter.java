@@ -48,11 +48,12 @@ public class PopulationDataImporter extends DataImporter {
 	private final Date collectionDate;
 	private final CampaignReferenceDto campaignReferenceDto;
 
-	public PopulationDataImporter(File inputFile, UserDto currentUser, CampaignReferenceDto campaignReferenceDto, ValueSeparator csvSeparator) throws IOException {
+	public PopulationDataImporter(File inputFile, UserDto currentUser, CampaignDto campaignDto, ValueSeparator csvSeparator) throws IOException {
 		
 		super(inputFile, false, currentUser, csvSeparator);
 		this.collectionDate = new Date();
-		this.campaignReferenceDto = campaignReferenceDto;
+		
+		this.campaignReferenceDto = FacadeProvider.getCampaignFacade().getReferenceByUuid(campaignDto.getUuid());
 	}
 
 	@Override
@@ -74,8 +75,7 @@ public class PopulationDataImporter extends DataImporter {
 		RegionReferenceDto region = null;
 		DistrictReferenceDto district = null;
 		CommunityReferenceDto community = null;
-		
-		CampaignReferenceDto campaigns = campaignReferenceDto;
+		CampaignReferenceDto campaigns_ = null;
 
 		// Retrieve the region and district from the database or throw an error if more or less than one entry have been retrieved
 		for (int i = 0; i < entityProperties.length; i++) {
@@ -139,6 +139,29 @@ public class PopulationDataImporter extends DataImporter {
 					}
 				}
 			
+			//fixing importing campaign population based patch
+			if (PopulationDataDto.CAMPAIGN.equalsIgnoreCase(entityProperties[i])) { 
+				if (DataHelper.isNullOrEmpty(values[i])) {
+					campaigns_ = null;
+				} else {
+					if( values[i].toString().length() > 28 &&  values[i].toString().contains("-")) {
+						
+						campaigns_ = FacadeProvider.getCampaignFacade().getReferenceByUuid(values[i]);
+						
+						if (campaigns_ == null) {
+							writeImportError(values, new ImportErrorException(values[i], entityProperties[i]).getMessage());
+							System.out.println("~~~~~~~~~~~~~~~~~~~````"+new ImportErrorException(values[i], entityProperties[i]).getMessage());
+							return ImportLineResult.ERROR;
+						}
+						
+					} else {
+						writeImportError(values, new ImportErrorException(values[i], entityProperties[i]).getMessage());
+						System.out.println("~!~!~!~!~!~!@!@!~ "+new ImportErrorException(values[i], entityProperties[i]).getMessage() +" ttttttttttttttttt 1111"+values[i]);
+						return ImportLineResult.ERROR;
+					}
+					}
+				}
+			
 		
 //		
 //		//Enable campaign based population import
@@ -164,54 +187,70 @@ public class PopulationDataImporter extends DataImporter {
 		final DistrictReferenceDto finalDistrict = district;
 		final CommunityReferenceDto finalCommunity = community;
 		
-		final CampaignReferenceDto finalCampaign = campaignReferenceDto;
+		final CampaignReferenceDto finalCampaign = campaigns_;
 
 		// Retrieve the existing population data for the region and district
 		PopulationDataCriteria criteria = new PopulationDataCriteria().region(finalRegion);
-		criteria.setCampaign(finalCampaign);
+		//criteria.setCampaign(finalCampaign);
+		if (finalCampaign == null) {
+			criteria.campaignIsNull(true);
+		} else {
+			criteria.campaign(finalCampaign);
+		}
+		
+		
+		
+		
 		if (finalCommunity == null) {
 			criteria.communityIsNull(true);
 		} else {
 			criteria.community(finalCommunity);
 		}
+		
 		if (district == null) {
 			criteria.districtIsNull(true);
 		} else {
 			criteria.district(finalDistrict);
 		}
+		
 		List<PopulationDataDto> existingPopulationDataList = FacadeProvider.getPopulationDataFacade().getPopulationData(criteria);
 		List<PopulationDataDto> modifiedPopulationDataList = new ArrayList<PopulationDataDto>();
 
 		boolean populationDataHasImportError =
 			insertRowIntoData(values, entityClasses, entityPropertyPaths, false, new Function<ImportCellData, Exception>() {
-
+				
 				@Override
 				public Exception apply(ImportCellData cellData) {
+					System.out.println("++++++++++++++++111111111111111111111111++++++++++++++++ ");
+					
 					try {
 						if (PopulationDataDto.REGION.equalsIgnoreCase(cellData.getEntityPropertyPath()[0])
 							|| PopulationDataDto.DISTRICT.equalsIgnoreCase(cellData.getEntityPropertyPath()[0])
-							//|| PopulationDataDto.COMMUNITY.equalsIgnoreCase(cellData.getEntityPropertyPath()[0]) //Property type  not allowed
+							|| PopulationDataDto.CAMPAIGN.equalsIgnoreCase(cellData.getEntityPropertyPath()[0]) //Property type  not allowed
 							|| PopulationDataDto.COMMUNITY_EXTID.equalsIgnoreCase(cellData.getEntityPropertyPath()[0])) {
+							System.out.println("+++++++++++++ignoring......");
 							// Ignore the region, district and community columns
 						} else if (RegionDto.GROWTH_RATE.equalsIgnoreCase(cellData.getEntityPropertyPath()[0])) {
+							System.out.println("+++++++++++++----------");
 							// Update the growth rate of the region or district
-							if (!DataHelper.isNullOrEmpty(cellData.value)) {
-								Float growthRate = Float.parseFloat(cellData.value);
-								if (finalCommunity != null) {
-									CommunityDto communityDto = FacadeProvider.getCommunityFacade().getByUuid(finalCommunity.getUuid());
-									communityDto.setGrowthRate(growthRate);
-									FacadeProvider.getCommunityFacade().save(communityDto);
-								} else if (finalDistrict != null) {
-									DistrictDto districtDto = FacadeProvider.getDistrictFacade().getDistrictByUuid(finalDistrict.getUuid());
-									districtDto.setGrowthRate(growthRate);
-									FacadeProvider.getDistrictFacade().save(districtDto);
-								} else {
-									RegionDto regionDto = FacadeProvider.getRegionFacade().getByUuid(finalRegion.getUuid());
-									regionDto.setGrowthRate(growthRate);
-									FacadeProvider.getRegionFacade().save(regionDto);
-								}
-							}
+//							if (!DataHelper.isNullOrEmpty(cellData.value)) {
+//								Float growthRate = Float.parseFloat(cellData.value);
+//								if (finalCommunity != null) {
+//									CommunityDto communityDto = FacadeProvider.getCommunityFacade().getByUuid(finalCommunity.getUuid());
+//									communityDto.setGrowthRate(growthRate);
+//									FacadeProvider.getCommunityFacade().save(communityDto);
+//								} else if (finalDistrict != null) {
+//									DistrictDto districtDto = FacadeProvider.getDistrictFacade().getDistrictByUuid(finalDistrict.getUuid());
+//									districtDto.setGrowthRate(growthRate);
+//									FacadeProvider.getDistrictFacade().save(districtDto);
+//								} else {
+//									RegionDto regionDto = FacadeProvider.getRegionFacade().getByUuid(finalRegion.getUuid());
+//									regionDto.setGrowthRate(growthRate);
+//									FacadeProvider.getRegionFacade().save(regionDto);
+//								}
+//							}
 						} else {
+							System.out.println("+++++++++++++");
 							// Add the data from the currently processed cell to a new population data object
 							PopulationDataDto newPopulationData = PopulationDataDto.build(collectionDate);
 							insertCellValueIntoData(newPopulationData, cellData.getValue(), cellData.getEntityPropertyPath());
@@ -219,21 +258,29 @@ public class PopulationDataImporter extends DataImporter {
 							Optional<PopulationDataDto> existingPopulationData = existingPopulationDataList.stream()
 								.filter(
 									populationData -> populationData.getAgeGroup() == newPopulationData.getAgeGroup()
-										&& populationData.getSex() == newPopulationData.getSex())
+										&& populationData.getSex() == newPopulationData.getSex() 
+										&& populationData.getCampaign() == newPopulationData.getCampaign()
+										)
 								.findFirst();
 							// Check whether this population data set already exists in the database; if yes, override it
 							if (existingPopulationData.isPresent()) {
+								System.out.println("++++++++++++++++existingPopulationData.isPresent()++++++++++++++++ ");
 								existingPopulationData.get().setPopulation(newPopulationData.getPopulation());
 								existingPopulationData.get().setCollectionDate(collectionDate);
 								modifiedPopulationDataList.add(existingPopulationData.get());
 							} else {
+								System.out.println("++++++++++++++++existingPopulationData.NOTisPresent()++++++++++++++++ ");
+								
 								newPopulationData.setRegion(finalRegion);
 								newPopulationData.setDistrict(finalDistrict);
 								newPopulationData.setCommunity(finalCommunity);
+								newPopulationData.setCampaign(finalCampaign);
 								modifiedPopulationDataList.add(newPopulationData);
 							}
 						}
 					} catch (ImportErrorException | InvalidColumnException | NumberFormatException e) {
+						System.out.println("++++++++++++++++Error found++++++++++++++++ ");
+						
 						return e;
 					}
 
@@ -243,6 +290,8 @@ public class PopulationDataImporter extends DataImporter {
 
 		// Validate and save the population data object into the database if the import has no errors
 		if (!populationDataHasImportError) {
+			System.out.println("++++++++++++++++0000000000000000NO Errror 000000000000000000000++++++++++++++++ " + modifiedPopulationDataList.size());
+			
 			try {
 				FacadeProvider.getPopulationDataFacade().savePopulationData(modifiedPopulationDataList);
 				return ImportLineResult.SUCCESS;

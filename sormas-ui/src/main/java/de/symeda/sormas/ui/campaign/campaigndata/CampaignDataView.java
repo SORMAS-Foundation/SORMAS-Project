@@ -19,45 +19,42 @@ import static de.symeda.sormas.ui.UiUtil.permitted;
 import static de.symeda.sormas.ui.utils.FilteredGrid.EDIT_BTN_ID;
 
 import java.io.IOException;
-import java.net.URI;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-
+import org.joda.time.Days;
+import org.joda.time.LocalDate;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.router.Location;
-import com.vaadin.flow.server.VaadinServletRequest;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinService;
+import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Grid.SelectionMode;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.JavaScript;
+import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.components.grid.HeaderCell;
-import com.vaadin.ui.components.grid.HeaderRow;
+import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
-import de.symeda.sormas.api.campaign.data.CampaignFormDataIndexDto;
 import de.symeda.sormas.api.campaign.data.translation.TranslationElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
@@ -84,18 +81,23 @@ import de.symeda.sormas.ui.campaign.components.CampaignFormPhaseSelector;
 import de.symeda.sormas.ui.campaign.components.CampaignSelector;
 import de.symeda.sormas.ui.campaign.components.importancefilterswitcher.ImportanceFilterSwitcher;
 import de.symeda.sormas.ui.campaign.importer.CampaignFormDataImportLayout;
+import de.symeda.sormas.ui.user.UsersView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
+import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.RowCount;
-import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 @SuppressWarnings("serial")
 @com.vaadin.annotations.JavaScript("jquerymini.js")
 @CssImport("w3c.css")
 public class CampaignDataView extends AbstractCampaignView {
+	
+	// Bulk operations
+		private MenuBar bulkOperationsDropdown;
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/campaigndata";
 
@@ -123,10 +125,15 @@ public class CampaignDataView extends AbstractCampaignView {
 		criteria.setFormType(campaignFormPhaseSelector.getValue().toString());
 		addHeaderComponent(campaignFormPhaseSelector);
 
+		System.out.println("-----####### "+criteria.getCampaign());
 		grid = new CampaignDataGrid(criteria);
 		rowsCount = new RowCount(Strings.labelNumberDataRows, grid.getItemCount());
-		
+
 		VerticalLayout mainLayout = new VerticalLayout();
+		
+		Accordion accordion = new Accordion();
+		
+		
 		HorizontalLayout filtersLayout = new HorizontalLayout();
 
 		filtersLayout.setWidthFull();
@@ -137,35 +144,77 @@ public class CampaignDataView extends AbstractCampaignView {
 		filtersLayout.addComponent(filterBar);
 		filtersLayout.setComponentAlignment(filterBar, Alignment.TOP_LEFT);
 		filtersLayout.setExpandRatio(filterBar, 0.8f);
+		
+		{
+			// Bulk operation dropdown
+			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+				bulkOperationsDropdown = MenuBarHelper.createDropDown(
+					Captions.bulkActions,
+					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDelete), VaadinIcons.DEL, selectedItem -> {
+						ControllerProvider.getCampaignController()
+							.deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
+					}, true));
+
+				bulkOperationsDropdown.setVisible(ViewModelProviders.of(UsersView.class).get(ViewConfiguration.class).isInEagerMode());
+				filtersLayout.addComponent(bulkOperationsDropdown);
+			}
+		}
 
 		importanceFilterSwitcher = new ImportanceFilterSwitcher();
 		importanceFilterSwitcher.setVisible(false);
 		filtersLayout.addComponent(importanceFilterSwitcher);
 		filtersLayout.setComponentAlignment(importanceFilterSwitcher, Alignment.TOP_RIGHT);
 		filtersLayout.setExpandRatio(importanceFilterSwitcher, 0.2f);
-
+		//filtersLayout.setMargin(true);
+		
+		 HorizontalLayout filtersLayoutx = new HorizontalLayout();
+		 
+		 	Button button1 = new Button("Hide filters");
+	        button1.addStyleName(ValoTheme.BUTTON_LINK);
+	        button1.addClickListener(event -> {
+	        	filtersLayout.setVisible(false);
+	        	filtersLayoutx.setVisible(true);
+	        });
+	        filtersLayout.addComponent(button1);
+	        
+	       
+	        Button button12 = new Button("Show filters");
+	        button12.addStyleName(ValoTheme.BUTTON_LINK);
+	        button12.addClickListener(event -> {
+	        	filtersLayoutx.setVisible(false);
+	        	filtersLayout.setVisible(true);
+	        }
+	        		
+	        		);
+	       
+	        filtersLayoutx.addComponent(button12);
+	        filtersLayoutx.setComponentAlignment(button12, Alignment.TOP_RIGHT);
+	        filtersLayoutx.setVisible(false);
+				
+	    mainLayout.addComponent(filtersLayoutx);
 		mainLayout.addComponent(filtersLayout);
 
 		filterForm.getField(CampaignFormDataCriteria.CAMPAIGN_FORM_META).addValueChangeListener(e -> {
 			Object value = e.getProperty().getValue();
 			importanceFilterSwitcher.setVisible(value != null);
 			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
-			
+			grid.reload();
+
 			executeJavaScript();
 		});
 
 		importanceFilterSwitcher.addValueChangeListener(e -> {
 			grid.reload();
+			executeJavaScript();
+			// navigateTo(criteria);
 			createFormMetaChangedCallback().accept((CampaignFormMetaReferenceDto) filterForm
 					.getField(CampaignFormDataCriteria.CAMPAIGN_FORM_META).getValue());
 			rowsCount.update(grid.getItemCount());
 		});
-		
 
-		
 		mainLayout.addComponent(rowsCount);
 		mainLayout.addComponent(grid);
-		mainLayout.setMargin(true);
+		//mainLayout.setMargin(true);
 		mainLayout.setSpacing(false);
 		mainLayout.setSizeFull();
 		mainLayout.setExpandRatio(grid, 1);
@@ -245,6 +294,10 @@ public class CampaignDataView extends AbstractCampaignView {
 		}
 
 		campaignSelector.addValueChangeListener(e -> {
+			
+		//	System.out.println("44444444444444444 " + UI.getCurrent().getSession().getCurrent().getAttribute("lastcriteria"));
+			
+			
 			campaignFormPhaseSelector.clear();
 			((VerticalLayout) importFormPanel.getContent()).removeAllComponents();
 			if (!Objects.isNull(campaignSelector.getValue())) {
@@ -264,10 +317,14 @@ public class CampaignDataView extends AbstractCampaignView {
 				// System.out.println("44444444444444444 " + criteria.toUrlParams().toString());
 			}
 			criteria.setCampaignFormMeta(null);
+			
+			System.out.println("!!!!!!!! " + criteria.toUrlParams().toString());
+			
+			
 			filterForm.setValue(criteria);
 			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
 			executeJavaScript();
-	
+
 		});
 
 		campaignFormPhaseSelector.addValueChangeListener(e -> {
@@ -278,14 +335,15 @@ public class CampaignDataView extends AbstractCampaignView {
 			} else {
 				newFormButton.setEnabled(false);
 			}
-
 			criteria.setFormType(e.getValue().toString());
 			filterForm.setPhaseFilterContent(e.getValue().toString());
 			filterForm.setValue(criteria);
 			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
 			// System.out.println("777777777777777777777 " +
 			// criteria.toUrlParams().toString());
-			grid.reload();
+
+			// grid.reload();
+			executeJavaScript();
 			rowsCount.update(grid.getItemCount());
 		});
 
@@ -295,10 +353,13 @@ public class CampaignDataView extends AbstractCampaignView {
 		}
 
 		addComponent(mainLayout);
+		executeJavaScript();
 		rowsCount.update(grid.getItemCount());
 
 		JavaScript js = Page.getCurrent().getJavaScript();
-		js.execute("$(document).ready(function() {\n" + "	if ($(window).width() <= 825) {\n"
+		js.execute("$(document).ready(function() {\n" + ""
+				+ "document.querySelector(\".v-label.v-widget.h1.v-label-h1.vspace-none.v-label-vspace-none.v-label-undef-w\").style.display='none';\n"
+				+ "	if ($(window).width() <= 825) {\n"
 				+ "document.querySelector(\".v-label.v-widget.h1.v-label-h1.vspace-none.v-label-vspace-none.v-label-undef-w\").style.display='none';\n"
 
 				+ "document.querySelector(\".v-horizontallayout-view-headerxxxx :nth-child(12)\").style.display='none';"
@@ -314,6 +375,55 @@ public class CampaignDataView extends AbstractCampaignView {
 //
 //				+ "});"
 				+ "});");
+		
+		
+		
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.bulkDelete, VaadinIcons.CHECK_SQUARE_O, null);
+			
+			btnEnterBulkEditMode.setVisible(!ViewModelProviders.of(CampaignDataView.class).get(ViewConfiguration.class).isInEagerMode());
+
+			addHeaderComponent(btnEnterBulkEditMode);
+
+			Button btnLeaveBulkEditMode =
+				ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
+			btnLeaveBulkEditMode.setVisible(ViewModelProviders.of(CampaignDataView.class).get(ViewConfiguration.class).isInEagerMode());
+			if(ViewModelProviders.of(CampaignDataView.class).get(ViewConfiguration.class).isInEagerMode()) {
+				grid.setSelectionMode(SelectionMode.MULTI);	
+			}else {
+				grid.setSelectionMode(SelectionMode.SINGLE);
+			}
+			
+
+			addHeaderComponent(btnLeaveBulkEditMode); 
+
+			btnEnterBulkEditMode.addClickListener(e -> {
+				bulkOperationsDropdown.setVisible(true);
+				ViewModelProviders.of(CampaignDataView.class).get(ViewConfiguration.class).setInEagerMode(true);
+				System.out.println("+++++++++ -----: "+!ViewModelProviders.of(CampaignDataView.class).get(ViewConfiguration.class).isInEagerMode());
+				
+				grid.setSelectionMode(SelectionMode.MULTI);
+				
+				btnEnterBulkEditMode.setVisible(false);
+				btnLeaveBulkEditMode.setVisible(true);
+				grid.reload();
+			});
+			btnLeaveBulkEditMode.addClickListener(e -> {
+				bulkOperationsDropdown.setVisible(false);
+				ViewModelProviders.of(CampaignDataView.class).get(ViewConfiguration.class).setInEagerMode(false);
+				System.out.println("+++++++++ -----: "+!ViewModelProviders.of(CampaignDataView.class).get(ViewConfiguration.class).isInEagerMode());
+				
+				grid.setSelectionMode(SelectionMode.SINGLE);
+				btnLeaveBulkEditMode.setVisible(false);
+				btnEnterBulkEditMode.setVisible(true);
+				navigateTo(criteria);
+			});
+		}
+		
+		
+		
+		
 
 		executeJavaScript();
 //		
@@ -370,16 +480,25 @@ public class CampaignDataView extends AbstractCampaignView {
 	}
 
 	private void fillNewFormDropdown(Panel containerPanel) {
+		
 
 		CampaignReferenceDto campaignReferenceDtx = campaignSelector.getValue();
 		String phase = campaignFormPhaseSelector.getValue();
 		Set<FormAccess> userFormAccess = UserProvider.getCurrent().getFormAccess();
+		
+		CampaignDto campaignDto = FacadeProvider.getCampaignFacade().getByUuid(campaignReferenceDtx.getUuid());
 
 		((VerticalLayout) containerPanel.getContent()).removeAllComponents();
 
-		// System.out.println(phase + " #############################");
+		 SimpleDateFormat DateFor = new SimpleDateFormat("yyyy-MM-dd");
+		 String stringDate= DateFor.format(campaignDto.getStartDate());
+		
+		 	LocalDate date1 = LocalDate.parse(stringDate);
+	        LocalDate date2 = LocalDate.now();
+	        int days = Days.daysBetween(date1, date2).getDays();
 
 		if (phase != null && campaignReferenceDtx != null) {
+			
 			List<CampaignFormMetaReferenceDto> campagaignFormReferences = FacadeProvider.getCampaignFormMetaFacade()
 					.getAllCampaignFormMetasAsReferencesByRoundandCampaignandForm(phase.toLowerCase(),
 							campaignReferenceDtx.getUuid(), userFormAccess);
@@ -387,27 +506,37 @@ public class CampaignDataView extends AbstractCampaignView {
 			Collections.sort(campagaignFormReferences);
 
 			for (CampaignFormMetaReferenceDto campaignForm : campagaignFormReferences) {
+				
+				int isShown = days - campaignForm.getDaysExpired();
+				boolean hideFromList = isShown < 0;
+				
 				Button campaignFormButton = ButtonHelper.createButton(campaignForm.toString(), el -> {
-
-//					System.out.println(campaignReferenceDtx.getUuid()
-//							+ " ####################################################################"
-//							+ campaignForm.getUuid());
-
+					if(hideFromList) {
 					ControllerProvider.getCampaignController().navigateToFormDataView(campaignReferenceDtx.getUuid(),
 							campaignForm.getUuid());
-
 					newFormButton.setPopupVisible(false);
+					}
 				});
 
 				campaignFormButton.setWidth(100, Unit.PERCENTAGE);
 				// campaignFormButton.removeStyleName(VIEW_NAME);
 				campaignFormButton.removeStyleName("v-button");
 				campaignFormButton.setStyleName("nocapitalletter");
+				
+				if(!hideFromList) {
+					//campaignFormButton.setEnabled(false);
+					campaignFormButton.addClickListener(e -> {
+						Notification notf = new Notification(campaignForm.getCaption() +" is now closed for data entry");
+						notf.setPosition(Notification.POSITION_TOP_RIGHT);
+						notf.setDelayMsec(3000);
+						notf.show(UI.getCurrent().getPage());
+					});
+				}
+				
 				((VerticalLayout) containerPanel.getContent()).addComponent(campaignFormButton);
 			}
+			
 			if (campagaignFormReferences.size() >= 10) {
-				// setting a fixed height will enable a scrollbar. Increase width to accommodate
-				// it
 				containerPanel.setHeight(400, Unit.PIXELS);
 				containerPanel.setWidth(containerPanel.getContent().getWidth() + 20.0f, Unit.PIXELS);
 			} else {
@@ -427,44 +556,30 @@ public class CampaignDataView extends AbstractCampaignView {
 		filterForm = new CampaignFormDataFilterForm();
 
 		if (filterForm.hasFilter()) {
+			executeJavaScript();
 			criteria.setArea(criteria.getArea());
 			criteria.setRegion(criteria.getRegion());
 			criteria.setDistrict(criteria.getDistrict());
 			criteria.setCommunity(criteria.getCommunity());
-			executeJavaScript();
+
 		}
 
-		filterForm.addValueChangeListener(e -> {
-			if (!filterForm.hasFilter() && campaignSelector == null) {
-				navigateTo(null);
-				executeJavaScript();
-			}
-		});
 		filterForm.addResetHandler(e -> {
 			ViewModelProviders.of(CampaignDataView.class).remove(CampaignFormDataCriteria.class);
-			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", "");
+			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", null);
 			navigateTo(null, true);
 			executeJavaScript();
 			rowsCount.update(grid.getItemCount());
 		});
 
-		// apply button action
-		filterForm.addApplyHandler(e -> {
-			criteria.setCampaign(campaignSelector.getValue());
-			criteria.setFormType(campaignFormPhaseSelector.getValue().toString());
-			grid.reload();
-			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
-			System.out.println(UI.getCurrent().getSession().getCurrent().getAttribute("lastcriteria"));
-			executeJavaScript();
-			rowsCount.update(grid.getItemCount());
-		});
 		campaignSelector.addValueChangeListener(e -> {
 			criteria.setCampaign(campaignSelector.getValue());
 			grid.reload();
+			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria_campigned", criteria.toUrlParams().toString());
 			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
 			executeJavaScript();
 			rowsCount.update(grid.getItemCount());
-			});
+		});
 
 		campaignFormPhaseSelector.addValueChangeListener(e -> {
 			criteria.setFormType(e.getValue().toString());
@@ -473,11 +588,42 @@ public class CampaignDataView extends AbstractCampaignView {
 					Page.getCurrent().getLocation().toString());
 			executeJavaScript();
 			rowsCount.update(grid.getItemCount());
-			});
+		});
 
-		filterForm.setFormMetaChangedCallback(createFormMetaChangedCallback());
+		// apply button action
+		filterForm.addApplyHandler(e -> {
+			criteria.setCampaign(campaignSelector.getValue());
+			criteria.setFormType(campaignFormPhaseSelector.getValue().toString());
+			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
+			System.out.println(UI.getCurrent().getSession().getCurrent().getAttribute("lastcriteria"));
+			grid.reload();
+			executeJavaScript();
+			rowsCount.update(grid.getItemCount());
 
+		});
+		filterForm.addValueChangeListener(e -> {
+			if (!filterForm.hasFilter() && campaignSelector == null) {
+				navigateTo(null);
+				executeJavaScript();
+			} else if (filterForm.hasFilter() && campaignSelector != null) {
+				UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria",
+						criteria.toUrlParams().toString());
+				rowsCount.update(grid.getItemCount());
+			}
+		});
+
+		callBackFormData();
+		
 		return filterForm;
+
+	}
+	
+
+	public void callBackFormData() {
+	//	System.out.println("111111111111111111__5555555555555555____11111111111111111111");
+		filterForm.setFormMetaChangedCallback(createFormMetaChangedCallback());
+		grid.reload();
+		executeJavaScript();
 	}
 
 	private Consumer<CampaignFormMetaReferenceDto> createFormMetaChangedCallback() {
@@ -486,6 +632,7 @@ public class CampaignDataView extends AbstractCampaignView {
 			grid.addDefaultColumns();
 			executeJavaScript();
 			if (formMetaReference != null) {
+
 				CampaignFormMetaDto formMeta = FacadeProvider.getCampaignFormMetaFacade()
 						.getCampaignFormMetaByUuid(formMetaReference.getUuid());
 				Language userLanguage = UserProvider.getCurrent().getUser().getLanguage();
@@ -511,12 +658,15 @@ public class CampaignDataView extends AbstractCampaignView {
 
 						if (caption != null) {
 							grid.addCustomColumn(element.getId(), caption);
-
+							executeJavaScript();
 						}
 					}
 				}
+				executeJavaScript();
 			}
+			executeJavaScript();
 		};
+
 	}
 
 	private Consumer<CampaignFormMetaReferenceDto> createFormMetaChangedCallbackPhase() {
@@ -547,24 +697,24 @@ public class CampaignDataView extends AbstractCampaignView {
 						}
 						if (caption == null) {
 							caption = element.getCaption();
+							executeJavaScript();
 						}
 
 						if (caption != null) {
 							grid.addCustomColumn(element.getId(), caption);
-					
+							executeJavaScript();
 							rowsCount.update(grid.getItemCount());
-
 						}
 					}
 				}
-			
 			}
 		};
 	}
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-
+		String formtt = "";
+		String campp = "";
 		UserDto user = UserProvider.getCurrent().getUser();
 		if (event.getParameters() != null) {
 			// split at "&"
@@ -593,58 +743,72 @@ public class CampaignDataView extends AbstractCampaignView {
 				}
 				if (queryParameter.contains("formType")) {
 					criteria.setFormType(innerSplit[1]);
+					formtt = innerSplit[1].toString();
+					System.out.println(campp + "cammmm      formmmmtttt" +formtt);
+					
+					List<CampaignFormMetaReferenceDto> campaignsmeta_ = FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferencesByRoundandCampaign(formtt, campp);
+							filterForm.cbCampaignForm.addItems(campaignsmeta_);
+							
 					executeJavaScript();
 				}
 				if (queryParameter.contains("campaign")) {
 					CampaignReferenceDto campaign = FacadeProvider.getCampaignFacade()
 							.getReferenceByUuid(innerSplit[1]);
 					criteria.setCampaign(campaign);
+					campp = innerSplit[1].toString();
+					
 
 					// campaignSelector.setValue(criteria.getCampaign());
 
 				}
 				if (queryParameter.contains("campaignFormMeta")) {
+					
 					CampaignFormMetaReferenceDto campaignsmeta = FacadeProvider.getCampaignFormMetaFacade()
 							.getCampaignFormMetaReferenceByUuid(innerSplit[1]);
 					criteria.setCampaignFormMeta(campaignsmeta);
+					
+				//	System.out.println(innerSplit[1] + "111111111111111111__666666666____11111111111111111111" +campaignsmeta);
+					
 					filterForm.cbCampaignForm.setValue(campaignsmeta);
-					filterForm.cbCampaignForm.setInputPrompt(campaignsmeta.getCaption());
+//					filterForm.cbCampaignForm.setInputPrompt(campaignsmeta.getCaption());
 					executeJavaScript();
 				}
 			}
 		}
 
 		applyingCriteria = true;
-	
+		executeJavaScript();
 		filterForm.setValue(criteria);
+		executeJavaScript();
 		applyingCriteria = false;
 
 		grid.reload();
-		
+		executeJavaScript();
 		rowsCount.update(grid.getItemCount());
 
 		super.enter(event);
 	}
 
 	public void executeJavaScript() {
+
 		JavaScript jss = Page.getCurrent().getJavaScript();
-		jss.execute("$(document).ready(function() {\n" + "document.querySelectorAll(\".v-grid-column-header-content.v-grid-column-default-header-content\").forEach(function (elem) {\r\n"
+		jss.execute("$(document).ready(function() {\n"
+				+ "document.querySelectorAll(\".v-grid-column-header-content.v-grid-column-default-header-content\").forEach(function (elem) {\r\n"
 				+ "  if (parseFloat(window.getComputedStyle(elem).width) === parseFloat(window.getComputedStyle(elem.parentElement).width)) {\r\n"
-				+ "    elem.setAttribute(\"title\", elem.textContent);\r\n"
-				+ "  }\r\n"
+				+ "    elem.setAttribute(\"title\", elem.textContent);\r\n" + "  }\r\n"
 				+ "    elem.setAttribute(\"title\", elem.textContent);\r\n"
 
-				+ "});"
-				+ "});");
-		
+				+ "});" + "});");
+
 		grid.addColumnReorderListener(e -> {
-			  JavaScript jsss = Page.getCurrent().getJavaScript();
-			  jsss.execute("document.querySelectorAll(\".v-grid-column-header-content.v-grid-column-default-header-content\").forEach(function (elem) {\r\n"
-			    + "  if (parseFloat(window.getComputedStyle(elem).width) === parseFloat(window.getComputedStyle(elem.parentElement).width)) {\r\n"
-			    + "    elem.setAttribute(\"title\", elem.textContent);\r\n"
-			    + "  }\r\n"
-			    + "    elem.setAttribute(\"title\", elem.textContent);\r\n"
-			    + "});");
-			});
+			JavaScript jsss = Page.getCurrent().getJavaScript();
+			jsss.execute(
+					"document.querySelectorAll(\".v-grid-column-header-content.v-grid-column-default-header-content\").forEach(function (elem) {\r\n"
+							+ "  if (parseFloat(window.getComputedStyle(elem).width) === parseFloat(window.getComputedStyle(elem.parentElement).width)) {\r\n"
+							+ "    elem.setAttribute(\"title\", elem.textContent);\r\n" + "  }\r\n"
+							+ "    elem.setAttribute(\"title\", elem.textContent);\r\n" + "});");
+		});
 	}
+	
+
 }

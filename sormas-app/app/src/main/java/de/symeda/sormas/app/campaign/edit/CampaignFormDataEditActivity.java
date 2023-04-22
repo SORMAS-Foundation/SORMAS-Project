@@ -114,7 +114,7 @@ public class CampaignFormDataEditActivity extends BaseEditActivity<CampaignFormD
                 if (taskResult.getResultStatus().isSuccess()) {
                     finish();
                 } else {
-                    onResume(); // reload data
+                 //   onResume(); // reload data
                 }
                 saveTask = null;
             }

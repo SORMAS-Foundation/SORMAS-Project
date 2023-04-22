@@ -320,6 +320,89 @@ public final class VaadinUiUtil {
 		return popupWindow;
 	}
 
+	//publish 
+	
+	public static Window showPublishConfirmationWindow(String content, Runnable callback) {
+		Window popupWindow = VaadinUiUtil.createPopupWindow();
+
+		VerticalLayout publishLayout = new VerticalLayout();
+		publishLayout.setMargin(true);
+		publishLayout.setSizeUndefined();
+		publishLayout.setSpacing(true);
+
+		Label description = new Label(content);
+		description.setWidth(100, Unit.PERCENTAGE);
+		publishLayout.addComponent(description);
+
+		ConfirmationComponent publishConfirmationComponent = new ConfirmationComponent(false) {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			protected void onConfirm() {
+				popupWindow.close();
+				onDone();
+				callback.run();
+			}
+
+			@Override
+			protected void onCancel() {
+				popupWindow.close();
+			}
+		};
+		publishConfirmationComponent.getConfirmButton().setCaption(I18nProperties.getString(Strings.yes));
+		publishConfirmationComponent.getCancelButton().setCaption(I18nProperties.getString(Strings.no));
+		publishLayout.addComponent(publishConfirmationComponent);
+		publishLayout.setComponentAlignment(publishConfirmationComponent, Alignment.BOTTOM_RIGHT);
+
+		popupWindow.setCaption(I18nProperties.getString(Strings.headingConfirmPublish));
+		popupWindow.setContent(publishLayout);
+		UI.getCurrent().addWindow(popupWindow);
+
+		return popupWindow;
+	}
+	
+	public static Window showUnPublishConfirmationWindow(String content, Runnable callback) {
+		Window popupWindow = VaadinUiUtil.createPopupWindow();
+
+		VerticalLayout unpublishLayout = new VerticalLayout();
+		unpublishLayout.setMargin(true);
+		unpublishLayout.setSizeUndefined();
+		unpublishLayout.setSpacing(true);
+
+		Label description = new Label(content);
+		description.setWidth(100, Unit.PERCENTAGE);
+		unpublishLayout.addComponent(description);
+
+		ConfirmationComponent unpublishConfirmationComponent = new ConfirmationComponent(false) {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			protected void onConfirm() {
+				popupWindow.close();
+				onDone();
+				callback.run();
+			}
+
+			@Override
+			protected void onCancel() {
+				popupWindow.close();
+			}
+		};
+		unpublishConfirmationComponent.getConfirmButton().setCaption(I18nProperties.getString(Strings.yes));
+		unpublishConfirmationComponent.getCancelButton().setCaption(I18nProperties.getString(Strings.no));
+		unpublishLayout.addComponent(unpublishConfirmationComponent);
+		unpublishLayout.setComponentAlignment(unpublishConfirmationComponent, Alignment.BOTTOM_RIGHT);
+
+		popupWindow.setCaption(I18nProperties.getString(Strings.headingConfirmUnPublish));
+		popupWindow.setContent(unpublishLayout);
+		UI.getCurrent().addWindow(popupWindow);
+
+		return popupWindow;
+	}
+	
+	
 	public static ConfirmationComponent buildYesNoConfirmationComponent() {
 		ConfirmationComponent requestTaskComponent = new ConfirmationComponent(false) {
 

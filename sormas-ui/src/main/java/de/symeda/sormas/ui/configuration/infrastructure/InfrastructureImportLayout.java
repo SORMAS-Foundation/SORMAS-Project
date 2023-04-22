@@ -31,6 +31,72 @@ import de.symeda.sormas.ui.utils.ComboBoxHelper;
 
 @SuppressWarnings("serial")
 public class InfrastructureImportLayout extends AbstractImportLayout {
+	
+	public InfrastructureImportLayout(InfrastructureType infrastructureType, CampaignDto camapigndto) {
+	
+
+		super();
+		
+		if(camapigndto!= null) {
+
+		ComboBox campaignFilter = ComboBoxHelper.createComboBoxV7();
+		if (infrastructureType == InfrastructureType.POPULATION_DATA) {
+			
+			campaignFilter.setId(CampaignDto.NAME);
+			campaignFilter.setRequired(true);
+			campaignFilter.setNullSelectionAllowed(false);
+			campaignFilter.setCaption(I18nProperties.getCaption(Captions.Campaign));
+			campaignFilter.setWidth(200, Unit.PIXELS);
+			campaignFilter.setInputPrompt(I18nProperties.getString(Strings.promptCampaign));
+			campaignFilter.addItems(FacadeProvider.getCampaignFacade().getAllActiveCampaignsAsReference());
+			campaignFilter.select(camapigndto);
+			campaignFilter.setEnabled(false);
+			
+			Label lblCollectionDateInfo = new Label(I18nProperties.getString(Strings.infoPopulationCollectionDate));
+			addComponent(lblCollectionDateInfo);
+			addComponent(campaignFilter);
+			campaignFilter.addValueChangeListener(e -> upload.setEnabled(e.getProperty().getValue() != null));
+		}
+
+		String templateFilePath;
+		String templateFileName;
+		String fileNameAddition;
+		ImportFacade importFacade = FacadeProvider.getImportFacade();
+		
+			templateFilePath = importFacade.getPopulationDataImportTemplateFilePath();
+			templateFileName = importFacade.getPopulationDataImportTemplateFileName();
+			fileNameAddition = camapigndto.getName().replace(" ", "_")+"_population_data_import_";
+		
+	//	addDownloadResourcesComponent(1, new ClassResource("/SORMAS_Infrastructure_Import_Guide.pdf"));
+		addDownloadImportTemplateComponent(2, templateFilePath, templateFileName);
+
+		if (infrastructureType == InfrastructureType.POPULATION_DATA) {
+			addImportCsvComponent(3, new ImportReceiver(fileNameAddition, file -> {
+				resetDownloadErrorReportButton();
+
+				try {
+					DataImporter importer =
+						new PopulationDataImporter(file, currentUser, (CampaignDto) campaignFilter.getValue(), (ValueSeparator) separator.getValue());
+					importer.startImport(this::extendDownloadErrorReportButton, currentUI, true);
+				} catch (IOException | CsvValidationException e) {
+					new Notification(
+						I18nProperties.getString(Strings.headingImportFailed),
+						I18nProperties.getString(Strings.messageImportFailed),
+						Type.ERROR_MESSAGE,
+						false).show(Page.getCurrent());
+				}
+			}));
+			upload.setEnabled(true);
+		}
+		
+
+		addDownloadErrorReportComponent(4);
+		} else {
+			Label lblCollectionDateInfo = new Label(I18nProperties.getString(Strings.infoSaveCampaignFirst));
+			addComponent(lblCollectionDateInfo);
+		}
+	}
+	
 
 	public InfrastructureImportLayout(InfrastructureType infrastructureType) {
 
@@ -41,7 +107,6 @@ public class InfrastructureImportLayout extends AbstractImportLayout {
 		ComboBox campaignFilter = ComboBoxHelper.createComboBoxV7();
 		if (infrastructureType == InfrastructureType.POPULATION_DATA) {
 			
-			
 			campaignFilter.setId(CampaignDto.NAME);
 			campaignFilter.setRequired(true);
 			campaignFilter.setNullSelectionAllowed(false);
@@ -49,12 +114,13 @@ public class InfrastructureImportLayout extends AbstractImportLayout {
 			campaignFilter.setWidth(200, Unit.PIXELS);
 			campaignFilter.setInputPrompt(I18nProperties.getString(Strings.promptCampaign));
 			campaignFilter.addItems(FacadeProvider.getCampaignFacade().getAllActiveCampaignsAsReference());
+			campaignFilter.setNullSelectionAllowed(false);
 			
 			
 			Label lblCollectionDateInfo = new Label(I18nProperties.getString(Strings.infoPopulationCollectionDate));
 			addComponent(lblCollectionDateInfo);
 			addComponent(campaignFilter);
-			campaignFilter.addValueChangeListener(e -> upload.setEnabled(e.getProperty().getValue() != null));
+			//campaignFilter.addValueChangeListener(e -> upload.setEnabled(e.getProperty().getValue() != null));
 		}
 
 		String templateFilePath;
@@ -120,22 +186,22 @@ public class InfrastructureImportLayout extends AbstractImportLayout {
 		addDownloadImportTemplateComponent(2, templateFilePath, templateFileName);
 
 		if (infrastructureType == InfrastructureType.POPULATION_DATA) {
-			addImportCsvComponent(3, new ImportReceiver(fileNameAddition, file -> {
-				resetDownloadErrorReportButton();
-
-				try {
-					DataImporter importer =
-						new PopulationDataImporter(file, currentUser, (CampaignReferenceDto) campaignFilter.getValue(), (ValueSeparator) separator.getValue());
-					importer.startImport(this::extendDownloadErrorReportButton, currentUI, true);
-				} catch (IOException | CsvValidationException e) {
-					new Notification(
-						I18nProperties.getString(Strings.headingImportFailed),
-						I18nProperties.getString(Strings.messageImportFailed),
-						Type.ERROR_MESSAGE,
-						false).show(Page.getCurrent());
-				}
-			}));
-			upload.setEnabled(false);
+//			addImportCsvComponent(3, new ImportReceiver(fileNameAddition, file -> {
+//				resetDownloadErrorReportButton();
+//
+//				try {
+//					DataImporter importer =
+//						new PopulationDataImporter(file, currentUser, (CampaignReferenceDto) campaignFilter.getValue(), (ValueSeparator) separator.getValue());
+//					importer.startImport(this::extendDownloadErrorReportButton, currentUI, true);
+//				} catch (IOException | CsvValidationException e) {
+//					new Notification(
+//						I18nProperties.getString(Strings.headingImportFailed),
+//						I18nProperties.getString(Strings.messageImportFailed),
+//						Type.ERROR_MESSAGE,
+//						false).show(Page.getCurrent());
+//				}
+//			}));
+//			upload.setEnabled(true);
 		} else {
 			addImportCsvComponentWithOverwrite(3, allowOverwrite -> new ImportReceiver(fileNameAddition, file -> {
 				resetDownloadErrorReportButton();

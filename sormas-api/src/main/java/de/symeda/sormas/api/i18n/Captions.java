@@ -64,7 +64,9 @@ public interface Captions {
 	String actionCreate = "actionCreate";
 	String actionCreatingLabel = "actionCreatingLabel";
 	String actionDearchive = "actionDearchive";
+	String actionUnpublish = "Unpublish";
 	String actionDelete = "actionDelete";
+	String actionPublish = "Publish";
 	String actionDeselectAll = "actionDeselectAll";
 	String actionDeselectAndContinue = "actionDeselectAndContinue";
 	String actionDisable = "actionDisable";
@@ -1447,6 +1449,7 @@ public interface Captions {
 	String LoginSidebar_outbreakResponse = "LoginSidebar.outbreakResponse";
 	String LoginSidebar_poweredBy = "LoginSidebar.poweredBy";
 	String mainMenuAbout = "mainMenuAbout";
+	String mainMenuSupport = "mainMenuSupport";
 	String mainMenuAggregateReports = "mainMenuAggregateReports";
 	String mainMenuCampaigns = "mainMenuCampaigns";
 	String mainMenuCases = "mainMenuCases";

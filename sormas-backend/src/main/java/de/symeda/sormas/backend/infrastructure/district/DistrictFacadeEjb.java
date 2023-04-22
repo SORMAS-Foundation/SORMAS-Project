@@ -47,6 +47,7 @@ import javax.validation.constraints.NotNull;
 import com.vladmihalcea.hibernate.type.util.SQLExtractor;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -453,7 +454,7 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 		dto.setEpidCode(entity.getEpidCode());
 		dto.setRisk(entity.getRisk());
 		dto.setGrowthRate(entity.getGrowthRate());
-		dto.setPopulation(populationDataFacade.getDistrictPopulation(dto.getUuid()));
+	//	dto.setPopulation(populationDataFacade.getDistrictPopulation(dto.getUuid()));
 		dto.setAreaexternalId(entity.getRegion().getArea().getExternalId());
 		dto.setAreaname(entity.getRegion().getArea().getName());
 		dto.setRegionexternalId(entity.getRegion().getExternalId());
@@ -481,7 +482,6 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 
 	@Override
 	public String getFullEpidCodeForDistrict(String districtUuid) {
-
 		District district = service.getByUuid(districtUuid);
 		return getFullEpidCodeForDistrict(district);
 	}
@@ -505,12 +505,13 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 	}
 	
 	@Override
-	public List<DistrictDto> getAllActiveAsReferenceAndPopulation(Long regionId) {
-		String queryStringBuilder = "select a.\"name\", sum(p.population), a.id, ar.uuid as umid, a.uuid as uimn from district a\n"
+	public List<DistrictDto> getAllActiveAsReferenceAndPopulation(Long regionId, CampaignDto campaignDt) {
+		String queryStringBuilder = "select a.\"name\", sum(p.population), a.id, ar.uuid as umid, a.uuid as uimn, p.selected from district a\n"
 				+ "left outer join populationdata p on a.id = p.district_id\n"
 				+ "left outer join region ar on ar.id = "+regionId+"\n"
-				+ "where a.archived = false and p.agegroup = 'AGE_0_4' and a.region_id = "+regionId+"\n"
-				+ "group by a.\"name\", a.id, ar.uuid, a.uuid";
+				+ "left outer join campaigns ca on p.campaign_id = ca.id \n"
+				+ "where a.archived = false and p.agegroup = 'AGE_0_4' and a.region_id = "+regionId+" and ca.uuid = '"+campaignDt.getUuid()+"'\n"
+				+ "group by a.\"name\", a.id, ar.uuid, a.uuid, p.selected";
 		
 		
 		Query seriesDataQuery = em.createNativeQuery(queryStringBuilder);
@@ -521,12 +522,12 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 		@SuppressWarnings("unchecked")
 		List<Object[]> resultList = seriesDataQuery.getResultList(); 
 		
-		System.out.println("starting....");
+		//System.out.println("starting....");
 		
 		resultData.addAll(resultList.stream()
-				.map((result) -> new DistrictDto((String) result[0].toString(), ((BigInteger) result[1]).longValue(), ((BigInteger) result[2]).longValue(), (String) result[3].toString(), (String) result[4].toString())).collect(Collectors.toList()));
+				.map((result) -> new DistrictDto((String) result[0].toString(), ((BigInteger) result[1]).longValue(), ((BigInteger) result[2]).longValue(), (String) result[3].toString(), (String) result[4].toString(), (String) result[5].toString())).collect(Collectors.toList()));
 		
-		System.out.println("ending...." +resultData.size());
+		//System.out.println("ending...." +resultData.size());
 	
 	
 	//System.out.println("resultData - "+ resultData.toString()); //SQLExtractor.from(seriesDataQuery));

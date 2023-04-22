@@ -202,6 +202,7 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
                         } else if (type == CampaignFormElementType.CHECKBOX || type == CampaignFormElementType.RADIO || type == CampaignFormElementType.CHECKBOXBASIC || type == CampaignFormElementType.RADIOBASIC) {
                             dynamicField = CampaignFormDataFragmentUtils.createControlCheckBoxField(campaignFormElement, requireContext(), CampaignFormDataFragmentUtils.getUserTranslations(campaignFormMeta));
                         } else if (type == CampaignFormElementType.NUMBER || type == CampaignFormElementType.DECIMAL) {
+
                             dynamicField = CampaignFormDataFragmentUtils.createControlTextEditField(campaignFormElement, requireContext(), CampaignFormDataFragmentUtils.getUserTranslations(campaignFormMeta), true, campaignFormElement.isImportant());
                         } else if (type == CampaignFormElementType.RANGE) {
                             final boolean exprx = expressionx;

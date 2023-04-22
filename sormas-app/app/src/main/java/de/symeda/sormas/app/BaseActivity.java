@@ -597,8 +597,8 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 	}
 
 	public void synchronizeChangedData() {
-		SwipeRefreshLayout refreshLayout = findViewById(R.id.swiperefresh);
-		synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, true, refreshLayout, getSynchronizeResultCallback(), null);
+	//	SwipeRefreshLayout refreshLayout = findViewById(R.id.swiperefresh);
+		synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, true, null, getSynchronizeResultCallback(), null);
 	}
 
 	private boolean checkActiveUser() {
@@ -647,7 +647,7 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 		} else {
 			progressDialog = null;
 			if (swipeRefreshLayout != null) {
-				swipeRefreshLayout.setRefreshing(true);
+				swipeRefreshLayout.setRefreshing(false);
 			}
 		}
 

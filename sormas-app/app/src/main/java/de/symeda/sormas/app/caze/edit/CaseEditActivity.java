@@ -295,7 +295,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 				if (taskResult.getResultStatus().isSuccess()) {
 					successCallback.accept(changedCase);
 				} else {
-					onResume(); // reload data
+					//onResume(); // reload data
 				}
 				saveTask = null;
 			}

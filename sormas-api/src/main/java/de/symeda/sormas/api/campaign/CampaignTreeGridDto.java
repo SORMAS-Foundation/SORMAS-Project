@@ -24,6 +24,7 @@ public class CampaignTreeGridDto {
     private String uuid;
     private Long isClicked; //let leave this to a Long type
     private String levelAssessed;
+    private String savedData;
 
     public CampaignTreeGridDto(String name, Long id, String parentUuid, String uuid, String levelAssessed) {
         this.name = name;
@@ -66,6 +67,14 @@ public class CampaignTreeGridDto {
                 .map(region -> region.getPopulationData())
                 .reduce(0L, Long::sum);
     }
+        
+	public String getSavedData() {
+		return savedData;
+	}
+
+	public void setSavedData(String savedData) {
+		this.savedData = savedData;
+	}
 
 	public Long getId() {
 		return id;

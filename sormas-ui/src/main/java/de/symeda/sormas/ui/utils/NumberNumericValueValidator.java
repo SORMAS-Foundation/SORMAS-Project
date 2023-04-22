@@ -77,7 +77,7 @@ public class NumberNumericValueValidator extends AbstractValidator<String> {
 		super(errorMessage);
 		
 		
-		System.out.println("delteme meeeeeee"+errorMessage);
+	//	System.out.println("delteme meeeeeee"+errorMessage);
 		if (minValue != null) {
 			this.minValue = new BigDecimal(minValue.toString());
 		}

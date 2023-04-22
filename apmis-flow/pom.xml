@@ -7,7 +7,7 @@
     <groupId>de.symeda.sormas.ui</groupId>
     <artifactId>apmis-flow</artifactId>
     <name>${project.artifactId}</name>
-   <version>1.0.28</version>
+   <version>1.0.30</version>
     <packaging>war</packaging>
 
     <properties>

@@ -104,6 +104,5 @@ public class AboutView extends VerticalLayout {
 		aboutView.add(apmisImageContainer, aboutText, guides, feedbackForm, sendFeedback, versionNum);
         add(aboutView);
 
-    }
-
 }
+    }

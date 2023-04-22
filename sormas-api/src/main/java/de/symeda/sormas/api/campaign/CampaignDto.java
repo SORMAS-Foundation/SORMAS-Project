@@ -14,6 +14,7 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.PopulationDataDto;
 import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -44,9 +45,9 @@ public class CampaignDto extends EntityDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String name;
 	private String round;
-	//private String campaignTypes;
+	// private String campaignTypes;
 	public String campaignStatus;
-	
+
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String description;
 	private Date startDate;
@@ -54,15 +55,17 @@ public class CampaignDto extends EntityDto {
 	private String campaignYear;
 	private UserReferenceDto creatingUser;
 	private Set<CampaignFormMetaReferenceDto> campaignFormMetas;
-	
+
 	public String creatingusername;
-	
-	
+	public Boolean published;
+
 	private Set<AreaReferenceDto> areas = new HashSet<AreaReferenceDto>();
 	private Set<RegionReferenceDto> region = new HashSet<RegionReferenceDto>();
 	private Set<DistrictReferenceDto> districts = new HashSet<DistrictReferenceDto>();
 	private Set<CommunityReferenceDto> community = new HashSet<CommunityReferenceDto>();
-	
+
+	private Set<PopulationDataDto> populationdata = new HashSet<PopulationDataDto>();
+
 	@Valid
 	private List<CampaignDashboardElement> campaignDashboardElements;
 
@@ -87,8 +90,8 @@ public class CampaignDto extends EntityDto {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
-	public String getUuid(String uuid) {	
+
+	public String getUuid(String uuid) {
 		return this.getUuid();
 	}
 
@@ -100,16 +103,12 @@ public class CampaignDto extends EntityDto {
 		this.round = round;
 	}
 
-	
-	
-	/*public String getCampaignTypes() {
-		return campaignTypes;
-	}
-
-	public void setCampaignTypes(String campaignTypes) {
-		this.campaignTypes = campaignTypes;
-	}
-*/
+	/*
+	 * public String getCampaignTypes() { return campaignTypes; }
+	 * 
+	 * public void setCampaignTypes(String campaignTypes) { this.campaignTypes =
+	 * campaignTypes; }
+	 */
 	public String getDescription() {
 		return description;
 	}
@@ -151,15 +150,15 @@ public class CampaignDto extends EntityDto {
 	}
 
 	public String getCreatingusername() {
-		return this.getCreatingUser().getFirstName() + " " +this.getCreatingUser().getLastName();
+		return this.getCreatingUser().getFirstName() + " " + this.getCreatingUser().getLastName();
 	}
 
 	public Set<CampaignFormMetaReferenceDto> getCampaignFormMetas() {
-			return campaignFormMetas;
+		return campaignFormMetas;
 	}
-	
+
 	public Set<CampaignFormMetaReferenceDto> getCampaignFormMetas(String formType) {
-	
+
 		return campaignFormMetas.stream().filter(e -> e.getFormType().equals(formType)).collect(Collectors.toSet());
 	}
 
@@ -203,8 +202,25 @@ public class CampaignDto extends EntityDto {
 		return campaignDashboardElements;
 	}
 
-
 	public void setCampaignDashboardElements(List<CampaignDashboardElement> campaignDashboardElements) {
 		this.campaignDashboardElements = campaignDashboardElements;
 	}
+
+	public Set<PopulationDataDto> getPopulationdata() {
+		return populationdata;
+	}
+
+	public void setPopulationdata(Set<PopulationDataDto> populationdata) {
+		this.populationdata = populationdata;
+	}
+
+	public void setPublished(boolean published) {
+
+		this.published = published;
+	}
+
+	public Boolean isPublished() {
+		return published;
+	}
+
 }

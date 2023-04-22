@@ -27,11 +27,12 @@ public class PopulationData extends AbstractDomainObject {
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
-	public static final String CAMPAIGN = "campaigns";
+	public static final String CAMPAIGN = "campaign";
 	public static final String SEX = "sex";
 	public static final String AGE_GROUP = "ageGroup";
 	public static final String POPULATION = "population";
 	public static final String COLLECTION_DATE = "collectionDate";
+	public static final String SELECTED = "selected";
 
 	private Region region;
 	private District district;
@@ -40,7 +41,8 @@ public class PopulationData extends AbstractDomainObject {
 	private AgeGroup ageGroup;
 	private Integer population;
 	private Date collectionDate;
-	private Campaign campigns;
+	private Campaign campaign;
+	private String selected;
 
 	@ManyToOne(cascade = {})
 	public Region getRegion() {
@@ -104,13 +106,27 @@ public class PopulationData extends AbstractDomainObject {
 		this.collectionDate = collectionDate;
 	}
 
-	public Campaign getCampigns() {
-		return campigns;
+	
+	@ManyToOne(cascade = {})
+	public Campaign getCampaign() {
+		return campaign;
 	}
 
-	public void setCampigns(Campaign campigns) {
-		this.campigns = campigns;
+	public void setCampaign(Campaign campaign) {
+		this.campaign = campaign;
 	}
+
+	
+	//selected default to false
+	public String getSelected() {
+		return "false";
+	}
+
+	public void setSelected(String selected) {
+		this.selected = "false";
+	}
+	
+	
 	
 	
 }

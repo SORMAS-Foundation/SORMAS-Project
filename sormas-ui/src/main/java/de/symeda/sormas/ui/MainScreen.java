@@ -61,6 +61,7 @@ import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.ui.campaign.AbstractCampaignView;
 import de.symeda.sormas.ui.campaign.campaigndata.CampaignDataView;
 import de.symeda.sormas.ui.campaign.campaigns.CampaignsView;
+import de.symeda.sormas.ui.campaign.campaignstatistics.CampaignStatisticsView;
 //import de.symeda.sormas.ui.campaign.campaignstatistics.CampaignStatisticsView;
 import de.symeda.sormas.ui.caze.CasesView;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
@@ -112,7 +113,7 @@ public class MainScreen extends HorizontalLayout {
 	private static final Set<String> KNOWN_VIEWS = initKnownViews();
 
 	private final Menu menu;
-	
+
 	public MainScreen(SormasUI ui) {
 
 		CssLayout viewContainer = new CssLayout();
@@ -219,8 +220,13 @@ public class MainScreen extends HorizontalLayout {
 			AbstractCampaignView.registerViews(navigator);
 			menu.addView(CampaignDataView.class, AbstractCampaignView.ROOT_VIEW_NAME,
 					I18nProperties.getCaption(Captions.mainMenuCampaigns), VaadinIcons.CLIPBOARD_CHECK);
+		}
+
+		if ((permitted(UserType.WHO_USER) || permitted(UserType.EOC_USER)) && permitted(UserRight.REPORT_VIEW)) {
+			
 			menu.addView(CampaignReportView.class, CampaignReportView.VIEW_NAME, I18nProperties.getCaption("Report"),
-				VaadinIcons.CHART);
+					VaadinIcons.CHART);
+		
 
 		}
 
@@ -244,11 +250,13 @@ public class MainScreen extends HorizontalLayout {
 						I18nProperties.getCaption(Captions.mainMenuConfiguration), VaadinIcons.COG_O);
 			}
 		}
+		if (permitted(UserType.WHO_USER) || permitted(UserType.EOC_USER)) {
+			if ((permitted(UserRole.ADMIN) || permitted(UserRole.AREA_ADMIN_SUPERVISOR)
+					|| permitted(UserRole.ADMIN_SUPERVISOR) || permitted(UserRole.COMMUNITY_INFORMANT))) {
 
-		if ((permitted(UserRole.ADMIN) || permitted(UserRole.AREA_ADMIN_SUPERVISOR)
-				|| permitted(UserRole.ADMIN_SUPERVISOR) || permitted(UserRole.COMMUNITY_INFORMANT))) {
-			menu.addView(UsersView.class, UsersView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuUsers),
-					VaadinIcons.USERS);
+				menu.addView(UsersView.class, UsersView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuUsers),
+						VaadinIcons.USERS);
+			}
 		}
 
 		menu.createViewButtonx(Captions.actionSettings, I18nProperties.getCaption(Captions.language),
@@ -259,9 +267,15 @@ public class MainScreen extends HorizontalLayout {
 
 		// menu.addView(LanguageView.class, LanguageView.VIEW_NAME, "DashboardTest",
 		// VaadinIcons.GLOBE_WIRE);
+		
+		menu.addView(SupportView.class, "Support/Feedback", I18nProperties.getCaption(Captions.mainMenuSupport),
+				VaadinIcons.CHAT);
 
 		menu.addView(AboutView.class, AboutView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuAbout),
 				VaadinIcons.INFO_CIRCLE_O);
+
+		
+		
 
 		// menu.addView(CampaignGisView.class, CampaignGisView.VIEW_NAME,
 		// I18nProperties.getCaption("GIS"),
@@ -273,6 +287,7 @@ public class MainScreen extends HorizontalLayout {
 
 		menu.addViewx(LogoutTimeoutView.class, LogoutTimeoutView.VIEW_NAME);
 
+		
 		/*
 		 * //trying to include a javascript from this method MainScreenAbstract dd = new
 		 * MainScreenAbstract(); menu.addComponent(dd);
@@ -353,7 +368,7 @@ public class MainScreen extends HorizontalLayout {
 		setSpacing(false);
 		setMargin(false);
 		setSizeFull();
-		
+
 //		Page.getCurrent().getJavaScript().execute("\n" + "var timeleft = 1800;\n" + "\n"
 //				+ "        function resetTimer() {\n"
 //				+ "            return timeleft = (1800 - timeleft) + timeleft; //reset back to 35 seconds \n"
@@ -377,96 +392,54 @@ public class MainScreen extends HorizontalLayout {
 //
 //				+ "                window.location.href = window.location.origin+\"/sormas-ui/#!logouttimer\";\n"
 //				+ "            }\n" + "\n" + "        }, 1000);");
-		// Define a JavaScript function to display the modal popup with OK and Cancel buttons after 20 seconds of inactivity
-		
+		// Define a JavaScript function to display the modal popup with OK and Cancel
+		// buttons after 20 seconds of inactivity
 
-		
-		Page.getCurrent().getJavaScript().execute(
-			    "var timeleft = 1800; " +
-			    "function resetTimer() { " +
-			    "   return timeleft = (1800 - timeleft) + timeleft; " +
-			    "} " +
-			    "function setupReset() { " +
-			    "   document.addEventListener('mousedown', resetTimer); " +
-			    "   document.addEventListener('keypress', resetTimer); " +
-			    "   document.addEventListener('touchmove', resetTimer); " +
-			    "   document.addEventListener('onscroll', resetTimer); " +
-			    "} " +
-			    "function showModal() { " +
-			    "   var modal = document.createElement('div'); " +
-			    "   modal.style.position = 'fixed'; " +
-			    "   modal.style.top = '0'; " +
-			    "   modal.style.left = '0'; " +
-			    "   modal.style.width = '100%'; " +
-			    "   modal.style.height = '100%'; " +
-			    "   modal.style.border = '5px solid red'; " +
-			    "   modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)'; " +
-			    "   modal.style.zIndex = '9999'; " +
-			    "   var message = document.createElement('div'); " +
-			    "   message.innerHTML = 'You have been idle for 20 minutes. You will automatically be <br>logged out 10 minutes after getting this message.'; " +
-			    "   message.style.position = 'absolute'; " +
-			    "   message.style.top = '50%'; " +
-			    "   message.style.left = '50%'; " +
-			    "   message.style.height = '160px'; " +
-			    "   message.style.transform = 'translate(-50%, -50%)'; " +
-			    "   message.style.backgroundColor = '#fff'; " +
-			    "   message.style.border = '1px solid green'; " +
-			    "   message.style.borderRadius = '4px'; " +
-			    
-			    "   message.style.padding = '1em'; " +
-			    "   message.style.paddingTop = '30px'; " +
-			    "   modal.appendChild(message); " +
-			    "   var okButton = document.createElement('button'); " +
-			    "   okButton.innerHTML = 'Logout Now'; " +
-			    "   okButton.style.marginRight = '0.5em'; " +
-			    "   okButton.style.position = 'absolute'; " +
-			    "   okButton.style.top = '95px'; " +
-			    "   okButton.style.right = '200px'; " +
-			    "   okButton.style.backgroundColor = 'red'; " +
-			    "   okButton.style.border = '1px solid red'; " +
-			    "   okButton.style.borderRadius = '4px'; " +
-			    "   okButton.style.width = '110px'; " +
-			    "   okButton.style.height = '35px'; " +
-			    "   okButton.style.color = 'white'; " +
-			    "   okButton.addEventListener('click', function () { " +
-			    "   window.location.href = window.location.origin + \"/sormas-ui/#!logouttimer\"; " +
-			    "   }); " +
-			    "   message.appendChild(okButton); " +
-			    "   var cancelButton = document.createElement('button'); " +
-			    "   cancelButton.innerHTML = 'Stay Logged In'; " +
-			    "   cancelButton.style.position = 'absolute'; " +
-			    "   cancelButton.style.top = '95px'; " +
-			    "   cancelButton.style.right = '80px'; " +
-			    "   cancelButton.style.backgroundColor = 'white'; " +
-			    "   cancelButton.style.border = '1px solid #0E693A'; " +
-			    "   cancelButton.style.borderRadius = '4px'; " +
-			    "   cancelButton.style.width = '110px'; " +
-			    "   cancelButton.style.height = '35px'; " +
-			    "   cancelButton.style.color = 'green'; " +
-			    "   cancelButton.addEventListener('click', function () { " +
-			    "   document.body.removeChild(modal); " +
-			    "   resetTimer()}); " +
-			    "   message.appendChild(cancelButton); " +
-			    "   document.body.appendChild(modal); " +
-			    "} " +
-			    "setInterval(function () { " +
-			    "   timeleft--; " +
-			   
-			    "   setupReset(); " +
-			    "   if (timeleft > 600) { " +
+		Page.getCurrent().getJavaScript().execute("var timeleft = 1800; " + "function resetTimer() { "
+				+ "   return timeleft = (1800 - timeleft) + timeleft; " + "} " + "function setupReset() { "
+				+ "   document.addEventListener('mousedown', resetTimer); "
+				+ "   document.addEventListener('keypress', resetTimer); "
+				+ "   document.addEventListener('touchmove', resetTimer); "
+				+ "   document.addEventListener('onscroll', resetTimer); " + "} " + "function showModal() { "
+				+ "   var modal = document.createElement('div'); " + "   modal.style.position = 'fixed'; "
+				+ "   modal.style.top = '0'; " + "   modal.style.left = '0'; " + "   modal.style.width = '100%'; "
+				+ "   modal.style.height = '100%'; " + "   modal.style.border = '5px solid red'; "
+				+ "   modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)'; " + "   modal.style.zIndex = '9999'; "
+				+ "   var message = document.createElement('div'); "
+				+ "   message.innerHTML = 'You have been idle for 20 minutes. You will automatically be <br>logged out 10 minutes after getting this message.'; "
+				+ "   message.style.position = 'absolute'; " + "   message.style.top = '50%'; "
+				+ "   message.style.left = '50%'; " + "   message.style.height = '160px'; "
+				+ "   message.style.transform = 'translate(-50%, -50%)'; "
+				+ "   message.style.backgroundColor = '#fff'; " + "   message.style.border = '1px solid green'; "
+				+ "   message.style.borderRadius = '4px'; " +
+
+				"   message.style.padding = '1em'; " + "   message.style.paddingTop = '30px'; "
+				+ "   modal.appendChild(message); " + "   var okButton = document.createElement('button'); "
+				+ "   okButton.innerHTML = 'Logout Now'; " + "   okButton.style.marginRight = '0.5em'; "
+				+ "   okButton.style.position = 'absolute'; " + "   okButton.style.top = '95px'; "
+				+ "   okButton.style.right = '200px'; " + "   okButton.style.backgroundColor = 'red'; "
+				+ "   okButton.style.border = '1px solid red'; " + "   okButton.style.borderRadius = '4px'; "
+				+ "   okButton.style.width = '110px'; " + "   okButton.style.height = '35px'; "
+				+ "   okButton.style.color = 'white'; " + "   okButton.addEventListener('click', function () { "
+				+ "   window.location.href = window.location.origin + \"/sormas-ui/#!logouttimer\"; " + "   }); "
+				+ "   message.appendChild(okButton); " + "   var cancelButton = document.createElement('button'); "
+				+ "   cancelButton.innerHTML = 'Stay Logged In'; " + "   cancelButton.style.position = 'absolute'; "
+				+ "   cancelButton.style.top = '95px'; " + "   cancelButton.style.right = '80px'; "
+				+ "   cancelButton.style.backgroundColor = 'white'; "
+				+ "   cancelButton.style.border = '1px solid #0E693A'; "
+				+ "   cancelButton.style.borderRadius = '4px'; " + "   cancelButton.style.width = '110px'; "
+				+ "   cancelButton.style.height = '35px'; " + "   cancelButton.style.color = 'green'; "
+				+ "   cancelButton.addEventListener('click', function () { " + "   document.body.removeChild(modal); "
+				+ "   resetTimer()}); " + "   message.appendChild(cancelButton); "
+				+ "   document.body.appendChild(modal); " + "} " + "setInterval(function () { " + "   timeleft--; " +
+
+				"   setupReset(); " + "   if (timeleft > 600) { " +
 //			    "   setupReset(document.body.removeChild(modal)); " +
-			    "   } else if (timeleft == 600) { " +
-			    "       showModal(); " +
-			    "   }  else if (timeleft == 0) { " +
-			    "   window.location.href = window.location.origin + \"/sormas-ui/#!logouttimer\"; " +
-			    "   } " +
-			    "}, 1000);"
-			);
+				"   } else if (timeleft == 600) { " + "       showModal(); " + "   }  else if (timeleft == 0) { "
+				+ "   window.location.href = window.location.origin + \"/sormas-ui/#!logouttimer\"; " + "   } "
+				+ "}, 1000);");
 
-		
 	}
-	
-
 
 	private void showSettingsPopup() {
 
@@ -484,7 +457,7 @@ public class MainScreen extends HorizontalLayout {
 	private static Set<String> initKnownViews() {
 		final Set<String> views = new HashSet<>(Arrays.asList(TasksView.VIEW_NAME, CasesView.VIEW_NAME,
 				ContactsView.VIEW_NAME, EventsView.VIEW_NAME, EventGroupDataView.VIEW_NAME, SamplesView.VIEW_NAME,
-				CampaignsView.VIEW_NAME, CampaignDataView.VIEW_NAME, // CampaignStatisticsView.VIEW_NAME,
+				CampaignsView.VIEW_NAME, CampaignDataView.VIEW_NAME,  CampaignStatisticsView.VIEW_NAME,
 				ReportsView.VIEW_NAME, StatisticsView.VIEW_NAME, PersonsView.VIEW_NAME, UsersView.VIEW_NAME,
 				OutbreaksView.VIEW_NAME, RegionsView.VIEW_NAME, DistrictsView.VIEW_NAME, CommunitiesView.VIEW_NAME,
 				FacilitiesView.VIEW_NAME, PointsOfEntryView.VIEW_NAME, ContinentsView.VIEW_NAME,

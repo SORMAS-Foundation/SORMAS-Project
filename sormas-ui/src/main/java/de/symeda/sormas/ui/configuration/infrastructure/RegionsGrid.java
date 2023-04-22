@@ -73,12 +73,14 @@ public class RegionsGrid extends FilteredGrid<RegionIndexDto, RegionCriteria> {
 			columns,
 			RegionIndexDto.NAME, 
 			//RegionIndexDto.EPID_CODE,
-			RegionIndexDto.EXTERNAL_ID,
-			RegionIndexDto.POPULATION,
-			RegionIndexDto.GROWTH_RATE);
+			RegionIndexDto.EXTERNAL_ID
+//			,
+//			RegionIndexDto.POPULATION,
+//			RegionIndexDto.GROWTH_RATE
+			);
 		setColumns(columns);
 		this.sort(RegionIndexDto.AREA, SortDirection.ASCENDING);
-		getColumn(RegionIndexDto.POPULATION).setSortable(false);
+//		getColumn(RegionIndexDto.POPULATION).setSortable(false);
 
 		if (!FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
 			removeColumn(RegionIndexDto.AREA);
@@ -89,8 +91,8 @@ public class RegionsGrid extends FilteredGrid<RegionIndexDto, RegionCriteria> {
 			addItemClickListener(new ShowDetailsListener<>(RegionIndexDto.NAME,e -> ControllerProvider.getInfrastructureController().editRegion(e.getUuid())));
 			addItemClickListener(new ShowDetailsListener<>(RegionIndexDto.AREA, e -> ControllerProvider.getInfrastructureController().editRegion(e.getUuid())));
 			addItemClickListener(new ShowDetailsListener<>(RegionIndexDto.EXTERNAL_ID, e -> ControllerProvider.getInfrastructureController().editRegion(e.getUuid())));
-			addItemClickListener(new ShowDetailsListener<>(RegionIndexDto.POPULATION, e -> ControllerProvider.getInfrastructureController().editRegion(e.getUuid())));
-			addItemClickListener(new ShowDetailsListener<>(RegionIndexDto.GROWTH_RATE, e -> ControllerProvider.getInfrastructureController().editRegion(e.getUuid())));
+//			addItemClickListener(new ShowDetailsListener<>(RegionIndexDto.POPULATION, e -> ControllerProvider.getInfrastructureController().editRegion(e.getUuid())));
+//			addItemClickListener(new ShowDetailsListener<>(RegionIndexDto.GROWTH_RATE, e -> ControllerProvider.getInfrastructureController().editRegion(e.getUuid())));
 			
 			//addEditColumn(e -> ControllerProvider.getInfrastructureController().editRegion(e.getUuid()));
 		}

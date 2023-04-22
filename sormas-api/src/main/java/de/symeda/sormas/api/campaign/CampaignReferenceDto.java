@@ -25,6 +25,8 @@ import java.util.HashMap;
 import de.symeda.sormas.api.ReferenceDto;
 
 public class CampaignReferenceDto extends ReferenceDto {
+	
+	private String campaignYear;
 
 	public CampaignReferenceDto() {
 	}
@@ -37,4 +39,21 @@ public class CampaignReferenceDto extends ReferenceDto {
 		setUuid(uuid);
 		setCaption(caption);
 	}
+	
+	public CampaignReferenceDto(String uuid, String caption, String campaignYear) {
+		setUuid(uuid);
+		setCaption(caption);
+		this.campaignYear = campaignYear;
+	}
+
+	public String getCampaignYear() {
+		return campaignYear;
+	}
+
+	public void setCampaignYear(String campaignYear) {
+		this.campaignYear = campaignYear;
+	}
+	
+	
+	
 }

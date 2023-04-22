@@ -178,6 +178,20 @@ public class AbstractImportLayout extends VerticalLayout {
 		errorReportComponent.getButton().setEnabled(false);
 		addComponent(errorReportComponent);
 	}
+	
+	
+	protected void addDownloadNotSupported(int step) {
+		String headline = I18nProperties.getString(Strings.headingImportCsvFile);
+		String infoText = I18nProperties.getString(Strings.infoDownloadErrorReport);
+		Resource buttonIcon = VaadinIcons.DOWNLOAD;
+		String buttonCaption = I18nProperties.getCaption(Captions.importDownloadErrorReport);
+		ImportLayoutComponent errorReportComponent = new ImportLayoutComponent(step, headline, infoText, buttonIcon, buttonCaption);
+		//downloadErrorReportButton = errorReportComponent.getButton();
+		errorReportComponent.getButton().setVisible(false);// .setEnabled(false);
+		addComponent(errorReportComponent);
+	}
+	
+	
 
 	protected void resetDownloadErrorReportButton() {
 		downloadErrorReportButton.setEnabled(false);

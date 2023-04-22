@@ -118,6 +118,8 @@ public interface Strings {
 	String confirmationDeleteCases = "confirmationDeleteCases";
 	String confirmationDeleteContacts = "confirmationDeleteContacts";
 	String confirmationDeleteEntity = "confirmationDeleteEntity";
+	String confirmationPublishEntity = "confirmationPublishEntity";
+	String confirmationUnPublishEntity = "confirmationUnPublishEntity";
 	String confirmationDeleteEventParticipants = "confirmationDeleteEventParticipants";
 	String confirmationDeleteEvents = "confirmationDeleteEvents";
 	String confirmationDeleteFile = "confirmationDeleteFile";
@@ -335,6 +337,8 @@ public interface Strings {
 	String headingAnimalContactDetails = "headingAnimalContactDetails";
 	String headingAnimalContacts = "headingAnimalContacts";
 	String headingArchiveCampaign = "headingArchiveCampaign";
+	String headingPublishCampaign = "headingPublishCampaign";
+	String headingUnPublishCampaign = "headingUnPublishCampaign";
 	String headingArchiveCase = "headingArchiveCase";
 	String headingArchiveEvent = "headingArchiveEvent";
 	String headingArchiveEventGroup = "headingArchiveEventGroup";
@@ -376,6 +380,8 @@ public interface Strings {
 	String headingConfirmChoice = "headingConfirmChoice";
 	String headingConfirmDearchiving = "headingConfirmDearchiving";
 	String headingConfirmDeletion = "headingConfirmDeletion";
+	String headingConfirmPublish = "headingConfirmPublish";
+	String headingConfirmUnPublish = "headingConfirmUnPublish";
 	String headingConfirmDisabling = "headingConfirmDisabling";
 	String headingConfirmEnabling = "headingConfirmEnabling";
 	String headingConfirmManuallyForwardedLabMessage = "headingConfirmManuallyForwardedLabMessage";
@@ -768,6 +774,7 @@ public interface Strings {
 	String infoPickOrCreateSample = "infoPickOrCreateSample";
 	String infoPickOrCreateSuperordinateEventForEvent = "infoPickOrCreateSuperordinateEventForEvent";
 	String infoPopulationCollectionDate = "infoPopulationCollectionDate";
+	String infoSaveCampaignFirst = "infoSaveCampaignFirst";
 	String infoPopulationDataView = "infoPopulationDataView";
 	String infoPopulationReferenceYear = "infoPopulationReferenceYear";
 	String infoSampleAdditionalTesting = "infoSampleAdditionalTesting";
