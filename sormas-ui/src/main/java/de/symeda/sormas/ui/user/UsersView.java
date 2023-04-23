@@ -62,6 +62,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.configuration.infrastructure.CommunitiesGrid;
 import de.symeda.sormas.ui.configuration.infrastructure.RegionsGrid;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -196,10 +197,21 @@ public class UsersView extends AbstractView {
 			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			addHeaderComponent(exportButton);
 
-			StreamResource streamResource = GridExportStreamResource.createStreamResource("", "", exportgrid,
-					ExportEntityName.USERS, UserExportGrid.EDIT_BTN_ID);
+			StreamResource streamResource = GridExportStreamResource.createStreamResource("", "", grid,
+					ExportEntityName.USERS, UserGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
+			
+//			if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
+//				Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.TABLE, null, ValoTheme.BUTTON_PRIMARY);
+//				exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
+//				addHeaderComponent(exportButton);
+//
+//				StreamResource streamResource =
+//					GridExportStreamResource.createStreamResource("","",grid, ExportEntityName.COMMUNITIES, CommunitiesGrid.EDIT_BTN_ID);
+//				FileDownloader fileDownloader = new FileDownloader(streamResource);
+//				fileDownloader.extend(exportButton);
+//			}
 		}
 
 		if (AuthProvider.getProvider(FacadeProvider.getConfigFacade()).isUserSyncSupported()) {
