@@ -6811,7 +6811,7 @@ paths:
           content:
             application/json; charset=UTF-8:
               schema:
-                type: string
+                type: array
                 example:
                 - personUuid: Q56VFD-G3TXKT-R2DBIW-FTWIKAMI
                   latestFollowUpEndDate: 1599602400000
@@ -6874,7 +6874,7 @@ paths:
           content:
             application/json; charset=UTF-8:
               schema:
-                type: string
+                type: boolean
                 example: true
           description: "true a person with the given Uuid exists in SORMAS, false\
             \ otherwise."
@@ -6894,14 +6894,10 @@ paths:
         content:
           application/json; charset=UTF-8:
             schema:
-              type: string
-              example: |-
-                [
-                  {
-                    "status": "REGISTERED",
-                    "statusDateTime": "2020-04-15T12:55:00.000+02:00" // datetime format yyyy-MM-dd'T'HH:mm:ss.SSSZ
-                  }
-                ]
+              type: array
+              example:
+              - status: REGISTERED
+                statusDateTime: 2020-04-15T12:55:00.000+02:00
         description: "status may be one of the following:<br/>UNREGISTERED: User has\
           \ not yet sent any state<br/>REGISTERED: After successful registration in\
           \ SymptomJournal<br/>ACCEPTED: User has accepted a confirmation<br/>REJECTED:\
@@ -6911,7 +6907,7 @@ paths:
           content:
             application/json; charset=UTF-8:
               schema:
-                type: string
+                type: boolean
                 example: true
           description: "true if the status was set successfully, false otherwise."
       summary: Save symptom journal status

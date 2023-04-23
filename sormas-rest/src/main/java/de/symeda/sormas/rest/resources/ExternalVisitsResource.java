@@ -75,7 +75,7 @@ public class ExternalVisitsResource extends EntityDtoResource<ExternalVisitDto> 
 	@Operation(summary = "Check person validity", description = "Check if a the Uuid given as parameter exists in SORMAS.",
 		responses =
 			@ApiResponse(description = "true a person with the given Uuid exists in SORMAS, false otherwise.",
-					content = @Content(schema = @Schema(example = "true"))))
+					content = @Content(schema = @Schema(type = "boolean", example = "true"))))
 	public Boolean isValidPersonUuid(@PathParam("personUuid") String personUuid) {
 		return FacadeProvider.getPersonFacade().isValidPersonUuid(personUuid);
 	}
@@ -86,18 +86,20 @@ public class ExternalVisitsResource extends EntityDtoResource<ExternalVisitDto> 
 	@Operation(summary = "Save symptom journal status",
 		responses =
 			@ApiResponse(description = "true if the status was set successfully, false otherwise.",
-					content = @Content(schema = @Schema(example = "true"))))
+					content = @Content(schema = @Schema(type="boolean", example = "true"))))
 	@RequestBody(
-		//@formatter:off
 		description = "status may be one of the following:<br/>" +
 				"UNREGISTERED: User has not yet sent any state<br/>" +
 				"REGISTERED: After successful registration in SymptomJournal<br/>" +
 				"ACCEPTED: User has accepted a confirmation<br/>" +
 				"REJECTED: User has rejected (declined) a confirmation<br/>" +
 				"DELETED: User was deleted",
-		//@formatter:on
-		content = @Content(schema = @Schema(example = "[\n  {\n    \"status\": \"REGISTERED\",\n"
-			+ "    \"statusDateTime\": \"2020-04-15T12:55:00.000+02:00\" // datetime format yyyy-MM-dd'T'HH:mm:ss.SSSZ\n  }\n]")))
+		content = @Content(schema = @Schema(type="array", example = "[\n" +
+				"  {\n" +
+				"    \"status\": \"REGISTERED\",\n" +
+				"    \"statusDateTime\": \"2020-04-15T12:55:00.000+02:00\"\n" +
+				"  }\n" +
+				"]")))
 	//@formatter:on
 	public boolean postSymptomJournalStatus(@PathParam("personUuid") String personUuid, PersonSymptomJournalStatusDto statusDto) {
 		try {
@@ -132,7 +134,7 @@ public class ExternalVisitsResource extends EntityDtoResource<ExternalVisitDto> 
 			+ "Only returns values changed after {since}, which is interpreted as a UNIX timestamp.")
 	//@formatter:off
 	@ApiResponse(description = "List of personUuids and their latest follow up end dates as UNIX timestamps.",
-			content = @Content(schema = @Schema(example = "[\n" +
+			content = @Content(schema = @Schema(type = "array", example = "[\n" +
 			"  {\n" +
 			"    \"personUuid\": \"Q56VFD-G3TXKT-R2DBIW-FTWIKAMI\",\n" +
 			"    \"latestFollowUpEndDate\": 1599602400000\n" +
