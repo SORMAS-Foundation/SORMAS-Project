@@ -41,11 +41,6 @@ public class SormasSwaggerExtensions extends AbstractOpenAPIExtension {
 		}
 	}
 
-	@Override
-	protected boolean shouldIgnoreClass(Class<?> cls) {
-		return super.shouldIgnoreClass(cls);
-	}
-
 	/**
 	 * Generate a user-friendly name label for the given controller class.
 	 */
