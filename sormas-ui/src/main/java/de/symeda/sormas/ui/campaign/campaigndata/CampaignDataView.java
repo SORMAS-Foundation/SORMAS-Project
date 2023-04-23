@@ -114,7 +114,7 @@ public class CampaignDataView extends AbstractCampaignView {
 	@SuppressWarnings("deprecation")
 	public CampaignDataView() {
 		super(VIEW_NAME);
-
+		
 		criteria = ViewModelProviders.of(getClass()).get(CampaignFormDataCriteria.class);
 
 		campaignSelector = new CampaignSelector();
@@ -357,9 +357,7 @@ public class CampaignDataView extends AbstractCampaignView {
 		rowsCount.update(grid.getItemCount());
 
 		JavaScript js = Page.getCurrent().getJavaScript();
-		js.execute("$(document).ready(function() {\n" + ""
-				+ "document.querySelector(\".v-label.v-widget.h1.v-label-h1.vspace-none.v-label-vspace-none.v-label-undef-w\").style.display='none';\n"
-				+ "	if ($(window).width() <= 825) {\n"
+		js.execute("$(document).ready(function() {\n" + "	if ($(window).width() <= 825) {\n"
 				+ "document.querySelector(\".v-label.v-widget.h1.v-label-h1.vspace-none.v-label-vspace-none.v-label-undef-w\").style.display='none';\n"
 
 				+ "document.querySelector(\".v-horizontallayout-view-headerxxxx :nth-child(12)\").style.display='none';"
