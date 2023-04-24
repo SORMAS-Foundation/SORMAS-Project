@@ -69,22 +69,22 @@ public class VisitController {
 		VisitEditForm editForm;
 		Date startDate = null;
 		Date endDate = null;
-		boolean hasContactAsParentEntity = false;
+		boolean inJurisdiction = false;
 
 		if (contactRef != null) {
 			ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactRef.getUuid());
 			PersonDto visitPerson = FacadeProvider.getPersonFacade().getByUuid(visit.getPerson().getUuid());
-			editForm = new VisitEditForm(visit.getDisease(), contact, visitPerson, false);
+			editForm = new VisitEditForm(visit.getDisease(), contact, visitPerson, false, contact.isInJurisdiction());
 			startDate = ContactLogic.getStartDate(contact);
 			endDate = ContactLogic.getEndDate(contact);
-			hasContactAsParentEntity = true;
+			inJurisdiction = contact.isInJurisdiction();
 		} else if (caseRef != null) {
 			CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
 			PersonDto visitPerson = FacadeProvider.getPersonFacade().getByUuid(visit.getPerson().getUuid());
-			editForm = new VisitEditForm(visit.getDisease(), caze, visitPerson, false);
+			editForm = new VisitEditForm(visit.getDisease(), caze, visitPerson, false, caze.isInJurisdiction());
 			startDate = CaseLogic.getStartDate(caze);
 			endDate = CaseLogic.getEndDate(caze);
-			hasContactAsParentEntity = false;
+			inJurisdiction = caze.isInJurisdiction();
 		} else {
 			throw new IllegalArgumentException("Cannot edit a visit without contact nor case");
 		}
@@ -97,7 +97,7 @@ public class VisitController {
 			doneConsumer,
 			canEdit,
 			canDelete,
-			hasContactAsParentEntity,
+			inJurisdiction,
 			VisitLogic.getAllowedStartDate(startDate),
 			VisitLogic.getAllowedEndDate(endDate));
 	}
@@ -108,7 +108,7 @@ public class VisitController {
 		Consumer<VisitReferenceDto> doneConsumer,
 		boolean canEdit,
 		boolean canDelete,
-		boolean hasContactAsParentEntity,
+		boolean inJurisdiction,
 		Date allowedStartDate,
 		Date allowedEndDate) {
 
@@ -142,19 +142,7 @@ public class VisitController {
 				}, I18nProperties.getCaption(VisitDto.I18N_PREFIX));
 			}
 
-			if (hasContactAsParentEntity) {
-				editView.restrictEditableChildComponentOnEditView(
-					UserRight.CONTACT_EDIT,
-					UserRight.VISIT_EDIT,
-					UserRight.CONTACT_DELETE,
-					UserRight.VISIT_DELETE);
-			} else {
-				editView.restrictEditableChildComponentOnEditView(
-					UserRight.CASE_EDIT,
-					UserRight.VISIT_EDIT,
-					UserRight.CASE_DELETE,
-					UserRight.VISIT_DELETE);
-			}
+			editView.restrictEditableComponentsOnEditView(UserRight.VISIT_EDIT, UserRight.VISIT_DELETE, null, inJurisdiction);
 
 		}
 		editView.getButtonsPanel().setVisible(isEditOrDeleteAllowed);
@@ -186,7 +174,7 @@ public class VisitController {
 		VisitDto visit = createNewVisit(contactRef);
 		ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactRef.getUuid());
 		PersonDto contactPerson = FacadeProvider.getPersonFacade().getByUuid(contact.getPerson().getUuid());
-		VisitEditForm createForm = new VisitEditForm(visit.getDisease(), contact, contactPerson, true);
+		VisitEditForm createForm = new VisitEditForm(visit.getDisease(), contact, contactPerson, true, true); // Valid because jurisdiction doesn't matter for entities that are about to be created
 		createForm.setValue(visit);
 
 		createVisit(
@@ -200,7 +188,7 @@ public class VisitController {
 		VisitDto visit = createNewVisit(caseRef);
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
 		PersonDto person = FacadeProvider.getPersonFacade().getByUuid(caze.getPerson().getUuid());
-		VisitEditForm createForm = new VisitEditForm(visit.getDisease(), caze, person, true);
+		VisitEditForm createForm = new VisitEditForm(visit.getDisease(), caze, person, true, true); // Valid because jurisdiction doesn't matter for entities that are about to be created
 		createForm.setValue(visit);
 
 		createVisit(
