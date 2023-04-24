@@ -49,21 +49,29 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 
 	private void performRestoreSelectedItems(List<String> entityUuids, F entityFacade, CoreEntityRestoreMessages messages, Runnable callback) {
 
-		int countNotRestoredEntities = 0;
-		StringBuilder notRestoredEntities = new StringBuilder();
+		int unrestoredEntityCount = 0;
+		StringBuilder unrestoredEntitiesSb = new StringBuilder();
+
 		for (String selectedRow : entityUuids) {
 			try {
 				entityFacade.restore(selectedRow);
 			} catch (Exception e) {
-				countNotRestoredEntities++;
-				notRestoredEntities.append(selectedRow, 0, 6).append(", ");
+				unrestoredEntityCount++;
+				unrestoredEntitiesSb.append(selectedRow, 0, 6).append(", ");
 			}
 		}
-		if (notRestoredEntities.length() > 0) {
-			notRestoredEntities = new StringBuilder(" " + notRestoredEntities.substring(0, notRestoredEntities.length() - 2) + ". ");
+
+		if (unrestoredEntitiesSb.length() > 0) {
+			unrestoredEntitiesSb = new StringBuilder(" " + unrestoredEntitiesSb.substring(0, unrestoredEntitiesSb.length() - 2) + ". ");
 		}
+
 		callback.run();
-		if (countNotRestoredEntities == 0) {
+		handleRestoreResult(unrestoredEntityCount, messages, unrestoredEntitiesSb.toString());
+	}
+
+	private void handleRestoreResult(int unrestoredEntityCount, CoreEntityRestoreMessages messages, String unrestoredEntitiesString) {
+
+		if (unrestoredEntityCount == 0) {
 			new Notification(
 				I18nProperties.getString(messages.getHeadingEntitiesRestored()),
 				I18nProperties.getString(messages.getMessageEntitiesRestored()),
@@ -76,8 +84,8 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 					"%1s <br/> <br/> %2s",
 					String.format(
 						I18nProperties.getString(messages.getMessageCountEntitiesNotRestored()),
-						String.format("<b>%s</b>", countNotRestoredEntities),
-						String.format("<b>%s</b>", HtmlHelper.cleanHtml(notRestoredEntities.toString()))),
+						String.format("<b>%s</b>", unrestoredEntityCount),
+						String.format("<b>%s</b>", HtmlHelper.cleanHtml(unrestoredEntitiesString))),
 					I18nProperties.getString(Strings.messageCasesNotRestored)),
 				ContentMode.HTML);
 			response.setWidth(600, Sizeable.Unit.PIXELS);
