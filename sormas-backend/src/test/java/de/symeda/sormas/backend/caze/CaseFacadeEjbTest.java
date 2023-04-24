@@ -313,8 +313,17 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			Disease.EVD,
 			CaseClassification.PROBABLE,
 			InvestigationStatus.PENDING,
-			DateUtils.addMinutes(today, -3),
+			DateUtils.addDays(today, -1),
 			rdcf);
+
+		executeInTransaction(em -> {
+			Query query = em.createQuery("select c from cases c where c.uuid=:uuid");
+			query.setParameter("uuid", case2.getUuid());
+			Case singleResult = (Case) query.getSingleResult();
+
+			singleResult.setCreationDate(new Timestamp(DateUtils.addDays(today, -1).getTime()));
+			em.persist(singleResult);
+		});
 
 		final List<CaseMergeIndexDto[]> casesForDuplicateMergingToday =
 			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(new Date()), 100, true);
