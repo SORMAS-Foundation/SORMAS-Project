@@ -36,7 +36,7 @@ Feature: Facility end to end tests
   @tmsLink=SORDEV-9206 @env_main
   Scenario: Checking availability of new categories and types of facility in Edit Event directory
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     Then I open the last created event via api

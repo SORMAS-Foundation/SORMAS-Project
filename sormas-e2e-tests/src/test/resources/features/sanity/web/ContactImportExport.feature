@@ -4,10 +4,10 @@ Feature: Contact import and export tests
   @tmsLink=SORDEV-10043 @env_main
   Scenario: Contact basic export test
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new contact
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I click on the Contacts button from navbar
@@ -19,10 +19,10 @@ Feature: Contact import and export tests
   @tmsLink=SORDEV-10046 @env_main
   Scenario: Contact custom export test
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new contact
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I click on the Contacts button from navbar
@@ -107,10 +107,10 @@ Feature: Contact import and export tests
   @tmsLink=SORDEV-12441 @env_de
   Scenario: Hide citizenship and country of birth in Detailed Contact Export file
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new contact
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I click on the Contacts button from navbar

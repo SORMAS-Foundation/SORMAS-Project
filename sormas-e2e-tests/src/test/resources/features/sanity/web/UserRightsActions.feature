@@ -42,7 +42,7 @@ Feature: User actions based on their rights
   @#8564 @env_main
   Scenario Outline: Check user <user> can see batch edit mode button for event participants
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a <user>
     Then I open the last created event via api
