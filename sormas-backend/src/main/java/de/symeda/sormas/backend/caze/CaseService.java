@@ -1955,7 +1955,8 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 		Predicate userFilter = createUserFilter(caseQueryContext);
 		Predicate criteriaFilter = cb.or(createCriteriaFilter(criteria, caseQueryContext), createCriteriaFilter(criteria, caseQueryContext2));
-		Predicate relevanceStatusRoot2Filter = createRelevanceStatusFilter(criteria, caseQueryContext2);
+		Predicate relevanceStatusRoot2Filter =
+			cb.and(createRelevanceStatusFilter(criteria, caseQueryContext), createRelevanceStatusFilter(criteria, caseQueryContext2));
 		Expression<String> nameSimilarityExpr = cb.concat(person.get(Person.FIRST_NAME), " ");
 		nameSimilarityExpr = cb.concat(nameSimilarityExpr, person.get(Person.LAST_NAME));
 		Expression<String> nameSimilarityExpr2 = cb.concat(person2.get(Person.FIRST_NAME), " ");
