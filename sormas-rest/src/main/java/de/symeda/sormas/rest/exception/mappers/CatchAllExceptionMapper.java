@@ -33,8 +33,8 @@ public class CatchAllExceptionMapper implements ExceptionMapper<Exception> {
 	public Response toResponse(Exception exception) {
 		logger.warn("A specialized ExceptionMapper for {} is missing.", exception.getClass().getName());
 		String message = exception.getLocalizedMessage();
-		return Response.status(HttpStatus.SC_UNPROCESSABLE_ENTITY)
-			.entity(StringUtils.isNotBlank(message) ? message : "The entity could not be processed.")
+		return Response.status(HttpStatus.SC_INTERNAL_SERVER_ERROR)
+			.entity(StringUtils.isNotBlank(message) ? message : "An exception occurred while processing the request.")
 			.build();
 	}
 }

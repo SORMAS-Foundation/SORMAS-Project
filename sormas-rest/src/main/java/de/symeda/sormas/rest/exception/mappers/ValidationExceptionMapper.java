@@ -30,6 +30,8 @@ public class ValidationExceptionMapper implements ExceptionMapper<ValidationExce
 	@Override
 	public Response toResponse(ValidationException exception) {
 		String message = exception.getLocalizedMessage();
-		return Response.status(HttpStatus.SC_BAD_REQUEST).entity(StringUtils.isNotBlank(message) ? message : "The entity is not valid.").build();
+		return Response.status(HttpStatus.SC_BAD_REQUEST)
+			.entity(StringUtils.isNotBlank(message) ? message : "The entity is not valid.")
+			.build();
 	}
 }

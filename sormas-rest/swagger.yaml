@@ -1,6 +1,10 @@
 openapi: 3.0.1
 info:
-  description: https://github.com/hzi-braunschweig/SORMAS-Project/tree/development/sormas-rest
+  description: "[Readme of the module on GitHub](https://github.com/hzi-braunschweig/SORMAS-Project/tree/development/sormas-rest).\
+    \ \n### Responses\n- 400: Bad request: The request is not valid, e.g. missing\
+    \ required data\n- 403: Forbidden: User does not have necessary user rights\n\
+    - 409: Conflict: Tried to update data of an entity that was updated in the mean-time.\n\
+    - 500: Internal server error: Other exceptions\n"
   license:
     name: GPL v3
     url: https://www.gnu.org/licenses/gpl-3.0.html
@@ -6812,11 +6816,8 @@ paths:
             application/json; charset=UTF-8:
               schema:
                 type: array
-                example:
-                - personUuid: Q56VFD-G3TXKT-R2DBIW-FTWIKAMI
-                  latestFollowUpEndDate: 1599602400000
-                - personUuid: TEYCIW-BHWHMH-MH2QIW-KBP72JMU
-                  latestFollowUpEndDate: 1593727200000
+                items:
+                  $ref: '#/components/schemas/PersonFollowUpEndDto'
           description: List of personUuids and their latest follow up end dates as
             UNIX timestamps.
       summary: Get follow up end dates
@@ -6894,10 +6895,7 @@ paths:
         content:
           application/json; charset=UTF-8:
             schema:
-              type: array
-              example:
-              - status: REGISTERED
-                statusDateTime: 2020-04-15T12:55:00.000+02:00
+              $ref: '#/components/schemas/PersonSymptomJournalStatusDto'
         description: "status may be one of the following:<br/>UNREGISTERED: User has\
           \ not yet sent any state<br/>REGISTERED: After successful registration in\
           \ SymptomJournal<br/>ACCEPTED: User has accepted a confirmation<br/>REJECTED:\
