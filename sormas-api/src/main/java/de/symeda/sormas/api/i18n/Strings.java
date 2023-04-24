@@ -754,6 +754,7 @@ public interface Strings {
 	String headingViewClinicalVisit = "headingViewClinicalVisit";
 	String headingViewNotFound = "headingViewNotFound";
 	String headingViewPathogenTestResult = "headingViewPathogenTestResult";
+	String headingViewPrescription = "headingViewPrescription";
 	String headingViewSurveillanceReport = "headingViewSurveillanceReport";
 	String headingViewTask = "headingViewTask";
 	String headingViewTreatment = "headingViewTreatment";
