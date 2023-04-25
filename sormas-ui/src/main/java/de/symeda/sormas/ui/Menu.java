@@ -36,10 +36,14 @@ import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.ui.VerticalLayout;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserType;
 import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.user.UserAccountView;
@@ -78,10 +82,15 @@ public class Menu extends CssLayout {
 		menuPart.addStyleName(ValoTheme.MENU_PART);
 
 		// header of the menu
+		final VerticalLayout topLay = new VerticalLayout();
+		topLay.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+		topLay.addStyleName(ValoTheme.MENU_TITLE);
+		topLay.setSpacing(false);
+		
 		final HorizontalLayout top = new HorizontalLayout();
 		top.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-		top.addStyleName(ValoTheme.MENU_TITLE);
-		top.setSpacing(true);
+		
+		top.setSpacing(false);
 		
 		 Label title = new
 		 Label("APMIS");
@@ -99,7 +108,21 @@ public class Menu extends CssLayout {
 		top.addComponent(image);
 		top.addComponent(title);
 		top.addLayoutClickListener(listener -> SormasUI.get().getNavigator().navigateTo(SurveillanceDashboardView.VIEW_NAME));
-		menuPart.addComponent(top);
+		
+		 topLay.addComponent(top);
+		 
+		 Label eocTitle = new
+				 Label("NEOC Afghanistan");
+		 eocTitle.setSizeUndefined();
+		
+		
+		 if ((UserProvider.getCurrent().getUser().getUsertype().equals(UserType.EOC_USER))) {
+			 topLay.addComponent(eocTitle);
+		 }
+		
+			
+			menuPart.addComponent(topLay);
+		
 
 		// button for toggling the visibility of the menu when on a small screen
 		final Button showMenu = ButtonHelper.createIconButton(Captions.menu, VaadinIcons.MENU, event -> {
@@ -130,33 +153,6 @@ public class Menu extends CssLayout {
 		
 		menuPart.addComponent(menuItemsLayout);
 
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 		// logout menu item
 		MenuBar logoutMenu = new MenuBar();
 		logoutMenu.setId(Captions.actionLogout);
