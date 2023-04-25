@@ -28,6 +28,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -183,5 +184,10 @@ public class ImmunizationResource extends EntityDtoResource<ImmunizationDto> {
 	@Override
 	public UnaryOperator<ImmunizationDto> getSave() {
 		return FacadeProvider.getImmunizationFacade()::save;
+	}
+
+	@Override
+	public Response postEntityDtos(List<ImmunizationDto> immunizationDtos) {
+		return super.postEntityDtos(immunizationDtos);
 	}
 }

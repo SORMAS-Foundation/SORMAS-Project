@@ -27,6 +27,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
@@ -92,5 +93,10 @@ public class VisitResource extends EntityDtoResource<VisitDto> {
 	@Override
 	public UnaryOperator<VisitDto> getSave() {
 		return FacadeProvider.getVisitFacade()::save;
+	}
+
+	@Override
+	public Response postEntityDtos(List<VisitDto> visitDtos) {
+		return super.postEntityDtos(visitDtos);
 	}
 }

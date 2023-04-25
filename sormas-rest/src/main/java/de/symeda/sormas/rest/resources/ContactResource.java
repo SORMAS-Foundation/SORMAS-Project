@@ -162,4 +162,9 @@ public class ContactResource extends EntityDtoResource<ContactDto> {
 	public UnaryOperator<ContactDto> getSave() {
 		return FacadeProvider.getContactFacade()::save;
 	}
+
+	@Override
+	public Response postEntityDtos(List<ContactDto> contactDtos) {
+		return super.postEntityDtos(contactDtos);
+	}
 }

@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.rest.resources;
 
+import java.util.List;
 import java.util.function.UnaryOperator;
 
 import javax.ws.rs.Consumes;
@@ -70,5 +71,10 @@ public class TravelEntryResource extends EntityDtoResource<TravelEntryDto> {
 	@Override
 	public UnaryOperator<TravelEntryDto> getSave() {
 		return FacadeProvider.getTravelEntryFacade()::save;
+	}
+
+	@Override
+	public Response postEntityDtos(List<TravelEntryDto> travelEntryDtos) {
+		return super.postEntityDtos(travelEntryDtos);
 	}
 }

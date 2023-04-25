@@ -27,6 +27,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
@@ -81,5 +82,10 @@ public class AdditionalTestResource extends EntityDtoResource<AdditionalTestDto>
 	@Override
 	public UnaryOperator<AdditionalTestDto> getSave() {
 		return FacadeProvider.getAdditionalTestFacade()::saveAdditionalTest;
+	}
+
+	@Override
+	public Response postEntityDtos(List<AdditionalTestDto> additionalTestDtos) {
+		return super.postEntityDtos(additionalTestDtos);
 	}
 }

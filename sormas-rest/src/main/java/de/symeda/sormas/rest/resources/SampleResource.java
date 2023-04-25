@@ -27,6 +27,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
@@ -114,5 +115,10 @@ public class SampleResource extends EntityDtoResource<SampleDto> {
 	@Override
 	public UnaryOperator<SampleDto> getSave() {
 		return FacadeProvider.getSampleFacade()::saveSample;
+	}
+
+	@Override
+	public Response postEntityDtos(List<SampleDto> sampleDtos) {
+		return super.postEntityDtos(sampleDtos);
 	}
 }
