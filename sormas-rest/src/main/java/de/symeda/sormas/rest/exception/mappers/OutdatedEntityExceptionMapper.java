@@ -19,6 +19,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 
 import de.symeda.sormas.api.utils.OutdatedEntityException;
@@ -27,7 +28,8 @@ import de.symeda.sormas.api.utils.OutdatedEntityException;
 public class OutdatedEntityExceptionMapper implements ExceptionMapper<OutdatedEntityException> {
 
 	@Override
-	public Response toResponse(OutdatedEntityException e) {
-		return Response.status(HttpStatus.SC_CONFLICT).entity("The entity is outdated.").build();
+	public Response toResponse(OutdatedEntityException exception) {
+		String message = exception.getLocalizedMessage();
+		return Response.status(HttpStatus.SC_CONFLICT).entity(StringUtils.isNotBlank(message) ? message : "The entity is outdated.").build();
 	}
 }

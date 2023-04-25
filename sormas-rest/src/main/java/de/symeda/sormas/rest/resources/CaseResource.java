@@ -224,4 +224,9 @@ public class CaseResource extends EntityDtoResource<CaseDataDto> {
 	public UnaryOperator<CaseDataDto> getSave() {
 		return FacadeProvider.getCaseFacade()::save;
 	}
+
+	@Override
+	public Response postEntityDtos(List<CaseDataDto> caseDataDtos) {
+		return super.postEntityDtos(caseDataDtos);
+	}
 }

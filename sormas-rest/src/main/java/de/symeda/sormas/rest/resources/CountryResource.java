@@ -26,6 +26,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
@@ -88,5 +89,10 @@ public class CountryResource extends EntityDtoResource<CountryDto> {
 	@Override
 	public UnaryOperator<CountryDto> getSave() {
 		return FacadeProvider.getCountryFacade()::save;
+	}
+
+	@Override
+	public Response postEntityDtos(List<CountryDto> countryDtos) {
+		return super.postEntityDtos(countryDtos);
 	}
 }

@@ -156,4 +156,9 @@ public class EventResource extends EntityDtoResource<EventDto> {
 	public UnaryOperator<EventDto> getSave() {
 		return FacadeProvider.getEventFacade()::save;
 	}
+
+	@Override
+	public Response postEntityDtos(List<EventDto> eventDtos) {
+		return super.postEntityDtos(eventDtos);
+	}
 }

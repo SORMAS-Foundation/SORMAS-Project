@@ -26,6 +26,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
@@ -87,5 +88,10 @@ public class CommunityResource extends EntityDtoResource<CommunityDto> {
 	@Override
 	public UnaryOperator<CommunityDto> getSave() {
 		return FacadeProvider.getCommunityFacade()::save;
+	}
+
+	@Override
+	public Response postEntityDtos(List<CommunityDto> communityDtos) {
+		return super.postEntityDtos(communityDtos);
 	}
 }

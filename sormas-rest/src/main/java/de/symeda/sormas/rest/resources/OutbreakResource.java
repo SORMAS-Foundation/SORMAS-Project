@@ -26,6 +26,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
@@ -78,5 +79,10 @@ public class OutbreakResource extends EntityDtoResource<OutbreakDto> {
 	@Override
 	public UnaryOperator<OutbreakDto> getSave() {
 		return FacadeProvider.getOutbreakFacade()::saveOutbreak;
+	}
+
+	@Override
+	public Response postEntityDtos(List<OutbreakDto> outbreakDtos) {
+		return super.postEntityDtos(outbreakDtos);
 	}
 }
