@@ -255,6 +255,13 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 				Collections.sort(items, 
 						CommunityReferenceDto.clusternumber); 
 				FieldHelper.updateItems(cbCommunity, district != null ? items : null);
+
+				//solution to issue #348 add if else statement checking if form to be entered at district level, if so... disble cluster.
+
+				CampaignFormMetaDto campaignForm = FacadeProvider.getCampaignFormMetaFacade()
+						.getCampaignFormMetaByUuid(super.getValue().getCampaignFormMeta().getUuid());
+
+
 			}
 
 			final UserDto currentUserx = UserProvider.getCurrent().getUser();
@@ -390,7 +397,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		expressionProcessor.disableExpressionFieldsForEditing();
 		expressionProcessor.configureExpressionFieldsWithTooltip();
 		expressionProcessor.addExpressionListener();
-		expressionProcessor.addExpressionListenerIgnorable();
+		//expressionProcessor.addExpressionListenerIgnorable();
 
 		getContent().addComponent(campaignFormLayout, CAMPAIGN_FORM_LOC);
 	}

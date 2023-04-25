@@ -8726,6 +8726,12 @@ ALTER TABLE public.populationdata ADD CONSTRAINT populationdata_fk FOREIGN KEY (
 
 INSERT INTO schema_version (version_number, comment) VALUES (440, 'limitation of form to expiry days and population foreign keys');
 
+--Allow for District-level data collection #348
+
+ALTER TABLE public.campaignformmeta ADD districtentry boolean NOT NULL DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (441, 'Allow for District-level data collection #348 #38');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
 
 
