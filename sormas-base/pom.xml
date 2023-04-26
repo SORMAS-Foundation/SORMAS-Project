@@ -587,7 +587,6 @@
 			</dependency>
 
 			<!-- manual dependency
-				SQL function copied to sormas-backend/src/main/resources/sql/versioning_function.sql
 			SQL function copied to sormas-backend/src/main/resources/sql/versioning_function.sql
 			https://github.com/nearform/temporal_tables/releases/tag/v0.4.2
 			-->
@@ -1343,6 +1342,11 @@
 				<plugin>
 					<artifactId>maven-surefire-report-plugin</artifactId>
 					<version>3.0.0-M7</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.cargo</groupId>
+					<artifactId>cargo-maven3-plugin</artifactId>
+					<version>1.10.6</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
