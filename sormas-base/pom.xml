@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>de.symeda.sormas</groupId>
@@ -475,9 +476,9 @@
 			</dependency>
 
 			<dependency>
-			    <groupId>org.checkerframework</groupId>
-			    <artifactId>checker-qual</artifactId>
-			    <version>3.29.0</version>
+				<groupId>org.checkerframework</groupId>
+				<artifactId>checker-qual</artifactId>
+				<version>3.29.0</version>
 			</dependency>
 
 			<dependency>
@@ -587,7 +588,8 @@
 
 			<!-- manual dependency
 				SQL function copied to sormas-backend/src/main/resources/sql/versioning_function.sql
-				https://github.com/nearform/temporal_tables/releases/tag/v0.4.2
+			SQL function copied to sormas-backend/src/main/resources/sql/versioning_function.sql
+			https://github.com/nearform/temporal_tables/releases/tag/v0.4.2
 			-->
 
 			<dependency>
@@ -1471,7 +1473,7 @@
 	<pluginRepositories>
 		<pluginRepository>
 			<id>gradle</id>
-			<url>https://repo.gradle.org/gradle/libs-releases-local/</url>
+			<url>https://repo.gradle.org/gradle/libs-releases</url>
 		</pluginRepository>
 	</pluginRepositories>
 
