@@ -582,13 +582,75 @@ public class DemisSteps implements En {
     And(
         "^I check that the Status column is filtered by \"([^\"]*)\" on Message directory page$",
         (String quickFilterOption) -> {
-          List<String> statusColumnData = getTableColumnDataByIndex(13, 10);
-          for (int i = 1; i < statusColumnData.size(); i++) {
-            softly.assertEquals(
-                statusColumnData.get(i),
-                quickFilterOption,
-                "At least one record in the column is invalid!");
-            softly.assertAll();
+          switch (quickFilterOption) {
+            case "Alle":
+              if (!webDriverHelpers.getTextFromWebElement(ALL_QUICK_FILTER_COUNTER).equals("0")) {
+                List<String> statusColumnData = getTableColumnDataByIndex(13, 10);
+                for (int i = 1; i < statusColumnData.size(); i++) {
+                  softly.assertEquals(
+                      statusColumnData.get(i),
+                      quickFilterOption,
+                      "At least one record in the column is invalid!");
+                  softly.assertAll();
+                }
+              }
+              break;
+            case "Unverarbeitet":
+              if (!webDriverHelpers
+                  .getTextFromWebElement(UNPROCESSED_QUICK_FILTER_COUNTER)
+                  .equals("0")) {
+                List<String> statusColumnData = getTableColumnDataByIndex(13, 10);
+                for (int i = 1; i < statusColumnData.size(); i++) {
+                  softly.assertEquals(
+                      statusColumnData.get(i),
+                      quickFilterOption,
+                      "At least one record in the column is invalid!");
+                  softly.assertAll();
+                }
+              }
+              break;
+            case "Verarbeitet":
+              if (!webDriverHelpers
+                  .getTextFromWebElement(PROCESSED_QUICK_FILTER_COUNTER)
+                  .equals("0")) {
+                List<String> statusColumnData = getTableColumnDataByIndex(13, 10);
+                for (int i = 1; i < statusColumnData.size(); i++) {
+                  softly.assertEquals(
+                      statusColumnData.get(i),
+                      quickFilterOption,
+                      "At least one record in the column is invalid!");
+                  softly.assertAll();
+                }
+              }
+              break;
+            case "Unklar":
+              if (!webDriverHelpers
+                  .getTextFromWebElement(UNCLEAR_QUICK_FILTER_COUNTER)
+                  .equals("0")) {
+                List<String> statusColumnData = getTableColumnDataByIndex(13, 10);
+                for (int i = 1; i < statusColumnData.size(); i++) {
+                  softly.assertEquals(
+                      statusColumnData.get(i),
+                      quickFilterOption,
+                      "At least one record in the column is invalid!");
+                  softly.assertAll();
+                }
+              }
+              break;
+            case "Weitergeleitet":
+              if (!webDriverHelpers
+                  .getTextFromWebElement(FORWARDED_QUICK_FILTER_COUNTER)
+                  .equals("0")) {
+                List<String> statusColumnData = getTableColumnDataByIndex(13, 10);
+                for (int i = 1; i < statusColumnData.size(); i++) {
+                  softly.assertEquals(
+                      statusColumnData.get(i),
+                      quickFilterOption,
+                      "At least one record in the column is invalid!");
+                  softly.assertAll();
+                }
+              }
+              break;
           }
         });
 
