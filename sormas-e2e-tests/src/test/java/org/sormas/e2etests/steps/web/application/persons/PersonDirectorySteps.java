@@ -334,7 +334,7 @@ public class PersonDirectorySteps implements En {
         "I click Immunization aggregation button on Person Directory Page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(IMMUNIZATION_AGGREGATION_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
         });
 
     Then(
@@ -465,7 +465,8 @@ public class PersonDirectorySteps implements En {
     When(
         "I click on first person in person directory",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(By.cssSelector("[role='gridcell'] a"));
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(PERSON_FIRST_RECORD_IN_TABLE);
+          webDriverHelpers.clickOnWebElementBySelector(PERSON_FIRST_RECORD_IN_TABLE);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
