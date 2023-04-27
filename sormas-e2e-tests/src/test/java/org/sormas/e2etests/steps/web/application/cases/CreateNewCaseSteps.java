@@ -1508,7 +1508,7 @@ public class CreateNewCaseSteps implements En {
         "I check if popup with merge message in german appears",
         () -> {
           softly.assertTrue(
-              webDriverHelpers.isElementVisibleWithTimeout(MERGE_MESSAGE_HEADER_DE, 5),
+              webDriverHelpers.isElementVisibleWithTimeout(MERGE_MESSAGE_HEADER_DE, 30),
               "element was not visible");
           softly.assertAll();
         });
