@@ -17,7 +17,7 @@ package de.symeda.sormas.app.rest;
 
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.report.WeeklyReportDto;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -37,7 +37,7 @@ public interface WeeklyReportFacadeRetro {
 	Call<List<WeeklyReportDto>> pullByUuids(@Body List<String> uuids);
 
 	@POST("weeklyreports/push")
-	Call<List<PushResult>> pushAll(@Body List<WeeklyReportDto> dtos);
+	Call<List<PostResponse>> pushAll(@Body List<WeeklyReportDto> dtos);
 
 	@GET("weeklyreports/uuids")
 	Call<List<String>> pullUuids();

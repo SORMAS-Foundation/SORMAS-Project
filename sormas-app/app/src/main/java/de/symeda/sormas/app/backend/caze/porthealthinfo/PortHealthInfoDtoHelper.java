@@ -17,7 +17,7 @@ package de.symeda.sormas.app.backend.caze.porthealthinfo;
 
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.rest.NoConnectionException;
@@ -46,7 +46,7 @@ public class PortHealthInfoDtoHelper extends AdoDtoHelper<PortHealthInfo, PortHe
 	}
 
 	@Override
-	protected Call<List<PushResult>> pushAll(List<PortHealthInfoDto> dtos) throws NoConnectionException {
+	protected Call<List<PostResponse>> pushAll(List<PortHealthInfoDto> dtos) throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is embedded");
 	}
 

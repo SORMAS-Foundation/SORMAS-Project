@@ -377,6 +377,7 @@ Feature: Vaccination tests
     And I collect the leading contact UUID displayed on Contact Directory Page
     And I click on the More button on Contact directory page
     Then I click on Merge Duplicates on Contact directory page
+    And I click to CONFIRM FILTERS on Merge Duplicate Contact page
     And I click on Merge button of leading duplicated line listing Contact in Merge Duplicate Contact page
     Then I click to Confirm action in Merge Duplicates Cases popup
     And I click on the Contacts button from navbar
@@ -433,6 +434,7 @@ Feature: Vaccination tests
     And I collect the leading contact UUID displayed on Contact Directory Page
     And I click on the More button on Contact directory page
     Then I click on Merge Duplicates on Contact directory page
+    And I click to CONFIRM FILTERS on Merge Duplicate Contact page
     And I click on Merge button of leading duplicated line listing Contact in Merge Duplicate Contact page
     Then I click to Confirm action in Merge Duplicates Cases popup
     And I click on the Contacts button from navbar
@@ -488,6 +490,7 @@ Feature: Vaccination tests
     And I collect the leading contact UUID displayed on Contact Directory Page
     And I click on the More button on Contact directory page
     Then I click on Merge Duplicates on Contact directory page
+    And I click to CONFIRM FILTERS on Merge Duplicate Contact page
     And I click on Merge button of leading duplicated line listing Contact in Merge Duplicate Contact page
     Then I click to Confirm action in Merge Duplicates Cases popup
     And I click on the Contacts button from navbar

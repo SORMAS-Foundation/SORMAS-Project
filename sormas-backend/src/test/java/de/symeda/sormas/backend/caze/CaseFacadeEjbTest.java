@@ -45,9 +45,11 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.persistence.Query;
+import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
@@ -58,7 +60,6 @@ import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
@@ -72,6 +73,7 @@ import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseMergeIndexDto;
+import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CasePersonDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -105,6 +107,7 @@ import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
@@ -119,6 +122,7 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.CauseOfDeath;
@@ -149,8 +153,10 @@ import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.OutdatedEntityException;
@@ -307,8 +313,17 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			Disease.EVD,
 			CaseClassification.PROBABLE,
 			InvestigationStatus.PENDING,
-			DateUtils.addMinutes(today, -3),
+			DateUtils.addDays(today, -1),
 			rdcf);
+
+		executeInTransaction(em -> {
+			Query query = em.createQuery("select c from cases c where c.uuid=:uuid");
+			query.setParameter("uuid", case2.getUuid());
+			Case singleResult = (Case) query.getSingleResult();
+
+			singleResult.setCreationDate(new Timestamp(DateUtils.addDays(today, -1).getTime()));
+			em.persist(singleResult);
+		});
 
 		final List<CaseMergeIndexDto[]> casesForDuplicateMergingToday =
 			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(new Date()), 100, true);
@@ -410,6 +425,60 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(
 			1,
 			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(new Date()), 100, true).size());
+	}
+
+	@Test
+	public void testGetCasesForDuplicateMergingWithPseudonymization() {
+
+		RDCF rdcf = creator.createRDCF();
+		//User without SEE_PERSONAL_DATA_IN_JURISDICTION right
+		UserDto user = creator.createUser(
+			null,
+			null,
+			null,
+			"User",
+			"User",
+			"User",
+			JurisdictionLevel.NATION,
+			UserRight.CONTACT_VIEW,
+			UserRight.CONTACT_EDIT,
+			UserRight.CASE_VIEW,
+			UserRight.PERSON_VIEW,
+			UserRight.PERSON_EDIT,
+			UserRight.CONTACT_MERGE);
+
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze1 = creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		CaseDataDto caze2 = creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		CaseCriteria caseCriteria = new CaseCriteria();
+		caseCriteria.setIncludeCasesFromOtherJurisdictions(true);
+
+		loginWith(user);
+
+		List<CaseMergeIndexDto[]> cases = getCaseFacade().getCasesForDuplicateMerging(caseCriteria, 100, false);
+		CaseMergeIndexDto[] casePair = cases.get(0);
+
+		assertNotNull(cases);
+		assertEquals(I18nProperties.getCaption(Captions.inaccessibleValue), casePair[0].getPersonFirstName());
+		assertEquals(I18nProperties.getCaption(Captions.inaccessibleValue), casePair[0].getPersonLastName());
+		assertEquals(I18nProperties.getCaption(Captions.inaccessibleValue), casePair[1].getPersonFirstName());
+		assertEquals(I18nProperties.getCaption(Captions.inaccessibleValue), casePair[1].getPersonLastName());
 	}
 
 	@Test
@@ -706,7 +775,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			null,
 			null);
 
-		EventParticipantDto event1Participant1 = creator.createEventParticipant(event1.toReference(), person1, surveillanceSupervisor.toReference());
+		EventParticipantDto event1Participant1 =
+			creator.createEventParticipant(event1.toReference(), person1, "Involved", surveillanceSupervisor.toReference(), rdcf);
 		EventParticipantDto event1Participant2 = creator.createEventParticipant(event1.toReference(), person2, surveillanceSupervisor.toReference());
 
 		CaseDataDto case1 = creator.createCase(
@@ -1176,7 +1246,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		SampleDto sample1 = creator.createSample(caze.toReference(), surveillanceSupervisor.toReference(), rdcf.facility);
 		SampleDto sample2 = creator.createSample(caze.toReference(), surveillanceSupervisor.toReference(), rdcf.facility);
-		getSampleFacade().deleteSample(sample1.toReference(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
+		getSampleFacade().delete(sample1.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
 		List<CaseExportDto> results =
 			getCaseFacade().getExportList(new CaseCriteria(), Collections.emptySet(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);
@@ -1191,7 +1261,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testCaseDeletionAndUndeletion() throws ExternalSurveillanceToolRuntimeException {
+	public void testCaseDeletionAndRestoration() throws ExternalSurveillanceToolRuntimeException {
 		Date since = new Date();
 
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
@@ -1260,7 +1330,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(DeletionReason.OTHER_REASON, getCaseFacade().getByUuid(caze.getUuid()).getDeletionReason());
 		assertEquals("test reason", getCaseFacade().getByUuid(caze.getUuid()).getOtherDeletionReason());
 
-		getCaseFacade().undelete(caze.getUuid());
+		getCaseFacade().restore(caze.getUuid());
 
 		// Deleted flag should be set for case, sample and pathogen test; Additional test should be deleted; Contact should not have the deleted flag; Task should not be deleted
 		assertFalse(getCaseFacade().getDeletedUuidsSince(since).contains(caze.getUuid()));
@@ -2316,6 +2386,27 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testCreatePointOfEntryCase() {
+		PersonReferenceDto personDto = creator.createPerson().toReference();
+		PointOfEntryDto newPointOfEntry = creator.createPointOfEntry("New point of entry", rdcf.region, rdcf.district);
+
+		CaseDataDto caze1 = CaseDataDto.build(personDto, Disease.CORONAVIRUS);
+		caze1.setReportDate(new Date());
+		caze1.setReportingUser(surveillanceOfficer.toReference());
+		caze1.setCaseClassification(CaseClassification.PROBABLE);
+		caze1.setInvestigationStatus(InvestigationStatus.PENDING);
+		caze1.setDisease(Disease.CORONAVIRUS);
+		caze1.setPerson(personDto);
+		caze1.setResponsibleRegion(rdcf.region);
+		caze1.setResponsibleDistrict(rdcf.district);
+		caze1.setCaseOrigin(CaseOrigin.POINT_OF_ENTRY);
+		caze1.setPointOfEntry(newPointOfEntry.toReference());
+		getCaseFacade().save(caze1);
+
+		MatcherAssert.assertThat(getCaseFacade().getIndexList(new CaseCriteria(), 0, 100, null), hasSize(1));
+	}
+
+	@Test
 	public void testGetDuplicatesWithReportDateThreshold() {
 
 		LocalDateTime now = LocalDateTime.now();
@@ -2602,7 +2693,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 		Validator validator = factory.getValidator();
 
-		MatcherAssert.assertThat(validator.validate(caze), hasSize(1));
+		final Set<ConstraintViolation<CaseDataDto>> validate = validator.validate(caze);
+		assertTrue(validate.stream().anyMatch(violation -> CaseDataDto.DISEASE_DETAILS.equals(violation.getPropertyPath().toString())));
 	}
 
 	@Test

@@ -63,6 +63,7 @@ public class ExternalMessageGridFilterForm extends AbstractFilterForm<ExternalMe
 	protected String[] getMainFilterLocators() {
 		return new String[] {
 			ExternalMessageCriteria.SEARCH_FIELD_LIKE,
+			ExternalMessageCriteria.MESSAGE_CONTENT_LIKE,
 			ExternalMessageCriteria.ASSIGNEE,
 			ExternalMessageCriteria.TYPE,
 			ExternalMessageCriteria.DISEASE,
@@ -83,6 +84,13 @@ public class ExternalMessageGridFilterForm extends AbstractFilterForm<ExternalMe
 				I18nProperties.getString(Strings.promptExternalMessagesSearchField),
 				200));
 		searchField.setNullRepresentation("");
+
+		TextField contentSearchField = addField(
+			FieldConfiguration.withCaptionAndPixelSized(
+				ExternalMessageCriteria.MESSAGE_CONTENT_LIKE,
+				I18nProperties.getString(Strings.promptExternalMessagesContentSearchField),
+				200));
+		contentSearchField.setNullRepresentation("");
 
 		ComboBoxWithPlaceholder assignee = addField(ExternalMessageCriteria.ASSIGNEE, ComboBoxWithPlaceholder.class);
 		assignee.addItem(new UserReferenceDto(ReferenceDto.NO_REFERENCE_UUID, "", "", I18nProperties.getCaption(Captions.unassigned)));

@@ -17,7 +17,7 @@ package de.symeda.sormas.app.backend.event;
 
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
@@ -62,7 +62,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 	}
 
 	@Override
-	protected Call<List<PushResult>> pushAll(List<EventDto> eventDtos) throws NoConnectionException {
+	protected Call<List<PostResponse>> pushAll(List<EventDto> eventDtos) throws NoConnectionException {
 		return RetroProvider.getEventFacade().pushAll(eventDtos);
 	}
 

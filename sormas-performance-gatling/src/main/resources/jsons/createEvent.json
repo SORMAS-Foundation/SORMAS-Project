@@ -1,0 +1,36 @@
+[
+  {
+    "disease":"CORONAVIRUS",
+    "diseaseVariant":{
+      "value":"B.1.617.3",
+      "caption":"B.1.617.3",
+      "hasDetails":true
+    },
+    "eventTitle":"Event#{todayDate}",
+    "eventLocation":{
+      "uuid":"#{eventLocationGUID}",
+      "region":{
+        "uuid": "#{regionUUID}"
+      },
+      "district":{
+        "uuid": "#{districtUUID}"
+      },
+      "community":{
+        "uuid": "#{communityUUID}"
+      }
+    },
+    "eventStatus":"SIGNAL",
+    "reportingUser":{
+      "uuid": "#{restUserUUID}"
+    },
+    "eventInvestigationStatus":"PENDING",
+    "reportDateTime": #{todayDate},
+    "riskLevel":"LOW",
+    "eventDesc":"Chuck Norris ist so schnell – wenn er das Licht ausschaltet, ist er im Bett bevor der Raum dunkel ist.",
+    "srcType":"HOTLINE_PERSON",
+    "typeOfPlace":"HOME",
+    "uuid": "#{eventGUID}",
+    "startDate": #{todayDate},
+    "eventManagementStatus":"ONGOING"
+  }
+]

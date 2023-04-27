@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.action;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.action.ActionContext;
@@ -39,9 +40,12 @@ public class ActionController {
 	/**
 	 * Show a create form for an action.
 	 *
-	 * @param context of the action
-	 * @param entityRef of the action
-	 * @param callback on save
+	 * @param context
+	 *            of the action
+	 * @param entityRef
+	 *            of the action
+	 * @param callback
+	 *            on save
 	 */
 	public void create(ActionContext context, ReferenceDto entityRef, Runnable callback) {
 
@@ -66,8 +70,10 @@ public class ActionController {
 	/**
 	 * Show an edit form for an action.
 	 *
-	 * @param dto of the action
-	 * @param callback on save
+	 * @param dto
+	 *            of the action
+	 * @param callback
+	 *            on save
 	 */
 	public void edit(ActionDto dto, Runnable callback) {
 
@@ -76,8 +82,7 @@ public class ActionController {
 
 		ActionEditForm form = new ActionEditForm(false);
 		form.setValue(newDto);
-		final CommitDiscardWrapperComponent<ActionEditForm> editView =
-			new CommitDiscardWrapperComponent<>(form, true, form.getFieldGroup());
+		final CommitDiscardWrapperComponent<ActionEditForm> editView = new CommitDiscardWrapperComponent<>(form, true, form.getFieldGroup());
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditAction));
 
@@ -100,8 +105,11 @@ public class ActionController {
 			}, I18nProperties.getString(Strings.entityAction));
 		}
 
+		EditPermissionType editPermissionType = FacadeProvider.getActionFacade().getEditPermissionType(dto.getUuid());
+		boolean isInJurisdiction = FacadeProvider.getActionFacade().isInJurisdiction(dto.getUuid());
+
 		editView.addDiscardListener(popupWindow::close);
-		editView.restrictEditableComponentsOnEditView(UserRight.ACTION_EDIT, UserRight.ACTION_DELETE, null);
+		editView.restrictEditableComponentsOnEditView(UserRight.ACTION_EDIT, UserRight.ACTION_DELETE, editPermissionType, isInJurisdiction);
 	}
 
 	private ActionDto createNewAction(ActionContext context, ReferenceDto entityRef) {

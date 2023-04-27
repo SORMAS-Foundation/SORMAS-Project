@@ -54,7 +54,7 @@ public class EventParticipantsPage {
       By.cssSelector("[scroll] [aria-live] .v-grid-body tr:nth-of-type(1)");
   public static final By CONFIRM_BUTTON_FOR_SELECT_PERSON_FROM_ADD_PARTICIPANTS_WINDOW =
       By.cssSelector("[scroll] [role='dialog']:nth-of-type(5) #commit");
-  public static final By DELETE_EVENT_PARTICIPANT_BUTTTON = By.cssSelector("div#deleteUndelete");
+  public static final By DELETE_EVENT_PARTICIPANT_BUTTTON = By.cssSelector("div#deleteRestore");
   public static final By CONFIRM_ACTION = By.id("actionConfirm");
   public static final By POPUP_CANCEL_ACTION_BUTTON = By.id("unsavedChanges.cancel");
   public static final By EVENT_PARTICIPANT_UUID =

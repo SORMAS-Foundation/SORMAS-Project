@@ -61,12 +61,12 @@ public class CampaignController {
 			});
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
-				campaignComponent.addDeleteWithReasonOrUndeleteListener((deleteDetails) -> {
+				campaignComponent.addDeleteWithReasonOrRestoreListener((deleteDetails) -> {
 					FacadeProvider.getCampaignFacade().delete(campaign.getUuid(), deleteDetails);
 					campaignComponent.discard();
 					SormasUI.refreshView();
 				}, null, (deleteDetails) -> {
-					FacadeProvider.getCampaignFacade().undelete(campaign.getUuid());
+					FacadeProvider.getCampaignFacade().restore(campaign.getUuid());
 					campaignComponent.discard();
 					SormasUI.refreshView();
 				}, I18nProperties.getString(Strings.entityCampaign), campaign.getUuid(), FacadeProvider.getCampaignFacade());
@@ -101,7 +101,7 @@ public class CampaignController {
 		Window window = VaadinUiUtil.createPopupWindow();
 
 		CommitDiscardWrapperComponent<CampaignFormDataEditForm> component =
-			getCampaignFormDataComponent(null, campaign, campaignForm, false, false, () -> {
+			getCampaignFormDataComponent(null, campaign, campaignForm, false, true, () -> {
 				window.close();
 				SormasUI.refreshView();
 				Notification.show(
@@ -137,11 +137,11 @@ public class CampaignController {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE) && !isCreate) {
 			CampaignDto finalCampaignDto = campaignDto;
-			campaignComponent.addDeleteWithReasonOrUndeleteListener((deleteDetails) -> {
+			campaignComponent.addDeleteWithReasonOrRestoreListener((deleteDetails) -> {
 				FacadeProvider.getCampaignFacade().delete(finalCampaignDto.getUuid(), deleteDetails);
 				UI.getCurrent().getNavigator().navigateTo(CampaignsView.VIEW_NAME);
 			}, null, (deleteDetails) -> {
-				FacadeProvider.getCampaignFacade().undelete(finalCampaignDto.getUuid());
+				FacadeProvider.getCampaignFacade().restore(finalCampaignDto.getUuid());
 				campaignComponent.discard();
 				SormasUI.refreshView();
 			}, I18nProperties.getString(Strings.entityCampaign), finalCampaignDto.getUuid(), FacadeProvider.getCampaignFacade());
@@ -169,7 +169,7 @@ public class CampaignController {
 			}
 		}
 
-		campaignComponent.restrictEditableComponentsOnEditView(UserRight.CAMPAIGN_EDIT, UserRight.CAMPAIGN_DELETE, null);
+		campaignComponent.restrictEditableComponentsOnEditView(UserRight.CAMPAIGN_EDIT, UserRight.CAMPAIGN_DELETE, null, true);
 
 		return campaignComponent;
 	}
@@ -179,7 +179,7 @@ public class CampaignController {
 		CampaignReferenceDto campaign,
 		CampaignFormMetaReferenceDto campaignForm,
 		boolean revertFormOnDiscard,
-		boolean showDeleteButton,
+		boolean isCreate,
 		Runnable commitCallback,
 		Runnable discardCallback) {
 
@@ -225,8 +225,8 @@ public class CampaignController {
 			component.addDiscardListener(discardCallback::run);
 		}
 
-		if (showDeleteButton && UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
-			String campaignFormDataUuid = campaignFormData.getUuid();
+		String campaignFormDataUuid = campaignFormData.getUuid();
+		if (!isCreate && UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
 
 			component.addDeleteListener(() -> {
 				FacadeProvider.getCampaignFormDataFacade().deleteCampaignFormData(campaignFormDataUuid);
@@ -234,7 +234,9 @@ public class CampaignController {
 			}, I18nProperties.getString(Strings.entityCampaignDataForm));
 		}
 
-		component.restrictEditableComponentsOnEditView(UserRight.CAMPAIGN_FORM_DATA_EDIT, UserRight.CAMPAIGN_FORM_DATA_DELETE, null);
+		boolean isInJurisdiction = isCreate || FacadeProvider.getCampaignFormDataFacade().isInJurisdiction(campaignFormDataUuid);
+		component
+			.restrictEditableComponentsOnEditView(UserRight.CAMPAIGN_FORM_DATA_EDIT, UserRight.CAMPAIGN_FORM_DATA_DELETE, null, isInJurisdiction);
 		return component;
 	}
 

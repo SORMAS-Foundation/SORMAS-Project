@@ -88,7 +88,7 @@ public class ContactDirectoryPage {
   public static final By ACTIVE_CONTACT_BUTTON = By.id("status-Active contact");
   public static final By CONVERTED_TO_CASE_BUTTON = By.id("status-Converted to case");
   public static final By DROPPED_BUTTON = By.id("status-Dropped");
-  public static final By BULK_ACTIONS_CONTACT_VALUES = By.id("bulkActions-9");
+  public static final By BULK_ACTIONS_CONTACT_VALUES = By.id("bulkActions-11");
   public static final By CONTACT_DATA_TAB = By.cssSelector("#tab-contacts-data");
   public static final By NEW_ENTRY_EPIDEMIOLOGICAL_DATA = By.id("actionNewEntry");
   public static final By FIRST_PERSON_ID = By.xpath("//td[6]//a");
@@ -102,6 +102,9 @@ public class ContactDirectoryPage {
   public static final By CONTACT_VACCINATION_STATUS_FILTER_COMBOBOX =
       By.cssSelector("[id='vaccinationStatus'] [class='v-filterselect-button']");
   public static final By FIRST_CONTACT_ID_FROM_CASE = By.xpath("(//td//a)[1]");
+  public static final By CREATE_CASE_FROM_POSITIVE_TEST_RESULT_HEADER_DE =
+      By.xpath(
+          "//*[contains(text(),'Soll ein Fall aus dem Kontakt mit positivem Testresultat erstellt werden?')]");
 
   public static By getCheckboxByUUID(String uuid) {
     return By.xpath(

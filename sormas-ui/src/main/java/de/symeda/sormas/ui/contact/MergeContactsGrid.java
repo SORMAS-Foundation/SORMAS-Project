@@ -5,7 +5,9 @@ import java.util.List;
 
 import com.vaadin.data.TreeData;
 import com.vaadin.data.provider.TreeDataProvider;
+import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
+import com.vaadin.ui.Link;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.TextRenderer;
@@ -20,11 +22,15 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonHelper;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.caze.CaseDataView;
 import de.symeda.sormas.ui.utils.AbstractMergeGrid;
 
 public class MergeContactsGrid extends AbstractMergeGrid<MergeContactIndexDto, ContactCriteria> {
 
+	private static final String CASE_UUID = Captions.Contact_caze;
 	public static final String COLUMN_DISEASE = Captions.columnDiseaseShort;
 
 	public MergeContactsGrid() {
@@ -42,9 +48,18 @@ public class MergeContactsGrid extends AbstractMergeGrid<MergeContactIndexDto, C
 			addColumn(contact -> DiseaseHelper.toString(contact.getDisease(), contact.getDiseaseDetails()));
 		diseaseColumn.setId(COLUMN_DISEASE);
 
+		addComponentColumn(indexDto -> {
+			Link link = new Link(
+				DataHelper.getShortUuid(indexDto.getCaze().getUuid()),
+				new ExternalResource(
+					SormasUI.get().getPage().getLocation().getRawPath() + "#!" + CaseDataView.VIEW_NAME + "/" + indexDto.getCaze().getUuid()));
+			link.setTargetName("_blank");
+			return link;
+		}).setId(CASE_UUID);
+
 		setColumns(
 			COLUMN_UUID,
-			MergeContactIndexDto.CAZE,
+			CASE_UUID,
 			COLUMN_DISEASE,
 			MergeContactIndexDto.CONTACT_CLASSIFICATION,
 			MergeContactIndexDto.PERSON_FIRST_NAME,
@@ -78,11 +93,7 @@ public class MergeContactsGrid extends AbstractMergeGrid<MergeContactIndexDto, C
 
 	@Override
 	protected List<MergeContactIndexDto[]> getItemsForDuplicateMerging(int limit) {
-		return FacadeProvider.getContactFacade()
-			.getContactsForDuplicateMerging(
-				criteria,
-				limit,
-				ignoreRegion);
+		return FacadeProvider.getContactFacade().getContactsForDuplicateMerging(criteria, limit, ignoreRegion);
 	}
 
 	@Override

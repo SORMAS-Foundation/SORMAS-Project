@@ -50,7 +50,7 @@ public class EditContactPage {
   public static final By TYPE_OF_CONTACT_OPTIONS = By.cssSelector("#contactProximity label");
   public static final By CONTACT_CATEGORY_OPTIONS = By.cssSelector("#contactCategory label");
   public static final By CONTACT_CREATED_POPUP = By.cssSelector(".v-Notification-caption");
-  public static final By DELETE_BUTTON = By.id("deleteUndelete");
+  public static final By DELETE_BUTTON = By.id("deleteRestore");
   public static final By DELETE_POPUP_YES_BUTTON = By.cssSelector(".popupContent #actionConfirm");
   public static final By CONTACT_CLASSIFICATION_OPTIONS =
       By.cssSelector("#contactClassification label");
@@ -195,4 +195,12 @@ public class EditContactPage {
 
   public static final By OPEN_CASE_OF_THIS_CONTACT_PERSON_LINK =
       By.cssSelector("[location='toCaseBtnLoc'] div");
+
+  public static final By getHeaderText(String text) {
+    return By.xpath(
+        String.format("//div[contains(@class, 'v-window-header') and text()='%s']", text));
+  }
+
+  public static final By CONTACT_CAN_NOT_BE_SHARED_HEADER_DE =
+      By.xpath("//div[contains(text(), 'Kontakt kann nicht geteilt werden')]");
 }

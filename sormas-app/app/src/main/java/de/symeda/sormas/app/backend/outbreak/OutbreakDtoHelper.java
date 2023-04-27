@@ -17,7 +17,7 @@ package de.symeda.sormas.app.backend.outbreak;
 
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.outbreak.OutbreakDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -48,7 +48,7 @@ public class OutbreakDtoHelper extends AdoDtoHelper<Outbreak, OutbreakDto> {
 	}
 
 	@Override
-	protected Call<List<PushResult>> pushAll(List<OutbreakDto> communityDtos) throws NoConnectionException {
+	protected Call<List<PostResponse>> pushAll(List<OutbreakDto> communityDtos) throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is read-only");
 	}
 

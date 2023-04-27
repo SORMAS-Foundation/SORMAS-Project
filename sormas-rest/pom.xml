@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>de.symeda.sormas</groupId>
 		<artifactId>sormas-base</artifactId>
-		<version>1.82.0</version>
+		<version>1.83.0</version>
 		<relativePath>../sormas-base</relativePath>
 	</parent>
 
@@ -82,6 +82,11 @@
 		<dependency>
 			<groupId>org.eclipse.microprofile.config</groupId>
 			<artifactId>microprofile-config-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.glassfish.jersey.containers.glassfish</groupId>
+			<artifactId>jersey-gf-ejb</artifactId>
 		</dependency>
 
 		<dependency>

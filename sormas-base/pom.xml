@@ -5,7 +5,7 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.82.0</version>
+	<version>1.83.0</version>
 
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -266,6 +266,14 @@
 				<artifactId>jersey-media-json-jackson</artifactId>
 				<version>${jersey.version}</version>
 				<scope>provided</scope>
+			</dependency>
+
+			<!-- Do not remove: Necessary to debug underlying logic of how ExceptionMappers are resolved in the IDE.-->
+			<dependency>
+				<groupId>org.glassfish.jersey.containers.glassfish</groupId>
+				<artifactId>jersey-gf-ejb</artifactId>
+				<version>${jersey.version}</version>
+				<scope>compile</scope>
 			</dependency>
 
 			<dependency>

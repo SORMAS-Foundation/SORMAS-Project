@@ -1,13 +1,13 @@
 {
   "openapi" : "3.0.1",
   "info" : {
-    "description" : "https://github.com/hzi-braunschweig/SORMAS-Project/tree/development/sormas-rest",
+    "description" : "[Readme of the module on GitHub](https://github.com/hzi-braunschweig/SORMAS-Project/tree/development/sormas-rest). \n### Responses\n- 400: Bad request: The request is not valid, e.g. missing required data\n- 403: Forbidden: User does not have necessary user rights\n- 409: Conflict: Tried to update data of an entity that was updated in the mean-time.\n- 500: Internal server error: Other exceptions\n",
     "license" : {
       "name" : "GPL v3",
       "url" : "https://www.gnu.org/licenses/gpl-3.0.html"
     },
     "title" : "SORMAS REST API",
-    "version" : "1.82.0-SNAPSHOT"
+    "version" : "1.83.0-SNAPSHOT"
   },
   "servers" : [ {
     "url" : "/sormas-rest"
@@ -111,7 +111,8 @@
     },
     "/actions/push" : {
       "post" : {
-        "operationId" : "postActions",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -125,21 +126,34 @@
           }
         },
         "responses" : {
-          "default" : {
+          "207" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
+              "application/json" : {
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
+                    "$ref" : "#/components/schemas/PostResponse"
                   }
                 }
               }
             },
-            "description" : "default response"
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
+        "summary" : "Create or update one or multiple entities.",
         "tags" : [ "Action Controller" ]
       }
     },
@@ -307,7 +321,8 @@
     },
     "/additionaltests/push" : {
       "post" : {
-        "operationId" : "postAdditionalTests",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_1",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -321,21 +336,34 @@
           }
         },
         "responses" : {
-          "default" : {
+          "207" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
+              "application/json" : {
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
+                    "$ref" : "#/components/schemas/PostResponse"
                   }
                 }
               }
             },
-            "description" : "default response"
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
+        "summary" : "Create or update one or multiple entities.",
         "tags" : [ "Additional Test Controller" ]
       }
     },
@@ -455,7 +483,8 @@
     },
     "/aggregatereports/push" : {
       "post" : {
-        "operationId" : "postAggregateReports",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_2",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -469,21 +498,34 @@
           }
         },
         "responses" : {
-          "default" : {
+          "207" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
+              "application/json" : {
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
+                    "$ref" : "#/components/schemas/PostResponse"
                   }
                 }
               }
             },
-            "description" : "default response"
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
+        "summary" : "Create or update one or multiple entities.",
         "tags" : [ "Aggregate Report Controller" ]
       }
     },
@@ -703,7 +745,8 @@
     },
     "/campaignFormData/push" : {
       "post" : {
-        "operationId" : "postCampaignFormData",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_3",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -717,21 +760,34 @@
           }
         },
         "responses" : {
-          "default" : {
+          "207" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
+              "application/json" : {
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
+                    "$ref" : "#/components/schemas/PostResponse"
                   }
                 }
               }
             },
-            "description" : "default response"
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
+        "summary" : "Create or update one or multiple entities.",
         "tags" : [ "Campaign Form Data Controller" ]
       }
     },
@@ -1386,7 +1442,8 @@
     },
     "/cases/push" : {
       "post" : {
-        "operationId" : "postCases",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_4",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -1400,21 +1457,34 @@
           }
         },
         "responses" : {
-          "default" : {
+          "207" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
+              "application/json" : {
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
+                    "$ref" : "#/components/schemas/PostResponse"
                   }
                 }
               }
             },
-            "description" : "default response"
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
+        "summary" : "Create or update one or multiple entities.",
         "tags" : [ "Case Controller" ]
       }
     },
@@ -1436,17 +1506,7 @@
         "responses" : {
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
-                  "type" : "object",
-                  "additionalProperties" : {
-                    "type" : "object",
-                    "additionalProperties" : {
-                      "type" : "string"
-                    }
-                  }
-                }
-              }
+              "application/json; charset=UTF-8" : { }
             },
             "description" : "default response"
           }
@@ -1760,7 +1820,8 @@
     },
     "/clinicalvisits/push" : {
       "post" : {
-        "operationId" : "postVisits",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_5",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -1774,21 +1835,34 @@
           }
         },
         "responses" : {
-          "default" : {
+          "207" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
+              "application/json" : {
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
+                    "$ref" : "#/components/schemas/PostResponse"
                   }
                 }
               }
             },
-            "description" : "default response"
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
+        "summary" : "Create or update one or multiple entities.",
         "tags" : [ "Clinical Visit Controller" ]
       }
     },
@@ -1953,7 +2027,8 @@
     },
     "/communities/push" : {
       "post" : {
-        "operationId" : "postCommunities",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_6",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -1967,21 +2042,34 @@
           }
         },
         "responses" : {
-          "default" : {
+          "207" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
+              "application/json" : {
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
+                    "$ref" : "#/components/schemas/PostResponse"
                   }
                 }
               }
             },
-            "description" : "default response"
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
+        "summary" : "Create or update one or multiple entities.",
         "tags" : [ "Community Controller" ]
       }
     },
@@ -2331,7 +2419,8 @@
     },
     "/contacts/push" : {
       "post" : {
-        "operationId" : "postContacts",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_7",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -2345,21 +2434,34 @@
           }
         },
         "responses" : {
-          "default" : {
+          "207" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
+              "application/json" : {
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
+                    "$ref" : "#/components/schemas/PostResponse"
                   }
                 }
               }
             },
-            "description" : "default response"
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
+        "summary" : "Create or update one or multiple entities.",
         "tags" : [ "Contact Controller" ]
       }
     },
@@ -2610,7 +2712,8 @@
     },
     "/continents/push" : {
       "post" : {
-        "operationId" : "postContinents",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_8",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -2624,21 +2727,34 @@
           }
         },
         "responses" : {
-          "default" : {
+          "207" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
+              "application/json" : {
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
+                    "$ref" : "#/components/schemas/PostResponse"
                   }
                 }
               }
             },
-            "description" : "default response"
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
+        "summary" : "Create or update one or multiple entities.",
         "tags" : [ "Continent Controller" ]
       }
     },
@@ -2803,7 +2919,8 @@
     },
     "/countries/push" : {
       "post" : {
-        "operationId" : "postCountries",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_9",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -2817,21 +2934,34 @@
           }
         },
         "responses" : {
-          "default" : {
+          "207" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
+              "application/json" : {
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
+                    "$ref" : "#/components/schemas/PostResponse"
                   }
                 }
               }
             },
-            "description" : "default response"
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
+        "summary" : "Create or update one or multiple entities.",
         "tags" : [ "Country Controller" ]
       }
     },
@@ -3537,7 +3667,8 @@
     },
     "/districts/push" : {
       "post" : {
-        "operationId" : "postDistricts",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_10",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -3551,21 +3682,34 @@
           }
         },
         "responses" : {
-          "default" : {
+          "207" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
+              "application/json" : {
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
+                    "$ref" : "#/components/schemas/PostResponse"
                   }
                 }
               }
             },
-            "description" : "default response"
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
+        "summary" : "Create or update one or multiple entities.",
         "tags" : [ "District Controller" ]
       }
     },
@@ -3717,19 +3861,49 @@
     },
     "/eventGroups/push" : {
       "post" : {
-        "operationId" : "postEventGroup",
-        "responses" : {
-          "default" : {
-            "content" : {
-              "application/json; charset=UTF-8" : {
-                "schema" : {
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_11",
+        "requestBody" : {
+          "content" : {
+            "application/json; charset=UTF-8" : {
+              "schema" : {
+                "type" : "array",
+                "items" : {
                   "$ref" : "#/components/schemas/EventGroupDto"
                 }
               }
-            },
-            "description" : "default response"
+            }
           }
         },
+        "responses" : {
+          "207" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
+          }
+        },
+        "summary" : "Create or update one or multiple entities.",
         "tags" : [ "Event Group Controller" ]
       }
     },
@@ -4029,7 +4203,8 @@
     },
     "/eventparticipants/push" : {
       "post" : {
-        "operationId" : "postEventParticipants",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_12",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -4043,21 +4218,34 @@
           }
         },
         "responses" : {
-          "default" : {
+          "207" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
+              "application/json" : {
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
+                    "$ref" : "#/components/schemas/PostResponse"
                   }
                 }
               }
             },
-            "description" : "default response"
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
+        "summary" : "Create or update one or multiple entities.",
         "tags" : [ "Event Participant Controller" ]
       }
     },
@@ -4499,7 +4687,8 @@
     },
     "/events/push" : {
       "post" : {
-        "operationId" : "postEvents",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_13",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -4513,21 +4702,34 @@
           }
         },
         "responses" : {
-          "default" : {
+          "207" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
+              "application/json" : {
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
+                    "$ref" : "#/components/schemas/PostResponse"
                   }
                 }
               }
             },
-            "description" : "default response"
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
+        "summary" : "Create or update one or multiple entities.",
         "tags" : [ "Event Controller" ]
       }
     },
@@ -4796,7 +4998,8 @@
     },
     "/facilities/push" : {
       "post" : {
-        "operationId" : "postSubcontinents",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_15",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -4810,21 +5013,34 @@
           }
         },
         "responses" : {
-          "default" : {
+          "207" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
+              "application/json" : {
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
+                    "$ref" : "#/components/schemas/PostResponse"
                   }
                 }
               }
             },
-            "description" : "default response"
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
+        "summary" : "Create or update one or multiple entities.",
         "tags" : [ "Facility Controller" ]
       }
     },
@@ -5319,7 +5535,8 @@
     },
     "/immunizations/push" : {
       "post" : {
-        "operationId" : "post",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_16",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -5333,21 +5550,34 @@
           }
         },
         "responses" : {
-          "default" : {
+          "207" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
+              "application/json" : {
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
+                    "$ref" : "#/components/schemas/PostResponse"
                   }
                 }
               }
             },
-            "description" : "default response"
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
+        "summary" : "Create or update one or multiple entities.",
         "tags" : [ "Immunization Controller" ]
       }
     },
@@ -5979,7 +6209,8 @@
     },
     "/outbreaks/push" : {
       "post" : {
-        "operationId" : "postOutbreak",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_17",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -5993,21 +6224,34 @@
           }
         },
         "responses" : {
-          "default" : {
+          "207" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
+              "application/json" : {
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
+                    "$ref" : "#/components/schemas/PostResponse"
                   }
                 }
               }
             },
-            "description" : "default response"
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
+        "summary" : "Create or update one or multiple entities.",
         "tags" : [ "Outbreak Controller" ]
       }
     },
@@ -6172,7 +6416,8 @@
     },
     "/pathogentests/push" : {
       "post" : {
-        "operationId" : "postPathogenTests",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_18",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -6186,21 +6431,34 @@
           }
         },
         "responses" : {
-          "default" : {
+          "207" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
+              "application/json" : {
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
+                    "$ref" : "#/components/schemas/PostResponse"
                   }
                 }
               }
             },
-            "description" : "default response"
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
+        "summary" : "Create or update one or multiple entities.",
         "tags" : [ "Pathogen Test Controller" ]
       }
     },
@@ -6427,7 +6685,8 @@
     },
     "/persons/push" : {
       "post" : {
-        "operationId" : "postPersons",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_19",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -6441,21 +6700,34 @@
           }
         },
         "responses" : {
-          "default" : {
+          "207" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
+              "application/json" : {
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
+                    "$ref" : "#/components/schemas/PostResponse"
                   }
                 }
               }
             },
-            "description" : "default response"
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
+        "summary" : "Create or update one or multiple entities.",
         "tags" : [ "Person Controller" ]
       }
     },
@@ -6700,7 +6972,8 @@
     },
     "/pointsofentry/push" : {
       "post" : {
-        "operationId" : "postPointOfEntries",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_20",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -6714,21 +6987,34 @@
           }
         },
         "responses" : {
-          "default" : {
+          "207" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
+              "application/json" : {
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
+                    "$ref" : "#/components/schemas/PostResponse"
                   }
                 }
               }
             },
-            "description" : "default response"
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
+        "summary" : "Create or update one or multiple entities.",
         "tags" : [ "Point Of Entry Controller" ]
       }
     },
@@ -6884,7 +7170,8 @@
     },
     "/prescriptions/push" : {
       "post" : {
-        "operationId" : "postPrescriptions",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_21",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -6898,21 +7185,34 @@
           }
         },
         "responses" : {
-          "default" : {
+          "207" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
+              "application/json" : {
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
+                    "$ref" : "#/components/schemas/PostResponse"
                   }
                 }
               }
             },
-            "description" : "default response"
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
+        "summary" : "Create or update one or multiple entities.",
         "tags" : [ "Prescription Controller" ]
       }
     },
@@ -7077,7 +7377,8 @@
     },
     "/regions/push" : {
       "post" : {
-        "operationId" : "postRegions",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_22",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -7091,21 +7392,34 @@
           }
         },
         "responses" : {
-          "default" : {
+          "207" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
+              "application/json" : {
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
+                    "$ref" : "#/components/schemas/PostResponse"
                   }
                 }
               }
             },
-            "description" : "default response"
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
+        "summary" : "Create or update one or multiple entities.",
         "tags" : [ "Region Controller" ]
       }
     },
@@ -7366,7 +7680,8 @@
     },
     "/samples/push" : {
       "post" : {
-        "operationId" : "postSamples",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_23",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -7380,21 +7695,34 @@
           }
         },
         "responses" : {
-          "default" : {
+          "207" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
+              "application/json" : {
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
+                    "$ref" : "#/components/schemas/PostResponse"
                   }
                 }
               }
             },
-            "description" : "default response"
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
+        "summary" : "Create or update one or multiple entities.",
         "tags" : [ "Sample Controller" ]
       }
     },
@@ -8128,7 +8456,8 @@
     },
     "/subcontinents/push" : {
       "post" : {
-        "operationId" : "postSubcontinents_1",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_24",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -8142,21 +8471,34 @@
           }
         },
         "responses" : {
-          "default" : {
+          "207" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
+              "application/json" : {
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
+                    "$ref" : "#/components/schemas/PostResponse"
                   }
                 }
               }
             },
-            "description" : "default response"
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
+        "summary" : "Create or update one or multiple entities.",
         "tags" : [ "Subcontinent Controller" ]
       }
     },
@@ -8216,7 +8558,8 @@
     },
     "/surveillancereports/push" : {
       "post" : {
-        "operationId" : "postCaseReports",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_25",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -8230,21 +8573,34 @@
           }
         },
         "responses" : {
-          "default" : {
+          "207" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
+              "application/json" : {
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
+                    "$ref" : "#/components/schemas/PostResponse"
                   }
                 }
               }
             },
-            "description" : "default response"
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
+        "summary" : "Create or update one or multiple entities.",
         "tags" : [ "Surveillance Report Controller" ]
       }
     },
@@ -8484,7 +8840,8 @@
     },
     "/tasks/push" : {
       "post" : {
-        "operationId" : "postTasks",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_26",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -8498,21 +8855,34 @@
           }
         },
         "responses" : {
-          "default" : {
+          "207" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
+              "application/json" : {
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
+                    "$ref" : "#/components/schemas/PostResponse"
                   }
                 }
               }
             },
-            "description" : "default response"
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
+        "summary" : "Create or update one or multiple entities.",
         "tags" : [ "Task Controller" ]
       }
     },
@@ -8631,7 +9001,8 @@
     },
     "/travelentries/push" : {
       "post" : {
-        "operationId" : "postTravelEntries",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_27",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -8645,21 +9016,34 @@
           }
         },
         "responses" : {
-          "default" : {
+          "207" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
+              "application/json" : {
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
+                    "$ref" : "#/components/schemas/PostResponse"
                   }
                 }
               }
             },
-            "description" : "default response"
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
+        "summary" : "Create or update one or multiple entities.",
         "tags" : [ "Travel Entry Controller" ]
       }
     },
@@ -8807,7 +9191,8 @@
     },
     "/treatments/push" : {
       "post" : {
-        "operationId" : "postTreatments",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_28",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -8821,21 +9206,34 @@
           }
         },
         "responses" : {
-          "default" : {
+          "207" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
+              "application/json" : {
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
+                    "$ref" : "#/components/schemas/PostResponse"
                   }
                 }
               }
             },
-            "description" : "default response"
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
+        "summary" : "Create or update one or multiple entities.",
         "tags" : [ "Treatment Controller" ]
       }
     },
@@ -9141,7 +9539,7 @@
     "/visits-external" : {
       "post" : {
         "description" : "Upload visits with all symptom and disease related data to SORMAS.",
-        "operationId" : "postExternalVisits",
+        "operationId" : "postEntityDtos_14",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -9155,19 +9553,31 @@
           }
         },
         "responses" : {
-          "default" : {
+          "207" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
+              "application/json" : {
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
+                    "$ref" : "#/components/schemas/PostResponse"
                   }
                 }
               }
             },
-            "description" : "default response"
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
         "summary" : "Save visits",
@@ -9192,14 +9602,10 @@
             "content" : {
               "application/json; charset=UTF-8" : {
                 "schema" : {
-                  "type" : "string",
-                  "example" : [ {
-                    "personUuid" : "Q56VFD-G3TXKT-R2DBIW-FTWIKAMI",
-                    "latestFollowUpEndDate" : 1599602400000
-                  }, {
-                    "personUuid" : "TEYCIW-BHWHMH-MH2QIW-KBP72JMU",
-                    "latestFollowUpEndDate" : 1593727200000
-                  } ]
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PersonFollowUpEndDto"
+                  }
                 }
               }
             },
@@ -9255,7 +9661,7 @@
             "content" : {
               "application/json; charset=UTF-8" : {
                 "schema" : {
-                  "type" : "string",
+                  "type" : "boolean",
                   "example" : true
                 }
               }
@@ -9282,8 +9688,7 @@
           "content" : {
             "application/json; charset=UTF-8" : {
               "schema" : {
-                "type" : "string",
-                "example" : "[\n  {\n    \"status\": \"REGISTERED\",\n    \"statusDateTime\": \"2020-04-15T12:55:00.000+02:00\" // datetime format yyyy-MM-dd'T'HH:mm:ss.SSSZ\n  }\n]"
+                "$ref" : "#/components/schemas/PersonSymptomJournalStatusDto"
               }
             }
           },
@@ -9294,7 +9699,7 @@
             "content" : {
               "application/json; charset=UTF-8" : {
                 "schema" : {
-                  "type" : "string",
+                  "type" : "boolean",
                   "example" : true
                 }
               }
@@ -9436,7 +9841,8 @@
     },
     "/visits/push" : {
       "post" : {
-        "operationId" : "postVisits_1",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_29",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -9450,21 +9856,34 @@
           }
         },
         "responses" : {
-          "default" : {
+          "207" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
+              "application/json" : {
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
+                    "$ref" : "#/components/schemas/PostResponse"
                   }
                 }
               }
             },
-            "description" : "default response"
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
+        "summary" : "Create or update one or multiple entities.",
         "tags" : [ "Visit Controller" ]
       }
     },
@@ -9599,7 +10018,8 @@
     },
     "/weeklyreports/push" : {
       "post" : {
-        "operationId" : "postWeeklyReports",
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_30",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -9613,21 +10033,34 @@
           }
         },
         "responses" : {
-          "default" : {
+          "207" : {
             "content" : {
-              "application/json; charset=UTF-8" : {
+              "application/json" : {
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
+                    "$ref" : "#/components/schemas/PostResponse"
                   }
                 }
               }
             },
-            "description" : "default response"
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
+        "summary" : "Create or update one or multiple entities.",
         "tags" : [ "Weekly Report Controller" ]
       }
     },
@@ -9768,7 +10201,8 @@
             "minLength" : 20,
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "actionContext", "date" ]
       },
       "ActivityAsCaseDto" : {
         "type" : "object",
@@ -9875,7 +10309,8 @@
             "type" : "string",
             "enum" : [ "UNKNOWN", "OPEN_SPACE_OFFICE", "FOOD_SECTOR", "BUILDING_SECTOR", "LOGISTICS_CENTER", "OTHER" ]
           }
-        }
+        },
+        "required" : [ "activityAsCaseType" ]
       },
       "AdditionalTestCriteria" : {
         "type" : "object",
@@ -10246,7 +10681,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "CampaignDashboardElement" : {
         "type" : "object",
@@ -10506,7 +10942,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "CampaignFormTranslations" : {
         "type" : "object",
@@ -10534,7 +10971,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "CaseCriteria" : {
         "type" : "object",
@@ -11294,7 +11732,8 @@
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           }
-        }
+        },
+        "required" : [ "caseClassification", "disease", "investigationStatus", "person", "reportDate", "responsibleDistrict", "responsibleRegion" ]
       },
       "CaseFollowUpCriteria" : {
         "type" : "object",
@@ -11990,7 +12429,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "ClassificationAllOfCriteriaDto" : {
         "type" : "object",
@@ -12216,7 +12656,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "ClinicalVisitCriteria" : {
         "type" : "object",
@@ -12395,7 +12836,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "ContactCriteria" : {
         "type" : "object",
@@ -12966,7 +13408,8 @@
             "type" : "string",
             "enum" : [ "VACCINATED", "UNVACCINATED", "UNKNOWN" ]
           }
-        }
+        },
+        "required" : [ "contactClassification", "disease", "epiData", "healthConditions", "multiDayContact", "person", "reportDateTime" ]
       },
       "ContactIndexDetailedDto" : {
         "type" : "object",
@@ -13290,7 +13733,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "ContinentCriteria" : {
         "type" : "object",
@@ -13390,7 +13834,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "CoreAndPersonDtoCaseDataDto" : {
         "type" : "object",
@@ -13573,7 +14018,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "CriteriaDateType" : {
         "type" : "object"
@@ -14911,7 +15357,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "DocumentCriteria" : {
         "type" : "object",
@@ -14979,7 +15426,8 @@
             "minLength" : 20,
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "mimeType", "name", "relatedEntityType", "relatedEntityUuid", "size", "uploadingUser" ]
       },
       "EpiDataDto" : {
         "type" : "object",
@@ -15687,7 +16135,8 @@
             "minLength" : 20,
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "name" ]
       },
       "EventGroupIndexDto" : {
         "type" : "object",
@@ -15721,7 +16170,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "EventGroupsIndexDto" : {
         "type" : "object",
@@ -16048,7 +16498,8 @@
             "type" : "string",
             "enum" : [ "VACCINATED", "UNVACCINATED", "UNKNOWN" ]
           }
-        }
+        },
+        "required" : [ "event", "person" ]
       },
       "EventParticipantIndexDto" : {
         "type" : "object",
@@ -16138,7 +16589,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "EventReferenceDto" : {
         "type" : "object",
@@ -16150,7 +16602,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "ExposureDto" : {
         "type" : "object",
@@ -16397,7 +16850,8 @@
             "type" : "string",
             "enum" : [ "UNKNOWN", "OPEN_SPACE_OFFICE", "FOOD_SECTOR", "BUILDING_SECTOR", "LOGISTICS_CENTER", "OTHER" ]
           }
-        }
+        },
+        "required" : [ "exposureType" ]
       },
       "ExternalDataDto" : {
         "type" : "object",
@@ -16442,6 +16896,9 @@
           "externalMessageStatus" : {
             "type" : "string",
             "enum" : [ "UNPROCESSED", "PROCESSED", "FORWARDED", "UNCLEAR" ]
+          },
+          "messageContentLike" : {
+            "type" : "string"
           },
           "messageDateFrom" : {
             "type" : "string",
@@ -16703,7 +17160,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "ExternalVisitDto" : {
         "type" : "object",
@@ -16750,7 +17208,8 @@
             "type" : "string",
             "enum" : [ "UNAVAILABLE", "UNCOOPERATIVE", "COOPERATIVE" ]
           }
-        }
+        },
+        "required" : [ "disease", "personUuid", "visitDateTime", "visitStatus" ]
       },
       "FacilityCriteria" : {
         "type" : "object",
@@ -16965,7 +17424,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "FeatureConfigurationCriteria" : {
         "type" : "object",
@@ -17525,7 +17985,8 @@
             "type" : "string",
             "format" : "date-time"
           }
-        }
+        },
+        "required" : [ "disease", "immunizationManagementStatus", "immunizationStatus", "meansOfImmunization", "person", "reportDate", "responsibleDistrict", "responsibleRegion" ]
       },
       "ImmunizationIndexDto" : {
         "type" : "object",
@@ -17617,7 +18078,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "InfrastructureChangeDatesDto" : {
         "type" : "object",
@@ -19285,7 +19747,8 @@
           "viaLims" : {
             "type" : "boolean"
           }
-        }
+        },
+        "required" : [ "lab", "labUser", "sample", "testResult", "testResultVerified", "testType", "testedDisease" ]
       },
       "PeriodDto" : {
         "type" : "object",
@@ -19673,7 +20136,8 @@
             "minLength" : 20,
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "firstName", "lastName", "sex" ]
       },
       "PersonFollowUpEndDto" : {
         "type" : "object",
@@ -19772,7 +20236,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "PersonSimilarityCriteria" : {
         "type" : "object",
@@ -19829,7 +20294,8 @@
           "statusDateTime" : {
             "type" : "string"
           }
-        }
+        },
+        "required" : [ "status" ]
       },
       "PointOfEntryCriteria" : {
         "type" : "object",
@@ -19945,7 +20411,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "PortHealthInfoDto" : {
         "type" : "object",
@@ -20068,6 +20535,18 @@
             "type" : "string",
             "maxLength" : 512,
             "minLength" : 0
+          }
+        }
+      },
+      "PostResponse" : {
+        "type" : "object",
+        "properties" : {
+          "body" : {
+            "type" : "object"
+          },
+          "statusCode" : {
+            "type" : "integer",
+            "format" : "int32"
           }
         }
       },
@@ -20244,7 +20723,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "PreviousHospitalizationDto" : {
         "type" : "object",
@@ -20344,7 +20824,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "RegionCriteria" : {
         "type" : "object",
@@ -20466,7 +20947,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "SampleCriteria" : {
         "type" : "object",
@@ -20750,7 +21232,8 @@
             "minLength" : 20,
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "reportDateTime", "sampleDateTime", "sampleMaterial", "samplePurpose" ]
       },
       "SampleIndexDto" : {
         "type" : "object",
@@ -20900,7 +21383,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "SampleReportDto" : {
         "type" : "object",
@@ -20973,7 +21457,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "ShareRequestCriteria" : {
         "type" : "object",
@@ -21659,7 +22144,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "SurveillanceDashboardCriteria" : {
         "type" : "object",
@@ -21796,7 +22282,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "SymptomsDto" : {
         "type" : "object",
@@ -22750,7 +23237,8 @@
             "minLength" : 20,
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "assigneeUser", "dueDate", "taskContext", "taskType" ]
       },
       "TaskIndexDto" : {
         "type" : "object",
@@ -22968,7 +23456,8 @@
             "minLength" : 20,
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "sampleReport" ]
       },
       "TherapyDto" : {
         "type" : "object",
@@ -22999,7 +23488,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "TranslationElement" : {
         "type" : "object",
@@ -23240,7 +23730,8 @@
           "vaccinated" : {
             "type" : "boolean"
           }
-        }
+        },
+        "required" : [ "person" ]
       },
       "TravelEntryIndexDto" : {
         "type" : "object",
@@ -23310,7 +23801,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "TreatmentCriteria" : {
         "type" : "object",
@@ -23525,7 +24017,7 @@
           },
           "language" : {
             "type" : "string",
-            "enum" : [ "EN", "EN_NG", "EN_GH", "EN_AF", "FR", "FR_CH", "DE", "DE_CH", "ES_EC", "ES_CU", "IT", "IT_CH", "FI", "PS", "FA", "CZ", "UR_PK" ]
+            "enum" : [ "EN", "EN_NG", "EN_GH", "EN_AF", "FR", "FR_CH", "FR_TN", "DE", "DE_CH", "ES_EC", "ES_CU", "IT", "IT_CH", "FI", "PS", "FA", "CZ", "UR_PK" ]
           },
           "lastName" : {
             "type" : "string",
@@ -23591,7 +24083,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "UserReferenceWithTaskNumbersDto" : {
         "type" : "object",
@@ -23613,7 +24106,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "UserRoleDto" : {
         "type" : "object",
@@ -23698,7 +24192,8 @@
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
-        }
+        },
+        "required" : [ "uuid" ]
       },
       "VaccinationDto" : {
         "type" : "object",
@@ -23800,7 +24295,8 @@
             "maxLength" : 1000000,
             "minLength" : 0
           }
-        }
+        },
+        "required" : [ "reportDate" ]
       },
       "VisitCriteria" : {
         "type" : "object",
@@ -23883,7 +24379,8 @@
           "visitUser" : {
             "$ref" : "#/components/schemas/UserReferenceDto"
           }
-        }
+        },
+        "required" : [ "person", "visitDateTime", "visitStatus", "visitUser" ]
       },
       "VisitIndexDto" : {
         "type" : "object",

@@ -134,7 +134,7 @@ public class VaccinationController {
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editComponent, I18nProperties.getCaption(VaccinationDto.I18N_PREFIX));
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_DELETE)) {
-			editComponent.addDeleteWithReasonOrUndeleteListener((deleteDetails) -> {
+			editComponent.addDeleteWithReasonOrRestoreListener((deleteDetails) -> {
 				popupWindow.close();
 				if (doSave) {
 					List<CaseDataDto> cases = getCaseFacade().getRelevantCasesForVaccination(vaccination)
@@ -152,7 +152,8 @@ public class VaccinationController {
 			}, I18nProperties.getCaption(VaccinationDto.I18N_PREFIX));
 		}
 
-		editComponent.restrictEditableComponentsOnEditView(UserRight.IMMUNIZATION_EDIT, UserRight.IMMUNIZATION_DELETE, null);
+		editComponent
+			.restrictEditableComponentsOnEditView(UserRight.IMMUNIZATION_EDIT, UserRight.IMMUNIZATION_DELETE, null, vaccination.isInJurisdiction());
 	}
 
 	public static void showUpdateStatusConfirmationPopup(List<CaseDataDto> cases) {
@@ -186,10 +187,8 @@ public class VaccinationController {
 		VaccinationEditForm form = new VaccinationEditForm(true, disease, fieldAccessCheckers);
 		form.setValue(vaccination);
 
-		final CommitDiscardWrapperComponent<VaccinationEditForm> editComponent = new CommitDiscardWrapperComponent<>(
-			form,
-			isEditAllowed,
-			form.getFieldGroup());
+		final CommitDiscardWrapperComponent<VaccinationEditForm> editComponent =
+			new CommitDiscardWrapperComponent<>(form, isEditAllowed, form.getFieldGroup());
 		editComponent.getCommitButton().setCaption(doSave ? I18nProperties.getCaption(Captions.actionSave) : I18nProperties.getString(Strings.done));
 
 		if (isEditAllowed) {

@@ -532,13 +532,35 @@ public class ContactsView extends AbstractView {
 								items -> ControllerProvider.getContactController()
 									.setAllSelectedItemsToLostToFollowUp(items, () -> navigateTo(criteria))),
 							hasBulkOperationsRight),
+						criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED
+							? new MenuBarHelper.MenuBarItem(
+								I18nProperties.getCaption(Captions.bulkDelete),
+								VaadinIcons.TRASH,
+								mi -> grid.bulkActionHandler(
+									items -> ControllerProvider.getContactController().deleteAllSelectedItems(items, () -> navigateTo(criteria)),
+									true),
+								hasBulkOperationsRight)
+							: new MenuBarHelper.MenuBarItem(
+								I18nProperties.getCaption(Captions.bulkRestore),
+								VaadinIcons.ARROW_BACKWARD,
+								mi -> grid.bulkActionHandler(
+									items -> ControllerProvider.getContactController().restoreSelectedContacts(items, () -> navigateTo(criteria)),
+									true),
+								hasBulkOperationsRight),
 						new MenuBarHelper.MenuBarItem(
-							I18nProperties.getCaption(Captions.bulkDelete),
-							VaadinIcons.TRASH,
+							I18nProperties.getCaption(Captions.actionArchiveCoreEntity),
+							VaadinIcons.ARCHIVE,
 							mi -> grid.bulkActionHandler(
-								items -> ControllerProvider.getContactController().deleteAllSelectedItems(items, () -> navigateTo(criteria)),
+								items -> ControllerProvider.getContactController().archiveAllSelectedItems(items, () -> navigateTo(criteria, true)),
 								true),
-							hasBulkOperationsRight),
+							hasBulkOperationsRight && EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
+						new MenuBarHelper.MenuBarItem(
+							I18nProperties.getCaption(Captions.actionDearchiveCoreEntity),
+							VaadinIcons.ARCHIVE,
+							mi -> grid.bulkActionHandler(
+								items -> ControllerProvider.getContactController().dearchiveAllSelectedItems(items, () -> navigateTo(criteria, true)),
+								true),
+							hasBulkOperationsRight && EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())),
 						new MenuBarHelper.MenuBarItem(
 							I18nProperties.getCaption(Captions.sormasToSormasShare),
 							VaadinIcons.SHARE,

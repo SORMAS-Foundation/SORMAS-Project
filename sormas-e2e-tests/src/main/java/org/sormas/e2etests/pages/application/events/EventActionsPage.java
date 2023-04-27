@@ -23,5 +23,5 @@ import org.openqa.selenium.By;
 public class EventActionsPage {
   public static final By CREATE_BUTTON = By.id("actionCreate");
   public static final String EDIT_SPECIFIC_EVENT_BUTTON =
-      "//div[contains(text(),'%s')]//following::div[@id='edit-action-0']";
+      "//div[contains(text(),'%s')]/../../div/div[@id='edit-action-0']";
 }

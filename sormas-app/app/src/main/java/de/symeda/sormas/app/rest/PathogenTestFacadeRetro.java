@@ -17,7 +17,7 @@ package de.symeda.sormas.app.rest;
 
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -40,5 +40,5 @@ public interface PathogenTestFacadeRetro {
 	Call<List<String>> pullUuids();
 
 	@POST("pathogentests/push")
-	Call<List<PushResult>> pushAll(@Body List<PathogenTestDto> dtos);
+	Call<List<PostResponse>> pushAll(@Body List<PathogenTestDto> dtos);
 }

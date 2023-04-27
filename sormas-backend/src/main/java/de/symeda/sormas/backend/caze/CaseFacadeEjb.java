@@ -1446,7 +1446,27 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		CaseCriteria criteria,
 		@Min(1) Integer limit,
 		boolean showDuplicatesWithDifferentRegion) {
-		return service.getCasesForDuplicateMerging(criteria, limit, showDuplicatesWithDifferentRegion, configFacade.getNameSimilarityThreshold());
+		List<CaseMergeIndexDto[]> cases =
+			service.getCasesForDuplicateMerging(criteria, limit, showDuplicatesWithDifferentRegion, configFacade.getNameSimilarityThreshold());
+
+		for (CaseMergeIndexDto[] caze : cases) {
+			pseudonymizeCasePairs(caze);
+		}
+
+		return cases;
+	}
+
+	public void pseudonymizeCasePairs(CaseMergeIndexDto[] cazePair) {
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+
+		Arrays.stream(cazePair).forEach(caze -> {
+			Boolean isInJurisdiction = caze.getInJurisdiction();
+			pseudonymizer.pseudonymizeDto(
+				CaseMergeIndexDto.class,
+				caze,
+				isInJurisdiction,
+				c -> pseudonymizer.pseudonymizeDto(AgeAndBirthDateDto.class, caze.getAgeAndBirthDate(), isInJurisdiction, null));
+		});
 	}
 
 	@RightsAllowed(UserRight._CASE_EDIT)
@@ -2578,8 +2598,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	@RightsAllowed(UserRight._CASE_DELETE)
-	public void undelete(String uuid) {
-		super.undelete(uuid);
+	public void restore(String uuid) {
+		super.restore(uuid);
 	}
 
 	@Override

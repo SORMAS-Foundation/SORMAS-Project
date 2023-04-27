@@ -119,6 +119,7 @@ import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.LocationHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
@@ -474,6 +475,10 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 			externalJournalService.handleExternalJournalPersonUpdateAsync(source.toReference());
 		}
 
+		if (existingPerson != null) {
+			LocationHelper.resetContinentFieldsIfCountryRemoved(source.getAddress(), existingPerson.getAddress());
+		}
+
 		person = fillOrBuildEntity(source, person, checkChangeDate);
 
 		service.ensurePersisted(person);
@@ -517,6 +522,10 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 		if (existingPersonDto != null && existingPersonDto.isEnrolledInExternalJournal()) {
 			externalJournalService.validateExternalJournalPerson(source);
+		}
+
+		if (existingPersonDto != null) {
+			LocationHelper.resetContinentFieldsIfCountryRemoved(source.getAddress(), existingPersonDto.getAddress());
 		}
 
 		existingPerson = fillOrBuildEntity(source, existingPerson, true);

@@ -23,7 +23,7 @@ import java.util.Optional;
 
 import android.content.Context;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
@@ -71,7 +71,7 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
 	}
 
 	@Override
-	protected Call<List<PushResult>> pushAll(List<FacilityDto> facilityDtos) throws NoConnectionException {
+	protected Call<List<PostResponse>> pushAll(List<FacilityDto> facilityDtos) throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is infrastructure");
 	}
 

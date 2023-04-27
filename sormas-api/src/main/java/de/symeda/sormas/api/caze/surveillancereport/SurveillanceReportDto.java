@@ -54,7 +54,7 @@ public class SurveillanceReportDto extends SormasToSormasShareableDto {
 	public static final String NOTIFICATION_DETAILS = "notificationDetails";
 	private UserReferenceDto reportingUser;
 
-	@NotNull
+	@NotNull(message = Validations.requiredField)
 	private ReportingType reportingType;
 
 	private String externalId;
@@ -69,7 +69,7 @@ public class SurveillanceReportDto extends SormasToSormasShareableDto {
 		return surveillanceReport;
 	}
 
-	@NotNull
+	@NotNull(message = Validations.validReportDateTime)
 	private Date reportDate;
 
 	private Date dateOfDiagnosis;

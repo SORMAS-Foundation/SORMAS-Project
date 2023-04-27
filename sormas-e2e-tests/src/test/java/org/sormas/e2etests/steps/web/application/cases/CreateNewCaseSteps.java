@@ -28,6 +28,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONF
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ERROR_MESSAGE_HEADER_DE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FIRST_CASE_ID_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.MERGE_DUPLICATED_CASES_WARNING_POPUP_DE;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.MERGE_MESSAGE_HEADER_DE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SHOW_MORE_LESS_FILTERS;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getMergeButtonForCaseForSourceSystem;
@@ -1446,6 +1447,23 @@ public class CreateNewCaseSteps implements En {
         });
 
     When(
+        "I create a new case with mandatory data with person name and {string} region and {string} district for DE version",
+        (String reg, String disctr) -> {
+          LocalDate reportDate = LocalDate.now();
+          caze =
+              caseService.buildGeneratedCaseDEForOnePerson(
+                  firstName, lastName, dateOfBirth, reportDate, personSex);
+          fillDisease(caze.getDisease());
+          selectResponsibleRegion(reg);
+          selectResponsibleDistrict(disctr);
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          fillFirstName(caze.getFirstName());
+          fillLastName(caze.getLastName());
+          selectSex(caze.getSex());
+          fillDateOfReport(caze.getDateOfReport(), Locale.GERMAN);
+        });
+
+    When(
         "I click on Merge button for target system from received case",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(
@@ -1487,9 +1505,51 @@ public class CreateNewCaseSteps implements En {
         });
 
     When(
+        "I check if popup with merge message in german appears",
+        () -> {
+          softly.assertTrue(
+              webDriverHelpers.isElementVisibleWithTimeout(MERGE_MESSAGE_HEADER_DE, 5),
+              "element was not visible");
+          softly.assertAll();
+        });
+
+    When(
         "I click on cancel button in merge duplicated cases popup",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL);
+        });
+
+    And(
+        "I fill a new case form for DE version with mandatory data with {string} as a region and {string} as a district",
+        (String region, String district) -> {
+          caze = caseService.buildGeneratedCaseDE();
+          fillFirstName(caze.getFirstName());
+          fillLastName(caze.getLastName());
+          selectSex(caze.getSex());
+          selectResponsibleRegion(region);
+          selectResponsibleDistrict(district);
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          fillDisease(caze.getDisease());
+          fillDateOfReport(caze.getDateOfReport(), Locale.GERMAN);
+        });
+
+    And(
+        "I fill a new case form for DE version with mandatory data forced by positive sample with {string} as a region and {string} as a district",
+        (String region, String district) -> {
+          caze = caseService.buildGeneratedCaseDE();
+          selectResponsibleRegion(region);
+          selectResponsibleDistrict(district);
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          fillDateOfReport(caze.getDateOfReport(), Locale.GERMAN);
+        });
+
+    When(
+        "I search for the last created case uuid in the CHOOSE SOURCE Contact window",
+        () -> {
+          webDriverHelpers.fillInWebElement(SOURCE_CASE_WINDOW_CASE_INPUT, casesUUID.get(0));
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
         });
   }
 

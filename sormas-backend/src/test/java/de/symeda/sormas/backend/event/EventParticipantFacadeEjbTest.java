@@ -400,7 +400,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(PathogenTestResultType.POSITIVE, eventParticipantIndexDtos.get(0).getPathogenTestResult());
 		assertEquals(calendarDay10.getTime(), eventParticipantIndexDtos.get(0).getSampleDateTime());
 
-		getSampleFacade().deleteSample(sampleDto.toReference(), new DeletionDetails());
+		getSampleFacade().delete(sampleDto.getUuid(), new DeletionDetails());
 
 		eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
 		assertEquals(1, eventParticipantIndexDtos.size());

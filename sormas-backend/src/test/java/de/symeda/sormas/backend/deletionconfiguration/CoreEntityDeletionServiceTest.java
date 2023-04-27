@@ -532,7 +532,7 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 	}
 
 	@Test
-	public void testUndelete() {
+	public void testRestore() {
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator
@@ -543,12 +543,12 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		getImmunizationFacade().delete(immunization.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 		assertEquals(0, getImmunizationFacade().getIndexList(new ImmunizationCriteria(), 0, 100, null).size());
 
-		getImmunizationFacade().undelete(immunization.getUuid());
+		getImmunizationFacade().restore(immunization.getUuid());
 		List<ImmunizationIndexDto> indexList = getImmunizationFacade().getIndexList(new ImmunizationCriteria(), 0, 100, null);
 		assertEquals(1, indexList.size());
-		Immunization undeletedImmunization = getImmunizationService().getByUuid(indexList.get(0).getUuid());
-		assertNull(undeletedImmunization.getDeletionReason());
-		assertNull(undeletedImmunization.getOtherDeletionReason());
+		Immunization restoredImmunization = getImmunizationService().getByUuid(indexList.get(0).getUuid());
+		assertNull(restoredImmunization.getDeletionReason());
+		assertNull(restoredImmunization.getOtherDeletionReason());
 	}
 
 	@Test

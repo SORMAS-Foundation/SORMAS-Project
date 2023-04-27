@@ -1,7 +1,23 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2023 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.rest.resources;
 
 import java.util.Date;
 import java.util.List;
+import java.util.function.UnaryOperator;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
@@ -11,15 +27,17 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonFollowUpEndDto;
 import de.symeda.sormas.api.person.PersonSymptomJournalStatusDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.visit.ExternalVisitDto;
+import de.symeda.sormas.rest.resources.base.EntityDtoResource;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -29,7 +47,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @RolesAllowed(UserRight._EXTERNAL_VISITS)
-public class ExternalVisitsResource extends EntityDtoResource {
+public class ExternalVisitsResource extends EntityDtoResource<ExternalVisitDto> {
 
 	public static final String EXTERNAL_VISITS_API_VERSION = "1.41.1";
 
@@ -58,30 +76,26 @@ public class ExternalVisitsResource extends EntityDtoResource {
 	@Operation(summary = "Check person validity", description = "Check if a the Uuid given as parameter exists in SORMAS.",
 		responses =
 			@ApiResponse(description = "true a person with the given Uuid exists in SORMAS, false otherwise.",
-					content = @Content(schema = @Schema(example = "true"))))
+					content = @Content(schema = @Schema(type = "boolean", example = "true"))))
 	public Boolean isValidPersonUuid(@PathParam("personUuid") String personUuid) {
 		return FacadeProvider.getPersonFacade().isValidPersonUuid(personUuid);
 	}
 
-	//@formatter:off
+
 	@POST
 	@Path("/person/{personUuid}/status")
 	@Operation(summary = "Save symptom journal status",
 		responses =
 			@ApiResponse(description = "true if the status was set successfully, false otherwise.",
-					content = @Content(schema = @Schema(example = "true"))))
+					content = @Content(schema = @Schema(type="boolean", example = "true"))))
 	@RequestBody(
-		//@formatter:off
 		description = "status may be one of the following:<br/>" +
 				"UNREGISTERED: User has not yet sent any state<br/>" +
 				"REGISTERED: After successful registration in SymptomJournal<br/>" +
 				"ACCEPTED: User has accepted a confirmation<br/>" +
 				"REJECTED: User has rejected (declined) a confirmation<br/>" +
 				"DELETED: User was deleted",
-		//@formatter:on
-		content = @Content(schema = @Schema(example = "[\n  {\n    \"status\": \"REGISTERED\",\n"
-			+ "    \"statusDateTime\": \"2020-04-15T12:55:00.000+02:00\" // datetime format yyyy-MM-dd'T'HH:mm:ss.SSSZ\n  }\n]")))
-	//@formatter:on
+		content = @Content(schema = @Schema(implementation=PersonSymptomJournalStatusDto.class)))
 	public boolean postSymptomJournalStatus(@PathParam("personUuid") String personUuid, PersonSymptomJournalStatusDto statusDto) {
 		try {
 			return FacadeProvider.getPersonFacade().setSymptomJournalStatus(personUuid, statusDto.getStatus());
@@ -93,8 +107,9 @@ public class ExternalVisitsResource extends EntityDtoResource {
 	@POST
 	@Path("/")
 	@Operation(summary = "Save visits", description = "Upload visits with all symptom and disease related data to SORMAS.")
-	public List<PushResult> postExternalVisits(List<ExternalVisitDto> dtos) {
-		return savePushedDto(dtos, FacadeProvider.getVisitFacade()::saveExternalVisit);
+	@Override
+	public Response postEntityDtos(List<ExternalVisitDto> dtos) {
+		return super.postEntityDtos(dtos);
 	}
 
 	@GET
@@ -112,28 +127,14 @@ public class ExternalVisitsResource extends EntityDtoResource {
 		description = "Get latest follow up end date assigned to the specified person. "
 			+ "Note: Only returns values for persons who have their symptom journal status set to ACCEPTED! "
 			+ "Only returns values changed after {since}, which is interpreted as a UNIX timestamp.")
-	//@formatter:off
 	@ApiResponse(description = "List of personUuids and their latest follow up end dates as UNIX timestamps.",
-			content = @Content(schema = @Schema(example = "[\n" +
-			"  {\n" +
-			"    \"personUuid\": \"Q56VFD-G3TXKT-R2DBIW-FTWIKAMI\",\n" +
-			"    \"latestFollowUpEndDate\": 1599602400000\n" +
-			"  },\n" +
-			"  {\n" +
-			"    \"personUuid\": \"TEYCIW-BHWHMH-MH2QIW-KBP72JMU\",\n" +
-			"    \"latestFollowUpEndDate\": 1593727200000\n" +
-			"  }\n" +
-			"]")))
-	//@formatter:on
-
+		content = @Content(array = @ArraySchema(schema = @Schema(implementation = PersonFollowUpEndDto.class))))
 	public List<PersonFollowUpEndDto> getLatestFollowUpEndDates(@PathParam("since") long since) {
 		return FacadeProvider.getPersonFacade().getLatestFollowUpEndDates(new Date(since), true);
 	}
 
 	@Override
-	protected <T> String createErrorMessage(T dto) {
-		final ExternalVisitDto externalVisitDto = (ExternalVisitDto) dto;
-		return dto.getClass().getSimpleName() + " #personUUID: " + externalVisitDto.getPersonUuid() + "\n";
+	public UnaryOperator<ExternalVisitDto> getSave() {
+		return FacadeProvider.getVisitFacade()::saveExternalVisit;
 	}
-
 }

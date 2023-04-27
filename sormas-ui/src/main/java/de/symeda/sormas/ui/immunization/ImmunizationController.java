@@ -195,7 +195,7 @@ public class ImmunizationController {
 
 		// Initialize 'Delete' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_DELETE)) {
-			editComponent.addDeleteWithReasonOrUndeleteListener(
+			editComponent.addDeleteWithReasonOrRestoreListener(
 				ImmunizationsView.VIEW_NAME,
 				null,
 				I18nProperties.getString(Strings.entityImmunization),
@@ -214,7 +214,11 @@ public class ImmunizationController {
 					() -> navigateToImmunization(immunizationDto.getUuid()));
 		}
 
-		editComponent.restrictEditableComponentsOnEditView(UserRight.IMMUNIZATION_EDIT, UserRight.IMMUNIZATION_DELETE, null);
+		editComponent.restrictEditableComponentsOnEditView(
+			UserRight.IMMUNIZATION_EDIT,
+			UserRight.IMMUNIZATION_DELETE,
+			null,
+			immunizationDto.isInJurisdiction());
 
 		return editComponent;
 	}

@@ -17,7 +17,7 @@ package de.symeda.sormas.app.rest;
 
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -34,7 +34,7 @@ public interface CampaignFormDataFacadeRetro {
 	Call<List<CampaignFormDataDto>> pullByUuids(@Body List<String> uuids);
 
 	@POST("campaignFormData/push")
-	Call<List<PushResult>> pushAll(@Body List<CampaignFormDataDto> dtos);
+	Call<List<PostResponse>> pushAll(@Body List<CampaignFormDataDto> dtos);
 
 	@GET("campaignFormData/uuids")
 	Call<List<String>> pullUuids();

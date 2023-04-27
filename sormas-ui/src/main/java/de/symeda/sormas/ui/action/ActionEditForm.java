@@ -62,7 +62,7 @@ public class ActionEditForm extends AbstractEditForm<ActionDto> {
 			fluidRowLocs(ActionDto.DESCRIPTION) +
 			loc(LAST_MODIFIED_BY_LABEL_LOC) +
 			fluidRowLocs(ActionDto.REPLY) +
-			fluidRowLocs(4, ActionDto.ACTION_STATUS, 8, STATUS_CHANGE_LABEL_LOC);
+			fluidRowLocs(5, ActionDto.ACTION_STATUS, 7, STATUS_CHANGE_LABEL_LOC);
 	//@formatter:on
 
 	public ActionEditForm(boolean create) {

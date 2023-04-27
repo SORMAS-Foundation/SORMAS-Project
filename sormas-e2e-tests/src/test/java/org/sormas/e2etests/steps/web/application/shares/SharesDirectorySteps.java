@@ -18,10 +18,12 @@
 
 package org.sormas.e2etests.steps.web.application.shares;
 
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ACTION_OKAY;
 import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.POPUP_COLUMN_HEADER;
 import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.SHARE_FIRST_EYE_ICON;
 import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.SHARE_OPTION_CHECKBOX;
 import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.SHARE_UUID_CASE_TITLE;
+import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.WARNING_ACCEPT_CASE_BEFORE_CONTACT_HEADER_DE;
 import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.getCheckBoxFromShareFormByIndex;
 import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.getPopupColumnHeaderByIndex;
 
@@ -105,6 +107,16 @@ public class SharesDirectorySteps implements En {
                 "Contact column header is displayed!");
             softly.assertAll();
           }
+        });
+
+    When(
+        "I check if a warning pop-up message appears that the Case should be accepted first",
+        () -> {
+          softly.assertTrue(
+              webDriverHelpers.isElementVisibleWithTimeout(
+                  WARNING_ACCEPT_CASE_BEFORE_CONTACT_HEADER_DE, 5));
+          softly.assertAll();
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_OKAY);
         });
   }
 }
