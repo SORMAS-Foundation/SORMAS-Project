@@ -60,6 +60,8 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
+import de.symeda.sormas.api.environment.EnvironmentDto;
+import de.symeda.sormas.api.environment.EnvironmentMedia;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
@@ -2228,6 +2230,24 @@ public class TestDataCreator {
 		beanTest.getShareRequestInfoService().persist(requestInfo);
 
 		return requestInfo;
+	}
+
+	public EnvironmentDto createEnvironment(String name, EnvironmentMedia environmentMedia, UserReferenceDto reportingUser, RDCF rdcf) {
+
+		EnvironmentDto environment = EnvironmentDto.build();
+		environment.setEnvironmentName(name);
+		environment.setEnvironmentMedia(environmentMedia);
+		environment.setReportDate(new Date());
+		environment.setReportingUser(reportingUser);
+		LocationDto location = LocationDto.build();
+		location.setRegion(rdcf.region);
+		location.setDistrict(rdcf.district);
+		location.setCommunity(rdcf.community);
+		environment.setLocation(location);
+
+		environment = beanTest.getEnvironmentFacade().save(environment);
+
+		return environment;
 	}
 
 	/**

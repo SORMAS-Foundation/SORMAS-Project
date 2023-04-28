@@ -12365,4 +12365,44 @@ $$ LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (514, '#12008 Add EVENTGROUP_LINK user right dependency for users with EVENTGROUP_CREATE user rights', false);
 
+-- 2023-05-10 Created a new Environment entity #11796
+CREATE TABLE environments(
+    id bigint not null,
+    uuid varchar(36) not null unique,
+    changedate timestamp not null,
+    creationdate timestamp not null,
+    reportdate timestamp,
+    reportinguser_id bigint,
+    environmentname varchar(255),
+    description varchar(4096),
+    externalid varchar(512),
+    responsibleuser_id bigint,
+    investigationstatus varchar(255),
+    environmentmedia varchar(255),
+    watertype varchar(255),
+    otherwatertype varchar(512),
+    infrastructuredetails varchar(255),
+    otherinfrastructuredetails varchar(512),
+    wateruse json,
+    otherwateruse varchar(512),
+    location_id bigint,
+    deleted boolean DEFAULT false,
+    archived boolean DEFAULT false,
+    sys_period tstzrange not null,
+    primary key(id)
+);
+
+ALTER TABLE environments OWNER TO sormas_user;
+ALTER TABLE environments ADD CONSTRAINT fk_environments_reportinguser_id FOREIGN KEY (reportinguser_id) REFERENCES users(id);
+ALTER TABLE environments ADD CONSTRAINT fk_environments_responsibleuser_id FOREIGN KEY (responsibleuser_id) REFERENCES users(id);
+ALTER TABLE environments ADD CONSTRAINT fk_environments_location_id FOREIGN KEY (location_id) REFERENCES location(id);
+CREATE TABLE environments_history (LIKE environments);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON environments
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'environments_history', true);
+ALTER TABLE environments_history OWNER TO sormas_user;
+ALTER TABLE environments ALTER COLUMN wateruse set DATA TYPE jsonb using wateruse::jsonb;
+ALTER TABLE environments_history ALTER COLUMN wateruse set DATA TYPE jsonb using wateruse::jsonb;
+
+INSERT INTO schema_version (version_number, comment) VALUES (515, 'Created a new Environment entity #11796');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

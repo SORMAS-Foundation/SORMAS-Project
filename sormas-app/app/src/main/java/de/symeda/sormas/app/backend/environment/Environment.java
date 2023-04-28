@@ -1,0 +1,224 @@
+package de.symeda.sormas.app.backend.environment;
+
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_SMALL;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+
+import java.lang.reflect.Type;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+
+import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.environment.EnvironmentInfrastructureDetails;
+import de.symeda.sormas.api.environment.EnvironmentMedia;
+import de.symeda.sormas.api.environment.WaterType;
+import de.symeda.sormas.api.environment.WaterUse;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.backend.user.User;
+
+public class Environment extends AbstractDomainObject {
+
+    public static final String TABLE_NAME = "environments";
+    public static final String I18N_PREFIX = "Environment";
+
+    public static final String REPORT_DATE = "reportDate";
+    public static final String REPORTING_USER = "reportingUser";
+    public static final String ENVIRONMENT_NAME = "environmentName";
+    public static final String DESCRIPTION = "description";
+    public static final String EXTERNAL_ID = "externalId";
+    public static final String RESPONSIBLE_USER = "responsibleUser";
+    public static final String INVESTIGATION_STATUS = "investigationStatus";
+    public static final String ENVIRONMENT_MEDIA = "environmentMedia";
+    public static final String WATER_TYPE = "waterType";
+    public static final String OTHER_WATER_TYPE = "otherWaterType";
+    public static final String INFRASTUCTURE_DETAILS = "infrastructureDetails";
+    public static final String OTHER_INFRASTRUCTUIRE_DETAILS = "otherInfrastructureDetails";
+    public static final String WATER_DRINKING_HOUSEHOLD = "waterUseDrinkingHousehold";
+    public static final String WATER_USE = "waterUse";
+    public static final String OTHER_WATER_USE = "otherWaterUse";
+    public static final String LOCATION = "location";
+
+    @DatabaseField(dataType = DataType.DATE_LONG)
+    private Date reportDate;
+    @DatabaseField(foreign = true, foreignAutoRefresh = true, columnName = "reportingUser_id")
+    private User reportingUser;
+    @Column(length = CHARACTER_LIMIT_SMALL)
+    private String environmentName;
+    @Column(length = CHARACTER_LIMIT_BIG)
+    private String description;
+    @Column(length = CHARACTER_LIMIT_DEFAULT)
+    private String externalId;
+    @DatabaseField(foreign = true, foreignAutoRefresh = true, columnName = "responsibleUser_id")
+    private User responsibleUser;
+    @Enumerated(EnumType.STRING)
+    private InvestigationStatus investigationStatus;
+    @Enumerated(EnumType.STRING)
+    private EnvironmentMedia environmentMedia;
+    @Enumerated(EnumType.STRING)
+    private WaterType waterType;
+    @Column(length = CHARACTER_LIMIT_DEFAULT)
+    private String otherWaterType;
+    @Enumerated(EnumType.STRING)
+    private EnvironmentInfrastructureDetails infrastructureDetails;
+    @Column(length = CHARACTER_LIMIT_DEFAULT)
+    private String otherInfrastructureDetails;
+    @Column(name = "waterUse", length = 1024)
+    private String waterUseJson;
+    private Map<WaterUse, Boolean> waterUse;
+    @Column(length = CHARACTER_LIMIT_DEFAULT)
+    private String otherWaterUse;
+    @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 2)
+    private Location location;
+
+    public Date getReportDate() {
+        return reportDate;
+    }
+
+    public void setReportDate(Date reportDate) {
+        this.reportDate = reportDate;
+    }
+
+    public User getReportingUser() {
+        return reportingUser;
+    }
+
+    public void setReportingUser(User reportingUser) {
+        this.reportingUser = reportingUser;
+    }
+
+    public String getEnvironmentName() {
+        return environmentName;
+    }
+
+    public void setEnvironmentName(String environmentName) {
+        this.environmentName = environmentName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
+    }
+
+    public User getResponsibleUser() {
+        return responsibleUser;
+    }
+
+    public void setResponsibleUser(User responsibleUser) {
+        this.responsibleUser = responsibleUser;
+    }
+
+    public InvestigationStatus getInvestigationStatus() {
+        return investigationStatus;
+    }
+
+    public void setInvestigationStatus(InvestigationStatus investigationStatus) {
+        this.investigationStatus = investigationStatus;
+    }
+
+    public EnvironmentMedia getEnvironmentMedia() {
+        return environmentMedia;
+    }
+
+    public void setEnvironmentMedia(EnvironmentMedia environmentMedia) {
+        this.environmentMedia = environmentMedia;
+    }
+
+    public WaterType getWaterType() {
+        return waterType;
+    }
+
+    public void setWaterType(WaterType waterType) {
+        this.waterType = waterType;
+    }
+
+    public String getOtherWaterType() {
+        return otherWaterType;
+    }
+
+    public void setOtherWaterType(String otherWaterType) {
+        this.otherWaterType = otherWaterType;
+    }
+
+    public EnvironmentInfrastructureDetails getInfrastructureDetails() {
+        return infrastructureDetails;
+    }
+
+    public void setInfrastructureDetails(EnvironmentInfrastructureDetails infrastructureDetails) {
+        this.infrastructureDetails = infrastructureDetails;
+    }
+
+    public String getOtherInfrastructureDetails() {
+        return otherInfrastructureDetails;
+    }
+
+    public void setOtherInfrastructureDetails(String otherInfrastructureDetails) {
+        this.otherInfrastructureDetails = otherInfrastructureDetails;
+    }
+
+    public String getWaterUseJson() {
+        return waterUseJson;
+    }
+
+    public void setWaterUseJson(String waterUseJson) {
+        this.waterUseJson = waterUseJson;
+        waterUse = null;
+    }
+
+    public Map<WaterUse, Boolean> getWaterUse() {
+        if (waterUse == null) {
+            Gson gson = new Gson();
+            Type type = new TypeToken<Set<WaterUse>>() {
+            }.getType();
+            waterUse = gson.fromJson(waterUseJson, type);
+            if (waterUse == null) {
+                waterUse = new HashMap<>();
+            }
+        }
+        return waterUse;
+    }
+
+    public void setWaterUse(Map<WaterUse, Boolean> waterUse) {
+        this.waterUse = waterUse;
+    }
+
+    public String getOtherWaterUse() {
+        return otherWaterUse;
+    }
+
+    public void setOtherWaterUse(String otherWaterUse) {
+        this.otherWaterUse = otherWaterUse;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+}
