@@ -94,6 +94,7 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 		target.setLanguageCode(source.getLanguageCode());
 		target.setCampaignFormElements(source.getCampaignFormElementsList());
 		target.setCampaignFormTranslations(source.getCampaignFormTranslationsList());
+		target.setDistrictentry(source.isDistrictentry());
 
 		return target;
 	}
