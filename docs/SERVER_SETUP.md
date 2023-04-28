@@ -36,7 +36,7 @@
 ## Related
 
 * [Creating an App for a Demo Server](DEMO_APP.md)
-* [SORMAS Docker Repository](https://github.com/hzi-braunschweig/SORMAS-Docker)
+* [SORMAS Docker Repository](https://github.com/sormas-foundation/SORMAS-Docker)
 
 ## Prerequisites
 
@@ -79,7 +79,7 @@ You can check your Java version from the shell/command line using: ``java -versi
 
 ## SORMAS Server
 
-Get the latest SORMAS build by downloading the ZIP archive from the latest release on GitHub: <https://github.com/hzi-braunschweig/SORMAS-Project/releases/latest>
+Get the latest SORMAS build by downloading the ZIP archive from the latest release on GitHub: <https://github.com/sormas-foundation/SORMAS-Project/releases/latest>
 
 ### Install on Linux
 
@@ -90,7 +90,7 @@ sudo su
 mkdir /root/deploy/sormas
 cd /root/deploy/sormas
 SORMAS_VERSION=1.y.z
-wget https://github.com/hzi-braunschweig/SORMAS-Project/releases/download/v${SORMAS_VERSION}/sormas_${SORMAS_VERSION}.zip
+wget https://github.com/sormas-foundation/SORMAS-Project/releases/download/v${SORMAS_VERSION}/sormas_${SORMAS_VERSION}.zip
 unzip sormas_${SORMAS_VERSION}.zip
 mv deploy/ $(date +%F)
 rm sormas_${SORMAS_VERSION}.zip
@@ -117,7 +117,7 @@ You can configure the audit logger of SORMAS by providing a Logback [configurati
 
 ## Keycloak Server
 
-**Note**: SORMAS also comes with a basic auth mechanism using an JEE authentication realm. This authentication mechanism should only be used for development environments. For **production environments always use the keycloak authentication mechansim.** See [Authentication & Authorization](https://github.com/hzi-braunschweig/SORMAS-Project/wiki/Authentication-&-Authorization).
+**Note**: SORMAS also comes with a basic auth mechanism using an JEE authentication realm. This authentication mechanism should only be used for development environments. For **production environments always use the keycloak authentication mechansim.** See [Authentication & Authorization](https://github.com/sormas-foundation/SORMAS-Project/wiki/Authentication-&-Authorization).
 
 Keycloak can be set up in two ways:
 * as a Docker container (for just using Keycloak approach)
@@ -126,7 +126,7 @@ Keycloak can be set up in two ways:
 ### Keycloak as a Docker container
 *To be done only in the situation when SORMAS is already installed on the machine as a standalone installation.*
 
-*For complete Docker setup see the [SORMAS-Docker](https://github.com/hzi-braunschweig/SORMAS-Docker/tree/keycloak-integration) repository.*
+*For complete Docker setup see the [SORMAS-Docker](https://github.com/sormas-foundation/SORMAS-Docker/tree/keycloak-integration) repository.*
 
 **Prerequisites**
 * SORMAS Server is installed
@@ -391,7 +391,7 @@ chmod +x r-setup.sh
 ## SORMAS to SORMAS Certificate Setup
 
 To be able to communicate with other SORMAS instances, there are some additional steps which need to be taken, in order to set
-up the certificate and the truststore. Please see the [related guide](https://github.com/hzi-braunschweig/SORMAS-Project/wiki/Creating-a-SORMAS2SORMAS-Certificate) for detailed instructions regarding SORMAS to SORMAS setup.
+up the certificate and the truststore. Please see the [related guide](https://github.com/sormas-foundation/SORMAS-Project/wiki/Creating-a-SORMAS2SORMAS-Certificate) for detailed instructions regarding SORMAS to SORMAS setup.
 <br/>
 
 ## Troubleshooting

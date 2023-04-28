@@ -70,9 +70,11 @@ public class RestConfig extends ResourceConfig {
 				"The purpose of this API is to enable communication between SORMAS and other symptom journals. "
 					+ "Only users with the role ``REST_EXTERNAL_VISITS_USER`` are authorized to use the endpoints. "
 					+ "If you would like to receive access, please contact the System Administrator. "
-					+ "For technical details please contact the dev team on gitter. "
+					+ "For technical details please contact the dev team through GitHub Discussions. "
 					+ "Authentication is done using basic auth, with the user and password.")
-			.contact(new Contact().url("https://gitter.im/SORMAS-Project/dev-support").name("Dev support"))
+			.contact(
+				new Contact().url("https://github.com/sormas-foundation/SORMAS-Project/discussions/categories/development-support")
+					.name("Development support"))
 			.license(new License().name("GNU General Public License").url("https://www.gnu.org/licenses/"));
 
 		OpenAPI openAPI = new OpenAPI().info(info);

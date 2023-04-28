@@ -15,5 +15,5 @@ Cases, mSERS (aggregated case reporting), Contacts, Events, Samples, Messages, S
 In addition, there is a dashboard that gives an overview of the data.
 
 
-There ia also an [angular-based prototype](https://github.com/hzi-braunschweig/SORMAS-Angular) of an alternative web application.
+There ia also an [angular-based prototype](https://github.com/sormas-foundation/SORMAS-Angular) of an alternative web application.
 

@@ -122,10 +122,10 @@ Important points when **interpreting the visual report**:
 * Adding indices so postgres does not have to go through all data. You can use a btree index to include multiple columns and sorting
 * Getting rid of unnecessary joins. Example: Joining a region of a case to compare it to the region of the user, instead of directly doing this on the region_id field of the case
 * Using limit to reduce the output (e.g. the first 100). Make sure there is no sorting done close to the end of the query graph. This is often the case when 'DISTINCT' is used.
-  Example: https://github.com/hzi-braunschweig/SORMAS-Project/issues/9054#issuecomment-1420849461
+  Example: https://github.com/sormas-foundation/SORMAS-Project/issues/9054#issuecomment-1420849461
 * Splitting the query into separate queries when 'DISTINCT' has to be used / using distinct on a sub-query
 * Using sub-queries to influence the query planner. 
-  Example: https://github.com/hzi-braunschweig/SORMAS-Project/issues/11465#issuecomment-1425789509
+  Example: https://github.com/sormas-foundation/SORMAS-Project/issues/11465#issuecomment-1425789509
 
 **How to save time** when optimizing the query:
 

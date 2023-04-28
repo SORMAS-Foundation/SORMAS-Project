@@ -5,7 +5,7 @@ This is a [keycloak service provider](https://www.keycloak.org/docs/11.0/server_
 1. Migration of existing user when moving from the basic authentication mechanism to keycloak
 2. Creation of users without email in SORMAS. In this case the password will be shown to the admin **once**. 
 
-More on [Authentication & Authorization](https://github.com/hzi-braunschweig/SORMAS-Project/wiki/Authentication-&-Authorization).
+More on [Authentication & Authorization](https://github.com/sormas-foundation/SORMAS-Project/wiki/Authentication-&-Authorization).
 
 ## SORMAS Password Hash Provider
 

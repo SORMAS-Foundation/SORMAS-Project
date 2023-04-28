@@ -3,12 +3,12 @@
 
 This step-by-step guide explains how to set up your development environment, using either Eclipse or IntelliJ for the backend and web UI and Android Studio for the mobile app. Please follow it strictly to make sure that development will run as smoothly as possible and your code adheres to our guidelines.
 
-**Please note that these instructions are optimized for Windows and Linux systems.** If you're developing on a Mac and, we would be glad to get your feedback about how this guide can be extended with OS-specific instructions through our [GitHub Discussions](https://github.com/hzi-braunschweig/SORMAS-Project/discussions).
+**Please note that these instructions are optimized for Windows and Linux systems.** If you're developing on a Mac and, we would be glad to get your feedback about how this guide can be extended with OS-specific instructions through our [GitHub Discussions](https://github.com/sormas-foundation/SORMAS-Project/discussions).
 
 ## Step 1: Check Out the SORMAS Repository
 - [Download and install the latest Git version](https://git-scm.com/downloads) for your operating system
 - *Optional:* Install a Git client such as [TortoiseGit](https://tortoisegit.org/) or [GitHub Desktop](https://desktop.github.com/) if you don't want to handle version control from the command line or within your IDE
-- *Optional:* Clone the SORMAS-Project repository with `git clone https://github.com/hzi-braunschweig/SORMAS-Project.git`; if you want to use Git from within your IDE, you can also clone the repository in Step 4
+- *Optional:* Clone the SORMAS-Project repository with `git clone https://github.com/sormas-foundation/SORMAS-Project.git`; if you want to use Git from within your IDE, you can also clone the repository in Step 4
 - Open Git Bash and execute the following command to ensure that rebase is used when pulling the development branch rather than merge: `git config --global branch.development.rebase true`
 
 ## Step 2: Install Java

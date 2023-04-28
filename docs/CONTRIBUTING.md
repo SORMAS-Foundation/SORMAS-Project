@@ -1,6 +1,6 @@
 # Contributing Guidelines
 
-If you want to contribute to SORMAS by any means - for example by submitting a bug report, requesting a new feature, translating the application into a new language, or actively contributing to the source code - please make sure to read through and follow these guidelines. This allows us to consider and process your contribution as quickly and smoothly as possible. If there is anything unclear to you or you think that this guide is lacking coverage of a specific topic, please get in touch with us through our [GitHub Discussions](https://github.com/hzi-braunschweig/SORMAS-Project/discussions).
+If you want to contribute to SORMAS by any means - for example by submitting a bug report, requesting a new feature, translating the application into a new language, or actively contributing to the source code - please make sure to read through and follow these guidelines. This allows us to consider and process your contribution as quickly and smoothly as possible. If there is anything unclear to you or you think that this guide is lacking coverage of a specific topic, please get in touch with us through our [GitHub Discussions](https://github.com/sormas-foundation/SORMAS-Project/discussions).
 
 ## Table of Contents
 
@@ -27,7 +27,7 @@ If you want to contribute to SORMAS by any means - for example by submitting a b
 **Before creating a new issue, please search the repository for similar issues first to avoid duplicates!** You can do this by using the search field in the menu bar. If you find an issue that already covers your request or seems very similar, please comment on that issue.
 
 We are currently distinguishing the following issue types: `bug`, `change`, `feature`, `finding`, `task` and `epic`.
-Please make sure to always use one of the templates that are automatically presented to you when [creating a new issue](https://github.com/hzi-braunschweig/SORMAS-Project/issues/new/choose) because it ensures that your issue is structured and contains all the information that we need. Issues that have not been created like this will be closed and you will be asked to submit a new issue that adheres to these guidelines.
+Please make sure to always use one of the templates that are automatically presented to you when [creating a new issue](https://github.com/sormas-foundation/SORMAS-Project/issues/new/choose) because it ensures that your issue is structured and contains all the information that we need. Issues that have not been created like this will be closed and you will be asked to submit a new issue that adheres to these guidelines.
 
 Please add information to all mandatory sections of the issue templates, and try to fill in the optional sections if possible. Do not remove any section after submitting the issue because they might be filled later by the development team. While moving forward in the development process, developers might also extend or alter the initial issue description, e.g. to adjust it according to the outcome of a refinement process.
 
@@ -99,7 +99,7 @@ The development team uses an epic as an umbrella for large change or feature str
 
 ## Contributing to the Project
 
-There are many ways in which you can contribute to this project as a non-developer. If there is something you would like to do that you don't find instructions about here - or if you want to learn how you can get involved - please contact us at sormas@helmholtz-hzi.de or through our [GitHub Discussions](https://github.com/hzi-braunschweig/SORMAS-Project/discussions) and let us know how we can assist you!
+There are many ways in which you can contribute to this project as a non-developer. If there is something you would like to do that you don't find instructions about here - or if you want to learn how you can get involved - please contact us at sormas@helmholtz-hzi.de or through our [GitHub Discussions](https://github.com/sormas-foundation/SORMAS-Project/discussions) and let us know how we can assist you!
 
 Some possibilities to contribute to SORMAS are:
 
@@ -108,12 +108,12 @@ Some possibilities to contribute to SORMAS are:
 
 ## Contributing to the Code
 
-If you're interested in participating in the development of SORMAS, please follow the [Development Environment Setup Instructions](DEVELOPMENT_ENVIRONMENT.md) before you start developing. If you have problems setting up your development environment or need assistance in choosing the first issue to work on, please get in touch with us through our [GitHub Discussions](https://github.com/hzi-braunschweig/SORMAS-Project/discussions) or by contacting us at sormas@helmholtz-hzi.de.
+If you're interested in participating in the development of SORMAS, please follow the [Development Environment Setup Instructions](DEVELOPMENT_ENVIRONMENT.md) before you start developing. If you have problems setting up your development environment or need assistance in choosing the first issue to work on, please get in touch with us through our [GitHub Discussions](https://github.com/sormas-foundation/SORMAS-Project/discussions) or by contacting us at sormas@helmholtz-hzi.de.
 
-Additionally, our [Wiki](https://github.com/hzi-braunschweig/SORMAS-Project/wiki) contains some specific development guides that cover common issues like adding new fields to an entity that we suggest to check out before you start implementing something related to those topics:
+Additionally, our [Wiki](https://github.com/sormas-foundation/SORMAS-Project/wiki) contains some specific development guides that cover common issues like adding new fields to an entity that we suggest to check out before you start implementing something related to those topics:
 
-* [Technical User Guides](https://github.com/hzi-braunschweig/SORMAS-Project/wiki#technical-user-guides)
-* [Development Guides](https://github.com/hzi-braunschweig/SORMAS-Project/wiki#development-guides)
+* [Technical User Guides](https://github.com/sormas-foundation/SORMAS-Project/wiki#technical-user-guides)
+* [Development Guides](https://github.com/sormas-foundation/SORMAS-Project/wiki#development-guides)
 
 ### Development Contributing Guidelines
 
@@ -193,7 +193,7 @@ For version numbers we use semantic versioning. The meaning of a given version n
 * Y: Minor version: Usually a new release of a development iteration of a few weeks, containing new features and changes.
 * Z: Micro version: Fixing problems in the last minor version to make it properly or better to use. Usually contains only bugfixes.
 
-Versions are defined as [Git tags](https://github.com/hzi-braunschweig/SORMAS-Project/tags) with [release notes](https://github.com/hzi-braunschweig/SORMAS-Project/releases) attached to the tag.
+Versions are defined as [Git tags](https://github.com/sormas-foundation/SORMAS-Project/tags) with [release notes](https://github.com/sormas-foundation/SORMAS-Project/releases) attached to the tag.
 
 An unstable version currently under development is denoted as `X.Y.Z-SNAPSHOT`.
 

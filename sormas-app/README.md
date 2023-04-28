@@ -33,7 +33,7 @@ Known limitation: The system always calculates on the fly what data the user can
 There is no active process of removing data the user has no longer access to from the mobile device (e.g. when the jurisdiction of a case changes).
 When the user makes changes to such an entity and tries to sync, the system will detect that the user has no access and trigger an exchange of all UUIDs the user has access to, to remove not accessible entities.
 
-[Synchronization in more detail](https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/sormas-base/doc/SormasSyncProcess.md)
+[Synchronization in more detail](https://github.com/sormas-foundation/SORMAS-Project/blob/development/sormas-base/doc/SormasSyncProcess.md)
 
 ## Versions & Update
 
