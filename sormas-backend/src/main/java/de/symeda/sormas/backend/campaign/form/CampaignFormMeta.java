@@ -44,9 +44,12 @@ public class CampaignFormMeta extends AbstractDomainObject {
 	public static final String CAMPAIGN_FORM_TRANSLATIONS = "campaignFormTranslations";
 	public static final String DAYSTOEXPIRE = "daysExpired";
 
+	public static final String DISTRICTENTRY = "districtentry";
+
 	private String formId;
 	private String formType;
-	
+
+	private boolean districtentry;
 	
 	private FormAccess formCategory;
 	private int daysExpired;
@@ -169,6 +172,15 @@ public class CampaignFormMeta extends AbstractDomainObject {
 	public void setCampaignFormTranslations(String campaignFormTranslations) {
 		this.campaignFormTranslations = campaignFormTranslations;
 		campaignFormTranslationsList = null;
+	}
+
+	@Column
+	public boolean isDistrictentry() {
+		return districtentry;
+	}
+
+	public void setDistrictentry(boolean districtentry) {
+		this.districtentry = districtentry;
 	}
 
 	@Transient

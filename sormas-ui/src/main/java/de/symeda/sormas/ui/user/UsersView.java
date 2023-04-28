@@ -133,7 +133,7 @@ public class UsersView extends AbstractView {
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setStyleName("crud-main-layout");
 		
-		
+
 		HeaderRow mainHeader = grid.getDefaultHeaderRow();
 		
 		HeaderCell ractiveHeader = mainHeader.getCell("active");

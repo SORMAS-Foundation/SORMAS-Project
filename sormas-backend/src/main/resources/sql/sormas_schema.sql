@@ -8729,8 +8729,12 @@ INSERT INTO schema_version (version_number, comment) VALUES (440, 'limitation of
 --Allow for District-level data collection #348
 
 ALTER TABLE public.campaignformmeta ADD districtentry boolean NOT NULL DEFAULT false;
+ALTER TABLE public.populationdata ADD CONSTRAINT populationdata_un UNIQUE (district_id,agegroup,campaign_id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (441, 'Allow for District-level data collection #348 #38');
+
+
+
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
 

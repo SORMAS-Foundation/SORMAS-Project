@@ -58,6 +58,7 @@ import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
+import org.apache.poi.util.SystemOutLogger;
 
 @Stateless(name = "PopulationDataFacade")
 public class PopulationDataFacadeEjb implements PopulationDataFacade {
@@ -157,6 +158,8 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 	@Override
 	public Integer getDistrictPopulationByType(String districtUuid, String campaignUuid, AgeGroup ageGroup) {
 
+		System.out.println("------------!!!!!!!!!!!!!!!!!!!!!!: ");
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Integer> cq = cb.createQuery(Integer.class);
 		Root<PopulationData> root = cq.from(PopulationData.class);
@@ -169,6 +172,8 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 
 		cq.where(campaignFilter, districtFilter, ageFilter);
 		cq.select(root.get(PopulationData.POPULATION));
+
+		System.out.println("------------!!!!!!!!!!!!!!!!!!!!!!: "+SQLExtractor.from(em.createQuery(cq)));
 
 		return QueryHelper.getSingleResult(em, cq);
 	}
