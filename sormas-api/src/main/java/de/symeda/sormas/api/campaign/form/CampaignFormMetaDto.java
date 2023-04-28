@@ -21,6 +21,7 @@ public class CampaignFormMetaDto extends EntityDto {
 	public static final String CAMPAIGN_FORM_ELEMENTS = "campaignFormElements";
 	public static final String FORM_CATEGORY = "formCategory";
 	public static final String DAYSTOEXPIRE = "daysExpired";
+	public static final String DISTRICTENTRY = "districtentry";
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String formId;
@@ -37,6 +38,8 @@ public class CampaignFormMetaDto extends EntityDto {
 	private FormAccess formCategory;
 	
 	private int daysExpired;
+
+	private boolean districtentry;
 
 	public String getFormId() {
 		return formId;
@@ -93,7 +96,12 @@ public class CampaignFormMetaDto extends EntityDto {
 	public void setDaysExpired(int daysExpired) {
 		this.daysExpired = daysExpired;
 	}
-	
-	
 
+	public boolean isDistrictentry() {
+		return districtentry;
+	}
+
+	public void setDistrictentry(boolean districtentry) {
+		this.districtentry = districtentry;
+	}
 }

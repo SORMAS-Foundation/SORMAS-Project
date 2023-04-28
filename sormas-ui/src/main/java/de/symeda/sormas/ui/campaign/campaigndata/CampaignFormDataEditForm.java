@@ -31,6 +31,7 @@ import com.vaadin.server.Page;
 import com.vaadin.server.VaadinService;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.Validator.EmptyValueException;
@@ -238,13 +239,14 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 			if (district != null) {
 				List<CommunityReferenceDto> items = FacadeProvider.getCommunityFacade()
 						.getAllActiveByDistrict(district.getUuid());
-				
+
 				CampaignReferenceDto campaignReferenceDto = (CampaignReferenceDto) cbCampaign.getValue();
-				
-				
+
+				System.out.println(district.getUuid()+"11111111-------- "+campaignReferenceDto.getUuid()+" ----!!!!!!!!!!!!!!!!!!!!!!: "+AgeGroup.AGE_0_4);
+
 				Integer comdto = FacadeProvider.getPopulationDataFacade().getDistrictPopulationByType(district.getUuid(), campaignReferenceDto.getUuid(),  AgeGroup.AGE_0_4);
 				
-				System.out.println(comdto +" =========================="+campaignReferenceDto.getUuid());
+				System.out.println(" ========================== "+campaignReferenceDto.getUuid());
 			
 				VaadinService.getCurrentRequest().getWrappedSession().setAttribute("populationdata", comdto);
 			
@@ -255,6 +257,27 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 				Collections.sort(items, 
 						CommunityReferenceDto.clusternumber); 
 				FieldHelper.updateItems(cbCommunity, district != null ? items : null);
+
+				//solution to issue #348 add if else statement checking if form to be entered at district level, if so... disable cluster.
+
+				CampaignFormMetaDto campaignForm = FacadeProvider.getCampaignFormMetaFacade()
+						.getCampaignFormMetaByUuid(super.getValue().getCampaignFormMeta().getUuid());
+
+				System.out.println("=============================1111: "+campaignForm.getUuid());
+				System.out.println("=============================2222: "+campaignForm.isDistrictentry());
+
+				// Select the first item in the cbCommunity
+				if(campaignForm.isDistrictentry()) {
+					if (!items.isEmpty()) {
+						cbCommunity.setValue(items.get(0));
+					} else {
+						Notification.show("District does not have Clusters configured in the system. Please contact your Administrator", Notification.TYPE_TRAY_NOTIFICATION);
+					}
+					cbCommunity.setEnabled(false);
+					cbCommunity.setVisible(false);
+					cbCommunity.setCaption("District Entry Enabled");
+				}
+
 			}
 
 			final UserDto currentUserx = UserProvider.getCurrent().getUser();
@@ -264,6 +287,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 						CommunityReferenceDto.clusternumber); 
 				cbCommunity.clear();
 				FieldHelper.updateItems(cbCommunity, items);
+
 			}
 
 		});
@@ -390,7 +414,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		expressionProcessor.disableExpressionFieldsForEditing();
 		expressionProcessor.configureExpressionFieldsWithTooltip();
 		expressionProcessor.addExpressionListener();
-		expressionProcessor.addExpressionListenerIgnorable();
+		//expressionProcessor.addExpressionListenerIgnorable();
 
 		getContent().addComponent(campaignFormLayout, CAMPAIGN_FORM_LOC);
 	}
