@@ -74,6 +74,8 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 
 	private DateField dates;
 
+
+
 	public AreaReferenceDto getArea() {
 		return area;
 	}
