@@ -9,6 +9,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.OptionGroup;
 
@@ -26,9 +27,16 @@ public class CampaignFormPhaseSelector extends HorizontalLayout {
 
 	private static final String PHASE_ELEMENTS_SELECTOR = "campaignphases";
 	private final ComboBox phaseComboBox;
+	boolean isCampaingPhaseChanged = false;
+	String currentSessionHolder;
+	String newSession;
 
 	public CampaignFormPhaseSelector() {
-				
+		if (UI.getCurrent().getSession().getCurrent().getAttribute("lastcriteria") != null && !UI.getCurrent()
+				.getSession().getCurrent().getAttribute("lastcriteria").toString().contains("campaign=")) {
+			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", null);
+		}
+
 		setMargin(false);
 		setSpacing(false);
 
@@ -59,11 +67,35 @@ public class CampaignFormPhaseSelector extends HorizontalLayout {
 		// Populate the drop-down
 		phaseComboBox.setItems(phases);
 
+		if (UI.getCurrent().getSession().getCurrent().getAttribute("lastcriteria") != null) {
+			if (UI.getCurrent().getSession().getCurrent().getAttribute("lastcriteria").toString()
+					.contains("formType=")) {
+				String[] sessionx = UI.getCurrent().getSession().getCurrent().getAttribute("lastcriteria").toString()
+						.split("formType=");
+				if (sessionx.length > 0) {
+					UI.getCurrent().getSession().getCurrent().setAttribute("isCampaingPhaseChanged", true);
+					isCampaingPhaseChanged = true;
+
+					String presentSession = sessionx[1].toString();
+					if (sessionx[1].toString().contains("&")) {
+						String[] dex = sessionx[1].toString().split("&");
+						presentSession = dex[0].toString();
+					}
+					System.out.println(presentSession + "ojbdufinaldexxxxxxxxxxxxxxxxxxxxxx");
+					phaseComboBox.setValue(presentSession);
+					currentSessionHolder = presentSession;
+				}
+			}
+		}
+		newSession = currentSessionHolder;
+//		System.out.println("nnnnnnnnnnnnnnnnnnnnoooooooooooooooooooooooo" + newSession);
 		// Set default value of drop-down based on the user type
-		if (UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
+		if (UserProvider.getCurrent().hasUserType(UserType.WHO_USER) && !isCampaingPhaseChanged) {
 			phaseComboBox.setValue(WordUtils.capitalizeFully(CampaignPhase.INTRA.toString()));
 		} else {
-			phaseComboBox.setValue(WordUtils.capitalizeFully(CampaignPhase.INTRA.toString()));
+//			phaseComboBox.setValue(WordUtils.capitalizeFully(CampaignPhase.INTRA.toString()));
+			phaseComboBox.setValue(newSession);
+//			System.out.println("nnnnnnnnnyyyyyyyyyyyyyyyyyyyyyyyyyyyoooo" + newSession);
 		}
 		// Drop-down styling
 		phaseComboBox.setEmptySelectionAllowed(false);
@@ -94,15 +126,15 @@ public class CampaignFormPhaseSelector extends HorizontalLayout {
 				|| UserProvider.getCurrent().hasUserType(UserType.COMMON_USER)) {
 			phases.add(WordUtils.capitalizeFully(CampaignPhase.INTRA.toString()));
 		}
-		if(campaignReferenceDto == null) {
+		if (campaignReferenceDto == null) {
 			if (UserProvider.getCurrent().hasUserType(UserType.WHO_USER)) {
 				phases.add(WordUtils.capitalizeFully(CampaignPhase.POST.toString()));
 			}
-		}else {
-		if (UserProvider.getCurrent().hasUserType(UserType.WHO_USER)
-				|| FacadeProvider.getCampaignFacade().getByUuid(campaignReferenceDto.getUuid()).isPublished()) {
-			phases.add(WordUtils.capitalizeFully(CampaignPhase.POST.toString()));
-		}
+		} else {
+			if (UserProvider.getCurrent().hasUserType(UserType.WHO_USER)
+					|| FacadeProvider.getCampaignFacade().getByUuid(campaignReferenceDto.getUuid()).isPublished()) {
+				phases.add(WordUtils.capitalizeFully(CampaignPhase.POST.toString()));
+			}
 		}
 		phaseComboBox.setItems(phases);
 		// set phase value based on the type of user

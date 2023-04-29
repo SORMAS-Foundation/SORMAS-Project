@@ -318,11 +318,11 @@ public class CampaignDataView extends AbstractCampaignView {
 			}
 			criteria.setCampaignFormMeta(null);
 			
-			System.out.println("!!!!!!!! " + criteria.toUrlParams().toString());
+			System.out.println("!!!!campaign!!!! " + criteria.toUrlParams().toString());
 			
 			
 			filterForm.setValue(criteria);
-			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
+//			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
 			executeJavaScript();
 
 		});
@@ -332,15 +332,17 @@ public class CampaignDataView extends AbstractCampaignView {
 			if (!Objects.isNull(campaignSelector.getValue())) {
 				fillNewFormDropdown(newFormPanel);
 				newFormButton.setEnabled(true);
+				UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
 			} else {
 				newFormButton.setEnabled(false);
+				UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
 			}
 			criteria.setFormType(e.getValue().toString());
 			filterForm.setPhaseFilterContent(e.getValue().toString());
 			filterForm.setValue(criteria);
 			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
-			// System.out.println("777777777777777777777 " +
-			// criteria.toUrlParams().toString());
+			 System.out.println("77777777phase7777777777777 " +
+			 criteria.toUrlParams().toString());
 
 			// grid.reload();
 			executeJavaScript();
