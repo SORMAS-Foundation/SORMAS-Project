@@ -125,7 +125,7 @@ public class CampaignDataView extends AbstractCampaignView {
 		criteria.setFormType(campaignFormPhaseSelector.getValue().toString());
 		addHeaderComponent(campaignFormPhaseSelector);
 
-	//	System.out.println("-----####### "+criteria.getCampaign());
+		System.out.println("-----####### "+criteria.getCampaign());
 		grid = new CampaignDataGrid(criteria);
 		rowsCount = new RowCount(Strings.labelNumberDataRows, grid.getItemCount());
 
@@ -196,25 +196,19 @@ public class CampaignDataView extends AbstractCampaignView {
 
 		filterForm.getField(CampaignFormDataCriteria.CAMPAIGN_FORM_META).addValueChangeListener(e -> {
 			Object value = e.getProperty().getValue();
-			importanceFilterSwitcher.clear();
 			importanceFilterSwitcher.setVisible(value != null);
 			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
-		//	grid.reload();
-			navigateTo(criteria);
+			grid.reload();
 
 			executeJavaScript();
 		});
 
 		importanceFilterSwitcher.addValueChangeListener(e -> {
-
-
-				createFormMetaChangedCallback().accept((CampaignFormMetaReferenceDto) filterForm
-						.getField(CampaignFormDataCriteria.CAMPAIGN_FORM_META).getValue());
-
-
 			grid.reload();
 			executeJavaScript();
-
+			// navigateTo(criteria);
+			createFormMetaChangedCallback().accept((CampaignFormMetaReferenceDto) filterForm
+					.getField(CampaignFormDataCriteria.CAMPAIGN_FORM_META).getValue());
 			rowsCount.update(grid.getItemCount());
 		});
 
@@ -323,8 +317,8 @@ public class CampaignDataView extends AbstractCampaignView {
 				// System.out.println("44444444444444444 " + criteria.toUrlParams().toString());
 			}
 			criteria.setCampaignFormMeta(null);
-			//
-			//System.out.println("!!!!!!!! " + criteria.toUrlParams().toString());
+			
+			System.out.println("!!!!!!!! " + criteria.toUrlParams().toString());
 			
 			
 			filterForm.setValue(criteria);
@@ -405,7 +399,7 @@ public class CampaignDataView extends AbstractCampaignView {
 			btnEnterBulkEditMode.addClickListener(e -> {
 				bulkOperationsDropdown.setVisible(true);
 				ViewModelProviders.of(CampaignDataView.class).get(ViewConfiguration.class).setInEagerMode(true);
-			//	System.out.println("+++++++++ -----: "+!ViewModelProviders.of(CampaignDataView.class).get(ViewConfiguration.class).isInEagerMode());
+				System.out.println("+++++++++ -----: "+!ViewModelProviders.of(CampaignDataView.class).get(ViewConfiguration.class).isInEagerMode());
 				
 				grid.setSelectionMode(SelectionMode.MULTI);
 				
@@ -416,7 +410,7 @@ public class CampaignDataView extends AbstractCampaignView {
 			btnLeaveBulkEditMode.addClickListener(e -> {
 				bulkOperationsDropdown.setVisible(false);
 				ViewModelProviders.of(CampaignDataView.class).get(ViewConfiguration.class).setInEagerMode(false);
-			//	System.out.println("+++++++++ -----: "+!ViewModelProviders.of(CampaignDataView.class).get(ViewConfiguration.class).isInEagerMode());
+				System.out.println("+++++++++ -----: "+!ViewModelProviders.of(CampaignDataView.class).get(ViewConfiguration.class).isInEagerMode());
 				
 				grid.setSelectionMode(SelectionMode.SINGLE);
 				btnLeaveBulkEditMode.setVisible(false);
@@ -599,7 +593,7 @@ public class CampaignDataView extends AbstractCampaignView {
 			criteria.setCampaign(campaignSelector.getValue());
 			criteria.setFormType(campaignFormPhaseSelector.getValue().toString());
 			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
-		//	System.out.println(UI.getCurrent().getSession().getCurrent().getAttribute("lastcriteria"));
+			System.out.println(UI.getCurrent().getSession().getCurrent().getAttribute("lastcriteria"));
 			grid.reload();
 			executeJavaScript();
 			rowsCount.update(grid.getItemCount());
@@ -616,7 +610,7 @@ public class CampaignDataView extends AbstractCampaignView {
 			}
 		});
 
-	//	callBackFormData();
+		callBackFormData();
 		
 		return filterForm;
 
@@ -748,7 +742,7 @@ public class CampaignDataView extends AbstractCampaignView {
 				if (queryParameter.contains("formType")) {
 					criteria.setFormType(innerSplit[1]);
 					formtt = innerSplit[1].toString();
-				//	System.out.println(campp + "cammmm      formmmmtttt" +formtt);
+					System.out.println(campp + "cammmm      formmmmtttt" +formtt);
 					
 					List<CampaignFormMetaReferenceDto> campaignsmeta_ = FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferencesByRoundandCampaign(formtt, campp);
 							filterForm.cbCampaignForm.addItems(campaignsmeta_);
