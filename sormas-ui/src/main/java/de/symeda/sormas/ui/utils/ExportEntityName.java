@@ -36,6 +36,7 @@ public enum ExportEntityName {
 	SAMPLES("entitySamples", "samples"),
 	TASKS("entityTasks", "tasks"),
 	USERS("entityUsers", "Apmis Users"),
+	JSON_DICTIONARY("entityJsonDictionary", "Apmis Json Dictionary"),
 	USER_ROLES("entityUserRoles", "user roles"),
 	DOCUMENTS("entityDocuments", "documents"),
 	DATA_DICTIONARY("entityDataDictionary", "data dictionary"),
