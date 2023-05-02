@@ -40,6 +40,7 @@ import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -705,7 +706,10 @@ public class ContactController {
 					() -> navigateToView(ContactDataView.VIEW_NAME, contact.getUuid(), false));
 		}
 
-		editComponent.restrictEditableComponentsOnEditView(UserRight.CONTACT_EDIT, UserRight.CONTACT_DELETE, null, contact.isInJurisdiction());
+		final EditPermissionType contactEditAllowed = FacadeProvider.getContactFacade().getEditPermissionType(contactUuid);
+
+		editComponent
+			.restrictEditableComponentsOnEditView(UserRight.CONTACT_EDIT, UserRight.CONTACT_DELETE, contactEditAllowed, contact.isInJurisdiction());
 
 		return editComponent;
 	}

@@ -82,7 +82,19 @@ public class ContactJurisdictionPredicateValidator extends PredicateJurisdiction
 				? cb.equal(joins.getRoot().get(Contact.REPORTING_USER).get(User.ID), user.getId())
 				: cb.equal(joins.getRoot().get(Contact.REPORTING_USER).get(User.ID), userPath.get(User.ID)));
 
+		if (userLimitedDiseaseCheck() != null) {
+			return cb.and(cb.or(reportedByCurrentUser, isInJurisdiction()), userLimitedDiseaseCheck());
+		}
+
 		return cb.or(reportedByCurrentUser, inJurisdiction());
+	}
+
+	private Predicate userLimitedDiseaseCheck() {
+		Predicate filter = null;
+		if (user != null && user.getLimitedDisease() != null) {
+			filter = cb.equal(joins.getRoot().get(Contact.DISEASE), user.getLimitedDisease());
+		}
+		return filter;
 	}
 
 	@Override
@@ -140,8 +152,8 @@ public class ContactJurisdictionPredicateValidator extends PredicateJurisdiction
 		final Join contactJoin = sampleJoins.getContact();
 
 		SampleJurisdictionPredicateValidator sampleJurisdictionPredicateValidator = user != null
-				? SampleJurisdictionPredicateValidator.withoutAssociations(cb, sampleJoins, user)
-				: SampleJurisdictionPredicateValidator.withoutAssociations(cb, sampleJoins, userPath);
+			? SampleJurisdictionPredicateValidator.withoutAssociations(cb, sampleJoins, user)
+			: SampleJurisdictionPredicateValidator.withoutAssociations(cb, sampleJoins, userPath);
 
 		sampleContactSubquery.where(cb.and(cb.equal(contactJoin, joins.getRoot()), sampleJurisdictionPredicateValidator.inJurisdictionOrOwned()));
 		sampleContactSubquery.select(sampleRoot.get(Sample.ID));

@@ -52,6 +52,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseBulkEditData;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -962,7 +963,10 @@ public class CaseController {
 
 		appendSpecialCommands(caze, editView);
 
-		editView.restrictEditableComponentsOnEditView(UserRight.CASE_EDIT, UserRight.CASE_DELETE, null, caze.isInJurisdiction());
+		final EditPermissionType caseEditAllowed = FacadeProvider.getCaseFacade().getEditPermissionType(caze.getUuid());
+
+		editView.restrictEditableComponentsOnEditView(UserRight.CASE_EDIT, UserRight.CASE_DELETE, caseEditAllowed, caze.isInJurisdiction());
+
 		return editView;
 	}
 

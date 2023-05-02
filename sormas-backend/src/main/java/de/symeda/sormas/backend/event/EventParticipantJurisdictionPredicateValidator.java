@@ -52,9 +52,24 @@ public class EventParticipantJurisdictionPredicateValidator extends PredicateJur
 		return cb.or(reportedByCurrentUser, isInJurisdiction());
 	}
 
+	private Predicate userLimitedDiseaseCheck() {
+		Predicate filter = null;
+		if (user != null && user.getLimitedDisease() != null) {
+			filter = cb.equal(joins.getEventJoins().getRoot().get(Event.DISEASE), user.getLimitedDisease());
+		}
+		return filter;
+	}
+
 	@Override
 	protected Predicate isInJurisdiction() {
-		return isInJurisdictionByJurisdictionLevel(user.getJurisdictionLevel());
+
+		final Predicate jurisdictionLevel = isInJurisdictionByJurisdictionLevel(user.getJurisdictionLevel());
+
+		if (userLimitedDiseaseCheck() != null) {
+			return cb.and(jurisdictionLevel, userLimitedDiseaseCheck());
+		}
+
+		return jurisdictionLevel;
 	}
 
 	@Override

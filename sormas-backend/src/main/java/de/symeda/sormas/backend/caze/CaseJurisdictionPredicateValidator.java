@@ -86,7 +86,18 @@ public class CaseJurisdictionPredicateValidator extends PredicateJurisdictionVal
 				? cb.equal(joins.getRoot().get(Case.REPORTING_USER).get(User.ID), user.getId())
 				: cb.equal(joins.getRoot().get(Case.REPORTING_USER).get(User.ID), userPath.get(User.ID)));
 
+		if (userLimitedDiseaseCheck() != null) {
+			return cb.and(cb.or(reportedByCurrentUser, isInJurisdiction()), userLimitedDiseaseCheck());
+		}
 		return cb.or(reportedByCurrentUser, isInJurisdiction());
+	}
+
+	private Predicate userLimitedDiseaseCheck() {
+		Predicate filter = null;
+		if (user != null && user.getLimitedDisease() != null) {
+			filter = cb.equal(joins.getRoot().get(Case.DISEASE), user.getLimitedDisease());
+		}
+		return filter;
 	}
 
 	@Override
