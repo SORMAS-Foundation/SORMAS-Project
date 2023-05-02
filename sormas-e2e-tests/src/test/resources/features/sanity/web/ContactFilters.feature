@@ -4,13 +4,11 @@ Feature: Contact filter functionality
   @tmsLink=SORDEV-5692 @env_main
   Scenario: Check Contact basic filters on Contact directory page
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given API: I create a new contact linked to the previous created case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I click on the Contacts button from navbar
@@ -45,13 +43,10 @@ Feature: Contact filter functionality
   @tmsLink=SORDEV-5692 @env_main
   Scenario: Check checkbox filters on Contact directory page
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given API: I create a new contact linked to the previous created case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I click on the Contacts button from navbar
@@ -83,13 +78,10 @@ Feature: Contact filter functionality
   @tmsLink=SORDEV-5692 @env_main
   Scenario: Check aggregation buttons on Contact directory page
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given API: I create a new contact linked to the previous created case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I click on the Contacts button from navbar
@@ -280,10 +272,10 @@ Feature: Contact filter functionality
   @tmsLink=SORQA-5969 @env_de
   Scenario Outline: Test vaccination status filter <status> and columns to contact
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     And API: I create a new contact
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I open the last created contact via API

@@ -1,7 +1,13 @@
 openAPI:
   info:
     title: SORMAS REST API
-    description: https://github.com/hzi-braunschweig/SORMAS-Project/tree/development/sormas-rest
+    description: |
+      [Readme of the module on GitHub](https://github.com/hzi-braunschweig/SORMAS-Project/tree/development/sormas-rest). 
+      ### Responses
+      - 400: Bad request: The request is not valid, e.g. missing required data
+      - 403: Forbidden: User does not have necessary user rights
+      - 409: Conflict: Tried to update data of an entity that was updated in the mean-time.
+      - 500: Internal server error: Other exceptions
     version: ${project.version}
     license:
       name: GPL v3

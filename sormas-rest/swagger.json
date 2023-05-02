@@ -1,13 +1,13 @@
 {
   "openapi" : "3.0.1",
   "info" : {
-    "description" : "https://github.com/hzi-braunschweig/SORMAS-Project/tree/development/sormas-rest",
+    "description" : "[Readme of the module on GitHub](https://github.com/hzi-braunschweig/SORMAS-Project/tree/development/sormas-rest). \n### Responses\n- 400: Bad request: The request is not valid, e.g. missing required data\n- 403: Forbidden: User does not have necessary user rights\n- 409: Conflict: Tried to update data of an entity that was updated in the mean-time.\n- 500: Internal server error: Other exceptions\n",
     "license" : {
       "name" : "GPL v3",
       "url" : "https://www.gnu.org/licenses/gpl-3.0.html"
     },
     "title" : "SORMAS REST API",
-    "version" : "1.83.0-SNAPSHOT"
+    "version" : "1.84.0-SNAPSHOT"
   },
   "servers" : [ {
     "url" : "/sormas-rest"
@@ -126,15 +126,35 @@
           }
         },
         "responses" : {
+          "207" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : { }
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
             },
-            "description" : "default response"
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
         "summary" : "Create or update one or multiple entities.",
-        "tags" : [ "Entity Dto Controller" ]
+        "tags" : [ "Action Controller" ]
       }
     },
     "/actions/query" : {
@@ -316,15 +336,35 @@
           }
         },
         "responses" : {
+          "207" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : { }
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
             },
-            "description" : "default response"
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
         "summary" : "Create or update one or multiple entities.",
-        "tags" : [ "Entity Dto Controller" ]
+        "tags" : [ "Additional Test Controller" ]
       }
     },
     "/additionaltests/query" : {
@@ -458,15 +498,35 @@
           }
         },
         "responses" : {
+          "207" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : { }
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
             },
-            "description" : "default response"
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
         "summary" : "Create or update one or multiple entities.",
-        "tags" : [ "Entity Dto Controller" ]
+        "tags" : [ "Aggregate Report Controller" ]
       }
     },
     "/aggregatereports/query" : {
@@ -700,15 +760,35 @@
           }
         },
         "responses" : {
+          "207" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : { }
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
             },
-            "description" : "default response"
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
         "summary" : "Create or update one or multiple entities.",
-        "tags" : [ "Entity Dto Controller" ]
+        "tags" : [ "Campaign Form Data Controller" ]
       }
     },
     "/campaignFormData/query" : {
@@ -1377,15 +1457,35 @@
           }
         },
         "responses" : {
+          "207" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : { }
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
             },
-            "description" : "default response"
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
         "summary" : "Create or update one or multiple entities.",
-        "tags" : [ "Entity Dto Controller" ]
+        "tags" : [ "Case Controller" ]
       }
     },
     "/cases/push-detailed" : {
@@ -1735,15 +1835,35 @@
           }
         },
         "responses" : {
+          "207" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : { }
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
             },
-            "description" : "default response"
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
         "summary" : "Create or update one or multiple entities.",
-        "tags" : [ "Entity Dto Controller" ]
+        "tags" : [ "Clinical Visit Controller" ]
       }
     },
     "/clinicalvisits/query" : {
@@ -1922,15 +2042,35 @@
           }
         },
         "responses" : {
+          "207" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : { }
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
             },
-            "description" : "default response"
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
         "summary" : "Create or update one or multiple entities.",
-        "tags" : [ "Entity Dto Controller" ]
+        "tags" : [ "Community Controller" ]
       }
     },
     "/communities/query" : {
@@ -2294,15 +2434,35 @@
           }
         },
         "responses" : {
+          "207" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : { }
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
             },
-            "description" : "default response"
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
         "summary" : "Create or update one or multiple entities.",
-        "tags" : [ "Entity Dto Controller" ]
+        "tags" : [ "Contact Controller" ]
       }
     },
     "/contacts/pushWithPerson" : {
@@ -2567,15 +2727,35 @@
           }
         },
         "responses" : {
+          "207" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : { }
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
             },
-            "description" : "default response"
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
         "summary" : "Create or update one or multiple entities.",
-        "tags" : [ "Entity Dto Controller" ]
+        "tags" : [ "Continent Controller" ]
       }
     },
     "/continents/query" : {
@@ -2754,15 +2934,35 @@
           }
         },
         "responses" : {
+          "207" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : { }
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
             },
-            "description" : "default response"
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
         "summary" : "Create or update one or multiple entities.",
-        "tags" : [ "Entity Dto Controller" ]
+        "tags" : [ "Country Controller" ]
       }
     },
     "/countries/query" : {
@@ -3482,15 +3682,35 @@
           }
         },
         "responses" : {
+          "207" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : { }
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
             },
-            "description" : "default response"
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
         "summary" : "Create or update one or multiple entities.",
-        "tags" : [ "Entity Dto Controller" ]
+        "tags" : [ "District Controller" ]
       }
     },
     "/districts/query" : {
@@ -3656,15 +3876,35 @@
           }
         },
         "responses" : {
+          "207" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : { }
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
             },
-            "description" : "default response"
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
         "summary" : "Create or update one or multiple entities.",
-        "tags" : [ "Entity Dto Controller" ]
+        "tags" : [ "Event Group Controller" ]
       }
     },
     "/eventGroups/{uuid}" : {
@@ -3978,15 +4218,35 @@
           }
         },
         "responses" : {
+          "207" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : { }
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
             },
-            "description" : "default response"
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
         "summary" : "Create or update one or multiple entities.",
-        "tags" : [ "Entity Dto Controller" ]
+        "tags" : [ "Event Participant Controller" ]
       }
     },
     "/eventparticipants/query" : {
@@ -4442,15 +4702,35 @@
           }
         },
         "responses" : {
+          "207" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : { }
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
             },
-            "description" : "default response"
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
         "summary" : "Create or update one or multiple entities.",
-        "tags" : [ "Entity Dto Controller" ]
+        "tags" : [ "Event Controller" ]
       }
     },
     "/events/query" : {
@@ -4733,15 +5013,35 @@
           }
         },
         "responses" : {
+          "207" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : { }
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
             },
-            "description" : "default response"
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
         "summary" : "Create or update one or multiple entities.",
-        "tags" : [ "Entity Dto Controller" ]
+        "tags" : [ "Facility Controller" ]
       }
     },
     "/facilities/query" : {
@@ -5250,15 +5550,35 @@
           }
         },
         "responses" : {
+          "207" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : { }
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
             },
-            "description" : "default response"
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
         "summary" : "Create or update one or multiple entities.",
-        "tags" : [ "Entity Dto Controller" ]
+        "tags" : [ "Immunization Controller" ]
       }
     },
     "/immunizations/query" : {
@@ -5904,15 +6224,35 @@
           }
         },
         "responses" : {
+          "207" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : { }
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
             },
-            "description" : "default response"
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
         "summary" : "Create or update one or multiple entities.",
-        "tags" : [ "Entity Dto Controller" ]
+        "tags" : [ "Outbreak Controller" ]
       }
     },
     "/outbreaks/uuids" : {
@@ -6091,15 +6431,35 @@
           }
         },
         "responses" : {
+          "207" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : { }
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
             },
-            "description" : "default response"
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
         "summary" : "Create or update one or multiple entities.",
-        "tags" : [ "Entity Dto Controller" ]
+        "tags" : [ "Pathogen Test Controller" ]
       }
     },
     "/pathogentests/query" : {
@@ -6340,15 +6700,35 @@
           }
         },
         "responses" : {
+          "207" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : { }
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
             },
-            "description" : "default response"
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
         "summary" : "Create or update one or multiple entities.",
-        "tags" : [ "Entity Dto Controller" ]
+        "tags" : [ "Person Controller" ]
       }
     },
     "/persons/query" : {
@@ -6607,15 +6987,35 @@
           }
         },
         "responses" : {
+          "207" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : { }
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
             },
-            "description" : "default response"
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
         "summary" : "Create or update one or multiple entities.",
-        "tags" : [ "Entity Dto Controller" ]
+        "tags" : [ "Point Of Entry Controller" ]
       }
     },
     "/pointsofentry/query" : {
@@ -6785,15 +7185,35 @@
           }
         },
         "responses" : {
+          "207" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : { }
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
             },
-            "description" : "default response"
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
         "summary" : "Create or update one or multiple entities.",
-        "tags" : [ "Entity Dto Controller" ]
+        "tags" : [ "Prescription Controller" ]
       }
     },
     "/prescriptions/query" : {
@@ -6972,15 +7392,35 @@
           }
         },
         "responses" : {
+          "207" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : { }
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
             },
-            "description" : "default response"
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
         "summary" : "Create or update one or multiple entities.",
-        "tags" : [ "Entity Dto Controller" ]
+        "tags" : [ "Region Controller" ]
       }
     },
     "/regions/query" : {
@@ -7255,15 +7695,35 @@
           }
         },
         "responses" : {
+          "207" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : { }
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
             },
-            "description" : "default response"
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
         "summary" : "Create or update one or multiple entities.",
-        "tags" : [ "Entity Dto Controller" ]
+        "tags" : [ "Sample Controller" ]
       }
     },
     "/samples/query" : {
@@ -8011,15 +8471,35 @@
           }
         },
         "responses" : {
+          "207" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : { }
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
             },
-            "description" : "default response"
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
         "summary" : "Create or update one or multiple entities.",
-        "tags" : [ "Entity Dto Controller" ]
+        "tags" : [ "Subcontinent Controller" ]
       }
     },
     "/subcontinents/query" : {
@@ -8093,15 +8573,35 @@
           }
         },
         "responses" : {
+          "207" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : { }
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
             },
-            "description" : "default response"
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
         "summary" : "Create or update one or multiple entities.",
-        "tags" : [ "Entity Dto Controller" ]
+        "tags" : [ "Surveillance Report Controller" ]
       }
     },
     "/surveillancereports/query/cases" : {
@@ -8355,15 +8855,35 @@
           }
         },
         "responses" : {
+          "207" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : { }
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
             },
-            "description" : "default response"
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
         "summary" : "Create or update one or multiple entities.",
-        "tags" : [ "Entity Dto Controller" ]
+        "tags" : [ "Task Controller" ]
       }
     },
     "/tasks/query" : {
@@ -8496,15 +9016,35 @@
           }
         },
         "responses" : {
+          "207" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : { }
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
             },
-            "description" : "default response"
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
         "summary" : "Create or update one or multiple entities.",
-        "tags" : [ "Entity Dto Controller" ]
+        "tags" : [ "Travel Entry Controller" ]
       }
     },
     "/travelentries/{uuid}" : {
@@ -8666,15 +9206,35 @@
           }
         },
         "responses" : {
+          "207" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : { }
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
             },
-            "description" : "default response"
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
         "summary" : "Create or update one or multiple entities.",
-        "tags" : [ "Entity Dto Controller" ]
+        "tags" : [ "Treatment Controller" ]
       }
     },
     "/treatments/query" : {
@@ -8993,11 +9553,31 @@
           }
         },
         "responses" : {
+          "207" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : { }
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
             },
-            "description" : "default response"
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
         "summary" : "Save visits",
@@ -9022,14 +9602,10 @@
             "content" : {
               "application/json; charset=UTF-8" : {
                 "schema" : {
-                  "type" : "string",
-                  "example" : [ {
-                    "personUuid" : "Q56VFD-G3TXKT-R2DBIW-FTWIKAMI",
-                    "latestFollowUpEndDate" : 1599602400000
-                  }, {
-                    "personUuid" : "TEYCIW-BHWHMH-MH2QIW-KBP72JMU",
-                    "latestFollowUpEndDate" : 1593727200000
-                  } ]
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PersonFollowUpEndDto"
+                  }
                 }
               }
             },
@@ -9085,7 +9661,7 @@
             "content" : {
               "application/json; charset=UTF-8" : {
                 "schema" : {
-                  "type" : "string",
+                  "type" : "boolean",
                   "example" : true
                 }
               }
@@ -9112,8 +9688,7 @@
           "content" : {
             "application/json; charset=UTF-8" : {
               "schema" : {
-                "type" : "string",
-                "example" : "[\n  {\n    \"status\": \"REGISTERED\",\n    \"statusDateTime\": \"2020-04-15T12:55:00.000+02:00\" // datetime format yyyy-MM-dd'T'HH:mm:ss.SSSZ\n  }\n]"
+                "$ref" : "#/components/schemas/PersonSymptomJournalStatusDto"
               }
             }
           },
@@ -9124,7 +9699,7 @@
             "content" : {
               "application/json; charset=UTF-8" : {
                 "schema" : {
-                  "type" : "string",
+                  "type" : "boolean",
                   "example" : true
                 }
               }
@@ -9281,15 +9856,35 @@
           }
         },
         "responses" : {
+          "207" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : { }
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
             },
-            "description" : "default response"
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
         "summary" : "Create or update one or multiple entities.",
-        "tags" : [ "Entity Dto Controller" ]
+        "tags" : [ "Visit Controller" ]
       }
     },
     "/visits/query" : {
@@ -9438,15 +10033,35 @@
           }
         },
         "responses" : {
+          "207" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
           "default" : {
             "content" : {
-              "application/json; charset=UTF-8" : { }
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
             },
-            "description" : "default response"
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
           }
         },
         "summary" : "Create or update one or multiple entities.",
-        "tags" : [ "Entity Dto Controller" ]
+        "tags" : [ "Weekly Report Controller" ]
       }
     },
     "/weeklyreports/query" : {
@@ -19920,6 +20535,18 @@
             "type" : "string",
             "maxLength" : 512,
             "minLength" : 0
+          }
+        }
+      },
+      "PostResponse" : {
+        "type" : "object",
+        "properties" : {
+          "body" : {
+            "type" : "object"
+          },
+          "statusCode" : {
+            "type" : "integer",
+            "format" : "int32"
           }
         }
       },

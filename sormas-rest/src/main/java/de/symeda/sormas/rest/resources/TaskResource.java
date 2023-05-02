@@ -27,6 +27,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
@@ -113,5 +114,10 @@ public class TaskResource extends EntityDtoResource<TaskDto> {
 	@Override
 	public UnaryOperator<TaskDto> getSave() {
 		return FacadeProvider.getTaskFacade()::saveTask;
+	}
+
+	@Override
+	public Response postEntityDtos(List<TaskDto> taskDtos) {
+		return super.postEntityDtos(taskDtos);
 	}
 }

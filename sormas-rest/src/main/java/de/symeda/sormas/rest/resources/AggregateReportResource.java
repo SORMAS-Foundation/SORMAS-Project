@@ -26,6 +26,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.report.AggregateCaseCountDto;
@@ -65,5 +66,10 @@ public class AggregateReportResource extends EntityDtoResource<AggregateReportDt
 	@Override
 	public UnaryOperator<AggregateReportDto> getSave() {
 		return FacadeProvider.getAggregateReportFacade()::saveAggregateReport;
+	}
+
+	@Override
+	public Response postEntityDtos(List<AggregateReportDto> aggregateReportDtos) {
+		return super.postEntityDtos(aggregateReportDtos);
 	}
 }

@@ -75,17 +75,15 @@ public class VisitGrid extends FilteredGrid<VisitIndexDto, VisitCriteria> {
 			return new Label(displayText);
 		}).setId(VisitIndexDto.ORIGIN);
 
-		if (isEditAllowed) {
-			setColumns(
-				ACTION_BTN_ID,
-				VisitIndexDto.VISIT_DATE_TIME,
-				VisitIndexDto.VISIT_STATUS,
-				VisitIndexDto.VISIT_REMARKS,
-				VisitIndexDto.DISEASE,
-				VisitIndexDto.SYMPTOMATIC,
-				VisitIndexDto.TEMPERATURE,
-				VisitIndexDto.ORIGIN);
-		}
+		setColumns(
+			ACTION_BTN_ID,
+			VisitIndexDto.VISIT_DATE_TIME,
+			VisitIndexDto.VISIT_STATUS,
+			VisitIndexDto.VISIT_REMARKS,
+			VisitIndexDto.DISEASE,
+			VisitIndexDto.SYMPTOMATIC,
+			VisitIndexDto.TEMPERATURE,
+			VisitIndexDto.ORIGIN);
 
 		((Column<VisitIndexDto, Date>) getColumn(VisitIndexDto.VISIT_DATE_TIME))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(I18nProperties.getUserLanguage())));

@@ -25,6 +25,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
@@ -55,5 +56,10 @@ public class CampaignFormDataResource extends EntityDtoResource<CampaignFormData
 	@Override
 	public UnaryOperator<CampaignFormDataDto> getSave() {
 		return FacadeProvider.getCampaignFormDataFacade()::saveCampaignFormData;
+	}
+
+	@Override
+	public Response postEntityDtos(List<CampaignFormDataDto> campaignFormDataDtos) {
+		return super.postEntityDtos(campaignFormDataDtos);
 	}
 }

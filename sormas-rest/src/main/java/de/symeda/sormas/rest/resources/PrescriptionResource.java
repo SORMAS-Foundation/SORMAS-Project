@@ -26,6 +26,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
@@ -76,5 +77,10 @@ public class PrescriptionResource extends EntityDtoResource<PrescriptionDto> {
 	@Override
 	public UnaryOperator<PrescriptionDto> getSave() {
 		return FacadeProvider.getPrescriptionFacade()::savePrescription;
+	}
+
+	@Override
+	public Response postEntityDtos(List<PrescriptionDto> prescriptionDtos) {
+		return super.postEntityDtos(prescriptionDtos);
 	}
 }

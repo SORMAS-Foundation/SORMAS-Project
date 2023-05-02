@@ -175,7 +175,7 @@
     <string name="caption_executed_by">Executed by</string>
     <string name="caption_facility_or_home">Place of stay</string>
     <string name="caption_fatalities">Fatalities</string>
-    <string name="caption_first_name">First Name</string>
+    <string name="caption_first_name">Imię</string>
     <string name="caption_sex">Sex</string>
     <string name="caption_inadequate_specimen">Inadequate Specimen</string>
     <string name="caption_indeterminate">Indeterminate</string>
@@ -275,7 +275,7 @@
     <string name="confirmation_reduce_quarantine">Czy na pewno chcesz skrócić kwarantannę?</string>
     <string name="confirmation_extend_followup">Would you also want the follow-up period to be extended accordingly?</string>
     <string name="description_epi_week">Epi Week</string>
-    <string name="description_first_name">First Name</string>
+    <string name="description_first_name">Imię</string>
     <string name="description_last_name">Last Name</string>
     <string name="description_password">Password</string>
     <string name="description_period_end">Period End</string>

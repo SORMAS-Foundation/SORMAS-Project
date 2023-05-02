@@ -4,10 +4,10 @@ Feature: Person import and export tests
 @tmsLink=SORDEV-8044 @env_main
 Scenario: Basic person export
   Given API: I create a new person
-  Then API: I check that POST call body is "OK"
+
   And API: I check that POST call status code is 200
   Given API: I create a new case
-  Then API: I check that POST call body is "OK"
+
   And API: I check that POST call status code is 200
   When I log in as a National User
   When I click on the Persons button from navbar
@@ -27,10 +27,10 @@ Scenario: Basic person export
 @tmsLink=SORDEV-8044 @env_main
 Scenario: Detailed person export
   Given API: I create a new person
-  Then API: I check that POST call body is "OK"
+
   And API: I check that POST call status code is 200
   Given API: I create a new case
-  Then API: I check that POST call body is "OK"
+
   And API: I check that POST call status code is 200
   When I log in as a Admin User
   When I click on the Persons button from navbar
@@ -50,10 +50,10 @@ Scenario: Detailed person export
   @tmsLink=SORDEV-8044 @env_main
   Scenario: Custom person export
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     When I log in as a Admin User
     When I click on the Persons button from navbar

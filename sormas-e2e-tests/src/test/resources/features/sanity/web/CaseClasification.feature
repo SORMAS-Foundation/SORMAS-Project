@@ -4,10 +4,8 @@ Feature: Case Classification functionality
   @env_de
   Scenario: Change Case classification from Not Yet Classified to Suspect Case by confirming Sore Throat for DE
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     And API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     And I log in as a National User
     Then I open last edited case by API via URL navigation
@@ -22,10 +20,8 @@ Feature: Case Classification functionality
   @env_de
   Scenario: Change Case classification from Suspect Case to Not Yet Classified for DE
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     And API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     And I log in as a National User
     Then I open last edited case by API via URL navigation

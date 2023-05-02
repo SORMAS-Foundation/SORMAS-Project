@@ -23,10 +23,8 @@ Feature: Edit Persons
   @tmsLink=SORDEV-8466 @env_main
   Scenario: Check Filters on Person page work as expected
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     When I log in as a National User
     When I click on the Persons button from navbar
@@ -110,18 +108,13 @@ Feature: Edit Persons
   @tmsLink=SORDEV-8469 @env_main
   Scenario: Test for navigating through Case, Contact and Immunization cards on Edit Person Page
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     And API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given API: I create a new contact linked to the previous created case
-    Then API: I check that POST call body is "OK"
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given API: I create 1 new immunizations for last created person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
     When I click on the Contacts button from navbar
@@ -148,10 +141,8 @@ Feature: Edit Persons
   @tmsLink=SORDEV-5630 @env_de
   Scenario: Test a general comment field in person entity
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I navigate to the last created via api Person page via URL
@@ -160,7 +151,7 @@ Feature: Edit Persons
   @tmsLink=SORDEV-7424 @env_main
   Scenario: Test event participant person sex required
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     When I log in as a National User
     And I click on the Events button from navbar
@@ -172,7 +163,7 @@ Feature: Edit Persons
   @tmsLink=SORDEV-10227 @env_de
   Scenario: Test Permanent deletion for Person for Travel Entry, Event Participant, Case and Contact combined
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I click on the Entries button from navbar
@@ -309,13 +300,13 @@ Feature: Edit Persons
   @tmsLink=SORDEV-12088 @env_s2s_1
   Scenario: [S2S] Simultaneous Work on Person [1]
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new contact with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district linked to last created case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     Then I navigate to the last created case via the url
@@ -355,10 +346,10 @@ Feature: Edit Persons
   @tmsLink=SORDEV-12088 @env_s2s_1
   Scenario: [S2S] Simultaneous Work on Person [2]
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     Then I navigate to the last created case via the url
@@ -435,10 +426,10 @@ Feature: Edit Persons
   @tmsLink=SORDEV-12088 @env_s2s_1
   Scenario: [S2S] Simultaneous Work on Person [4]
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I click on the Contacts button from navbar

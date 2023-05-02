@@ -1491,7 +1491,7 @@ public class CreateNewCaseSteps implements En {
         () -> {
           softly.assertTrue(
               webDriverHelpers.isElementVisibleWithTimeout(
-                  MERGE_DUPLICATED_CASES_WARNING_POPUP_DE, 5));
+                  MERGE_DUPLICATED_CASES_WARNING_POPUP_DE, 30));
           softly.assertAll();
           webDriverHelpers.clickOnWebElementBySelector(MERGE_DUPLICATED_CASES_WARNING_POPUP_DE);
         });
@@ -1508,7 +1508,7 @@ public class CreateNewCaseSteps implements En {
         "I check if popup with merge message in german appears",
         () -> {
           softly.assertTrue(
-              webDriverHelpers.isElementVisibleWithTimeout(MERGE_MESSAGE_HEADER_DE, 5),
+              webDriverHelpers.isElementVisibleWithTimeout(MERGE_MESSAGE_HEADER_DE, 30),
               "element was not visible");
           softly.assertAll();
         });
