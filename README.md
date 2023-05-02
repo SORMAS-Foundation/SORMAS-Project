@@ -63,7 +63,7 @@ If you want to learn more about the development and contribution process, settin
 * [Sormas2Sormas](docs/SORMAS2SORMAS.md) - The Sormas2Sormas API is used to share entities between SORMAS instances.
 
 * [Security Policies](docs/SECURITY.md) - These contain important information about how to report security problems and the processes we are using to take care of them.
-* [3rd Party License Acknowledgement](docs/3RD_PARTY_ACK.md) - This resource contains the names and license copies of external resources that SORMAS is using.
+* [Third-Party License Acknowledgement](docs/3RD_PARTY_ACK.md) - This resource contains the names and license copies of external resources that SORMAS is using.
 
 If you want to set up a SORMAS instance for production, testing or development purposes, please refer to the following guides:
 * [Installing a SORMAS Server](docs/SERVER_SETUP.md)

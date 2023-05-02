@@ -57,7 +57,7 @@ sudo apt-get install zulu11
 #### Windows
 
 For testing and development environments we suggest to download and run the installer of the Java 11 **JDK** for 32 or 64 bit client systems (depending on your system).
-You can check your Java version from the shell/command line using: ``java -version``.
+You can check your Java version from the shell/command-line using: ``java -version``.
 
 ### Postgres Database
 
@@ -109,7 +109,7 @@ You can configure the audit logger of SORMAS by providing a Logback [configurati
 
 ### Sormas installation
 
-* Optional: Open ``server-setup.sh`` in a text editor to customize the install paths, database access and ports for the server. The default ports are 6080 (HTTP), 6081 (HTTPS) and 6048 (admin). **Important:** Do not change the name of the database user. The pre-defined name is used in the statements executed in the database.
+* Optional: Open ``server-setup.sh`` in a text editor to customize the install paths, database access and ports for the server. The default ports are 6080 (HTTP), 6081 (HTTPS) and 6048 (admin). **Important:** Do not change the name of the database user. The predefined name is used in the statements executed in the database.
 * Set up the database and a Payara domain for SORMAS by executing the setup script: ``sudo -s ./server-setup.sh`` Press enter whenever asked for it
 * **IMPORTANT**: Make sure the script executed successfully. If anything goes wrong you need to fix the problem (or ask for help), then delete the created domain directory and re-execute the script.
 * **IMPORTANT**: Adjust the SORMAS configuration for your country in /opt/domains/sormas/sormas.properties
@@ -304,7 +304,7 @@ Activate output compression (very important!):
 </IfModule>
 ```
 
-Provide the android apk:
+Provide the Android apk:
 
 ```java
 Options -Indexes

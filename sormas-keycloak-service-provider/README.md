@@ -18,7 +18,7 @@ SORMAS technique by importing the `sormas-api` dependency where the technique is
 ### SORMAS Hashing Technique
 *For more info about the SORMAS hashing technique see `sormas-api/src/main/java/de/symeda/sormas/api/utils/PasswordHelper.java`*
 
-In Keycloak this algorithm will be identifiable by the id `sormas-sha256`.
+In Keycloak this algorithm will be identifiable by the ID `sormas-sha256`.
 
 ### Keycloak Hashing Technique
 

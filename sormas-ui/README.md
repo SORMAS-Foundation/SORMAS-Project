@@ -8,7 +8,7 @@ The UI logic of an application runs as a Java servlet in a Java application serv
 The data exchange between client and server takes place Vaadin-internally in json format and is limited to transmitting only the actual changes.
 The data transfer takes place via an encrypted HTTPS connection.
 
-On the client side additional JavaScript libraries are used to display components like maps and charts.
+On the client-side additional JavaScript libraries are used to display components like maps and charts.
 
 The user interface is divided according to the main modules of SORMAS:
 Cases, mSERS (aggregated case reporting), Contacts, Events, Samples, Messages, Statistics, Settings and User Management.

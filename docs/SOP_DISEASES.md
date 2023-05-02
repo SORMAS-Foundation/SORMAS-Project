@@ -53,7 +53,7 @@ Open the **Symptoms** tab which lists all the symptoms that are currently used i
 It's possible that your new disease uses one or more symptoms that are currently not part of SORMAS. In that case, you need to add a new row for each of these symptoms to the bottom of the table and provide the **name of the symptom** in the *Caption* column.
 
 Most symptoms in SORMAS are simple *Yes/No/Unknown* fields where *Yes* means that the symptom is present, *No* that the symptom is not present and *Unknown* that there is no information about whether the symptom is present or not. If your symptom can simply be defined by this pattern, you don't have to specify anything else.
-However, if your symptom is more complex (e.g. there are a number of pre-defined values that the user should choose from), please provide all the necessary details about how the symptom should be specified by users in the *Description* column.
+However, if your symptom is more complex (e.g. there are a number of predefined values that the user should choose from), please provide all the necessary details about how the symptom should be specified by users in the *Description* column.
 
 ### Step 6: Define the Relevant Epidemiological Data
 

@@ -7,7 +7,7 @@ This step-by-step guide explains how to set up your development environment, usi
 
 ## Step 1: Check Out the SORMAS Repository
 - [Download and install the latest Git version](https://git-scm.com/downloads) for your operating system
-- *Optional:* Install a Git client such as [TortoiseGit](https://tortoisegit.org/) or [GitHub Desktop](https://desktop.github.com/) if you don't want to handle version control from the command line or within your IDE
+- *Optional:* Install a Git client such as [TortoiseGit](https://tortoisegit.org/) or [GitHub Desktop](https://desktop.github.com/) if you don't want to handle version control from the command-line or within your IDE
 - *Optional:* Clone the SORMAS-Project repository with `git clone https://github.com/sormas-foundation/SORMAS-Project.git`; if you want to use Git from within your IDE, you can also clone the repository in Step 4
 - Open Git Bash and execute the following command to ensure that rebase is used when pulling the development branch rather than merge: `git config --global branch.development.rebase true`
 
