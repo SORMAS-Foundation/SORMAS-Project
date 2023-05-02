@@ -66,8 +66,9 @@ public class VaccinationsField extends AbstractTableField<VaccinationDto> {
 		if (create) {
 			ControllerProvider.getVaccinationController().create(entry.getImmunization(), disease, fieldAccessCheckers, commitCallback);
 		} else {
+			//TODO: check if is ok to add true for isDeleteAllowed since isEditAllowed true was also added without checking the rights and isEditAllowed()
 			ControllerProvider.getVaccinationController()
-				.edit(entry, disease, fieldAccessCheckers, false, commitCallback, () -> VaccinationsField.this.removeEntry(entry), true);
+				.edit(entry, disease, fieldAccessCheckers, false, commitCallback, () -> VaccinationsField.this.removeEntry(entry), true, true);
 		}
 	}
 
