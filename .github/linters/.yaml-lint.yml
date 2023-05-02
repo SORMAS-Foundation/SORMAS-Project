@@ -6,7 +6,7 @@
 # You can disable line with:              #
 # # yamllint disable-line                 #
 ###########################################
-rules:
-  line-length:
-    level: warning
-    max: 125
+#rules:
+#  line-length:
+#    level: warning
+#    max: 125
