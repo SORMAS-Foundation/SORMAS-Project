@@ -947,6 +947,7 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
+	@PermitAll
 	public List<UserRight> getUserRights(String userUuid) {
 
 		User user = StringUtils.isBlank(userUuid) ? currentUserService.getCurrentUser() : userService.getByUuid(userUuid);
