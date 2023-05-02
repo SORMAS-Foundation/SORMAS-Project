@@ -137,7 +137,7 @@ If something is still not working:
  -> Stop the payara domain, run Ant deploy-serverlibs to update libs
  -> clean up (delete all from domains/sormas/autodeploy, domains/sormas/applications, domains/sormas/generated, and domains/sormas/osgi-cache) try to build again by executing `mvn clean install -DskipTests` on the `sormas-base` module
  -> start the domain and deploy again
- 
+
 ## Avoid redeployment problems
 
 **Problem**: Due to currently a not mitigated problem, it is only possible to deploy the `sormas-ear.ear` (contains `sormas-backend`) once without problems. If you undeploy it and deploy `sormas-ear.ear` again, the other artifacts `sormas-ui`and `sormas-rest` cannot successfully call the backend.

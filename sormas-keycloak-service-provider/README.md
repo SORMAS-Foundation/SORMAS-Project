@@ -3,7 +3,7 @@
 This is a [keycloak service provider](https://www.keycloak.org/docs/11.0/server_development/#_providers) that implements SORMAS legacy password hashing mechanism for two use cases:
 
 1. Migration of existing user when moving from the basic authentication mechanism to keycloak
-2. Creation of users without email in SORMAS. In this case the password will be shown to the admin **once**. 
+2. Creation of users without email in SORMAS. In this case the password will be shown to the admin **once**.
 
 More on [Authentication & Authorization](https://github.com/sormas-foundation/SORMAS-Project/wiki/Authentication-&-Authorization).
 
