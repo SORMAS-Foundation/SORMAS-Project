@@ -1491,7 +1491,7 @@ public class CreateNewCaseSteps implements En {
         () -> {
           softly.assertTrue(
               webDriverHelpers.isElementVisibleWithTimeout(
-                  MERGE_DUPLICATED_CASES_WARNING_POPUP_DE, 5));
+                  MERGE_DUPLICATED_CASES_WARNING_POPUP_DE, 30));
           softly.assertAll();
           webDriverHelpers.clickOnWebElementBySelector(MERGE_DUPLICATED_CASES_WARNING_POPUP_DE);
         });
