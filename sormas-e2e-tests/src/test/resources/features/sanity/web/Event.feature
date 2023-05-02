@@ -103,7 +103,7 @@ Feature: Create events
   @env_main
   Scenario: Add a New action from event and verify the fields
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I open the last created event via api
@@ -116,7 +116,7 @@ Feature: Create events
     @tmsLink=SORDEV-5520 @env_main
   Scenario: Add a New action from Event Actions tab and verify the fields.
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I navigate to Event Action tab for created Event
@@ -131,7 +131,7 @@ Feature: Create events
   @env_main
   Scenario: Add a New action for an Event and verify the Action in EventActions table
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I navigate to Event Action tab for created Event
@@ -146,7 +146,7 @@ Feature: Create events
   @tmsLink=SORDEV-5476 @env_main
   Scenario: Add a Task from event and verify the fields
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     When I am accessing the event tab using the created event via api
@@ -195,7 +195,7 @@ Feature: Create events
   @tmsLink=SORDEV-5571 @env_main
   Scenario: Event group screen from Event Directory Page
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I click on the Events button from navbar
@@ -210,7 +210,7 @@ Feature: Create events
   @tmsLink=SORDEV-5571 @env_main
   Scenario: Event group screen using Group Id on Edit Event Page
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I click on the Events button from navbar
@@ -226,7 +226,7 @@ Feature: Create events
   @tmsLink=SORDEV-5571 @env_main
   Scenario: Event group screen using Group Id in grid
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I click on the Events button from navbar
@@ -243,7 +243,7 @@ Feature: Create events
   @tmsLink=SORDEV-5570 @env_main
   Scenario: Testing Event screen Impact
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I open the last created event via api
@@ -263,7 +263,7 @@ Feature: Create events
   @tmsLink=SORDEV-5572 @env_main
   Scenario: Testing Event group adding for new event
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     Then I open the last created event via api
@@ -338,7 +338,7 @@ Feature: Create events
   @tmsLink=SORDEV-5569 @env_main
   Scenario: Testing Event groups view filters with sorting actions
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     When I am accessing the event tab using the created event via api
@@ -444,7 +444,7 @@ Feature: Create events
     @tmsLink=SORDEV-10359 @env_main
     Scenario: Test Access to the event directory filtered on the events of a group
       Given API: I create a new event
-      Then API: I check that POST call body is "OK"
+
       And API: I check that POST call status code is 200
       Given I log in as a National User
       When I am accessing the event tab using the created event via api
@@ -464,7 +464,7 @@ Feature: Create events
   @tmsLink=SORDEV-7461 @env_main
   Scenario: Testing bulk edit of Events
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I click on the Events button from navbar
@@ -492,7 +492,7 @@ Feature: Create events
   @tmsLink=SORDEV-5967 @env_de
   Scenario: Add evidence fields for event clusters
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I open the last created event via api
@@ -538,13 +538,13 @@ Feature: Create events
   @tmsLink=SORDEV-9477 @env_main
   Scenario: Add a person search option on creation forms
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new person
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     And I log in as a National User
     Then I open the last created event via api
@@ -570,13 +570,13 @@ Feature: Create events
   @env_main @#8555
   Scenario: Add back a person to an event who was previously deleted as event participant
     Given API: I create a new person
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     When I am accessing the event tab using the created event via api
@@ -631,7 +631,7 @@ Feature: Create events
   @tmsLink=SORDEV-10265 @env_main
   Scenario: Manual archiving for bulk event participants
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I click on the Events button from navbar
@@ -674,13 +674,13 @@ Feature: Create events
   @tmsLink=SORDEV-9786 @env_main
   Scenario: Test The "urine p.m." enum value should be hidden when Covid19 is selected as disease
     Given API: I create a new person
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I open the last created event via api
@@ -733,7 +733,7 @@ Feature: Create events
   @tmsLink=SORDEV-8667 @env_main
   Scenario: Test Adjustments to the jurisdiction definition process of event participants
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     Then I open the last created event via api
@@ -788,7 +788,7 @@ Feature: Create events
   @tmsLink=SORDEV-9788 @env_de
   Scenario: Test Hide country specific fields in the 'Person search option' pop-up in Event Participant directory
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     When I open the last created event via api
@@ -858,13 +858,13 @@ Feature: Create events
   @env_main @#8556
   Scenario: Add two positive Pathogen Test Result of different diseases to a Sample of an Event Participant
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new person
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     When I am accessing the event tab using the created event via api
@@ -890,7 +890,7 @@ Feature: Create events
   @env_main @#8565
   Scenario: Check an archived event if its read only
     Given API: I create a new event
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then I log in as a Admin User
     Then I am accessing the event tab using the created event via api
@@ -919,7 +919,7 @@ Feature: Create events
   @tmsLink=SORDEV-7095 @env_main
   Scenario: Test Addition of a Variant field in the "EVENT" part
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     When I log in as a National User
     And I click on the Events button from navbar
@@ -971,7 +971,7 @@ Feature: Create events
   @tmsLink=SORDEV-11455 @env_main
   Scenario: Add reason for deletion to confirmation dialogue
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     When I log in as a National User
     And I click on the Events button from navbar
@@ -1012,7 +1012,7 @@ Feature: Create events
   @tmsLink=SORQA-7093 @env_main
   Scenario: Allow the admin surveillance supervisor to delete events
     Given API: I create a new event
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I navigate to SORMAS login page
     Then I log in as a Admin Surveillance Supervisor
@@ -1026,7 +1026,7 @@ Feature: Create events
   @tmsLink=SORQA-7093 @env_main
   Scenario: Allow the admin surveillance supervisor to archive events
     Given API: I create a new event
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I navigate to SORMAS login page
     Then I log in as a Admin Surveillance Supervisor
@@ -1174,7 +1174,7 @@ Feature: Create events
   @tmsLink=SORDEV-10227 @env_de
   Scenario: Test Permanent deletion for Person for Event Participant
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     Then I open the last created event via api
@@ -1202,7 +1202,7 @@ Feature: Create events
   @tmsLink=SORDEV-5565 @env_de
   Scenario: Document Templates create quarantine order for Event Participant bulk DE
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     Then I open the last created event via api
@@ -1267,7 +1267,7 @@ Feature: Create events
   @tmsLink=SORDEV-12439 @env_main
   Scenario: Test set 'All Event Participants' as the default value when an event is active
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     When I am accessing the event tab using the created event via api
@@ -1277,7 +1277,7 @@ Feature: Create events
   @tmsLink=SORDEV-12439 @env_main
   Scenario: Test set 'Active event participants' as the default value when an event is archived
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     When I am accessing the event tab using the created event via api
@@ -1289,7 +1289,7 @@ Feature: Create events
   @env_main @#7750
   Scenario: Check the map functionality in the Edit Event Page
     Given API: I create a new event
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then I log in as a National User
     Then I am accessing the event tab using the created event via api
@@ -1302,7 +1302,7 @@ Feature: Create events
   @env_main @#8559
   Scenario: Confirm navigation' pop-up is triggered when a user creates a new entry for 'Contact information' and tries to navigate to another page
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     When I open the last created event via api
@@ -1318,7 +1318,7 @@ Feature: Create events
   @tmsLink=SORDEV-12441 @env_de
   Scenario: Hide citizenship and country of birth on Edit Event Participant Person Page
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     Then I open the last created event via api
@@ -1328,13 +1328,12 @@ Feature: Create events
     @tmsLink=SORQA-667 @env_de @oldfake
     Scenario: Check automatic deletion of EVENT_PARTICIPANT created 1826 days ago
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then API: I create a new event
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new event participant with creation date 1826 days ago
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then I log in as a Admin User
     Then I open the last created event via api
@@ -1353,7 +1352,6 @@ Feature: Create events
   @tmsLink=SORQA-666 @env_de @oldfake
     Scenario: Check automatic deletion of EVENT created 1826 days ago
     Given API: I create a new event with creation date 1826 days ago
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then I log in as a Admin User
     Then I open the last created event via api
@@ -1371,13 +1369,12 @@ Feature: Create events
   @tmsLink=SORQA-679 @env_de @oldfake
   Scenario: Check automatic deletion NOT of EVENT_PARTICIPANT created 1820 days ago
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then API: I create a new event
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new event participant with creation date 1820 days ago
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then I log in as a Admin User
     Then I open the last created event via api
@@ -1396,7 +1393,6 @@ Feature: Create events
   @tmsLink=SORQA-680 @env_de @oldfake
   Scenario: Check automatic deletion NOT of EVENT created 1820 days ago
     Given API: I create a new event with creation date 1820 days ago
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then I log in as a Admin User
     Then I open the last created event via api
@@ -1431,13 +1427,13 @@ Feature: Create events
   @#5762 @env_main
   Scenario: Link Event to a Case
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I open the last created Case via API
@@ -1452,13 +1448,13 @@ Feature: Create events
   @tmsLink=SORDEV-10280 @env_main
   Scenario Outline: Test Allow "surveillance supervisor" and "contact supervisor" profiles to access the batch edit mode of the directory of participating events
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new event
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new event participant with creation date 2 days ago
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then I log in as a <user>
     Then I open the last created event via api

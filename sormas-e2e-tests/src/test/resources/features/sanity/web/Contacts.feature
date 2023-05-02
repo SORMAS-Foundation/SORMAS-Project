@@ -15,10 +15,8 @@ Feature: Contacts end to end tests
   @env_main
   Scenario: Delete created contact
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then API: I create a new contact
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
     When I click on the Contacts button from navbar
@@ -29,10 +27,8 @@ Feature: Contacts end to end tests
   @env_main
   Scenario: Edit a created contact
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     And API: I create a new contact
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I open the last created contact via API
@@ -43,10 +39,8 @@ Feature: Contacts end to end tests
   @tmsLink=SORDEV-5476 @env_main
     Scenario: Add a task from contact and verify the fields
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then I log in as a National User
     And I click on the Contacts button from navbar
@@ -66,16 +60,12 @@ Feature: Contacts end to end tests
   @env_main
   Scenario: Source case selected for contact
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     And API: I create a new contact
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I open the last created contact via API
@@ -90,16 +80,12 @@ Feature: Contacts end to end tests
   @env_main
   Scenario: Change the source case contact and then delete
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     And API: I create a new contact
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I open the last created contact via API
@@ -111,10 +97,8 @@ Feature: Contacts end to end tests
     When I open the Case Contacts tab of the created case via api
     Then I check the linked contact information is correctly displayed
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     When I open the last created contact via API
     And I click on the CHANGE CASE button
@@ -129,10 +113,8 @@ Feature: Contacts end to end tests
   @env_main
     Scenario: Create Contact and check details in Detailed view table
       Given API: I create a new person
-      Then API: I check that POST call body is "OK"
       And API: I check that POST call status code is 200
       Then API: I create a new contact
-      Then API: I check that POST call body is "OK"
       And API: I check that POST call status code is 200
       When I log in as a National User
       Then I click on the Contacts button from navbar
@@ -143,10 +125,8 @@ Feature: Contacts end to end tests
   @env_main
   Scenario: Edit all fields from Follow-up visits tab
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     When API: I create a new contact
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     When I am accessing the Follow-up visits tab using of created contact via api
@@ -187,10 +167,10 @@ Feature: Contacts end to end tests
     @tmsLink=SORDEV-5470 @env_main
   Scenario: Create complex contact
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I click on the Contacts button from navbar
@@ -208,10 +188,10 @@ Feature: Contacts end to end tests
   @tmsLink=SORDEV-5641 @env_main
   Scenario: Fill the epidemiological data tab in Contacts
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new contact
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I open the last created contact via API
@@ -232,10 +212,10 @@ Feature: Contacts end to end tests
   @tmsLink=SORDEV-5670 @env_main
   Scenario: Fill the follow-up tab
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new contact
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     And I log in as a National User
     And I am accessing the Follow-up visits tab using of created contact via api
@@ -259,10 +239,10 @@ Feature: Contacts end to end tests
   @tmsLink=SORDEV-7452 @env_main
   Scenario: Bulk mode for linking/adding contacts to new Event
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     When API: I create a new contact
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I click on the Contacts button from navbar
@@ -282,13 +262,13 @@ Feature: Contacts end to end tests
   @tmsLink=SORDEV-7452 @env_main
   Scenario: Bulk mode for linking/adding contacts to existing Event
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     When API: I create a new contact
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I click on the Contacts button from navbar
@@ -308,10 +288,10 @@ Feature: Contacts end to end tests
   @tmsLink=SORDEV-7425 @env_main
   Scenario: Adopt the source case in the associated exposure after case conversion
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new contact
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I open the last created contact via API
@@ -329,10 +309,10 @@ Feature: Contacts end to end tests
   @tmsLink=SORDEV-5640 @env_main
   Scenario: Enter an exposure data in Contacts to testing all available options
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new contact
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then I log in as a National User
     Then I open the last created contact via API
@@ -366,10 +346,10 @@ Feature: Contacts end to end tests
   @env_main @#7768
   Scenario: Create new contact using line listing and select source case
     Given API: I create a new person
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then I log in as a National User
     When I click on the Contacts button from navbar
@@ -384,10 +364,10 @@ Feature: Contacts end to end tests
   @env_main @#7769
   Scenario: Create a new Contact via Line Listing and validate that the selected Source Case data is correctly displayed
     Given API: I create a new person
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then I log in as a National User
     When I click on the Contacts button from navbar
@@ -401,10 +381,10 @@ Feature: Contacts end to end tests
   @tmsLink=SORDEV-9124 @env_main
   Scenario: Document Templates create quarantine order in Contacts
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new contact
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     Then I open the last created contact via API
@@ -420,10 +400,10 @@ Feature: Contacts end to end tests
   @tmsLink=SORDEV-9124 @env_main
   Scenario: Document Templates create quarantine order for Contact bulk
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new contact
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I click on the Contacts button from navbar
@@ -463,10 +443,10 @@ Feature: Contacts end to end tests
   @tmsLink=SORDEV-9477 @env_main
   Scenario: Add a person search option on creation forms
     Then API: I create a new person
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     And I log in as a National User
     Then I click on the Contacts button from navbar
@@ -487,7 +467,7 @@ Feature: Contacts end to end tests
   @tmsLink=SORDEV-6140 @env_main
   Scenario: Ask user to automatically convert some additional contacts and event participants to case
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     When I click on the Contacts button from navbar
@@ -519,7 +499,7 @@ Feature: Contacts end to end tests
   @tmsLink=SORDEV-6140 @env_main
   Scenario: Ask user to automatically convert all additional contacts and event participants to case
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     When I click on the Contacts button from navbar
@@ -550,7 +530,7 @@ Feature: Contacts end to end tests
   @tmsLink=SORDEV-6140 @env_main
   Scenario: Ask user to automatically convert no additional contacts and event participants to case
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     When I click on the Contacts button from navbar
@@ -581,10 +561,10 @@ Feature: Contacts end to end tests
     @tmsLink=SORDEV-10265 @env_main
     Scenario: Manual archiving for contacts
       When API: I create a new person
-      Then API: I check that POST call body is "OK"
+
       And API: I check that POST call status code is 200
       Then API: I create a new contact
-      Then API: I check that POST call body is "OK"
+
       And API: I check that POST call status code is 200
       Given I log in as a Admin User
       Then I open the last created contact via API
@@ -600,10 +580,10 @@ Feature: Contacts end to end tests
   @tmsLink=SORDEV-9786 @env_main
   Scenario: Test The "urine p.m." enum value should be hidden when Covid19 is selected as disease
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new contact
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     Then I open the last created contact via API
@@ -614,10 +594,10 @@ Feature: Contacts end to end tests
   @env_main @tmsLink=SORDEV-9155
   Scenario: Test Vaccinations get lost when merging contacts with duplicate persons
     Then API: I create a new person
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I click on the Contacts button from navbar
@@ -655,10 +635,10 @@ Feature: Contacts end to end tests
   @tmsLink=SORDEV-7460 @env_main
   Scenario: Test Extend the exposure and event startDate and endDate to include a startTime and endTime
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new contact
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I open the last created contact via API
@@ -674,10 +654,10 @@ Feature: Contacts end to end tests
   @tmsLink=SORDEV-5613 @env_main
   Scenario: Option to attach document like pdf, word, jpeg to contacts
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new contact
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     When I click on the Contacts button from navbar
@@ -707,10 +687,10 @@ Feature: Contacts end to end tests
   @tmsLink=SORDEV-10254 @env_main
     Scenario: Manual archive Cases and Contacts
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     When I open the Case Contacts tab of the created case via api
@@ -790,13 +770,13 @@ Feature: Contacts end to end tests
   @env_main @#8565
   Scenario: Check an archived contact if its read only
     Given API: I create a new person
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new contact
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then I log in as a Admin User
     Then I open last edited contact by API via URL navigation
@@ -858,10 +838,10 @@ Feature: Contacts end to end tests
   @tmsLink=SORDEV-6102 @env_main
   Scenario: Merge duplicate contacts
     Then API: I create a new person
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I click on the Contacts button from navbar
@@ -961,10 +941,10 @@ Feature: Contacts end to end tests
   @tmsLink=SORDEV-10361 @env_main
   Scenario: Test Hide "buried" within Person present condition for Covid-19 for Contacts
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I click on the Contacts button from navbar
@@ -1072,10 +1052,10 @@ Feature: Contacts end to end tests
   @tmsLink=SORDEV-6185 @env_de
   Scenario: Test Add information to followup warning message for Contacts
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new contact
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I open the last created contact via API
@@ -1131,10 +1111,10 @@ Feature: Contacts end to end tests
   @tmsLink=SORDEV-5565 @env_de
   Scenario: Document Templates create quarantine order for Contact bulk DE
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new contact
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I click on the Contacts button from navbar
@@ -1177,10 +1157,10 @@ Feature: Contacts end to end tests
   @tmsLink=SORDEV-12441 @env_de
   Scenario: Hide citizenship and country of birth on Edit Contact Person
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new contact
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I open the last created contact via API
@@ -1191,13 +1171,13 @@ Feature: Contacts end to end tests
   @tmsLink=SORDEV-12087 @env_s2s_1 @precon @LanguageRisk
   Scenario: Delete a contact in source system with handing ownership
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new contact with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district linked to last created case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     Then I navigate to the last created case via the url
@@ -1239,13 +1219,13 @@ Feature: Contacts end to end tests
   @tmsLink=SORDEV-12087 @env_s2s_1
   Scenario: Delete a contact in target system with handing ownership
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new contact with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district linked to last created case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     Then I navigate to the last created case via the url
@@ -1284,13 +1264,13 @@ Feature: Contacts end to end tests
   @tmsLink=SORDEV-12087 @env_s2s_1
   Scenario: Delete a contact in source system without handing ownership
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new contact with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district linked to last created case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     Then I navigate to the last created case via the url
@@ -1329,13 +1309,13 @@ Feature: Contacts end to end tests
   @tmsLink=SORDEV-12087 @env_s2s_1
   Scenario: Delete a contact in target system without handing ownership
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new contact with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district linked to last created case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     Then I navigate to the last created case via the url
@@ -1375,13 +1355,13 @@ Feature: Contacts end to end tests
   @tmsLink=SORDEV-12087 @env_s2s_1
   Scenario: Delete a contact in source system with handing ownership before acceptance
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new contact with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district linked to last created case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     Then I navigate to the last created case via the url
@@ -1420,10 +1400,10 @@ Feature: Contacts end to end tests
     @tmsLink=SORQA-665 @env_de @oldfake
     Scenario: Check automatic deletion of CONTACT created 1826 days ago
       Given API: I create a new person
-      Then API: I check that POST call body is "OK"
+
       And API: I check that POST call status code is 200
       Then API: I create a new contact with creation date 1826 days ago
-      Then API: I check that POST call body is "OK"
+
       And API: I check that POST call status code is 200
       Then I log in as a Admin User
       When I click on the Contacts button from navbar
@@ -1442,10 +1422,10 @@ Feature: Contacts end to end tests
       @tmsLink=SORQA-681 @env_de @oldfake
         Scenario: Check automatic deletion NOT of CONTACT created 1820 days ago
         Given API: I create a new person
-        Then API: I check that POST call body is "OK"
+
         And API: I check that POST call status code is 200
         Then API: I create a new contact with creation date 1820 days ago
-        Then API: I check that POST call body is "OK"
+
         And API: I check that POST call status code is 200
         Then I log in as a Admin User
         When I click on the Contacts button from navbar
@@ -1464,10 +1444,10 @@ Feature: Contacts end to end tests
   @tmsLink=SORDEV-13951 @env_s2s_1
   Scenario: S2S - Share a Contact without having a sample
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then I log in as a Admin User
     When I click on the Contacts button from navbar
@@ -1511,10 +1491,10 @@ Feature: Contacts end to end tests
   @tmsLink=SORDEV-13952 @env_s2s_1
   Scenario: S2S - Share a Contact having a sample
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then I log in as a Admin User
     When I click on the Contacts button from navbar

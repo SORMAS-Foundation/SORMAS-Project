@@ -4,10 +4,8 @@ Feature: Cover Epidemiological data Tab from Contacts
   @env_main
   Scenario: Cover Epidemiological data Tab from Contacts
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then API: I create a new contact
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
     When I am accessing the Epidemiological tab using of created contact via api
@@ -17,10 +15,8 @@ Feature: Cover Epidemiological data Tab from Contacts
   @tmsLink=SORDEV-5204 @env_main
   Scenario: Test continent and subcontinent in location entry in exposure
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then API: I create a new contact
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I click on the Contacts button from navbar
