@@ -60,7 +60,7 @@ You can check your Java version from the shell/command line using: ``java -versi
 
 ### Postgres Database
 
-* Install PostgreSQL (currently 9.5, 9.6 or 10) on your system (manuals for all OS can be found here: <https://www.postgresql.org/download>)
+* Install PostgreSQL (currently 9.5, 9.6 or 10 to 15) on your system (manuals for all OS can be found here: <https://www.postgresql.org/download>)
 * Set **max_connections = 288** and **max_prepared_transactions = 256** (at least, sum of all connection pools) in ``postgresql.conf`` (e.g. ``/etc/postgresql/10.0/main/postgresql.conf``; ``C:/Program Files/PostgreSQL/10.0/data``) - make sure the property is uncommented and restart the service to apply the changes.
 * Install the "temporal tables" extension for Postgres (<https://github.com/arkhipov/temporal_tables>)
   * **Windows**: Download the latest version for your Postgres version:
