@@ -70,12 +70,12 @@ public class TherapyController {
 		PrescriptionForm form = new PrescriptionForm(false, !isEditAllowed, prescription.isPseudonymized(), prescription.isInJurisdiction());
 		form.setValue(prescription);
 
-		boolean isEditOrDeleteAllowed = CommitDiscardWrapperComponent.isEditOrDeleteAllowed(isEditAllowed, isDeleteAllowed);
+		boolean isEditOrDeleteAllowed = isEditAllowed || isDeleteAllowed;
 		final CommitDiscardWrapperComponent<PrescriptionForm> view =
 			new CommitDiscardWrapperComponent<>(form, isEditOrDeleteAllowed, form.getFieldGroup());
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(
 			view,
-			I18nProperties.getString(!isEditOrDeleteAllowed ? Strings.headingViewPrescription : Strings.headingEditPrescription));
+			I18nProperties.getString(!isEditAllowed ? Strings.headingViewPrescription : Strings.headingEditPrescription));
 
 		if (isEditOrDeleteAllowed) {
 			view.addCommitListener(new CommitListener() {
@@ -206,7 +206,7 @@ public class TherapyController {
 	public void openTreatmentEditForm(TreatmentIndexDto treatmentIndex, Runnable callback, boolean isEditAllowed, boolean isDeleteAllowed) {
 		TreatmentDto treatment = FacadeProvider.getTreatmentFacade().getTreatmentByUuid(treatmentIndex.getUuid());
 
-		boolean isEditOrDeleteAllowed = CommitDiscardWrapperComponent.isEditOrDeleteAllowed(isEditAllowed, isDeleteAllowed);
+		boolean isEditOrDeleteAllowed = isEditAllowed || isDeleteAllowed;
 		TreatmentForm form = new TreatmentForm(false, treatment.isPseudonymized(), treatment.isInJurisdiction());
 		form.setValue(treatment);
 
@@ -215,7 +215,7 @@ public class TherapyController {
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(
 			view,
-			I18nProperties.getString(!isEditOrDeleteAllowed ? Strings.headingViewTreatment : Strings.headingEditTreatment));
+			I18nProperties.getString(!isEditAllowed ? Strings.headingViewTreatment : Strings.headingEditTreatment));
 
 		if (isEditOrDeleteAllowed) {
 			view.addCommitListener(() -> {

@@ -112,13 +112,13 @@ public class VisitController {
 		Date allowedStartDate,
 		Date allowedEndDate) {
 
-		boolean isEditOrDeleteAllowed = CommitDiscardWrapperComponent.isEditOrDeleteAllowed(canEdit, canDelete);
+		boolean isEditOrDeleteAllowed = canEdit || canDelete;
 		final CommitDiscardWrapperComponent<VisitEditForm> editView =
 			new CommitDiscardWrapperComponent<>(editForm, isEditOrDeleteAllowed, editForm.getFieldGroup());
 		editView.setWidth(100, Unit.PERCENTAGE);
 
 		Window window = VaadinUiUtil
-			.showModalPopupWindow(editView, I18nProperties.getString(!isEditOrDeleteAllowed ? Strings.headingViewVisit : Strings.headingEditVisit));
+			.showModalPopupWindow(editView, I18nProperties.getString(!canEdit ? Strings.headingViewVisit : Strings.headingEditVisit));
 		window.setWidth(editForm.getWidth() + 90, Unit.PIXELS);
 		window.setHeight(80, Unit.PERCENTAGE);
 

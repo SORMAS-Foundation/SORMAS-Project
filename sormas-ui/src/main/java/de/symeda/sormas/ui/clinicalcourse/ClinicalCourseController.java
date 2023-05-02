@@ -79,14 +79,14 @@ public class ClinicalCourseController {
 			clinicalVisit.isInJurisdiction());
 		form.setValue(clinicalVisit);
 
-		boolean isEditOrDeleteAllowed = CommitDiscardWrapperComponent.isEditOrDeleteAllowed(isEditAllowed, isDeleteAllowed);
+		boolean isEditOrDeleteAllowed = isEditAllowed || isDeleteAllowed;
 		final CommitDiscardWrapperComponent<ClinicalVisitForm> view =
 			new CommitDiscardWrapperComponent<>(form, isEditOrDeleteAllowed, form.getFieldGroup());
 		view.setWidth(100, Unit.PERCENTAGE);
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(
 			view,
-			I18nProperties.getString(!isEditOrDeleteAllowed ? Strings.headingViewClinicalVisit : Strings.headingEditClinicalVisit));
+			I18nProperties.getString(!isEditAllowed ? Strings.headingViewClinicalVisit : Strings.headingEditClinicalVisit));
 		popupWindow.setWidth(form.getWidth() + 90, Unit.PIXELS);
 		popupWindow.setHeight(80, Unit.PERCENTAGE);
 

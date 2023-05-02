@@ -929,10 +929,6 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		}
 	}
 
-	public static boolean isEditOrDeleteAllowed(boolean isEditAllowed, boolean isDeleteAllowed) {
-		return isEditAllowed || isDeleteAllowed;
-	}
-
 	@Override
 	public void setWidth(float width, Unit unit) {
 		super.setWidth(width, unit);
