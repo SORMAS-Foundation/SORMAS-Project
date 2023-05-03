@@ -25,20 +25,29 @@ public class JsonDictionaryGrid extends FilteredGrid<JsonDictionaryReportModelDt
 		
 		setColumns(
 				JsonDictionaryReportModelDto.ID, JsonDictionaryReportModelDto.CAPTION,
-				JsonDictionaryReportModelDto.DATATYPE, JsonDictionaryReportModelDto.FORM_TYPE,
-				JsonDictionaryReportModelDto.MODALITY
+			 JsonDictionaryReportModelDto.FORM_TYPE,
+				JsonDictionaryReportModelDto.MODALITY,JsonDictionaryReportModelDto.DATATYPE
 				);
 		
 		for (Column<?, ?> column : getColumns()) {
 			column.setDescriptionGenerator(CommunityUserReportModelDto -> column.getCaption());
-			//System.out.println(column.getId() +" dcolumn.getId() ");
-			if(column.getId().toString().equals("community")) {
-				column.setCaption(I18nProperties.getPrefixCaption(JsonDictionaryReportModelDto.I18N_PREFIX, column.getId().toString(),
-						column.getCaption()));
-			}else {
-			column.setCaption(I18nProperties.getPrefixCaption(JsonDictionaryReportModelDto.I18N_PREFIX, column.getId().toString(),
-					column.getCaption()));
+			if(column.getCaption().equalsIgnoreCase("Formtype")) { 
+				column.setCaption("Data Type");
 			}
+			if(column.getCaption().equalsIgnoreCase("Modality")) { 
+				column.setCaption("Campaign Phase");
+			}
+			if(column.getCaption().equalsIgnoreCase("Datatype")) { 
+				column.setCaption("Campaign Modality");
+			}
+			//System.out.println(column.getId() +" dcolumn.getId() ");
+//			if(column.getId().toString().equals("community")) {
+//				column.setCaption(I18nProperties.getPrefixCaption(JsonDictionaryReportModelDto.I18N_PREFIX, column.getId().toString(),
+//						column.getCaption()));
+//			}else {
+//			column.setCaption(I18nProperties.getPrefixCaption(JsonDictionaryReportModelDto.I18N_PREFIX, column.getId().toString(),
+//					column.getCaption()));
+//			}
 		}
 	}
 	public void setLazyDataProvider() {
