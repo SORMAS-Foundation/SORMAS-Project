@@ -8722,7 +8722,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (439, 'Abilityt to p
 
 ALTER TABLE public.campaignformmeta DROP COLUMN expiry_day_capaign;
 ALTER TABLE public.campaignformmeta ADD daysexpired int4 NOT NULL DEFAULT 0;
-ALTER TABLE public.populationdata ADD CONSTRAINT populationdata_fk FOREIGN KEY (campaign_id) REFERENCES campaigns(id);
+--ALTER TABLE public.populationdata ADD CONSTRAINT populationdata_fk FOREIGN KEY (campaign_id) REFERENCES campaigns(id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (440, 'limitation of form to expiry days and population foreign keys');
 
