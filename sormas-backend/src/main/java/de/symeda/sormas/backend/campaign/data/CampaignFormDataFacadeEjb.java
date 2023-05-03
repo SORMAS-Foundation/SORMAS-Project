@@ -50,6 +50,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.vladmihalcea.hibernate.type.util.SQLExtractor;
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignJurisdictionLevel;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
@@ -388,7 +389,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			cq.orderBy(cb.desc(root.get(CampaignFormData.CHANGE_DATE)));
 		}
 		
-	//	//System.out.println("DEBUGGER r567ujhgty8ijyu8dfrf  " + SQLExtractor.from(em.createQuery(cq)));
+	System.out.println("DEBUGGER r567ujhgty8ijyu8dfrf  " + SQLExtractor.from(em.createQuery(cq)));
 		return QueryHelper.getResultList(em, cq, first, max);
 	}
 	
