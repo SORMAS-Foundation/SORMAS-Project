@@ -1678,7 +1678,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		
 		System.err.println("now in db");
 		List<JsonDictionaryReportModelDto> resultData = new ArrayList<>();
-		StringBuilder selectBuilder = new StringBuilder("SELECT formid, fe->>'caption' as caption, fe->>'id' as id,  formtype, fe->>'type' as datatype,modality\r\n"
+		StringBuilder selectBuilder = new StringBuilder("SELECT formid, fe->>'caption' as caption, fe->>'id' as id,  fe->>'type' as datatype, formtype, modality\r\n"
 				+ "FROM campaignformmeta c , \r\n"
 				+ "     json_array_elements(c.campaignformelements) AS fe \r\n"
 				+ "WHERE fe->>'caption' IS NOT NULL \r\n"
@@ -1721,7 +1721,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		
 		String joinBuilder = "SELECT COUNT(*) as count_result \r\n"
 				+ "FROM (\r\n"
-				+ "  SELECT formid, fe->>'caption' as caption, fe->>'id' as id,  formtype, fe->>'type' as datatype,modality\r\n"
+				+ "  SELECT formid, fe->>'caption' as caption, fe->>'id' as id, fe->>'type' as datatype, formtype, modality\r\n"
 				+ "  FROM campaignformmeta c , \r\n"
 				+ "       json_array_elements(c.campaignformelements) AS fe \r\n"
 				+ "  WHERE fe->>'caption' IS NOT NULL \r\n"

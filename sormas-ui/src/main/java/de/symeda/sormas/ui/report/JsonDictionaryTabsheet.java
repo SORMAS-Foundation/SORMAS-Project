@@ -43,7 +43,7 @@ public class JsonDictionaryTabsheet extends VerticalLayout implements View {
 		this.setStyleName("crud-main-layout");
 		grid.setVisible(false);
 
-		Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.TABLE, null,
+		Button exportButton = ButtonHelper.createIconButton(Captions.exportJsonDictionary, VaadinIcons.TABLE, null,
 				ValoTheme.BUTTON_PRIMARY);
 		exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 		this.addComponent(exportButton);

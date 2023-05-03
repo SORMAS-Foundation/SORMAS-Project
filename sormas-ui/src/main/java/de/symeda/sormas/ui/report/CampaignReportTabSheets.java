@@ -53,6 +53,8 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.campaign.components.clusterassignmentfilterswitcher.ClusterAssignmentFilterSwitcher;
+import de.symeda.sormas.ui.campaign.components.importancefilterswitcher.ImportanceFilterSwitcher;
 import de.symeda.sormas.ui.configuration.infrastructure.CommunitiesGrid;
 import de.symeda.sormas.ui.configuration.infrastructure.CommunitiesView;
 import de.symeda.sormas.ui.configuration.infrastructure.components.SearchField;
@@ -87,6 +89,7 @@ public class CampaignReportTabSheets extends VerticalLayout implements View {
 //		private ComboBox relevanceStatusFilter;
 		private Button resetButton;
 		protected boolean applyingCriteria;
+//		private ClusterAssignmentFilterSwitcher clusterAssignmentFilterSwitcher;
 
 		private HorizontalLayout filterLayout;
 		//private VerticalLayout gridLayout;
@@ -260,6 +263,12 @@ public class CampaignReportTabSheets extends VerticalLayout implements View {
 		resetButton.setVisible(true);
 
 		filterLayout.addComponent(resetButton);
+		
+//		clusterAssignmentFilterSwitcher = new ClusterAssignmentFilterSwitcher();
+//		clusterAssignmentFilterSwitcher.setVisible(true);
+//		filterLayout.addComponent(clusterAssignmentFilterSwitcher);
+//		filterLayout.setComponentAlignment(clusterAssignmentFilterSwitcher, Alignment.TOP_RIGHT);
+//		filterLayout.setExpandRatio(clusterAssignmentFilterSwitcher, 0.2f);
 
 		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
 		actionButtonsLayout.setSpacing(true);
