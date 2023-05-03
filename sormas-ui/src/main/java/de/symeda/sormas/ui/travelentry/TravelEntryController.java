@@ -9,6 +9,7 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -180,8 +181,13 @@ public class TravelEntryController {
 					() -> navigateToTravelEntry(travelEntry.getUuid()));
 		}
 
-		editComponent
-			.restrictEditableComponentsOnEditView(UserRight.TRAVEL_ENTRY_EDIT, UserRight.TRAVEL_ENTRY_DELETE, null, travelEntry.isInJurisdiction());
+		final EditPermissionType travelEntryEditAllowed = FacadeProvider.getTravelEntryFacade().getEditPermissionType(travelEntryUuid);
+
+		editComponent.restrictEditableComponentsOnEditView(
+			UserRight.TRAVEL_ENTRY_EDIT,
+			UserRight.TRAVEL_ENTRY_DELETE,
+			travelEntryEditAllowed,
+			travelEntry.isInJurisdiction());
 
 		return editComponent;
 	}
