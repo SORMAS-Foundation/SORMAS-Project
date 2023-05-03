@@ -300,13 +300,10 @@ Feature: Edit Persons
   @tmsLink=SORDEV-12088 @env_s2s_1
   Scenario: [S2S] Simultaneous Work on Person [1]
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-
     And API: I check that POST call status code is 200
     Given API: I create a new contact with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district linked to last created case
-
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     Then I navigate to the last created case via the url
@@ -346,10 +343,8 @@ Feature: Edit Persons
   @tmsLink=SORDEV-12088 @env_s2s_1
   Scenario: [S2S] Simultaneous Work on Person [2]
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     Then I navigate to the last created case via the url
