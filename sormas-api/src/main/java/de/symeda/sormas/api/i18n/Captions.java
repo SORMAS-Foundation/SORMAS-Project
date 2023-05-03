@@ -1162,6 +1162,7 @@ public interface Captions {
 	String eventUnlinkEvent = "eventUnlinkEvent";
 	String eventUnlinkEventGroup = "eventUnlinkEventGroup";
 	String export = "export";
+	String exportJsonDictionary = "exportJsonDictionary";
 	String exportBasic = "exportBasic";
 	String exportCaseCustom = "exportCaseCustom";
 	String exportCaseManagement = "exportCaseManagement";

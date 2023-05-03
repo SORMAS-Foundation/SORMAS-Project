@@ -49,6 +49,16 @@ public class CampaignReportView extends AbstractView {
 		gridLayout = new VerticalLayout();
 		tabsheet.addTab(gridLayout, "Aggregate Report");
 
+		
+		
+		
+
+//		gridLayout = new VerticalLayout();
+//		gridLayout.setHeightFull();
+//		JsonDictionaryTabsheet dsdgdgae = new JsonDictionaryTabsheet();
+//		gridLayout.addComponent(dsdgdgae);
+//		tabsheet.addTab(dsdgdgae, "json dicytionary");
+
 		criteria = ViewModelProviders.of(CommunitiesView.class).get(CommunityCriteriaNew.class,
 				new CommunityCriteriaNew().country(FacadeProvider.getCountryFacade().getServerCountry()));
 		if (criteria.getRelevanceStatus() == null) {
@@ -74,37 +84,36 @@ public class CampaignReportView extends AbstractView {
 
 		tabsheet.addTab(tabsheetx, "User Analysis");
 
-		
 		FormAccess frmss[] = FormAccess.values();
-	//	for (FormAccess lopper : frmss) {
+		// for (FormAccess lopper : frmss) {
 		{
 			gridLayout = new VerticalLayout();
 			gridLayout.setHeightFull();
 			CompletionAnalysisTabSheets compAnalysis = new CompletionAnalysisTabSheets(FormAccess.ICM);// CampaignReportTabSheets
-																								// sheet = new
-																								// CampaignReportTabSheets(criteria,
-																								// lopper);
+			// sheet = new
+			// CampaignReportTabSheets(criteria,
+			// lopper);
 			gridLayout.addComponent(compAnalysis);
 			tabsheetxr.addTab(gridLayout, "ICM Completion");
 		}
-		
+
 		{
-			
+
 			gridLayout = new VerticalLayout();
 			gridLayout.setHeightFull();
 			CompletionAnalysisTabSheets compAnalysis = new CompletionAnalysisTabSheets(FormAccess.ICM);// CampaignReportTabSheets
-																								// sheet = new
-																								// CampaignReportTabSheets(criteria,
-																								// lopper);
-		//	gridLayout.addComponent(compAnalysis);
-		//	tabsheetxr.addTab(gridLayout, "ICM Missing");
-			
+			// sheet = new
+			// CampaignReportTabSheets(criteria,
+			// lopper);
+			// gridLayout.addComponent(compAnalysis);
+			// tabsheetxr.addTab(gridLayout, "ICM Missing");
+
 		}
-	//	}
+
+		// }
 
 		tabsheetxr.setHeightFull();
 
-		
 		tabsheet.addSelectedTabChangeListener(new SelectedTabChangeListener() {
 			@Override
 			public void selectedTabChange(SelectedTabChangeEvent event) {

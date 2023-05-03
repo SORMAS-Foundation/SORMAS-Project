@@ -33,6 +33,7 @@ import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.report.JsonDictionaryReportModelDto;
 import de.symeda.sormas.api.user.FormAccess;
 import de.symeda.sormas.api.utils.SortProperty;
 
@@ -96,5 +97,9 @@ public interface CampaignFormDataFacade {
 	String getByClusterDropDown(CommunityReferenceDto community, CampaignFormMetaDto campaignForm, CampaignDto campaign);
 
 	void deleteCampaignData(List<String> uuids);
+	
+	List<JsonDictionaryReportModelDto> getByJsonFormDefinitonToCSV();
+	String getByJsonFormDefinitonToCSVCount();
+	
 	
 }
