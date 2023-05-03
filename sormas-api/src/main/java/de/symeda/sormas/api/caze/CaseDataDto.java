@@ -281,7 +281,6 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 		COUNTRY_CODE_SWITZERLAND })
 	private Date districtLevelDate;
 	@Outbreaks
-	@NotNull(message = Validations.caseClassificationInvalid)
 	private CaseClassification caseClassification;
 	@HideForCountriesExcept
 	private CaseIdentificationSource caseIdentificationSource;
@@ -301,7 +300,6 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	private YesNoUnknown laboratoryDiagnosticConfirmation;
 
 	@Outbreaks
-	@NotNull(message = Validations.requiredField)
 	private InvestigationStatus investigationStatus;
 	@Outbreaks
 	private Date investigatedDate;

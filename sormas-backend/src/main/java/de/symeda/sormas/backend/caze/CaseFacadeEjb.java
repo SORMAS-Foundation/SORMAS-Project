@@ -3044,12 +3044,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	public Case fillOrBuildEntity(@NotNull CaseDataDto source, Case target, boolean checkChangeDate) {
 		boolean targetWasNull = isNull(target);
 
-		target = DtoHelper.fillOrBuildEntity(source, target, () -> {
-			Case newCase = new Case();
-			newCase.setSystemCaseClassification(CaseClassification.NOT_CLASSIFIED);
-
-			return newCase;
-		}, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, Case::build, checkChangeDate);
 
 		if (targetWasNull) {
 			FacadeHelper.setUuidIfDtoExists(target.getHospitalization(), source.getHospitalization());
@@ -3076,7 +3071,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setNationalLevelDate(source.getNationalLevelDate());
 		target.setDistrictLevelDate(source.getDistrictLevelDate());
 		target.setPerson(personService.getByReferenceDto(source.getPerson()));
-		target.setCaseClassification(source.getCaseClassification());
+		if (source.getCaseClassification() != null) {
+			target.setCaseClassification(source.getCaseClassification());
+		}
 		target.setCaseIdentificationSource(source.getCaseIdentificationSource());
 		target.setScreeningType(source.getScreeningType());
 		target.setClassificationUser(userService.getByReferenceDto(source.getClassificationUser()));
@@ -3085,7 +3082,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setClinicalConfirmation(source.getClinicalConfirmation());
 		target.setEpidemiologicalConfirmation(source.getEpidemiologicalConfirmation());
 		target.setLaboratoryDiagnosticConfirmation(source.getLaboratoryDiagnosticConfirmation());
-		target.setInvestigationStatus(source.getInvestigationStatus());
+		if (source.getInvestigationStatus() != null) {
+			target.setInvestigationStatus(source.getInvestigationStatus());
+		}
 		target.setHospitalization(hospitalizationFacade.fillOrBuildEntity(source.getHospitalization(), target.getHospitalization(), checkChangeDate));
 		target.setEpiData(epiDataFacade.fillOrBuildEntity(source.getEpiData(), target.getEpiData(), checkChangeDate));
 		if (source.getTherapy() == null) {
@@ -3139,7 +3138,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 
-		target.setOutcome(source.getOutcome());
+		if (source.getOutcome() != null) {
+			target.setOutcome(source.getOutcome());
+		}
 		target.setOutcomeDate(source.getOutcomeDate());
 		target.setSequelae(source.getSequelae());
 		target.setSequelaeDetails(source.getSequelaeDetails());
@@ -3147,7 +3148,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setNotifyingClinicDetails(source.getNotifyingClinicDetails());
 
 		target.setCreationVersion(source.getCreationVersion());
-		target.setCaseOrigin(source.getCaseOrigin());
+		if (source.getCaseOrigin() != null) {
+			target.setCaseOrigin(source.getCaseOrigin());
+		}
 		target.setPointOfEntry(pointOfEntryService.getByReferenceDto(source.getPointOfEntry()));
 		target.setPointOfEntryDetails(source.getPointOfEntryDetails());
 		target.setAdditionalDetails(source.getAdditionalDetails());
