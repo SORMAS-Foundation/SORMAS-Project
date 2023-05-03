@@ -125,7 +125,7 @@ public class TaskController {
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(
 			editView,
-			isEditingOrDeletingAllowed ? I18nProperties.getString(Strings.headingEditTask) : I18nProperties.getString(Strings.headingViewTask));
+			isEditingAllowed ? I18nProperties.getString(Strings.headingEditTask) : I18nProperties.getString(Strings.headingViewTask));
 
 		editView.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {

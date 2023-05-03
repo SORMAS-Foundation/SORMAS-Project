@@ -70,12 +70,16 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 		for (PathogenTestDto pathogenTest : displayedEntries) {
 			PathogenTestListEntry listEntry = new PathogenTestListEntry(pathogenTest, true);
 			String pathogenTestUuid = pathogenTest.getUuid();
-			boolean isEditableAndHasEditRight = isEditable && UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_EDIT);
+			boolean isEditableAndHasEditRight =
+				UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditable, UserRight.SAMPLE_EDIT, UserRight.PATHOGEN_TEST_EDIT);
+			boolean isEditableAndHasDeleteRight =
+				UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditable, UserRight.PATHOGEN_TEST_DELETE);
+
 			listEntry.addActionButton(
 				pathogenTestUuid,
 				e -> actionCallback.accept(
 					() -> ControllerProvider.getPathogenTestController()
-						.edit(pathogenTestUuid, SormasUI::refreshView, isEditableAndHasEditRight)),
+						.edit(pathogenTestUuid, SormasUI::refreshView, isEditableAndHasEditRight, isEditableAndHasDeleteRight)),
 				isEditableAndHasEditRight);
 			listEntry.setEnabled(isEditable);
 			listLayout.addComponent(listEntry);

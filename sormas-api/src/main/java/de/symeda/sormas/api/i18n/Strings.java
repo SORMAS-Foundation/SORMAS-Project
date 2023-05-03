@@ -528,6 +528,7 @@ public interface Strings {
 	String headingEditTask = "headingEditTask";
 	String headingEditTreatment = "headingEditTreatment";
 	String headingEditUser = "headingEditUser";
+	String headingEditVaccination = "headingEditVaccination";
 	String headingEditVisit = "headingEditVisit";
 	String headingEnvironmentalExposure = "headingEnvironmentalExposure";
 	String headingEpiCurve = "headingEpiCurve";
@@ -751,10 +752,14 @@ public interface Strings {
 	String headingUserSettings = "headingUserSettings";
 	String headingVaccination = "headingVaccination";
 	String headingViewAdditionalTest = "headingViewAdditionalTest";
+	String headingViewClinicalVisit = "headingViewClinicalVisit";
 	String headingViewNotFound = "headingViewNotFound";
 	String headingViewPathogenTestResult = "headingViewPathogenTestResult";
+	String headingViewPrescription = "headingViewPrescription";
 	String headingViewSurveillanceReport = "headingViewSurveillanceReport";
 	String headingViewTask = "headingViewTask";
+	String headingViewTreatment = "headingViewTreatment";
+	String headingViewVaccination = "headingViewVaccination";
 	String headingViewVisit = "headingViewVisit";
 	String headingVisits = "headingVisits";
 	String headingVisitsDeleted = "headingVisitsDeleted";
