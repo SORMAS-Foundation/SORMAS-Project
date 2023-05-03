@@ -31,6 +31,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.InfoProvider;
+import de.symeda.sormas.ui.report.JsonDictionaryTabsheet;
 
 @SuppressWarnings("serial")
 public class AboutView extends VerticalLayout implements View {
@@ -45,6 +46,10 @@ public class AboutView extends VerticalLayout implements View {
 		content.setSizeFull();
 		addComponent(content);
 		
+		JsonDictionaryTabsheet jsonDictionaryTabsheet = new JsonDictionaryTabsheet();
+		jsonDictionaryTabsheet.setId("jsonDictionaryExport");
+//		jsonDictionaryTabsheet.setComponentAlignment(, ALIGNMENT_DEFAULT);
+		addComponent(jsonDictionaryTabsheet);
 //		SormasUI.getCurrent().getPage().getJavaScript().execute("        var form = document.getElementById('my-form');\n"
 //				+ "        form.addEventListener(\"submit\", e => {\n"
 //				+ "            e.preventDefault();\n"

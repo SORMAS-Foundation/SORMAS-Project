@@ -114,7 +114,7 @@ public class CampaignDataView extends AbstractCampaignView {
 	@SuppressWarnings("deprecation")
 	public CampaignDataView() {
 		super(VIEW_NAME);
-
+		
 		criteria = ViewModelProviders.of(getClass()).get(CampaignFormDataCriteria.class);
 
 		campaignSelector = new CampaignSelector();
@@ -323,12 +323,14 @@ public class CampaignDataView extends AbstractCampaignView {
 				// System.out.println("44444444444444444 " + criteria.toUrlParams().toString());
 			}
 			criteria.setCampaignFormMeta(null);
+
 			//
 			//System.out.println("!!!!!!!! " + criteria.toUrlParams().toString());
+
 			
 			
 			filterForm.setValue(criteria);
-			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
+//			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
 			executeJavaScript();
 
 		});
@@ -338,15 +340,17 @@ public class CampaignDataView extends AbstractCampaignView {
 			if (!Objects.isNull(campaignSelector.getValue())) {
 				fillNewFormDropdown(newFormPanel);
 				newFormButton.setEnabled(true);
+				UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
 			} else {
 				newFormButton.setEnabled(false);
+				UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
 			}
 			criteria.setFormType(e.getValue().toString());
 			filterForm.setPhaseFilterContent(e.getValue().toString());
 			filterForm.setValue(criteria);
 			UI.getCurrent().getSession().getCurrent().setAttribute("lastcriteria", criteria.toUrlParams().toString());
-			// System.out.println("777777777777777777777 " +
-			// criteria.toUrlParams().toString());
+			 System.out.println("77777777phase7777777777777 " +
+			 criteria.toUrlParams().toString());
 
 			// grid.reload();
 			executeJavaScript();
@@ -363,9 +367,7 @@ public class CampaignDataView extends AbstractCampaignView {
 		rowsCount.update(grid.getItemCount());
 
 		JavaScript js = Page.getCurrent().getJavaScript();
-		js.execute("$(document).ready(function() {\n" + ""
-				+ "document.querySelector(\".v-label.v-widget.h1.v-label-h1.vspace-none.v-label-vspace-none.v-label-undef-w\").style.display='none';\n"
-				+ "	if ($(window).width() <= 825) {\n"
+		js.execute("$(document).ready(function() {\n" + "	if ($(window).width() <= 825) {\n"
 				+ "document.querySelector(\".v-label.v-widget.h1.v-label-h1.vspace-none.v-label-vspace-none.v-label-undef-w\").style.display='none';\n"
 
 				+ "document.querySelector(\".v-horizontallayout-view-headerxxxx :nth-child(12)\").style.display='none';"

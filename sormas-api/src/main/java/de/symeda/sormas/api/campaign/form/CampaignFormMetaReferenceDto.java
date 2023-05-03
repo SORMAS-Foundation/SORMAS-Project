@@ -51,6 +51,14 @@ public class CampaignFormMetaReferenceDto extends ReferenceDto {
 		setUuid(uuid);
 		setCaption(caption);
 	}
+	
+	public CampaignFormMetaReferenceDto(String uuid,  int daysExpired) {
+		// System.out.println("555555555555555555555555555555555555555");
+		setUuid(uuid);
+		
+		this.setDaysExpired(daysExpired);
+		
+	}
 
 	public CampaignFormMetaReferenceDto(String uuid, String caption, String type) {
 	//	 System.out.println("44444444444444444444444444444444444");
@@ -66,6 +74,15 @@ public class CampaignFormMetaReferenceDto extends ReferenceDto {
 		setFormType(type);
 		this.setDaysExpired(daysExpired);
 		this.setFormCategory(access);
+	}
+	
+	public CampaignFormMetaReferenceDto(String uuid, String caption, String type,  int daysExpired) {
+		// System.out.println("555555555555555555555555555555555555555");
+		setUuid(uuid);
+		setCaption(caption);
+		setFormType(type);
+		this.setDaysExpired(daysExpired);
+		
 	}
 
 	public FormAccess getFormCategory() {

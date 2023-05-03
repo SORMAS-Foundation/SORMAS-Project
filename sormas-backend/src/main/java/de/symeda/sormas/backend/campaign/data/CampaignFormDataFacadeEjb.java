@@ -77,6 +77,7 @@ import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.report.JsonDictionaryReportModelDto;
 import de.symeda.sormas.api.user.FormAccess;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -504,7 +505,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 				+ "select count(campaignfo0_.formvalues)\n"
 				+ "from campaignFormData campaignfo0_\n"
 				+ "left outer join campaigns campaign1_ on campaignfo0_.campaign_id=campaign1_.id\n"
-				+ "left o*******uter join areas area3_ on campaignfo0_.area_id=area3_.id \n"
+				+ "left outer join areas area3_ on campaignfo0_.area_id=area3_.id \n"
 				+ "left outer join CampaignFormMeta campaignfo2_ on campaignfo0_.campaignFormMeta_id=campaignfo2_.id\n"
 				+ "where area3_.uuid=area3_x.uuid and campaignfo2_.formCategory= 'ICM' and (campaignfo2_.formName like '%Revisit%')\n"
 				+ "and campaignfo0_.community_id = campaignfo0_x.id\n"
@@ -1672,8 +1673,83 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		}
 		
 	}
+
+	@Override
+	public List<JsonDictionaryReportModelDto> getByJsonFormDefinitonToCSV() {
+		
+		System.err.println("now in db");
+		List<JsonDictionaryReportModelDto> resultData = new ArrayList<>();
+		StringBuilder selectBuilder = new StringBuilder("SELECT formid, fe->>'caption' as caption, fe->>'id' as id,  fe->>'type' as datatype, formtype, modality\r\n"
+				+ "FROM campaignformmeta c , \r\n"
+				+ "     json_array_elements(c.campaignformelements) AS fe \r\n"
+				+ "WHERE fe->>'caption' IS NOT NULL \r\n"
+				+ "  AND fe->>'caption' NOT LIKE '%<%';");
+		
+		System.out.println("query used - "+ selectBuilder.toString()); //SQLExtractor.from(seriesDataQuery));
+		
+		Query seriesDataQuery = em.createNativeQuery(selectBuilder.toString());
+				
+				
+		@SuppressWarnings("unchecked")
+		List<Object[]> resultList = seriesDataQuery.getResultList(); 
+		
+		//String formUuid, String formId, String formField, String formCaption, String area,String region, String district, Long sumValue
+		System.err.println("convertting to constructor at db");
+		resultData.addAll(resultList.stream()
+				.map((result) -> new JsonDictionaryReportModelDto(
+						(String) result[0],
+						(String) result[1],
+						(String) result[2], 
+						(String) result[3],
+						(String) result[4],
+						(String) result[5]
+						)).collect(Collectors.toList()));
+
+	System.out.println("query used - "+ resultData.toString()); //SQLExtractor.from(seriesDataQuery));
+	return resultData;
+	}
 	
+	@Override
+	public String getByJsonFormDefinitonToCSVCount() {
 	
+		
+		//@formatter:off
+		
+		String joiner = "";
+		
+	
+		
+		
+		String joinBuilder = "SELECT COUNT(*) as count_result \r\n"
+				+ "FROM (\r\n"
+				+ "  SELECT formid, fe->>'caption' as caption, fe->>'id' as id, fe->>'type' as datatype, formtype, modality\r\n"
+				+ "  FROM campaignformmeta c , \r\n"
+				+ "       json_array_elements(c.campaignformelements) AS fe \r\n"
+				+ "  WHERE fe->>'caption' IS NOT NULL \r\n"
+				+ "    AND fe->>'caption' NOT LIKE '%<%'\r\n"
+				+ ") AS subquery;";
+		
+		
+	//	Query seriesDataQuery = em.createNativeQuery(joinBuilder);
+		
+	//	List<CampaignFormDataIndexDto> resultData = new ArrayList<>();
+//		
+//		
+//		@SuppressWarnings("unchecked")
+//		List<Object[]> resultList = seriesDataQuery.getResultList(); 
+//		
+//		resultData.addAll(resultList.stream()
+//				.map((result) -> new CampaignFormDataIndexDto(
+//						
+//						(String) result[0]
+//								
+//								)).collect(Collectors.toList()));
+//	
+//		System.out.println("ending...." +resultData.size());
+		
+	//System.out.println("resultData - "+ resultData.toString()); //SQLExtractor.from(seriesDataQuery));
+	return ((BigInteger) em.createNativeQuery(joinBuilder).getSingleResult()).toString();
+	}
 	
 
 }
