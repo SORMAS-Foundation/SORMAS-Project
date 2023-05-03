@@ -258,6 +258,7 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 		Set<FormAccess> userFormAccess = UserProvider.getCurrent().getFormAccess();
 		CampaignFormDataCriteria criteriax = criteria;
 		if (criteria.getCampaign() != null && getPhaseFilterContent() == null) {
+		//	System.out.println("@@@@@@@@@111222222");
 			cbCampaignForm.removeAllItems();
 			campaignFormMetaReferenceDto = FacadeProvider.getCampaignFormMetaFacade()
 					.getAllCampaignFormMetasAsReferencesByRoundandCampaignandForm(phase.toLowerCase(),
@@ -267,6 +268,7 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 			
 		} else if (criteria.getCampaign() != null && getPhaseFilterContent() != null
 				&& !"ALL PHASES".equals(getPhaseFilterContent())) {
+		//	System.out.println("@@@@@@@@@3333333");
 			cbCampaignForm.removeAllItems();
 			campaignFormMetaReferenceDto = FacadeProvider.getCampaignFormMetaFacade()
 					.getAllCampaignFormMetasAsReferencesByRoundandCampaignandForm(phase.toLowerCase(),
@@ -277,6 +279,8 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 		
 	//System.out.println("111111111111111111___xcxcxcxcxcx___11111111111111111111"+campaignFormMetaReferenceDto.size());
 		if(criteria.getCampaignFormMeta() != null) {
+		//	System.out.println("@@@@@@@@@11111111");
+
 		cbCampaignForm.setValue(criteria.getCampaignFormMeta());
 		}
 			
