@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2023 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,6 +17,7 @@ package de.symeda.sormas.rest.resources;
 
 import java.util.Date;
 import java.util.List;
+import java.util.function.UnaryOperator;
 
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -27,12 +28,12 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
@@ -45,12 +46,13 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.Experimental;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
+import de.symeda.sormas.rest.resources.base.EntityDtoResource;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @Path("/immunizations")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
-public class ImmunizationResource extends EntityDtoResource {
+public class ImmunizationResource extends EntityDtoResource<ImmunizationDto> {
 
 	@GET
 	@Path("/all/{since}")
@@ -77,12 +79,6 @@ public class ImmunizationResource extends EntityDtoResource {
 	@Path("/query/persons")
 	public List<ImmunizationDto> getByPersonUuids(List<String> uuids) {
 		return FacadeProvider.getImmunizationFacade().getByPersonUuids(uuids);
-	}
-
-	@POST
-	@Path("/push")
-	public List<PushResult> post(@Valid List<ImmunizationDto> dtos) {
-		return savePushedDto(dtos, FacadeProvider.getImmunizationFacade()::save);
 	}
 
 	@GET
@@ -185,4 +181,13 @@ public class ImmunizationResource extends EntityDtoResource {
 		return FacadeProvider.getVaccinationFacade().postUpdate(uuid, vaccinationDataDtoJson);
 	}
 
+	@Override
+	public UnaryOperator<ImmunizationDto> getSave() {
+		return FacadeProvider.getImmunizationFacade()::save;
+	}
+
+	@Override
+	public Response postEntityDtos(List<ImmunizationDto> immunizationDtos) {
+		return super.postEntityDtos(immunizationDtos);
+	}
 }

@@ -2,7 +2,7 @@ package de.symeda.sormas.app.backend.report;
 
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.report.AggregateReportDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -43,7 +43,7 @@ public class AggregateReportDtoHelper extends AdoDtoHelper<AggregateReport, Aggr
 	}
 
 	@Override
-	protected Call<List<PushResult>> pushAll(List<AggregateReportDto> aggregateReports) throws NoConnectionException {
+	protected Call<List<PostResponse>> pushAll(List<AggregateReportDto> aggregateReports) throws NoConnectionException {
 		return RetroProvider.getAggregateReportFacade().pushAll(aggregateReports);
 	}
 

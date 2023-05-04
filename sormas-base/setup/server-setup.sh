@@ -451,7 +451,7 @@ echo "---"
 echo "Please make sure to perform the following steps:"
 echo "  - Adjust the sormas.properties file to your system"
 if [[ ${DEV_SYSTEM} != true ]]; then
-	echo "  - Execute the sormas-update.sh file to populate the database and deploy the server"
+	echo "  - Execute the server-update.sh file to populate the database and deploy the server"
 	echo "  - Configure the apache web server according to the server setup guide"
 fi
 	echo "  - Execute the r-setup.sh file to enable disease network diagrams"

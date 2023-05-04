@@ -1,0 +1,91 @@
+[
+  {
+    "uuid": "#{caseGUID}",
+    "pseudonymized": false,
+    "reportDate": #{todayDate},
+    "followUpUntil": #{todayDate},
+    "person": {
+      "uuid": "#{personGUID}"
+    },
+    "clinicalCourse": {
+  "uuid": "#{clinicalCourseUUID}"
+    },
+    "reportingUser": {
+      "uuid": "#{nationalUserUUID}"
+},
+    "surveillanceOfficer": {
+     "uuid": "#{surveillanceOfficerUUID}"
+},
+    "hospitalization": {
+  "uuid": "#{hospitalizationUUID}"
+    },
+    "therapy": {
+  "uuid": "#{therapyUUID}"
+    },
+    "community": {
+  "uuid": "#{communityUUID}"
+    },
+    "symptoms": {
+       "uuid": "#{symptomsUUID}",
+      "pseudonymized": true,
+      "symptomatic": false
+    },
+    "epiData": {
+  "uuid": "#{epiDataUUID_forCase}"
+    },
+    "portHealthInfo": {
+  "uuid": "#{portHealthInfoUUID}"
+    },
+    "district": {
+  "uuid": "#{districtUUID}"
+    },
+    "region": {
+  "uuid": "#{regionUUID}"
+    },
+    "responsibleDistrict": {
+  "uuid": "#{districtUUID}"
+    },
+    "responsibleRegion": {
+  "uuid": "#{regionUUID}"
+    },
+    "healthFacility": {
+  "uuid": "#{healthFacilityUUID}"
+    },
+    "healthConditions": {
+  "uuid": "#{healthConditionUUID_forCase}"
+    },
+    "maternalHistory": {
+      "pseudonymized": true,
+  "uuid": "#{maternalHistoryUUID}"
+    },
+    "followUpStatus": "FOLLOW_UP",
+    "outcome": "NO_OUTCOME",
+    "investigationStatus": "PENDING",
+    "caseOrigin": "IN_COUNTRY",
+    "disease": "CORONAVIRUS",
+    "diseaseDetails": "Test Disease",
+    "healthFacilityDetails": "Details",
+    "caseClassification": "NOT_CLASSIFIED",
+    "facilityType": "HOSPITAL",
+    "pointOfEntryDetails": "",
+    "sharedToCountry": false,
+    "nosocomialOutbreak": false,
+    "quarantineOrderedVerbally": false,
+    "quarantineOrderedOfficialDocument": false,
+    "quarantineExtended": false,
+    "quarantineReduced": false,
+    "quarantineOfficialOrderSent": false,
+    "overwriteFollowUpUntil": false,
+    "ownershipHandedOver": false,
+    "notACaseReasonNegativeTest": false,
+    "notACaseReasonPhysicianInformation": false,
+    "notACaseReasonDifferentPathogen": false,
+    "notACaseReasonOther": false,
+    "dontShareWithReportingTool": false,
+    "caseReferenceDefinition": "NOT_FULFILLED",
+    "vaccinationStatus": "VACCINATED",
+    "quarantine": "HOME",
+    "reInfection": "YES",
+    "reinfectionStatus": "CONFIRMED"
+  }
+]

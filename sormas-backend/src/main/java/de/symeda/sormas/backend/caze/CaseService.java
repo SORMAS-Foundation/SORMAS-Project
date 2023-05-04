@@ -1172,10 +1172,10 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 	}
 
 	@Override
-	public void undelete(Case caze) {
+	public void restore(Case caze) {
 		// un-delete all samples that are only associated with this case
-		caze.getSamples().stream().forEach(sample -> sampleService.undelete(sample));
-		super.undelete(caze);
+		caze.getSamples().stream().forEach(sample -> sampleService.restore(sample));
+		super.restore(caze);
 	}
 
 	private void deleteCaseInExternalSurveillanceTool(Case caze) {
@@ -1954,8 +1954,9 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		// * onset date within 30 days of each other (when defined)
 
 		Predicate userFilter = createUserFilter(caseQueryContext);
-		Predicate criteriaFilter = criteria != null ? createCriteriaFilter(criteria, caseQueryContext) : null;
-		Predicate relevanceStatusRoot2Filter = createRelevanceStatusFilter(criteria, caseQueryContext2);
+		Predicate criteriaFilter = cb.or(createCriteriaFilter(criteria, caseQueryContext), createCriteriaFilter(criteria, caseQueryContext2));
+		Predicate relevanceStatusRoot2Filter =
+			cb.and(createRelevanceStatusFilter(criteria, caseQueryContext), createRelevanceStatusFilter(criteria, caseQueryContext2));
 		Expression<String> nameSimilarityExpr = cb.concat(person.get(Person.FIRST_NAME), " ");
 		nameSimilarityExpr = cb.concat(nameSimilarityExpr, person.get(Person.LAST_NAME));
 		Expression<String> nameSimilarityExpr2 = cb.concat(person2.get(Person.FIRST_NAME), " ");

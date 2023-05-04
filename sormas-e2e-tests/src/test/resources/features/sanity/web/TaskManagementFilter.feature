@@ -36,10 +36,8 @@ Feature: Tasks filtering functionalities
   @#8554 @env_main
   Scenario: Verify task displays District and Region in results grid from Case used to create the task
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a Surveillance Officer
     Then I navigate to the last created case via the url

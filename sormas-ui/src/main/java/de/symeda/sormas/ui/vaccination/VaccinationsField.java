@@ -67,7 +67,7 @@ public class VaccinationsField extends AbstractTableField<VaccinationDto> {
 			ControllerProvider.getVaccinationController().create(entry.getImmunization(), disease, fieldAccessCheckers, commitCallback);
 		} else {
 			ControllerProvider.getVaccinationController()
-				.edit(entry, disease, fieldAccessCheckers, false, commitCallback, () -> VaccinationsField.this.removeEntry(entry), true);
+				.edit(entry, disease, fieldAccessCheckers, false, commitCallback, () -> VaccinationsField.this.removeEntry(entry), true, true);
 		}
 	}
 

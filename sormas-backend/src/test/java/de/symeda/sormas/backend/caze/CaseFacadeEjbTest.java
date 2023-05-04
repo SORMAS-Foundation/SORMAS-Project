@@ -73,6 +73,7 @@ import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseMergeIndexDto;
+import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CasePersonDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -121,6 +122,7 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.CauseOfDeath;
@@ -311,8 +313,17 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			Disease.EVD,
 			CaseClassification.PROBABLE,
 			InvestigationStatus.PENDING,
-			DateUtils.addMinutes(today, -3),
+			DateUtils.addDays(today, -1),
 			rdcf);
+
+		executeInTransaction(em -> {
+			Query query = em.createQuery("select c from cases c where c.uuid=:uuid");
+			query.setParameter("uuid", case2.getUuid());
+			Case singleResult = (Case) query.getSingleResult();
+
+			singleResult.setCreationDate(new Timestamp(DateUtils.addDays(today, -1).getTime()));
+			em.persist(singleResult);
+		});
 
 		final List<CaseMergeIndexDto[]> casesForDuplicateMergingToday =
 			getCaseFacade().getCasesForDuplicateMerging(new CaseCriteria().creationDateFrom(today).creationDateTo(new Date()), 100, true);
@@ -764,7 +775,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			null,
 			null);
 
-		EventParticipantDto event1Participant1 = creator.createEventParticipant(event1.toReference(), person1, surveillanceSupervisor.toReference());
+		EventParticipantDto event1Participant1 =
+			creator.createEventParticipant(event1.toReference(), person1, "Involved", surveillanceSupervisor.toReference(), rdcf);
 		EventParticipantDto event1Participant2 = creator.createEventParticipant(event1.toReference(), person2, surveillanceSupervisor.toReference());
 
 		CaseDataDto case1 = creator.createCase(
@@ -1234,7 +1246,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		SampleDto sample1 = creator.createSample(caze.toReference(), surveillanceSupervisor.toReference(), rdcf.facility);
 		SampleDto sample2 = creator.createSample(caze.toReference(), surveillanceSupervisor.toReference(), rdcf.facility);
-		getSampleFacade().deleteSample(sample1.toReference(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
+		getSampleFacade().delete(sample1.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
 		List<CaseExportDto> results =
 			getCaseFacade().getExportList(new CaseCriteria(), Collections.emptySet(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);
@@ -1249,7 +1261,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testCaseDeletionAndUndeletion() throws ExternalSurveillanceToolRuntimeException {
+	public void testCaseDeletionAndRestoration() throws ExternalSurveillanceToolRuntimeException {
 		Date since = new Date();
 
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
@@ -1318,7 +1330,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(DeletionReason.OTHER_REASON, getCaseFacade().getByUuid(caze.getUuid()).getDeletionReason());
 		assertEquals("test reason", getCaseFacade().getByUuid(caze.getUuid()).getOtherDeletionReason());
 
-		getCaseFacade().undelete(caze.getUuid());
+		getCaseFacade().restore(caze.getUuid());
 
 		// Deleted flag should be set for case, sample and pathogen test; Additional test should be deleted; Contact should not have the deleted flag; Task should not be deleted
 		assertFalse(getCaseFacade().getDeletedUuidsSince(since).contains(caze.getUuid()));
@@ -2371,6 +2383,27 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		caze1.setEpiData(epiData);
 
 		return getCaseFacade().save(caze1);
+	}
+
+	@Test
+	public void testCreatePointOfEntryCase() {
+		PersonReferenceDto personDto = creator.createPerson().toReference();
+		PointOfEntryDto newPointOfEntry = creator.createPointOfEntry("New point of entry", rdcf.region, rdcf.district);
+
+		CaseDataDto caze1 = CaseDataDto.build(personDto, Disease.CORONAVIRUS);
+		caze1.setReportDate(new Date());
+		caze1.setReportingUser(surveillanceOfficer.toReference());
+		caze1.setCaseClassification(CaseClassification.PROBABLE);
+		caze1.setInvestigationStatus(InvestigationStatus.PENDING);
+		caze1.setDisease(Disease.CORONAVIRUS);
+		caze1.setPerson(personDto);
+		caze1.setResponsibleRegion(rdcf.region);
+		caze1.setResponsibleDistrict(rdcf.district);
+		caze1.setCaseOrigin(CaseOrigin.POINT_OF_ENTRY);
+		caze1.setPointOfEntry(newPointOfEntry.toReference());
+		getCaseFacade().save(caze1);
+
+		MatcherAssert.assertThat(getCaseFacade().getIndexList(new CaseCriteria(), 0, 100, null), hasSize(1));
 	}
 
 	@Test

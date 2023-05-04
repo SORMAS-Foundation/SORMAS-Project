@@ -66,4 +66,6 @@ public interface CampaignFormDataFacade {
 	List<CampaignFormDataDto> getAllActiveAfter(Date date);
 
 	void overwriteCampaignFormData(CampaignFormDataDto existingData, CampaignFormDataDto newData);
+
+	boolean isInJurisdiction(String campaignFormDataUuid);
 }

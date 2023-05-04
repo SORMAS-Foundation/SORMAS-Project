@@ -134,7 +134,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(DeletionReason.OTHER_REASON, getEventFacade().getByUuid(event.getUuid()).getDeletionReason());
 		assertEquals("test reason", getEventFacade().getByUuid(event.getUuid()).getOtherDeletionReason());
 
-		getEventFacade().undelete(event.getUuid());
+		getEventFacade().restore(event.getUuid());
 
 		assertFalse(getEventFacade().getDeletedUuidsSince(since).contains(event.getUuid()));
 		assertFalse(getEventParticipantFacade().getDeletedUuidsSince(since).contains(eventParticipant.getUuid()));

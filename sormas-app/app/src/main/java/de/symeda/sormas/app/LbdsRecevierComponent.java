@@ -21,7 +21,7 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -102,13 +102,13 @@ public class LbdsRecevierComponent extends BroadcastReceiver {
 		Gson gson = RetroProvider.initGson();
 		List<PersonDto> sentPersonDtos = gson.fromJson(methodFromResponse.payload, new TypeToken<List<PersonDto>>() {
 		}.getType());
-		List<PushResult> responsePushResults = gson.fromJson(resultFromResponse.body, new TypeToken<List<PushResult>>() {
+		List<PostResponse> responsePostResponses = gson.fromJson(resultFromResponse.body, new TypeToken<List<PostResponse>>() {
 		}.getType());
-		Log.i("SORMAS_LBDS", "sent " + sentPersonDtos.size() + " PersonDtos and received " + responsePushResults.size() + " PushResults");
+		Log.i("SORMAS_LBDS", "sent " + sentPersonDtos.size() + " PersonDtos and received " + responsePostResponses.size() + " PostResponses");
 
-		if (sentPersonDtos.size() != responsePushResults.size()) {
+		if (sentPersonDtos.size() != responsePostResponses.size()) {
 			Log.i("SORMAS_LBDS", "List lengths differ, abort.");
-			throw new IllegalArgumentException("Number of sent Dtos and received PushResults must be equal");
+			throw new IllegalArgumentException("Number of sent Dtos and received PostResponses must be equal");
 		}
 
 		LbdsSyncDao lbdsSyncDao = DatabaseHelper.getLbdsSyncDao();
@@ -118,13 +118,13 @@ public class LbdsRecevierComponent extends BroadcastReceiver {
 		for (int i = 0; i < sentPersonDtos.size(); i++) {
 			PersonDto personDto = sentPersonDtos.get(i);
 			String uuid = personDto.getUuid();
-			PushResult pushResult = responsePushResults.get(i);
-			if (pushResult == PushResult.OK) {
-				Log.i("SORMAS_LBDS", "Process PushResult " + pushResult + " for PersonDto " + uuid);
+			PostResponse postResponse = responsePostResponses.get(i);
+			if (postResponse.getStatusCode() == 200) {
+				Log.i("SORMAS_LBDS", "Process PostResponse " + postResponse + " for PersonDto " + uuid);
 				lbdsSyncDao.logLbdsReceive(uuid);
 				successful++;
 			} else {
-				Log.i("SORMAS_LBDS", "Ignore PushResult " + pushResult + " for PersonDto " + uuid);
+				Log.i("SORMAS_LBDS", "Ignore PostResponse " + postResponse + " for PersonDto " + uuid);
 				ignored++;
 			}
 		}
@@ -153,13 +153,13 @@ public class LbdsRecevierComponent extends BroadcastReceiver {
 		Gson gson = RetroProvider.initGson();
 		List<CaseDataDto> sentCaseDataDtos = gson.fromJson(methodFromResponse.payload, new TypeToken<List<CaseDataDto>>() {
 		}.getType());
-		List<PushResult> responsePushResults = gson.fromJson(resultFromResponse.body, new TypeToken<List<PushResult>>() {
+		List<PostResponse> responsePostResponses = gson.fromJson(resultFromResponse.body, new TypeToken<List<PostResponse>>() {
 		}.getType());
-		Log.i("SORMAS_LBDS", "sent " + sentCaseDataDtos.size() + " CaseDataDtos and received " + responsePushResults.size() + " PushResults");
+		Log.i("SORMAS_LBDS", "sent " + sentCaseDataDtos.size() + " CaseDataDtos and received " + responsePostResponses.size() + " PostResponses");
 
-		if (sentCaseDataDtos.size() != responsePushResults.size()) {
+		if (sentCaseDataDtos.size() != responsePostResponses.size()) {
 			Log.i("SORMAS_LBDS", "List lengths differ, abort.");
-			throw new IllegalArgumentException("Number of sent Dtos and received PushResults must be equal");
+			throw new IllegalArgumentException("Number of sent Dtos and received PostResponses must be equal");
 		}
 
 		LbdsSyncDao lbdsSyncDao = DatabaseHelper.getLbdsSyncDao();
@@ -169,13 +169,13 @@ public class LbdsRecevierComponent extends BroadcastReceiver {
 		for (int i = 0; i < sentCaseDataDtos.size(); i++) {
 			CaseDataDto caseDataDto = sentCaseDataDtos.get(i);
 			String uuid = caseDataDto.getUuid();
-			PushResult pushResult = responsePushResults.get(i);
-			if (pushResult == PushResult.OK) {
-				Log.i("SORMAS_LBDS", "Process PushResult " + pushResult + " for CaseDataDto " + uuid);
+			PostResponse postResponse = responsePostResponses.get(i);
+			if (postResponse.getStatusCode() == 200) {
+				Log.i("SORMAS_LBDS", "Process PostResponse " + postResponse + " for CaseDataDto " + uuid);
 				lbdsSyncDao.logLbdsReceive(uuid);
 				successful++;
 			} else {
-				Log.i("SORMAS_LBDS", "Ignore PushResult " + pushResult + " for CaseDataDto " + uuid);
+				Log.i("SORMAS_LBDS", "Ignore PostResponse " + postResponse + " for CaseDataDto " + uuid);
 				ignored++;
 			}
 		}

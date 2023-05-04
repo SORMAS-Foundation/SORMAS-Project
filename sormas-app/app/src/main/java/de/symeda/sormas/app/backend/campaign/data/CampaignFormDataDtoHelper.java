@@ -17,7 +17,7 @@ package de.symeda.sormas.app.backend.campaign.data;
 
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.app.backend.campaign.CampaignDtoHelper;
 import de.symeda.sormas.app.backend.campaign.form.CampaignFormMetaDtoHelper;
@@ -54,7 +54,7 @@ public class CampaignFormDataDtoHelper extends AdoDtoHelper<CampaignFormData, Ca
 	}
 
 	@Override
-	protected Call<List<PushResult>> pushAll(List<CampaignFormDataDto> campaignFormMetaDtos) throws NoConnectionException {
+	protected Call<List<PostResponse>> pushAll(List<CampaignFormDataDto> campaignFormMetaDtos) throws NoConnectionException {
 		return RetroProvider.getCampaignFormDataFacade().pushAll(campaignFormMetaDtos);
 	}
 

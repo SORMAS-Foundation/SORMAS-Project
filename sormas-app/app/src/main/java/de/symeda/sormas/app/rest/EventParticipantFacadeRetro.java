@@ -17,7 +17,7 @@ package de.symeda.sormas.app.rest;
 
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -37,7 +37,7 @@ public interface EventParticipantFacadeRetro {
 	Call<List<EventParticipantDto>> pullByUuids(@Body List<String> uuids);
 
 	@POST("eventparticipants/push")
-	Call<List<PushResult>> pushAll(@Body List<EventParticipantDto> dtos);
+	Call<List<PostResponse>> pushAll(@Body List<EventParticipantDto> dtos);
 
 	@GET("eventparticipants/uuids")
 	Call<List<String>> pullUuids();

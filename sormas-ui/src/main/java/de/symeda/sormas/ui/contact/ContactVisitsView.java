@@ -174,22 +174,6 @@ public class ContactVisitsView extends AbstractContactView {
 		return topLayout;
 	}
 
-//	private void updateActiveStatusButtonCaption() {
-//		if (activeStatusButton != null) {
-//			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getContainer().size())));
-//		}
-//	}
-
-//	private void processStatusChangeVisuals(Button button) {
-//		statusButtons.keySet().forEach(b -> {
-//			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
-//			b.setCaption(statusButtons.get(b));
-//		});
-//		CssStyles.removeStyles(button, CssStyles.BUTTON_FILTER_LIGHT);
-//		activeStatusButton = button;
-//		updateActiveStatusButtonCaption();
-//	}
-
 	@Override
 	protected void initView(String params) {
 
@@ -202,8 +186,11 @@ public class ContactVisitsView extends AbstractContactView {
 		criteria.contact(getContactRef());
 
 		if (grid == null) {
-			grid =
-				new VisitGrid(criteria, isEditAllowed() && UserProvider.getCurrent().hasAllUserRights(UserRight.CONTACT_EDIT, UserRight.VISIT_EDIT));
+			grid = new VisitGrid(
+				criteria,
+				UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed(), UserRight.CONTACT_EDIT, UserRight.VISIT_EDIT),
+				UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed(), UserRight.VISIT_DELETE));
+
 			gridLayout = new DetailSubComponentWrapper(() -> null);
 			gridLayout.setSizeFull();
 			gridLayout.setMargin(true);
@@ -215,6 +202,5 @@ public class ContactVisitsView extends AbstractContactView {
 		}
 
 		grid.reload();
-//		updateActiveStatusButtonCaption();
 	}
 }

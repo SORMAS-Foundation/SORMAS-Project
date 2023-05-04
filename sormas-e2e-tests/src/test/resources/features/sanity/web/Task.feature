@@ -31,13 +31,13 @@ Feature: Tasks functionalities
   @env_main
   Scenario: Check all fields from the created Task in the Task Management table
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new contact
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     And API: I create a new task
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Surveillance Officer
     And I click on the Tasks button from navbar
@@ -48,16 +48,16 @@ Feature: Tasks functionalities
   @tmsLink=SORDEV-6080 @env_main
   Scenario: Bulk deleting tasks in Task Directory
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new contact
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     And API: I create a new task
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     And API: I create a new task
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I click on the Tasks button from navbar
@@ -74,16 +74,16 @@ Feature: Tasks functionalities
   @tmsLink=SORDEV-6080 @env_main
   Scenario: Bulk archiving tasks in Task Directory
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new contact
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     And API: I create a new task
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     And API: I create a new task
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I click on the Tasks button from navbar
@@ -100,16 +100,16 @@ Feature: Tasks functionalities
   @tmsLink=SORDEV-6080 @env_main
   Scenario: Bulk editing tasks in Task Directory
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new contact
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     And API: I create a new task
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     And API: I create a new task
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I click on the Tasks button from navbar
@@ -129,13 +129,13 @@ Feature: Tasks functionalities
   @tmsLink=SORDEV-9156 @env_main
   Scenario: Check the task observer is added
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new contact
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     And API: I create a new task
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I click on the Tasks button from navbar
@@ -238,13 +238,13 @@ Feature: Tasks functionalities
   @tmsLink=SORDEV-12438 @env_main
   Scenario: Test add task status Progress in task edit page
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new contact
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     And API: I create a new task
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I click on the Tasks button from navbar

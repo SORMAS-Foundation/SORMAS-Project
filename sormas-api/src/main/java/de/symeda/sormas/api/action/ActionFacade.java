@@ -23,6 +23,7 @@ import java.util.List;
 import javax.ejb.Remote;
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.event.EventActionExportDto;
 import de.symeda.sormas.api.event.EventActionIndexDto;
@@ -61,4 +62,8 @@ public interface ActionFacade {
 	long countEventActions(EventCriteria criteria);
 
 	long countActions(ActionCriteria criteria);
+
+	boolean isInJurisdiction(String uuid);
+
+	EditPermissionType getEditPermissionType(String uuid);
 }

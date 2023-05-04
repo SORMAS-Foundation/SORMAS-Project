@@ -1488,6 +1488,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 		Join<Contact, Person> person = joins.getPerson();
 
 		Root<Contact> root2 = cq.from(Contact.class);
+		final ContactQueryContext contactQueryContext2 = new ContactQueryContext(cb, cq, root2);
 		Join<Contact, Person> person2 = root2.join(Contact.PERSON, JoinType.LEFT);
 
 		// similarity:
@@ -1502,7 +1503,8 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 
 		Predicate sourceCaseFilter = cb.equal(root.get(Contact.CAZE), root2.get(Contact.CAZE));
 		Predicate userFilter = createUserFilter(contactQueryContext);
-		Predicate criteriaFilter = criteria != null ? buildCriteriaFilter(criteria, contactQueryContext) : null;
+		Predicate criteriaFilter =
+			criteria != null ? cb.or(buildCriteriaFilter(criteria, contactQueryContext), buildCriteriaFilter(criteria, contactQueryContext2)) : null;
 		Expression<String> nameSimilarityExpr = cb.concat(person.get(Person.FIRST_NAME), " ");
 		nameSimilarityExpr = cb.concat(nameSimilarityExpr, person.get(Person.LAST_NAME));
 		Expression<String> nameSimilarityExpr2 = cb.concat(person2.get(Person.FIRST_NAME), " ");
@@ -1683,11 +1685,11 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 	}
 
 	@Override
-	public void undelete(Contact contact) {
-		// undelete all samples only associated with this contact
-		contact.getSamples().stream().forEach(sample -> sampleService.undelete(sample));
+	public void restore(Contact contact) {
+		// restore all samples only associated with this contact
+		contact.getSamples().stream().forEach(sample -> sampleService.restore(sample));
 
-		super.undelete(contact);
+		super.restore(contact);
 	}
 
 	@Override

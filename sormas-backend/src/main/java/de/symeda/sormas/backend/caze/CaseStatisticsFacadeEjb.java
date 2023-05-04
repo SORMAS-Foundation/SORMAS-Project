@@ -195,8 +195,8 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 						regionFacade,
 						districtFacade,
 						userRoleFacade,
-						MISSING_ROW_MIN.equals(caseGroupRangeResults[0]) ? null : (Date) caseGroupRangeResults[0],
-						MISSING_ROW_MAX.equals(caseGroupRangeResults[1]) ? null : (Date) caseGroupRangeResults[1]);
+						buildStartInterval(caseCriteria, rowGrouping, caseGroupRangeResults[0]),
+						buildEndInterval(caseCriteria, rowGrouping, caseGroupRangeResults[1]));
 				}
 			} else {
 				allRowKeys = Arrays.asList((StatisticsGroupingKey) null);
@@ -213,8 +213,8 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 						regionFacade,
 						districtFacade,
 						userRoleFacade,
-						MISSING_COLUMN_MIN.equals(caseGroupRangeResults[2]) ? null : (Date) caseGroupRangeResults[2],
-						MISSING_COLUMN_MAX.equals(caseGroupRangeResults[3]) ? null : (Date) caseGroupRangeResults[3]);
+						buildStartInterval(caseCriteria, columnGrouping, caseGroupRangeResults[2]),
+						buildEndInterval(caseCriteria, columnGrouping, caseGroupRangeResults[3]));
 				}
 			} else {
 				allColumnKeys = Arrays.asList((StatisticsGroupingKey) null);
@@ -341,6 +341,55 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 		queryBuilder.append(" FROM ").append(Case.TABLE_NAME).append(caseJoinBuilder).append(caseFilterBuilder);
 
 		return new ImmutablePair<>(queryBuilder.toString(), filterBuilderParameters);
+	}
+
+	private Date buildStartInterval(
+		StatisticsCaseCriteria statisticsCaseCriteria,
+		StatisticsCaseAttribute mainAttribute,
+		Object caseGroupRangeResult) {
+
+		switch (mainAttribute) {
+		case ONSET_TIME:
+			if (statisticsCaseCriteria.getOnsetDateFrom() != null || statisticsCaseCriteria.getOnsetDateTo() != null) {
+				return statisticsCaseCriteria.getOnsetDateFrom();
+			}
+		case REPORT_TIME:
+			if (statisticsCaseCriteria.getReportDateFrom() != null || statisticsCaseCriteria.getReportDateTo() != null) {
+				return statisticsCaseCriteria.getReportDateFrom();
+			}
+		case OUTCOME_TIME:
+			if (statisticsCaseCriteria.getOutcomeDateFrom() != null || statisticsCaseCriteria.getOutcomeDateTo() != null) {
+				return statisticsCaseCriteria.getOutcomeDateFrom();
+			}
+		default:
+			return MISSING_ROW_MIN.equals(caseGroupRangeResult)
+				|| MISSING_COLUMN_MIN.equals(caseGroupRangeResult)
+				|| MISSING_ROW_MAX.equals(caseGroupRangeResult)
+				|| MISSING_COLUMN_MAX.equals(caseGroupRangeResult) ? null : (Date) caseGroupRangeResult;
+		}
+	}
+
+	private Date buildEndInterval(StatisticsCaseCriteria statisticsCaseCriteria, StatisticsCaseAttribute mainAttribute, Object caseGroupRangeResult) {
+
+		switch (mainAttribute) {
+		case ONSET_TIME:
+			if (statisticsCaseCriteria.getOnsetDateTo() != null) {
+				return statisticsCaseCriteria.getOnsetDateTo();
+			}
+		case REPORT_TIME:
+			if (statisticsCaseCriteria.getReportDateTo() != null) {
+				return statisticsCaseCriteria.getReportDateTo();
+			}
+		case OUTCOME_TIME:
+			if (statisticsCaseCriteria.getOutcomeDateTo() != null) {
+				return statisticsCaseCriteria.getOutcomeDateTo();
+			}
+		default:
+			return MISSING_ROW_MIN.equals(caseGroupRangeResult)
+				|| MISSING_COLUMN_MIN.equals(caseGroupRangeResult)
+				|| MISSING_ROW_MAX.equals(caseGroupRangeResult)
+				|| MISSING_COLUMN_MAX.equals(caseGroupRangeResult) ? null : (Date) caseGroupRangeResult;
+		}
 	}
 
 	private String getVisualizationSelection(StatisticsCaseAttribute groupingA) {

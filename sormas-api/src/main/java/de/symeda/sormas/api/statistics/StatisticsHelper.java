@@ -249,8 +249,12 @@ public final class StatisticsHelper {
 			return new ArrayList<>();
 		}
 
-		LocalDate earliest = dateFrom.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		LocalDate latest = dateTo.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		LocalDate earliest = dateFrom == null
+			? new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+			: dateFrom.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		LocalDate latest = dateTo == null
+			? new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+			: dateTo.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
 		switch (subAttribute) {
 		case YEAR:
@@ -286,8 +290,12 @@ public final class StatisticsHelper {
 			List<StatisticsGroupingKey> monthOfYearList = new ArrayList<>();
 			for (int year = earliest.getYear(); year <= latest.getYear(); year++) {
 				for (Month month : Month.values()) {
-					if ((earliest.getYear() == year && earliest.getMonth().getValue() <= month.getMonthNumber())
-						|| (latest.getYear() == year && latest.getMonth().getValue() >= month.getMonthNumber())
+					if ((earliest.getYear() == year
+						&& earliest.getMonth().getValue() <= month.getMonthNumber()
+						&& (latest.getYear() == year ? latest.getMonth().getValue() >= month.getMonthNumber() : true))
+						|| (latest.getYear() == year
+							&& latest.getMonth().getValue() >= month.getMonthNumber()
+							&& (earliest.getYear() == year ? earliest.getMonth().getValue() <= month.getMonthNumber() : true))
 						|| (year > earliest.getYear() && year < latest.getYear())) {
 						monthOfYearList.add(new MonthOfYear(month, year));
 					}

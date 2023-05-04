@@ -1,0 +1,22 @@
+[
+  {
+    "uuid": "#{immunizationGUID}",
+    "person": {
+      "uuid": "#{personGUID}"
+    },
+    "pseudonymized": false,
+    "disease": "CORONAVIRUS",
+    "reportDate": #{todayDate},
+  "positiveTestResultDate" : #{todayDate},
+  "recoveryDate" : #{todayDate},
+  "externalId" : "123",
+  "reportingUser": "#{nationalUserUUID}",
+  "archived": false,
+  "immunizationStatus": "ACQUIRED",
+  "meansOfImmunization": "VACCINATION",
+  "immunizationManagementStatus": "COMPLETED",
+  "responsibleRegion": "#{regionUUID}",
+  "responsibleDistrict": "#{districtUUID}",
+  "responsibleCommunity":  "#{communityUUID}"
+  }
+]

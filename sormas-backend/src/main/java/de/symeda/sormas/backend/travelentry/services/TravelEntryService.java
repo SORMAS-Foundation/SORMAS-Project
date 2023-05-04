@@ -95,8 +95,7 @@ public class TravelEntryService extends BaseTravelEntryService {
 			final Join<TravelEntry, Person> person = joins.getPerson();
 			final Join<TravelEntry, PointOfEntry> pointOfEntry = joins.getPointOfEntry();
 
-			final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
-			final Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
+			final Join<Location, District> district = joins.getPersonJoins().getAddressJoins().getDistrict();
 
 			cq.multiselect(
 				travelEntry.get(TravelEntry.UUID),
@@ -175,9 +174,9 @@ public class TravelEntryService extends BaseTravelEntryService {
 		CriteriaBuilder cb = travelEntryQueryContext.getCriteriaBuilder();
 		CriteriaQuery<?> cq = travelEntryQueryContext.getQuery();
 
-		Join<TravelEntry, Person> person = travelEntryQueryContext.getJoins().getPerson();
-		final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
-		final Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
+		TravelEntryJoins travelEntryJoins = travelEntryQueryContext.getJoins();
+		Join<TravelEntry, Person> person = travelEntryJoins.getPerson();
+		final Join<Location, District> district = travelEntryJoins.getPersonJoins().getAddressJoins().getDistrict();
 
 		if (CollectionUtils.isNotEmpty(sortProperties)) {
 			List<Order> order = new ArrayList<>(sortProperties.size());
@@ -190,7 +189,7 @@ public class TravelEntryService extends BaseTravelEntryService {
 				case TravelEntryIndexDto.VACCINATED:
 				case TravelEntryIndexDto.TESTED_NEGATIVE:
 				case TravelEntryIndexDto.QUARANTINE_TO:
-					expression = travelEntryQueryContext.getJoins().getRoot().get(sortProperty.propertyName);
+					expression = travelEntryJoins.getRoot().get(sortProperty.propertyName);
 					break;
 				case TravelEntryIndexDto.PERSON_FIRST_NAME:
 					expression = person.get(Person.FIRST_NAME);
@@ -202,7 +201,7 @@ public class TravelEntryService extends BaseTravelEntryService {
 					expression = district.get(District.NAME);
 					break;
 				case TravelEntryIndexDto.POINT_OF_ENTRY_NAME:
-					expression = travelEntryQueryContext.getJoins().getPointOfEntry().get(PointOfEntry.NAME);
+					expression = travelEntryJoins.getPointOfEntry().get(PointOfEntry.NAME);
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
@@ -212,7 +211,7 @@ public class TravelEntryService extends BaseTravelEntryService {
 			}
 			cq.orderBy(order);
 		} else {
-			Path<Object> changeDate = travelEntryQueryContext.getJoins().getRoot().get(TravelEntry.CHANGE_DATE);
+			Path<Object> changeDate = travelEntryJoins.getRoot().get(TravelEntry.CHANGE_DATE);
 			cq.orderBy(cb.desc(changeDate));
 			selections.add(changeDate);
 		}

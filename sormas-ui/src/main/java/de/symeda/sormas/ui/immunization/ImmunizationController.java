@@ -195,7 +195,7 @@ public class ImmunizationController {
 
 		// Initialize 'Delete' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_DELETE)) {
-			editComponent.addDeleteWithReasonOrUndeleteListener(
+			editComponent.addDeleteWithReasonOrRestoreListener(
 				ImmunizationsView.VIEW_NAME,
 				null,
 				I18nProperties.getString(Strings.entityImmunization),

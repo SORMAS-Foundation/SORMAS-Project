@@ -18,7 +18,7 @@ package de.symeda.sormas.app.backend.classification;
 import java.sql.SQLException;
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -52,7 +52,7 @@ public class DiseaseClassificationDtoHelper extends AdoDtoHelper<DiseaseClassifi
 	}
 
 	@Override
-	protected Call<List<PushResult>> pushAll(List<DiseaseClassificationCriteriaDto> dtos) throws NoConnectionException {
+	protected Call<List<PostResponse>> pushAll(List<DiseaseClassificationCriteriaDto> dtos) throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is read-only");
 	}
 

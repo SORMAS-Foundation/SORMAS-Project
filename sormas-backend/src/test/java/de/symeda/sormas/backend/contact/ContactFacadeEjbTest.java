@@ -513,7 +513,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testContactDeletionAndUndeletion() {
+	public void testContactDeletionAndRestoration() {
 
 		Date since = new Date();
 
@@ -572,7 +572,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(DeletionReason.OTHER_REASON, getContactFacade().getByUuid(contact.getUuid()).getDeletionReason());
 		assertEquals("test reason", getContactFacade().getByUuid(contact.getUuid()).getOtherDeletionReason());
 
-		getContactFacade().undelete(contact.getUuid());
+		getContactFacade().restore(contact.getUuid());
 
 		assertFalse(getContactFacade().getDeletedUuidsSince(since).contains(contact.getUuid()));
 		assertNull(getTaskFacade().getByUuid(task.getUuid()));
@@ -849,7 +849,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			null,
 			null);
 
-		EventParticipantDto event1Participant1 = creator.createEventParticipant(event1.toReference(), person1, user.toReference());
+		EventParticipantDto event1Participant1 = creator.createEventParticipant(event1.toReference(), person1, "Involved", user.toReference(), rdcf);
 		creator.createEventParticipant(event1.toReference(), person2, user.toReference());
 
 		CaseDataDto case1 = creator.createCase(

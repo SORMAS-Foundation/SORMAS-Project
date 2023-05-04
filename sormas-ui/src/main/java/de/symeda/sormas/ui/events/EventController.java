@@ -86,6 +86,7 @@ import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.BulkOperationHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
+import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DeletableUtils;
@@ -882,7 +883,7 @@ public class EventController {
 
 		final String uuid = event.getUuid();
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_DELETE)) {
-			editView.addDeleteWithReasonOrUndeleteListener((deleteDetails) -> {
+			editView.addDeleteWithReasonOrRestoreListener((deleteDetails) -> {
 				if (!existEventParticipantsLinkedToEvent(event)) {
 					try {
 						FacadeProvider.getEventFacade().delete(uuid, deleteDetails);
@@ -901,7 +902,7 @@ public class EventController {
 				}
 				UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
 			}, getDeleteConfirmationDetails(Collections.singletonList(eventUuid)), (deleteDetails) -> {
-				FacadeProvider.getEventFacade().undelete(uuid);
+				FacadeProvider.getEventFacade().restore(uuid);
 				UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityEvent), uuid, FacadeProvider.getEventFacade());
 		}
@@ -1084,6 +1085,15 @@ public class EventController {
 					}
 				});
 		}
+	}
+
+	public void restoreSelectedEvents(Collection<? extends EventIndexDto> selectedRows, Runnable callback) {
+		ControllerProvider.getDeleteRestoreController()
+			.restoreSelectedItems(
+				selectedRows.stream().map(EventIndexDto::getUuid).collect(Collectors.toList()),
+				FacadeProvider.getEventFacade(),
+				CoreEntityRestoreMessages.EVENT,
+				callback);
 	}
 
 	private Boolean existEventParticipantsLinkedToEvent(EventDto event) {
