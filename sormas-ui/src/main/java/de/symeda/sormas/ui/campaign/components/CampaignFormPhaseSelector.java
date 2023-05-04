@@ -90,7 +90,7 @@ public class CampaignFormPhaseSelector extends HorizontalLayout {
 		newSession = currentSessionHolder;
 //		System.out.println("nnnnnnnnnnnnnnnnnnnnoooooooooooooooooooooooo" + newSession);
 		// Set default value of drop-down based on the user type
-		if (UserProvider.getCurrent().hasUserType(UserType.WHO_USER) && !isCampaingPhaseChanged) {
+		if ((UserProvider.getCurrent().hasUserType(UserType.WHO_USER) || UserProvider.getCurrent().hasUserType(UserType.EOC_USER)) && !isCampaingPhaseChanged) {
 			phaseComboBox.setValue(WordUtils.capitalizeFully(CampaignPhase.INTRA.toString()));
 		} else {
 //			phaseComboBox.setValue(WordUtils.capitalizeFully(CampaignPhase.INTRA.toString()));
