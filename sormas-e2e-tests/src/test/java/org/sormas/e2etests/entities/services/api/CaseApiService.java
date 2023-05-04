@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.entities.services.api;
 
+import static org.sormas.e2etests.entities.pojo.helpers.ShortUUIDGenerator.generateShortUUID;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.google.inject.Inject;
@@ -25,7 +26,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.LinkedHashMap;
-import java.util.UUID;
+import lombok.SneakyThrows;
 import org.sormas.e2etests.entities.pojo.api.*;
 import org.sormas.e2etests.enums.*;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
@@ -44,13 +45,14 @@ public class CaseApiService {
     this.runningConfiguration = runningConfiguration;
   }
 
+  @SneakyThrows
   public Case buildGeneratedCase(Person person) {
     EnvironmentManager environmentManager = new EnvironmentManager(restAssuredClient);
     return Case.builder()
         .disease(DiseasesValues.CORONAVIRUS.getDiseaseName())
         .diseaseDetails("Test Disease")
         .pseudonymized(false)
-        .uuid(UUID.randomUUID().toString())
+        .uuid(generateShortUUID())
         .reportDate(new Date())
         .reportingUser(
             ReportingUser.builder()
@@ -101,15 +103,15 @@ public class CaseApiService {
         .caseClassification("NOT_CLASSIFIED")
         .investigationStatus("PENDING")
         .outcome("NO_OUTCOME")
-        .epiData(EpiData.builder().uuid(UUID.randomUUID().toString()).build())
-        .hospitalization(Hospitalization.builder().uuid(UUID.randomUUID().toString()).build())
+        .epiData(EpiData.builder().uuid(generateShortUUID()).build())
+        .hospitalization(Hospitalization.builder().uuid(generateShortUUID()).build())
         .symptoms(
             Symptoms.builder()
-                .uuid(UUID.randomUUID().toString())
+                .uuid(generateShortUUID())
                 .pseudonymized(true)
                 .symptomatic(false)
                 .build())
-        .therapy(Therapy.builder().uuid(UUID.randomUUID().toString()).build())
+        .therapy(Therapy.builder().uuid(generateShortUUID()).build())
         .healthFacility(
             HealthFacility.builder()
                 .uuid(
@@ -118,13 +120,10 @@ public class CaseApiService {
                         HealthFacilityValues.StandardEinrichtung.getName()))
                 .build())
         .maternalHistory(
-            MaternalHistory.builder()
-                .uuid(UUID.randomUUID().toString())
-                .pseudonymized(true)
-                .build())
-        .portHealthInfo(PortHealthInfo.builder().uuid(UUID.randomUUID().toString()).build())
-        .clinicalCourse(ClinicalCourse.builder().uuid(UUID.randomUUID().toString()).build())
-        .healthConditions(HealthConditions.builder().uuid(UUID.randomUUID().toString()).build())
+            MaternalHistory.builder().uuid(generateShortUUID()).pseudonymized(true).build())
+        .portHealthInfo(PortHealthInfo.builder().uuid(generateShortUUID()).build())
+        .clinicalCourse(ClinicalCourse.builder().uuid(generateShortUUID()).build())
+        .healthConditions(HealthConditions.builder().uuid(generateShortUUID()).build())
         .surveillanceOfficer(
             SurveillanceOfficer.builder()
                 .uuid(
@@ -167,6 +166,7 @@ public class CaseApiService {
         .build();
   }
 
+  @SneakyThrows
   public Case buildGeneratedCaseWithCreationDate(Person person, Integer days) {
     EnvironmentManager environmentManager = new EnvironmentManager(restAssuredClient);
     return Case.builder()
@@ -178,7 +178,7 @@ public class CaseApiService {
         .disease(DiseasesValues.CORONAVIRUS.getDiseaseName())
         .diseaseDetails("Test Disease")
         .pseudonymized(false)
-        .uuid(UUID.randomUUID().toString())
+        .uuid(generateShortUUID())
         .reportDate(new Date())
         .reportingUser(
             ReportingUser.builder()
@@ -227,15 +227,15 @@ public class CaseApiService {
         .caseClassification("NOT_CLASSIFIED")
         .investigationStatus("PENDING")
         .outcome("NO_OUTCOME")
-        .epiData(EpiData.builder().uuid(UUID.randomUUID().toString()).build())
-        .hospitalization(Hospitalization.builder().uuid(UUID.randomUUID().toString()).build())
+        .epiData(EpiData.builder().uuid(generateShortUUID()).build())
+        .hospitalization(Hospitalization.builder().uuid(generateShortUUID()).build())
         .symptoms(
             Symptoms.builder()
-                .uuid(UUID.randomUUID().toString())
+                .uuid(generateShortUUID())
                 .pseudonymized(true)
                 .symptomatic(false)
                 .build())
-        .therapy(Therapy.builder().uuid(UUID.randomUUID().toString()).build())
+        .therapy(Therapy.builder().uuid(generateShortUUID()).build())
         .healthFacility(
             HealthFacility.builder()
                 .uuid(
@@ -244,13 +244,10 @@ public class CaseApiService {
                         HealthFacilityValues.StandardEinrichtung.getName()))
                 .build())
         .maternalHistory(
-            MaternalHistory.builder()
-                .uuid(UUID.randomUUID().toString())
-                .pseudonymized(true)
-                .build())
-        .portHealthInfo(PortHealthInfo.builder().uuid(UUID.randomUUID().toString()).build())
-        .clinicalCourse(ClinicalCourse.builder().uuid(UUID.randomUUID().toString()).build())
-        .healthConditions(HealthConditions.builder().uuid(UUID.randomUUID().toString()).build())
+            MaternalHistory.builder().uuid(generateShortUUID()).pseudonymized(true).build())
+        .portHealthInfo(PortHealthInfo.builder().uuid(generateShortUUID()).build())
+        .clinicalCourse(ClinicalCourse.builder().uuid(generateShortUUID()).build())
+        .healthConditions(HealthConditions.builder().uuid(generateShortUUID()).build())
         .surveillanceOfficer(
             SurveillanceOfficer.builder()
                 .uuid(
@@ -293,6 +290,7 @@ public class CaseApiService {
         .build();
   }
 
+  @SneakyThrows
   public Case buildGeneratedCaseWithParamRegionAndDistrictAndFacility(
       Person person, String region, String district, String facility) {
     EnvironmentManager environmentManager = new EnvironmentManager(restAssuredClient);
@@ -300,7 +298,7 @@ public class CaseApiService {
         .disease(DiseasesValues.CORONAVIRUS.getDiseaseName())
         .diseaseDetails("Test Disease")
         .pseudonymized(false)
-        .uuid(UUID.randomUUID().toString())
+        .uuid(generateShortUUID())
         .reportDate(new Date())
         .reportingUser(
             ReportingUser.builder()
@@ -324,27 +322,24 @@ public class CaseApiService {
         .caseClassification("NOT_CLASSIFIED")
         .investigationStatus("PENDING")
         .outcome("NO_OUTCOME")
-        .epiData(EpiData.builder().uuid(UUID.randomUUID().toString()).build())
-        .hospitalization(Hospitalization.builder().uuid(UUID.randomUUID().toString()).build())
+        .epiData(EpiData.builder().uuid(generateShortUUID()).build())
+        .hospitalization(Hospitalization.builder().uuid(generateShortUUID()).build())
         .symptoms(
             Symptoms.builder()
-                .uuid(UUID.randomUUID().toString())
+                .uuid(generateShortUUID())
                 .pseudonymized(true)
                 .symptomatic(false)
                 .build())
-        .therapy(Therapy.builder().uuid(UUID.randomUUID().toString()).build())
+        .therapy(Therapy.builder().uuid(generateShortUUID()).build())
         .healthFacility(
             HealthFacility.builder()
                 .uuid(environmentManager.getHealthFacilityUUID(region, facility))
                 .build())
         .maternalHistory(
-            MaternalHistory.builder()
-                .uuid(UUID.randomUUID().toString())
-                .pseudonymized(true)
-                .build())
-        .portHealthInfo(PortHealthInfo.builder().uuid(UUID.randomUUID().toString()).build())
-        .clinicalCourse(ClinicalCourse.builder().uuid(UUID.randomUUID().toString()).build())
-        .healthConditions(HealthConditions.builder().uuid(UUID.randomUUID().toString()).build())
+            MaternalHistory.builder().uuid(generateShortUUID()).pseudonymized(true).build())
+        .portHealthInfo(PortHealthInfo.builder().uuid(generateShortUUID()).build())
+        .clinicalCourse(ClinicalCourse.builder().uuid(generateShortUUID()).build())
+        .healthConditions(HealthConditions.builder().uuid(generateShortUUID()).build())
         .surveillanceOfficer(
             SurveillanceOfficer.builder()
                 .uuid(

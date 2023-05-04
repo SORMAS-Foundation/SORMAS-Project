@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.entities.services.api;
 
+import static org.sormas.e2etests.entities.pojo.helpers.ShortUUIDGenerator.generateShortUUID;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.github.javafaker.Faker;
@@ -25,7 +26,8 @@ import com.google.inject.Inject;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Calendar;
-import java.util.UUID;
+
+import lombok.SneakyThrows;
 import org.sormas.e2etests.entities.pojo.api.Immunization;
 import org.sormas.e2etests.entities.pojo.api.Person;
 import org.sormas.e2etests.enums.CommunityValues;
@@ -57,10 +59,11 @@ public class ImmunizationApiService {
     this.runningConfiguration = runningConfiguration;
   }
 
+  @SneakyThrows
   public Immunization buildGeneratedImmunizationForPerson(Person person) {
     EnvironmentManager environmentManager = new EnvironmentManager(restAssuredClient);
     return Immunization.builder()
-        .uuid(UUID.randomUUID().toString())
+        .uuid(generateShortUUID())
         .pseudonymized(false)
         .person(person)
         .reportDate(Calendar.getInstance().getTimeInMillis())
@@ -86,6 +89,7 @@ public class ImmunizationApiService {
         .build();
   }
 
+  @SneakyThrows
   public Immunization buildGeneratedImmunizationForPersonWithCreationDate(
       Person person, Integer days) {
     EnvironmentManager environmentManager = new EnvironmentManager(restAssuredClient);
@@ -95,7 +99,7 @@ public class ImmunizationApiService {
                 .atZone(ZoneId.systemDefault())
                 .toInstant()
                 .toEpochMilli())
-        .uuid(UUID.randomUUID().toString())
+        .uuid(generateShortUUID())
         .pseudonymized(false)
         .person(person)
         .reportDate(Calendar.getInstance().getTimeInMillis())

@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.persons;
 
+import static org.sormas.e2etests.entities.pojo.helpers.ShortUUIDGenerator.generateShortUUID;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePersonPage.CASE_OF_DEATH_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePersonPage.DATE_OF_DEATH_INPUT;
@@ -560,7 +561,7 @@ public class PersonDirectorySteps implements En {
         (String searchCriteria) -> {
           String searchText = "";
           String personUUID =
-              dataOperations.getPartialUuidFromAssociatedLink(UUID.randomUUID().toString());
+              dataOperations.getPartialUuidFromAssociatedLink(generateShortUUID());
           switch (searchCriteria) {
             case "uuid":
               searchText = personUUID;

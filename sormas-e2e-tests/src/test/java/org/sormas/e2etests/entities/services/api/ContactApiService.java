@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.entities.services.api;
 
+import static org.sormas.e2etests.entities.pojo.helpers.ShortUUIDGenerator.generateShortUUID;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import java.time.LocalDateTime;
@@ -25,6 +26,8 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.UUID;
 import javax.inject.Inject;
+
+import lombok.SneakyThrows;
 import org.sormas.e2etests.entities.pojo.api.Case;
 import org.sormas.e2etests.entities.pojo.api.Contact;
 import org.sormas.e2etests.entities.pojo.api.District;
@@ -58,11 +61,12 @@ public class ContactApiService {
     this.runningConfiguration = runningConfiguration;
   }
 
+  @SneakyThrows
   public Contact buildGeneratedContact(Person person) {
     environmentManager = new EnvironmentManager(restAssuredClient);
     return Contact.builder()
         .disease(DiseasesValues.CORONAVIRUS.getDiseaseName())
-        .uuid(UUID.randomUUID().toString())
+        .uuid(generateShortUUID())
         .reportDateTime(new Date())
         .reportingUser(
             ReportingUser.builder()
@@ -94,12 +98,13 @@ public class ContactApiService {
                 .firstName(person.getFirstName())
                 .lastName(person.getLastName())
                 .build())
-        .epiData(EpiData.builder().uuid(UUID.randomUUID().toString()).build())
-        .healthConditions(HealthConditions.builder().uuid(UUID.randomUUID().toString()).build())
+        .epiData(EpiData.builder().uuid(generateShortUUID()).build())
+        .healthConditions(HealthConditions.builder().uuid(generateShortUUID()).build())
         .relationToCase("SAME_HOUSEHOLD")
         .build();
   }
 
+  @SneakyThrows
   public Contact buildGeneratedContactWithCreationDate(Person person, Integer days) {
     environmentManager = new EnvironmentManager(restAssuredClient);
     return Contact.builder()
@@ -109,7 +114,7 @@ public class ContactApiService {
                 .toInstant()
                 .toEpochMilli())
         .disease(DiseasesValues.CORONAVIRUS.getDiseaseName())
-        .uuid(UUID.randomUUID().toString())
+        .uuid(generateShortUUID())
         .reportDateTime(new Date())
         .reportingUser(
             ReportingUser.builder()
@@ -141,18 +146,19 @@ public class ContactApiService {
                 .firstName(person.getFirstName())
                 .lastName(person.getLastName())
                 .build())
-        .epiData(EpiData.builder().uuid(UUID.randomUUID().toString()).build())
-        .healthConditions(HealthConditions.builder().uuid(UUID.randomUUID().toString()).build())
+        .epiData(EpiData.builder().uuid(generateShortUUID()).build())
+        .healthConditions(HealthConditions.builder().uuid(generateShortUUID()).build())
         .relationToCase("SAME_HOUSEHOLD")
         .build();
   }
 
+  @SneakyThrows
   public Contact buildGeneratedContactWithParamRegionAndDistrictLinkedToPreviousCreatedCase(
       Person person, Case caze, String region, String district) {
     environmentManager = new EnvironmentManager(restAssuredClient);
     return Contact.builder()
         .disease(DiseasesValues.CORONAVIRUS.getDiseaseName())
-        .uuid(UUID.randomUUID().toString())
+        .uuid(generateShortUUID())
         .reportDateTime(new Date())
         .reportingUser(
             ReportingUser.builder()
@@ -172,17 +178,18 @@ public class ContactApiService {
                 .firstName(person.getFirstName())
                 .lastName(person.getLastName())
                 .build())
-        .epiData(EpiData.builder().uuid(UUID.randomUUID().toString()).build())
-        .healthConditions(HealthConditions.builder().uuid(UUID.randomUUID().toString()).build())
+        .epiData(EpiData.builder().uuid(generateShortUUID()).build())
+        .healthConditions(HealthConditions.builder().uuid(generateShortUUID()).build())
         .relationToCase("SAME_HOUSEHOLD")
         .caze(Case.builder().uuid(caze.getUuid()).build())
         .build();
   }
 
+  @SneakyThrows
   public Contact buildGeneratedContactWithLinkedCase(Person person, Case caze) {
     environmentManager = new EnvironmentManager(restAssuredClient);
     return Contact.builder()
-        .uuid(UUID.randomUUID().toString())
+        .uuid(generateShortUUID())
         .disease(DiseasesValues.CORONAVIRUS.getDiseaseName())
         .reportDateTime(new Date())
         .reportingUser(
@@ -215,8 +222,8 @@ public class ContactApiService {
                 .firstName(person.getFirstName())
                 .lastName(person.getLastName())
                 .build())
-        .epiData(EpiData.builder().uuid(UUID.randomUUID().toString()).build())
-        .healthConditions(HealthConditions.builder().uuid(UUID.randomUUID().toString()).build())
+        .epiData(EpiData.builder().uuid(generateShortUUID()).build())
+        .healthConditions(HealthConditions.builder().uuid(generateShortUUID()).build())
         .relationToCase("SAME_HOUSEHOLD")
         .caze(Case.builder().uuid(caze.getUuid()).build())
         .build();

@@ -22,7 +22,8 @@ import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.time.LocalDate;
 import java.util.Random;
-import java.util.UUID;
+
+import lombok.SneakyThrows;
 import org.sormas.e2etests.entities.pojo.web.Contact;
 import org.sormas.e2etests.entities.pojo.web.epidemiologicalData.Exposure;
 import org.sormas.e2etests.enums.CommunityValues;
@@ -37,6 +38,8 @@ import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfActivityExposur
 import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
 import org.sormas.e2etests.helpers.strings.ASCIIHelper;
 
+import static org.sormas.e2etests.entities.pojo.helpers.ShortUUIDGenerator.generateShortUUID;
+
 public class ContactService {
   private final Faker faker;
   private static Random random = new Random();
@@ -50,6 +53,7 @@ public class ContactService {
     this.faker = faker;
   }
 
+  @SneakyThrows
   public Contact buildGeneratedContactDE() {
     firstName = faker.name().firstName();
     lastName = faker.name().lastName();
@@ -69,7 +73,7 @@ public class ContactService {
         .returningTraveler("NEIN")
         .reportDate(LocalDate.now().minusDays(random.nextInt(5)))
         .diseaseOfSourceCase("COVID-19")
-        .caseIdInExternalSystem(UUID.randomUUID().toString())
+        .caseIdInExternalSystem(generateShortUUID())
         .dateOfFirstContact(LocalDate.now().minusDays(9))
         .dateOfLastContact(LocalDate.now().minusDays(6))
         .caseOrEventInformation("Automated test dummy description")
@@ -85,6 +89,7 @@ public class ContactService {
         .build();
   }
 
+  @SneakyThrows
   public Contact buildGeneratedContactWithParametrizedPersonDataDE(
       String firstName, String lastName, LocalDate dateOfBirth, String sex) {
 
@@ -99,7 +104,7 @@ public class ContactService {
         .returningTraveler("NEIN")
         .reportDate(LocalDate.now().minusDays(random.nextInt(5)))
         .diseaseOfSourceCase("COVID-19")
-        .caseIdInExternalSystem(UUID.randomUUID().toString())
+        .caseIdInExternalSystem(generateShortUUID())
         .dateOfFirstContact(LocalDate.now().minusDays(9))
         .dateOfLastContact(LocalDate.now().minusDays(6))
         .caseOrEventInformation("Automated test dummy description")
@@ -115,6 +120,7 @@ public class ContactService {
         .build();
   }
 
+  @SneakyThrows
   public Contact buildGeneratedContactWithParametrizedPersonData(
       String firstName, String lastName, LocalDate dateOfBirth) {
     return Contact.builder()
@@ -128,7 +134,7 @@ public class ContactService {
         .returningTraveler("NO")
         .reportDate(LocalDate.now())
         .diseaseOfSourceCase("COVID-19")
-        .caseIdInExternalSystem(UUID.randomUUID().toString())
+        .caseIdInExternalSystem(generateShortUUID())
         .dateOfFirstContact(LocalDate.now().minusDays(15))
         .dateOfLastContact(LocalDate.now().minusDays(13))
         .caseOrEventInformation("Automated test dummy description")
@@ -145,6 +151,7 @@ public class ContactService {
         .build();
   }
 
+  @SneakyThrows
   public Contact buildGeneratedContact() {
     firstName = faker.name().firstName();
     lastName = faker.name().lastName();
@@ -164,7 +171,7 @@ public class ContactService {
         .returningTraveler("NO")
         .reportDate(LocalDate.now().minusDays(random.nextInt(10)))
         .diseaseOfSourceCase("COVID-19")
-        .caseIdInExternalSystem(UUID.randomUUID().toString())
+        .caseIdInExternalSystem(generateShortUUID())
         .dateOfFirstContact(LocalDate.now().minusDays(15))
         .dateOfLastContact(LocalDate.now().minusDays(13))
         .caseOrEventInformation("Automated test dummy description")
@@ -181,6 +188,7 @@ public class ContactService {
         .build();
   }
 
+  @SneakyThrows
   public Contact buildEditContact() {
     return Contact.builder()
         .classification("CONFIRMED CONTACT")
@@ -188,15 +196,15 @@ public class ContactService {
         .dateOfFirstContact(LocalDate.now().minusDays(3))
         .dateOfLastContact(LocalDate.now().minusDays(1))
         .diseaseOfSourceCase("Measles")
-        .externalId(UUID.randomUUID().toString())
-        .externalToken(UUID.randomUUID().toString().substring(0, 8))
+        .externalId(generateShortUUID())
+        .externalToken(generateShortUUID().substring(0, 8))
         .reportDate(LocalDate.now())
         .reportingDistrict("District11")
         .responsibleRegion("Region1")
         .responsibleDistrict("District12")
         .responsibleCommunity("")
         .returningTraveler("YES")
-        .caseIdInExternalSystem(UUID.randomUUID().toString())
+        .caseIdInExternalSystem(generateShortUUID())
         .caseOrEventInformation("Random description for case or event")
         .identificationSource("Other")
         .identificationSourceDetails("random details")
