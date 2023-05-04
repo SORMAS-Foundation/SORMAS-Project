@@ -785,6 +785,7 @@ public interface Strings {
 	String infoBulkProcessCancelled = "infoBulkProcessCancelled";
 	String infoBulkProcessFinished = "infoBulkProcessFinished";
 	String infoBulkProcessFinishedWithSkips = "infoBulkProcessFinishedWithSkips";
+	String infoBulkUnresponsiveWindowHint = "infoBulkUnresponsiveWindowHint";
 	String infoCalculateCompleteness = "infoCalculateCompleteness";
 	String infoCampaignsDashboard = "infoCampaignsDashboard";
 	String infoCanceledBy = "infoCanceledBy";

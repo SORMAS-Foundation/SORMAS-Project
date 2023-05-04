@@ -58,4 +58,9 @@ public class BulkProgressLayout extends AbstractProgressLayout<BulkProgressUpdat
 		skippedEntriesCount += progressUpdateInfo.getSkippedEntryCount();
 		skippedEntriesLabel.setValue(String.format(I18nProperties.getCaption(Captions.bulkSkipped), skippedEntriesCount));
 	}
+
+	@Override
+	protected String getHintText() {
+		return I18nProperties.getString(Strings.infoBulkUnresponsiveWindowHint);
+	}
 }

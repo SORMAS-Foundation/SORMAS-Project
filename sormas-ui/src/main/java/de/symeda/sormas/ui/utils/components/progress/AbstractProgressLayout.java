@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.ui.utils.components.progress;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -53,6 +55,8 @@ public abstract class AbstractProgressLayout<P extends ProgressUpdateInfo> exten
 	private Label progressCountLabel;
 	private int progressCount = 0;
 
+	protected HorizontalLayout hintLayout;
+
 	private Button cancelButton;
 	private Button closeButton;
 	private final Runnable cancelCallback;
@@ -69,6 +73,7 @@ public abstract class AbstractProgressLayout<P extends ProgressUpdateInfo> exten
 		initInfoSection(initialInfoText);
 		initProgressSection();
 		initButtonPanel();
+		initHintSection();
 	}
 
 	/**
@@ -120,6 +125,10 @@ public abstract class AbstractProgressLayout<P extends ProgressUpdateInfo> exten
 		cancelButton.setVisible(false);
 		closeButton.setVisible(true);
 		closeButton.addClickListener(e -> closeCallback.run());
+	}
+
+	protected String getHintText() {
+		return null;
 	}
 
 	private void initInfoSection(String initialInfoText) {
@@ -193,6 +202,20 @@ public abstract class AbstractProgressLayout<P extends ProgressUpdateInfo> exten
 
 		addComponent(buttonPanel);
 		setComponentAlignment(buttonPanel, Alignment.MIDDLE_RIGHT);
+	}
+
+	private void initHintSection() {
+
+		if (StringUtils.isNotBlank(getHintText())) {
+			hintLayout = new HorizontalLayout();
+			CssStyles.style(hintLayout, CssStyles.VSPACE_TOP_3);
+
+			Label hintLabel = new Label(getHintText(), ContentMode.HTML);
+			CssStyles.style(hintLabel, CssStyles.LABEL_MINOR, CssStyles.LABEL_SMALL);
+			hintLayout.addComponent(hintLabel);
+
+			addComponent(hintLayout);
+		}
 	}
 
 }

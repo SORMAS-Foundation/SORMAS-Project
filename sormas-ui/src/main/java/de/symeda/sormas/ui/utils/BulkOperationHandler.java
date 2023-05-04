@@ -60,7 +60,7 @@ public class BulkOperationHandler {
 
 			BulkProgressLayout bulkProgressLayout = new BulkProgressLayout(currentUI, selectedEntries.size(), this::handleCancelButtonClicked);
 			Window window = VaadinUiUtil.createPopupWindow();
-			window.setCaption(I18nProperties.getString(Strings.headingDataImport));
+			window.setCaption(I18nProperties.getString(Strings.headingBulkOperationProgress));
 			window.setWidth(800, Sizeable.Unit.PIXELS);
 			window.setContent(bulkProgressLayout);
 			window.setClosable(false);
