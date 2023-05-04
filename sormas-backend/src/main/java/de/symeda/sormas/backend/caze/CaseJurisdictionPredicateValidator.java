@@ -53,7 +53,7 @@ public class CaseJurisdictionPredicateValidator extends PredicateJurisdictionVal
 		this.joins = joins;
 		this.cq = cq;
 	}
-	
+
 	private CaseJurisdictionPredicateValidator(
 		CriteriaQuery<?> cq,
 		CriteriaBuilder cb,
@@ -86,18 +86,12 @@ public class CaseJurisdictionPredicateValidator extends PredicateJurisdictionVal
 				? cb.equal(joins.getRoot().get(Case.REPORTING_USER).get(User.ID), user.getId())
 				: cb.equal(joins.getRoot().get(Case.REPORTING_USER).get(User.ID), userPath.get(User.ID)));
 
-		if (userLimitedDiseaseCheck() != null) {
-			return cb.and(cb.or(reportedByCurrentUser, isInJurisdiction()), userLimitedDiseaseCheck());
-		}
-		return cb.or(reportedByCurrentUser, isInJurisdiction());
+		return cb.and(cb.or(reportedByCurrentUser, isInJurisdiction()), hasUserLimitedDisease());
 	}
 
-	private Predicate userLimitedDiseaseCheck() {
-		Predicate filter = null;
-		if (user != null && user.getLimitedDisease() != null) {
-			filter = cb.equal(joins.getRoot().get(Case.DISEASE), user.getLimitedDisease());
-		}
-		return filter;
+	@Override
+	protected Predicate getLimitedDiseasePredicate() {
+		return cb.equal(joins.getRoot().get(Case.DISEASE), user.getLimitedDisease());
 	}
 
 	@Override

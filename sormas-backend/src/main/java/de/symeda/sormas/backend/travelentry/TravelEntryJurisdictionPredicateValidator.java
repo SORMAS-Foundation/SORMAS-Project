@@ -78,19 +78,12 @@ public class TravelEntryJurisdictionPredicateValidator extends PredicateJurisdic
 				? cb.equal(joins.getRoot().get(TravelEntry.REPORTING_USER).get(User.ID), user.getId())
 				: cb.equal(joins.getRoot().get(TravelEntry.REPORTING_USER).get(User.ID), userPath.get(User.ID)));
 
-		if (userLimitedDiseaseCheck() != null) {
-			return cb.and(cb.or(reportedByCurrentUser, isInJurisdiction()), userLimitedDiseaseCheck());
-		}
-
-		return cb.or(reportedByCurrentUser, isInJurisdiction());
+		return cb.and(cb.or(reportedByCurrentUser, isInJurisdiction()), hasUserLimitedDisease());
 	}
 
-	private Predicate userLimitedDiseaseCheck() {
-		Predicate filter = null;
-		if (user != null && user.getLimitedDisease() != null) {
-			filter = cb.equal(joins.getRoot().get(TravelEntry.DISEASE), user.getLimitedDisease());
-		}
-		return filter;
+	@Override
+	protected Predicate getLimitedDiseasePredicate() {
+		return cb.equal(joins.getRoot().get(TravelEntry.DISEASE), user.getLimitedDisease());
 	}
 
 	@Override

@@ -19,7 +19,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 
-import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -72,19 +71,12 @@ public class EventJurisdictionPredicateValidator extends PredicateJurisdictionVa
 				? cb.equal(joins.getRoot().get(Event.RESPONSIBLE_USER).get(User.ID), user.getId())
 				: cb.equal(joins.getRoot().get(Event.RESPONSIBLE_USER).get(User.ID), userPath.get(User.ID)));
 
-		if (userLimitedDiseaseCheck() != null) {
-			return cb.and(cb.or(reportedByCurrentUser, currentUserResponsible, isInJurisdiction()), userLimitedDiseaseCheck());
-		}
-
-		return cb.or(reportedByCurrentUser, currentUserResponsible, isInJurisdiction());
+		return cb.and(cb.or(reportedByCurrentUser, currentUserResponsible, isInJurisdiction()), hasUserLimitedDisease());
 	}
 
-	private Predicate userLimitedDiseaseCheck() {
-		Predicate filter = null;
-		if (user != null && user.getLimitedDisease() != null) {
-			filter = cb.equal(joins.getRoot().get(Event.DISEASE), user.getLimitedDisease());
-		}
-		return filter;
+	@Override
+	protected Predicate getLimitedDiseasePredicate() {
+		return cb.equal(joins.getRoot().get(Event.DISEASE), user.getLimitedDisease());
 	}
 
 	@Override

@@ -24,6 +24,7 @@ import javax.persistence.criteria.Predicate;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.jurisdiction.JurisdictionValidator;
 import de.symeda.sormas.backend.user.User;
+import org.apache.poi.ss.usermodel.CellStyle;
 
 public abstract class PredicateJurisdictionValidator extends JurisdictionValidator<Predicate> {
 
@@ -61,5 +62,17 @@ public abstract class PredicateJurisdictionValidator extends JurisdictionValidat
 			.when(cb.equal(jLP, JurisdictionLevel.POINT_OF_ENTRY), cb.selectCase().when(whenPointOfEntryLevel(), true).otherwise(false))
 			.otherwise(false)
 			.in(true);
+	}
+
+	protected Predicate hasUserLimitedDisease() {
+		if (user != null && user.getLimitedDisease() != null) {
+			return getLimitedDiseasePredicate();
+		} else {
+			return cb.conjunction();
+		}
+	}
+
+	protected Predicate getLimitedDiseasePredicate() {
+		return cb.conjunction();
 	}
 }
