@@ -2480,6 +2480,7 @@ public interface Captions {
 	String User_userName = "User.userName";
 	String User_userRoles = "User.userRoles";
 	String User_uuid = "User.uuid";
+	String userMyUserId = "userMyUserId";
 	String userNewUser = "userNewUser";
 	String userResetPassword = "userResetPassword";
 	String userRight = "userRight";
