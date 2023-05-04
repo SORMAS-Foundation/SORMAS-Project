@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Date;
 
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -193,28 +194,28 @@ public class CasePartialUpdateTest extends AbstractBeanTest {
 			InvestigationStatus.PENDING,
 			new Date(),
 			rdcf);
-		caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
+		caze.setPregnant(YesNoUnknown.NO);
 		caze.setAdditionalDetails("additional details");
 		caze = getCaseFacade().save(caze);
 
 		ObjectMapper mapper = new ObjectMapper();
 		JsonNode caseJson = mapper.convertValue(caze, JsonNode.class);
 		//check if the reference person uuid is the same in the converted json
-		CaseOrigin actualCaseOrigin = Enum.valueOf(CaseOrigin.class, caseJson.get("caseOrigin").textValue());
+		YesNoUnknown actualPregnant = Enum.valueOf(YesNoUnknown.class, caseJson.get("pregnant").textValue());
 		String actualAdditionalDetails = caseJson.get("additionalDetails").textValue();
-		assertEquals(CaseOrigin.IN_COUNTRY, actualCaseOrigin);
+		assertEquals(YesNoUnknown.NO, actualPregnant);
 		assertEquals(caze.getAdditionalDetails(), actualAdditionalDetails);
-		((ObjectNode) caseJson).putNull("caseOrigin");
+		((ObjectNode) caseJson).putNull("pregnant");
 		((ObjectNode) caseJson).putNull("additionalDetails");
 
-		assertTrue(caseJson.get("caseOrigin").isNull());
+		assertTrue(caseJson.get("pregnant").isNull());
 		assertTrue(caseJson.get("additionalDetails").isNull());
 
 		//remove from json some nodes 
 
 		((ObjectNode) caseJson).remove("caseClassification");
-		((ObjectNode) caseJson).remove("district");
-		((ObjectNode) caseJson).remove("community");
+		((ObjectNode) caseJson).remove("responsibleRegion");
+		((ObjectNode) caseJson).remove("responsibleDistrict");
 		((ObjectNode) caseJson).remove("healthFacility");
 		((ObjectNode) caseJson).remove("epiData");
 		((ObjectNode) caseJson).remove("surveillanceOfficer");
@@ -226,9 +227,9 @@ public class CasePartialUpdateTest extends AbstractBeanTest {
 		CaseDataDto casePostUpdated = getCaseFacade().postUpdate(caze.getUuid(), caseJson);
 		//check if the fields has been set to null  
 		assertNull(casePostUpdated.getAdditionalDetails());
-		assertNull(casePostUpdated.getCaseOrigin());
+		assertNull(casePostUpdated.getPregnant());
 		//check if the fields that were not in the json file has not be deleted
-		assertEquals(CaseClassification.PROBABLE, caze.getCaseClassification());
+		assertEquals(rdcf.region, caze.getResponsibleRegion());
 	}
 
 	@Test
