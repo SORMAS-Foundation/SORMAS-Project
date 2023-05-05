@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.contacts;
 
+import static org.sormas.e2etests.entities.pojo.helpers.ShortUUIDGenerator.generateShortUUID;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ACTION_OKAY;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALL_RESULTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_ACTIONS;
@@ -184,10 +185,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.common.DataOperations;
@@ -1348,6 +1350,7 @@ public class ContactDirectorySteps implements En {
     return detailedContactPojo;
   }
 
+  @SneakyThrows
   public static void writeCSVFromMapDetailedContact(
       Map<String, Object> detailedContact,
       String createdFileName,
@@ -1368,8 +1371,8 @@ public class ContactDirectorySteps implements En {
       List<String[]> data = new ArrayList<String[]>();
       firstName = faker.name().firstName();
       lastName = faker.name().lastName();
-      contactUUIDFromCSV = UUID.randomUUID().toString().substring(0, 26).toUpperCase();
-      String personUUID = UUID.randomUUID().toString().substring(0, 26).toUpperCase();
+      contactUUIDFromCSV = generateShortUUID();
+      String personUUID = generateShortUUID();
       int lRandom = ThreadLocalRandom.current().nextInt(8999999, 9999999 + 1);
       detailedContact.computeIfPresent("uuid", (k, v) -> v = contactUUIDFromCSV);
       detailedContact.computeIfPresent("personUuid", (k, v) -> v = personUUID);

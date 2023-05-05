@@ -18,12 +18,14 @@
 
 package org.sormas.e2etests.entities.services.api;
 
+import static org.sormas.e2etests.entities.pojo.helpers.ShortUUIDGenerator.generateShortUUID;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.google.inject.Inject;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.UUID;
+
+import lombok.SneakyThrows;
 import org.sormas.e2etests.entities.pojo.api.District;
 import org.sormas.e2etests.entities.pojo.api.Person;
 import org.sormas.e2etests.entities.pojo.api.PointOfEntry;
@@ -51,6 +53,7 @@ public class TravelEntryApiService {
     this.runningConfiguration = runningConfiguration;
   }
 
+  @SneakyThrows
   public TravelEntry buildGeneratedTravelEntryWithCreationDate(
       String personUUID, String personFirstName, String personLastName, Integer days) {
     environmentManager = new EnvironmentManager(restAssuredClient);
@@ -60,7 +63,7 @@ public class TravelEntryApiService {
                 .atZone(ZoneId.systemDefault())
                 .toInstant()
                 .toEpochMilli())
-        .uuid(UUID.randomUUID().toString())
+        .uuid(generateShortUUID())
         .person(
             Person.builder()
                 .uuid(personUUID)

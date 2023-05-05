@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.entities.services.api;
 
+import static org.sormas.e2etests.entities.pojo.helpers.ShortUUIDGenerator.generateShortUUID;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.github.javafaker.Faker;
@@ -25,7 +26,8 @@ import com.google.inject.Inject;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.UUID;
+
+import lombok.SneakyThrows;
 import org.sormas.e2etests.entities.pojo.api.Community;
 import org.sormas.e2etests.entities.pojo.api.District;
 import org.sormas.e2etests.entities.pojo.api.Event;
@@ -61,10 +63,11 @@ public class EventApiService {
   //    this.faker = faker;
   //  }
 
+  @SneakyThrows
   public Event buildGeneratedEvent() {
     EnvironmentManager environmentManager = new EnvironmentManager(restAssuredClient);
     return Event.builder()
-        .uuid(UUID.randomUUID().toString())
+        .uuid(generateShortUUID())
         .disease(DiseasesValues.CORONAVIRUS.getDiseaseName())
         .diseaseVariant(
             DiseaseVariant.builder()
@@ -91,7 +94,7 @@ public class EventApiService {
         .eventManagementStatus(EventManagementStatusValues.ONGOING.getValue())
         .eventLocation(
             EventLocation.builder()
-                .uuid(UUID.randomUUID().toString())
+                .uuid(generateShortUUID())
                 .community(
                     Community.builder()
                         .uuid(
@@ -114,6 +117,7 @@ public class EventApiService {
         .build();
   }
 
+  @SneakyThrows
   public Event buildGeneratedEventWithCreationDate(Integer days) {
     EnvironmentManager environmentManager = new EnvironmentManager(restAssuredClient);
     return Event.builder()
@@ -122,7 +126,7 @@ public class EventApiService {
                 .atZone(ZoneId.systemDefault())
                 .toInstant()
                 .toEpochMilli())
-        .uuid(UUID.randomUUID().toString())
+        .uuid(generateShortUUID())
         .disease(DiseasesValues.CORONAVIRUS.getDiseaseName())
         .diseaseVariant(
             DiseaseVariant.builder()
@@ -149,7 +153,7 @@ public class EventApiService {
         .eventManagementStatus(EventManagementStatusValues.ONGOING.getValue())
         .eventLocation(
             EventLocation.builder()
-                .uuid(UUID.randomUUID().toString())
+                .uuid(generateShortUUID())
                 .community(
                     Community.builder()
                         .uuid(

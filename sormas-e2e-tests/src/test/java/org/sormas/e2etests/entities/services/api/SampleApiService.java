@@ -18,11 +18,13 @@
 
 package org.sormas.e2etests.entities.services.api;
 
+import static org.sormas.e2etests.entities.pojo.helpers.ShortUUIDGenerator.generateShortUUID;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.google.inject.Inject;
 import java.util.Date;
-import java.util.UUID;
+
+import lombok.SneakyThrows;
 import org.sormas.e2etests.entities.pojo.api.AssociatedCase;
 import org.sormas.e2etests.entities.pojo.api.Case;
 import org.sormas.e2etests.entities.pojo.api.Lab;
@@ -47,10 +49,11 @@ public class SampleApiService {
     this.runningConfiguration = runningConfiguration;
   }
 
+  @SneakyThrows
   public Sample buildGeneratedSample(Case caze) {
     EnvironmentManager environmentManager = new EnvironmentManager(restAssuredClient);
     return Sample.builder()
-        .uuid(UUID.randomUUID().toString())
+        .uuid(generateShortUUID())
         .reportingUser(
             ReportingUser.builder()
                 .uuid(
