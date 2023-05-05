@@ -45,7 +45,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -918,9 +917,11 @@ public class EventController {
 				});
 		}
 
-		final EditPermissionType eventEditAllowed = FacadeProvider.getEventFacade().getEditPermissionType(eventUuid);
-
-		editView.restrictEditableComponentsOnEditView(UserRight.EVENT_EDIT, UserRight.EVENT_DELETE, eventEditAllowed, event.isInJurisdiction());
+		editView.restrictEditableComponentsOnEditView(
+			UserRight.EVENT_EDIT,
+			UserRight.EVENT_DELETE,
+			FacadeProvider.getEventFacade().getEditPermissionType(eventUuid),
+			event.isInJurisdiction());
 
 		return editView;
 	}

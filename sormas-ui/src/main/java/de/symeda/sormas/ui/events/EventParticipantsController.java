@@ -32,7 +32,6 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Window;
 import com.vaadin.v7.data.Validator;
 
-import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
@@ -267,12 +266,10 @@ public class EventParticipantsController {
 					() -> navigateToData(eventParticipant.getUuid()));
 		}
 
-		final EditPermissionType eventParticipantEditAllowed = FacadeProvider.getEventParticipantFacade().getEditPermissionType(eventParticipantUuid);
-
 		editComponent.restrictEditableComponentsOnEditView(
 			UserRight.EVENTPARTICIPANT_EDIT,
 			UserRight.EVENTPARTICIPANT_DELETE,
-			eventParticipantEditAllowed,
+			FacadeProvider.getEventParticipantFacade().getEditPermissionType(eventParticipantUuid),
 			eventParticipant.isInJurisdiction());
 
 		return editComponent;
