@@ -124,14 +124,18 @@ public class VaccinationController {
 		boolean doSave,
 		Consumer<VaccinationDto> commitCallback,
 		Runnable deleteCallback,
-		boolean isEditAllowed) {
+		boolean isEditAllowed,
+		boolean isDeleteAllowed) {
 
 		VaccinationEditForm form = new VaccinationEditForm(true, disease, fieldAccessCheckers);
 		form.setValue(vaccination);
 
 		final CommitDiscardWrapperComponent<VaccinationEditForm> editComponent =
 			getVaccinationEditComponent(vaccination, disease, fieldAccessCheckers, doSave, commitCallback, isEditAllowed);
-		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editComponent, I18nProperties.getCaption(VaccinationDto.I18N_PREFIX));
+
+		Window popupWindow = VaadinUiUtil.showModalPopupWindow(
+			editComponent,
+			I18nProperties.getString(!isEditAllowed ? Strings.headingViewVaccination : Strings.headingEditVaccination));
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_DELETE)) {
 			editComponent.addDeleteWithReasonOrRestoreListener((deleteDetails) -> {

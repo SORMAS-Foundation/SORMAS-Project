@@ -31,7 +31,7 @@ public class ClinicalVisitGrid extends Grid implements V7AbstractGrid<ClinicalVi
 
 	private ClinicalVisitCriteria clinicalVisitCriteria = new ClinicalVisitCriteria();
 
-	public ClinicalVisitGrid(CaseReferenceDto caseRef, boolean isPseudonymized, boolean isEditAllowed) {
+	public ClinicalVisitGrid(CaseReferenceDto caseRef, boolean isPseudonymized, boolean isEditAllowed, boolean isDeleteAllowed) {
 
 		setSizeFull();
 
@@ -72,7 +72,12 @@ public class ClinicalVisitGrid extends Grid implements V7AbstractGrid<ClinicalVi
 		addItemClickListener(e -> {
 			if (ACTION_BTN_ID.equals(e.getPropertyId()) || e.isDoubleClick()) {
 				ControllerProvider.getClinicalCourseController()
-					.openClinicalVisitEditForm((ClinicalVisitIndexDto) e.getItemId(), caseRef.getUuid(), this::reload, isEditAllowed);
+					.openClinicalVisitEditForm(
+						(ClinicalVisitIndexDto) e.getItemId(),
+						caseRef.getUuid(),
+						this::reload,
+						isEditAllowed,
+						isDeleteAllowed);
 			}
 		});
 	}

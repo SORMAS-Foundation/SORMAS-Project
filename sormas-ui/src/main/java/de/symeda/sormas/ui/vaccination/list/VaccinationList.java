@@ -71,10 +71,14 @@ public class VaccinationList extends PaginationList<VaccinationListEntryDto> {
 
 	@Override
 	protected void drawDisplayedEntries() {
-		boolean isEditableAndHasEditOrDeleteRight = isEditAllowed && hasEditOrDeleteRights();
+		boolean isEditableAndHasEditRight = UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed, UserRight.IMMUNIZATION_EDIT);
+		boolean isEditableAndHasDeleteRight =
+			UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed, UserRight.IMMUNIZATION_DELETE);
+
 		for (VaccinationListEntryDto entryDto : getDisplayedEntries()) {
 			VaccinationListEntry listEntry = new VaccinationListEntry(entryDto, disease == null);
 			boolean isActiveVaccination = entryDto.getUuid().equals(getActiveUuid());
+
 			if (isActiveVaccination) {
 				listEntry.setActive();
 			}
@@ -91,17 +95,13 @@ public class VaccinationList extends PaginationList<VaccinationListEntryDto> {
 							true,
 							v -> SormasUI.refreshView(),
 							deleteCallback(),
-							isEditableAndHasEditOrDeleteRight);
-				}), isEditableAndHasEditOrDeleteRight);
+							isEditableAndHasEditRight,
+							isEditableAndHasDeleteRight);
+				}), isEditableAndHasEditRight || isEditableAndHasDeleteRight);
 			}
 
 			listEntry.setEnabled(isEditAllowed && entryDto.isRelevant());
 			listLayout.addComponent(listEntry);
 		}
-	}
-
-	private boolean hasEditOrDeleteRights() {
-		return UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_EDIT)
-			|| UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_DELETE);
 	}
 }

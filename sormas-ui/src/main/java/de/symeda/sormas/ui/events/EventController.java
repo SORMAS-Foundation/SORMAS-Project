@@ -73,7 +73,6 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.BulkOperationResults;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.api.uuid.HasUuid;
@@ -84,7 +83,7 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
 import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceServiceGateway;
 import de.symeda.sormas.ui.utils.AbstractView;
-import de.symeda.sormas.ui.utils.BulkOperationHelper;
+import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
 import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
@@ -969,7 +968,7 @@ public class EventController {
 			boolean eventManagementStatusChange = form.getEventManagementStatusCheckbox().getValue();
 
 			List<EventIndexDto> selectedEventsCpy = new ArrayList<>(selectedEvents);
-			BulkOperationHelper.doBulkOperation(
+			new BulkOperationHandler().doBulkOperation(
 				selectedEntries -> eventFacade.saveBulkEvents(
 					selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
 					updatedTempEvent,
@@ -977,24 +976,18 @@ public class EventController {
 					eventInvestigationStatusChange,
 					eventManagementStatusChange),
 				selectedEventsCpy,
-				selectedEventsCpy.size(),
-				results -> handleBulkOperationDone(results, popupWindow, eventGrid, selectedEvents));
+				results -> handleBulkOperationDone((List<EventIndexDto>) results, popupWindow, eventGrid));
 		});
 
 		editView.addDiscardListener(() -> popupWindow.close());
 	}
 
-	private void handleBulkOperationDone(
-		BulkOperationResults<?> results,
-		Window popupWindow,
-		EventGrid eventGrid,
-		Collection<EventIndexDto> selectedEvents) {
+	private void handleBulkOperationDone(List<EventIndexDto> remainingEvents, Window popupWindow, EventGrid eventGrid) {
 
 		popupWindow.close();
 		eventGrid.reload();
-		if (CollectionUtils.isNotEmpty(results.getRemainingEntries())) {
-			eventGrid.asMultiSelect()
-				.selectItems(selectedEvents.stream().filter(e -> results.getRemainingEntries().contains(e.getUuid())).toArray(EventIndexDto[]::new));
+		if (CollectionUtils.isNotEmpty(remainingEvents)) {
+			eventGrid.asMultiSelect().selectItems(remainingEvents.toArray(new EventIndexDto[0]));
 		} else {
 			navigateToIndex();
 		}

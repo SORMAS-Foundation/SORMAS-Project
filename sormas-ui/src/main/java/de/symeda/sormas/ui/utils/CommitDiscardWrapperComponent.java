@@ -886,21 +886,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		} catch (IllegalStateException e) {
 			super.setEnabled(readOnly);
 		}
-		//
-		//		getWrappedComponent().setReadOnly(readOnly);
-		//		if (fieldGroups != null) {
-		//			for (FieldGroup fieldGroup : fieldGroups) {
-		//				fieldGroup.setReadOnly(readOnly);
-		//			}
-		//		}
-		//
-		//		buttonsPanel.setVisible(!readOnly);
 	}
-
-	//	@Override
-	//	public boolean isReadOnly() {
-	//		return getWrappedComponent().isReadOnly();
-	//	}
 
 	protected static class ClickShortcut extends Button.ClickShortcut {
 
