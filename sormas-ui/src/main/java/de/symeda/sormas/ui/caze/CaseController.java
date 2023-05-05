@@ -103,7 +103,6 @@ import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.BulkOperationResults;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.HtmlHelper;
@@ -133,7 +132,7 @@ import de.symeda.sormas.ui.hospitalization.HospitalizationView;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.therapy.TherapyView;
 import de.symeda.sormas.ui.utils.AbstractView;
-import de.symeda.sormas.ui.utils.BulkOperationHelper;
+import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
@@ -1036,7 +1035,7 @@ public class CaseController {
 					I18nProperties.getCaption(Captions.caseTransferCases),
 					I18nProperties.getCaption(Captions.caseEditData),
 					500,
-					e -> BulkOperationHelper.doBulkOperation(
+					e -> new BulkOperationHandler().doBulkOperation(
 						selectedEntries -> caseFacade.saveBulkEditWithFacilities(
 							selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
 							updatedBulkEditData,
@@ -1047,10 +1046,9 @@ public class CaseController {
 							surveillanceOfficerChange,
 							e),
 						selectedCasesCpy,
-						selectedCasesCpy.size(),
-						results -> handleBulkOperationDone(results, popupWindow, caseGrid, selectedCases)));
+						results -> handleBulkOperationDone((List<? extends CaseIndexDto>) results, popupWindow, caseGrid)));
 			} else {
-				BulkOperationHelper.doBulkOperation(
+				new BulkOperationHandler().doBulkOperation(
 					selectedEntries -> caseFacade.saveBulkCase(
 						selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
 						updatedBulkEditData,
@@ -1060,31 +1058,22 @@ public class CaseController {
 						outcomeChange,
 						surveillanceOfficerChange),
 					selectedCasesCpy,
-					selectedCasesCpy.size(),
-					results -> handleBulkOperationDone(results, popupWindow, caseGrid, selectedCases));
+					remainingEntries -> handleBulkOperationDone((List<? extends CaseIndexDto>) remainingEntries, popupWindow, caseGrid));
 			}
 		});
 
 		editView.addDiscardListener(popupWindow::close);
 	}
 
-	private void handleBulkOperationDone(
-		BulkOperationResults<?> results,
-		Window popupWindow,
-		AbstractCaseGrid<?> caseGrid,
-		Collection<? extends CaseIndexDto> selectedCases) {
+	private void handleBulkOperationDone(List<? extends CaseIndexDto> remainingCases, Window popupWindow, AbstractCaseGrid<?> caseGrid) {
 
 		popupWindow.close();
 		caseGrid.reload();
-		if (CollectionUtils.isNotEmpty(results.getRemainingEntries())) {
+		if (CollectionUtils.isNotEmpty(remainingCases)) {
 			if (caseGrid instanceof CaseGrid) {
-				((CaseGrid) caseGrid).asMultiSelect()
-					.selectItems(
-						selectedCases.stream().filter(c -> results.getRemainingEntries().contains(c.getUuid())).toArray(CaseIndexDto[]::new));
+				((CaseGrid) caseGrid).asMultiSelect().selectItems(remainingCases.toArray(new CaseIndexDto[0]));
 			} else if (caseGrid instanceof CaseGridDetailed) {
-				((CaseGridDetailed) caseGrid).asMultiSelect()
-					.selectItems(
-						selectedCases.stream().filter(c -> results.getRemainingEntries().contains(c.getUuid())).toArray(CaseIndexDetailedDto[]::new));
+				((CaseGridDetailed) caseGrid).asMultiSelect().selectItems(remainingCases.toArray(new CaseIndexDetailedDto[0]));
 			}
 		} else {
 			navigateToIndex();

@@ -86,6 +86,7 @@ public interface Strings {
 	String confirmationArchiveTask = "confirmationArchiveTask";
 	String confirmationArchiveTasks = "confirmationArchiveTasks";
 	String confirmationArchiveTravelEntry = "confirmationArchiveTravelEntry";
+	String confirmationCancelBulkAction = "confirmationCancelBulkAction";
 	String confirmationCancelExternalFollowUpPopup = "confirmationCancelExternalFollowUpPopup";
 	String confirmationCancelFollowUp = "confirmationCancelFollowUp";
 	String confirmationChangeCaseDisease = "confirmationChangeCaseDisease";
@@ -785,6 +786,11 @@ public interface Strings {
 	String infoAutomaticDeletionTooltipYears = "infoAutomaticDeletionTooltipYears";
 	String infoBAGExport = "infoBAGExport";
 	String infoBasicExport = "infoBasicExport";
+	String infoBulkProcess = "infoBulkProcess";
+	String infoBulkProcessCancelled = "infoBulkProcessCancelled";
+	String infoBulkProcessFinished = "infoBulkProcessFinished";
+	String infoBulkProcessFinishedWithSkips = "infoBulkProcessFinishedWithSkips";
+	String infoBulkUnresponsiveWindowHint = "infoBulkUnresponsiveWindowHint";
 	String infoCalculateCompleteness = "infoCalculateCompleteness";
 	String infoCampaignsDashboard = "infoCampaignsDashboard";
 	String infoCanceledBy = "infoCanceledBy";
@@ -999,8 +1005,6 @@ public interface Strings {
 	String messageBulkContactsWithDifferentDiseasesSelected = "messageBulkContactsWithDifferentDiseasesSelected";
 	String messageBulkDontShareWithReportingToolWarning = "messageBulkDontShareWithReportingToolWarning";
 	String messageBulkLinkEventHint = "messageBulkLinkEventHint";
-	String messageBulkOperationEntryLimitReached = "messageBulkOperationEntryLimitReached";
-	String messageBulkOperationTimeLimitReached = "messageBulkOperationTimeLimitReached";
 	String messageCampaignArchived = "messageCampaignArchived";
 	String messageCampaignCreated = "messageCampaignCreated";
 	String messageCampaignDearchived = "messageCampaignDearchived";
@@ -1147,8 +1151,6 @@ public interface Strings {
 	String messageEventSaved = "messageEventSaved";
 	String messageEventsDearchived = "messageEventsDearchived";
 	String messageEventsDeleted = "messageEventsDeleted";
-	String messageEventsEdited = "messageEventsEdited";
-	String messageEventsEditedExceptArchived = "messageEventsEditedExceptArchived";
 	String messageEventsNotDeletedReason = "messageEventsNotDeletedReason";
 	String messageEventsNotDeletedReasonExternalSurveillanceTool = "messageEventsNotDeletedReasonExternalSurveillanceTool";
 	String messageEventsRestored = "messageEventsRestored";
