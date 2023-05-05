@@ -486,7 +486,7 @@ public class ImmunizationFacadeEjb
 		boolean checkChangeDate,
 		boolean includeVaccinations) {
 
-		target = DtoHelper.fillOrBuildEntity(source, target, Immunization::new, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, Immunization::build, checkChangeDate);
 
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
@@ -494,10 +494,14 @@ public class ImmunizationFacadeEjb
 		target.setReportDate(source.getReportDate());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setArchived(source.isArchived());
-		target.setImmunizationStatus(source.getImmunizationStatus());
+		if (source.getImmunizationStatus() != null) {
+			target.setImmunizationStatus(source.getImmunizationStatus());
+		}
 		target.setMeansOfImmunization(source.getMeansOfImmunization());
 		target.setMeansOfImmunizationDetails(source.getMeansOfImmunizationDetails());
-		target.setImmunizationManagementStatus(source.getImmunizationManagementStatus());
+		if (source.getImmunizationManagementStatus() != null) {
+			target.setImmunizationManagementStatus(source.getImmunizationManagementStatus());
+		}
 		target.setExternalId(source.getExternalId());
 		target.setResponsibleRegion(regionService.getByReferenceDto(source.getResponsibleRegion()));
 		target.setResponsibleDistrict(districtService.getByReferenceDto(source.getResponsibleDistrict()));

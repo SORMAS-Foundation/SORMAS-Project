@@ -1411,7 +1411,7 @@ public class ContactFacadeEjb
 
 		boolean targetWasNull = isNull(target);
 
-		target = DtoHelper.fillOrBuildEntity(source, target, Contact::new, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, Contact::build, checkChangeDate);
 
 		if (targetWasNull) {
 			FacadeHelper.setUuidIfDtoExists(target.getEpiData(), source.getEpiData());
@@ -1445,8 +1445,12 @@ public class ContactFacadeEjb
 		target.setTracingApp(source.getTracingApp());
 		target.setTracingAppDetails(source.getTracingAppDetails());
 		target.setContactProximity(source.getContactProximity());
-		target.setContactClassification(source.getContactClassification());
-		target.setContactStatus(source.getContactStatus());
+		if (source.getContactClassification() != null) {
+			target.setContactClassification(source.getContactClassification());
+		}
+		if (source.getContactStatus() != null) {
+			target.setContactStatus(source.getContactStatus());
+		}
 		target.setFollowUpStatus(source.getFollowUpStatus());
 		target.setFollowUpComment(source.getFollowUpComment());
 		target.setFollowUpUntil(source.getFollowUpUntil());
