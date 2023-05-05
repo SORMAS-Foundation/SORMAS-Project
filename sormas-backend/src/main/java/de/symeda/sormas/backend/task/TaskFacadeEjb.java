@@ -72,7 +72,6 @@ import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.BulkOperationResults;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -112,7 +111,6 @@ import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
-import de.symeda.sormas.backend.util.BulkOperationHelper;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -363,7 +361,7 @@ public class TaskFacadeEjb implements TaskFacade {
 
 	@Override
 	@RightsAllowed(UserRight._TASK_EDIT)
-	public BulkOperationResults<String> saveBulkTasks(
+	public Integer saveBulkTasks(
 		List<String> taskUuidList,
 		TaskDto updatedTempTask,
 		boolean priorityChange,
@@ -372,8 +370,9 @@ public class TaskFacadeEjb implements TaskFacade {
 
 		UserReferenceDto currentUser = userService.getCurrentUser().toReference();
 
-		return BulkOperationHelper.executeWithLimits(taskUuidList, uuid -> {
-			Task task = taskService.getByUuid(uuid);
+		int changedTasks = 0;
+		for (String taskUuid : taskUuidList) {
+			Task task = taskService.getByUuid(taskUuid);
 			TaskDto taskDto = toDto(task, createPseudonymizer());
 
 			if (priorityChange) {
@@ -388,7 +387,9 @@ public class TaskFacadeEjb implements TaskFacade {
 			}
 
 			saveTask(taskDto);
-		});
+			changedTasks++;
+		}
+		return changedTasks;
 	}
 
 	private void notifyAboutNewAssignee(Task task, User newAssignee, User oldAssignee) {
