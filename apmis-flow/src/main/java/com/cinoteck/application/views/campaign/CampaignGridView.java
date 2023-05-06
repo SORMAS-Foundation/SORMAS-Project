@@ -10,11 +10,13 @@ import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 
+import de.symeda.sormas.api.campaign.CampaignCriteria;
+
 
 public class CampaignGridView extends VerticalLayout {
 	
 
-	public CampaignGridView() {
+	public CampaignGridView(CampaignCriteria criteria) {
 
 		
 	}
