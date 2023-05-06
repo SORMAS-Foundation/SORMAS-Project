@@ -31,23 +31,20 @@ public class CampaignForm extends FormLayout {
 	List<CampaignReferenceDto> campaignStartDate;
 	List<CampaignReferenceDto> campaignEndDate;
 	List<CampaignReferenceDto> campaignDescription;
-	
+
 	TextField campaignNameField = new TextField("Campaign Name");
 	ComboBox<CampaignReferenceDto> campaignRoundField = new ComboBox("Round");
 	DatePicker campaignStartDateField = new DatePicker("Start Date");
 	DatePicker campaignEndDateField = new DatePicker("End Date");
 	TextField campaignDescriptionField = new TextField("Description");
-	
-	
 
-	public CampaignForm(List<CampaignReferenceDto> campaignName,
-	List<CampaignReferenceDto> campaignRound,
-	List<CampaignReferenceDto> campaignStartDate,
-	List<CampaignReferenceDto> campaignEndDate,
-	List<CampaignReferenceDto> campaignDescription) {
-		
+	public CampaignForm(List<CampaignReferenceDto> campaignName, List<CampaignReferenceDto> campaignRound,
+			List<CampaignReferenceDto> campaignStartDate, List<CampaignReferenceDto> campaignEndDate,
+			List<CampaignReferenceDto> campaignDescription) {
+
 		HorizontalLayout hor = new HorizontalLayout();
 		Icon vaadinIcon = new Icon("lumo", "cross");
+		
 //		hor.setJustifyContentMode(JustifyContentMode.END);
 		hor.setWidthFull();
 		hor.add(vaadinIcon);
@@ -59,33 +56,32 @@ public class CampaignForm extends FormLayout {
 		configureFields();
 
 	}
-	
+
 	private void configureFields() {
 		FormLayout campaignForm = new FormLayout();
-		
+
 		H2 bInfo = new H2("Campaign Basics");
 
-		
-		binder.forField(campaignNameField).asRequired("Campaign Name is Required").bind(CampaignDto::getName,CampaignDto::setName);
-		
+		binder.forField(campaignNameField).asRequired("Campaign Name is Required").bind(CampaignDto::getName,
+				CampaignDto::setName);
+
 		campaignRoundField.setItems();
 		binder.forField(campaignRoundField).asRequired("Campaign Round is Required").bind(CampaignDto.ROUND);
 		campaignRoundField.setItemLabelGenerator(CampaignReferenceDto::getCaption);
 		campaignRoundField.addValueChangeListener(e -> {
-		
+
 		});
-		
+
 		binder.forField(campaignStartDateField).bind(CampaignDto.START_DATE);
 		binder.forField(campaignEndDateField).bind(CampaignDto.END_DATE);
-		
-		binder.forField(campaignDescriptionField).asRequired("Campaign Description is Required").bind(CampaignDto::getDescription,CampaignDto::setDescription);
-		
-		
-		
 
-		add(bInfo,campaignNameField, campaignRoundField, campaignStartDateField, campaignEndDateField, campaignDescriptionField);
+		binder.forField(campaignDescriptionField).asRequired("Campaign Description is Required")
+				.bind(CampaignDto::getDescription, CampaignDto::setDescription);
+
+		add(bInfo, campaignNameField, campaignRoundField, campaignStartDateField, campaignEndDateField,
+				campaignDescriptionField);
 	}
-	
+
 	public void setCampaign(CampaignDto user) {
 		binder.setBean(user);
 	}
@@ -103,13 +99,13 @@ public class CampaignForm extends FormLayout {
 			return campaign;
 		}
 	}
-	
+
 	public static class SaveEvent extends CampaignFormEvent {
 		SaveEvent(CampaignForm source, CampaignDto campaign) {
 			super(source, campaign);
 		}
 	}
-	
+
 	public static class DeleteEvent extends CampaignFormEvent {
 		DeleteEvent(CampaignForm source, CampaignDto contact) {
 			super(source, contact);
@@ -122,7 +118,7 @@ public class CampaignForm extends FormLayout {
 			super(source, null);
 		}
 	}
-	
+
 	public Registration addDeleteListener(ComponentEventListener<DeleteEvent> listener) {
 		return addListener(DeleteEvent.class, listener);
 	}

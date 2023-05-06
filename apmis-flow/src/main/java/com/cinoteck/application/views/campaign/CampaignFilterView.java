@@ -60,6 +60,7 @@ public class CampaignFilterView extends VerticalLayout {
 		searchField.setPlaceholder("Search");
 		searchField.setPrefixComponent(new Icon(VaadinIcon.SEARCH));
 		searchField.setValueChangeMode(ValueChangeMode.EAGER);
+		
 
 		ComboBox<EntityRelevanceStatus> campaignStatus = new ComboBox<EntityRelevanceStatus>();
 		campaignStatus.setLabel("Campaign Status");
