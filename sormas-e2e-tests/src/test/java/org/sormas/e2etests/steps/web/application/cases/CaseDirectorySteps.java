@@ -23,7 +23,6 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CLOSE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CONFIRM;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_RELATED_CONTACTS_CHECKBOX;
@@ -89,7 +88,6 @@ import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
-
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -1266,7 +1264,7 @@ public class CaseDirectorySteps implements En {
         "I check if csv file for detailed case is imported successfully",
         () -> {
           webDriverHelpers.isElementVisibleWithTimeout(IMPORT_SUCCESSFUL_FACILITY_IMPORT_CSV, 10);
-          webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL);
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_CLOSE);
           webDriverHelpers.clickOnWebElementBySelector(CLOSE_DETAILED_EXPORT_POPUP);
         });
 
@@ -1518,8 +1516,7 @@ public class CaseDirectorySteps implements En {
       int lRandom = ThreadLocalRandom.current().nextInt(8999999, 9999999 + 1);
       detailedCase.computeIfPresent("id", (k, v) -> v = String.valueOf(lRandom));
       detailedCase.computeIfPresent("uuid", (k, v) -> v = caseUUIDFromCSV);
-      detailedCase.computeIfPresent(
-          "epidNumber", (k, v) -> v = epidNumber);
+      detailedCase.computeIfPresent("epidNumber", (k, v) -> v = epidNumber);
       detailedCase.computeIfPresent("personUuid", (k, v) -> v = personUUID);
       detailedCase.computeIfPresent("personFirstName", (k, v) -> v = firstName);
       detailedCase.computeIfPresent("personLastName", (k, v) -> v = lastName);
