@@ -24,6 +24,7 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CLOSE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CONFIRM;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_RELATED_CONTACTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BACK_TO_CASES_BUTTON;
@@ -231,7 +232,7 @@ public class CaseDirectorySteps implements En {
         "I check that an import success notification appears in the Import Case popup",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(IMPORT_SUCCESS_DE);
-          webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL);
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_CLOSE);
         });
     When(
         "I close Import Cases form",
