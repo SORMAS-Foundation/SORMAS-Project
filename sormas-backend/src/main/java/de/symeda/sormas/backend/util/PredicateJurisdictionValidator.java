@@ -45,7 +45,7 @@ public abstract class PredicateJurisdictionValidator extends JurisdictionValidat
 	}
 
 	@Override
-	protected Predicate isInJurisdiction() {
+	protected Predicate isRootInJurisdiction() {
 		return user != null
 			? isInJurisdictionByJurisdictionLevel(user.getJurisdictionLevel())
 			: isInJurisdictionByJurisdictionLevelPath(userPath.get(User.JURISDICTION_LEVEL));
@@ -68,7 +68,7 @@ public abstract class PredicateJurisdictionValidator extends JurisdictionValidat
 		if (user != null && user.getLimitedDisease() != null) {
 			return getLimitedDiseasePredicate();
 		} else {
-			return cb.conjunction();
+			return null;
 		}
 	}
 

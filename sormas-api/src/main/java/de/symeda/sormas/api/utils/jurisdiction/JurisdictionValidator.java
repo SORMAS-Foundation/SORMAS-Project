@@ -31,36 +31,36 @@ public abstract class JurisdictionValidator<T> {
 	public T inJurisdictionOrOwned() {
 		if (associatedJurisdictionValidators != null && !associatedJurisdictionValidators.isEmpty()) {
 			final List<T> jurisdictionTypes = new ArrayList<>();
-			jurisdictionTypes.add(isInJurisdictionOrOwned());
+			jurisdictionTypes.add(isRootInJurisdictionOrOwned());
 			for (JurisdictionValidator<T> jurisdictionValidator : associatedJurisdictionValidators) {
 				if (jurisdictionValidator != null) {
-					jurisdictionTypes.add(jurisdictionValidator.isInJurisdictionOrOwned());
+					jurisdictionTypes.add(jurisdictionValidator.isRootInJurisdictionOrOwned());
 				}
 			}
 			return or(jurisdictionTypes);
 		} else {
-			return isInJurisdictionOrOwned();
+			return isRootInJurisdictionOrOwned();
 		}
 	}
 
 	public T inJurisdiction() {
 		if (associatedJurisdictionValidators != null && !associatedJurisdictionValidators.isEmpty()) {
 			final List<T> jurisdictionTypes = new ArrayList<>();
-			jurisdictionTypes.add(isInJurisdiction());
+			jurisdictionTypes.add(isRootInJurisdiction());
 			for (JurisdictionValidator<T> jurisdictionValidator : associatedJurisdictionValidators) {
 				if (jurisdictionValidator != null) {
-					jurisdictionTypes.add(jurisdictionValidator.isInJurisdiction());
+					jurisdictionTypes.add(jurisdictionValidator.isRootInJurisdiction());
 				}
 			}
 			return or(jurisdictionTypes);
 		} else {
-			return isInJurisdiction();
+			return isRootInJurisdiction();
 		}
 	}
 
-	protected abstract T isInJurisdiction();
+	protected abstract T isRootInJurisdiction();
 
-	protected abstract T isInJurisdictionOrOwned();
+	protected abstract T isRootInJurisdictionOrOwned();
 
 	protected T isInJurisdictionByJurisdictionLevel(JurisdictionLevel jurisdictionLevel) {
 

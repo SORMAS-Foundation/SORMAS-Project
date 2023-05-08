@@ -26,6 +26,7 @@ import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.backend.caze.CaseJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -75,14 +76,14 @@ public class ContactJurisdictionPredicateValidator extends PredicateJurisdiction
 	}
 
 	@Override
-	protected Predicate isInJurisdictionOrOwned() {
+	protected Predicate isRootInJurisdictionOrOwned() {
 		final Predicate reportedByCurrentUser = cb.and(
 			cb.isNotNull(joins.getRoot().get(Contact.REPORTING_USER)),
 			user != null
 				? cb.equal(joins.getRoot().get(Contact.REPORTING_USER).get(User.ID), user.getId())
 				: cb.equal(joins.getRoot().get(Contact.REPORTING_USER).get(User.ID), userPath.get(User.ID)));
 
-		return cb.and(cb.or(reportedByCurrentUser, isInJurisdiction()), hasUserLimitedDisease());
+		return CriteriaBuilderHelper.and(cb, cb.or(reportedByCurrentUser, inJurisdiction()), hasUserLimitedDisease());
 	}
 
 	@Override
@@ -91,8 +92,8 @@ public class ContactJurisdictionPredicateValidator extends PredicateJurisdiction
 	}
 
 	@Override
-	protected Predicate isInJurisdiction() {
-		return super.isInJurisdiction();
+	protected Predicate isRootInJurisdiction() {
+		return super.isRootInJurisdiction();
 	}
 
 	@Override
