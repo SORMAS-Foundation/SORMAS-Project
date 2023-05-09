@@ -24,7 +24,6 @@ import javax.persistence.criteria.Predicate;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.jurisdiction.JurisdictionValidator;
 import de.symeda.sormas.backend.user.User;
-import org.apache.poi.ss.usermodel.CellStyle;
 
 public abstract class PredicateJurisdictionValidator extends JurisdictionValidator<Predicate> {
 
