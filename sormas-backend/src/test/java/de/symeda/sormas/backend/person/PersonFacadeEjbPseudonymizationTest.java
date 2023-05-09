@@ -29,6 +29,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import de.symeda.sormas.api.travelentry.TravelEntryDto;
+import de.symeda.sormas.backend.travelentry.TravelEntry;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
@@ -62,7 +64,7 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	public void init() {
 		super.init();
 
-		rdcf1 = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1");
+		rdcf1 = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1", "PointOfEntry1");
 		districtUser1 = creator.createUser(
 			rdcf1.region.getUuid(),
 			rdcf1.district.getUuid(),
@@ -71,7 +73,7 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			"Off1",
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 
-		rdcf2 = creator.createRDCF("Region 2", "District 2", "Community 2", "Facility 2");
+		rdcf2 = creator.createRDCF("Region 2", "District 2", "Community 2", "Facility 2", "PointOfEntry2");
 		districtUser2 = creator.createUser(
 			rdcf2.region.getUuid(),
 			rdcf2.district.getUuid(),
@@ -269,6 +271,26 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		contact.setRegion(null);
 		contact.setDistrict(null);
 		contact = getContactFacade().save(contact);
+
+		loginWith(districtUser2);
+		assertNotPseudonymized(getPersonFacade().getByUuid(person.getUuid()));
+	}
+
+	@Test
+	public void testGetTravelEntryPersonOutsideJurisdiction() {
+		loginWith(districtUser1);
+		person = createPerson();
+		TravelEntryDto travelEntry = creator.createTravelEntry(person.toReference(), districtUser1.toReference(), rdcf1, (t) -> {
+			t.setDisease(Disease.EVD);
+		});
+
+		loginWith(districtUser2);
+		assertPseudonymised(getPersonFacade().getByUuid(person.getUuid()));
+
+		loginWith(districtUser1);
+		CaseDataDto caze = creator.createCase(districtUser1.toReference(), person.toReference(), rdcf2);
+		travelEntry.setResultingCase(caze.toReference());
+		getTravelEntryFacade().save(travelEntry);
 
 		loginWith(districtUser2);
 		assertNotPseudonymized(getPersonFacade().getByUuid(person.getUuid()));

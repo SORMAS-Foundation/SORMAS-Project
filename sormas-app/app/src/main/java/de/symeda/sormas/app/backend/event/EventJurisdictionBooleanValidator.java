@@ -38,12 +38,12 @@ public class EventJurisdictionBooleanValidator extends BooleanJurisdictionValida
     }
 
     @Override
-    protected Boolean isInJurisdiction() {
+    protected Boolean isRootInJurisdiction() {
         return isInJurisdictionByJurisdictionLevel(userJurisdiction.getJurisdictionLevel());
     }
 
     @Override
-    protected Boolean isInJurisdictionOrOwned() {
+    protected Boolean isRootInJurisdictionOrOwned() {
         return userJurisdiction.getUuid().equals(eventJurisdictionDto.getReportingUserUuid()) || userJurisdiction.getUuid().equals(eventJurisdictionDto.getResponsibleUserUuid()) || inJurisdiction();
     }
 
