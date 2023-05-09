@@ -39,6 +39,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility.Display;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataIndexDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataReferenceDto;
@@ -52,20 +53,21 @@ public class CampaignDataView extends VerticalLayout {
 	List<CampaignFormMetaReferenceDto> campaigns = FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences();// getAllActiveUuids();
 	List<CampaignFormMetaReferenceDto> campaignName, campaignForm;
 //	campaignStartDate, campaignEndDate, campaignDescription;
-	Grid<CampaignFormDataDto> grid = new Grid<>(CampaignFormDataDto.class, true);
-	private GridListDataView<CampaignFormMetaDto> dataView;
+	Grid<CampaignFormDataIndexDto> grid = new Grid<>(CampaignFormDataIndexDto.class, false);
+	private GridListDataView<CampaignFormDataIndexDto> dataView;
 
 	
 	
 	public CampaignDataView() {
-
+		CampaignFormDataCriteria criteria;
+		criteria = new CampaignFormDataCriteria();
 		add(camapignDataFilter);
-		configureGrid();
+		configureGrid(criteria);
 
 	}
 	
 	
-	private void configureGrid() {
+	private void configureGrid(CampaignFormDataCriteria criteria) {
 		grid.setSelectionMode(SelectionMode.SINGLE);
 		grid.setMultiSort(true, MultiSortPriority.APPEND);
 		grid.setSizeFull();
@@ -79,21 +81,21 @@ public class CampaignDataView extends VerticalLayout {
 //				CampaignFormDataIndexDto.COMMUNITYNUMBER, CampaignFormDataIndexDto.CCODE,
 //				CampaignFormDataIndexDto.FORM_DATE, CampaignFormDataIndexDto.FORM_TYPE);
 ////
-//		grid.addColumn(CampaignFormDataIndexDto.CAMPAIGN).setHeader("Campaign").setSortable(true).setResizable(true);
-//		grid.addColumn(CampaignFormDataIndexDto.FORM).setHeader("Form").setSortable(true).setResizable(true);
+		grid.addColumn(CampaignFormDataIndexDto.CAMPAIGN).setHeader("Campaign").setSortable(true).setResizable(true);
+		grid.addColumn(CampaignFormDataIndexDto.FORM).setHeader("Form").setSortable(true).setResizable(true);
 ////
-//		grid.addColumn(CampaignFormDataIndexDto.AREA).setHeader("Region").setSortable(true).setResizable(true);
-//		grid.addColumn(CampaignFormDataIndexDto.RCODE).setHeader("Region").setSortable(true).setResizable(true);
+		grid.addColumn(CampaignFormDataIndexDto.AREA).setHeader("Region").setSortable(true).setResizable(true);
+		grid.addColumn(CampaignFormDataIndexDto.RCODE).setHeader("Region").setSortable(true).setResizable(true);
 ////		
-//		grid.addColumn(CampaignFormDataIndexDto.REGION).setHeader("Proince").setSortable(true).setResizable(true);
-//		grid.addColumn(CampaignFormDataIndexDto.PCODE).setHeader("PCode").setSortable(true).setResizable(true);
-//		grid.addColumn(CampaignFormDataIndexDto.DISTRICT).setHeader("District").setSortable(true).setResizable(true);
-//		grid.addColumn(CampaignFormDataIndexDto.DCODE).setHeader("DCode").setSortable(true).setResizable(true);
-//		grid.addColumn(CampaignFormDataIndexDto.COMMUNITY).setHeader("Cluster").setSortable(true).setResizable(true);
-//		grid.addColumn(CampaignFormDataIndexDto.COMMUNITYNUMBER).setHeader("Cluster Number").setSortable(true).setResizable(true);
-//		grid.addColumn(CampaignFormDataIndexDto.CCODE).setHeader("CCode").setSortable(true).setResizable(true);
-//		grid.addColumn(CampaignFormDataIndexDto.FORM_DATE).setHeader("Form Date").setSortable(true).setResizable(true);
-//		grid.addColumn(CampaignFormDataIndexDto.FORM_TYPE).setHeader("Form Phase").setSortable(true).setResizable(true);
+		grid.addColumn(CampaignFormDataIndexDto.REGION).setHeader("Proince").setSortable(true).setResizable(true);
+		grid.addColumn(CampaignFormDataIndexDto.PCODE).setHeader("PCode").setSortable(true).setResizable(true);
+		grid.addColumn(CampaignFormDataIndexDto.DISTRICT).setHeader("District").setSortable(true).setResizable(true);
+		grid.addColumn(CampaignFormDataIndexDto.DCODE).setHeader("DCode").setSortable(true).setResizable(true);
+		grid.addColumn(CampaignFormDataIndexDto.COMMUNITY).setHeader("Cluster").setSortable(true).setResizable(true);
+		grid.addColumn(CampaignFormDataIndexDto.COMMUNITYNUMBER).setHeader("Cluster Number").setSortable(true).setResizable(true);
+		grid.addColumn(CampaignFormDataIndexDto.CCODE).setHeader("CCode").setSortable(true).setResizable(true);
+		grid.addColumn(CampaignFormDataIndexDto.FORM_DATE).setHeader("Form Date").setSortable(true).setResizable(true);
+		grid.addColumn(CampaignFormDataIndexDto.FORM_TYPE).setHeader("Form Phase").setSortable(true).setResizable(true);
 ////
 ////		
 ////		
@@ -101,8 +103,8 @@ public class CampaignDataView extends VerticalLayout {
 		grid.setVisible(true);
 		grid.setAllRowsVisible(true);
 
-		List<CampaignFormDataDto> campaigns = FacadeProvider.getCampaignFormDataFacade().getAllActive();
-		grid.setItems(campaigns);
+//		List<CampaignFormDataIndexDto> campaigns = FacadeProvider.getCampaignFormDataFacade().getIndexList(criteria, null, null, null);
+//		grid.setItems(campaigns);
 //		grid.asSingleSelect().addValueChangeListener(event -> editCampaign(event.getValue()));
 add(grid);
 	}

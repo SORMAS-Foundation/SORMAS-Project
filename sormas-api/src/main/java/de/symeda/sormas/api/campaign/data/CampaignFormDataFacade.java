@@ -95,5 +95,7 @@ public interface CampaignFormDataFacade {
 	List<MapCampaignDataDto> getCampaignDataforMaps();
 	
 	String getByClusterDropDown(CommunityReferenceDto community, CampaignFormMetaDto campaignForm, CampaignDto campaign);
+
+	List<CampaignFormDataIndexDto> getByCompletionAnalysisNew(CampaignFormDataCriteria criteria, List<SortProperty> sortProperties, FormAccess frms);
 	
 }
