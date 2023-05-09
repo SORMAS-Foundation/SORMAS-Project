@@ -48,4 +48,6 @@ public interface CampaignFormMetaFacade {
 	List<String> getAllUuids();
 
 	List<CampaignFormMetaDto> getByUuids(List<String> uuids);
+
+	List<CampaignFormMetaReferenceDto> getCampaignFormMetaAsReferencesByCampaignPostCamapaign(String uuid);
 }

@@ -1,2 +1,0 @@
-This file contains special characters äöüß.
-It is UTF-8 encoded.

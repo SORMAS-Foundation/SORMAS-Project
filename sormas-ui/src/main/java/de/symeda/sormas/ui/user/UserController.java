@@ -195,12 +195,16 @@ public class UserController {
 			public void onCommit() {
 				if (!createForm.getFieldGroup().isModified()) {
 					UserDto dto = createForm.getValue();
-//					if (UserProvider.getCurrent().getUser().getUsertype().equals(UserType.EOC_USER)) {
-//						dto.setUsertype(UserType.EOC_USER);
-//					}
-//					else {
-//						dto.setUsertype(UserType.WHO_USER);
-//					}
+							
+					if(dto.getUsertype() == null) {
+						
+						if (UserProvider.getCurrent().getUser().getUsertype().equals(UserType.EOC_USER)) {
+							dto.setUsertype(UserType.EOC_USER);
+						}
+						else {
+							dto.setUsertype(UserType.WHO_USER);
+						}
+					}
 					dto = FacadeProvider.getUserFacade().saveUser(dto);
 					refreshView();
 					makeInitialPassword(dto.getUuid(), dto.getUserEmail(), dto.getUserName());
@@ -477,7 +481,7 @@ public class UserController {
 	}
 
 	public void disableAllSelectedItems(Collection<UserDto> selectedRows, Runnable callback) {
-
+  
 		if (selectedRows.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoUsersSelected),
 					I18nProperties.getString(Strings.messageNoUsersSelected), Notification.Type.WARNING_MESSAGE, false)

@@ -36,6 +36,8 @@ public abstract class ReferenceDto implements Serializable, HasUuid, Comparable<
 	private String uuid;
 	private String caption;
 	private String formType;
+	private String dateExpired;
+	
 //	private Long externalId;
 
 	public ReferenceDto() {
@@ -56,13 +58,17 @@ public abstract class ReferenceDto implements Serializable, HasUuid, Comparable<
 		this.caption = caption;
 		this.formType = type; 
 	}
-	
-	/*public ReferenceDto(String uuid, Long externalId) {
+	public ReferenceDto(String uuid, String caption, String type, String dateExpired) {
 		this.uuid = uuid;
-		this.externalId = externalId;
+		this.caption = caption;
+		this.formType = type; 
+		this.dateExpired = dateExpired;
+		
 	}
 	
-	public ReferenceDto(String uuid, String caption, Long externalId) {
+
+	
+	/*	public ReferenceDto(String uuid, String caption, Long externalId) {
 		this.uuid = uuid;
 		this.caption = caption;
 		this.externalId = externalId;
@@ -70,6 +76,14 @@ public abstract class ReferenceDto implements Serializable, HasUuid, Comparable<
 	
 	*/
 	
+
+	public String getDateExpired() {
+		return dateExpired;
+	}
+
+	public void setDateExpired(String dateExpired) {
+		this.dateExpired = dateExpired;
+	}
 
 	@Override
 	public String getUuid() {
@@ -94,9 +108,9 @@ public abstract class ReferenceDto implements Serializable, HasUuid, Comparable<
 		return formType;
 	}
 
-	public void setFormtype(String formType) {
-		this.formType = formType;
-	}
+//	public void setFormtype(String formType) {
+//		this.formType = formType;
+//	}
 
 	/*public Long getExternalID() {
 		return externalId;

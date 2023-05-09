@@ -53,6 +53,7 @@ public interface Captions {
 	String actionBack = "actionBack";
 	String actionBackToNationOverview = "actionBackToNationOverview";
 	String actionCancel = "actionCancel";
+	String commomUser = "commomUser";
 	String actionClear = "actionClear";
 	String actionClearAll = "actionClearAll";
 	String actionClose = "actionClose";
@@ -63,7 +64,9 @@ public interface Captions {
 	String actionCreate = "actionCreate";
 	String actionCreatingLabel = "actionCreatingLabel";
 	String actionDearchive = "actionDearchive";
+	String actionUnpublish = "Unpublish";
 	String actionDelete = "actionDelete";
+	String actionPublish = "Publish";
 	String actionDeselectAll = "actionDeselectAll";
 	String actionDeselectAndContinue = "actionDeselectAndContinue";
 	String actionDisable = "actionDisable";
@@ -1159,6 +1162,7 @@ public interface Captions {
 	String eventUnlinkEvent = "eventUnlinkEvent";
 	String eventUnlinkEventGroup = "eventUnlinkEventGroup";
 	String export = "export";
+	String exportJsonDictionary = "exportJsonDictionary";
 	String exportBasic = "exportBasic";
 	String exportCaseCustom = "exportCaseCustom";
 	String exportCaseManagement = "exportCaseManagement";
@@ -1446,6 +1450,7 @@ public interface Captions {
 	String LoginSidebar_outbreakResponse = "LoginSidebar.outbreakResponse";
 	String LoginSidebar_poweredBy = "LoginSidebar.poweredBy";
 	String mainMenuAbout = "mainMenuAbout";
+	String mainMenuSupport = "mainMenuSupport";
 	String mainMenuAggregateReports = "mainMenuAggregateReports";
 	String mainMenuCampaigns = "mainMenuCampaigns";
 	String mainMenuCases = "mainMenuCases";

@@ -28,8 +28,10 @@ import java.util.stream.Collectors;
 import javax.persistence.NoResultException;
 
 import com.vaadin.server.Page;
+import com.vaadin.server.VaadinService;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.Validator.EmptyValueException;
@@ -39,8 +41,10 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignDto;
+import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataReferenceDto;
@@ -78,7 +82,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		this.area = area;
 	}
 
-	private static final String HTML_LAYOUT = fluidRowLocs(CampaignFormDataDto.FORM_DATE// ,
+	private static final String HTML_LAYOUT = fluidRowLocs(CampaignFormDataDto.CAMPAIGN, CampaignFormDataDto.FORM_DATE// ,
 																						// CampaignFormDataDto.LATITUDE,
 	// CampaignFormDataDto.LONGITUDE
 	) + fluidRowLocs(CampaignFormDataEditForm.AREA, CampaignFormDataDto.REGION)// ,
@@ -104,7 +108,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 	protected void addFields() {
 		ComboBox cbCampaign = addField(CampaignFormDataDto.CAMPAIGN, ComboBox.class);
 		cbCampaign.addItems(FacadeProvider.getCampaignFacade().getAllActiveCampaignsAsReference());
-
+		cbCampaign.setEnabled(false);
 		// addField(CampaignFormDataDto.LONGITUDE, TextField.class);
 		// addField(CampaignFormDataDto.LATITUDE, TextField.class);
 		ComboBox cbRegion = addInfrastructureField(CampaignFormDataDto.REGION);
@@ -129,7 +133,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 				CampaignFormDataDto.AREA, CampaignFormDataDto.DISTRICT, CampaignFormDataDto.COMMUNITY);
 		// CampaignFormDataDto.FORM_TYPE);
 
-		addInfrastructureListenerx(cbArea, cbRegion, cbDistrict, cbCommunity);
+		addInfrastructureListenerx(cbArea, cbRegion, cbDistrict, cbCommunity, cbCampaign);
 		cbArea.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
 
 		final UserDto currentUser = UserProvider.getCurrent().getUser();
@@ -187,6 +191,8 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 					CommunityReferenceDto.clusternumber); 
 			cbCommunity.addItems(items);
 		}
+		
+		System.out.println("+++++++++++++++++++++++++++ "+cbCampaign.getValue());
 	}
 
 //	@SuppressWarnings("deprecation")
@@ -206,13 +212,12 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 //			FieldHelper.updateItems(cbCommunity,
 //					district != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid())
 //							: null);
-//			
+//			//dataform
 //		});
 //	}
 
 	@SuppressWarnings("deprecation")
-	private void addInfrastructureListenerx(ComboBox cbArea, ComboBox cbRegion, ComboBox cbDistrict,
-			ComboBox cbCommunity) {
+	private void addInfrastructureListenerx(ComboBox cbArea, ComboBox cbRegion, ComboBox cbDistrict, ComboBox cbCommunity, ComboBox cbCampaign) {
 		cbArea.addValueChangeListener(e -> {
 			AreaReferenceDto area = (AreaReferenceDto) e.getProperty().getValue();
 			FieldHelper.updateItems(cbRegion,
@@ -234,12 +239,44 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 			if (district != null) {
 				List<CommunityReferenceDto> items = FacadeProvider.getCommunityFacade()
 						.getAllActiveByDistrict(district.getUuid());
+
+				CampaignReferenceDto campaignReferenceDto = (CampaignReferenceDto) cbCampaign.getValue();
+
+				System.out.println(district.getUuid()+"11111111-------- "+campaignReferenceDto.getUuid()+" ----!!!!!!!!!!!!!!!!!!!!!!: "+AgeGroup.AGE_0_4);
+
+				Integer comdto = FacadeProvider.getPopulationDataFacade().getDistrictPopulationByType(district.getUuid(), campaignReferenceDto.getUuid(),  AgeGroup.AGE_0_4);
+				
+				System.out.println(" ========================== "+campaignReferenceDto.getUuid());
+			
+				VaadinService.getCurrentRequest().getWrappedSession().setAttribute("populationdata", comdto);
+			
+				
 				for (CommunityReferenceDto item : items) {
 					item.setCaption(item.getNumber() != null ? item.getNumber().toString() : item.getCaption());
 				}
 				Collections.sort(items, 
 						CommunityReferenceDto.clusternumber); 
 				FieldHelper.updateItems(cbCommunity, district != null ? items : null);
+
+				//solution to issue #348 add if else statement checking if form to be entered at district level, if so... disable cluster.
+
+				CampaignFormMetaDto campaignForm = FacadeProvider.getCampaignFormMetaFacade()
+						.getCampaignFormMetaByUuid(super.getValue().getCampaignFormMeta().getUuid());
+
+				System.out.println("=============================1111: "+campaignForm.getUuid());
+				System.out.println("=============================2222: "+campaignForm.isDistrictentry());
+
+				// Select the first item in the cbCommunity
+				if(campaignForm.isDistrictentry()) {
+					if (!items.isEmpty()) {
+						cbCommunity.setValue(items.get(0));
+					} else {
+						Notification.show("District does not have Clusters configured in the system. Please contact your Administrator", Notification.TYPE_TRAY_NOTIFICATION);
+					}
+					cbCommunity.setEnabled(false);
+					cbCommunity.setVisible(false);
+					cbCommunity.setCaption("District Entry Enabled");
+				}
 
 			}
 
@@ -250,6 +287,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 						CommunityReferenceDto.clusternumber); 
 				cbCommunity.clear();
 				FieldHelper.updateItems(cbCommunity, items);
+
 			}
 
 		});
@@ -264,9 +302,6 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 
 				if (cbCommunity.getValue() != null && cbDistrict.getValue() != null) {
 
-//					System.out.println(dates.getValue() + "||||||||||||||||||||||||||||"
-//							+ super.getValue().getCampaignFormMeta().getUuid() + "||||||||||||"
-//							+ super.getValue().getCampaign().getUuid());
 					CampaignFormMetaDto campaignForm = FacadeProvider.getCampaignFormMetaFacade()
 							.getCampaignFormMetaByUuid(super.getValue().getCampaignFormMeta().getUuid());
 
@@ -274,18 +309,21 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 							.getByUuid(super.getValue().getCampaign().getUuid());
 
 					CommunityReferenceDto community = (CommunityReferenceDto) cbCommunity.getValue();
-
-//					System.out.println(community.getCaption() + "??????????????????>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "
-//							+ campaignForm.getFormName() + campaign.getName());
+					
+					CommunityDto comdto = FacadeProvider.getCommunityFacade().getByUuid(community.getUuid());
+					
 					String formuuid = FacadeProvider.getCampaignFormDataFacade().getByClusterDropDown(community,
 							campaignForm, campaign);
+					
+					VaadinService.getCurrentRequest().getWrappedSession().setAttribute("Clusternumber", comdto.getExternalId());
+					VaadinService.getCurrentRequest().getWrappedSession().setAttribute("Clusternumber", comdto.getExternalId());
+//					
+//					System.out.println(comdto.getExternalId() + "?comdto.getExternalId() going to session>>>>>>"+comdto.getClusterNumber());
+//					
 
 					if (!formuuid.equals("nul")) {
-						// Page.getCurrent().get
 						ControllerProvider.getCampaignController().navigateToFormDataView(formuuid);
 					} else {
-//						System.out.println(
-//								">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 						Page.getCurrent().getJavaScript().execute("$(document).ready(function() {"
 								// + "alert();"
 								// + "document.querySelector(\".v-slot.v-align-right.v-align-bottom\").show();"
@@ -297,11 +335,19 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 								+ "});");
 					}
 				}
+				
 			});
 
-		}
+		} 
 
-		;
+		cbCommunity.addValueChangeListener(e -> {
+			//this is a temporary fix... we need to find a way to update the population_4 field upon district change
+			cbArea.setEnabled(false);
+			cbDistrict.setEnabled(false);
+			cbRegion.setEnabled(false);
+			cbCampaign.setEnabled(false);
+			
+		});
 
 	}
 
@@ -336,7 +382,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 			throw new RuntimeException("Campaign form builder has not been initialized");
 		}
 		//validateFieldsCommit
-		System.out.println("{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{"+isCommitClicked);
+	//	System.out.println("{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{"+isCommitClicked);
 		
 		if(isCommitClicked != null) {
 			if(isCommitClicked) {
@@ -368,7 +414,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		expressionProcessor.disableExpressionFieldsForEditing();
 		expressionProcessor.configureExpressionFieldsWithTooltip();
 		expressionProcessor.addExpressionListener();
-		expressionProcessor.addExpressionListenerIgnorable();
+		//expressionProcessor.addExpressionListenerIgnorable();
 
 		getContent().addComponent(campaignFormLayout, CAMPAIGN_FORM_LOC);
 	}

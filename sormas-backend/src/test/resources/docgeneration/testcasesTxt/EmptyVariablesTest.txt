@@ -1,3 +1,0 @@
-This property is empty and is not displayed: $!notDisplayed
-This property is empty and is not replaced: $notReplaced
-This property is not empty and is replaced: $notEmpty

@@ -28,11 +28,17 @@ import de.symeda.sormas.api.user.FormAccess;
 
 public class CampaignFormMetaReferenceDto extends ReferenceDto {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	@Enumerated(EnumType.STRING)
 	private FormAccess formCategory;
+	private int daysExpired;
 
 	public CampaignFormMetaReferenceDto() {
-		// System.out.println("00000000000000000000000000000000");
+	//	 System.out.println("00000000000000000000000000000000");
 	}
 
 	public CampaignFormMetaReferenceDto(String uuid) {
@@ -45,20 +51,38 @@ public class CampaignFormMetaReferenceDto extends ReferenceDto {
 		setUuid(uuid);
 		setCaption(caption);
 	}
+	
+	public CampaignFormMetaReferenceDto(String uuid,  int daysExpired) {
+		// System.out.println("555555555555555555555555555555555555555");
+		setUuid(uuid);
+		
+		this.setDaysExpired(daysExpired);
+		
+	}
 
 	public CampaignFormMetaReferenceDto(String uuid, String caption, String type) {
-		// System.out.println("44444444444444444444444444444444444");
+	//	 System.out.println("44444444444444444444444444444444444");
 		setUuid(uuid);
 		setCaption(caption);
 		setFormType(type);
 	}
 	
-	public CampaignFormMetaReferenceDto(String uuid, String caption, String type, FormAccess access) {
+	public CampaignFormMetaReferenceDto(String uuid, String caption, String type, FormAccess access, int daysExpired) {
 		// System.out.println("555555555555555555555555555555555555555");
 		setUuid(uuid);
 		setCaption(caption);
 		setFormType(type);
+		this.setDaysExpired(daysExpired);
 		this.setFormCategory(access);
+	}
+	
+	public CampaignFormMetaReferenceDto(String uuid, String caption, String type,  int daysExpired) {
+		// System.out.println("555555555555555555555555555555555555555");
+		setUuid(uuid);
+		setCaption(caption);
+		setFormType(type);
+		this.setDaysExpired(daysExpired);
+		
 	}
 
 	public FormAccess getFormCategory() {
@@ -68,6 +92,16 @@ public class CampaignFormMetaReferenceDto extends ReferenceDto {
 	public void setFormCategory(FormAccess formCategory) {
 		this.formCategory = formCategory;
 	}
+
+	public int getDaysExpired() {
+		return daysExpired;
+	}
+
+	public void setDaysExpired(int daysExpired) {
+		this.daysExpired = daysExpired;
+	}
+	
+	
 	
 	
 

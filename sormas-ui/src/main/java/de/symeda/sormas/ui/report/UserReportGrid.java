@@ -42,6 +42,8 @@ public class UserReportGrid extends FilteredGrid<CommunityUserReportModelDto, Co
 		
 		//To Do enable other loader
 		setLazyDataProvider(formacc);
+		
+		System.out.println("criteria criteria criteria = " +criteria == null);
 		setCriteria(criteria);
 	
 		setColumns(
@@ -88,14 +90,14 @@ public class UserReportGrid extends FilteredGrid<CommunityUserReportModelDto, Co
 							.collect(Collectors.toList()), formacc)
 					.stream(),
 				query -> FacadeProvider.getCommunityFacade()
-					.getAllActiveCommunitytoRerence(
+					.getAllActiveCommunitytoRerenceCount(
 						query.getFilter().orElse(null),
 						query.getOffset(),
 						query.getLimit(),
 						query.getSortOrders()
 							.stream()
 							.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-							.collect(Collectors.toList()), formacc).size());
+							.collect(Collectors.toList()), formacc));
 				
 			//	{
 //					return (int) FacadeProvider.getCommunityFacade().countReportGrid(

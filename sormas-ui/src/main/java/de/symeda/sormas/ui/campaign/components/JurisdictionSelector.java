@@ -14,8 +14,15 @@ public class JurisdictionSelector extends ComboBox {
 
 	public JurisdictionSelector() {
 		setCaption(I18nProperties.getCaption(Captions.Campaign_grouping));
-		setItems(I18nProperties.getCaption(Captions.Campaign_none),I18nProperties.getCaption(Captions.Campaign_area), I18nProperties.getCaption(Captions.Campaign_region), I18nProperties.getCaption(Captions.Campaign_district), I18nProperties.getCaption(Captions.Campaign_community));
-		setEmptySelectionAllowed(false);
-		setValue(JurisdictionLevel.NONE);
+		setItems(
+//				I18nProperties.getCaption(Captions.Campaign_none),
+				I18nProperties.getCaption(Captions.Campaign_area), 
+				I18nProperties.getCaption(Captions.Campaign_region),
+				I18nProperties.getCaption(Captions.Campaign_district)
+//				,
+//				I18nProperties.getCaption(Captions.Campaign_community)
+				);
+		setEmptySelectionAllowed(true);
+//		setValue(JurisdictionLevel.NONE);
 	}
 }

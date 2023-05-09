@@ -29,6 +29,8 @@ import java.util.List;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.campaign.CampaignDto;
+import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
@@ -51,6 +53,8 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.campaign.components.clusterassignmentfilterswitcher.ClusterAssignmentFilterSwitcher;
+import de.symeda.sormas.ui.campaign.components.importancefilterswitcher.ImportanceFilterSwitcher;
 import de.symeda.sormas.ui.configuration.infrastructure.CommunitiesGrid;
 import de.symeda.sormas.ui.configuration.infrastructure.CommunitiesView;
 import de.symeda.sormas.ui.configuration.infrastructure.components.SearchField;
@@ -78,13 +82,14 @@ public class CampaignReportTabSheets extends VerticalLayout implements View {
 	private Button syncButton;
 	//check the diagram definition Selector
 	// Filter
-		private SearchField searchField;
+//		private SearchField searchField;
 		private ComboBox areaFilter;
 		private ComboBox regionFilter;
 		private ComboBox districtFilter;
-		private ComboBox relevanceStatusFilter;
+//		private ComboBox relevanceStatusFilter;
 		private Button resetButton;
 		protected boolean applyingCriteria;
+//		private ClusterAssignmentFilterSwitcher clusterAssignmentFilterSwitcher;
 
 		private HorizontalLayout filterLayout;
 		//private VerticalLayout gridLayout;
@@ -95,12 +100,13 @@ public class CampaignReportTabSheets extends VerticalLayout implements View {
 	private CommunityCriteriaNew criteria;
 	
 	public CampaignReportTabSheets(CommunityCriteriaNew criteriax, FormAccess formAccess) {
-	//	System.out.println("Qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq "+formAccess.toString());
 			criteria = criteriax;
-			//gridLayout = new VerticalLayout();
-			grid = new UserReportGrid(criteriax, formAccess);		
+			grid = new UserReportGrid(criteriax, formAccess);	
+			
+			
 			this.addComponent(createFilterBar());
-			extractUrl();
+			
+			
 			this.addComponent(grid);
 			this.setHeightFull();
 			this.setMargin(false);
@@ -118,11 +124,14 @@ public class CampaignReportTabSheets extends VerticalLayout implements View {
 
 		StreamResource streamResource = GridExportStreamResource.createStreamResource("", "", grid,
 				ExportEntityName.USERS, UserReportGrid.EDIT_BTN_ID);
-		FileDownloader fileDownloaderx = new FileDownloader(streamResource);
+		FileDownloader fileDownloaderx = new FileDownloader(streamResource); 
 		fileDownloaderx.extend(exportButton);
+		
+		//extractUrl();
 
 	}
-
+	
+	@SuppressWarnings("deprecation")
 	private HorizontalLayout createFilterBar() {
 		
 		final UserDto user = UserProvider.getCurrent().getUser();
@@ -136,46 +145,35 @@ public class CampaignReportTabSheets extends VerticalLayout implements View {
 		filterLayout.setSpacing(true);
 		filterLayout.setWidth(100, Unit.PERCENTAGE);
 
-		searchField = new SearchField();
-		searchField.addTextChangeListener(e -> {
-			criteria.nameLike(e.getText());
-			grid.reload();
-		});
-		filterLayout.addComponent(searchField);
+//		searchField = new SearchField();
+//		searchField.addTextChangeListener(e -> {
+//			criteria.nameLike(e.getText());
+//			grid.reload();
+//		});
+//		filterLayout.addComponent(searchField);
 		
 		
 		areaFilter = ComboBoxHelper.createComboBoxV7();
 		areaFilter.setId(RegionDto.AREA);
 		
 		
-//		
-	if(criteria.getArea() == null) {
-//		areaFilter.setWidth(140, Unit.PIXELS);
-//		areaFilter.setCaption(I18nProperties.getPrefixCaption(RegionDto.I18N_PREFIX, RegionDto.AREA));
-//		areaFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.AREA));
-//		areaFilter.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
-			criteria.fromUrlParams("area=R7HFRA-KEQ6EI-Z776T6-5DMYCPTM");
-//			areaFilter.addValueChangeListener(e -> {
-//
-//				AreaReferenceDto area = (AreaReferenceDto) e.getProperty().getValue();
-//				
-//				if (!DataHelper.equal(area, criteria.getArea())) {
-//				
-//				criteria.area(area);
-//				navigateTo(criteria.area(area));
-//				FieldHelper
-//					.updateItems(regionFilter, area != null ? FacadeProvider.getRegionFacade().getAllActiveByArea(area.getUuid()) : null);
-////				
-//				//grid.reload();
-//				}});
-
-		}
 		if (user.getArea() == null) {
 		
 		areaFilter.setWidth(140, Unit.PIXELS);
 		areaFilter.setCaption(I18nProperties.getPrefixCaption(RegionDto.I18N_PREFIX, RegionDto.AREA));
 		areaFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.AREA));
 		areaFilter.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
+	
+		
+		//if (criteria.getArea() == null) {
+			
+			if (areaFilter.getValue() == null) {
+			
+			criteria.fromUrlParams("area=W5R34K-APYPCA-4GZXDO-IVJWKGIM");
+		}
+			
+			
+		
 		areaFilter.addValueChangeListener(e -> {
 
 			AreaReferenceDto area = (AreaReferenceDto) e.getProperty().getValue();
@@ -185,7 +183,8 @@ public class CampaignReportTabSheets extends VerticalLayout implements View {
 				criteria.area(area);
 			}
 			criteria.area(area);
-			navigateTo(criteria);
+			//navigateTo(criteria);
+			grid.reload();
 			FieldHelper
 				.updateItems(regionFilter, area != null ? FacadeProvider.getRegionFacade().getAllActiveByArea(area.getUuid()) : null);
 
@@ -193,25 +192,31 @@ public class CampaignReportTabSheets extends VerticalLayout implements View {
 	
 		
 		filterLayout.addComponent(areaFilter);
-		}
-
-//	if(criteria.getArea() == null) {
-//		criteria.fromUrlParams("area=W5R34K-APYPCA-4GZXDO-IVJWKGIM");
-//	}
+	
+	}
 
 		regionFilter = ComboBoxHelper.createComboBoxV7();
 		regionFilter.setId(DistrictDto.REGION);
+		
+		
 		if (user.getRegion() == null) {
 		regionFilter.setWidth(140, Unit.PIXELS);
 		regionFilter.setInputPrompt(I18nProperties.getCaption(Captions.region));
 		regionFilter.setCaption(I18nProperties.getPrefixCaption(DistrictDto.I18N_PREFIX, DistrictDto.REGION));
-		regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		
+		if(user.getArea() != null) {
+			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByArea(user.getArea().getUuid()));
+		}else {
+			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		}
+		
+		
 		regionFilter.addValueChangeListener(e -> {
 			RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
 //			criteria.region(region);
 //			navigateTo(criteria);
-//			FieldHelper
-//				.updateItems(districtFilter, region != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()) : null);
+			FieldHelper
+				.updateItems(districtFilter, region != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()) : null);
 //			//grid.reload();
 //		});
 //		filterLayout.addComponent(regionFilter);
@@ -222,27 +227,34 @@ public class CampaignReportTabSheets extends VerticalLayout implements View {
 			}
 
 			criteria.region(region);
-			navigateTo(criteria);
+			//navigateTo(criteria);
+			grid.reload();
 		});
 		filterLayout.addComponent(regionFilter);
 	}
 		
 		
-
 		districtFilter = ComboBoxHelper.createComboBoxV7();
 		districtFilter.setId(CommunityDto.DISTRICT);
+		if(user.getDistrict() == null) {
+		
 		districtFilter.setWidth(140, Unit.PIXELS);
 		districtFilter.setInputPrompt(I18nProperties.getCaption(Captions.district));
 		districtFilter.setCaption(I18nProperties.getPrefixCaption(CommunityDto.I18N_PREFIX, CommunityDto.DISTRICT));
+		
+		if(user.getRegion() != null) {
+			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));
+		}
+		
 		districtFilter.addValueChangeListener(e -> {
 			DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
 			criteria.district(district);
-			navigateTo(criteria);
+//			navigateTo(criteria);
 //			criteria.district((DistrictReferenceDto) e.getProperty().getValue());
-//			grid.reload();
+			grid.reload();
 		});
 		filterLayout.addComponent(districtFilter);
-
+		}
 		resetButton = ButtonHelper.createButton(Captions.actionResetFilters, event -> {
 			ViewModelProviders.of(CommunitiesView.class).remove(CommunityCriteriaNew.class);
 			navigateTo(null);
@@ -251,35 +263,43 @@ public class CampaignReportTabSheets extends VerticalLayout implements View {
 		resetButton.setVisible(true);
 
 		filterLayout.addComponent(resetButton);
+		
+//		clusterAssignmentFilterSwitcher = new ClusterAssignmentFilterSwitcher();
+//		clusterAssignmentFilterSwitcher.setVisible(true);
+//		filterLayout.addComponent(clusterAssignmentFilterSwitcher);
+//		filterLayout.setComponentAlignment(clusterAssignmentFilterSwitcher, Alignment.TOP_RIGHT);
+//		filterLayout.setExpandRatio(clusterAssignmentFilterSwitcher, 0.2f);
 
 		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show active/archived/all dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
-				relevanceStatusFilter = ComboBoxHelper.createComboBoxV7();
-				relevanceStatusFilter.setId("relevanceStatus");
-				relevanceStatusFilter.setWidth(220, Unit.PERCENTAGE);
-				relevanceStatusFilter.setNullSelectionAllowed(false);
-				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
-				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.communityActiveCommunities));
-				relevanceStatusFilter
-					.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.communityArchivedCommunities));
-				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.communityAllCommunities));
-				relevanceStatusFilter.addValueChangeListener(e -> {
-					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
-					navigateTo(criteria);
-					grid.reload();
-				});
-				actionButtonsLayout.addComponent(relevanceStatusFilter);
-
-			
-			}
+//			if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
+//				relevanceStatusFilter = ComboBoxHelper.createComboBoxV7();
+//				relevanceStatusFilter.setId("relevanceStatus");
+//				relevanceStatusFilter.setWidth(220, Unit.PERCENTAGE);
+//				relevanceStatusFilter.setNullSelectionAllowed(false);
+//				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
+//				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.communityActiveCommunities));
+//				relevanceStatusFilter
+//					.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.communityArchivedCommunities));
+//				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.communityAllCommunities));
+//				relevanceStatusFilter.addValueChangeListener(e -> {
+//					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
+//					navigateTo(criteria);
+//					//grid.reload();
+//				});
+//				actionButtonsLayout.addComponent(relevanceStatusFilter);
+//
+//			
+//			}
 		}
 		filterLayout.addComponent(actionButtonsLayout);
 		filterLayout.setComponentAlignment(actionButtonsLayout, Alignment.BOTTOM_RIGHT);
 		filterLayout.setExpandRatio(actionButtonsLayout, 1);
 
+		//extractUrl();
+		
 		return filterLayout;
 	}
 
@@ -309,10 +329,10 @@ public class CampaignReportTabSheets extends VerticalLayout implements View {
 
 		resetButton.setVisible(criteria.hasAnyFilterActive());
 
-		if (relevanceStatusFilter != null) {
-			relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
-		}
-		searchField.setValue(criteria.getNameLike());
+//		if (relevanceStatusFilter != null) {
+//			relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
+//		}
+//		searchField.setValue(criteria.getNameLike());
 		areaFilter.setValue(criteria.getArea());
 		regionFilter.setValue(criteria.getRegion());
 		districtFilter.setValue(criteria.getDistrict());

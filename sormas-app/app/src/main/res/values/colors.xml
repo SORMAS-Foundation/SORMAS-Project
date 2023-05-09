@@ -59,6 +59,7 @@
     <color name="lighterBlue40">#66cdd8ec</color>
     <color name="normalText">#FF374b5a</color>
     <color name="normalText30">#4D374b5a</color>
+    <color name="normalText3ww">#a2f1a2</color>
     <color name="normalText44">#70374b5a</color>
     <color name="normalText50">#80374b5a</color>
     <color name="normalText80">#CC374b5a</color>
@@ -221,8 +222,8 @@
 
     <color name="unreadIcon">@color/lightBlue</color>
     <!-- Action Bar -->
-    <color name="actionBarBackgroundColor">@color/whiteOpaque</color>
-    <color name="toolbarTextColor">#0e693a</color>
+    <color name="actionBarBackgroundColor">@color/lightBlue</color>
+    <color name="toolbarTextColor">@color/whiteOpaque</color>
 
     <color name="popupBackground">@color/whiteOpaque</color>
     <color name="popupMenuListDivider">@color/lighterBlue40</color>
@@ -343,7 +344,7 @@
 
 
 
-    <color name="viewSeparator">@color/lightestBlue</color>
+    <color name="viewSeparator">@color/gray</color>
 
 
     <!-- Form Edit Control -->
@@ -401,7 +402,8 @@
 
 
     <color name="listActivityRowBackground">@android:color/transparent</color>
-    <color name="listActivityRowBorder">@color/lighterBlue</color>
+    <color name="listActivityRowBorder">#799DED9D</color>
+    <color name="listActivityRowBorderUnsent">#90FBBB5B</color>
     <color name="listActivityRowPressedBackground">@color/listItemPressed</color>
     <color name="listActivityRowFocusedBackground">@color/listItemPressed</color>
     <color name="listActivityRowSelectedBackground">@color/listItemPressed</color>
@@ -416,7 +418,7 @@
 
 
 
-    <color name="optionMenuIcon">@color/blue</color>
+    <color name="optionMenuIcon">@color/whiteOpaque</color>
 
 
     <color name="sectionListRowBackground">@color/whiteOpaque</color>

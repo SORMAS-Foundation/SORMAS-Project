@@ -304,10 +304,10 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
 
 		if (captionCapitalized != null) {
 			if (!captionCapitalized) {
-				label.setTypeface(Typeface.create("sans-serif", typeFace));
+				label.setTypeface(Typeface.create("@font/rubikregular", typeFace));
 				label.setAllCaps(false);
 			} else {
-				label.setTypeface(Typeface.create("sans-serif-medium", typeFace));
+				label.setTypeface(Typeface.create("@font/rubikregular", typeFace));
 				label.setAllCaps(true);
 			}
 		}

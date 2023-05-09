@@ -101,7 +101,7 @@ public class CompletionAnalysisGrid extends FilteredGrid<CampaignFormDataIndexDt
 												.collect(Collectors.toList()), formacc))
 								);
 
-		System.out.println("sdafasdfasdfgasdgvasdfgsdfhsdfg " + dataProvider);
+		//System.out.println("sdafasdfasdfgasdgvasdfgsdfhsdfg " + dataProvider);
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
 	}

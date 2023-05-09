@@ -5,6 +5,9 @@ import static de.symeda.sormas.api.campaign.CampaignJurisdictionLevel.COMMUNITY;
 import static de.symeda.sormas.api.campaign.CampaignJurisdictionLevel.DISTRICT;
 import static de.symeda.sormas.api.campaign.CampaignJurisdictionLevel.REGION;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
@@ -42,7 +45,8 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 	private CampaignGisView mapview;
 
 	private Label infoLabel;
-
+	
+	private ComboBox yearFilter;
 	private ComboBox campaignFilter;
 	private ComboBox campaignPhaseFilter;
 	private ComboBox areaFilter;
@@ -59,6 +63,7 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 		this.dashboardView = dashboardView;
 		this.dashboardDataProvider = dashboardDataProvider;
 		this.campaignFilter = ComboBoxHelper.createComboBoxV7();
+		this.yearFilter = ComboBoxHelper.createComboBoxV7();
 		this.campaignPhaseFilter = ComboBoxHelper.createComboBoxV7();
 		this.regionFilter = ComboBoxHelper.createComboBoxV7();
 		this.districtFilter = ComboBoxHelper.createComboBoxV7();
@@ -101,6 +106,7 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 
 		this.mapview = dashboardView;
 		this.dashboardDataProvider = dashboardDataProvider;
+		this.yearFilter = ComboBoxHelper.createComboBoxV7();
 		this.campaignFilter = ComboBoxHelper.createComboBoxV7();
 		this.campaignPhaseFilter = ComboBoxHelper.createComboBoxV7();
 		this.regionFilter = ComboBoxHelper.createComboBoxV7();
@@ -124,15 +130,13 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 
 		
 		
-		campaignFilter.setRequired(true);
+		//campaignFilter.setRequired(true);
 		campaignFilter.setNullSelectionAllowed(false);
 		campaignFilter.setCaption(I18nProperties.getCaption(Captions.Campaign));
 		campaignFilter.setWidth(200, Unit.PIXELS);
 		campaignFilter.setInputPrompt(I18nProperties.getString(Strings.promptCampaign));
 		campaignFilter.addItems(FacadeProvider.getCampaignFacade().getAllActiveCampaignsAsReference().toArray());
-		campaignFilter.addValueChangeListener(e -> {
-			
-		});
+		
 		addComponent(campaignFilter);
 		//campaignPhaseFilter.addItem(FacadeProvider.getCampaignFacade())
 		
@@ -144,39 +148,91 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 	}
 
 	private void createCampaignFilter() {
-		campaignFilter.setRequired(true);
+		createYearFilter();
+
 		campaignFilter.setNullSelectionAllowed(false);
 		campaignFilter.setCaption(I18nProperties.getCaption(Captions.Campaign));
 		
 		//campaignFilter.setWidth(200, Unit.PIXELS);
 		campaignFilter.setInputPrompt(I18nProperties.getString(Strings.promptCampaign));
-		campaignFilter.addItems(FacadeProvider.getCampaignFacade().getAllActiveCampaignsAsReference().toArray());
+		List<CampaignReferenceDto> stf = FacadeProvider.getCampaignFacade().getAllActiveCampaignsAsReference();
+		stf.removeIf(ee -> (!ee.getCampaignYear().equals(yearFilter.getValue())));
+		campaignFilter.addItems(stf.toArray());
+		campaignFilter.setNullSelectionAllowed(false);
+		
 		campaignFilter.addValueChangeListener(e -> {
 			dashboardDataProvider.setCampaign((CampaignReferenceDto) campaignFilter.getValue());
 			dashboardView.refreshDashboard();
 		});
 		addComponent(campaignFilter);
 		
-		createCampaignPhaseFilter();
+		
 
 		final CampaignReferenceDto lastStartedCampaign = dashboardDataProvider.getLastStartedCampaign();
+		createCampaignPhaseFilter(lastStartedCampaign);
+		
 		if (lastStartedCampaign != null) {
-			//System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.  "+lastStartedCampaign);
 			campaignFilter.setValue(lastStartedCampaign);
 			campaignPhaseFilter.setValue(CampaignPhase.INTRA.toString());
 		}
+		
+		
 		dashboardDataProvider.setCampaign((CampaignReferenceDto) campaignFilter.getValue());
+		
+		
 	}
+			
+			
+		private void createYearFilter() {
+		
+			yearFilter.setNullSelectionAllowed(false);
+			yearFilter.setCaption("Year");//I18nProperties.getCaption(Captions.Campaign));
+				
+				//campaignFilter.setWidth(200, Unit.PIXELS);
+			yearFilter.setInputPrompt("Year");//I18nProperties.getString(Strings.promptCampaign));
+			List<String> camYearList = new ArrayList<>();
+			for(CampaignReferenceDto camdreg :  FacadeProvider.getCampaignFacade().getAllActiveCampaignsAsReference()) {
+				camYearList.add(camdreg.getCampaignYear());
+			}
+			yearFilter.addItems(camYearList);
+			yearFilter.addValueChangeListener(e -> {
+				campaignFilter.removeAllItems();
+				
+				List<CampaignReferenceDto> stf = FacadeProvider.getCampaignFacade().getAllActiveCampaignsAsReference();
+				stf.removeIf(ee -> (!ee.getCampaignYear().equals(yearFilter.getValue())));
+				campaignFilter.addItems(stf.toArray());
+				
+				//might generate null pointer if campaign list return null.
+				campaignFilter.setValue(campaignFilter.getItemIds().iterator().next());
+				});
+				addComponent(yearFilter);
+				
+				
+		
+				final CampaignReferenceDto lastStartedCampaign = dashboardDataProvider.getLastStartedCampaign();
+				
+				if (lastStartedCampaign != null) {
+					yearFilter.setValue(lastStartedCampaign.getCampaignYear());
+					//campaignPhaseFilter.setValue(CampaignPhase.INTRA.toString());
+				}
+				
+				
+				//dashboardDataProvider.setCampaign((CampaignReferenceDto) campaignFilter.getValue());
+				
+				
+			}
+
 	
 	
-	private void createCampaignPhaseFilter() {
-		campaignFormPhaseSelector = new CampaignFormPhaseSelector(null);
+	private void createCampaignPhaseFilter(CampaignReferenceDto lastStartedCampaign) {
+		
+		campaignFormPhaseSelector = new CampaignFormPhaseSelector(lastStartedCampaign);
+		
 		campaignFormPhaseSelector.addValueChangeListener(e -> {
 			dashboardDataProvider.setCampaignFormPhase(campaignFormPhaseSelector.getValue().toLowerCase());
 			dashboardView.refreshDashboard();
 		});
 		addComponent(campaignFormPhaseSelector);
-		//System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.  "+campaignFormPhaseSelector.getValue().toLowerCase());
 		dashboardDataProvider.setCampaignFormPhase(campaignFormPhaseSelector.getValue().toLowerCase());
 	}
 
@@ -302,7 +358,6 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 
 	private void updateFiltersBasedOnArea(Object value) {
 		if (value != null) {
-			System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!! value = " +value);
 			regionFilter.removeAllItems();
 			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByArea(((AreaReferenceDto) value).getUuid()));
 			regionFilter.setEnabled(true);
@@ -310,7 +365,6 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 			campaignJurisdictionGroupByFilter.removeItem(COMMUNITY);
 			campaignJurisdictionGroupByFilter.addItems(AREA, REGION, DISTRICT);
 		} else {
-			System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!");
 			regionFilter.clear();
 			regionFilter.removeAllItems();
 			districtFilter.clear();

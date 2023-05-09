@@ -59,8 +59,14 @@ public class CampaignView extends AbstractDetailView<CampaignReferenceDto> {
 		setSubComponent(container);
 
 		CampaignDto campaignDto = FacadeProvider.getCampaignFacade().getByUuid(getReference().getUuid());
-		System.out.println("Campaign VIEW: "+ campaignDto.getCreatingUser());
+	//	System.out.println("Campaign VIEW==: "+ campaignDto.getPopulationdata().size());
 		editComponent = ControllerProvider.getCampaignController().getCampaignComponent(campaignDto, () -> {
+		System.out.println("############################## -  -  "+campaignDto.getPopulationdata().size());
+		
+		//Do the facade save stuff for popu;lation list here
+		
+		FacadeProvider.getPopulationDataFacade().savePopulationList(campaignDto.getPopulationdata());
+			
 			Notification.show(String.format(I18nProperties.getString(Strings.messageCampaignSaved), campaignDto.getName()), TRAY_NOTIFICATION);
 		});
 		editComponent.setMargin(false);

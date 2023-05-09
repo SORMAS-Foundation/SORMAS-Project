@@ -117,10 +117,10 @@ public class RegionsView extends AbstractConfigurationView {
 		provinceNameHeader.setDescription("Province");
 		HeaderCell pCodeHeader = mainHeader.getCell("externalId");
 		pCodeHeader.setDescription("PCode");
-		HeaderCell populationHeader = mainHeader.getCell("population");
-		populationHeader.setDescription("Population");
-		HeaderCell growthRateHeader = mainHeader.getCell("growthRate");
-		growthRateHeader.setDescription("Growth Rate");
+//		HeaderCell populationHeader = mainHeader.getCell("population");
+//		populationHeader.setDescription("Population");
+//		HeaderCell growthRateHeader = mainHeader.getCell("growthRate");
+//		growthRateHeader.setDescription("Growth Rate");
 
 		boolean infrastructureDataEditable = FacadeProvider.getFeatureConfigurationFacade()
 				.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA);
@@ -143,7 +143,7 @@ public class RegionsView extends AbstractConfigurationView {
 			addHeaderComponent(infrastructureDataLocked);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT) && UserProvider.getCurrent().hasAnyUserRole(UserRole.ADMIN)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
 			Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.TABLE, null,
 					ValoTheme.BUTTON_PRIMARY);
 			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));

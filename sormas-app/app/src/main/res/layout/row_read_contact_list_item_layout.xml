@@ -57,7 +57,7 @@
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/listActivityRowTertiaryTextSize"
                     android:textColor="@color/listActivityRowLeastText"
-                    android:fontFamily="sans-serif-medium"
+                    android:fontFamily="@font/rubikregular"
                     app:value="@{data.uuid}"
                     app:shortUuid="@{true}" />
 
@@ -83,7 +83,7 @@
                         android:textSize="@dimen/row_entry_status_text_size"
                         android:textAllCaps="true"
                         android:textColor="@color/row_entry_status_text"
-                        android:fontFamily="sans-serif-medium"
+                        android:fontFamily="@font/rubikregular"
                         app:value="@{data.contactClassification}" />
 
                 </LinearLayout>
@@ -109,7 +109,7 @@
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/listActivityRowPrimaryTextSize"
                         android:textColor="@color/listActivityRowPrimaryText"
-                        android:fontFamily="sans-serif-medium"
+                        android:fontFamily="@font/rubikregular"
                         android:scrollHorizontally="true"
                         android:maxLines="1"
                         android:ellipsize="end"
@@ -132,7 +132,7 @@
                         android:textSize="@dimen/listActivityRowTertiaryTextSize"
                         android:textColor="@color/listActivityRowLeastText"
                         android:layout_marginTop="@dimen/listActivityRowSecondaryTextVerticalMargin"
-                        android:fontFamily="sans-serif-medium"
+                        android:fontFamily="@font/rubikregular"
                         app:timeAgoValue="@{data.lastContactDate}"
                         app:goneIfEmpty="@{data.lastContactDate}" />
 
@@ -159,7 +159,7 @@
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/row_entry_date_text_size"
                         android:textColor="@color/listActivityRowDateText"
-                        android:fontFamily="sans-serif"
+                        android:fontFamily="@font/rubiklight"
                         android:layout_marginTop="@dimen/listActivityRowSecondaryTextVerticalMargin"
                         android:textAlignment="viewEnd"
                         android:layout_alignParentTop="false"

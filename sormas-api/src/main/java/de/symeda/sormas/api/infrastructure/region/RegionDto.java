@@ -57,6 +57,10 @@ public class RegionDto extends EntityDto {
 	private AreaReferenceDto area;
 	private CountryReferenceDto country;
 	private String externalIddummy;
+	private Long populationData;
+	private Long regionId;
+	private String areaUuid_;
+	private String uuid_;
 
 	public RegionDto(
 		Date creationDate,
@@ -91,6 +95,14 @@ public class RegionDto extends EntityDto {
 	public RegionDto() {
 		super();
 	}
+	
+	public RegionDto(String name, Long populationData, Long regionId, String areaUuid, String uuid_) {
+		this.name = name;
+		this.populationData = populationData;
+		this.regionId = regionId;
+		this.areaUuid_ = areaUuid;
+		this.uuid_ = uuid_;
+	};
 
 	public String getName() {
 		return name;
@@ -153,9 +165,23 @@ public class RegionDto extends EntityDto {
 	public void setCountry(CountryReferenceDto country) {
 		this.country = country;
 	}
+	
+	public Long getPopulationData() {
+		return populationData;
+	}
 
-	
-	
+	public void setPopulationData(Long populationData) {
+		this.populationData = populationData;
+	}
+
+	public Long getRegionId() {
+		return regionId;
+	}
+
+	public void setRegionId(Long regionId) {
+		this.regionId = regionId;
+	}
+
 	public String getExternalIddummy() {
 		
 		if(externalId != null) {
@@ -181,4 +207,23 @@ public class RegionDto extends EntityDto {
 		dto.setUuid(DataHelper.createUuid());
 		return dto;
 	}
+
+	public String getAreaUuid_() {
+		return areaUuid_;
+	}
+
+	public void setAreaUuid_(String areaUuid_) {
+		this.areaUuid_ = areaUuid_;
+	}
+
+	public String getUuid_() {
+		return uuid_;
+	}
+
+	public void setUuid_(String uuid_) {
+		this.uuid_ = uuid_;
+	}
+	
+	
+	
 }

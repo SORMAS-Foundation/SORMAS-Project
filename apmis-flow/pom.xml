@@ -7,8 +7,7 @@
     <groupId>de.symeda.sormas</groupId>
     <artifactId>apmis-flow</artifactId>
     <name>${project.artifactId}</name>
-   <version>1.0.28</version>
-    <packaging>war</packaging>
+   <version>1.0.30</version>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>

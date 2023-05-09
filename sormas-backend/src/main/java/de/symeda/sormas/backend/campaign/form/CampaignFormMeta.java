@@ -42,13 +42,17 @@ public class CampaignFormMeta extends AbstractDomainObject {
 	public static final String FORM_CATEGORY = "formCategory"; 
 	public static final String CAMPAIGN_FORM_ELEMENTS = "campaignFormElements";
 	public static final String CAMPAIGN_FORM_TRANSLATIONS = "campaignFormTranslations";
+	public static final String DAYSTOEXPIRE = "daysExpired";
+
+	public static final String DISTRICTENTRY = "districtentry";
 
 	private String formId;
 	private String formType;
-	
+
+	private boolean districtentry;
 	
 	private FormAccess formCategory;
-	
+	private int daysExpired;
 	
 	private String formName;
 	private String languageCode;
@@ -85,6 +89,15 @@ public class CampaignFormMeta extends AbstractDomainObject {
 		this.formCategory = formCategory;
 	}
 
+	@Column
+	public int getDaysExpired() {
+		return daysExpired;
+	}
+
+	public void setDaysExpired(int daysExpired) {
+		this.daysExpired = daysExpired;
+	}
+	
 	@Column
 	public String getFormName() {
 		return formName;
@@ -161,6 +174,15 @@ public class CampaignFormMeta extends AbstractDomainObject {
 		campaignFormTranslationsList = null;
 	}
 
+	@Column
+	public boolean isDistrictentry() {
+		return districtentry;
+	}
+
+	public void setDistrictentry(boolean districtentry) {
+		this.districtentry = districtentry;
+	}
+
 	@Transient
 	public List<CampaignFormTranslations> getCampaignFormTranslationsList() {
 		if (campaignFormTranslationsList == null) {
@@ -196,7 +218,7 @@ public class CampaignFormMeta extends AbstractDomainObject {
 	}
 
 	public CampaignFormMetaReferenceDto toReference() {
-		return new CampaignFormMetaReferenceDto(getUuid(), formName, formType, formCategory);
+		return new CampaignFormMetaReferenceDto(getUuid(), formName, formType, formCategory, daysExpired);
 	}
 
 	@Override

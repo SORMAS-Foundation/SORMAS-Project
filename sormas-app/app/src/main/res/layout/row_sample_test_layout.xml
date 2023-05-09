@@ -98,7 +98,7 @@
                     android:textSize="@dimen/row_entry_status_text_size"
                     android:textAllCaps="true"
                     android:textColor="@color/row_entry_status_text"
-                    android:fontFamily="sans-serif-medium"
+                    android:fontFamily="@font/rubikregular"
                     app:resultType="@{data.testResult}" />
 
             </LinearLayout>

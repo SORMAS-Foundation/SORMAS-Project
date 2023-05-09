@@ -53,7 +53,7 @@
             android:layout_marginBottom="@dimen/listActivityRowSecondaryTextVerticalMargin"
             android:textSize="@dimen/listActivityRowPrimaryTextSize"
             android:textColor="@color/listActivityRowPrimaryText"
-            android:fontFamily="sans-serif-medium"
+            android:fontFamily="@font/rubikregular"
             android:scrollHorizontally="true"
             android:maxLines="1"
             android:ellipsize="end"

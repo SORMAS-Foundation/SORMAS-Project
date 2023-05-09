@@ -61,7 +61,7 @@
                 android:layout_marginBottom="@dimen/listActivityRowSecondaryTextVerticalMargin"
                 android:textSize="@dimen/listActivityRowPrimaryTextSize"
                 android:textColor="@color/listActivityRowPrimaryText"
-                android:fontFamily="sans-serif-medium"
+                android:fontFamily="@font/rubikregular"
                 android:scrollHorizontally="true"
                 android:maxLines="1"
                 android:ellipsize="end"
@@ -145,7 +145,7 @@
                     android:gravity="top|left"
                     android:textSize="@dimen/listActivityRowTertiaryTextSize"
                     android:textColor="@color/listActivityRowLeastText"
-                    android:fontFamily="sans-serif-medium"
+                    android:fontFamily="@font/rubikregular"
                     app:userValue="@{caze.reportingUser}"
                     app:defaultValue='@{@string/person_unknown}'
                     />
@@ -161,7 +161,7 @@
                     android:gravity="top|end"
                     android:textSize="@dimen/listActivityRowDateTextSize"
                     android:textColor="@color/listActivityRowDateText"
-                    android:fontFamily="sans-serif"
+                    android:fontFamily="@font/rubiklight"
                     android:textAlignment="viewEnd"
                     app:timeAgoValue="@{caze.reportDate}"
                     app:defaultValue='@{@string/report_date_unknown}'

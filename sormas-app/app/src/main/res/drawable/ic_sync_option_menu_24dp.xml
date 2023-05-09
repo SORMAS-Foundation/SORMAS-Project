@@ -16,10 +16,16 @@
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<vector android:height="24dp" android:tint="#38761D"
-    android:viewportHeight="24" android:viewportWidth="24"
-    android:width="24dp" xmlns:android="http://schemas.android.com/apk/res/android">
-    <path android:fillColor="@android:color/white" android:pathData="M19.35,10.04C18.67,6.59 15.64,4 11,4 9.11,4 6.6,5.64 5.35,8.04 2.34,8.36 0,10.91 0,14c0,3.31 2.69,6 6,6h13c2.76,0 5,-2.24 5,-5 0,-2.64 -2.05,-4.78 -4.65,-4.96zM14,13v4h-4v-4H7l5,-5 5,5h-3z"/>
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+android:width="24dp"
+android:height="24dp"
+android:viewportWidth="42"
+android:viewportHeight="42">
+<group> <path
+    android:fillColor="@color/drawerIcon"
+    android:pathData="M33.958 12.988C33.531 6.376 28.933 0 20.5 0 12.787 0 6.839 5.733 6.524 13.384 2.304 14.697 0 19.213 0 22.5 0 27.561 4.206 32 9 32h6.5a0.5 0.5 0 0 0 0-1H9c-4.262 0-8-3.972-8-8.5C1 19.449 3.674 14 9 14h1.5a0.5 0.5 0 0 0 0-1H9c-0.509 0-0.99 0.057 -1.459 0.139 C7.933 7.149 12.486 1 20.5 1 29.088 1 33 7.739 33 14v1.5a0.5 0.5 0 0 0 1 0V14v-0.009c3.019 0.331 7 3.571 7 8.509 0 3.826-3.691 8.5-8 8.5h-7.5c-3.238 0-4.5-1.262-4.5-4.5V12.783l4.078 4.07a0.5 0.5 0 1 0 0.708-0.706l-4.461-4.452c-0.594-0.592-1.055-0.592-1.648 0l-4.461 4.452a0.5 0.5 0 0 0 0.707 0.707 L20 12.783V26.5c0 3.804 1.696 5.5 5.5 5.5H33c4.847 0 9-5.224 9-9.5 0-5.167-4.223-9.208-8.042-9.512z" />
+</group>
 </vector>
 
 

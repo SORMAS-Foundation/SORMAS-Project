@@ -299,7 +299,8 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
         if (getMaxLength() >= 0) {
             input.setFilters(
                     new InputFilter[]{
-                            new InputFilter.LengthFilter(240)});
+                            new InputFilter.LengthFilter(240)}
+            );
         }
 
         required = isRequired;
@@ -345,7 +346,10 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
             }
 
             @Override
-            public void afterTextChanged(Editable editable) {
+            public void afterTextChanged(Editable editablex) {
+
+                System.out.println("===================================================== "+editablex.toString());
+                System.out.println("===================================================== "+input.getId());
 
                 if (inverseBindingListener != null) {
                     inverseBindingListener.onChange();
