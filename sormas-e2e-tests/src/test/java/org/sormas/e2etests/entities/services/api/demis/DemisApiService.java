@@ -160,6 +160,19 @@ public class DemisApiService {
     return json;
   }
 
+  public String prepareLabNotificationFileWithOtherFacility(
+      String patientFirstName, String patientLastName, String otherFacilityId, String otherFacilityName) {
+    DemisData demisData = runningConfiguration.getDemisData(locale);
+    String file = "";
+    String json = readFileAsString(file);
+    json = json.replace("\"<postal_code_change>\"", "\"" + demisData.getPostalCode() + "\"");
+    json = json.replace("\"<last_name_to_change>\"", "\"" + patientLastName + "\"");
+    json = json.replace("\"<first_name_to_change>\"", "\"" + patientFirstName + "\"");
+    json = json.replace("\"<facility_id_to_change>\"", "\"" + otherFacilityId + "\"");
+    json = json.replace("\"<facility_name_to_change>\"", "\"" + otherFacilityName + "\"");
+    return json;
+  }
+
   /** Delete method once we start adding tests */
   @SneakyThrows
   public String loginRequest() {
