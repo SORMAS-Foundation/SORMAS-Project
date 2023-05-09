@@ -928,10 +928,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-10265 @env_main
   Scenario: Manual archiving for case contacts
     Given API: I create a new person
-
     And API: I check that POST call status code is 200
     Then API: I create a new case
-
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     When I open the Case Contacts tab of the created case via api
@@ -950,7 +948,6 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-10265 @env_main
   Scenario: Manual archiving for bulk case contacts
     When API: I create 2 new cases
-
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     When I open the Case Contacts tab of the first created case via api
@@ -982,10 +979,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-9786 @env_main
   Scenario: Test The "urine p.m." enum value should be hidden when Covid19 is selected as disease
     When API: I create a new person
-
     And API: I check that POST call status code is 200
     Then API: I create a new case
-
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I open the last created Case via API
@@ -1024,10 +1019,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-7460 @env_main
   Scenario: Test Extend the exposure and event startDate and endDate to include a startTime and endTime
     When API: I create a new person
-
     And API: I check that POST call status code is 200
     Then API: I create a new case
-
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I open the last created Case via API
@@ -1168,10 +1161,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-9496 @env_de
   Scenario: Test Handle person related fields and search button for travel entry forms
     Given API: I create a new person
-
     And API: I check that POST call status code is 200
     And API: I create a new case
-
     And API: I check that POST call status code is 200
     Given I log in as a National User
     When I open the last created Case via API
@@ -1251,10 +1242,8 @@ Feature: Case end to end tests
   @env_main @#8556
   Scenario: Add two positive Pathogen Test Result of different diseases to a Sample of a Case
     Given API: I create a new person
-
     And API: I check that POST call status code is 200
     Given API: I create a new case
-
     And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I navigate to the last created case via the url
@@ -1274,10 +1263,8 @@ Feature: Case end to end tests
   @env_main @#8565
   Scenario: Check an archived case if its read only
     Given API: I create a new person
-
     And API: I check that POST call status code is 200
     Given API: I create a new case
-
     And API: I check that POST call status code is 200
     Then I log in as a Admin User
     Then I open last edited case by API via URL navigation
@@ -1309,10 +1296,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-6614 @env_de
   Scenario: Provide a search alternative aside from the duplicate recognizing
     Given API: I create a new person
-
     And API: I check that POST call status code is 200
     Then API: I create a new contact
-
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I click on the Cases button from navbar
@@ -1421,10 +1406,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-10241 @env_de
   Scenario: Hide Reception dates of paper form
     Given API: I create a new person
-
     And API: I check that POST call status code is 200
     Given API: I create a new case
-
     And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I navigate to the last created case via the url
@@ -1524,10 +1507,8 @@ Feature: Case end to end tests
   @env_main @tmsLink=SORDEV-5104
   Scenario: Check if external token is visible on Edit Case Page
     Given API: I create a new person
-
     And API: I check that POST call status code is 200
     Given API: I create a new case
-
     And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I navigate to the last created case via the url
@@ -1536,10 +1517,8 @@ Feature: Case end to end tests
   @env_de @tmsLink=SORDEV-5104
   Scenario: Check if external token is visible on Edit Case Page for DE
     Given API: I create a new person
-
     And API: I check that POST call status code is 200
     Given API: I create a new case
-
     And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I navigate to the last created case via the url
@@ -1570,10 +1549,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-6185 @env_de
   Scenario: Test Add information to followup warning message for Cases
     Given API: I create a new person
-
     And API: I check that POST call status code is 200
     Given API: I create a new case
-
     And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I navigate to the last created case via the url
@@ -1614,10 +1591,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-5565 @env_de
   Scenario: Document Templates create quarantine order for Case bulk DE
     When API: I create a new person
-
     And API: I check that POST call status code is 200
     Then API: I create a new case
-
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I click on the Cases button from navbar
@@ -1705,10 +1680,8 @@ Feature: Case end to end tests
    @#8558 @env_main
    Scenario: Verify that Page can not be saved if a future date is set for Date of symptom onset
      Given API: I create a new person
-
      And API: I check that POST call status code is 200
      Given API: I create a new case
-
      And API: I check that POST call status code is 200
      Given I log in as a National User
      Then I navigate to the last created case via the url
@@ -1722,10 +1695,8 @@ Feature: Case end to end tests
    @tmsLink=SORQA-478 @env_s2s_1
      Scenario: Test send case to another instance using S2S connection
      Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-
      And API: I check that POST call status code is 200
      Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-
      And API: I check that POST call status code is 200
      Given I log in as a Admin User
      Then I navigate to the last created case via the url
@@ -1763,10 +1734,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-12441 @env_de
   Scenario: Hide citizenship and country of birth on Edit Case Person page
     Given API: I create a new person
-
     And API: I check that POST call status code is 200
     Given API: I create a new case
-
     And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I navigate to the last created case via the url
@@ -1778,10 +1747,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-9789 @env_de
   Scenario: Test Move health conditions from clinical course to the case
     Given API: I create a new person
-
     And API: I check that POST call status code is 200
     Given API: I create a new case
-
     And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I navigate to the last created case via the url
@@ -1826,10 +1793,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-12087 @env_s2s_1
   Scenario: Delete a case in source system with handing ownership
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     Then I navigate to the last created case via the url
@@ -1868,10 +1833,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-12087 @env_s2s_1
   Scenario: Delete a case in target system with handing ownership
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     Then I navigate to the last created case via the url
@@ -1901,10 +1864,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-12087 @env_s2s_1
   Scenario: Delete a case in source system without handing ownership
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     Then I navigate to the last created case via the url
@@ -1933,10 +1894,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-12087 @env_s2s_1
   Scenario: Delete a case in target system without handing ownership
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     Then I navigate to the last created case via the url
@@ -1968,10 +1927,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-12087 @env_s2s_1
   Scenario: Delete a case in source system with handing ownership before acceptance
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     Then I navigate to the last created case via the url
@@ -1991,10 +1948,8 @@ Feature: Case end to end tests
   @tmsLink=SORQA-658 @env_de @oldfake
     Scenario: Check automatic deletion of cases created 3651 days ago
     Given API: I create a new person
-
     And API: I check that POST call status code is 200
     Then API: I create a new case with creation date 3651 days ago
-
     And API: I check that POST call status code is 200
     Then I log in as a Admin User
     Then I navigate to the last created case via the url
@@ -2012,10 +1967,8 @@ Feature: Case end to end tests
     @tmsLink=SORQA-663 @env_de @oldfake @precon
       Scenario: Check if 'Löschung geplant für' is available in Case Edit
       Given API: I create a new person
-
       And API: I check that POST call status code is 200
       Then API: I create a new case
-
       And API: I check that POST call status code is 200
       Then I log in as a Admin User
       Then I navigate to the last created case via the url
@@ -2024,10 +1977,8 @@ Feature: Case end to end tests
   @tmsLink=SORQA-682 @env_de @oldfake
   Scenario: Check automatic deletion NOT of cases created 3645 days ago
     Given API: I create a new person
-
     And API: I check that POST call status code is 200
     Then API: I create a new case with creation date 3645 days ago
-
     And API: I check that POST call status code is 200
     Then I log in as a Admin User
     Then I navigate to the last created case via the url
@@ -2045,10 +1996,8 @@ Feature: Case end to end tests
   @env_main @#10418
   Scenario: Verify sample timestamp pattern from Quarantine Order popup
     Given API: I create a new person
-
     And API: I check that POST call status code is 200
     Given API: I create a new case
-
     And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I navigate to the last created case via the url
@@ -2063,10 +2012,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-12081 @env_s2s_1
   Scenario: Accept Reject Special Cases [1]
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     Then I navigate to the last created case via the url
@@ -2087,10 +2034,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-12081 @env_s2s_1
   Scenario: Accept Reject Special Cases [2]
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     Then I navigate to the last created case via the url
@@ -2111,10 +2056,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-12081 @env_s2s_1
   Scenario: Accept Reject Special Cases [3]
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     Then I navigate to the last created case via the url
@@ -2141,10 +2084,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-12081 @env_s2s_1
   Scenario: Accept Reject Special Cases [4]
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     Then I navigate to the last created case via the url
@@ -2165,10 +2106,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-12081 @env_s2s_1
   Scenario: Accept Reject Special Cases [5]
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     Then I navigate to the last created case via the url
@@ -2191,10 +2130,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-12081 @env_s2s_1
   Scenario: Accept Reject Special Cases [6]
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     Then I navigate to the last created case via the url
@@ -2299,10 +2236,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-11838 @env_s2s_1
   Scenario: [S2S] Test Avoiding simultaneous work of two health departments - preventing sharing twice to the same target system as long as the target system has not yet accepted or rejected for case with hand over the ownership [1]
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-
     And API: I check that POST call status code is 200
     Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I open the last created Case via API
@@ -2343,10 +2278,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-11838 @env_s2s_1
   Scenario: [S2S] Test Avoiding simultaneous work of two health departments - preventing sharing twice to the same target system as long as the target system has not yet accepted or rejected for case without hand over the ownership [2]
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-
     And API: I check that POST call status code is 200
     Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I open the last created Case via API
@@ -2393,10 +2326,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-11838 @env_s2s_1
   Scenario: [S2S] Test Avoiding simultaneous work of two health departments - preventing sharing twice to the same target system as long as the target system has not yet accepted or rejected for contact with hand over the ownership [3]
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-
     And API: I check that POST call status code is 200
     Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I open the last created Case via API
@@ -2438,10 +2369,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-11838 @env_s2s_1
   Scenario: [S2S] Test Avoiding simultaneous work of two health departments - preventing sharing twice to the same target system as long as the target system has not yet accepted or rejected for contact without hand over the ownership [4]
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-
     And API: I check that POST call status code is 200
     Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I open the last created Case via API
@@ -2489,10 +2418,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-12447 @env_s2s_1
   Scenario: [S2S] S2S_deactivate share parameter 'share associated contacts' (for cases) [1]
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-
     And API: I check that POST call status code is 200
     Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I open the last created Case via API
@@ -2514,10 +2441,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-12447 @env_s2s_1
   Scenario: [S2S] S2S_deactivate share parameter 'share associated contacts' (for cases) [2]
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-
     And API: I check that POST call status code is 200
     Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I open the last created Case via API
@@ -2671,10 +2596,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-12449 @env_s2s_1
   Scenario: S2S_added sample after sharing a case/contact does not get shared [2]
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-
     And API: I check that POST call status code is 200
     Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I open the last created Case via API
@@ -2716,10 +2639,8 @@ Feature: Case end to end tests
     @tmsLink=SORDEV-12095 @env_s2s_1
     Scenario: [S2S] Sample and Immunization - Change sample and immunization in target system
       Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-
       And API: I check that POST call status code is 200
       Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-
       And API: I check that POST call status code is 200
       Given I log in as a Admin User
       And I open the last created Case via API
@@ -2764,10 +2685,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-12095 @env_s2s_1
   Scenario: [S2S] Sample and Immunization - Add sample and immunization in target system
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-
     And API: I check that POST call status code is 200
     Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I open the last created Case via API
@@ -2812,10 +2731,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-12095 @env_s2s_1
   Scenario: [S2S] Sample and Immunization - Change date of sample and immuniation
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-
     And API: I check that POST call status code is 200
     Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I open the last created Case via API
@@ -2860,10 +2777,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-12095 @env_s2s_1
   Scenario: [S2S] Sample and Immunization - Create sample and immuniation after share the case
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-
     And API: I check that POST call status code is 200
     Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I open the last created Case via API
@@ -2896,10 +2811,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-12095 @env_s2s_1
   Scenario: [S2S] Sample and Immunization - Add sample and immunization in source system after accept s2s case without hand over the ownership
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-
     And API: I check that POST call status code is 200
     Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I open the last created Case via API
@@ -2939,10 +2852,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-12095 @env_s2s_1
   Scenario: [S2S] Sample and Immunization - Change sample and immunization in target system without hand over the ownership
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-
     And API: I check that POST call status code is 200
     Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I open the last created Case via API
@@ -2980,10 +2891,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-12095 @env_s2s_1
   Scenario: [S2S] Sample and Immunization - Add sample and immunization in source system before accept s2s case without hand over the ownership
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-
     And API: I check that POST call status code is 200
     Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I open the last created Case via API
@@ -3046,3 +2955,44 @@ Feature: Case end to end tests
     Then I back to tab number 1
     And I open the last created case with collected UUID by url on "s2s_1" instance
     And I check if Archive button changed name to Wiedereröffnen
+
+  @tmsLink=SORQA-962 @env_s2s_1
+  Scenario: Delete a shared case
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    And API: I check that POST call status code is 200
+    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    Then I navigate to the last created case via the url
+    And I collect uuid of the case
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with "shared to be deleted after"
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment
+    And I log in as a Admin User
+    And I click on the Shares button from navbar
+    Then I accept first case in Shares Page
+    Then I navigate to "s2s_1" environment
+    Then I navigate to the last created case via the url
+    Then I click on Delete button from case
+    And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I click on Yes option in Confirm deletion popup
+    And I apply "Alle" to ownership combobox on Case Directory Page
+    And I apply "Gelöschte Fälle" to combobox on Case Directory Page
+    Then I click on the APPLY FILTERS button
+    And I select first created case for person from Cases list
+    Then I check if editable fields are read only for an archived case
+    And I check if handover card contains "LK Fulda" information
+    And I check if handover card contains "Geteilt von: Automation ADMIN" information
+    And I check if handover card contains "Kommentar: shared to be deleted after" information
+    Then I navigate to "s2s_2" environment
+    And I click on the Cases button from navbar
+    And I apply "Alle" to ownership combobox on Case Directory Page
+    And I apply "Aktive Fälle" to combobox on Case Directory Page
+    Then I click on the APPLY FILTERS button
+    And I select first created case for person from Cases list
+    Then I check if editable fields are read only for an archived case
+    And I check if handover card contains "Eigentümer: LK Barnim" information
+    And I check if handover card contains "Geteilt von: Automation Admin" information
+    And I check if handover card contains "shared to be deleted after" information

@@ -445,6 +445,10 @@ public class EditCasePage {
         String.format("//div[contains(@location,'samples')]//div[contains(text(), '%s')]", text));
   }
 
+  public static By checkTextInHandoverSideComponent(String text) {
+    return By.xpath(String.format("//div[@location='sormasToSormas']//div[text()='%s']", text));
+  }
+
   public static final By ADDED_SAMPLES_IN_SAMPLE_CARD =
       By.xpath("//*[@location='samples']//*[@class='v-slot v-slot-s-list']/div/div/div/div");
 }
