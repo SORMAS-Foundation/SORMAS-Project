@@ -119,7 +119,7 @@ public class PersonImportExportSteps implements En {
           Path path = Paths.get(file);
           Files.delete(path);
           softly.assertEquals(
-              reader.getUuid().toLowerCase(),
+              reader.getUuid(),
               apiState.getLastCreatedPerson().getUuid(),
               "UUIDs are not equal");
           softly.assertEquals(
