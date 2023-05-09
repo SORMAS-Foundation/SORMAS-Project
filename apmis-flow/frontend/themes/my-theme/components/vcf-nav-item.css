@@ -8,7 +8,7 @@
 
 
 :host([active]) a:hover{
-	background: #6D5D4F !important;
+	background: red !important;
     color: #ffffff !important;
     text-shadow: none !important;
 }

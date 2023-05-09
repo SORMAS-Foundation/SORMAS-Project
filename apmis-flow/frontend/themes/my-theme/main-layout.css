@@ -160,13 +160,13 @@ width: 100%;
     color: white;
 }
 
- vcf-nav-item#navitem:hover, vcf-nav-item#navitem:active, vcf-nav-item#navitem:focus-visible {
+ vcf-nav-item#navitem:hover,  vcf-nav-item#navitem:focus-visible {
    	background: #6D5D4F !important;
     color: #ffffff !important;
     text-shadow: none !important;
 }
     
-     #menuItems:active {
+   vcf-nav-item#navitem:active,  #menuItems:active {
     background: orange !important; 
     color: white !important;
     
@@ -321,3 +321,4 @@ vaadin-input-container{
     font-size: 2em;
     margin-bottom: 1em;
 }
+
