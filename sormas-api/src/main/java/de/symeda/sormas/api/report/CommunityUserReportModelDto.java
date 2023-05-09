@@ -61,9 +61,28 @@ public class CommunityUserReportModelDto extends EntityDto {
 
 	private Set<FormAccess> formAccess;
 	private String clusterNumber;
+	private Integer clusterNumberr;
 	private String username;
 	private String message;
 	private List<CampaignFormDataCriteria> formType;
+	
+	public CommunityUserReportModelDto(
+			String area,
+			String region,
+			String district,
+			String community,
+			Integer clusternumer,
+			String username,
+			String message
+			) {
+		this.area = area;
+		this.region = region;
+		this.district = district;
+		this.community = community;
+		this.clusterNumberr = clusternumer;
+		this.username = username;
+		this.message = message;
+	}
 
 	//
 //	public String getClusterNumber() {
@@ -187,6 +206,14 @@ public class CommunityUserReportModelDto extends EntityDto {
 
 	public Set<FormAccess> getFormAccess() {
 		return formAccess;
+	}
+
+	public Integer getClusterNumberr() {
+		return clusterNumberr;
+	}
+
+	public void setClusterNumberr(Integer clusterNumberr) {
+		this.clusterNumberr = clusterNumberr;
 	}
 
 	public void setFormAccess(Set<FormAccess> formAccess) {

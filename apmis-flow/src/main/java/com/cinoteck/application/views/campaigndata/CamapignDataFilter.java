@@ -41,25 +41,25 @@ public class CamapignDataFilter extends VerticalLayout {
 //	private final Button addNewBtnn = new Button();
 //
 //	private TextField searchField = new TextField();
-	private ComboBox<String> campaignYear;
-	private ComboBox<CampaignReferenceDto> campaign = new ComboBox<>();
+	public ComboBox<String> campaignYear;
+	public ComboBox<CampaignReferenceDto> campaign = new ComboBox<>();
 	ComboBox<String> campaignPhase = new ComboBox<>();
-	private Button newForm = new Button("NEW FORM");
-	private Button importData = new Button("IMPORT");
-	private Button exportData = new Button("EXPORT");
+	public Button newForm = new Button("NEW FORM");
+	public Button importData = new Button("IMPORT");
+	public Button exportData = new Button("EXPORT");
 
 	List<String> campaignsYears;
 	List<CampaignReferenceDto> campaigns;
 	List<CampaignReferenceDto> campaignPhases;
 	List<String> camYearList;
 
-	private ComboBox<CampaignFormMetaReferenceDto> campaignForm = new ComboBox<>();
-	private ComboBox<AreaReferenceDto> region = new ComboBox<>();
-	private ComboBox<RegionReferenceDto> province = new ComboBox<>();
-	private ComboBox<DistrictReferenceDto> district = new ComboBox<>();
-	private ComboBox cluster = new ComboBox<>();
-	private Button resetHandler = new Button();
-	private Button applyHandler = new Button();
+	public ComboBox<CampaignFormMetaReferenceDto> campaignForm = new ComboBox<>();
+	public ComboBox<AreaReferenceDto> region = new ComboBox<>();
+	public ComboBox<RegionReferenceDto> province = new ComboBox<>();
+	public ComboBox<DistrictReferenceDto> district = new ComboBox<>();
+	public ComboBox cluster = new ComboBox<>();
+	public Button resetHandler = new Button();
+	public Button applyHandler = new Button();
 
 	List<CampaignFormMetaReferenceDto> campaignForms;
 	List<AreaReferenceDto> regions;
@@ -67,11 +67,11 @@ public class CamapignDataFilter extends VerticalLayout {
 	List<DistrictReferenceDto> districts;
 	List<CommunityReferenceDto> communities;
 
-	private final TextField filterr = new TextField();
+	public final TextField filterr = new TextField();
 
-	private final Button addNewBtnn = new Button();
+	public final Button addNewBtnn = new Button();
 
-	private TextField searchField = new TextField();
+	public TextField searchField = new TextField();
 
 	public CamapignDataFilter() {
 		HorizontalLayout level1Filters = new HorizontalLayout();
