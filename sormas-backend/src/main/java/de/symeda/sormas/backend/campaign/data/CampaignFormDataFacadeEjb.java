@@ -389,8 +389,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			cq.orderBy(order);
 		} else {
 			cq.orderBy(cb.desc(root.get(CampaignFormData.CHANGE_DATE)));
-		}
-
+    }
 System.out.println("DEBUGGER r567ujhgty8ijyu8dfrf this query " + SQLExtractor.from(em.createQuery(cq)));
 
 		return QueryHelper.getResultList(em, cq, first, max);
@@ -1797,13 +1796,10 @@ System.out.println("DEBUGGER r567ujhgty8ijyu8dfrf this query " + SQLExtractor.fr
 	
 	@Override
 	public String getByJsonFormDefinitonToCSVCount() {
-	
-		
+    
 		//@formatter:off
 		
 		String joiner = "";
-		
-	
 		
 		
 		String joinBuilder = "SELECT COUNT(*) as count_result \r\n"
