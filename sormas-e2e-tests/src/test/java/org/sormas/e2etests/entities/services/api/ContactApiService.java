@@ -24,9 +24,7 @@ import static org.sormas.e2etests.steps.BaseSteps.locale;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.UUID;
 import javax.inject.Inject;
-
 import lombok.SneakyThrows;
 import org.sormas.e2etests.entities.pojo.api.Case;
 import org.sormas.e2etests.entities.pojo.api.Contact;

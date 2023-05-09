@@ -1,17 +1,16 @@
 package org.sormas.e2etests.entities.services;
 
+import static org.sormas.e2etests.entities.pojo.helpers.ShortUUIDGenerator.generateShortUUID;
+
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.time.LocalDate;
-
 import lombok.SneakyThrows;
 import org.sormas.e2etests.entities.pojo.web.Immunization;
 import org.sormas.e2etests.enums.*;
 import org.sormas.e2etests.enums.immunizations.ImmunizationManagementStatusValues;
 import org.sormas.e2etests.enums.immunizations.StatusValues;
 import org.sormas.e2etests.helpers.strings.ASCIIHelper;
-
-import static org.sormas.e2etests.entities.pojo.helpers.ShortUUIDGenerator.generateShortUUID;
 
 public class ImmunizationService {
 

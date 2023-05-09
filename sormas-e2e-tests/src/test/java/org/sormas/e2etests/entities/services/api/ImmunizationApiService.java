@@ -26,7 +26,6 @@ import com.google.inject.Inject;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Calendar;
-
 import lombok.SneakyThrows;
 import org.sormas.e2etests.entities.pojo.api.Immunization;
 import org.sormas.e2etests.entities.pojo.api.Person;
