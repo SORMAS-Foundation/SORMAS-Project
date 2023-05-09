@@ -25,7 +25,6 @@ import static org.sormas.e2etests.enums.YesNoUnknownOptions.YES;
 
 import com.google.inject.Inject;
 import java.time.LocalDate;
-
 import lombok.SneakyThrows;
 import org.sormas.e2etests.entities.pojo.web.Symptoms;
 
