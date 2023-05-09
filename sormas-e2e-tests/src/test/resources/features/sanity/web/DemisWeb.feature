@@ -356,3 +356,20 @@ Scenario: Create and send laboratory request via Demis
     Then I filter by last created person via API in Messages Directory
     And I click on Verarbeiten button in Messages Directory
     Then I check if while creating new event participant from demis message there is a possibility to edit first and last name
+
+  @tmsLink=SORQA-959 @env_d2s @LoginKeycloak
+  Scenario: Test [Lab Message] Demis - Process a Lab message that has no mapped ID for Facility in Sormas
+    Given API : Login to DEMIS server
+    When I create and send Laboratory Notification with other facility name "Other Laboratory" and facility ID "928170"
+    And I log in as a Admin User
+    Then I click on the Messages button from navbar
+    And I click on fetch messages button
+    Then I filter by last created person via API in Messages Directory
+    And I click on Verarbeiten button in Messages Directory
+    Then I create a new person and a new case from received message
+    And I check that new sample form with pathogen detection reporting process is displayed
+    Then I verify that labor is prefilled with "Andere Einrichtung" in New sample form while processing a DEMIS LabMessage
+    Then I verify that labor description is prefilled with "Other Laboratory" in New sample form while processing a DEMIS LabMessage
+    And I click on save sample button
+    And I click on save sample button
+    And I click on the Cases button from navbar

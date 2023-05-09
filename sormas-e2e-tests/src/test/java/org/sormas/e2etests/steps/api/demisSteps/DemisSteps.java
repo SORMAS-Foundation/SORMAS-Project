@@ -34,6 +34,8 @@ import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPa
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CREATE_NEW_PERSON_RADIOBUTTON_DE;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FORWARDED_QUICK_FILTER_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FORWARDED_QUICK_FILTER_COUNTER;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.LABORATORY_DETAILS_INPUT;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.LABORATORY_INPUT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGES_DETAILED_COLUMN_HEADERS;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGES_DETAILED_TABLE_ROWS;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGES_TABLE_DATA;
@@ -737,6 +739,38 @@ public class DemisSteps implements En {
               CREATE_A_NEW_CASE_WITH_POSITIVE_TEST_EVENT_PARTICIPANT_HEADER_DE, 2)) {
             webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL);
           }
+        });
+
+    When(
+        "^I create and send Laboratory Notification with other facility name \"([^\"]*)\" and facility ID \"([^\"]*)\"$",
+        (String otherFacilityName, String otherFacilityId) -> {
+          patientFirstName = faker.name().firstName();
+          patientLastName = faker.name().lastName();
+          String json = demisApiService.prepareLabNotificationFileWithOtherFacility(patientFirstName, patientLastName, otherFacilityId, otherFacilityName);
+
+          Assert.assertTrue(
+                  demisApiService.sendLabRequest(json, loginToken),
+                  "Failed to send laboratory request");
+        });
+
+    Then(
+        "^I verify that labor is prefilled with \"([^\"]*)\" in New sample form while processing a DEMIS LabMessage$",
+        (String laboratoryName) -> {
+          softly.assertEquals(
+                  webDriverHelpers.getValueFromWebElement(LABORATORY_INPUT),
+                  laboratoryName,
+                  "Laboratory field has incorrect value prefilled");
+          softly.assertAll();
+        });
+
+    Then(
+        "^I verify that labor description is prefilled with \"([^\"]*)\" in New sample form while processing a DEMIS LabMessage$",
+        (String laboratoryDetails) -> {
+          softly.assertEquals(
+                  webDriverHelpers.getValueFromWebElement(LABORATORY_DETAILS_INPUT),
+                  laboratoryDetails,
+                  "Laboratory details field has incorrect value prefilled");
+          softly.assertAll();
         });
   }
 
