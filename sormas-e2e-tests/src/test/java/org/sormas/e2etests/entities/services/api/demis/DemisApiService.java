@@ -163,7 +163,7 @@ public class DemisApiService {
   public String prepareLabNotificationFileWithOtherFacility(
       String patientFirstName, String patientLastName, String otherFacilityId, String otherFacilityName) {
     DemisData demisData = runningConfiguration.getDemisData(locale);
-    String file = "";
+    String file = "src/main/resources/demisJsonTemplates/labNotificationTemplateOtherFacility.json";
     String json = readFileAsString(file);
     json = json.replace("\"<postal_code_change>\"", "\"" + demisData.getPostalCode() + "\"");
     json = json.replace("\"<last_name_to_change>\"", "\"" + patientLastName + "\"");
