@@ -66,7 +66,6 @@ public class ReceivedSampleProcessor
 		Map<String, PathogenTestDto> existingPathogenTests = getExistingPathogenTests(existingData);
 		sharedData.getPathogenTests()
 			.forEach(pathogenTest -> {
-				// TODO - change PathogenTest::labUser to reportingUser and use updateReportingUser
 				PathogenTestDto existingPathogenTest = existingPathogenTests.get(pathogenTest.getUuid());
 				UserReferenceDto labUser =
 					existingPathogenTest == null ? userService.getCurrentUser().toReference() : existingPathogenTest.getLabUser();
