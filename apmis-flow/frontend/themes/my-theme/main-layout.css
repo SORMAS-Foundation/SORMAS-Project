@@ -130,18 +130,19 @@ width: 100%;
     
     .menuNav:active{
     color: white;
-    background: orange  
+    background: #F08F3E  
     }
     
    
     #menuItems:hover{
-    background: orange;
+    background: #F08F3E;
 
     }
    
     vcf-nav-item#navitem {
     color: white;
     font-family: Lato;
+    font-weight: 300 !important;
 }
      vcf-nav-item#navitem vaadin-icon{
     height: 15px;
@@ -167,7 +168,7 @@ width: 100%;
 }
     
    vcf-nav-item#navitem:active,  #menuItems:active {
-    background: orange !important; 
+    background: #F08F3E !important; 
     color: white !important;
     
     }
@@ -189,7 +190,7 @@ width: 100%;
     }
     
     #menuItems:hover {
-    background: orange !important; 
+    background: #F08F3E !important; 
     color: white !important;
     
     }
@@ -233,7 +234,7 @@ margin-top: 15px;
 
 :host{
 color:white !important;
-background-color: orange;
+background-color: #F08F3E;
 }
 
 #label-vaadin-text-field-0, #label-vaadin-password-field-3{
@@ -260,13 +261,13 @@ label {
 
 a:active {
     color: white !important;
-    background-color: orange !important;
+    background-color: #F08F3E !important;
     transition: none;
 }
 
 a:hover {
     color: white !important;
-    background-color: orange !important;
+    background-color: #F08F3E !important;
     transition: none;
 }
 
@@ -301,7 +302,7 @@ a:selected{
 
 :host([selected])::before, :host([selected])::after{
 	width: 100% !important;
-	background: orange !important;
+	background: #F08F3E !important;
 }
 
 /*

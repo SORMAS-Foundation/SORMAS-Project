@@ -13,6 +13,7 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -41,6 +42,7 @@ public class SupportView extends VerticalLayout {
 		apmisImageContainer.getStyle().set("height", "140px");
 		apmisImageContainer.getStyle().set("display", "flex");
 		apmisImageContainer.getStyle().set("justify-content", "center");
+		apmisImageContainer.getStyle().set("margin-bottom", "30px");
 
 		Image img = new Image("images/apmislogo.png", "APMIS-LOGO");
 		img.getStyle().set("max-height", "-webkit-fill-available");
@@ -48,42 +50,82 @@ public class SupportView extends VerticalLayout {
 		apmisImageContainer.add(img);
 
 		Div aboutText = new Div();
-		aboutText.getStyle().set("height", "121px");
+		
 		Paragraph text = new Paragraph(
 				"The Afghanistan Polio Management Information System (APMIS) is an online data system that simplifies and improves the use and management of polio immunization-related data. APMIS facilitates field data entry, immunization data storage, data visualization, and real-time monitoring of polio immunization activities in Afghanistan.  Using this system will assist in evaluating immunization campaign activities and identifying program challenges.");
 		text.getStyle().set("color", "green");
+		text.getStyle().set("font-size", "20px");
+		text.getStyle().set("margin-bottom", "30px");
 		aboutText.add(text);
 
-		HorizontalLayout guides = new HorizontalLayout();
-		Tab techguide = new Tab("Technical Guide");
-		techguide.getStyle().set("color", "green");
-		Tab userguide = new Tab("User Guide");
-		userguide.getStyle().set("color", "green");
+//		HorizontalLayout guides = new HorizontalLayout();
+//		Anchor techguide = new Anchor("https://staging.afghanistan-apmis.com/sormas-ui/VAADIN/themes/sormas/img/APMIS_Technical_Manual.pdf", "Technical Guide");
+//		techguide.getStyle().set("text-decoration", "underline !important");
+//		techguide.getStyle().set("color", "green !important");
+//		Anchor userguide = new Anchor("https://staging.afghanistan-apmis.com/sormas-ui/VAADIN/themes/sormas/img/APMIS_User_Guide.pdf", "User Guide");
+//		userguide.getStyle().set("color", "green !important");
+//		userguide.getStyle().set("text-decoration", "underline !important");
+//
+//		guides.setJustifyContentMode(JustifyContentMode.CENTER);
+//		// tabs.getStyle().set("background", "#434343");
+//
+//		guides.add(userguide, techguide);
 
-		Tabs tabs = new Tabs(techguide, userguide);
-		// tabs.getStyle().set("background", "#434343");
-
-		guides.add(tabs);
-
-		
-		Anchor anchor = new Anchor("src/main/webapp/docs/APMIS_User_Guide.pdf", "A document");
-		anchor.getElement().setAttribute("router-ignore", true);
-		anchor.getStyle().set("background", "red");
-		
-//		PdfViewer pdfViewer = new PdfViewer();
-		StreamResource resource = new StreamResource("example.pdf", () -> getClass().getResourceAsStream("/docs/APMIS_User_Guide.pdf"));
-//		pdfViewer.setSrc(resource);
-//		pdfViewer.openThumbnailsView();
-//		add(pdfViewer);  
-		anchor.setHref(resource);
-
-		aboutView.add(apmisImageContainer, aboutText, guides);
+		aboutView.add(apmisImageContainer, aboutText);
 		add(aboutView);
-		add(anchor);
+		configureActionButtonVisibility();
+
 //		add(downloadButton);
 		
 		
 
+	}
+	public void configureActionButtonVisibility() {
+		Button displayActionButtons =  new Button("Show Action Buttons");
+		displayActionButtons.setIcon(new Icon(VaadinIcon.SLIDERS));
+		
+		
+		Button getUserGuide =  new Button("User Guide");
+		getUserGuide.setIcon(new Icon(VaadinIcon.NURSE));
+		getUserGuide.setVisible(false);
+		
+		Button getTechnicalGuide =  new Button("Technical Guide");
+		getTechnicalGuide.setIcon(new Icon(VaadinIcon.DIPLOMA_SCROLL));
+		getTechnicalGuide.setVisible(false);
+		
+		
+		Button getJsonGlossary =  new Button("Export Forms & Diagrams Glossary");
+		getJsonGlossary.setIcon(new Icon(VaadinIcon.TABLE));
+		getJsonGlossary.setVisible(false);
+		
+		displayActionButtons.addClickListener(e->{
+			if(getUserGuide.isVisible() == false) {
+				getUserGuide.setVisible(true);
+				getTechnicalGuide.setVisible(true);
+				getJsonGlossary.setVisible(true);
+				displayActionButtons.setText("Hide Action Buttons");
+			}else {
+			getUserGuide.setVisible(false);
+			getTechnicalGuide.setVisible(false);
+			getJsonGlossary.setVisible(false);
+			displayActionButtons.setText("Show Action Buttons");
+			}
+		});
+		
+		getUserGuide.addClickListener(e->{
+			  UI.getCurrent().getPage().open("https://staging.afghanistan-apmis.com/sormas-ui/VAADIN/themes/sormas/img/APMIS_User_Guide.pdf");
+		});
+		
+		getTechnicalGuide.addClickListener(e->{
+			  UI.getCurrent().getPage().open("https://staging.afghanistan-apmis.com/sormas-ui/VAADIN/themes/sormas/img/APMIS_Technical_Manual.pdf");
+		});
+		
+		HorizontalLayout buttonsLayout  = new HorizontalLayout();
+		buttonsLayout.getStyle().set("padding-left", "90px");
+		buttonsLayout.add(displayActionButtons, getUserGuide, getTechnicalGuide, getJsonGlossary);
+		add(buttonsLayout);
+		
+		
 	}
 
 }
