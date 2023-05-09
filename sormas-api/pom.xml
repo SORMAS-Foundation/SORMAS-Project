@@ -9,9 +9,6 @@
 	<artifactId>sormas-api</artifactId>
 	<name>${project.artifactId}</name>
 
-
-
-
 	<build>
 		<finalName>${project.artifactId}</finalName>
 		<resources>
