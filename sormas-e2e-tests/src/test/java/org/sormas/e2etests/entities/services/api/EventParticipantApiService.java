@@ -25,7 +25,6 @@ import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-
 import lombok.SneakyThrows;
 import org.sormas.e2etests.entities.pojo.api.Event;
 import org.sormas.e2etests.entities.pojo.api.EventParticipant;

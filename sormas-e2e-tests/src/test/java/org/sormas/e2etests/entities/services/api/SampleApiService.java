@@ -23,7 +23,6 @@ import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.google.inject.Inject;
 import java.util.Date;
-
 import lombok.SneakyThrows;
 import org.sormas.e2etests.entities.pojo.api.AssociatedCase;
 import org.sormas.e2etests.entities.pojo.api.Case;
