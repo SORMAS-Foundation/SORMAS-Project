@@ -421,10 +421,8 @@ Feature: Edit Persons
   @tmsLink=SORDEV-12088 @env_s2s_1
   Scenario: [S2S] Simultaneous Work on Person [4]
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I click on the Contacts button from navbar

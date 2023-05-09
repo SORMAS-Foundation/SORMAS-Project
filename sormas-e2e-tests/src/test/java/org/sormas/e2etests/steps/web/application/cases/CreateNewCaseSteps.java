@@ -330,6 +330,7 @@ public class CreateNewCaseSteps implements En {
           casesUUID.add(webDriverHelpers.getValueFromWebElement(UUID_INPUT));
         });
 
+    // TODO this method should be refactored since it has 2 logics inside
     When(
         "I select ([^\"]*) created case for person from Cases list",
         (String option) -> {
