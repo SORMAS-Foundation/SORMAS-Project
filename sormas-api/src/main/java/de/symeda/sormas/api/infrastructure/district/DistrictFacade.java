@@ -63,4 +63,6 @@ public interface DistrictFacade extends GeoLocationFacade<DistrictDto, DistrictI
 	boolean hasArchivedParentInfrastructure(Collection<String> districtUuids);
 
 	Map<String, String> getRegionUuidsForDistricts(List<DistrictReferenceDto> districts);
+
+	List<DistrictIndexDto> getAllDistricts();
 }

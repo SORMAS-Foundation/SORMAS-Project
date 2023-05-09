@@ -532,5 +532,27 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 	
 	//System.out.println("resultData - "+ resultData.toString()); //SQLExtractor.from(seriesDataQuery));
 	return resultData;
+  }
+  
+	public List<DistrictIndexDto> getAllDistricts() {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<District> cq = cb.createQuery(District.class);
+		Root<District> district = cq.from(District.class);
+		Join<District, Region> region = district.join(District.REGION, JoinType.LEFT);
+		Join<Region, Area> area = region.join(Region.AREA, JoinType.LEFT);
+		
+		Predicate filter = cb.equal(region.get(Region.ARCHIVED), false);
+		cq.where(filter);
+		cq.select(district); 
+		List<District> regions = em.createQuery(cq).getResultList();
+		List<DistrictIndexDto> dtos = new ArrayList();
+		
+		for (District reg : regions) {
+			if (!reg.equals(null)) {
+				dtos.add(this.toIndexDto(reg));
+			}
+		}
+		return dtos;
+    
 	}
 }

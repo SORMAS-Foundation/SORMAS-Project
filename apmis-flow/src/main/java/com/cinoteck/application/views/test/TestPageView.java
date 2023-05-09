@@ -24,5 +24,8 @@ public class TestPageView extends VerticalLayout {
 		add(layout);
 
 		button.addClickListener(click -> add(new Paragraph("Clicked" + date.getValue())));
+		
+		
+
 	}
 }

@@ -23,11 +23,13 @@ public class AboutView extends VerticalLayout {
 
     public AboutView() {
         Div aboutView = new Div();
+        aboutView.setId("aboutView");
         aboutView.getStyle().set("height", "100%");
         aboutView.getStyle().set("padding-left", "90px");
         aboutView.getStyle().set("padding-right", "90px");
 
         Div apmisImageContainer = new Div();
+        aboutView.setId("apmisImageContainer");
         apmisImageContainer.getStyle().set("height", "140px");
         apmisImageContainer.getStyle().set("display", "flex");
         apmisImageContainer.getStyle().set("justify-content", "center");
@@ -38,31 +40,23 @@ public class AboutView extends VerticalLayout {
         apmisImageContainer.add(img);
 
         Div aboutText = new Div();
-		aboutText.getStyle().set("height", "121px");
+//		aboutText.getStyle().set("height", "121px");
         Paragraph text = new Paragraph("The Afghanistan Polio Management Information System (APMIS) is an online data system that simplifies and improves the use and management of polio immunization-related data. APMIS facilitates field data entry, immunization data storage, data visualization, and real-time monitoring of polio immunization activities in Afghanistan.  Using this system will assist in evaluating immunization campaign activities and identifying program challenges.");
         text.getStyle().set("color", "green");
         aboutText.add(text);
 
-        HorizontalLayout guides = new HorizontalLayout();
-        Tab techguide = new Tab("Technical Guide");
-        techguide.getStyle().set("color", "green");
-        Tab userguide = new Tab("User Guide");
-        userguide.getStyle().set("color", "green");
-
-        Tabs tabs = new Tabs(techguide, userguide);
-       // tabs.getStyle().set("background", "#434343");
-
-        guides.add(tabs);
 
 		Div feedbackFormFields = new Div();
       //  Binder<Feedback> binder = new Binder<>(Feedback.class);
 
         TextField firstName = new TextField("First name");
         firstName.getStyle().set("color", "green");
+       
      //   binder.forField(firstName).bind(Feedback::getFirstName, Feedback::setFirstName);
 
         TextField lastName = new TextField("Last name");
         lastName.getStyle().set("color", "green");
+       
      //   binder.forField(lastName).bind(Feedback::getLastName, Feedback::setLastName);
 
         TextField email = new TextField("Email");
@@ -73,9 +67,11 @@ public class AboutView extends VerticalLayout {
         message.getStyle().set("color", "green");
      //   binder.forField(message).bind(Feedback::getFeedback, Feedback::setFeedback);
 
-        Button sendFeedback = new Button("Send", new Icon("vaadin", "location-arrow"));
+        Button sendFeedback = new Button("Send", new Icon("vaadin", "location-arrow-circle-o"));
         sendFeedback.getStyle().set("color", "white");
         sendFeedback.getStyle().set("background", "green");
+        sendFeedback.getStyle().set("width", "10%");
+        sendFeedback.getStyle().set("border-radius", "8px");
 
         sendFeedback.addClickListener(click -> System.out.println("kkcvakvckavsckvackvakscvkasvckasvckasvckhavsckhavsckhv"));
      //   sendFeedback.setSuffixComponent(new Icon("vaadin", "building"));
@@ -101,7 +97,7 @@ public class AboutView extends VerticalLayout {
         Paragraph versionNum = new Paragraph("Version Number : APMIS 5.0.0");
         versionNum.getStyle().set("font-size", "12px");
 
-		aboutView.add(apmisImageContainer, aboutText, guides, feedbackForm, sendFeedback, versionNum);
+		aboutView.add(apmisImageContainer, aboutText, feedbackForm, sendFeedback, versionNum);
         add(aboutView);
 
 }

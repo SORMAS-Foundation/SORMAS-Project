@@ -480,4 +480,32 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionSer
 		}	
 		return dtos;
 	}
+	
+	@Override
+	public List<RegionIndexDto> getAllRegions() {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Region> cq = cb.createQuery(Region.class);
+		Root<Region> region = cq.from(Region.class);
+		Join<Region, Area> area = region.join(Region.AREA, JoinType.LEFT);
+		
+		Predicate filter = cb.equal(region.get(Region.ARCHIVED), false);
+		cq.where(filter);
+		cq.select(region); 
+		List<Region> regions = em.createQuery(cq).getResultList();
+		List<RegionIndexDto> dtos = new ArrayList();
+		
+		for (Region reg : regions) {
+			if (!reg.equals(null)) {
+				dtos.add(this.toIndexDto(reg));
+			}
+		}
+		return dtos;
+	}
+
+	@Override
+	public List<RegionDto> getAllActiveAsReferenceAndPopulation(Long areaId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

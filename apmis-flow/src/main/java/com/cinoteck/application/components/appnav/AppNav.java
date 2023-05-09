@@ -4,6 +4,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.Tag;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.dom.Element;
 import java.util.Optional;
@@ -17,6 +18,7 @@ import java.util.Optional;
  */
 @JsModule("@vaadin-component-factory/vcf-nav")
 @Tag("vcf-nav")
+@CssImport(value = "./themes/my-theme/components/vcf-nav-item.css", themeFor = "vcf-nav-item")
 public class AppNav extends Component implements HasSize, HasStyle {
 
     /**

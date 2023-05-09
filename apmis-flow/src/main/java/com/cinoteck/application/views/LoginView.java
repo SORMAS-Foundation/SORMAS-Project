@@ -26,10 +26,11 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
 	String content =  "<div class=" + "apmisDesc>" + "<p class=" + "apmisText>AFGHANISTHAN POLIO MANAGEMENT INFORMATION SYSTEM.<p>"+"</div>";
 
-
+	Paragraph signInText = new Paragraph("Sign in to APMIS");
+	
     Html html = new Html(content);
     
-    private final LoginForm login = new LoginForm();
+    private final LoginFormInput login = new LoginFormInput();
     
     
 	
@@ -43,35 +44,35 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 		setAlignItems(Alignment.CENTER);
 		setJustifyContentMode(JustifyContentMode.CENTER);
 
-		login.setAction("login"); 
 		login.setClassName("loginfORM");
-
+		signInText.setId("signInText");
 
 		logoDiv.setClassName("logoContainer");
 		imgApmis.setWidth("20%");
 		addClassName("loginOverlay");
 		logoDiv.add(imgApmis);
 
-
-
-		
-		//containerDiv.setWidth("500px");
 		containerDiv.setClassName("loginContainer");
-		containerDiv.add(logoDiv, html, login);
-		add(containerDiv); 
-		
-		
-		
+		containerDiv.add(logoDiv, html, signInText , login);
+		add(containerDiv); 	
 	}
+
+
 
 	@Override
-	public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
-		// inform the user about an authentication error
-		if(beforeEnterEvent.getLocation()  
-        .getQueryParameters()
-        .getParameters()
-        .containsKey("error")) {
-            login.setError(true);
-        }
+	public void beforeEnter(BeforeEnterEvent event) {
+		// TODO Auto-generated method stub
+		
 	}
+
+//	@Override
+//	public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
+//		// inform the user about an authentication error
+//		if(beforeEnterEvent.getLocation()  
+//        .getQueryParameters()
+//        .getParameters()
+////        .containsKey("error")) {
+////            login.setError(true);
+////        }
+//	}
 }

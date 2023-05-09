@@ -55,5 +55,4 @@ public class CampaignReferenceDto extends ReferenceDto {
 	}
 	
 	
-	
 }

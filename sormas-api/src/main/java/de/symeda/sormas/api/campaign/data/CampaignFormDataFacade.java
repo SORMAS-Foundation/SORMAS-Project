@@ -85,6 +85,7 @@ public interface CampaignFormDataFacade {
 	List<CampaignFormDataDto> getAllActiveAfter(Date date);
 	
 	List<CampaignFormDataDto> getAllActive();
+	List<CampaignFormDataDto> getAllActiveRef();
 
 	void overwriteCampaignFormData(CampaignFormDataDto existingData, CampaignFormDataDto newData);
 	
@@ -101,5 +102,6 @@ public interface CampaignFormDataFacade {
 	List<JsonDictionaryReportModelDto> getByJsonFormDefinitonToCSV();
 	String getByJsonFormDefinitonToCSVCount();
 	
+	List<CampaignFormDataIndexDto> getByCompletionAnalysisNew(CampaignFormDataCriteria criteria, List<SortProperty> sortProperties, FormAccess frms);
 	
 }

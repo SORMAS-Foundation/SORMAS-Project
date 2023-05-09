@@ -4,11 +4,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    
 	<modelVersion>4.0.0</modelVersion>
-    <groupId>de.symeda.sormas.ui</groupId>
+    <groupId>de.symeda.sormas</groupId>
     <artifactId>apmis-flow</artifactId>
     <name>${project.artifactId}</name>
    <version>1.0.30</version>
-    <packaging>war</packaging>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -123,6 +122,10 @@
             <version>5.1.0</version>
             <scope>test</scope>
         </dependency>
+        
+       
+ 
+        
     </dependencies>
 
     <build>

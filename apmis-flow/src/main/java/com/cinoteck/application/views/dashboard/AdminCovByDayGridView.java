@@ -28,38 +28,38 @@ public class AdminCovByDayGridView extends VerticalLayout{
 
             Div charts1 = new Div();
             charts1.setClassName("card col-sm-12 col-md-12 col-lg-12");
-            Image img = new Image("images/vacvstarg.png", "placeholder plant");
+            Image img = new Image("images/vactag2.png", "placeholder plant");
             charts1.setWidth("25%");
             charts1.add(img);
 
             Div charts2 = new Div();
             charts2.setClassName("card col-sm-12 col-md-4 col-lg-4");
-            Image img2 = new Image("images/totalvac.png", "placeholder plant");
+            Image img2 = new Image("images/columnbargraph.png", "placeholder plant");
             charts2.setWidth("25%");
             charts2.add(img2);
 
             Div charts3 = new Div();
             charts3.setClassName("card col-sm-12 col-md-4 col-lg-4");
-            Image img3 = new Image("images/totalvac.png", "placeholder plant");
+            Image img3 = new Image("images/xolumndonut2.png", "placeholder plant");
             charts3.setWidth("25%");
             charts3.add(img3);
 
             Div charts4 = new Div();
             charts4.setClassName("card col-sm-12 col-md-4 col-lg-4");
-            Image img4 = new Image("images/totalvac2.png", "placeholder plant");
+            Image img4 = new Image("images/columnbargraph.png", "placeholder plant");
             charts4.setWidth("25%");
             charts4.add(img4);
 
             Div charts5 = new Div();
             charts5.setClassName("card col-sm-12 col-md-12 col-lg-6");
-            Image img5 = new Image("images/totalvac2.png", "placeholder plant");
+            Image img5 = new Image("images/xolumndonut2.png", "placeholder plant");
             img5.setWidth("100%");
             charts5.setWidth("50%");
             charts5.add(img5);
 
             Div charts6 = new Div();
             charts6.setClassName("card col-sm-12 col-md-12 col-lg-6");
-            Image img6 = new Image("images/targetedchildren.png", "placeholder plant");
+            Image img6 = new Image("images/xolumndonut2.png", "placeholder plant");
             img6.setWidth("100%");
             charts6.setWidth("50%");
             charts6.add(img6);

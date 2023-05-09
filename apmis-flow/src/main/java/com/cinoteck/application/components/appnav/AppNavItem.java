@@ -2,9 +2,11 @@ package com.cinoteck.application.components.appnav;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.internal.StateTree;
 import com.vaadin.flow.router.RouteConfiguration;
@@ -19,6 +21,7 @@ import java.util.Optional;
  */
 @JsModule("@vaadin-component-factory/vcf-nav")
 @Tag("vcf-nav-item")
+@CssImport(value = "./themes/my-theme/components/vcf-nav-item.css", themeFor = "vcf-nav-item")
 public class AppNavItem extends Component {
 
     /**
@@ -102,11 +105,11 @@ public class AppNavItem extends Component {
      * @param iconClass
      *            the CSS class to use for showing the icon
      */
-    public AppNavItem(String label, String path, String iconClass) {
+    public AppNavItem(String label, String path, VaadinIcon iconClass) {
         setPath(path);
         setLabel(label);
 
-        setIconClass(iconClass);
+        setIcon(iconClass.create());
     }
 
     /**
@@ -120,11 +123,11 @@ public class AppNavItem extends Component {
      * @param iconClass
      *            the CSS class to use for showing the icon
      */
-    public AppNavItem(String label, Class<? extends Component> view, String iconClass, String style) {
+    public AppNavItem(String label, Class<? extends Component> view, VaadinIcon iconClass, String style) {
         setPath(view);
         setLabel(label);
 
-        setIconClass(iconClass);
+        setIcon(iconClass.create());
         setId(style);
     }
 
@@ -143,6 +146,7 @@ public class AppNavItem extends Component {
         for (AppNavItem appNavItem : appNavItems) {
             appNavItem.getElement().setAttribute("slot", "children");
             getElement().appendChild(appNavItem.getElement());
+            
         }
 
         return this;

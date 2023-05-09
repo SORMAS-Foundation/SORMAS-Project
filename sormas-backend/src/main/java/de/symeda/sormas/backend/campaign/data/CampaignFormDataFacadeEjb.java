@@ -51,6 +51,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.vladmihalcea.hibernate.type.util.SQLExtractor;
+
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignJurisdictionLevel;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
@@ -389,8 +390,9 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		} else {
 			cq.orderBy(cb.desc(root.get(CampaignFormData.CHANGE_DATE)));
 		}
-		
-	System.out.println("DEBUGGER r567ujhgty8ijyu8dfrf  " + SQLExtractor.from(em.createQuery(cq)));
+
+System.out.println("DEBUGGER r567ujhgty8ijyu8dfrf this query " + SQLExtractor.from(em.createQuery(cq)));
+
 		return QueryHelper.getResultList(em, cq, first, max);
 	}
 	
@@ -673,6 +675,15 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			return Collections.emptyList();
 		}
 		return campaignFormDataService.getAllActive().stream().map(c -> convertToDto(c)).collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<CampaignFormDataDto> getAllActiveRef() {
+		if (userService.getCurrentUser() == null) {
+			return Collections.emptyList();
+		}
+//		return campaignFormDataService.getAllActiveRef().stream().map(c -> convertToDto(c)).collect(Collectors.toList());
+		return null;
 	}
 	
 	public List<CampaignDiagramDataDto> getDiagramDataByFieldGroup(CampaignDiagramSeries diagramSeriesTotal, CampaignDiagramSeries diagramSeries,
@@ -1655,6 +1666,81 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			return "nul";
 		}
 		
+	}
+	
+	@Override
+	public List<CampaignFormDataIndexDto> getByCompletionAnalysisNew(CampaignFormDataCriteria criteria, 
+			List<SortProperty> sortProperties, FormAccess frms) {
+	System.out.println("Query running puuurrrrr!!!!!!!");
+		String joinBuilder = "\n"
+				+ "select area3_x.\"name\" as area_, region4_x.\"name\" as region_, district5_x.\"name\" as district_, campaignfo0_x.clusternumber as clusternumber_, campaignfo0_x.externalid as ccode, COALESCE((\n"
+				+ "select count(campaignfo0_.formvalues)\n"
+				+ "from campaignFormData campaignfo0_\n"
+				+ "left outer join campaigns campaign1_ on campaignfo0_.campaign_id=campaign1_.id\n"
+				+ "left outer join areas area3_ on campaignfo0_.area_id=area3_.id\n"
+				+ "left outer join CampaignFormMeta campaignfo2_ on campaignfo0_.campaignFormMeta_id=campaignfo2_.id\n"
+				+ "where area3_.uuid=area3_x.uuid and campaignfo2_.formCategory= 'ICM' and (campaignfo2_.formName like '%Revisit%')\n"
+				+ "and campaignfo0_.community_id = campaignfo0_x.id\n"
+				+ "group by campaignfo0_.community_id\n"
+				+ "), 0) as hh, COALESCE((\n"
+				+ "select count(campaignfo0_.formvalues)\n"
+				+ "from campaignFormData campaignfo0_\n"
+				+ "left outer join campaigns campaign1_ on campaignfo0_.campaign_id=campaign1_.id\n"
+				+ "left outer join areas area3_ on campaignfo0_.area_id=area3_.id \n"
+				+ "left outer join CampaignFormMeta campaignfo2_ on campaignfo0_.campaignFormMeta_id=campaignfo2_.id\n"
+				+ "where area3_.uuid=area3_x.uuid and campaignfo2_.formCategory= 'ICM' and (campaignfo2_.formName like '%Revisit%')\n"
+				+ "and campaignfo0_.community_id = campaignfo0_x.id \n"
+				+ "group by campaignfo0_.community_id\n"
+				+ "), 0) as sup, COALESCE((\n"
+				+ "select count(campaignfo0_.formvalues)\n"
+				+ "from campaignFormData campaignfo0_\n"
+				+ "left outer join campaigns campaign1_ on campaignfo0_.campaign_id=campaign1_.id\n"
+				+ "left outer join areas area3_ on campaignfo0_.area_id=area3_.id \n"
+				+ "left outer join CampaignFormMeta campaignfo2_ on campaignfo0_.campaignFormMeta_id=campaignfo2_.id\n"
+				+ "where area3_.uuid=area3_x.uuid and campaignfo2_.formCategory= 'ICM' and (campaignfo2_.formName like '%Revisit%')\n"
+				+ "and campaignfo0_.community_id = campaignfo0_x.id \n"
+				+ "group by campaignfo0_.community_id\n"
+				+ "), 0) as team, COALESCE((\n"
+				+ "select count(campaignfo0_.formvalues)\n"
+				+ "from campaignFormData campaignfo0_\n"
+				+ "left outer join campaigns campaign1_ on campaignfo0_.campaign_id=campaign1_.id\n"
+				+ "left outer join areas area3_ on campaignfo0_.area_id=area3_.id \n"
+				+ "left outer join CampaignFormMeta campaignfo2_ on campaignfo0_.campaignFormMeta_id=campaignfo2_.id\n"
+				+ "where area3_.uuid=area3_x.uuid and campaignfo2_.formCategory= 'ICM' and (campaignfo2_.formName like '%Revisit%')\n"
+				+ "and campaignfo0_.community_id = campaignfo0_x.id\n"
+				+ "group by campaignfo0_.community_id\n"
+				+ "), 0) as rev from community campaignfo0_x\n"
+				+ "left outer join District district5_x on campaignfo0_x.district_id=district5_x.id\n"
+				+ "left outer join Region region4_x on district5_x.region_id=region4_x.id\n"
+				+ "left outer join areas area3_x on region4_x.area_id=area3_x.id\n"
+				+ "where area3_x.uuid='W5R34K-APYPCA-4GZXDO-IVJWKGIM' and campaignfo0_x.archived = false\n"
+				+ "limit 10";
+		
+		Query seriesDataQuery = em.createNativeQuery(joinBuilder);
+		
+		List<CampaignFormDataIndexDto> resultData = new ArrayList<>();
+		
+		
+		@SuppressWarnings("unchecked")
+		List<Object[]> resultList = seriesDataQuery.getResultList(); 
+		
+		System.out.println("starting....");
+		
+		resultData.addAll(resultList.stream()
+				.map((result) -> new CampaignFormDataIndexDto((String) result[0].toString(), (String) result[1].toString(),
+						(String) result[2].toString(),"", (Integer) result[3], 
+						((BigInteger) result[4]).longValue(),  
+						((BigInteger) result[5]).longValue(), 
+						((BigInteger) result[6]).longValue(), 
+						((BigInteger) result[7]).longValue(),
+						((BigInteger) result[8]).longValue()
+				)).collect(Collectors.toList()));
+		
+		System.out.println("ending...." +resultData.size());
+	
+	
+	//System.out.println("resultData - "+ resultData.toString()); //SQLExtractor.from(seriesDataQuery));
+	return resultData;
 	}
 
 	@Override
