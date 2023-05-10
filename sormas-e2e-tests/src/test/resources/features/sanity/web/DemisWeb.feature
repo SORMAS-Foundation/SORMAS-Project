@@ -360,7 +360,7 @@ Scenario: Create and send laboratory request via Demis
   @tmsLink=SORQA-959 @env_d2s @LoginKeycloak
   Scenario: Test [Lab Message] Demis - Process a Lab message that has no mapped ID for Facility in Sormas
     Given API : Login to DEMIS server
-    When I create and send Laboratory Notification with other facility name "Other Laboratory" and facility ID "928170"
+    When I create and send Laboratory Notification with other facility name "Other Laboratory" and facility ID 928170
     And I log in as a Admin User
     Then I click on the Messages button from navbar
     And I click on fetch messages button
