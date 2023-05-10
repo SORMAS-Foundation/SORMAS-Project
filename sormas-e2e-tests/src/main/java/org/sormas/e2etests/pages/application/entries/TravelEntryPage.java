@@ -51,7 +51,7 @@ public class TravelEntryPage {
     return By.xpath(String.format("(//td//input[@type=\"checkbox\"])[%s]", idx));
   }
 
-  public static final By CLOSE_DATA_IMPORT_POPUP_BUTTON = By.id("actionCancel");
+  public static final By CLOSE_DATA_IMPORT_POPUP_BUTTON = By.id("actionClose");
   public static final By CLOSE_IMPORT_TRAVEL_ENTRY_BUTTON =
       By.xpath("//div[@class='v-window-closebox']");
   public static final By FIRST_NAME_IMPORTED_PERSON =

@@ -18,17 +18,16 @@
 
 package org.sormas.e2etests.entities.services.api;
 
+import static org.sormas.e2etests.entities.pojo.helpers.ShortUUIDGenerator.generateShortUUID;
+
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.util.Date;
-
 import lombok.SneakyThrows;
 import org.sormas.e2etests.entities.pojo.api.AssigneeUser;
 import org.sormas.e2etests.entities.pojo.api.Task;
 import org.sormas.e2etests.helpers.RestAssuredClient;
 import org.sormas.e2etests.helpers.environmentdata.manager.EnvironmentManager;
-
-import static org.sormas.e2etests.entities.pojo.helpers.ShortUUIDGenerator.generateShortUUID;
 
 public class TaskApiService {
 
