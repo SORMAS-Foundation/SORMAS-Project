@@ -114,16 +114,6 @@
                                     ]
                                 }
                             ],
-							"telecom": [
-                                {
-                                    "system": "phone",
-                                    "value": "+4915700000000"
-                                },
-                                {
-                                    "system": "email",
-                                    "value": "emailadresse@mail.com"
-                                }
-                            ],
                             "gender": "male",
                             "birthDate": "1950-02-11",
                             "address": [
@@ -218,7 +208,7 @@
                                         "Teststraße 123a Dritter Hinterhof"
                                     ],
                                     "city": "Teststadt",
-                                    "postalCode": "12347",
+                                    "postalCode": "20095",
                                     "country": "20422"
                                 }
                             ],
@@ -263,10 +253,10 @@
                             "identifier": [
                                 {
                                     "system": "https://fhir.kbv.de/NamingSystem/KBV_NS_Base_BSNR",
-                                    "value": "<facility_id_to_change>"
+                                    "value": "123456780"
                                 }
                             ],
-                            "name": "<facility_name_to_change>",
+                            "name": "Einsendereinrichtungsname",
                             "telecom": [
                                 {
                                     "extension": [
@@ -287,7 +277,7 @@
                                     ],
                                     "city": "Hamburg",
                                     "state": "DE-BE",
-                                    "postalCode": "<postal_code_to_change>",
+                                    "postalCode": "20095",
                                     "country": "20422"
                                 }
                             ]

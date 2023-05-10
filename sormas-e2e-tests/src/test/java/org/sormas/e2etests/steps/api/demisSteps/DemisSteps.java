@@ -742,8 +742,8 @@ public class DemisSteps implements En {
         });
 
     When(
-        "I create and send Laboratory Notification with other facility name {string} and facility ID {int}",
-        (String otherFacilityName, Integer otherFacilityId) -> {
+        "I create and send Laboratory Notification with other facility name {string} and facility ID {string}",
+        (String otherFacilityName, String otherFacilityId) -> {
           patientFirstName = faker.name().firstName();
           patientLastName = faker.name().lastName();
           String json =
