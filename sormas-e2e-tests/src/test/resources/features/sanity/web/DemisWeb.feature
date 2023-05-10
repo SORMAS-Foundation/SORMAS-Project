@@ -377,3 +377,14 @@ Scenario: Create and send laboratory request via Demis
     And I click on save sample button
     And I click on save sample button
     And I click on the Cases button from navbar
+    And I search the case by last created person via Demis message
+    Then I click on the first Case ID from Case Directory
+    And I check if sample card is correctly displayed in case edit tab for DE version
+    And I click on edit Sample
+    Then I check that laboratory is set to "Andere Einrichtung" on Edit Sample page
+    And I check that laboratory details is set to "Other Laboratory" on edit Sample page
+    When I navigate to case tab
+    Then I check if report side component in Edit Case has today date
+    When I click on edit Report on Edit Case page
+    Then I check that Reporter Facility in Edit report form is set to "Andere Einrichtung"
+    And I check that Reporter Facility Details in Edit report form is set to "Other Laboratory"
