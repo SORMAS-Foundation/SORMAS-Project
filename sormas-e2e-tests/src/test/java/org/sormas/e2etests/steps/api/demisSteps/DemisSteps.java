@@ -742,24 +742,26 @@ public class DemisSteps implements En {
         });
 
     When(
-        "^I create and send Laboratory Notification with other facility name \"([^\"]*)\" and facility ID \"([^\"]*)\"$",
-        (String otherFacilityName, String otherFacilityId) -> {
+        "I create and send Laboratory Notification with other facility name {int} and facility ID {string}",
+        (String otherFacilityName, Integer otherFacilityId) -> {
           patientFirstName = faker.name().firstName();
           patientLastName = faker.name().lastName();
-          String json = demisApiService.prepareLabNotificationFileWithOtherFacility(patientFirstName, patientLastName, otherFacilityId, otherFacilityName);
+          String json =
+              demisApiService.prepareLabNotificationFileWithOtherFacility(
+                  patientFirstName, patientLastName, otherFacilityId, otherFacilityName);
 
           Assert.assertTrue(
-                  demisApiService.sendLabRequest(json, loginToken),
-                  "Failed to send laboratory request");
+              demisApiService.sendLabRequest(json, loginToken),
+              "Failed to send laboratory request");
         });
 
     Then(
         "^I verify that labor is prefilled with \"([^\"]*)\" in New sample form while processing a DEMIS LabMessage$",
         (String laboratoryName) -> {
           softly.assertEquals(
-                  webDriverHelpers.getValueFromWebElement(LABORATORY_INPUT),
-                  laboratoryName,
-                  "Laboratory field has incorrect value prefilled");
+              webDriverHelpers.getValueFromWebElement(LABORATORY_INPUT),
+              laboratoryName,
+              "Laboratory field has incorrect value prefilled");
           softly.assertAll();
         });
 
@@ -767,9 +769,9 @@ public class DemisSteps implements En {
         "^I verify that labor description is prefilled with \"([^\"]*)\" in New sample form while processing a DEMIS LabMessage$",
         (String laboratoryDetails) -> {
           softly.assertEquals(
-                  webDriverHelpers.getValueFromWebElement(LABORATORY_DETAILS_INPUT),
-                  laboratoryDetails,
-                  "Laboratory details field has incorrect value prefilled");
+              webDriverHelpers.getValueFromWebElement(LABORATORY_DETAILS_INPUT),
+              laboratoryDetails,
+              "Laboratory details field has incorrect value prefilled");
           softly.assertAll();
         });
   }
