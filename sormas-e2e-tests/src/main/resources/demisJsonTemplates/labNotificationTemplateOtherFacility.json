@@ -114,6 +114,16 @@
                                     ]
                                 }
                             ],
+							"telecom": [
+                                {
+                                    "system": "phone",
+                                    "value": "+4915700000000"
+                                },
+                                {
+                                    "system": "email",
+                                    "value": "emailadresse@mail.com"
+                                }
+                            ],
                             "gender": "male",
                             "birthDate": "1950-02-11",
                             "address": [
@@ -253,10 +263,10 @@
                             "identifier": [
                                 {
                                     "system": "https://fhir.kbv.de/NamingSystem/KBV_NS_Base_BSNR",
-                                    "value": "123456780"
+                                    "value": "<facility_id_to_change>"
                                 }
                             ],
-                            "name": "Einsendereinrichtungsname",
+                            "name": "<facility_name_to_change>",
                             "telecom": [
                                 {
                                     "extension": [
