@@ -366,8 +366,12 @@ Scenario: Create and send laboratory request via Demis
     And I click on fetch messages button
     Then I filter by last created person via API in Messages Directory
     And I click on Verarbeiten button in Messages Directory
-    Then I create a new person and a new case from received message
-    And I check that new sample form with pathogen detection reporting process is displayed
+    And I pick a new person in Pick or create person popup during case creation for DE
+    And I choose create new case in Pick or create entry form for DE
+    And I check that create new case form with pathogen detection reporting process is displayed for DE
+    And I fill only mandatory fields to convert laboratory message into a case for DE
+    And I click on save button in the case popup
+    Then I check that new sample form with pathogen detection reporting process is displayed
     Then I verify that labor is prefilled with "Andere Einrichtung" in New sample form while processing a DEMIS LabMessage
     Then I verify that labor description is prefilled with "Other Laboratory" in New sample form while processing a DEMIS LabMessage
     And I click on save sample button
