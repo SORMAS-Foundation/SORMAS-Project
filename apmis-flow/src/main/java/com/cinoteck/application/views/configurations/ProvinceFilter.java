@@ -16,6 +16,7 @@ import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 public class ProvinceFilter extends VerticalLayout{
 	
 public ProvinceFilter() {
+	setMargin(true);
 	HorizontalLayout layout = new HorizontalLayout();
 	layout.setPadding(false);
 	layout.setVisible(false);

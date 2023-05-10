@@ -1634,7 +1634,7 @@ System.out.println("DEBUGGER r567ujhgty8ijyu8dfrf this query " + SQLExtractor.fr
 				+ "left outer join Region region4_x on district5_x.region_id=region4_x.id\n"
 				+ "left outer join areas area3_x on region4_x.area_id=area3_x.id\n"
 				+ "where area3_x.uuid='W5R34K-APYPCA-4GZXDO-IVJWKGIM' and campaignfo0_x.archived = false\n"
-				+ "limit 10";
+				+ "limit 30";
 		
 		Query seriesDataQuery = em.createNativeQuery(joinBuilder);
 		

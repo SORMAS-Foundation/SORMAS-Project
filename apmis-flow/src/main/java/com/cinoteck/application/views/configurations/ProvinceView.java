@@ -38,6 +38,7 @@ public class ProvinceView extends VerticalLayout implements RouterLayout{
 	private ProvinceFilter provinceFilter = new ProvinceFilter();
 
 	public ProvinceView() {
+		setHeightFull();
 		
 		Grid<RegionIndexDto> grid = new Grid<>(RegionIndexDto.class, false);
 
@@ -49,8 +50,11 @@ public class ProvinceView extends VerticalLayout implements RouterLayout{
 		grid.addColumn(RegionIndexDto::getAreaexternalId).setHeader("Rcode").setResizable(true).setSortable(true);
 		grid.addColumn(RegionIndexDto::getName).setHeader("Province").setSortable(true).setResizable(true);
 		grid.addColumn(RegionIndexDto::getExternalId).setHeader("PCode").setSortable(true).setResizable(true);
+		
+		
 		grid.setVisible(true);
 		grid.setAllRowsVisible(true);
+		grid.setHeight("76vh");
 		List<RegionIndexDto> regions = FacadeProvider.getRegionFacade().getAllRegions();
 		GridListDataView<RegionIndexDto> dataView = grid.setItems(regions);
 

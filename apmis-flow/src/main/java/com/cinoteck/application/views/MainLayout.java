@@ -89,16 +89,17 @@ public class MainLayout extends AppLayout {
 		// For documentation, visit https://github.com/vaadin/vcf-nav#readme  
 		AppNav nav = new AppNav();
 		
-
+		
 		nav.addItem(new AppNavItem("Dashboard", DashboardView.class,  VaadinIcon.GRID_BIG_O, "navitem"));
 		nav.addItem(new AppNavItem("Campaign Data", CampaignDataView.class,  VaadinIcon.CLIPBOARD , "navitem"));
 		nav.addItem(new AppNavItem("All Campaigns", CampaignsView.class, VaadinIcon.CLIPBOARD_TEXT, "navitem"));
 		nav.addItem(new AppNavItem("Configuration", ConfigurationsView.class, VaadinIcon.COG_O, "navitem"));
 		nav.addItem(new AppNavItem("Users", UserView.class, VaadinIcon.USERS, "navitem"));
 		nav.addItem(new AppNavItem("Reports", ReportView.class,VaadinIcon.CHART_LINE, "navitem"));
-		nav.addItem(new AppNavItem("User Profile", MyAccountView.class, VaadinIcon.USER_CHECK, "navitem"));
-		nav.addItem(new AppNavItem("About", AboutView.class, VaadinIcon.INFO_CIRCLE_O, "navitem"));
+		nav.addItem(new AppNavItem("User Profile", MyAccountView.class, VaadinIcon.USER, "navitem"));
 		nav.addItem(new AppNavItem("Support", SupportView.class, VaadinIcon.INFO_CIRCLE_O, "navitem"));
+		nav.addItem(new AppNavItem("About", AboutView.class, VaadinIcon.CHAT, "navitem"));
+		
 //		nav.addItem(new AppNavItem("Test", TestPageView.class, "la la-info-circle", "navitem"));
 		nav.addItem(new AppNavItem("Sign Out", LogoutView.class, VaadinIcon.SIGN_OUT_ALT, "navitem"));
 

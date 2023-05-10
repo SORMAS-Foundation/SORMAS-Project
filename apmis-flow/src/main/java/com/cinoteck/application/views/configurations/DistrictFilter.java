@@ -26,6 +26,7 @@ public class DistrictFilter extends VerticalLayout {
 	List<RegionReferenceDto> provinces;
 
 	public DistrictFilter() {
+		setMargin(true);
 		HorizontalLayout layout = new HorizontalLayout();
 		layout.setPadding(false);
 		layout.setVisible(false);

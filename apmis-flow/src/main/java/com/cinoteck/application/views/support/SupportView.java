@@ -33,99 +33,89 @@ import com.vaadin.flow.server.VaadinSession;
 public class SupportView extends VerticalLayout {
 
 	public SupportView() {
-		Div aboutView = new Div();
-		aboutView.getStyle().set("height", "100%");
-		aboutView.getStyle().set("padding-left", "90px");
-		aboutView.getStyle().set("padding-right", "90px");
+		 Div aboutView = new Div();
+	       
+	        aboutView.setId("aboutView");
+	        aboutView.getStyle().set("height", "100%");
+	        aboutView.getStyle().set("padding-left", "90px");
+	        aboutView.getStyle().set("padding-right", "90px");
 
-		Div apmisImageContainer = new Div();
-		apmisImageContainer.getStyle().set("height", "140px");
-		apmisImageContainer.getStyle().set("display", "flex");
-		apmisImageContainer.getStyle().set("justify-content", "center");
-		apmisImageContainer.getStyle().set("margin-bottom", "30px");
+	        Div apmisImageContainer = new Div();
+	        aboutView.setId("apmisImageContainer");
+	        apmisImageContainer.getStyle().set("height", "140px");
+	        apmisImageContainer.getStyle().set("display", "flex");
+	        apmisImageContainer.getStyle().set("justify-content", "center");
+	       
+	        Image img = new Image("images/apmislogo.png", "APMIS-LOGO");
+	        img.getStyle().set("max-height", "-webkit-fill-available");
 
-		Image img = new Image("images/apmislogo.png", "APMIS-LOGO");
-		img.getStyle().set("max-height", "-webkit-fill-available");
+	        apmisImageContainer.add(img);
 
-		apmisImageContainer.add(img);
+	        Div aboutText = new Div();
+//			aboutText.getStyle().set("height", "121px");
+	        Paragraph text = new Paragraph("The Afghanistan Polio Management Information System (APMIS) is an online data system that simplifies and improves the use and management of polio immunization-related data. APMIS facilitates field data entry, immunization data storage, data visualization, and real-time monitoring of polio immunization activities in Afghanistan.  Using this system will assist in evaluating immunization campaign activities and identifying program challenges.");
+	        text.getStyle().set("color", "green");
+	        text.getStyle().set("font-size", "20px");
+	        text.getStyle().set("text-align", "justify");
+	        text.getStyle().set("padding-top", "30px");
 
-		Div aboutText = new Div();
-		
-		Paragraph text = new Paragraph(
-				"The Afghanistan Polio Management Information System (APMIS) is an online data system that simplifies and improves the use and management of polio immunization-related data. APMIS facilitates field data entry, immunization data storage, data visualization, and real-time monitoring of polio immunization activities in Afghanistan.  Using this system will assist in evaluating immunization campaign activities and identifying program challenges.");
-		text.getStyle().set("color", "green");
-		text.getStyle().set("font-size", "20px");
-		text.getStyle().set("margin-bottom", "30px");
-		aboutText.add(text);
+	        aboutText.add(text);
 
-//		HorizontalLayout guides = new HorizontalLayout();
-//		Anchor techguide = new Anchor("https://staging.afghanistan-apmis.com/sormas-ui/VAADIN/themes/sormas/img/APMIS_Technical_Manual.pdf", "Technical Guide");
-//		techguide.getStyle().set("text-decoration", "underline !important");
-//		techguide.getStyle().set("color", "green !important");
-//		Anchor userguide = new Anchor("https://staging.afghanistan-apmis.com/sormas-ui/VAADIN/themes/sormas/img/APMIS_User_Guide.pdf", "User Guide");
-//		userguide.getStyle().set("color", "green !important");
-//		userguide.getStyle().set("text-decoration", "underline !important");
-//
-//		guides.setJustifyContentMode(JustifyContentMode.CENTER);
-//		// tabs.getStyle().set("background", "#434343");
-//
-//		guides.add(userguide, techguide);
 
-		aboutView.add(apmisImageContainer, aboutText);
-		add(aboutView);
-		configureActionButtonVisibility();
+			Div feedbackFormFields = new Div();
+	      //  Binder<Feedback> binder = new Binder<>(Feedback.class);
 
-//		add(downloadButton);
-		
-		
+	        TextField firstName = new TextField("First name");
+	        firstName.getStyle().set("color", "green");
+	       
+	     //   binder.forField(firstName).bind(Feedback::getFirstName, Feedback::setFirstName);
 
-	}
-	public void configureActionButtonVisibility() {
-		Button displayActionButtons =  new Button("Show Action Buttons");
-		displayActionButtons.setIcon(new Icon(VaadinIcon.SLIDERS));
-		
-		
-		Button getUserGuide =  new Button("User Guide");
-		getUserGuide.setIcon(new Icon(VaadinIcon.NURSE));
-		getUserGuide.setVisible(false);
-		
-		Button getTechnicalGuide =  new Button("Technical Guide");
-		getTechnicalGuide.setIcon(new Icon(VaadinIcon.DIPLOMA_SCROLL));
-		getTechnicalGuide.setVisible(false);
-		
-		
-		Button getJsonGlossary =  new Button("Export Forms & Diagrams Glossary");
-		getJsonGlossary.setIcon(new Icon(VaadinIcon.TABLE));
-		getJsonGlossary.setVisible(false);
-		
-		displayActionButtons.addClickListener(e->{
-			if(getUserGuide.isVisible() == false) {
-				getUserGuide.setVisible(true);
-				getTechnicalGuide.setVisible(true);
-				getJsonGlossary.setVisible(true);
-				displayActionButtons.setText("Hide Action Buttons");
-			}else {
-			getUserGuide.setVisible(false);
-			getTechnicalGuide.setVisible(false);
-			getJsonGlossary.setVisible(false);
-			displayActionButtons.setText("Show Action Buttons");
-			}
-		});
-		
-		getUserGuide.addClickListener(e->{
-			  UI.getCurrent().getPage().open("https://staging.afghanistan-apmis.com/sormas-ui/VAADIN/themes/sormas/img/APMIS_User_Guide.pdf");
-		});
-		
-		getTechnicalGuide.addClickListener(e->{
-			  UI.getCurrent().getPage().open("https://staging.afghanistan-apmis.com/sormas-ui/VAADIN/themes/sormas/img/APMIS_Technical_Manual.pdf");
-		});
-		
-		HorizontalLayout buttonsLayout  = new HorizontalLayout();
-		buttonsLayout.getStyle().set("padding-left", "90px");
-		buttonsLayout.add(displayActionButtons, getUserGuide, getTechnicalGuide, getJsonGlossary);
-		add(buttonsLayout);
-		
-		
+	        TextField lastName = new TextField("Last name");
+	        lastName.getStyle().set("color", "green");
+	       
+	     //   binder.forField(lastName).bind(Feedback::getLastName, Feedback::setLastName);
+
+	        TextField email = new TextField("Email");
+	        email.getStyle().set("color", "green");
+	     //   binder.forField(email).bind(Feedback::getEmailAddress, Feedback::setEmailAddress);
+
+	        TextArea message = new TextArea();
+	        message.getStyle().set("color", "green");
+	        message.getStyle().set("height", "370px");
+	     //   binder.forField(message).bind(Feedback::getFeedback, Feedback::setFeedback);
+
+	        Button sendFeedback = new Button("Send", new Icon("vaadin", "location-arrow-circle-o"));
+	        sendFeedback.getStyle().set("color", "white");
+	        sendFeedback.getStyle().set("background", "#0D6938");
+	        sendFeedback.getStyle().set("width", "10%");
+	        sendFeedback.getStyle().set("border-radius", "8px");
+
+	        sendFeedback.addClickListener(click -> System.out.println("kkcvakvckavsckvackvakscvkasvckasvckasvckhavsckhavsckhv"));
+	     //   sendFeedback.setSuffixComponent(new Icon("vaadin", "building"));
+
+
+	        message.setWidthFull();
+	        message.setLabel("Feedback");
+
+	        FormLayout feedbackForm = new FormLayout();
+	        feedbackForm.add(firstName, lastName, email, message);
+	        feedbackForm.setResponsiveSteps(
+	                // Use one column by default
+	                new ResponsiveStep("0", 1),
+	                // Use two columns, if layout's width exceeds 500px
+	                new ResponsiveStep("500px", 2));
+	        // Stretch the username field over 2 columns
+	        feedbackForm.setColspan(email, 2);
+	        feedbackForm.setColspan(message, 2);
+	        feedbackForm.setColspan(sendFeedback, 0);
+
+			feedbackFormFields.add(feedbackForm);
+
+	        Paragraph versionNum = new Paragraph("Version Number : APMIS 5.0.0");
+	        versionNum.getStyle().set("font-size", "12px");
+
+			aboutView.add(aboutText, feedbackForm, sendFeedback, versionNum);
+	        add(aboutView);
 	}
 
 }

@@ -8,7 +8,7 @@ vaadin-app-layout[primary-section="drawer"]::part(navbar)::before {
 }
 
 vaadin-app-layout[primary-section="drawer"]::part(navbar) {
-  box-shadow: 0 1px 0 0 var(--lumo-contrast-10pct);
+  box-shadow: 0 3px 0 0 var(--lumo-contrast-10pct);
 }
 
 vaadin-app-layout[primary-section="drawer"]:not([overlay])::part(drawer) {
@@ -32,7 +32,7 @@ vaadin-drawer-toggle[slot="navbar"] {
 }
 
 vaadin-scroller[slot="drawer"] {
- background: #0D6938;
+ background: #0D6938 !important;
   flex: 1;
   
 }
@@ -156,6 +156,7 @@ width: 100%;
 } 
    vcf-nav {
     color: white;
+    padding-top: 35px;
 }
  vcf-nav:hover {
     color: white;
@@ -175,6 +176,11 @@ width: 100%;
     
     input{
     font-weight: 300;
+    }
+    
+    
+    header{
+    background: white !important;
     }
     
     #pageHeader{
@@ -219,9 +225,11 @@ width: 100%;
    }
 
    .apmisText{
-   font-size: xx-large;
-   text-align: center;
-   color: white;
+   font-size: 36px;
+    text-align: center;
+    color: white;
+    line-height: 34px;
+    font-weight: 600;
    }
 
    .loginfORM{
@@ -319,7 +327,36 @@ vaadin-input-container{
 #signInText{
 	align-self: center;
     color: white;
-    font-size: 2em;
-    margin-bottom: 1em;
+    font-size: 30px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.loginUsername {
+margin-bottom: 0px !important;
+width: 637px !important;
+}
+
+
+.loginButton {
+width: 630px !important;
+height :48px !important;
+}
+
+
+.loginUsername label{
+	color: white !important;
+    font-size: 16px;
+    font-weight: 500;
+    font-family: Lato !important;
+}
+
+.loginUsername input{
+	height: 48px;
+	width: 586px;
+}
+
+#navbarTop{
+	border-bottom: 1px solid #c9c9c9 !important;
 }
 
