@@ -22,6 +22,7 @@ import static org.sormas.e2etests.steps.BaseSteps.locale;
 import java.net.SocketTimeoutException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.UUID;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -166,13 +167,15 @@ public class DemisApiService {
       String otherFacilityId,
       String otherFacilityName) {
     DemisData demisData = runningConfiguration.getDemisData(locale);
-    String file = "src/main/resources/demisJsonTemplates/labNotificationTemplateOtherFacility.json";
+//    String file = "src/main/resources/demisJsonTemplates/labNotificationTemplateOtherFacility.json";
+    String file = "src/main/resources/demisJsonTemplates/labNotificationTemplateOtherFacilityUniqueUUID";
     String json = readFileAsString(file);
     json = json.replace("\"<postal_code_to_change>\"", "\"" + demisData.getPostalCode() + "\"");
     json = json.replace("\"<last_name_to_change>\"", "\"" + patientLastName + "\"");
     json = json.replace("\"<first_name_to_change>\"", "\"" + patientFirstName + "\"");
     json = json.replace("\"<facility_id_to_change>\"", "\"" + otherFacilityId + "\"");
     json = json.replace("\"<facility_name_to_change>\"", "\"" + otherFacilityName + "\"");
+    json = json.replace("<specimen_UUID_to_change>", UUID.randomUUID().toString());
     return json;
   }
 
