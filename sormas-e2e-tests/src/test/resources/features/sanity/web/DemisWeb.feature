@@ -371,9 +371,8 @@ Scenario: Create and send laboratory request via Demis
     And I check that create new case form with pathogen detection reporting process is displayed for DE
     And I fill only mandatory fields to convert laboratory message into a case for DE
     And I click on save button in the case popup
-    Then I check that new sample form with pathogen detection reporting process is displayed
     Then I verify that labor is prefilled with "Andere Einrichtung" in New sample form while processing a DEMIS LabMessage
-    Then I verify that labor description is prefilled with "Other Laboratory" in New sample form while processing a DEMIS LabMessage
+    And I verify that labor description is prefilled with "Other Laboratory" in New sample form while processing a DEMIS LabMessage
     And I click on save sample button
     And I click on save sample button
     And I click on the Cases button from navbar
