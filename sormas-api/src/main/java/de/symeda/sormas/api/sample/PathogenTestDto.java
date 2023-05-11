@@ -100,7 +100,6 @@ public class PathogenTestDto extends PseudonymizableDto {
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String labDetails;
-	@NotNull(message = Validations.requiredField)
 	@SensitiveData
 	private UserReferenceDto labUser;
 	@NotNull(message = Validations.requiredField)
