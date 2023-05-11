@@ -988,7 +988,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		}
 	}
 
-	//Todo: if this is working refactor this to get isEditAllowed as parameter
+	//TODO: if this is working refactor this to get isEditAllowed as parameter
 	public void restrictEditableChildComponentOnEditView(
 		UserRight editParentRight,
 		UserRight editChildRight,
@@ -1002,9 +1002,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 				addToActiveButtonsList(deleteUndeleteButton);
 				this.setNonEditable();
 			}
-			//else {
 			this.setNonEditable();
-			//}
 		}
 	}
 
@@ -1020,7 +1018,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		return UserProvider.getCurrent().hasUserRight(editRight) && (editPermissionType == null || editPermissionType == EditPermissionType.ALLOWED);
 	}
 
-	//Todo: check is editPermissionCheck is also necessary here
+	//TODO: check is editPermissionCheck is also necessary here
 	public boolean isEditChildAllowed(UserRight editParentRight, UserRight editChildRight) {
 		return UserProvider.getCurrent().hasUserRight(editParentRight) && UserProvider.getCurrent().hasUserRight(editChildRight);
 	}
