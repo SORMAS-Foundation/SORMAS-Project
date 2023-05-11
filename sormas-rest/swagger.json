@@ -11785,7 +11785,7 @@
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           }
         },
-        "required" : [ "caseClassification", "disease", "investigationStatus", "person", "reportDate", "responsibleDistrict", "responsibleRegion" ]
+        "required" : [ "disease", "person", "reportDate", "responsibleDistrict", "responsibleRegion" ]
       },
       "CaseFollowUpCriteria" : {
         "type" : "object",
@@ -13461,7 +13461,7 @@
             "enum" : [ "VACCINATED", "UNVACCINATED", "UNKNOWN" ]
           }
         },
-        "required" : [ "contactClassification", "disease", "epiData", "healthConditions", "multiDayContact", "person", "reportDateTime" ]
+        "required" : [ "disease", "person", "reportDateTime" ]
       },
       "ContactIndexDetailedDto" : {
         "type" : "object",
@@ -18038,7 +18038,7 @@
             "format" : "date-time"
           }
         },
-        "required" : [ "disease", "immunizationManagementStatus", "immunizationStatus", "meansOfImmunization", "person", "reportDate", "responsibleDistrict", "responsibleRegion" ]
+        "required" : [ "disease", "meansOfImmunization", "person", "reportDate", "responsibleDistrict", "responsibleRegion" ]
       },
       "ImmunizationIndexDto" : {
         "type" : "object",
@@ -19800,7 +19800,7 @@
             "type" : "boolean"
           }
         },
-        "required" : [ "lab", "labUser", "sample", "testResult", "testResultVerified", "testType", "testedDisease" ]
+        "required" : [ "lab", "sample", "testResult", "testResultVerified", "testType", "testedDisease" ]
       },
       "PeriodDto" : {
         "type" : "object",
