@@ -73,9 +73,8 @@ public class TherapyController {
 		boolean isEditOrDeleteAllowed = isEditAllowed || isDeleteAllowed;
 		final CommitDiscardWrapperComponent<PrescriptionForm> view =
 			new CommitDiscardWrapperComponent<>(form, isEditOrDeleteAllowed, form.getFieldGroup());
-		Window popupWindow = VaadinUiUtil.showModalPopupWindow(
-			view,
-			I18nProperties.getString(!isEditAllowed ? Strings.headingViewPrescription : Strings.headingEditPrescription));
+		Window popupWindow = VaadinUiUtil
+			.showModalPopupWindow(view, I18nProperties.getString(!isEditAllowed ? Strings.headingViewPrescription : Strings.headingEditPrescription));
 
 		if (isEditOrDeleteAllowed) {
 			view.addCommitListener(new CommitListener() {
@@ -116,7 +115,8 @@ public class TherapyController {
 					}
 				}, I18nProperties.getString(Strings.entityPrescription));
 			}
-			view.restrictEditableComponentsOnEditView(
+			view.restrictEditableChildComponentOnEditView(
+				UserRight.CASE_EDIT,
 				UserRight.PRESCRIPTION_EDIT,
 				UserRight.PRESCRIPTION_DELETE,
 				null,
@@ -213,9 +213,8 @@ public class TherapyController {
 		final CommitDiscardWrapperComponent<TreatmentForm> view =
 			new CommitDiscardWrapperComponent<>(form, isEditOrDeleteAllowed, form.getFieldGroup());
 
-		Window popupWindow = VaadinUiUtil.showModalPopupWindow(
-			view,
-			I18nProperties.getString(!isEditAllowed ? Strings.headingViewTreatment : Strings.headingEditTreatment));
+		Window popupWindow = VaadinUiUtil
+			.showModalPopupWindow(view, I18nProperties.getString(!isEditAllowed ? Strings.headingViewTreatment : Strings.headingEditTreatment));
 
 		if (isEditOrDeleteAllowed) {
 			view.addCommitListener(() -> {
@@ -238,7 +237,12 @@ public class TherapyController {
 				}, I18nProperties.getString(Strings.entityTreatment));
 			}
 
-			view.restrictEditableComponentsOnEditView(UserRight.TREATMENT_EDIT, UserRight.TREATMENT_DELETE, null, treatment.isInJurisdiction());
+			view.restrictEditableChildComponentOnEditView(
+				UserRight.CASE_EDIT,
+				UserRight.TREATMENT_EDIT,
+				UserRight.TREATMENT_DELETE,
+				null,
+				treatment.isInJurisdiction());
 		}
 		view.getButtonsPanel().setVisible(isEditOrDeleteAllowed);
 

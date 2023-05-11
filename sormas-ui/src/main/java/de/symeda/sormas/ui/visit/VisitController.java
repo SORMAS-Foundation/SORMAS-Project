@@ -70,6 +70,7 @@ public class VisitController {
 		Date startDate = null;
 		Date endDate = null;
 		boolean inJurisdiction = false;
+		boolean isContactRef = false;
 
 		if (contactRef != null) {
 			ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactRef.getUuid());
@@ -78,6 +79,7 @@ public class VisitController {
 			startDate = ContactLogic.getStartDate(contact);
 			endDate = ContactLogic.getEndDate(contact);
 			inJurisdiction = contact.isInJurisdiction();
+			isContactRef = true;
 		} else if (caseRef != null) {
 			CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
 			PersonDto visitPerson = FacadeProvider.getPersonFacade().getByUuid(visit.getPerson().getUuid());
@@ -97,6 +99,7 @@ public class VisitController {
 			doneConsumer,
 			canEdit,
 			canDelete,
+			isContactRef,
 			inJurisdiction,
 			VisitLogic.getAllowedStartDate(startDate),
 			VisitLogic.getAllowedEndDate(endDate));
@@ -108,6 +111,7 @@ public class VisitController {
 		Consumer<VisitReferenceDto> doneConsumer,
 		boolean canEdit,
 		boolean canDelete,
+		boolean isContactRef,
 		boolean inJurisdiction,
 		Date allowedStartDate,
 		Date allowedEndDate) {
@@ -117,8 +121,8 @@ public class VisitController {
 			new CommitDiscardWrapperComponent<>(editForm, isEditOrDeleteAllowed, editForm.getFieldGroup());
 		editView.setWidth(100, Unit.PERCENTAGE);
 
-		Window window = VaadinUiUtil
-			.showModalPopupWindow(editView, I18nProperties.getString(!canEdit ? Strings.headingViewVisit : Strings.headingEditVisit));
+		Window window =
+			VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(!canEdit ? Strings.headingViewVisit : Strings.headingEditVisit));
 		window.setWidth(editForm.getWidth() + 90, Unit.PIXELS);
 		window.setHeight(80, Unit.PERCENTAGE);
 
@@ -142,10 +146,19 @@ public class VisitController {
 				}, I18nProperties.getCaption(VisitDto.I18N_PREFIX));
 			}
 
-			editView.restrictEditableComponentsOnEditView(UserRight.VISIT_EDIT, UserRight.VISIT_DELETE, null, inJurisdiction);
+			editView.restrictEditableChildComponentOnEditView(
+				getParentEditRight(isContactRef),
+				UserRight.VISIT_EDIT,
+				UserRight.VISIT_DELETE,
+				null,
+				inJurisdiction);
 
 		}
 		editView.getButtonsPanel().setVisible(isEditOrDeleteAllowed);
+	}
+
+	private UserRight getParentEditRight(boolean isContactRef) {
+		return isContactRef ? UserRight.CONTACT_EDIT : UserRight.CASE_EDIT;
 	}
 
 	private void createVisit(VisitEditForm createForm, Consumer<VisitReferenceDto> doneConsumer, Date allowedStartDate, Date allowedEndDate) {

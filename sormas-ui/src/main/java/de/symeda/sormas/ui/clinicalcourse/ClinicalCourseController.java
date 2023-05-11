@@ -119,7 +119,8 @@ public class ClinicalCourseController {
 				}, I18nProperties.getString(Strings.entityClinicalVisit));
 			}
 
-			view.restrictEditableComponentsOnEditView(
+			view.restrictEditableChildComponentOnEditView(
+				UserRight.CASE_EDIT,
 				UserRight.CLINICAL_VISIT_EDIT,
 				UserRight.CLINICAL_VISIT_DELETE,
 				null,
