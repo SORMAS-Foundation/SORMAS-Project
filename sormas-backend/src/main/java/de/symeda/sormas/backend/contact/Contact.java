@@ -166,7 +166,7 @@ public class Contact extends CoreAdo implements SormasToSormasShareable, HasExte
 	public static final String TRACING_APP_DETAILS = "tracingAppDetails";
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
 	public static final String VISITS = "visits";
-	public static final String DUPLICATE_OF	= "duplicateOf";
+	public static final String DUPLICATE_OF = "duplicateOf";
 
 	private Date reportDateTime;
 	private User reportingUser;
@@ -282,6 +282,13 @@ public class Contact extends CoreAdo implements SormasToSormasShareable, HasExte
 	private VaccinationStatus vaccinationStatus;
 
 	private Long personId;
+
+	public static Contact build() {
+		Contact contact = new Contact();
+		contact.setContactClassification(ContactClassification.UNCONFIRMED);
+		contact.setContactStatus(ContactStatus.ACTIVE);
+		return contact;
+	}
 
 	@Column(name = "person_id", updatable = false, insertable = false)
 	public Long getPersonId() {

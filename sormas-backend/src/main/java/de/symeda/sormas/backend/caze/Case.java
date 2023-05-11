@@ -421,6 +421,17 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 
 	private Map<String, String> externalData;
 
+	public static Case build() {
+		Case caze = new Case();
+		caze.setSystemCaseClassification(CaseClassification.NOT_CLASSIFIED);
+		caze.setInvestigationStatus(InvestigationStatus.PENDING);
+		caze.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
+		caze.setOutcome(CaseOutcome.NO_OUTCOME);
+		caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
+		caze.setFollowUpStatus(FollowUpStatus.NO_FOLLOW_UP);
+		return caze;
+	}
+
 	@Column(name = "person_id", updatable = false, insertable = false)
 	public Long getPersonId() {
 		return personId;
