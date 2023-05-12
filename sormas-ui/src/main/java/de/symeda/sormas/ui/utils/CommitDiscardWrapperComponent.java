@@ -996,7 +996,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		EditPermissionType editPermissionType,
 		boolean isInJurisdiction) {
 		String deleteUndeleteButton = CommitDiscardWrapperComponent.DELETE_RESTORE;
-		boolean isEditAllowed = isEditChildAllowed(editParentRight, editChildRight);
+		boolean isEditAllowed = isEditChildAllowed(editParentRight, editChildRight, editPermissionType);
 		if (!isEditAllowed) {
 			if (isInJurisdiction && isDeleteAllowed(deleteChildRight)) {
 				addToActiveButtonsList(deleteUndeleteButton);
@@ -1018,9 +1018,10 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		return UserProvider.getCurrent().hasUserRight(editRight) && (editPermissionType == null || editPermissionType == EditPermissionType.ALLOWED);
 	}
 
-	//TODO: check is editPermissionCheck is also necessary here
-	public boolean isEditChildAllowed(UserRight editParentRight, UserRight editChildRight) {
-		return UserProvider.getCurrent().hasUserRight(editParentRight) && UserProvider.getCurrent().hasUserRight(editChildRight);
+	public boolean isEditChildAllowed(UserRight editParentRight, UserRight editChildRight, EditPermissionType editPermissionType) {
+		return UserProvider.getCurrent().hasUserRight(editParentRight)
+			&& UserProvider.getCurrent().hasUserRight(editChildRight)
+			&& (editPermissionType == null || editPermissionType == EditPermissionType.ALLOWED);
 	}
 
 	//excludedButtons: contains the buttons attached to the CommitDiscardWrapperComponent which we intend to
