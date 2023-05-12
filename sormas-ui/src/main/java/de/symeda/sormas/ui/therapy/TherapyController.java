@@ -64,6 +64,7 @@ public class TherapyController {
 	public void openPrescriptionEditForm(
 		PrescriptionReferenceDto prescriptionReference,
 		Runnable callback,
+		String caseUuid,
 		boolean isEditAllowed,
 		boolean isDeleteAllowed) {
 		PrescriptionDto prescription = FacadeProvider.getPrescriptionFacade().getPrescriptionByUuid(prescriptionReference.getUuid());
@@ -119,7 +120,7 @@ public class TherapyController {
 				UserRight.CASE_EDIT,
 				UserRight.PRESCRIPTION_EDIT,
 				UserRight.PRESCRIPTION_DELETE,
-				null,
+				FacadeProvider.getCaseFacade().getEditPermissionType(caseUuid),
 				prescription.isInJurisdiction());
 		}
 		view.getButtonsPanel().setVisible(isEditOrDeleteAllowed);
@@ -155,8 +156,13 @@ public class TherapyController {
 			true);
 	}
 
-	public void openPrescriptionEditForm(PrescriptionIndexDto prescriptionIndex, Runnable callback, boolean isEditAllowed, boolean isDeleteAllowed) {
-		openPrescriptionEditForm(new PrescriptionReferenceDto(prescriptionIndex.getUuid()), callback, isEditAllowed, isDeleteAllowed);
+	public void openPrescriptionEditForm(
+		PrescriptionIndexDto prescriptionIndex,
+		Runnable callback,
+		String caseUuid,
+		boolean isEditAllowed,
+		boolean isDeleteAllowed) {
+		openPrescriptionEditForm(new PrescriptionReferenceDto(prescriptionIndex.getUuid()), callback, caseUuid, isEditAllowed, isDeleteAllowed);
 	}
 
 	public void openTreatmentCreateForm(TherapyReferenceDto therapy, Runnable callback) {
@@ -203,7 +209,12 @@ public class TherapyController {
 		VaadinUiUtil.showModalPopupWindow(view, I18nProperties.getString(Strings.headingCreateNewTreatment));
 	}
 
-	public void openTreatmentEditForm(TreatmentIndexDto treatmentIndex, Runnable callback, boolean isEditAllowed, boolean isDeleteAllowed) {
+	public void openTreatmentEditForm(
+		TreatmentIndexDto treatmentIndex,
+		Runnable callback,
+		String caseUuid,
+		boolean isEditAllowed,
+		boolean isDeleteAllowed) {
 		TreatmentDto treatment = FacadeProvider.getTreatmentFacade().getTreatmentByUuid(treatmentIndex.getUuid());
 
 		boolean isEditOrDeleteAllowed = isEditAllowed || isDeleteAllowed;
@@ -241,7 +252,7 @@ public class TherapyController {
 				UserRight.CASE_EDIT,
 				UserRight.TREATMENT_EDIT,
 				UserRight.TREATMENT_DELETE,
-				null,
+				FacadeProvider.getCaseFacade().getEditPermissionType(caseUuid),
 				treatment.isInJurisdiction());
 		}
 		view.getButtonsPanel().setVisible(isEditOrDeleteAllowed);
@@ -251,6 +262,7 @@ public class TherapyController {
 				openPrescriptionEditForm(
 					treatment.getPrescription(),
 					null,
+					caseUuid,
 					true,
 					UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed, UserRight.PRESCRIPTION_DELETE));
 				popupWindow.close();

@@ -277,6 +277,7 @@ public class TherapyView extends AbstractCaseView {
 		prescriptionGrid = new PrescriptionGrid(
 			this,
 			caze.isPseudonymized(),
+			caze.getUuid(),
 			UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed(), UserRight.CASE_EDIT, UserRight.PRESCRIPTION_EDIT),
 			UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed(), UserRight.PRESCRIPTION_DELETE));
 
@@ -289,6 +290,7 @@ public class TherapyView extends AbstractCaseView {
 
 		treatmentGrid = new TreatmentGrid(
 			caze.isPseudonymized(),
+			caze.getUuid(),
 			UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed(), UserRight.CASE_EDIT, UserRight.TREATMENT_EDIT),
 			UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed(), UserRight.TREATMENT_DELETE));
 

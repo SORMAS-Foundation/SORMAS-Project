@@ -37,6 +37,7 @@ import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -141,6 +142,8 @@ public class PathogenTestController {
 		// get fresh data
 		PathogenTestDto pathogenTest = facade.getByUuid(pathogenTestUuid);
 		SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(pathogenTest.getSample().getUuid());
+		EditPermissionType editPermissionType = getEditPermissionTypeFromParent(sample);
+
 		PathogenTestForm form = new PathogenTestForm(sample, false, 0, pathogenTest.isPseudonymized(), pathogenTest.isInJurisdiction());
 		form.setValue(pathogenTest);
 
@@ -167,13 +170,22 @@ public class PathogenTestController {
 				UserRight.SAMPLE_EDIT,
 				UserRight.PATHOGEN_TEST_EDIT,
 				UserRight.PATHOGEN_TEST_DELETE,
-				null,
+				editPermissionType,
 				pathogenTest.isInJurisdiction());
 
 		}
 		editView.getButtonsPanel().setVisible(isEditOrDeleteAllowed);
 
 		return editView;
+	}
+
+	public EditPermissionType getEditPermissionTypeFromParent(SampleDto sample) {
+		if (sample.getAssociatedCase() != null) {
+			return FacadeProvider.getCaseFacade().getEditPermissionType(sample.getAssociatedCase().getUuid());
+		} else if (sample.getAssociatedContact() != null) {
+			return FacadeProvider.getContactFacade().getEditPermissionType(sample.getAssociatedContact().getUuid());
+		} else
+			return FacadeProvider.getEventParticipantFacade().getEditPermissionType(sample.getAssociatedEventParticipant().getUuid());
 	}
 
 	public static void showCaseUpdateWithNewDiseaseVariantDialog(
