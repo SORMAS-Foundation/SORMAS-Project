@@ -385,5 +385,5 @@ Scenario: Create and send laboratory request via Demis
     When I navigate to case tab
     Then I check if report side component in Edit Case has today date
     When I click on edit Report on Edit Case page
-    Then I check that Reporter Facility in Edit report form is set to "Andere Einrichtung (Inactive)"
+    Then I check that Reporter Facility in Edit report form is set to "Andere Einrichtung (Inaktiv)"
     And I check that Reporter Facility Details in Edit report form is set to "Other Laboratory"

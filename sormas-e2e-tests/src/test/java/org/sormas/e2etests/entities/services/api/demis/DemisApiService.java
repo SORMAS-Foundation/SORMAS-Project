@@ -130,34 +130,46 @@ public class DemisApiService {
   @SneakyThrows
   public String prepareLabNotificationFile(String patientFirstName, String patientLastName) {
     DemisData demisData = runningConfiguration.getDemisData(locale);
-    String file = "src/main/resources/demisJsonTemplates/labNotificationTemplate.json";
+//    String file = "src/main/resources/demisJsonTemplates/labNotificationTemplate.json";
+    String file = "src/main/resources/demisJsonTemplates/labNotificationTemplateNew.json";
     String json = readFileAsString(file);
     json = json.replace("\"<postal_code_to_change>\"", "\"" + demisData.getPostalCode() + "\"");
     json = json.replace("\"<last_name_to_change>\"", "\"" + patientLastName + "\"");
     json = json.replace("\"<first_name_to_change>\"", "\"" + patientFirstName + "\"");
+    json = json.replace("<specimen_UUID_to_change>", UUID.randomUUID().toString());
+    json = json.replace("<observation_UUID_to_change>", UUID.randomUUID().toString());
+    json = json.replace("<report_UUID_to_change>", UUID.randomUUID().toString());
     return json;
   }
 
   public String prepareLabNotificationFileWithLoinc(
       String patientFirstName, String patientLastName, String loincCode) {
     DemisData demisData = runningConfiguration.getDemisData(locale);
-    String file = "src/main/resources/demisJsonTemplates/labNotificationWithLoincTemplate.json";
+//    String file = "src/main/resources/demisJsonTemplates/labNotificationWithLoincTemplate.json";
+    String file = "src/main/resources/demisJsonTemplates/labNotificationWithLoincTemplateNew.json";
     String json = readFileAsString(file);
     json = json.replace("\"<postal_code_to_change>\"", "\"" + demisData.getPostalCode() + "\"");
     json = json.replace("\"<last_name_to_change>\"", "\"" + patientLastName + "\"");
     json = json.replace("\"<first_name_to_change>\"", "\"" + patientFirstName + "\"");
     json = json.replace("\"<lonic_code_to_change>\"", "\"" + loincCode + "\"");
+    json = json.replace("<specimen_UUID_to_change>", UUID.randomUUID().toString());
+    json = json.replace("<observation_UUID_to_change>", UUID.randomUUID().toString());
+    json = json.replace("<report_UUID_to_change>", UUID.randomUUID().toString());
     return json;
   }
 
   public String prepareLabNotificationFileWithTelcom(
       String patientFirstName, String patientLastName) {
     DemisData demisData = runningConfiguration.getDemisData(locale);
-    String file = "src/main/resources/demisJsonTemplates/labNotificationTemplateTelcom.json";
+//    String file = "src/main/resources/demisJsonTemplates/labNotificationTemplateTelcom.json";
+    String file = "src/main/resources/demisJsonTemplates/labNotificationTemplateTelcomNew.json";
     String json = readFileAsString(file);
     json = json.replace("\"<postal_code_to_change>\"", "\"" + demisData.getPostalCode() + "\"");
     json = json.replace("\"<last_name_to_change>\"", "\"" + patientLastName + "\"");
     json = json.replace("\"<first_name_to_change>\"", "\"" + patientFirstName + "\"");
+    json = json.replace("<specimen_UUID_to_change>", UUID.randomUUID().toString());
+    json = json.replace("<observation_UUID_to_change>", UUID.randomUUID().toString());
+    json = json.replace("<report_UUID_to_change>", UUID.randomUUID().toString());
     return json;
   }
 
