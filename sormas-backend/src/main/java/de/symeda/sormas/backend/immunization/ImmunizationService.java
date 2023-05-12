@@ -52,8 +52,10 @@ import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
+import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.immunization.entity.DirectoryImmunization;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.immunization.transformers.ImmunizationListEntryDtoResultTransformer;
@@ -66,6 +68,7 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -385,6 +388,47 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 		cq.distinct(true);
 
 		return QueryHelper.getFirstResult(em, cq);
+	}
+
+	public List<String> getOrphanImmunizations() {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Immunization> root = cq.from(Immunization.class);
+
+		ImmunizationQueryContext immunizationQueryContext = new ImmunizationQueryContext(cb, cq, root);
+		ImmunizationJoins joins = immunizationQueryContext.getJoins();
+
+		final Subquery<String> caseSubquery = createSubquery(cb, cq, joins.getPerson(), Case.class, Case.PERSON);
+		final Subquery<String> contactSubquery = createSubquery(cb, cq, joins.getPerson(), Contact.class, Contact.PERSON);
+		final Subquery<String> eventParticipantSubquery = createSubquery(cb, cq, joins.getPerson(), EventParticipant.class, EventParticipant.PERSON);
+		final Subquery<String> travelEntrySubquery = createSubquery(cb, cq, joins.getPerson(), TravelEntry.class, TravelEntry.PERSON);
+
+		cq.where(
+			cb.and(
+				cb.not(cb.exists(caseSubquery)),
+				cb.not(cb.exists(contactSubquery)),
+				cb.not(cb.exists(eventParticipantSubquery)),
+				cb.not(cb.exists(travelEntrySubquery))));
+
+		cq.select(root.get(Immunization.UUID));
+		cq.distinct(true);
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	private Subquery<String> createSubquery(
+		CriteriaBuilder cb,
+		CriteriaQuery<String> cq,
+		Join<Immunization, Person> personJoin,
+		Class<? extends CoreAdo> subqueryClass,
+		String personField) {
+
+		final Subquery<String> subquery = cq.subquery(String.class);
+		final Root<? extends CoreAdo> from = subquery.from(subqueryClass);
+		subquery.where(cb.equal(from.get(personField), personJoin));
+		subquery.select(from.get(AbstractDomainObject.UUID));
+		return subquery;
 	}
 
 	public void updateImmunizationStatusBasedOnVaccinations(Immunization immunization) {
