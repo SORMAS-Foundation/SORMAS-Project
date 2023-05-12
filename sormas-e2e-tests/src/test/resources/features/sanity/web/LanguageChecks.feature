@@ -8,7 +8,7 @@ Feature: Application language checks
     And I select "Urdu" language from Combobox in User settings
     Then I check that Surveillance Dashboard header is correctly displayed in Urdu language
     Then I click on the User Settings button from navbar
-    And I select "انگریزی" language from Combobox in User settings
+    And I select "جرمن" language from Combobox in User settings
 
   @tmsLink=SORQA-69 @env_de @LanguageRisk
   Scenario: Check Settings directory is written in German for german market
