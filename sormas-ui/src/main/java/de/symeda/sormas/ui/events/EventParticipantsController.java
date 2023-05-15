@@ -269,7 +269,7 @@ public class EventParticipantsController {
 		editComponent.restrictEditableComponentsOnEditView(
 			UserRight.EVENTPARTICIPANT_EDIT,
 			UserRight.EVENTPARTICIPANT_DELETE,
-			null,
+			FacadeProvider.getEventParticipantFacade().getEditPermissionType(eventParticipantUuid),
 			eventParticipant.isInJurisdiction());
 
 		return editComponent;

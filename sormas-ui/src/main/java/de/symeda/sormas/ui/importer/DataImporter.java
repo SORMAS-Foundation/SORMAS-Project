@@ -80,6 +80,7 @@ import de.symeda.sormas.ui.person.PersonSelectionField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.components.progress.ProgressResult;
 
 /**
  * Base class for all importers that are used to get data from CSV files into SORMAS.
@@ -160,7 +161,7 @@ public abstract class DataImporter {
 
 		ImportProgressLayout progressLayout = this.getImportProgressLayout(currentUI, duplicatesPossible);
 
-		importedLineCallback = progressLayout::updateProgress;
+		importedLineCallback = result -> progressLayout.updateProgress(new ImportProgressUpdateInfo(result));
 
 		Window window = VaadinUiUtil.createPopupWindow();
 		window.setCaption(I18nProperties.getString(Strings.headingDataImport));
@@ -180,21 +181,27 @@ public abstract class DataImporter {
 				// Display a window presenting the import result
 				currentUI.access(() -> {
 					window.setClosable(true);
-					progressLayout.makeClosable(window::close);
-
-					if (importResult == ImportResultStatus.COMPLETED) {
-						progressLayout.displaySuccessIcon();
-						progressLayout.setInfoLabelText(I18nProperties.getString(Strings.messageImportSuccessful));
-					} else if (importResult == ImportResultStatus.COMPLETED_WITH_ERRORS) {
-						progressLayout.displayWarningIcon();
-						progressLayout.setInfoLabelText(I18nProperties.getString(Strings.messageImportPartiallySuccessful));
-					} else if (importResult == ImportResultStatus.CANCELED) {
-						progressLayout.displaySuccessIcon();
-						progressLayout.setInfoLabelText(I18nProperties.getString(Strings.messageImportCanceled));
-					} else {
-						progressLayout.displayWarningIcon();
-						progressLayout.setInfoLabelText(I18nProperties.getString(Strings.messageImportCanceledErrors));
+					ProgressResult progressResult;
+					String newInfoText;
+					switch (importResult) {
+					case COMPLETED:
+						progressResult = ProgressResult.SUCCESS;
+						newInfoText = I18nProperties.getString(Strings.messageImportSuccessful);
+						break;
+					case COMPLETED_WITH_ERRORS:
+						progressResult = ProgressResult.SUCCESS_WITH_WARNING;
+						newInfoText = I18nProperties.getString(Strings.messageImportPartiallySuccessful);
+						break;
+					case CANCELED:
+						progressResult = ProgressResult.SUCCESS;
+						newInfoText = I18nProperties.getString(Strings.messageImportCanceled);
+						break;
+					default:
+						progressResult = ProgressResult.FAILURE;
+						newInfoText = I18nProperties.getString(Strings.messageImportCanceledErrors);
+						break;
 					}
+					progressLayout.finishProgress(progressResult, newInfoText, window::close);
 
 					window.addCloseListener(e -> {
 						if (importResult == ImportResultStatus.COMPLETED_WITH_ERRORS || importResult == ImportResultStatus.CANCELED_WITH_ERRORS) {
@@ -208,9 +215,10 @@ public abstract class DataImporter {
 			} catch (InvalidColumnException e) {
 				currentUI.access(() -> {
 					window.setClosable(true);
-					progressLayout.makeClosable(window::close);
-					progressLayout.displayErrorIcon();
-					progressLayout.setInfoLabelText(String.format(I18nProperties.getString(Strings.messageImportInvalidColumn), e.getColumnName()));
+					progressLayout.finishProgress(
+						ProgressResult.FAILURE,
+						String.format(I18nProperties.getString(Strings.messageImportInvalidColumn), e.getColumnName()),
+						window::close);
 					currentUI.setPollInterval(-1);
 				});
 			} catch (Exception e) {
@@ -218,9 +226,7 @@ public abstract class DataImporter {
 
 				currentUI.access(() -> {
 					window.setClosable(true);
-					progressLayout.makeClosable(window::close);
-					progressLayout.displayErrorIcon();
-					progressLayout.setInfoLabelText(I18nProperties.getString(Strings.messageImportFailedFull));
+					progressLayout.finishProgress(ProgressResult.FAILURE, I18nProperties.getString(Strings.messageImportFailedFull), window::close);
 					currentUI.setPollInterval(-1);
 				});
 			}
@@ -232,8 +238,8 @@ public abstract class DataImporter {
 	/**
 	 * Can be overriden by subclasses to provide alternative progress layouts
 	 */
-	protected ImportProgressLayout getImportProgressLayout(UI currentUI, boolean duplicatesPossible) throws IOException, CsvValidationException {
-		return new ImportProgressLayout(readImportFileLength(inputFile), currentUI, this::cancelImport, duplicatesPossible);
+	protected ImportProgressLayout getImportProgressLayout(UI currentUI, boolean showDuplicates) throws IOException, CsvValidationException {
+		return new ImportProgressLayout(currentUI, readImportFileLength(inputFile), this::cancelImport, showDuplicates);
 	}
 
 	/**

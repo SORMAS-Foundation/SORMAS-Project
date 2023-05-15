@@ -18,12 +18,14 @@
 
 package org.sormas.e2etests.entities.services.api;
 
+import static org.sormas.e2etests.entities.pojo.helpers.ShortUUIDGenerator.generateShortUUID;
+
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.util.Collections;
 import java.util.Random;
-import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+import lombok.SneakyThrows;
 import org.sormas.e2etests.entities.pojo.api.Person;
 import org.sormas.e2etests.entities.pojo.api.chunks.Address;
 import org.sormas.e2etests.entities.pojo.api.chunks.Country;
@@ -52,9 +54,10 @@ public class PersonApiService {
     this.faker = faker;
   }
 
+  @SneakyThrows
   public Person buildGeneratedPerson() {
     EnvironmentManager environmentManager = new EnvironmentManager(restAssuredClient);
-    String personUUID = UUID.randomUUID().toString();
+    String personUUID = generateShortUUID();
     firstName = faker.name().firstName();
     lastName = faker.name().lastName();
     contactFirstName = faker.name().firstName();
@@ -97,7 +100,7 @@ public class PersonApiService {
 
     PersonContactDetails personContactDetails =
         PersonContactDetails.builder()
-            .uuid(UUID.randomUUID().toString())
+            .uuid(generateShortUUID())
             .person(Person.builder().uuid(personUUID).build())
             .primaryContact(true)
             .thirdParty(false)
@@ -121,9 +124,10 @@ public class PersonApiService {
         .build();
   }
 
+  @SneakyThrows
   public Person buildGeneratedPersonParamRegionAndDistrict(String region, String district) {
     EnvironmentManager environmentManager = new EnvironmentManager(restAssuredClient);
-    String personUUID = UUID.randomUUID().toString();
+    String personUUID = generateShortUUID();
     firstName = faker.name().firstName();
     lastName = faker.name().lastName();
     contactFirstName = faker.name().firstName();
@@ -159,7 +163,7 @@ public class PersonApiService {
 
     PersonContactDetails personContactDetails =
         PersonContactDetails.builder()
-            .uuid(UUID.randomUUID().toString())
+            .uuid(generateShortUUID())
             .person(Person.builder().uuid(personUUID).build())
             .primaryContact(true)
             .thirdParty(false)

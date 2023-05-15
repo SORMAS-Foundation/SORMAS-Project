@@ -19,6 +19,8 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
+import de.symeda.sormas.api.immunization.ImmunizationStatus;
 
 @Entity(name = "immunization")
 @Audited
@@ -56,4 +58,11 @@ public class Immunization extends BaseImmunization {
 	public static final String VACCINATIONS = "vaccinations";
 	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
 	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
+
+	public static Immunization build() {
+		Immunization immunization = new Immunization();
+		immunization.setImmunizationStatus(ImmunizationStatus.PENDING);
+		immunization.setImmunizationManagementStatus(ImmunizationManagementStatus.SCHEDULED);
+		return immunization;
+	}
 }

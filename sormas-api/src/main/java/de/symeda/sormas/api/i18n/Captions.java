@@ -54,6 +54,7 @@ public interface Captions {
 	String actionClose = "actionClose";
 	String actionCompare = "actionCompare";
 	String actionConfirm = "actionConfirm";
+	String actionConfirmAction = "actionConfirmAction";
 	String actionConfirmFilters = "actionConfirmFilters";
 	String actionContinue = "actionContinue";
 	String actionCreate = "actionCreate";
@@ -214,6 +215,7 @@ public interface Captions {
 	String bulkCaseClassification = "bulkCaseClassification";
 	String bulkCaseOutcome = "bulkCaseOutcome";
 	String bulkCaseShareWithReportingTool = "bulkCaseShareWithReportingTool";
+	String bulkCompleted = "bulkCompleted";
 	String bulkContactClassification = "bulkContactClassification";
 	String bulkContactOfficer = "bulkContactOfficer";
 	String bulkDelete = "bulkDelete";
@@ -230,6 +232,8 @@ public interface Captions {
 	String bulkLinkToEvent = "bulkLinkToEvent";
 	String bulkLostToFollowUp = "bulkLostToFollowUp";
 	String bulkRestore = "bulkRestore";
+	String bulkSkipped = "bulkSkipped";
+	String bulkSuccessful = "bulkSuccessful";
 	String bulkSurveillanceOfficer = "bulkSurveillanceOfficer";
 	String bulkTaskAssignee = "bulkTaskAssignee";
 	String bulkTaskPriority = "bulkTaskPriority";
@@ -2480,6 +2484,7 @@ public interface Captions {
 	String User_userName = "User.userName";
 	String User_userRoles = "User.userRoles";
 	String User_uuid = "User.uuid";
+	String userMyUserId = "userMyUserId";
 	String userNewUser = "userNewUser";
 	String userResetPassword = "userResetPassword";
 	String userRight = "userRight";

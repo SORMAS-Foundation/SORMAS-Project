@@ -74,7 +74,8 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 
 	//@formatter:off
     private static final String HTML_LAYOUT =
-            loc(PERSON_DATA_HEADING_LOC) +
+            loc(UserDto.UUID) +
+                    loc(PERSON_DATA_HEADING_LOC) +
                     fluidRowLocs(UserDto.FIRST_NAME, UserDto.LAST_NAME) +
                     fluidRowLocs(UserDto.USER_EMAIL, UserDto.PHONE) +
                     fluidRowLocs(USER_EMAIL_DESC_LOC, USER_PHONE_DESC_LOC) +
@@ -96,10 +97,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     public UserEditForm(boolean create) {
 
         super(UserDto.class, UserDto.I18N_PREFIX, true, new FieldVisibilityCheckers(), UiFieldAccessCheckers.getNoop());
-
-
         setWidth(640, Unit.PIXELS);
-
         if (create) {
             hideValidationUntilNextCommit();
         }
@@ -108,6 +106,9 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     @Override
     protected void addFields() {
 
+        TextField uuid = addField(UserDto.UUID, TextField.class);
+        uuid.setReadOnly(true);
+        
         Label personDataHeadingLabel = new Label(I18nProperties.getString(Strings.headingPersonData));
         personDataHeadingLabel.addStyleName(H3);
         getContent().addComponent(personDataHeadingLabel, PERSON_DATA_HEADING_LOC);

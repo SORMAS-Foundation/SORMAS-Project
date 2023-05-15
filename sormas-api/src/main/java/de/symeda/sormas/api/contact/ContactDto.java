@@ -181,7 +181,6 @@ public class ContactDto extends SormasToSormasShareableDto {
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
-	@NotNull(message = Validations.requiredField)
 	private boolean multiDayContact;
 	private Date firstContactDate;
 	private Date lastContactDate;
@@ -206,7 +205,6 @@ public class ContactDto extends SormasToSormasShareableDto {
 	@Diseases({
 		Disease.CORONAVIRUS })
 	private ContactCategory contactCategory;
-	@NotNull(message = Validations.requiredField)
 	private ContactClassification contactClassification;
 	private ContactStatus contactStatus;
 	private FollowUpStatus followUpStatus;
@@ -305,10 +303,9 @@ public class ContactDto extends SormasToSormasShareableDto {
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String additionalDetails;
-	@NotNull(message = Validations.requiredField)
+	@Valid
 	private EpiDataDto epiData;
 	@Valid
-	@NotNull(message = Validations.validHealthConditions)
 	private HealthConditionsDto healthConditions;
 	private YesNoUnknown returningTraveler;
 

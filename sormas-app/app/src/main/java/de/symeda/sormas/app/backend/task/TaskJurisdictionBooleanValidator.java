@@ -62,12 +62,12 @@ public class TaskJurisdictionBooleanValidator extends BooleanJurisdictionValidat
     }
 
     @Override
-    protected Boolean isInJurisdiction() {
+    protected Boolean isRootInJurisdiction() {
         return isInJurisdictionByJurisdictionLevel(userJurisdiction.getJurisdictionLevel());
     }
 
     @Override
-    protected Boolean isInJurisdictionOrOwned() {
+    protected Boolean isRootInJurisdictionOrOwned() {
         return userJurisdiction.getUuid().equals(taskJurisdictionDto.getCreatorUserUuid()) || userJurisdiction.getUuid().equals(taskJurisdictionDto.getAssigneeUserUuid()) || inJurisdiction();
     }
 

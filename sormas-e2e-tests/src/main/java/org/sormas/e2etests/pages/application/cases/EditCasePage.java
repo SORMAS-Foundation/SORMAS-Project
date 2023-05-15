@@ -161,6 +161,7 @@ public class EditCasePage {
   public static final By GENERAL_COMMENT_TEXTAREA = By.cssSelector("textarea#additionalDetails");
   public static final By SAVE_BUTTON = By.id("commit");
   public static final By ACTION_CANCEL = By.cssSelector(".popupContent #actionCancel");
+  public static final By ACTION_CLOSE = By.cssSelector(".popupContent #actionClose");
   public static final By DELETE_BUTTON = By.id("deleteRestore");
   public static final By DELETE_POPUP_YES_BUTTON = By.cssSelector(".popupContent #actionConfirm");
   public static final By CASE_SAVED_POPUP = By.cssSelector(".v-Notification-caption");
@@ -418,6 +419,9 @@ public class EditCasePage {
       By.cssSelector(".popupContent textarea");
   public static final By VACCINATION_STATUS_UPDATE_POPUP_HEADER =
       By.xpath("//div[@class='popupContent']//*[text()='Impfstatus Aktualisierung']");
+  public static final By EDIT_REPORT_BUTTON = By.xpath("//div[@location='surveillanceReports']//div[contains(@id, 'edit')]");
+  public static final By REPORTER_FACILITY_INPUT = By.cssSelector(".popupContent #facility input");
+  public static final By REPORTER_FACILITY_DETAILS_INPUT = By.cssSelector(".popupContent #facilityDetails");
 
   public static By checkIfTextExists(String text) {
     return By.xpath(String.format("//div[contains(text(),'%s')]", text));
@@ -442,6 +446,10 @@ public class EditCasePage {
   public static By checkTextInSampleSideComponent(String text) {
     return By.xpath(
         String.format("//div[contains(@location,'samples')]//div[contains(text(), '%s')]", text));
+  }
+
+  public static By checkTextInHandoverSideComponent(String text) {
+    return By.xpath(String.format("//div[@location='sormasToSormas']//div[text()='%s']", text));
   }
 
   public static final By ADDED_SAMPLES_IN_SAMPLE_CARD =
