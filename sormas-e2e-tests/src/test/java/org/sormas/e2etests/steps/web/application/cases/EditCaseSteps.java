@@ -1231,13 +1231,6 @@ public class EditCaseSteps implements En {
         () -> webDriverHelpers.clickOnWebElementBySelector(NEW_SAMPLE_BUTTON_DE));
 
     When(
-        "I click on edit Sample",
-        () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(EDIT_SAMPLE_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(EDIT_SAMPLE_BUTTON);
-        });
-
-    When(
         "I click on view Sample",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SHOW_SAMPLE_BUTTON);
@@ -2580,12 +2573,7 @@ public class EditCaseSteps implements En {
               webDriverHelpers.isElementVisibleWithTimeout(ERROR_DESCRIPTION_REQUEST_PROCESSED, 3));
           softly.assertAll();
         });
-    When(
-        "I check if edit sample button is unavailable",
-        () -> {
-          softly.assertFalse(webDriverHelpers.isElementPresent(EDIT_SAMPLE_BUTTON));
-          softly.assertAll();
-        });
+
     When(
         "I check if share warning is displayed",
         () -> {
@@ -2607,71 +2595,8 @@ public class EditCaseSteps implements En {
           webDriverHelpers.isElementGreyedOut(EditCasePage.UUID_INPUT);
           webDriverHelpers.isElementGreyedOut(EditCasePage.SAVE_BUTTON);
         });
-    And(
-        "I check if report side component in Edit Case has {string}",
-        (String text) -> {
-          softly.assertTrue(
-              webDriverHelpers.isElementPresent(checkTextInReportSideComponent(text)));
-          softly.assertAll();
-        });
-    And(
-        "I check if report side component in Edit Case has today date",
-        () -> {
-          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-          softly.assertTrue(
-              webDriverHelpers.isElementPresent(
-                  checkTextInReportSideComponent(formatter.format(LocalDate.now()))));
-          softly.assertAll();
-        });
-    Then(
-        "^I check that the number of added samples on the Edit case page is (\\d+)$",
-        (Integer numberOfSamples) -> {
-          Integer actualNumberOfSamples =
-              webDriverHelpers.getNumberOfElements(ADDED_SAMPLES_IN_SAMPLE_CARD);
-          softly.assertEquals(
-              actualNumberOfSamples,
-              numberOfSamples,
-              "Number of samples added in sample ard is different then expected!");
-          softly.assertAll();
-        });
 
     When("I refresh current page", () -> webDriverHelpers.refreshCurrentPage());
-
-    When(
-        "I check if Immunization area contains {string}",
-        (String name) -> {
-          softly.assertTrue(
-              webDriverHelpers.isElementPresent(checkTextInImmunizationSideComponent(name)),
-              "Element is not present");
-          softly.assertAll();
-        });
-
-    When(
-        "I check if Immunization area does not contains {string}",
-        (String name) -> {
-          softly.assertFalse(
-              webDriverHelpers.isElementPresent(checkTextInImmunizationSideComponent(name)),
-              "Element is present");
-          softly.assertAll();
-        });
-
-    When(
-        "I check if sample card has {string} information",
-        (String information) -> {
-          softly.assertTrue(
-              webDriverHelpers.isElementPresent(checkTextInSampleSideComponent(information)),
-              information + " text is not present in sample component");
-          softly.assertAll();
-        });
-
-    When(
-        "I check if handover card contains {string} information",
-        (String information) -> {
-          softly.assertTrue(
-              webDriverHelpers.isElementPresent(checkTextInHandoverSideComponent(information)),
-              information + " text is not present in handover component");
-          softly.assertAll();
-        });
   }
 
   private Vaccination collectVaccinationData() {
