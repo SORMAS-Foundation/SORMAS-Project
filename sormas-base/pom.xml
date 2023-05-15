@@ -10,8 +10,7 @@
 
 	<properties>
 		<maven.minimum.version>3.6.3</maven.minimum.version>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.release>11</maven.compiler.release>
 		<maven.javadoc.doclint>none</maven.javadoc.doclint>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
