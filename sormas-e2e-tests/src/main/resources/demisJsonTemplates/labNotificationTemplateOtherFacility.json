@@ -181,7 +181,7 @@
                             "identifier": [
                                 {
                                     "system": "https://fhir.kbv.de/NamingSystem/KBV_NS_Base_BSNR",
-                                    "value": "123456789"
+                                    "value": "<facility_id_to_change>"
                                 }
                             ],
                             "type": [
@@ -195,7 +195,7 @@
                                     ]
                                 }
                             ],
-                            "name": "Testlabor",
+                            "name": "<facility_name_to_change>",
                             "telecom": [
                                 {
                                     "system": "phone",
@@ -224,7 +224,7 @@
                                         "Teststraße 123a Dritter Hinterhof"
                                     ],
                                     "city": "Teststadt",
-                                    "postalCode": "12347",
+                                    "postalCode": "20095",
                                     "country": "20422"
                                 }
                             ],
@@ -293,7 +293,7 @@
                                     ],
                                     "city": "Hamburg",
                                     "state": "DE-BE",
-                                    "postalCode": "<postal_code_to_change>",
+                                    "postalCode": "20095",
                                     "country": "20422"
                                 }
                             ]

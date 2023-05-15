@@ -356,3 +356,34 @@ Scenario: Create and send laboratory request via Demis
     Then I filter by last created person via API in Messages Directory
     And I click on Verarbeiten button in Messages Directory
     Then I check if while creating new event participant from demis message there is a possibility to edit first and last name
+
+  @tmsLink=SORQA-959 @env_d2s @LoginKeycloak
+  Scenario: Test [Lab Message] Demis - Process a Lab message that has no mapped ID for Facility in Sormas
+    Given API : Login to DEMIS server
+    When I create and send Laboratory Notification with other facility name "Other Laboratory" and facility ID "928170"
+    And I log in as a Admin User
+    Then I click on the Messages button from navbar
+    And I click on fetch messages button
+    Then I filter by last created person via API in Messages Directory
+    And I click on Verarbeiten button in Messages Directory
+    And I pick a new person in Pick or create person popup during case creation for DE
+    And I choose create new case in Pick or create entry form for DE
+    And I check that create new case form with pathogen detection reporting process is displayed for DE
+    And I fill only mandatory fields to convert laboratory message into a case for DE
+    And I click on save button in the case popup
+    Then I check that new sample form with pathogen detection reporting process is displayed
+    Then I verify that labor is prefilled with "Andere Einrichtung" in New sample form while processing a DEMIS LabMessage
+    And I verify that labor description is prefilled with "Other Laboratory" in New sample form while processing a DEMIS LabMessage
+    And I click on save sample button
+    And I click on save sample button
+    And I click on the Cases button from navbar
+    And I search the case by last created person via Demis message
+    Then I click on the first Case ID from Case Directory
+    And I click on edit Sample
+    Then I check that laboratory is set to "Andere Einrichtung" on Edit Sample page
+    And I check that laboratory details is set to "Other Laboratory" on edit Sample page
+    When I navigate to case tab
+    Then I check if report side component in Edit Case has today date
+    When I click on edit Report on Edit Case page
+    Then I check that Reporter Facility in Edit report form is set to "Andere Einrichtung (Inaktiv)"
+    And I check that Reporter Facility Details in Edit report form is set to "Other Laboratory"

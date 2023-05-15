@@ -9526,9 +9526,7 @@ components:
           - "NO"
           - UNKNOWN
       required:
-      - caseClassification
       - disease
-      - investigationStatus
       - person
       - reportDate
       - responsibleDistrict
@@ -11579,11 +11577,7 @@ components:
           - UNVACCINATED
           - UNKNOWN
       required:
-      - contactClassification
       - disease
-      - epiData
-      - healthConditions
-      - multiDayContact
       - person
       - reportDateTime
     ContactIndexDetailedDto:
@@ -17483,8 +17477,6 @@ components:
           format: date-time
       required:
       - disease
-      - immunizationManagementStatus
-      - immunizationStatus
       - meansOfImmunization
       - person
       - reportDate
@@ -19214,7 +19206,6 @@ components:
           type: boolean
       required:
       - lab
-      - labUser
       - sample
       - testResult
       - testResultVerified

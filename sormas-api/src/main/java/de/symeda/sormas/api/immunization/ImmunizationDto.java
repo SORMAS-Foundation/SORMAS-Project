@@ -105,14 +105,12 @@ public class ImmunizationDto extends SormasToSormasShareableDto {
 	private Date reportDate;
 	private UserReferenceDto reportingUser;
 	private boolean archived;
-	@NotNull(message = Validations.requiredField)
 	private ImmunizationStatus immunizationStatus;
 	@NotNull(message = Validations.requiredField)
 	private MeansOfImmunization meansOfImmunization;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	@SensitiveData(mandatoryField = true)
 	private String meansOfImmunizationDetails;
-	@NotNull(message = Validations.requiredField)
 	private ImmunizationManagementStatus immunizationManagementStatus;
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
