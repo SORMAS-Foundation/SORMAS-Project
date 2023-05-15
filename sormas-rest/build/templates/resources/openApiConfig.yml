@@ -6,6 +6,7 @@ openAPI:
       ### Responses
       - 400: Bad request: The request is not valid, e.g. missing required data
       - 403: Forbidden: User does not have necessary user rights
+      - 404: Not found: The requested entity was not found.
       - 409: Conflict: Tried to update data of an entity that was updated in the mean-time.
       - 500: Internal server error: Other exceptions
     version: ${project.version}
