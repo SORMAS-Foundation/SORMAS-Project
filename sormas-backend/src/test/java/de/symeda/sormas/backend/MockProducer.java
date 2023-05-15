@@ -86,7 +86,7 @@ public class MockProducer implements InitialContextFactory {
 	// Receiving e-mail server is mocked: org. jvnet. mock_javamail. mailbox
 	private static Session mailSession;
 	static {
-		// Make sure that the default session does not use a local mail server (if mock-javamail is removed)
+		// Make sure that the default session does not use a local mail server
 		Properties props = new Properties();
 		props.setProperty("mail.host", "non@existent");
 		mailSession = Session.getInstance(props);

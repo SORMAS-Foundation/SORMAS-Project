@@ -29,7 +29,7 @@ import android.view.View;
 import android.widget.AdapterView;
 
 import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -92,7 +92,7 @@ public class CaseListActivity extends PagedBaseListActivity {
 				}
 			}
 		});
-		model = ViewModelProviders.of(this).get(CaseListViewModel.class);
+		model = new ViewModelProvider(this).get(CaseListViewModel.class);
 		model.getCases().observe(this, cases -> {
 			adapter.submitList(cases);
 			hidePreloader();
