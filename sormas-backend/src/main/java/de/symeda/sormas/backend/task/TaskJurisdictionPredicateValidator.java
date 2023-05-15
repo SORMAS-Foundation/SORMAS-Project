@@ -59,16 +59,16 @@ public class TaskJurisdictionPredicateValidator extends PredicateJurisdictionVal
 	}
 
 	@Override
-	protected Predicate isInJurisdictionOrOwned() {
+	protected Predicate isRootInJurisdictionOrOwned() {
 		final Predicate createdByCurrentUser = cb.and(cb.isNotNull(joins.getCreator()), cb.equal(joins.getCreator().get(User.UUID), user.getUuid()));
 
 		final Predicate assignedToCurrentUser =
 			cb.and(cb.isNotNull(joins.getAssignee()), cb.equal(joins.getAssignee().get(User.UUID), user.getUuid()));
-		return cb.or(createdByCurrentUser, assignedToCurrentUser, isInJurisdiction());
+		return cb.or(createdByCurrentUser, assignedToCurrentUser, isRootInJurisdiction());
 	}
 
 	@Override
-	protected Predicate isInJurisdiction() {
+	protected Predicate isRootInJurisdiction() {
 		return isInJurisdictionByJurisdictionLevel(user.getJurisdictionLevel());
 	}
 
