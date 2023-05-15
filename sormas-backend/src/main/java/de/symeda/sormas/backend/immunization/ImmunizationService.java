@@ -399,10 +399,10 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 		ImmunizationQueryContext immunizationQueryContext = new ImmunizationQueryContext(cb, cq, root);
 		ImmunizationJoins joins = immunizationQueryContext.getJoins();
 
-		final Subquery<String> caseSubquery = createSubquery(cb, cq, joins.getPerson(), Case.class, Case.PERSON);
-		final Subquery<String> contactSubquery = createSubquery(cb, cq, joins.getPerson(), Contact.class, Contact.PERSON);
-		final Subquery<String> eventParticipantSubquery = createSubquery(cb, cq, joins.getPerson(), EventParticipant.class, EventParticipant.PERSON);
-		final Subquery<String> travelEntrySubquery = createSubquery(cb, cq, joins.getPerson(), TravelEntry.class, TravelEntry.PERSON);
+		final Subquery<String> caseSubquery = createPersonLinkedToOtherCoreEntitySubQuery(cb, cq, joins.getPerson(), Case.class, Case.PERSON);
+		final Subquery<String> contactSubquery = createPersonLinkedToOtherCoreEntitySubQuery(cb, cq, joins.getPerson(), Contact.class, Contact.PERSON);
+		final Subquery<String> eventParticipantSubquery = createPersonLinkedToOtherCoreEntitySubQuery(cb, cq, joins.getPerson(), EventParticipant.class, EventParticipant.PERSON);
+		final Subquery<String> travelEntrySubquery = createPersonLinkedToOtherCoreEntitySubQuery(cb, cq, joins.getPerson(), TravelEntry.class, TravelEntry.PERSON);
 
 		cq.where(
 			cb.and(
@@ -417,16 +417,16 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 		return em.createQuery(cq).getResultList();
 	}
 
-	private Subquery<String> createSubquery(
+	private Subquery<String> createPersonLinkedToOtherCoreEntitySubQuery(
 		CriteriaBuilder cb,
 		CriteriaQuery<String> cq,
-		Join<Immunization, Person> personJoin,
-		Class<? extends CoreAdo> subqueryClass,
-		String personField) {
+		Join<Immunization, Person> immunizationPerson,
+		Class<? extends CoreAdo> otherCoreEntityClass,
+		String otherPersonField) {
 
 		final Subquery<String> subquery = cq.subquery(String.class);
-		final Root<? extends CoreAdo> from = subquery.from(subqueryClass);
-		subquery.where(cb.equal(from.get(personField), personJoin));
+		final Root<? extends CoreAdo> from = subquery.from(otherCoreEntityClass);
+		subquery.where(cb.equal(from.get(otherPersonField), immunizationPerson));
 		subquery.select(from.get(AbstractDomainObject.UUID));
 		return subquery;
 	}
