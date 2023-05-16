@@ -12,13 +12,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
+import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.sormastosormas.share.incoming.SormasToSormasShareRequestService;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfoService;
@@ -49,6 +53,10 @@ public class CoreEntityDeletionService {
 	private ShareRequestInfoService shareRequestInfoService;
 	@EJB
 	private SymptomsService symptomsService;
+	@EJB
+	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+	@EJB
+	private ImmunizationService immunizationService;
 
 	public CoreEntityDeletionService() {
 	}
@@ -101,6 +109,13 @@ public class CoreEntityDeletionService {
 		List<String> nonReferencedSymptoms = symptomsService.getOrphanSymptoms();
 		logger.debug("executeAutomaticDeletion(): Detected non referenced symptoms: n={}", nonReferencedSymptoms.size());
 		IterableHelper.executeBatched(nonReferencedSymptoms, DELETE_BATCH_SIZE, batchedUuids -> symptomsService.deletePermanentByUuids(batchedUuids));
+
+		if (featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+			List<String> orphanImmunizations = immunizationService.getOrphanImmunizations();
+			logger.debug("executeAutomaticDeletion(): Detected non referenced immunizations: n={}", orphanImmunizations.size());
+			IterableHelper
+				.executeBatched(orphanImmunizations, DELETE_BATCH_SIZE, batchedUuids -> immunizationService.deletePermanentByUuids(batchedUuids));
+		}
 
 		// Delete non referenced Persons
 		List<String> nonReferencedPersonUuids = personService.getAllNonReferencedPersonUuids();
