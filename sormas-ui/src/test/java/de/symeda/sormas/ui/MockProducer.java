@@ -41,17 +41,13 @@ import javax.naming.NamingException;
 import javax.naming.spi.InitialContextFactory;
 import javax.transaction.UserTransaction;
 
-import de.symeda.sormas.backend.user.CurrentUserService;
-import org.apache.james.mime4j.field.address.Mailbox;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
-
+import de.symeda.sormas.backend.user.CurrentUserService;
 
 /**
- * Creates mocks for resources needed in bean test / external services. <br />
- * Use {@link Mailbox#get (String)} to retrieve e-mails sent (receiver address passed).
+ * Creates mocks for resources needed in bean test / external services.
  * 
  * @author Stefan Kock
  */
@@ -71,8 +67,14 @@ public class MockProducer implements InitialContextFactory {
 
 	private static FacadeProvider facadeProvider = new FacadeProviderMock();
 
-	// Receiving e-mail server is mocked: org. jvnet. mock_javamail. mailbox
 	private static Session mailSession;
+	static {
+		// Make sure that the default session does not use a local mail server
+		Properties props = new Properties();
+		props.setProperty("mail.host", "non@existent");
+		mailSession = Session.getInstance(props);
+	}
+
 	static {
 		wireMocks();
 
@@ -95,9 +97,6 @@ public class MockProducer implements InitialContextFactory {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-
-		// Make sure that the default session does not use a local mail server (if mock-javamail is removed)
-		mailSession = Session.getInstance(properties);
 	}
 
 	@Override

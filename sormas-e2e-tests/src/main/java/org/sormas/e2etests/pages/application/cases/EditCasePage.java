@@ -418,6 +418,11 @@ public class EditCasePage {
       By.cssSelector(".popupContent textarea");
   public static final By VACCINATION_STATUS_UPDATE_POPUP_HEADER =
       By.xpath("//div[@class='popupContent']//*[text()='Impfstatus Aktualisierung']");
+  public static final By EDIT_REPORT_BUTTON =
+      By.xpath("//div[@location='surveillanceReports']//div[contains(@id, 'edit')]");
+  public static final By REPORTER_FACILITY_INPUT = By.cssSelector(".popupContent #facility input");
+  public static final By REPORTER_FACILITY_DETAILS_INPUT =
+      By.cssSelector(".popupContent #facilityDetails");
 
   public static By checkIfTextExists(String text) {
     return By.xpath(String.format("//div[contains(text(),'%s')]", text));

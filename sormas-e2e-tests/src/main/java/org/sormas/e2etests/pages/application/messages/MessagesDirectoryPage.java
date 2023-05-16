@@ -121,4 +121,6 @@ public class MessagesDirectoryPage {
       By.xpath("//*[text()='Neuen Kontakt erstellen']");
   public static final By CREATE_NEW_EVENT_PARTICIPANT_RADIOBUTTON_DE =
       By.xpath("//*[text()='Neuen Ereignisteilnehmer erstellen']");
+  public static final By LABORATORY_INPUT = By.cssSelector("#lab input");
+  public static final By LABORATORY_DETAILS_INPUT = By.cssSelector("#labDetails");
 }

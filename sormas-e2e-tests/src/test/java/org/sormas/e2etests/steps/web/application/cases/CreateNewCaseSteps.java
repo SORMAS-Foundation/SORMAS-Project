@@ -1399,6 +1399,7 @@ public class CreateNewCaseSteps implements En {
         "^I choose create new case in Pick or create entry form for DE$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_CASE_CONFIRMATION_BUTTON_DE);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CONFIRM_BUTTON_POPUP);
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON_POPUP);
         });
 

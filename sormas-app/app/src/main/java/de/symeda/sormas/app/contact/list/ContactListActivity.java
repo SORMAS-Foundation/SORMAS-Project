@@ -25,7 +25,7 @@ import android.view.View;
 import android.widget.AdapterView;
 
 import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import de.symeda.sormas.api.contact.ContactClassification;
@@ -87,7 +87,7 @@ public class ContactListActivity extends PagedBaseListActivity {
 				}
 			}
 		});
-		model = ViewModelProviders.of(this).get(ContactListViewModel.class);
+		model = new ViewModelProvider(this).get(ContactListViewModel.class);
 		model.initializeViewModel();
 		model.getContacts().observe(this, contacts -> {
 			adapter.submitList(contacts);

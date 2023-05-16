@@ -64,12 +64,12 @@ public class SampleJurisdictionBooleanValidator extends BooleanJurisdictionValid
     }
 
     @Override
-    protected Boolean isInJurisdiction() {
+    protected Boolean isRootInJurisdiction() {
         return isInJurisdictionByJurisdictionLevel(userJurisdiction.getJurisdictionLevel());
     }
 
     @Override
-    protected Boolean isInJurisdictionOrOwned() {
+    protected Boolean isRootInJurisdictionOrOwned() {
         return userJurisdiction.getUuid().equals(sampleJurisdictionDto.getReportingUserUuid()) || inJurisdiction();
     }
 

@@ -18,23 +18,23 @@
 package de.symeda.sormas.api.utils;
 
 import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
+import org.jsoup.safety.Safelist;
 
 // This class provides general XSS-Prevention methods using Jsoup.clean
 public class HtmlHelper {
 
-	public static final Whitelist EVENTACTION_WHITELIST =
-		Whitelist.relaxed().addTags("hr", "font").addAttributes("font", "size", "face", "color").addAttributes("div", "align");
+	public static final Safelist EVENTACTION_WHITELIST =
+		Safelist.relaxed().addTags("hr", "font").addAttributes("font", "size", "face", "color").addAttributes("div", "align");
 
 	private static final String HYPERLINK_TAG = "a";
 	private static final String SPAN_TAG = "span";
 	private static final String TITLE_ATTRIBUTE = "title";
 
 	public static String cleanHtml(String string) {
-		return (string == null) ? "" : Jsoup.clean(string, Whitelist.none());
+		return (string == null) ? "" : Jsoup.clean(string, Safelist.none());
 	}
 
-	public static String cleanHtml(String string, Whitelist whitelist) {
+	public static String cleanHtml(String string, Safelist whitelist) {
 		return (string == null) ? "" : Jsoup.clean(string, whitelist);
 	}
 
@@ -52,11 +52,11 @@ public class HtmlHelper {
 
 	// this method should be used for i18n-strings and captions so that custom whitelist rules can be added when needed
 	public static String cleanI18nString(String string) {
-		return (string == null) ? "" : Jsoup.clean(string, Whitelist.basic());
+		return (string == null) ? "" : Jsoup.clean(string, Safelist.basic());
 	}
 
 	public static String cleanHtmlRelaxed(String string) {
-		return (string == null) ? "" : Jsoup.clean(string, Whitelist.relaxed());
+		return (string == null) ? "" : Jsoup.clean(string, Safelist.relaxed());
 	}
 
 	/**
@@ -80,7 +80,7 @@ public class HtmlHelper {
 		String result = String.format("<%s %s>%s</%s>", tag, cleanHtmlAttribute(TITLE_ATTRIBUTE, title), HtmlHelper.cleanHtml(caption), tag);
 
 		// Prevent breakout in tag attributes: only allow the intended tag attribute
-		result = Jsoup.clean(result, Whitelist.none().addTags(tag).addAttributes(tag, TITLE_ATTRIBUTE));
+		result = Jsoup.clean(result, Safelist.none().addTags(tag).addAttributes(tag, TITLE_ATTRIBUTE));
 		return result;
 	}
 }

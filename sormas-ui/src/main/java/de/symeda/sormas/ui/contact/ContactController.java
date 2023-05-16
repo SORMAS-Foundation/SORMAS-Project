@@ -704,7 +704,11 @@ public class ContactController {
 					() -> navigateToView(ContactDataView.VIEW_NAME, contact.getUuid(), false));
 		}
 
-		editComponent.restrictEditableComponentsOnEditView(UserRight.CONTACT_EDIT, UserRight.CONTACT_DELETE, null, contact.isInJurisdiction());
+		editComponent.restrictEditableComponentsOnEditView(
+			UserRight.CONTACT_EDIT,
+			UserRight.CONTACT_DELETE,
+			FacadeProvider.getContactFacade().getEditPermissionType(contactUuid),
+			contact.isInJurisdiction());
 
 		return editComponent;
 	}

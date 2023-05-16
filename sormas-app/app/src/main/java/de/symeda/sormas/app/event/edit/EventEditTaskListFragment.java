@@ -23,7 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -55,7 +55,7 @@ public class EventEditTaskListFragment extends BaseEditFragment<FragmentFormList
 
 		((EventEditActivity) getActivity()).showPreloader();
 		adapter = new TaskListAdapter();
-		model = ViewModelProviders.of(this).get(TaskListViewModel.class);
+		model = new ViewModelProvider(this).get(TaskListViewModel.class);
 		model.initializeViewModel(getActivityRootData());
 		model.getTasks().observe(this, tasks -> {
 			((EventEditActivity) getActivity()).hidePreloader();
