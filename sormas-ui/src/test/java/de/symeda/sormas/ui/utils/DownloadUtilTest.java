@@ -16,6 +16,7 @@ import com.vaadin.server.StreamResource;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -30,15 +31,14 @@ import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
-import de.symeda.sormas.ui.AbstractBeanTest;
-import de.symeda.sormas.ui.TestDataCreator;
+import de.symeda.sormas.ui.AbstractUiBeanTest;
 
-public class DownloadUtilTest extends AbstractBeanTest {
+public class DownloadUtilTest extends AbstractUiBeanTest {
 
 	@Test
 	public void testCreateVisitsExportStreamResource() throws IOException {
 
-		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		var rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(
 			rdcf.region.getUuid(),
 			rdcf.district.getUuid(),
@@ -57,17 +57,21 @@ public class DownloadUtilTest extends AbstractBeanTest {
 			rdcf);
 
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
-		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date());
-		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE);
+		ContactDto contact = creator
+			.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), caze.getDisease());
+		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE, VisitOrigin.USER);
 		visit.getSymptoms().setAbdominalPain(SymptomState.YES);
 		FacadeProvider.getVisitFacade().save(visit);
 
 		PersonDto contactPerson2 = creator.createPerson("Contact2", "Person2");
-		ContactDto contact2 = creator.createContact(user.toReference(), user.toReference(), contactPerson2.toReference(), caze, new Date(), null);
-		VisitDto visit21 = creator.createVisit(caze.getDisease(), contactPerson2.toReference(), new Date(), VisitStatus.COOPERATIVE);
+		ContactDto contact2 =
+			creator.createContact(user.toReference(), user.toReference(), contactPerson2.toReference(), caze, new Date(), null, caze.getDisease());
+		VisitDto visit21 =
+			creator.createVisit(caze.getDisease(), contactPerson2.toReference(), new Date(), VisitStatus.COOPERATIVE, VisitOrigin.USER);
 		visit21.getSymptoms().setAbdominalPain(SymptomState.YES);
 		FacadeProvider.getVisitFacade().save(visit21);
-		VisitDto visit22 = creator.createVisit(caze.getDisease(), contactPerson2.toReference(), new Date(), VisitStatus.COOPERATIVE);
+		VisitDto visit22 =
+			creator.createVisit(caze.getDisease(), contactPerson2.toReference(), new Date(), VisitStatus.COOPERATIVE, VisitOrigin.USER);
 		visit22.getSymptoms().setAgitation(SymptomState.YES);
 		FacadeProvider.getVisitFacade().save(visit22);
 
@@ -76,15 +80,16 @@ public class DownloadUtilTest extends AbstractBeanTest {
 			caze.getDisease(),
 			contactPerson2.toReference(),
 			DateHelper.subtractDays(new Date(), FollowUpLogic.ALLOWED_DATE_OFFSET + 1),
-			VisitStatus.COOPERATIVE);
+			VisitStatus.COOPERATIVE,
+			VisitOrigin.USER);
 		visit23.getSymptoms().setAgitation(SymptomState.YES);
 		FacadeProvider.getVisitFacade().save(visit23);
 
 		PersonDto contactPerson3 = creator.createPerson("Contact3", "Person3");
-		ContactDto contact3 =
-			creator.createContact(user.toReference(), user.toReference(), contactPerson3.toReference(), caze, new Date(), new Date());
+		ContactDto contact3 = creator
+			.createContact(user.toReference(), user.toReference(), contactPerson3.toReference(), caze, new Date(), new Date(), caze.getDisease());
 		for (int i = 0; i < 3; i++) {
-			creator.createVisit(caze.getDisease(), contactPerson3.toReference(), new Date(), VisitStatus.COOPERATIVE);
+			creator.createVisit(caze.getDisease(), contactPerson3.toReference(), new Date(), VisitStatus.COOPERATIVE, VisitOrigin.USER);
 		}
 
 		StreamResource contactVisitsExport =

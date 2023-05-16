@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui;
+package de.symeda.sormas.backend;
 
 import org.hibernate.dialect.H2Dialect;
 import org.hibernate.dialect.function.SQLFunctionTemplate;
@@ -7,13 +7,15 @@ import org.hibernate.type.StandardBasicTypes;
 
 public class ExtendedH2Dialect extends H2Dialect {
 
-	public final static String ARRAY_TO_STRING = "array_to_string";
-	public final static String ARRAY_AGG = "array_agg";
-	public final static String CONCAT_FUNCTION = "concat_function";
 	public final static String UNACCENT = "unaccent";
 	public final static String ILIKE = "ilike";
 	public final static String WINDOW_FIRST_VALUE_DESC = "window_first_value_desc";
 	public final static String WINDOW_COUNT = "window_count";
+
+	public final static String ARRAY_TO_STRING = "array_to_string";
+	public final static String ARRAY_AGG = "array_agg";
+	public final static String CONCAT_FUNCTION = "concat_function";
+	public final static String GREATEST = "greatest";
 
 	public ExtendedH2Dialect() {
 		super();
@@ -22,11 +24,10 @@ public class ExtendedH2Dialect extends H2Dialect {
 		registerFunction(ARRAY_TO_STRING, new StandardSQLFunction(ARRAY_TO_STRING));
 		registerFunction(CONCAT_FUNCTION, new StandardSQLFunction("concat"));
 		registerFunction(ARRAY_AGG, new StandardSQLFunction(ARRAY_AGG));
-		registerFunction(ILIKE, new SQLFunctionTemplate(StandardBasicTypes.BOOLEAN, "?1 ILIKE ?2"));
-
-		// UNACCENT function is not available in H2 database, so let's just make sure it won't fail on tests
+		// The function unaccent is specific to PostgreSQL
+		// With H2 let's make sure it wont fail by making the function "unaccent" do nothing
 		registerFunction(UNACCENT, new SQLFunctionTemplate(StandardBasicTypes.STRING, "?1"));
-
+		registerFunction(ILIKE, new SQLFunctionTemplate(StandardBasicTypes.BOOLEAN, "?1 ILIKE ?2"));
 		registerFunction(
 			WINDOW_FIRST_VALUE_DESC,
 			new SQLFunctionTemplate(
@@ -37,6 +38,7 @@ public class ExtendedH2Dialect extends H2Dialect {
 			new SQLFunctionTemplate(
 				StandardBasicTypes.LONG,
 				"COUNT(?1) OVER (PARTITION BY ?2 RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)"));
+		registerFunction(GREATEST, new StandardSQLFunction(GREATEST));
 	}
 
 	/**

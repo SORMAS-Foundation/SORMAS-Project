@@ -64,18 +64,19 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.api.utils.LocationHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
-import de.symeda.sormas.ui.AbstractBeanTest;
-import de.symeda.sormas.ui.TestDataCreator;
+import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.ui.AbstractUiBeanTest;
 import de.symeda.sormas.ui.importer.CaseImportSimilarityInput;
 import de.symeda.sormas.ui.importer.CaseImportSimilarityResult;
 import de.symeda.sormas.ui.importer.ImportResultStatus;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
 import de.symeda.sormas.ui.importer.PersonImportSimilarityResult;
 
-public class CaseImporterTest extends AbstractBeanTest {
+public class CaseImporterTest extends AbstractUiBeanTest {
 
 	/**
 	 * This should be split into multiple tests. See #11618
@@ -274,7 +275,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 
 		InputStream errorStream = new ByteArrayInputStream(
 			((CaseImporterTest.CaseImporterExtension) caseImporter).stringBuilder.toString().getBytes(StandardCharsets.UTF_8));
-		List<String[]> errorRows = getCsvReader(errorStream).readAll();
+		List<String[]> errorRows = CSVUtils.createBomCsvReader(errorStream).readAll();
 		if (errorRows.size() > 1) {
 			assertThat("Error during import: " + StringUtils.join(errorRows.get(1), ", "), errorRows, hasSize(0));
 		}
@@ -293,7 +294,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 
 	@Test
 	public void testLineListingImport() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
-		TestDataCreator.RDCF rdcf = new TestDataCreator().createRDCF("Abia", "Bende", "Bende Ward", "Bende Maternity Home");
+		TestDataCreator.RDCF rdcf = creator.createRDCF("Abia", "Bende", "Bende Ward", "Bende Maternity Home");
 		UserDto user = creator.createUser(
 			rdcf.region.getUuid(),
 			rdcf.district.getUuid(),
@@ -383,7 +384,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 	@Test
 	public void testImportWithSamples() throws IOException, InterruptedException, CsvValidationException, InvalidColumnException, URISyntaxException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		creator.createFacility("Lab", FacilityType.LABORATORY, rdcf.region.toReference(), rdcf.district.toReference(), rdcf.community.toReference());
+		creator.createFacility("Lab", rdcf.region, rdcf.district, rdcf.community, FacilityType.LABORATORY);
 		UserDto user = creator.createUser(
 			rdcf.region.getUuid(),
 			rdcf.district.getUuid(),
@@ -421,7 +422,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		throws IOException, InterruptedException, CsvValidationException, InvalidColumnException, URISyntaxException {
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		creator.createFacility("Lab", FacilityType.LABORATORY, rdcf.region.toReference(), rdcf.district.toReference(), rdcf.community.toReference());
+		creator.createFacility("Lab", rdcf.region, rdcf.district, rdcf.community, FacilityType.LABORATORY);
 		UserDto user = creator.createUser(
 			rdcf.region.getUuid(),
 			rdcf.district.getUuid(),
@@ -471,7 +472,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		throws IOException, InterruptedException, CsvValidationException, InvalidColumnException, URISyntaxException {
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		creator.createFacility("Lab", FacilityType.LABORATORY, rdcf.region.toReference(), rdcf.district.toReference(), rdcf.community.toReference());
+		creator.createFacility("Lab", rdcf.region, rdcf.district, rdcf.community, FacilityType.LABORATORY);
 		UserDto user = creator.createUser(
 			rdcf.region.getUuid(),
 			rdcf.district.getUuid(),

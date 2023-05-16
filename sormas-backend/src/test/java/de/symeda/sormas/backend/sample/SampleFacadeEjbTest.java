@@ -1079,7 +1079,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		});
 		creator.createSample(caseWithCoord.toReference(), user.toReference(), creator.createRDCF().facility);
 
-		ContactDto contactWithParsonCoord = creator.createContact(user.toReference(), personWithCoord.toReference(), Disease.CORONAVIRUS, null);
+		ContactDto contactWithParsonCoord = creator.createContact(user.toReference(), personWithCoord.toReference(), Disease.CORONAVIRUS);
 		creator.createSample(
 			contactWithParsonCoord.toReference(),
 			new Date(),
