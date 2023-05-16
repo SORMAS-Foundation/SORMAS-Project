@@ -17,6 +17,8 @@ package de.symeda.sormas.backend.sormastosormas.share.outgoing;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -25,6 +27,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.backend.caze.Case;
@@ -35,6 +38,7 @@ import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
 
 @Entity(name = "sormastosormasshareinfo")
 public class SormasToSormasShareInfo extends AbstractDomainObject {
@@ -169,5 +173,13 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 
 	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
 		this.ownershipHandedOver = ownershipHandedOver;
+	}
+
+	@Transient
+	public SormasToSormasShareable getSharedEntity() {
+		return Stream.of(caze, contact, sample, immunization, surveillanceReport, event, eventParticipant)
+			.filter(Objects::nonNull)
+			.findFirst()
+			.orElseThrow(() -> new RuntimeException("ShareInfo[" + getUuid() + "] does not contain an entity"));
 	}
 }
