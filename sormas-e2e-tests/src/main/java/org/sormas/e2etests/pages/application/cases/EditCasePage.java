@@ -47,7 +47,6 @@ public class EditCasePage {
   public static final By EDIT_FIRST_TASK_BUTTON = By.cssSelector("[location='events'] #edit0");
   public static final By NEW_SAMPLE_BUTTON = By.cssSelector("[id='New sample']");
   public static final By NEW_SAMPLE_BUTTON_DE = By.cssSelector("[id='Neue Probe']");
-  public static final By EDIT_SAMPLE_BUTTON = By.xpath("//div[contains(@id, 'edit-sample')]");
 
   public static final By SHOW_SAMPLE_BUTTON =
       By.xpath(
@@ -419,9 +418,11 @@ public class EditCasePage {
       By.cssSelector(".popupContent textarea");
   public static final By VACCINATION_STATUS_UPDATE_POPUP_HEADER =
       By.xpath("//div[@class='popupContent']//*[text()='Impfstatus Aktualisierung']");
-  public static final By EDIT_REPORT_BUTTON = By.xpath("//div[@location='surveillanceReports']//div[contains(@id, 'edit')]");
+  public static final By EDIT_REPORT_BUTTON =
+      By.xpath("//div[@location='surveillanceReports']//div[contains(@id, 'edit')]");
   public static final By REPORTER_FACILITY_INPUT = By.cssSelector(".popupContent #facility input");
-  public static final By REPORTER_FACILITY_DETAILS_INPUT = By.cssSelector(".popupContent #facilityDetails");
+  public static final By REPORTER_FACILITY_DETAILS_INPUT =
+      By.cssSelector(".popupContent #facilityDetails");
 
   public static By checkIfTextExists(String text) {
     return By.xpath(String.format("//div[contains(text(),'%s')]", text));
@@ -430,28 +431,4 @@ public class EditCasePage {
   public static By SHARE_PENDING_WARNING_DE =
       By.xpath(
           "//div[@class='popupContent']//div[contains(text(),'Es gibt bereits eine ausstehende Anfrage an das gleiche Gesundheitsamt. Bitte widerrufen Sie die Anfrage, bevor Sie eine Neue senden.')]");
-
-  public static By checkTextInReportSideComponent(String text) {
-    return By.xpath(
-        String.format(
-            "//div[text()='Meldevorg\u00E4nge']/../../../../../..//div[text()='%s']", text));
-  }
-
-  public static By checkTextInImmunizationSideComponent(String text) {
-    return By.xpath(
-        String.format(
-            "//div[contains(@location,'vaccinations')]//div[contains(text(), '%s')]", text));
-  }
-
-  public static By checkTextInSampleSideComponent(String text) {
-    return By.xpath(
-        String.format("//div[contains(@location,'samples')]//div[contains(text(), '%s')]", text));
-  }
-
-  public static By checkTextInHandoverSideComponent(String text) {
-    return By.xpath(String.format("//div[@location='sormasToSormas']//div[text()='%s']", text));
-  }
-
-  public static final By ADDED_SAMPLES_IN_SAMPLE_CARD =
-      By.xpath("//*[@location='samples']//*[@class='v-slot v-slot-s-list']/div/div/div/div");
 }
