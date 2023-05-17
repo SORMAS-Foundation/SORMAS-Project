@@ -17,7 +17,7 @@ We suggest using [Zulu OpenJDK](https://www.azul.com/downloads/?version=java-11-
 
 Note: To work with the Android app JDK 17 is needed for the gradle build. The needed JDK is part of Android Studio, thus there is no need to manually install it.
 
-The SORMAS CI is using JDK 17 to build all modules. The only known difference though are slight differences in the Java time api that affect unit tests, so again there is no need to setup two JDKs on your local system.
+The SORMAS CI is using JDK 17 to build all modules. The only known difference though are slight differences in the Java time API that affect unit tests, so again there is no need to setup two JDKs on your local system.
 
 ## Step 3: Install Maven & Ant
 Download and install Maven for your operating system, see [binaries](https://dlcdn.apache.org/maven/maven-3/3.6.3/binaries/)
