@@ -12,9 +12,12 @@ This step-by-step guide explains how to set up your development environment, usi
 - Open Git Bash and execute the following command to ensure that rebase is used when pulling the development branch rather than merge: `git config --global branch.development.rebase true`
 
 ## Step 2: Install Java
-Download and install the **Java 11 JDK** (not JRE) for your operating system.
+Download and install the **Java 11 JDK** (not JRE) for your operating system, which is also needed for the [Server Setup](SERVER_SETUP.md).
 We suggest using [Zulu OpenJDK](https://www.azul.com/downloads/?version=java-11-lts&package=jdk). If you're running Linux, please refer to the [official documentation](https://docs.azul.com/zulu/zuludocs/ZuluUserGuide/PrepareZuluPlatform/AttachAPTRepositoryUbuntuOrDebianSys.htm) on how to install Zulu OpenJDK on your system.
-Note: To work with the Android app Java JDK 17 is needed for the gradle build. The needed JDK is part of Android Studio, thus there is no need to manually install it.
+
+Note: To work with the Android app JDK 17 is needed for the gradle build. The needed JDK is part of Android Studio, thus there is no need to manually install it.
+
+The SORMAS CI is using JDK 17 to build all modules. The only known difference though are slight differences in the Java time API that affect unit tests, so again there is no need to setup two JDKs on your local system.
 
 ## Step 3: Install Maven & Ant
 Download and install Maven for your operating system, see [binaries](https://dlcdn.apache.org/maven/maven-3/3.6.3/binaries/)
