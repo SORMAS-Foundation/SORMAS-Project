@@ -56,25 +56,44 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.ui.AbstractBeanTest;
-import de.symeda.sormas.ui.TestDataCreator;
+import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.ui.AbstractUiBeanTest;
 import de.symeda.sormas.ui.externalmessage.physiciansreport.AbstractPhysiciansReportProcessingFlow;
 import de.symeda.sormas.ui.externalmessage.processing.AbstractProcessingFlow.HandlerCallback;
 import de.symeda.sormas.ui.externalmessage.processing.PickOrCreateEntryResult;
 import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
 import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
 
-public class AbstractPhysiciansReportProcessingFlowTest extends AbstractBeanTest {
+public class AbstractPhysiciansReportProcessingFlowTest extends AbstractUiBeanTest {
 
 	private AbstractPhysiciansReportProcessingFlow flow;
 
 	private Supplier<CompletionStage<Boolean>> missingDiseaseHandler;
-	private Supplier<CompletionStage<Boolean>> relatedForwardedMessagesHandler;
-	private BiFunction<PersonDto, HandlerCallback<PersonDto>, Void> handlePickOrCreatePerson;
+
+	/**
+	 * Needed, because cdi-test InvocationTargetManager.onMockCreated doesn't allow multiple mocks for the same (generic) class
+	 */
+	private interface RelatedForwardedMessageHandler extends Supplier<CompletionStage<Boolean>> {
+	}
+
+	private RelatedForwardedMessageHandler relatedForwardedMessagesHandler;
+
+	private interface PickOrCreatePersonHandler extends BiFunction<PersonDto, HandlerCallback<PersonDto>, Void> {
+	}
+
+	private PickOrCreatePersonHandler handlePickOrCreatePerson;
 	private PickOrCreateEntryHandler handlePickOrCreateEntry;
 	private CaseCreationHandler handleCreateCase;
-	private BiFunction<CaseDataDto, HandlerCallback<CaseDataDto>, Void> handleUpdateCase;
-	private BiFunction<CaseDataDto, HandlerCallback<Void>, Void> handleConvertSamePersonContactsAndEventparticipants;
+
+	private interface UpdateCaseHandler extends BiFunction<CaseDataDto, HandlerCallback<CaseDataDto>, Void> {
+	}
+
+	private UpdateCaseHandler handleUpdateCase;
+
+	private interface ConvertSamePersonDataHandler extends BiFunction<CaseDataDto, HandlerCallback<Void>, Void> {
+	}
+
+	private ConvertSamePersonDataHandler handleConvertSamePersonContactsAndEventParticipants;
 
 	private TestDataCreator.RDCF rdcf;
 	private UserDto user;
@@ -87,10 +106,10 @@ public class AbstractPhysiciansReportProcessingFlowTest extends AbstractBeanTest
 		missingDiseaseHandler = Mockito.mock(Supplier.class);
 		when(missingDiseaseHandler.get()).thenReturn(CompletableFuture.completedFuture(true));
 
-		relatedForwardedMessagesHandler = Mockito.mock(Supplier.class);
+		relatedForwardedMessagesHandler = Mockito.mock(RelatedForwardedMessageHandler.class);
 		when(relatedForwardedMessagesHandler.get()).thenReturn(CompletableFuture.completedFuture(true));
 
-		handlePickOrCreatePerson = Mockito.mock(BiFunction.class);
+		handlePickOrCreatePerson = Mockito.mock(PickOrCreatePersonHandler.class);
 		doAnswer(answerPickOrCreatePerson(null)).when(handlePickOrCreatePerson).apply(any(), any());
 
 		handlePickOrCreateEntry = Mockito.mock(PickOrCreateEntryHandler.class);
@@ -104,17 +123,17 @@ public class AbstractPhysiciansReportProcessingFlowTest extends AbstractBeanTest
 			return null;
 		}).when(handleCreateCase).handle(any(), any(), any());
 
-		handleUpdateCase = Mockito.mock(BiFunction.class);
+		handleUpdateCase = Mockito.mock(UpdateCaseHandler.class);
 		doAnswer(invocation -> {
 			getCallbackParam(invocation).done(invocation.getArgument(0));
 			return null;
 		}).when(handleUpdateCase).apply(any(), any());
 
-		handleConvertSamePersonContactsAndEventparticipants = Mockito.mock(BiFunction.class);
+		handleConvertSamePersonContactsAndEventParticipants = Mockito.mock(ConvertSamePersonDataHandler.class);
 		doAnswer(invocation -> {
 			getCallbackParam(invocation).done(invocation.getArgument(0));
 			return null;
-		}).when(handleConvertSamePersonContactsAndEventparticipants).apply(any(), any());
+		}).when(handleConvertSamePersonContactsAndEventParticipants).apply(any(), any());
 
 		rdcf = creator.createRDCF();
 		user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
@@ -160,7 +179,7 @@ public class AbstractPhysiciansReportProcessingFlowTest extends AbstractBeanTest
 
 			@Override
 			protected void handleConvertSamePersonContactsAndEventParticipants(CaseDataDto caze, HandlerCallback<Void> callback) {
-				handleConvertSamePersonContactsAndEventparticipants.apply(caze, callback);
+				handleConvertSamePersonContactsAndEventParticipants.apply(caze, callback);
 			}
 		};
 	}

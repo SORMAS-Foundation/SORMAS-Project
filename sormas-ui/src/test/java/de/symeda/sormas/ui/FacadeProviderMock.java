@@ -55,6 +55,7 @@ import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserRoleFacade;
 import de.symeda.sormas.api.vaccination.VaccinationFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
+import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.campaign.CampaignFacadeEjb;
 import de.symeda.sormas.backend.campaign.data.CampaignFormDataFacadeEjb;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb;
@@ -95,121 +96,113 @@ import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserRoleFacadeEjb;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
-import info.novatec.beantest.api.BeanProviderHelper;
+
+import java.lang.reflect.Field;
 
 public final class FacadeProviderMock extends FacadeProvider {
+
+	private final AbstractBeanTest beanTest;
+
+	public static void MockFacadeProvider(AbstractBeanTest beanTest) {
+		try {
+			Field instance = FacadeProvider.class.getDeclaredField("instance");
+			instance.setAccessible(true);
+			instance.set(instance, new FacadeProviderMock(beanTest));
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public FacadeProviderMock(AbstractBeanTest beanTest) {
+		this.beanTest = beanTest;
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public <P> P lookupEjbRemote(Class<P> clazz) {
-		BeanProviderHelper bm = BeanProviderHelper.getInstance();
 		if (CaseFacade.class == clazz) {
-			return (P) bm.getBean(CaseFacadeEjbLocal.class);
+			return (P) beanTest.getBean(CaseFacadeEjbLocal.class);
 		} else if (ContactFacade.class == clazz) {
-			return (P) bm.getBean(ContactFacadeEjbLocal.class);
+			return (P) beanTest.getBean(ContactFacadeEjbLocal.class);
 		} else if (EventFacade.class == clazz) {
-			return (P) bm.getBean(EventFacadeEjbLocal.class);
+			return (P) beanTest.getBean(EventFacadeEjbLocal.class);
 		} else if (EventParticipantFacade.class == clazz) {
-			return (P) bm.getBean(EventParticipantFacadeEjbLocal.class);
+			return (P) beanTest.getBean(EventParticipantFacadeEjbLocal.class);
 		} else if (VisitFacade.class == clazz) {
-			return (P) bm.getBean(VisitFacadeEjbLocal.class);
+			return (P) beanTest.getBean(VisitFacadeEjbLocal.class);
 		} else if (PersonFacade.class == clazz) {
-			return (P) bm.getBean(PersonFacadeEjbLocal.class);
+			return (P) beanTest.getBean(PersonFacadeEjbLocal.class);
 		} else if (TaskFacade.class == clazz) {
-			return (P) bm.getBean(TaskFacadeEjbLocal.class);
+			return (P) beanTest.getBean(TaskFacadeEjbLocal.class);
 		} else if (SampleFacade.class == clazz) {
-			return (P) bm.getBean(SampleFacadeEjbLocal.class);
+			return (P) beanTest.getBean(SampleFacadeEjbLocal.class);
 		} else if (PathogenTestFacade.class == clazz) {
-			return (P) bm.getBean(PathogenTestFacadeEjbLocal.class);
+			return (P) beanTest.getBean(PathogenTestFacadeEjbLocal.class);
 		} else if (SymptomsFacade.class == clazz) {
-			return (P) bm.getBean(SymptomsFacadeEjbLocal.class);
+			return (P) beanTest.getBean(SymptomsFacadeEjbLocal.class);
 		} else if (FacilityFacade.class == clazz) {
-			return (P) bm.getBean(FacilityFacadeEjbLocal.class);
+			return (P) beanTest.getBean(FacilityFacadeEjbLocal.class);
 		} else if (CountryFacade.class == clazz) {
-			return (P) bm.getBean(CountryFacadeEjb.CountryFacadeEjbLocal.class);
+			return (P) beanTest.getBean(CountryFacadeEjb.CountryFacadeEjbLocal.class);
 		} else if (RegionFacade.class == clazz) {
-			return (P) bm.getBean(RegionFacadeEjbLocal.class);
+			return (P) beanTest.getBean(RegionFacadeEjbLocal.class);
 		} else if (DistrictFacade.class == clazz) {
-			return (P) bm.getBean(DistrictFacadeEjbLocal.class);
+			return (P) beanTest.getBean(DistrictFacadeEjbLocal.class);
 		} else if (CommunityFacade.class == clazz) {
-			return (P) bm.getBean(CommunityFacadeEjbLocal.class);
+			return (P) beanTest.getBean(CommunityFacadeEjbLocal.class);
 		} else if (UserFacade.class == clazz) {
-			return (P) bm.getBean(UserFacadeEjbLocal.class);
+			return (P) beanTest.getBean(UserFacadeEjbLocal.class);
 		} else if (HospitalizationFacade.class == clazz) {
-			return (P) bm.getBean(HospitalizationFacadeEjbLocal.class);
+			return (P) beanTest.getBean(HospitalizationFacadeEjbLocal.class);
 		} else if (EpiDataFacade.class == clazz) {
-			return (P) bm.getBean(EpiDataFacadeEjbLocal.class);
+			return (P) beanTest.getBean(EpiDataFacadeEjbLocal.class);
 		} else if (WeeklyReportFacade.class == clazz) {
-			return (P) bm.getBean(WeeklyReportFacadeEjbLocal.class);
+			return (P) beanTest.getBean(WeeklyReportFacadeEjbLocal.class);
 		} else if (GeoShapeProvider.class == clazz) {
-			return (P) bm.getBean(GeoShapeProviderEjbLocal.class);
+			return (P) beanTest.getBean(GeoShapeProviderEjbLocal.class);
 		} else if (OutbreakFacade.class == clazz) {
-			return (P) bm.getBean(OutbreakFacadeEjbLocal.class);
+			return (P) beanTest.getBean(OutbreakFacadeEjbLocal.class);
 		} else if (ConfigFacade.class == clazz) {
-			return (P) bm.getBean(ConfigFacadeEjbLocal.class);
+			return (P) beanTest.getBean(ConfigFacadeEjbLocal.class);
 		} else if (ExportFacade.class == clazz) {
-			return (P) bm.getBean(ExportFacadeEjbLocal.class);
+			return (P) beanTest.getBean(ExportFacadeEjbLocal.class);
 		} else if (ImportFacade.class == clazz) {
-			return (P) bm.getBean(ImportFacadeEjbLocal.class);
+			return (P) beanTest.getBean(ImportFacadeEjbLocal.class);
 		} else if (CaseClassificationFacade.class == clazz) {
-			return (P) bm.getBean(CaseClassificationFacadeEjbLocal.class);
+			return (P) beanTest.getBean(CaseClassificationFacadeEjbLocal.class);
 		} else if (PointOfEntryFacade.class == clazz) {
-			return (P) bm.getBean(PointOfEntryFacadeEjbLocal.class);
+			return (P) beanTest.getBean(PointOfEntryFacadeEjbLocal.class);
 		} else if (CampaignFacade.class == clazz) {
-			return (P) bm.getBean(CampaignFacadeEjb.CampaignFacadeEjbLocal.class);
+			return (P) beanTest.getBean(CampaignFacadeEjb.CampaignFacadeEjbLocal.class);
 		} else if (CampaignFormMetaFacade.class == clazz) {
-			return (P) bm.getBean(CampaignFormMetaFacadeEjb.CampaignFormMetaFacadeEjbLocal.class);
+			return (P) beanTest.getBean(CampaignFormMetaFacadeEjb.CampaignFormMetaFacadeEjbLocal.class);
 		} else if (CampaignFormDataFacade.class == clazz) {
-			return (P) bm.getBean(CampaignFormDataFacadeEjb.CampaignFormDataFacadeEjbLocal.class);
+			return (P) beanTest.getBean(CampaignFormDataFacadeEjb.CampaignFormDataFacadeEjbLocal.class);
 		} else if (CaseImportFacade.class == clazz) {
-			return (P) bm.getBean(CaseImportFacadeEjbLocal.class);
+			return (P) beanTest.getBean(CaseImportFacadeEjbLocal.class);
 		} else if (EventImportFacade.class == clazz) {
-			return (P) bm.getBean(EventImportFacadeEjbLocal.class);
+			return (P) beanTest.getBean(EventImportFacadeEjbLocal.class);
 		} else if (DocumentFacade.class == clazz) {
-			return (P) bm.getBean(DocumentFacadeEjbLocal.class);
+			return (P) beanTest.getBean(DocumentFacadeEjbLocal.class);
 		} else if (ImmunizationFacade.class == clazz) {
-			return (P) bm.getBean(ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal.class);
+			return (P) beanTest.getBean(ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal.class);
 		} else if (VaccinationFacade.class == clazz) {
-			return (P) bm.getBean(VaccinationFacadeEjb.VaccinationFacadeEjbLocal.class);
+			return (P) beanTest.getBean(VaccinationFacadeEjb.VaccinationFacadeEjbLocal.class);
 		} else if (TravelEntryFacade.class == clazz) {
-			return (P) bm.getBean(TravelEntryFacadeEjb.TravelEntryFacadeEjbLocal.class);
+			return (P) beanTest.getBean(TravelEntryFacadeEjb.TravelEntryFacadeEjbLocal.class);
 		} else if (TravelEntryImportFacade.class == clazz) {
-			return (P) bm.getBean(TravelEntryImportFacadeEjb.TravelEntryImportFacadeEjbLocal.class);
+			return (P) beanTest.getBean(TravelEntryImportFacadeEjb.TravelEntryImportFacadeEjbLocal.class);
 		} else if (ExternalMessageFacade.class == clazz) {
-			return (P) bm.getBean(ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal.class);
+			return (P) beanTest.getBean(ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal.class);
 		} else if (FeatureConfigurationFacade.class == clazz) {
-			return (P) bm.getBean(FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal.class);
+			return (P) beanTest.getBean(FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal.class);
 		} else if (UserRoleFacade.class == clazz) {
-			return (P) bm.getBean(UserRoleFacadeEjb.UserRoleFacadeEjbLocal.class);
+			return (P) beanTest.getBean(UserRoleFacadeEjb.UserRoleFacadeEjbLocal.class);
 		} else if (SampleDashboardFacade.class == clazz) {
-			return (P) bm.getBean(SampleDashboardFacadeEjb.SampleDashboardFacadeEjbLocal.class);
+			return (P) beanTest.getBean(SampleDashboardFacadeEjb.SampleDashboardFacadeEjbLocal.class);
 		}
 
 		return null;
 	}
 
-	public static CaseFacadeEjbLocal getCaseFacade() {
-		BeanProviderHelper bm = BeanProviderHelper.getInstance();
-		return bm.getBean(CaseFacadeEjbLocal.class);
-	}
-
-	public static ContactFacadeEjbLocal getContactFacade() {
-		BeanProviderHelper bm = BeanProviderHelper.getInstance();
-		return bm.getBean(ContactFacadeEjbLocal.class);
-	}
-
-	public static EventFacadeEjbLocal getEventFacade() {
-		BeanProviderHelper bm = BeanProviderHelper.getInstance();
-		return bm.getBean(EventFacadeEjbLocal.class);
-	}
-
-	public static EventParticipantFacadeEjbLocal getEventParticipantFacade() {
-		BeanProviderHelper bm = BeanProviderHelper.getInstance();
-		return bm.getBean(EventParticipantFacadeEjbLocal.class);
-	}
-
-	public static SampleFacadeEjbLocal getSampleFacade() {
-		BeanProviderHelper bm = BeanProviderHelper.getInstance();
-		return bm.getBean(SampleFacadeEjbLocal.class);
-	}
 }

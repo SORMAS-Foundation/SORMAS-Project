@@ -131,22 +131,8 @@
 		</dependency>
 
 		<dependency>
-			<groupId>info.novatec</groupId>
-			<artifactId>bean-test</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.weld.se</groupId>
-			<artifactId>weld-se-core</artifactId>
-			<version>2.1.2.Final</version>
-			<!-- Downgraded version of weld to keep bean-test working until it is removed -->
-		</dependency>
-		<dependency>
-			<groupId>org.apache.deltaspike.core</groupId>
-			<artifactId>deltaspike-core-impl</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.deltaspike.cdictrl</groupId>
-			<artifactId>deltaspike-cdictrl-weld</artifactId>
+			<groupId>de.hilling.junit.cdi</groupId>
+			<artifactId>cdi-test-core</artifactId>
 		</dependency>
 
 		<dependency>

@@ -17,11 +17,17 @@
  *******************************************************************************/
 package de.symeda.sormas.api.utils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Writer;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.ArrayUtils;
 
 import com.opencsv.CSVParserBuilder;
@@ -36,18 +42,31 @@ public final class CSVUtils {
 		// Hide Utility Class Constructor
 	}
 
-	public static CSVReader createCSVReader(Reader reader, char separator, LineValidator ...lineValidators) {
+	public static CSVReader createCSVReader(Reader reader, char separator, LineValidator... lineValidators) {
 		final CSVReaderBuilder builder = new CSVReaderBuilder(reader).withCSVParser(new CSVParserBuilder().withSeparator(separator).build());
 		if (ArrayUtils.isNotEmpty(lineValidators)) {
-			for(LineValidator lineValidator: lineValidators) {
+			for (LineValidator lineValidator : lineValidators) {
 				builder.withLineValidator(lineValidator);
 			}
 		}
 		return builder.build();
 	}
 
+	public static CSVReader createBomCsvReader(InputStream inputStream) {
+		CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder();
+		BOMInputStream bomInputStream = new BOMInputStream(inputStream);
+		Reader reader = new InputStreamReader(bomInputStream, decoder);
+		BufferedReader bufferedReader = new BufferedReader(reader);
+		return CSVUtils.createCSVReader(bufferedReader, ',');
+	}
+
 	public static CSVWriter createCSVWriter(Writer writer, char separator) {
-		return new SafeCSVWriter(writer, separator, CSVWriter.DEFAULT_QUOTE_CHARACTER, CSVWriter.DEFAULT_ESCAPE_CHARACTER, CSVWriter.DEFAULT_LINE_END);
+		return new SafeCSVWriter(
+			writer,
+			separator,
+			CSVWriter.DEFAULT_QUOTE_CHARACTER,
+			CSVWriter.DEFAULT_ESCAPE_CHARACTER,
+			CSVWriter.DEFAULT_LINE_END);
 	}
 
 	/**
@@ -89,7 +108,7 @@ public final class CSVUtils {
 				appendQuoteCharacterIfNeeded(applyQuotesToAll, appendable, stringContainsSpecialCharacters);
 
 				// begin code change from parent code
-				if(formulaPattern.matcher(nextElement).matches()) {
+				if (formulaPattern.matcher(nextElement).matches()) {
 					appendable.append(FORMULA_PREFIX);
 				}
 				// end
@@ -108,7 +127,8 @@ public final class CSVUtils {
 		}
 
 		// Copied from the parent class since it's access modifier was private
-		private void appendQuoteCharacterIfNeeded(boolean applyQuotesToAll, Appendable appendable, Boolean stringContainsSpecialCharacters) throws IOException {
+		private void appendQuoteCharacterIfNeeded(boolean applyQuotesToAll, Appendable appendable, Boolean stringContainsSpecialCharacters)
+			throws IOException {
 			if ((applyQuotesToAll || stringContainsSpecialCharacters) && quotechar != NO_QUOTE_CHARACTER) {
 				appendable.append(quotechar);
 			}

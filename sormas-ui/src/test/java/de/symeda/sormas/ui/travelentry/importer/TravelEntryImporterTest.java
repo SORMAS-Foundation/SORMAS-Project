@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package travelentry.importer;
+package de.symeda.sormas.ui.travelentry.importer;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
@@ -41,22 +41,18 @@ import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryType;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
-import de.symeda.sormas.ui.AbstractBeanTest;
-import de.symeda.sormas.ui.MockProducer;
-import de.symeda.sormas.ui.TestDataCreator;
+import de.symeda.sormas.ui.AbstractUiBeanTest;
 import de.symeda.sormas.ui.importer.ImportResultStatus;
-import de.symeda.sormas.ui.travelentry.importer.TravelEntryImporter;
 
-public class TravelEntryImporterTest extends AbstractBeanTest {
+public class TravelEntryImporterTest extends AbstractUiBeanTest {
 
 	@Test
 	public void testImportAllTravelEntries()
 		throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
 
-		TestDataCreator tdc = new TestDataCreator();
-		TestDataCreator.RDP rdp = tdc.createRDP();
-		UserDto user = creator.createPointOfEntryUser(rdp.region.getUuid(), rdp.district.getUuid(), rdp.pointOfEntry.getUuid());
+		UserDto user = creator.createPointOfEntryUser(creator.createRDP());
 
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_travelentry_import_test.csv").toURI());
 		TravelEntryImporterExtension importer = new TravelEntryImporterExtension(csvFile, false, user, ValueSeparator.DEFAULT);
@@ -70,9 +66,7 @@ public class TravelEntryImporterTest extends AbstractBeanTest {
 	public void testImportAllTravelEntriesSeparatedWithTab()
 		throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
 
-		TestDataCreator tdc = new TestDataCreator();
-		TestDataCreator.RDP rdp = tdc.createRDP();
-		UserDto user = creator.createPointOfEntryUser(rdp.region.getUuid(), rdp.district.getUuid(), rdp.pointOfEntry.getUuid());
+		UserDto user = creator.createPointOfEntryUser(creator.createRDP());
 
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_travelentry_import_test_tab.csv").toURI());
 		TravelEntryImporterExtension importer = new TravelEntryImporterExtension(csvFile, false, user, ValueSeparator.TAB);
@@ -85,11 +79,9 @@ public class TravelEntryImporterTest extends AbstractBeanTest {
 	@Test
 	public void testUserJurisdictionSetIfMissing()
 		throws InterruptedException, InvalidColumnException, CsvValidationException, IOException, URISyntaxException {
-		TestDataCreator tdc = new TestDataCreator();
-		TestDataCreator.RDP rdp = tdc.createRDP();
 
-		UserDto user = creator.createPointOfEntryUser(rdp.region.getUuid(), rdp.district.getUuid(), rdp.pointOfEntry.getUuid());
-
+		var rdp = creator.createRDP();
+		UserDto user = creator.createPointOfEntryUser(rdp);
 		loginWith(user);
 
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_travelentry_import_no_jurisdiction.csv").toURI());
@@ -102,21 +94,20 @@ public class TravelEntryImporterTest extends AbstractBeanTest {
 		List<TravelEntryDto> entries = getTravelEntryFacade().getAllAfter(new Date(0));
 		assertThat(entries, hasSize(1));
 
-		assertThat(entries.get(0).getPointOfEntry(), is(rdp.pointOfEntry.toReference()));
+		assertThat(entries.get(0).getPointOfEntry(), is(rdp.pointOfEntry));
 	}
 
 	@Test
 	public void testSetOtherPOEForGermanLocale()
 		throws InterruptedException, InvalidColumnException, CsvValidationException, IOException, URISyntaxException {
-		TestDataCreator tdc = new TestDataCreator();
-		TestDataCreator.RDP rdp = tdc.createRDP();
+		var rdp = creator.createRDP();
 
 		PointOfEntryDto otherPoe = PointOfEntryDto.build();
 		otherPoe.setUuid(PointOfEntryDto.OTHER_POE_UUID);
 		otherPoe.setName("Test Other POE");
 		otherPoe.setPointOfEntryType(PointOfEntryType.OTHER);
-		otherPoe.setRegion(rdp.region.toReference());
-		otherPoe.setDistrict(rdp.district.toReference());
+		otherPoe.setRegion(rdp.region);
+		otherPoe.setDistrict(rdp.district);
 		getPointOfEntryFacade().save(otherPoe);
 
 		UserDto user = creator.createUser(
@@ -160,8 +151,7 @@ public class TravelEntryImporterTest extends AbstractBeanTest {
 	@Test
 	public void testImportFailedWithoutPOE()
 		throws InterruptedException, InvalidColumnException, CsvValidationException, IOException, URISyntaxException {
-		TestDataCreator tdc = new TestDataCreator();
-		TestDataCreator.RDP rdp = tdc.createRDP();
+		var rdp = creator.createRDP();
 
 		UserDto user = creator.createUser(
 			rdp.region.getUuid(),
