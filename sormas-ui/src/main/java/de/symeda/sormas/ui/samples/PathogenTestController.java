@@ -141,7 +141,6 @@ public class PathogenTestController {
 		// get fresh data
 		PathogenTestDto pathogenTest = facade.getByUuid(pathogenTestUuid);
 		SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(pathogenTest.getSample().getUuid());
-
 		PathogenTestForm form = new PathogenTestForm(sample, false, 0, pathogenTest.isPseudonymized(), pathogenTest.isInJurisdiction());
 		form.setValue(pathogenTest);
 

@@ -30,7 +30,7 @@ public class TreatmentGrid extends Grid implements V7AbstractGrid<TreatmentCrite
 
 	private TreatmentCriteria treatmentCriteria = new TreatmentCriteria();
 
-	public TreatmentGrid(boolean isPseudonymized, String caseUuid, boolean isEditAllowed, boolean isDeleteAllowed) {
+	public TreatmentGrid(boolean isPseudonymized, boolean isEditAllowed, boolean isDeleteAllowed) {
 		setSizeFull();
 
 		if (isEditAllowed && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {

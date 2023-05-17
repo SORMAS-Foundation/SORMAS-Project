@@ -155,11 +155,7 @@ public class TherapyController {
 			true);
 	}
 
-	public void openPrescriptionEditForm(
-		PrescriptionIndexDto prescriptionIndex,
-		Runnable callback,
-		boolean isEditAllowed,
-		boolean isDeleteAllowed) {
+	public void openPrescriptionEditForm(PrescriptionIndexDto prescriptionIndex, Runnable callback, boolean isEditAllowed, boolean isDeleteAllowed) {
 		openPrescriptionEditForm(new PrescriptionReferenceDto(prescriptionIndex.getUuid()), callback, isEditAllowed, isDeleteAllowed);
 	}
 
@@ -207,11 +203,7 @@ public class TherapyController {
 		VaadinUiUtil.showModalPopupWindow(view, I18nProperties.getString(Strings.headingCreateNewTreatment));
 	}
 
-	public void openTreatmentEditForm(
-		TreatmentIndexDto treatmentIndex,
-		Runnable callback,
-		boolean isEditAllowed,
-		boolean isDeleteAllowed) {
+	public void openTreatmentEditForm(TreatmentIndexDto treatmentIndex, Runnable callback, boolean isEditAllowed, boolean isDeleteAllowed) {
 		TreatmentDto treatment = FacadeProvider.getTreatmentFacade().getTreatmentByUuid(treatmentIndex.getUuid());
 
 		boolean isEditOrDeleteAllowed = isEditAllowed || isDeleteAllowed;

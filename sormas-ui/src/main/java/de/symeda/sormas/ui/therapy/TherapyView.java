@@ -289,7 +289,6 @@ public class TherapyView extends AbstractCaseView {
 
 		treatmentGrid = new TreatmentGrid(
 			caze.isPseudonymized(),
-			caze.getUuid(),
 			UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed(), UserRight.CASE_EDIT, UserRight.TREATMENT_EDIT),
 			UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed(), UserRight.TREATMENT_DELETE));
 
