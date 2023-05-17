@@ -38,7 +38,7 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 
 	private PrescriptionCriteria prescriptionCriteria = new PrescriptionCriteria();
 
-	public PrescriptionGrid(TherapyView parentView, boolean isPseudonymized, String caseUuid, boolean isEditAllowed, boolean isDeleteAllowed) {
+	public PrescriptionGrid(TherapyView parentView, boolean isPseudonymized, boolean isEditAllowed, boolean isDeleteAllowed) {
 
 		setSizeFull();
 
@@ -112,7 +112,7 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 				ControllerProvider.getTherapyController().openTreatmentCreateForm(prescription, (Runnable) () -> parentView.reloadTreatmentGrid());
 			} else if (ACTION_BTN_ID.equals(e.getPropertyId()) || e.isDoubleClick()) {
 				ControllerProvider.getTherapyController()
-					.openPrescriptionEditForm((PrescriptionIndexDto) e.getItemId(), this::reload, caseUuid, isEditAllowed, isDeleteAllowed);
+					.openPrescriptionEditForm((PrescriptionIndexDto) e.getItemId(), this::reload, isEditAllowed, isDeleteAllowed);
 			}
 		});
 	}

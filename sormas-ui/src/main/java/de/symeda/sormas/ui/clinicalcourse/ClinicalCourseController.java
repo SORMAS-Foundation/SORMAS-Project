@@ -123,7 +123,7 @@ public class ClinicalCourseController {
 				UserRight.CASE_EDIT,
 				UserRight.CLINICAL_VISIT_EDIT,
 				UserRight.CLINICAL_VISIT_DELETE,
-				FacadeProvider.getCaseFacade().getEditPermissionType(caze.getUuid()),
+				null,
 				clinicalVisit.isInJurisdiction());
 		}
 		view.getButtonsPanel().setVisible(isEditOrDeleteAllowed);

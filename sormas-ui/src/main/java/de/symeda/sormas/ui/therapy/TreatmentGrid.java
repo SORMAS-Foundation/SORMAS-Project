@@ -73,7 +73,7 @@ public class TreatmentGrid extends Grid implements V7AbstractGrid<TreatmentCrite
 
 			if (ACTION_BTN_ID.equals(e.getPropertyId()) || e.isDoubleClick()) {
 				ControllerProvider.getTherapyController()
-					.openTreatmentEditForm((TreatmentIndexDto) e.getItemId(), this::reload, caseUuid, isEditAllowed, isDeleteAllowed);
+					.openTreatmentEditForm((TreatmentIndexDto) e.getItemId(), this::reload, isEditAllowed, isDeleteAllowed);
 			}
 		});
 	}

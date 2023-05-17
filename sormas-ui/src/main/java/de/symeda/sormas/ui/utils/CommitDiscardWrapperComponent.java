@@ -988,6 +988,8 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		}
 	}
 
+	//TODO: use one method restrictEditableChildComponentOnEditView with editChildRight null for children edit and editpermission null
+	//if the editChildRights exists calculate isEditAllowed
 	//TODO: if this is working refactor this to get isEditAllowed as parameter
 	public void restrictEditableChildComponentOnEditView(
 		UserRight editParentRight,

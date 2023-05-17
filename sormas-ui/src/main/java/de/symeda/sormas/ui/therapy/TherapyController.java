@@ -64,7 +64,6 @@ public class TherapyController {
 	public void openPrescriptionEditForm(
 		PrescriptionReferenceDto prescriptionReference,
 		Runnable callback,
-		String caseUuid,
 		boolean isEditAllowed,
 		boolean isDeleteAllowed) {
 		PrescriptionDto prescription = FacadeProvider.getPrescriptionFacade().getPrescriptionByUuid(prescriptionReference.getUuid());
@@ -120,7 +119,7 @@ public class TherapyController {
 				UserRight.CASE_EDIT,
 				UserRight.PRESCRIPTION_EDIT,
 				UserRight.PRESCRIPTION_DELETE,
-				FacadeProvider.getCaseFacade().getEditPermissionType(caseUuid),
+				null,
 				prescription.isInJurisdiction());
 		}
 		view.getButtonsPanel().setVisible(isEditOrDeleteAllowed);
@@ -159,10 +158,9 @@ public class TherapyController {
 	public void openPrescriptionEditForm(
 		PrescriptionIndexDto prescriptionIndex,
 		Runnable callback,
-		String caseUuid,
 		boolean isEditAllowed,
 		boolean isDeleteAllowed) {
-		openPrescriptionEditForm(new PrescriptionReferenceDto(prescriptionIndex.getUuid()), callback, caseUuid, isEditAllowed, isDeleteAllowed);
+		openPrescriptionEditForm(new PrescriptionReferenceDto(prescriptionIndex.getUuid()), callback, isEditAllowed, isDeleteAllowed);
 	}
 
 	public void openTreatmentCreateForm(TherapyReferenceDto therapy, Runnable callback) {
@@ -212,7 +210,6 @@ public class TherapyController {
 	public void openTreatmentEditForm(
 		TreatmentIndexDto treatmentIndex,
 		Runnable callback,
-		String caseUuid,
 		boolean isEditAllowed,
 		boolean isDeleteAllowed) {
 		TreatmentDto treatment = FacadeProvider.getTreatmentFacade().getTreatmentByUuid(treatmentIndex.getUuid());
@@ -252,7 +249,7 @@ public class TherapyController {
 				UserRight.CASE_EDIT,
 				UserRight.TREATMENT_EDIT,
 				UserRight.TREATMENT_DELETE,
-				FacadeProvider.getCaseFacade().getEditPermissionType(caseUuid),
+				null,
 				treatment.isInJurisdiction());
 		}
 		view.getButtonsPanel().setVisible(isEditOrDeleteAllowed);
@@ -262,7 +259,6 @@ public class TherapyController {
 				openPrescriptionEditForm(
 					treatment.getPrescription(),
 					null,
-					caseUuid,
 					true,
 					UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed, UserRight.PRESCRIPTION_DELETE));
 				popupWindow.close();

@@ -41,7 +41,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.visit.VisitDto;
@@ -72,7 +71,6 @@ public class VisitController {
 		Date endDate = null;
 		boolean inJurisdiction = false;
 		boolean isContactRef = false;
-		SormasToSormasShareableDto parent;
 
 		if (contactRef != null) {
 			ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactRef.getUuid());
@@ -82,7 +80,6 @@ public class VisitController {
 			endDate = ContactLogic.getEndDate(contact);
 			inJurisdiction = contact.isInJurisdiction();
 			isContactRef = true;
-			parent = contact;
 		} else if (caseRef != null) {
 			CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
 			PersonDto visitPerson = FacadeProvider.getPersonFacade().getByUuid(visit.getPerson().getUuid());
@@ -90,7 +87,6 @@ public class VisitController {
 			startDate = CaseLogic.getStartDate(caze);
 			endDate = CaseLogic.getEndDate(caze);
 			inJurisdiction = caze.isInJurisdiction();
-			parent = caze;
 		} else {
 			throw new IllegalArgumentException("Cannot edit a visit without contact nor case");
 		}
@@ -100,7 +96,6 @@ public class VisitController {
 		editVisit(
 			editForm,
 			visit.toReference(),
-			parent,
 			doneConsumer,
 			canEdit,
 			canDelete,
@@ -113,7 +108,6 @@ public class VisitController {
 	private void editVisit(
 		VisitEditForm editForm,
 		VisitReferenceDto visitRef,
-		SormasToSormasShareableDto parent,
 		Consumer<VisitReferenceDto> doneConsumer,
 		boolean canEdit,
 		boolean canDelete,
@@ -152,22 +146,12 @@ public class VisitController {
 				}, I18nProperties.getCaption(VisitDto.I18N_PREFIX));
 			}
 
-			//TODO: refactor this part
-			if (parent instanceof CaseDataDto) {
-				editView.restrictEditableChildComponentOnEditView(
-					getParentEditRight(isContactRef),
-					UserRight.VISIT_EDIT,
-					UserRight.VISIT_DELETE,
-					FacadeProvider.getCaseFacade().getEditPermissionType(parent.getUuid()),
-					inJurisdiction);
-			} else {
-				editView.restrictEditableChildComponentOnEditView(
-					getParentEditRight(isContactRef),
-					UserRight.VISIT_EDIT,
-					UserRight.VISIT_DELETE,
-					FacadeProvider.getContactFacade().getEditPermissionType(parent.getUuid()),
-					inJurisdiction);
-			}
+			editView.restrictEditableChildComponentOnEditView(
+				getParentEditRight(isContactRef),
+				UserRight.VISIT_EDIT,
+				UserRight.VISIT_DELETE,
+				null,
+				inJurisdiction);
 		}
 		editView.getButtonsPanel().setVisible(isEditOrDeleteAllowed);
 	}
