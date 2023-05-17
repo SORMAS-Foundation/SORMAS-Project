@@ -762,7 +762,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 	@Override
 	public Predicate inJurisdictionOrOwned(SampleQueryContext qc) {
 		final User currentUser = userService.getCurrentUser();
-		return SampleJurisdictionPredicateValidator.of(qc, currentUser).isRootInJurisdictionOrOwned();
+		return SampleJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
 	}
 
 	public Predicate buildCriteriaFilter(SampleCriteria criteria, SampleQueryContext sampleQueryContext) {

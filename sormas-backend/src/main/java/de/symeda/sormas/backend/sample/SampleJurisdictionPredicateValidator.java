@@ -22,15 +22,11 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 
-import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.api.utils.jurisdiction.JurisdictionValidator;
 import de.symeda.sormas.backend.caze.CaseJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
-import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
-import de.symeda.sormas.backend.event.Event;
-import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.event.EventParticipantQueryContext;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
@@ -85,22 +81,58 @@ public class SampleJurisdictionPredicateValidator extends PredicateJurisdictionV
 	}
 
 	@Override
-	protected Predicate isRootInJurisdictionOrOwned() {
+	public Predicate isRootInJurisdictionOrOwned() {
 		final Predicate reportedByCurrentUser = cb.and(
 			cb.isNotNull(joins.getRoot().get(Sample.REPORTING_USER)),
 			user != null
 				? cb.equal(joins.getRoot().get(Sample.REPORTING_USER).get(User.ID), user.getId())
 				: cb.equal(joins.getRoot().get(Sample.REPORTING_USER).get(User.ID), userPath.get(User.ID)));
-		return CriteriaBuilderHelper.and(cb, cb.or(reportedByCurrentUser, isRootInJurisdiction()), hasUserLimitedDisease());
+		return cb.or(reportedByCurrentUser, isRootInJurisdiction());
 	}
 
 	@Override
-	protected Predicate getLimitedDiseasePredicate() {
-		return CriteriaBuilderHelper.or(
-			cb,
-			cb.equal(joins.getCaze().get(Case.DISEASE), user.getLimitedDisease()),
-			cb.equal(joins.getContact().get(Contact.DISEASE), user.getLimitedDisease()),
-			cb.equal(joins.getEventParticipant().get(EventParticipant.EVENT).get(Event.DISEASE), user.getLimitedDisease()));
+	public Predicate inJurisdictionOrOwned() {
+		Predicate rootInJurisdictionOrOwned = isRootInJurisdictionOrOwned();
+		Predicate rootHasLimitedDisease = hasUserLimitedDisease();
+		if (associatedJurisdictionValidators != null && !associatedJurisdictionValidators.isEmpty()) {
+			final List<Predicate> jurisdictionTypes = new ArrayList<>();
+			final List<Predicate> diseaseJurisdictionTypes = new ArrayList<>();
+			jurisdictionTypes.add(rootInJurisdictionOrOwned);
+			diseaseJurisdictionTypes.add(rootHasLimitedDisease);
+			for (JurisdictionValidator<Predicate> jurisdictionValidator : associatedJurisdictionValidators) {
+				if (jurisdictionValidator != null) {
+					Predicate associatedInJurisdictionOrOwned = jurisdictionValidator.isRootInJurisdictionOrOwned();
+					Predicate associatedHasLimitedDisease = jurisdictionValidator.hasUserLimitedDisease();
+					jurisdictionTypes.add(associatedInJurisdictionOrOwned);
+					diseaseJurisdictionTypes.add(associatedHasLimitedDisease);
+				}
+			}
+			return and(or(jurisdictionTypes), or(diseaseJurisdictionTypes));
+		} else {
+			return and(rootInJurisdictionOrOwned, rootHasLimitedDisease);
+		}
+	}
+
+	public Predicate inJurisdiction() {
+		Predicate rootInJurisdiction = isRootInJurisdiction();
+		Predicate rootHasLimitedDisease = hasUserLimitedDisease();
+		if (associatedJurisdictionValidators != null && !associatedJurisdictionValidators.isEmpty()) {
+			final List<Predicate> jurisdictionTypes = new ArrayList<>();
+			final List<Predicate> diseaseJurisdictionTypes = new ArrayList<>();
+			jurisdictionTypes.add(rootInJurisdiction);
+			diseaseJurisdictionTypes.add(rootHasLimitedDisease);
+			for (JurisdictionValidator<Predicate> jurisdictionValidator : associatedJurisdictionValidators) {
+				if (jurisdictionValidator != null) {
+					Predicate associatedInJurisdiction = jurisdictionValidator.isRootInJurisdiction();
+					Predicate associatedHasLimitedDisease = jurisdictionValidator.hasUserLimitedDisease();
+					jurisdictionTypes.add(associatedInJurisdiction);
+					diseaseJurisdictionTypes.add(associatedHasLimitedDisease);
+				}
+			}
+			return and(or(jurisdictionTypes), or(diseaseJurisdictionTypes));
+		} else {
+			return and(rootInJurisdiction, rootHasLimitedDisease);
+		}
 	}
 
 	@Override

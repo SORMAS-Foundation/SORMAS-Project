@@ -22,45 +22,57 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 
 public abstract class JurisdictionValidator<T> {
 
-	private List<? extends JurisdictionValidator<T>> associatedJurisdictionValidators;
+	protected List<? extends JurisdictionValidator<T>> associatedJurisdictionValidators;
 
 	public JurisdictionValidator(List<? extends JurisdictionValidator<T>> associatedJurisdictionValidators) {
 		this.associatedJurisdictionValidators = associatedJurisdictionValidators;
 	}
 
+	// disease restriction overrules entity ownership
 	public T inJurisdictionOrOwned() {
+		T rootInJurisdictionOrOwned = isRootInJurisdictionOrOwned();
+		T rootHasLimitedDisease = hasUserLimitedDisease();
 		if (associatedJurisdictionValidators != null && !associatedJurisdictionValidators.isEmpty()) {
 			final List<T> jurisdictionTypes = new ArrayList<>();
-			jurisdictionTypes.add(isRootInJurisdictionOrOwned());
+			jurisdictionTypes.add(and(rootInJurisdictionOrOwned, rootHasLimitedDisease));
 			for (JurisdictionValidator<T> jurisdictionValidator : associatedJurisdictionValidators) {
 				if (jurisdictionValidator != null) {
-					jurisdictionTypes.add(jurisdictionValidator.isRootInJurisdictionOrOwned());
+					T associatedInJurisdictionOrOwned = jurisdictionValidator.isRootInJurisdictionOrOwned();
+					T associatedHasLimitedDisease = jurisdictionValidator.hasUserLimitedDisease();
+					jurisdictionTypes.add(and(associatedInJurisdictionOrOwned, associatedHasLimitedDisease));
 				}
 			}
 			return or(jurisdictionTypes);
 		} else {
-			return isRootInJurisdictionOrOwned();
+			return and(rootInJurisdictionOrOwned, rootHasLimitedDisease);
 		}
 	}
 
+	// disease restriction overrules entity ownership
 	public T inJurisdiction() {
+		T rootInJurisdiction = isRootInJurisdiction();
+		T rootHasLimitedDisease = hasUserLimitedDisease();
 		if (associatedJurisdictionValidators != null && !associatedJurisdictionValidators.isEmpty()) {
 			final List<T> jurisdictionTypes = new ArrayList<>();
-			jurisdictionTypes.add(isRootInJurisdiction());
+			jurisdictionTypes.add(and(rootInJurisdiction, rootHasLimitedDisease));
 			for (JurisdictionValidator<T> jurisdictionValidator : associatedJurisdictionValidators) {
 				if (jurisdictionValidator != null) {
-					jurisdictionTypes.add(jurisdictionValidator.isRootInJurisdiction());
+					T associatedInJurisdiction = jurisdictionValidator.isRootInJurisdiction();
+					T associatedHasLimitedDisease = jurisdictionValidator.hasUserLimitedDisease();
+					jurisdictionTypes.add(and(associatedInJurisdiction, associatedHasLimitedDisease));
 				}
 			}
 			return or(jurisdictionTypes);
 		} else {
-			return isRootInJurisdiction();
+			return and(rootInJurisdiction, rootHasLimitedDisease);
 		}
 	}
 
-	protected abstract T isRootInJurisdiction();
+	public abstract T isRootInJurisdiction();
 
-	protected abstract T isRootInJurisdictionOrOwned();
+	public abstract T isRootInJurisdictionOrOwned();
+
+	public abstract T hasUserLimitedDisease();
 
 	protected T isInJurisdictionByJurisdictionLevel(JurisdictionLevel jurisdictionLevel) {
 
@@ -87,6 +99,8 @@ public abstract class JurisdictionValidator<T> {
 			return whenNotAllowed();
 		}
 	}
+
+	protected abstract T and(T condition1, T condition2);
 
 	protected abstract T or(List<T> jurisdictionTypes);
 
