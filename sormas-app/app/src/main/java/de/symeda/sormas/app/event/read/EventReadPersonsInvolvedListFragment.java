@@ -21,7 +21,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -52,7 +52,7 @@ public class EventReadPersonsInvolvedListFragment extends BaseReadFragment<Fragm
 
 		((EventReadActivity) getActivity()).showPreloader();
 		adapter = new EventParticipantListAdapter(R.layout.row_read_persons_involved_list_item_layout, this, null);
-		model = ViewModelProviders.of(this).get(EventParticipantListViewModel.class);
+		model = new ViewModelProvider(this).get(EventParticipantListViewModel.class);
 		model.getEventParticipants(getActivityRootData()).observe(this, eventParticipants -> {
 			adapter.replaceAll(eventParticipants);
 			adapter.notifyDataSetChanged();

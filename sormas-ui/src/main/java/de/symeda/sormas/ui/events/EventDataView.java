@@ -218,10 +218,6 @@ public class EventDataView extends AbstractEventView {
 
 		layout.addSidePanelComponent(shortcutLinksLayout, SHORTCUT_LINKS_LOC);
 
-		if (!UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EDIT)) {
-			layout.getSidePanelComponent().setEnabled(false);
-		}
-
 		final boolean deleted = FacadeProvider.getEventFacade().isDeleted(uuid);
 		layout.disableIfNecessary(deleted, eventEditAllowed);
 	}

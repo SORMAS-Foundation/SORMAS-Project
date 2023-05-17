@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -37,7 +37,7 @@ public class CaseReadEventListFragment extends BaseReadFragment<FragmentFormList
 
 		((CaseReadActivity) getActivity()).showPreloader();
 		eventListAdapter = new EventListAdapter();
-		EventListViewModel model = ViewModelProviders.of(this).get(EventListViewModel.class);
+		EventListViewModel model = new ViewModelProvider(this).get(EventListViewModel.class);
 		model.initializeViewModel(getActivityRootData());
 		model.getEvents().observe(this, events -> {
 			eventListAdapter.submitList(events);

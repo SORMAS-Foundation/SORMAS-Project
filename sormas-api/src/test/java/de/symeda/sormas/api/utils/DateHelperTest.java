@@ -31,7 +31,11 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAccessor;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -337,17 +341,40 @@ public class DateHelperTest {
 		Date parsed = DateHelper.parseDateTimeWithException("21/04/2021 13:30", Language.DE);
 		assertEquals(date, parsed);
 
-		parsed = DateHelper.parseDateTimeWithException("21.04.2021 1:30 nachm.", Language.DE);
+		String dePmSuffix = getDePmSuffix();
+		parsed = DateHelper.parseDateTimeWithException("21.04.2021 1:30 " + dePmSuffix, Language.DE);
 		assertEquals(date, parsed);
 
 		parsed = DateHelper.parseDateTimeWithException("21-04-2021 13.30", Language.DE);
 		assertEquals(date, parsed);
 
-		parsed = DateHelper.parseDateTimeWithException("21-04-2021 1.30 nachm.", Language.DE);
+		parsed = DateHelper.parseDateTimeWithException("21-04-2021 1.30 " + dePmSuffix, Language.DE);
 		assertEquals(date, parsed);
 
 		Date parsedNoTime = DateHelper.parseDateTimeWithException("21/04/2021", Language.DE);
 		assertEquals(UtilDate.of(2021, Month.APRIL, 21), parsedNoTime);
+	}
+
+	/**
+	 * @return The correct PM suffix for Locale DE (changes between Java versions).
+	 */
+	private static String getDePmSuffix() {
+
+		String dateString = "21.04.2021 1:30 ";
+		DateTimeFormatter formatter =
+			new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern("dd.MM.yyyy h:mm a").toFormatter(Language.DE.getLocale());
+		String pmSuffix;
+		try {
+			// In Java 17
+			pmSuffix = "PM";
+			formatter.parse(dateString + pmSuffix);
+		} catch (DateTimeParseException e) {
+			// In Java 11
+			pmSuffix = "nachm.";
+			formatter.parse(dateString + pmSuffix);
+		}
+
+		return pmSuffix;
 	}
 
 	@Test

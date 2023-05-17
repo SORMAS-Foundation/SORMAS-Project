@@ -7,23 +7,32 @@ ext.sormasVersion = getVersionName()
 ext.keystoreProperties = loadKeystoreProperties()
 
 android {
+
     // this avoids build errors as these files are present multiple times in the project dependencies,
     // however, as they do not need to be part of the artifact, they can be excluded
-    packagingOptions{
-        exclude 'META-INF/LICENSE.md'
-        exclude 'META-INF/NOTICE.md'
+    packagingOptions {
+        jniLibs {
+            excludes += ['META-INF/spring.*']
+        }
+        resources {
+            excludes += ['META-INF/LICENSE.md',
+                         'META-INF/NOTICE.md',
+                         'META-INF/maven/de.symeda.sormas/sormas-api/pom.properties',
+                         'META-INF/maven/de.symeda.sormas/sormas-api/pom.xml',
+                         'META-INF/license.txt',
+                         'META-INF/notice.txt',
+                         'META-INF/spring.*']
+        }
     }
 
     // https://medium.com/google-developers/picking-your-compilesdkversion-minsdkversion-targetsdkversion-a098a0341ebd
     // ideally: minSdkVersion (lowest possible) <= targetSdkVersion == compileSdkVersion (latest SDK)
-    compileSdkVersion 31
-    // always use the latest
-    buildToolsVersion '30.0.2'
+    compileSdkVersion 33
 
     defaultConfig {
         applicationId "de.symeda.sormas.app"
         minSdkVersion 26
-        targetSdkVersion 31
+        targetSdkVersion 33
         versionCode buildVersionCode()
         versionName "$sormasVersion"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -53,19 +62,9 @@ android {
             }
         }
     }
-    packagingOptions {
-        exclude 'META-INF/maven/de.symeda.sormas/sormas-api/pom.properties'
-        exclude 'META-INF/maven/de.symeda.sormas/sormas-api/pom.xml'
-        exclude 'META-INF/license.txt'
-        exclude 'META-INF/notice.txt'
-        exclude 'META-INF/spring.*'
-    }
     productFlavors {
     }
 
-    lintOptions {
-        abortOnError false
-    }
     defaultConfig {
         vectorDrawables.useSupportLibrary = true
     }
@@ -81,6 +80,10 @@ android {
     useLibrary 'android.test.runner'
     useLibrary 'android.test.base'
     useLibrary 'android.test.mock'
+    namespace 'de.symeda.sormas.app'
+    lint {
+        abortOnError false
+    }
 }
 
 repositories {
@@ -91,18 +94,14 @@ repositories {
 }
 
 dependencies {
-    def lifecycle_version = "2.2.0"
-    def paging_version = "3.0.1"
-
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation platform('com.google.firebase:firebase-bom:29.0.0')
-    implementation 'androidx.appcompat:appcompat:1.3.1'
-    implementation 'com.google.android.material:material:1.5.0-alpha05'
+    implementation platform('com.google.firebase:firebase-bom:31.5.0')
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.8.0'
     implementation 'androidx.percentlayout:percentlayout:1.0.0'
-    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
-    implementation 'com.j256.ormlite:ormlite-core:5.1'
-    implementation 'com.j256.ormlite:ormlite-android:5.1'
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'com.j256.ormlite:ormlite-android:6.1'
     implementation 'javax.persistence:persistence-api:1.0.2'
     implementation 'com.google.firebase:firebase-crashlytics'
     implementation 'com.google.firebase:firebase-analytics'
@@ -110,8 +109,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-config'
     implementation("de.symeda.sormas:sormas-api:$sormasVersion") { changing = true }
     implementation 'com.github.mpkorstanje:simmetrics-core:4.1.1'
-    implementation 'com.google.guava:guava:31.0.1-android'
-    implementation 'com.opencsv:opencsv:5.5.2'
+    implementation 'com.google.guava:guava:31.1-jre'
+    implementation 'com.opencsv:opencsv:5.7.1'
     implementation 'commons-beanutils:commons-beanutils:1.9.4'
     implementation 'commons-codec:commons-codec:1.15'
     implementation 'commons-collections:commons-collections:3.2.2'
@@ -119,39 +118,41 @@ dependencies {
     implementation 'org.apache.commons:commons-collections4:4.4'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation 'org.apache.commons:commons-text:1.10.0'
-    implementation 'org.jsoup:jsoup:1.14.3'
+    implementation 'org.jsoup:jsoup:1.15.4'
     implementation 'com.googlecode:openbeans:1.0'
     implementation files('libs/MPAndroidChart-v3.0.2.jar')
     implementation(name: 'CircleProgress-v1.2.1', ext: 'aar')
-    implementation 'io.reactivex:rxandroid:1.0.1'
-    implementation 'io.reactivex:rxjava:1.0.14'
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.12.4'
-    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.12.4'
-    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
-    implementation "androidx.paging:paging-runtime:$paging_version"
-    implementation 'androidx.work:work-runtime-ktx:2.7.1'
+    implementation 'io.reactivex:rxandroid:1.2.1'
+    implementation 'io.reactivex:rxjava:1.3.8'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.14.2'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.14.2'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.6.1'
+    implementation 'androidx.paging:paging-runtime:3.1.1'
+    implementation 'androidx.work:work-runtime-ktx:2.8.1'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+    implementation 'me.dm7.barcodescanner:zxing:1.9.13'
+    implementation 'io.crowdcode.sormas.lbds:lbds-android-messaging:1.4.8'
+    implementation 'org.slf4j:slf4j-api:2.0.7'
+    // Align versions of all Kotlin components
+    implementation platform("org.jetbrains.kotlin:kotlin-bom:1.8.10")
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.hamcrest:hamcrest:2.2'
     testImplementation 'org.hamcrest:hamcrest-core:2.2'
     testImplementation 'org.hamcrest:hamcrest-library:2.2'
-    testImplementation 'org.robolectric:robolectric:4.2.1'
-    testImplementation 'org.mockito:mockito-core:4.3.1'
-    androidTestImplementation 'androidx.annotation:annotation:1.2.0'
-    androidTestImplementation 'androidx.test:runner:1.4.0'
-    androidTestImplementation 'androidx.test:rules:1.4.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    testImplementation 'org.robolectric:robolectric:4.10'
+    testImplementation 'org.mockito:mockito-core:5.3.0'
+    androidTestImplementation 'androidx.annotation:annotation:1.5.0'
+    androidTestImplementation 'androidx.test:runner:1.5.2'
+    androidTestImplementation 'androidx.test:rules:1.5.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
-    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
-    implementation 'me.dm7.barcodescanner:zxing:1.9.13'
-    implementation 'io.crowdcode.sormas.lbds:lbds-android-messaging:1.4.6'
-    implementation 'org.slf4j:slf4j-api:1.7.36'
 }
 
 apply plugin: "jacoco"
 
 jacoco {
     toolVersion = "0.8.5"
-    reportsDir = file("$buildDir/reports")
+    reportsDirectory = file("$buildDir/reports")
 }
 task jacocoUnitTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) {
     def coverageSourceDirs = [
@@ -176,8 +177,8 @@ task jacocoUnitTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) 
             "jacoco/testDebugUnitTest.exec"
     ])
     reports {
-        xml.enabled = true
-        html.enabled = true
+        xml.required = true
+        html.required = true
     }
 }
 

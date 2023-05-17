@@ -20,7 +20,7 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.jsoup.safety.Whitelist;
+import org.jsoup.safety.Safelist;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -219,7 +219,7 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 		for (CampaignFormElement element : campaignFormMetaDto.getCampaignFormElements()) {
 			// Clean the element caption from all HTML tags that are not explicitly allowed
 			if (StringUtils.isNotBlank(element.getCaption())) {
-				Whitelist whitelist = Whitelist.none();
+				Safelist whitelist = Safelist.none();
 				whitelist.addTags(CampaignFormElement.ALLOWED_HTML_TAGS);
 				element.setCaption(HtmlHelper.cleanHtml(element.getCaption(), whitelist));
 			}
@@ -245,7 +245,7 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 					}
 
 					if (StringUtils.isNotBlank(e.getCaption())) {
-						Whitelist whitelist = Whitelist.none();
+						Safelist whitelist = Safelist.none();
 						whitelist.addTags(CampaignFormElement.ALLOWED_HTML_TAGS);
 						e.setCaption(HtmlHelper.cleanHtml(e.getCaption(), whitelist));
 					}

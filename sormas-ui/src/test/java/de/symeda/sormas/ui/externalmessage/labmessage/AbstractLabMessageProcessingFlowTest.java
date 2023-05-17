@@ -80,8 +80,8 @@ import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.ui.AbstractBeanTest;
-import de.symeda.sormas.ui.TestDataCreator;
+import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.ui.AbstractUiBeanTest;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractLabMessageProcessingFlow;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractRelatedLabMessageHandler;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractRelatedLabMessageHandler.HandlerResult;
@@ -95,23 +95,46 @@ import de.symeda.sormas.ui.externalmessage.processing.PickOrCreateEntryResult;
 import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
 import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
 
-public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
+public class AbstractLabMessageProcessingFlowTest extends AbstractUiBeanTest {
 
 	private AbstractLabMessageProcessingFlow flow;
 
 	private Supplier<CompletionStage<Boolean>> missingDiseaseHandler;
-	private Supplier<CompletionStage<Boolean>> relatedForwardedMessagesHandler;
+
+	/**
+	 * Needed, because cdi-test InvocationTargetManager.onMockCreated doesn't allow multiple mocks for the same (generic) class
+	 */
+	private interface RelatedForwardedMessageHandler extends Supplier<CompletionStage<Boolean>> {
+	}
+
+	private RelatedForwardedMessageHandler relatedForwardedMessagesHandler;
 	private AbstractRelatedLabMessageHandler relatedLabMessageHandler;
 	private BiFunction<PersonDto, HandlerCallback<PersonDto>, Void> handlePickOrCreatePerson;
 	private PickOrCreateEntryHandler handlePickOrCreateEntry;
-	private EntityCreationHandler<CaseDataDto> handleCreateCase;
+	private CreateCaseHandler handleCreateCase;
 	private CreateSampleAndPathogenTestHandler handleCreateSampleAndPathogenTests;
-	private EntityCreationHandler<ContactDto> handleCreateContact;
+	private CreateContactHandler handleCreateContact;
 	private Consumer<HandlerCallback<PickOrCreateEventResult>> handlePickOrCreateEvent;
-	private BiConsumer<EventDto, HandlerCallback<EventDto>> handleCreateEvent;
-	private BiConsumer<EventParticipantDto, HandlerCallback<EventParticipantDto>> handleCreateEventParticipant;
-	private Supplier<CompletionStage<Boolean>> confirmPickExistingEventParticipant;
-	private Supplier<CompletionStage<Boolean>> multipleSamplesConfirmationHandler;
+
+	private interface CreateEventHandler extends BiConsumer<EventDto, HandlerCallback<EventDto>> {
+	}
+
+	private CreateEventHandler handleCreateEvent;
+
+	private interface CreateEventParticipantHandler extends BiConsumer<EventParticipantDto, HandlerCallback<EventParticipantDto>> {
+	}
+
+	private CreateEventParticipantHandler handleCreateEventParticipant;
+
+	private interface ConfirmPickExistingEventParticipantHandler extends Supplier<CompletionStage<Boolean>> {
+	}
+
+	private ConfirmPickExistingEventParticipantHandler confirmPickExistingEventParticipantHandler;
+
+	private interface MultipleSamplesConfirmationHandler extends Supplier<CompletionStage<Boolean>> {
+	}
+
+	private MultipleSamplesConfirmationHandler multipleSamplesConfirmationHandler;
 	private PickOrCreateSampleHandler handlePickOrCreateSample;
 	private EditSampleHandler handleEditSample;
 	private TestDataCreator.RDCF rdcf;
@@ -126,7 +149,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		missingDiseaseHandler = Mockito.mock(Supplier.class);
 		when(missingDiseaseHandler.get()).thenReturn(CompletableFuture.completedFuture(true));
 
-		relatedForwardedMessagesHandler = Mockito.mock(Supplier.class);
+		relatedForwardedMessagesHandler = Mockito.mock(RelatedForwardedMessageHandler.class);
 		when(relatedForwardedMessagesHandler.get()).thenReturn(CompletableFuture.completedFuture(true));
 
 		relatedLabMessageHandler = Mockito.mock(AbstractRelatedLabMessageHandler.class);
@@ -141,7 +164,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		pickOrCreateEntryResult.setNewCase(true);
 		doAnswer(answerPickOrCreateEntry(pickOrCreateEntryResult)).when(handlePickOrCreateEntry).handle(any(), any(), any(), any());
 
-		handleCreateCase = Mockito.mock(EntityCreationHandler.class);
+		handleCreateCase = Mockito.mock(CreateCaseHandler.class);
 		doAnswer((invocation) -> {
 			getCallbackParam(invocation).done(invocation.getArgument(0));
 			return null;
@@ -153,7 +176,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 			return null;
 		}).when(handleCreateSampleAndPathogenTests).handle(any(), any(), any(), any(), any());
 
-		handleCreateContact = Mockito.mock(EntityCreationHandler.class);
+		handleCreateContact = Mockito.mock(CreateContactHandler.class);
 		doAnswer((invocation) -> {
 			getCallbackParam(invocation).done(invocation.getArgument(0));
 			return null;
@@ -167,23 +190,18 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 			return null;
 		}).when(handlePickOrCreateEvent).accept(any());
 
-		handleCreateEvent = Mockito.mock(BiConsumer.class);
+		handleCreateEvent = Mockito.mock(CreateEventHandler.class);
 		doAnswer((invocation) -> {
 			getCallbackParam(invocation).done(invocation.getArgument(0));
 			return null;
 		}).when(handleCreateEvent).accept(any(), any());
 
-		handleCreateEventParticipant = Mockito.mock(BiConsumer.class);
+		handleCreateEventParticipant = Mockito.mock(CreateEventParticipantHandler.class);
 		doAnswer((invocation) -> {
 			getCallbackParam(invocation).done(invocation.getArgument(0));
 			return null;
 		}).when(handleCreateEventParticipant).accept(any(), any());
 
-		confirmPickExistingEventParticipant = Mockito.mock(Supplier.class);
-		when(confirmPickExistingEventParticipant.get()).thenReturn(CompletableFuture.completedFuture(true));
-
-		multipleSamplesConfirmationHandler = Mockito.mock(Supplier.class);
-		when(multipleSamplesConfirmationHandler.get()).thenReturn(CompletableFuture.completedFuture(true));
 		handlePickOrCreateSample = Mockito.mock(PickOrCreateSampleHandler.class);
 		PickOrCreateSampleResult pickOrCreateSampleResult = new PickOrCreateSampleResult();
 		pickOrCreateSampleResult.setNewSample(true);
@@ -191,6 +209,11 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 			getCallbackParam(invocation).done(pickOrCreateSampleResult);
 			return null;
 		}).when(handlePickOrCreateSample).handle(any(), any(), any());
+
+		confirmPickExistingEventParticipantHandler = Mockito.mock(ConfirmPickExistingEventParticipantHandler.class);
+		when(confirmPickExistingEventParticipantHandler.get()).thenReturn(CompletableFuture.completedFuture(true));
+		multipleSamplesConfirmationHandler = Mockito.mock(MultipleSamplesConfirmationHandler.class);
+		when(multipleSamplesConfirmationHandler.get()).thenReturn(CompletableFuture.completedFuture(true));
 
 		handleEditSample = Mockito.mock(EditSampleHandler.class);
 		doAnswer((invocation) -> {
@@ -284,7 +307,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 
 			@Override
 			protected CompletionStage<Boolean> confirmPickExistingEventParticipant() {
-				return confirmPickExistingEventParticipant.get();
+				return confirmPickExistingEventParticipantHandler.get();
 			}
 
 			@Override
@@ -1266,7 +1289,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		}).when(handlePickOrCreateEvent).accept(any());
 
 		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, user.toReference());
-		when(confirmPickExistingEventParticipant.get()).thenReturn(CompletableFuture.completedFuture(true));
+		when(confirmPickExistingEventParticipantHandler.get()).thenReturn(CompletableFuture.completedFuture(true));
 
 		ExternalMessageDto labMessage = createLabMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED);
 		SampleReportDto sampleReport = SampleReportDto.build();
@@ -1311,7 +1334,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		}).when(handlePickOrCreateEvent).accept(any());
 
 		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, user.toReference());
-		when(confirmPickExistingEventParticipant.get())
+		when(confirmPickExistingEventParticipantHandler.get())
 			// don't pick event participant
 			.thenReturn(CompletableFuture.completedFuture(false))
 			// pick event participant for the second time
@@ -1361,7 +1384,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		}).when(handlePickOrCreateEvent).accept(any());
 
 		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, user.toReference());
-		when(confirmPickExistingEventParticipant.get())
+		when(confirmPickExistingEventParticipantHandler.get())
 			// don't pick event participant
 			.thenReturn(CompletableFuture.completedFuture(false));
 
@@ -1402,16 +1425,10 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		}).when(handlePickOrCreateEvent).accept(any());
 
 		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, user.toReference());
-		when(confirmPickExistingEventParticipant.get()).thenReturn(CompletableFuture.completedFuture(true));
+		when(confirmPickExistingEventParticipantHandler.get()).thenReturn(CompletableFuture.completedFuture(true));
 
-		SampleDto sample = creator.createSample(
-			eventParticipant.toReference(),
-			new Date(),
-			new Date(),
-			user.toReference(),
-			SampleMaterial.CRUST,
-			rdcf.facility.toReference(),
-			s -> {
+		SampleDto sample = creator
+			.createSample(eventParticipant.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.CRUST, rdcf.facility, s -> {
 				s.setLabSampleID("test-lab-sample-id");
 				s.setSpecimenCondition(SpecimenCondition.ADEQUATE);
 			});
@@ -1501,7 +1518,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		}).when(handlePickOrCreateEvent).accept(any());
 
 		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, user.toReference());
-		when(confirmPickExistingEventParticipant.get()).thenReturn(CompletableFuture.completedFuture(true));
+		when(confirmPickExistingEventParticipantHandler.get()).thenReturn(CompletableFuture.completedFuture(true));
 
 		SampleDto sample = creator.createSample(eventParticipant.toReference(), user.toReference(), rdcf.facility, s -> {
 			s.setSampleMaterial(SampleMaterial.CRUST);
@@ -2000,7 +2017,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 			return null;
 		}).when(handlePickOrCreateEntry).handle(any(), any(), any(), any());
 
-		SampleDto sample = creator.createSample(contact.toReference(), user.toReference(), rdcf.facility.toReference(), null);
+		SampleDto sample = creator.createSample(contact.toReference(), user.toReference(), rdcf.facility, null);
 
 		doAnswer((invocation) -> {
 			List<SampleDto> samples = invocation.getArgument(0);
@@ -2047,7 +2064,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 			return null;
 		}).when(handlePickOrCreateEntry).handle(any(), any(), any(), any());
 
-		SampleDto sample = creator.createSample(contact.toReference(), user.toReference(), rdcf.facility.toReference(), s -> {
+		SampleDto sample = creator.createSample(contact.toReference(), user.toReference(), rdcf.facility, s -> {
 			s.setLabSampleID("test-lab-sample-id");
 			s.setSampleMaterial(SampleMaterial.CRUST);
 			s.setSpecimenCondition(SpecimenCondition.ADEQUATE);
@@ -2209,14 +2226,8 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 			return null;
 		}).when(handlePickOrCreateEntry).handle(any(), any(), any(), any());
 
-		SampleDto sample = creator.createSample(
-			eventParticipant.toReference(),
-			new Date(),
-			new Date(),
-			user.toReference(),
-			SampleMaterial.CRUST,
-			rdcf.facility.toReference(),
-			null);
+		SampleDto sample = creator
+			.createSample(eventParticipant.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.CRUST, rdcf.facility, null);
 		doAnswer((invocation) -> {
 			List<SampleDto> samples = invocation.getArgument(0);
 			PickOrCreateSampleResult result = new PickOrCreateSampleResult();
@@ -2608,8 +2619,13 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 			HandlerCallback<SampleAndPathogenTests> callback);
 	}
 
-	private interface EntityCreationHandler<T> {
+	private interface CreateCaseHandler {
 
-		Object handle(T entity, PersonDto person, HandlerCallback<?> callback);
+		Object handle(CaseDataDto caze, PersonDto person, HandlerCallback<?> callback);
+	}
+
+	private interface CreateContactHandler {
+
+		Object handle(ContactDto contact, PersonDto person, HandlerCallback<?> callback);
 	}
 }

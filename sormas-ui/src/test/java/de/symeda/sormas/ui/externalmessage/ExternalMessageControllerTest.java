@@ -26,16 +26,15 @@ import de.symeda.sormas.api.caze.surveillancereport.ReportingType;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageType;
-import de.symeda.sormas.ui.AbstractBeanTest;
-import de.symeda.sormas.ui.TestDataCreator;
+import de.symeda.sormas.ui.AbstractUiBeanTest;
 
-public class ExternalMessageControllerTest extends AbstractBeanTest {
+public class ExternalMessageControllerTest extends AbstractUiBeanTest {
 
 	@Test
 	public void testCreateSurveillanceReport() {
 		ExternalMessageController cut = new ExternalMessageController();
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		CaseDataDto caze = creator.createCase(rdcf);
+		var rdcf = creator.createRDCF();
+		CaseDataDto caze = creator.createCase(nationalAdmin.toReference(), rdcf, null);
 		Date messageDateTime = new Date();
 		ExternalMessageDto externalMessage = creator.createExternalMessage(m -> {
 			m.setType(ExternalMessageType.PHYSICIANS_REPORT);
