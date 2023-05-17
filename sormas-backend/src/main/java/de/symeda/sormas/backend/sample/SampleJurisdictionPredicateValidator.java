@@ -22,10 +22,15 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
+import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.event.EventParticipantQueryContext;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
@@ -86,7 +91,16 @@ public class SampleJurisdictionPredicateValidator extends PredicateJurisdictionV
 			user != null
 				? cb.equal(joins.getRoot().get(Sample.REPORTING_USER).get(User.ID), user.getId())
 				: cb.equal(joins.getRoot().get(Sample.REPORTING_USER).get(User.ID), userPath.get(User.ID)));
-		return cb.or(reportedByCurrentUser, isRootInJurisdiction());
+		return CriteriaBuilderHelper.and(cb, cb.or(reportedByCurrentUser, isRootInJurisdiction()), hasUserLimitedDisease());
+	}
+
+	@Override
+	protected Predicate getLimitedDiseasePredicate() {
+		return CriteriaBuilderHelper.or(
+			cb,
+			cb.equal(joins.getCaze().get(Case.DISEASE), user.getLimitedDisease()),
+			cb.equal(joins.getContact().get(Contact.DISEASE), user.getLimitedDisease()),
+			cb.equal(joins.getEventParticipant().get(EventParticipant.EVENT).get(Event.DISEASE), user.getLimitedDisease()));
 	}
 
 	@Override
