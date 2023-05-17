@@ -67,11 +67,11 @@ public class KeycloakAdminConsoleSteps implements En {
           TimeUnit.SECONDS.sleep(2);
           numberOfUsers = webDriverHelpers.getNumberOfElements(RESULT_IN_TABLE);
 
-          do {
+          while (webDriverHelpers.isElementEnabled(NEXT_PAGE_BUTTON)) {
             webDriverHelpers.clickOnWebElementBySelector(NEXT_PAGE_BUTTON);
             TimeUnit.SECONDS.sleep(2);
             numberOfUsers += webDriverHelpers.getNumberOfElements(RESULT_IN_TABLE);
-          } while (webDriverHelpers.isElementEnabled(NEXT_PAGE_BUTTON));
+          }
           numberOfUsers += webDriverHelpers.getNumberOfElements(RESULT_IN_TABLE);
         });
     When(

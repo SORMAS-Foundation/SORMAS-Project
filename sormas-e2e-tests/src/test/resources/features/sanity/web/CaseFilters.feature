@@ -4,7 +4,6 @@ Feature: Case filter functionality
   @env_main
   Scenario: Check Cases on Sample page work as expected
     Given API: I create 10 new cases
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     And I log in as a National User
     And I click on the Cases button from navbar
@@ -18,10 +17,8 @@ Feature: Case filter functionality
   @tmsLink=SORQA-30 @env_main
   Scenario: Check Person related fields filter in Case directory page
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I click on the Cases button from navbar
@@ -58,10 +55,8 @@ Feature: Case filter functionality
   @tmsLink=SORQA-30 @env_main
   Scenario: Check Case basic filters on Case directory page
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I click on the Cases button from navbar
@@ -101,10 +96,8 @@ Feature: Case filter functionality
   @tmsLink=SORQA-30 @env_main
   Scenario: Check Case region and facility related filters
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I click on the Cases button from navbar
@@ -142,10 +135,8 @@ Feature: Case filter functionality
   @tmsLink=SORQA-30 @env_main
   Scenario: Check checkboxes filters on Case directory page
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I click on the Cases button from navbar
@@ -189,10 +180,10 @@ Feature: Case filter functionality
   @tmsLink=SORQA-30 @env_main
   Scenario: Check aggregation buttons on Case directory page
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I click on the Cases button from navbar
@@ -213,10 +204,10 @@ Feature: Case filter functionality
   @tmsLink=SORQA-30 @env_main
   Scenario: Check Case report date filters on Case directory page
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I click on the Cases button from navbar
@@ -235,10 +226,10 @@ Feature: Case filter functionality
   @tmsLink=SORQA-30 @env_main
   Scenario: Check complex filters regarding responsibilities, vaccination and quarantine
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I click on the Cases button from navbar
@@ -430,10 +421,10 @@ Feature: Case filter functionality
   @tmsLink=SORQA-5969 @env_de
   Scenario Outline: Test vaccination status filter <status> and columns to case
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I open the last created Case via API

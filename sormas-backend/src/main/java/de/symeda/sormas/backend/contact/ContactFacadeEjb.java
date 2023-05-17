@@ -136,7 +136,6 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
-import de.symeda.sormas.api.utils.BulkOperationResults;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -203,7 +202,6 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserReference;
 import de.symeda.sormas.backend.user.UserRoleFacadeEjb;
-import de.symeda.sormas.backend.util.BulkOperationHelper;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -1411,7 +1409,7 @@ public class ContactFacadeEjb
 
 		boolean targetWasNull = isNull(target);
 
-		target = DtoHelper.fillOrBuildEntity(source, target, Contact::new, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, Contact::build, checkChangeDate);
 
 		if (targetWasNull) {
 			FacadeHelper.setUuidIfDtoExists(target.getEpiData(), source.getEpiData());
@@ -1445,8 +1443,12 @@ public class ContactFacadeEjb
 		target.setTracingApp(source.getTracingApp());
 		target.setTracingAppDetails(source.getTracingAppDetails());
 		target.setContactProximity(source.getContactProximity());
-		target.setContactClassification(source.getContactClassification());
-		target.setContactStatus(source.getContactStatus());
+		if (source.getContactClassification() != null) {
+			target.setContactClassification(source.getContactClassification());
+		}
+		if (source.getContactStatus() != null) {
+			target.setContactStatus(source.getContactStatus());
+		}
 		target.setFollowUpStatus(source.getFollowUpStatus());
 		target.setFollowUpComment(source.getFollowUpComment());
 		target.setFollowUpUntil(source.getFollowUpUntil());
@@ -2217,15 +2219,16 @@ public class ContactFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._CONTACT_EDIT)
-	public BulkOperationResults<String> saveBulkContacts(
+	public Integer saveBulkContacts(
 		List<String> contactUuidList,
 		ContactBulkEditData updatedContactBulkEditData,
 		boolean classificationChange,
 		boolean contactOfficerChange)
 		throws ValidationRuntimeException {
 
-		return BulkOperationHelper.executeWithLimits(contactUuidList, uuid -> {
-			Contact contact = service.getByUuid(uuid);
+		int changedContacts = 0;
+		for (String contactUuid : contactUuidList) {
+			Contact contact = service.getByUuid(contactUuid);
 
 			if (service.isEditAllowed(contact)) {
 				ContactDto existingContactDto = toDto(contact);
@@ -2238,8 +2241,10 @@ public class ContactFacadeEjb
 				}
 
 				save(existingContactDto);
+				changedContacts++;
 			}
-		});
+		}
+		return changedContacts;
 	}
 
 	@Override

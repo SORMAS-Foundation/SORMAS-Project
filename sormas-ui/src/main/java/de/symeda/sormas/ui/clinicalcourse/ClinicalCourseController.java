@@ -63,7 +63,12 @@ public class ClinicalCourseController {
 		popupWindow.setHeight(80, Unit.PERCENTAGE);
 	}
 
-	public void openClinicalVisitEditForm(ClinicalVisitIndexDto clinicalVisitIndex, String caseUuid, Runnable callback, boolean isEditAllowed) {
+	public void openClinicalVisitEditForm(
+		ClinicalVisitIndexDto clinicalVisitIndex,
+		String caseUuid,
+		Runnable callback,
+		boolean isEditAllowed,
+		boolean isDeleteAllowed) {
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
 		ClinicalVisitDto clinicalVisit = FacadeProvider.getClinicalVisitFacade().getClinicalVisitByUuid(clinicalVisitIndex.getUuid());
 		ClinicalVisitForm form = new ClinicalVisitForm(
@@ -74,17 +79,18 @@ public class ClinicalCourseController {
 			clinicalVisit.isInJurisdiction());
 		form.setValue(clinicalVisit);
 
-		final CommitDiscardWrapperComponent<ClinicalVisitForm> view = new CommitDiscardWrapperComponent<>(
-			form,
-			UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_VISIT_EDIT) && isEditAllowed,
-			form.getFieldGroup());
+		boolean isEditOrDeleteAllowed = isEditAllowed || isDeleteAllowed;
+		final CommitDiscardWrapperComponent<ClinicalVisitForm> view =
+			new CommitDiscardWrapperComponent<>(form, isEditOrDeleteAllowed, form.getFieldGroup());
 		view.setWidth(100, Unit.PERCENTAGE);
-		Window popupWindow = VaadinUiUtil.showModalPopupWindow(view, I18nProperties.getString(Strings.headingEditClinicalVisit));
-		// Clinical visit form is too big for typical screens
+
+		Window popupWindow = VaadinUiUtil.showModalPopupWindow(
+			view,
+			I18nProperties.getString(!isEditAllowed ? Strings.headingViewClinicalVisit : Strings.headingEditClinicalVisit));
 		popupWindow.setWidth(form.getWidth() + 90, Unit.PIXELS);
 		popupWindow.setHeight(80, Unit.PERCENTAGE);
 
-		if (isEditAllowed) {
+		if (isEditOrDeleteAllowed) {
 			view.addCommitListener(new CommitListener() {
 
 				@Override
@@ -103,7 +109,7 @@ public class ClinicalCourseController {
 
 			view.addDiscardListener(() -> popupWindow.close());
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_VISIT_DELETE)) {
+			if (isDeleteAllowed) {
 				view.addDeleteListener(() -> {
 					FacadeProvider.getClinicalVisitFacade().deleteClinicalVisit(clinicalVisit.getUuid());
 					popupWindow.close();
@@ -112,10 +118,14 @@ public class ClinicalCourseController {
 					}
 				}, I18nProperties.getString(Strings.entityClinicalVisit));
 			}
-		} else {
-			view.getCommitButton().setVisible(false);
-			view.getDiscardButton().setVisible(false);
+
+			view.restrictEditableComponentsOnEditView(
+				UserRight.CLINICAL_VISIT_EDIT,
+				UserRight.CLINICAL_VISIT_DELETE,
+				null,
+				clinicalVisit.isInJurisdiction());
 		}
+		view.getButtonsPanel().setVisible(isEditOrDeleteAllowed);
 	}
 
 	public void deleteAllSelectedClinicalVisits(Collection<Object> selectedRows, Runnable callback) {

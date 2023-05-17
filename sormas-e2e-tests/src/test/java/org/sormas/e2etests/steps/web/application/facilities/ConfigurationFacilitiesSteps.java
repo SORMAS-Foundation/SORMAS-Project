@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.facilities;
 
+import static org.sormas.e2etests.entities.pojo.helpers.ShortUUIDGenerator.generateShortUUID;
 import static org.sormas.e2etests.pages.application.configuration.ConfigurationTabsPage.CONFIGURATION_FACILITIES_TAB;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.CLOSE_DETAILED_EXPORT_POPUP;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.CLOSE_FACILITIES_IMPORT_BUTTON;
@@ -56,7 +57,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -239,6 +239,7 @@ public class ConfigurationFacilitiesSteps implements En {
     return builder;
   }
 
+  @SneakyThrows
   public static void writeCSVFromPOJOFacilityTab(FacilityCSV facilityData) {
 
     uploadFileDirectoryAndName = userDirPath + "/uploads/testFile.csv";
@@ -261,7 +262,7 @@ public class ConfigurationFacilitiesSteps implements En {
 
       String[] rowdata = {
         "\""
-            + UUID.randomUUID().toString().substring(0, 26).toUpperCase()
+            + generateShortUUID()
             + "\",\""
             + aFacilityName
             + "\",\""

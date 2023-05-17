@@ -101,7 +101,7 @@ ASADMIN="${PAYARA_HOME}/bin/asadmin --port ${PORT_ADMIN}"
 # Keycloak settings
 KEYCLOAK_PORT=7080
 if [[ -z "$KEYCLOAK_HOSTNAME" ]]; then
-  $KEYCLOAK_HOSTNAME="localhost:${KEYCLOAK_PORT}"
+  KEYCLOAK_HOSTNAME="localhost:${KEYCLOAK_PORT}"
   echo "Using default KEYCLOAK_HOSTNAME ${KEYCLOAK_HOSTNAME}"
 fi
 

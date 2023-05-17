@@ -102,6 +102,10 @@ public class UserProvider {
 		return getUserRights().containsAll(Arrays.asList(userRights));
 	}
 
+	public boolean hasAllUserRightsWithEditAllowedFlag(boolean isEditAllowed, UserRight... userRights) {
+		return isEditAllowed && getUserRights().containsAll(Arrays.asList(userRights));
+	}
+
 	public boolean hasNationJurisdictionLevel() {
 		return getJurisdictionLevel() == JurisdictionLevel.NATION;
 	}

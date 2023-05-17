@@ -1,5 +1,6 @@
 package org.sormas.e2etests.steps.nonBDDactions;
 
+import static org.sormas.e2etests.pages.application.NavBarPage.LOGOUT_BUTTON;
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.LANGUAGE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.SAVE_BUTTON;
 
@@ -25,10 +26,15 @@ public class BackupSteps implements En {
   public static void setAppLanguageToDefault(String envDefaultLanguage) {
     By referenceElement = By.xpath("//div[@id='dashboard']/span/span[2]");
     webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(referenceElement);
+    String currentUser = webDriverHelpers.getTextFromWebElement(LOGOUT_BUTTON);
     String collectedText = webDriverHelpers.getTextFromWebElement(referenceElement);
     String langCode = LanguageDetectorHelper.scanLanguage(collectedText);
     StringBuilder languageToSelect = new StringBuilder();
-    if (envDefaultLanguage.equalsIgnoreCase("main")) {
+    if (envDefaultLanguage.equalsIgnoreCase("main") && currentUser.contains("Nat LanUser")) {
+      languageToSelect.append(EnvLangsTranslations.getValueFor(langCode).getGermanLang());
+    } else if (envDefaultLanguage.equalsIgnoreCase("main")) {
+      languageToSelect.append(EnvLangsTranslations.getValueFor(langCode).getEnglishLang());
+    } else if (envDefaultLanguage.equalsIgnoreCase("de") && currentUser.contains("Nat LanUser")) {
       languageToSelect.append(EnvLangsTranslations.getValueFor(langCode).getEnglishLang());
     } else if (envDefaultLanguage.equalsIgnoreCase("de")) {
       languageToSelect.append(EnvLangsTranslations.getValueFor(langCode).getGermanLang());

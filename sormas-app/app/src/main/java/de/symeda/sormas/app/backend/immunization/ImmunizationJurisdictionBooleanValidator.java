@@ -38,12 +38,12 @@ public class ImmunizationJurisdictionBooleanValidator extends BooleanJurisdictio
 	}
 
 	@Override
-	protected Boolean isInJurisdiction() {
+	protected Boolean isRootInJurisdiction() {
 		return isInJurisdictionByJurisdictionLevel(userJurisdiction.getJurisdictionLevel());
 	}
 
 	@Override
-	protected Boolean isInJurisdictionOrOwned() {
+	protected Boolean isRootInJurisdictionOrOwned() {
 		return userJurisdiction.getUuid().equals(immunizationJurisdiction.getReportingUserUuid()) || inJurisdiction();
 	}
 

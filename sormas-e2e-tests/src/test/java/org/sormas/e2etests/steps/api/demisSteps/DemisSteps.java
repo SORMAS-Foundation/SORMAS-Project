@@ -34,6 +34,8 @@ import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPa
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CREATE_NEW_PERSON_RADIOBUTTON_DE;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FORWARDED_QUICK_FILTER_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FORWARDED_QUICK_FILTER_COUNTER;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.LABORATORY_DETAILS_INPUT;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.LABORATORY_INPUT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGES_DETAILED_COLUMN_HEADERS;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGES_DETAILED_TABLE_ROWS;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGES_TABLE_DATA;
@@ -582,13 +584,75 @@ public class DemisSteps implements En {
     And(
         "^I check that the Status column is filtered by \"([^\"]*)\" on Message directory page$",
         (String quickFilterOption) -> {
-          List<String> statusColumnData = getTableColumnDataByIndex(13, 10);
-          for (int i = 1; i < statusColumnData.size(); i++) {
-            softly.assertEquals(
-                statusColumnData.get(i),
-                quickFilterOption,
-                "At least one record in the column is invalid!");
-            softly.assertAll();
+          switch (quickFilterOption) {
+            case "Alle":
+              if (!webDriverHelpers.getTextFromWebElement(ALL_QUICK_FILTER_COUNTER).equals("0")) {
+                List<String> statusColumnData = getTableColumnDataByIndex(13, 10);
+                for (int i = 1; i < statusColumnData.size(); i++) {
+                  softly.assertEquals(
+                      statusColumnData.get(i),
+                      quickFilterOption,
+                      "At least one record in the column is invalid!");
+                  softly.assertAll();
+                }
+              }
+              break;
+            case "Unverarbeitet":
+              if (!webDriverHelpers
+                  .getTextFromWebElement(UNPROCESSED_QUICK_FILTER_COUNTER)
+                  .equals("0")) {
+                List<String> statusColumnData = getTableColumnDataByIndex(13, 10);
+                for (int i = 1; i < statusColumnData.size(); i++) {
+                  softly.assertEquals(
+                      statusColumnData.get(i),
+                      quickFilterOption,
+                      "At least one record in the column is invalid!");
+                  softly.assertAll();
+                }
+              }
+              break;
+            case "Verarbeitet":
+              if (!webDriverHelpers
+                  .getTextFromWebElement(PROCESSED_QUICK_FILTER_COUNTER)
+                  .equals("0")) {
+                List<String> statusColumnData = getTableColumnDataByIndex(13, 10);
+                for (int i = 1; i < statusColumnData.size(); i++) {
+                  softly.assertEquals(
+                      statusColumnData.get(i),
+                      quickFilterOption,
+                      "At least one record in the column is invalid!");
+                  softly.assertAll();
+                }
+              }
+              break;
+            case "Unklar":
+              if (!webDriverHelpers
+                  .getTextFromWebElement(UNCLEAR_QUICK_FILTER_COUNTER)
+                  .equals("0")) {
+                List<String> statusColumnData = getTableColumnDataByIndex(13, 10);
+                for (int i = 1; i < statusColumnData.size(); i++) {
+                  softly.assertEquals(
+                      statusColumnData.get(i),
+                      quickFilterOption,
+                      "At least one record in the column is invalid!");
+                  softly.assertAll();
+                }
+              }
+              break;
+            case "Weitergeleitet":
+              if (!webDriverHelpers
+                  .getTextFromWebElement(FORWARDED_QUICK_FILTER_COUNTER)
+                  .equals("0")) {
+                List<String> statusColumnData = getTableColumnDataByIndex(13, 10);
+                for (int i = 1; i < statusColumnData.size(); i++) {
+                  softly.assertEquals(
+                      statusColumnData.get(i),
+                      quickFilterOption,
+                      "At least one record in the column is invalid!");
+                  softly.assertAll();
+                }
+              }
+              break;
           }
         });
 
@@ -675,6 +739,40 @@ public class DemisSteps implements En {
               CREATE_A_NEW_CASE_WITH_POSITIVE_TEST_EVENT_PARTICIPANT_HEADER_DE, 2)) {
             webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL);
           }
+        });
+
+    When(
+        "I create and send Laboratory Notification with other facility name {string} and facility ID {string}",
+        (String otherFacilityName, String otherFacilityId) -> {
+          patientFirstName = faker.name().firstName();
+          patientLastName = faker.name().lastName();
+          String json =
+              demisApiService.prepareLabNotificationFileWithOtherFacility(
+                  patientFirstName, patientLastName, otherFacilityId, otherFacilityName);
+
+          Assert.assertTrue(
+              demisApiService.sendLabRequest(json, loginToken),
+              "Failed to send laboratory request");
+        });
+
+    Then(
+        "^I verify that labor is prefilled with \"([^\"]*)\" in New sample form while processing a DEMIS LabMessage$",
+        (String laboratoryName) -> {
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(LABORATORY_INPUT),
+              laboratoryName,
+              "Laboratory field has incorrect value prefilled");
+          softly.assertAll();
+        });
+
+    Then(
+        "^I verify that labor description is prefilled with \"([^\"]*)\" in New sample form while processing a DEMIS LabMessage$",
+        (String laboratoryDetails) -> {
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(LABORATORY_DETAILS_INPUT),
+              laboratoryDetails,
+              "Laboratory details field has incorrect value prefilled");
+          softly.assertAll();
         });
   }
 

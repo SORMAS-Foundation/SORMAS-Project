@@ -80,13 +80,13 @@ public class SampleJurisdictionPredicateValidator extends PredicateJurisdictionV
 	}
 
 	@Override
-	protected Predicate isInJurisdictionOrOwned() {
+	protected Predicate isRootInJurisdictionOrOwned() {
 		final Predicate reportedByCurrentUser = cb.and(
 			cb.isNotNull(joins.getRoot().get(Sample.REPORTING_USER)),
 			user != null
 				? cb.equal(joins.getRoot().get(Sample.REPORTING_USER).get(User.ID), user.getId())
 				: cb.equal(joins.getRoot().get(Sample.REPORTING_USER).get(User.ID), userPath.get(User.ID)));
-		return cb.or(reportedByCurrentUser, isInJurisdiction());
+		return cb.or(reportedByCurrentUser, isRootInJurisdiction());
 	}
 
 	@Override

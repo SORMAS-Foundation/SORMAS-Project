@@ -25,7 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -56,7 +56,7 @@ public class ContactReadImmunizationListFragment extends BaseReadFragment<Fragme
 
 		((ContactReadActivity) getActivity()).showPreloader();
 		immunizationListAdapter = new ImmunizationListAdapter();
-		ImmunizationListViewModel model = ViewModelProviders.of(this).get(ImmunizationListViewModel.class);
+		ImmunizationListViewModel model = new ViewModelProvider(this).get(ImmunizationListViewModel.class);
 		model.initializeViewModel(getActivityRootData());
 		model.getImmunizationList().observe(this, immunizations -> {
 			immunizationListAdapter.submitList(immunizations);

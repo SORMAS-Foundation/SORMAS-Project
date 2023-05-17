@@ -250,4 +250,9 @@ public class MergeContactIndexDto extends PseudonymizableIndexDto implements Mer
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		return this == o;
+	}
 }

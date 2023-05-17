@@ -25,7 +25,7 @@ import android.view.View;
 import android.widget.AdapterView;
 
 import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import de.symeda.sormas.api.task.TaskAssignee;
@@ -75,7 +75,7 @@ public class TaskListActivity extends PagedBaseListActivity {
 				}
 			}
 		});
-		model = ViewModelProviders.of(this).get(TaskListViewModel.class);
+		model = new ViewModelProvider(this).get(TaskListViewModel.class);
 		model.initializeViewModel();
 		model.getTasks().observe(this, tasks -> {
 			adapter.submitList(tasks);

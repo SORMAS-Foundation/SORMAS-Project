@@ -62,33 +62,42 @@ public class VisitController {
 		ContactReferenceDto contactRef,
 		CaseReferenceDto caseRef,
 		Consumer<VisitReferenceDto> doneConsumer,
-		boolean isEditAllowed) {
+		boolean isEditAllowed,
+		boolean isDeleteAllowed) {
+
 		VisitDto visit = FacadeProvider.getVisitFacade().getByUuid(visitUuid);
 		VisitEditForm editForm;
 		Date startDate = null;
 		Date endDate = null;
+		boolean inJurisdiction = false;
+
 		if (contactRef != null) {
 			ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactRef.getUuid());
 			PersonDto visitPerson = FacadeProvider.getPersonFacade().getByUuid(visit.getPerson().getUuid());
-			editForm = new VisitEditForm(visit.getDisease(), contact, visitPerson, false);
+			editForm = new VisitEditForm(visit.getDisease(), contact, visitPerson, false, contact.isInJurisdiction());
 			startDate = ContactLogic.getStartDate(contact);
 			endDate = ContactLogic.getEndDate(contact);
+			inJurisdiction = contact.isInJurisdiction();
 		} else if (caseRef != null) {
 			CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
 			PersonDto visitPerson = FacadeProvider.getPersonFacade().getByUuid(visit.getPerson().getUuid());
-			editForm = new VisitEditForm(visit.getDisease(), caze, visitPerson, false);
+			editForm = new VisitEditForm(visit.getDisease(), caze, visitPerson, false, caze.isInJurisdiction());
 			startDate = CaseLogic.getStartDate(caze);
 			endDate = CaseLogic.getEndDate(caze);
+			inJurisdiction = caze.isInJurisdiction();
 		} else {
 			throw new IllegalArgumentException("Cannot edit a visit without contact nor case");
 		}
 		editForm.setValue(visit);
 		boolean canEdit = VisitOrigin.USER.equals(visit.getOrigin()) && isEditAllowed;
+		boolean canDelete = VisitOrigin.USER.equals(visit.getOrigin()) && isDeleteAllowed;
 		editVisit(
 			editForm,
 			visit.toReference(),
 			doneConsumer,
 			canEdit,
+			canDelete,
+			inJurisdiction,
 			VisitLogic.getAllowedStartDate(startDate),
 			VisitLogic.getAllowedEndDate(endDate));
 	}
@@ -98,45 +107,45 @@ public class VisitController {
 		VisitReferenceDto visitRef,
 		Consumer<VisitReferenceDto> doneConsumer,
 		boolean canEdit,
+		boolean canDelete,
+		boolean inJurisdiction,
 		Date allowedStartDate,
 		Date allowedEndDate) {
 
-		final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<>(
-			editForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EDIT) && canEdit,
-			editForm.getFieldGroup());
+		boolean isEditOrDeleteAllowed = canEdit || canDelete;
+		final CommitDiscardWrapperComponent<VisitEditForm> editView =
+			new CommitDiscardWrapperComponent<>(editForm, isEditOrDeleteAllowed, editForm.getFieldGroup());
 		editView.setWidth(100, Unit.PERCENTAGE);
 
-		Window window;
-		if (!canEdit) {
-			editView.getButtonsPanel().setVisible(false);
-			window = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingViewVisit));
-		} else {
-			window = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditVisit));
-		}
-
-		// visit form is too big for typical screens
+		Window window = VaadinUiUtil
+			.showModalPopupWindow(editView, I18nProperties.getString(!canEdit ? Strings.headingViewVisit : Strings.headingEditVisit));
 		window.setWidth(editForm.getWidth() + 90, Unit.PIXELS);
 		window.setHeight(80, Unit.PERCENTAGE);
 
-		editView.addCommitListener(() -> {
-			if (!editForm.getFieldGroup().isModified()) {
-				FacadeProvider.getVisitFacade().saveVisit(editForm.getValue(), allowedStartDate, allowedEndDate);
-				if (doneConsumer != null) {
-					doneConsumer.accept(visitRef);
+		if (isEditOrDeleteAllowed) {
+			editView.addCommitListener(() -> {
+				if (!editForm.getFieldGroup().isModified()) {
+					FacadeProvider.getVisitFacade().saveVisit(editForm.getValue(), allowedStartDate, allowedEndDate);
+					if (doneConsumer != null) {
+						doneConsumer.accept(visitRef);
+					}
 				}
-			}
-		});
+			});
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_DELETE)) {
-			editView.addDeleteListener(() -> {
-				FacadeProvider.getVisitFacade().deleteVisit(visitRef.getUuid());
-				UI.getCurrent().removeWindow(window);
-				if (doneConsumer != null) {
-					doneConsumer.accept(visitRef);
-				}
-			}, I18nProperties.getCaption(VisitDto.I18N_PREFIX));
+			if (canDelete) {
+				editView.addDeleteListener(() -> {
+					FacadeProvider.getVisitFacade().deleteVisit(visitRef.getUuid());
+					UI.getCurrent().removeWindow(window);
+					if (doneConsumer != null) {
+						doneConsumer.accept(visitRef);
+					}
+				}, I18nProperties.getCaption(VisitDto.I18N_PREFIX));
+			}
+
+			editView.restrictEditableComponentsOnEditView(UserRight.VISIT_EDIT, UserRight.VISIT_DELETE, null, inJurisdiction);
+
 		}
+		editView.getButtonsPanel().setVisible(isEditOrDeleteAllowed);
 	}
 
 	private void createVisit(VisitEditForm createForm, Consumer<VisitReferenceDto> doneConsumer, Date allowedStartDate, Date allowedEndDate) {
@@ -165,7 +174,7 @@ public class VisitController {
 		VisitDto visit = createNewVisit(contactRef);
 		ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactRef.getUuid());
 		PersonDto contactPerson = FacadeProvider.getPersonFacade().getByUuid(contact.getPerson().getUuid());
-		VisitEditForm createForm = new VisitEditForm(visit.getDisease(), contact, contactPerson, true);
+		VisitEditForm createForm = new VisitEditForm(visit.getDisease(), contact, contactPerson, true, true); // Valid because jurisdiction doesn't matter for entities that are about to be created
 		createForm.setValue(visit);
 
 		createVisit(
@@ -179,7 +188,7 @@ public class VisitController {
 		VisitDto visit = createNewVisit(caseRef);
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
 		PersonDto person = FacadeProvider.getPersonFacade().getByUuid(caze.getPerson().getUuid());
-		VisitEditForm createForm = new VisitEditForm(visit.getDisease(), caze, person, true);
+		VisitEditForm createForm = new VisitEditForm(visit.getDisease(), caze, person, true, true); // Valid because jurisdiction doesn't matter for entities that are about to be created
 		createForm.setValue(visit);
 
 		createVisit(

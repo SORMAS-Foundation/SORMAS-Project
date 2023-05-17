@@ -19,17 +19,14 @@
 package org.sormas.e2etests.steps.web.application.samples;
 
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.ACTION_CONFIRM_POPUP_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.EDIT_SAMPLE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAMPLES_CARD_DATE_AND_TIME_OF_RESULT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAMPLES_CARD_DATE_OF_COLLECTED_SAMPLE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAMPLES_CARD_LABORATORY;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAMPLES_CARD_NUMBER_OF_TESTS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAMPLES_CARD_TEST_TYPE;
-import static org.sormas.e2etests.pages.application.contacts.EditContactPage.NUMBER_OF_TESTS_IN_SAMPLES;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_ACTIONS_COLUMN_HEADERS;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_ACTIONS_TABLE_DATA;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_ACTIONS_TABLE_ROW;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.ONE_TEST_IN_SAMPLES_DE;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.ADD_PATHOGEN_TEST;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.ADD_PATHOGEN_TEST_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.ANTIGEN_DETECTION_TEST_OPTION_BUTTON;
@@ -357,30 +354,6 @@ public class CreateNewSampleSteps implements En {
         "^I click on new test result for pathogen tests",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(NEW_TEST_RESULTS_BUTTON_FOR_PATHOGEN_TESTS);
-        });
-
-    When(
-        "^I validate only one sample is created with two pathogen tests",
-        () -> {
-          softly.assertEquals(
-              webDriverHelpers.getNumberOfElements(EDIT_SAMPLE_BUTTON),
-              1,
-              "Number of samples is not correct");
-          softly.assertEquals(
-              webDriverHelpers.getTextFromWebElement(NUMBER_OF_TESTS_IN_SAMPLES),
-              "Number of tests: 2",
-              "Number of tests is correct!");
-          softly.assertAll();
-        });
-
-    When(
-        "^I check that case created from laboratory message contains a sample with one test",
-        () -> {
-          softly.assertEquals(
-              webDriverHelpers.getNumberOfElements(EDIT_SAMPLE_BUTTON),
-              1,
-              "Number of samples is not correct");
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(ONE_TEST_IN_SAMPLES_DE);
         });
 
     When(

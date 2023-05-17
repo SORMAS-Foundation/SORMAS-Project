@@ -103,11 +103,11 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 
 	}
 
-	public VisitEditForm(Disease disease, ContactDto contact, PersonDto person, boolean create) {
+	public VisitEditForm(Disease disease, ContactDto contact, PersonDto person, boolean create, boolean inJurisdiction) {
 		this(disease, contact, null, person, create, contact.isPseudonymized(), contact.isInJurisdiction());
 	}
 
-	public VisitEditForm(Disease disease, CaseDataDto caze, PersonDto person, boolean create) {
+	public VisitEditForm(Disease disease, CaseDataDto caze, PersonDto person, boolean create, boolean inJurisdiction) {
 		this(disease, null, caze, person, create, caze.isPseudonymized(), caze.isInJurisdiction());
 	}
 

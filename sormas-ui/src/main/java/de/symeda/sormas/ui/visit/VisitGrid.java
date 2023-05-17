@@ -43,7 +43,7 @@ public class VisitGrid extends FilteredGrid<VisitIndexDto, VisitCriteria> {
 	private static final String ACTION_BTN_ID = "action";
 
 	@SuppressWarnings("unchecked")
-	public VisitGrid(VisitCriteria criteria, boolean isEditAllowed) {
+	public VisitGrid(VisitCriteria criteria, boolean isEditAllowed, boolean isDeleteAllowed) {
 		super(VisitIndexDto.class);
 		setSizeFull();
 
@@ -52,7 +52,7 @@ public class VisitGrid extends FilteredGrid<VisitIndexDto, VisitCriteria> {
 		setEagerDataProvider();
 
 		Consumer<VisitIndexDto> visitIndexDtoConsumer = e -> ControllerProvider.getVisitController()
-			.editVisit(e.getUuid(), getCriteria().getContact(), getCriteria().getCaze(), r -> reload(), isEditAllowed);
+			.editVisit(e.getUuid(), getCriteria().getContact(), getCriteria().getCaze(), r -> reload(), isEditAllowed, isDeleteAllowed);
 
 		if (isEditAllowed && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setSelectionMode(SelectionMode.MULTI);
@@ -75,17 +75,15 @@ public class VisitGrid extends FilteredGrid<VisitIndexDto, VisitCriteria> {
 			return new Label(displayText);
 		}).setId(VisitIndexDto.ORIGIN);
 
-		if (isEditAllowed) {
-			setColumns(
-				ACTION_BTN_ID,
-				VisitIndexDto.VISIT_DATE_TIME,
-				VisitIndexDto.VISIT_STATUS,
-				VisitIndexDto.VISIT_REMARKS,
-				VisitIndexDto.DISEASE,
-				VisitIndexDto.SYMPTOMATIC,
-				VisitIndexDto.TEMPERATURE,
-				VisitIndexDto.ORIGIN);
-		}
+		setColumns(
+			ACTION_BTN_ID,
+			VisitIndexDto.VISIT_DATE_TIME,
+			VisitIndexDto.VISIT_STATUS,
+			VisitIndexDto.VISIT_REMARKS,
+			VisitIndexDto.DISEASE,
+			VisitIndexDto.SYMPTOMATIC,
+			VisitIndexDto.TEMPERATURE,
+			VisitIndexDto.ORIGIN);
 
 		((Column<VisitIndexDto, Date>) getColumn(VisitIndexDto.VISIT_DATE_TIME))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(I18nProperties.getUserLanguage())));
