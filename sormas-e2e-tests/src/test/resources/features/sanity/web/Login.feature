@@ -99,3 +99,9 @@ Feature: Login with different type of users
     Then I check that English language is selected in User Settings
     And I click on logout button
 
+  @env_main @StandardLogin
+  Scenario: Login on a different website
+    Given I navigate to https://test-pipeline.sormas.netzlink.com/ website
+    Then I log in as a National Language User
+
+

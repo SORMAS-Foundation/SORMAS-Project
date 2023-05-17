@@ -78,6 +78,13 @@ public class LoginSteps implements En {
         });
 
     Given(
+      "^I navigate to ([^\"]*) website$",
+      (String path) -> {
+        webDriverHelpers.accessWebSite(path);
+        TimeUnit.SECONDS.sleep(2);
+      });
+
+    Given(
         "I click on the Log In button",
         () -> webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON));
 
