@@ -108,6 +108,7 @@ Feature: Login with different type of users
     Then I check if I got logged in as CONTACT SUPERVISOR - if so, I send an alert and log out
 
     Examples:
+      | url                                             |
       | https://test-pipeline.sormas.netzlink.com/      |
       | https://verify-sormas-two.sormas.netzlink.com/  |
 
