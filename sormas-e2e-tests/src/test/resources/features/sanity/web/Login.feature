@@ -99,13 +99,13 @@ Feature: Login with different type of users
     Then I check that English language is selected in User Settings
     And I click on logout button
 
-  @env_main @StandardLogin
+  @env_sltest @StandardLogin
   Scenario Outline: Test for default logins on the <url> website
     Given I navigate to address <url>
-    When I log into current website as a National Language User
-    Then I check if I got logged in as NATIONAL LANGUAGE USER - if so, I send an alert and log out
-    When I log into current website as a Contact Supervisor
-    Then I check if I got logged in as CONTACT SUPERVISOR - if so, I send an alert and log out
+    When I log into current website as a Administrator
+    Then I check if I got logged in as ADMINISTRATOR - if so, I send an alert and log out
+    When I log into current website as a National User
+    Then I check if I got logged in as NATIONAL USER - if so, I send an alert and log out
 
     Examples:
       | url                                             |
