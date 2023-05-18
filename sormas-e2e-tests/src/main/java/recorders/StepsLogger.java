@@ -47,7 +47,7 @@ public class StepsLogger implements StepLifecycleListener {
   public static final String PROCESS_ID_STRING = String.format("[PROCESS_ID:%s] ->", PROCESS_ID);
   private static RemoteWebDriver driver;
   private static boolean isScreenshotEnabled = true;
-  private static boolean takeScreenshotAfterStep = false;
+  private static boolean takeScreenshotAfterStep = true;
   private final String pngValue = "png";
   private final String imageType = "image/png";
 
