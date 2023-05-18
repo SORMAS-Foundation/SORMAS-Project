@@ -23,7 +23,6 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 /**
  * Writes the html templates of all forms to files.
  * Diffs between snapshots can be used to spot side effects of refactorings.
- *
  */
 public class EditFormLayoutCharting {
 

@@ -19,16 +19,15 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.ui.AbstractBeanTest;
-import de.symeda.sormas.ui.TestDataCreator;
+import de.symeda.sormas.ui.AbstractUiBeanTest;
 
-public class SampleControllerTest extends AbstractBeanTest {
+public class SampleControllerTest extends AbstractUiBeanTest {
 
 	@Test
 	public void testGetDiseaseOf() {
 
 		// basic setup
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		var rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto person = creator.createPerson();
 		SampleController sut = new SampleController();
@@ -48,20 +47,15 @@ public class SampleControllerTest extends AbstractBeanTest {
 
 		// contact
 		ContactDto contact = creator.createContact(user.toReference(), person.toReference(), Disease.CORONAVIRUS, rdcf);
-		sample = creator.createSample(contact.toReference(), user.toReference(), rdcf.facility.toReference(), null);
+		sample = creator.createSample(contact.toReference(), user.toReference(), rdcf.facility, null);
 
 		assertThat(sut.getDiseaseOf(sample), equalTo(Disease.CORONAVIRUS));
 
 		// event participant
 		EventDto event = creator.createEvent(user.toReference(), Disease.CHOLERA, rdcf);
 		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, user.toReference());
-		sample = creator.createSample(
-			eventParticipant.toReference(),
-			new Date(),
-			new Date(),
-			user.toReference(),
-			SampleMaterial.BLOOD,
-			rdcf.facility.toReference());
+		sample =
+			creator.createSample(eventParticipant.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
 
 		assertThat(sut.getDiseaseOf(sample), equalTo(Disease.CHOLERA));
 	}

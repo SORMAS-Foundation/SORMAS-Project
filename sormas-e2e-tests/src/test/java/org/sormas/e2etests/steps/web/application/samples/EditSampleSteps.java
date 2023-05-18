@@ -258,8 +258,8 @@ public class EditSampleSteps implements En {
         });
 
     Then(
-         "^I check that laboratory is set to \"([^\"]*)\" on Edit Sample page$",
-         (String labor) -> {
+        "^I check that laboratory is set to \"([^\"]*)\" on Edit Sample page$",
+        (String labor) -> {
           softly.assertEquals(
               webDriverHelpers.getValueFromWebElement(LABORATORY_INPUT),
               labor,

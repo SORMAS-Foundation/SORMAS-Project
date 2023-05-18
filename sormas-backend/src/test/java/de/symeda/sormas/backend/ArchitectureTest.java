@@ -115,7 +115,7 @@ public class ArchitectureTest {
 		new DescribedPredicate<JavaClass>("are used as data dictionary entity") {
 
 			@Override
-			public boolean apply(JavaClass javaClass) {
+			public boolean test(JavaClass javaClass) {
 				return InfoFacadeEjb.DATA_DICTIONARY_ENTITIES.stream().anyMatch(e -> javaClass.isEquivalentTo(e.getEntityClass()));
 			}
 		};
@@ -137,7 +137,7 @@ public class ArchitectureTest {
 			.haveRawType(new DescribedPredicate<JavaClass>("*Dto") {
 
 				@Override
-				public boolean apply(JavaClass javaClass) {
+				public boolean test(JavaClass javaClass) {
 					return javaClass.getSimpleName().toLowerCase().endsWith("dto");
 				}
 			})
@@ -479,7 +479,7 @@ public class ArchitectureTest {
 
 		if (authMode == AuthMode.CLASS_ONLY || authMode == AuthMode.NONE) {
 			notAnnotatedRule.apply(methods.and().haveNameNotMatching(exceptedMethodsMatcher)).check(classes);
-			annotatedRule.apply(methods.and().haveNameMatching(exceptedMethodsMatcher)).check(classes);
+			annotatedRule.apply(methods.and().haveNameMatching(exceptedMethodsMatcher)).allowEmptyShould(exceptedMethods.isEmpty()).check(classes);
 		} else {
 			// TODO - add exceptedMethods handling when needed
 			MethodsShouldConjunction methodChecks = annotatedRule.apply(methods);

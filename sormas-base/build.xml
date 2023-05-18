@@ -111,7 +111,7 @@
 
 		<echo>Collecting serverlibs</echo>
 		<antcall target="collect-serverlibs" />
-		
+
 		<echo>Collecting config und scripts</echo>
 		<antcall target="collect-setup" />
 

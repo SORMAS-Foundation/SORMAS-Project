@@ -24,7 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -56,7 +56,7 @@ public class CaseEditSampleListFragment extends BaseEditFragment<FragmentFormLis
 
 		((BaseActivity) getActivity()).showPreloader();
 		adapter = new SampleListAdapter();
-		SampleListViewModel model = ViewModelProviders.of(this).get(SampleListViewModel.class);
+		SampleListViewModel model = new ViewModelProvider(this).get(SampleListViewModel.class);
 		model.initializeViewModel(getActivityRootData());
 		model.getSamples().observe(this, samples -> {
 			((CaseEditActivity) getActivity()).hidePreloader();
