@@ -78,7 +78,7 @@ public class LoginSteps implements En {
         });
 
     Given(
-      "^I navigate to ([^\"]*) website$",
+      "^I navigate to address ([^\"]*)$",
       (String path) -> {
         webDriverHelpers.accessWebSite(path);
         TimeUnit.SECONDS.sleep(2);

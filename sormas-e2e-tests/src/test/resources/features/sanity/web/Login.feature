@@ -101,7 +101,7 @@ Feature: Login with different type of users
 
   @env_main @StandardLogin
   Scenario Outline: Test for default logins on the <url> website
-    Given I navigate to <url> website
+    Given I navigate to address <url>
     When I log into current website as a National Language User
     Then I check if I got logged in as NATIONAL LANGUAGE USER - if so, I send an alert and log out
     When I log into current website as a Contact Supervisor
