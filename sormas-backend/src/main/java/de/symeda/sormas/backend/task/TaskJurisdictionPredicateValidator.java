@@ -49,7 +49,8 @@ public class TaskJurisdictionPredicateValidator extends PredicateJurisdictionVal
 		final CriteriaBuilder cb = qc.getCriteriaBuilder();
 		final TaskJoins joins = qc.getJoins();
 
-		associatedJurisdictionValidators.add(CaseJurisdictionPredicateValidator.of(new CaseQueryContext(cb, qc.getQuery(), joins.getCaseJoins()), user));
+		associatedJurisdictionValidators
+			.add(CaseJurisdictionPredicateValidator.of(new CaseQueryContext(cb, qc.getQuery(), joins.getCaseJoins()), user));
 		associatedJurisdictionValidators
 			.add(ContactJurisdictionPredicateValidator.of(new ContactQueryContext(cb, qc.getQuery(), joins.getContactJoins()), user));
 		associatedJurisdictionValidators
@@ -59,7 +60,7 @@ public class TaskJurisdictionPredicateValidator extends PredicateJurisdictionVal
 	}
 
 	@Override
-	protected Predicate isRootInJurisdictionOrOwned() {
+	public Predicate isRootInJurisdictionOrOwned() {
 		final Predicate createdByCurrentUser = cb.and(cb.isNotNull(joins.getCreator()), cb.equal(joins.getCreator().get(User.UUID), user.getUuid()));
 
 		final Predicate assignedToCurrentUser =
@@ -68,7 +69,7 @@ public class TaskJurisdictionPredicateValidator extends PredicateJurisdictionVal
 	}
 
 	@Override
-	protected Predicate isRootInJurisdiction() {
+	public Predicate isRootInJurisdiction() {
 		return isInJurisdictionByJurisdictionLevel(user.getJurisdictionLevel());
 	}
 

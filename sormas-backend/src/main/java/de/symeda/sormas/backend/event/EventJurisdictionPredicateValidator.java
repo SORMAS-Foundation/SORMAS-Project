@@ -53,12 +53,12 @@ public class EventJurisdictionPredicateValidator extends PredicateJurisdictionVa
 	}
 
 	@Override
-	protected Predicate isRootInJurisdiction() {
+	public Predicate isRootInJurisdiction() {
 		return super.isRootInJurisdiction();
 	}
 
 	@Override
-	protected Predicate isRootInJurisdictionOrOwned() {
+	public Predicate isRootInJurisdictionOrOwned() {
 
 		final Predicate reportedByCurrentUser = cb.and(
 			cb.isNotNull(joins.getRoot().get(Event.REPORTING_USER)),
@@ -72,8 +72,7 @@ public class EventJurisdictionPredicateValidator extends PredicateJurisdictionVa
 				? cb.equal(joins.getRoot().get(Event.RESPONSIBLE_USER).get(User.ID), user.getId())
 				: cb.equal(joins.getRoot().get(Event.RESPONSIBLE_USER).get(User.ID), userPath.get(User.ID)));
 
-		return CriteriaBuilderHelper
-			.and(cb, cb.or(reportedByCurrentUser, currentUserResponsible, this.isRootInJurisdiction()), hasUserLimitedDisease());
+		return cb.or(reportedByCurrentUser, currentUserResponsible, this.isRootInJurisdiction());
 	}
 
 	@Override
