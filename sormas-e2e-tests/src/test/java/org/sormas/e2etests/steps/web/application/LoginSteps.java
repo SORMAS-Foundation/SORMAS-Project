@@ -249,8 +249,8 @@ public class LoginSteps implements En {
           }
         });
 
-     And(
-         "I check if I got logged in (if so, I send an alert and log out)",
+     Then(
+         "I check if I got logged in - if so, I send an alert and log out",
          () -> {
            if (webDriverHelpers.isElementVisibleWithTimeout(LOGOUT_BUTTON, 10)) {
              System.out.println("ALERT! POSSIBLE TO LOG IN WITH DEFAULT CREDENTIALS!");

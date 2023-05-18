@@ -103,9 +103,9 @@ Feature: Login with different type of users
   Scenario: Login on a different website
     Given I navigate to https://test-pipeline.sormas.netzlink.com/ website
     When I log in as a National Language User
-    Then I check if I got logged in (if so, I send an alert and log out)
+    Then I check if I got logged in - if so, I send an alert and log out
     When I log in as a Contact Supervisor
-    Then I check if I got logged in (if so, I send an alert and log out)
+    Then I check if I got logged in - if so, I send an alert and log out
 
 
 
