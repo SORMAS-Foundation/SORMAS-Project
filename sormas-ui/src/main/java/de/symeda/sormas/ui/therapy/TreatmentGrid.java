@@ -30,7 +30,12 @@ public class TreatmentGrid extends Grid implements V7AbstractGrid<TreatmentCrite
 
 	private TreatmentCriteria treatmentCriteria = new TreatmentCriteria();
 
-	public TreatmentGrid(boolean isPseudonymized, boolean isEditAllowed, boolean isDeleteAllowed) {
+	public TreatmentGrid(
+		boolean isPseudonymized,
+		boolean isEditAllowed,
+		boolean isDeleteAllowed,
+		boolean isPrescriptionEditAllowed,
+		boolean isPrescriptionDeleteAllowed) {
 		setSizeFull();
 
 		if (isEditAllowed && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
@@ -73,7 +78,13 @@ public class TreatmentGrid extends Grid implements V7AbstractGrid<TreatmentCrite
 
 			if (ACTION_BTN_ID.equals(e.getPropertyId()) || e.isDoubleClick()) {
 				ControllerProvider.getTherapyController()
-					.openTreatmentEditForm((TreatmentIndexDto) e.getItemId(), this::reload, isEditAllowed, isDeleteAllowed);
+					.openTreatmentEditForm(
+						(TreatmentIndexDto) e.getItemId(),
+						this::reload,
+						isEditAllowed,
+						isDeleteAllowed,
+						isPrescriptionEditAllowed,
+						isPrescriptionDeleteAllowed);
 			}
 		});
 	}
