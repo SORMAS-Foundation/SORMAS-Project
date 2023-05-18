@@ -215,13 +215,11 @@ public class MockProducer implements InitialContextFactory {
 		public EtcdCentralClient etcdCentralClient(ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb) {
 			return etcdCentralClient;
 		}
-
 	}
 
 	@Override
 	public Context getInitialContext(Hashtable<?, ?> environment) throws NamingException {
 		when(initialContext.lookup("java:module/CustomizableEnumFacade")).thenReturn(customizableEnumFacadeForConverter);
-
 		return initialContext;
 	}
 

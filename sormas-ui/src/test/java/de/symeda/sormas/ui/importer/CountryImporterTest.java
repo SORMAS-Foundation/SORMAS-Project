@@ -21,16 +21,15 @@ import de.symeda.sormas.api.infrastructure.country.CountryCriteria;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.ui.AbstractBeanTest;
-import de.symeda.sormas.ui.TestDataCreator;
+import de.symeda.sormas.ui.AbstractUiBeanTest;
 import de.symeda.sormas.ui.caze.importer.CountryImporter;
 
-public class CountryImporterTest extends AbstractBeanTest {
+public class CountryImporterTest extends AbstractUiBeanTest {
 
 	@Test
 	public void testUmlautsInCountryImport()
 		throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
-		TestDataCreator.RDCF rdcf = new TestDataCreator().createRDCF("Default Region", "Default District", "Default Community", "Default Facility");
+		var rdcf = creator.createRDCF("Default Region", "Default District", "Default Community", "Default Facility");
 		UserDto user = creator.createUser(
 			rdcf.region.getUuid(),
 			rdcf.district.getUuid(),
@@ -49,7 +48,7 @@ public class CountryImporterTest extends AbstractBeanTest {
 	@Test
 	public void testDontImportDuplicateCountry()
 		throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
-		TestDataCreator.RDCF rdcf = new TestDataCreator().createRDCF("Default Region", "Default District", "Default Community", "Default Facility");
+		var rdcf = creator.createRDCF("Default Region", "Default District", "Default Community", "Default Facility");
 		UserDto user = creator.createUser(
 			rdcf.region.getUuid(),
 			rdcf.district.getUuid(),

@@ -383,11 +383,12 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 	private void insertColumnEntryIntoData(CaseDataDto caze, PersonDto person, String entry, String[] entryHeaderPath)
 		throws InvalidColumnException, ImportErrorException {
 
+		Language language = I18nProperties.getUserLanguage();
+
 		Object currentElement = caze;
 		for (int i = 0; i < entryHeaderPath.length; i++) {
 			String headerPathElementName = entryHeaderPath[i];
 
-			Language language = I18nProperties.getUserLanguage();
 			try {
 				if (i != entryHeaderPath.length - 1) {
 					currentElement = new PropertyDescriptor(headerPathElementName, currentElement.getClass()).getReadMethod().invoke(currentElement);

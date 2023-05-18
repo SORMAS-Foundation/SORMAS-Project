@@ -30,19 +30,18 @@ import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.ui.AbstractBeanTest;
-import de.symeda.sormas.ui.TestDataCreator;
+import de.symeda.sormas.ui.AbstractUiBeanTest;
 import de.symeda.sormas.ui.events.importer.EventImporter;
 import de.symeda.sormas.ui.importer.ImportResultStatus;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
 import de.symeda.sormas.ui.importer.PersonImportSimilarityResult;
 
-public class EventImporterTest extends AbstractBeanTest {
+public class EventImporterTest extends AbstractUiBeanTest {
 
 	@Test
 	public void testImportAllEvents() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
 
-		TestDataCreator.RDCF rdcf = creator.createRDCF("Bourgogne-Franche-Comté", "Côte d'Or", "Dijon", "CHU Dijon Bourgogne");
+		var rdcf = creator.createRDCF("Bourgogne-Franche-Comté", "Côte d'Or", "Dijon", "CHU Dijon Bourgogne");
 		UserDto user = creator.createUser(
 			rdcf.region.getUuid(),
 			rdcf.district.getUuid(),

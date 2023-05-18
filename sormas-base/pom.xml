@@ -842,7 +842,7 @@
 				<artifactId>h2</artifactId>
 				<version>2.1.214</version>
 				<scope>test</scope>
-				<!-- In-memory-database for bean-test -->
+				<!-- In-memory-database for testing -->
 				<!-- better compatibility to PostgreSQL than HSQLDB -->
 			</dependency>
 
@@ -856,27 +856,6 @@
 				<groupId>org.testcontainers</groupId>
 				<artifactId>junit-jupiter</artifactId>
 				<version>1.17.6</version>
-				<scope>test</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>info.novatec</groupId>
-				<artifactId>bean-test</artifactId>
-				<version>0.2.Final_Local</version>
-				<scope>system</scope>
-				<systemPath>${project.basedir}/../sormas-base/dependencies/bean-test-0.2.Final.jar</systemPath>
-				<!-- Changed scope "test" to "system" as workaround for currently no publicly available maven artifact -->
-			</dependency>
-			<dependency>
-				<groupId>org.apache.deltaspike.core</groupId>
-				<artifactId>deltaspike-core-impl</artifactId>
-				<version>1.2.1</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.deltaspike.cdictrl</groupId>
-				<artifactId>deltaspike-cdictrl-weld</artifactId>
-				<version>1.2.1</version>
 				<scope>test</scope>
 			</dependency>
 

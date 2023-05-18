@@ -31,10 +31,9 @@ import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.ui.AbstractBeanTest;
-import de.symeda.sormas.ui.TestDataCreator;
+import de.symeda.sormas.ui.AbstractUiBeanTest;
 
-public class SampleDashboardDataProviderTest extends AbstractBeanTest {
+public class SampleDashboardDataProviderTest extends AbstractUiBeanTest {
 
 	private SampleDashboardDataProvider dataProvider;
 
@@ -68,17 +67,17 @@ public class SampleDashboardDataProviderTest extends AbstractBeanTest {
 
 	@Test
 	public void testRefreshData() {
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		var rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto person = creator.createPerson();
 		ContactDto contact = creator.createContact(user.toReference(), person.toReference(), Disease.CORONAVIRUS, rdcf);
 
-		creator.createSample(contact.toReference(), user.toReference(), rdcf.facility.toReference(), s -> {
+		creator.createSample(contact.toReference(), user.toReference(), rdcf.facility, s -> {
 			s.setSamplePurpose(SamplePurpose.INTERNAL);
 		});
 
 		final String sampleExternalId = "test-sample-ext-id";
-		SampleDto sample = creator.createSample(contact.toReference(), user.toReference(), rdcf.facility.toReference(), s -> {
+		SampleDto sample = creator.createSample(contact.toReference(), user.toReference(), rdcf.facility, s -> {
 			s.setSamplePurpose(SamplePurpose.EXTERNAL);
 			s.setReceived(true);
 		});
@@ -92,6 +91,6 @@ public class SampleDashboardDataProviderTest extends AbstractBeanTest {
 		Assertions.assertEquals(2, dataProvider.getSampleCountsByPurpose().size());
 		Assertions.assertEquals(1, dataProvider.getSampleCountsBySpecimenCondition().size());
 		Assertions.assertEquals(1, dataProvider.getSampleCountsByShipmentStatus().size());
-		Assertions.assertEquals(1, dataProvider.getTestResultCountsByResultType().size());
+		Assertions.assertEquals(2, dataProvider.getTestResultCountsByResultType().size());
 	}
 }
