@@ -100,10 +100,10 @@ Feature: Login with different type of users
     And I click on logout button
 
   @env_sltest @StandardLogin
-  Scenario Outline: Test for default <user> logins on the <url> website
+  Scenario Outline: Test <url> for default <user> credentials
     Given I navigate to address <url>
     When I log into current website as a <user>
-    Then I check if I got logged in as <user> - if so, I send an alert
+    Then I check if I got logged into <url> as <user> - if so, I send an alert
 
     Examples:
       | url                                             | user                        |
