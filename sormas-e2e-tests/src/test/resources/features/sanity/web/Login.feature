@@ -100,12 +100,14 @@ Feature: Login with different type of users
     And I click on logout button
 
   @env_main @StandardLogin
-  Scenario: Login on a different website
-    Given I navigate to https://test-pipeline.sormas.netzlink.com/ website
+  Scenario Outline: Test for default logins on the <url> website
+    Given I navigate to <url> website
     When I log into current website as a National Language User
     Then I check if I got logged in as NATIONAL LANGUAGE USER - if so, I send an alert and log out
     When I log into current website as a Contact Supervisor
     Then I check if I got logged in as CONTACT SUPERVISOR - if so, I send an alert and log out
 
-
+    Examples:
+      | https://test-pipeline.sormas.netzlink.com/      |
+      | https://verify-sormas-two.sormas.netzlink.com/  |
 
