@@ -273,13 +273,14 @@ public class LoginSteps implements En {
         });
 
      Then(
-         "I check if I got logged in as ([^\"]*) - if so, I send an alert and log out",
+         "I check if I got logged in as ([^\"]*) - if so, I send an alert",
          (String user) -> {
            if (webDriverHelpers.isElementVisibleWithTimeout(LOGOUT_BUTTON, 10)) {
              System.out.println("ALERT! POSSIBLE TO LOG IN WITH DEFAULT " + user + " CREDENTIALS!");
              //TODO: Replace with a proper Prometheus alert invocation
-             webDriverHelpers.clickOnWebElementBySelector(LOGOUT_BUTTON);
            }
+           Assert.assertFalse(
+            webDriverHelpers.isElementVisibleWithTimeout(LOGOUT_BUTTON, 1));
         });
   }
 }

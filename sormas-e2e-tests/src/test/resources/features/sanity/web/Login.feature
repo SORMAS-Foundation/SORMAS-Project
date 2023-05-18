@@ -100,15 +100,29 @@ Feature: Login with different type of users
     And I click on logout button
 
   @env_sltest @StandardLogin
-  Scenario Outline: Test for default logins on the <url> website
+  Scenario Outline: Test for default <user> logins on the <url> website
     Given I navigate to address <url>
-    When I log into current website as a Administrator
-    Then I check if I got logged in as ADMINISTRATOR - if so, I send an alert and log out
-    When I log into current website as a National User
-    Then I check if I got logged in as NATIONAL USER - if so, I send an alert and log out
+    When I log into current website as a <user>
+    Then I check if I got logged in as <user> - if so, I send an alert
 
     Examples:
-      | url                                             |
-      | https://test-pipeline.sormas.netzlink.com/      |
-      | https://verify-sormas-two.sormas.netzlink.com/  |
+      | url                                             | user                        |
+      | https://test-pipeline.sormas.netzlink.com/      | Administrator               |
+      | https://test-pipeline.sormas.netzlink.com/      | Surveillance Supervisor     |
+      | https://test-pipeline.sormas.netzlink.com/      | Case Supervisor             |
+      | https://test-pipeline.sormas.netzlink.com/      | Contact Supervisor          |      
+      | https://test-pipeline.sormas.netzlink.com/      | Point of Entry Supervisor   |
+      | https://test-pipeline.sormas.netzlink.com/      | Laboratory Officer          |
+      | https://test-pipeline.sormas.netzlink.com/      | Event Officer               |   
+      | https://test-pipeline.sormas.netzlink.com/      | National User               |
+      | https://test-pipeline.sormas.netzlink.com/      | National Clinician          |
+      | https://verify-sormas-two.sormas.netzlink.com/  | Administrator               |
+      | https://verify-sormas-two.sormas.netzlink.com/  | Surveillance Supervisor     |
+      | https://verify-sormas-two.sormas.netzlink.com/  | Case Supervisor             |
+      | https://verify-sormas-two.sormas.netzlink.com/  | Contact Supervisor          |      
+      | https://verify-sormas-two.sormas.netzlink.com/  | Point of Entry Supervisor   |
+      | https://verify-sormas-two.sormas.netzlink.com/  | Laboratory Officer          |
+      | https://verify-sormas-two.sormas.netzlink.com/  | Event Officer               |   
+      | https://verify-sormas-two.sormas.netzlink.com/  | National User               |
+      | https://verify-sormas-two.sormas.netzlink.com/  | National Clinician          |
 
