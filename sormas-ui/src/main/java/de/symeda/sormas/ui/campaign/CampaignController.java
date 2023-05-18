@@ -169,7 +169,7 @@ public class CampaignController {
 			}
 		}
 
-		campaignComponent.restrictEditableComponentsOnEditView(UserRight.CAMPAIGN_EDIT, UserRight.CAMPAIGN_DELETE, null, true);
+		campaignComponent.restrictEditableComponentsOnEditView(UserRight.CAMPAIGN_EDIT, null, UserRight.CAMPAIGN_DELETE, null, true);
 
 		return campaignComponent;
 	}
@@ -235,8 +235,12 @@ public class CampaignController {
 		}
 
 		boolean isInJurisdiction = isCreate || FacadeProvider.getCampaignFormDataFacade().isInJurisdiction(campaignFormDataUuid);
-		component
-			.restrictEditableComponentsOnEditView(UserRight.CAMPAIGN_FORM_DATA_EDIT, UserRight.CAMPAIGN_FORM_DATA_DELETE, null, isInJurisdiction);
+		component.restrictEditableComponentsOnEditView(
+			UserRight.CAMPAIGN_FORM_DATA_EDIT,
+			null,
+			UserRight.CAMPAIGN_FORM_DATA_DELETE,
+			null,
+			isInJurisdiction);
 		return component;
 	}
 

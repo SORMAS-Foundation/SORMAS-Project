@@ -216,6 +216,7 @@ public class ImmunizationController {
 
 		editComponent.restrictEditableComponentsOnEditView(
 			UserRight.IMMUNIZATION_EDIT,
+			null,
 			UserRight.IMMUNIZATION_DELETE,
 			null,
 			immunizationDto.isInJurisdiction());

@@ -61,10 +61,8 @@ public class AdditionalTestController {
 		AdditionalTestForm form = new AdditionalTestForm(FacadeProvider.getSampleFacade().getSampleByUuid(dto.getSample().getUuid()), false);
 		form.setValue(newDto);
 
-		final CommitDiscardWrapperComponent<AdditionalTestForm> component = new CommitDiscardWrapperComponent<>(
-			form,
-			isEditAllowed,
-			form.getFieldGroup());
+		final CommitDiscardWrapperComponent<AdditionalTestForm> component =
+			new CommitDiscardWrapperComponent<>(form, isEditAllowed, form.getFieldGroup());
 
 		Window window = VaadinUiUtil.showModalPopupWindow(
 			component,
@@ -98,7 +96,7 @@ public class AdditionalTestController {
 				}, I18nProperties.getString(Strings.entityAdditionalTest));
 			}
 
-			component.restrictEditableComponentsOnEditView(UserRight.ADDITIONAL_TEST_EDIT, UserRight.ADDITIONAL_TEST_DELETE, null, true);
+			component.restrictEditableComponentsOnEditView(UserRight.ADDITIONAL_TEST_EDIT, null, UserRight.ADDITIONAL_TEST_DELETE, null, true);
 		}
 		component.getButtonsPanel().setVisible(isEditAllowed);
 	}

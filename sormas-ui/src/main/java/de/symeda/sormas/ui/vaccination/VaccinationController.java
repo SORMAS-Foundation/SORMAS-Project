@@ -156,8 +156,12 @@ public class VaccinationController {
 			}, I18nProperties.getCaption(VaccinationDto.I18N_PREFIX));
 		}
 
-		editComponent
-			.restrictEditableComponentsOnEditView(UserRight.IMMUNIZATION_EDIT, UserRight.IMMUNIZATION_DELETE, null, vaccination.isInJurisdiction());
+		editComponent.restrictEditableComponentsOnEditView(
+			UserRight.IMMUNIZATION_EDIT,
+			null,
+			UserRight.IMMUNIZATION_DELETE,
+			null,
+			vaccination.isInJurisdiction());
 	}
 
 	public static void showUpdateStatusConfirmationPopup(List<CaseDataDto> cases) {

@@ -115,7 +115,7 @@ public class TherapyController {
 					}
 				}, I18nProperties.getString(Strings.entityPrescription));
 			}
-			view.restrictEditableChildComponentOnEditView(
+			view.restrictEditableComponentsOnEditView(
 				UserRight.CASE_EDIT,
 				UserRight.PRESCRIPTION_EDIT,
 				UserRight.PRESCRIPTION_DELETE,
@@ -237,7 +237,7 @@ public class TherapyController {
 				}, I18nProperties.getString(Strings.entityTreatment));
 			}
 
-			view.restrictEditableChildComponentOnEditView(
+			view.restrictEditableComponentsOnEditView(
 				UserRight.CASE_EDIT,
 				UserRight.TREATMENT_EDIT,
 				UserRight.TREATMENT_DELETE,

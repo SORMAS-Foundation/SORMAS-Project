@@ -146,7 +146,7 @@ public class VisitController {
 				}, I18nProperties.getCaption(VisitDto.I18N_PREFIX));
 			}
 
-			editView.restrictEditableChildComponentOnEditView(
+			editView.restrictEditableComponentsOnEditView(
 				getParentEditRight(isContactRef),
 				UserRight.VISIT_EDIT,
 				UserRight.VISIT_DELETE,

@@ -163,7 +163,7 @@ public class PathogenTestController {
 					editView.getWrappedComponent().getField(PathogenTestDto.OTHER_DELETION_REASON).setVisible(true);
 				}
 			}
-			editView.restrictEditableChildComponentOnEditView(
+			editView.restrictEditableComponentsOnEditView(
 				UserRight.SAMPLE_EDIT,
 				UserRight.PATHOGEN_TEST_EDIT,
 				UserRight.PATHOGEN_TEST_DELETE,
