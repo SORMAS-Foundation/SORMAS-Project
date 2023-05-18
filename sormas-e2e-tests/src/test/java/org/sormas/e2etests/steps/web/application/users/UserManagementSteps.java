@@ -104,11 +104,11 @@ public class UserManagementSteps implements En {
     When(
         "^I check if sync message is correct in German$",
         () -> {
-          TimeUnit.SECONDS.sleep(35);
+          TimeUnit.SECONDS.sleep(45);
           assertHelpers.assertWithPoll(
               () ->
                   Assert.assertTrue(
-                      webDriverHelpers.isElementVisibleWithTimeout(SYNC_SUCCESS_DE, 25),
+                      webDriverHelpers.isElementVisibleWithTimeout(SYNC_SUCCESS_DE, 15),
                       "Sync of users failed"),
               10);
         });
