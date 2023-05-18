@@ -55,14 +55,15 @@ public class AdditionalTestController {
 		});
 	}
 
-	public void openEditComponent(AdditionalTestDto dto, Runnable callback, boolean isEditAllowed) {
+	public void openEditComponent(AdditionalTestDto dto, Runnable callback, boolean isEditAllowed, boolean isDeleteAllowed) {
 
 		AdditionalTestDto newDto = FacadeProvider.getAdditionalTestFacade().getByUuid(dto.getUuid());
 		AdditionalTestForm form = new AdditionalTestForm(FacadeProvider.getSampleFacade().getSampleByUuid(dto.getSample().getUuid()), false);
 		form.setValue(newDto);
 
+		boolean isEditOrDeleteAllowed = isEditAllowed || isDeleteAllowed;
 		final CommitDiscardWrapperComponent<AdditionalTestForm> component =
-			new CommitDiscardWrapperComponent<>(form, isEditAllowed, form.getFieldGroup());
+			new CommitDiscardWrapperComponent<>(form, isEditOrDeleteAllowed, form.getFieldGroup());
 
 		Window window = VaadinUiUtil.showModalPopupWindow(
 			component,
@@ -70,7 +71,7 @@ public class AdditionalTestController {
 		window.setWidth(form.getWidth() + 90, Unit.PIXELS);
 		window.setHeight(80, Unit.PERCENTAGE);
 
-		if (isEditAllowed) {
+		if (isEditOrDeleteAllowed) {
 			component.addCommitListener(new CommitListener() {
 
 				@Override
@@ -85,7 +86,7 @@ public class AdditionalTestController {
 				}
 			});
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_DELETE)) {
+			if (isDeleteAllowed) {
 				component.addDeleteListener(() -> {
 					FacadeProvider.getAdditionalTestFacade().deleteAdditionalTest(dto.getUuid());
 					window.close();
@@ -98,6 +99,6 @@ public class AdditionalTestController {
 
 			component.restrictEditableComponentsOnEditView(UserRight.ADDITIONAL_TEST_EDIT, null, UserRight.ADDITIONAL_TEST_DELETE, null, true);
 		}
-		component.getButtonsPanel().setVisible(isEditAllowed);
+		component.getButtonsPanel().setVisible(isEditOrDeleteAllowed);
 	}
 }
