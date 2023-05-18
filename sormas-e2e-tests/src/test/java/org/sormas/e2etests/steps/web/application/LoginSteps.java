@@ -148,7 +148,6 @@ public class LoginSteps implements En {
             webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM_GDPR_POPUP_DE);
           }
         }
-        webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOGOUT_BUTTON, 50);
       });
 
     When(
