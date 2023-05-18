@@ -106,32 +106,32 @@ Feature: Login with different type of users
     Then I check if I got logged into "<url>" as "<user>" - if so, I send an alert
 
     Examples:
-      | url                                    | user                        |
-      | test-pipeline.sormas.netzlink.com      | Administrator               |
-      | test-pipeline.sormas.netzlink.com      | Surveillance Supervisor     |
-      | test-pipeline.sormas.netzlink.com      | Case Supervisor             |
-      | test-pipeline.sormas.netzlink.com      | Contact Supervisor          |      
-      | test-pipeline.sormas.netzlink.com      | Point of Entry Supervisor   |
-      | test-pipeline.sormas.netzlink.com      | Laboratory Officer          |
-      | test-pipeline.sormas.netzlink.com      | Event Officer               |   
-      | test-pipeline.sormas.netzlink.com      | National User               |
-      | test-pipeline.sormas.netzlink.com      | National Clinician          |
-      | verify-sormas-two.sormas.netzlink.com  | Administrator               |
-      | verify-sormas-two.sormas.netzlink.com  | Surveillance Supervisor     |
-      | verify-sormas-two.sormas.netzlink.com  | Case Supervisor             |
-      | verify-sormas-two.sormas.netzlink.com  | Contact Supervisor          |      
-      | verify-sormas-two.sormas.netzlink.com  | Point of Entry Supervisor   |
-      | verify-sormas-two.sormas.netzlink.com  | Laboratory Officer          |
-      | verify-sormas-two.sormas.netzlink.com  | Event Officer               |   
-      | verify-sormas-two.sormas.netzlink.com  | National User               |
-      | verify-sormas-two.sormas.netzlink.com  | National Clinician          |
-      | aesculab.sormas.netzlink.com           | Administrator               |
-      | aesculab.sormas.netzlink.com           | Surveillance Supervisor     |
-      | aesculab.sormas.netzlink.com           | Case Supervisor             |
-      | aesculab.sormas.netzlink.com           | Contact Supervisor          |
-      | aesculab.sormas.netzlink.com           | Point of Entry Supervisor   |
-      | aesculab.sormas.netzlink.com           | Laboratory Officer          |
-      | aesculab.sormas.netzlink.com           | Event Officer               |
-      | aesculab.sormas.netzlink.com           | National User               |
-      | aesculab.sormas.netzlink.com           | National Clinician          |
+      | url                                             | user                        |
+      | https://test-pipeline.sormas.netzlink.com/      | Administrator               |
+      | https://test-pipeline.sormas.netzlink.com/      | Surveillance Supervisor     |
+      | https://test-pipeline.sormas.netzlink.com/      | Case Supervisor             |
+      | https://test-pipeline.sormas.netzlink.com/      | Contact Supervisor          |      
+      | https://test-pipeline.sormas.netzlink.com/      | Point of Entry Supervisor   |
+      | https://test-pipeline.sormas.netzlink.com/      | Laboratory Officer          |
+      | https://test-pipeline.sormas.netzlink.com/      | Event Officer               |   
+      | https://test-pipeline.sormas.netzlink.com/      | National User               |
+      | https://test-pipeline.sormas.netzlink.com/      | National Clinician          |
+      | https://verify-sormas-two.sormas.netzlink.com/  | Administrator               |
+      | https://verify-sormas-two.sormas.netzlink.com/  | Surveillance Supervisor     |
+      | https://verify-sormas-two.sormas.netzlink.com/  | Case Supervisor             |
+      | https://verify-sormas-two.sormas.netzlink.com/  | Contact Supervisor          |      
+      | https://verify-sormas-two.sormas.netzlink.com/  | Point of Entry Supervisor   |
+      | https://verify-sormas-two.sormas.netzlink.com/  | Laboratory Officer          |
+      | https://verify-sormas-two.sormas.netzlink.com/  | Event Officer               |   
+      | https://verify-sormas-two.sormas.netzlink.com/  | National User               |
+      | https://verify-sormas-two.sormas.netzlink.com/  | National Clinician          |
+      | https://aesculab.sormas.netzlink.com/           | Administrator               |
+      | https://aesculab.sormas.netzlink.com/           | Surveillance Supervisor     |
+      | https://aesculab.sormas.netzlink.com/           | Case Supervisor             |
+      | https://aesculab.sormas.netzlink.com/           | Contact Supervisor          |
+      | https://aesculab.sormas.netzlink.com/           | Point of Entry Supervisor   |
+      | https://aesculab.sormas.netzlink.com/           | Laboratory Officer          |
+      | https://aesculab.sormas.netzlink.com/           | Event Officer               |
+      | https://aesculab.sormas.netzlink.com/           | National User               |
+      | https://aesculab.sormas.netzlink.com/           | National Clinician          |
 
