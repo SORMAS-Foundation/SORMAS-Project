@@ -1,4 +1,4 @@
-@UI @ShareCases @SharedData
+@UI @Sanity @ShareCases @SharedData
 Feature: Sharing cases between environments tests
 
   @tmsLink=SORQA-962 @env_s2s_1
