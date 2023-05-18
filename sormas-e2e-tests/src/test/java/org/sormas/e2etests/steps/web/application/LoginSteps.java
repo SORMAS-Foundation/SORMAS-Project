@@ -248,5 +248,15 @@ public class LoginSteps implements En {
             webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON_DE);
           }
         });
+
+     And(
+       "I check if I got logged in (if so, I send an alert and log out)",
+       () -> {
+         if (webDriverHelpers.isElementVisibleWithTimeout(LOGOUT_BUTTON, 10)) {
+           Systen.out.println("ALERT! POSSIBLE TO LOG IN WITH DEFAULT CREDENTIALS!");
+           //TODO: Replace with a proper Prometheus alert invocation
+           webDriverHelpers.clickOnWebElementBySelector(LOGOUT_BUTTON);
+         }
+       });
   }
 }

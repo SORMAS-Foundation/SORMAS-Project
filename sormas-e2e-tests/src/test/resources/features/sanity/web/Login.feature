@@ -102,6 +102,10 @@ Feature: Login with different type of users
   @env_main @StandardLogin
   Scenario: Login on a different website
     Given I navigate to https://test-pipeline.sormas.netzlink.com/ website
-    Then I log in as a National Language User
+    When I log in as a National Language User
+    Then I check if I got logged in (if so, I send an alert and log out)
+    When I log in as a Contact Supervisor
+    Then I check if I got logged in (if so, I send an alert and log out)
+
 
 
