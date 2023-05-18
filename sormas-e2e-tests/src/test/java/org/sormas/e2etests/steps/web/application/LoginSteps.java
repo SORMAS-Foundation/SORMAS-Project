@@ -131,7 +131,6 @@ public class LoginSteps implements En {
     Given(
       "^I log in as a ([^\"]*)$ in current website",
       (String userRole) -> {
-        webDriverHelpers.accessWebSite(runningConfiguration.getEnvironmentUrlForMarket(locale));
         webDriverHelpers.waitUntilIdentifiedElementIsPresent(LoginPage.USER_NAME_INPUT);
         EnvUser user = runningConfiguration.getUserByRole(locale, userRole);
         log.info("Filling username");
