@@ -22,6 +22,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 
+import de.symeda.sormas.api.utils.jurisdiction.JurisdictionValidator;
 import de.symeda.sormas.backend.caze.CaseJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.contact.ContactJurisdictionPredicateValidator;
@@ -80,13 +81,58 @@ public class SampleJurisdictionPredicateValidator extends PredicateJurisdictionV
 	}
 
 	@Override
-	protected Predicate isRootInJurisdictionOrOwned() {
+	public Predicate isRootInJurisdictionOrOwned() {
 		final Predicate reportedByCurrentUser = cb.and(
 			cb.isNotNull(joins.getRoot().get(Sample.REPORTING_USER)),
 			user != null
 				? cb.equal(joins.getRoot().get(Sample.REPORTING_USER).get(User.ID), user.getId())
 				: cb.equal(joins.getRoot().get(Sample.REPORTING_USER).get(User.ID), userPath.get(User.ID)));
 		return cb.or(reportedByCurrentUser, isRootInJurisdiction());
+	}
+
+	@Override
+	public Predicate inJurisdictionOrOwned() {
+		Predicate rootInJurisdictionOrOwned = isRootInJurisdictionOrOwned();
+		Predicate rootHasLimitedDisease = hasUserLimitedDisease();
+		if (associatedJurisdictionValidators != null && !associatedJurisdictionValidators.isEmpty()) {
+			final List<Predicate> jurisdictionTypes = new ArrayList<>();
+			final List<Predicate> diseaseJurisdictionTypes = new ArrayList<>();
+			jurisdictionTypes.add(rootInJurisdictionOrOwned);
+			diseaseJurisdictionTypes.add(rootHasLimitedDisease);
+			for (JurisdictionValidator<Predicate> jurisdictionValidator : associatedJurisdictionValidators) {
+				if (jurisdictionValidator != null) {
+					Predicate associatedInJurisdictionOrOwned = jurisdictionValidator.isRootInJurisdictionOrOwned();
+					Predicate associatedHasLimitedDisease = jurisdictionValidator.hasUserLimitedDisease();
+					jurisdictionTypes.add(associatedInJurisdictionOrOwned);
+					diseaseJurisdictionTypes.add(associatedHasLimitedDisease);
+				}
+			}
+			return and(or(jurisdictionTypes), or(diseaseJurisdictionTypes));
+		} else {
+			return and(rootInJurisdictionOrOwned, rootHasLimitedDisease);
+		}
+	}
+
+	public Predicate inJurisdiction() {
+		Predicate rootInJurisdiction = isRootInJurisdiction();
+		Predicate rootHasLimitedDisease = hasUserLimitedDisease();
+		if (associatedJurisdictionValidators != null && !associatedJurisdictionValidators.isEmpty()) {
+			final List<Predicate> jurisdictionTypes = new ArrayList<>();
+			final List<Predicate> diseaseJurisdictionTypes = new ArrayList<>();
+			jurisdictionTypes.add(rootInJurisdiction);
+			diseaseJurisdictionTypes.add(rootHasLimitedDisease);
+			for (JurisdictionValidator<Predicate> jurisdictionValidator : associatedJurisdictionValidators) {
+				if (jurisdictionValidator != null) {
+					Predicate associatedInJurisdiction = jurisdictionValidator.isRootInJurisdiction();
+					Predicate associatedHasLimitedDisease = jurisdictionValidator.hasUserLimitedDisease();
+					jurisdictionTypes.add(associatedInJurisdiction);
+					diseaseJurisdictionTypes.add(associatedHasLimitedDisease);
+				}
+			}
+			return and(or(jurisdictionTypes), or(diseaseJurisdictionTypes));
+		} else {
+			return and(rootInJurisdiction, rootHasLimitedDisease);
+		}
 	}
 
 	@Override

@@ -66,19 +66,19 @@ public class TravelEntryJurisdictionPredicateValidator extends PredicateJurisdic
 	}
 
 	@Override
-	protected Predicate isRootInJurisdiction() {
+	public Predicate isRootInJurisdiction() {
 		return super.isRootInJurisdiction();
 	}
 
 	@Override
-	protected Predicate isRootInJurisdictionOrOwned() {
+	public Predicate isRootInJurisdictionOrOwned() {
 		final Predicate reportedByCurrentUser = cb.and(
 			cb.isNotNull(joins.getRoot().get(TravelEntry.REPORTING_USER)),
 			user != null
 				? cb.equal(joins.getRoot().get(TravelEntry.REPORTING_USER).get(User.ID), user.getId())
 				: cb.equal(joins.getRoot().get(TravelEntry.REPORTING_USER).get(User.ID), userPath.get(User.ID)));
 
-		return CriteriaBuilderHelper.and(cb, cb.or(reportedByCurrentUser, isRootInJurisdiction()), hasUserLimitedDisease());
+		return cb.or(reportedByCurrentUser, isRootInJurisdiction());
 	}
 
 	@Override

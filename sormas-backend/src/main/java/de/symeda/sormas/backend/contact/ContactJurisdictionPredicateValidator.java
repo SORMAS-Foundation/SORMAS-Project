@@ -76,14 +76,14 @@ public class ContactJurisdictionPredicateValidator extends PredicateJurisdiction
 	}
 
 	@Override
-	protected Predicate isRootInJurisdictionOrOwned() {
+	public Predicate isRootInJurisdictionOrOwned() {
 		final Predicate reportedByCurrentUser = cb.and(
 			cb.isNotNull(joins.getRoot().get(Contact.REPORTING_USER)),
 			user != null
 				? cb.equal(joins.getRoot().get(Contact.REPORTING_USER).get(User.ID), user.getId())
 				: cb.equal(joins.getRoot().get(Contact.REPORTING_USER).get(User.ID), userPath.get(User.ID)));
 
-		return CriteriaBuilderHelper.and(cb, cb.or(reportedByCurrentUser, inJurisdiction()), hasUserLimitedDisease());
+		return cb.or(reportedByCurrentUser, inJurisdiction());
 	}
 
 	@Override
@@ -92,7 +92,7 @@ public class ContactJurisdictionPredicateValidator extends PredicateJurisdiction
 	}
 
 	@Override
-	protected Predicate isRootInJurisdiction() {
+	public Predicate isRootInJurisdiction() {
 		return super.isRootInJurisdiction();
 	}
 
