@@ -116,8 +116,8 @@ System.out.println("####################################3 "+ext_id);
 				}
 
 				Predicate likeFilters = cb.or(
-					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Region.NAME), textFilter),
-					CriteriaBuilderHelper.ilike(cb, from.get(Region.EPID_CODE), textFilter));
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Region.NAME), textFilter));//,
+				//	CriteriaBuilderHelper.ilike(cb, from.get(Region.EPID_CODE), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}

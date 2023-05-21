@@ -62,7 +62,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 
 		criteria.setCampaign(campaignSelector.getValue());
 		// criteria.setGroupingLevel(null);
-		criteria.setGroupingLevel(CampaignJurisdictionLevel.COUNTRY);
+		criteria.setGroupingLevel(CampaignJurisdictionLevel.AREA);
 		addHeaderComponent(campaignSelector);
 		grid = new CampaignStatisticsGrid(criteria);
 
@@ -112,17 +112,14 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 			String selectorValue = e.getValue().toString();
 			System.out.println("++++++++++++++----+++++}}}}}}}}}}}}}}}} "+selectorValue);
 			switch (selectorValue) {
-			case "I18nProperties.getCaption(Captions.Country)":
-				groupingValue = CampaignJurisdictionLevel.COUNTRY;
-				System.out.println("+++++++++++----++++++++"+groupingValue.toString());
+			
 			case "I18nProperties.getCaption(Captions.Campaign_area)":
 				groupingValue = CampaignJurisdictionLevel.getByJurisdictionLevel(level.AREA);
 			case "I18nProperties.getCaption(Captions.Campaign_region)":
 				groupingValue = CampaignJurisdictionLevel.getByJurisdictionLevel(level.REGION);
 			case "I18nProperties.getCaption(Captions.Campaign_district)":
 				groupingValue = CampaignJurisdictionLevel.getByJurisdictionLevel(level.DISTRICT);
-			case "I18nProperties.getCaption(Captions.Campaign_community)":
-				groupingValue = CampaignJurisdictionLevel.getByJurisdictionLevel(level.COMMUNITY);
+			
 			}
 
 			// CampaignJurisdictionLevel groupingValue = (CampaignJurisdictionLevel)
@@ -190,7 +187,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 		final UserDto user = UserProvider.getCurrent().getUser();
 		criteria.setRegion(user.getRegion());
 		criteria.setDistrict(user.getDistrict());
-		criteria.setCommunity(null);
+//		criteria.setCommunity(null);
 		CampaignStatisticsFilterForm filterForm = new CampaignStatisticsFilterForm();
 		filterForm.addValueChangeListener(e -> {
 			if (!filterForm.hasFilter() && campaignSelector == null) {

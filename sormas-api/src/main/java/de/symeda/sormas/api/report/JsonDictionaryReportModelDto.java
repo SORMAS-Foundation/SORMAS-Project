@@ -1,6 +1,5 @@
 package de.symeda.sormas.api.report;
 
-
 import de.symeda.sormas.api.EntityDto;
 
 public class JsonDictionaryReportModelDto extends EntityDto {

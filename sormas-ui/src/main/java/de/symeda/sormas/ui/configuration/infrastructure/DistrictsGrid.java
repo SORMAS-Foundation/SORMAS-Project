@@ -66,17 +66,17 @@ public class DistrictsGrid extends FilteredGrid<DistrictIndexDto, DistrictCriter
 			DistrictIndexDto.NAME,
 			//DistrictIndexDto.EPID_CODE,
 			DistrictIndexDto.EXTERNAL_ID,
-			DistrictIndexDto.POPULATION,
+//			DistrictIndexDto.POPULATION,
 			DistrictIndexDto.RISK);
 
-		getColumn(DistrictIndexDto.POPULATION).setSortable(false);
+//		getColumn(DistrictIndexDto.POPULATION).setSortable(false);
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			addItemClickListener(new ShowDetailsListener<>(DistrictIndexDto.NAME, e -> ControllerProvider.getInfrastructureController().editDistrict(e.getUuid())));
 			addItemClickListener(new ShowDetailsListener<>(DistrictIndexDto.REGION, e -> ControllerProvider.getInfrastructureController().editDistrict(e.getUuid())));
 			addItemClickListener(new ShowDetailsListener<>(DistrictIndexDto.EXTERNAL_ID, e -> ControllerProvider.getInfrastructureController().editDistrict(e.getUuid())));
-			addItemClickListener(new ShowDetailsListener<>(DistrictIndexDto.POPULATION, e -> ControllerProvider.getInfrastructureController().editDistrict(e.getUuid())));
+//			addItemClickListener(new ShowDetailsListener<>(DistrictIndexDto.POPULATION, e -> ControllerProvider.getInfrastructureController().editDistrict(e.getUuid())));
 			addItemClickListener(new ShowDetailsListener<>(DistrictIndexDto.RISK, e -> ControllerProvider.getInfrastructureController().editDistrict(e.getUuid())));
 			
 		//	addEditColumn(e -> ControllerProvider.getInfrastructureController().editDistrict(e.getUuid()));

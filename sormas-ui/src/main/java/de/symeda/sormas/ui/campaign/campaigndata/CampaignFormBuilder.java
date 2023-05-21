@@ -35,6 +35,7 @@ import com.google.common.collect.Sets;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.Page;
 import com.vaadin.server.UserError;
+import com.vaadin.server.VaadinService;
 import com.vaadin.server.Page.Styles;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.AbstractComponent;
@@ -423,37 +424,58 @@ public class CampaignFormBuilder {
 			}
 
 			if (type == CampaignFormElementType.NUMBER) {
-
-				/*
-				 * ((TextField) field).addValueChangeListener(e -> { if
-				 * (e.getProperty().getValue() != null &&
-				 * e.getProperty().getValue().toString().contains(".0")) {
-				 * e.getProperty().setValue(e.getProperty().getValue().toString().replace(".0",
-				 * "")); } });
-				 */
-				// ((TextField) field).addValidator(
-				// new RegexpValidator("^[0-9]\\d*$", errormsg == null ?
-				// Validations.onlyNumbersAllowed : errormsg ));
-
-				((TextField) field).addValidator(new NumberNumericValueValidator(I18nProperties.getValidationError(
-						errormsg == null ? caption + ": " + Validations.onlyNumbersAllowed : errormsg, caption)));
-			}
-			if (type == CampaignFormElementType.DECIMAL) {
-
-				/*
-				 * ((TextField) field).addValueChangeListener(e -> { if
-				 * (e.getProperty().getValue() != null &&
-				 * !e.getProperty().getValue().toString().contains(".")) {
-				 * e.getProperty().setValue(e.getProperty().getValue().toString() + ".0"); } });
-				 */
-
-				// ((TextField) field).addValidator(
-				// new RegexpValidator("^[0-9]\\d*$", errormsg == null ?
-				// Validations.onlyDecimalNumbersAllowed : errormsg ));
-
+				
+				
 				((TextField) field).addValidator(new NumberNumericValueValidator(I18nProperties.getValidationError(
 						errormsg == null ? caption + ": " + Validations.onlyDecimalNumbersAllowed : errormsg, caption),
 						null, null, true));
+				
+				if(fieldId.equalsIgnoreCase("Villagecode")) {
+					
+					 ((TextField) field).addValidator(
+							 new RegexpValidator("(?!.*000$).*", I18nProperties.getValidationError(
+										errormsg == null ? caption + ": " + Validations.onlyDecimalNumbersAllowed : errormsg, caption) ));
+					 
+					((TextField) field).addValueChangeListener(e -> {
+						if (e.getProperty().getValue() != null && e.getProperty().getValue().toString().length() > 2 && e.getProperty().getValue().toString().length() < 8) {
+							if (VaadinService.getCurrentRequest().getWrappedSession()
+									.getAttribute("Clusternumber") != null) {
+								
+								final String des = VaadinService.getCurrentRequest().getWrappedSession()
+										.getAttribute("Clusternumber") + e.getProperty().getValue().toString().substring(0, 3);
+								e.getProperty().setValue(des);
+
+							}
+							}
+//						else if (e.getProperty().getValue() != null && e.getProperty().getValue().toString().length() > 4) {
+//							//	((TextField) e.getProperty()).setCaption("<b>Village Number Assigned:<b>");
+//								//((TextField) e.getProperty()).setCaptionAsHtml(true);
+//								//((TextField) e.getProperty()).setEnabled(false);
+//							}
+					});
+				
+				}
+				
+				
+				
+				if(fieldId.equalsIgnoreCase("PopulationGroup_0_4")) {
+					
+					 
+					((TextField) field).addValueChangeListener(e -> {
+							if (VaadinService.getCurrentRequest().getWrappedSession()
+									.getAttribute("populationdata") != null) {
+								
+								final String des = VaadinService.getCurrentRequest().getWrappedSession().getAttribute("populationdata").toString();
+								e.getProperty().setValue(des);
+
+							}
+							
+					});
+				
+				}
+				
+				
+				
 			}
 
 			if (type == CampaignFormElementType.RANGE) {
@@ -599,13 +621,13 @@ public class CampaignFormBuilder {
 
 		switch (type) {
 		case YES_NO:
-			System.out.println(field.getId() +"@@@@@@@@@@555555555555@@@@@@@@@@@@@@@@@@@@2 "+value);
+		//	System.out.println(field.getId() +"@@@@@@@@@@555555555555@@@@@@@@@@@@@@@@@@@@2 "+value);
 			if (value != null) {
 				value = value.toString().equalsIgnoreCase("YES") ? true
 						: value.toString().equalsIgnoreCase("NO") ? false : value;
 
 			}
-			System.out.println(Sets.newHashSet(value)+"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@2 "+value);
+		//	System.out.println(Sets.newHashSet(value)+"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@2 "+value);
 			((NullableOptionGroup) field).setValue(Sets.newHashSet(value));
 			break;
 		case TEXT:
@@ -659,7 +681,7 @@ public class CampaignFormBuilder {
 				try {
 
 					String vc = value + "";
-					// System.out.println(value);
+					// System.out.println("@@@===@@ date to parse"+value);
 					Date dst = vc.contains("00:00:00") ? dateFormatter(value) : dateFormatterLongAndMobile(value);
 
 					((DateField) field).setValue(value != null ? dst : null);
@@ -738,24 +760,37 @@ public class CampaignFormBuilder {
 
 		String dateStr = value + "";
 		DateFormat formatter = new SimpleDateFormat("MMM dd, yyyy HH:mm:ss a");
+		DateFormat formatter_ = new SimpleDateFormat("MMM d, yyyy HH:mm:ss");
+		DateFormat formatter_x = new SimpleDateFormat("MMM d, yyyy HH:mm:ss a");
 		DateFormat formattercx = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
 		DateFormat formatterx = new SimpleDateFormat("dd/MM/yyyy");
 		Date date;
-		//System.out.println("date in question " + value);
+		//System.out.println("date in question " + value); delteme meeeeee  +++++++++++++++++++++++===========
 
 		try {
 			date = (Date) formatter.parse(dateStr);
 		} catch (ParseException e) {
-
+			System.out.println("date wont parse on " + e.getMessage());
 			try {
-				date = (Date) formatterx.parse(dateStr);
-			} catch (ParseException ed) {
-
-				try {
-					date = (Date) formattercx.parse(dateStr);
-				} catch (ParseException edx) {
-
-					date = new Date((Long) value);
+				date = (Date) formatter_.parse(dateStr);
+					} catch (ParseException ex) {
+						System.out.println("date wont parse on " + ex.getMessage());
+						try {
+							date = (Date) formatter_x.parse(dateStr);
+						} catch (ParseException edz) {
+							System.out.println("date wont parse on " + edz.getMessage());
+					try {
+						date = (Date) formatterx.parse(dateStr);
+					} catch (ParseException ed) {
+						System.out.println("date wont parse on " + ed.getMessage());
+						
+						try {
+							date = (Date) formattercx.parse(dateStr);
+						} catch (ParseException edx) {
+							System.out.println("date wont parse on " + edx.getMessage());
+							date = new Date((Long) value);
+						}
+					}
 				}
 			}
 		}

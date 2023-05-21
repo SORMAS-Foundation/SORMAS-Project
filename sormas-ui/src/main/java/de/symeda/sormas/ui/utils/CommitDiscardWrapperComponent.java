@@ -62,7 +62,8 @@ import de.symeda.sormas.ui.person.PersonEditForm;
 
 import static java.util.Objects.nonNull;
 
-public class CommitDiscardWrapperComponent<C extends Component> extends VerticalLayout implements DirtyStateComponent, Buffered {
+public class CommitDiscardWrapperComponent<C extends Component> extends VerticalLayout
+		implements DirtyStateComponent, Buffered {
 
 	private static final long serialVersionUID = 1L;
 
@@ -70,7 +71,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 		void onCommit() throws CannotProceedException;
 	}
-	
+
 	public static interface CommitandContListener {
 
 		void onCommitandCont() throws CannotProceedException;
@@ -90,34 +91,44 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 		void onDelete();
 	}
-	
+
+	public static interface PublishListener {
+
+		void onPublish();
+	}
+
+	public static interface UnPublishListener {
+
+		void onUnPublish();
+	}
+
 	public static interface CloneListener {
 
 		void onClone();
 	}
-	
+
 	public static interface CloseOpenCampaignListener {
 
 		void onCloseOpenCampaignListener();
 	}
-	
+
 	public static interface OpenCloseCampaignListener {
 
 		void onOpenCloseCampaignListener();
 	}
-	
+
 	public static interface SaveAndContinueListener {
 
 		void onSaveAndContinue();
 	}
-	
-	
 
 	private transient List<CommitListener> commitListeners = new ArrayList<>();
 	private transient List<CommitandContListener> commitandContListeners = new ArrayList<>();
 	private transient List<DiscardListener> discardListeners = new ArrayList<>();
 	private transient List<DoneListener> doneListeners = new ArrayList<>();
 	private transient List<DeleteListener> deleteListeners = new ArrayList<>();
+	private transient List<PublishListener> publishListeners = new ArrayList<>();
+	private transient List<UnPublishListener> unPublishListeners = new ArrayList<>();
 	private transient List<CloneListener> cloneListeners = new ArrayList<>();
 	private transient List<OpenCloseCampaignListener> openCloseCampaignListeners = new ArrayList<>();
 	private transient List<CloseOpenCampaignListener> closeOpenCampaignListeners = new ArrayList<>();
@@ -134,22 +145,26 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	private HorizontalLayout buttonsPanel;
 	private Button commitButton;
 	private Button commitandContButton;
-	
+
 	private Button discardButton;
 
 	private Button deleteButton;
-	
+
+	private Button publishButton;
+
+	private Button unPublishButton;
+
 	private Button cloneButton;
-	
+
 	private Button closeOpenCampaignButton;
-	
+
 	private Button openCloseCampaignButton;
-	
+
 	private Button saveAndContinueButton;
 
 	private boolean commited = false;
 	private boolean commitedandCont = false;
-	
+
 	private boolean dirty = false;
 
 	private boolean shortcutsEnabled = false;
@@ -158,7 +173,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	protected CommitDiscardWrapperComponent() {
 
 	}
-	
+
 	public CommitDiscardWrapperComponent(C component, FieldGroup... fieldGroups) {
 		this(component, null, fieldGroups);
 	}
@@ -204,7 +219,6 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		buttonsPanel.addComponent(commitButton);
 		buttonsPanel.setComponentAlignment(commitButton, Alignment.BOTTOM_RIGHT);
 		buttonsPanel.setExpandRatio(commitButton, 0);
-	
 
 		addComponent(buttonsPanel);
 		setComponentAlignment(buttonsPanel, Alignment.BOTTOM_RIGHT);
@@ -212,7 +226,8 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		setShortcutsEnabled(shortcutsEnabled);
 
 		if (fieldGroups != null && fieldGroups.length > 0) {
-			// convention: set wrapper to read-only when all wrapped field groups are read-only
+			// convention: set wrapper to read-only when all wrapped field groups are
+			// read-only
 			boolean allReadOnly = true;
 			for (FieldGroup fieldGroup : fieldGroups) {
 				if (!fieldGroup.isReadOnly()) {
@@ -224,7 +239,8 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 				setReadOnly(true);
 			}
 		} else if (wrappedComponent != null) {
-			if (wrappedComponent instanceof AbstractLegacyComponent && ((AbstractLegacyComponent) wrappedComponent).isReadOnly()) {
+			if (wrappedComponent instanceof AbstractLegacyComponent
+					&& ((AbstractLegacyComponent) wrappedComponent).isReadOnly()) {
 				setReadOnly(true);
 			}
 		}
@@ -238,74 +254,57 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		if (fieldGroups != null) {
 			Stream.of(fieldGroups).forEach(fg -> fg.getFields().forEach(f -> f.addValueChangeListener(ev -> {
 				final Object source = ((Field.ValueChangeEvent) ev).getSource();
-				// Note by @MateStrysewske: It seems like the duplicate code here is necessary; for some reason,
+				// Note by @MateStrysewske: It seems like the duplicate code here is necessary;
+				// for some reason,
 				// moving it to a separate method breaks the logic at least on my dev system
 				if (source instanceof PersonEditForm) {
 					final PersonEditForm personEditForm = (PersonEditForm) source;
 					final LocationEditForm locationEditForm = personEditForm.getField(PersonDto.ADDRESS);
-					if (atLeastOneFieldModified(
-						locationEditForm.getField(LocationDto.LATITUDE),
-						locationEditForm.getField(LocationDto.LONGITUDE),
-						locationEditForm.getField(LocationDto.LAT_LON_ACCURACY))) {
-						dirty = false;//this
-					} else if (locationEditForm.getFieldGroup()
-						.getFields()
-						.stream()
-						.filter(lf -> !(lf instanceof AccessibleTextField))
-						.anyMatch(Buffered::isModified)) {
-						dirty = false;//this
-					} else if (personEditForm.getFieldGroup()
-						.getFields()
-						.stream()
-						.filter(lf -> !(lf instanceof AccessibleTextField))
-						.anyMatch(Buffered::isModified)) {
-						dirty = false;//this
+					if (atLeastOneFieldModified(locationEditForm.getField(LocationDto.LATITUDE),
+							locationEditForm.getField(LocationDto.LONGITUDE),
+							locationEditForm.getField(LocationDto.LAT_LON_ACCURACY))) {
+						dirty = false;// this
+					} else if (locationEditForm.getFieldGroup().getFields().stream()
+							.filter(lf -> !(lf instanceof AccessibleTextField)).anyMatch(Buffered::isModified)) {
+						dirty = false;// this
+					} else if (personEditForm.getFieldGroup().getFields().stream()
+							.filter(lf -> !(lf instanceof AccessibleTextField)).anyMatch(Buffered::isModified)) {
+						dirty = false;// this
 					}
 				} else if (source instanceof EventDataForm) {
 					final EventDataForm eventDataForm = (EventDataForm) source;
 					final LocationEditForm locationEditForm = eventDataForm.getField(EventDto.EVENT_LOCATION);
-					if (atLeastOneFieldModified(
-						locationEditForm.getField(LocationDto.LATITUDE),
-						locationEditForm.getField(LocationDto.LONGITUDE),
-						locationEditForm.getField(LocationDto.LAT_LON_ACCURACY))) {
-						dirty = false;//this
-					} else if (locationEditForm.getFieldGroup()
-						.getFields()
-						.stream()
-						.filter(lf -> !(lf instanceof AccessibleTextField))
-						.anyMatch(Buffered::isModified)) {
-						dirty = false;//this
-					} else if (eventDataForm.getFieldGroup()
-						.getFields()
-						.stream()
-						.filter(lf -> !(lf instanceof AccessibleTextField))
-						.anyMatch(Buffered::isModified)) {
-						dirty = false;//this
+					if (atLeastOneFieldModified(locationEditForm.getField(LocationDto.LATITUDE),
+							locationEditForm.getField(LocationDto.LONGITUDE),
+							locationEditForm.getField(LocationDto.LAT_LON_ACCURACY))) {
+						dirty = false;// this
+					} else if (locationEditForm.getFieldGroup().getFields().stream()
+							.filter(lf -> !(lf instanceof AccessibleTextField)).anyMatch(Buffered::isModified)) {
+						dirty = false;// this
+					} else if (eventDataForm.getFieldGroup().getFields().stream()
+							.filter(lf -> !(lf instanceof AccessibleTextField)).anyMatch(Buffered::isModified)) {
+						dirty = false;// this
 					}
 				} else if (source instanceof LocationEditForm) {
-					
-System.out.print("afsdfasdfasdfasdfasdf");
+
+					System.out.print("afsdfasdfasdfasdfasdf");
 					final LocationEditForm locationEditForm = (LocationEditForm) source;
-					if (atLeastOneFieldModified(
-						locationEditForm.getField(LocationDto.LATITUDE),
-						locationEditForm.getField(LocationDto.LONGITUDE),
-						locationEditForm.getField(LocationDto.LAT_LON_ACCURACY))) {
-						dirty = false;//this
-					} else if (locationEditForm.getFieldGroup()
-						.getFields()
-						.stream()
-						.filter(lf -> !(lf instanceof AccessibleTextField))
-						.anyMatch(Buffered::isModified)) {
-						dirty = false;//this
+					if (atLeastOneFieldModified(locationEditForm.getField(LocationDto.LATITUDE),
+							locationEditForm.getField(LocationDto.LONGITUDE),
+							locationEditForm.getField(LocationDto.LAT_LON_ACCURACY))) {
+						dirty = false;// this
+					} else if (locationEditForm.getFieldGroup().getFields().stream()
+							.filter(lf -> !(lf instanceof AccessibleTextField)).anyMatch(Buffered::isModified)) {
+						dirty = false;// this
 					}
 				} else if (source instanceof AccessibleTextField) {
 					System.out.print("asdfddddddddddddddddddddddddddddddddddd");
 					final AccessibleTextField accessibleTextField = (AccessibleTextField) source;
 					if (accessibleTextField.isModified()) {
-						dirty = false;//this
+						dirty = false;// this
 					}
 				} else {
-					dirty = false;//this
+					dirty = false;// this
 				}
 			})));
 		}
@@ -377,45 +376,46 @@ System.out.print("afsdfasdfasdfasdfasdf");
 	}
 
 	/**
-	 * Durch das Aufrufen dieser Methode wird ein Button zum Speichern erzeugt, aber nicht eingefügt.
-	 * Das passiert in setWrappedComponent().
+	 * Durch das Aufrufen dieser Methode wird ein Button zum Speichern erzeugt, aber
+	 * nicht eingefügt. Das passiert in setWrappedComponent().
 	 * 
 	 * @return
 	 */
 	public Button getCommitButton() {
 		if (commitButton == null) {
-			commitButton = ButtonHelper.createButton("commit", I18nProperties.getCaption(Captions.actionSave), new ClickListener() {
+			commitButton = ButtonHelper.createButton("commit", I18nProperties.getCaption(Captions.actionSave),
+					new ClickListener() {
 
-				private static final long serialVersionUID = 1L;
+						private static final long serialVersionUID = 1L;
 
-				@Override
-				public void buttonClick(ClickEvent event) {
-					commitAndHandle();
-				}
-			}, ValoTheme.BUTTON_PRIMARY);
+						@Override
+						public void buttonClick(ClickEvent event) {
+							commitAndHandle();
+						}
+					}, ValoTheme.BUTTON_PRIMARY);
 		}
 
 		return commitButton;
 	}
-	
-	
+
 	/**
-	 * Durch das Aufrufen dieser Methode wird ein Button zum Verwerfen erzeugt aber nicht eingefügt.
-	 * Das passiert in setWrappedComponent().
+	 * Durch das Aufrufen dieser Methode wird ein Button zum Verwerfen erzeugt aber
+	 * nicht eingefügt. Das passiert in setWrappedComponent().
 	 * 
 	 * @return
 	 */
 	public Button getDiscardButton() {
 		if (discardButton == null) {
-			discardButton = ButtonHelper.createButton("discard", I18nProperties.getCaption(Captions.actionDiscard), new ClickListener() {
+			discardButton = ButtonHelper.createButton("discard", I18nProperties.getCaption(Captions.actionDiscard),
+					new ClickListener() {
 
-				private static final long serialVersionUID = 1L;
+						private static final long serialVersionUID = 1L;
 
-				@Override
-				public void buttonClick(ClickEvent event) {
-					discard();
-				}
-			});
+						@Override
+						public void buttonClick(ClickEvent event) {
+							discard();
+						}
+					});
 			discardButton.setDescription(I18nProperties.getDescription(Descriptions.discardDescription));
 			discardButton.setTabIndex(-1);
 		}
@@ -425,28 +425,30 @@ System.out.print("afsdfasdfasdfasdfasdf");
 
 	public Button getDeleteButton(String entityName) {
 		if (deleteButton == null) {
-			deleteButton = ButtonHelper.createButton("delete", I18nProperties.getCaption(Captions.actionDelete), new ClickListener() {
+			deleteButton = ButtonHelper.createButton("delete", I18nProperties.getCaption(Captions.actionDelete),
+					new ClickListener() {
 
-				private static final long serialVersionUID = 1L;
+						private static final long serialVersionUID = 1L;
 
-				@Override
-				public void buttonClick(ClickEvent event) {
-					VaadinUiUtil.showDeleteConfirmationWindow(
-						String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName),
-						new Runnable() {
+						@Override
+						public void buttonClick(ClickEvent event) {
+							VaadinUiUtil.showDeleteConfirmationWindow(String
+									.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName),
+									new Runnable() {
 
-							public void run() {
-								onDelete();
-							}
-						});
-				}
-			}, ValoTheme.BUTTON_DANGER, CssStyles.BUTTON_BORDER_NEUTRAL);
+										public void run() {
+											onDelete();
+										}
+									});
+						}
+					}, ValoTheme.BUTTON_DANGER, CssStyles.BUTTON_BORDER_NEUTRAL);
 			deleteButton.setTabIndex(-1);
 		}
 
 		return deleteButton;
 	}
-	//I18nProperties.getCaption(Captions.actionDelete)
+
+	// I18nProperties.getCaption(Captions.actionDelete)
 	public Button getCloneButton(String entityName) {
 		if (cloneButton == null) {
 			cloneButton = ButtonHelper.createButton("clone", "Duplicate", new ClickListener() {
@@ -463,45 +465,91 @@ System.out.print("afsdfasdfasdfasdfasdf");
 
 		return cloneButton;
 	}
-	
-	//I18nProperties.getCaption(Captions.actionDelete)
-			public Button getCloseOpenCampaignButton(String entityName) {
-				if (closeOpenCampaignButton == null) {
-					closeOpenCampaignButton = ButtonHelper.createButton("open", "Open Campaign", new ClickListener() {
 
-						private static final long serialVersionUID = 1L;
+	// I18nProperties.getCaption(Captions.actionDelete)
+	public Button getCloseOpenCampaignButton(String entityName) {
+		if (closeOpenCampaignButton == null) {
+			closeOpenCampaignButton = ButtonHelper.createButton("open", "Open Campaign", new ClickListener() {
 
-						@Override
-						public void buttonClick(ClickEvent event) {
-							onCloseOpenCampaignListener();
-						}
-					}, ValoTheme.BUTTON_PRIMARY, CssStyles.BUTTON_BORDER_NEUTRAL);
-					closeOpenCampaignButton.setTabIndex(-1);
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void buttonClick(ClickEvent event) {
+					onCloseOpenCampaignListener();
 				}
+			}, ValoTheme.BUTTON_PRIMARY, CssStyles.BUTTON_BORDER_NEUTRAL);
+			closeOpenCampaignButton.setTabIndex(-1);
+		}
 
-				return closeOpenCampaignButton;
-			}
-		
-			
-			public Button getOpenCloseCampaignButton(String entityName) {
-				if (openCloseCampaignButton == null) {
-					openCloseCampaignButton= ButtonHelper.createButton("close", "Close Campaign", new ClickListener() {
+		return closeOpenCampaignButton;
+	}
 
-						private static final long serialVersionUID = 1L;
+	public Button getOpenCloseCampaignButton(String entityName) {
+		if (openCloseCampaignButton == null) {
+			openCloseCampaignButton = ButtonHelper.createButton("close", "Close Campaign", new ClickListener() {
 
-						@Override
-						public void buttonClick(ClickEvent event) {
-							onOpenCloseCampaignListener();
-						}
-					}, ValoTheme.BUTTON_PRIMARY, CssStyles.BUTTON_BORDER_NEUTRAL);
-					openCloseCampaignButton.setTabIndex(-1);
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void buttonClick(ClickEvent event) {
+					onOpenCloseCampaignListener();
 				}
+			}, ValoTheme.BUTTON_PRIMARY, CssStyles.BUTTON_BORDER_NEUTRAL);
+			openCloseCampaignButton.setTabIndex(-1);
+		}
 
-				return openCloseCampaignButton;
-			}
-		
-		
-			
+		return openCloseCampaignButton;
+	}
+
+//	publish 
+	public Button getPublishButton(String entityName) {
+		if (publishButton == null) {
+			publishButton = ButtonHelper.createButton("publish", "Publish Campaign", new ClickListener() {
+
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void buttonClick(ClickEvent event) {
+					VaadinUiUtil.showPublishConfirmationWindow(
+							String.format(I18nProperties.getString(Strings.confirmationPublishEntity), entityName),
+							new Runnable() {
+
+								public void run() {
+									onPublish();
+								}
+							});
+				}
+			}, ValoTheme.BUTTON_PRIMARY, CssStyles.BUTTON_BORDER_NEUTRAL);
+			publishButton.setTabIndex(-1);
+		}
+
+		return publishButton;
+	}
+
+	public Button getUnPublishButton(String entityName) {
+		if (unPublishButton == null) {
+			unPublishButton = ButtonHelper.createButton("unpublish", "Un-Publish Campaign", new ClickListener() {
+
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void buttonClick(ClickEvent event) {
+					VaadinUiUtil.showUnPublishConfirmationWindow(
+							String.format(I18nProperties.getString(Strings.confirmationUnPublishEntity), entityName),
+							new Runnable() {
+
+								public void run() {
+									onUnPublish();
+								}
+							});
+				}
+			}, ValoTheme.BUTTON_PRIMARY, CssStyles.BUTTON_BORDER_NEUTRAL);
+			unPublishButton.setTabIndex(-1);
+		}
+
+		return unPublishButton;
+	}
+
 	public Button getCommitandContButton(String entityName) {
 		if (commitandContButton == null) {
 			commitandContButton = ButtonHelper.createButton("commitandCont", "Save and Add New", new ClickListener() {
@@ -519,35 +567,33 @@ System.out.print("afsdfasdfasdfasdfasdf");
 		return commitandContButton;
 	}
 
-	
-	
-	
-	//I18nProperties.getCaption(Captions.actionDelete)
-		public Button getSaveAndContinueButton(String entityName) {
-			if (saveAndContinueButton == null) {
-				saveAndContinueButton = ButtonHelper.createButton("sandnew", "Save and New", new ClickListener() {
+	// I18nProperties.getCaption(Captions.actionDelete)
+	public Button getSaveAndContinueButton(String entityName) {
+		if (saveAndContinueButton == null) {
+			saveAndContinueButton = ButtonHelper.createButton("sandnew", "Save and New", new ClickListener() {
 
-					private static final long serialVersionUID = 1L;
+				private static final long serialVersionUID = 1L;
 
-					@Override
-					public void buttonClick(ClickEvent event) {
-						/*VaadinUiUtil.showDeleteConfirmationWindow(
-							String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName),
-							new Runnable() {
+				@Override
+				public void buttonClick(ClickEvent event) {
+					/*
+					 * VaadinUiUtil.showDeleteConfirmationWindow(
+					 * String.format(I18nProperties.getString(Strings.confirmationDeleteEntity),
+					 * entityName), new Runnable() {
+					 * 
+					 * public void run() {
+					 * 
+					 * } });
+					 */
 
-								public void run() {
-									
-								}
-							});*/
-						
-						onSaveAndContinue();
-					}
-				}, ValoTheme.BUTTON_PRIMARY, CssStyles.BUTTON_BORDER_NEUTRAL);
-				saveAndContinueButton.setTabIndex(-1);
-			}
-
-			return saveAndContinueButton;
+					onSaveAndContinue();
+				}
+			}, ValoTheme.BUTTON_PRIMARY, CssStyles.BUTTON_BORDER_NEUTRAL);
+			saveAndContinueButton.setTabIndex(-1);
 		}
+
+		return saveAndContinueButton;
+	}
 
 	@Override
 	public boolean isModified() {
@@ -566,7 +612,7 @@ System.out.print("afsdfasdfasdfasdfasdf");
 	public boolean isCommited() {
 		return commited;
 	}
-	
+
 	public boolean isCommitedandCont() {
 		return commitedandCont;
 	}
@@ -579,7 +625,8 @@ System.out.print("afsdfasdfasdfasdfasdf");
 			if (fieldGroups.length > 1) {
 				// validate all fields first, so commit will likely work for all fieldGroups
 				// this is basically only needed when we have multiple field groups
-				// FIXME this leads to problem #537 for AbstractEditForm with hideValidationUntilNextCommit 
+				// FIXME this leads to problem #537 for AbstractEditForm with
+				// hideValidationUntilNextCommit
 				// can hopefully be fixed easier with Vaadin 8 architecture change
 				getFieldsStream().forEach(field -> {
 					if (!field.isInvalidCommitted()) {
@@ -614,7 +661,7 @@ System.out.print("afsdfasdfasdfasdfasdf");
 		onDone();
 	}
 
-	//also saves the campaign form first field group
+	// also saves the campaign form first field group
 //	@Override
 	public void commitandCont() throws InvalidValueException, SourceException, CommitRuntimeException {
 
@@ -622,7 +669,8 @@ System.out.print("afsdfasdfasdfasdfasdf");
 			if (fieldGroups.length > 1) {
 				// validate all fields first, so commit will likely work for all fieldGroups
 				// this is basically only needed when we have multiple field groups
-				// FIXME this leads to problem #537 for AbstractEditForm with hideValidationUntilNextCommit 
+				// FIXME this leads to problem #537 for AbstractEditForm with
+				// hideValidationUntilNextCommit
 				// can hopefully be fixed easier with Vaadin 8 architecture change
 				getFieldsStream().forEach(field -> {
 					if (!field.isInvalidCommitted()) {
@@ -652,11 +700,10 @@ System.out.print("afsdfasdfasdfasdfasdf");
 
 		onCommitandCont();
 		commitedandCont = true;
-		
+
 		onDone();
 	}
-	
-	
+
 	private String findHtmlMessage(InvalidValueException exception) {
 		if (!(exception.getMessage() == null || exception.getMessage().isEmpty()))
 			return exception.getHtmlMessage();
@@ -684,7 +731,7 @@ System.out.print("afsdfasdfasdfasdfasdf");
 		try {
 			commit();
 		} catch (InvalidValueException ex) {
-			
+
 			StringBuilder htmlMsg = new StringBuilder();
 			String message = ex.getMessage();
 			if (message != null && !message.isEmpty()) {
@@ -711,7 +758,8 @@ System.out.print("afsdfasdfasdfasdfasdf");
 						// Alle nochmal
 						for (int i = 0; i < causes.length; i++) {
 							if (!causes[i].isInvisible()) {
-								htmlMsg.append("<li style=\"color: #FFF;\">").append(findHtmlMessage(causes[i])).append("</li>");
+								htmlMsg.append("<li style=\"color: #FFF;\">").append(findHtmlMessage(causes[i]))
+										.append("</li>");
 							}
 						}
 						htmlMsg.append("</ul>");
@@ -726,17 +774,17 @@ System.out.print("afsdfasdfasdfasdfasdf");
 
 				}
 			}
-			
+
 			System.out.println(")))))))))))))0000000000000000000");
 
-			new Notification(I18nProperties.getString(Strings.messageCheckInputData), htmlMsg.toString(), Type.ERROR_MESSAGE, true)
-				.show(Page.getCurrent());
+			new Notification(I18nProperties.getString(Strings.messageCheckInputData), htmlMsg.toString(),
+					Type.ERROR_MESSAGE, true).show(Page.getCurrent());
 		}
 	}
-	
+
 	public void commitAndHandleandCont() {
 		try {
-			//commit();
+			// commit();
 			commitandCont();
 			System.out.println("DEBUGEwwwwwwwwwwwwwwwwwwwwwwwwwwwwRRRR");
 		} catch (InvalidValueException ex) {
@@ -767,7 +815,8 @@ System.out.print("afsdfasdfasdfasdfasdf");
 						// Alle nochmal
 						for (int i = 0; i < causes.length; i++) {
 							if (!causes[i].isInvisible()) {
-								htmlMsg.append("<li style=\"color: #FFF;\">").append(findHtmlMessage(causes[i])).append("</li>");
+								htmlMsg.append("<li style=\"color: #FFF;\">").append(findHtmlMessage(causes[i]))
+										.append("</li>");
 							}
 						}
 						htmlMsg.append("</ul>");
@@ -783,8 +832,8 @@ System.out.print("afsdfasdfasdfasdfasdf");
 				}
 			}
 
-			new Notification(I18nProperties.getString(Strings.messageCheckInputData), htmlMsg.toString(), Type.ERROR_MESSAGE, true)
-				.show(Page.getCurrent());
+			new Notification(I18nProperties.getString(Strings.messageCheckInputData), htmlMsg.toString(),
+					Type.ERROR_MESSAGE, true).show(Page.getCurrent());
 		}
 	}
 
@@ -794,7 +843,7 @@ System.out.print("afsdfasdfasdfasdfasdf");
 			for (FieldGroup fieldGroup : fieldGroups) {
 				fieldGroup.discard();
 			}
-		} else if (wrappedComponent instanceof Buffered) { 
+		} else if (wrappedComponent instanceof Buffered) {
 			((Buffered) wrappedComponent).discard();
 		} else {
 			// NOOP
@@ -839,7 +888,7 @@ System.out.print("afsdfasdfasdfasdfasdf");
 		if (!commitListeners.contains(listener))
 			commitListeners.add(listener);
 	}
-	
+
 	public void setPrimaryCommitListener(CommitListener listener) {
 		if (primaryCommitListener != null)
 			throw new UnsupportedOperationException("primary listener already set");
@@ -863,9 +912,7 @@ System.out.print("afsdfasdfasdfasdfasdf");
 				break;
 			}
 	}
-	
-	
-	
+
 	public void removeCommitListener(CommitListener listener) {
 		commitListeners.remove(listener);
 		if (primaryCommitListener != null && primaryCommitListener.equals(listener))
@@ -883,8 +930,8 @@ System.out.print("afsdfasdfasdfasdfasdf");
 	}
 
 	/**
-	 * Fügt einen Listener zum Abbrechen hinzu.
-	 * Blendet den Abbrechen-Button aber nicht ein.
+	 * Fügt einen Listener zum Abbrechen hinzu. Blendet den Abbrechen-Button aber
+	 * nicht ein.
 	 * 
 	 * @param listener
 	 */
@@ -922,39 +969,51 @@ System.out.print("afsdfasdfasdfasdfasdf");
 		if (!deleteListeners.contains(listener))
 			deleteListeners.add(listener);
 	}
-	
+
+	public void addPublishListener(PublishListener listener, String entityName) {
+		if (publishListeners.isEmpty())
+			buttonsPanel.addComponent(getPublishButton(entityName), 0);
+		if (!publishListeners.contains(listener))
+			publishListeners.add(listener);
+	}
+
+	public void addUnPublishListener(UnPublishListener listener, String entityName) {
+		if (unPublishListeners.isEmpty())
+			buttonsPanel.addComponent(getUnPublishButton(entityName), 0);
+		if (!unPublishListeners.contains(listener))
+			unPublishListeners.add(listener);
+	}
+
 	public void addCloneListener(CloneListener listener, String entityName) {
 		if (cloneListeners.isEmpty())
 			buttonsPanel.addComponent(getCloneButton(entityName), 0);
 		if (!cloneListeners.contains(listener))
 			cloneListeners.add(listener);
 	}
-	
+
 	public void addCloseOpenListener(CloseOpenCampaignListener listener, String entityName) {
 		if (closeOpenCampaignListeners.isEmpty())
 			buttonsPanel.addComponent(getCloseOpenCampaignButton(entityName), 0);
 		if (!closeOpenCampaignListeners.contains(listener))
 			closeOpenCampaignListeners.add(listener);
 	}
-	
+
 	public void addOpenCloseListener(OpenCloseCampaignListener listener, String entityName) {
 		if (openCloseCampaignListeners.isEmpty())
 			buttonsPanel.addComponent(getOpenCloseCampaignButton(entityName), 0);
 		if (!openCloseCampaignListeners.contains(listener))
 			openCloseCampaignListeners.add(listener);
 	}
-	
-	
+
 	public void addCommitandContListener(CommitandContListener listener, String entityName) {
 		System.out.println("D55555555555555555555555555555555555555qeRRRR");
-		
+
 		if (commitandContListeners.isEmpty())
 			buttonsPanel.addComponent(getCommitandContButton(entityName), 0);
 		if (!commitandContListeners.contains(listener))
 			commitandContListeners.add(listener);
 	}
-	
-	
+
 	public boolean hasDeleteListener() {
 		return !deleteListeners.isEmpty();
 	}
@@ -963,9 +1022,8 @@ System.out.print("afsdfasdfasdfasdfasdf");
 		for (DeleteListener listener : deleteListeners)
 			listener.onDelete();
 	}
-	
-	
-	//imp save and continue
+
+	// imp save and continue
 	public boolean hasSaveAndContinueListener() {
 		return !saveAndContinueListeners.isEmpty();
 	}
@@ -975,41 +1033,56 @@ System.out.print("afsdfasdfasdfasdfasdf");
 			listener.onSaveAndContinue();
 	}
 
-	
-	
-	//impl clone
+	// impl clone
 	public boolean hasCloneListener() {
 		return !cloneListeners.isEmpty();
 	}
-	
-	
+
 	private void onClone() {
 		for (CloneListener listener : cloneListeners)
 			listener.onClone();
 	}
-	
-	//impl close and open
+
+	// impl close and open
 	public boolean hasCloseOpenCampaignListener() {
 		return !closeOpenCampaignListeners.isEmpty();
 	}
-	
+
 	private void onCloseOpenCampaignListener() {
 		for (CloseOpenCampaignListener listener : closeOpenCampaignListeners)
 			listener.onCloseOpenCampaignListener();
 	}
-	
-	//impl open then close
-		public boolean hasOpenCloseCampaignListener() {
-			return !openCloseCampaignListeners.isEmpty();
-		}
-		
-		private void onOpenCloseCampaignListener() {
-			for (OpenCloseCampaignListener listener : openCloseCampaignListeners)
-				listener.onOpenCloseCampaignListener();
-		}
-		
-	
-	
+
+	// impl open then close
+	public boolean hasOpenCloseCampaignListener() {
+		return !openCloseCampaignListeners.isEmpty();
+	}
+
+	private void onOpenCloseCampaignListener() {
+		for (OpenCloseCampaignListener listener : openCloseCampaignListeners)
+			listener.onOpenCloseCampaignListener();
+	}
+
+	// impl publish
+	public boolean hasPublishListener() {
+		return !publishListeners.isEmpty();
+	}
+
+	private void onPublish() {
+		for (PublishListener listener : publishListeners)
+			listener.onPublish();
+	}
+
+	// impl unpublish
+	public boolean hasUnPublishListener() {
+		return !unPublishListeners.isEmpty();
+	}
+
+	private void onUnPublish() {
+		for (UnPublishListener listener : unPublishListeners)
+			listener.onUnPublish();
+	}
+
 	@Override
 	public void setReadOnly(boolean readOnly) {
 		try {
@@ -1018,20 +1091,20 @@ System.out.print("afsdfasdfasdfasdfasdf");
 			super.setEnabled(readOnly);
 		}
 		//
-		//		getWrappedComponent().setReadOnly(readOnly);
-		//		if (fieldGroups != null) {
-		//			for (FieldGroup fieldGroup : fieldGroups) {
-		//				fieldGroup.setReadOnly(readOnly);
-		//			}
-		//		}
+		// getWrappedComponent().setReadOnly(readOnly);
+		// if (fieldGroups != null) {
+		// for (FieldGroup fieldGroup : fieldGroups) {
+		// fieldGroup.setReadOnly(readOnly);
+		// }
+		// }
 		//
-		//		buttonsPanel.setVisible(!readOnly);
+		// buttonsPanel.setVisible(!readOnly);
 	}
 
-	//	@Override
-	//	public boolean isReadOnly() {
-	//		return getWrappedComponent().isReadOnly();
-	//	}
+	// @Override
+	// public boolean isReadOnly() {
+	// return getWrappedComponent().isReadOnly();
+	// }
 
 	protected static class ClickShortcut extends Button.ClickShortcut {
 

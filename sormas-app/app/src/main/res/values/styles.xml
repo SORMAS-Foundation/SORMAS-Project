@@ -78,7 +78,7 @@
         <item name="android:background">@drawable/background_toolbar</item>
         <item name="android:layout_gravity">center_vertical</item>
         <item name="android:textAllCaps">false</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">@font/rubikbold</item>
         <item name="android:elevation">@dimen/toolBarElevation</item>
         <item name="titleTextAppearance">@style/TextAppearance.Widget.Event.Toolbar.Title</item>
         <!--<item name="android:drawablePadding">10dp</item>-->
@@ -108,9 +108,11 @@
     </style>
 
     <style name="ControlFirstOfTwoColumnsStyle">
+        <item name="android:fontFamily">@font/rubiklight</item>
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">1</item>
+
     </style>
 
     <style name="ControlSecondOfTwoColumnsStyle" parent="ControlFirstOfTwoColumnsStyle">
@@ -127,7 +129,7 @@
         <item name="android:textSize">@dimen/controlLabelSize</item>
         <item name="android:paddingTop">@dimen/controlLabelMarginTop</item>
         <item name="android:paddingBottom">@dimen/controlLabelMarginBottom</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">@font/rubikregular</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">false</item>
         <item name="android:focusableInTouchMode">false</item>
@@ -143,13 +145,13 @@
         <item name="android:textAllCaps">false</item>
         <item name="android:textSize">@dimen/row_entry_secondary_text_size</item>
         <item name="android:textColor">@color/listActivityRowPrimaryText</item>
-        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:fontFamily">@font/rubiklight</item>
     </style>
 
     <style name="CheckBoxLabelStyle">
         <item name="android:textColor">@color/controlLabelColor</item>
         <item name="android:textSize">@dimen/controlLabelSize</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">@font/rubiklight</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:focusable">true</item>
         <item name="android:clickable">true</item>
@@ -164,7 +166,7 @@
         <item name="android:text">@string/indicator_required</item>
         <item name="android:textColor">@color/watchOut</item>
         <item name="android:textSize">@dimen/textSizeNormal</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">@font/rubiklight</item>
     </style>
 
     <style name="SoftRequiredIndicatorStyle" parent="@style/RequiredIndicatorStyle">
@@ -181,7 +183,7 @@
         <item name="android:background">@drawable/background_rounded_edges_warning</item>
         <item name="android:textColor">@color/whiteOpaque</item>
         <item name="android:textSize">@dimen/verySmallTextSize</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">@font/rubiklight</item>
         <item name="android:maxLines">1</item>
         <item name="android:minWidth">30dp</item>
         <item name="android:padding">2dp</item>
@@ -200,7 +202,7 @@
         <item name="android:layout_marginBottom">@dimen/controlMarginBottom</item>
         <item name="android:background">@drawable/selector_text_control_edit</item>
         <item name="android:cursorVisible">true</item>
-        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:fontFamily">@font/rubiklight</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:maxLines">1</item>
         <item name="android:textColor">@color/controlTextColor</item>
@@ -229,7 +231,7 @@
     <style name="ControlTextFieldReadStyle">
         <item name="android:background">@color/controlReadTextViewBackground</item>
         <item name="android:cursorVisible">true</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">@font/rubiklight</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:focusable">false</item>
         <item name="android:textColor">@color/controlReadTextColor</item>
@@ -257,7 +259,7 @@
         <item name="android:paddingRight">@dimen/textViewRightPadding</item>
         <item name="android:paddingTop">@dimen/textViewTopPadding</item>
         <item name="android:paddingBottom">@dimen/textViewBottomPadding</item>
-        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:fontFamily">@font/rubiklight</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:maxLines">5</item>
         <item name="android:ellipsize">end</item>
@@ -284,6 +286,7 @@
         <item name="android:cursorVisible">false</item>
         <item name="android:textIsSelectable">false</item>
     </style>
+
 
     <style name="ControlSpinnerStyle">
         <item name="android:layout_height">@dimen/maxSpinnerHeight</item>
@@ -324,7 +327,7 @@
 
     <style name="ControlLinkStyle">
         <item name="android:height">@dimen/linkButtonHeight</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">@font/rubiklight</item>
         <item name="android:textSize">@dimen/formActivityLinkButtonTextSize</item>
         <item name="android:textAppearance">@style/TextAppearance.AppCompat.Button</item>
         <item name="android:textColor">@color/selector_color_form_activity_link_button</item>
@@ -367,12 +370,12 @@
         <item name="android:textColor">@color/controlLabelColor</item>
         <item name="android:textSize">@dimen/controlLabelSize</item>
         <item name="android:layout_marginBottom">@dimen/field_padding_8</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">@font/rubiklight</item>
     </style>
 
     <style name="DarkColorStyle">
         <item name="android:textColor">@color/normalText</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">@font/rubiklight</item>
         <item name="android:textAllCaps">true</item>
     </style>
 
@@ -391,7 +394,7 @@
         <item name="android:paddingBottom">@dimen/parentLayoutVerticalPadding</item>
         <item name="android:paddingLeft">@dimen/parentLayoutHorizontalPadding</item>
         <item name="android:paddingRight">@dimen/parentLayoutHorizontalPadding</item>
-        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:fontFamily">@font/rubiklight</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:textColor">@color/controlTextColor</item>
         <item name="android:textSize">@dimen/defaultControlTextSize</item>
@@ -402,7 +405,7 @@
     <style name="LoginHeading1">
         <item name="android:textColor">@color/normalText</item>
         <item name="android:textSize">@dimen/loginHeadingTextSize</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">@font/rubiklight</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:textAlignment">center</item>
     </style>
@@ -414,14 +417,14 @@
     <style name="LoginSubHeadingText">
         <item name="android:textColor">@color/gray_70</item>
         <item name="android:textSize">@dimen/loginServiceTextSize</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">@font/rubiklight</item>
         <item name="android:textAllCaps">true</item>
     </style>
 
     <style name="LoginSignInText">
         <item name="android:textColor">@color/lightBlue</item>
         <item name="android:textSize">@dimen/signInTextSize</item>
-        <item name="android:fontFamily">sans-serif-black</item>
+        <item name="android:fontFamily">@font/rubikblack</item>
     </style>
 
     <style name="LoginSignInTagLineText">
@@ -442,7 +445,7 @@
         <item name="android:gravity">center</item>
         <item name="android:height">@dimen/primaryButtonHeight</item>
         <item name="android:background">@android:color/transparent</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">@font/rubiklight</item>
         <item name="android:textAppearance">@style/TextAppearance.AppCompat.Button</item>
         <item name="android:textAlignment">center</item>
         <item name="android:textColor">@color/selector_color_settings_button</item>
@@ -453,7 +456,7 @@
     <style name="LinkButtonStyle">
         <item name="android:gravity">center</item>
         <item name="android:height">@dimen/linkButtonHeight</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">@font/rubiklight</item>
         <item name="android:textSize">@dimen/linkButtonTextSize</item>
         <item name="android:textAppearance">@style/TextAppearance.AppCompat.Button</item>
         <item name="android:textColor">@color/selector_color_link_button</item>
@@ -468,6 +471,7 @@
         <item name="android:textSize">@dimen/pinButtonTextSize</item>
         <item name="android:textColor">@color/selector_color_text_pin_button</item>
         <item name="android:elevation">@dimen/pinButtonElevation</item>
+        <item name="android:fontFamily">@font/rubiklight</item>
     </style>
 
     <style name="ToolTipStyleOverride">
@@ -494,7 +498,7 @@
         <item name="android:textSize">12sp</item>
         <item name="textAllCaps">false</item>
         <item name="android:textColor">@color/normalText</item>
-        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:fontFamily">@font/rubiklight</item>
     </style>
 
     <style name="NavigationDrawerStyle">
@@ -546,14 +550,14 @@
     <!-- Sub heading with bottom margin -->
     <style name="HeadingStyle">
         <item name="android:textColor">@color/normalText</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">@font/rubiklight</item>
         <item name="android:textSize">@dimen/textSizeXXLarge</item>
         <item name="android:layout_marginBottom">@dimen/parentLayoutVerticalMargin</item>
     </style>
 
     <style name="SubHeadingStyle">
         <item name="android:textColor">@color/normalText</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">@font/rubiklight</item>
         <item name="android:textSize">@dimen/readActivitySubHeadingTextSize</item>
         <item name="android:layout_marginBottom">@dimen/parentLayoutVerticalMargin</item>
     </style>
@@ -561,13 +565,13 @@
     <!-- Sub heading without bottom margin -->
     <style name="SubHeadingCompactStyle">
         <item name="android:textColor">@color/normalText</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">@font/rubiklight</item>
         <item name="android:textSize">@dimen/readActivitySubHeadingTextSize</item>
     </style>
 
     <!-- Description of the area below a sub heading -->
     <style name="SubHeadingDescriptionStyle">
-        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:fontFamily">@font/rubiklight</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:layout_marginBottom">@dimen/subHeadlineMarginBottom</item>
         <item name="android:singleLine">false</item>
@@ -578,7 +582,7 @@
 
     <style name="ReadActivitySubListHeadingNoBMarginStyle">
         <item name="android:textColor">@color/normalText</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">@font/rubiklight</item>
         <item name="android:textSize">@dimen/readActivitySubListHeadingTextSize</item>
     </style>
 

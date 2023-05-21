@@ -42,7 +42,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/pinHeading1MarginBottom"
-                android:fontFamily="sans-serif-black"
+                android:fontFamily="@font/rubikmedium"
                 android:textColor="@color/pinHeading1"
                 android:textSize="@dimen/headingEnterPinTextSize"/>
 
@@ -61,7 +61,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/enterPinInputDisplayMarginBottom"
-                android:background="@drawable/background_pin_mask_frame"
                 android:orientation="horizontal">
 
                 <EditText
@@ -69,28 +68,31 @@
                     style="@style/EnterPinInputDisplayStyle"
                     android:layout_width="@dimen/enterPinInputDisplayWidth"
                     android:layout_height="@dimen/enterPinInputDisplayHeight"
-                    android:background="@drawable/background_pin_mask_first"/>
+                    android:layout_marginRight="15dp"
+                    android:background="@drawable/background_pin_mask_frame"/>
 
                 <EditText
                     android:id="@+id/pin_char2"
                     style="@style/EnterPinInputDisplayStyle"
                     android:layout_width="@dimen/enterPinInputDisplayWidth"
                     android:layout_height="@dimen/enterPinInputDisplayHeight"
-                    android:background="@drawable/background_pin_mask_others"/>
+                    android:layout_marginRight="15dp"
+                    android:background="@drawable/background_pin_mask_frame"/>
 
                 <EditText
                     android:id="@+id/pin_char3"
                     style="@style/EnterPinInputDisplayStyle"
                     android:layout_width="@dimen/enterPinInputDisplayWidth"
                     android:layout_height="@dimen/enterPinInputDisplayHeight"
-                    android:background="@drawable/background_pin_mask_others"/>
+                    android:background="@drawable/background_pin_mask_frame"/>
 
                 <EditText
                     android:id="@+id/pin_char4"
                     style="@style/EnterPinInputDisplayStyle"
                     android:layout_width="@dimen/enterPinInputDisplayWidth"
                     android:layout_height="@dimen/enterPinInputDisplayHeight"
-                    android:background="@drawable/background_pin_mask_last"/>
+                    android:layout_marginLeft="15dp"
+                    android:background="@drawable/background_pin_mask_frame"/>
 
             </LinearLayout>
 

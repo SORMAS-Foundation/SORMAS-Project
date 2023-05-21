@@ -52,6 +52,8 @@ import de.symeda.sormas.backend.campaign.diagram.CampaignDiagramDefinitionFacade
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.infrastructure.PopulationData;
+import de.symeda.sormas.backend.infrastructure.PopulationDataService;
 import de.symeda.sormas.backend.infrastructure.area.Area;
 import de.symeda.sormas.backend.infrastructure.area.AreaFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.area.AreaService;
@@ -97,6 +99,10 @@ public class CampaignFacadeEjb implements CampaignFacade {
 	private DistrictService districtService;
 	@EJB
 	private CommunityService communityService;
+	
+	@EJB
+	private PopulationDataService popService;
+	
 	
 	@Override
 	public List<CampaignIndexDto> getIndexList(CampaignCriteria campaignCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
@@ -151,7 +157,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		return campaignService.getAll()
 			.stream()
 			.filter(c -> !c.isDeleted() && !c.isArchived())
-			.map(CampaignFacadeEjb::toReferenceDto)
+			.map(CampaignFacadeEjb::toReferenceDtoYear)
 			.collect(Collectors.toList());
 	}
 	
@@ -171,7 +177,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		final TypedQuery<Campaign> q = em.createQuery(query);
 		final Campaign lastStartedCampaign = q.getResultList().stream().findFirst().orElse(null);
 
-		return toReferenceDto(lastStartedCampaign);
+		return toReferenceDtoYear(lastStartedCampaign);
 	}
 
 	@Override
@@ -216,6 +222,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		target.setRound(source.getRound());
 		target.setCampaignYear(source.getCampaignYear());
 		target.setStartDate(source.getStartDate());
+		
 		
 		final Set<AreaReferenceDto> areas = source.getAreas();
 		if (!CollectionUtils.isEmpty(areas)) {
@@ -460,6 +467,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		target.setDistricts(DistrictFacadeEjb.toReferenceDto(new HashSet<District>(source.getDistricts())));
 		target.setCommunity(CommunityFacadeEjb.toReferenceDto(new HashSet<Community>(source.getCommunity())));
 		target.setCampaignDashboardElements(source.getDashboardElements());
+		target.setPublished(source.isPublished());
 
 		return target;
 	}
@@ -595,6 +603,15 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		return count.size() > 0;
 	}
 	
+	@Override
+	public boolean isPublished(String uuid) {
+		String cdvv = "select published from campaigns where uuid = '"+uuid+"' and published = false";
+	
+		List count = em.createNativeQuery(cdvv).getResultList();  
+		//System.out.println(cdvv +"  ++++++++++++++++   "+count.size());
+		return count.size() > 0;
+	}
+	
 
 	@Override
 	public void deleteCampaign(String campaignUuid) {
@@ -609,10 +626,8 @@ public class CampaignFacadeEjb implements CampaignFacade {
 
 		campaignService.delete(campaignService.getByUuid(campaignUuid));
 	}
-	
-	
 	@Override
-	public String cloneCampaign(String campaignUuid, String userCreating) {
+		public String cloneCampaign(String campaignUuid, String userCreating) {
 
 		User user = userService.getCurrentUser();
 		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
@@ -622,7 +637,43 @@ public class CampaignFacadeEjb implements CampaignFacade {
 					+ I18nProperties.getString(Strings.entityCampaigns).toLowerCase() + ".");
 		}
 		String newUuid = campaignService.cloneForm(campaignService.getByUuid(campaignUuid), user.getId());
+		
+		List<PopulationData> popList = campaignService.clonePopulationData(campaignService.getByUuid(campaignUuid), null);
+		final Campaign cmp = campaignService.getByUuid(newUuid);
+		for(PopulationData popListx : popList) {
+			PopulationData ppData = new PopulationData();
+			ppData.setAgeGroup(popListx.getAgeGroup());
+			ppData.setCampaign(cmp);
+			ppData.setDistrict(popListx.getDistrict());
+			ppData.setPopulation(popListx.getPopulation());
+			ppData.setRegion(popListx.getRegion());
+			ppData.setCollectionDate(popListx.getCollectionDate());
+			ppData.setSelected(popListx.getSelected());
+			
+	       em.persist(ppData);
+
+		}
+		
 		return newUuid;
+	}
+	
+	
+	
+	
+	@Override
+	public void publishandUnPublishCampaign(String campaignUuid, boolean publishedandunpublishbutton) {
+
+		User user = userService.getCurrentUser();
+		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
+			.contains(UserRight.CAMPAIGN_PUBLISH)) {
+			throw new UnsupportedOperationException(
+				I18nProperties.getString(Strings.entityUser) + " " + user.getUuid() + " is not allowed to publish a campaign data  "
+					+ I18nProperties.getString(Strings.entityCampaigns).toLowerCase() + ".");
+		}
+		campaignService.campaignPublish(campaignUuid, publishedandunpublishbutton);
+		
+		
+	
 	}
 	
 	
@@ -643,7 +694,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 
 	@Override
 	public CampaignReferenceDto getReferenceByUuid(String uuid) {
-		return toReferenceDto(campaignService.getByUuid(uuid));
+		return toReferenceDtoYear(campaignService.getByUuid(uuid));
 	}
 
 	@Override
@@ -687,7 +738,15 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		if (entity == null) {
 			return null;
 		}
-		CampaignReferenceDto dto = new CampaignReferenceDto(entity.getUuid(), entity.toString());
+		CampaignReferenceDto dto = new CampaignReferenceDto(entity.getUuid(), entity.toString() );
+		return dto;
+	}
+	
+	public static CampaignReferenceDto toReferenceDtoYear(Campaign entity) {
+		if (entity == null) {
+			return null;
+		}
+		CampaignReferenceDto dto = new CampaignReferenceDto(entity.getUuid(), entity.toString(), entity.getCampaignYear() );
 		return dto;
 	}
 

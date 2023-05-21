@@ -40,7 +40,7 @@
             android:layout_weight="0.4"
             android:textSize="16sp"
             android:textColor="@color/listActivityRowTertiaryText"
-            android:fontFamily="sans-serif-medium"
+            android:fontFamily="@font/rubikregular"
             android:ellipsize="none"
             android:scrollHorizontally="false"
             android:paddingTop="18dp"

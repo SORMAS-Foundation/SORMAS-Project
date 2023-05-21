@@ -1,2 +1,0 @@
-Hello $person.FirstName $person.lastName
-City: $person.address.city

@@ -91,6 +91,22 @@ public class CampaignFormMetaService extends AdoServiceWithUserFilter<CampaignFo
 
 		return em.createQuery(cq).getResultList();
 	}
+	
+	public List<CampaignFormMetaReferenceDto> getCampaignFormMetasAsReferencesByCampaignPostCampaign(String uuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<CampaignFormMetaReferenceDto> cq = cb.createQuery(CampaignFormMetaReferenceDto.class);
+		Root<Campaign> campaignRoot = cq.from(Campaign.class);
+		Join<Campaign, CampaignFormMeta> campaignFormMetaJoin = campaignRoot.join(Campaign.CAMPAIGN_FORM_METAS);
+
+		Predicate filter = cb.equal(campaignRoot.get(Campaign.UUID), uuid);
+		Predicate typefilter = cb.equal(campaignFormMetaJoin.get(CampaignFormMeta.FORM_TYPE), "post-campaign");// cb.and
+		Predicate filterxx = cb.equal(campaignRoot.get(Campaign.PUBLISHED), true);
+		cq = cq.where(filter, typefilter, filterxx);
+		cq.multiselect(campaignFormMetaJoin.get(CampaignFormMeta.UUID),
+				campaignFormMetaJoin.get(CampaignFormMeta.FORM_NAME));
+
+		return em.createQuery(cq).getResultList();
+	}
 
 	public List<CampaignFormMetaReferenceDto> getCampaignFormMetasAsReferencesByCampaignandRound(String round,
 			String uuid) {
@@ -105,8 +121,8 @@ public class CampaignFormMetaService extends AdoServiceWithUserFilter<CampaignFo
 		// TODO: post campaign implementations
 		cq = cq.where(filter);
 		cq.multiselect(campaignFormMetaJoin.get(CampaignFormMeta.UUID),
-				campaignFormMetaJoin.get(CampaignFormMeta.FORM_NAME), campaignFormMetaJoin.get(CampaignFormMeta.FORM_TYPE), campaignFormMetaJoin.get(CampaignFormMeta.FORM_CATEGORY));
-		 //System.out.println("SSSSSSSSS44SSSSSSSSSS"+SQLExtractor.from(em.createQuery(cq)));
+				campaignFormMetaJoin.get(CampaignFormMeta.FORM_NAME), campaignFormMetaJoin.get(CampaignFormMeta.FORM_TYPE), campaignFormMetaJoin.get(CampaignFormMeta.FORM_CATEGORY),  campaignFormMetaJoin.get(CampaignFormMeta.DAYSTOEXPIRE));
+		 System.out.println("SSSSSSSSS44SSSSSSSSSS"+SQLExtractor.from(em.createQuery(cq)));
 		return em.createQuery(cq).getResultList();
 	}
 	

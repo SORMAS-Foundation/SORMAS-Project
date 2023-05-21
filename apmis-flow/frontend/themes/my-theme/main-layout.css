@@ -126,6 +126,16 @@ width: 100%;
 .menuNav {
 	color: white !important;
 }
+   .loginView{
+   background-image: url("images/afghanistan-map.svg");
+   background-color: white;
+    background-repeat: no-repeat;
+       background-size: cover;
+   }
+   
+   .loginOverlay{
+   background-color: rgba(8, 0, 113, 0.6);
+   }
 
 .menuNav:active {
 	color: white;

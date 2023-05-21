@@ -59,6 +59,7 @@
     <color name="lighterBlue40">#66cdd8ec</color>
     <color name="normalText">#FF374b5a</color>
     <color name="normalText30">#4D374b5a</color>
+    <color name="normalText3ww">#a2f1a2</color>
     <color name="normalText44">#70374b5a</color>
     <color name="normalText50">#80374b5a</color>
     <color name="normalText80">#CC374b5a</color>
@@ -69,7 +70,7 @@
     <color name="whiteTransparent">#00FFFFFF</color>
     <color name="transparent">#00000000</color>
     <color name="brightBlue">#ff46c8e5</color>
-    <color name="brightYellow">#fff7de7c</color>
+    <color name="lightGray">#aeaeae</color>
     <color name="disabled">#4D374b5a</color>
     <color name="disabled50">#80374b5a</color>
     <color name="disabled20">#2037425a</color>
@@ -90,7 +91,7 @@
 
 
     <color name="defaultControlBackground">@color/whiteTransparent</color>
-    <color name="controlStrokeNormal">@color/lighterBlue</color>
+    <color name="controlStrokeNormal">@color/lightGray</color>
     <color name="controlStrokeActivated">@color/blue</color>
 
     <color name="switchDisabledBackground">@color/disabled</color>
@@ -221,8 +222,8 @@
 
     <color name="unreadIcon">@color/lightBlue</color>
     <!-- Action Bar -->
-    <color name="actionBarBackgroundColor">@color/whiteOpaque</color>
-    <color name="toolbarTextColor">#0e693a</color>
+    <color name="actionBarBackgroundColor">@color/lightBlue</color>
+    <color name="toolbarTextColor">@color/whiteOpaque</color>
 
     <color name="popupBackground">@color/whiteOpaque</color>
     <color name="popupMenuListDivider">@color/lighterBlue40</color>
@@ -343,7 +344,7 @@
 
 
 
-    <color name="viewSeparator">@color/lightestBlue</color>
+    <color name="viewSeparator">@color/gray</color>
 
 
     <!-- Form Edit Control -->
@@ -359,7 +360,7 @@
 
     <color name="indicatorTaskPriorityHigh">@color/red</color>
     <color name="indicatorTaskPriorityLow">@color/brightBlue</color>
-    <color name="indicatorTaskPriorityNormal">@color/brightYellow</color>
+    <color name="indicatorTaskPriorityNormal">@color/lightGray</color>
 
     <color name="indicatorTaskPending">@color/orange</color>
     <color name="indicatorTaskDone">@color/green</color>
@@ -372,7 +373,7 @@
 
     <color name="indicatorCaseProbable">@color/orange</color>
     <color name="indicatorCaseNotYetClassified">@color/lightBlue50</color>
-    <color name="indicatorCaseSuspect">@color/brightYellow</color>
+    <color name="indicatorCaseSuspect">@color/lightGray</color>
     <color name="indicatorCaseConfirmed">@color/watchOut</color>
     <color name="indicatorNotACase">@color/gray</color>
 
@@ -401,7 +402,8 @@
 
 
     <color name="listActivityRowBackground">@android:color/transparent</color>
-    <color name="listActivityRowBorder">@color/lighterBlue</color>
+    <color name="listActivityRowBorder">#799DED9D</color>
+    <color name="listActivityRowBorderUnsent">#90FBBB5B</color>
     <color name="listActivityRowPressedBackground">@color/listItemPressed</color>
     <color name="listActivityRowFocusedBackground">@color/listItemPressed</color>
     <color name="listActivityRowSelectedBackground">@color/listItemPressed</color>
@@ -416,7 +418,7 @@
 
 
 
-    <color name="optionMenuIcon">@color/blue</color>
+    <color name="optionMenuIcon">@color/whiteOpaque</color>
 
 
     <color name="sectionListRowBackground">@color/whiteOpaque</color>

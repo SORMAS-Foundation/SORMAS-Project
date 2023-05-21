@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.campaign;
 
+import java.math.BigInteger;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
@@ -16,10 +17,12 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.campaign.CampaignCriteria;
+import de.symeda.sormas.api.infrastructure.PopulationDataDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.infrastructure.PopulationData;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
@@ -128,9 +131,9 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Campaign> cq = cb.createQuery(getElementClass());
-		Root<Campaign> from = cq.from(getElementClass());
-		cq.where(createActiveCampaignsFilter(cb, from));
-		cq.orderBy(cb.desc(from.get(AbstractDomainObject.CHANGE_DATE)));
+		Root<Campaign> root = cq.from(getElementClass());
+		cq.where(cb.and(cb.isFalse(root.get(Campaign.ARCHIVED)), cb.isFalse(root.get(Campaign.DELETED))));
+		cq.orderBy(cb.desc(root.get(AbstractDomainObject.CHANGE_DATE)));
 
 		return em.createQuery(cq).getResultList();
 	}
@@ -141,17 +144,52 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 		String cds = "";
 
 		final Long mill = ZonedDateTime.now().toInstant().toEpochMilli();
-		
+
 		try {
 			cds = cloneFormx1x(uuidx, mill, userCreatingId);
 		} finally {
-			cdv = "insert into campaign_campaignformmeta  (SELECT "+mill+" as id, "
-					+ "cd.campaignformmeta_id, cd.sys_period FROM campaigns dc inner join campaign_campaignformmeta cd on (dc.id = cd.campaign_id) where dc.name='"
-					+ uuidx + "' and deleted = false)";
-
-		}
+			
+		cdv = "insert into campaign_campaignformmeta  (SELECT " + mill + " as id, "
+				+ "cd.campaignformmeta_id, cd.sys_period FROM campaigns dc inner join campaign_campaignformmeta cd on (dc.id = cd.campaign_id) where dc.name='"
+				+ uuidx + "' and deleted = false)";
+		
 		int notused = em.createNativeQuery(cdv).executeUpdate();
+		}
 		return cds;
+	}
+//	
+//	public BigInteger countPopulationtoClone(Campaign uuidx) {
+//		String cdv = " SELECT count(*) from populationdata WHERE campaign_id = "+uuidx.getId()+";";
+//		return (BigInteger) em.createNativeQuery(cdv).getSingleResult();
+//	}
+
+	public List<PopulationData> clonePopulationData(Campaign uuidx, Campaign newCampaignUuid) {
+
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<PopulationData> cq = cb.createQuery(PopulationData.class);
+		Root<PopulationData> root = cq.from(PopulationData.class);
+		cq.where(cb.and(cb.equal(root.get(PopulationData.CAMPAIGN), uuidx)));
+
+		return em.createQuery(cq).getResultList();
+		
+//		
+//		List<PopulationData> popdata = em.createNativeQuery("select from populationdata where campaign_id = "+uuidx.getId()).getResultList();
+
+//		return popdata;
+	}
+
+	public int campaignPublish(String uuidx, boolean published) {
+
+		String cdvv = "";
+		if (published) {
+			cdvv = "update campaigns c set published = false where uuid = '" + uuidx + "' ";
+
+		} else {
+			cdvv = "update campaigns c set published = true where uuid = '" + uuidx + "' ";
+		}
+		System.out.println(cdvv);
+		return em.createNativeQuery(cdvv).executeUpdate();
 	}
 
 	public int closeAndOpenForm(String uuidx, boolean close) {
@@ -170,23 +208,18 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 
 		UUID uuisd = UUID.randomUUID();
 
-		
-
-		String cdc = "insert into campaigns (SELECT "+mill+" as id, '"
-				+ uuisd.toString().toUpperCase()
+		String cdc = "insert into campaigns (SELECT " + mill + " as id, '" + uuisd.toString().toUpperCase()
 				+ "' as uuid, changedate, creationdate, CONCAT(name,'-DUP'), description, startdate, enddate, "
 				+ userCreatingId
-				+ ", deleted, archived, sys_period, dashboardelements, cluster, round, campaignyear FROM campaigns where name='"
+				+ ", deleted, archived, sys_period, dashboardelements, cluster, round, campaignyear, openandclose FROM campaigns where name='"
 				+ uuidx + "' and archived = false and  deleted = false)";
-		
+
 		System.out.println(cdc);
-		
+
 		em.createNativeQuery(cdc).executeUpdate();
 
 		return uuisd.toString().toUpperCase();
 	}
-
-	
 
 	/*
 	 * public int cloneFormx(Campaign uuidx, int unix) { String cdv =
@@ -198,10 +231,9 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 	public Predicate createActiveCampaignsFilter(CriteriaBuilder cb, Root<Campaign> root) {
 		return cb.and(cb.isFalse(root.get(Campaign.ARCHIVED)), cb.isFalse(root.get(Campaign.DELETED)));
 	}
-	
-	
-	
+
 	public Predicate createActiveCampaignsFilterForMobile(CriteriaBuilder cb, Root<Campaign> root) {
-		return cb.and(cb.isFalse(root.get(Campaign.ARCHIVED)), cb.isTrue(root.get(Campaign.CLOSEOPEN)), cb.isFalse(root.get(Campaign.DELETED)));
+		return cb.and(cb.isFalse(root.get(Campaign.ARCHIVED)), cb.isTrue(root.get(Campaign.CLOSEOPEN)),
+				cb.isFalse(root.get(Campaign.DELETED)));
 	}
 }

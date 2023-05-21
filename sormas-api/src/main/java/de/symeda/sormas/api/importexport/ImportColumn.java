@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -129,6 +130,8 @@ public class ImportColumn {
 			return I18nProperties.getString(Strings.infoFacilityCsvImport);
 		} else if (EventReferenceDto.class.isAssignableFrom(fieldType)) {
 			return String.format(I18nProperties.getString(Strings.uuidOf), DataHelper.getHumanClassCaption(fieldType));
+		} else if (DataHelper.getHumanClassCaption(fieldType).equalsIgnoreCase("Campaign")) {
+			return String.format(I18nProperties.getString(Strings.uuidOf), DataHelper.getHumanClassCaption(fieldType));//.equalsIgnoreCase("Region") ? "Province" : DataHelper.getHumanClassCaption(fieldType));
 		} else if (ReferenceDto.class.isAssignableFrom(fieldType)) {
 			return String.format(I18nProperties.getString(Strings.nameOf), DataHelper.getHumanClassCaption(fieldType));//.equalsIgnoreCase("Region") ? "Province" : DataHelper.getHumanClassCaption(fieldType));
 		} else if (Disease.class.isAssignableFrom(fieldType)) {

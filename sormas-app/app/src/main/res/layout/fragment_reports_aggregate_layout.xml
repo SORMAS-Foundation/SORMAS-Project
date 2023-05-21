@@ -113,7 +113,7 @@
                     android:layout_weight="0.2"
                     android:textSize="16sp"
                     android:textColor="@color/listActivityRowTertiaryText"
-                    android:fontFamily="sans-serif-medium"
+                    android:fontFamily="@font/rubikregular"
                     android:paddingStart="4dp"
                     android:paddingEnd="2dp"/>
 
@@ -123,7 +123,7 @@
                     android:layout_weight="0.2"
                     android:textSize="16sp"
                     android:textColor="@color/listActivityRowTertiaryText"
-                    android:fontFamily="sans-serif-medium"
+                    android:fontFamily="@font/rubikregular"
                     android:paddingStart="4dp"
                     android:paddingEnd="2dp"/>
 
@@ -133,7 +133,7 @@
                     android:layout_weight="0.2"
                     android:textSize="16sp"
                     android:textColor="@color/listActivityRowTertiaryText"
-                    android:fontFamily="sans-serif-medium"
+                    android:fontFamily="@font/rubikregular"
                     android:paddingStart="4dp"/>
 
             </LinearLayout>
@@ -151,7 +151,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
                 android:textColor="@color/listActivityRowTertiaryText"
-                android:fontFamily="sans-serif-medium"
+                android:fontFamily="@font/rubikregular"
                 android:paddingStart="24dp"
                 android:paddingEnd="24dp"
                 android:layout_marginTop="14dp"

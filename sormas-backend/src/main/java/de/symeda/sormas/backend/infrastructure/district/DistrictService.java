@@ -201,8 +201,9 @@ public class DistrictService extends AbstractInfrastructureAdoService<District> 
 				}
 
 				Predicate likeFilters = cb.or(
-					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(District.NAME), textFilter),
-					CriteriaBuilderHelper.ilike(cb, from.get(District.EPID_CODE), textFilter));
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(District.NAME), textFilter)//,
+					//CriteriaBuilderHelper.ilike(cb, from.get(District.EPID_CODE), textFilter)
+					);
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}

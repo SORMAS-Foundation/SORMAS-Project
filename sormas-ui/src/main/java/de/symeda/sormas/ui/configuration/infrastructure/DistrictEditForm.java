@@ -70,9 +70,9 @@ public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
 		ComboBox riskField = addRiskCombo(DistrictDto.RISK);
 		
 		//ComboBox riskField = addField(DistrictDto.RISK, ComboBox.class);
-		riskField.addItem("None Risk District (NRD)");
-		riskField.addItem("High Risk District (HRD)");
-		riskField.addItem("Very High Risk District (VHRD)");
+		riskField.addItem("Low Risk (LR)");
+		riskField.addItem("Medium Risk (MR)");
+		riskField.addItem("High Risk (HR)");
 		riskField.setNullSelectionAllowed(true);
 		
 //		TextField growthRate = addField(DistrictDto.GROWTH_RATE, TextField.class); NID

@@ -89,7 +89,7 @@ public abstract class BaseListFragment<TListAdapter extends RecyclerView.Adapter
 			((HasOnListItemClickListener) this.adapter).setOnListItemClickListener(this);
 		} else {
 			throw new NotImplementedException(
-				"setOnListItemClickListener is not supported by the adapter; " + "implement HasOnListItemClickListener");
+					"setOnListItemClickListener is not supported by the adapter; " + "implement HasOnListItemClickListener");
 		}
 
 //        jobTask = new DefaultAsyncTask(getContext()) {
@@ -116,16 +116,16 @@ public abstract class BaseListFragment<TListAdapter extends RecyclerView.Adapter
 	public void onResume() {
 		super.onResume();
 
-		final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout) this.getView().findViewById(R.id.swiperefresh);
-		if (swiperefresh != null) {
-			swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-
-				@Override
-				public void onRefresh() {
-					getBaseActivity().synchronizeChangedData();
-				}
-			});
-		}
+//		final SwipeRefreshLayout swiperefresh = (SwipeRefreshLayout) this.getView().findViewById(R.id.swiperefresh);
+//		if (swiperefresh != null) {
+//			swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//
+//				@Override
+//				public void onRefresh() {
+//					getBaseActivity().synchronizeChangedData();
+//				}
+//			});
+//		}
 
 		subHeadingHandler.updateSubHeadingTitle();
 	}
@@ -164,7 +164,7 @@ public abstract class BaseListFragment<TListAdapter extends RecyclerView.Adapter
 
 		if (adapter.getItemCount() == 0) {
 			emptyListHintView
-				.setText(getResources().getString(canAddToList() ? R.string.hint_no_records_found_add_new : R.string.hint_no_records_found));
+					.setText(getResources().getString(canAddToList() ? R.string.hint_no_records_found_add_new : R.string.hint_no_records_found));
 			emptyListHintView.setVisibility(View.VISIBLE);
 		} else {
 			emptyListHintView.setVisibility(View.GONE);

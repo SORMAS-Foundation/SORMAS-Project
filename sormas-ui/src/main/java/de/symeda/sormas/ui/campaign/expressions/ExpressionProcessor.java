@@ -41,7 +41,7 @@ public class ExpressionProcessor {
 
 	public ExpressionProcessor(CampaignFormBuilder campaignFormBuilder) {
 		this.campaignFormBuilder = campaignFormBuilder;
-		checkExpression(false);
+		checkExpression();
 	}
 
 	public void disableExpressionFieldsForEditing() {
@@ -61,20 +61,9 @@ public class ExpressionProcessor {
 		final List<CampaignFormElement> formElements = campaignFormBuilder.getFormElements();
 		formElements.stream()
 			//.filter(formElement -> formElement.getExpression() == null)
-		//.filter(formElement -> !formElement.isIgnoredisable())
 			.filter(formElement -> fields.get(formElement.getId()) != null)
 			.forEach(formElement -> {
-				fields.get(formElement.getId()).addValueChangeListener((Property.ValueChangeListener) valueChangeEvent -> checkExpression(false));
-			});
-	}
-	
-	public void addExpressionListenerIgnorable() {
-		final Map<String, Field<?>> fields = campaignFormBuilder.getFields();
-		final List<CampaignFormElement> formElements = campaignFormBuilder.getFormElements();
-		formElements.stream()
-			.filter(formElement -> formElement.isIgnoredisable())
-			.forEach(formElement -> {
-				fields.get(formElement.getId()).addValueChangeListener((Property.ValueChangeListener) valueChangeEvent -> checkExpression(true));
+				fields.get(formElement.getId()).addValueChangeListener((Property.ValueChangeListener) valueChangeEvent -> checkExpression());
 			});
 	}
 
@@ -101,30 +90,23 @@ public class ExpressionProcessor {
 		field.setDescription(String.format("%s: %s", I18nProperties.getDescription(Descriptions.Campaign_calculatedBasedOn), StringUtils.join(fieldNamesInExpression, ", ")));
 	}
 
-	private void checkExpression(boolean isIgnorable) {
-//		for(CampaignFormDataEntry dfv : campaignFormBuilder.getFormValues()) {
-//		System.out.println(dfv.getId() +" ===== "+dfv.getValue());
-//		}
-//		
+	private void checkExpression() {
+	//	System.out.println("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+		
 		EvaluationContext context = refreshEvaluationContext(campaignFormBuilder.getFormValues());
 		final List<CampaignFormElement> formElements = campaignFormBuilder.getFormElements();
 		formElements.stream().filter(element -> element.getExpression() != null).forEach(e -> {
 			try {
-				
 				final Expression expression = expressionParser.parseExpression(e.getExpression());
-				
-				
 				final Class<?> valueType = expression.getValueType(context);
 				final Object value = expression.getValue(context, valueType); 
 				//final Object valx = Precision.round((double) value, 3);
 				//final List <String> opt = null;
-			//	System.out.println(value + "| range? "+e.getType().toString().equals("range")+ " value:  "+expression.getValue(context) +" == "+e.getCaption());
+				//System.out.println(value + "| range? "+e.getType().toString().equals("range")+ " value:  "+expression.getValue(context));
 				String valuex = value +"";
-				System.out.println(value+" +++++++++++++++++++++++++============================ "+e.getType().toString());
-				
+			
 				if(!valuex.isBlank() && value != null) {
 				if(e.getType().toString().equals("range")) {
-					System.out.println(value + "| range? "+e.getType().toString().equals("range")+ " value:  "+expression.getValue(context) +" == "+e.getCaption());
 					
 					if(value.toString().equals("0")) { 
 						campaignFormBuilder
@@ -157,22 +139,14 @@ public class ExpressionProcessor {
 							!Double.isFinite((double) value) ? 0 : value.toString().endsWith(".0") ? value.toString().replace(".0", "") : Precision.round((double) value, 2),
 									null, null, false, e.getErrormessage() != null ? e.getCaption() +" : "+e.getErrormessage() : null);
 			//	return;
-				} else if(e.getType().toString().equals("yes-no")) {
-					
-					if(!isIgnorable) {
-						campaignFormBuilder
-						.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
-								CampaignFormElementType.fromString(e.getType()), value,
-										null, null, false, e.getErrormessage() != null ? e.getCaption() +" : "+e.getErrormessage() : null);
-					}
 				} else if(valueType.isAssignableFrom(Boolean.class)) {
-					
 					campaignFormBuilder
 					.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
 							CampaignFormElementType.fromString(e.getType()), value,
 									null, null, false, e.getErrormessage() != null ? e.getCaption() +" : "+e.getErrormessage() : null);
-			
-				}else {
+				//	return;
+				//	
+				} else {
 					
 					campaignFormBuilder
 					.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
@@ -186,7 +160,7 @@ public class ExpressionProcessor {
 					
 				}
 			} catch (SpelEvaluationException evaluationException) {
-				LOG.error("Error evaluating expression: {} / {}", evaluationException.getMessageCode(), evaluationException.getMessage());
+				//LOG.error("Error evaluating expression: {} / {}", evaluationEx0rception.getMessageCode(), evaluationException.getMessage());
 			}
 		});
 	}

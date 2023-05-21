@@ -739,6 +739,7 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                         .setContent(R.id.tabSheet5);
                 mTabHost.addTab(spec);
                 mTabHost.getTabWidget().getChildAt(4).getLayoutParams().width = 140;
+               mTabHost.getTabWidget().getChildAt(4).setVisibility(View.GONE);
             }
          /*    if (dayy > 5) {
                 spec = mTabHost.newTabSpec("tab6").setIndicator("D6",//caption_1,

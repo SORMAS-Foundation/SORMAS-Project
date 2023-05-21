@@ -33,9 +33,9 @@ public class AreaDto extends EntityDto {
 	private Long populationData;
 	private Long areaid;
 	private String uuid_;
-	
-//	@Autowired
-//	public RegionDto regionDto;
+
+  
+  //TODO check if you want to leave this here 
 	private List<RegionDto> regionData = new ArrayList<>();
 
 	public static AreaDto build() {
@@ -102,6 +102,17 @@ public class AreaDto extends EntityDto {
 		this.areaid = areaid;
 	}
 
+//	public List<RegionDto> getRegionData() {
+//		List<RegionDto> regions_ = FacadeProvider.getRegionFacade().getAllActiveAsReferenceAndPopulation(getAreaid(), campignUuid);
+//		regionData.addAll(regions_);
+//		return regionData;
+//	}
+//
+//	public void setRegionData(List<RegionDto> regionData) {
+//		this.regionData = regionData;
+//	}
+  
+  //TODO check if you want to leave this here 
 	public List<RegionDto> getRegionData() {
 		List<RegionDto> regions_ = FacadeProvider.getRegionFacade().getAllActiveAsReferenceAndPopulation(getAreaid());
 		regionData.addAll(regions_);
@@ -111,6 +122,7 @@ public class AreaDto extends EntityDto {
 	public void setRegionData(List<RegionDto> regionData) {
 		this.regionData = regionData;
 	}
+  
 
 	public String getUuid_() {
 		return uuid_;
@@ -119,8 +131,14 @@ public class AreaDto extends EntityDto {
 	public void setUuid_(String uuid_) {
 		this.uuid_ = uuid_;
 	}
-	
-	
-	
+
+//
+//	public String getCampignUuid() {
+//		return campignUuid;
+//	}
+//
+//	public void setCampignUuid(String campignUuid) {
+//		this.campignUuid = campignUuid;
+//	}
 	
 }

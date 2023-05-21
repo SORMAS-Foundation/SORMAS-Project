@@ -11,6 +11,7 @@ import javax.persistence.TemporalType;
 
 import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.backend.campaign.Campaign;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -26,10 +27,12 @@ public class PopulationData extends AbstractDomainObject {
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
+	public static final String CAMPAIGN = "campaign";
 	public static final String SEX = "sex";
 	public static final String AGE_GROUP = "ageGroup";
 	public static final String POPULATION = "population";
 	public static final String COLLECTION_DATE = "collectionDate";
+	public static final String SELECTED = "selected";
 
 	private Region region;
 	private District district;
@@ -38,6 +41,8 @@ public class PopulationData extends AbstractDomainObject {
 	private AgeGroup ageGroup;
 	private Integer population;
 	private Date collectionDate;
+	private Campaign campaign;
+	private String selected;
 
 	@ManyToOne(cascade = {})
 	public Region getRegion() {
@@ -100,4 +105,28 @@ public class PopulationData extends AbstractDomainObject {
 	public void setCollectionDate(Date collectionDate) {
 		this.collectionDate = collectionDate;
 	}
+
+	
+	@ManyToOne(cascade = {})
+	public Campaign getCampaign() {
+		return campaign;
+	}
+
+	public void setCampaign(Campaign campaign) {
+		this.campaign = campaign;
+	}
+
+	
+	//selected default to false
+	public String getSelected() {
+		return "false";
+	}
+
+	public void setSelected(String selected) {
+		this.selected = "false";
+	}
+	
+	
+	
+	
 }

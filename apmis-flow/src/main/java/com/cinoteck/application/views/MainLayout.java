@@ -45,6 +45,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 @JavaScript(value = "https://code.jquery.com/jquery-3.6.4.min.js" )
 @StyleSheet("https://cdn.jsdelivr.net/npm/@vaadin/vaadin-lumo-styles@24.0.0/")
 @StyleSheet("https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css")
+@JavaScript("https://code.jquery.com/jquery-3.6.3.min.js")
 @JavaScript("https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js")
 @StyleSheet("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/fontawesome.min.css")
 @StyleSheet("https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css")
