@@ -18,11 +18,13 @@ package com.cinoteck.application.views.user;
 import java.util.Collections;
 import java.util.Set;
 
+import com.cinoteck.application.UserProvider;
+
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.user.FormAccess;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.ui.UserProvider;
+
 
 public class UserUiHelper {
 

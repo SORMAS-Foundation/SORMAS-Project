@@ -1,71 +1,71 @@
 vaadin-app-layout[primary-section="navbar"]::part(navbar)::before {
-  background: var(--lumo-base-color) linear-gradient(var(--lumo-contrast-5pct), var(--lumo-contrast-5pct));
+	background: var(- -lumo-base-color)
+		linear-gradient(var(- -lumo-contrast-5pct), var(- -lumo-contrast-5pct));
 }
 
-
 vaadin-app-layout[primary-section="drawer"]::part(navbar)::before {
-  background: var(--lumo-base-color);
+	background: var(- -lumo-base-color);
 }
 
 vaadin-app-layout[primary-section="drawer"]::part(navbar) {
-  box-shadow: 0 3px 0 0 var(--lumo-contrast-10pct);
+	box-shadow: 0 3px 0 0 var(- -lumo-contrast-10pct);
 }
 
-vaadin-app-layout[primary-section="drawer"]:not([overlay])::part(drawer) {
-  background: var(--lumo-shade-5pct);
-  border: 0;
-  box-shadow: 1px 0 0 0 var(--lumo-contrast-10pct), 1px 0 0 0 var(--lumo-base-color);
-  z-index: 1;
+vaadin-app-layout[primary-section="drawer"]:not([overlay])::part(drawer)
+	{
+	background: var(- -lumo-shade-5pct);
+	border: 0;
+	box-shadow: 1px 0 0 0 var(- -lumo-contrast-10pct), 1px 0 0 0
+		var(- -lumo-base-color);
+	z-index: 1;
 }
 
 vaadin-drawer-toggle[slot="navbar"] {
-  color: white;
+	color: white;
 }
 
 ::part(navbar) {
-  min-height: var(--lumo-size-xl);
+	min-height: var(- -lumo-size-xl);
 }
 
 ::part(drawer) {
-  display: flex;
-  flex-direction: column;
+	display: flex;
+	flex-direction: column;
 }
 
 vaadin-scroller[slot="drawer"] {
- background: #0D6938 !important;
-  flex: 1;
-  
+	background: #0D6938 !important;
+	flex: 1;
 }
 
 vaadin-scroller[slot="drawer"][overflow~="top"] {
-  border-top: 1px solid var(--lumo-contrast-10pct);
+	border-top: 1px solid var(- -lumo-contrast-10pct);
 }
 
 vaadin-scroller[slot="drawer"][overflow~="bottom"] {
-  border-bottom: 1px solid var(--lumo-contrast-10pct);
+	border-bottom: 1px solid var(- -lumo-contrast-10pct);
 }
 
 [slot="drawer"]:is(header, footer) {
-  display: flex;
-  align-items: center;
-  gap: var(--lumo-space-s);
-  padding: var(--lumo-space-s) var(--lumo-space-m);
-  min-height: var(--lumo-size-xl);
-  box-sizing: border-box;
+	display: flex;
+	align-items: center;
+	gap: var(- -lumo-space-s);
+	padding: var(- -lumo-space-s) var(- -lumo-space-m);
+	min-height: var(- -lumo-size-xl);
+	box-sizing: border-box;
 }
-[part='icon'], [part='icon']::after, [part='icon']::before{
+
+[part='icon'], [part='icon']::after, [part='icon']::before {
 	color: white !important;
 }
 
 [slot="drawer"]:is(header, footer):is(:empty) {
-  display: none;
+	display: none;
 }
 
-textarea{
+textarea {
 	height: 40vh !important;
 }
-
-
 
 /*.actions{
 width: 100%;
@@ -75,240 +75,242 @@ width: 100%;
     align-items: flex-end;
     }
     */
-    .campFilter{
-    width:100%;
-    display: flex;
-    }
-    
-    .topdiv{
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    }
-    
-    .campDatFill{
-    width:100%;
-    display: flex;
-    justify-content: space-between;
-    }
-    
-    .actionLayout{
-    display: flex;
-    align-items: flex-end;
-    }
-
-    
-    .subtabBackground{
-        width: 100%;
-        background: #434343;
-        color: white;
-    }
-    
-    .superDiv{
-        display: flex;
-    justify-content: space-between;
-    width: 100%;
-    }
-    
-    .anchDiv{
-    display: flex;
-    align-items: flex-end;
-    }
-    
-    .communitydiv{
-    display: flex;
-    }
-    
-    .navScroller{
-    background: green;
-     color: white;
-    }
-    
-    .menuNav{
-    color: white !important; 
-    }
-    
-    .menuNav:active{
-    color: white;
-    background: #F08F3E  
-    }
-    
-   
-    #menuItems:hover{
-    background: #F08F3E;
-
-    }
-   
-    vcf-nav-item#navitem {
-    color: white;
-    font-family: Lato;
-    font-weight: 300 !important;
-}
-     vcf-nav-item#navitem vaadin-icon{
-    height: 15px;
-}
-     vcf-nav-item#navitem a, vcf-nav-item#navitem a:hover{
-    color: white;
+.campFilter {
+	width: 100%;
+	display: flex;
 }
 
-     vcf-nav-item#navitem a slot, vcf-nav-item#navitem a slot:hover{
-    color: white;
-} 
-   vcf-nav {
-    color: white;
-    padding-top: 35px;
-}
- vcf-nav:hover {
-    color: white;
+.topdiv {
+	display: flex;
+	justify-content: space-between;
+	width: 100%;
 }
 
- vcf-nav-item#navitem:hover,  vcf-nav-item#navitem:focus-visible {
-   	background: #6D5D4F !important;
-    color: #ffffff !important;
-    text-shadow: none !important;
-}
-    
-   vcf-nav-item#navitem:active,  #menuItems:active {
-    background: #F08F3E !important; 
-    color: white !important;
-    
-    }
-    
-    input{
-    font-weight: 300;
-    }
-    
-    
-    header{
-    background: white !important;
-    }
-    
-    #pageHeader{
-    color: green;
-    width: 100%;
-    font-size: 31px;
-    font-family: 'Lato';
-    padding-top: 16px;
-    padding-bottom: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    }
-    
-    #menuItems:hover {
-    background: #F08F3E !important; 
-    color: white !important;
-    
-    }
-
-   .loginView{
-   background-image: url("images/loginBackground.png");
-       background-repeat: no-repeat;
-       background-size: cover;
-   }
-
-   .loginContainer{
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    width: 40%;
-   }
-
-   .logoContainer{
-    display: flex;
-    justify-content: center;
-   }
-
-   .apmisDesc{
-   display: flex;
-   justify-content: center;
-   }
-
-   .apmisText{
-   font-size: 36px;
-    text-align: center;
-    color: white;
-    line-height: 34px;
-    font-weight: 600;
-   }
-
-   .loginfORM{
-   display: flex;
-       justify-content: center;
-   }
-#overviewTab{
-margin-top: 15px;
+.campDatFill {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
 }
 
-:host{
-color:white !important;
-background-color: #F08F3E;
+.actionLayout {
+	display: flex;
+	align-items: flex-end;
 }
 
-#label-vaadin-text-field-0, #label-vaadin-password-field-3{
+.subtabBackground {
+	width: 100%;
+	background: #434343;
 	color: white;
-	
+}
+
+.superDiv {
+	display: flex;
+	justify-content: space-between;
+	width: 100%;
+}
+
+.anchDiv {
+	display: flex;
+	align-items: flex-end;
+}
+
+.communitydiv {
+	display: flex;
+}
+
+.navScroller {
+	background: green;
+	color: white;
+}
+
+.menuNav {
+	color: white !important;
+}
+
+.menuNav:active {
+	color: white;
+	background: #F08F3E
+}
+
+#menuItems:hover {
+	background: #F08F3E;
+}
+
+vcf-nav-item#navitem {
+	color: white;
+	font-family: Lato;
+	font-weight: 300 !important;
+}
+
+vcf-nav-item#navitem vaadin-icon {
+	height: 15px;
+}
+
+vcf-nav-item#navitem a, vcf-nav-item#navitem a:hover {
+	color: white;
+}
+
+vcf-nav-item#navitem a slot, vcf-nav-item#navitem a slot:hover {
+	color: white;
+}
+
+vcf-nav {
+	color: white;
+	padding-top: 35px;
+}
+
+vcf-nav:hover {
+	color: white;
+}
+
+vcf-nav-item#navitem:hover, vcf-nav-item#navitem:focus-visible {
+	background: #6D5D4F !important;
+	color: #ffffff !important;
+	text-shadow: none !important;
+}
+
+vcf-nav-item#navitem:active, #menuItems:active {
+	background: #F08F3E !important;
+	color: white !important;
+}
+
+input {
+	font-weight: 300;
+}
+
+header {
+	background: white !important;
+}
+
+#pageHeader {
+	color: green;
+	width: 100%;
+	font-size: 31px;
+	font-family: 'Lato';
+	padding-top: 16px;
+	padding-bottom: 16px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+#menuItems:hover {
+	background: #F08F3E !important;
+	color: white !important;
+}
+
+.loginView {
+	background-image: url("images/loginBackground.png");
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+.loginContainer {
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+	width: 40%;
+}
+
+.logoContainer {
+	display: flex;
+	justify-content: center;
+}
+
+.apmisDesc {
+	display: flex;
+	justify-content: center;
+}
+
+.apmisText {
+	font-size: 36px;
+	text-align: center;
+	color: white;
+	line-height: 34px;
+	font-weight: 600;
+}
+
+.loginfORM {
+	display: flex;
+	justify-content: center;
+}
+
+#overviewTab {
+	margin-top: 15px;
+}
+
+:host {
+	color: white !important;
+	background-color: #F08F3E;
+}
+
+#label-vaadin-text-field-0, #label-vaadin-password-field-3 {
+	color: white;
 }
 
 #input-vaadin-text-field-6, #input-vaadin-password-field-7 {
-    -_lumo-text-field-overflow-mask-image: () !important;
-    -webkit-mask-image: var(--_lumo-text-field-overflow-mask-image);
-    border-radius: 5px;
-    margin-left: -5px;
-    border: 1px solid white !important;
-    	color: white;
-    
+	-_lumo-text-field-overflow-mask-image: () !important;
+	-webkit-mask-image: var(- -_lumo-text-field-overflow-mask-image);
+	border-radius: 5px;
+	margin-left: -5px;
+	border: 1px solid white !important;
+	color: white;
 }
 
 label {
-    color: green !important;
-    font-weight: 400;
-    letter-spacing: 0.5px;
-    font-family: Lato;
+	color: green !important;
+	font-weight: 400;
+	letter-spacing: 0.5px;
+	font-family: Lato;
 }
 
 a:active {
-    color: white !important;
-    background-color: #F08F3E !important;
-    transition: none;
+	color: white !important;
+	background-color: #F08F3E !important;
+	transition: none;
 }
 
 a:hover {
-    color: white !important;
-    background-color: #F08F3E !important;
-    transition: none;
+	color: white !important;
+	background-color: #F08F3E !important;
+	transition: none;
 }
 
 a {
-    color: white !important;
-    transition: none;
+	color: white !important;
+	transition: none;
 }
 
-.col, .col-1, .col-10, .col-11, .col-12, .col-2, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-auto, .col-lg, .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-lg-auto, .col-md, .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-auto, .col-sm, .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-auto, .col-xl, .col-xl-1, .col-xl-10, .col-xl-11, .col-xl-12, .col-xl-2, .col-xl-3, .col-xl-4, .col-xl-5, .col-xl-6, .col-xl-7, .col-xl-8, .col-xl-9, .col-xl-auto{
+.col, .col-1, .col-10, .col-11, .col-12, .col-2, .col-3, .col-4, .col-5,
+	.col-6, .col-7, .col-8, .col-9, .col-auto, .col-lg, .col-lg-1,
+	.col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4,
+	.col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-lg-auto,
+	.col-md, .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2,
+	.col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8,
+	.col-md-9, .col-md-auto, .col-sm, .col-sm-1, .col-sm-10, .col-sm-11,
+	.col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6,
+	.col-sm-7, .col-sm-8, .col-sm-9, .col-sm-auto, .col-xl, .col-xl-1,
+	.col-xl-10, .col-xl-11, .col-xl-12, .col-xl-2, .col-xl-3, .col-xl-4,
+	.col-xl-5, .col-xl-6, .col-xl-7, .col-xl-8, .col-xl-9, .col-xl-auto {
 	padding-left: 0px !important;
 	padding-right: 0px !important;
 }
 
-
-
-vaadin-icon{
+vaadin-icon {
 	color: white !important;
 }
 
-vaadin-tab{
-	
+vaadin-tab {
 	margin-right: 20px;
 	font-weight: 300;
 	font-family: Lato;
 }
 
-
-
-a:selected{
+a:selected {
 	color: white;
 }
 
-:host([selected])::before, :host([selected])::after{
+:host([selected])::before, :host([selected])::after {
 	width: 100% !important;
 	background: #F08F3E !important;
 }
@@ -318,45 +320,41 @@ vaadin-icon#fghf , #signInIcon{
 	color: green !important;
 }
 */
-
-vaadin-input-container{
-	    border: 1px solid green !important;
-    background: white !important;
+vaadin-input-container {
+	border: 1px solid green !important;
+	background: white !important;
 }
 
-#signInText{
+#signInText {
 	align-self: center;
-    color: white;
-    font-size: 30px;
-    font-weight: 600;
-    margin-bottom: 5px;
+	color: white;
+	font-size: 30px;
+	font-weight: 600;
+	margin-bottom: 5px;
 }
 
 .loginUsername {
-margin-bottom: 0px !important;
-width: 637px !important;
+	margin-bottom: 0px !important;
+	width: 637px !important;
 }
-
 
 .loginButton {
-width: 630px !important;
-height :48px !important;
+	width: 630px !important;
+	height: 48px !important;
 }
 
-
-.loginUsername label{
+.loginUsername label {
 	color: white !important;
-    font-size: 16px;
-    font-weight: 500;
-    font-family: Lato !important;
+	font-size: 16px;
+	font-weight: 500;
+	font-family: Lato !important;
 }
 
-.loginUsername input{
+.loginUsername input {
 	height: 48px;
 	width: 586px;
 }
 
-#navbarTop{
+#navbarTop {
 	border-bottom: 1px solid #c9c9c9 !important;
 }
-

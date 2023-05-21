@@ -17,10 +17,12 @@ import com.cinoteck.application.views.user.UserView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.dependency.StyleSheet;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -88,7 +90,7 @@ public class MainLayout extends AppLayout {
 		// AppNav is not yet an official component.
 		// For documentation, visit https://github.com/vaadin/vcf-nav#readme  
 		AppNav nav = new AppNav();
-		
+		Button myButton = new Button();
 		
 		nav.addItem(new AppNavItem("Dashboard", DashboardView.class,  VaadinIcon.GRID_BIG_O, "navitem"));
 		nav.addItem(new AppNavItem("Campaign Data", CampaignDataView.class,  VaadinIcon.CLIPBOARD , "navitem"));
@@ -97,6 +99,7 @@ public class MainLayout extends AppLayout {
 		nav.addItem(new AppNavItem("Users", UserView.class, VaadinIcon.USERS, "navitem"));
 		nav.addItem(new AppNavItem("Reports", ReportView.class,VaadinIcon.CHART_LINE, "navitem"));
 		nav.addItem(new AppNavItem("User Profile", MyAccountView.class, VaadinIcon.USER, "navitem"));
+//		nav.addItem(new AppNavItem("Language", VaadinIcon.USER, "navitem",myButton));
 		nav.addItem(new AppNavItem("Support", SupportView.class, VaadinIcon.INFO_CIRCLE_O, "navitem"));
 		nav.addItem(new AppNavItem("About", AboutView.class, VaadinIcon.CHAT, "navitem"));
 		
@@ -107,6 +110,75 @@ public class MainLayout extends AppLayout {
 		
 
 	}
+	
+	 private Button createPopup() {
+		 Button confirmButton;
+		 Button cancelButton;
+
+		Dialog dialog = new Dialog();
+		dialog.setCloseOnEsc(false);
+		dialog.setCloseOnOutsideClick(false);
+		
+		VerticalLayout dialogHolderLayout = new VerticalLayout();
+		
+		   
+		Div apmisImageContainer = new Div();
+		apmisImageContainer.getStyle().set("width", "100%");
+		apmisImageContainer.getStyle().set("display", "flex");
+		apmisImageContainer.getStyle().set("justify-content", "center");
+
+		Image img = new Image("images/logout.png", "APMIS-LOGO");
+		img.getStyle().set("max-height", "-webkit-fill-available");
+
+		apmisImageContainer.add(img);
+
+		Div aboutText = new Div();
+		
+		Paragraph text = new Paragraph("You are attempting to log out of APMIS");
+		Paragraph confirmationText = new Paragraph("Are you sure you want to logout?");
+		
+		
+		text.getStyle().set("color", "black");
+		text.getStyle().set("font-size", "24px");
+		confirmationText.getStyle().set("color", "green");
+		confirmationText.getStyle().set("font-size", "18px");
+		
+		
+		aboutText.getStyle().set("display", "flex");
+		aboutText.getStyle().set("flex-direction", "column");
+		aboutText.getStyle().set("align-items", "center");
+		aboutText.add(text, confirmationText);
+
+		Div logoutButtons = new Div();
+		logoutButtons.getStyle().set("display", "flex");
+		logoutButtons.getStyle().set("justify-content", "space-evenly");
+		logoutButtons.getStyle().set("width", "100%");
+	   
+		confirmButton = new Button("Confirm", event -> {
+//			confirmButton.getUI().ifPresent(ui -> ui.navigate(""));
+		});
+		confirmButton.getStyle().set("width", "35%");
+		cancelButton = new Button("Cancel", event -> {
+			dialog.close();
+//			cancelButton.getUI().ifPresent(ui -> ui.navigate("dashboard"));
+		});
+		cancelButton.getStyle().set("width", "35%");
+		cancelButton.getStyle().set("background", "white");
+		cancelButton.getStyle().set("color", "green");
+		logoutButtons.add(confirmButton, cancelButton);
+
+		dialogHolderLayout.add(apmisImageContainer, aboutText, logoutButtons);
+		dialog.add(dialogHolderLayout);
+		return cancelButton;
+		
+
+//		add(dialog);
+//		return dialog;
+
+	}
+
+	
+	
 	
 	private Tabs getTabs() {
 	    Tabs tabs = new Tabs();
