@@ -94,6 +94,7 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 		target.setLanguageCode(source.getLanguageCode());
 		target.setCampaignFormElements(source.getCampaignFormElementsList());
 		target.setCampaignFormTranslations(source.getCampaignFormTranslationsList());
+		target.setDistrictentry(source.isDistrictentry());
 
 		return target;
 	}
@@ -142,6 +143,14 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 	public List<CampaignFormMetaReferenceDto> getCampaignFormMetaAsReferencesByCampaignIntraCamapaign(String uuid) {
 		return service.getCampaignFormMetasAsReferencesByCampaignIntraCampaign(uuid);
 	}
+	
+	
+
+	@Override
+	public List<CampaignFormMetaReferenceDto> getCampaignFormMetaAsReferencesByCampaignPostCamapaign(String uuid) {
+		return service.getCampaignFormMetasAsReferencesByCampaignPostCampaign(uuid);
+	}
+	
 
 	@Override
 	public List<CampaignFormMetaReferenceDto> getAllCampaignFormMetasAsReferencesByRound(String round) {
@@ -443,7 +452,7 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 		}
 
 		return new CampaignFormMetaReferenceDto(entity.getUuid(), entity.toString(), entity.getFormType(),
-				entity.getFormCategory());
+				entity.getFormCategory(), entity.getDaysExpired());
 	}
 
 	@LocalBean

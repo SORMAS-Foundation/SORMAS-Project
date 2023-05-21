@@ -50,6 +50,7 @@ public class AreasView extends AbstractConfigurationView {
 	private SearchField searchField;
 	private ComboBox<EntityRelevanceStatus> filterRelevanceStatus;
 	private Button btnResetFilters;
+	private Button btnExport;
 
 	private final AreasGrid grid;
 	protected Button btnCreate;
@@ -94,8 +95,8 @@ public class AreasView extends AbstractConfigurationView {
 			addHeaderComponent(btnImport);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT) && UserProvider.getCurrent().hasAnyUserRole(UserRole.ADMIN)) {
-			Button btnExport = ButtonHelper.createIconButton(Captions.export, VaadinIcons.TABLE, null, ValoTheme.BUTTON_PRIMARY);
+		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
+			 btnExport = ButtonHelper.createIconButton(Captions.export, VaadinIcons.TABLE, null, ValoTheme.BUTTON_PRIMARY);
 			btnExport.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			addHeaderComponent(btnExport);
 

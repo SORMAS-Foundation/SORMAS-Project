@@ -29,7 +29,7 @@
             <!--<solid android:color="@android:color/transparent" />-->
             <stroke
                 android:width="@dimen/pinInputStrokeWidth"
-                android:color="@color/controlTextViewStroke" />
+                android:color="@color/lightGray" />
 
         </shape>
     </item>

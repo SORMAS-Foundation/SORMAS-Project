@@ -59,7 +59,7 @@
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/listActivityRowTertiaryTextSize"
                     android:textColor="@color/listActivityRowLeastText"
-                    android:fontFamily="sans-serif-medium"
+                    android:fontFamily="@font/rubikregular"
                     app:value="@{data.uuid}"
                     app:shortUuid="@{true}"
                     app:defaultValue='@{@string/value_contact_uuid_unknown}'
@@ -85,7 +85,7 @@
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/listActivityRowPrimaryTextSize"
                         android:textColor="@color/listActivityRowPrimaryText"
-                        android:fontFamily="sans-serif-medium"
+                        android:fontFamily="@font/rubikregular"
                         android:scrollHorizontally="true"
                         android:maxLines="1"
                         android:ellipsize="end"
@@ -117,7 +117,7 @@
                             android:layout_height="wrap_content"
                             android:textSize="@dimen/listActivityRowTertiaryTextSize"
                             android:textColor="@color/listActivityRowLeastText"
-                            android:fontFamily="sans-serif-medium"
+                            android:fontFamily="@font/rubikregular"
                             android:textAllCaps="true"
                             app:ageWithUnit="@{data.person}"
                             app:defaultValue='@{@string/value_age_unknown}'
@@ -138,7 +138,7 @@
                             android:layout_height="wrap_content"
                             android:textSize="@dimen/listActivityRowTertiaryTextSize"
                             android:textColor="@color/listActivityRowLeastText"
-                            android:fontFamily="sans-serif-medium"
+                            android:fontFamily="@font/rubikregular"
                             android:textAllCaps="true"
                             app:value="@{data.person.sex}"
                             app:defaultValue='@{@string/value_sex_unknown}'
@@ -159,7 +159,7 @@
                             android:layout_height="wrap_content"
                             android:textSize="@dimen/listActivityRowTertiaryTextSize"
                             android:textColor="@color/listActivityRowLeastText"
-                            android:fontFamily="sans-serif-medium"
+                            android:fontFamily="@font/rubikregular"
                             android:textAllCaps="true"
                             app:resultingCaseStatus="@{data.resultingCaseUuid}"
                             app:defaultValue='@{@string/value_status_unknown}'

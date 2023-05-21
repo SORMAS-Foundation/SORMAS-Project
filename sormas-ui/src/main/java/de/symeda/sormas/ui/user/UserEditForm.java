@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.vaadin.ui.Label;
+import com.vaadin.ui.UI;
 import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.CheckBox;
@@ -91,7 +92,8 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
                     fluidRowLocs(UserDto.ADDRESS) +
                     
                     loc(USER_TYPE_HEADING_LOC) +
-                    fluidRowLocs(UserDto.TABLE_NAME_USERTYPES) +
+                    fluidRowLocs(UserDto.COMMON_USER) +
+                 //  fluidRowLocs(UserDto.TABLE_NAME_USERTYPES) +
 					
                     loc(USER_DATA_HEADING_LOC) +
                     fluidRowLocs(UserDto.ACTIVE) +
@@ -146,22 +148,37 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
             addDiseaseField(UserDto.LIMITED_DISEASE, false);
         }
         
+        CheckBox commusr = addField(UserDto.COMMON_USER, CheckBox.class);
+        
         ComboBox userTypes = addField(UserDto.TABLE_NAME_USERTYPES, ComboBox.class);
+        userTypes.setNullSelectionAllowed(true);
         
-        if (UserProvider.getCurrent().getUser().getUsertype().equals(UserType.EOC_USER)) {
-        	 userTypes.removeItem(UserType.UNICEF_USER);
-        	 userTypes.removeItem(UserType.WHO_USER);
-		}
-		else {
-			 userTypes.removeItem(UserType.UNICEF_USER);
-			 userTypes.removeItem(UserType.EOC_USER);
-		}
+        commusr.addValueChangeListener(e -> {
+        	System.out.println((boolean) e.getProperty().getValue());
+        	if ((boolean) e.getProperty().getValue() ==  true ) {
+            	 userTypes.setValue(UserType.COMMON_USER);
+            	// final Field userRolesField = getFieldGroup().getField(UserDto.USER_ROLES);
+            	 
+            	 final OptionGroup userRolesRemoval = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
+            	 UserDto userDto = FacadeProvider.getUserFacade().getCurrentUser();
+            	 userRolesRemoval.removeAllItems();
+            	 userRolesRemoval.addItems(UserUiHelper.getAssignableRoles(userDto.getUserRoles() ));
+            	 userRolesRemoval.removeItem(UserRole.ADMIN);
+            	 userRolesRemoval.removeItem(UserRole.COMMUNITY_INFORMANT);
+            	 userRolesRemoval.removeItem(UserRole.AREA_ADMIN_SUPERVISOR);
+            	 userRolesRemoval.removeItem(UserRole.ADMIN_SUPERVISOR);
+                 
+    		}
+    		else {
+    			 userTypes.setValue(UserProvider.getCurrent().getUser().getUsertype());
+    			 final OptionGroup userRolesRemoval = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
+            	 UserDto userDto = FacadeProvider.getUserFacade().getCurrentUser();
+            	 userRolesRemoval.removeAllItems();
+            	 userRolesRemoval.addItems(UserUiHelper.getAssignableRoles(userDto.getUserRoles() ));
+            	// userRolesRemoval.removeItem(UserRole.ADMIN);
+    		} 	
         	
-       
-        
-        
-               // usersType.setDescription(I18nProperties.getDescription(getPropertyI18nPrefix() + "." + UserDto.TABLE_NAME_USERTYPES));
-
+        });
         
         Label userEmailDesc = new Label(I18nProperties.getString(Strings.infoUserEmail));
         getContent().addComponent(userEmailDesc, USER_EMAIL_DESC_LOC);
@@ -267,7 +284,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 
          area.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
 
-        setRequired(true, UserDto.FIRST_NAME, UserDto.LAST_NAME, UserDto.USER_NAME, UserDto.USER_ROLES, UserDto.FORM_ACCESS, UserDto.TABLE_NAME_USERTYPES);
+        setRequired(true, UserDto.FIRST_NAME, UserDto.LAST_NAME, UserDto.USER_NAME, UserDto.USER_ROLES, UserDto.FORM_ACCESS);
         addValidators(UserDto.USER_NAME, new UserNameValidator());
 
         addFieldListeners(UserDto.FIRST_NAME, e -> suggestUserName());

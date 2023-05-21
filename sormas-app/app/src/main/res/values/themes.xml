@@ -156,6 +156,10 @@
         <item name="android:textStyle">italic</item>
     </style>
 
+    <style name="RobotoTextViewStyle" parent="android:Widget.TextView">
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+
     <style name="Theme.Tebo.Dialog.DatePicker.WeekDayTextAppearance">
         <item name="android:textColor">@color/blue</item>
         <item name="android:textSize">14sp</item>

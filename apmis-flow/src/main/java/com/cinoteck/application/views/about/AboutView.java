@@ -121,3 +121,4 @@ public class AboutView extends VerticalLayout {
 		
 	}
 }
+    }

@@ -8453,7 +8453,7 @@ CREATE TABLE IF NOT EXISTS public.user_account
     CONSTRAINT ukhl02wv5hym99ys465woijmfib UNIQUE (email)
 )
 WITH (
-    OIDS = FALSE //novatec
+    OIDS = FALSE
 )
 TABLESPACE pg_default;
 
@@ -8704,6 +8704,38 @@ UPDATE users_formaccess  SET formaccess  = 'ARCHIVE' WHERE formaccess = 'REPORT'
 UPDATE campaignformmeta SET formcategory = 'ARCHIVE' WHERE formcategory = 'REPORT';
 
 INSERT INTO schema_version (version_number, comment) VALUES (437, 'renaming Report to Archive in form category');
+
+
+-- Associate population with campign schema #164
+ALTER TABLE public.populationdata ADD campaign_id varchar(225) NULL;
+ALTER TABLE public.populationdata ADD CONSTRAINT populationdata_campaign_fk FOREIGN KEY (campaign_id) REFERENCES public.campaigns(uuid);
+
+INSERT INTO schema_version (version_number, comment) VALUES (438, 'adding campaign id to population data');
+
+
+-- Ability to publish read-only post campaign data to eoc users #379 
+ALTER TABLE campaigns ADD COLUMN "published" boolean default false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (439, 'Abilityt to publish read-only post campaign data to eoc users');
+
+-- limitation of form to expiry days
+
+ALTER TABLE public.campaignformmeta DROP COLUMN expiry_day_capaign;
+ALTER TABLE public.campaignformmeta ADD daysexpired int4 NOT NULL DEFAULT 0;
+--ALTER TABLE public.populationdata ADD CONSTRAINT populationdata_fk FOREIGN KEY (campaign_id) REFERENCES campaigns(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (440, 'limitation of form to expiry days and population foreign keys');
+
+--Allow for District-level data collection #348
+
+ALTER TABLE public.campaignformmeta ADD districtentry boolean NOT NULL DEFAULT false;
+ALTER TABLE public.populationdata ADD CONSTRAINT populationdata_un UNIQUE (district_id,agegroup,campaign_id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (441, 'Allow for District-level data collection #348 #38');
+
+
+
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
 
 

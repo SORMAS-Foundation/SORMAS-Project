@@ -174,10 +174,7 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 						PointsOfEntryView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
 			}
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.POPULATION_MANAGE)) {
-				menu.addView(PopulationDataView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
-						PopulationDataView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
-			}
+			
 		}
 
 		// if (LoginHelper.hasUserRight(UserRight.USER_RIGHTS_MANAGE)) {

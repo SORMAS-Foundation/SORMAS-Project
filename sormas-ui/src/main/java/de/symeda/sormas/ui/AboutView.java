@@ -31,6 +31,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.InfoProvider;
+import de.symeda.sormas.ui.report.JsonDictionaryTabsheet;
 
 @SuppressWarnings("serial")
 public class AboutView extends VerticalLayout implements View {
@@ -45,25 +46,29 @@ public class AboutView extends VerticalLayout implements View {
 		content.setSizeFull();
 		addComponent(content);
 		
-		SormasUI.getCurrent().getPage().getJavaScript().execute("        var form = document.getElementById('my-form');\n"
-				+ "        form.addEventListener(\"submit\", e => {\n"
-				+ "            e.preventDefault();\n"
-				+ "            fetch(form.action, {\n"
-				+ "                method: \"POST\",\n"
-				+ "                body: new FormData(document.getElementById(\"my-form\")),\n"
-				+ "            }).then((response) => {\n"
-				+ "   \n"
-				+ "    alert(\"You have submitted this form \");\n"
-				+ "    window.location.reload();\n"
-				+ "\n"
-				+ "  \n"
-				+ "});\n"
-				+ "        });");
-		
-		Label infoLabel = new Label(
-				I18nProperties.getCaption(Captions.aboutApmisVersion) + " " + InfoProvider.InfoProvider_apmis(),
-				ContentMode.HTML);
-		addComponent(infoLabel);
+		JsonDictionaryTabsheet jsonDictionaryTabsheet = new JsonDictionaryTabsheet();
+		jsonDictionaryTabsheet.setId("jsonDictionaryExport");
+//		jsonDictionaryTabsheet.setComponentAlignment(, ALIGNMENT_DEFAULT);
+		addComponent(jsonDictionaryTabsheet);
+//		SormasUI.getCurrent().getPage().getJavaScript().execute("        var form = document.getElementById('my-form');\n"
+//				+ "        form.addEventListener(\"submit\", e => {\n"
+//				+ "            e.preventDefault();\n"
+//				+ "            fetch(form.action, {\n"
+//				+ "                method: \"POST\",\n"
+//				+ "                body: new FormData(document.getElementById(\"my-form\")),\n"
+//				+ "            }).then((response) => {\n"
+//				+ "   \n"
+//				+ "    alert(\"You have submitted this form \");\n"
+//				+ "    window.location.reload();\n"
+//				+ "\n"
+//				+ "  \n"
+//				+ "});\n"
+//				+ "        });");
+//		
+//		Label infoLabel = new Label(
+//				I18nProperties.getCaption(Captions.aboutApmisVersion) + " " + InfoProvider.InfoProvider_apmis(),
+//				ContentMode.HTML);
+//		addComponent(infoLabel);
 		
 	}
 	

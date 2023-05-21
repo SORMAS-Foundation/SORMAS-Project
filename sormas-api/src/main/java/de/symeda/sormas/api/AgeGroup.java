@@ -21,16 +21,30 @@ public enum AgeGroup {
 	AGE_70_74,
 	AGE_75_79,
 	AGE_80_PLUS;
+	
+	
+	
+	
+	
+	
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
 
+	
+	
+	
+	
 	public static AgeGroup getAgeGroupFromIntegerRange(IntegerRange range) {
 
 		if (range.getFrom() == 80 && range.getTo() == null) {
 			return AGE_80_PLUS;
 		}
+		
+		
+		
+		
 
 		try {
 			return AgeGroup.valueOf("AGE_" + range.getFrom() + "_" + range.getTo());

@@ -69,7 +69,7 @@
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/listActivityRowPrimaryTextSize"
                         android:textColor="@color/listActivityRowPrimaryText"
-                        android:fontFamily="sans-serif-medium"
+                        android:fontFamily="@font/rubikregular"
                         android:scrollHorizontally="true"
                         android:maxLines="1"
                         android:ellipsize="end"
@@ -155,7 +155,7 @@
                     android:gravity="start"
                     android:textSize="@dimen/listActivityRowTertiaryTextSize"
                     android:textColor="@color/listActivityRowLeastText"
-                    android:fontFamily="sans-serif-medium"
+                    android:fontFamily="@font/rubikregular"
                     app:dateValue="@{data.visitDateTime}"
                     app:defaultValue='@{@string/value_visit_date_unknown}'
                     />
@@ -169,7 +169,7 @@
                     android:gravity="end"
                     android:textSize="@dimen/row_entry_date_text_size"
                     android:textColor="@color/listActivityRowDateText"
-                    android:fontFamily="sans-serif"
+                    android:fontFamily="@font/rubiklight"
                     app:timeAgoValue="@{data.visitDateTime}"
                     app:defaultValue='@{@string/value_visit_time_unknown}'
                     />

@@ -30,6 +30,8 @@ public interface CampaignFacade { //CampaignFacadeEjb
 	boolean isArchived(String uuid);
 	
 	boolean isClosedd(String uuid);
+	
+	boolean isPublished(String uuid);
 
 
 	void deleteCampaign(String uuid);
@@ -37,6 +39,8 @@ public interface CampaignFacade { //CampaignFacadeEjb
 	String cloneCampaign(String uuid, String userCreatingx);
 	
 	void closeandOpenCampaign(String uuid, boolean openandclosebutton);
+	
+	void publishandUnPublishCampaign(String uuid, boolean publishedandunpublishbutton);
 
 	void archiveOrDearchiveCampaign(String campaignUuid, boolean archive);
 
@@ -55,4 +59,6 @@ public interface CampaignFacade { //CampaignFacadeEjb
 	void validate(CampaignReferenceDto campaignReferenceDto);
 	
 	void validate(CampaignReferenceDto campaignReferenceDto, String formType);
+
+	
 }

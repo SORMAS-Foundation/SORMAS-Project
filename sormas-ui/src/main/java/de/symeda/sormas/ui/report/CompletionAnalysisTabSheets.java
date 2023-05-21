@@ -164,18 +164,15 @@ public class CompletionAnalysisTabSheets extends VerticalLayout implements View 
 
 		final UserDto user = UserProvider.getCurrent().getUser();
 
+		criteria.area(user.getArea());// .setArea(user.getArea());
+		criteria.region(user.getRegion());// .setRegion(user.getRegion());
+		criteria.district(user.getDistrict()); // .setDistrict(user.getDistrict());
+		
+		
 		filterLayout = new HorizontalLayout();
 		filterLayout.setMargin(false);
 		filterLayout.setSpacing(true);
-	//	filterLayout.setWidth(100, Unit.PERCENTAGE);
-
-//		searchField = new SearchField();
-//		searchField.addTextChangeListener(e -> {
-////			criteria.nameLike(e.getText());
-//			grid.reload();
-//		});
-//		filterLayout.addComponent(searchField);
-
+		
 		campaignFilter = ComboBoxHelper.createComboBoxV7();
 		campaignFilter.setId(CampaignDto.NAME);
 		campaignFilter.setRequired(true);
@@ -184,17 +181,13 @@ public class CompletionAnalysisTabSheets extends VerticalLayout implements View 
 		campaignFilter.setWidth(200, Unit.PIXELS);
 		campaignFilter.setInputPrompt(I18nProperties.getString(Strings.promptCampaign));
 		campaignFilter.addItems(FacadeProvider.getCampaignFacade().getAllActiveCampaignsAsReference());
-		campaignFilter.addValueChangeListener(e -> {
-		});
-		// campaignFilter.addValueChangeListener(e -> {
-//			System.out.println(e.getProperty().getValue() + "khgfksuiihyikgivivciouvsiuvivkihvi");
-//			AreaReferenceDto area = (AreaReferenceDto) e.getProperty().getValue();
-//			criteria.area(area);
-//			navigateTo(criteria);
-//			FieldHelper
-//				.updateItems(regionFilter, area != null ? FacadeProvider.getRegionFacade().getAllActiveByArea(area.getUuid()) : null);
-//			//grid.reload();
+//		campaignFilter.addValueChangeListener(e -> {
 //		});
+		 campaignFilter.addValueChangeListener(e -> {
+			CampaignReferenceDto campaign = (CampaignReferenceDto) e.getProperty().getValue();
+			criteria.campaign(campaign);
+			grid.reload();
+		});
 
 		filterLayout.addComponent(campaignFilter);
 
@@ -203,24 +196,12 @@ public class CompletionAnalysisTabSheets extends VerticalLayout implements View 
 			campaignFilter.setValue(lastStartedCampaign);
 
 		}
-//
-//		campaignFormPhaseSelector = new CampaignFormPhaseSelector(null);
-//		campaignFormPhaseSelector.addValueChangeListener(e -> {
-//			campaignFormPhaseSelector.getValue().toLowerCase();
-//
-//		});
-//		filterLayout.addComponent(campaignFormPhaseSelector);
-//		campaignFormPhaseSelector.getValue().toLowerCase();
-//		
-		
-		
-		
 
 		areaFilter = ComboBoxHelper.createComboBoxV7();
 		areaFilter.setId(RegionDto.AREA);
-		
-		 
 		areaFilter.setWidth(140, Unit.PIXELS);
+		if (user.getArea() == null) {
+		
 		areaFilter.setCaption(I18nProperties.getPrefixCaption(RegionDto.I18N_PREFIX, RegionDto.AREA));
 		areaFilter.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
 
@@ -236,30 +217,48 @@ public class CompletionAnalysisTabSheets extends VerticalLayout implements View 
 			FieldHelper.updateItems(regionFilter,
 					area != null ? FacadeProvider.getRegionFacade().getAllActiveByArea(area.getUuid()) : null);
 
-			// grid.reload();
+			grid.reload();
 		});
 		
 		filterLayout.addComponent(areaFilter);
+		}
 		
+		
+		if (user.getRegion() == null) {
 		regionFilter = ComboBoxHelper.createComboBoxV7();
 		regionFilter.setId(DistrictDto.REGION);
 		regionFilter.setWidth(140, Unit.PIXELS);
 		regionFilter.setCaption(I18nProperties.getPrefixCaption(DistrictDto.I18N_PREFIX, DistrictDto.REGION));
-		regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		
+		if(user.getArea() != null) {
+			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByArea(user.getArea().getUuid()));
+		}else {
+			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		}
+		
 		regionFilter.addValueChangeListener(e -> {
 			RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
 			criteria.region(region);
 //			navigateTo(criteria);
 			FieldHelper.updateItems(districtFilter,
 					region != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()) : null);
-			// grid.reload();
+			grid.reload();
 		});
 		filterLayout.addComponent(regionFilter);
-
+		}
+		
+		
+		if(user.getDistrict() == null) {
 		districtFilter = ComboBoxHelper.createComboBoxV7();
 		districtFilter.setId(CommunityDto.DISTRICT);
 		districtFilter.setWidth(140, Unit.PIXELS);
 		districtFilter.setCaption(I18nProperties.getPrefixCaption(CommunityDto.I18N_PREFIX, CommunityDto.DISTRICT));
+		
+		if(user.getRegion() != null) {
+			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));
+		}
+		
+		
 		districtFilter.addValueChangeListener(e -> {
 			criteria.district((DistrictReferenceDto) e.getProperty().getValue());
 			grid.reload();
@@ -274,36 +273,8 @@ public class CompletionAnalysisTabSheets extends VerticalLayout implements View 
 		resetButton.setVisible(true);
 
 		filterLayout.addComponent(resetButton);
-
-//		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
-//		actionButtonsLayout.setSpacing(true);
-//		{
-//			// Show active/archived/all dropdown
-//			if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
-//				relevanceStatusFilter = ComboBoxHelper.createComboBoxV7();
-//				relevanceStatusFilter.setId("relevanceStatus");
-//				relevanceStatusFilter.setWidth(220, Unit.PERCENTAGE);
-//				relevanceStatusFilter.setNullSelectionAllowed(false);
-//				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
-//				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE,
-//						I18nProperties.getCaption(Captions.communityActiveCommunities));
-//				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED,
-//						I18nProperties.getCaption(Captions.communityArchivedCommunities));
-//				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL,
-//						I18nProperties.getCaption(Captions.communityAllCommunities));
-//				relevanceStatusFilter.addValueChangeListener(e -> {
-//					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
-//					navigateTo(criteria);
-//					grid.reload();
-//				});
-//				actionButtonsLayout.addComponent(relevanceStatusFilter);
-//
-//			}
-//		}
-//		filterLayout.addComponent(actionButtonsLayout);
-//		filterLayout.setComponentAlignment(actionButtonsLayout, Alignment.BOTTOM_RIGHT);
-//		filterLayout.setExpandRatio(actionButtonsLayout, 1);
-
+		}
+		
 		return filterLayout;
 	}
 
@@ -340,6 +311,7 @@ public class CompletionAnalysisTabSheets extends VerticalLayout implements View 
 		areaFilter.setValue(criteria.getArea());
 		regionFilter.setValue(criteria.getRegion());
 		districtFilter.setValue(criteria.getDistrict());
+		campaignFilter.setValue(criteria.getCampaign());
 
 		applyingCriteria = false;
 	}

@@ -66,10 +66,6 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 	private Long analysis_c;
 	private Long analysis_d;
 	
-//	public CampaignFormDataIndexDto(String uuid) {
-//		
-//	};
-//	
 	public CampaignFormDataIndexDto(
 		String uuid,
 		String campaign,

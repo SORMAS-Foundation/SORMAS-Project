@@ -86,7 +86,7 @@ public class CaseListAdapter extends BindingPagedListAdapter<Case, RowCaseListIt
 			} else if (completeness < 50) {
 				txtCompleteness.setTextColor(resources.getColor(R.color.orange));
 			} else if (completeness < 75) {
-				txtCompleteness.setTextColor(resources.getColor(R.color.brightYellow));
+				txtCompleteness.setTextColor(resources.getColor(R.color.lightGray));
 			} else {
 				txtCompleteness.setTextColor(resources.getColor(R.color.green));
 			}

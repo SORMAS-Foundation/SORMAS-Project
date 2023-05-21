@@ -84,6 +84,7 @@ import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
+import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
@@ -410,17 +411,19 @@ System.out.println("YESSSS");
 		//importColumns.add(ImportColumn.from(PopulationDataDto.class, PopulationDataDto.COMMUNITY, CommunityReferenceDto.class, separator));
 		//adding cluster no to import data
 		importColumns.add(ImportColumn.from(PopulationDataDto.class, PopulationDataDto.COMMUNITY_EXTID, Integer.class, separator));
+		importColumns.add(ImportColumn.from(PopulationDataDto.class, PopulationDataDto.CAMPAIGN, CampaignReferenceDto.class, separator));
+		
 		importColumns.add(ImportColumn.from(RegionDto.class, RegionDto.GROWTH_RATE, Float.class, separator));
 		importColumns.add(ImportColumn.from(PopulationDataDto.class, "TOTAL", Integer.class, separator));
 		importColumns.add(ImportColumn.from(PopulationDataDto.class, "MALE_TOTAL", Integer.class, separator));
 		importColumns.add(ImportColumn.from(PopulationDataDto.class, "FEMALE_TOTAL", Integer.class, separator));
 		importColumns.add(ImportColumn.from(PopulationDataDto.class, "OTHER_TOTAL", Integer.class, separator));
-		for (AgeGroup ageGroup : AgeGroup.values()) {
-			importColumns.add(ImportColumn.from(PopulationDataDto.class, "TOTAL_" + ageGroup.name(), Integer.class, separator));
-			importColumns.add(ImportColumn.from(PopulationDataDto.class, "MALE_" + ageGroup.name(), Integer.class, separator));
-			importColumns.add(ImportColumn.from(PopulationDataDto.class, "FEMALE_" + ageGroup.name(), Integer.class, separator));
-			importColumns.add(ImportColumn.from(PopulationDataDto.class, "OTHER_" + ageGroup.name(), Integer.class, separator));
-		}
+		//for (AgeGroup ageGroup : AgeGroup.values()) {
+			importColumns.add(ImportColumn.from(PopulationDataDto.class, "TOTAL_AGE_0_4", Integer.class, separator));
+		//	importColumns.add(ImportColumn.from(PopulationDataDto.class, "MALE_" + ageGroup.name(), Integer.class, separator));
+		//	importColumns.add(ImportColumn.from(PopulationDataDto.class, "FEMALE_" + ageGroup.name(), Integer.class, separator));
+		//	importColumns.add(ImportColumn.from(PopulationDataDto.class, "OTHER_" + ageGroup.name(), Integer.class, separator));
+		//} External ID of
 
 		writeTemplate(Paths.get(getPopulationDataImportTemplateFilePath()), importColumns, false);
 	}

@@ -50,7 +50,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/listActivityRowTertiaryTextSize"
                 android:textColor="@color/listActivityRowTertiaryText"
-                android:fontFamily="sans-serif-medium"
+                android:fontFamily="@font/rubikregular"
                 app:dateTimeValue="@{data.treatmentDateTime}"
                 app:defaultValue='@{@string/value_treatment_date_time_unknown}' />
 
@@ -73,7 +73,7 @@
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/listActivityRowPrimaryTextSize"
                         android:textColor="@color/listActivityRowPrimaryText"
-                        android:fontFamily="sans-serif-medium"
+                        android:fontFamily="@font/rubikregular"
                         android:scrollHorizontally="true"
                         android:maxLines="1"
                         android:ellipsize="end"
@@ -88,7 +88,7 @@
                         android:gravity="center_vertical"
                         android:textSize="@dimen/row_entry_status_text_size"
                         android:textColor="@color/row_entry_status_text"
-                        android:fontFamily="sans-serif-medium"
+                        android:fontFamily="@font/rubikregular"
                         android:layout_marginBottom="@dimen/listActivityRowSecondaryTextVerticalMargin"
                         app:doseValue="@{data.dose}"
                         app:routeValue="@{data.route}"
@@ -100,7 +100,7 @@
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/listActivityRowTertiaryTextSize"
                         android:textColor="@color/listActivityRowLeastText"
-                        android:fontFamily="sans-serif-medium"
+                        android:fontFamily="@font/rubikregular"
                         app:value="@{data.executingClinician}"
                         app:prependValue='@{@string/caption_executed_by}'
                         app:defaultValue='@{@string/value_executing_clinician_unknown}'

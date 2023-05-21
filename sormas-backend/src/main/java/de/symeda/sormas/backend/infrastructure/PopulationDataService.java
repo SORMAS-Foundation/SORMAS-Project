@@ -9,6 +9,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 
 import de.symeda.sormas.api.infrastructure.PopulationDataCriteria;
+import de.symeda.sormas.backend.campaign.Campaign;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -25,9 +26,12 @@ public class PopulationDataService extends AdoServiceWithUserFilter<PopulationDa
 
 	public Predicate buildCriteriaFilter(PopulationDataCriteria criteria, CriteriaBuilder cb, From<PopulationData, PopulationData> from) {
 		Predicate filter = null;
+		
+		
 		if (criteria.getRegion() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.join(PopulationData.REGION, JoinType.LEFT).get(Region.UUID), criteria.getRegion().getUuid()));
 		}
+		
 		if (criteria.isDistrictIsNull()) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNull(from.get(PopulationData.DISTRICT)));
 		} else if (criteria.getDistrict() != null) {

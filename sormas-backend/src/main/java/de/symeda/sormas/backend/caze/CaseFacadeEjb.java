@@ -3173,7 +3173,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		} else {
 			List<Pair<DistrictDto, BigDecimal>> resultList = results.stream().map(e -> {
 				District district = (District) e[0];
-				Integer population = populationDataFacade.getProjectedDistrictPopulation(district.getUuid());
+				Integer population = populationDataFacade.getProjectedDistrictPopulation(district.getUuid(), null);
 				Long caseCount = (Long) e[1];
 
 				if (population == null || population <= 0) {

@@ -407,3 +407,27 @@ background: green !important;
     border: 2px solid white !important;
 }
 
+.sormas .v-tree8-expander.expanded::before {
+	font-size: large;
+	content: url('https://api.iconify.design/vaadin/minus-square-o.svg') !important;
+	font-family: ThemeIcons !important;
+}
+
+.sormas .v-tree8-expander.collapsed::before {
+	content: url('https://api.iconify.design/vaadin/plus-square-o.svg') !important;
+	font-size: large;
+	font-family: ThemeIcons !important;
+}
+
+.sormas .v-treegrid-expander.collapsed::before {
+	font-size: large;
+	content: url('https://api.iconify.design/vaadin/plus-square-o.svg') !important;
+	font-family: ThemeIcons !important;
+}
+
+.sormas .v-treegrid-expander.expanded::before {
+	content: url('https://api.iconify.design/vaadin/minus-square-o.svg') !important;
+	font-size: large;
+	font-family: ThemeIcons !important;
+}
+

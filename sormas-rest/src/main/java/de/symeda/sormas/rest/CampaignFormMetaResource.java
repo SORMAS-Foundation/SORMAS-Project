@@ -19,6 +19,7 @@ import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
 @RolesAllowed({
 	"USER",
 	"REST_USER" })
+
 public class CampaignFormMetaResource extends EntityDtoResource {
 
 	@GET

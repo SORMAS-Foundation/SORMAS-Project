@@ -22,6 +22,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.campaign.CampaignIndexDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -113,6 +114,7 @@ public class CampaignFormDataSelectionField extends VerticalLayout {
 
 		addComponent(buttonLayout);
 		setComponentAlignment(buttonLayout, Alignment.MIDDLE_RIGHT);
+		
 	}
 
 	private HorizontalLayout buildFormDataDetailsComponent(CampaignFormDataDto formData, boolean existingData) {
