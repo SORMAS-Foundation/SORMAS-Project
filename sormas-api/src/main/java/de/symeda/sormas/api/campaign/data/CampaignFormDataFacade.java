@@ -20,6 +20,7 @@
 
 package de.symeda.sormas.api.campaign.data;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -97,9 +98,10 @@ public interface CampaignFormDataFacade {
 	
 	String getByClusterDropDown(CommunityReferenceDto community, CampaignFormMetaDto campaignForm, CampaignDto campaign);
 
-	void deleteCampaignData(List<String> uuids);
-	
+	List<CampaignFormDataIndexDto> getByCompletionAnalysisNew(CampaignFormDataCriteria criteria, List<SortProperty> sortProperties, FormAccess frms);
+
 	List<JsonDictionaryReportModelDto> getByJsonFormDefinitonToCSV();
+	
 	String getByJsonFormDefinitonToCSVCount();
 	
 

@@ -31,7 +31,7 @@ public class ReportView extends VerticalLayout implements RouterLayout{
 
 
 	private Tabs createTabs() {
-		tabComponentMap.put(new Tab("Aggregate Report"),null);
+		tabComponentMap.put(new Tab("Aggregate Report"),new JsonDIctionaryGridView());
 		tabComponentMap.put(new Tab("Completion Analysis"), new CompletionAnalysisView());
 		tabComponentMap.put(new Tab("User Analysis"), new UserAnalysisView());
 		

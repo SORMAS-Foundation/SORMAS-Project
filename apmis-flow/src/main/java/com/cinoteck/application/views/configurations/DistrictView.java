@@ -15,6 +15,7 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
@@ -28,18 +29,19 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 
 @PageTitle("Districts")
 @Route(value = "districts", layout = ConfigurationsView.class)
-public class DistrictView extends Div { 
+public class DistrictView extends VerticalLayout { 
 
 	private DistrictFilter districtFilter = new DistrictFilter();
 	GridListDataView<DistrictIndexDto> dataView;
 	
 	public DistrictView() {
+		setHeightFull();
 		
 		Grid<DistrictIndexDto> grid = new Grid<>(DistrictIndexDto.class, false);
 		
 		grid.setSelectionMode(SelectionMode.SINGLE);
 		grid.setMultiSort(true, MultiSortPriority.APPEND);
-		grid.setSizeFull();
+//		grid.setSizeFull();
 		grid.setColumnReorderingAllowed(true);
 		grid.addColumn(DistrictIndexDto::getAreaname).setHeader("Region").setSortable(true).setResizable(true);
 		grid.addColumn(DistrictIndexDto::getAreaexternalId).setHeader("Rcode").setResizable(true).setSortable(true);
@@ -50,6 +52,7 @@ public class DistrictView extends Div {
 
 		
 		grid.setVisible(true);
+		grid.setHeight("76vh");
 		grid.setAllRowsVisible(true);
 		List<DistrictIndexDto> regions = FacadeProvider.getDistrictFacade().getAllDistricts();
 		this.dataView = grid.setItems(regions);

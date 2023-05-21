@@ -1713,7 +1713,7 @@ System.out.println("DEBUGGER r567ujhgty8ijyu8dfrf this query " + SQLExtractor.fr
 				+ "left outer join Region region4_x on district5_x.region_id=region4_x.id\n"
 				+ "left outer join areas area3_x on region4_x.area_id=area3_x.id\n"
 				+ "where area3_x.uuid='W5R34K-APYPCA-4GZXDO-IVJWKGIM' and campaignfo0_x.archived = false\n"
-				+ "limit 10";
+				+ "limit 30";
 		
 		Query seriesDataQuery = em.createNativeQuery(joinBuilder);
 		
@@ -1741,6 +1741,85 @@ System.out.println("DEBUGGER r567ujhgty8ijyu8dfrf this query " + SQLExtractor.fr
 	//System.out.println("resultData - "+ resultData.toString()); //SQLExtractor.from(seriesDataQuery));
 	return resultData;
 	}
+	
+	@Override
+	public List<JsonDictionaryReportModelDto> getByJsonFormDefinitonToCSV() {
+		
+		System.err.println("now in db");
+		List<JsonDictionaryReportModelDto> resultData = new ArrayList<>();
+		StringBuilder selectBuilder = new StringBuilder("SELECT formid, fe->>'caption' as caption, fe->>'id' as id,  fe->>'type' as datatype, formtype, modality\r\n"
+				+ "FROM campaignformmeta c , \r\n"
+				+ "     json_array_elements(c.campaignformelements) AS fe \r\n"
+				+ "WHERE fe->>'caption' IS NOT NULL \r\n"
+				+ "  AND fe->>'caption' NOT LIKE '%<%';");
+		
+		System.out.println("query used - "+ selectBuilder.toString()); //SQLExtractor.from(seriesDataQuery));
+		
+		Query seriesDataQuery = em.createNativeQuery(selectBuilder.toString());
+				
+				
+		@SuppressWarnings("unchecked")
+		List<Object[]> resultList = seriesDataQuery.getResultList(); 
+		
+		//String formUuid, String formId, String formField, String formCaption, String area,String region, String district, Long sumValue
+		System.err.println("convertting to constructor at db");
+		resultData.addAll(resultList.stream()
+				.map((result) -> new JsonDictionaryReportModelDto(
+						(String) result[0],
+						(String) result[1],
+						(String) result[2], 
+						(String) result[3],
+						(String) result[4],
+						(String) result[5]
+						)).collect(Collectors.toList()));
+
+	System.out.println("query used - "+ resultData.toString()); //SQLExtractor.from(seriesDataQuery));
+	return resultData;
+	}
+	
+	
+	@Override
+	public String getByJsonFormDefinitonToCSVCount() {
+	
+		
+		//@formatter:off
+		
+		String joiner = "";
+		
+	
+		
+		
+		String joinBuilder = "SELECT COUNT(*) as count_result \r\n"
+				+ "FROM (\r\n"
+				+ "  SELECT formid, fe->>'caption' as caption, fe->>'id' as id, fe->>'type' as datatype, formtype, modality\r\n"
+				+ "  FROM campaignformmeta c , \r\n"
+				+ "       json_array_elements(c.campaignformelements) AS fe \r\n"
+				+ "  WHERE fe->>'caption' IS NOT NULL \r\n"
+				+ "    AND fe->>'caption' NOT LIKE '%<%'\r\n"
+				+ ") AS subquery;";
+		
+		
+	//	Query seriesDataQuery = em.createNativeQuery(joinBuilder);
+		
+	//	List<CampaignFormDataIndexDto> resultData = new ArrayList<>();
+//		
+//		
+//		@SuppressWarnings("unchecked")
+//		List<Object[]> resultList = seriesDataQuery.getResultList(); 
+//		
+//		resultData.addAll(resultList.stream()
+//				.map((result) -> new CampaignFormDataIndexDto(
+//						
+//						(String) result[0]
+//								
+//								)).collect(Collectors.toList()));
+//	
+//		System.out.println("ending...." +resultData.size());
+		
+	//System.out.println("resultData - "+ resultData.toString()); //SQLExtractor.from(seriesDataQuery));
+	return ((BigInteger) em.createNativeQuery(joinBuilder).getSingleResult()).toString();
+	}
+	
 
 	@Override
 	public void deleteCampaignData(List<String> uuids) {

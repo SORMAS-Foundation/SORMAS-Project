@@ -24,7 +24,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 	
 	Image imgApmis = new Image("images/apmislogo.png", "APMIS-LOGO");
 
-	String content =  "<div class=" + "apmisDesc>" + "<p class=" + "apmisText>AFGHANISTHAN POLIO MANAGEMENT INFORMATION SYSTEM.<p>"+"</div>";
+	String content =  "<div class=" + "apmisDesc>" + "<p class=" + "apmisText>AFGHANISTAN POLIO MANAGEMENT INFORMATION SYSTEM.<p>"+"</div>";
 
 	Paragraph signInText = new Paragraph("Sign in to APMIS");
 	
@@ -48,8 +48,8 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 		signInText.setId("signInText");
 
 		logoDiv.setClassName("logoContainer");
-		imgApmis.setWidth("20%");
-		addClassName("loginOverlay");
+		imgApmis.setWidth("159px");
+		imgApmis.setHeight("144px");
 		logoDiv.add(imgApmis);
 
 		containerDiv.setClassName("loginContainer");

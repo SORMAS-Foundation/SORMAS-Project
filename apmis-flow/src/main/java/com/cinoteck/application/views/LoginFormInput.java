@@ -37,26 +37,36 @@ public class LoginFormInput extends VerticalLayout {
 		// Create the UI components
 		username = new TextField();
 		username.setPlaceholder("Username");
+		username.setClassName("loginUsername");
+		username.setLabel("Username");
 		username.getStyle().set("width", "100%");
 		username.getStyle().set("font-weight", "200");
 		username.getStyle().set("margin-bottom", "1.5em");
 
 		password = new PasswordField();
 		password.setRevealButtonVisible(false);
+		password.setClassName("loginUsername");
+		password.setLabel("Password");
 		password.getStyle().set("width", "100%");
 		password.setPlaceholder("Password");
 		password.getStyle().set("font-weight", "200");
 		password.getStyle().set("margin-bottom", "1.5em");
 
 		signInIcon = new Icon(VaadinIcon.SIGN_OUT_ALT);
-		signInIcon.getStyle().set("color", "green");
+		signInIcon.getStyle().set("color", "#0D6938 !important");
 		signInIcon.setId("signInIcon");
 
 		loginButton = new Button("Sign In", signInIcon);
 		loginButton.getStyle().set("width", "100%");
+		loginButton.getStyle().set("margin-top", "20px");
+		loginButton.setClassName("loginButton");
 		loginButton.getStyle().set("background", "white");
 		loginButton.getStyle().set("color", "green");
 		loginButton.getStyle().set("margin-bottom", "1em");
+		
+//		Icon loginIcon  = new Icon(VaadinIcon.SIGN_IN);
+//		loginIcon.getStyle().set("color", "#0D6938 !important");
+//		loginButton.setIcon(loginIcon);
 
 		// Setting the login button action
 		loginButton.addClickListener(event -> {

@@ -2,6 +2,7 @@ package com.cinoteck.application.components.appnav;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Span;
@@ -23,7 +24,7 @@ import java.util.Optional;
 @Tag("vcf-nav-item")
 @CssImport(value = "./themes/my-theme/components/vcf-nav-item.css", themeFor = "vcf-nav-item")
 public class AppNavItem extends Component {
-
+	 private Button buttonComponent;
     /**
      * Creates a menu item which does not link to any view but only shows the given
      * label.
@@ -130,8 +131,25 @@ public class AppNavItem extends Component {
         setIcon(iconClass.create());
         setId(style);
     }
-
-
+    /**
+     * Creates a new menu item using the given label and icon that links to the
+     * given path. and a buttin to initialize a clicklistener 
+     * 
+     * @param label
+     *            the label for the item
+     * @param view
+     *            the view to link to
+     * @param iconClass
+     *            the CSS class to use for showing the icon
+     */
+    
+    public AppNavItem(String label,  VaadinIcon iconClass, String style,Button button) {
+       
+        setLabel(label);
+        setIcon(iconClass.create());
+        setId(style);
+        setButton(button);
+    }
 
 
 
@@ -201,6 +219,11 @@ public class AppNavItem extends Component {
     public AppNavItem setLabel(String label) {
         getLabelElement().setText(label);
         return this;
+    }
+    
+    public AppNavItem setButton(Button button) {
+    	this.buttonComponent = button;
+		return this;
     }
 
     private Optional<Element> getExistingLabelElement() {

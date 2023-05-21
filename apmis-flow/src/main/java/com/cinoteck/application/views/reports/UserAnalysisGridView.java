@@ -22,7 +22,7 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.report.CommunityUserReportModelDto;
 import de.symeda.sormas.api.user.FormAccess;
-import de.symeda.sormas.ui.utils.CollectionValueProvider;
+
 
 @Route(layout =UserAnalysisView.class)
 public class UserAnalysisGridView extends VerticalLayout {
