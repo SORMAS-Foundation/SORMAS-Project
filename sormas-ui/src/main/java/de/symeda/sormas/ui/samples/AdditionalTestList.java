@@ -50,13 +50,18 @@ public class AdditionalTestList extends PaginationList<AdditionalTestDto> {
 		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
 			AdditionalTestDto additionalTest = displayedEntries.get(i);
 			AdditionalTestListEntry listEntry = new AdditionalTestListEntry(additionalTest);
-			boolean isEditableAndHasEditRight = isEditable && UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_EDIT);
+
+			boolean isEditableAndHasEditRight =
+				UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditable, UserRight.ADDITIONAL_TEST_EDIT);
+			boolean isEditableAndHasDeleteRight =
+				UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditable, UserRight.ADDITIONAL_TEST_DELETE);
+
 			listEntry.addActionButton(
 				additionalTest.getUuid(),
 				e -> actionCallback.accept(
 					() -> ControllerProvider.getAdditionalTestController()
-						.openEditComponent(additionalTest, AdditionalTestList.this::reload, isEditableAndHasEditRight)),
-				isEditable);
+						.openEditComponent(additionalTest, AdditionalTestList.this::reload, isEditableAndHasEditRight, isEditableAndHasDeleteRight)),
+				isEditableAndHasEditRight);
 			listEntry.setEnabled(isEditable);
 			listLayout.addComponent(listEntry);
 		}

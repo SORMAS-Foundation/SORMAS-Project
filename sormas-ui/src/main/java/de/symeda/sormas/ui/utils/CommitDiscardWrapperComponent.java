@@ -974,13 +974,16 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 	//In case of having delete right without edit right the delete button should remain enabled
 	public void restrictEditableComponentsOnEditView(
-		UserRight editRight,
-		UserRight deleteRight,
+		UserRight editParentRight,
+		UserRight editChildRight,
+		UserRight deleteEntityRight,
 		EditPermissionType editPermissionType,
 		boolean isInJurisdiction) {
-		boolean isEditAllowed = isEditAllowed(editRight, editPermissionType);
+
+		boolean isEditAllowed = isEditAllowed(editParentRight, editChildRight, editPermissionType);
+
 		if (!isEditAllowed) {
-			if (isInJurisdiction && isDeleteAllowed(deleteRight)) {
+			if (isInJurisdiction && isDeleteAllowed(deleteEntityRight)) {
 				addToActiveButtonsList(CommitDiscardWrapperComponent.DELETE_RESTORE);
 			}
 
@@ -996,8 +999,13 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		return UserProvider.getCurrent().hasUserRight(deleteRight);
 	}
 
-	public boolean isEditAllowed(UserRight editRight, EditPermissionType editPermissionType) {
-		return UserProvider.getCurrent().hasUserRight(editRight) && (editPermissionType == null || editPermissionType == EditPermissionType.ALLOWED);
+	public boolean isEditAllowed(UserRight editParentRight, UserRight editChildRight, EditPermissionType editPermissionType) {
+		if (editChildRight != null) {
+			return UserProvider.getCurrent().hasUserRight(editParentRight) && UserProvider.getCurrent().hasUserRight(editChildRight);
+		} else {
+			return UserProvider.getCurrent().hasUserRight(editParentRight)
+				&& (editPermissionType == null || editPermissionType == EditPermissionType.ALLOWED);
+		}
 	}
 
 	//excludedButtons: contains the buttons attached to the CommitDiscardWrapperComponent which we intend to

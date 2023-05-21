@@ -411,7 +411,7 @@ public class SampleController {
 			}
 		}
 
-		editView.restrictEditableComponentsOnEditView(UserRight.SAMPLE_EDIT, UserRight.SAMPLE_DELETE, null, dto.isInJurisdiction());
+		editView.restrictEditableComponentsOnEditView(UserRight.SAMPLE_EDIT, null, UserRight.SAMPLE_DELETE, null, dto.isInJurisdiction());
 
 		return editView;
 	}

@@ -706,6 +706,7 @@ public class ContactController {
 
 		editComponent.restrictEditableComponentsOnEditView(
 			UserRight.CONTACT_EDIT,
+			null,
 			UserRight.CONTACT_DELETE,
 			FacadeProvider.getContactFacade().getEditPermissionType(contactUuid),
 			contact.isInJurisdiction());

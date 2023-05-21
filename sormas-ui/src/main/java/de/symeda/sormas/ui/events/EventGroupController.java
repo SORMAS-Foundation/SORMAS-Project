@@ -62,8 +62,7 @@ public class EventGroupController {
 
 		EventDto eventByUuid = FacadeProvider.getEventFacade().getEventByUuid(eventReference.getUuid(), false);
 		UserProvider user = UserProvider.getCurrent();
-		if ((!user.hasNationJurisdictionLevel() && !user.hasRegion(eventByUuid.getEventLocation().getRegion()))
-				&& !user.isAdmin()) {
+		if ((!user.hasNationJurisdictionLevel() && !user.hasRegion(eventByUuid.getEventLocation().getRegion())) && !user.isAdmin()) {
 			new Notification(
 				I18nProperties.getString(Strings.headingEventGroupLinkEventIssue),
 				I18nProperties.getString(Strings.errorEventFromAnotherJurisdiction),
@@ -265,7 +264,7 @@ public class EventGroupController {
 		}
 
 		editView.addDiscardListener(SormasUI::refreshView);
-		editView.restrictEditableComponentsOnEditView(UserRight.EVENTGROUP_EDIT, UserRight.EVENTGROUP_DELETE, null, true);
+		editView.restrictEditableComponentsOnEditView(UserRight.EVENTGROUP_EDIT, null, UserRight.EVENTGROUP_DELETE, null, true);
 
 		return editView;
 
