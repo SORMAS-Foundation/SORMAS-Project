@@ -102,7 +102,7 @@ Feature: Login with different type of users
   @env_sltest @StandardLogin
   Scenario Outline: Test <url> for default <user> credentials
     Given I navigate to address <url>
-    When I log into current website as a <user>
+    When I try to log into current website as a <user>
     Then I check if I got logged into "<url>" as "<user>" - if so, I send an alert
 
     Examples:
