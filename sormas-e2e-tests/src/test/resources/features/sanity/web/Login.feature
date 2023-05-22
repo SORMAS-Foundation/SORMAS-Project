@@ -242,24 +242,6 @@ Feature: Login with different type of users
       | https://erfurt.sormas-deutschland.de/  | National User               |
       | https://erfurt.sormas-deutschland.de/  | Point of Entry Supervisor   |
       | https://erfurt.sormas-deutschland.de/  | Surveillance Supervisor     |
-      | https://freeipa-dns-test-client/  | Administrator               |
-      | https://freeipa-dns-test-client/  | Case Supervisor             |
-      | https://freeipa-dns-test-client/  | Contact Supervisor          |
-      | https://freeipa-dns-test-client/  | Event Officer               |
-      | https://freeipa-dns-test-client/  | Laboratory Officer          |
-      | https://freeipa-dns-test-client/  | National Clinician          |
-      | https://freeipa-dns-test-client/  | National User               |
-      | https://freeipa-dns-test-client/  | Point of Entry Supervisor   |
-      | https://freeipa-dns-test-client/  | Surveillance Supervisor     |
-      | https://freeipa-dns-test-server/  | Administrator               |
-      | https://freeipa-dns-test-server/  | Case Supervisor             |
-      | https://freeipa-dns-test-server/  | Contact Supervisor          |
-      | https://freeipa-dns-test-server/  | Event Officer               |
-      | https://freeipa-dns-test-server/  | Laboratory Officer          |
-      | https://freeipa-dns-test-server/  | National Clinician          |
-      | https://freeipa-dns-test-server/  | National User               |
-      | https://freeipa-dns-test-server/  | Point of Entry Supervisor   |
-      | https://freeipa-dns-test-server/  | Surveillance Supervisor     |
       | https://ga1.sormas-oegd.de/  | Administrator               |
       | https://ga1.sormas-oegd.de/  | Case Supervisor             |
       | https://ga1.sormas-oegd.de/  | Contact Supervisor          |
