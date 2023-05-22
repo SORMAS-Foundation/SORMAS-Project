@@ -71,6 +71,9 @@ public class ResponseChecksSteps implements En {
               case 400:
                 developmentErrorCause = "Validation failed, invalid request";
                 break;
+              case 401:
+                developmentErrorCause = "Unauthorized request";
+                break;
               case 403:
                 developmentErrorCause = "User does not have access";
                 break;
