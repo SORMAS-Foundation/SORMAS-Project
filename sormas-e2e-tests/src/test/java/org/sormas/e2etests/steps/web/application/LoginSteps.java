@@ -132,8 +132,8 @@ public class LoginSteps implements En {
     Given(
       "^I try to log into current website as a ([^\"]*)$",
       (String userRole) -> {
-        if (!webDriverHelpers.isElementVisibleWithTimeout(LoginPage.USER_NAME_INPUT, 10)) {
-          throw new PendingException();
+        if (!webDriverHelpers.isElementVisibleWithTimeout(LoginPage.USER_NAME_INPUT, 25)) {
+          throw new PendingException("Unable to reach the login page within timeout limit");
         }
         EnvUser user = runningConfiguration.getUserByRole(locale, userRole);
         log.info("Filling username");
