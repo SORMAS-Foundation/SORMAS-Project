@@ -2597,6 +2597,16 @@ public class EditCaseSteps implements En {
         });
 
     When("I refresh current page", () -> webDriverHelpers.refreshCurrentPage());
+
+    And(
+        "^I click on Send to reporting tool button on Edit Case page$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              SEND_TO_REPORTING_TOOL_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SEND_TO_REPORTING_TOOL_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_ACTION);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(REPORTING_TOOL_MESSAGE);
+        });
   }
 
   private Vaccination collectVaccinationData() {

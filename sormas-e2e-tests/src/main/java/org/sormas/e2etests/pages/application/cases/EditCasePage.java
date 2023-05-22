@@ -431,4 +431,8 @@ public class EditCasePage {
   public static By SHARE_PENDING_WARNING_DE =
       By.xpath(
           "//div[@class='popupContent']//div[contains(text(),'Es gibt bereits eine ausstehende Anfrage an das gleiche Gesundheitsamt. Bitte widerrufen Sie die Anfrage, bevor Sie eine Neue senden.')]");
+  public static final By SEND_TO_REPORTING_TOOL_BUTTON =
+      By.id("ExternalSurveillanceToolGateway.send");
+  public static final By REPORTING_TOOL_MESSAGE =
+      By.xpath("//div[@class='v-Notification humanized v-Notification-humanized']");
 }

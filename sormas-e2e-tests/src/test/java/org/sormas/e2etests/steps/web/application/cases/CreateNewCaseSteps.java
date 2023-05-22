@@ -1554,6 +1554,21 @@ public class CreateNewCaseSteps implements En {
               SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
         });
+
+    And(
+        "^I create a new case with mandatory data only for Survnet DE$",
+        () -> {
+          caze = caseService.buildCaseForSurvnetFeature();
+          fillDateOfReport(caze.getDateOfReport(), Locale.GERMAN);
+          selectResponsibleRegion(caze.getResponsibleRegion());
+          selectResponsibleDistrict(caze.getResponsibleDistrict());
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          fillFirstName(caze.getFirstName());
+          fillLastName(caze.getLastName());
+          selectSex(caze.getSex());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+        });
   }
 
   private void selectPlaceOfStayDistrict(String placeOfStayDistrict) {
