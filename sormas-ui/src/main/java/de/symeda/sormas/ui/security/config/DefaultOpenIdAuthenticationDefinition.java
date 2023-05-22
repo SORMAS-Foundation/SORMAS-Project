@@ -121,6 +121,11 @@ public class DefaultOpenIdAuthenticationDefinition implements OpenIdAuthenticati
 			public boolean disableScopeValidation() {
 				return false;
 			}
+
+			@Override
+			public String accessTokenIssuer() {
+				return "";
+			}
 		};
 	}
 
