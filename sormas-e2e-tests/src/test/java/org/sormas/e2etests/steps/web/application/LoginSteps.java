@@ -25,6 +25,7 @@ import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.google.inject.Inject;
 import cucumber.api.java8.En;
+import cucumber.api.PendingException;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
