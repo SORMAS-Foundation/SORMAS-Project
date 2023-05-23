@@ -35,10 +35,9 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb;
-import de.symeda.sormas.ui.AbstractBeanTest;
-import de.symeda.sormas.ui.TestDataCreator;
+import de.symeda.sormas.ui.AbstractUiBeanTest;
 
-public class ExternalMessageMapperTest extends AbstractBeanTest {
+public class ExternalMessageMapperTest extends AbstractUiBeanTest {
 
 	@Test
 	public void testHomogenousTestResultTypesInWithNoTestReport() {
@@ -218,7 +217,7 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetLabReference() {
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		var rdcf = creator.createRDCF();
 		final FacilityReferenceDto otherFacilityRef = getFacilityFacade().getReferenceByUuid(FacilityDto.OTHER_FACILITY_UUID);
 
 		ExternalMessageDto labMessageDto = ExternalMessageDto.build();
@@ -227,14 +226,12 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 		assertEquals(otherFacilityRef, mapper.getFacilityReference(Collections.emptyList()));
 		assertEquals(otherFacilityRef, mapper.getFacilityReference(Collections.singletonList("unknown")));
 
-		FacilityDto one = creator
-			.createFacility("One", FacilityType.LABORATORY, rdcf.region.toReference(), rdcf.district.toReference(), rdcf.community.toReference());
+		FacilityDto one = creator.createFacility("One", rdcf.region, rdcf.district, rdcf.community, FacilityType.LABORATORY);
 		one.setExternalID("oneExternal");
 		one.setChangeDate(new Date());
 		getFacilityFacade().save(one);
 
-		FacilityDto two = creator
-			.createFacility("Two", FacilityType.LABORATORY, rdcf.region.toReference(), rdcf.district.toReference(), rdcf.community.toReference());
+		FacilityDto two = creator.createFacility("Two", rdcf.region, rdcf.district, rdcf.community, FacilityType.LABORATORY);
 		two.setExternalID("twoExternal");
 		two.setChangeDate(new Date());
 		getFacilityFacade().save(two);

@@ -160,7 +160,8 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 
 	@Override
 	@RightsAllowed({
-		UserRight._TREATMENT_EDIT })
+		UserRight._TREATMENT_EDIT,
+		UserRight._PRESCRIPTION_DELETE })
 	public void unlinkPrescriptionFromTreatments(List<String> treatmentUuids) {
 		service.unlinkPrescriptionFromTreatments(treatmentUuids);
 	}
@@ -269,7 +270,6 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 		return convertToDto(source, pseudonymizer, inJurisdiction);
 	}
 
-	
 	private TreatmentDto convertToDto(Treatment source, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
 
 		TreatmentDto dto = toDto(source);
@@ -286,11 +286,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 	private void restorePseudonymizedDto(TreatmentDto source, Treatment existingTreatment, TreatmentDto existingDto) {
 		if (existingTreatment != null) {
 			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-			pseudonymizer.restorePseudonymizedValues(
-				TreatmentDto.class,
-				source,
-				existingDto,
-				service.inJurisdictionOrOwned(existingTreatment));
+			pseudonymizer.restorePseudonymizedValues(TreatmentDto.class, source, existingDto, service.inJurisdictionOrOwned(existingTreatment));
 		}
 	}
 

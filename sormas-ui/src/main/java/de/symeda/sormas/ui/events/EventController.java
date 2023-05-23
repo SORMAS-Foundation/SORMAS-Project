@@ -919,6 +919,7 @@ public class EventController {
 
 		editView.restrictEditableComponentsOnEditView(
 			UserRight.EVENT_EDIT,
+			null,
 			UserRight.EVENT_DELETE,
 			FacadeProvider.getEventFacade().getEditPermissionType(eventUuid),
 			event.isInJurisdiction());

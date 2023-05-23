@@ -318,6 +318,7 @@ public interface Strings {
 	String errorNoPopulationDataLocations = "errorNoPopulationDataLocations";
 	String errorNoRightsForChangingField = "errorNoRightsForChangingField";
 	String errorNoRightsForChangingMultipleFields = "errorNoRightsForChangingMultipleFields";
+	String errorNotFound = "errorNotFound";
 	String errorNotifyingExternalSurveillanceTool = "errorNotifyingExternalSurveillanceTool";
 	String errorNotRequiredRights = "errorNotRequiredRights";
 	String errorOccurred = "errorOccurred";
@@ -348,6 +349,7 @@ public interface Strings {
 	String errorSormasToSormasShare = "errorSormasToSormasShare";
 	String errorSormasToSormasShareContactWithoutCase = "errorSormasToSormasShareContactWithoutCase";
 	String errorSormasToSormasShareContactWithUnsharedSourceCase = "errorSormasToSormasShareContactWithUnsharedSourceCase";
+	String errorSormasToSormasSharequestNotFound = "errorSormasToSormasSharequestNotFound";
 	String errorSurveillanceReportNotEditable = "errorSurveillanceReportNotEditable";
 	String errorTemplateFileCorrupt = "errorTemplateFileCorrupt";
 	String errorViewNotFound = "errorViewNotFound";
@@ -722,6 +724,7 @@ public interface Strings {
 	String headingSormasToSormasCanAcceptContactsWithoutCase = "headingSormasToSormasCanAcceptContactsWithoutCase";
 	String headingSormasToSormasCantShareContactWithoutCase = "headingSormasToSormasCantShareContactWithoutCase";
 	String headingSormasToSormasDuplicateDetection = "headingSormasToSormasDuplicateDetection";
+	String headingSormasToSormasShareRequestNotFound = "headingSormasToSormasShareRequestNotFound";
 	String headingStoppedFollowUp = "headingStoppedFollowUp";
 	String headingSurveillanceReports = "headingSurveillanceReports";
 	String headingSymptomJournalAccountCreation = "headingSymptomJournalAccountCreation";

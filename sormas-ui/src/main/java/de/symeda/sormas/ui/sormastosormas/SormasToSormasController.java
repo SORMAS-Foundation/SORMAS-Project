@@ -163,6 +163,15 @@ public class SormasToSormasController {
 
 		SormasToSormasShareRequestDto shareRequest = FacadeProvider.getSormasToSormasShareRequestFacade().getShareRequestByUuid(request.getUuid());
 
+		if (shareRequest == null) {
+			VaadinUiUtil.showSimplePopupWindow(
+				I18nProperties.getString(Strings.headingSormasToSormasShareRequestNotFound),
+				I18nProperties.getString(Strings.errorSormasToSormasSharequestNotFound) + " "
+					+ I18nProperties.getString(Strings.reloadPageToSeeChanges));
+
+			return;
+		}
+
 		if (request.getDataType() == ShareRequestDataType.CONTACT) {
 			List<SormasToSormasContactPreview> contacts = shareRequest.getContacts();
 			for (int i = 0, contactsSize = contacts.size(); i < contactsSize && !hasErrors; i++) {

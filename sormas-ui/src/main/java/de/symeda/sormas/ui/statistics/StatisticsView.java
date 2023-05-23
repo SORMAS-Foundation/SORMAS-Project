@@ -86,6 +86,7 @@ import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.api.utils.HasCaption;
 import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.dashboard.map.DashboardMapComponent;
@@ -535,14 +536,22 @@ public class StatisticsView extends AbstractStatisticsView {
 
 				if (xAxisAttribute != null) {
 					if (!StatisticsHelper.isNullOrUnknown(row.getColumnKey())) {
-						xAxisCaptions.putIfAbsent((StatisticsGroupingKey) row.getColumnKey(), row.getColumnKey().toString());
+						StatisticsGroupingKey columnKey = row.getColumnKey();
+						String columnCaption =
+							HasCaption.class.isAssignableFrom(columnKey.getClass()) ? ((HasCaption) columnKey).buildCaption() : columnKey.toString();
+
+						xAxisCaptions.putIfAbsent(columnKey, columnCaption);
 					} else {
 						appendUnknownXAxisCaption = true;
 					}
 				}
 				if (seriesAttribute != null) {
 					if (!StatisticsHelper.isNullOrUnknown(row.getRowKey())) {
-						seriesCaptions.putIfAbsent((StatisticsGroupingKey) row.getRowKey(), row.getRowKey().toString());
+						StatisticsGroupingKey rowKey = row.getRowKey();
+						String rowCaption =
+							HasCaption.class.isAssignableFrom(rowKey.getClass()) ? ((HasCaption) rowKey).buildCaption() : rowKey.toString();
+
+						seriesCaptions.putIfAbsent(rowKey, rowCaption);
 					}
 				}
 			}

@@ -50,12 +50,12 @@ public class ImmunizationJurisdictionPredicateValidator extends PredicateJurisdi
 	}
 
 	@Override
-	protected Predicate isRootInJurisdiction() {
+	public Predicate isRootInJurisdiction() {
 		return isInJurisdictionByJurisdictionLevel(user.getJurisdictionLevel());
 	}
 
 	@Override
-	protected Predicate isRootInJurisdictionOrOwned() {
+	public Predicate isRootInJurisdictionOrOwned() {
 		final Path<Object> reportingUserPath = joins.getRoot().get(Immunization.REPORTING_USER);
 		final Predicate reportedByCurrentUser = cb.and(cb.isNotNull(reportingUserPath), cb.equal(reportingUserPath.get(User.ID), user.getId()));
 		return cb.or(reportedByCurrentUser, this.isRootInJurisdiction());

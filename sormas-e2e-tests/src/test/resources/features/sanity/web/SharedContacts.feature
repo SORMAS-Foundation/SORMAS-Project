@@ -1,4 +1,4 @@
-@UI @ShareContacts @SharedData
+@UI @Sanity @ShareContacts @SharedData
 Feature: Sharing contacts between environments tests
 
   @tmsLink=SORDEV-13951 @env_s2s_1

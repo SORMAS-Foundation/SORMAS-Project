@@ -97,7 +97,7 @@ public class VaccinationList extends PaginationList<VaccinationListEntryDto> {
 							deleteCallback(),
 							isEditableAndHasEditRight,
 							isEditableAndHasDeleteRight);
-				}), isEditableAndHasEditRight || isEditableAndHasDeleteRight);
+				}), isEditableAndHasEditRight);
 			}
 
 			listEntry.setEnabled(isEditAllowed && entryDto.isRelevant());

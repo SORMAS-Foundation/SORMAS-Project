@@ -182,6 +182,7 @@ public class TravelEntryController {
 
 		editComponent.restrictEditableComponentsOnEditView(
 			UserRight.TRAVEL_ENTRY_EDIT,
+			null,
 			UserRight.TRAVEL_ENTRY_DELETE,
 			FacadeProvider.getTravelEntryFacade().getEditPermissionType(travelEntryUuid),
 			travelEntry.isInJurisdiction());

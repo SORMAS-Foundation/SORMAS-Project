@@ -108,6 +108,7 @@ public class ActionController {
 
 		editView.restrictEditableComponentsOnEditView(
 			UserRight.ACTION_EDIT,
+			null,
 			UserRight.ACTION_DELETE,
 			FacadeProvider.getActionFacade().getEditPermissionType(dto.getUuid()),
 			FacadeProvider.getActionFacade().isInJurisdiction(dto.getUuid()));

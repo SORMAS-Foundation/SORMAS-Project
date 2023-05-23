@@ -179,7 +179,7 @@ public class TaskController {
 		}
 
 		editView.addToActiveButtonsList(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
-		editView.restrictEditableComponentsOnEditView(UserRight.TASK_EDIT, UserRight.TASK_DELETE, editPermissionType, true);
+		editView.restrictEditableComponentsOnEditView(UserRight.TASK_EDIT, null, UserRight.TASK_DELETE, editPermissionType, true);
 	}
 
 	private TaskDto createNewTask(TaskContext context, ReferenceDto entityRef) {

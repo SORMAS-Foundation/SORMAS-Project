@@ -963,6 +963,7 @@ public class CaseController {
 
 		editView.restrictEditableComponentsOnEditView(
 			UserRight.CASE_EDIT,
+			null,
 			UserRight.CASE_DELETE,
 			FacadeProvider.getCaseFacade().getEditPermissionType(caze.getUuid()),
 			caze.isInJurisdiction());

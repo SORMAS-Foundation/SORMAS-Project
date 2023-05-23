@@ -164,6 +164,7 @@ public class PathogenTestController {
 				}
 			}
 			editView.restrictEditableComponentsOnEditView(
+				UserRight.SAMPLE_EDIT,
 				UserRight.PATHOGEN_TEST_EDIT,
 				UserRight.PATHOGEN_TEST_DELETE,
 				null,

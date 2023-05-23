@@ -39,7 +39,7 @@ public class CampaignFormDataJurisdictionPredicateValidator extends PredicateJur
 	}
 
 	@Override
-	protected Predicate isRootInJurisdictionOrOwned() {
+	public Predicate isRootInJurisdictionOrOwned() {
 		final Predicate reportedByCurrentUser = cb.and(
 			cb.isNotNull(joins.getRoot().get(CampaignFormData.CREATING_USER)),
 			cb.equal(joins.getRoot().get(CampaignFormData.CREATING_USER).get(User.ID), user.getId()));

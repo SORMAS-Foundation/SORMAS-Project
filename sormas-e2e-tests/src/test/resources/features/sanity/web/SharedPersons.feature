@@ -1,4 +1,4 @@
-@UI @SharePersons @SharedData
+@UI @Sanity @SharePersons @SharedData
 Feature: Sharing persons between environments tests
 
   @tmsLink=SORDEV-12088 @env_s2s_1

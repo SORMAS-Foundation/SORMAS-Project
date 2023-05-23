@@ -120,6 +120,7 @@ public class ClinicalCourseController {
 			}
 
 			view.restrictEditableComponentsOnEditView(
+				UserRight.CASE_EDIT,
 				UserRight.CLINICAL_VISIT_EDIT,
 				UserRight.CLINICAL_VISIT_DELETE,
 				null,

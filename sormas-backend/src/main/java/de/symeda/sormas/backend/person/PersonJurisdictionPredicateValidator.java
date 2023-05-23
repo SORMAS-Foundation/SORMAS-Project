@@ -90,12 +90,12 @@ public class PersonJurisdictionPredicateValidator extends PredicateJurisdictionV
 	}
 
 	@Override
-	protected Predicate isRootInJurisdictionOrOwned() {
+	public Predicate isRootInJurisdictionOrOwned() {
 		return this.isRootInJurisdiction();
 	}
 
 	@Override
-	protected Predicate isRootInJurisdiction() {
+	public Predicate isRootInJurisdiction() {
 
 		// Fallback if no associatedJurisdictionValidator was linked: No persons can to be identified by permitted explicit associations
 		return cb.disjunction();
