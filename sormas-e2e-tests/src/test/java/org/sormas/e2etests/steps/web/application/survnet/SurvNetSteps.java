@@ -31,7 +31,7 @@ public class SurvNetSteps implements En {
         () -> {
           LocalDate expectedDate =  CreateNewCaseSteps.survnetCase.getDateOfReport();
           LocalDate dateOfReport = getReportingDate(xmlFile);
-          softly.assertEquals(dateOfReport, LocalDate.now().minusDays(2), "Date of report is incorrect!");
+          softly.assertEquals(dateOfReport, expectedDate, "Date of report is incorrect!");
           softly.assertAll();
         });
 
