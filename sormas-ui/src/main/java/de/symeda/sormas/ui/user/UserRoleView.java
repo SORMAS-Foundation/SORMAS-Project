@@ -42,8 +42,10 @@ public class UserRoleView extends AbstractUserRoleView {
 		CommitDiscardWrapperComponent<UserRoleEditForm> editComponent =
 			ControllerProvider.getUserRoleController().getUserRoleEditComponent(getReference());
 
-		UserRoleEditForm wrappedComponent = editComponent.getWrappedComponent();
-		userRoleTemplateSelectionField.setUserRoleEditForm(wrappedComponent);
+		if (userRoleTemplateSelectionField != null) {
+			UserRoleEditForm wrappedComponent = editComponent.getWrappedComponent();
+			userRoleTemplateSelectionField.setUserRoleEditForm(wrappedComponent);
+		}
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
