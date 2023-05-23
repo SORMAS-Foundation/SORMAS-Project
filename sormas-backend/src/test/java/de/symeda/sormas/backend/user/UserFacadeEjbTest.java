@@ -37,6 +37,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityNotFoundException;
 import javax.validation.ValidationException;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -464,13 +465,15 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		loginWith(nationalAdmin);
 		List<UserRight> userRights = getUserFacade().getUserRights(userWithoutAccess.getUuid());
 		assertThat(userRights, containsInAnyOrder(surveillanceOfficerRights));
-
 		// Successfully retrieve own user rights with user without access to the USER_VIEW and USERROLE_VIEW rights
 		loginWith(userWithoutAccess);
 		userRights = getUserFacade().getUserRights(null);
 		assertThat(userRights, containsInAnyOrder(surveillanceOfficerRights));
-
 		// Prevent users without access from retrieving user rights of other users
 		assertThrows(AccessDeniedException.class, () -> getUserFacade().getUserRights(nationalAdmin.getUuid()));
+
+		// Uuid which does not exist in the system
+		loginWith(nationalAdmin);
+		assertThrows(EntityNotFoundException.class, () -> getUserFacade().getUserRights("12345"));
 	}
 }
