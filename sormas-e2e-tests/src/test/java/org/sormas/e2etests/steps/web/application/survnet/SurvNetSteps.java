@@ -39,7 +39,9 @@ public class SurvNetSteps implements En {
         "^I check if sex in SurvNet generated XML file is correct$",
         () -> {
           String sex = getSexDE(xmlFile);
-          //add an assertion
+          String expectedSex = CreateNewCaseSteps.survnetCase.getSex();
+          softly.assertEquals(sex, expectedSex, "Sex is incorrect!");
+          softly.assertAll();
         });
   }
 

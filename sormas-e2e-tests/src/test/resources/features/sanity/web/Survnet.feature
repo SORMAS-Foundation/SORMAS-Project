@@ -15,6 +15,6 @@ Feature: Survnet tests
     And I click on the NEW CASE button
     And I create a new case with mandatory data only for Survnet DE
     And I click on Send to reporting tool button on Edit Case page
-    Then I wait 60 seconds for system reaction
+    Then I wait 30 seconds for system reaction
     Then I check if date of report in SurvNet generated XML file is correct
     And I check if sex in SurvNet generated XML file is correct
