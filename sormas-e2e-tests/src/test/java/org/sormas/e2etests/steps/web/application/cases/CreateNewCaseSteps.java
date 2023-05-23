@@ -171,6 +171,7 @@ public class CreateNewCaseSteps implements En {
   private static BaseSteps baseSteps;
   protected static Case oneCase;
   public static Case oneCaseDe;
+  public static Case survnetCase;
   public static final String userDirPath = System.getProperty("user.dir");
   public static List<String> casesUUID = new ArrayList<>();
   private static String currentUrl;
@@ -1558,14 +1559,14 @@ public class CreateNewCaseSteps implements En {
     And(
         "^I create a new case with mandatory data only for Survnet DE$",
         () -> {
-          caze = caseService.buildCaseForSurvnetFeature();
-          fillDateOfReport(caze.getDateOfReport(), Locale.GERMAN);
-          selectResponsibleRegion(caze.getResponsibleRegion());
-          selectResponsibleDistrict(caze.getResponsibleDistrict());
-          selectPlaceOfStay(caze.getPlaceOfStay());
-          fillFirstName(caze.getFirstName());
-          fillLastName(caze.getLastName());
-          selectSex(caze.getSex());
+          survnetCase = caseService.buildCaseForSurvnetFeature();
+          fillDateOfReport(survnetCase.getDateOfReport(), Locale.GERMAN);
+          selectResponsibleRegion(survnetCase.getResponsibleRegion());
+          selectResponsibleDistrict(survnetCase.getResponsibleDistrict());
+          selectPlaceOfStay(survnetCase.getPlaceOfStay());
+          fillFirstName(survnetCase.getFirstName());
+          fillLastName(survnetCase.getLastName());
+          selectSex(survnetCase.getSex());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
         });
