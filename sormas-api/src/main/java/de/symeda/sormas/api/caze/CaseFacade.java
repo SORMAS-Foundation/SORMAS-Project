@@ -50,7 +50,6 @@ import de.symeda.sormas.api.messaging.ManualMessageLogDto;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
-import de.symeda.sormas.api.utils.BulkOperationResults;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -89,6 +88,8 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 	CaseDataDto getCaseDataByUuid(String uuid);
 
 	CaseDataDto updateFollowUpComment(@Valid @NotNull CaseDataDto dto) throws ValidationRuntimeException;
+
+	void updateVaccinationStatus(CaseReferenceDto caseRef, VaccinationStatus status);
 
 	CaseDataDto save(@Valid @NotNull CaseDataDto dto, boolean systemSave) throws ValidationRuntimeException;
 
@@ -184,7 +185,7 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	List<String> getUuidsNotShareableWithExternalReportingTools(List<String> caseUuids);
 
-	BulkOperationResults<String> saveBulkCase(
+	Integer saveBulkCase(
 		List<String> caseUuidList,
 		@Valid CaseBulkEditData updatedCaseBulkEditData,
 		boolean diseaseChange,
@@ -193,7 +194,7 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 		boolean outcomeChange,
 		boolean surveillanceOfficerChange);
 
-	BulkOperationResults<String> saveBulkEditWithFacilities(
+	Integer saveBulkEditWithFacilities(
 		List<String> caseUuidList,
 		@Valid CaseBulkEditData updatedCaseBulkEditData,
 		boolean diseaseChange,
@@ -234,5 +235,4 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 	boolean hasOtherValidVaccination(CaseDataDto caze, String vaccinationUuid);
 
 	Pair<RegionReferenceDto, DistrictReferenceDto> getRegionAndDistrictRefsOf(CaseReferenceDto caze);
-
 }

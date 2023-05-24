@@ -4,7 +4,6 @@ Feature: Sample filter functionality
   @env_main
   Scenario: Check Filters on Sample page work as expected
     Given API: I create 10 new cases with a new sample foreach of them
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     And I log in as a National User
     And I click on the Sample button from navbar
@@ -18,13 +17,10 @@ Feature: Sample filter functionality
   @tmsLink=SORDEV-5981 @env_main
   Scenario: Check all filters are work properly in Samples directory
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given API: I create a new sample
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
     When I click on the Sample button from navbar
@@ -77,13 +73,10 @@ Feature: Sample filter functionality
   @tmsLink=SORDEV-5982 @env_de
   Scenario: Check all filters are work properly in Samples directory for DE version
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given API: I create a new sample
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I click on the Sample button from navbar

@@ -23,7 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -53,7 +53,7 @@ public class CaseReadPrescriptionListFragment extends BaseReadFragment<FragmentF
 
 		((BaseActivity) getActivity()).showPreloader();
 		adapter = new PrescriptionListAdapter();
-		PrescriptionListViewModel model = ViewModelProviders.of(this).get(PrescriptionListViewModel.class);
+		PrescriptionListViewModel model = new ViewModelProvider(this).get(PrescriptionListViewModel.class);
 		model.initializeViewModel(getActivityRootData().getTherapy());
 		model.getPrescriptions().observe(this, prescriptions -> {
 			((BaseActivity) getActivity()).hidePreloader();

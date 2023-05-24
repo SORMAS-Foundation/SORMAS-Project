@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>de.symeda.sormas</groupId>
 		<artifactId>sormas-base</artifactId>
-		<version>1.83.1</version>
+		<version>1.84.0</version>
 		<relativePath>../sormas-base</relativePath>
 	</parent>
 
@@ -97,9 +97,10 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>31.0.1-jre</version>
+			<!-- Avoids: Failed to execute goal io.swagger.core.v3:swagger-maven-plugin:2.2.8:resolve (rest api) on project sormas-rest: 
+				Execution rest api of goal io.swagger.core.v3:swagger-maven-plugin:2.2.8:resolve failed: A required class was missing while 
+				executing io.swagger.core.v3:swagger-maven-plugin:2.2.8:resolve: com/google/common/collect/ImmutableMap -->
 		</dependency>
-
 
 	</dependencies>
 
@@ -109,7 +110,6 @@
 		<plugins>
 			<!-- Provide WebApp context path via value of `sormasRest.apiRoot` property -->
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 				<configuration>
 					<filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>

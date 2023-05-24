@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.deletionconfiguration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -9,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -30,6 +32,9 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
@@ -59,6 +64,7 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
+import de.symeda.sormas.backend.feature.FeatureConfiguration;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasTest;
@@ -275,6 +281,7 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		});
 
 		assertEquals(1, getImmunizationService().count());
+		assertEquals(1, getVaccinationService().count());
 
 		useSystemUser();
 		getCoreEntityDeletionService().executeAutomaticDeletion();
@@ -282,6 +289,55 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 
 		assertEquals(0, getImmunizationService().count());
 		assertEquals(0, getVaccinationService().count());
+		assertEquals(0, getPersonService().count());
+	}
+
+	@Test
+	public void testOrphanReducedImmunizationAutomaticDeletion() {
+
+		createDeletionConfigurations();
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator
+			.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN), creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto person = creator.createPerson();
+		ImmunizationDto immunization = creator.createImmunization(Disease.EVD, person.toReference(), user.toReference(), rdcf);
+		creator.createVaccination(user.toReference(), immunization.toReference());
+
+		assertEquals(1, getImmunizationService().count());
+		assertEquals(1, getVaccinationService().count());
+
+		useSystemUser();
+		getCoreEntityDeletionService().executeAutomaticDeletion();
+		loginWith(user);
+
+		assertFalse(getFeatureConfigurationFacade().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED));
+		assertEquals(1, getImmunizationService().count());
+		assertEquals(1, getVaccinationService().count());
+		assertEquals(1, getPersonService().count());
+
+		// change feature configuration to immunization reduced
+		FeatureConfigurationIndexDto featureConfiguration =
+			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
+		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.IMMUNIZATION_MANAGEMENT);
+		executeInTransaction(em -> {
+			Query query = em.createQuery("select f from featureconfiguration f");
+			List<FeatureConfiguration> resultList = (List<FeatureConfiguration>) query.getResultList();
+
+			HashMap<FeatureTypeProperty, Object> properties = new HashMap<>();
+			properties.put(FeatureTypeProperty.REDUCED, true);
+			resultList.get(1).setProperties(properties);
+			em.persist(resultList.get(1));
+		});
+
+		useSystemUser();
+		getCoreEntityDeletionService().executeAutomaticDeletion();
+		loginWith(user);
+
+		assertTrue(getFeatureConfigurationFacade().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED));
+		assertEquals(0, getImmunizationService().count());
+		assertEquals(0, getVaccinationService().count());
+		assertEquals(0, getPersonService().count());
 	}
 
 	@Test

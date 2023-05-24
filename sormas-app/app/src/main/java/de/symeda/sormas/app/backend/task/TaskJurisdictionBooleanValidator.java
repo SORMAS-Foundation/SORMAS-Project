@@ -21,6 +21,7 @@ package de.symeda.sormas.app.backend.task;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.app.backend.caze.CaseJurisdictionBooleanValidator;
 import de.symeda.sormas.app.backend.caze.CaseJurisdictionDto;
 import de.symeda.sormas.app.backend.contact.ContactJurisdictionBooleanValidator;
@@ -56,19 +57,24 @@ public class TaskJurisdictionBooleanValidator extends BooleanJurisdictionValidat
     }
 
     private TaskJurisdictionBooleanValidator(TaskJurisdictionDto taskJurisdictionDto, UserJurisdiction userJurisdiction, List<BooleanJurisdictionValidator> associatedJurisdictionValidators) {
-        super(associatedJurisdictionValidators);
+        super(associatedJurisdictionValidators, userJurisdiction);
         this.taskJurisdictionDto = taskJurisdictionDto;
         this.userJurisdiction = userJurisdiction;
     }
 
     @Override
-    protected Boolean isInJurisdiction() {
+    public Boolean isRootInJurisdiction() {
         return isInJurisdictionByJurisdictionLevel(userJurisdiction.getJurisdictionLevel());
     }
 
     @Override
-    protected Boolean isInJurisdictionOrOwned() {
+    public Boolean isRootInJurisdictionOrOwned() {
         return userJurisdiction.getUuid().equals(taskJurisdictionDto.getCreatorUserUuid()) || userJurisdiction.getUuid().equals(taskJurisdictionDto.getAssigneeUserUuid()) || inJurisdiction();
+    }
+
+    @Override
+    protected Disease getDisease() {
+        return null;
     }
 
     @Override

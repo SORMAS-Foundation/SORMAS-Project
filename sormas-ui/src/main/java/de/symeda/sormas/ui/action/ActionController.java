@@ -20,7 +20,6 @@ package de.symeda.sormas.ui.action;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
-import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.action.ActionContext;
@@ -105,11 +104,14 @@ public class ActionController {
 			}, I18nProperties.getString(Strings.entityAction));
 		}
 
-		EditPermissionType editPermissionType = FacadeProvider.getActionFacade().getEditPermissionType(dto.getUuid());
-		boolean isInJurisdiction = FacadeProvider.getActionFacade().isInJurisdiction(dto.getUuid());
-
 		editView.addDiscardListener(popupWindow::close);
-		editView.restrictEditableComponentsOnEditView(UserRight.ACTION_EDIT, UserRight.ACTION_DELETE, editPermissionType, isInJurisdiction);
+
+		editView.restrictEditableComponentsOnEditView(
+			UserRight.ACTION_EDIT,
+			null,
+			UserRight.ACTION_DELETE,
+			FacadeProvider.getActionFacade().getEditPermissionType(dto.getUuid()),
+			FacadeProvider.getActionFacade().isInJurisdiction(dto.getUuid()));
 	}
 
 	private ActionDto createNewAction(ActionContext context, ReferenceDto entityRef) {

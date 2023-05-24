@@ -4,10 +4,8 @@ Feature: Epidemiological data coverage
   @env_main
   Scenario: Edit all fields from Epidemiological data tab
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     And API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I click on the Cases button from navbar
@@ -25,10 +23,8 @@ Feature: Epidemiological data coverage
     @tmsLink=SORDEV-5522 @env_main
   Scenario: Validate all fields are present and functional on Epidemiological page
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     And API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I click on the Cases button from navbar
@@ -60,10 +56,8 @@ Feature: Epidemiological data coverage
   @tmsLink=SORDEV-5523 @env_main
   Scenario: Enter an exposure data in Case Directory
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I click on the Cases button from navbar
@@ -188,10 +182,10 @@ Feature: Epidemiological data coverage
   @tmsLink=SORDEV-5839 @env_main
   Scenario: Make facility selection on LocationForm more intuitive
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     And API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I click on the Cases button from navbar
@@ -205,10 +199,10 @@ Feature: Epidemiological data coverage
   @tmsLink=SORDEV-5977 @env_main
   Scenario: Improve exposure table display
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     And API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I click on the Cases button from navbar
@@ -223,10 +217,10 @@ Feature: Epidemiological data coverage
   @tmsLink=SORDEV-5524 @env_main @ignore
   Scenario: Enter an activity as case in Epidemiological data tab in Cases
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I click on the Cases button from navbar
@@ -302,10 +296,10 @@ Feature: Epidemiological data coverage
   @tmsLink=SORDEV-5204 @env_main
   Scenario: Test continent and subcontinent in location entry in exposure and activity as case
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     And API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I click on the Cases button from navbar

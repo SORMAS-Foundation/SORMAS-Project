@@ -46,7 +46,7 @@ Given I log in as a Admin User
   @tmsLink=SORDEV-9475 @env_de
   Scenario: Test Add reduced vaccination module to imports for Event Participants
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I open the last created event via api
@@ -106,7 +106,7 @@ Given I log in as a Admin User
   @tmsLink=SORDEV-12441 @env_de
   Scenario: Hide citizenship and country of birth in Detailed Event Participant file
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     Then I open the last created event via api

@@ -40,6 +40,7 @@ public class SideComponent extends VerticalLayout {
 		Label headingLabel = new Label(heading);
 		headingLabel.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(headingLabel);
+		componentHeader.setExpandRatio(headingLabel, 1);
 
 		this.actionCallback = actionCallback;
 	}
@@ -47,6 +48,7 @@ public class SideComponent extends VerticalLayout {
 	protected void addCreateButton(Button button) {
 		componentHeader.addComponent(button);
 		componentHeader.setComponentAlignment(button, Alignment.MIDDLE_RIGHT);
+		componentHeader.setExpandRatio(button, 0);
 	}
 
 	protected void addCreateButton(String caption, Runnable callback, UserRight... userRights) {

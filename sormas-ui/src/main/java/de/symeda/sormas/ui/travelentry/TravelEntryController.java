@@ -180,8 +180,12 @@ public class TravelEntryController {
 					() -> navigateToTravelEntry(travelEntry.getUuid()));
 		}
 
-		editComponent
-			.restrictEditableComponentsOnEditView(UserRight.TRAVEL_ENTRY_EDIT, UserRight.TRAVEL_ENTRY_DELETE, null, travelEntry.isInJurisdiction());
+		editComponent.restrictEditableComponentsOnEditView(
+			UserRight.TRAVEL_ENTRY_EDIT,
+			null,
+			UserRight.TRAVEL_ENTRY_DELETE,
+			FacadeProvider.getTravelEntryFacade().getEditPermissionType(travelEntryUuid),
+			travelEntry.isInJurisdiction());
 
 		return editComponent;
 	}

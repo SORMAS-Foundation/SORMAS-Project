@@ -40,9 +40,10 @@ public class CurrentUserService {
 
 	/**
 	 * Returns the User entity corresponding to the current user.
+	 *
+	 * @TransactionScoped would be better for performance, but is not supported by the CDI based testing framework
 	 */
 	@RequestScoped
-// FIXME @TransactionScoped would be better for performance, but is not support by novatec.bean-test (see their github #4)
 	public User getCurrentUser() {
 		final String currentUsername = context.getCallerPrincipal().getName();
 

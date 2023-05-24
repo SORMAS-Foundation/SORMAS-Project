@@ -18,13 +18,14 @@
 
 package org.sormas.e2etests.entities.services.api;
 
+import static org.sormas.e2etests.entities.pojo.helpers.ShortUUIDGenerator.generateShortUUID;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.UUID;
+import lombok.SneakyThrows;
 import org.sormas.e2etests.entities.pojo.api.Event;
 import org.sormas.e2etests.entities.pojo.api.EventParticipant;
 import org.sormas.e2etests.entities.pojo.api.Person;
@@ -46,6 +47,7 @@ public class EventParticipantApiService {
     this.runningConfiguration = runningConfiguration;
   }
 
+  @SneakyThrows
   public EventParticipant buildGeneratedEventParticipantWithCreationDate(
       String eventUUID, Person person, Integer days) {
     return EventParticipant.builder()
@@ -54,7 +56,7 @@ public class EventParticipantApiService {
                 .atZone(ZoneId.systemDefault())
                 .toInstant()
                 .toEpochMilli())
-        .uuid(UUID.randomUUID().toString())
+        .uuid(generateShortUUID())
         .reportingUser(
             ReportingUser.builder()
                 .uuid(

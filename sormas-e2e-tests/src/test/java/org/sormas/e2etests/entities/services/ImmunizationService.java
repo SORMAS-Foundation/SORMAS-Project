@@ -1,9 +1,11 @@
 package org.sormas.e2etests.entities.services;
 
+import static org.sormas.e2etests.entities.pojo.helpers.ShortUUIDGenerator.generateShortUUID;
+
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.time.LocalDate;
-import java.util.UUID;
+import lombok.SneakyThrows;
 import org.sormas.e2etests.entities.pojo.web.Immunization;
 import org.sormas.e2etests.enums.*;
 import org.sormas.e2etests.enums.immunizations.ImmunizationManagementStatusValues;
@@ -22,12 +24,13 @@ public class ImmunizationService {
     this.faker = faker;
   }
 
+  @SneakyThrows
   public Immunization buildGeneratedImmunization() {
     firstName = faker.name().firstName();
     lastName = faker.name().lastName();
     return Immunization.builder()
         .dateOfReport(LocalDate.now().minusDays(1))
-        .externalId(UUID.randomUUID().toString())
+        .externalId(generateShortUUID())
         .disease(DiseasesValues.getRandomDiseaseCaption())
         .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
         .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
@@ -69,11 +72,12 @@ public class ImmunizationService {
         .build();
   }
 
+  @SneakyThrows
   public Immunization buildImmunizationWithSpecificResponsibleLocation(
       String responsibleRegion, String responsibleDistrict) {
     return Immunization.builder()
         .dateOfReport(LocalDate.now().minusDays(1))
-        .externalId(UUID.randomUUID().toString())
+        .externalId(generateShortUUID())
         .responsibleRegion(responsibleRegion)
         .responsibleDistrict(responsibleDistrict)
         .meansOfImmunization("Vaccination")

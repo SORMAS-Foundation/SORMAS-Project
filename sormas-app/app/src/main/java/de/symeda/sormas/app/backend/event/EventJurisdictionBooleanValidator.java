@@ -18,6 +18,7 @@
 
 package de.symeda.sormas.app.backend.event;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.util.BooleanJurisdictionValidator;
 import de.symeda.sormas.app.util.UserJurisdiction;
@@ -32,19 +33,24 @@ public class EventJurisdictionBooleanValidator extends BooleanJurisdictionValida
     }
 
     private EventJurisdictionBooleanValidator(EventJurisdictionDto eventJurisdictionDto, UserJurisdiction userJurisdiction) {
-        super(null);
+        super(null, userJurisdiction);
         this.eventJurisdictionDto = eventJurisdictionDto;
         this.userJurisdiction = userJurisdiction;
     }
 
     @Override
-    protected Boolean isInJurisdiction() {
+    public Boolean isRootInJurisdiction() {
         return isInJurisdictionByJurisdictionLevel(userJurisdiction.getJurisdictionLevel());
     }
 
     @Override
-    protected Boolean isInJurisdictionOrOwned() {
+    public Boolean isRootInJurisdictionOrOwned() {
         return userJurisdiction.getUuid().equals(eventJurisdictionDto.getReportingUserUuid()) || userJurisdiction.getUuid().equals(eventJurisdictionDto.getResponsibleUserUuid()) || inJurisdiction();
+    }
+
+    @Override
+    protected Disease getDisease() {
+        return null;
     }
 
     @Override

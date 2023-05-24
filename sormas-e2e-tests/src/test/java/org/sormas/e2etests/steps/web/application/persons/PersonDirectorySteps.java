@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.persons;
 
+import static org.sormas.e2etests.entities.pojo.helpers.ShortUUIDGenerator.generateShortUUID;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePersonPage.CASE_OF_DEATH_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePersonPage.DATE_OF_DEATH_INPUT;
@@ -35,7 +36,6 @@ import cucumber.api.java8.En;
 import java.text.DateFormatSymbols;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
@@ -334,7 +334,7 @@ public class PersonDirectorySteps implements En {
         "I click Immunization aggregation button on Person Directory Page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(IMMUNIZATION_AGGREGATION_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
         });
 
     Then(
@@ -465,7 +465,8 @@ public class PersonDirectorySteps implements En {
     When(
         "I click on first person in person directory",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(By.cssSelector("[role='gridcell'] a"));
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(PERSON_FIRST_RECORD_IN_TABLE);
+          webDriverHelpers.clickOnWebElementBySelector(PERSON_FIRST_RECORD_IN_TABLE);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
@@ -558,8 +559,7 @@ public class PersonDirectorySteps implements En {
         "I change {string} information data field for Person",
         (String searchCriteria) -> {
           String searchText = "";
-          String personUUID =
-              dataOperations.getPartialUuidFromAssociatedLink(UUID.randomUUID().toString());
+          String personUUID = dataOperations.getPartialUuidFromAssociatedLink(generateShortUUID());
           switch (searchCriteria) {
             case "uuid":
               searchText = personUUID;

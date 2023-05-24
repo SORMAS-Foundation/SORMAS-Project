@@ -20,6 +20,7 @@ package de.symeda.sormas.app.backend.contact;
 
 import java.util.Collections;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.backend.caze.CaseJurisdictionBooleanValidator;
 import de.symeda.sormas.app.util.BooleanJurisdictionValidator;
@@ -35,19 +36,24 @@ public class ContactJurisdictionBooleanValidator extends BooleanJurisdictionVali
     }
 
     private ContactJurisdictionBooleanValidator(ContactJurisdictionDto contactJurisdictionDto, UserJurisdiction userJurisdiction) {
-        super(Collections.singletonList(contactJurisdictionDto.getCaseJurisdiction() != null ? CaseJurisdictionBooleanValidator.of(contactJurisdictionDto.getCaseJurisdiction(), userJurisdiction): null));
+        super(Collections.singletonList(contactJurisdictionDto.getCaseJurisdiction() != null ? CaseJurisdictionBooleanValidator.of(contactJurisdictionDto.getCaseJurisdiction(), userJurisdiction): null), userJurisdiction);
         this.contactJurisdictionDto = contactJurisdictionDto;
         this.userJurisdiction = userJurisdiction;
     }
 
     @Override
-    protected Boolean isInJurisdiction() {
+    public Boolean isRootInJurisdiction() {
         return isInJurisdictionByJurisdictionLevel(userJurisdiction.getJurisdictionLevel());
     }
 
     @Override
-    protected Boolean isInJurisdictionOrOwned() {
+    public Boolean isRootInJurisdictionOrOwned() {
         return userJurisdiction.getUuid().equals(contactJurisdictionDto.getReportingUserUuid()) || inJurisdiction();
+    }
+
+    @Override
+    protected Disease getDisease() {
+        return null;
     }
 
     @Override

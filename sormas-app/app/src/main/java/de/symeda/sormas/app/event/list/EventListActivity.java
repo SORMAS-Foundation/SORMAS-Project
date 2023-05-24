@@ -23,7 +23,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.widget.AdapterView;
 
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import de.symeda.sormas.api.event.EventStatus;
@@ -79,7 +79,7 @@ public class EventListActivity extends PagedBaseListActivity {
 				}
 			}
 		});
-		model = ViewModelProviders.of(this).get(EventListViewModel.class);
+		model = new ViewModelProvider(this).get(EventListViewModel.class);
 		model.getEvents().observe(this, events -> {
 			adapter.submitList(events);
 			hidePreloader();

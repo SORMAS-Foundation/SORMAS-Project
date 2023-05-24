@@ -71,7 +71,6 @@ import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.BulkOperationResults;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -88,7 +87,7 @@ import de.symeda.sormas.ui.contact.components.linelisting.layout.LineListingLayo
 import de.symeda.sormas.ui.epidata.ContactEpiDataView;
 import de.symeda.sormas.ui.epidata.EpiDataForm;
 import de.symeda.sormas.ui.utils.AbstractView;
-import de.symeda.sormas.ui.utils.BulkOperationHelper;
+import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
 import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
@@ -705,7 +704,12 @@ public class ContactController {
 					() -> navigateToView(ContactDataView.VIEW_NAME, contact.getUuid(), false));
 		}
 
-		editComponent.restrictEditableComponentsOnEditView(UserRight.CONTACT_EDIT, UserRight.CONTACT_DELETE, null, contact.isInJurisdiction());
+		editComponent.restrictEditableComponentsOnEditView(
+			UserRight.CONTACT_EDIT,
+			null,
+			UserRight.CONTACT_DELETE,
+			FacadeProvider.getContactFacade().getEditPermissionType(contactUuid),
+			contact.isInJurisdiction());
 
 		return editComponent;
 	}
@@ -759,40 +763,32 @@ public class ContactController {
 			boolean contactOfficerChange = district != null ? form.getContactOfficerCheckBox().getValue() : false;
 
 			List<ContactIndexDto> selectedContactsCpy = new ArrayList<>(selectedContacts);
-			BulkOperationHelper.doBulkOperation(
+			new BulkOperationHandler().doBulkOperation(
 				selectedEntries -> contactFacade.saveBulkContacts(
 					selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
 					updatedBulkEditData,
 					classificationChange,
 					contactOfficerChange),
 				selectedContactsCpy,
-				selectedContactsCpy.size(),
-				results -> handleBulkOperationDone(results, popupWindow, contactGrid, selectedContacts, caseUuid));
+				results -> handleBulkOperationDone((List<? extends ContactIndexDto>) results, popupWindow, contactGrid, caseUuid));
 		});
 
-		editView.addDiscardListener(() -> popupWindow.close());
+		editView.addDiscardListener(popupWindow::close);
 	}
 
 	private void handleBulkOperationDone(
-		BulkOperationResults<?> results,
+		List<? extends ContactIndexDto> remainingContacts,
 		Window popupWindow,
 		AbstractContactGrid<?> contactGrid,
-		Collection<? extends ContactIndexDto> selectedContacts,
 		String caseUuid) {
 
 		popupWindow.close();
 		contactGrid.reload();
-		if (CollectionUtils.isNotEmpty(results.getRemainingEntries())) {
+		if (CollectionUtils.isNotEmpty(remainingContacts)) {
 			if (contactGrid instanceof ContactGrid) {
-				((ContactGrid) contactGrid).asMultiSelect()
-					.selectItems(
-						selectedContacts.stream().filter(c -> results.getRemainingEntries().contains(c.getUuid())).toArray(ContactIndexDto[]::new));
+				((ContactGrid) contactGrid).asMultiSelect().selectItems(remainingContacts.toArray(new ContactIndexDto[0]));
 			} else if (contactGrid instanceof ContactGridDetailed) {
-				((ContactGridDetailed) contactGrid).asMultiSelect()
-					.selectItems(
-						selectedContacts.stream()
-							.filter(c -> results.getRemainingEntries().contains(c.getUuid()))
-							.toArray(ContactIndexDetailedDto[]::new));
+				((ContactGridDetailed) contactGrid).asMultiSelect().selectItems(remainingContacts.toArray(new ContactIndexDetailedDto[0]));
 			}
 		} else {
 			if (caseUuid == null) {

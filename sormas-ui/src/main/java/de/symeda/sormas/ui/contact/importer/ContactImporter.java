@@ -33,6 +33,7 @@ import com.vaadin.server.StreamResource;
 import com.vaadin.ui.UI;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -360,6 +361,8 @@ public class ContactImporter extends DataImporter {
 	private void insertColumnEntryIntoData(ContactDto contact, PersonDto person, String entry, String[] entryHeaderPath)
 		throws InvalidColumnException, ImportErrorException {
 
+		Language language = I18nProperties.getUserLanguage();
+
 		Object currentElement = contact;
 		for (int i = 0; i < entryHeaderPath.length; i++) {
 			String headerPathElementName = entryHeaderPath[i];
@@ -372,7 +375,7 @@ public class ContactImporter extends DataImporter {
 						currentElement = person;
 					}
 				} else if (ContactExportDto.BIRTH_DATE.equals(headerPathElementName)) {
-					BirthDateDto birthDateDto = PersonHelper.parseBirthdate(entry, currentUser.getLanguage());
+					BirthDateDto birthDateDto = PersonHelper.parseBirthdate(entry, language);
 					if (birthDateDto != null) {
 						person.setBirthdateDD(birthDateDto.getDateOfBirthDD());
 						person.setBirthdateMM(birthDateDto.getDateOfBirthMM());

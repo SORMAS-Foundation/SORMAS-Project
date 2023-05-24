@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -45,7 +45,7 @@ public class EventParticipantEditVaccinationListFragment extends BaseEditFragmen
 		Date vaccinationListGrayoutDate = eventStartDate != null ? eventStartDate : eventEndDate != null ? eventEndDate : eventReportDate;
 		adapter = new VaccinationReducedListAdapter(vaccinationListGrayoutDate);
 
-		VaccinationListViewModel model = ViewModelProviders.of(this).get(VaccinationListViewModel.class);
+		VaccinationListViewModel model = new ViewModelProvider(this).get(VaccinationListViewModel.class);
 		model.initializeViewModel(getActivityRootData());
 		model.getVaccinations().observe(this, vaccinations -> {
 			adapter.submitList(vaccinations);

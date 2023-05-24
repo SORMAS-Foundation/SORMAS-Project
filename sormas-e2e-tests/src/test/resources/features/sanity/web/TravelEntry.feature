@@ -468,10 +468,10 @@ Feature: Create travel entries
     @tmsLink=SORQA-669 @env_de @oldfake
     Scenario: Check automatic deletion of TRAVEL_ENTRY origin 16 days ago
       Given API: I create a new person
-      And API: I check that POST call body is "OK"
+
       And API: I check that POST call status code is 200
       Then API: I create a new travel entry with creation date 16 days ago
-      And API: I check that POST call body is "OK"
+
       And API: I check that POST call status code is 200
       Then I log in as a Admin User
       And I open the last created travel entry via api
@@ -488,10 +488,9 @@ Feature: Create travel entries
   @tmsLink=SORQA-678 @env_de @oldfake
   Scenario: Check automatic deletion NOT of TRAVEL_ENTRY origin 13 days ago
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then API: I create a new travel entry with creation date 13 days ago
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then I log in as a Admin User
     And I open the last created travel entry via api

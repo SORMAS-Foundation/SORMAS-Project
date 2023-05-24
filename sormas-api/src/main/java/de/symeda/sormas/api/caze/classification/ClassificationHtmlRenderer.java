@@ -21,12 +21,11 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jsoup.safety.Whitelist;
+import org.jsoup.safety.Safelist;
 
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteriaDto.ClassificationXOfSubCriteriaDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -292,7 +291,7 @@ public final class ClassificationHtmlRenderer {
 		for (ClassificationCriteriaDto subCriteria : ((ClassificationCollectiveCriteria) criteria).getSubCriteria()) {
 			if (!(subCriteria instanceof ClassificationCollectiveCriteria) || subCriteria instanceof ClassificationCompactCriteria) {
 				// For non-collective or compact collective criteria, add the description as a list item
-				subCriteriaSb.append("- " + HtmlHelper.cleanHtml(subCriteria.buildDescription(), Whitelist.basic()) + "</br>");
+				subCriteriaSb.append("- " + HtmlHelper.cleanHtml(subCriteria.buildDescription(), Safelist.basic()) + "</br>");
 			} else if (subCriteria instanceof ClassificationCollectiveCriteria
 				&& !(subCriteria instanceof ClassificationAllOfCriteriaDto)
 				&& !(subCriteria.getClass() == ClassificationXOfCriteriaDto.class)) {
@@ -338,7 +337,7 @@ public final class ClassificationHtmlRenderer {
 
 		//@formatter:off
 		return "<div class='headline'>"
-				+ HtmlHelper.cleanHtml(headline, Whitelist.basic())
+				+ HtmlHelper.cleanHtml(headline, Safelist.basic())
 				+ "</div>";
 		//@formatter:on
 	}
@@ -384,7 +383,7 @@ public final class ClassificationHtmlRenderer {
 	 * Specific tags are allowed to be contained in i18n strings and are thus unescaped
 	 */
 	private static String createCriteriaItemDiv(String text) {
-		return (HtmlHelper.cleanHtml(text, Whitelist.basic()) + "<br>");
+		return (HtmlHelper.cleanHtml(text, Safelist.basic()) + "<br>");
 	}
 
 	private enum ClassificationCriteriaType {

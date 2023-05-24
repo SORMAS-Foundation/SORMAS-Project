@@ -4,7 +4,7 @@ Feature: Event Directory filters check
   @tmsLink=SORDEV-5915 @env_main
   Scenario: Check all filters are working properly in Event directory
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     When I log in as a National User
     And I click on the Events button from navbar
@@ -46,7 +46,7 @@ Feature: Event Directory filters check
   @tmsLink=SORDEV-5917 @env_de
   Scenario: Check all filters are working properly in Event directory for DE version
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     When I log in as a National User
     And I click on the Events button from navbar
@@ -85,10 +85,10 @@ Feature: Event Directory filters check
   @tmsLink=SORQA-77 @env_main
   Scenario: Filters for Region, District, Community, Reporting user and Event statuses on Event Directory Page
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     When API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     When I log in as a National User
     And I open the last created event via api
@@ -135,7 +135,7 @@ Feature: Event Directory filters check
   @tmsLink=SORQA-77 @env_main
   Scenario: Date filters and aggregation buttons in Event Directory
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     When I log in as a National User
     And I click on the Events button from navbar

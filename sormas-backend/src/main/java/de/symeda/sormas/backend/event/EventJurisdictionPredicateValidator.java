@@ -19,6 +19,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -52,12 +53,12 @@ public class EventJurisdictionPredicateValidator extends PredicateJurisdictionVa
 	}
 
 	@Override
-	protected Predicate isInJurisdiction() {
-		return super.isInJurisdiction();
+	public Predicate isRootInJurisdiction() {
+		return super.isRootInJurisdiction();
 	}
 
 	@Override
-	protected Predicate isInJurisdictionOrOwned() {
+	public Predicate isRootInJurisdictionOrOwned() {
 
 		final Predicate reportedByCurrentUser = cb.and(
 			cb.isNotNull(joins.getRoot().get(Event.REPORTING_USER)),
@@ -71,7 +72,12 @@ public class EventJurisdictionPredicateValidator extends PredicateJurisdictionVa
 				? cb.equal(joins.getRoot().get(Event.RESPONSIBLE_USER).get(User.ID), user.getId())
 				: cb.equal(joins.getRoot().get(Event.RESPONSIBLE_USER).get(User.ID), userPath.get(User.ID)));
 
-		return cb.or(reportedByCurrentUser, currentUserResponsible, isInJurisdiction());
+		return cb.or(reportedByCurrentUser, currentUserResponsible, this.isRootInJurisdiction());
+	}
+
+	@Override
+	protected Predicate getLimitedDiseasePredicate() {
+		return cb.equal(joins.getRoot().get(Event.DISEASE), user.getLimitedDisease());
 	}
 
 	@Override
@@ -121,7 +127,8 @@ public class EventJurisdictionPredicateValidator extends PredicateJurisdictionVa
 			return EventParticipantJurisdictionPredicateValidator.of(new EventParticipantQueryContext(cb, cq, joins.getEventParticipantJoins()), user)
 				.whenLaboratoryLevel();
 		} else {
-			return EventParticipantJurisdictionPredicateValidator.of(new EventParticipantQueryContext(cb, cq, joins.getEventParticipantJoins()), userPath)
+			return EventParticipantJurisdictionPredicateValidator
+				.of(new EventParticipantQueryContext(cb, cq, joins.getEventParticipantJoins()), userPath)
 				.whenLaboratoryLevel();
 		}
 	}

@@ -21,6 +21,7 @@ package de.symeda.sormas.app.backend.sample;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.backend.caze.CaseJurisdictionBooleanValidator;
 import de.symeda.sormas.app.backend.caze.CaseJurisdictionDto;
@@ -58,19 +59,24 @@ public class SampleJurisdictionBooleanValidator extends BooleanJurisdictionValid
     }
 
     private SampleJurisdictionBooleanValidator(SampleJurisdictionDto sampleJurisdictionDto, UserJurisdiction userJurisdiction, List<BooleanJurisdictionValidator> associatedJurisdictionValidators) {
-        super(associatedJurisdictionValidators);
+        super(associatedJurisdictionValidators, userJurisdiction);
         this.sampleJurisdictionDto = sampleJurisdictionDto;
         this.userJurisdiction = userJurisdiction;
     }
 
     @Override
-    protected Boolean isInJurisdiction() {
+    public Boolean isRootInJurisdiction() {
         return isInJurisdictionByJurisdictionLevel(userJurisdiction.getJurisdictionLevel());
     }
 
     @Override
-    protected Boolean isInJurisdictionOrOwned() {
+    public Boolean isRootInJurisdictionOrOwned() {
         return userJurisdiction.getUuid().equals(sampleJurisdictionDto.getReportingUserUuid()) || inJurisdiction();
+    }
+
+    @Override
+    protected Disease getDisease() {
+		return null;
     }
 
     @Override

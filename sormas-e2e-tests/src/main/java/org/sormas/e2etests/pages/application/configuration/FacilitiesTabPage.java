@@ -33,7 +33,7 @@ public class FacilitiesTabPage {
       By.xpath("//div[@class='v-window-closebox']");
   public static final By IMPORT_SUCCESSFUL_FACILITY_IMPORT_CSV =
       By.xpath("//*[text()='Import successful!']");
-  public static final By CLOSE_POPUP_FACILITIES_BUTTON = By.id("actionCancel");
+  public static final By CLOSE_POPUP_FACILITIES_BUTTON = By.id("actionClose");
   public static final By CLOSE_FACILITIES_IMPORT_BUTTON =
       By.xpath("//div[@class='v-window-closebox']");
   public static final By FACILITIES_NEW_ENTRY_BUTTON = By.id("create");

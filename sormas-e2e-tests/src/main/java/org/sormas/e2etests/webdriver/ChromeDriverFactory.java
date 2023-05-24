@@ -58,6 +58,7 @@ public class ChromeDriverFactory implements DriverFactory {
     chromePreferences.put("profile.password_manager_enabled", Boolean.FALSE);
     chromePreferences.put("download.default_directory", userDirProperty + "/downloads");
     final ChromeOptions options = new ChromeOptions();
+    options.addArguments("--remote-allow-origins=*");
     options.merge(desiredCapabilities);
     options.setHeadless(headless);
     options.addArguments("--no-default-browser-check");

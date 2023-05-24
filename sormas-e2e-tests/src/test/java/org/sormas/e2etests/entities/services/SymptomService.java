@@ -18,13 +18,14 @@
 
 package org.sormas.e2etests.entities.services;
 
+import static org.sormas.e2etests.entities.pojo.helpers.ShortUUIDGenerator.generateShortUUID;
 import static org.sormas.e2etests.enums.YesNoUnknownOptions.NO;
 import static org.sormas.e2etests.enums.YesNoUnknownOptions.UNKNOWN;
 import static org.sormas.e2etests.enums.YesNoUnknownOptions.YES;
 
 import com.google.inject.Inject;
 import java.time.LocalDate;
-import java.util.UUID;
+import lombok.SneakyThrows;
 import org.sormas.e2etests.entities.pojo.web.Symptoms;
 
 public class SymptomService {
@@ -32,6 +33,7 @@ public class SymptomService {
   @Inject
   public SymptomService() {}
 
+  @SneakyThrows
   public Symptoms buildEditGeneratedSymptoms() {
     return Symptoms.builder()
         .maximumBodyTemperatureInC("35.2")
@@ -70,12 +72,13 @@ public class SymptomService {
         .confusedDisoriented(YES.toString())
         .seizures(YES.toString())
         .otherNonHemorrhagicSymptoms(YES.toString())
-        .symptomsComments(UUID.randomUUID().toString())
+        .symptomsComments(generateShortUUID())
         .firstSymptom("Diarrhea")
         .dateOfSymptom(LocalDate.now().minusDays(2))
         .build();
   }
 
+  @SneakyThrows
   public Symptoms buildEditGeneratedSymptomsWithNoOptions() {
     return Symptoms.builder()
         .maximumBodyTemperatureInC("35.2")
@@ -114,10 +117,11 @@ public class SymptomService {
         .confusedDisoriented(NO.toString())
         .seizures(NO.toString())
         .otherComplications(NO.toString())
-        .symptomsComments(UUID.randomUUID().toString())
+        .symptomsComments(generateShortUUID())
         .build();
   }
 
+  @SneakyThrows
   public Symptoms buildEditGeneratedSymptomsWithUnknownOptions() {
     return Symptoms.builder()
         .maximumBodyTemperatureInC("35.2")
@@ -156,7 +160,7 @@ public class SymptomService {
         .confusedDisoriented(UNKNOWN.toString())
         .seizures(UNKNOWN.toString())
         .otherComplications(UNKNOWN.toString())
-        .symptomsComments(UUID.randomUUID().toString())
+        .symptomsComments(generateShortUUID())
         .build();
   }
 }

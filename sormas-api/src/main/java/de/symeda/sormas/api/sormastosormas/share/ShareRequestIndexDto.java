@@ -64,6 +64,19 @@ public class ShareRequestIndexDto extends AbstractUuidDto {
 		this.comment = comment;
 	}
 
+	public ShareRequestIndexDto(
+		String uuid,
+		Date creationDate,
+		ShareRequestDataType dataType,
+		ShareRequestStatus status,
+		String organizationId,
+		String senderFirstName,
+		String senderLastName,
+		boolean ownershipHandedOver,
+		String comment) {
+		this(uuid, creationDate, dataType, status, organizationId, senderFirstName + " " + senderLastName, ownershipHandedOver, comment);
+	}
+
 	public Date getCreationDate() {
 		return creationDate;
 	}

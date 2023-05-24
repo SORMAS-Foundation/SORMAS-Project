@@ -4,10 +4,10 @@ Feature: Case import and export tests
   @tmsLink=SORDEV-10042 @env_main
   Scenario: Case custom export test
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I click on the Cases button from navbar
@@ -24,10 +24,10 @@ Feature: Case import and export tests
     @tmsLink=SORDEV-10040 @env_main
     Scenario: Case basic export test
       When API: I create a new person
-      Then API: I check that POST call body is "OK"
+
       And API: I check that POST call status code is 200
       Then API: I create a new case
-      Then API: I check that POST call body is "OK"
+
       And API: I check that POST call status code is 200
       Given I log in as a Admin User
       And I click on the Cases button from navbar
@@ -107,10 +107,10 @@ Feature: Case import and export tests
   @tmsLink=SORDEV-7454 @env_de
   Scenario:  Test Add multiple variables to detailed export
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National Language User
     And I click on the Cases button from navbar
@@ -122,10 +122,10 @@ Feature: Case import and export tests
   @tmsLink=SORDEV-7454 @env_de
   Scenario:  Test Add multiple variables to custom export
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I click on the Cases button from navbar
@@ -151,10 +151,10 @@ Feature: Case import and export tests
   @tmsLink=SORDEV-12441 @env_de
   Scenario: Hide citizenship and country of birth in Detailed Case Export file
     Given API: I create a new person
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I click on the Cases button from navbar

@@ -26,6 +26,7 @@ import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.backend.caze.CaseJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -75,7 +76,7 @@ public class ContactJurisdictionPredicateValidator extends PredicateJurisdiction
 	}
 
 	@Override
-	protected Predicate isInJurisdictionOrOwned() {
+	public Predicate isRootInJurisdictionOrOwned() {
 		final Predicate reportedByCurrentUser = cb.and(
 			cb.isNotNull(joins.getRoot().get(Contact.REPORTING_USER)),
 			user != null
@@ -86,8 +87,13 @@ public class ContactJurisdictionPredicateValidator extends PredicateJurisdiction
 	}
 
 	@Override
-	protected Predicate isInJurisdiction() {
-		return super.isInJurisdiction();
+	protected Predicate getLimitedDiseasePredicate() {
+		return cb.equal(joins.getRoot().get(Contact.DISEASE), user.getLimitedDisease());
+	}
+
+	@Override
+	public Predicate isRootInJurisdiction() {
+		return super.isRootInJurisdiction();
 	}
 
 	@Override
@@ -140,8 +146,8 @@ public class ContactJurisdictionPredicateValidator extends PredicateJurisdiction
 		final Join contactJoin = sampleJoins.getContact();
 
 		SampleJurisdictionPredicateValidator sampleJurisdictionPredicateValidator = user != null
-				? SampleJurisdictionPredicateValidator.withoutAssociations(cb, sampleJoins, user)
-				: SampleJurisdictionPredicateValidator.withoutAssociations(cb, sampleJoins, userPath);
+			? SampleJurisdictionPredicateValidator.withoutAssociations(cb, sampleJoins, user)
+			: SampleJurisdictionPredicateValidator.withoutAssociations(cb, sampleJoins, userPath);
 
 		sampleContactSubquery.where(cb.and(cb.equal(contactJoin, joins.getRoot()), sampleJurisdictionPredicateValidator.inJurisdictionOrOwned()));
 		sampleContactSubquery.select(sampleRoot.get(Sample.ID));

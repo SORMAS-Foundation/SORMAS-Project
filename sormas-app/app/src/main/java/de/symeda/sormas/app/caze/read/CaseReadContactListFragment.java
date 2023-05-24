@@ -24,7 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -55,7 +55,7 @@ public class CaseReadContactListFragment extends BaseReadFragment<FragmentFormLi
 
 		((CaseReadActivity) getActivity()).showPreloader();
 		adapter = new ContactListAdapter();
-		ContactListViewModel model = ViewModelProviders.of(this).get(ContactListViewModel.class);
+		ContactListViewModel model = new ViewModelProvider(this).get(ContactListViewModel.class);
 		model.initializeViewModel(getActivityRootData());
 		model.getContacts().observe(this, contacts -> {
 			((CaseReadActivity) getActivity()).hidePreloader();

@@ -118,6 +118,7 @@ import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.PreviousCaseDto;
 import de.symeda.sormas.api.caze.ReinfectionDetail;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
@@ -198,7 +199,6 @@ import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
-import de.symeda.sormas.api.utils.BulkOperationResults;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -338,7 +338,6 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserReference;
 import de.symeda.sormas.backend.user.UserRoleFacadeEjb;
 import de.symeda.sormas.backend.user.UserRoleService;
-import de.symeda.sormas.backend.util.BulkOperationHelper;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -1525,7 +1524,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@RightsAllowed({
 		UserRight._CASE_EDIT })
-	public BulkOperationResults<String> saveBulkCase(
+	public Integer saveBulkCase(
 		List<String> caseUuidList,
 		@Valid CaseBulkEditData updatedCaseBulkEditData,
 		boolean diseaseChange,
@@ -1535,8 +1534,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		boolean surveillanceOfficerChange)
 		throws ValidationRuntimeException {
 
-		return BulkOperationHelper.executeWithLimits(caseUuidList, uuid -> {
-			Case caze = service.getByUuid(uuid);
+		int changedCases = 0;
+		for (String caseUuid : caseUuidList) {
+			Case caze = service.getByUuid(caseUuid);
 
 			if (service.isEditAllowed(caze)) {
 				CaseDataDto existingCaseDto = toDto(caze);
@@ -1549,13 +1549,15 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					outcomeChange,
 					surveillanceOfficerChange);
 				doSave(caze, true, existingCaseDto, true);
+				changedCases++;
 			}
-		});
+		}
+		return changedCases;
 	}
 
 	@RightsAllowed({
 		UserRight._CASE_EDIT })
-	public BulkOperationResults<String> saveBulkEditWithFacilities(
+	public Integer saveBulkEditWithFacilities(
 		List<String> caseUuidList,
 		@Valid CaseBulkEditData updatedCaseBulkEditData,
 		boolean diseaseChange,
@@ -1571,8 +1573,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			updatedCaseBulkEditData.getCommunity() != null ? communityService.getByUuid(updatedCaseBulkEditData.getCommunity().getUuid()) : null;
 		Facility newFacility = facilityService.getByUuid(updatedCaseBulkEditData.getHealthFacility().getUuid());
 
-		return BulkOperationHelper.executeWithLimits(caseUuidList, uuid -> {
-			Case caze = service.getByUuid(uuid);
+		int changedCases = 0;
+		for (String caseUuid : caseUuidList) {
+			Case caze = service.getByUuid(caseUuid);
 
 			if (service.isEditAllowed(caze)) {
 				CaseDataDto existingCaseDto = toDto(caze);
@@ -1593,8 +1596,11 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				caze.setHealthFacilityDetails(updatedCaseBulkEditData.getHealthFacilityDetails());
 				CaseLogic.handleHospitalization(toDto(caze), existingCaseDto, doTransfer);
 				doSave(caze, true, existingCaseDto, true);
+				changedCases++;
 			}
-		});
+		}
+
+		return changedCases;
 	}
 
 	private void updateCaseWithBulkData(
@@ -1663,6 +1669,19 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		caze.setFollowUpComment(dto.getFollowUpComment());
 		service.ensurePersisted(caze);
 		return toPseudonymizedDto(caze);
+	}
+
+	@Override
+	@RightsAllowed({
+		UserRight._CASE_EDIT,
+		UserRight._IMMUNIZATION_CREATE,
+		UserRight._IMMUNIZATION_EDIT,
+		UserRight._IMMUNIZATION_DELETE })
+	public void updateVaccinationStatus(CaseReferenceDto caseRef, VaccinationStatus status) {
+		Case caze = service.getByReferenceDto(caseRef);
+		caze.setVaccinationStatus(status);
+
+		service.ensurePersisted(caze);
 	}
 
 	private CaseDataDto caseSave(
