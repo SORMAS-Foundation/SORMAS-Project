@@ -153,6 +153,7 @@ public class EditCaseSteps implements En {
   public static final DateTimeFormatter DATE_FORMATTER_DE = DateTimeFormatter.ofPattern("d.M.yyyy");
   public static final String userDirPath = System.getProperty("user.dir");
   public static String caseUuid;
+  public static String externalUUID;
 
   @SneakyThrows
   @Inject
@@ -2606,6 +2607,14 @@ public class EditCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SEND_TO_REPORTING_TOOL_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_ACTION);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(REPORTING_TOOL_MESSAGE);
+        });
+
+    And(
+        "^I collect case external UUID from Edit Case page$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(EXTERNAL_ID_INPUT);
+          externalUUID = webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT);
+          System.out.println(externalUUID);
         });
   }
 

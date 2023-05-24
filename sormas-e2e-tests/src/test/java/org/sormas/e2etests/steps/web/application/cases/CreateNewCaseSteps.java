@@ -1567,7 +1567,6 @@ public class CreateNewCaseSteps implements En {
           fillFirstName(survnetCase.getFirstName());
           fillLastName(survnetCase.getLastName());
           selectSex(survnetCase.getSex());
-          fillExternalId(survnetCase.getExternalId());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
         });

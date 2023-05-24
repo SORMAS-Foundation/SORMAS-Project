@@ -595,7 +595,6 @@ public class CaseService {
         .firstName(firstName)
         .lastName(lastName)
         .sex(GenderValues.getRandomGenderDE())
-        .externalId(generateShortUUID())
         .build();
   }
 }

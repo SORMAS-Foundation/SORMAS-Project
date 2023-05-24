@@ -1,24 +1,26 @@
 package org.sormas.e2etests.steps.web.application.survnet;
 
 import cucumber.api.java8.En;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.jdom2.Document;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.helpers.parsers.XMLParser;
 import org.sormas.e2etests.steps.web.application.cases.CreateNewCaseSteps;
+import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
 import org.testng.asserts.SoftAssert;
+
+import javax.inject.Inject;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Slf4j
 public class SurvNetSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-  public static final Document xmlFile =
+  public static Document xmlFile =
       XMLParser.getDocument(
-          "/srv/dockerdata/jenkins_new/sormas-files/report.xml");
+          "/srv/dockerdata/jenkins_new/sormas-files/test_" + EditCaseSteps.externalUUID +".xml");
 
   @Inject
   public SurvNetSteps(WebDriverHelpers webDriverHelpers, SoftAssert softly) {
