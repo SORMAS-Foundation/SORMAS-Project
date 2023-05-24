@@ -67,7 +67,7 @@ public class ContactInfoLayout extends AbstractInfoLayout<ContactDto> {
 			addDescLabel(
 				firstColumn,
 				ContactDto.PERSON,
-				contactDto.getPerson(),
+				contactDto.getPerson().buildCaption(),
 				I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.PERSON));
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
