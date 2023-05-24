@@ -582,6 +582,7 @@ public class CaseService {
         .build();
   }
 
+  @SneakyThrows
   public Case buildCaseForSurvnetFeature() {
     firstName = faker.name().firstName();
     lastName = faker.name().lastName();
@@ -594,6 +595,7 @@ public class CaseService {
         .firstName(firstName)
         .lastName(lastName)
         .sex(GenderValues.getRandomGenderDE())
+        .externalId(generateShortUUID())
         .build();
   }
 }
