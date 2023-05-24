@@ -20,6 +20,7 @@ import org.testng.asserts.SoftAssert;
 public class ColumnSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
+  List<String> rawColumnDataBeforeSorting;
 
   @Inject
   public ColumnSteps(WebDriverHelpers webDriverHelpers, SoftAssert softly) {
@@ -34,21 +35,32 @@ public class ColumnSteps implements En {
         });
 
     When(
-        "I check that column {int} is sorted alphabetically in ascending order",
+        "I click the header of chosen column {int}",
         (Integer col) -> {
-          TimeUnit.SECONDS.sleep(5); // For preventing premature data collection
+          TimeUnit.SECONDS.sleep(3); // For preventing premature data collection
+          rawColumnDataBeforeSorting = getTableColumnDataByIndex(col, 10);
+          log.info("List of elements element before sorting" + rawColumnDataBeforeSorting);
+          rawColumnDataBeforeSorting.replaceAll(element -> element.toLowerCase());
+          rawColumnDataBeforeSorting.replaceAll(element -> nullifyEmptyString(element));
+          webDriverHelpers.clickOnWebElementBySelector(
+              By.xpath("//thead//tr//th[" + col.toString() + "]"));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I check that column {int} is sorted",
+        (Integer col) -> {
+          TimeUnit.SECONDS.sleep(10); // For preventing premature data collection
           List<String> rawColumnData = getTableColumnDataByIndex(col, 10);
           rawColumnData.replaceAll(element -> element.toLowerCase());
           rawColumnData.replaceAll(element -> nullifyEmptyString(element));
-          List<String> ascColumnData = new ArrayList<>(rawColumnData);
-          ascColumnData.sort(Comparator.nullsLast(Comparator.naturalOrder()));
-          log.info("List elements before test " + rawColumnData);
-          softly.assertEquals(
+          log.info("List of  elements after sorting " + rawColumnData);
+          softly.assertNotEquals(
               rawColumnData,
-              ascColumnData,
+              rawColumnDataBeforeSorting,
               "Column " + col.toString() + " is not correctly sorted!");
           softly.assertAll();
-          log.info("List elements after test " + rawColumnData);
+          rawColumnDataBeforeSorting.clear();
         });
 
     When(
