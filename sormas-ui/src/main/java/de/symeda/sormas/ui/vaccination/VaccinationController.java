@@ -184,8 +184,7 @@ public class VaccinationController {
 	}
 
 	public static void updateVaccinationStatus(CaseDataDto caseDataDto) {
-		caseDataDto.setVaccinationStatus(null);
-		getCaseFacade().save(caseDataDto);
+		getCaseFacade().updateVaccinationStatus(caseDataDto.toReference(), null);
 	}
 
 	public CommitDiscardWrapperComponent<VaccinationEditForm> getVaccinationEditComponent(
