@@ -28,7 +28,7 @@ public class SurvNetSteps implements En {
         () -> {
           Document xmlFile =
                     XMLParser.getDocument(
-                            "/srv/dockerdata/jenkins_new/sormas-files/report.xml");
+                            "/srv/dockerdata/jenkins_new/sormas-files/test_" + EditCaseSteps.externalUUID.substring(1,37) + ".xml");
           LocalDate expectedDate =  CreateNewCaseSteps.survnetCase.getDateOfReport();
           LocalDate dateOfReport = getReportingDate(xmlFile);
           softly.assertEquals(dateOfReport, expectedDate, "Date of report is incorrect!");
@@ -40,7 +40,7 @@ public class SurvNetSteps implements En {
         () -> {
           Document xmlFile =
                     XMLParser.getDocument(
-                            "/srv/dockerdata/jenkins_new/sormas-files/report.xml");
+                            "/srv/dockerdata/jenkins_new/sormas-files/test_" + EditCaseSteps.externalUUID.substring(1,37) + ".xml");
           String sex = getSexDE(xmlFile);
           String expectedSex = CreateNewCaseSteps.survnetCase.getSex();
           softly.assertEquals(sex, expectedSex, "Sex is incorrect!");
