@@ -2626,7 +2626,6 @@ public class EditCaseSteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(EXTERNAL_ID_INPUT);
           externalUUID = webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT);
-          System.out.println(externalUUID);
         });
   }
 
