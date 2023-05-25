@@ -18,9 +18,6 @@ public class SurvNetSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-  public static Document xmlFile =
-      XMLParser.getDocument(
-          "/srv/dockerdata/jenkins_new/sormas-files/test_" + EditCaseSteps.externalUUID +".xml");
 
   @Inject
   public SurvNetSteps(WebDriverHelpers webDriverHelpers, SoftAssert softly) {
@@ -29,6 +26,9 @@ public class SurvNetSteps implements En {
     Then(
         "I check if date of report in SurvNet generated XML file is correct",
         () -> {
+          Document xmlFile =
+                    XMLParser.getDocument(
+                            "/srv/dockerdata/jenkins_new/sormas-files/test_" + EditCaseSteps.externalUUID +".xml");
           LocalDate expectedDate =  CreateNewCaseSteps.survnetCase.getDateOfReport();
           LocalDate dateOfReport = getReportingDate(xmlFile);
           softly.assertEquals(dateOfReport, expectedDate, "Date of report is incorrect!");
@@ -38,6 +38,9 @@ public class SurvNetSteps implements En {
     And(
         "^I check if sex in SurvNet generated XML file is correct$",
         () -> {
+          Document xmlFile =
+                    XMLParser.getDocument(
+                            "/srv/dockerdata/jenkins_new/sormas-files/test_" + EditCaseSteps.externalUUID +".xml");
           String sex = getSexDE(xmlFile);
           String expectedSex = CreateNewCaseSteps.survnetCase.getSex();
           softly.assertEquals(sex, expectedSex, "Sex is incorrect!");
