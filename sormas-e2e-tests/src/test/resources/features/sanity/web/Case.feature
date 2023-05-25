@@ -1272,7 +1272,7 @@ Feature: Case end to end tests
     Then I click on logout button from navbar
     Then I log in as a National User
     Then I open last edited case by API via URL navigation
-    Then I check if editable fields are read only for an archived case
+    Then I check if editable fields are enabled for the case in view
 
   @env_main @tmsLink=SORDEV-7453
   Scenario: Check cases order after case edit
