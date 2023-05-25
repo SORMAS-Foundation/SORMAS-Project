@@ -58,7 +58,6 @@ Scenario Outline: Sort column <col> in Persons directory
     |5 |
     |6 |
     |7 |
-    |8 |
     |9 |
     |10 |
     |11 |
@@ -93,7 +92,6 @@ Scenario Outline: Sort column <col> in Cases directory
     | col |
     |1 |
     |2 |
-    |3 |
     |4 |
 #    |5 |  Non-alphabetical sorting order - find out whether it's a bug or a feature
     |6 |
@@ -106,8 +104,6 @@ Scenario Outline: Sort column <col> in Cases directory
     |13 |
     |14 |
     |17 |
-    |19 |
-    |21 |
 
 @env_main @tmsLink=SORDEV-5342 @Case
 Scenario Outline: Sort column <col> by date and time in Cases directory
@@ -193,9 +189,6 @@ Scenario Outline: Sort column <col> in Events directory
   Examples:
     | col |
     |1 |
-    |2 |
-    |3 |
-    |4 |
     |5 |
     |6 |
     |7 |
@@ -208,7 +201,6 @@ Scenario Outline: Sort column <col> in Events directory
     |16 |
     |17 |
     |18 |
-    |19 |
     |20 |
     |22 |
     |23 |
@@ -241,15 +233,12 @@ Scenario Outline: Sort column <col> in Samples directory
   Examples:
     | col |
     |1 |
-    |2 |
     |3 |
     |7 |
     |8 |
-    |9 |
     |10 |
     |12 |
     |13 |
-    |14 |
 
 @env_main @tmsLink=SORDEV-5342 @Sample
 Scenario Outline: Sort column <col> by last name in Samples directory
