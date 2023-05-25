@@ -1845,7 +1845,7 @@ public class EditCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_ACTION);
         });
     When(
-        "I check if editable fields are read only for an archived case",
+        "I check if editable fields are enabled for the case in view",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
           TimeUnit.SECONDS.sleep(3);
@@ -1968,6 +1968,16 @@ public class EditCaseSteps implements En {
         () -> {
           webDriverHelpers.scrollToElement(DELETE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
+        });
+
+    When(
+        "I check Delete button from case is enabled",
+        () -> {
+          webDriverHelpers.scrollToElement(DELETE_BUTTON);
+          softly.assertFalse(
+              webDriverHelpers.isElementEnabled(DELETE_BUTTON),
+              "Delete case button is not enabled");
+          softly.assertAll();
         });
 
     When(
@@ -2588,6 +2598,8 @@ public class EditCaseSteps implements En {
               webDriverHelpers.isElementVisibleWithTimeout(ERROR_IN_HANDOVER_HEADER_DE, 3));
           softly.assertAll();
         });
+
+    // TODO -> refactor, bad approach to keep logic here for 2 pages
     And(
         "^I check if editable fields are read only for shared case/contact$",
         () -> {
