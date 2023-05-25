@@ -185,10 +185,13 @@ public final class DtoHelper {
 		return target;
 	}
 
+	public static <T extends AbstractDomainObject> T fillOrBuildEntity(EntityDto source, T target, Supplier<T> newEntity, boolean checkChangeDate) {
+		return fillOrBuildEntity(source, target, newEntity, checkChangeDate, false);
+	}
 	/**
 	 * @return The target entity or a new entity of target was null
 	 */
-	public static <T extends AbstractDomainObject> T fillOrBuildEntity(EntityDto source, T target, Supplier<T> newEntity, boolean checkChangeDate) {
+	public static <T extends AbstractDomainObject> T fillOrBuildEntity(EntityDto source, T target, Supplier<T> newEntity, boolean checkChangeDate, boolean allowUuidOverwrite) {
 		if (target == null) {
 			target = newEntity.get();
 
@@ -204,7 +207,7 @@ public final class DtoHelper {
 				target.setUuid(uuid);
 			} else if (DataHelper.isNullOrEmpty(source.getUuid())) {
 				// target has a uuid. do nothing -> gracefully handle missing uuids of children
-			} else if (!target.getUuid().equals(source.getUuid())) {
+			} else if (!target.getUuid().equals(source.getUuid()) && !allowUuidOverwrite) {
 				throw new MismatchUuidException(target.getUuid(), target.getClass(), source.getUuid());
 			}
 		}

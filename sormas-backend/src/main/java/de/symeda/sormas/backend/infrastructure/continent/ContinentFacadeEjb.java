@@ -225,8 +225,8 @@ public class ContinentFacadeEjb
 	}
 
 	@Override
-	protected Continent fillOrBuildEntity(@NotNull ContinentDto source, Continent target, boolean checkChangeDate) {
-		target = DtoHelper.fillOrBuildEntity(source, target, Continent::new, checkChangeDate);
+	protected Continent fillOrBuildEntity(@NotNull ContinentDto source, Continent target, boolean checkChangeDate, boolean allowUuidOverwrite) {
+		target = DtoHelper.fillOrBuildEntity(source, target, Continent::new, checkChangeDate, allowUuidOverwrite);
 
 		target.setDefaultName(source.getDefaultName());
 		target.setArchived(source.isArchived());
@@ -243,9 +243,7 @@ public class ContinentFacadeEjb
 		}
 
 		@Inject
-		protected ContinentFacadeEjbLocal(
-			ContinentService service,
-			FeatureConfigurationFacadeEjbLocal featureConfiguration) {
+		protected ContinentFacadeEjbLocal(ContinentService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
 			super(service, featureConfiguration);
 		}
 	}

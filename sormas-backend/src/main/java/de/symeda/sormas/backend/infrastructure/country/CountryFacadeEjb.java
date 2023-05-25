@@ -95,11 +95,11 @@ public class CountryFacadeEjb
 		boolean allowMerge,
 		boolean includeArchived,
 		boolean checkChangeDate,
-		String duplicateErrorMessageProperty) {
+		boolean allowUuidOverwrite) {
 		if (StringUtils.isBlank(dtoToSave.getIsoCode())) {
 			throw new EmptyValueException(I18nProperties.getValidationError(Validations.importCountryEmptyIso));
 		}
-		return super.doSave(dtoToSave, allowMerge, includeArchived, checkChangeDate, duplicateErrorMessageProperty);
+		return super.doSave(dtoToSave, allowMerge, includeArchived, checkChangeDate, allowUuidOverwrite);
 	}
 
 	@Override
@@ -266,8 +266,8 @@ public class CountryFacadeEjb
 	}
 
 	@Override
-	protected Country fillOrBuildEntity(@NotNull CountryDto source, Country target, boolean checkChangeDate) {
-		target = DtoHelper.fillOrBuildEntity(source, target, Country::new, checkChangeDate);
+	protected Country fillOrBuildEntity(@NotNull CountryDto source, Country target, boolean checkChangeDate, boolean allowUuidOverwrite) {
+		target = DtoHelper.fillOrBuildEntity(source, target, Country::new, checkChangeDate, allowUuidOverwrite);
 
 		target.setDefaultName(source.getDefaultName());
 		target.setArchived(source.isArchived());

@@ -585,9 +585,9 @@ public class FacilityFacadeEjb
 	}
 
 	@Override
-	protected Facility fillOrBuildEntity(@NotNull FacilityDto source, Facility target, boolean checkChangeDate) {
+	protected Facility fillOrBuildEntity(@NotNull FacilityDto source, Facility target, boolean checkChangeDate, boolean allowUuidOverwrite) {
 
-		target = DtoHelper.fillOrBuildEntity(source, target, Facility::new, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, Facility::new, checkChangeDate, allowUuidOverwrite);
 
 		target.setName(source.getName());
 
