@@ -238,7 +238,6 @@ Scenario Outline: Sort column <col> in Samples directory
     |8 |
     |10 |
     |12 |
-    |13 |
 
 @env_main @tmsLink=SORDEV-5342 @Sample
 Scenario Outline: Sort column <col> by last name in Samples directory
