@@ -49,6 +49,7 @@ public class CaseSteps implements En {
                   apiState.getLastCreatedPerson(), creationTime);
           caseHelper.createCase(caze);
           apiState.setCreatedCase(caze);
+          System.out.print("Response UUID:  " + apiState.getCreatedCase().getUuid());
         });
 
     When(
