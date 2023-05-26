@@ -1159,7 +1159,7 @@ Feature: Contacts end to end tests
         Then I click on Execute Automatic Deletion button
         And I wait 30 seconds for system reaction
         Then I check if created contact is available in API
-        And API: I check that POST call status code is 200
+        And API: I check that GET call status code is 200
         And I click on the Contacts button from navbar
         And I filter with last created contact using contact UUID
         And I check that number of displayed contact results is 1

@@ -1785,7 +1785,8 @@ Feature: Case end to end tests
     And I wait 30 seconds for system reaction
     Then I click on the Cases button from navbar
     And I check if created case is available in API
-    And API: I check that POST call status code is 204
+    #And API: I check that POST call status code is 204
+    And API: I check that GET call status code is 204
     Then I filter with first Case ID
     And I check that number of displayed cases results is 0
 
@@ -1814,7 +1815,7 @@ Feature: Case end to end tests
     And I wait 30 seconds for system reaction
     Then I click on the Cases button from navbar
     And I check if created case is available in API
-    And API: I check that POST call status code is 200
+    And API: I check that GET call status code is 200
     Then I filter with first Case ID
     And I check that number of displayed cases results is 1
 
