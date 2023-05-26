@@ -213,12 +213,13 @@ public final class DtoHelper {
 				target.setUuid(uuid);
 			} else if (DataHelper.isNullOrEmpty(source.getUuid())) {
 				// target has a uuid. do nothing -> gracefully handle missing uuids of children
-			} else if (!target.getUuid().equals(source.getUuid()))
+			} else if (!target.getUuid().equals(source.getUuid())) {
 				if (allowUuidOverwrite) {
 					target.setUuid(source.getUuid());
 				} else {
 					throw new MismatchUuidException(target.getUuid(), target.getClass(), source.getUuid());
 				}
+			}
 		}
 
 		DtoHelper.validateDto(source, target, checkChangeDate);
