@@ -188,10 +188,16 @@ public final class DtoHelper {
 	public static <T extends AbstractDomainObject> T fillOrBuildEntity(EntityDto source, T target, Supplier<T> newEntity, boolean checkChangeDate) {
 		return fillOrBuildEntity(source, target, newEntity, checkChangeDate, false);
 	}
+
 	/**
 	 * @return The target entity or a new entity of target was null
 	 */
-	public static <T extends AbstractDomainObject> T fillOrBuildEntity(EntityDto source, T target, Supplier<T> newEntity, boolean checkChangeDate, boolean allowUuidOverwrite) {
+	public static <T extends AbstractDomainObject> T fillOrBuildEntity(
+		EntityDto source,
+		T target,
+		Supplier<T> newEntity,
+		boolean checkChangeDate,
+		boolean allowUuidOverwrite) {
 		if (target == null) {
 			target = newEntity.get();
 
@@ -207,9 +213,12 @@ public final class DtoHelper {
 				target.setUuid(uuid);
 			} else if (DataHelper.isNullOrEmpty(source.getUuid())) {
 				// target has a uuid. do nothing -> gracefully handle missing uuids of children
-			} else if (!target.getUuid().equals(source.getUuid()) && !allowUuidOverwrite) {
-				throw new MismatchUuidException(target.getUuid(), target.getClass(), source.getUuid());
-			}
+			} else if (!target.getUuid().equals(source.getUuid()))
+				if (allowUuidOverwrite) {
+					target.setUuid(source.getUuid());
+				} else {
+					throw new MismatchUuidException(target.getUuid(), target.getClass(), source.getUuid());
+				}
 		}
 
 		DtoHelper.validateDto(source, target, checkChangeDate);
