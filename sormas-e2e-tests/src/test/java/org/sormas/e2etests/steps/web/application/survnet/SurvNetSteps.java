@@ -24,7 +24,7 @@ public class SurvNetSteps implements En {
     this.webDriverHelpers = webDriverHelpers;
 
     Then(
-        "I check if date of report in SurvNet generated XML file is correct",
+        "I check if date of report in SORMAS generated XML file is correct",
         () -> {
           Document xmlFile =
                     XMLParser.getDocument(
@@ -36,7 +36,7 @@ public class SurvNetSteps implements En {
         });
 
     And(
-        "^I check if sex in SurvNet generated XML file is correct$",
+        "^I check if sex in SORMAS generated XML file is correct$",
         () -> {
           Document xmlFile =
                     XMLParser.getDocument(
