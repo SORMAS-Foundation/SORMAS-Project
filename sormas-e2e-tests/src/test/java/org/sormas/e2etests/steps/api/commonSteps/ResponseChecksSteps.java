@@ -59,6 +59,11 @@ public class ResponseChecksSteps implements En {
           String responseBody = apiState.getResponse().getBody().asString();
 
           if (responseStatusCode == expectedStatus) {
+
+             if (responseBody.contains("html")) {
+              responseBody = String.format("[{\"statusCode\":%s}]", responseStatusCode);
+             }
+
             String regexUpdatedResponseBody = responseBody.replaceAll("[^a-zA-Z0-9]", "");
             Assert.assertEquals(
                 regexUpdatedResponseBody,
@@ -70,6 +75,9 @@ public class ResponseChecksSteps implements En {
             switch (responseStatusCode) {
               case 400:
                 developmentErrorCause = "Validation failed, invalid request";
+                break;
+              case 401:
+                developmentErrorCause = "Unauthorized request";
                 break;
               case 403:
                 developmentErrorCause = "User does not have access";

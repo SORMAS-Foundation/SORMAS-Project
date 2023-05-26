@@ -21,10 +21,8 @@ import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sormastosormas.share.ShareRequestCriteria;
-import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.ViewModelProviders;
-import de.symeda.sormas.ui.task.TasksView;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -77,14 +75,7 @@ public class ShareRequestsView extends AbstractView {
 	}
 
 	private ShareRequestCriteria getCriteria() {
-		ShareRequestCriteria criteria = ViewModelProviders.of(ShareRequestsView.class).get(ShareRequestCriteria.class);
-
-		if (!ViewModelProviders.of(TasksView.class).has(TaskCriteria.class)) {
-			// init default filter
-			criteria = new ShareRequestCriteria();
-			ViewModelProviders.of(ShareRequestsView.class).get(ShareRequestCriteria.class, criteria);
-		}
-		return criteria;
+		return ViewModelProviders.of(ShareRequestsView.class).get(ShareRequestCriteria.class);
 	}
 
 }

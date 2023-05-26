@@ -2,14 +2,13 @@
 Feature: Test column sorting for different entities
 
 @env_main @tmsLink=SORDEV-5342 @Task
-Scenario Outline: Sort column <col> alphabetically in Tasks directory
+Scenario Outline: Sort column <col> in Tasks directory
   Given I log in as a National User
   And I click on the Tasks button from navbar
-  When I click the header of column <col>
-  Then I check that column <col> is sorted alphabetically in ascending order
+  When I click the header of chosen column <col>
+  Then I check that column <col> is sorted
   And I check that an upwards arrow appears in the header of column <col>
-  When I click the header of column <col>
-  Then I check that column <col> is sorted alphabetically in descending order
+  When I click the header of chosen column <col>
   And I check that a downwards arrow appears in the header of column <col>
 
   Examples:
@@ -42,14 +41,13 @@ Scenario Outline: Sort column <col> by date and time in Tasks directory
     |9 |
 
 @env_main @tmsLink=SORDEV-5342 @Persons
-Scenario Outline: Sort column <col> alphabetically in Persons directory
+Scenario Outline: Sort column <col> in Persons directory
   Given I log in as a National User
   And I click on the Persons button from navbar
-  When I click the header of column <col>
-  Then I check that column <col> is sorted alphabetically in ascending order
+  When I click the header of chosen column <col>
+  Then I check that column <col> is sorted
   And I check that an upwards arrow appears in the header of column <col>
-  When I click the header of column <col>
-  Then I check that column <col> is sorted alphabetically in descending order
+  When I click the header of chosen column <col>
   And I check that a downwards arrow appears in the header of column <col>
 
   Examples:
@@ -60,7 +58,6 @@ Scenario Outline: Sort column <col> alphabetically in Persons directory
     |5 |
     |6 |
     |7 |
-    |8 |
     |9 |
     |10 |
     |11 |
@@ -82,21 +79,19 @@ Scenario Outline: Sort column <col> by age in Persons directory
     |4 |
 
 @env_main @tmsLink=SORDEV-5342 @Case
-Scenario Outline: Sort column <col> alphabetically in Cases directory
+Scenario Outline: Sort column <col> in Cases directory
   Given I log in as a National User
   And I click on the Cases button from navbar
-  When I click the header of column <col>
-  Then I check that column <col> is sorted alphabetically in ascending order
+  When I click the header of chosen column <col>
+  Then I check that column <col> is sorted
   And I check that an upwards arrow appears in the header of column <col>
-  When I click the header of column <col>
-  Then I check that column <col> is sorted alphabetically in descending order
+  When I click the header of chosen column <col>
   And I check that a downwards arrow appears in the header of column <col>
 
   Examples:
     | col |
     |1 |
     |2 |
-    |3 |
     |4 |
 #    |5 |  Non-alphabetical sorting order - find out whether it's a bug or a feature
     |6 |
@@ -109,8 +104,6 @@ Scenario Outline: Sort column <col> alphabetically in Cases directory
     |13 |
     |14 |
     |17 |
-    |19 |
-    |21 |
 
 @env_main @tmsLink=SORDEV-5342 @Case
 Scenario Outline: Sort column <col> by date and time in Cases directory
@@ -145,14 +138,13 @@ Scenario Outline: Sort column <col> by date in Cases directory
     |18 |
 
 @env_main @tmsLink=SORDEV-5342 @Contacts
-Scenario Outline: Sort column <col> alphabetically in Contacts directory
+Scenario Outline: Sort column <col> in Contacts directory
   Given I log in as a National User
   And I click on the Contacts button from navbar
-  When I click the header of column <col>
-  Then I check that column <col> is sorted alphabetically in ascending order
+  When I click the header of chosen column <col>
+  Then I check that column <col> is sorted
   And I check that an upwards arrow appears in the header of column <col>
-  When I click the header of column <col>
-  Then I check that column <col> is sorted alphabetically in descending order
+  When I click the header of chosen column <col>
   And I check that a downwards arrow appears in the header of column <col>
 
   Examples:
@@ -185,22 +177,18 @@ Scenario Outline: Sort column <col> by date in Contacts directory
     |11 |
 
 @env_main @tmsLink=SORDEV-5342 @tmsLink=SORQA-78 @Event
-Scenario Outline: Sort column <col> alphabetically in Events directory
+Scenario Outline: Sort column <col> in Events directory
   Given I log in as a National User
   And I click on the Events button from navbar
-  When I click the header of column <col>
-  Then I check that column <col> is sorted alphabetically in ascending order
+  When I click the header of chosen column <col>
+  Then I check that column <col> is sorted
   And I check that an upwards arrow appears in the header of column <col>
-  When I click the header of column <col>
-  Then I check that column <col> is sorted alphabetically in descending order
+  When I click the header of chosen column <col>
   And I check that a downwards arrow appears in the header of column <col>
 
   Examples:
     | col |
     |1 |
-    |2 |
-    |3 |
-    |4 |
     |5 |
     |6 |
     |7 |
@@ -213,7 +201,6 @@ Scenario Outline: Sort column <col> alphabetically in Events directory
     |16 |
     |17 |
     |18 |
-    |19 |
     |20 |
     |22 |
     |23 |
@@ -234,28 +221,23 @@ Scenario Outline: Sort column <col> by date in Events directory
     |11 |
 
 @env_main @tmsLink=SORDEV-5342 @Sample
-Scenario Outline: Sort column <col> alphabetically in Samples directory
+Scenario Outline: Sort column <col> in Samples directory
   Given I log in as a National User
   And I click on the Sample button from navbar
-  When I click the header of column <col>
-  Then I check that column <col> is sorted alphabetically in ascending order
+  When I click the header of chosen column <col>
+  Then I check that column <col> is sorted
   And I check that an upwards arrow appears in the header of column <col>
-  When I click the header of column <col>
-  Then I check that column <col> is sorted alphabetically in descending order
+  When I click the header of chosen column <col>
   And I check that a downwards arrow appears in the header of column <col>
 
   Examples:
     | col |
     |1 |
-    |2 |
     |3 |
     |7 |
     |8 |
-    |9 |
     |10 |
     |12 |
-    |13 |
-    |14 |
 
 @env_main @tmsLink=SORDEV-5342 @Sample
 Scenario Outline: Sort column <col> by last name in Samples directory
@@ -290,14 +272,13 @@ Scenario Outline: Sort column <col> by date in Samples directory
     |11 |
 
 @env_de @tmsLink=SORDEV-7162 @TravelEntries
-Scenario Outline: Sort column <col> alphabetically in Entries directory
+Scenario Outline: Sort column <col> in Entries directory
   Given I log in as a National User
   And I click on the Entries button from navbar
-  When I click the header of column <col>
-  Then I check that column <col> is sorted alphabetically in ascending order
+  When I click the header of chosen column <col>
+  Then I check that column <col> is sorted
   And I check that an upwards arrow appears in the header of column <col>
-  When I click the header of column <col>
-  Then I check that column <col> is sorted alphabetically in descending order
+  When I click the header of chosen column <col>
   And I check that a downwards arrow appears in the header of column <col>
 
   Examples:

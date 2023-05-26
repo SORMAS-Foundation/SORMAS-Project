@@ -118,6 +118,7 @@ import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.PreviousCaseDto;
 import de.symeda.sormas.api.caze.ReinfectionDetail;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
@@ -1668,6 +1669,19 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		caze.setFollowUpComment(dto.getFollowUpComment());
 		service.ensurePersisted(caze);
 		return toPseudonymizedDto(caze);
+	}
+
+	@Override
+	@RightsAllowed({
+		UserRight._CASE_EDIT,
+		UserRight._IMMUNIZATION_CREATE,
+		UserRight._IMMUNIZATION_EDIT,
+		UserRight._IMMUNIZATION_DELETE })
+	public void updateVaccinationStatus(CaseReferenceDto caseRef, VaccinationStatus status) {
+		Case caze = service.getByReferenceDto(caseRef);
+		caze.setVaccinationStatus(status);
+
+		service.ensurePersisted(caze);
 	}
 
 	private CaseDataDto caseSave(

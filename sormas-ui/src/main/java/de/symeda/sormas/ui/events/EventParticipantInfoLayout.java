@@ -96,7 +96,7 @@ public class EventParticipantInfoLayout extends AbstractInfoLayout<EventParticip
 		addDescLabel(
 			secondColumn,
 			EventParticipantDto.PERSON,
-			personDto,
+			personDto.buildCaption(),
 			I18nProperties.getPrefixCaption(EventParticipantDto.I18N_PREFIX, EventParticipantDto.PERSON));
 
 		final HorizontalLayout ageSexRow = new HorizontalLayout();

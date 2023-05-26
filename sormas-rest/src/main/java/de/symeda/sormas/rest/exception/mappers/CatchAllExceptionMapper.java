@@ -31,7 +31,10 @@ public class CatchAllExceptionMapper implements ExceptionMapper<Exception> {
 
 	@Override
 	public Response toResponse(Exception exception) {
-		logger.warn("A specialized ExceptionMapper for {} is missing.", exception.getClass().getName());
+		logger.warn(
+			"A specialized ExceptionMapper for {} is missing. "
+				+ "If the mapper exists, make sure the exception class is declared as a javax.ejb.ApplicationException.",
+			exception.getClass().getName());
 		String message = exception.getLocalizedMessage();
 		return Response.status(HttpStatus.SC_INTERNAL_SERVER_ERROR)
 			.entity(StringUtils.isNotBlank(message) ? message : "An exception occurred while processing the request.")
