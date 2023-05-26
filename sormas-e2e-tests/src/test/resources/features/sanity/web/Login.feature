@@ -56,6 +56,7 @@ Feature: Login with different type of users
       | Community Officer             |
       | Hospital Informant            |
       | Clinician                     |
+      | hopaaaaaa                     |
 
   @env_keycloak @LoginKeycloak
   Scenario Outline: Login with <user> user on Keycloak Environment
