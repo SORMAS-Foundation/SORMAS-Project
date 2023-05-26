@@ -410,7 +410,9 @@ public class CreateNewCaseSteps implements En {
     When(
         "I check if created case is available in API",
         () -> {
-          getCaseByUUID(casesUUID.get(0));
+          // getCaseByUUID(casesUUID.get(0));
+          getCaseByUUID(apiState.getCreatedCase().getUuid());
+          System.out.print("Response UUID:  " + apiState.getCreatedCase().getUuid());
         });
 
     When(
