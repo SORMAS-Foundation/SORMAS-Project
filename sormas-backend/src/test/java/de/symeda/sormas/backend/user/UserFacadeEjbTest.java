@@ -37,6 +37,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityNotFoundException;
 import javax.validation.ValidationException;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -54,6 +55,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
@@ -449,5 +451,29 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 				equalTo(limitedSurveillanceOfficer.toReference()),
 				equalTo(generalRestUser.toReference())));
 
+	}
+
+	@Test
+	void getUserRights() {
+
+		RDCF rdcf = creator.createRDCF();
+		UserDto userWithoutAccess = creator.createSurveillanceOfficer(rdcf);
+		UserRight[] surveillanceOfficerRights =
+			UserRole.getUserRights(Collections.singletonList(creator.getUserRole(SURVEILLANCE_OFFICER))).toArray(new UserRight[] {});
+
+		// Successfully retrieve user rights of other user
+		loginWith(nationalAdmin);
+		List<UserRight> userRights = getUserFacade().getUserRights(userWithoutAccess.getUuid());
+		assertThat(userRights, containsInAnyOrder(surveillanceOfficerRights));
+		// Successfully retrieve own user rights with user without access to the USER_VIEW and USERROLE_VIEW rights
+		loginWith(userWithoutAccess);
+		userRights = getUserFacade().getUserRights(null);
+		assertThat(userRights, containsInAnyOrder(surveillanceOfficerRights));
+		// Prevent users without access from retrieving user rights of other users
+		assertThrows(AccessDeniedException.class, () -> getUserFacade().getUserRights(nationalAdmin.getUuid()));
+
+		// Uuid which does not exist in the system
+		loginWith(nationalAdmin);
+		assertThrows(EntityNotFoundException.class, () -> getUserFacade().getUserRights("12345"));
 	}
 }

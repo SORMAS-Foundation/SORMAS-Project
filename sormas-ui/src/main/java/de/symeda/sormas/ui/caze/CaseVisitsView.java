@@ -150,7 +150,11 @@ public class CaseVisitsView extends AbstractCaseView {
 		criteria.caze(getCaseRef());
 
 		if (grid == null) {
-			grid = new VisitGrid(criteria, isEditAllowed() && UserProvider.getCurrent().hasAllUserRights(UserRight.CASE_EDIT, UserRight.VISIT_EDIT));
+			grid = new VisitGrid(
+				criteria,
+				UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed(), UserRight.CASE_EDIT, UserRight.VISIT_EDIT),
+				UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed(), UserRight.VISIT_DELETE));
+
 			gridLayout = new DetailSubComponentWrapper(() -> null);
 			gridLayout.setSizeFull();
 			gridLayout.setMargin(true);

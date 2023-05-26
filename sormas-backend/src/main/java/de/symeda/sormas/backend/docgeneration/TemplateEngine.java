@@ -46,7 +46,7 @@ import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document.OutputSettings;
-import org.jsoup.safety.Whitelist;
+import org.jsoup.safety.Safelist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,7 +68,7 @@ import fr.opensagres.xdocreport.template.velocity.internal.VelocityTemplateEngin
 public class TemplateEngine {
 
 	private static final Pattern VARIABLE_PATTERN = Pattern.compile("([{] *(!)? *([A-Za-z0-9._]+) *[}]| *(!)? *([A-Za-z0-9._]+) *)");
-	private static final Whitelist HTML_TEMPLATE_WHITELIST =
+	private static final Safelist HTML_TEMPLATE_WHITELIST =
 		HtmlHelper.EVENTACTION_WHITELIST.addAttributes("div", "class").addAttributes("span", "class").addAttributes("table", "class");
 	private static final Logger logger = LoggerFactory.getLogger(TemplateEngine.class);
 

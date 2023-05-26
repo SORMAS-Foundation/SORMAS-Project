@@ -33,7 +33,6 @@ import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
-import de.symeda.sormas.api.utils.BulkOperationResults;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
@@ -81,7 +80,7 @@ public interface EventFacade extends CoreFacade<EventDto, EventIndexDto, EventRe
 
 	boolean hasAnyEventParticipantWithoutJurisdiction(String eventUuid);
 
-	BulkOperationResults<String> saveBulkEvents(
+	Integer saveBulkEvents(
 		List<String> eventUuidList,
 		EventDto updatedTempEvent,
 		boolean eventStatusChange,

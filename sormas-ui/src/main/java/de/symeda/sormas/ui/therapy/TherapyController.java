@@ -61,19 +61,22 @@ public class TherapyController {
 		VaadinUiUtil.showModalPopupWindow(view, I18nProperties.getString(Strings.headingCreateNewPrescription));
 	}
 
-	public void openPrescriptionEditForm(PrescriptionReferenceDto prescriptionReference, Runnable callback, boolean readOnly) {
+	public void openPrescriptionEditForm(
+		PrescriptionReferenceDto prescriptionReference,
+		Runnable callback,
+		boolean isEditAllowed,
+		boolean isDeleteAllowed) {
 		PrescriptionDto prescription = FacadeProvider.getPrescriptionFacade().getPrescriptionByUuid(prescriptionReference.getUuid());
-		PrescriptionForm form = new PrescriptionForm(false, readOnly, prescription.isPseudonymized(), prescription.isInJurisdiction());
+		PrescriptionForm form = new PrescriptionForm(false, !isEditAllowed, prescription.isPseudonymized(), prescription.isInJurisdiction());
 		form.setValue(prescription);
 
-		final CommitDiscardWrapperComponent<PrescriptionForm> view = new CommitDiscardWrapperComponent<>(
-			form,
-			UserProvider.getCurrent().hasUserRight(UserRight.PRESCRIPTION_EDIT) && !readOnly,
-			form.getFieldGroup());
+		boolean isEditOrDeleteAllowed = isEditAllowed || isDeleteAllowed;
+		final CommitDiscardWrapperComponent<PrescriptionForm> view =
+			new CommitDiscardWrapperComponent<>(form, isEditOrDeleteAllowed, form.getFieldGroup());
 		Window popupWindow = VaadinUiUtil
-			.showModalPopupWindow(view, I18nProperties.getString(readOnly ? Strings.entityPrescription : Strings.headingEditPrescription));
+			.showModalPopupWindow(view, I18nProperties.getString(!isEditAllowed ? Strings.headingViewPrescription : Strings.headingEditPrescription));
 
-		if (!readOnly) {
+		if (isEditOrDeleteAllowed) {
 			view.addCommitListener(new CommitListener() {
 
 				@Override
@@ -92,7 +95,7 @@ public class TherapyController {
 
 			view.addDiscardListener(() -> popupWindow.close());
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PRESCRIPTION_DELETE)) {
+			if (isDeleteAllowed) {
 				view.addDeleteListener(new DeleteListener() {
 
 					@Override
@@ -112,9 +115,14 @@ public class TherapyController {
 					}
 				}, I18nProperties.getString(Strings.entityPrescription));
 			}
+			view.restrictEditableComponentsOnEditView(
+				UserRight.CASE_EDIT,
+				UserRight.PRESCRIPTION_EDIT,
+				UserRight.PRESCRIPTION_DELETE,
+				null,
+				prescription.isInJurisdiction());
 		}
-		view.getButtonsPanel().setVisible(!readOnly);
-		view.setEditable(!readOnly);
+		view.getButtonsPanel().setVisible(isEditOrDeleteAllowed);
 	}
 
 	private void handleDeletePrescriptionWithTreatments(List<TreatmentIndexDto> treatmentIndexDtos, List<String> prescriptionUuids) {
@@ -147,8 +155,8 @@ public class TherapyController {
 			true);
 	}
 
-	public void openPrescriptionEditForm(PrescriptionIndexDto prescriptionIndex, Runnable callback, boolean readOnly) {
-		openPrescriptionEditForm(new PrescriptionReferenceDto(prescriptionIndex.getUuid()), callback, readOnly);
+	public void openPrescriptionEditForm(PrescriptionIndexDto prescriptionIndex, Runnable callback, boolean isEditAllowed, boolean isDeleteAllowed) {
+		openPrescriptionEditForm(new PrescriptionReferenceDto(prescriptionIndex.getUuid()), callback, isEditAllowed, isDeleteAllowed);
 	}
 
 	public void openTreatmentCreateForm(TherapyReferenceDto therapy, Runnable callback) {
@@ -195,23 +203,26 @@ public class TherapyController {
 		VaadinUiUtil.showModalPopupWindow(view, I18nProperties.getString(Strings.headingCreateNewTreatment));
 	}
 
-	public void openTreatmentEditForm(TreatmentIndexDto treatmentIndex, Runnable callback, boolean isEditAllowed) {
+	public void openTreatmentEditForm(
+		TreatmentIndexDto treatmentIndex,
+		Runnable callback,
+		boolean isEditAllowed,
+		boolean isDeleteAllowed,
+		boolean isPrescriptionEditAllowed,
+		boolean isPrescriptionDeleteAllowed) {
 		TreatmentDto treatment = FacadeProvider.getTreatmentFacade().getTreatmentByUuid(treatmentIndex.getUuid());
+
+		boolean isEditOrDeleteAllowed = isEditAllowed || isDeleteAllowed;
 		TreatmentForm form = new TreatmentForm(false, treatment.isPseudonymized(), treatment.isInJurisdiction());
 		form.setValue(treatment);
 
-		final CommitDiscardWrapperComponent<TreatmentForm> view = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
-		Window popupWindow = VaadinUiUtil.showModalPopupWindow(view, I18nProperties.getString(Strings.headingEditTreatment));
+		final CommitDiscardWrapperComponent<TreatmentForm> view =
+			new CommitDiscardWrapperComponent<>(form, isEditOrDeleteAllowed, form.getFieldGroup());
 
-		for (int i = 0; i < view.getButtonsPanel().getComponentCount(); i++) {
-			view.getButtonsPanel().getComponent(i).setVisible(isEditAllowed);
-		}
+		Window popupWindow = VaadinUiUtil
+			.showModalPopupWindow(view, I18nProperties.getString(!isEditAllowed ? Strings.headingViewTreatment : Strings.headingEditTreatment));
 
-		if (!UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_EDIT) || !isEditAllowed) {
-			view.getWrappedComponent().setEnabled(false);
-		}
-
-		if (isEditAllowed) {
+		if (isEditOrDeleteAllowed) {
 			view.addCommitListener(() -> {
 				if (!form.getFieldGroup().isModified()) {
 					TreatmentDto dto = form.getValue();
@@ -224,18 +235,26 @@ public class TherapyController {
 
 			view.addDiscardListener(popupWindow::close);
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_DELETE) && isEditAllowed) {
+			if (isDeleteAllowed) {
 				view.addDeleteListener(() -> {
 					FacadeProvider.getTreatmentFacade().deleteTreatment(treatment.getUuid());
 					popupWindow.close();
 					callback.run();
 				}, I18nProperties.getString(Strings.entityTreatment));
 			}
+
+			view.restrictEditableComponentsOnEditView(
+				UserRight.CASE_EDIT,
+				UserRight.TREATMENT_EDIT,
+				UserRight.TREATMENT_DELETE,
+				null,
+				treatment.isInJurisdiction());
 		}
+		view.getButtonsPanel().setVisible(isEditOrDeleteAllowed);
 
 		if (treatment.getPrescription() != null) {
 			Button openPrescriptionButton = ButtonHelper.createButton(Captions.treatmentOpenPrescription, e -> {
-				openPrescriptionEditForm(treatment.getPrescription(), null, true);
+				openPrescriptionEditForm(treatment.getPrescription(), null, isPrescriptionEditAllowed, isPrescriptionDeleteAllowed);
 				popupWindow.close();
 				callback.run();
 			});

@@ -18,10 +18,12 @@
 
 package org.sormas.e2etests.entities.services.api;
 
+import static org.sormas.e2etests.entities.pojo.helpers.ShortUUIDGenerator.generateShortUUID;
+
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.util.Date;
-import java.util.UUID;
+import lombok.SneakyThrows;
 import org.sormas.e2etests.entities.pojo.api.AssigneeUser;
 import org.sormas.e2etests.entities.pojo.api.Task;
 import org.sormas.e2etests.helpers.RestAssuredClient;
@@ -38,10 +40,11 @@ public class TaskApiService {
     this.faker = faker;
   }
 
+  @SneakyThrows
   public Task buildGeneratedTask() {
     EnvironmentManager environmentManager = new EnvironmentManager(restAssuredClient);
     return Task.builder()
-        .uuid(UUID.randomUUID().toString())
+        .uuid(generateShortUUID())
         .taskContext("CONTACT")
         .taskType("WEEKLY_REPORT_GENERATION")
         .priority("NORMAL")

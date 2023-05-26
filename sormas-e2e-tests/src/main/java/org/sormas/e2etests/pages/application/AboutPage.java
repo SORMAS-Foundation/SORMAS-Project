@@ -14,4 +14,6 @@ public class AboutPage {
 	public static final By OFFICIAL_SORMAS_WEBSITE_HYPERLINK = By.cssSelector(".v-vertical .v-slot:nth-of-type(5) span");
 	public static final By SORMAS_GITHUB_HYPERLINK = By.cssSelector(".v-vertical .v-slot:nth-of-type(6) span");
 	public static final By FULL_CHANGELOG_HYPERLINK = By.cssSelector(".v-vertical .v-slot:nth-of-type(7) span");
+  public static final By SURVNET_CONVERTER_VERSION_LABEL =
+      By.xpath("//div[contains(text(), 'IfSG Meldesystem')]");
 }

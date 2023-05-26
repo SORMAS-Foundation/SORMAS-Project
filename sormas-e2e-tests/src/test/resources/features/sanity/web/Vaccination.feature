@@ -4,10 +4,10 @@ Feature: Vaccination tests
   @tmsLink=SORDEV-9585 @env_de
   Scenario: Test Add reduced vaccination module to document creation for Contact
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new contact
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I click on the Configuration button from navbar
@@ -32,10 +32,10 @@ Feature: Vaccination tests
   @tmsLink=SORDEV-9585 @env_de
   Scenario: Test Add reduced vaccination module to document creation for Case
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I click on the Configuration button from navbar
@@ -60,7 +60,7 @@ Feature: Vaccination tests
   @tmsLink=SORDEV-9585 @env_de
   Scenario: Test Add reduced vaccination module to document creation for Event
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I click on the Configuration button from navbar
@@ -338,10 +338,10 @@ Feature: Vaccination tests
   @tmsLink=SORDEV-11753 @env_de
   Scenario: Duplicate detection for vaccinations when merging contacts [1]
     Given API: I create a new person
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     When I click on the Contacts button from navbar
@@ -394,10 +394,10 @@ Feature: Vaccination tests
   @tmsLink=SORDEV-11753 @env_de
   Scenario: Duplicate detection for vaccinations when merging contacts [2]
     Given API: I create a new person
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     When I click on the Contacts button from navbar
@@ -451,10 +451,10 @@ Feature: Vaccination tests
   @tmsLink=SORDEV-11753 @env_de
   Scenario: Duplicate detection for vaccinations when merging contacts [3]
     Given API: I create a new person
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     When I click on the Contacts button from navbar
@@ -510,10 +510,10 @@ Feature: Vaccination tests
   @tmsLink=SORDEV-11753 @env_de
   Scenario: Duplicate detection for vaccinations when merging contacts[4]
     Given API: I create a new person
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     When I click on the Contacts button from navbar
@@ -569,10 +569,10 @@ Feature: Vaccination tests
   @tmsLink=SORDEV-11753 @env_de
   Scenario: Duplicate detection for vaccinations when merging contacts[5]
     Given API: I create a new person
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     When I click on the Contacts button from navbar

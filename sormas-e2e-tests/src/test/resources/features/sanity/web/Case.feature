@@ -148,10 +148,8 @@ Feature: Case end to end tests
   @env_main
   Scenario: Delete created case
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I open the last created Case via API
@@ -162,10 +160,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-5530 @env_main
   Scenario: Edit all fields from Case Contacts tab
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
     When I open the Case Contacts tab of the created case via api
@@ -177,10 +173,8 @@ Feature: Case end to end tests
   @tmsLink=SORQA-100 @env_main
   Scenario: Edit all fields from Symptoms tab
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
     When I am accessing the Symptoms tab using of created case via api
@@ -201,10 +195,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-5527 @env_main
   Scenario: Fill the therapy tab
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I open the last created Case via API
@@ -263,10 +255,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-5529 @env_main
   Scenario: Fill the clinical course tab
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I open the last created Case via API
@@ -289,10 +279,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-8412 @env_main
   Scenario: Change of Isolation/Quarantine should be documented
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I open the last created Case via API
@@ -317,10 +305,8 @@ Feature: Case end to end tests
     Then I click on save case button
     And I check if Quarantine change comment field was saved correctly
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then API: I create a new contact
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then I open the last created contact via API
     Then I set place for Quarantine as Home
@@ -359,10 +345,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-7452 @env_main
   Scenario: Bulk mode for linking/adding cases to new Event
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     When API: I create 2 new cases
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I click on the Cases button from navbar
@@ -386,13 +370,10 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-7452 @env_main
   Scenario: Bulk mode for linking/adding case to existing Event
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     When API: I create 2 new cases
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I click on the Cases button from navbar
@@ -569,10 +550,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-6612 @env_main @ignore
   Scenario: Manually triggered calculation of case classification
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I open the last created Case via API
@@ -731,10 +710,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-5479 @env_main
   Scenario: Test for exporting and importing case contact
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I open the last created Case via API
@@ -812,10 +789,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-5526 @env_main
     Scenario: Create a contact with source case
     Given API: I create a new person
-    And API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     And API: I create a new case
-    And API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     And I log in as a National User
     And I open the last created Case via API
@@ -837,10 +812,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-9124 @env_main
   Scenario: Document Templates create quarantine order
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I open the last created Case via API
@@ -856,10 +829,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-9124 @env_main
   Scenario: Document Templates create quarantine order for Case bulk
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I click on the Cases button from navbar
@@ -894,13 +865,10 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-9477 @env_main
   Scenario: Add a person search option on creation forms
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then API: I create a new person
-    And API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     And I log in as a National User
     And I click on the Cases button from navbar
@@ -960,10 +928,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-10265 @env_main
   Scenario: Manual archiving for case contacts
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     When I open the Case Contacts tab of the created case via api
@@ -982,7 +948,6 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-10265 @env_main
   Scenario: Manual archiving for bulk case contacts
     When API: I create 2 new cases
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     When I open the Case Contacts tab of the first created case via api
@@ -1014,10 +979,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-9786 @env_main
   Scenario: Test The "urine p.m." enum value should be hidden when Covid19 is selected as disease
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I open the last created Case via API
@@ -1056,10 +1019,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-7460 @env_main
   Scenario: Test Extend the exposure and event startDate and endDate to include a startTime and endTime
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I open the last created Case via API
@@ -1200,10 +1161,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-9496 @env_de
   Scenario: Test Handle person related fields and search button for travel entry forms
     Given API: I create a new person
-    And API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     And API: I create a new case
-    And API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
     When I open the last created Case via API
@@ -1283,10 +1242,8 @@ Feature: Case end to end tests
   @env_main @#8556
   Scenario: Add two positive Pathogen Test Result of different diseases to a Sample of a Case
     Given API: I create a new person
-    And API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I navigate to the last created case via the url
@@ -1306,10 +1263,8 @@ Feature: Case end to end tests
   @env_main @#8565
   Scenario: Check an archived case if its read only
     Given API: I create a new person
-    And API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then I log in as a Admin User
     Then I open last edited case by API via URL navigation
@@ -1341,10 +1296,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-6614 @env_de
   Scenario: Provide a search alternative aside from the duplicate recognizing
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then API: I create a new contact
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I click on the Cases button from navbar
@@ -1453,10 +1406,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-10241 @env_de
   Scenario: Hide Reception dates of paper form
     Given API: I create a new person
-    And API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I navigate to the last created case via the url
@@ -1556,10 +1507,8 @@ Feature: Case end to end tests
   @env_main @tmsLink=SORDEV-5104
   Scenario: Check if external token is visible on Edit Case Page
     Given API: I create a new person
-    And API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I navigate to the last created case via the url
@@ -1568,10 +1517,8 @@ Feature: Case end to end tests
   @env_de @tmsLink=SORDEV-5104
   Scenario: Check if external token is visible on Edit Case Page for DE
     Given API: I create a new person
-    And API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I navigate to the last created case via the url
@@ -1602,10 +1549,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-6185 @env_de
   Scenario: Test Add information to followup warning message for Cases
     Given API: I create a new person
-    And API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I navigate to the last created case via the url
@@ -1646,10 +1591,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-5565 @env_de
   Scenario: Document Templates create quarantine order for Case bulk DE
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I click on the Cases button from navbar
@@ -1737,10 +1680,8 @@ Feature: Case end to end tests
    @#8558 @env_main
    Scenario: Verify that Page can not be saved if a future date is set for Date of symptom onset
      Given API: I create a new person
-     And API: I check that POST call body is "OK"
      And API: I check that POST call status code is 200
      Given API: I create a new case
-     Then API: I check that POST call body is "OK"
      And API: I check that POST call status code is 200
      Given I log in as a National User
      Then I navigate to the last created case via the url
@@ -1750,27 +1691,6 @@ Feature: Case end to end tests
      And I set Date of symptom onset to 7 days into the future
      When I click on save case button in Symptoms tab
      Then I Verify popup message from Symptoms Tab Contains "Date of symptom onset cannot be in the future"
-
-   @tmsLink=SORQA-478 @env_s2s_1
-     Scenario: Test send case to another instance using S2S connection
-     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-     And API: I check that POST call body is "OK"
-     And API: I check that POST call status code is 200
-     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-     Then API: I check that POST call body is "OK"
-     And API: I check that POST call status code is 200
-     Given I log in as a Admin User
-     Then I navigate to the last created case via the url
-     And I collect uuid of the case
-     Then I click on share case button
-     And I select organization to share with "s2s_2"
-     And I fill comment in share popup with "shared with automated test"
-     Then I click on share button in s2s share popup and wait for share to finish
-     Then I navigate to "s2s_2" environment
-     Given I log in as a Admin User
-     And I click on the Shares button from navbar
-     Then I click on the The Eye Icon located in the Shares Page
-     And I check if received case id is equal with sent
 
    @tmsLink=SORDEV-10230 @env_main
       Scenario: Test Archived entities should always be read-only
@@ -1795,10 +1715,8 @@ Feature: Case end to end tests
   @tmsLink=SORDEV-12441 @env_de
   Scenario: Hide citizenship and country of birth on Edit Case Person page
     Given API: I create a new person
-    And API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I navigate to the last created case via the url
@@ -1806,14 +1724,11 @@ Feature: Case end to end tests
     Then I check that Citizenship is not visible in Contact Information section for DE version
     And I check that Country of birth is not visible in Contact Information section for DE version
 
-
   @tmsLink=SORDEV-9789 @env_de
   Scenario: Test Move health conditions from clinical course to the case
     Given API: I create a new person
-    And API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I navigate to the last created case via the url
@@ -1855,178 +1770,11 @@ Feature: Case end to end tests
     And I click on Bulk Actions combobox on Case Directory Page
     Then I check that Share option is not visible in Bulk Actions dropdown in Case Directory for DE specific
 
-  @tmsLink=SORDEV-12087 @env_s2s_1
-  Scenario: Delete a case in source system with handing ownership
-    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-    And API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given I log in as a Admin User
-    Then I navigate to the last created case via the url
-    And I collect uuid of the case
-    Then I click on share case button
-    And I click to hand over the ownership of the case in Share popup
-    And I select organization to share with "s2s_2"
-    And I fill comment in share popup with "shared with automated test"
-    Then I click on share button in s2s share popup and wait for share to finish
-    Then I navigate to "s2s_2" environment
-    Given I log in as a Admin User
-    And I click on the Shares button from navbar
-    Then I accept first case in Shares Page
-    Then I navigate to "s2s_1" environment
-    And I click on the Cases button from navbar
-    And I filter by CaseID on Case directory page
-    And I apply "Alle" to ownership combobox on Case Directory Page
-    And I apply "Alle aktiven und archivierten Fälle" to combobox on Case Directory Page
-    And I click APPLY BUTTON in Case Directory Page
-    And I click on the More button on Case directory page
-    And I click Enter Bulk Edit Mode on Case directory page
-    And I click SHOW MORE FILTERS button on Case directory page
-    And I click checkbox to choose all Case results
-    And I click on Bulk Actions combobox on Case Directory Page
-    Then I click on Delete button from Bulk Actions Combobox in Case Directory
-    And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
-    And I click on Yes option in Confirm deletion popup
-    Then I navigate to "s2s_2" environment
-    And I click on the Cases button from navbar
-    And I apply "Alle" to ownership combobox on Case Directory Page
-    And I apply "Alle aktiven und archivierten Fälle" to combobox on Case Directory Page
-    Then I click on the APPLY FILTERS button
-    And I select first created case for person from Cases list
-    Then I check if editable fields are read only for an archived case
-
-  @tmsLink=SORDEV-12087 @env_s2s_1
-  Scenario: Delete a case in target system with handing ownership
-    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-    And API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given I log in as a Admin User
-    Then I navigate to the last created case via the url
-    And I collect uuid of the case
-    Then I click on share case button
-    And I click to hand over the ownership of the case in Share popup
-    And I select organization to share with "s2s_2"
-    And I fill comment in share popup with "shared with automated test"
-    Then I click on share button in s2s share popup and wait for share to finish
-    Then I navigate to "s2s_2" environment
-    Given I log in as a Admin User
-    And I click on the Shares button from navbar
-    Then I accept first case in Shares Page
-    And I click on the Cases button from navbar
-    And I select first created case for person from Cases list
-    Then I click on Delete button from case
-    And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
-    And I click on Yes option in Confirm deletion popup
-    Then I navigate to "s2s_1" environment
-    And I click on the Cases button from navbar
-    And I apply "Alle" to ownership combobox on Case Directory Page
-    And I apply "Alle aktiven und archivierten Fälle" to combobox on Case Directory Page
-    Then I click on the APPLY FILTERS button
-    And I select first created case for person from Cases list
-    Then I check if editable fields are read only for an archived case
-
-  @tmsLink=SORDEV-12087 @env_s2s_1
-  Scenario: Delete a case in source system without handing ownership
-    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-    And API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given I log in as a Admin User
-    Then I navigate to the last created case via the url
-    And I collect uuid of the case
-    Then I click on share case button
-    And I select organization to share with "s2s_2"
-    And I fill comment in share popup with "shared with automated test"
-    Then I click on share button in s2s share popup and wait for share to finish
-    Then I navigate to "s2s_2" environment
-    And I log in as a Admin User
-    And I click on the Shares button from navbar
-    Then I accept first case in Shares Page
-    Then I navigate to "s2s_1" environment
-    Then I navigate to the last created case via the url
-    Then I click on Delete button from case
-    And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
-    And I click on Yes option in Confirm deletion popup
-    Then I navigate to "s2s_2" environment
-    And I click on the Cases button from navbar
-    And I apply "Alle" to ownership combobox on Case Directory Page
-    And I apply "Alle aktiven und archivierten Fälle" to combobox on Case Directory Page
-    Then I click on the APPLY FILTERS button
-    And I select first created case for person from Cases list
-    Then I check if editable fields are read only for an archived case
-
-  @tmsLink=SORDEV-12087 @env_s2s_1
-  Scenario: Delete a case in target system without handing ownership
-    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-    And API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given I log in as a Admin User
-    Then I navigate to the last created case via the url
-    And I collect uuid of the case
-    Then I click on share case button
-    And I select organization to share with "s2s_2"
-    And I fill comment in share popup with "shared with automated test"
-    Then I click on share button in s2s share popup and wait for share to finish
-    Then I navigate to "s2s_2" environment
-    Given I log in as a Admin User
-    And I click on the Shares button from navbar
-    Then I accept first case in Shares Page
-    And I click on the Cases button from navbar
-    And I filter by CaseID on Case directory page
-    And I apply "Alle" to ownership combobox on Case Directory Page
-    And I apply "Alle aktiven und archivierten Fälle" to combobox on Case Directory Page
-    And I click APPLY BUTTON in Case Directory Page
-    And I click on the More button on Case directory page
-    And I click Enter Bulk Edit Mode on Case directory page
-    And I click SHOW MORE FILTERS button on Case directory page
-    And I click checkbox to choose all Case results
-    And I click on Bulk Actions combobox on Case Directory Page
-    Then I click on Delete button from Bulk Actions Combobox in Case Directory
-    And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
-    And I click on Yes option in Confirm deletion popup
-    Then I navigate to "s2s_1" environment
-    Then I navigate to the last created case via the url
-
-  @tmsLink=SORDEV-12087 @env_s2s_1
-  Scenario: Delete a case in source system with handing ownership before acceptance
-    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-    And API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given I log in as a Admin User
-    Then I navigate to the last created case via the url
-    Then I click on share case button
-    And I select organization to share with "s2s_2"
-    And I fill comment in share popup with "shared with automated test"
-    Then I click on share button in s2s share popup and wait for share to finish
-    Then I click on Delete button from case
-    And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
-    And I click on Yes option in Confirm deletion popup
-    Then I navigate to "s2s_2" environment
-    Given I log in as a Admin User
-    And I click on the Shares button from navbar
-    And I click on the The Eye Icon located in the Shares Page
-    Then I check that first shared result has different id then deleted shared case
-
   @tmsLink=SORQA-658 @env_de @oldfake
     Scenario: Check automatic deletion of cases created 3651 days ago
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then API: I create a new case with creation date 3651 days ago
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then I log in as a Admin User
     Then I navigate to the last created case via the url
@@ -2044,10 +1792,8 @@ Feature: Case end to end tests
     @tmsLink=SORQA-663 @env_de @oldfake @precon
       Scenario: Check if 'Löschung geplant für' is available in Case Edit
       Given API: I create a new person
-      Then API: I check that POST call body is "OK"
       And API: I check that POST call status code is 200
       Then API: I create a new case
-      Then API: I check that POST call body is "OK"
       And API: I check that POST call status code is 200
       Then I log in as a Admin User
       Then I navigate to the last created case via the url
@@ -2056,10 +1802,8 @@ Feature: Case end to end tests
   @tmsLink=SORQA-682 @env_de @oldfake
   Scenario: Check automatic deletion NOT of cases created 3645 days ago
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then API: I create a new case with creation date 3645 days ago
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then I log in as a Admin User
     Then I navigate to the last created case via the url
@@ -2077,10 +1821,8 @@ Feature: Case end to end tests
   @env_main @#10418
   Scenario: Verify sample timestamp pattern from Quarantine Order popup
     Given API: I create a new person
-    And API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I navigate to the last created case via the url
@@ -2091,990 +1833,3 @@ Feature: Case end to end tests
     And I click on Create button in Document Templates box in Edit Case directory
     Then I select "ExampleDocumentTemplateCases.docx" Quarantine Order in Create Quarantine Order form in Edit Case directory
     And Sample name timestamp is correct in Create Quarantine Order form from Edit Case directory
-
-  @tmsLink=SORDEV-12081 @env_s2s_1
-  Scenario: Accept Reject Special Cases [1]
-    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-    And API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given I log in as a Admin User
-    Then I navigate to the last created case via the url
-    And I collect uuid of the case
-    Then I click on share case button
-    And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
-    Then I click on share button in s2s share popup and wait for share to finish
-    Then I navigate to "s2s_2" environment
-    Given I log in as a Admin User
-    And I click on the Shares button from navbar
-    And I click on "reject" shared case button with copied case description
-    Then I fill comment field in Reject share request popup and click confirm
-    Then I navigate to "s2s_1" environment
-    Then I navigate to the last created case via the url
-    And I check if reject share case button in Edit Case is unavailable
-
-  @tmsLink=SORDEV-12081 @env_s2s_1
-  Scenario: Accept Reject Special Cases [2]
-    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-    And API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given I log in as a Admin User
-    Then I navigate to the last created case via the url
-    And I collect uuid of the case
-    Then I click on share case button
-    And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
-    Then I click on share button in s2s share popup and wait for share to finish
-    Then I navigate to "s2s_2" environment in new driver tab
-    Given I log in as a Admin User
-    And I click on the Shares button from navbar
-    And I click on "accept" shared case button with copied case description
-    Then I back to tab number 1
-    And I click on revoke share button
-    Then I click on Ja button in Revoke case popup
-    And I check if popup with error with handover displays
-
-  @tmsLink=SORDEV-12081 @env_s2s_1
-  Scenario: Accept Reject Special Cases [3]
-    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-    And API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given I log in as a Admin User
-    Then I navigate to the last created case via the url
-    And I collect uuid of the case
-    Then I click on share case button
-    And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
-    Then I click on share button in s2s share popup and wait for share to finish
-    Then I navigate to "s2s_2" environment
-    Given I log in as a Admin User
-    And I click on the Shares button from navbar
-    And I click on "reject" shared case button with copied case description
-    Then I fill comment field in Reject share request popup and click confirm
-    Then I navigate to "s2s_1" environment
-    Then I navigate to the last created case via the url
-    Then I click on share case button
-    And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
-    Then I click on share button in s2s share popup and wait for share to finish
-    Then I navigate to "s2s_2" environment
-    And I click on the Shares button from navbar
-    And I click on "reject" shared case button with copied case description
-
-  @tmsLink=SORDEV-12081 @env_s2s_1
-  Scenario: Accept Reject Special Cases [4]
-    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-    And API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given I log in as a Admin User
-    Then I navigate to the last created case via the url
-    And I collect uuid of the case
-    Then I click on share case button
-    And I click to hand over the ownership of the case in Share popup
-    And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
-    Then I click on share button in s2s share popup and wait for share to finish
-    Then I navigate to "s2s_2" environment
-    Given I log in as a Admin User
-    And I click on the Shares button from navbar
-    And I click on "accept" shared case button with copied case description
-    Then I navigate to "s2s_1" environment
-    Then I navigate to the last created case via the url without check if uuid is enabled
-    And I check if share case button in Edit Case is unavailable
-
-  @tmsLink=SORDEV-12081 @env_s2s_1
-  Scenario: Accept Reject Special Cases [5]
-    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-    And API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given I log in as a Admin User
-    Then I navigate to the last created case via the url
-    And I collect uuid of the case
-    Then I click on share case button
-    And I click to hand over the ownership of the case in Share popup
-    And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
-    Then I click on share button in s2s share popup and wait for share to finish
-    Then I navigate to "s2s_2" environment in new driver tab
-    Given I log in as a Admin User
-    And I click on the Shares button from navbar
-    Then I back to tab number 1
-    And I click on revoke share button
-    Then I click on Ja button in Revoke case popup
-    Then I back to tab number 2
-    And I click on "accept" shared case button with copied case description
-    And I check if popup with error with handover displays
-
-  @tmsLink=SORDEV-12081 @env_s2s_1
-  Scenario: Accept Reject Special Cases [6]
-    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-    And API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given I log in as a Admin User
-    Then I navigate to the last created case via the url
-    And I collect uuid of the case
-    Then I click on share case button
-    And I click to hand over the ownership of the case in Share popup
-    And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
-    Then I click on share button in s2s share popup and wait for share to finish
-    Then I navigate to "s2s_2" environment in new driver tab
-    Given I log in as a Admin User
-    And I click on the Shares button from navbar
-    Then I back to tab number 1
-    And I click on revoke share button
-    Then I click on Ja button in Revoke case popup
-    Then I back to tab number 2
-    And I click on "reject" shared case button with copied case description
-    Then I fill comment field in Reject share request popup and click confirm
-    And I check if popup with error with handover displays
-
-    @tmsLink=SORDEV-12445 @env_d2s
-    Scenario: S2S_Processed lab messages should be transferred [1]
-      Given API : Login to DEMIS server
-      Then I create and send Laboratory Notification
-      And I log in as a Admin User
-      Then I click on the Messages button from navbar
-      And I click on fetch messages button
-      Then I filter by last created person via API in Messages Directory
-      And I collect message data from searched record in Messages directory
-      And I click on process button for 1 result in Message Directory page
-      And I pick a new person in Pick or create person popup during case creation for DE
-      And I choose create new case in Pick or create entry form for DE
-      And I check that create new case form with pathogen detection reporting process is displayed for DE
-      And I fill only mandatory fields to convert laboratory message into a case for DE
-      And I click on save button in the case popup
-      And I check that new sample form with pathogen detection reporting process is displayed
-      And I click on save sample button
-      And I click on save sample button
-      And I click on the Cases button from navbar
-      And I search the case by last created person via Demis message
-      Then I click on the first Case ID from Case Directory
-      Then I click on share case button
-      And I click to hand over the ownership of the case in Share popup
-      And I select organization to share with "s2s_3"
-      And I fill comment in share popup with random string
-      Then I click on share button in s2s share popup and wait for share to finish
-      Then I navigate to "s2s_3" environment in new driver tab
-      Given I log in as a Admin User
-      And I click on the Shares button from navbar
-      And I click on "accept" shared case button with copied case description
-      And I click on the Cases button from navbar
-      Then I filter by last created person via DEMIS API in Case Directory
-      Then I click on the first Case ID from Case Directory
-      And I click on edit Sample
-      Then I back to tab number 1
-      And I click on the Cases button from navbar
-      And I apply "Zur Ansicht" to ownership combobox on Case Directory Page
-      And I search the case by last created person via Demis message
-      Then I click on the first Case ID from Case Directory
-      And I check if edit sample button is unavailable
-
-  @tmsLink=SORDEV-12445 @env_d2s
-  Scenario: S2S_Processed lab messages should be transferred [2]
-    Given API : Login to DEMIS server
-    Then I create and send Laboratory Notification
-    And I log in as a Admin User
-    Then I click on the Messages button from navbar
-    And I click on fetch messages button
-    Then I filter by last created person via API in Messages Directory
-    And I collect message data from searched record in Messages directory
-    And I click on process button for 1 result in Message Directory page
-    And I pick a new person in Pick or create person popup during case creation for DE
-    And I choose create new case in Pick or create entry form for DE
-    And I check that create new case form with pathogen detection reporting process is displayed for DE
-    And I fill only mandatory fields to convert laboratory message into a case for DE
-    And I click on save button in the case popup
-    And I check that new sample form with pathogen detection reporting process is displayed
-    And I click on save sample button
-    And I click on save sample button
-    And I click on the Cases button from navbar
-    And I search the case by last created person via Demis message
-    Then I click on the first Case ID from Case Directory
-    Then I click on share case button
-    And I select organization to share with "s2s_3"
-    And I fill comment in share popup with random string
-    Then I click on share button in s2s share popup and wait for share to finish
-    Then I navigate to "s2s_3" environment in new driver tab
-    Given I log in as a Admin User
-    And I click on the Shares button from navbar
-    And I click on "accept" shared case button with copied case description
-    And I click on the Cases button from navbar
-    Then I filter by last created person via DEMIS API in Case Directory
-    And I apply "Zur Ansicht" to ownership combobox on Case Directory Page
-    Then I click on the first Case ID from Case Directory
-    And I check if edit sample button is unavailable
-    Then I back to tab number 1
-    And I click on the Cases button from navbar
-    And I search the case by last created person via Demis message
-    Then I click on the first Case ID from Case Directory
-    And I click on edit Sample
-
-  @tmsLink=SORDEV-11838 @env_s2s_1
-  Scenario: [S2S] Test Avoiding simultaneous work of two health departments - preventing sharing twice to the same target system as long as the target system has not yet accepted or rejected for case with hand over the ownership [1]
-    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given I log in as a Admin User
-    And I open the last created Case via API
-    When I open the Case Contacts tab
-    Then I click on new contact button from Case Contacts tab
-    And I create a new basic contact to from Cases Contacts tab for DE
-    And I open the last created Case via API
-    Then I click on share case button
-    And I click to hand over the ownership of the case in Share popup
-    And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
-    Then I click on share button in s2s share popup and wait for share to finish
-    And I open the last created Case via API
-    Then I click on share case button
-    And I select organization to share with "s2s_2"
-    And I fill comment in share popup with "shared with automated test"
-    Then I check if share warning is displayed
-    And I open the last created Case via API
-    Then I click on share case button
-    And I select organization to share with "s2s_3"
-    And I click to hand over the ownership of the case in Share popup
-    And I fill comment in share popup with "shared with automated test"
-    Then I click on share button in s2s share popup
-    And I check if popup with error with handover header displays
-    And I open the last created Case via API
-    And I click on revoke share button
-    Then I click on Ja button in Revoke case popup
-    Then I click on share case button
-    And I click to hand over the ownership of the case in Share popup
-    And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
-    Then I click on share button in s2s share popup and wait for share to finish
-    Then I navigate to "s2s_2" environment in new driver tab
-    Given I log in as a Admin User
-    And I click on the Shares button from navbar
-    And I click on "accept" shared case button with copied case description
-
-  @tmsLink=SORDEV-11838 @env_s2s_1
-  Scenario: [S2S] Test Avoiding simultaneous work of two health departments - preventing sharing twice to the same target system as long as the target system has not yet accepted or rejected for case without hand over the ownership [2]
-    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given I log in as a Admin User
-    And I open the last created Case via API
-    When I open the Case Contacts tab
-    Then I click on new contact button from Case Contacts tab
-    And I create a new basic contact to from Cases Contacts tab for DE
-    And I open the last created Case via API
-    Then I click on share case button
-    And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
-    And I click to share samples of the case in Share popup
-    And I click to share reports of the case in Share popup
-    Then I click on share button in s2s share popup and wait for share to finish
-    And I open the last created Case via API
-    Then I click on share case button
-    And I select organization to share with "s2s_2"
-    And I fill comment in share popup with "shared with automated test"
-    Then I check if share warning is displayed
-    And I open the last created Case via API
-    Then I click on share case button
-    And I select organization to share with "s2s_3"
-    And I fill comment in share popup with "shared with automated test"
-    And I click to share samples of the case in Share popup
-    And I click to share reports of the case in Share popup
-    Then I click on share button in s2s share popup
-    And I open the last created Case via API
-    And I click on revoke share button
-    Then I click on Ja button in Revoke case popup
-    Then I click on share case button
-    And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
-    Then I click on share button in s2s share popup and wait for share to finish
-    Then I navigate to "s2s_2" environment in new driver tab
-    Given I log in as a Admin User
-    And I click on the Shares button from navbar
-    And I click on "accept" shared case button with copied case description
-    Then I back to tab number 1
-    Then I click on share case button
-    And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
-    And I click to hand over the ownership of the case in Share popup
-    Then I click on share button in s2s share popup and wait for share to finish
-
-  @tmsLink=SORDEV-11838 @env_s2s_1
-  Scenario: [S2S] Test Avoiding simultaneous work of two health departments - preventing sharing twice to the same target system as long as the target system has not yet accepted or rejected for contact with hand over the ownership [3]
-    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given I log in as a Admin User
-    And I open the last created Case via API
-    When I open the Case Contacts tab
-    Then I click on new contact button from Case Contacts tab
-    And I create a new basic contact to from Cases Contacts tab for DE
-    And I open the last created Case via API
-    Then I click on share case button
-    And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
-    And I click to hand over the ownership of the case in Share popup
-    Then I click on share button in s2s share popup and wait for share to finish
-    Then I navigate to Contacts tab in Edit case page
-    And I open the first contact from contacts list
-    Then I click on share contact button
-    And I click to hand over the ownership of the case in Share popup
-    And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
-    Then I click on share button in s2s share popup and wait for share to finish
-    Then I click on share contact button
-    And I select organization to share with "s2s_2"
-    And I fill comment in share popup with "shared with automated test"
-    Then I check if share warning is displayed
-    And I open the last created Case via API
-    Then I navigate to Contacts tab in Edit case page
-    And I open the first contact from contacts list
-    And I click on revoke share button
-    Then I click on Ja button in Revoke case popup
-    Then I click on share contact button
-    And I select organization to share with "s2s_2"
-    And I fill comment in share popup for contact with random string
-    And I click to hand over the ownership of the case in Share popup
-    Then I click on share button in s2s share popup and wait for share to finish
-    Then I navigate to "s2s_2" environment in new driver tab
-    Given I log in as a Admin User
-    And I click on the Shares button from navbar
-    And I click on "accept" shared contact button with copied contact description
-
-  @tmsLink=SORDEV-11838 @env_s2s_1
-  Scenario: [S2S] Test Avoiding simultaneous work of two health departments - preventing sharing twice to the same target system as long as the target system has not yet accepted or rejected for contact without hand over the ownership [4]
-    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given I log in as a Admin User
-    And I open the last created Case via API
-    When I open the Case Contacts tab
-    Then I click on new contact button from Case Contacts tab
-    And I create a new basic contact to from Cases Contacts tab for DE
-    And I open the last created Case via API
-    Then I click on share case button
-    And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
-    And I click to share samples of the case in Share popup
-    And I click to share reports of the case in Share popup
-    Then I click on share button in s2s share popup and wait for share to finish
-    Then I navigate to Contacts tab in Edit case page
-    And I open the first contact from contacts list
-    Then I click on share contact button
-    And I click to share samples of the case in Share popup
-    And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
-    Then I click on share button in s2s share popup and wait for share to finish
-    Then I click on share contact button
-    And I select organization to share with "s2s_2"
-    And I fill comment in share popup with "shared with automated test"
-    Then I check if share warning is displayed
-    And I open the last created Case via API
-    Then I navigate to Contacts tab in Edit case page
-    And I open the first contact from contacts list
-    And I click on revoke share button
-    Then I click on Ja button in Revoke case popup
-    Then I click on share contact button
-    And I select organization to share with "s2s_2"
-    And I fill comment in share popup for contact with random string
-    Then I click on share button in s2s share popup and wait for share to finish
-    Then I navigate to "s2s_2" environment in new driver tab
-    Given I log in as a Admin User
-    And I click on the Shares button from navbar
-    And I click on "accept" shared contact button with copied contact description
-    Then I back to tab number 1
-    Then I click on share contact button
-    And I select organization to share with "s2s_2"
-    And I fill comment in share popup for contact with random string
-    And I click to hand over the ownership of the case in Share popup
-    Then I click on share button in s2s share popup and wait for share to finish
-
-  @tmsLink=SORDEV-12447 @env_s2s_1
-  Scenario: [S2S] S2S_deactivate share parameter 'share associated contacts' (for cases) [1]
-    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given I log in as a Admin User
-    And I open the last created Case via API
-    When I open the Case Contacts tab
-    Then I click on new contact button from Case Contacts tab
-    And I create a new basic contact to from Cases Contacts tab for DE
-    And I open the last created Case via API
-    Then I click on share case button
-    And I check that share associated contacts checkbox is not visible in Share form for DE
-    And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
-    Then I click on share button in s2s share popup and wait for share to finish
-    Then I navigate to "s2s_2" environment
-    Given I log in as a Admin User
-    And I click on the Shares button from navbar
-    And I click on the The Eye Icon located in the Shares Page
-    And I check that "KONTAKT-ID" column header is not visible in Share request details window for DE
-
-  @tmsLink=SORDEV-12447 @env_s2s_1
-  Scenario: [S2S] S2S_deactivate share parameter 'share associated contacts' (for cases) [2]
-    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given I log in as a Admin User
-    And I open the last created Case via API
-    When I open the Case Contacts tab
-    Then I click on new contact button from Case Contacts tab
-    And I create a new basic contact to from Cases Contacts tab for DE
-    And I open the last created Case via API
-    Then I click on share case button
-    And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
-    Then I click on share button in s2s share popup and wait for share to finish
-    Then I navigate to "s2s_2" environment in new driver tab
-    Given I log in as a Admin User
-    And I click on the Shares button from navbar
-    And I accept first case in Shares Page
-    Then I back to tab number 1
-    When I open the Case Contacts tab
-    And I click on the first Contact ID from Contacts Directory in Contacts in Case
-    And I click on share contact button
-    And I check that share associated contacts checkbox is not visible in Share form for DE
-    And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
-    Then I click on share button in s2s share popup and wait for share to finish
-    And I back to tab number 2
-    And I click on the Shares button from navbar
-    And I click on the The Eye Icon located in the Shares Page
-    And I check that "FALL-ID" column header is not visible in Share request details window for DE
-
-  @tmsLink=SORDEV-12094 @env_s2s_1
-  Scenario: [S2S] Mergen without hand over the ownership
-    Given I log in as a Admin User
-    And I click on the Cases button from navbar
-    And I click on the NEW CASE button
-    Then I create a new case with mandatory data with person name and "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district for DE version
-    Then I click on save button in the case popup
-    Then I navigate to "s2s_2" environment in new driver tab
-    And I log in as a Admin User
-    And I click on the Cases button from navbar
-    And I click on the NEW CASE button
-    Then  I create a new case with mandatory data with person name and "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district for DE version
-    Then I click on save button in the case popup
-    Then I back to tab number 1
-    Then I click on share case button
-    And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
-    Then I click on share button in s2s share popup and wait for share to finish
-    Then I back to tab number 2
-    And I click on the Shares button from navbar
-    And I click on "accept" shared case button with copied case description
-    Then I click on Okay button in Potential duplicate popup
-    And I click on the Cases button from navbar
-    And I click on the More button on Case directory page
-    Then I click on Merge Duplicates on Case directory page
-    And I click to CONFIRM FILTERS on Merge Duplicate Cases page
-    Then I click on Merge button for target system from received case
-    And I confirm merge duplicated case
-    Then I check if popup with merge duplicated case appears
-    And I click on cancel button in merge duplicated cases popup
-    Then I click on Merge button for source system from received case
-    And I confirm merge duplicated case
-    Then I check if popup with merge message in german appears
-
-  @tmsLink=SORDEV-12094 @env_s2s_1
-  Scenario: [S2S] Mergen with hand over the ownership - merge for target system
-    Given I log in as a Admin User
-    And I click on the Cases button from navbar
-    And I click on the NEW CASE button
-    Then I create a new case with specific person name and "Hessen" region and "LK Fulda" district for DE version
-    Then I click on save button in the case popup
-    Then I navigate to "s2s_2" environment in new driver tab
-    And I log in as a Admin User
-    And I click on the Cases button from navbar
-    And I click on the NEW CASE button
-    Then I create a new case with specific person name and "Hessen" region and "LK Fulda" district for DE version
-    Then I click on save button in the case popup
-    Then I back to tab number 1
-    Then I click on share case button
-    And I select organization to share with "s2s_2"
-    And I click to hand over the ownership of the case in Share popup
-    And I fill comment in share popup with random string
-    Then I click on share button in s2s share popup and wait for share to finish
-    Then I back to tab number 2
-    And I click on the Shares button from navbar
-    And I click on "accept" shared case button with copied case description
-    Then I click on Okay button in Potential duplicate popup
-    And I click on the Cases button from navbar
-    And I click on the More button on Case directory page
-    Then I click on Merge Duplicates on Case directory page
-    And I click to CONFIRM FILTERS on Merge Duplicate Cases page
-    Then I click on Merge button for target system from received case
-    And I confirm merge duplicated case
-    Then I check if popup with merge message in german appears
-
-  @tmsLink=SORDEV-12094 @env_s2s_1
-  Scenario: [S2S] Mergen with hand over the ownership - merge for source system
-    Given I log in as a Admin User
-    And I click on the Cases button from navbar
-    And I click on the NEW CASE button
-    Then I create a new case with specific person name and "Hessen" region and "LK Fulda" district for DE version
-    Then I click on save button in the case popup
-    Then I navigate to "s2s_2" environment in new driver tab
-    And I log in as a Admin User
-    And I click on the Cases button from navbar
-    And I click on the NEW CASE button
-    Then I create a new case with specific person name and "Hessen" region and "LK Fulda" district for DE version
-    Then I click on save button in the case popup
-    Then I back to tab number 1
-    Then I click on share case button
-    And I select organization to share with "s2s_2"
-    And I click to hand over the ownership of the case in Share popup
-    And I fill comment in share popup with random string
-    Then I click on share button in s2s share popup and wait for share to finish
-    Then I back to tab number 2
-    And I click on the Shares button from navbar
-    And I click on "accept" shared case button with copied case description
-    Then I click on Okay button in Potential duplicate popup
-    And I click on the Cases button from navbar
-    And I click on the More button on Case directory page
-    Then I click on Merge Duplicates on Case directory page
-    And I click to CONFIRM FILTERS on Merge Duplicate Cases page
-    Then I click on Merge button for source system from received case
-    And I confirm merge duplicated case
-    Then I check if popup with merge message in german appears
-
-  @tmsLink=SORDEV-12449 @env_s2s_1
-  Scenario: S2S_added sample after sharing a case/contact does not get shared [1]
-    Given I log in as a Admin User
-    And I click on the Cases button from navbar
-    And I click on the NEW CASE button
-    Then I create a new case with specific person name and "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district for DE version
-    And I click on save button in the case popup
-    And I click on New Sample in German
-    And I create a new Sample with only required fields for DE version
-    And I click on save sample button
-    Then I click on share case button
-    And I select organization to share with "s2s_2"
-    And I click to share samples of the case in Share popup
-    And I fill comment in share popup with random string
-    Then I click on share button in s2s share popup and wait for share to finish
-    And I click on New Sample in German
-    And I create a new Sample with only required fields for DE version
-    And I click on save sample button
-    Then I navigate to "s2s_2" environment in new driver tab
-    And I log in as a Admin User
-    And I click on the Shares button from navbar
-    Then I accept first case in Shares Page
-    And I click on the The Eye Icon located in the Shares Page
-    And I click on the shortened case/contact ID to open the case
-    Then I check that the number of added samples on the Edit case page is 2
-
-  @tmsLink=SORDEV-12449 @env_s2s_1
-  Scenario: S2S_added sample after sharing a case/contact does not get shared [2]
-    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given I log in as a Admin User
-    And I open the last created Case via API
-    When I open the Case Contacts tab
-    Then I click on new contact button from Case Contacts tab
-    And I create a new basic contact to from Cases Contacts tab for DE
-    And I open the last created Case via API
-    Then I click on share case button
-    And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
-    Then I click on share button in s2s share popup and wait for share to finish
-    Then I navigate to "s2s_2" environment in new driver tab
-    Given I log in as a Admin User
-    And I click on the Shares button from navbar
-    And I accept first case in Shares Page
-    Then I back to tab number 1
-    When I open the Case Contacts tab
-    And I click on the first Contact ID from Contacts Directory in Contacts in Case
-    And I click on New Sample in German
-    And I create a new Sample with only required fields for DE version
-    And I click on save sample button
-    And I click on share contact button
-    And I select organization to share with "s2s_2"
-    And I click to share samples of the case in Share popup
-    And I fill comment in share popup with random string
-    Then I click on share button in s2s share popup and wait for share to finish
-    And I click on New Sample in German
-    And I create a new Sample with only required fields for DE version
-    And I click on save sample button
-    Then I back to tab number 2
-    And I click on the Shares button from navbar
-    And I accept first contact in Shares Page
-    And I click on the The Eye Icon located in the Shares Page
-    And I click on the shortened case/contact ID to open the case
-    Then I check that the number of added samples on the Edit case page is 2
-    Then I back to tab number 1
-    Then I check that the number of added samples on the Edit case page is 2
-
-    @tmsLink=SORDEV-12095 @env_s2s_1
-    Scenario: [S2S] Sample and Immunization - Change sample and immunization in target system
-      Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-      Then API: I check that POST call body is "OK"
-      And API: I check that POST call status code is 200
-      Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-      Then API: I check that POST call body is "OK"
-      And API: I check that POST call status code is 200
-      Given I log in as a Admin User
-      And I open the last created Case via API
-      Then I click on save button in the case popup
-      And I click NEW VACCINATION button for DE
-      And I fill new vaccination data in new Vaccination form for DE
-      And I click SAVE button in new Vaccination form
-      And I open the last created Case via API
-      When I click on New Sample in German
-      And I create a new Sample with positive test result for DE version
-      And I select the German words for Rapid Antigen Detection Test as Type of Test in the Create New Sample popup
-      And I save the created sample with pathogen test
-      And I open the last created Case via API
-      Then I click on share case button
-      And I select organization to share with "s2s_2"
-      And I click to hand over the ownership of the case in Share popup
-      And I fill comment in share popup with random string
-      Then I click on share button in s2s share popup and wait for share to finish
-      Then I navigate to "s2s_2" environment in new driver tab
-      And I log in as a Admin User
-      And I click on the Shares button from navbar
-      And I click on "accept" shared case button with copied case description
-      And I click on the Cases button from navbar
-      And I filter by CaseID on Case directory page
-      And I check that number of displayed cases results is 1
-      Then I click on the first Case ID from Case Directory
-      And I click on edit Sample
-      Then I set type of sample to "Blut"
-      And I click on Save Button in Sample Edit page
-      Then I navigate to case tab
-      And I click on first vaccination edit button
-      And I set vaccine manufacturer to "Valneva"
-      Then I click on save button in New Immunization form
-      Then I back to tab number 1
-      And I open the last created Case via API
-      And I click on first vaccination edit button
-      Then I check vaccine manufacturer is set to "Valneva"
-      Then I click on save button in New Immunization form
-      And I click on edit Sample
-      Then I check if type of sample is set to "Blut"
-
-  @tmsLink=SORDEV-12095 @env_s2s_1
-  Scenario: [S2S] Sample and Immunization - Add sample and immunization in target system
-    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given I log in as a Admin User
-    And I open the last created Case via API
-    Then I click on save button in the case popup
-    And I click NEW VACCINATION button for DE
-    And I fill new vaccination data in new Vaccination form for DE
-    And I click SAVE button in new Vaccination form
-    And I open the last created Case via API
-    When I click on New Sample in German
-    And I create a new Sample with positive test result for DE version
-    And I select the German words for Rapid Antigen Detection Test as Type of Test in the Create New Sample popup
-    And I save the created sample with pathogen test
-    And I open the last created Case via API
-    Then I click on share case button
-    And I select organization to share with "s2s_2"
-    And I click to hand over the ownership of the case in Share popup
-    And I fill comment in share popup with random string
-    Then I click on share button in s2s share popup and wait for share to finish
-    Then I navigate to "s2s_2" environment in new driver tab
-    And I log in as a Admin User
-    And I click on the Shares button from navbar
-    And I click on "accept" shared case button with copied case description
-    And I click on the Cases button from navbar
-    And I filter by CaseID on Case directory page
-    And I check that number of displayed cases results is 1
-    Then I click on the first Case ID from Case Directory
-    When I click on New Sample in German
-    And I create a new Sample with positive test result for DE version with "Testlabor DEMIS" as a labor
-    And I save the created sample with pathogen test
-    And I confirm case with positive test result
-    Then I navigate to case tab
-    And I click NEW VACCINATION button for DE
-    And I fill new vaccination data in new Vaccination form for DE with "Comirnaty (COVID-19-mRNA Impfstoff)" as a vaccine name
-    And I click SAVE button in new Vaccination form
-    Then I back to tab number 1
-    And I refresh current page
-    Then I check if Immunization area contains "Comirnaty (COVID-19-mRNA Impfstoff)"
-    Then I check if Immunization area contains "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)"
-    And I click on See samples for this person button
-    And I check that number of displayed sample results is 2
-
-  @tmsLink=SORDEV-12095 @env_s2s_1
-  Scenario: [S2S] Sample and Immunization - Change date of sample and immuniation
-    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given I log in as a Admin User
-    And I open the last created Case via API
-    Then I click on save button in the case popup
-    And I click NEW VACCINATION button for DE
-    And I fill new vaccination data in new Vaccination form for DE
-    And I click SAVE button in new Vaccination form
-    And I open the last created Case via API
-    When I click on New Sample in German
-    And I create a new Sample with positive test result for DE version
-    And I select the German words for Rapid Antigen Detection Test as Type of Test in the Create New Sample popup
-    And I save the created sample with pathogen test
-    And I open the last created Case via API
-    Then I click on share case button
-    And I select organization to share with "s2s_2"
-    And I click to hand over the ownership of the case in Share popup
-    And I fill comment in share popup with random string
-    Then I click on share button in s2s share popup and wait for share to finish
-    Then I navigate to "s2s_2" environment in new driver tab
-    And I log in as a Admin User
-    And I click on the Shares button from navbar
-    And I click on "accept" shared case button with copied case description
-    And I click on the Cases button from navbar
-    And I filter by CaseID on Case directory page
-    And I check that number of displayed cases results is 1
-    Then I click on the first Case ID from Case Directory
-    And I click on edit Sample
-    Then I set date sample was collected minus 4 days ago on Sample Edit page
-    And I click on Save Button in Sample Edit page
-    Then I navigate to case tab
-    And I click on first vaccination edit button
-    Then I change the vaccination date for minus 5 day from today
-    And I click SAVE button in new Vaccination form
-    Then I back to tab number 1
-    And I refresh current page
-    And I click on view Sample
-    And I check if date of sample is set for 4 day ago from today on Edit Sample page for DE version
-    Then I navigate to case tab
-    And I click on the Edit Vaccination icon on vaccination card on Edit contact page
-    Then I check if vaccination date is set for 5 day ago from today on Edit Vaccination page for DE version
-
-  @tmsLink=SORDEV-12095 @env_s2s_1
-  Scenario: [S2S] Sample and Immunization - Create sample and immuniation after share the case
-    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given I log in as a Admin User
-    And I open the last created Case via API
-    Then I click on share case button
-    And I select organization to share with "s2s_2"
-    And I click to hand over the ownership of the case in Share popup
-    And I fill comment in share popup with random string
-    Then I click on share button in s2s share popup and wait for share to finish
-    And I click NEW VACCINATION button for DE
-    And I fill new vaccination data in new Vaccination form for DE
-    And I click SAVE button in new Vaccination form
-    And I open the last created Case via API
-    When I click on New Sample in German
-    And I create a new Sample with positive test result for DE version
-    And I select the German words for Rapid Antigen Detection Test as Type of Test in the Create New Sample popup
-    And I save the created sample with pathogen test
-    And I open the last created Case via API
-    Then I navigate to "s2s_2" environment in new driver tab
-    And I log in as a Admin User
-    And I click on the Shares button from navbar
-    And I click on "accept" shared case button with copied case description
-    And I click on the Cases button from navbar
-    And I filter by CaseID on Case directory page
-    And I check that number of displayed cases results is 1
-    Then I click on the first Case ID from Case Directory
-    Then I check if Immunization area contains "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)"
-    And I click on See samples for this person button
-    And I check that number of displayed sample results is 1
-
-  @tmsLink=SORDEV-12095 @env_s2s_1
-  Scenario: [S2S] Sample and Immunization - Add sample and immunization in source system after accept s2s case without hand over the ownership
-    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given I log in as a Admin User
-    And I open the last created Case via API
-    Then I click on save button in the case popup
-    And I click NEW VACCINATION button for DE
-    And I fill new vaccination data in new Vaccination form for DE
-    And I click SAVE button in new Vaccination form
-    And I open the last created Case via API
-    When I click on New Sample in German
-    And I create a new Sample with positive test result for DE version
-    And I select the German words for Rapid Antigen Detection Test as Type of Test in the Create New Sample popup
-    And I save the created sample with pathogen test
-    And I open the last created Case via API
-    Then I click on share case button
-    And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
-    Then I click on share button in s2s share popup and wait for share to finish
-    Then I navigate to "s2s_2" environment in new driver tab
-    And I log in as a Admin User
-    And I click on the Shares button from navbar
-    And I click on "accept" shared case button with copied case description
-    Then I open last created Case via API on "s2s_2" instance
-    Then I back to tab number 1
-    When I click on New Sample in German
-    And I create a new Sample with positive test result for DE version with "Voreingestelltes Labor" as a labor
-    And I save the created sample with pathogen test
-    And I confirm case with positive test result
-    Then I navigate to case tab
-    And I click NEW VACCINATION button for DE
-    And I fill new vaccination data in new Vaccination form for DE with "Comirnaty (COVID-19-mRNA Impfstoff)" as a vaccine name
-    And I click SAVE button in new Vaccination form
-    Then I back to tab number 2
-    And I refresh current page
-    Then I check if Immunization area does not contains "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)"
-    And I check if sample card has "Es gibt keine Proben für diesen Fall" information
-
-  @tmsLink=SORDEV-12095 @env_s2s_1
-  Scenario: [S2S] Sample and Immunization - Change sample and immunization in target system without hand over the ownership
-    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given I log in as a Admin User
-    And I open the last created Case via API
-    Then I click on save button in the case popup
-    And I click NEW VACCINATION button for DE
-    And I fill new vaccination data in new Vaccination form for DE
-    And I click SAVE button in new Vaccination form
-    And I open the last created Case via API
-    When I click on New Sample in German
-    And I create a new Sample with positive test result for DE version
-    And I select the German words for Rapid Antigen Detection Test as Type of Test in the Create New Sample popup
-    And I save the created sample with pathogen test
-    And I open the last created Case via API
-    Then I click on share case button
-    And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
-    Then I click on share button in s2s share popup and wait for share to finish
-    Then I navigate to "s2s_2" environment in new driver tab
-    And I log in as a Admin User
-    And I click on the Shares button from navbar
-    And I click on "accept" shared case button with copied case description
-    Then I back to tab number 1
-    And I click on edit Sample
-    Then I set type of sample to "Blut"
-    And I click on Save Button in Sample Edit page
-    Then I navigate to case tab
-    And I click on first vaccination edit button
-    And I set vaccine manufacturer to "Valneva"
-    Then I click on save button in New Immunization form
-    Then I back to tab number 2
-    Then I open last created Case via API on "s2s_2" instance
-    And I check if sample card has "Es gibt keine Proben für diesen Fall" information
-    And I check if Immunization area contains "Es gibt keine Impfungen für diese Person und Krankheit"
-
-  @tmsLink=SORDEV-12095 @env_s2s_1
-  Scenario: [S2S] Sample and Immunization - Add sample and immunization in source system before accept s2s case without hand over the ownership
-    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given I log in as a Admin User
-    And I open the last created Case via API
-    Then I click on save button in the case popup
-    And I click NEW VACCINATION button for DE
-    And I fill new vaccination data in new Vaccination form for DE
-    And I click SAVE button in new Vaccination form
-    And I open the last created Case via API
-    When I click on New Sample in German
-    And I create a new Sample with positive test result for DE version
-    And I select the German words for Rapid Antigen Detection Test as Type of Test in the Create New Sample popup
-    And I save the created sample with pathogen test
-    And I open the last created Case via API
-    Then I click on share case button
-    And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
-    And I click to share samples of the case in Share popup
-    And I click on share immunizations of the case in Share popup
-    Then I click on share button in s2s share popup and wait for share to finish
-    When I click on New Sample in German
-    And I create a new Sample with positive test result for DE version with "Voreingestelltes Labor" as a labor
-    And I save the created sample with pathogen test
-    And I confirm case with positive test result
-    Then I navigate to case tab
-    And I click NEW VACCINATION button for DE
-    And I fill new vaccination data in new Vaccination form for DE with "Comirnaty (COVID-19-mRNA Impfstoff)" as a vaccine name
-    And I click SAVE button in new Vaccination form
-    Then I navigate to "s2s_2" environment in new driver tab
-    And I log in as a Admin User
-    And I click on the Shares button from navbar
-    And I click on "accept" shared case button with copied case description
-    Then I open last created Case via API on "s2s_2" instance
-    And I refresh current page
-    Then I check if Immunization area contains "Comirnaty (COVID-19-mRNA Impfstoff)"
-    Then I check if Immunization area contains "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)"
-    And I click on See samples for this person button
-    And I check that number of displayed sample results is 2
-
-  @tmsLink=SORDEV-13953 @env_s2s_1
-  Scenario: S2S - Share a case that was Archived
-    Given I log in as a Admin User
-    When I click on the Cases button from navbar
-    Then I click on the NEW CASE button
-    And I fill a new case form for DE version with mandatory data with "Berlin" as a region and "SK Berlin Mitte" as a district
-    And I save a new case
-    And I collect uuid of the case
-    Then I click on the Archive case button and confirm popup
-    And I click on save button from Edit Case page
-    Then I click on share case button
-    And I select organization to share with "s2s_2"
-    And I click to hand over the ownership of the case in Share popup
-    And I fill comment in share popup with random string
-    Then I click on share button in s2s share popup and wait for share to finish
-    Then I navigate to "s2s_2" environment in new driver tab
-    When I log in as a Admin User
-    And I click on the Shares button from navbar
-    And I click on "accept" shared case button with copied case description
-    And I open the last created case with collected UUID by url on "s2s_2" instance
-    And I check if Archive button changed name to Abschließen
-    Then I back to tab number 1
-    And I open the last created case with collected UUID by url on "s2s_1" instance
-    And I check if Archive button changed name to Wiedereröffnen

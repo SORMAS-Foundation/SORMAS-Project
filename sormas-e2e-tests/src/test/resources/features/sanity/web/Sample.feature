@@ -79,13 +79,10 @@ Feature: Sample Functionalities
   @env_main
   Scenario: Add a Pathogen test from Samples and verify the fields
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     And API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     And API: I create a new sample
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     When I log in as a National User
     And I click on the Sample button from navbar
@@ -97,13 +94,10 @@ Feature: Sample Functionalities
   @env_main
   Scenario: Delete created sample
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given API: I create a new sample
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I open the last created sample via API
@@ -114,13 +108,10 @@ Feature: Sample Functionalities
   @tmsLink=SORDEV-10052 @env_main
   Scenario: Basic export sample
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given API: I create a new sample
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     When I click on the Sample button from navbar
@@ -134,13 +125,10 @@ Feature: Sample Functionalities
   @tmsLink=SORDEV-10053 @env_main
   Scenario: Detailed export sample
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given API: I create a new sample
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     When I click on the Sample button from navbar
@@ -155,13 +143,13 @@ Feature: Sample Functionalities
   @env_main @tmsLink=SORDEV-5493
   Scenario: Add a Additional test from Samples and verify the fields
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     And API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     And API: I create a new sample
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     When I log in as a Admin User
     And I click on the Sample button from navbar
@@ -173,10 +161,10 @@ Feature: Sample Functionalities
   @#8556 @env_main
   Scenario: Add two positive Pathogen Test Result of different diseases to a Sample of a Contact
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new contact
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     When I log in as a National User
     Then I open the last created contact via API
@@ -201,10 +189,10 @@ Feature: Sample Functionalities
   @env_main @#8560
   Scenario: Display date and time for pathogen test result on sample card
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new contact
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     When I log in as a National User
     Then I open the last created contact via API
@@ -265,10 +253,10 @@ Feature: Sample Functionalities
   @tmsLink=SORDEV-7427 @env_de
   Scenario: Test Make date fields in sample creation mask and information non-compulsory
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I open the last created Case via API

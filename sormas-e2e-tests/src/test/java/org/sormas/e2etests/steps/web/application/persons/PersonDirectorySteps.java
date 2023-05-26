@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.persons;
 
+import static org.sormas.e2etests.entities.pojo.helpers.ShortUUIDGenerator.generateShortUUID;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePersonPage.CASE_OF_DEATH_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePersonPage.DATE_OF_DEATH_INPUT;
@@ -35,7 +36,6 @@ import cucumber.api.java8.En;
 import java.text.DateFormatSymbols;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
@@ -559,8 +559,7 @@ public class PersonDirectorySteps implements En {
         "I change {string} information data field for Person",
         (String searchCriteria) -> {
           String searchText = "";
-          String personUUID =
-              dataOperations.getPartialUuidFromAssociatedLink(UUID.randomUUID().toString());
+          String personUUID = dataOperations.getPartialUuidFromAssociatedLink(generateShortUUID());
           switch (searchCriteria) {
             case "uuid":
               searchText = personUUID;

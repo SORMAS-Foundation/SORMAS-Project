@@ -277,7 +277,9 @@ public class TherapyView extends AbstractCaseView {
 		prescriptionGrid = new PrescriptionGrid(
 			this,
 			caze.isPseudonymized(),
-			isEditAllowed() && UserProvider.getCurrent().hasAllUserRights(UserRight.CASE_EDIT, UserRight.PRESCRIPTION_EDIT));
+			UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed(), UserRight.CASE_EDIT, UserRight.PRESCRIPTION_EDIT),
+			UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed(), UserRight.PRESCRIPTION_DELETE));
+
 		prescriptionGrid.setCriteria(prescriptionCriteria);
 		prescriptionGrid.setHeightMode(HeightMode.ROW);
 		CssStyles.style(prescriptionGrid, CssStyles.VSPACE_2);
@@ -287,7 +289,11 @@ public class TherapyView extends AbstractCaseView {
 
 		treatmentGrid = new TreatmentGrid(
 			caze.isPseudonymized(),
-			isEditAllowed() && UserProvider.getCurrent().hasAllUserRights(UserRight.CASE_EDIT, UserRight.TREATMENT_EDIT));
+			UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed(), UserRight.CASE_EDIT, UserRight.TREATMENT_EDIT),
+			UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed(), UserRight.TREATMENT_DELETE),
+			UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed(), UserRight.CASE_EDIT, UserRight.PRESCRIPTION_EDIT),
+			UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed(), UserRight.PRESCRIPTION_DELETE));
+
 		treatmentGrid.setCriteria(treatmentCriteria);
 		container.addComponent(treatmentGrid);
 		container.setExpandRatio(treatmentGrid, 1);

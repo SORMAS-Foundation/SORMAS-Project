@@ -18,10 +18,12 @@
 
 package org.sormas.e2etests.entities.services;
 
+import static org.sormas.e2etests.entities.pojo.helpers.ShortUUIDGenerator.generateShortUUID;
+
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.time.LocalDate;
-import java.util.UUID;
+import lombok.SneakyThrows;
 import org.sormas.e2etests.entities.pojo.web.Person;
 import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.DistrictsValues;
@@ -52,6 +54,7 @@ public class PersonService {
         .build();
   }
 
+  @SneakyThrows
   public Person buildGeneratedPerson() {
     firstName = faker.name().firstName();
     lastName = faker.name().lastName();
@@ -69,8 +72,8 @@ public class PersonService {
         .emailAddress(ASCIIHelper.convertASCIIToLatin(firstName + "." + lastName + emailDomain))
         .phoneNumber(faker.phoneNumber().phoneNumber())
         .presentConditionOfPerson("Alive")
-        .externalId(UUID.randomUUID().toString())
-        .externalToken(UUID.randomUUID().toString())
+        .externalId(generateShortUUID())
+        .externalToken(generateShortUUID())
         .typeOfOccupation("Farmer")
         .staffOfArmedForces("Unknown")
         .region(RegionsValues.VoreingestellteBundeslander.getName())

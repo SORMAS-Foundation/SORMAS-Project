@@ -19,6 +19,7 @@
 package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.constants.api.Endpoints.CASES_PATH;
+import static org.sormas.e2etests.entities.pojo.helpers.ShortUUIDGenerator.generateShortUUID;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_PRESENT_CONDITION_COMBOBOX;
@@ -142,7 +143,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -177,6 +177,7 @@ public class CreateNewCaseSteps implements En {
   private static String phoneNumber;
   private final RestAssuredClient restAssuredClient;
 
+  @SneakyThrows
   @Inject
   public CreateNewCaseSteps(
       WebDriverHelpers webDriverHelpers,
@@ -201,8 +202,8 @@ public class CreateNewCaseSteps implements En {
             faker.number().numberBetween(1900, 2002),
             faker.number().numberBetween(1, 12),
             faker.number().numberBetween(1, 27));
-    UUID randomUUID_first_user = UUID.randomUUID();
-    UUID randomUUID_second_user = UUID.randomUUID();
+    String randomUUID_first_user = generateShortUUID();
+    String randomUUID_second_user = generateShortUUID();
 
     oneCase = caseService.buildGeneratedCaseForOnePerson(firstName, lastName, dateOfBirth);
     oneCase = oneCase.toBuilder().disease("COVID-19").build();
@@ -249,8 +250,8 @@ public class CreateNewCaseSteps implements En {
           caze = caseService.buildGeneratedCaseForOnePerson(firstName, lastName, dateOfBirth);
           selectCaseOrigin(caze.getCaseOrigin());
           // field that is no longer available
-          // fillExternalId(randomUUID_first_user.toString());
-          fillEpidNumber(randomUUID_first_user.toString());
+          // fillExternalId(randomUUID_first_user);
+          fillEpidNumber(randomUUID_first_user);
           fillDisease(caze.getDisease());
           selectResponsibleRegion(caze.getResponsibleRegion());
           selectResponsibleDistrict(caze.getResponsibleDistrict());
@@ -275,8 +276,8 @@ public class CreateNewCaseSteps implements En {
           caze = caseService.buildGeneratedCaseForOnePerson(firstName, lastName, dateOfBirth);
           selectCaseOrigin(caze.getCaseOrigin());
           // field that is no longer available
-          // fillExternalId(randomUUID_second_user.toString());
-          fillEpidNumber(randomUUID_second_user.toString());
+          // fillExternalId(randomUUID_second_user);
+          fillEpidNumber(randomUUID_second_user);
           fillDisease(caze.getDisease());
           selectResponsibleRegion(caze.getResponsibleRegion());
           selectResponsibleDistrict(caze.getResponsibleDistrict());
@@ -330,6 +331,7 @@ public class CreateNewCaseSteps implements En {
           casesUUID.add(webDriverHelpers.getValueFromWebElement(UUID_INPUT));
         });
 
+    // TODO this method should be refactored since it has 2 logics inside
     When(
         "I select ([^\"]*) created case for person from Cases list",
         (String option) -> {
@@ -1397,6 +1399,7 @@ public class CreateNewCaseSteps implements En {
         "^I choose create new case in Pick or create entry form for DE$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_CASE_CONFIRMATION_BUTTON_DE);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CONFIRM_BUTTON_POPUP);
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON_POPUP);
         });
 
@@ -1491,7 +1494,7 @@ public class CreateNewCaseSteps implements En {
         () -> {
           softly.assertTrue(
               webDriverHelpers.isElementVisibleWithTimeout(
-                  MERGE_DUPLICATED_CASES_WARNING_POPUP_DE, 5));
+                  MERGE_DUPLICATED_CASES_WARNING_POPUP_DE, 30));
           softly.assertAll();
           webDriverHelpers.clickOnWebElementBySelector(MERGE_DUPLICATED_CASES_WARNING_POPUP_DE);
         });

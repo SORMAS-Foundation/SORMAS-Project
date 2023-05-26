@@ -198,10 +198,44 @@ public class AboutDirectorySteps implements En {
 			webDriverHelpers.clickOnWebElementBySelector(CASE_CLASSIFICATION_RULES_HYPERLINK);
 		});
 
-		When("I check if Data Dictionary in {string} record has no {string} as a disease", (String recordName, String disease) -> {
-			softly.assertFalse(readXlsxFile(DATA_DICTIONARY_FILE_PATH, recordName, disease), disease + " exists in " + recordName);
-			softly.assertAll();
-		});
+    Then(
+        "^I check that Surveillance Dashboard header is correctly displayed in ([^\"]*) language$",
+        (String language) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              SURVEILLANCE_DASHBOARD_NAME, 30);
+          LanguageDetectorHelper.checkLanguage(
+              webDriverHelpers.getTextFromWebElement(SURVEILLANCE_DASHBOARD_NAME), language);
+        });
+
+    Then(
+        "^I check that the Survnet Converter version is not an unavailable on About directory$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(SURVNET_CONVERTER_VERSION_LABEL);
+
+          softly.assertFalse(
+              webDriverHelpers
+                  .getTextFromWebElement(SURVNET_CONVERTER_VERSION_LABEL)
+                  .contains("SORMAS (unavailable)"),
+              "The Sormas Converter is unavailable");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check that the Survnet Converter version is correctly displayed on About directory$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(SORMAS_VERSION_LINK);
+          String sormasVersion =
+              webDriverHelpers.getTextFromWebElement(SORMAS_VERSION_LINK).substring(9, 15);
+
+          softly.assertTrue(
+              webDriverHelpers
+                  .getTextFromWebElement(SURVNET_CONVERTER_VERSION_LABEL)
+                  .contains(sormasVersion),
+              "Survnet Converter has wrong version");
+          softly.assertAll();
+        });
+  }
 
 		Then("^I check that Surveillance Dashboard header is correctly displayed in ([^\"]*) language$", (String language) -> {
 			webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);

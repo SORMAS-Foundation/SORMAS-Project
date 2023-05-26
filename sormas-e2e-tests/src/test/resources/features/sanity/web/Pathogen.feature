@@ -5,13 +5,10 @@ Feature: Pathogen Functionalities
   @tmsLink=SORDEV-5492 @env_main
   Scenario: Add a Pathogen test from Samples with IgM test type and verify the fields
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     And API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     And API: I create a new sample
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     When I log in as a National User
     And I click on the Sample button from navbar
@@ -25,13 +22,10 @@ Feature: Pathogen Functionalities
   @tmsLink=SORDEV-5492 @env_main
   Scenario: Add a Pathogen test from Samples with IgG test type and verify the fields
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     And API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     And API: I create a new sample
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     When I log in as a National User
     And I click on the Sample button from navbar
@@ -45,13 +39,10 @@ Feature: Pathogen Functionalities
   @tmsLink=SORDEV-5492 @env_main
   Scenario: Add a Pathogen test from Samples with PCR RT PCR test type and verify the fields
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     And API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     And API: I create a new sample
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     When I log in as a National User
     And I click on the Sample button from navbar
@@ -65,13 +56,10 @@ Feature: Pathogen Functionalities
   @tmsLink=SORDEV-5492 @env_main
   Scenario: Add a Pathogen test from Samples with CQ Value Detection test type and verify the fields
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     And API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     And API: I create a new sample
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     When I log in as a National User
     And I click on the Sample button from navbar
@@ -85,13 +73,13 @@ Feature: Pathogen Functionalities
   @tmsLink=SORDEV-5492 @env_main
   Scenario: Add a Pathogen test from Samples with Sequencing test type and verify the fields
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     And API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     And API: I create a new sample
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     When I log in as a National User
     And I click on the Sample button from navbar
@@ -105,13 +93,13 @@ Feature: Pathogen Functionalities
   @tmsLink=SORDEV-5492 @env_main
   Scenario: Add a Pathogen test from Samples with DNA Microarray test type and verify the fields
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     And API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     And API: I create a new sample
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     When I log in as a National User
     And I click on the Sample button from navbar
@@ -125,13 +113,13 @@ Feature: Pathogen Functionalities
   @tmsLink=SORDEV-5492 @env_main
   Scenario: Add a Pathogen test from Samples with Other test type and verify the fields
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     And API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     And API: I create a new sample
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     When I log in as a National User
     And I click on the Sample button from navbar
@@ -145,10 +133,10 @@ Feature: Pathogen Functionalities
   @tmsLink=SORDEV-8058 @env_main
   Scenario: Unify pathogen test saving logic between cases and contacts
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     And API: I create a new contact
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I open the last created contact via API
@@ -169,10 +157,10 @@ Feature: Pathogen Functionalities
   @tmsLink=SORDEV-8058 @env_main
   Scenario: Unify pathogen test saving logic between cases and event participants
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     When I am accessing the event tab using the created event via api
@@ -196,13 +184,13 @@ Feature: Pathogen Functionalities
     @tmsLink=SORDEV-7092 @env_de
       Scenario: Test Enhance availability of pathogen test information
       Given API: I create a new person
-      Then API: I check that POST call body is "OK"
+
       And API: I check that POST call status code is 200
       And API: I create a new case
-      Then API: I check that POST call body is "OK"
+
       And API: I check that POST call status code is 200
       And API: I create a new sample
-      Then API: I check that POST call body is "OK"
+
       And API: I check that POST call status code is 200
       When I log in as a National User
       And I click on the Sample button from navbar

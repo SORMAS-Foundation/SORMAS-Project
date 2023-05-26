@@ -30,7 +30,6 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
-import de.symeda.sormas.api.utils.BulkOperationResults;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
@@ -88,7 +87,7 @@ public interface TaskFacade {
 
 	EditPermissionType getEditPermissionType(String uuid);
 
-	BulkOperationResults<String> saveBulkTasks(
+	Integer saveBulkTasks(
 		List<String> taskUuidList,
 		TaskDto updatedTempTask,
 		boolean priorityChange,

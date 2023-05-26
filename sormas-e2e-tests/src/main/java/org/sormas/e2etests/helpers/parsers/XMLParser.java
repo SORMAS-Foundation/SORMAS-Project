@@ -28,7 +28,7 @@ public class XMLParser {
                         && filez.getName().endsWith(fileExtension))
             .findFirst()
             .get();
-            SAXBuilder saxBuilder = new SAXBuilder();
-            return saxBuilder.build(file);
+    SAXBuilder saxBuilder = new SAXBuilder();
+    return saxBuilder.build(file);
   }
 }

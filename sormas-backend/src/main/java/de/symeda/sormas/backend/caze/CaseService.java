@@ -1656,7 +1656,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		Root<Case> root = cq.from(Case.class);
 		cq.multiselect(
 			JurisdictionHelper
-				.booleanSelector(cb, CaseJurisdictionPredicateValidator.of(new CaseQueryContext(cb, cq, root), user).isInJurisdiction()));
+				.booleanSelector(cb, CaseJurisdictionPredicateValidator.of(new CaseQueryContext(cb, cq, root), user).isRootInJurisdiction()));
 		cq.where(cb.equal(root.get(Case.UUID), caze.getUuid()));
 		return em.createQuery(cq).getResultList().stream().anyMatch(aBoolean -> aBoolean);
 	}

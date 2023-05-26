@@ -18,11 +18,17 @@
 
 -dontobfuscate
 
--keep public class de.symeda.sormas.** {
-  *;
-}
+-keep public class de.symeda.sormas.**  { *; }
+-keep public enum de.symeda.sormas.**  { *; }
 
 # exclude LBDS libs - their usage via reflection isn't properly detected
--keep public class org.hzi.sormas.** {
-  *;
-}
+-keep public class org.hzi.sormas.**  { *; }
+
+-dontwarn javax.**
+-dontwarn java.beans.**
+-dontwarn java.awt.Image
+-dontwarn kotlin.reflect.jvm.ReflectJvmMapping
+-dontwarn org.apache.commons.io.input.BOMInputStream
+-dontwarn org.slf4j.impl.StaticLoggerBinder
+-dontwarn reactor.blockhound.integration.BlockHoundIntegration
+-dontwarn sun.security.x509.AlgorithmId

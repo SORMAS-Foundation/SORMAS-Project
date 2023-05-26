@@ -256,6 +256,26 @@ public class EditSampleSteps implements En {
               "Date is inncorect");
           softly.assertAll();
         });
+
+    Then(
+        "^I check that laboratory is set to \"([^\"]*)\" on Edit Sample page$",
+        (String labor) -> {
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(LABORATORY_INPUT),
+              labor,
+              "Laboratory is incorrect");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check that laboratory details is set to \"([^\"]*)\" on edit Sample page$",
+        (String laborDetails) -> {
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(LABORATORY_NAME_INPUT),
+              laborDetails,
+              "Laboratory details are incorrect");
+          softly.assertAll();
+        });
   }
 
   private void selectPurposeOfSample(String samplePurpose, By element) {
