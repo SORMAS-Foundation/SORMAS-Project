@@ -1,7 +1,7 @@
 {
   "openapi" : "3.0.1",
   "info" : {
-    "description" : "[Readme of the module on GitHub](https://github.com/hzi-braunschweig/SORMAS-Project/tree/development/sormas-rest). \n### Responses\n- 400: Bad request: The request is not valid, e.g. missing required data\n- 403: Forbidden: User does not have necessary user rights\n- 404: Not found: The requested entity was not found.\n- 409: Conflict: Tried to update data of an entity that was updated in the mean-time.\n- 500: Internal server error: Other exceptions\n",
+    "description" : "[Readme of the module on GitHub](https://github.com/sormas-foundation/SORMAS-Project/tree/development/sormas-rest). \n### Responses\n- 400: Bad request: The request is not valid, e.g. missing required data\n- 403: Forbidden: User does not have necessary user rights\n- 404: Not found: The requested entity was not found.\n- 409: Conflict: Tried to update data of an entity that was updated in the mean-time.\n- 500: Internal server error: Other exceptions\n",
     "license" : {
       "name" : "GPL v3",
       "url" : "https://www.gnu.org/licenses/gpl-3.0.html"

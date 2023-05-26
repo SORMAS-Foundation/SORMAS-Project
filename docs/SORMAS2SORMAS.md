@@ -33,13 +33,13 @@ Descriptors centrally distributed via a dedicated `etcd` keyspace (e.g., `/s2s/`
 
 Each instance receives a dedicated x509 certificate and private key pair which is used to encrypt all S2S communication.
 The certificate is signed by a common S2S CA. The certificate and private key are stored in a `pkcs12` keystore under the
-S2S ID of the instance. See [here](https://github.com/hzi-braunschweig/S2S-Testbed/blob/main/docker/certs/sormas_a/generate-cert-a.sh)
+S2S ID of the instance. See [here](https://github.com/sormas-foundation/S2S-Testbed/blob/main/docker/certs/sormas_a/generate-cert-a.sh)
 for an example of how to generate a keystore.
 
 #### Truststore
 
 Each instance receives a truststore which contains the S2S CA certificate under the `sormas2sormas.rootCaAlias`.
-See [here](https://github.com/hzi-braunschweig/S2S-Testbed/blob/main/docker/certs/ca/generate_ca.sh) for an example of
+See [here](https://github.com/sormas-foundation/S2S-Testbed/blob/main/docker/certs/ca/generate_ca.sh) for an example of
 how to generate a truststore.
 
 #### Properties

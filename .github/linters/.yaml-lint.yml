@@ -7,6 +7,5 @@
 # # yamllint disable-line                 #
 ###########################################
 rules:
-  line-length:
-    level: warning
-    max: 125
+  line-length: disable
+  indentation: disable

@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thank you for contributing to SORMAS! **Please make sure that your issue complies to our [Contributing guidelines](https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/docs/CONTRIBUTING.md)** before submitting it.
+        Thank you for contributing to SORMAS! **Please make sure that your issue complies to our [Contributing guidelines](https://github.com/sormas-foundation/SORMAS-Project/blob/development/docs/CONTRIBUTING.md)** before submitting it.
   - type: textarea
     id: problem-description
     attributes:

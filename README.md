@@ -2,14 +2,14 @@
   <a href="https://sormas.org/">
     <img
       alt="SORMAS - Surveillance, Outbreak Response Management and Analysis System"
-      src="https://raw.githubusercontent.com/hzi-braunschweig/SORMAS-Project/development/logo.png"
+      src="https://raw.githubusercontent.com/sormas-foundation/SORMAS-Project/development/logo.png"
       height="200"
     />
   </a>
   <br/>
-  <a href="https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL%20v3-blue"/></a>
-  <a href="https://github.com/hzi-braunschweig/SORMAS-Project/releases/latest"><img alt="Latest Release" src="https://img.shields.io/github/v/release/hzi-braunschweig/SORMAS-Project"/></a>
-  <a href="https://github.com/hzi-braunschweig/SORMAS-Project/actions?query=workflow%3A%22Java+CI+with+Maven%22"><img alt="Development Build Status" src="https://github.com/hzi-braunschweig/SORMAS-Project/workflows/Java%20CI%20with%20Maven/badge.svg?branch=development"/></a>
+  <a href="https://github.com/sormas-foundation/SORMAS-Project/blob/development/LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL%20v3-blue"/></a>
+  <a href="https://github.com/sormas-foundation/SORMAS-Project/releases/latest"><img alt="Latest Release" src="https://img.shields.io/github/v/release/sormas-foundation/SORMAS-Project"/></a>
+  <a href="https://github.com/sormas-foundation/SORMAS-Project/actions?query=workflow%3A%22Java+CI+with+Maven%22"><img alt="Development Build Status" src="https://github.com/sormas-foundation/SORMAS-Project/workflows/Java%20CI%20with%20Maven/badge.svg?branch=development"/></a>
 </p>
 <br/>
 
@@ -24,14 +24,14 @@ You can give SORMAS a try on our demo server at <https://demo.sormas.org>!
 
 ### How Can I Get Involved?
 Read through our [*Contributing Readme*](docs/CONTRIBUTING.md) and contact us at info@sormas.org to learn how you can help to drive the development of SORMAS forward,
-or check out our [Discussions](https://github.com/hzi-braunschweig/SORMAS-Project/discussions) to get development support from the core developers and other community members.
+or check out our [Discussions](https://github.com/sormas-foundation/SORMAS-Project/discussions) to get development support from the core developers and other community members.
 SORMAS is a community-driven project, and we'd love to have you on board!
 
 If you want to contribute to the code, please strictly adhere to the [*Development Environment*](docs/DEVELOPMENT_ENVIRONMENT.md) guide to ensure that everything is set up correctly.
 Please also make sure that you've read the [*Development Contributing Guidelines*](docs/CONTRIBUTING.md#development-contributing-guidelines) before you start to develop.
 
 ### How Can I Report a Bug or Request a Feature?
-If you want to report a **security issue**, please read and follow our [*Security Policies*](docs/SECURITY.md). For bugs without security implications, change and feature requests, please [create a new issue](https://github.com/hzi-braunschweig/SORMAS-Project/issues/new/choose) and
+If you want to report a **security issue**, please read and follow our [*Security Policies*](docs/SECURITY.md). For bugs without security implications, change and feature requests, please [create a new issue](https://github.com/sormas-foundation/SORMAS-Project/issues/new/choose) and
 read the [*Submitting an Issue*](docs/CONTRIBUTING.md#submitting-an-issue) guide for more detailed instructions. We appreciate your help!
 
 ### Which Browsers and Android Versions are Supported?
@@ -40,7 +40,7 @@ SORMAS officially supports and is tested on **Chromium-based browsers** (like Go
 Making use of the SORMAS web application through a mobile device web browser is possible and acceptable also in countries that are subject to the General Data Protection Regulation (GDPR) as enforced by the European Union. However, in such countries that are subject to the GDPR, the Android application (.apk file) for SORMAS should not be used on mobile devices until further notice.
 
 ### Is there a ReST API documentation?
-Yes! Please download the [latest release](https://github.com/hzi-braunschweig/SORMAS-Project/releases/latest) and copy the content of /deploy/openapi/sormas-rest.yaml to an editor that generates a visual API documentation(e.g. <https://editor.swagger.io/>).
+Yes! Please download the [latest release](https://github.com/sormas-foundation/SORMAS-Project/releases/latest) and copy the content of /deploy/openapi/sormas-rest.yaml to an editor that generates a visual API documentation(e.g. <https://editor.swagger.io/>).
 A runtime Swagger documentation of the External Visits Resource (used by external symptom journals such as CLIMEDO or PIA) is available at ``<<host>>/sormas-rest/openapi.json`` or ``<<host>>/sormas-rest/openapi.yaml``
 
 ### Who is responsible for Data Protection and Data Security?
@@ -51,9 +51,9 @@ For these reasons, HZI cannot take the responsibility from the respective public
 <p align="center"><img src="https://user-images.githubusercontent.com/23701005/74659600-ebb8fc00-5194-11ea-836b-a7ca9d682301.png"/></p>
 
 ## Guidelines and Resources
-If you want to learn more about the development and contribution process, setting up or customizing your own system, or technical details, please consider the following guides and resources available in this repository. You can also view this readme and all guides outside the Wiki with a full table of content and search functionality here: <https://hzi-braunschweig.github.io/SORMAS-Project/>
+If you want to learn more about the development and contribution process, setting up or customizing your own system, or technical details, please consider the following guides and resources available in this repository. You can also view this readme and all guides outside the Wiki with a full table of content and search functionality here: <https://sormas-foundation.github.io/SORMAS-Project/>
 
-* **[GitHub Wiki](https://github.com/hzi-braunschweig/SORMAS-Project/wiki) - Our wiki contains additional guides for server customization and development instructions. Please have a look at it if you need information on anything that this readme does not contain.**
+* **[GitHub Wiki](https://github.com/sormas-foundation/SORMAS-Project/wiki) - Our wiki contains additional guides for server customization and development instructions. Please have a look at it if you need information on anything that this readme does not contain.**
 * [Contributing Guidelines](docs/CONTRIBUTING.md) - These are mandatory literature if you want to contribute to this repository in any way (e.g. by submitting issues, developing code, or translating SORMAS into new languages).
 * [Development Environment Setup Instructions](docs/DEVELOPMENT_ENVIRONMENT.md) - If you want to get involved with development, this guide tells you how to correctly set up your system in order to contribute to the code in adherence with codestyle guidelines, development practices, etc.
 * [Troubleshooting](docs/TROUBLESHOOTING.md) - A collection of solutions to common (mostly development) problems. Please consult this readme when encountering issues before issuing a support request.
@@ -63,7 +63,7 @@ If you want to learn more about the development and contribution process, settin
 * [Sormas2Sormas](docs/SORMAS2SORMAS.md) - The Sormas2Sormas API is used to share entities between SORMAS instances.
 
 * [Security Policies](docs/SECURITY.md) - These contain important information about how to report security problems and the processes we are using to take care of them.
-* [3rd Party License Acknowledgement](docs/3RD_PARTY_ACK.md) - This resource contains the names and license copies of external resources that SORMAS is using.
+* [Third-Party License Acknowledgement](docs/3RD_PARTY_ACK.md) - This resource contains the names and license copies of external resources that SORMAS is using.
 
 If you want to set up a SORMAS instance for production, testing or development purposes, please refer to the following guides:
 * [Installing a SORMAS Server](docs/SERVER_SETUP.md)

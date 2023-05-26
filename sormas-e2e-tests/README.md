@@ -145,7 +145,7 @@ to link GitHub bugs/tickets
 
 ## Copyright
 
-[Add the copyright](https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/docs/ADDING_LICENSE.md)
+[Add the copyright](https://github.com/sormas-foundation/SORMAS-Project/blob/development/docs/ADDING_LICENSE.md)
 
 ## Guide to further resources
 
