@@ -36,30 +36,30 @@ public class EventParticipantJurisdictionBooleanValidator extends BooleanJurisdi
 	private EventParticipantJurisdictionBooleanValidator(
 		EventParticipantJurisdictionDto eventParticipantJurisdictionDto,
 		UserJurisdiction userJurisdiction) {
-		super(null);
+		super(null, userJurisdiction);
 		this.eventParticipantJurisdictionDto = eventParticipantJurisdictionDto;
 		this.userJurisdiction = userJurisdiction;
 	}
 
-    @Override
-    public Boolean isRootInJurisdiction() {
-        return isInJurisdictionByJurisdictionLevel(userJurisdiction.getJurisdictionLevel());
-    }
+	@Override
+	public Boolean isRootInJurisdiction() {
+		return isInJurisdictionByJurisdictionLevel(userJurisdiction.getJurisdictionLevel());
+	}
 
-    @Override
-    public Boolean isRootInJurisdictionOrOwned() {
-        return userJurisdiction.getUuid().equals(eventParticipantJurisdictionDto.getReportingUserUuid()) || inJurisdiction();
-    }
+	@Override
+	public Boolean isRootInJurisdictionOrOwned() {
+		return userJurisdiction.getUuid().equals(eventParticipantJurisdictionDto.getReportingUserUuid()) || inJurisdiction();
+	}
 
-    @Override
-    protected Disease getDisease() {
-        return null;
-    }
+	@Override
+	protected Disease getDisease() {
+		return null;
+	}
 
-    @Override
-    protected Boolean whenNotAllowed() {
-        return false;
-    }
+	@Override
+	protected Boolean whenNotAllowed() {
+		return false;
+	}
 
 	@Override
 	protected Boolean whenNationalLevel() {
