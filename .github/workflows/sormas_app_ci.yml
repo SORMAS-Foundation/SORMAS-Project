@@ -43,7 +43,7 @@ jobs:
         if: ${{ fromJSON(env.PRIVILEGED_RUN) }}
         uses: actions/checkout@v3
         with:
-          token: ${{ secrets.SORMAS_VITAGROUP_TOKEN }}
+          token: ${{ secrets.SORMAS_VITAGROUP_CI_TOKEN }}
 
       - name: Checkout repository (without token)
         # Check if PR results from a fork: if yes, we cannot access the token.
