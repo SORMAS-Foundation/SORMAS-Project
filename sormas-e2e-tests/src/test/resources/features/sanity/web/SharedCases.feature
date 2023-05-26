@@ -9,6 +9,7 @@ Feature: Sharing cases between environments tests
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     Then I navigate to the last created case via the url
+    And I check if handover card contains "Dieser Fall ist nicht geteilt" information
     And I collect uuid of the case
     Then I click on share case button
     And I select organization to share with "s2s_2"
@@ -20,6 +21,8 @@ Feature: Sharing cases between environments tests
     Then I accept first case in Shares Page
     Then I navigate to "s2s_1" environment
     Then I navigate to the last created case via the url
+    And I check Delete button from case is enabled
+    And Total number of read only fields should be 17
     Then I click on Delete button from case
     And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
     And I click on Yes option in Confirm deletion popup
@@ -27,7 +30,7 @@ Feature: Sharing cases between environments tests
     And I apply "Gelöschte Fälle" to combobox on Case Directory Page
     Then I click on the APPLY FILTERS button
     And I select first created case for person from Cases list
-    Then I check if editable fields are read only for an archived case
+    Then Total number of read only fields should be 17
     And I check if handover card contains "LK Fulda" information
     And I check if handover card contains "Geteilt von: Automation ADMIN" information
     And I check if handover card contains "Kommentar: shared to be deleted after" information
@@ -37,7 +40,7 @@ Feature: Sharing cases between environments tests
     And I apply "Aktive Fälle" to combobox on Case Directory Page
     Then I click on the APPLY FILTERS button
     And I select first created case for person from Cases list
-    Then I check if editable fields are read only for an archived case
+    Then I check if editable fields are enabled for the case in view
     And I check if handover card contains "Eigentümer: LK Barnim" information
     And I check if handover card contains "Geteilt von: Automation Admin" information
     And I check if handover card contains "shared to be deleted after" information
@@ -1027,7 +1030,7 @@ Feature: Sharing cases between environments tests
     And I apply "Alle aktiven und archivierten Fälle" to combobox on Case Directory Page
     Then I click on the APPLY FILTERS button
     And I select first created case for person from Cases list
-    Then I check if editable fields are read only for an archived case
+    Then I check if editable fields are enabled for the case in view
 
   @tmsLink=SORDEV-12087 @env_s2s_1
   Scenario: Delete a case in target system with handing ownership
@@ -1058,7 +1061,7 @@ Feature: Sharing cases between environments tests
     And I apply "Alle aktiven und archivierten Fälle" to combobox on Case Directory Page
     Then I click on the APPLY FILTERS button
     And I select first created case for person from Cases list
-    Then I check if editable fields are read only for an archived case
+    Then I check if editable fields are enabled for the case in view
 
   @tmsLink=SORDEV-12087 @env_s2s_1
   Scenario: Delete a case in source system without handing ownership
@@ -1088,7 +1091,7 @@ Feature: Sharing cases between environments tests
     And I apply "Alle aktiven und archivierten Fälle" to combobox on Case Directory Page
     Then I click on the APPLY FILTERS button
     And I select first created case for person from Cases list
-    Then I check if editable fields are read only for an archived case
+    Then I check if editable fields are enabled for the case in view
 
   @tmsLink=SORDEV-12087 @env_s2s_1
   Scenario: Delete a case in target system without handing ownership
