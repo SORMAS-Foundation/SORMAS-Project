@@ -55,7 +55,6 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -65,8 +64,6 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.ExportEntityName;
-import org.apache.commons.lang3.mutable.Mutable;
-import org.apache.commons.lang3.mutable.MutableObject;
 
 @SuppressWarnings("serial")
 public class AboutView extends VerticalLayout implements View {
@@ -160,7 +157,7 @@ public class AboutView extends VerticalLayout implements View {
 
 		Link whatsNewLink = new Link(
 			I18nProperties.getCaption(Captions.aboutWhatsNew),
-			new ExternalResource("https://github.com/hzi-braunschweig/SORMAS-Project/releases/tag/v" + InfoProvider.get().getBaseVersion()));
+			new ExternalResource("https://github.com/sormas-foundation/SORMAS-Project/releases/tag/v" + InfoProvider.get().getBaseVersion()));
 		whatsNewLink.setTargetName("_blank");
 		infoLayout.addComponent(whatsNewLink);
 
@@ -169,13 +166,13 @@ public class AboutView extends VerticalLayout implements View {
 		sormasWebsiteLink.setTargetName("_blank");
 		infoLayout.addComponent(sormasWebsiteLink);
 
-		Link sormasGithubLink = new Link("SORMAS Github", new ExternalResource("https://github.com/hzi-braunschweig/SORMAS-Project"));
+		Link sormasGithubLink = new Link("SORMAS Github", new ExternalResource("https://github.com/sormas-foundation/SORMAS-Project"));
 		sormasGithubLink.setTargetName("_blank");
 		infoLayout.addComponent(sormasGithubLink);
 
 		Link changelogLink = new Link(
 			I18nProperties.getCaption(Captions.aboutChangelog),
-			new ExternalResource("https://github.com/hzi-braunschweig/SORMAS-Project/releases"));
+			new ExternalResource("https://github.com/sormas-foundation/SORMAS-Project/releases"));
 		changelogLink.setTargetName("_blank");
 		infoLayout.addComponent(changelogLink);
 
@@ -277,7 +274,7 @@ public class AboutView extends VerticalLayout implements View {
 		 * Link technicalManualLink = new Link(
 		 * I18nProperties.getCaption(Captions.aboutTechnicalManual),
 		 * new ExternalResource(
-		 * "https://github.com/hzi-braunschweig/SORMAS-Project/files/2585973/SORMAS_Technical_Manual_Webversion_20180911.pdf"));
+		 * "https://github.com/sormas-foundation/SORMAS-Project/files/2585973/SORMAS_Technical_Manual_Webversion_20180911.pdf"));
 		 * technicalManualLink.setTargetName("_blank");
 		 * documentsLayout.addComponent(technicalManualLink);
 		 */

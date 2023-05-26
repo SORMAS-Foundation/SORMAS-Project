@@ -135,7 +135,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	 * If you need to change this test to make it pass, you probably changed the behaviour of the ExternalVisitsResource.
 	 * Please note that other system used alongside with SORMAS are depending on this, so that their developers must be notified of any
 	 * relevant API changes some time before they go into any test and productive system. Please inform the SORMAS core development team at
-	 * https://gitter.im/SORMAS-Project!
+	 * https://github.com/sormas-foundation/SORMAS-Project/discussions/categories/development-support!
 	 */
 	public void givenValidEmailWithPhoneOnlyAccepted() {
 
@@ -198,7 +198,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	 * If you need to change this test to make it pass, you probably changed the behaviour of the ExternalVisitsResource.
 	 * Please note that other system used alongside with SORMAS are depending on this, so that their developers must be notified of any
 	 * relevant API changes some time before they go into any test and productive system. Please inform the SORMAS core development team at
-	 * https://gitter.im/SORMAS-Project!
+	 * https://github.com/sormas-foundation/SORMAS-Project/discussions/categories/development-support!
 	 */
 	public void givenValidEmailWithPhoneOnlyNotAccepted() {
 
@@ -263,7 +263,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	 * If you need to change this test to make it pass, you probably changed the behaviour of the ExternalVisitsResource.
 	 * Please note that other system used alongside with SORMAS are depending on this, so that their developers must be notified of any
 	 * relevant API changes some time before they go into any test and productive system. Please inform the SORMAS core development team at
-	 * https://gitter.im/SORMAS-Project!
+	 * https://github.com/sormas-foundation/SORMAS-Project/discussions/categories/development-support!
 	 */
 	public void givenNoEmailWithPhoneOnlyAccepted() {
 
@@ -327,7 +327,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	 * If you need to change this test to make it pass, you probably changed the behaviour of the ExternalVisitsResource.
 	 * Please note that other system used alongside with SORMAS are depending on this, so that their developers must be notified of any
 	 * relevant API changes some time before they go into any test and productive system. Please inform the SORMAS core development team at
-	 * https://gitter.im/SORMAS-Project!
+	 * https://github.com/sormas-foundation/SORMAS-Project/discussions/categories/development-support!
 	 */
 	public void givenNoEmailWithPhoneOnlyNotAccepted() {
 
@@ -391,7 +391,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	 * If you need to change this test to make it pass, you probably changed the behaviour of the ExternalVisitsResource.
 	 * Please note that other system used alongside with SORMAS are depending on this, so that their developers must be notified of any
 	 * relevant API changes some time before they go into any test and productive system. Please inform the SORMAS core development team at
-	 * https://gitter.im/SORMAS-Project!
+	 * https://github.com/sormas-foundation/SORMAS-Project/discussions/categories/development-support!
 	 */
 	public void givenMultipleNonPrimaryEmailsWithPhoneOnlyAccepted() {
 
@@ -465,7 +465,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	 * If you need to change this test to make it pass, you probably changed the behaviour of the ExternalVisitsResource.
 	 * Please note that other system used alongside with SORMAS are depending on this, so that their developers must be notified of any
 	 * relevant API changes some time before they go into any test and productive system. Please inform the SORMAS core development team at
-	 * https://gitter.im/SORMAS-Project!
+	 * https://github.com/sormas-foundation/SORMAS-Project/discussions/categories/development-support!
 	 */
 	public void givenMultipleNonPrimaryEmailsWithPhoneOnlyNotAccepted() {
 
@@ -537,7 +537,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	 * If you need to change this test to make it pass, you probably changed the behaviour of the ExternalVisitsResource.
 	 * Please note that other system used alongside with SORMAS are depending on this, so that their developers must be notified of any
 	 * relevant API changes some time before they go into any test and productive system. Please inform the SORMAS core development team at
-	 * https://gitter.im/SORMAS-Project!
+	 * https://github.com/sormas-foundation/SORMAS-Project/discussions/categories/development-support!
 	 */
 	public void givenInvalidPrimaryEmailWithPhoneOnlyAccepted() {
 
@@ -609,7 +609,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	 * If you need to change this test to make it pass, you probably changed the behaviour of the ExternalVisitsResource.
 	 * Please note that other system used alongside with SORMAS are depending on this, so that their developers must be notified of any
 	 * relevant API changes some time before they go into any test and productive system. Please inform the SORMAS core development team at
-	 * https://gitter.im/SORMAS-Project!
+	 * https://github.com/sormas-foundation/SORMAS-Project/discussions/categories/development-support!
 	 */
 	public void givenInvalidPrimaryEmailWithPhoneOnlyNotAccepted() {
 
@@ -675,7 +675,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	 * If you need to change this test to make it pass, you probably changed the behaviour of the ExternalVisitsResource.
 	 * Please note that other system used alongside with SORMAS are depending on this, so that their developers must be notified of any
 	 * relevant API changes some time before they go into any test and productive system. Please inform the SORMAS core development team at
-	 * https://gitter.im/SORMAS-Project!
+	 * https://github.com/sormas-foundation/SORMAS-Project/discussions/categories/development-support!
 	 */
 	public void givenInvalidNonPrimaryEmailWithPhoneOnlyAccepted() {
 
@@ -749,7 +749,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	 * If you need to change this test to make it pass, you probably changed the behaviour of the ExternalVisitsResource.
 	 * Please note that other system used alongside with SORMAS are depending on this, so that their developers must be notified of any
 	 * relevant API changes some time before they go into any test and productive system. Please inform the SORMAS core development team at
-	 * https://gitter.im/SORMAS-Project!
+	 * https://github.com/sormas-foundation/SORMAS-Project/discussions/categories/development-support!
 	 */
 	public void givenInvalidNonprimaryEmailWithPhoneOnlyNotAccepted() {
 
@@ -816,7 +816,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	 * If you need to change this test to make it pass, you probably changed the behaviour of the ExternalVisitsResource.
 	 * Please note that other system used alongside with SORMAS are depending on this, so that their developers must be notified of any
 	 * relevant API changes some time before they go into any test and productive system. Please inform the SORMAS core development team at
-	 * https://gitter.im/SORMAS-Project!
+	 * https://github.com/sormas-foundation/SORMAS-Project/discussions/categories/development-support!
 	 */
 	public void givenTakenEmailWithPhoneOnlyAccepted() {
 
@@ -889,7 +889,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	 * If you need to change this test to make it pass, you probably changed the behaviour of the ExternalVisitsResource.
 	 * Please note that other system used alongside with SORMAS are depending on this, so that their developers must be notified of any
 	 * relevant API changes some time before they go into any test and productive system. Please inform the SORMAS core development team at
-	 * https://gitter.im/SORMAS-Project!
+	 * https://github.com/sormas-foundation/SORMAS-Project/discussions/categories/development-support!
 	 */
 	public void givenTakenEmailWithPhoneOnlyNotAccepted() {
 
@@ -955,7 +955,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	 * If you need to change this test to make it pass, you probably changed the behaviour of the ExternalVisitsResource.
 	 * Please note that other system used alongside with SORMAS are depending on this, so that their developers must be notified of any
 	 * relevant API changes some time before they go into any test and productive system. Please inform the SORMAS core development team at
-	 * https://gitter.im/SORMAS-Project!
+	 * https://github.com/sormas-foundation/SORMAS-Project/discussions/categories/development-support!
 	 */
 	public void givenIncompleteBirthdateIsNotExportable() {
 		PersonDto person = new PersonDto();

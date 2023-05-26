@@ -1,6 +1,6 @@
 site_name: SORMAS Project
-repo_name: 'hzi-braunschweig/SORMAS-Project'
-repo_url: 'https://github.com/hzi-braunschweig/SORMAS-Project'
+repo_name: 'sormas-foundation/SORMAS-Project'
+repo_url: 'https://github.com/sormas-foundation/SORMAS-Project'
 
 theme:
   name: material
@@ -12,7 +12,7 @@ extra:
     primary: 'cyan'
   social:
     - icon: 'fontawesome/brands/github-alt'
-      link: 'https://github.com/hzi-braunschweig/SORMAS-Project'
+      link: 'https://github.com/sormas-foundation/SORMAS-Project'
 plugins:
   - search:
       separator: '[\s]+'
