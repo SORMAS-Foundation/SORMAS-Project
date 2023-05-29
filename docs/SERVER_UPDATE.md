@@ -3,12 +3,12 @@
 SORMAS releases starting from 1.21.0 contain a script that automatically updates and deploys the server. If you are using an older version and therefore need to do a manual server update, please download the 1.21.0 release files and use the commands specified in the server-update.sh script.
 
 ## Preparations
-* Get the latest release files (deploy.zip) from <https://github.com/hzi-braunschweig/SORMAS-Project/releases/latest>
+* Get the latest release files (deploy.zip) from <https://github.com/sormas-foundation/SORMAS-Project/releases/latest>
 * Unzip the archive and copy/upload its contents to **/root/deploy/sormas/$(date +%F)**
     ```bash
     cd /root/deploy/sormas
     SORMAS_VERSION=1.y.z
-    wget https://github.com/hzi-braunschweig/SORMAS-Project/releases/download/v${SORMAS_VERSION}/sormas_${SORMAS_VERSION}.zip
+    wget https://github.com/sormas-foundation/SORMAS-Project/releases/download/v${SORMAS_VERSION}/sormas_${SORMAS_VERSION}.zip
     unzip sormas_${SORMAS_VERSION}.zip
     mv deploy/ $(date +%F)
     rm sormas_${SORMAS_VERSION}.zip
@@ -34,7 +34,7 @@ SELECT c.userrole, ur.userright FROM userroles_userrights ur LEFT JOIN userroles
 After deploying the new version, the information retrieved from these queries can be used to alter the new user role configurations accordingly.
 
 ### 1.81.0
-The [temporal tables extension is replaced](https://github.com/hzi-braunschweig/SORMAS-Project/issues/10260) during the deployment of the backend. As a preparation the following SQL **needs to be executed on the SORMAS database using the postgres user.**
+The [temporal tables extension is replaced](https://github.com/sormas-foundation/SORMAS-Project/issues/10260) during the deployment of the backend. As a preparation the following SQL **needs to be executed on the SORMAS database using the postgres user.**
 
 ```SQL
 -- versioning function will be replaced during server backend startup
@@ -119,7 +119,7 @@ The docker installation is automatically upgraded to the latest version specifie
 
 **Prerequisites:** Make sure the DB is backed up, because once the upgrade is done the new DB won't be usable with the old version of Keycloak.
 
-For more info see the [Keycloak Docker Documentation](https://github.com/hzi-braunschweig/SORMAS-Docker/blob/development/keycloak/README.md).
+For more info see the [Keycloak Docker Documentation](https://github.com/sormas-foundation/SORMAS-Docker/blob/development/keycloak/README.md).
 
 ## How to migrate to new Payara Server
 

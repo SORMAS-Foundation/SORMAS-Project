@@ -8,7 +8,7 @@ project.
   - [Disclosure Policy](#disclosure-policy)
   - [Comments on this Policy](#comments-on-this-policy)
 
-If you want to report a bug which is not security sensible, please [submit an issue](https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/CONTRIBUTING.md#submitting-an-issue).
+If you want to report a bug which is not security sensible, please [submit an issue](https://github.com/sormas-foundation/SORMAS-Project/blob/development/CONTRIBUTING.md#submitting-an-issue).
 
 ## Reporting a Security Bug
 
