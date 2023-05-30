@@ -27,7 +27,7 @@ A minimal maven project structure for an external message adapter module is show
 
 ### MyMessageAdapter.java
 
-This is the main class of the external message adapter module. 
+This is the main class of the external message adapter module.
 It must implement the  [ExternalMessageAdapterFacade](../sormas-api/src/main/java/de/symeda/sormas/api/externalmessage/ExternalMessageAdapterFacade.java) interface from the `sormas-api` module.
 
 For more information please refer to the javadoc on the [ExternalMessageAdapterFacade](../sormas-api/src/main/java/de/symeda/sormas/api/externalmessage/ExternalMessageAdapterFacade.java) interface.
@@ -409,7 +409,7 @@ Set the `interface.demis.jndiName` in the `sormas.properties` of your SORMAS dom
 This JNDI name should match the location the external message ejb implemented in the module.
 Following the above example project it would be:
 
-```
+```properties
 interface.demis.jndiName=java:global/my-message-adapter/MyExternalMessageFacade
 ```
 
