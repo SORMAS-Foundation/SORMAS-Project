@@ -31,6 +31,8 @@ public class SideCards {
       By.xpath("//div[contains(@id, 'see-associated-message')]");
   public static By HANDOVER_SIDE_CARD = By.xpath("//div[@location='sormasToSormas']");
 
+  public static By HANDOVER_SIDE_CARD = By.xpath("//div[@location='sormasToSormas']");
+
   public static By checkTextInHandoverSideComponent(String text) {
     return By.xpath(String.format("//div[@location='sormasToSormas']//div[text()='%s']", text));
   }
