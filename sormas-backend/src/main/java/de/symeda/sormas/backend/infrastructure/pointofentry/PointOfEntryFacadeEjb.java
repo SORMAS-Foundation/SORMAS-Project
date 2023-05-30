@@ -252,9 +252,13 @@ public class PointOfEntryFacadeEjb
 	}
 
 	@Override
-	protected PointOfEntry fillOrBuildEntity(@NotNull PointOfEntryDto source, PointOfEntry target, boolean checkChangeDate) {
+	protected PointOfEntry fillOrBuildEntity(
+		@NotNull PointOfEntryDto source,
+		PointOfEntry target,
+		boolean checkChangeDate,
+		boolean allowUuidOverwrite) {
 
-		target = DtoHelper.fillOrBuildEntity(source, target, PointOfEntry::new, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, PointOfEntry::new, checkChangeDate, allowUuidOverwrite);
 
 		target.setName(source.getName());
 		target.setPointOfEntryType(source.getPointOfEntryType());
@@ -305,9 +309,7 @@ public class PointOfEntryFacadeEjb
 		}
 
 		@Inject
-		protected PointOfEntryFacadeEjbLocal(
-			PointOfEntryService service,
-			FeatureConfigurationFacadeEjbLocal featureConfiguration) {
+		protected PointOfEntryFacadeEjbLocal(PointOfEntryService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
 			super(service, featureConfiguration);
 		}
 	}

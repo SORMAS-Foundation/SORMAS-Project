@@ -261,8 +261,12 @@ public class SubcontinentFacadeEjb
 	}
 
 	@Override
-	protected Subcontinent fillOrBuildEntity(@NotNull SubcontinentDto source, Subcontinent target, boolean checkChangeDate) {
-		target = DtoHelper.fillOrBuildEntity(source, target, Subcontinent::new, checkChangeDate);
+	protected Subcontinent fillOrBuildEntity(
+		@NotNull SubcontinentDto source,
+		Subcontinent target,
+		boolean checkChangeDate,
+		boolean allowUuidOverwrite) {
+		target = DtoHelper.fillOrBuildEntity(source, target, Subcontinent::new, checkChangeDate, allowUuidOverwrite);
 
 		target.setDefaultName(source.getDefaultName());
 		target.setArchived(source.isArchived());
@@ -280,9 +284,7 @@ public class SubcontinentFacadeEjb
 		}
 
 		@Inject
-		protected SubcontinentFacadeEjbLocal(
-			SubcontinentService service,
-			FeatureConfigurationFacadeEjbLocal featureConfiguration) {
+		protected SubcontinentFacadeEjbLocal(SubcontinentService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
 			super(service, featureConfiguration);
 		}
 	}
