@@ -1,6 +1,9 @@
 package org.sormas.e2etests.steps.web.application.survnet;
 
 import cucumber.api.java8.En;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.jdom2.Document;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
@@ -8,10 +11,6 @@ import org.sormas.e2etests.helpers.parsers.XMLParser;
 import org.sormas.e2etests.steps.web.application.cases.CreateNewCaseSteps;
 import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
 import org.testng.asserts.SoftAssert;
-
-import javax.inject.Inject;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 @Slf4j
 public class SurvNetSteps implements En {
@@ -27,9 +26,11 @@ public class SurvNetSteps implements En {
         "I check if date of report in SurvNet generated XML file is correct",
         () -> {
           Document xmlFile =
-                    XMLParser.getDocument(
-                            "/srv/dockerdata/jenkins_new/sormas-files/test_" + EditCaseSteps.externalUUID.substring(1,37) + ".xml");
-          LocalDate expectedDate =  CreateNewCaseSteps.survnetCase.getDateOfReport();
+              XMLParser.getDocument(
+                  "/srv/dockerdata/jenkins_new/sormas-files/test_"
+                      + EditCaseSteps.externalUUID.substring(1, 37)
+                      + ".xml");
+          LocalDate expectedDate = CreateNewCaseSteps.survnetCase.getDateOfReport();
           LocalDate dateOfReport = getReportingDate(xmlFile);
           softly.assertEquals(dateOfReport, expectedDate, "Date of report is incorrect!");
           softly.assertAll();
@@ -39,8 +40,10 @@ public class SurvNetSteps implements En {
         "^I check if sex in SurvNet generated XML file is correct$",
         () -> {
           Document xmlFile =
-                    XMLParser.getDocument(
-                            "/srv/dockerdata/jenkins_new/sormas-files/test_" + EditCaseSteps.externalUUID.substring(1,37) + ".xml");
+              XMLParser.getDocument(
+                  "/srv/dockerdata/jenkins_new/sormas-files/test_"
+                      + EditCaseSteps.externalUUID.substring(1, 37)
+                      + ".xml");
           String sex = getSexDE(xmlFile);
           String expectedSex = CreateNewCaseSteps.survnetCase.getSex();
           softly.assertEquals(sex, expectedSex, "Sex is incorrect!");

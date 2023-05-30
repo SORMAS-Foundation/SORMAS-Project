@@ -457,7 +457,7 @@ public class CaseDirectorySteps implements En {
                   + "/sormas-webdriver/#!cases/data/"
                   + apiState.getCreatedCase().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_CASE_URL);
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
         });
 
     When(

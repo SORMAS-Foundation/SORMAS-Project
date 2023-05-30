@@ -1975,7 +1975,7 @@ public class EditCaseSteps implements En {
         "I check Delete button from case is enabled",
         () -> {
           webDriverHelpers.scrollToElement(DELETE_BUTTON);
-          softly.assertFalse(
+          softly.assertTrue(
               webDriverHelpers.isElementEnabled(DELETE_BUTTON),
               "Delete case button is not enabled");
           softly.assertAll();
@@ -2387,7 +2387,6 @@ public class EditCaseSteps implements En {
     When(
         "I click to share reports of the case in Share popup",
         () -> webDriverHelpers.clickOnWebElementBySelector(SHARE_REPORTS_CHECKBOX));
-
     When(
         "I click on share button in s2s share popup and wait for share to finish",
         () -> {

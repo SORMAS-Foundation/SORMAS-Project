@@ -23,5 +23,4 @@ import org.openqa.selenium.By;
 public class GeneralActions {
 
   public static final By READ_ONLY_FIELDS = By.xpath("//*[@aria-disabled='true']");
-
 }
