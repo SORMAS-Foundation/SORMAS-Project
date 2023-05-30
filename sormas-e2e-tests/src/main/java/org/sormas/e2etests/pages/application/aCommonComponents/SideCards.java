@@ -26,6 +26,8 @@ public class SideCards {
       By.xpath("//*[@location='samples']//*[@class='v-slot v-slot-s-list']/div/div/div/div");
   public static final By EDIT_SAMPLE_BUTTON = By.xpath("//div[contains(@id, 'edit-sample')]");
 
+  public static By HANDOVER_SIDE_CARD = By.xpath("//div[@location='sormasToSormas']");
+
   public static By checkTextInHandoverSideComponent(String text) {
     return By.xpath(String.format("//div[@location='sormasToSormas']//div[text()='%s']", text));
   }

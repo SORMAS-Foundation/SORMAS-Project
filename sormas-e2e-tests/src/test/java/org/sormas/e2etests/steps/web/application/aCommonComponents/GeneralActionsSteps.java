@@ -18,21 +18,16 @@
 
 package org.sormas.e2etests.steps.web.application.aCommonComponents;
 
+import static org.sormas.e2etests.pages.application.aCommonComponents.GeneralActions.READ_ONLY_FIELDS;
+import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.*;
+
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
+import javax.inject.Inject;
 import lombok.SneakyThrows;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.testng.asserts.SoftAssert;
-
-import javax.inject.Inject;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-
-import static org.sormas.e2etests.pages.application.aCommonComponents.GeneralActions.READ_ONLY_FIELDS;
-import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.*;
-import static org.sormas.e2etests.pages.application.contacts.EditContactPage.NUMBER_OF_TESTS_IN_SAMPLES;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.ONE_TEST_IN_SAMPLES_DE;
 
 public class GeneralActionsSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
@@ -40,8 +35,8 @@ public class GeneralActionsSteps implements En {
   private final BaseSteps baseSteps;
 
   /**
-   * This class contains general methods applicable anywhere
-   * Please don't add a view location in their name as they should be general
+   * This class contains general methods applicable anywhere Please don't add a view location in
+   * their name as they should be general
    */
   @SneakyThrows
   @Inject
@@ -54,8 +49,9 @@ public class GeneralActionsSteps implements En {
         "Total number of read only fields should be {int}",
         (Integer number) -> {
           softly.assertEquals(
-              webDriverHelpers.getNumberOfElements(READ_ONLY_FIELDS), number.intValue(),
-               " text is not present in handover component");
+              webDriverHelpers.getNumberOfElements(READ_ONLY_FIELDS),
+              number.intValue(),
+              " text is not present in handover component");
           softly.assertAll();
         });
   }
