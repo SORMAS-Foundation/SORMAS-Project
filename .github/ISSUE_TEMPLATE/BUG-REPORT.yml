@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thank you for reporting a bug you found in SORMAS! **Please make sure that your issue complies to our [Contributing guidelines](https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/docs/CONTRIBUTING.md)** before submitting it. Note that bugs in the current development version that are not reproducible on a released version should generally be reported on the issue they have been introduced in.
+        Thank you for reporting a bug you found in SORMAS! **Please make sure that your issue complies to our [Contributing guidelines](https://github.com/sormas-foundation/SORMAS-Project/blob/development/docs/CONTRIBUTING.md)** before submitting it. Note that bugs in the current development version that are not reproducible on a released version should generally be reported on the issue they have been introduced in.
   - type: textarea
     id: bug-description
     attributes:

@@ -33,7 +33,7 @@ jobs:
         if: ${{ fromJSON(env.PRIVILEGED_RUN) }}
         uses: actions/checkout@v3
         with:
-          token: ${{ secrets.SORMAS_VITAGROUP_TOKEN }}
+          token: ${{ secrets.SORMAS_VITAGROUP_CI_TOKEN }}
 
       - name: Checkout repository (without token)
         # Check if PR results from a fork: if yes, we cannot access the token.
@@ -73,7 +73,7 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
       - name: Run mvn verify and sonar analysis
-        # FIXME(@JonasCir) see https://github.com/hzi-braunschweig/SORMAS-Project/issues/3730#issuecomment-745165678
+        # FIXME(@JonasCir) see https://github.com/sormas-foundation/SORMAS-Project/issues/3730#issuecomment-745165678
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -84,7 +84,7 @@ jobs:
         uses: actions/github-script@v6
         if: github.event_name == 'pull_request'
         with:
-          github-token: ${{ secrets.SORMAS_VITAGROUP_TOKEN }}
+          github-token: ${{ secrets.SORMAS_VITAGROUP_CI_TOKEN }}
           script: |
             github.rest.issues.createComment({
               issue_number: context.issue.number,

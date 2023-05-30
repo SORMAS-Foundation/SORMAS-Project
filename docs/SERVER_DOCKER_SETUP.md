@@ -1,6 +1,6 @@
 # Installing a SORMAS Server for development
 
-**Note: This guide explains how to configure a SORMAS server on Linux and Windows systems for development. Please note that there is no database setup because the script supposes the use of the Docker Postgresql image (see [SORMAS-Docker](https://github.com/hzi-braunschweig/SORMAS-Docker)).**
+**Note: This guide explains how to configure a SORMAS server on Linux and Windows systems for development. Please note that there is no database setup because the script supposes the use of the Docker Postgresql image (see [SORMAS-Docker](https://github.com/sormas-foundation/SORMAS-Docker)).**
 
 ## Content
 * [Prerequisites](#prerequisites)
@@ -28,7 +28,7 @@ Download and install Ant, it can be done from [Ant site](https://ant.apache.org/
 
 See [Installing Postgresql](SERVER_SETUP.md#postgres-database)
 
-Alternatively you can use the Docker image available in [SORMAS-Docker](https://github.com/hzi-braunschweig/SORMAS-Docker) repository.
+Alternatively you can use the Docker image available in [SORMAS-Docker](https://github.com/sormas-foundation/SORMAS-Docker) repository.
 
 ## SORMAS Server
 

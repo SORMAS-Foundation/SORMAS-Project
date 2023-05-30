@@ -3,9 +3,9 @@
 This is a [keycloak service provider](https://www.keycloak.org/docs/11.0/server_development/#_providers) that implements SORMAS legacy password hashing mechanism for two use cases:
 
 1. Migration of existing user when moving from the basic authentication mechanism to keycloak
-2. Creation of users without email in SORMAS. In this case the password will be shown to the admin **once**. 
+2. Creation of users without email in SORMAS. In this case the password will be shown to the admin **once**.
 
-More on [Authentication & Authorization](https://github.com/hzi-braunschweig/SORMAS-Project/wiki/Authentication-&-Authorization).
+More on [Authentication & Authorization](https://github.com/sormas-foundation/SORMAS-Project/wiki/Authentication-&-Authorization).
 
 ## SORMAS Password Hash Provider
 
@@ -18,7 +18,7 @@ SORMAS technique by importing the `sormas-api` dependency where the technique is
 ### SORMAS Hashing Technique
 *For more info about the SORMAS hashing technique see `sormas-api/src/main/java/de/symeda/sormas/api/utils/PasswordHelper.java`*
 
-In Keycloak this algorithm will be identifiable by the id `sormas-sha256`.
+In Keycloak this algorithm will be identifiable by the ID `sormas-sha256`.
 
 ### Keycloak Hashing Technique
 
