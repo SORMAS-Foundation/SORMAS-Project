@@ -4,7 +4,7 @@
 
 A minimal maven project structure for an external message adapter module is shown below:
 
-```
+```text
   my-message-adapter
   |-- src
     |   |-- main
@@ -53,33 +53,33 @@ import java.util.stream.Collectors;
 @Stateless(name = "MyExternalMessageFacade")
 public class MyExternalMessageFacadeEjb implements ExternalMessageAdapterFacade {
 
-  @Override
-  public ExternalMessageResult<List<ExternalMessageDto>> getExternalMessages(Date since) {
-    return new ExternalMessageResult<>(Collections.emptyList(), new Date(), true, null);
-  }
+    @Override
+    public ExternalMessageResult<List<ExternalMessageDto>> getExternalMessages(Date since) {
+        return new ExternalMessageResult<>(Collections.emptyList(), new Date(), true, null);
+    }
 
-  @Override
-  public ExternalMessageResult<String> convertToHTML(ExternalMessageDto message) {
-    return new ExternalMessageResult<>("", new Date(), true, null);
-  }
+    @Override
+    public ExternalMessageResult<String> convertToHTML(ExternalMessageDto message) {
+        return new ExternalMessageResult<>("", new Date(), true, null);
+    }
 
-  @Override
-  public ExternalMessageResult<byte[]> convertToPDF(ExternalMessageDto message) {
-    return new ExternalMessageResult<>(new byte[0], new Date(), true, null);
-  }
+    @Override
+    public ExternalMessageResult<byte[]> convertToPDF(ExternalMessageDto message) {
+        return new ExternalMessageResult<>(new byte[0], new Date(), true, null);
+    }
 
-  @Override
-  public String getVersion() {
-    return new BufferedReader(
-            new InputStreamReader(
-                    Objects.requireNonNull(MyExternalMessageFacadeEjb.class.getResourceAsStream("/version.txt")),
-                    StandardCharsets.UTF_8)).lines().collect(Collectors.joining("\n"));
-  }
+    @Override
+    public String getVersion() {
+        return new BufferedReader(
+                new InputStreamReader(
+                        Objects.requireNonNull(MyExternalMessageFacadeEjb.class.getResourceAsStream("/version.txt")),
+                        StandardCharsets.UTF_8)).lines().collect(Collectors.joining("\n"));
+    }
 }
 ```
 
 ### version.txt
-This file contains the template string that describes this modules version. 
+This file contains the template string that describes this modules version.
 It is used by the SORMAS server to display the version of configured external message module's version on the about page.
 SORMAS also uses the version method for doing an availability check.
 
@@ -164,239 +164,241 @@ Example with default dependencies for java-ee, sormas-api, logging and testing:
 </summary>
 
 ```xml
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
 
-	<properties>
-		<sormas.version>1.85.0</sormas.version>
-		<myProject.apiRoot>/my-message-adapter</myProject.apiRoot>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-		<junit.version>4.13.1</junit.version>
-		<mockito.version>3.6.0</mockito.version>
-		<assertj.version>3.18.1</assertj.version>
+    <properties>
+        <sormas.version>1.85.0</sormas.version>
+        <myProject.apiRoot>/my-message-adapter</myProject.apiRoot>
 
-		<commons-lang.version>3.11</commons-lang.version>
-		<commons-io.version>2.8.0</commons-io.version>
-		<slf4j.version>1.7.30</slf4j.version>
-		<javaee.version>8.0.1</javaee.version>
+        <junit.version>4.13.1</junit.version>
+        <mockito.version>3.6.0</mockito.version>
+        <assertj.version>3.18.1</assertj.version>
 
-		<maven.compiler.source>11</maven.compiler.source>
-		<maven.compiler.target>11</maven.compiler.target>
-		<productionBranch>master</productionBranch>
-	</properties>
+        <commons-lang.version>3.11</commons-lang.version>
+        <commons-io.version>2.8.0</commons-io.version>
+        <slf4j.version>1.7.30</slf4j.version>
+        <javaee.version>8.0.1</javaee.version>
 
-	<groupId>my.project</groupId>
-	<artifactId>my-message-adapter</artifactId>
-	<name>${project.artifactId}</name>
-	<packaging>war</packaging>
-	<version>0.1.0-SNAPSHOT</version>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <productionBranch>master</productionBranch>
+    </properties>
 
-	<repositories>
-		<repository>
-			<id>central</id>
-			<name>bintray</name>
-			<url>https://jcenter.bintray.com</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
+    <groupId>my.project</groupId>
+    <artifactId>my-message-adapter</artifactId>
+    <name>${project.artifactId}</name>
+    <packaging>war</packaging>
+    <version>0.1.0-SNAPSHOT</version>
 
-	<dependencies>
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>bintray</name>
+            <url>https://jcenter.bintray.com</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 
-		<dependency>
-			<groupId>javax</groupId>
-			<artifactId>javaee-web-api</artifactId>
-			<version>${javaee.version}</version>
-		</dependency>
+    <dependencies>
 
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
-		</dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-web-api</artifactId>
+            <version>${javaee.version}</version>
+        </dependency>
 
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>sormas-api</artifactId>
-			<version>${sormas.version}</version>
-		</dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
 
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-			<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>sormas-api</artifactId>
+            <version>${sormas.version}</version>
+        </dependency>
 
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<version>${mockito.version}</version>
-			<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-inline</artifactId>
-			<version>${mockito.version}</version>
-			<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.assertj</groupId>
-			<artifactId>assertj-core</artifactId>
-			<version>${assertj.version}</version>
-			<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-inline</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.jsoup</groupId>
-			<artifactId>jsoup</artifactId>
-			<version>1.14.2</version>
-			<scope>compile</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>${assertj.version}</version>
+            <scope>test</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-library</artifactId>
-			<version>1.3</version>
-			<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.14.2</version>
+            <scope>compile</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-model</artifactId>
-			<version>3.8.4</version>
-			<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-library</artifactId>
+            <version>1.3</version>
+            <scope>test</scope>
+        </dependency>
 
-	</dependencies>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-model</artifactId>
+            <version>3.8.4</version>
+            <scope>test</scope>
+        </dependency>
 
-	<build>
-		<finalName>${project.artifactId}</finalName>
+    </dependencies>
+
+    <build>
+        <finalName>${project.artifactId}</finalName>
 
         <!-- Provide version.txt that can be read for returning the desired version string of this module -->
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-				<filtering>true</filtering>
-				<includes>
-					<include>**/version.txt</include>
-				</includes>
-			</resource>
-			<resource>
-				<directory>src/main/resources</directory>
-				<filtering>false</filtering>
-				<excludes>
-					<exclude>**/version.txt</exclude>
-				</excludes>
-			</resource>
-		</resources>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/version.txt</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>**/version.txt</exclude>
+                </excludes>
+            </resource>
+        </resources>
 
-		<plugins>
-			<!-- Provide WebApp context path via value of `myProject.apiRoot` property -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>3.2.3</version>
-				<configuration>
-					<filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
-					<webResources>
-						<resource>
-							<directory>src/main/webapp/META-INF</directory>
-							<includes>
-								<include>context.xml</include>
-							</includes>
-							<targetPath>/META-INF</targetPath>
-							<filtering>true</filtering>
-						</resource>
-						<resource>
-							<directory>src/main/webapp</directory>
-							<targetPath>/</targetPath>
-							<filtering>false</filtering>
-						</resource>
-					</webResources>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>com.amashchenko.maven.plugin</groupId>
-				<artifactId>gitflow-maven-plugin</artifactId>
-				<version>1.15.1</version>
-				<configuration>
-					<gitFlowConfig>
-						<productionBranch>${productionBranch}</productionBranch>
-						<developmentBranch>development</developmentBranch>
-						<featureBranchPrefix>feature-</featureBranchPrefix>
-						<releaseBranchPrefix>release-</releaseBranchPrefix>
-						<hotfixBranchPrefix>hotfix-</hotfixBranchPrefix>
-						<versionTagPrefix>v</versionTagPrefix>
-					</gitFlowConfig>
-					<commitMessagePrefix>[GITFLOW]</commitMessagePrefix>
-					<useSnapshotInHotfix>true</useSnapshotInHotfix>
-				</configuration>
-			</plugin>
+        <plugins>
+            <!-- Provide WebApp context path via value of `myProject.apiRoot` property -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.2.3</version>
+                <configuration>
+                    <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
+                    <webResources>
+                        <resource>
+                            <directory>src/main/webapp/META-INF</directory>
+                            <includes>
+                                <include>context.xml</include>
+                            </includes>
+                            <targetPath>/META-INF</targetPath>
+                            <filtering>true</filtering>
+                        </resource>
+                        <resource>
+                            <directory>src/main/webapp</directory>
+                            <targetPath>/</targetPath>
+                            <filtering>false</filtering>
+                        </resource>
+                    </webResources>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.amashchenko.maven.plugin</groupId>
+                <artifactId>gitflow-maven-plugin</artifactId>
+                <version>1.15.1</version>
+                <configuration>
+                    <gitFlowConfig>
+                        <productionBranch>${productionBranch}</productionBranch>
+                        <developmentBranch>development</developmentBranch>
+                        <featureBranchPrefix>feature-</featureBranchPrefix>
+                        <releaseBranchPrefix>release-</releaseBranchPrefix>
+                        <hotfixBranchPrefix>hotfix-</hotfixBranchPrefix>
+                        <versionTagPrefix>v</versionTagPrefix>
+                    </gitFlowConfig>
+                    <commitMessagePrefix>[GITFLOW]</commitMessagePrefix>
+                    <useSnapshotInHotfix>true</useSnapshotInHotfix>
+                </configuration>
+            </plugin>
 
-			<!-- Code Coverage / activate Integration Tests -->
-			<plugin>
-				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>2.19.1</version>
-				<executions>
-					<execution>
-						<id>integration-test</id>
-						<phase>integration-test</phase>
-						<goals>
-							<goal>integration-test</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>verify</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>verify</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+            <!-- Code Coverage / activate Integration Tests -->
+            <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.19.1</version>
+                <executions>
+                    <execution>
+                        <id>integration-test</id>
+                        <phase>integration-test</phase>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>verify</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
-			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.5</version>
-				<inherited>true</inherited>
-				<executions>
-					<execution>
-						<id>prepare-coverage</id>
-						<phase>generate-test-sources</phase>
-						<goals>
-							<goal>prepare-agent</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>analyze-coverage</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>report</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>prepare-coverage-integration</id>
-						<phase>pre-integration-test</phase>
-						<goals>
-							<goal>prepare-agent-integration</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>analyze-coverage-integration</id>
-						<phase>post-integration-test</phase>
-						<goals>
-							<goal>report-integration</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.5</version>
+                <inherited>true</inherited>
+                <executions>
+                    <execution>
+                        <id>prepare-coverage</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>analyze-coverage</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>prepare-coverage-integration</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>prepare-agent-integration</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>analyze-coverage-integration</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>report-integration</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
 ```
 </details>
@@ -404,9 +406,9 @@ Example with default dependencies for java-ee, sormas-api, logging and testing:
 ## Deploying into the `sormas` domain
 
 Set the `interface.demis.jndiName` in the `sormas.properties` of your SORMAS domain.
-This JNDI name should match the location the external message ejb implemented in the module. 
+This JNDI name should match the location the external message ejb implemented in the module.
 Following the above example project it would be:
-  
+
 ```
 interface.demis.jndiName=java:global/my-message-adapter/MyExternalMessageFacade
 ```
