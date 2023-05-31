@@ -70,13 +70,10 @@ Feature: Immunization end to end tests
   @env_main @#8565
   Scenario: Check an archived immunization if its read only
     Given API: I create a new person
-
     And API: I check that POST call status code is 200
     Then API: I create a new case
-
     And API: I check that POST call status code is 200
     Then API: I create 1 new immunizations for last created person
-
     And API: I check that POST call status code is 200
     Then I log in as a Admin User
     Then I navigate to last created immunization by API via URL
