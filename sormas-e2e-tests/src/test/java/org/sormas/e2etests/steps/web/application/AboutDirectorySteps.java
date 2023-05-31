@@ -240,6 +240,14 @@ public class AboutDirectorySteps implements En {
               CASE_CLASSIFICATION_RULES_HYPERLINK, 15);
           webDriverHelpers.clickOnWebElementBySelector(CASE_CLASSIFICATION_RULES_HYPERLINK);
         });
+    When(
+        "I check if Data Dictionary in {string} record has no {string} as a disease",
+        (String recordName, String disease) -> {
+          softly.assertFalse(
+              readXlsxFile(DATA_DICTIONARY_FILE_PATH, recordName, disease),
+              disease + " exists in " + recordName);
+          softly.assertAll();
+        });
 
     Then(
         "^I check that Surveillance Dashboard header is correctly displayed in ([^\"]*) language$",
