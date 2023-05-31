@@ -12,15 +12,6 @@
       <property name="DatabaseName" value="sun-appserv-samples"></property>
       <property name="connectionAttributes" value=";create=true"></property>
     </jdbc-connection-pool>
-    <managed-executor-service object-type="system-all" jndi-name="concurrent/__defaultManagedExecutorService"></managed-executor-service>
-    <jdbc-connection-pool datasource-classname="org.postgresql.xa.PGXADataSource" name="sormasAuditlogPool" validation-classname="org.glassfish.api.jdbc.validation.PostgresConnectionValidation" is-connection-validation-required="true" connection-validation-method="custom-validation" res-type="javax.sql.XADataSource">
-      <property name="user" value="sormas_user"></property>
-      <property name="password" value="sormas_user"></property>
-      <property name="portNumber" value="5432"></property>
-      <property name="databaseName" value="sormas_audit_db"></property>
-      <property name="serverName" value="localhost"></property>
-    </jdbc-connection-pool>
-    <jdbc-resource pool-name="sormasAuditlogPool" jndi-name="jdbc/AuditlogPool"></jdbc-resource>
     <jdbc-connection-pool datasource-classname="org.postgresql.ds.PGConnectionPoolDataSource" name="sormasDataPool" validation-classname="org.glassfish.api.jdbc.validation.PostgresConnectionValidation" is-connection-validation-required="true" connection-validation-method="custom-validation" res-type="javax.sql.ConnectionPoolDataSource">
       <property name="user" value="sormas_user"></property>
       <property name="password" value="sormas_user"></property>

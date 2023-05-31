@@ -90,16 +90,11 @@ public class StartupShutdownServiceTest {
 		assertContinuousSchemaVersions(StartupShutdownService.SORMAS_SCHEMA, 70, 106, 124);
 	}
 
-	@Test
-	public void testAuditSchemaVersions() throws IOException {
-		assertContinuousSchemaVersions(StartupShutdownService.AUDIT_SCHEMA);
-	}
-
 	/**
 	 * Checks that the order of the updates is correct
 	 *
 	 * @param schemaResource
-	 *            {@link StartupShutdownService#SORMAS_SCHEMA} or {@link StartupShutdownService#AUDIT_SCHEMA}
+	 *            {@link StartupShutdownService#SORMAS_SCHEMA}
 	 * @param omittedVersions
 	 *            versions to skip
 	 */

@@ -16,7 +16,6 @@ import org.hibernate.annotations.Type;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
@@ -24,7 +23,6 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 @Entity
-@Audited
 public class CampaignFormMeta extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -5200626281564146919L;

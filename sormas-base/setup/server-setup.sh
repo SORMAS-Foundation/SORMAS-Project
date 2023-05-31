@@ -1,3 +1,4 @@
+#!/bin/bash
 
 #*******************************************************************************
 # SORMAS® - Surveillance Outbreak Response Management & Analysis System
@@ -16,8 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #*******************************************************************************
-
-#!/bin/bash
 
 rm -f setup.log
 exec > >(tee -ia setup.log)
@@ -54,7 +53,9 @@ fi
 
 PAYARA_VERSION=5.2021.10
 
-if [[ $(expr substr "$(uname -a)" 1 5) = "Linux" ]]; then
+if  [[ $(expr "$(uname)") == "Darwin" ]]; then
+  LINUX=true
+elif [[ $(expr substr "$(uname -a)" 1 5) = "Linux" ]]; then
 	LINUX=true
 else
 	LINUX=false
@@ -99,7 +100,6 @@ DOMAIN_XMX=4096m
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=sormas_db
-DB_NAME_AUDIT=sormas_audit_db
 # Name of the database user; DO NOT CHANGE THIS!
 DB_USER=sormas_user
 DB_JDBC_MAXPOOLSIZE=128
@@ -284,7 +284,6 @@ else
 cat > setup.sql <<-EOF
 CREATE USER $DB_USER WITH PASSWORD '$DB_PW' CREATEDB;
 CREATE DATABASE $DB_NAME WITH OWNER = '$DB_USER' ENCODING = 'UTF8';
-CREATE DATABASE $DB_NAME_AUDIT WITH OWNER = '$DB_USER' ENCODING = 'UTF8';
 \c $DB_NAME
 CREATE OR REPLACE PROCEDURAL LANGUAGE plpgsql;
 ALTER PROCEDURAL LANGUAGE plpgsql OWNER TO $DB_USER;
@@ -292,11 +291,6 @@ CREATE EXTENSION pg_trgm;
 CREATE EXTENSION pgcrypto;
 CREATE EXTENSION IF NOT EXISTS unaccent;
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO $DB_USER;
-\c $DB_NAME_AUDIT
-CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO $DB_USER;
-ALTER TABLE IF EXISTS schema_version OWNER TO $DB_USER;
 EOF
 
   if [[ ${LINUX} = true ]]; then
@@ -358,10 +352,6 @@ ${ASADMIN} set configs.config.server-config.thread-pools.thread-pool.http-thread
 # JDBC pool
 ${ASADMIN} create-jdbc-connection-pool --restype javax.sql.ConnectionPoolDataSource --datasourceclassname org.postgresql.ds.PGConnectionPoolDataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --maxpoolsize ${DB_JDBC_MAXPOOLSIZE} --property "portNumber=${DB_PORT}:databaseName=${DB_NAME}:serverName=${DB_HOST}:user=${DB_USER}:password=${DB_PW}" ${DOMAIN_NAME}DataPool
 ${ASADMIN} create-jdbc-resource --connectionpoolid ${DOMAIN_NAME}DataPool jdbc/sormasDataPool
-
-# Pool for audit log
-${ASADMIN} create-jdbc-connection-pool --restype javax.sql.XADataSource --datasourceclassname org.postgresql.xa.PGXADataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --maxpoolsize ${DB_JDBC_MAXPOOLSIZE} --property "portNumber=${DB_PORT}:databaseName=${DB_NAME_AUDIT}:serverName=${DB_HOST}:user=${DB_USER}:password=${DB_PW}" ${DOMAIN_NAME}AuditlogPool
-${ASADMIN} create-jdbc-resource --connectionpoolid ${DOMAIN_NAME}AuditlogPool jdbc/AuditlogPool
 
 ${ASADMIN} create-javamail-resource --mailhost localhost --mailuser user --fromaddress "${MAIL_FROM}" mail/MailSession
 

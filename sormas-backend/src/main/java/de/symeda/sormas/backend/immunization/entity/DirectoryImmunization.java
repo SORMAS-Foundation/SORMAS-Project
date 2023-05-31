@@ -4,13 +4,11 @@ import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.backend.vaccination.FirstVaccinationDate;
 import de.symeda.sormas.backend.vaccination.LastVaccinationDate;
 import de.symeda.sormas.backend.vaccination.LastVaccineType;
 
 @Entity(name = "immunizationDirectory")
-@Audited
 @Table(name = "immunization")
 public class DirectoryImmunization extends BaseImmunization {
 

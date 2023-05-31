@@ -36,7 +36,6 @@ import org.hibernate.annotations.TypeDef;
 
 import com.vladmihalcea.hibernate.type.array.ListArrayType;
 
-import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SpecimenCondition;
@@ -45,7 +44,6 @@ import de.symeda.sormas.backend.externalmessage.ExternalMessage;
 import de.symeda.sormas.backend.sample.Sample;
 
 @Entity(name = SampleReport.TABLE_NAME)
-@Audited
 @TypeDef(name = "list-array", typeClass = ListArrayType.class)
 public class SampleReport extends AbstractDomainObject {
 
