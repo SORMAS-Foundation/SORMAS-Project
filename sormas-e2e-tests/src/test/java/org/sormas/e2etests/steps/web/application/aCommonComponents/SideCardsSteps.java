@@ -26,6 +26,7 @@ import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
@@ -51,9 +52,13 @@ public class SideCardsSteps implements En {
     When(
         "I check if handover card contains {string} information",
         (String information) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(HANDOVER_SIDE_CARD);
+          TimeUnit.SECONDS.sleep(3);
           softly.assertTrue(
               webDriverHelpers.isElementPresent(checkTextInHandoverSideComponent(information)),
-              information + " text is not present in handover component");
+              information
+                  + " text is not present in handover component. Found only "
+                  + webDriverHelpers.getTextFromPresentWebElement(HANDOVER_SIDE_CARD));
           softly.assertAll();
         });
 

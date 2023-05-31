@@ -60,9 +60,9 @@ public class ResponseChecksSteps implements En {
 
           if (responseStatusCode == expectedStatus) {
 
-             if (responseBody.contains("html")) {
+            if (responseBody.contains("html")) {
               responseBody = String.format("[{\"statusCode\":%s}]", responseStatusCode);
-             }
+            }
 
             String regexUpdatedResponseBody = responseBody.replaceAll("[^a-zA-Z0-9]", "");
             Assert.assertEquals(

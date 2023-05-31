@@ -2,7 +2,7 @@
 Feature: Sharing cases between environments tests
 
   @tmsLink=SORQA-962 @env_s2s_1
-  Scenario: Delete a shared case
+  Scenario: [S2S] Delete a shared case
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
@@ -13,6 +13,7 @@ Feature: Sharing cases between environments tests
     And I collect uuid of the case
     Then I click on share case button
     And I select organization to share with "s2s_2"
+    And I click to hand over the ownership of the case in Share popup
     And I fill comment in share popup with "shared to be deleted after"
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
@@ -22,7 +23,7 @@ Feature: Sharing cases between environments tests
     Then I navigate to "s2s_1" environment
     Then I navigate to the last created case via the url
     And I check Delete button from case is enabled
-    And Total number of read only fields should be 17
+    And Total number of read only fields should be 13
     Then I click on Delete button from case
     And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
     And I click on Yes option in Confirm deletion popup
@@ -30,10 +31,10 @@ Feature: Sharing cases between environments tests
     And I apply "Gelöschte Fälle" to combobox on Case Directory Page
     Then I click on the APPLY FILTERS button
     And I select first created case for person from Cases list
-    Then Total number of read only fields should be 17
-    And I check if handover card contains "LK Fulda" information
+    Then Total number of read only fields should be 0
+    And I check if handover card contains "Eigentümer: LK Fulda" information
     And I check if handover card contains "Geteilt von: Automation ADMIN" information
-    And I check if handover card contains "Kommentar: shared to be deleted after" information
+    And I check if handover card contains "shared to be deleted after" information
     Then I navigate to "s2s_2" environment
     And I click on the Cases button from navbar
     And I apply "Alle" to ownership combobox on Case Directory Page
@@ -41,7 +42,7 @@ Feature: Sharing cases between environments tests
     Then I click on the APPLY FILTERS button
     And I select first created case for person from Cases list
     Then I check if editable fields are enabled for the case in view
-    And I check if handover card contains "Eigentümer: LK Barnim" information
+    And I check if handover card contains "Gesendet von LK Barnim" information
     And I check if handover card contains "Geteilt von: Automation Admin" information
     And I check if handover card contains "shared to be deleted after" information
 

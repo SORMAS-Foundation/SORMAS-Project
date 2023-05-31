@@ -307,9 +307,9 @@ public class DistrictFacadeEjb
 	}
 
 	@Override
-	protected District fillOrBuildEntity(@NotNull DistrictDto source, District target, boolean checkChangeDate) {
+	protected District fillOrBuildEntity(@NotNull DistrictDto source, District target, boolean checkChangeDate, boolean allowUuidOverwrite) {
 
-		target = DtoHelper.fillOrBuildEntity(source, target, District::new, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, District::new, checkChangeDate, allowUuidOverwrite);
 
 		target.setName(source.getName());
 		target.setEpidCode(source.getEpidCode());
