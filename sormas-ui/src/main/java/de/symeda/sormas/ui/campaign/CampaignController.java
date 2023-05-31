@@ -169,7 +169,10 @@ public class CampaignController {
 			}
 		}
 
-		campaignComponent.restrictEditableComponentsOnEditView(UserRight.CAMPAIGN_EDIT, null, UserRight.CAMPAIGN_DELETE, null, true);
+//		campaignComponent.restrictEditableComponentsOnEditView(UserRight.CAMPAIGN_EDIT, null, UserRight.CAMPAIGN_DELETE, null, true);
+
+		campaignComponent
+			.restrictEditableComponentsOnEditView(UserRight.CAMPAIGN_EDIT, null, UserRight.CAMPAIGN_DELETE, UserRight.CAMPAIGN_ARCHIVE, null, true);
 
 		return campaignComponent;
 	}
@@ -239,8 +242,10 @@ public class CampaignController {
 			UserRight.CAMPAIGN_FORM_DATA_EDIT,
 			null,
 			UserRight.CAMPAIGN_FORM_DATA_DELETE,
+			UserRight.CAMPAIGN_FORM_DATA_ARCHIVE,
 			null,
 			isInJurisdiction);
+
 		return component;
 	}
 

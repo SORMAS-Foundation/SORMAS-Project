@@ -708,6 +708,7 @@ public class ContactController {
 			UserRight.CONTACT_EDIT,
 			null,
 			UserRight.CONTACT_DELETE,
+			UserRight.CONTACT_ARCHIVE,
 			FacadeProvider.getContactFacade().getEditPermissionType(contactUuid),
 			contact.isInJurisdiction());
 
