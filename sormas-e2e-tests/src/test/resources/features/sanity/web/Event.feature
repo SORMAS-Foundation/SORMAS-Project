@@ -263,7 +263,6 @@ Feature: Create events
   @tmsLink=SORDEV-5572 @env_main
   Scenario: Testing Event group adding for new event
     Given API: I create a new event
-
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     Then I open the last created event via api
