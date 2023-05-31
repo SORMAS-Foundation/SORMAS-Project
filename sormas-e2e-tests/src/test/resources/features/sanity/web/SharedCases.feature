@@ -1183,9 +1183,9 @@ Feature: Sharing cases between environments tests
     Then I navigate to "s2s_2" environment in new driver tab
     Given I log in as a Admin User
     And I click on the Shares button from navbar
-#    And I check that shared case with copied case description is visible in Share Directory page
+    And I check that accept shared case button with copied case description is visible in Share Directory page
     Then I back to tab number 1
-    Then I click on Delete button from case
+    And I click on Delete button from case
     And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
     And I click on Yes option in Confirm deletion popup
     And I apply "Zum Besitz" to ownership combobox on Case Directory Page
@@ -1193,5 +1193,8 @@ Feature: Sharing cases between environments tests
     And I click APPLY BUTTON in Case Directory Page
     And I select first created case for person from Cases list
     Then I check if editable fields are enabled for the case in view
-    Then I back to tab number 2
+    And Total number of read only fields should be 21
+    When I back to tab number 2
     And I click on "accept" shared case button with copied case description
+    Then I check if Share request not found popup message appeared for DE
+    And I click on okay button
