@@ -16,6 +16,6 @@ Feature: Survnet tests
     And I create a new case with mandatory data only for Survnet DE
     And I click on Send to reporting tool button on Edit Case page
     And I collect case external UUID from Edit Case page
-    Then I wait 30 seconds for system reaction
-    Then I check if date of report in SurvNet generated XML file is correct
-    And I check if sex in SurvNet generated XML file is correct
+    Then I wait 40 seconds for system reaction
+    Then I check if date of report in SORMAS generated XML file is correct
+    And I check if sex in SORMAS generated XML file is correct
