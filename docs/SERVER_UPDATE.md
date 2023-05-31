@@ -53,6 +53,10 @@ WHERE deptype = 'e'
 DROP EXTENSION IF EXISTS temporal_tables;
 ```
 
+### 1.85.0
+Payara is updated from 5.2021.10 to 5.2022.5.
+If you are **not** using [SORMAS-Docker](https://github.com/SORMAS-Foundation/SORMAS-Docker), please follow the [Payara migration guide](SERVER_UPDATE.md#how-to-migrate-to-new-payara-server).
+
 ## Automatic Server Update
 * Navigate to the  folder containing the unzipped deploy files:
   ``cd /root/deploy/sormas/$(date +%F)``
@@ -123,12 +127,12 @@ For more info see the [Keycloak Docker Documentation](https://github.com/hzi-bra
 
 ## How to migrate to new Payara Server
 
-### Step 1: Shutdown existing domain
+### Step 1: Shutdown and backup existing domain
 ```bash
 # Stop domain
 service payara-sormas stop
 
-# Move existing domain
+# Move (backup) existing domain
 DOMAIN_PATH=/opt/domains
 DOMAIN_NAME="sormas"
 DOMAIN_BACKUP_NAME="sormas_backup"
@@ -143,3 +147,12 @@ Transfer your settings from `sormas.properties`, `logback.xml` or changes in the
 
 ### Step 4: Install new SORMAS version
 To install the new SORMAS version in the Payara domain, proceed with the [automatic update](SERVER_UPDATE.md#automatic-server-update) or for developers: Deploy SORMAS via the IDE as usual.
+
+### Alternative for development systems
+For minor updates of the payara version, you will most often be able to keep the existing domain and only replace the payara server.
+
+1. Download the needed version of [Payara server](https://www.payara.fish/downloads/payara-platform-community-edition/).
+2. Undeploy all sormas modules from the payara domain and stop the domain.
+3. Replace your payara server in ``/opt/payara5`` (default path) with the downloaded one. Remove the default domain in ``opt/payara5/glassfish/domains`` as it is not needed.
+4. Replace the application server in your IDE with the new server. See [IDE setup guide](DEVELOPMENT_ENVIRONMENT.md#step-5-install-and-configure-your-ide)
+5. If you are facing any problems, restart your IDE and clean all generated files from the sormas domain.
