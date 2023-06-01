@@ -395,3 +395,18 @@ Scenario: Create and send laboratory request via Demis
     And I log in as a Admin User
     Then I click on the Messages button from navbar
     And I click on fetch messages button
+    Then I filter by last created person via API in Messages Directory
+    And I click on Verarbeiten button in Messages Directory
+    And I pick a new person in Pick or create person popup during case creation for DE
+    And I choose create new case in Pick or create entry form for DE
+    And I check that create new case form with pathogen detection reporting process is displayed for DE
+    And I fill only mandatory fields to convert laboratory message into a case for DE
+    And I click on save button in the case popup
+    Then I check that new sample form with pathogen detection reporting process is displayed
+    And I check that laboratory is set to "" on Edit Sample page
+    And I select "Testlabor DEMIS" as a Laboratory in New sample form while processing a DEMIS LabMessage
+    And I click on save sample button
+    And I click on save sample button
+    And I click on the Cases button from navbar
+    And I search the case by last created person via Demis message
+    Then I click on the first Case ID from Case Directory

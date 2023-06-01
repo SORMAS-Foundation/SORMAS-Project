@@ -786,6 +786,13 @@ public class DemisSteps implements En {
                 demisApiService.sendLabRequest(json, loginToken),
                 "Failed to send laboratory request");
         });
+
+    And(
+         "^I select \"([^\"]*)\" as a Laboratory in New sample form while processing a DEMIS LabMessage$",
+         (String labor) -> {
+           webDriverHelpers.waitUntilIdentifiedElementIsPresent(LABORATORY_DETAILS_INPUT);
+           webDriverHelpers.fillInWebElement(LABORATORY_DETAILS_INPUT, labor);
+        });
   }
 
   private List<Map<String, String>> getTableRowsData() {
