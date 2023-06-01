@@ -591,6 +591,24 @@ public class CreateNewCaseSteps implements En {
     When("I choose {string} as a disease", (String disease) -> fillDisease(disease));
 
     When(
+        "^I check if National Health Id, Nickname and Passport number appear in Pick or create person popup$",
+        () -> {
+          softly.assertEquals(
+              false, webDriverHelpers.isElementVisibleWithTimeout(NICKNAME_ATTRIBUTE, 2));
+          softly.assertEquals(
+              false, webDriverHelpers.isElementVisibleWithTimeout(PASSPORT_NUMBER_ATTRIBUTE, 2));
+          softly.assertEquals(
+              false, webDriverHelpers.isElementVisibleWithTimeout(NATIONAL_HEALTH_ID_ATTRIBUTE, 2));
+          softly.assertAll();
+          webDriverHelpers.clickOnWebElementBySelector(PICK_A_EXISTING_PERSON_LABEL_DE);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_A_EXISTING_CASE_LABEL_DE, 4)) {
+            webDriverHelpers.clickOnWebElementBySelector(PICK_A_EXISTING_CASE_LABEL_DE);
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          }
+        });
+
+    When(
         "^I create a new case with Facility as a Place of stay$",
         () -> {
           caze = caseService.buildGeneratedCaseWithFacility();
