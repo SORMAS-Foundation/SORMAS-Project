@@ -631,10 +631,6 @@
 						<groupId>org.springframework</groupId>
 						<artifactId>spring-beans</artifactId>
 					</exclusion>
-					<exclusion>
-						<groupId>org.springframework</groupId>
-						<artifactId>spring-jcl</artifactId>
-					</exclusion>
 				</exclusions>
 			</dependency>
 
