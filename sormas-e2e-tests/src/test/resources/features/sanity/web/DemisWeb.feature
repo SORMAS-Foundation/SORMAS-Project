@@ -387,3 +387,11 @@ Scenario: Create and send laboratory request via Demis
     When I click on edit Report on Edit Case page
     Then I check that Reporter Facility in Edit report form is set to "Andere Einrichtung (Inaktiv)"
     And I check that Reporter Facility Details in Edit report form is set to "Other Laboratory"
+
+  @tmsLink=SORQA-960 @env_d2s @LoginKeycloak
+  Scenario: Demis - Process a Lab message that has mapped 2 existing laboratory IDs from Sormas
+    Given API : Login to DEMIS server
+    When I create and send Laboratory Notification with two different facilities
+    And I log in as a Admin User
+    Then I click on the Messages button from navbar
+    And I click on fetch messages button

@@ -774,6 +774,18 @@ public class DemisSteps implements En {
               "Laboratory details field has incorrect value prefilled");
           softly.assertAll();
         });
+
+    When(
+        "^I create and send Laboratory Notification with two different facilities$",
+        () -> {
+            patientLastName = faker.name().lastName();
+            patientFirstName = faker.name().firstName();
+            String json = demisApiService.prepareLabNotificationFileWithTwoFacilities(patientFirstName, patientLastName);
+
+            Assert.assertTrue(
+                demisApiService.sendLabRequest(json, loginToken),
+                "Failed to send laboratory request");
+        });
   }
 
   private List<Map<String, String>> getTableRowsData() {
