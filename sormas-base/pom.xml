@@ -18,15 +18,15 @@
 		<pushHotfixes>true</pushHotfixes>
 
 		<!-- *** Payara module versions *** -->
-		<jackson.version>2.12.4</jackson.version>
-		<jakarta.activation.version>1.2.1</jakarta.activation.version>
+		<glassfish.jaxb.version>2.3.7</glassfish.jaxb.version>
+		<jackson.version>2.13.4</jackson.version>
+		<jakarta.activation.version>1.2.2</jakarta.activation.version>
 		<javaee.version>8.0.1</javaee.version>
-		<jersey.version>2.34</jersey.version>
+		<jersey.version>2.37</jersey.version>
 		<!-- Payara version used for release. Overwrite them in settings.xml for local development with different versions -->
-		<payara.version>5.2021.10</payara.version>
+		<payara.version>5.2022.5</payara.version>
 
 		<!-- *** Other dependency versions *** -->
-		<glassfish.jaxb.version>2.3.7</glassfish.jaxb.version>
 		<slf4j.version>2.0.6</slf4j.version>
 		<logback.version>1.3.5</logback.version>
 		<vaadin.version.warning>TODO: Remove bootstrap.js in widgetset</vaadin.version.warning>
@@ -169,7 +169,7 @@
 			<dependency>
 				<groupId>com.sun.istack</groupId>
 				<artifactId>istack-commons-runtime</artifactId>
-				<version>3.0.10</version>
+				<version>3.0.12</version>
 				<scope>provided</scope>
 			</dependency>
 			<dependency>
@@ -189,7 +189,7 @@
 			<dependency>
 				<groupId>fish.payara.security.connectors</groupId>
 				<artifactId>security-connector-oidc-client</artifactId>
-				<version>2.2.0</version>
+				<version>2.4.0</version>
 				<scope>provided</scope>
 			</dependency>
 
@@ -220,14 +220,14 @@
 			<dependency>
 				<groupId>jakarta.xml.bind</groupId>
 				<artifactId>jakarta.xml.bind-api</artifactId>
-				<version>2.3.2</version>
+				<version>2.3.3</version>
 				<scope>provided</scope>
 			</dependency>
 
 			<dependency>
 				<groupId>org.eclipse.microprofile.config</groupId>
 				<artifactId>microprofile-config-api</artifactId>
-				<version>2.0</version>
+				<version>2.0.1</version>
 				<scope>provided</scope>
 			</dependency>
 
@@ -281,28 +281,28 @@
 			<dependency>
 				<groupId>org.glassfish.soteria</groupId>
 				<artifactId>javax.security.enterprise</artifactId>
-				<version>1.1-b01.payara-p4</version>
+				<version>1.1-b01.payara-p5</version>
 				<scope>provided</scope>
 			</dependency>
 
 			<dependency>
 				<groupId>org.javassist</groupId>
 				<artifactId>javassist</artifactId>
-				<version>3.26.0-GA</version>
+				<version>3.29.2-GA</version>
 				<scope>provided</scope>
 			</dependency>
 
 			<dependency>
 				<groupId>org.jboss.logging</groupId>
 				<artifactId>jboss-logging</artifactId>
-				<version>3.4.2.Final</version>
+				<version>3.4.3.Final</version>
 				<scope>provided</scope>
 			</dependency>
 
 			<dependency>
 				<groupId>org.yaml</groupId>
 				<artifactId>snakeyaml</artifactId>
-				<version>1.28</version>
+				<version>1.33</version>
 				<scope>provided</scope>
 			</dependency>
 
@@ -536,14 +536,14 @@
 				<artifactId>jaxb-runtime</artifactId>
 				<version>${glassfish.jaxb.version}</version>
 				<scope>provided</scope>
-				<!-- Dependency of hibernate-core -->
+				<!-- Dependency of hibernate-core - provided as payara module jaxb-osgi -->
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish.jaxb</groupId>
 				<artifactId>txw2</artifactId>
 				<version>${glassfish.jaxb.version}</version>
 				<scope>provided</scope>
-				<!-- Dependency of hibernate-core -->
+				<!-- Dependency of hibernate-core - provided as payara module jaxb-osgi -->
 			</dependency>
 			<dependency>
 				<groupId>org.jvnet.staxex</groupId>
@@ -1442,10 +1442,9 @@
 
 		<repository>
 			<!-- Needed for patched dependencies from Payara -->
-			<!-- It's readonly since 2021 and only listed for artifacts that are not found elsewhere -->
 			<id>payara-patched-externals</id>
 			<name>Payara Patched Externals</name>
-			<url>https://raw.github.com/payara/Payara_PatchedProjects/master</url>
+			<url>https://nexus.payara.fish/repository/payara-artifacts</url>
 		</repository>
 
 		<repository>
