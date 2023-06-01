@@ -393,6 +393,7 @@
 				<groupId>commons-codec</groupId>
 				<artifactId>commons-codec</artifactId>
 				<version>1.15</version>
+				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>commons-collections</groupId>
@@ -615,6 +616,28 @@
 				<version>${slf4j.version}</version>
 				<scope>provided</scope>
 			</dependency>
+
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-context</artifactId>
+				<version>5.3.27</version>
+				<scope>provided</scope>
+				<exclusions>
+					<exclusion>
+						<groupId>org.springframework</groupId>
+						<artifactId>spring-aop</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.springframework</groupId>
+						<artifactId>spring-beans</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.springframework</groupId>
+						<artifactId>spring-jcl</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
 			<dependency>
 				<groupId>ca.uhn.hapi.fhir</groupId>
 				<artifactId>hapi-fhir-structures-r4</artifactId>
@@ -945,22 +968,6 @@
 				<groupId>io.swagger.core.v3</groupId>
 				<artifactId>swagger-jaxrs2-servlet-initializer-v2</artifactId>
 				<version>${swagger.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-context</artifactId>
-				<version>5.3.27</version>
-				<exclusions>
-					<exclusion>
-						<groupId>org.springframework</groupId>
-						<artifactId>spring-aop</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.springframework</groupId>
-						<artifactId>spring-beans</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 
 			<dependency>
