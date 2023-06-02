@@ -789,17 +789,17 @@ public class DemisSteps implements En {
         });
 
     And(
-         "^I select \"([^\"]*)\" as a Laboratory in New sample form while processing a DEMIS LabMessage$",
-         (String labor) -> {
-           webDriverHelpers.waitUntilIdentifiedElementIsPresent(LABORATORY_INPUT);
-           webDriverHelpers.fillInWebElement(LABORATORY_INPUT, labor);
+        "^I select \"([^\"]*)\" as a Laboratory in New sample form while processing a DEMIS LabMessage$",
+        (String labor) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(LABORATORY_INPUT);
+          webDriverHelpers.fillAndSubmitInWebElement(LABORATORY_INPUT, labor);
         });
 
     And(
         "^I select \"([^\"]*)\" as a Laboratory for pathogen in New sample form while processing a DEMIS LabMessage$",
         (String labor) -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(FIRST_PATHOGEN_LABORATORY_INPUT);
-          webDriverHelpers.fillInWebElement(FIRST_PATHOGEN_LABORATORY_INPUT, labor);
+          webDriverHelpers.fillAndSubmitInWebElement(FIRST_PATHOGEN_LABORATORY_INPUT, labor);
         });
   }
 
