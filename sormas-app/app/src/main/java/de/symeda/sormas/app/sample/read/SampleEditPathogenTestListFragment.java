@@ -24,7 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -58,7 +58,7 @@ public class SampleEditPathogenTestListFragment extends BaseEditFragment<Fragmen
 
 		((SampleEditActivity) getActivity()).showPreloader();
 		adapter = new PathogenTestListAdapter();
-		PathogenTestListViewModel model = ViewModelProviders.of(this).get(PathogenTestListViewModel.class);
+		PathogenTestListViewModel model = new ViewModelProvider(this).get(PathogenTestListViewModel.class);
 		model.initializeViewModel(getActivityRootData());
 		model.getPathogenTests().observe(this, contacts -> {
 			((SampleEditActivity) getActivity()).hidePreloader();

@@ -57,6 +57,7 @@ public class PersonDirectoryPage {
   public static final By EVENT_AGGREGATION_BUTTON_DE = By.id("Ereignisteilnehmer");
   public static final By CONTACT_AGGREGATION_BUTTON_DE = By.id("Kontakt");
   public static final By ALL_AGGREGATION_BUTTON_DE = By.id("Alle");
+  public static final By PERSON_FIRST_RECORD_IN_TABLE = By.cssSelector("[role='gridcell'] a");
 
   public static final By getPersonResultsUuidLocator(String uuid) {
     return By.cssSelector(String.format("[title = '%s']", uuid));

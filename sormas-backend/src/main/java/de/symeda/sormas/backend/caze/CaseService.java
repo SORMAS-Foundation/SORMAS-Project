@@ -831,18 +831,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.and(cb.notEqual(from.get(Case.QUARANTINE_HELP_NEEDED), ""), cb.isNotNull(from.get(Case.QUARANTINE_HELP_NEEDED))));
 		}
-		if (caseCriteria.getRelevanceStatus() != null) {
-			if (caseCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(from.get(Case.ARCHIVED), false), cb.isNull(from.get(Case.ARCHIVED))));
-			} else if (caseCriteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.ARCHIVED), true));
-			} else if (caseCriteria.getRelevanceStatus() == EntityRelevanceStatus.DELETED) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DELETED), true));
-			}
-		}
-		if (caseCriteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
-			filter = CriteriaBuilderHelper.and(cb, filter, createDefaultFilter(cb, from));
-		}
+		filter = CriteriaBuilderHelper.and(cb, filter, createRelevanceStatusFilter(caseCriteria, caseQueryContext));
 
 		if (!DataHelper.isNullOrEmpty(caseCriteria.getPersonLike())) {
 			Predicate likeFilters = CriteriaBuilderHelper.buildFreeTextSearchPredicate(
@@ -955,6 +944,28 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 				ExternalShareInfo.CAZE,
 				(latestShareDate) -> createChangeDateFilter(cq, cb, joins, latestShareDate, true, true)));
 
+		return filter;
+	}
+
+	private Predicate createRelevanceStatusFilter(CaseCriteria caseCriteria, CaseQueryContext caseQueryContext) {
+
+		final From<?, Case> from = caseQueryContext.getRoot();
+		final CriteriaBuilder cb = caseQueryContext.getCriteriaBuilder();
+
+		Predicate filter = null;
+
+		if (caseCriteria.getRelevanceStatus() != null) {
+			if (caseCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(from.get(Case.ARCHIVED), false), cb.isNull(from.get(Case.ARCHIVED))));
+			} else if (caseCriteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.ARCHIVED), true));
+			} else if (caseCriteria.getRelevanceStatus() == EntityRelevanceStatus.DELETED) {
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DELETED), true));
+			}
+		}
+		if (caseCriteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
+			filter = CriteriaBuilderHelper.and(cb, filter, createDefaultFilter(cb, from));
+		}
 		return filter;
 	}
 
@@ -1161,10 +1172,10 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 	}
 
 	@Override
-	public void undelete(Case caze) {
+	public void restore(Case caze) {
 		// un-delete all samples that are only associated with this case
-		caze.getSamples().stream().forEach(sample -> sampleService.undelete(sample));
-		super.undelete(caze);
+		caze.getSamples().stream().forEach(sample -> sampleService.restore(sample));
+		super.restore(caze);
 	}
 
 	private void deleteCaseInExternalSurveillanceTool(Case caze) {
@@ -1605,7 +1616,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 			.calculateFollowUpUntilDate(
 				CaseFacadeEjb.toCaseDto(caze),
 				CaseLogic.getFollowUpStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate(), earliestSampleDate),
-				caze.getVisits().stream().map(VisitFacadeEjb::toDto).collect(Collectors.toList()),
+				caze.getVisits().stream().map(VisitFacadeEjb::toVisitDto).collect(Collectors.toList()),
 				diseaseConfigurationFacade.getCaseFollowUpDuration(caze.getDisease()),
 				false,
 				featureConfigurationFacade.isPropertyValueTrue(FeatureType.CASE_FOLLOWUP, FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE))
@@ -1645,7 +1656,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		Root<Case> root = cq.from(Case.class);
 		cq.multiselect(
 			JurisdictionHelper
-				.booleanSelector(cb, CaseJurisdictionPredicateValidator.of(new CaseQueryContext(cb, cq, root), user).isInJurisdiction()));
+				.booleanSelector(cb, CaseJurisdictionPredicateValidator.of(new CaseQueryContext(cb, cq, root), user).isRootInJurisdiction()));
 		cq.where(cb.equal(root.get(Case.UUID), caze.getUuid()));
 		return em.createQuery(cq).getResultList().stream().anyMatch(aBoolean -> aBoolean);
 	}
@@ -1943,7 +1954,9 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		// * onset date within 30 days of each other (when defined)
 
 		Predicate userFilter = createUserFilter(caseQueryContext);
-		Predicate criteriaFilter = criteria != null ? createCriteriaFilter(criteria, caseQueryContext) : null;
+		Predicate criteriaFilter = cb.or(createCriteriaFilter(criteria, caseQueryContext), createCriteriaFilter(criteria, caseQueryContext2));
+		Predicate relevanceStatusRoot2Filter =
+			cb.and(createRelevanceStatusFilter(criteria, caseQueryContext), createRelevanceStatusFilter(criteria, caseQueryContext2));
 		Expression<String> nameSimilarityExpr = cb.concat(person.get(Person.FIRST_NAME), " ");
 		nameSimilarityExpr = cb.concat(nameSimilarityExpr, person.get(Person.LAST_NAME));
 		Expression<String> nameSimilarityExpr2 = cb.concat(person2.get(Person.FIRST_NAME), " ");
@@ -1993,13 +2006,12 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 				cb.lessThanOrEqualTo(root2.get(Case.CREATION_DATE), DateHelper.getStartOfDay(criteria.getCreationDateFrom())),
 				cb.greaterThanOrEqualTo(root2.get(Case.CREATION_DATE), DateHelper.getEndOfDay(criteria.getCreationDateTo()))));
 
-		Predicate filter = CriteriaBuilderHelper
-			.and(cb, createDefaultFilter(cb, root), createDefaultFilter(cb, root2), userFilter, criteriaFilter, nameSimilarityFilter, diseaseFilter);
+		Predicate filter = CriteriaBuilderHelper.and(cb, userFilter, criteriaFilter, relevanceStatusRoot2Filter, nameSimilarityFilter, diseaseFilter);
 
 		if (!showDuplicatesWithDifferentRegion) {
-			Predicate regionFilter = cb.and(
+			Predicate regionFilter = cb.or(
 				cb.equal(root.get(Case.RESPONSIBLE_REGION), root2.get(Case.RESPONSIBLE_REGION)),
-				cb.or(cb.and(cb.isNull(root.get(Case.REGION))), cb.equal(root.get(Case.REGION), root2.get(Case.REGION))));
+				cb.and(cb.isNotNull(root.get(Case.REGION)), cb.equal(root.get(Case.REGION), root2.get(Case.REGION))));
 			filter = CriteriaBuilderHelper.and(cb, filter, regionFilter);
 		}
 
@@ -2011,7 +2023,9 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 			birthDateFilter,
 			onsetDateFilter,
 			creationDateFilter,
-			cb.notEqual(root.get(Case.ID), root2.get(Case.ID)));
+			cb.notEqual(root.get(Case.ID), root2.get(Case.ID)),
+			cb.lessThanOrEqualTo(root.get(Case.CREATION_DATE), root2.get(Case.CREATION_DATE)),
+			cb.lessThanOrEqualTo(root2.get(Case.CREATION_DATE), DateHelper.getEndOfDay(criteria.getCreationDateTo())));
 
 		if (CollectionUtils.isNotEmpty(criteria.getCaseUuidsForMerge())) {
 			Set<String> caseUuidsForMerge = criteria.getCaseUuidsForMerge();

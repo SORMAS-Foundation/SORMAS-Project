@@ -68,6 +68,7 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -118,6 +119,7 @@ import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.LocationHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
@@ -473,6 +475,10 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 			externalJournalService.handleExternalJournalPersonUpdateAsync(source.toReference());
 		}
 
+		if (existingPerson != null) {
+			LocationHelper.resetContinentFieldsIfCountryRemoved(source.getAddress(), existingPerson.getAddress());
+		}
+
 		person = fillOrBuildEntity(source, person, checkChangeDate);
 
 		service.ensurePersisted(person);
@@ -518,6 +524,10 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 			externalJournalService.validateExternalJournalPerson(source);
 		}
 
+		if (existingPersonDto != null) {
+			LocationHelper.resetContinentFieldsIfCountryRemoved(source.getAddress(), existingPersonDto.getAddress());
+		}
+
 		existingPerson = fillOrBuildEntity(source, existingPerson, true);
 
 		service.ensurePersisted(existingPerson);
@@ -555,7 +565,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	}
 
 	private void validateUserRights(PersonDto person, PersonDto existingPerson) {
-		if (existingPerson != null) {
+		if (existingPerson != null && !RequestContextHolder.isMobileSync()) {
 			if (person.getSymptomJournalStatus() != existingPerson.getSymptomJournalStatus()
 				&& !(userService.hasRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL) || userService.hasRight(UserRight.EXTERNAL_VISITS))) {
 				throw new AccessDeniedException(
@@ -1739,7 +1749,10 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		target.setPassportNumber(source.getPassportNumber());
 		target.setNationalHealthId(source.getNationalHealthId());
 		target.setPlaceOfBirthFacilityType(source.getPlaceOfBirthFacilityType());
-		target.setSymptomJournalStatus(source.getSymptomJournalStatus());
+
+		if (!RequestContextHolder.isMobileSync()) {
+			target.setSymptomJournalStatus(source.getSymptomJournalStatus());
+		}
 
 		target.setHasCovidApp(source.isHasCovidApp());
 		target.setCovidCodeDelivered(source.isCovidCodeDelivered());
@@ -1914,7 +1927,8 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 					}
 
 					EventParticipant otherEventParticipant = participantsToSameEvent.stream()
-						.filter(eventParticipant -> !selectedEventParticipantUuids.contains(eventParticipant.getUuid()))
+						.filter(
+							eventParticipant -> !selectedEventParticipantUuids.contains(eventParticipant.getUuid()) && !eventParticipant.isDeleted())
 						.findFirst()
 						.orElse(null);
 

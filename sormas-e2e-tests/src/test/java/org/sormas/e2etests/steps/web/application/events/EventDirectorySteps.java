@@ -39,6 +39,7 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_A
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_EVENT_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_EVENT_PARTICIPANT_AFTER_IMPORT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_EVENT_PARTICIPANT_FROM_LIST;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_PERSON_ID_IN_EVENT_PARTICIPANT_TAB;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_RESULT_IN_EVENT_PARTICIPANT_TABLE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.UUID_EDIT_EVENT;
@@ -202,7 +203,9 @@ public class EventDirectorySteps implements En {
     When(
         "I fill EVENT ID filter by API",
         () -> {
-          TimeUnit.SECONDS.sleep(2); // wait for reaction
+          TimeUnit.SECONDS.sleep(5); // wait for reaction
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(APPLY_FILTER);
           String eventUuid = apiState.getCreatedEvent().getUuid();
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(SEARCH_EVENT_BY_FREE_TEXT);
           webDriverHelpers.fillInWebElement(
@@ -455,7 +458,10 @@ public class EventDirectorySteps implements En {
 
     When(
         "I click on the NEW EVENT button",
-        () -> webDriverHelpers.clickOnWebElementBySelector(EventDirectoryPage.NEW_EVENT_BUTTON));
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NEW_EVENT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(EventDirectoryPage.NEW_EVENT_BUTTON);
+        });
     And(
         "I apply {string} to combobox on Event Directory Page",
         (String eventParameter) -> {
@@ -976,8 +982,9 @@ public class EventDirectorySteps implements En {
     When(
         "I click on last created UI result in grid in Event Directory for Bulk Action",
         () -> {
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
           webDriverHelpers.scrollToElement(getByEventUuid(CreateNewEventSteps.newEvent.getUuid()));
+          TimeUnit.SECONDS.sleep(5);
           webDriverHelpers.clickOnWebElementBySelector(
               getByEventUuid(CreateNewEventSteps.newEvent.getUuid()));
         });
@@ -985,6 +992,7 @@ public class EventDirectorySteps implements En {
     When(
         "I search for the last event uuid created by UI",
         () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           webDriverHelpers.fillInWebElement(
               SEARCH_EVENT_BY_FREE_TEXT, CreateNewEventSteps.eventUUID);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
@@ -1288,7 +1296,7 @@ public class EventDirectorySteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_POPUP_BUTTON);
           TimeUnit.SECONDS.sleep(2); // wait for spinner
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(80);
         });
 
     When(
@@ -1296,7 +1304,7 @@ public class EventDirectorySteps implements En {
         (String option) -> {
           webDriverHelpers.selectFromCombobox(EVENT_PARTICIPANT_DISPLAY_FILTER_COMBOBOX, option);
           TimeUnit.SECONDS.sleep(3); // wait for reaction
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
         });
 
     When(
@@ -1423,6 +1431,12 @@ public class EventDirectorySteps implements En {
         "I click on the first row from event participant list",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_PARTICIPANT_FROM_LIST);
+        });
+
+    When(
+        "I click on the first Person ID from Event Participants",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_PERSON_ID_IN_EVENT_PARTICIPANT_TAB);
         });
   }
 

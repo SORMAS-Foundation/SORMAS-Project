@@ -35,10 +35,10 @@ import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.ui.AbstractBeanTest;
-import de.symeda.sormas.ui.TestDataCreator;
+import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.ui.AbstractUiBeanTest;
 
-public class GermanCaseClassificationValidatorTest extends AbstractBeanTest {
+public class GermanCaseClassificationValidatorTest extends AbstractUiBeanTest {
 
 	public static final String INVALID_CASE_CLASSIFICATION = "invalid case classification";
 
@@ -46,7 +46,6 @@ public class GermanCaseClassificationValidatorTest extends AbstractBeanTest {
 	@Disabled("see #2599")
 	public void testCaseClassificationValidator() {
 
-		final TestDataCreator creator = new TestDataCreator();
 		final TestDataCreator.RDCF rdcf = creator.createRDCF("region", "district", "community", "facility");
 		final UserDto user = creator.createUser(
 			rdcf.region.getUuid(),
@@ -81,7 +80,7 @@ public class GermanCaseClassificationValidatorTest extends AbstractBeanTest {
 
 		// assert classifications when no symptoms & non-positive lab result
 		final SampleDto sample =
-			creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility.toReference());
+			creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
 
 		valid(CaseClassification.NOT_CLASSIFIED, validator);
 		invalid(CaseClassification.SUSPECT, validator);

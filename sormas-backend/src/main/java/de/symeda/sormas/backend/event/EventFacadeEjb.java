@@ -95,7 +95,6 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasRuntimeException;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
-import de.symeda.sormas.api.utils.BulkOperationResults;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.FacadeHelper;
@@ -128,7 +127,6 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShar
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
-import de.symeda.sormas.backend.util.BulkOperationHelper;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -170,6 +168,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
 	@EJB
 	private SormasToSormasEventFacadeEjbLocal sormasToSormasEventFacade;
+	@EJB
+	private EventService eventService;
 	@EJB
 	private EventParticipantService eventParticipantService;
 	@EJB
@@ -335,11 +335,15 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 	@Override
 	@RightsAllowed(UserRight._EVENT_DELETE)
-	public void undelete(String uuid) {
-		super.undelete(uuid);
+	public void restore(String uuid) {
+		super.restore(uuid);
 	}
 
 	private void deleteEvent(Event event, DeletionDetails deletionDetails) throws ExternalSurveillanceToolException {
+		if (!eventService.inJurisdictionOrOwned(event)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.messageEventOutsideJurisdictionDeletionDenied));
+		}
+
 		if (event.getEventStatus() == EventStatus.CLUSTER
 			&& externalSurveillanceToolFacade.isFeatureEnabled()
 			&& externalShareInfoService.isEventShared(event.getId())) {
@@ -518,8 +522,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 			// Participant, Case and Death Count
 			List<Object[]> participantQueryList = new ArrayList<>();
-			CriteriaQuery<Object[]> participantCQ = cb.createQuery(Object[].class);
 			IterableHelper.executeBatched(eventUuids, ModelConstants.PARAMETER_LIMIT, batchedUuids -> {
+				CriteriaQuery<Object[]> participantCQ = cb.createQuery(Object[].class);
 				Root<EventParticipant> epRoot = participantCQ.from(EventParticipant.class);
 				Join<EventParticipant, Case> caseJoin = epRoot.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
 				Predicate notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
@@ -1444,15 +1448,16 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 	@Override
 	@RightsAllowed(UserRight._EVENT_EDIT)
-	public BulkOperationResults<String> saveBulkEvents(
+	public Integer saveBulkEvents(
 		List<String> eventUuidList,
 		EventDto updatedTempEvent,
 		boolean eventStatusChange,
 		boolean eventInvestigationStatusChange,
 		boolean eventManagementStatusChange) {
 
-		return BulkOperationHelper.executeWithLimits(eventUuidList, uuid -> {
-			Event event = service.getByUuid(uuid);
+		int changedEvents = 0;
+		for (String eventUuid : eventUuidList) {
+			Event event = service.getByUuid(eventUuid);
 
 			if (service.isEditAllowed(event)) {
 				EventDto eventDto = toDto(event);
@@ -1469,8 +1474,10 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 				}
 
 				save(eventDto);
+				changedEvents++;
 			}
-		});
+		}
+		return changedEvents;
 
 	}
 

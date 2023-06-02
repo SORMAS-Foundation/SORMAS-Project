@@ -2,7 +2,7 @@ package de.symeda.sormas.app.rest;
 
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.report.AggregateReportDto;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -19,7 +19,7 @@ public interface AggregateReportFacadeRetro {
 	Call<List<AggregateReportDto>> pullByUuids(@Body List<String> uuids);
 
 	@POST("aggregatereports/push")
-	Call<List<PushResult>> pushAll(@Body List<AggregateReportDto> dtos);
+	Call<List<PostResponse>> pushAll(@Body List<AggregateReportDto> dtos);
 
 	@GET("aggregatereports/uuids")
 	Call<List<String>> pullUuids();

@@ -31,6 +31,7 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDashboardFilterDateType;
@@ -46,105 +47,57 @@ import de.symeda.sormas.backend.TestDataCreator;
 
 public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 
-	@Test
-	public void getSampleCountsByResultType() {
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		TestDataCreator.RDCF rdcf2 = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+	private TestDataCreator.RDCF rdcf;
+	private TestDataCreator.RDCF rdcf2;
+	private CaseDataDto caze;
+	private Date reportDate;
+	private UserDto user;
 
-		Date reportDate = DateHelper.getDateZero(2023, 1, 20);
-		CaseDataDto caze = creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf, c -> {
+	@Override
+	public void init() {
+		super.init();
+		rdcf = creator.createRDCF();
+		rdcf2 = creator.createRDCF();
+		user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		reportDate = DateHelper.getDateZero(2023, 1, 20);
+
+		caze = creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf, c -> {
 			c.setReportDate(reportDate);
 			c.setDisease(Disease.CORONAVIRUS);
 		});
-		SampleDto indeterminateSample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
-			s.setSampleDateTime(reportDate);
-			s.setPathogenTestResult(PathogenTestResultType.INDETERMINATE);
-			s.setSampleMaterial(SampleMaterial.BLOOD);
-		});
-		creator.createPathogenTest(
-			indeterminateSample.toReference(),
-			PathogenTestType.RAPID_TEST,
-			Disease.CORONAVIRUS,
-			reportDate,
-			rdcf.facility,
-			user.toReference(),
-			PathogenTestResultType.INDETERMINATE,
-			"",
-			true,
-			null);
-		creator.createPathogenTest(
-			indeterminateSample.toReference(),
-			PathogenTestType.RAPID_TEST,
+	}
+
+	@Test
+	public void getSampleCountsByResultType() {
+		SampleDto indeterminateSample = createSampleByResultType(caze, reportDate, PathogenTestResultType.INDETERMINATE, SampleMaterial.BLOOD);
+		createPathogenTestByResultType(indeterminateSample, Disease.CORONAVIRUS, reportDate, PathogenTestResultType.INDETERMINATE);
+		createPathogenTestByResultType(
+			indeterminateSample,
 			Disease.CORONAVIRUS,
 			DateHelper.subtractDays(reportDate, 4),
-			rdcf.facility,
-			user.toReference(),
-			PathogenTestResultType.INDETERMINATE,
-			"",
-			true,
-			null);
+			PathogenTestResultType.INDETERMINATE);
 
-		SampleDto pendingSample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
-			s.setSampleDateTime(DateHelper.addDays(reportDate, 1));
-			s.setPathogenTestResult(PathogenTestResultType.PENDING);
-			s.setSampleMaterial(SampleMaterial.CRUST);
-		});
-		creator.createPathogenTest(
-			pendingSample.toReference(),
-			PathogenTestType.RAPID_TEST,
+		SampleDto pendingSample =
+			createSampleByResultType(caze, DateHelper.addDays(reportDate, 1), PathogenTestResultType.PENDING, SampleMaterial.CRUST);
+		createPathogenTestByResultType(pendingSample, Disease.CORONAVIRUS, DateHelper.subtractDays(reportDate, 4), PathogenTestResultType.PENDING);
+
+		SampleDto negativeSample =
+			createSampleByResultType(caze, DateHelper.addDays(reportDate, 4), PathogenTestResultType.NEGATIVE, SampleMaterial.CRUST);
+		createPathogenTestByResultType(
+			negativeSample,
 			Disease.CORONAVIRUS,
 			DateHelper.subtractDays(reportDate, 4),
-			rdcf.facility,
-			user.toReference(),
-			PathogenTestResultType.PENDING,
-			"",
-			true,
-			null);
+			PathogenTestResultType.INDETERMINATE);
 
-		SampleDto negativeSample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
-			s.setSampleDateTime(DateHelper.addDays(reportDate, 4));
-			s.setPathogenTestResult(PathogenTestResultType.NEGATIVE);
-			s.setSampleMaterial(SampleMaterial.CRUST);
-		});
-		creator.createPathogenTest(
-			negativeSample.toReference(),
-			PathogenTestType.RAPID_TEST,
-			Disease.CORONAVIRUS,
-			DateHelper.subtractDays(reportDate, 4),
-			rdcf.facility,
-			user.toReference(),
-			PathogenTestResultType.INDETERMINATE,
-			"",
-			true,
-			null);
-
-		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
-			s.setSampleDateTime(DateHelper.subtractDays(reportDate, 1));
-			s.setPathogenTestResult(PathogenTestResultType.POSITIVE);
-			s.setSampleMaterial(SampleMaterial.CRUST);
-		});
+		createSampleByResultType(caze, DateHelper.subtractDays(reportDate, 1), PathogenTestResultType.POSITIVE, SampleMaterial.CRUST);
 
 		caze = creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf2, c -> {
 			c.setReportDate(DateHelper.subtractDays(reportDate, 5));
 			c.setDisease(Disease.CHOLERA);
 		});
-		SampleDto notDoneOtherRdcfSample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
-			s.setSampleDateTime(DateHelper.subtractDays(reportDate, 4));
-			s.setPathogenTestResult(PathogenTestResultType.NOT_DONE);
-			s.setSampleMaterial(SampleMaterial.THROAT_SWAB);
-		});
-		creator.createPathogenTest(
-			notDoneOtherRdcfSample.toReference(),
-			PathogenTestType.RAPID_TEST,
-			Disease.CHOLERA,
-			DateHelper.addDays(reportDate, 1),
-			rdcf.facility,
-			user.toReference(),
-			PathogenTestResultType.NOT_DONE,
-			"",
-			true,
-			null);
+		SampleDto notDoneOtherRdcfSample =
+			createSampleByResultType(caze, DateHelper.subtractDays(reportDate, 4), PathogenTestResultType.NOT_DONE, SampleMaterial.THROAT_SWAB);
+		createPathogenTestByResultType(notDoneOtherRdcfSample, Disease.CHOLERA, DateHelper.addDays(reportDate, 1), PathogenTestResultType.NOT_DONE);
 
 		Map<PathogenTestResultType, Long> sampleCountsForRelevantDate = getSampleDashboardFacade().getSampleCountsByResultType(
 			new SampleDashboardCriteria().dateBetween(DateHelper.subtractDays(reportDate, 2), DateHelper.addDays(reportDate, 2))
@@ -236,32 +189,14 @@ public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetSampleCountsWithNoDiseaseFlag() {
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
-
 		EventDto eventWithNoDisease = creator.createEvent(user.toReference());
-		EventParticipantDto eventParticipantWithNoDisease =
-			creator.createEventParticipant(eventWithNoDisease.toReference(), creator.createPerson(), user.toReference());
-		creator.createSample(
-			eventParticipantWithNoDisease.toReference(),
-			new Date(),
-			new Date(),
-			user.toReference(),
-			SampleMaterial.CRUST,
-			rdcf.facility);
-		creator.createSample(
-			eventParticipantWithNoDisease.toReference(),
-			new Date(),
-			new Date(),
-			user.toReference(),
-			SampleMaterial.CRUST,
-			rdcf.facility);
+		EventParticipantDto eventParticipantWithNoDisease = createEventParticipant(eventWithNoDisease);
+		createSample(eventParticipantWithNoDisease, SampleMaterial.CRUST);
+		createSample(eventParticipantWithNoDisease, SampleMaterial.CRUST);
 
 		EventDto eventWithDisease = creator.createEvent(user.toReference(), Disease.CORONAVIRUS);
-		EventParticipantDto eventParticipantWithDisease =
-			creator.createEventParticipant(eventWithDisease.toReference(), creator.createPerson(), user.toReference());
-		creator
-			.createSample(eventParticipantWithDisease.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.CRUST, rdcf.facility);
+		EventParticipantDto eventParticipantWithDisease = createEventParticipant(eventWithDisease);
+		createSample(eventParticipantWithDisease, SampleMaterial.CRUST);
 
 		Map<PathogenTestResultType, Long> counts =
 			getSampleDashboardFacade().getSampleCountsByResultType(new SampleDashboardCriteria().withNoDisease(null));
@@ -279,17 +214,8 @@ public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetSampleCountsByPurpose() {
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
-		CaseDataDto caze = creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
-
-		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
-			s.setSamplePurpose(SamplePurpose.INTERNAL);
-		});
-
-		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
-			s.setSamplePurpose(SamplePurpose.EXTERNAL);
-		});
+		createSampleByPurpose(caze, rdcf.facility, SamplePurpose.INTERNAL, null, null, null);
+		createSampleByPurpose(caze, rdcf.facility, SamplePurpose.EXTERNAL, null, null, null);
 
 		Map<SamplePurpose, Long> sampleCounts = getSampleDashboardFacade().getSampleCountsByPurpose(new SampleDashboardCriteria());
 
@@ -299,38 +225,13 @@ public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetSampleCountsBySpecimenCondition() {
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
-		CaseDataDto caze = creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
-
-		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
-			s.setSamplePurpose(SamplePurpose.EXTERNAL);
-			s.setReceived(true);
-			s.setSpecimenCondition(SpecimenCondition.ADEQUATE);
-		});
-
-		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
-			s.setSamplePurpose(SamplePurpose.EXTERNAL);
-			s.setReceived(true);
-			s.setSpecimenCondition(SpecimenCondition.NOT_ADEQUATE);
-		});
-
-		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
-			s.setSamplePurpose(SamplePurpose.EXTERNAL);
-			s.setReceived(true);
-		});
+		createSampleByPurpose(caze, rdcf.facility, SamplePurpose.EXTERNAL, SpecimenCondition.ADEQUATE, true, null);
+		createSampleByPurpose(caze, rdcf.facility, SamplePurpose.EXTERNAL, SpecimenCondition.NOT_ADEQUATE, true, null);
+		createSampleByPurpose(caze, rdcf.facility, SamplePurpose.EXTERNAL, null, true, null);
 
 		// not received sample should not be counted
-		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
-			s.setSamplePurpose(SamplePurpose.EXTERNAL);
-			s.setReceived(false);
-			s.setSpecimenCondition(SpecimenCondition.NOT_ADEQUATE);
-		});
-
-		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
-			s.setSamplePurpose(SamplePurpose.INTERNAL);
-			s.setSpecimenCondition(SpecimenCondition.NOT_ADEQUATE);
-		});
+		createSampleByPurpose(caze, rdcf.facility, SamplePurpose.EXTERNAL, SpecimenCondition.NOT_ADEQUATE, false, null);
+		createSampleByPurpose(caze, rdcf.facility, SamplePurpose.INTERNAL, SpecimenCondition.NOT_ADEQUATE, null, null);
 
 		Map<SpecimenCondition, Long> sampleCounts = getSampleDashboardFacade().getSampleCountsBySpecimenCondition(new SampleDashboardCriteria());
 
@@ -341,70 +242,123 @@ public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetSampleCountsByShipmentStatus() {
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		FacilityReferenceDto lab = creator.createFacility("lab", rdcf.region, rdcf.district, null, FacilityType.LABORATORY).toReference();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
-		CaseDataDto caze = creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
 
 		// not shipped sample
-		creator.createSample(caze.toReference(), user.toReference(), lab, s -> {
-			s.setSamplePurpose(SamplePurpose.EXTERNAL);
-		});
-		// not shipped sample
-		creator.createSample(caze.toReference(), user.toReference(), lab, s -> {
-			s.setSamplePurpose(SamplePurpose.EXTERNAL);
-			s.setShipped(false);
-			s.setReceived(false);
-		});
+		createSampleByPurpose(caze, lab, SamplePurpose.EXTERNAL, null, null, null);
 
 		// not shipped sample
-		creator.createSample(caze.toReference(), user.toReference(), lab, s -> {
-			s.setSamplePurpose(SamplePurpose.EXTERNAL);
-			s.setShipped(false);
-		});
+		createSampleByPurpose(caze, lab, SamplePurpose.EXTERNAL, null, false, false);
 
 		// not shipped sample
-		creator.createSample(caze.toReference(), user.toReference(), lab, s -> {
-			s.setSamplePurpose(SamplePurpose.EXTERNAL);
-			s.setReceived(false);
-		});
+		createSampleByPurpose(caze, lab, SamplePurpose.EXTERNAL, null, null, false);
+
+		// not shipped sample
+		createSampleByPurpose(caze, lab, SamplePurpose.EXTERNAL, null, false, null);
 
 		// shipped sample
-		creator.createSample(caze.toReference(), user.toReference(), lab, s -> {
-			s.setSamplePurpose(SamplePurpose.EXTERNAL);
-			s.setShipped(true);
-		});
+		createSampleByPurpose(caze, lab, SamplePurpose.EXTERNAL, null, null, true);
 
 		// shipped sample
-		creator.createSample(caze.toReference(), user.toReference(), lab, s -> {
-			s.setSamplePurpose(SamplePurpose.EXTERNAL);
-			s.setShipped(true);
-			s.setReceived(false);
-		});
+		createSampleByPurpose(caze, lab, SamplePurpose.EXTERNAL, null, false, true);
 
 		// received sample
-		creator.createSample(caze.toReference(), user.toReference(), lab, s -> {
-			s.setSamplePurpose(SamplePurpose.EXTERNAL);
-			s.setShipped(true);
-			s.setReceived(true);
-		});
+		createSampleByPurpose(caze, lab, SamplePurpose.EXTERNAL, null, true, true);
 
 		// received sample
-		creator.createSample(caze.toReference(), user.toReference(), lab, s -> {
-			s.setSamplePurpose(SamplePurpose.EXTERNAL);
-			s.setReceived(true);
-		});
+		createSampleByPurpose(caze, lab, SamplePurpose.EXTERNAL, null, true, null);
 
 		// internal sample should not be counted
-		creator.createSample(caze.toReference(), user.toReference(), lab, s -> {
-			s.setSamplePurpose(SamplePurpose.INTERNAL);
-			s.setShipped(true);
-		});
+		createSampleByPurpose(caze, lab, SamplePurpose.INTERNAL, null, null, true);
 
 		Map<SampleShipmentStatus, Long> sampleCounts = getSampleDashboardFacade().getSampleCountsByShipmentStatus(new SampleDashboardCriteria());
 
 		assertEquals(4, sampleCounts.get(SampleShipmentStatus.NOT_SHIPPED));
 		assertEquals(2, sampleCounts.get(SampleShipmentStatus.SHIPPED));
 		assertEquals(2, sampleCounts.get(SampleShipmentStatus.RECEIVED));
+	}
+
+	@Test
+	public void getResultCountByResultType() {
+		SampleDto sample1 = createSampleByResultType(caze, reportDate, null, SampleMaterial.BLOOD);
+		createPathogenTestByResultType(sample1, Disease.CORONAVIRUS, reportDate, PathogenTestResultType.INDETERMINATE);
+
+		SampleDto sample2 = createSampleByResultType(caze, reportDate, null, SampleMaterial.BLOOD);
+		createPathogenTestByResultType(sample2, Disease.CORONAVIRUS, reportDate, PathogenTestResultType.PENDING);
+		createPathogenTestByResultType(sample2, Disease.CORONAVIRUS, reportDate, PathogenTestResultType.NEGATIVE);
+
+		SampleDto sample3 = createSampleByResultType(caze, reportDate, null, SampleMaterial.BLOOD);
+		createPathogenTestByResultType(sample3, Disease.CORONAVIRUS, reportDate, PathogenTestResultType.POSITIVE);
+
+		Map<PathogenTestResultType, Long> pathogenTestCountsForRelevantDate = getSampleDashboardFacade().getTestResultCountsByResultType(
+			new SampleDashboardCriteria().dateBetween(DateHelper.subtractDays(reportDate, 2), DateHelper.addDays(reportDate, 2))
+				.sampleDateType(SampleDashboardFilterDateType.MOST_RELEVANT));
+
+		assertEquals(1, pathogenTestCountsForRelevantDate.get(PathogenTestResultType.INDETERMINATE));
+		assertEquals(1, pathogenTestCountsForRelevantDate.get(PathogenTestResultType.PENDING));
+		assertEquals(1, pathogenTestCountsForRelevantDate.get(PathogenTestResultType.NEGATIVE));
+		assertEquals(1, pathogenTestCountsForRelevantDate.get(PathogenTestResultType.POSITIVE));
+	}
+
+	public SampleDto createSampleByResultType(
+		CaseDataDto caze,
+		Date sampleDateTime,
+		PathogenTestResultType pathogenTestResultType,
+		SampleMaterial sampleMaterial) {
+		return creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
+			s.setSampleDateTime(sampleDateTime);
+			if (pathogenTestResultType != null) {
+				s.setPathogenTestResult(pathogenTestResultType);
+			}
+			s.setSampleMaterial(sampleMaterial);
+		});
+	}
+
+	public SampleDto createSampleByPurpose(
+		CaseDataDto caze,
+		FacilityReferenceDto facility,
+		SamplePurpose samplePurpose,
+		SpecimenCondition specimenCondition,
+		Boolean received,
+		Boolean shipped) {
+
+		return creator.createSample(caze.toReference(), user.toReference(), facility, s -> {
+			s.setSamplePurpose(samplePurpose);
+			if (received != null) {
+				s.setReceived(received);
+			}
+			if (shipped != null) {
+				s.setShipped(shipped);
+			}
+			if (specimenCondition != null) {
+				s.setSpecimenCondition(specimenCondition);
+			}
+		});
+	}
+
+	public SampleDto createSample(EventParticipantDto eventParticipantDto, SampleMaterial sampleMaterial) {
+		return creator.createSample(eventParticipantDto.toReference(), new Date(), new Date(), user.toReference(), sampleMaterial, rdcf.facility);
+	}
+
+	public PathogenTestDto createPathogenTestByResultType(
+		SampleDto sample,
+		Disease disease,
+		Date reportDate,
+		PathogenTestResultType pathogenTestResultType) {
+		return creator.createPathogenTest(
+			sample.toReference(),
+			PathogenTestType.RAPID_TEST,
+			disease,
+			reportDate,
+			rdcf.facility,
+			user.toReference(),
+			pathogenTestResultType,
+			"",
+			true,
+			null);
+	}
+
+	public EventParticipantDto createEventParticipant(EventDto event) {
+		return creator.createEventParticipant(event.toReference(), creator.createPerson(), user.toReference());
 	}
 }

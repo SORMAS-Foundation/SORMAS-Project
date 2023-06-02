@@ -54,7 +54,7 @@ public class EventParticipantsPage {
       By.cssSelector("[scroll] [aria-live] .v-grid-body tr:nth-of-type(1)");
   public static final By CONFIRM_BUTTON_FOR_SELECT_PERSON_FROM_ADD_PARTICIPANTS_WINDOW =
       By.cssSelector("[scroll] [role='dialog']:nth-of-type(5) #commit");
-  public static final By DELETE_EVENT_PARTICIPANT_BUTTTON = By.cssSelector("div#deleteUndelete");
+  public static final By DELETE_EVENT_PARTICIPANT_BUTTTON = By.cssSelector("div#deleteRestore");
   public static final By CONFIRM_ACTION = By.id("actionConfirm");
   public static final By POPUP_CANCEL_ACTION_BUTTON = By.id("unsavedChanges.cancel");
   public static final By EVENT_PARTICIPANT_UUID =
@@ -72,6 +72,14 @@ public class EventParticipantsPage {
   public static final By ENTER_BULK_EDIT_MODE_BUTTON = By.id("actionEnterBulkEditMode");
   public static final By EVENT_PARTICIPANTS_GRID =
       By.xpath("//div[@class='v-grid v-widget v-has-width v-has-height']");
+  public static final By EVENT_PARTICIPANT_PERSON_TAB =
+      By.cssSelector("#tab-events-eventparticipants-person");
+  public static final By EVENT_PARTICIPANT_DATA_TAB =
+      By.cssSelector("#tab-events-eventparticipants-data");
+  public static final By UNSAVED_CHANGES_HEADER =
+      By.xpath("//*[contains(text(), 'Unsaved changes')]");
+  public static final By UNSAVED_CHANGES_HEADER_DE =
+      By.xpath("//*[contains(text(), 'Ungespeicherte \u00C4nderungen')]");
 
   public static final By getEventParticipantByPersonUuid(String uuid) {
     return By.xpath(String.format("//a[@title='%s']//parent::td//parent::tr//td[1]/a", uuid));

@@ -18,13 +18,14 @@
 
 package org.sormas.e2etests.entities.services.api;
 
+import static org.sormas.e2etests.entities.pojo.helpers.ShortUUIDGenerator.generateShortUUID;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.UUID;
+import lombok.SneakyThrows;
 import org.sormas.e2etests.entities.pojo.api.Event;
 import org.sormas.e2etests.entities.pojo.api.EventParticipant;
 import org.sormas.e2etests.entities.pojo.api.Person;
@@ -46,15 +47,16 @@ public class EventParticipantApiService {
     this.runningConfiguration = runningConfiguration;
   }
 
+  @SneakyThrows
   public EventParticipant buildGeneratedEventParticipantWithCreationDate(
-      String eventUUID, String personUUID, String personSex, Integer days) {
+      String eventUUID, Person person, Integer days) {
     return EventParticipant.builder()
         .creationDate(
             LocalDateTime.parse(LocalDateTime.now().minusDays(days).toString())
                 .atZone(ZoneId.systemDefault())
                 .toInstant()
                 .toEpochMilli())
-        .uuid(UUID.randomUUID().toString())
+        .uuid(generateShortUUID())
         .reportingUser(
             ReportingUser.builder()
                 .uuid(
@@ -62,7 +64,13 @@ public class EventParticipantApiService {
                         .getUserByRole(locale, UserRoles.RestUser.getRole())
                         .getUuid())
                 .build())
-        .person(Person.builder().uuid(personUUID).sex(personSex).build())
+        .person(
+            Person.builder()
+                .uuid(person.getUuid())
+                .sex(person.getSex())
+                .firstName(person.getFirstName())
+                .lastName(person.getLastName())
+                .build())
         .event(Event.builder().uuid(eventUUID).build())
         .build();
   }

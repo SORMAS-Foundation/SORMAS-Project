@@ -29,6 +29,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.action.ActionCriteria;
 import de.symeda.sormas.api.action.ActionDto;
 import de.symeda.sormas.api.action.ActionFacade;
@@ -37,7 +38,10 @@ import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.event.EventActionExportDto;
 import de.symeda.sormas.api.event.EventActionIndexDto;
 import de.symeda.sormas.api.event.EventCriteria;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
@@ -147,6 +151,11 @@ public class ActionFacadeEjb implements ActionFacade {
 	@RightsAllowed(UserRight._ACTION_DELETE)
 	public void deleteAction(ActionDto actionDto) {
 		Action action = actionService.getByUuid(actionDto.getUuid());
+
+		if (!actionService.inJurisdictionOrOwned(action)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.messageActionOutsideJurisdictionDeletionDenied));
+		}
+
 		actionService.deletePermanent(action);
 	}
 
@@ -223,6 +232,20 @@ public class ActionFacadeEjb implements ActionFacade {
 	@Override
 	public long countActions(ActionCriteria criteria) {
 		return actionService.countActions(criteria);
+	}
+
+	@Override
+	public boolean isInJurisdiction(String uuid) {
+		return actionService.inJurisdictionOrOwned(actionService.getByUuid(uuid));
+	}
+
+	@Override
+	public EditPermissionType getEditPermissionType(String uuid) {
+		if (!isInJurisdiction(uuid)) {
+			return EditPermissionType.REFUSED;
+		}
+
+		return EditPermissionType.ALLOWED;
 	}
 
 	@LocalBean

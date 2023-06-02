@@ -21,7 +21,7 @@ import java.io.Serializable;
 
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 
-public class QuarterOfYear implements Serializable, Comparable<QuarterOfYear>, StatisticsGroupingKey {
+public class QuarterOfYear implements Serializable, Comparable<QuarterOfYear>, StatisticsGroupingKey, Cloneable {
 
 	private static final long serialVersionUID = -7158625755180563434L;
 
@@ -38,6 +38,12 @@ public class QuarterOfYear implements Serializable, Comparable<QuarterOfYear>, S
 		if (increaseYear) {
 			year.increaseYearBy(1);
 		}
+	}
+
+	public QuarterOfYear createNextQuarter() {
+		QuarterOfYear nextQuarter = new QuarterOfYear(new Quarter(quarter.getValue()), new Year(year.getValue()));
+		nextQuarter.increaseQuarter();
+		return nextQuarter;
 	}
 
 	public Quarter getQuarter() {

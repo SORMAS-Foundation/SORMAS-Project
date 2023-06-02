@@ -14,7 +14,8 @@
   - [SORMAS Server](#sormas-server)
     - [Install on Linux](#install-on-linux)
     - [Install on Windows](#install-on-windows)
-    - [Post-Installation Configuration](#post-installation-configuration)
+    - [Auditing](#auditing)
+    - [Sormas installation](#sormas-installation)
   - [Keycloak Server](#keycloak-server)
     - [Keycloak as a Docker container](#keycloak-as-a-docker-container)
     - [Keycloak as a standalone installation](#keycloak-as-a-standalone-installation)
@@ -36,7 +37,7 @@
 ## Related
 
 * [Creating an App for a Demo Server](DEMO_APP.md)
-* [SORMAS Docker Repository](https://github.com/hzi-braunschweig/SORMAS-Docker)
+* [SORMAS Docker Repository](https://github.com/sormas-foundation/SORMAS-Docker)
 
 ## Prerequisites
 
@@ -56,11 +57,11 @@ sudo apt-get install zulu11
 #### Windows
 
 For testing and development environments we suggest to download and run the installer of the Java 11 **JDK** for 32 or 64 bit client systems (depending on your system).
-You can check your Java version from the shell/command line using: ``java -version``.
+You can check your Java version from the shell/command-line using: ``java -version``.
 
 ### Postgres Database
 
-* Install PostgreSQL (currently 9.5, 9.6 or 10) on your system (manuals for all OS can be found here: <https://www.postgresql.org/download>)
+* Install PostgreSQL (currently 9.5, 9.6 or 10 to 15) on your system (manuals for all OS can be found here: <https://www.postgresql.org/download>)
 * Set **max_connections = 288** and **max_prepared_transactions = 256** (at least, sum of all connection pools) in ``postgresql.conf`` (e.g. ``/etc/postgresql/10.0/main/postgresql.conf``; ``C:/Program Files/PostgreSQL/10.0/data``) - make sure the property is uncommented and restart the service to apply the changes.
 * Install the "temporal tables" extension for Postgres (<https://github.com/arkhipov/temporal_tables>)
   * **Windows**: Download the latest version for your Postgres version:
@@ -79,7 +80,7 @@ You can check your Java version from the shell/command line using: ``java -versi
 
 ## SORMAS Server
 
-Get the latest SORMAS build by downloading the ZIP archive from the latest release on GitHub: <https://github.com/hzi-braunschweig/SORMAS-Project/releases/latest>
+Get the latest SORMAS build by downloading the ZIP archive from the latest release on GitHub: <https://github.com/sormas-foundation/SORMAS-Project/releases/latest>
 
 ### Install on Linux
 
@@ -90,7 +91,7 @@ sudo su
 mkdir /root/deploy/sormas
 cd /root/deploy/sormas
 SORMAS_VERSION=1.y.z
-wget https://github.com/hzi-braunschweig/SORMAS-Project/releases/download/v${SORMAS_VERSION}/sormas_${SORMAS_VERSION}.zip
+wget https://github.com/sormas-foundation/SORMAS-Project/releases/download/v${SORMAS_VERSION}/sormas_${SORMAS_VERSION}.zip
 unzip sormas_${SORMAS_VERSION}.zip
 mv deploy/ $(date +%F)
 rm sormas_${SORMAS_VERSION}.zip
@@ -108,7 +109,7 @@ You can configure the audit logger of SORMAS by providing a Logback [configurati
 
 ### Sormas installation
 
-* Optional: Open ``server-setup.sh`` in a text editor to customize the install paths, database access and ports for the server. The default ports are 6080 (HTTP), 6081 (HTTPS) and 6048 (admin). **Important:** Do not change the name of the database user. The pre-defined name is used in the statements executed in the database.
+* Optional: Open ``server-setup.sh`` in a text editor to customize the install paths, database access and ports for the server. The default ports are 6080 (HTTP), 6081 (HTTPS) and 6048 (admin). **Important:** Do not change the name of the database user. The predefined name is used in the statements executed in the database.
 * Set up the database and a Payara domain for SORMAS by executing the setup script: ``sudo -s ./server-setup.sh`` Press enter whenever asked for it
 * **IMPORTANT**: Make sure the script executed successfully. If anything goes wrong you need to fix the problem (or ask for help), then delete the created domain directory and re-execute the script.
 * **IMPORTANT**: Adjust the SORMAS configuration for your country in /opt/domains/sormas/sormas.properties
@@ -117,7 +118,7 @@ You can configure the audit logger of SORMAS by providing a Logback [configurati
 
 ## Keycloak Server
 
-**Note**: SORMAS also comes with a basic auth mechanism using an JEE authentication realm. This authentication mechanism should only be used for development environments. For **production environments always use the keycloak authentication mechansim.** See [Authentication & Authorization](https://github.com/hzi-braunschweig/SORMAS-Project/wiki/Authentication-&-Authorization).
+**Note**: SORMAS also comes with a basic auth mechanism using an JEE authentication realm. This authentication mechanism should only be used for development environments. For **production environments always use the keycloak authentication mechansim.** See [Authentication & Authorization](https://github.com/sormas-foundation/SORMAS-Project/wiki/Authentication-&-Authorization).
 
 Keycloak can be set up in two ways:
 * as a Docker container (for just using Keycloak approach)
@@ -126,7 +127,7 @@ Keycloak can be set up in two ways:
 ### Keycloak as a Docker container
 *To be done only in the situation when SORMAS is already installed on the machine as a standalone installation.*
 
-*For complete Docker setup see the [SORMAS-Docker](https://github.com/hzi-braunschweig/SORMAS-Docker/tree/keycloak-integration) repository.*
+*For complete Docker setup see the [SORMAS-Docker](https://github.com/sormas-foundation/SORMAS-Docker/tree/keycloak-integration) repository.*
 
 **Prerequisites**
 * SORMAS Server is installed
@@ -303,7 +304,7 @@ Activate output compression (very important!):
 </IfModule>
 ```
 
-Provide the android apk:
+Provide the Android apk:
 
 ```java
 Options -Indexes
@@ -391,7 +392,7 @@ chmod +x r-setup.sh
 ## SORMAS to SORMAS Certificate Setup
 
 To be able to communicate with other SORMAS instances, there are some additional steps which need to be taken, in order to set
-up the certificate and the truststore. Please see the [related guide](https://github.com/hzi-braunschweig/SORMAS-Project/wiki/Creating-a-SORMAS2SORMAS-Certificate) for detailed instructions regarding SORMAS to SORMAS setup.
+up the certificate and the truststore. Please see the [related guide](https://github.com/sormas-foundation/SORMAS-Project/wiki/Creating-a-SORMAS2SORMAS-Certificate) for detailed instructions regarding SORMAS to SORMAS setup.
 <br/>
 
 ## Troubleshooting

@@ -733,7 +733,11 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 		sormasToSormasRestClient.post(originInfo.getOrganizationId(), syncEndpoint, new SyncDataDto(shareData, criteria), null);
 
 		// remove existing shares from the request info
-		shareRequestInfo.setShares(shareRequestInfo.getShares().stream().filter(s -> s.getId() == null).collect(Collectors.toList()));
+		shareRequestInfo.setShares(
+			shareRequestInfo.getShares()
+				.stream()
+				.filter(s -> s.getSharedEntity().getSormasToSormasOriginInfo() == null && s.getId() == null)
+				.collect(Collectors.toList()));
 		if (!shareRequestInfo.getShares().isEmpty()) {
 			shareRequestInfoService.ensurePersisted(shareRequestInfo);
 		}

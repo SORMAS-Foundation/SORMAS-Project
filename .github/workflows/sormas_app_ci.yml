@@ -7,7 +7,7 @@
 name: Java CI with Gradle
 
 env:
-  JAVA: 11
+  JAVA: 17
   PRIVILEGED_RUN: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/development') 
    || github.event.pull_request.head.repo.full_name == github.repository }}
 
@@ -43,7 +43,7 @@ jobs:
         if: ${{ fromJSON(env.PRIVILEGED_RUN) }}
         uses: actions/checkout@v3
         with:
-          token: ${{ secrets.SORMAS_VITAGROUP_TOKEN }}
+          token: ${{ secrets.SORMAS_VITAGROUP_CI_TOKEN }}
 
       - name: Checkout repository (without token)
         # Check if PR results from a fork: if yes, we cannot access the token.
@@ -122,9 +122,10 @@ jobs:
           script: ./gradlew connectedAndroidTest
 
       - name: mobsfscan
-        uses: MobSF/mobsfscan@main
+        uses: MobSF/mobsfscan@0.2.0
         with:
           args: '. --sarif --output mobsf-results.sarif || true'
+
       - name: Upload mobsfscan report
         uses: github/codeql-action/upload-sarif@v2
         with:

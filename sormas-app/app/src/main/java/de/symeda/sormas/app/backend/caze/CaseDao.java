@@ -523,7 +523,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
 					if (assigneeUser != null
 						&& CaseJurisdictionBooleanValidator
 							.of(JurisdictionHelper.createCaseJurisdictionDto(changedCase), JurisdictionHelper.createUserJurisdiction(assigneeUser))
-							.isInJurisdiction()) {
+							.isRootInJurisdiction()) {
 						continue;
 					}
 

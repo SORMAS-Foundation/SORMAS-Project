@@ -4,10 +4,8 @@ Feature: Case view tests
   @env_main
   Scenario: Create a new Case and check details in Detailed view table
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     When API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then I log in as a National User
     Given I click on the Cases button from navbar

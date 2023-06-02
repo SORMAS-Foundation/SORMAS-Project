@@ -53,6 +53,7 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.LocationHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -79,7 +80,7 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 	private LocationEditForm homeAddressForm;
 	private Button searchPersonButton;
 
-	private PersonDto searchedPerson;
+	private PersonDto person;
 
 	private final boolean showHomeAddressForm;
 	private final boolean showPresentCondition;
@@ -104,6 +105,7 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 		boolean showPresentCondition,
 		boolean showSymptomsOnsetDate,
 		boolean showPersonSearchButton) {
+
 		super(
 			PersonDto.class,
 			PersonDto.I18N_PREFIX,
@@ -124,6 +126,7 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 
 	@Override
 	protected void addFields() {
+
 		addField(PersonDto.FIRST_NAME, TextField.class);
 		addField(PersonDto.LAST_NAME, TextField.class);
 
@@ -144,7 +147,8 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 		birthDateMonth.setPageLength(12);
 		birthDateMonth.setInputPrompt(I18nProperties.getString(Strings.month));
 		birthDateMonth.setCaption("");
-		DateHelper.getMonthsInYear().forEach(month -> birthDateMonth.setItemCaption(month, de.symeda.sormas.api.Month.values()[month - 1].toString()));
+		DateHelper.getMonthsInYear()
+			.forEach(month -> birthDateMonth.setItemCaption(month, de.symeda.sormas.api.Month.values()[month - 1].toString()));
 		setItemCaptionsForMonths(birthDateMonth);
 		ComboBox birthDateYear = addField(PersonDto.BIRTH_DATE_YYYY, ComboBox.class);
 		birthDateYear.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE));
@@ -241,6 +245,7 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 	}
 
 	private void addHomeAddressForm() {
+
 		enterHomeAddressNow = new CheckBox(I18nProperties.getCaption(Captions.caseDataEnterHomeAddressNow));
 		enterHomeAddressNow.addStyleName(VSPACE_3);
 		getContent().addComponent(enterHomeAddressNow, ENTER_HOME_ADDRESS_NOW);
@@ -266,13 +271,14 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 			addressHeader.setVisible(isChecked);
 			homeAddressForm.setVisible(isChecked);
 			homeAddressForm.setFacilityFieldsVisible(isChecked, true);
-			if (!isChecked && searchedPerson == null) {
+			if (!isChecked && person == null) {
 				homeAddressForm.clear();
 			}
 		});
 	}
 
 	protected Button createPersonSearchButton(String personSearchLoc) {
+
 		return ButtonHelper.createIconButtonWithCaption(personSearchLoc, StringUtils.EMPTY, VaadinIcons.SEARCH, clickEvent -> {
 			VaadinIcons icon = (VaadinIcons) clickEvent.getButton().getIcon();
 			if (icon == VaadinIcons.SEARCH) {
@@ -286,9 +292,9 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 					SimilarPersonDto pickedPerson = personSearchField.getValue();
 					if (pickedPerson != null) {
 						// add consumer
-						searchedPerson = FacadeProvider.getPersonFacade().getByUuid(pickedPerson.getUuid());
-						setPerson(searchedPerson);
-						enablePersonFields(false);
+						person = FacadeProvider.getPersonFacade().getByUuid(pickedPerson.getUuid());
+						setPerson(person);
+						enablePersonFields(false, true);
 						clickEvent.getButton().setIcon(VaadinIcons.CLOSE);
 					}
 				});
@@ -299,8 +305,8 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 
 				VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingSelectPerson));
 			} else {
-				searchedPerson = null;
-				setPerson(searchedPerson);
+				person = null;
+				setPerson(person);
 				enablePersonFields(true);
 				clickEvent.getButton().setIcon(VaadinIcons.SEARCH);
 			}
@@ -309,9 +315,11 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 
 	public void setPerson(PersonDto person) {
 
+		this.person = person;
+
 		if (showHomeAddressForm) {
-			enterHomeAddressNow.setEnabled(searchedPerson == null);
-			if (searchedPerson == null) {
+			enterHomeAddressNow.setEnabled(person == null || LocationHelper.checkIsEmptyLocation(person.getAddress()));
+			if (this.person == null) {
 				homeAddressForm.clear();
 				homeAddressForm.setFacilityFieldsVisible(false, true);
 				homeAddressForm.setVisible(false);
@@ -339,6 +347,7 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 	}
 
 	public void transferDataToPerson(PersonDto person) {
+
 		commit();
 		PersonDto personCreated = getValue();
 
@@ -363,22 +372,35 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 		}
 	}
 
-	public void enablePersonFields(Boolean enable) {
-		getField(PersonDto.FIRST_NAME).setEnabled(enable);
-		getField(PersonDto.LAST_NAME).setEnabled(enable);
-		getField(PersonDto.BIRTH_DATE_DD).setEnabled(enable);
-		getField(PersonDto.BIRTH_DATE_MM).setEnabled(enable);
-		getField(PersonDto.BIRTH_DATE_YYYY).setEnabled(enable);
-		getField(PersonDto.SEX).setEnabled(enable);
-		getField(PersonDto.PRESENT_CONDITION).setEnabled(enable);
-		getField(PersonDto.PHONE).setEnabled(enable);
-		getField(PersonDto.EMAIL_ADDRESS).setEnabled(enable);
-		getField(PersonDto.PASSPORT_NUMBER).setEnabled(enable);
-		getField(PersonDto.NATIONAL_HEALTH_ID).setEnabled(enable);
-		if (homeAddressForm != null) {
-			homeAddressForm.setEnabled(enable);
+	public void updateHomeAddress(PersonDto person) {
+
+		commit();
+		if (getHomeAddressForm() != null && getHomeAddressForm().getValue() != null) {
+			person.setAddress(getHomeAddressForm().getValue());
 		}
-		setRequired(enable, PersonDto.FIRST_NAME, PersonDto.LAST_NAME, PersonDto.SEX);
+	}
+
+	public void enablePersonFields(Boolean enabled) {
+		enablePersonFields(enabled, false);
+	}
+
+	public void enablePersonFields(Boolean enabled, boolean alwaysEnableAddressFields) {
+
+		getField(PersonDto.FIRST_NAME).setEnabled(enabled);
+		getField(PersonDto.LAST_NAME).setEnabled(enabled);
+		getField(PersonDto.BIRTH_DATE_DD).setEnabled(enabled);
+		getField(PersonDto.BIRTH_DATE_MM).setEnabled(enabled);
+		getField(PersonDto.BIRTH_DATE_YYYY).setEnabled(enabled);
+		getField(PersonDto.SEX).setEnabled(enabled);
+		getField(PersonDto.PRESENT_CONDITION).setEnabled(enabled);
+		getField(PersonDto.PHONE).setEnabled(enabled);
+		getField(PersonDto.EMAIL_ADDRESS).setEnabled(enabled);
+		getField(PersonDto.PASSPORT_NUMBER).setEnabled(enabled);
+		getField(PersonDto.NATIONAL_HEALTH_ID).setEnabled(enabled);
+		if (homeAddressForm != null) {
+			homeAddressForm.setEnabled(enabled || alwaysEnableAddressFields);
+		}
+		setRequired(enabled, PersonDto.FIRST_NAME, PersonDto.LAST_NAME, PersonDto.SEX);
 	}
 
 	public void setPersonalDetailsReadOnlyIfNotEmpty(boolean readOnly) {
@@ -435,6 +457,7 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 	}
 
 	public void updatePresentConditionEnum(Disease disease) {
+
 		ComboBox presentConditionField = getField(PersonDto.PRESENT_CONDITION);
 		PresentCondition currentValue = (PresentCondition) presentConditionField.getValue();
 		List<PresentCondition> validValues;
@@ -465,10 +488,10 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 	}
 
 	public PersonDto getSearchedPerson() {
-		return searchedPerson;
+		return person;
 	}
 
 	public void setSearchedPerson(PersonDto searchedPerson) {
-		this.searchedPerson = searchedPerson;
+		this.person = searchedPerson;
 	}
 }

@@ -48,12 +48,11 @@ import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.task.TaskIndexDto;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.BulkOperationResults;
 import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ArchivingController;
-import de.symeda.sormas.ui.utils.BulkOperationHelper;
+import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.DirtyCheckPopup;
@@ -125,7 +124,7 @@ public class TaskController {
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(
 			editView,
-			isEditingOrDeletingAllowed ? I18nProperties.getString(Strings.headingEditTask) : I18nProperties.getString(Strings.headingViewTask));
+			isEditingAllowed ? I18nProperties.getString(Strings.headingEditTask) : I18nProperties.getString(Strings.headingViewTask));
 
 		editView.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {
@@ -180,7 +179,7 @@ public class TaskController {
 		}
 
 		editView.addToActiveButtonsList(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
-		editView.restrictEditableComponentsOnEditView(UserRight.TASK_EDIT, UserRight.TASK_DELETE, editPermissionType);
+		editView.restrictEditableComponentsOnEditView(UserRight.TASK_EDIT, null, UserRight.TASK_DELETE, editPermissionType, true);
 	}
 
 	private TaskDto createNewTask(TaskContext context, ReferenceDto entityRef) {
@@ -238,7 +237,7 @@ public class TaskController {
 			TaskFacade taskFacade = FacadeProvider.getTaskFacade();
 
 			List<TaskIndexDto> selectedTasksCpy = new ArrayList<>(selectedTasks);
-			BulkOperationHelper.doBulkOperation(
+			new BulkOperationHandler().doBulkOperation(
 				selectedEntries -> taskFacade.saveBulkTasks(
 					selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
 					updatedTempTask,
@@ -246,25 +245,22 @@ public class TaskController {
 					form.getAssigneeCheckbox().getValue(),
 					form.getTaskStatusCheckbox().getValue()),
 				selectedTasksCpy,
-				selectedTasksCpy.size(),
-				results -> handleBulkOperationDone(results, popupWindow, taskGrid, selectedTasks, noEntriesRemainingCallback));
+				results -> handleBulkOperationDone((List<TaskIndexDto>) results, popupWindow, taskGrid, noEntriesRemainingCallback));
 		});
 
 		editView.addDiscardListener(popupWindow::close);
 	}
 
 	private void handleBulkOperationDone(
-		BulkOperationResults<?> results,
+		List<TaskIndexDto> remainingTasks,
 		Window popupWindow,
 		TaskGrid taskGrid,
-		Collection<TaskIndexDto> selectedTasks,
 		Runnable noEntriesRemainingCallback) {
 
 		popupWindow.close();
 		taskGrid.reload();
-		if (CollectionUtils.isNotEmpty(results.getRemainingEntries())) {
-			taskGrid.asMultiSelect()
-				.selectItems(selectedTasks.stream().filter(t -> results.getRemainingEntries().contains(t.getUuid())).toArray(TaskIndexDto[]::new));
+		if (CollectionUtils.isNotEmpty(remainingTasks)) {
+			taskGrid.asMultiSelect().selectItems(remainingTasks.toArray(new TaskIndexDto[0]));
 		} else {
 			noEntriesRemainingCallback.run();
 		}

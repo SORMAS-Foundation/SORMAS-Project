@@ -17,7 +17,7 @@ package de.symeda.sormas.app.backend.sample;
 
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -52,7 +52,7 @@ public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTe
 	}
 
 	@Override
-	protected Call<List<PushResult>> pushAll(List<PathogenTestDto> pathogenTestDtos) throws NoConnectionException {
+	protected Call<List<PostResponse>> pushAll(List<PathogenTestDto> pathogenTestDtos) throws NoConnectionException {
 		return RetroProvider.getSampleTestFacade().pushAll(pathogenTestDtos);
 	}
 

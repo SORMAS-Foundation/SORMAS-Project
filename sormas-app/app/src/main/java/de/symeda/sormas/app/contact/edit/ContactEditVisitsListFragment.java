@@ -20,7 +20,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -59,7 +59,7 @@ public class ContactEditVisitsListFragment extends BaseEditFragment<FragmentForm
 
 		((ContactEditActivity) getActivity()).showPreloader();
 		adapter = new VisitListAdapter(R.layout.row_read_followup_list_item_layout, this, null);
-		model = ViewModelProviders.of(this).get(VisitListViewModel.class);
+		model = new ViewModelProvider(this).get(VisitListViewModel.class);
 		model.getVisits(getActivityRootData()).observe(this, visits -> {
 			adapter.replaceAll(visits);
 			adapter.notifyDataSetChanged();

@@ -16,6 +16,7 @@ package de.symeda.sormas.api.sample;
 
 import java.util.Date;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -37,7 +38,6 @@ import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
-import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
@@ -77,9 +77,9 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String DELETION_REASON = "deletionReason";
 	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 
-	@Required
+	@NotNull(message = Validations.validSample)
 	private SampleReferenceDto sample;
-	@Required
+	@NotNull(message = Validations.validDisease)
 	private Disease testedDisease;
 	private DiseaseVariant testedDiseaseVariant;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
@@ -88,29 +88,26 @@ public class PathogenTestDto extends PseudonymizableDto {
 	private String testedDiseaseVariantDetails;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String typingId;
-	@Required
+	@NotNull(message = Validations.requiredField)
 	private PathogenTestType testType;
 	private PCRTestSpecification pcrTestSpecification;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String testTypeText;
-	@Required
 	private Date testDateTime;
-	@Required
+	@NotNull(message = Validations.requiredField)
 	private FacilityReferenceDto lab;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String labDetails;
-	@Required
 	@SensitiveData
 	private UserReferenceDto labUser;
-	@Required
+	@NotNull(message = Validations.requiredField)
 	private PathogenTestResultType testResult;
-	@Required
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String testResultText;
-	@Required
+	@NotNull(message = Validations.requiredField)
 	private Boolean testResultVerified;
 	private boolean fourFoldIncreaseAntibodyTiter;
 	@SensitiveData

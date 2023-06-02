@@ -17,7 +17,7 @@ package de.symeda.sormas.app.backend.sample;
 
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -48,7 +48,7 @@ public class AdditionalTestDtoHelper extends AdoDtoHelper<AdditionalTest, Additi
 	}
 
 	@Override
-	protected Call<List<PushResult>> pushAll(List<AdditionalTestDto> additionalTestDtos) throws NoConnectionException {
+	protected Call<List<PostResponse>> pushAll(List<AdditionalTestDto> additionalTestDtos) throws NoConnectionException {
 		throw new UnsupportedOperationException("Can't change additional tests in app");
 	}
 

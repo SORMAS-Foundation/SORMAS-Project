@@ -71,7 +71,6 @@ import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.BulkOperationResults;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -80,6 +79,7 @@ import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.ViewModelProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.CaseContactsView;
 import de.symeda.sormas.ui.caze.components.caseselection.CaseSelectionField;
@@ -87,9 +87,10 @@ import de.symeda.sormas.ui.contact.components.linelisting.layout.LineListingLayo
 import de.symeda.sormas.ui.epidata.ContactEpiDataView;
 import de.symeda.sormas.ui.epidata.EpiDataForm;
 import de.symeda.sormas.ui.utils.AbstractView;
-import de.symeda.sormas.ui.utils.BulkOperationHelper;
+import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
+import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DeletableUtils;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -330,8 +331,15 @@ public class ContactController {
 	}
 
 	public void navigateToMergeContactsView(ContactCriteria criteria) {
-		ViewModelProviders.of(MergeContactsView.class).remove(ContactCriteria.class);
-		ViewModelProviders.of(MergeContactsView.class).get(ContactCriteria.class, criteria);
+		ViewModelProvider viewModelProvider = ViewModelProviders.of(MergeContactsView.class);
+
+		// update the current criteria
+		viewModelProvider.remove(ContactCriteria.class);
+		viewModelProvider.get(ContactCriteria.class, criteria);
+
+		// force the grid to load as it is filtered, so it should not take too long to load
+		viewModelProvider.remove(MergeContactsViewConfiguration.class);
+		viewModelProvider.get(MergeContactsViewConfiguration.class, new MergeContactsViewConfiguration(true));
 
 		String navigationState = AbstractView.buildNavigationState(MergeContactsView.VIEW_NAME, criteria);
 		SormasUI.get().getNavigator().navigateTo(navigationState);
@@ -652,10 +660,8 @@ public class ContactController {
 
 		ContactDataForm editForm = new ContactDataForm(contact.getDisease(), viewMode, isPsuedonymized, contact.isInJurisdiction());
 		editForm.setValue(contact);
-		final CommitDiscardWrapperComponent<ContactDataForm> editComponent = new CommitDiscardWrapperComponent<ContactDataForm>(
-			editForm,
-			true,
-			editForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<ContactDataForm> editComponent =
+			new CommitDiscardWrapperComponent<ContactDataForm>(editForm, true, editForm.getFieldGroup());
 
 		editComponent.getButtonsPanel()
 			.addComponentAsFirst(new DeletionLabel(automaticDeletionInfoDto, manuallyDeletionInfoDto, contact.isDeleted(), ContactDto.I18N_PREFIX));
@@ -679,7 +685,7 @@ public class ContactController {
 		});
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_DELETE)) {
-			editComponent.addDeleteWithReasonOrUndeleteListener(
+			editComponent.addDeleteWithReasonOrRestoreListener(
 				ContactsView.VIEW_NAME,
 				getDeleteConfirmationDetails(Collections.singletonList(contact.getUuid())),
 				I18nProperties.getString(Strings.entityContact),
@@ -698,7 +704,12 @@ public class ContactController {
 					() -> navigateToView(ContactDataView.VIEW_NAME, contact.getUuid(), false));
 		}
 
-		editComponent.restrictEditableComponentsOnEditView(UserRight.CONTACT_EDIT, UserRight.CONTACT_DELETE, null);
+		editComponent.restrictEditableComponentsOnEditView(
+			UserRight.CONTACT_EDIT,
+			null,
+			UserRight.CONTACT_DELETE,
+			FacadeProvider.getContactFacade().getEditPermissionType(contactUuid),
+			contact.isInJurisdiction());
 
 		return editComponent;
 	}
@@ -752,40 +763,32 @@ public class ContactController {
 			boolean contactOfficerChange = district != null ? form.getContactOfficerCheckBox().getValue() : false;
 
 			List<ContactIndexDto> selectedContactsCpy = new ArrayList<>(selectedContacts);
-			BulkOperationHelper.doBulkOperation(
+			new BulkOperationHandler().doBulkOperation(
 				selectedEntries -> contactFacade.saveBulkContacts(
 					selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
 					updatedBulkEditData,
 					classificationChange,
 					contactOfficerChange),
 				selectedContactsCpy,
-				selectedContactsCpy.size(),
-				results -> handleBulkOperationDone(results, popupWindow, contactGrid, selectedContacts, caseUuid));
+				results -> handleBulkOperationDone((List<? extends ContactIndexDto>) results, popupWindow, contactGrid, caseUuid));
 		});
 
-		editView.addDiscardListener(() -> popupWindow.close());
+		editView.addDiscardListener(popupWindow::close);
 	}
 
 	private void handleBulkOperationDone(
-		BulkOperationResults<?> results,
+		List<? extends ContactIndexDto> remainingContacts,
 		Window popupWindow,
 		AbstractContactGrid<?> contactGrid,
-		Collection<? extends ContactIndexDto> selectedContacts,
 		String caseUuid) {
 
 		popupWindow.close();
 		contactGrid.reload();
-		if (CollectionUtils.isNotEmpty(results.getRemainingEntries())) {
+		if (CollectionUtils.isNotEmpty(remainingContacts)) {
 			if (contactGrid instanceof ContactGrid) {
-				((ContactGrid) contactGrid).asMultiSelect()
-					.selectItems(
-						selectedContacts.stream().filter(c -> results.getRemainingEntries().contains(c.getUuid())).toArray(ContactIndexDto[]::new));
+				((ContactGrid) contactGrid).asMultiSelect().selectItems(remainingContacts.toArray(new ContactIndexDto[0]));
 			} else if (contactGrid instanceof ContactGridDetailed) {
-				((ContactGridDetailed) contactGrid).asMultiSelect()
-					.selectItems(
-						selectedContacts.stream()
-							.filter(c -> results.getRemainingEntries().contains(c.getUuid()))
-							.toArray(ContactIndexDetailedDto[]::new));
+				((ContactGridDetailed) contactGrid).asMultiSelect().selectItems(remainingContacts.toArray(new ContactIndexDetailedDto[0]));
 			}
 		} else {
 			if (caseUuid == null) {
@@ -822,6 +825,15 @@ public class ContactController {
 				});
 
 		}
+	}
+
+	public void restoreSelectedContacts(Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {
+		ControllerProvider.getDeleteRestoreController()
+			.restoreSelectedItems(
+				selectedRows.stream().map(ContactIndexDto::getUuid).collect(Collectors.toList()),
+				FacadeProvider.getContactFacade(),
+				CoreEntityRestoreMessages.CONTACT,
+				callback);
 	}
 
 	public void cancelFollowUpOfAllSelectedItems(Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {
@@ -946,6 +958,37 @@ public class ContactController {
 				FacadeProvider.getContactFacade().delete(contact.getUuid(), deleteDetails);
 				callback.run();
 			});
+	}
+
+	public void archiveAllSelectedItems(Collection<ContactIndexDto> selectedRows, Runnable callback) {
+		List<String> contactUuids = selectedRows.stream().map(ContactIndexDto::getUuid).collect(Collectors.toList());
+
+		ControllerProvider.getArchiveController()
+			.archiveSelectedItems(
+				contactUuids,
+				FacadeProvider.getContactFacade(),
+				Strings.headingNoContactsSelected,
+				Strings.confirmationArchiveContacts,
+				Strings.headingContactsArchived,
+				Strings.messageContactsArchived,
+				callback);
+	}
+
+	public void dearchiveAllSelectedItems(Collection<ContactIndexDto> selectedRows, Runnable callback) {
+		List<String> contactUuids = selectedRows.stream().map(ContactIndexDto::getUuid).collect(Collectors.toList());
+
+		ControllerProvider.getArchiveController()
+			.dearchiveSelectedItems(
+				contactUuids,
+				FacadeProvider.getContactFacade(),
+				Strings.headingNoContactsSelected,
+				Strings.messageNoContactsSelected,
+				Strings.confirmationDearchiveContacts,
+				Strings.entityContact,
+				Strings.headingConfirmDearchiving,
+				Strings.headingContactsDearchived,
+				Strings.messageContactsDearchived,
+				callback);
 	}
 
 	public TitleLayout getContactViewTitleLayout(ContactDto contact) {

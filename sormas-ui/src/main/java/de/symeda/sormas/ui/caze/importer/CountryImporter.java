@@ -1,6 +1,5 @@
 package de.symeda.sormas.ui.caze.importer;
 
-import de.symeda.sormas.api.importexport.ImportErrorException;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.File;
@@ -17,6 +16,7 @@ import com.vaadin.ui.UI;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.importexport.ImportErrorException;
 import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.importexport.ValueSeparator;
@@ -55,7 +55,7 @@ public class CountryImporter extends InfrastructureImporter {
 		}
 
 		CountryDto newEntityDto = CountryDto.build();
-		boolean iHasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, false, (cellData) -> {
+		boolean hasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, false, cellData -> {
 			try {
 				if (!StringUtils.isEmpty(cellData.getValue())) {
 					insertColumnEntryIntoData(newEntityDto, cellData.getValue(), cellData.getEntityPropertyPath());
@@ -66,7 +66,15 @@ public class CountryImporter extends InfrastructureImporter {
 			return null;
 		});
 
-		if (!iHasImportError) {
+		if (!hasImportError) {
+			ImportLineResultDto<CountryDto> constraintErrors = validateConstraints(newEntityDto);
+			if (constraintErrors.isError()) {
+				writeImportError(values, constraintErrors.getMessage());
+				hasImportError = true;
+			}
+		}
+
+		if (!hasImportError) {
 			try {
 				FacadeProvider.getCountryFacade().save(newEntityDto, allowOverwrite);
 				return ImportLineResult.SUCCESS;
@@ -116,11 +124,6 @@ public class CountryImporter extends InfrastructureImporter {
 				logger.error("Unexpected error when trying to import infrastructure data: " + e.getMessage());
 				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importUnexpectedError));
 			}
-		}
-
-		ImportLineResultDto<CountryDto> constraintErrors = validateConstraints(newEntityDto);
-		if (constraintErrors.isError()) {
-			throw new ImportErrorException(constraintErrors.getMessage());
 		}
 	}
 

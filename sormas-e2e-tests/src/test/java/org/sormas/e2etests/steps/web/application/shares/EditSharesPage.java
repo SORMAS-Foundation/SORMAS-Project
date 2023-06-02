@@ -44,4 +44,8 @@ public class EditSharesPage {
             "(//*[@class='popupContent']//table//thead//tr/th//div[@class='v-grid-column-header-content v-grid-column-default-header-content'])[%s]",
             index));
   }
+
+  public static By WARNING_ACCEPT_CASE_BEFORE_CONTACT_HEADER_DE =
+      By.xpath(
+          "//*[@class='popupContent']//div[contains(text(), 'Kontakt(e) k\u00F6nnen nicht \u00FCbernommen werden')]");
 }

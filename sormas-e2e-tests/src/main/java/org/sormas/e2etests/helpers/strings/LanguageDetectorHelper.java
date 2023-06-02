@@ -1,5 +1,7 @@
 package org.sormas.e2etests.helpers.strings;
 
+import static org.apache.commons.lang3.StringUtils.capitalize;
+
 import com.hpe.caf.languagedetection.LanguageDetectorException;
 import java.util.Arrays;
 import java.util.Locale;
@@ -18,7 +20,7 @@ public abstract class LanguageDetectorHelper {
     if (isConfidenceStrong(textToScan)) {
       log.info("Check if text {} language is {}", textToScan, expectedLanguage);
       Assert.assertEquals(
-          scanLanguage(textToScan),
+          capitalize(scanLanguage(textToScan)),
           expectedLanguage,
           "Text: [" + textToScan + "] Language is not as expected");
     } else {

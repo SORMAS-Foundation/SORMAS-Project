@@ -56,7 +56,8 @@ public class MessagesDirectoryPage {
   }
 
   public static By getProcessMessageButtonByIndex(int index) {
-    return By.xpath(String.format("//table/tbody[1]/tr[%s]//div[@id='externalMessageProcess']", index));
+    return By.xpath(
+        String.format("//table/tbody[1]/tr[%s]//div[@id='externalMessageProcess']", index));
   }
 
   public static By getProcessStatusByIndex(int index) {
@@ -120,4 +121,6 @@ public class MessagesDirectoryPage {
       By.xpath("//*[text()='Neuen Kontakt erstellen']");
   public static final By CREATE_NEW_EVENT_PARTICIPANT_RADIOBUTTON_DE =
       By.xpath("//*[text()='Neuen Ereignisteilnehmer erstellen']");
+  public static final By LABORATORY_INPUT = By.cssSelector("#lab input");
+  public static final By LABORATORY_DETAILS_INPUT = By.cssSelector("#labDetails");
 }

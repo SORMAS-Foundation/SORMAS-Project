@@ -29,12 +29,12 @@ Please consult this collection of solutions to common problems if you have any i
 1. [Enable developer options in the Android device's settings](https://developer.android.com/studio/debug/dev-options)
 2. Use the "Take Bug Report" option. The full report is not needed.
 3. The zip file that is created will have a dumpstate-<current date>.txt file that contains the log and some more information
-4. Open it and search for de.symeda.sormas to identify the process id. E.g. `de.symeda.sormas.app/de.symeda.sormas.app.login.LoginActivity$_11109#0` -> 11109 is the id
-5. Search for all occurences of the process id to filter the file down to lines that contain the actual log of sormas
+4. Open it and search for de.symeda.sormas to identify the process ID. E.g. `de.symeda.sormas.app/de.symeda.sormas.app.login.LoginActivity$_11109#0` -> 11109 is the ID
+5. Search for all occurences of the process ID to filter the file down to lines that contain the actual log of sormas
 
 ## Identify Performance Problems
 
-There are two main sources of bad performance in the application: 
+There are two main sources of bad performance in the application:
 
 1. Slow database queries
 2. Slow Java code
@@ -115,17 +115,17 @@ Important points when **interpreting the visual report**:
 
 * Look for the **red highlights** in the report, especially for nodes that have a long runtime
 * Look for nodes that are processing a **lot of rows** (100+ millions). This is often the case for joins
-* When you are dealing with a lof of data, most often you only need to output a subset 
+* When you are dealing with a lof of data, most often you only need to output a subset
 
 **How to improve the query** is most often a process of trial and error. Here are some things to consider:
 
 * Adding indices so postgres does not have to go through all data. You can use a btree index to include multiple columns and sorting
 * Getting rid of unnecessary joins. Example: Joining a region of a case to compare it to the region of the user, instead of directly doing this on the region_id field of the case
 * Using limit to reduce the output (e.g. the first 100). Make sure there is no sorting done close to the end of the query graph. This is often the case when 'DISTINCT' is used.
-  Example: https://github.com/hzi-braunschweig/SORMAS-Project/issues/9054#issuecomment-1420849461
+[See Example](https://github.com/sormas-foundation/SORMAS-Project/issues/9054#issuecomment-1420849461)
 * Splitting the query into separate queries when 'DISTINCT' has to be used / using distinct on a sub-query
-* Using sub-queries to influence the query planner. 
-  Example: https://github.com/hzi-braunschweig/SORMAS-Project/issues/11465#issuecomment-1425789509
+* Using sub-queries to influence the query planner.
+[See Example](https://github.com/sormas-foundation/SORMAS-Project/issues/11465#issuecomment-1425789509)
 
 **How to save time** when optimizing the query:
 

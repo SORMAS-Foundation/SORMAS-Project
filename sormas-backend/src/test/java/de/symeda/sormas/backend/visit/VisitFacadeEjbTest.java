@@ -70,17 +70,17 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 			creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
 		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE, VisitOrigin.USER);
 		visit.getSymptoms().setAbdominalPain(SymptomState.YES);
-		getVisitFacade().saveVisit(visit);
+		getVisitFacade().save(visit);
 		VisitDto visit2 = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE, VisitOrigin.USER);
 		visit2.getSymptoms().setAgitation(SymptomState.YES);
-		getVisitFacade().saveVisit(visit2);
+		getVisitFacade().save(visit2);
 
 		VisitDto visit3 = creator.createVisit(caze.getDisease(), cazePerson.toReference(), new Date(), VisitStatus.COOPERATIVE, VisitOrigin.USER);
 		visit3.getSymptoms().setAbdominalPain(SymptomState.YES);
-		getVisitFacade().saveVisit(visit3);
+		getVisitFacade().save(visit3);
 		VisitDto visit4 = creator.createVisit(caze.getDisease(), cazePerson.toReference(), new Date(), VisitStatus.COOPERATIVE, VisitOrigin.USER);
 		visit4.getSymptoms().setAgitation(SymptomState.YES);
-		getVisitFacade().saveVisit(visit4);
+		getVisitFacade().save(visit4);
 
 		final ContactReferenceDto contactReferenceDto = new ContactReferenceDto(contact.getUuid());
 		final VisitCriteria visitCriteria = new VisitCriteria();
@@ -148,19 +148,19 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 
 		// Updating the visit but not changing the visit date time should not alter the contact associations
 		visit.setVisitStatus(VisitStatus.UNCOOPERATIVE);
-		getVisitFacade().saveVisit(visit);
+		getVisitFacade().save(visit);
 
 		assertThat(getContactService().getAllByVisit(visitEntity), hasSize(1));
 
 		// Changing the visit date time to a value beyond the threshold should remove the contact association
 		visit.setVisitDateTime(DateHelper.addDays(contact.getFollowUpUntil(), FollowUpLogic.ALLOWED_DATE_OFFSET + 1));
-		getVisitFacade().saveVisit(visit);
+		getVisitFacade().save(visit);
 
 		assertThat(getContactService().getAllByVisit(visitEntity), empty());
 
 		// Changing the visit date time back to a value in the threshold should re-add the contact association
 		visit.setVisitDateTime(new Date());
-		getVisitFacade().saveVisit(visit);
+		getVisitFacade().save(visit);
 
 		assertThat(getContactService().getAllByVisit(visitEntity), hasSize(1));
 
@@ -265,7 +265,7 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 
 		TimeUnit.MILLISECONDS.sleep(1);
 		visitWithChanges.getSymptoms().setAbdominalPain(SymptomState.YES);
-		visitWithChanges = getVisitFacade().saveVisit(visitWithChanges);
+		visitWithChanges = getVisitFacade().save(visitWithChanges);
 
 		visits = getVisitFacade().getAllActiveVisitsAfter(date);
 		assertThat(visits, hasSize(1));

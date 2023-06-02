@@ -54,6 +54,7 @@ import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -102,13 +103,10 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		sormasToSormasList = new SormasToSormasList(null);
 		notSharedCaptionTag = Captions.sormasToSormasSampleNotShared;
 
+		SormasToSormasOriginInfoDto sampleOriginInfo = sample.getSormasToSormasOriginInfo();
 		initLayout(
-			sample.getSormasToSormasOriginInfo(),
-			() -> FacadeProvider.getSormasToSormasShareInfoFacade()
-				.getIndexList(new SormasToSormasShareInfoCriteria().sample(sample.toReference()), null, null)
-				.stream()
-				.map(s -> new SormasToSormasShareTree(null, s, Collections.emptyList(), true))
-				.collect(Collectors.toList()),
+			sampleOriginInfo,
+			() -> getAllSharesFromCurrentInstance(new SormasToSormasShareInfoCriteria().sample(sample.toReference()), sampleOriginInfo),
 			null);
 	}
 
@@ -137,13 +135,12 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		sormasToSormasList = new SormasToSormasList(null);
 		notSharedCaptionTag = Captions.sormasToSormasImmunizationNotShared;
 
+		SormasToSormasOriginInfoDto immunizationOriginInfo = immunzation.getSormasToSormasOriginInfo();
 		initLayout(
-			immunzation.getSormasToSormasOriginInfo(),
-			() -> FacadeProvider.getSormasToSormasShareInfoFacade()
-				.getIndexList(new SormasToSormasShareInfoCriteria().immunization(immunzation.toReference()), null, null)
-				.stream()
-				.map(s -> new SormasToSormasShareTree(null, s, Collections.emptyList(), true))
-				.collect(Collectors.toList()),
+			immunizationOriginInfo,
+			() -> getAllSharesFromCurrentInstance(
+				new SormasToSormasShareInfoCriteria().immunization(immunzation.toReference()),
+				immunizationOriginInfo),
 			null);
 	}
 
@@ -480,6 +477,42 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		layout.setExpandRatio(infoLayout, 1);
 
 		return layout;
+	}
+
+	private List<SormasToSormasShareTree> getAllSharesFromCurrentInstance(
+		SormasToSormasShareInfoCriteria shareInfoCriteria,
+		SormasToSormasOriginInfoDto originInfo) {
+		List<SormasToSormasShareTree> shares = FacadeProvider.getSormasToSormasShareInfoFacade()
+			.getIndexList(shareInfoCriteria, null, null)
+			.stream()
+			.map(s -> new SormasToSormasShareTree(null, s, Collections.emptyList(), true))
+			.collect(Collectors.toList());
+
+		if (originInfo != null) {
+			// if coming from other instance, add a mock share info so the structure looks like
+			// [share from origin] -> [shares from this instance] so we can show the owner of the entity on the UI
+			SormasToSormasShareInfoDto shareFromOrigin = createMockShareInfoFromOrigin(originInfo);
+			return Collections.singletonList(new SormasToSormasShareTree(originInfo, shareFromOrigin, shares, true));
+		}
+
+		return shares;
+	}
+
+	private SormasToSormasShareInfoDto createMockShareInfoFromOrigin(SormasToSormasOriginInfoDto sampleOriginInfo) {
+		SormasToSormasShareInfoDto shareFromOrigin = new SormasToSormasShareInfoDto();
+		shareFromOrigin.setSender(new UserReferenceDto(null, sampleOriginInfo.getSenderName(), ""));
+		shareFromOrigin.setTargetDescriptor(
+			FacadeProvider.getSormasToSormasFacade().getSormasServerDescriptorById(FacadeProvider.getSormasToSormasFacade().getOrganizationId()));
+		shareFromOrigin.setOwnershipHandedOver(sampleOriginInfo.isOwnershipHandedOver());
+		shareFromOrigin.setWithAssociatedContacts(sampleOriginInfo.isWithAssociatedContacts());
+		shareFromOrigin.setWithSamples(sampleOriginInfo.isWithSamples());
+		shareFromOrigin.setWithEvenParticipants(sampleOriginInfo.isWithEventParticipants());
+		shareFromOrigin.setWithImmunizations(sampleOriginInfo.isWithImmunizations());
+		shareFromOrigin.setWithSurveillanceReports(sampleOriginInfo.isWithSurveillanceReports());
+		shareFromOrigin.setPseudonymizedPersonalData(sampleOriginInfo.isPseudonymizedData());
+		shareFromOrigin.setPseudonymizedSensitiveData(sampleOriginInfo.isPseudonymizedData());
+		shareFromOrigin.setRequestStatus(ShareRequestStatus.ACCEPTED);
+		return shareFromOrigin;
 	}
 
 	private interface ShareDataLoader {

@@ -4,10 +4,8 @@ Feature: Follow-up new visit functionality
   @env_main
   Scenario: Create a new visit from case follow-up
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     And API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     And I log in as a National User
     And I click on the Cases button from navbar
@@ -21,10 +19,8 @@ Feature: Follow-up new visit functionality
   @tmsLink=SORDEV-5528 @env_main
   Scenario: Fill the therapy tab for follow-up test
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then API: I create a new case
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     And I log in as a National User
     And I open the last created Case via API
@@ -66,10 +62,10 @@ Feature: Follow-up new visit functionality
   @tmsLink=SORDEV-12444 @env_main
   Scenario: User name from the 'Visit Origin' column is missing when exporting visits
     Given API: I create a new person
-    And API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I navigate to the last created case via the url

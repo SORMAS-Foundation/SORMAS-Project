@@ -584,13 +584,13 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 	}
 
 	@Override
-	public void undelete(Event event) {
-		// undelete all event participants associated with this event
+	public void restore(Event event) {
+		// restore all event participants associated with this event
 		List<EventParticipant> eventParticipants = eventParticipantService.getAllByEventAfter(null, event);
 		for (EventParticipant eventParticipant : eventParticipants) {
-			eventParticipantService.undelete(eventParticipant);
+			eventParticipantService.restore(eventParticipant);
 		}
-		super.undelete(event);
+		super.restore(event);
 	}
 
 	@Override

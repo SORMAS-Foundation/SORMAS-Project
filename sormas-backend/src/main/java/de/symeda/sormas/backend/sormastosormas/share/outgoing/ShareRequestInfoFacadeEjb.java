@@ -16,7 +16,8 @@
 package de.symeda.sormas.backend.sormastosormas.share.outgoing;
 
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -69,7 +71,7 @@ public class ShareRequestInfoFacadeEjb implements ShareRequestInfoFacade {
 	@EJB
 	private ShareRequestInfoService shareRequestInfoService;
 
-	@EJB
+	@Inject
 	private SormasToSormasDiscoveryService sormasToSormasDiscoveryService;
 	@EJB
 	private ShareDataBuilderHelper dataBuilderHelper;
@@ -92,14 +94,14 @@ public class ShareRequestInfoFacadeEjb implements ShareRequestInfoFacade {
 		Path<SormasToSormasShareInfo> sharesJoin = requestRoot.join(ShareRequestInfo.SHARES);
 		Join<ShareRequestInfo, User> senderJoin = requestRoot.join(ShareRequestInfo.SENDER, JoinType.LEFT);
 
-		Expression<String> senderName = cb.concat(cb.concat(senderJoin.get(User.FIRST_NAME), " "), senderJoin.get(User.LAST_NAME));
 		cq.multiselect(
 			requestRoot.get(ShareRequestInfo.UUID),
 			requestRoot.get(ShareRequestInfo.CREATION_DATE),
 			requestRoot.get(ShareRequestInfo.DATA_TYPE),
 			requestRoot.get(ShareRequestInfo.REQUEST_STATUS),
 			sharesJoin.get(SormasToSormasShareInfo.ORGANIZATION_ID),
-			senderName,
+			senderJoin.get(User.FIRST_NAME),
+			senderJoin.get(User.LAST_NAME),
 			sharesJoin.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER),
 			requestRoot.get(ShareRequestInfo.COMMENT));
 
@@ -113,40 +115,33 @@ public class ShareRequestInfoFacadeEjb implements ShareRequestInfoFacade {
 		}
 
 		List<Order> order = new ArrayList<>();
-		String organizationOrderExpr = sormasToSormasDiscoveryService.getAllAvailableServers()
-			.stream()
-			.sorted(Comparator.comparing(SormasServerDescriptor::getName))
-			.map(SormasServerDescriptor::getId)
-			.map(i -> "'" + i + "'")
-			.collect(Collectors.joining(","));
-
 		if (sortProperties != null && sortProperties.size() > 0) {
 			for (SortProperty sortProperty : sortProperties) {
-				Expression<?> expression;
+				final List<Expression<?>> expressions;
 				switch (sortProperty.propertyName) {
 				case ShareRequestIndexDto.UUID:
 				case ShareRequestIndexDto.CREATION_DATE:
 				case ShareRequestIndexDto.DATA_TYPE:
 				case ShareRequestIndexDto.COMMENT:
-					expression = requestRoot.get(sortProperty.propertyName);
+					expressions = Collections.singletonList(requestRoot.get(sortProperty.propertyName));
 					break;
 				case ShareRequestIndexDto.STATUS:
-					expression = requestRoot.get(ShareRequestInfo.REQUEST_STATUS);
+					expressions = Collections.singletonList(requestRoot.get(ShareRequestInfo.REQUEST_STATUS));
 					break;
 				case ShareRequestIndexDto.SENDER_NAME:
-					expression = senderName;
+					expressions = Arrays.asList(senderJoin.get(User.FIRST_NAME), senderJoin.get(User.LAST_NAME));
 					break;
 				case ShareRequestIndexDto.ORGANIZATION_ID:
 				case ShareRequestIndexDto.OWNERSHIP_HANDED_OVER:
-					expression = sharesJoin.get(sortProperty.propertyName);
+					expressions = Collections.singletonList(sharesJoin.get(sortProperty.propertyName));
 					break;
 				case ShareRequestIndexDto.ORGANIZATION_NAME:
-					expression = sharesJoin.get(ShareRequestIndexDto.ORGANIZATION_ID);
+					expressions = Collections.singletonList(sharesJoin.get(ShareRequestIndexDto.ORGANIZATION_ID));
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
 				}
-				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+				order.addAll(expressions.stream().map(e -> sortProperty.ascending ? cb.asc(e) : cb.desc(e)).collect(Collectors.toList()));
 			}
 		}
 

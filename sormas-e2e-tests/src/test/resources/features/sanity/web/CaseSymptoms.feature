@@ -4,10 +4,10 @@ Feature: Case symptoms tab e2e test cases
   @tmsLink=SORDEV-5521 @env_main
   Scenario: Fill the symptoms tab
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     And I log in as a National User
     And I open the last created Case via API
@@ -36,10 +36,10 @@ Feature: Case symptoms tab e2e test cases
   @tmsLink=SORDEV-8350 @env_main
   Scenario: Extend fever validation
     When API: I create a new person
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Then API: I create a new case
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     And I log in as a National User
     And I open the last created Case via API

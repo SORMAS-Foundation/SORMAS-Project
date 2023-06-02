@@ -2,7 +2,7 @@ package de.symeda.sormas.app.backend.vaccination;
 
 import java.util.List;
 
-import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.app.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.app.backend.clinicalcourse.HealthConditionsDtoHelper;
@@ -40,7 +40,7 @@ public class VaccinationDtoHelper extends AdoDtoHelper<Vaccination, VaccinationD
 	}
 
 	@Override
-	protected Call<List<PushResult>> pushAll(List<VaccinationDto> vaccinationDtos) throws NoConnectionException {
+	protected Call<List<PostResponse>> pushAll(List<VaccinationDto> vaccinationDtos) throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is embedded");
 	}
 

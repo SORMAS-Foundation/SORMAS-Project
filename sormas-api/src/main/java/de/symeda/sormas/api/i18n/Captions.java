@@ -54,6 +54,7 @@ public interface Captions {
 	String actionClose = "actionClose";
 	String actionCompare = "actionCompare";
 	String actionConfirm = "actionConfirm";
+	String actionConfirmAction = "actionConfirmAction";
 	String actionConfirmFilters = "actionConfirmFilters";
 	String actionContinue = "actionContinue";
 	String actionCreate = "actionCreate";
@@ -107,6 +108,7 @@ public interface Captions {
 	String actionReset = "actionReset";
 	String actionResetEnumCache = "actionResetEnumCache";
 	String actionResetFilters = "actionResetFilters";
+	String actionRestore = "actionRestore";
 	String actionSave = "actionSave";
 	String actionSaveAndContinue = "actionSaveAndContinue";
 	String actionSaveAndOpenCase = "actionSaveAndOpenCase";
@@ -123,7 +125,6 @@ public interface Captions {
 	String actionSkip = "actionSkip";
 	String actionStatusChangeDate = "actionStatusChangeDate";
 	String actionUnclearLabMessage = "actionUnclearLabMessage";
-	String actionUnDelete = "actionUnDelete";
 	String actionYes = "actionYes";
 	String actionYesAll = "actionYesAll";
 	String actionYesForAll = "actionYesForAll";
@@ -214,6 +215,7 @@ public interface Captions {
 	String bulkCaseClassification = "bulkCaseClassification";
 	String bulkCaseOutcome = "bulkCaseOutcome";
 	String bulkCaseShareWithReportingTool = "bulkCaseShareWithReportingTool";
+	String bulkCompleted = "bulkCompleted";
 	String bulkContactClassification = "bulkContactClassification";
 	String bulkContactOfficer = "bulkContactOfficer";
 	String bulkDelete = "bulkDelete";
@@ -229,6 +231,9 @@ public interface Captions {
 	String bulkInvestigationStatus = "bulkInvestigationStatus";
 	String bulkLinkToEvent = "bulkLinkToEvent";
 	String bulkLostToFollowUp = "bulkLostToFollowUp";
+	String bulkRestore = "bulkRestore";
+	String bulkSkipped = "bulkSkipped";
+	String bulkSuccessful = "bulkSuccessful";
 	String bulkSurveillanceOfficer = "bulkSurveillanceOfficer";
 	String bulkTaskAssignee = "bulkTaskAssignee";
 	String bulkTaskPriority = "bulkTaskPriority";
@@ -883,6 +888,7 @@ public interface Captions {
 	String dashboardNotYetClassifiedOnly = "dashboardNotYetClassifiedOnly";
 	String dashboardNumberOfCases = "dashboardNumberOfCases";
 	String dashboardNumberOfContacts = "dashboardNumberOfContacts";
+	String dashboardNumberOfSamples = "dashboardNumberOfSamples";
 	String dashboardOneDay = "dashboardOneDay";
 	String dashboardOutbreak = "dashboardOutbreak";
 	String dashboardPending = "dashboardPending";
@@ -1925,10 +1931,17 @@ public interface Captions {
 	String sampleAssociationType = "sampleAssociationType";
 	String sampleCreateNew = "sampleCreateNew";
 	String sampleDashboardAllSamples = "sampleDashboardAllSamples";
+	String sampleDashboardCaseSamples = "sampleDashboardCaseSamples";
+	String sampleDashboardContactSamples = "sampleDashboardContactSamples";
+	String sampleDashboardEventParticipantSamples = "sampleDashboardEventParticipantSamples";
 	String sampleDashboardFinalLabResults = "sampleDashboardFinalLabResults";
 	String sampleDashboardSamplePurpose = "sampleDashboardSamplePurpose";
 	String sampleDashboardShipmentStatus = "sampleDashboardShipmentStatus";
+	String sampleDashboardShowCaseSamples = "sampleDashboardShowCaseSamples";
+	String sampleDashboardShowContactSamples = "sampleDashboardShowContactSamples";
+	String sampleDashboardShowEventParticipantSamples = "sampleDashboardShowEventParticipantSamples";
 	String sampleDashboardSpecimenCondition = "sampleDashboardSpecimenCondition";
+	String sampleDashboardTestResults = "sampleDashboardTestResults";
 	String sampleDeletedSamples = "sampleDeletedSamples";
 	String SampleExport_additionalTestingRequested = "SampleExport.additionalTestingRequested";
 	String SampleExport_altSgpt = "SampleExport.altSgpt";
@@ -2471,6 +2484,7 @@ public interface Captions {
 	String User_userName = "User.userName";
 	String User_userRoles = "User.userRoles";
 	String User_uuid = "User.uuid";
+	String userMyUserId = "userMyUserId";
 	String userNewUser = "userNewUser";
 	String userResetPassword = "userResetPassword";
 	String userRight = "userRight";

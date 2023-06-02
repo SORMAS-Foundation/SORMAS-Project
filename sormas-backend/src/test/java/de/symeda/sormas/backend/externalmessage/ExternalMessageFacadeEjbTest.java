@@ -22,27 +22,39 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageCriteria;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageIndexDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
+import de.symeda.sormas.api.externalmessage.ExternalMessageType;
+import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
+import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.customizableenum.CustomizableEnumValue;
 
 public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 
@@ -239,7 +251,7 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 		assertThat(indexList.stream().filter(m -> DataHelper.isSame(m, messageWithEvent)).count(), is(1L));
 
 		getCaseFacade().delete(externalMessageCase.getUuid(), new DeletionDetails());
-		getSampleFacade().deleteSample(externalMessageSample.toReference(), new DeletionDetails());
+		getSampleFacade().delete(externalMessageSample.getUuid(), new DeletionDetails());
 		getCaseFacade().delete(caseWithSample.getUuid(), new DeletionDetails());
 		getContactFacade().delete(contactWithSample.getUuid(), new DeletionDetails());
 		getEventParticipantFacade().delete(eventParticipantWithSample.getUuid(), new DeletionDetails());
@@ -251,7 +263,85 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 
 	}
 
-//	This test currently does not work because the bean tests used don't support @TransactionAttribute tags.
+	@Test
+	public void testDiseaseVariantDeterminationOnSave() {
+		CustomizableEnumValue diseaseVariantEnumValue = new CustomizableEnumValue();
+		diseaseVariantEnumValue.setDataType(CustomizableEnumType.DISEASE_VARIANT);
+		diseaseVariantEnumValue.setValue("BF.1.2");
+		diseaseVariantEnumValue.setDiseases(Collections.singletonList(Disease.CORONAVIRUS));
+		diseaseVariantEnumValue.setCaption("BF.1.2 variant");
+		getCustomizableEnumValueService().ensurePersisted(diseaseVariantEnumValue);
+
+		DiseaseVariant diseaseVariant = new DiseaseVariant();
+		diseaseVariant.setValue(diseaseVariantEnumValue.getValue());
+
+		CustomizableEnumValue diseaseVariantEnumValue2 = new CustomizableEnumValue();
+		diseaseVariantEnumValue2.setDataType(CustomizableEnumType.DISEASE_VARIANT);
+		diseaseVariantEnumValue2.setValue("BF.1.3");
+		diseaseVariantEnumValue2.setDiseases(Collections.singletonList(Disease.CORONAVIRUS));
+		diseaseVariantEnumValue2.setCaption("BF.1.3 variant");
+		getCustomizableEnumValueService().ensurePersisted(diseaseVariantEnumValue2);
+
+		DiseaseVariant diseaseVariant2 = new DiseaseVariant();
+		diseaseVariant2.setValue(diseaseVariantEnumValue2.getValue());
+
+		Mockito
+			.when(MockProducer.getCustomizableEnumFacadeForConverter().getEnumValue(CustomizableEnumType.DISEASE_VARIANT, diseaseVariant.getValue()))
+			.thenReturn(diseaseVariant);
+		Mockito
+			.when(MockProducer.getCustomizableEnumFacadeForConverter().getEnumValue(CustomizableEnumType.DISEASE_VARIANT, diseaseVariant2.getValue()))
+			.thenReturn(diseaseVariant2);
+
+		ExternalMessageDto labMessage =
+			getExternalMessageFacade().save(createLabMessageWithDiseaseVariants(diseaseVariant, null, diseaseVariant, null));
+		assertEquals(diseaseVariant, labMessage.getDiseaseVariant());
+
+		//Will not update the disease variant if already set
+		labMessage.getSampleReports().get(0).getTestReports().get(0).setTestedDiseaseVariant(diseaseVariant2.getValue());
+		labMessage.getSampleReports().get(0).getTestReports().get(1).setTestedDiseaseVariant(diseaseVariant2.getValue());
+		getExternalMessageFacade().save(labMessage);
+		assertEquals(diseaseVariant, labMessage.getDiseaseVariant());
+
+		labMessage = getExternalMessageFacade().save(createLabMessageWithDiseaseVariants(diseaseVariant, null, diseaseVariant2, null));
+		assertNull(labMessage.getDiseaseVariant());
+
+		labMessage = getExternalMessageFacade().save(createLabMessageWithDiseaseVariants(diseaseVariant, "Details", diseaseVariant, "Details"));
+		assertEquals(diseaseVariant, labMessage.getDiseaseVariant());
+		assertEquals("Details", labMessage.getDiseaseVariantDetails());
+
+		labMessage = getExternalMessageFacade().save(createLabMessageWithDiseaseVariants(diseaseVariant, "Details 1", diseaseVariant, "Details 2"));
+		assertNull(labMessage.getDiseaseVariant());
+		assertNull(labMessage.getDiseaseVariantDetails());
+	}
+
+	private ExternalMessageDto createLabMessageWithDiseaseVariants(
+		DiseaseVariant diseaseVariant1,
+		String diseaseVariantDetails1,
+		DiseaseVariant diseaseVariant2,
+		String diseaseVariantDetails2) {
+		ExternalMessageDto labMessage = ExternalMessageDto.build();
+		labMessage.setType(ExternalMessageType.LAB_MESSAGE);
+		labMessage.setDisease(Disease.CORONAVIRUS);
+
+		SampleReportDto sampleReport = SampleReportDto.build();
+		labMessage.addSampleReport(sampleReport);
+
+		TestReportDto testReport = TestReportDto.build();
+		testReport.setTestedDiseaseVariant(diseaseVariant1.getValue());
+		testReport.setTestedDiseaseVariantDetails(diseaseVariantDetails1);
+		testReport.setTestResult(PathogenTestResultType.POSITIVE);
+		sampleReport.addTestReport(testReport);
+
+		TestReportDto testReport1 = TestReportDto.build();
+		testReport1.setTestedDiseaseVariant(diseaseVariant2.getValue());
+		testReport1.setTestedDiseaseVariantDetails(diseaseVariantDetails2);
+		testReport1.setTestResult(PathogenTestResultType.POSITIVE);
+		sampleReport.addTestReport(testReport1);
+
+		return labMessage;
+	}
+
+	//	This test currently does not work because the bean tests used don't support @TransactionAttribute tags.
 //	This test should be enabled once there is a new test framework in use.
 //	@Test
 //	public void testSaveWithFallback() {

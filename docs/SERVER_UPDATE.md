@@ -3,12 +3,12 @@
 SORMAS releases starting from 1.21.0 contain a script that automatically updates and deploys the server. If you are using an older version and therefore need to do a manual server update, please download the 1.21.0 release files and use the commands specified in the server-update.sh script.
 
 ## Preparations
-* Get the latest release files (deploy.zip) from <https://github.com/hzi-braunschweig/SORMAS-Project/releases/latest>
+* Get the latest release files (deploy.zip) from <https://github.com/sormas-foundation/SORMAS-Project/releases/latest>
 * Unzip the archive and copy/upload its contents to **/root/deploy/sormas/$(date +%F)**
     ```bash
     cd /root/deploy/sormas
     SORMAS_VERSION=1.y.z
-    wget https://github.com/hzi-braunschweig/SORMAS-Project/releases/download/v${SORMAS_VERSION}/sormas_${SORMAS_VERSION}.zip
+    wget https://github.com/sormas-foundation/SORMAS-Project/releases/download/v${SORMAS_VERSION}/sormas_${SORMAS_VERSION}.zip
     unzip sormas_${SORMAS_VERSION}.zip
     mv deploy/ $(date +%F)
     rm sormas_${SORMAS_VERSION}.zip
@@ -34,7 +34,7 @@ SELECT c.userrole, ur.userright FROM userroles_userrights ur LEFT JOIN userroles
 After deploying the new version, the information retrieved from these queries can be used to alter the new user role configurations accordingly.
 
 ### 1.81.0
-The [temporal tables extension is replaced](https://github.com/hzi-braunschweig/SORMAS-Project/issues/10260) during the deployment of the backend. As a preparation the following SQL **needs to be executed on the SORMAS database using the postgres user.**
+The [temporal tables extension is replaced](https://github.com/sormas-foundation/SORMAS-Project/issues/10260) during the deployment of the backend. As a preparation the following SQL **needs to be executed on the SORMAS database using the postgres user.**
 
 ```SQL
 -- versioning function will be replaced during server backend startup
@@ -52,6 +52,10 @@ WHERE deptype = 'e'
 
 DROP EXTENSION IF EXISTS temporal_tables;
 ```
+
+### 1.85.0
+Payara is updated from 5.2021.10 to 5.2022.5.
+If you are **not** using [SORMAS-Docker](https://github.com/SORMAS-Foundation/SORMAS-Docker), please follow the [Payara migration guide](SERVER_UPDATE.md#how-to-migrate-to-new-payara-server).
 
 ## Automatic Server Update
 * Navigate to the  folder containing the unzipped deploy files:
@@ -119,16 +123,16 @@ The docker installation is automatically upgraded to the latest version specifie
 
 **Prerequisites:** Make sure the DB is backed up, because once the upgrade is done the new DB won't be usable with the old version of Keycloak.
 
-For more info see the [Keycloak Docker Documentation](https://github.com/hzi-braunschweig/SORMAS-Docker/blob/development/keycloak/README.md).
+For more info see the [Keycloak Docker Documentation](https://github.com/sormas-foundation/SORMAS-Docker/blob/development/keycloak/README.md).
 
 ## How to migrate to new Payara Server
 
-### Step 1: Shutdown existing domain
+### Step 1: Shutdown and backup existing domain
 ```bash
 # Stop domain
 service payara-sormas stop
 
-# Move existing domain
+# Move (backup) existing domain
 DOMAIN_PATH=/opt/domains
 DOMAIN_NAME="sormas"
 DOMAIN_BACKUP_NAME="sormas_backup"
@@ -143,3 +147,12 @@ Transfer your settings from `sormas.properties`, `logback.xml` or changes in the
 
 ### Step 4: Install new SORMAS version
 To install the new SORMAS version in the Payara domain, proceed with the [automatic update](SERVER_UPDATE.md#automatic-server-update) or for developers: Deploy SORMAS via the IDE as usual.
+
+### Alternative for development systems
+For minor updates of the payara version, you will most often be able to keep the existing domain and only replace the payara server.
+
+1. Download the needed version of [Payara server](https://www.payara.fish/downloads/payara-platform-community-edition/).
+2. Undeploy all sormas modules from the payara domain and stop the domain.
+3. Replace your payara server in ``/opt/payara5`` (default path) with the downloaded one. Remove the default domain in ``opt/payara5/glassfish/domains`` as it is not needed.
+4. Replace the application server in your IDE with the new server. See [IDE setup guide](DEVELOPMENT_ENVIRONMENT.md#step-5-install-and-configure-your-ide)
+5. If you are facing any problems, restart your IDE and clean all generated files from the sormas domain.

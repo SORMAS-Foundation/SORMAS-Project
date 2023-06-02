@@ -52,7 +52,7 @@ fi
 #AS_JAVA_NATIVE='C:\zulu-11'
 #AS_JAVA_NATIVE='/opt/zulu-11'
 
-PAYARA_VERSION=5.2021.10
+PAYARA_VERSION=5.2022.5
 
 if [[ $(expr substr "$(uname -a)" 1 5) = "Linux" ]]; then
 	LINUX=true
@@ -451,7 +451,7 @@ echo "---"
 echo "Please make sure to perform the following steps:"
 echo "  - Adjust the sormas.properties file to your system"
 if [[ ${DEV_SYSTEM} != true ]]; then
-	echo "  - Execute the sormas-update.sh file to populate the database and deploy the server"
+	echo "  - Execute the server-update.sh file to populate the database and deploy the server"
 	echo "  - Configure the apache web server according to the server setup guide"
 fi
 	echo "  - Execute the r-setup.sh file to enable disease network diagrams"

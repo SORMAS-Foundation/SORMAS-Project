@@ -28,11 +28,14 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
@@ -45,8 +48,10 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -67,6 +72,7 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
+import de.symeda.sormas.api.contact.MergeContactIndexDto;
 import de.symeda.sormas.api.dashboard.DashboardContactDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
@@ -93,6 +99,7 @@ import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.common.JurisdictionFlagsService;
@@ -139,6 +146,8 @@ import de.symeda.sormas.backend.visit.VisitService;
 public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins>
 	implements JurisdictionFlagsService<Contact, ContactJurisdictionFlagsDto, ContactJoins, ContactQueryContext> {
 
+	private static final Double SECONDS_30_DAYS = Long.valueOf(TimeUnit.DAYS.toSeconds(30L)).doubleValue();
+
 	@EJB
 	private CaseService caseService;
 	@EJB
@@ -156,6 +165,8 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 	@EJB
 	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacade;
 	@EJB
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
+	@EJB
 	private ExternalJournalService externalJournalService;
 	@EJB
 	private UserService userService;
@@ -167,6 +178,8 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 	private VisitService visitService;
 	@EJB
 	private SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal sormasToSormasFacade;
+	@EJB
+	private ContactListCriteriaBuilder listCriteriaBuilder;
 
 	public ContactService() {
 		super(Contact.class);
@@ -939,7 +952,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 					.calculateFollowUpUntilDate(
 						contactDto,
 						ContactLogic.getFollowUpStartDate(contact.getLastContactDate(), contact.getReportDateTime(), earliestSampleDate),
-						contact.getVisits().stream().map(VisitFacadeEjb::toDto).collect(Collectors.toList()),
+						contact.getVisits().stream().map(VisitFacadeEjb::toVisitDto).collect(Collectors.toList()),
 						diseaseConfigurationFacade.getFollowUpDuration(contact.getDisease()),
 						false,
 						featureConfigurationFacade
@@ -1089,8 +1102,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 		case DISTRICT:
 			final District district = currentUser.getDistrict();
 			if (district != null) {
-				filter = CriteriaBuilderHelper
-					.or(cb, filter, cb.equal(contactRoot.get(Contact.DISTRICT), currentUser.getDistrict()));
+				filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(contactRoot.get(Contact.DISTRICT), currentUser.getDistrict()));
 			}
 			break;
 		case COMMUNITY:
@@ -1464,6 +1476,153 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 		return filter;
 	}
 
+	public List<MergeContactIndexDto[]> getContactsForDuplicateMerging(ContactCriteria criteria, @Min(1) Integer limit, boolean ignoreRegion) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+
+		Root<Contact> root = cq.from(Contact.class);
+
+		final ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, root);
+		ContactJoins joins = contactQueryContext.getJoins();
+		Join<Contact, Person> person = joins.getPerson();
+
+		Root<Contact> root2 = cq.from(Contact.class);
+		final ContactQueryContext contactQueryContext2 = new ContactQueryContext(cb, cq, root2);
+		Join<Contact, Person> person2 = root2.join(Contact.PERSON, JoinType.LEFT);
+
+		// similarity:
+		// * first & last name concatenated with whitespace. Similarity function with default threshold of 0.65D
+		// uses postgres pg_trgm: https://www.postgresql.org/docs/9.6/pgtrgm.html
+		// * same source case
+		// * same disease
+		// * same region (optional)
+		// * report date within 30 days of each other
+		// * same sex or same birth date (when defined)
+		// * same birth date (when fully defined)
+
+		Predicate sourceCaseFilter = cb.equal(root.get(Contact.CAZE), root2.get(Contact.CAZE));
+		Predicate userFilter = createUserFilter(contactQueryContext);
+		Predicate criteriaFilter =
+			criteria != null ? cb.or(buildCriteriaFilter(criteria, contactQueryContext), buildCriteriaFilter(criteria, contactQueryContext2)) : null;
+		Expression<String> nameSimilarityExpr = cb.concat(person.get(Person.FIRST_NAME), " ");
+		nameSimilarityExpr = cb.concat(nameSimilarityExpr, person.get(Person.LAST_NAME));
+		Expression<String> nameSimilarityExpr2 = cb.concat(person2.get(Person.FIRST_NAME), " ");
+		nameSimilarityExpr2 = cb.concat(nameSimilarityExpr2, person2.get(Person.LAST_NAME));
+		Predicate nameSimilarityFilter =
+			cb.gt(cb.function("similarity", double.class, nameSimilarityExpr, nameSimilarityExpr2), configFacade.getNameSimilarityThreshold());
+		Predicate diseaseFilter = cb.equal(root.get(Contact.DISEASE), root2.get(Contact.DISEASE));
+		Predicate reportDateFilter = cb.lessThanOrEqualTo(
+			cb.abs(
+				cb.diff(
+					cb.function("date_part", Double.class, cb.parameter(String.class, "date_type"), root.get(Contact.REPORT_DATE_TIME)),
+					cb.function("date_part", Double.class, cb.parameter(String.class, "date_type"), root2.get(Contact.REPORT_DATE_TIME)))),
+			SECONDS_30_DAYS);
+		// Sex filter: only when sex is filled in for both cases
+		Predicate sexFilter = cb.or(
+			cb.or(cb.isNull(person.get(Person.SEX)), cb.isNull(person2.get(Person.SEX))),
+			cb.equal(person.get(Person.SEX), person2.get(Person.SEX)));
+		// Birth date filter: only when birth date is filled in for both cases
+		Predicate birthDateFilter = cb.or(
+			cb.or(
+				cb.isNull(person.get(Person.BIRTHDATE_DD)),
+				cb.isNull(person.get(Person.BIRTHDATE_MM)),
+				cb.isNull(person.get(Person.BIRTHDATE_YYYY)),
+				cb.isNull(person2.get(Person.BIRTHDATE_DD)),
+				cb.isNull(person2.get(Person.BIRTHDATE_MM)),
+				cb.isNull(person2.get(Person.BIRTHDATE_YYYY))),
+			cb.and(
+				cb.equal(person.get(Person.BIRTHDATE_DD), person2.get(Person.BIRTHDATE_DD)),
+				cb.equal(person.get(Person.BIRTHDATE_MM), person2.get(Person.BIRTHDATE_MM)),
+				cb.equal(person.get(Person.BIRTHDATE_YYYY), person2.get(Person.BIRTHDATE_YYYY))));
+
+		Predicate creationDateFilter = cb.or(
+			cb.lessThan(root.get(Contact.CREATION_DATE), root2.get(Contact.CREATION_DATE)),
+			cb.or(
+				cb.lessThanOrEqualTo(root2.get(Contact.CREATION_DATE), DateHelper.getStartOfDay(criteria.getCreationDateFrom())),
+				cb.greaterThanOrEqualTo(root2.get(Contact.CREATION_DATE), DateHelper.getEndOfDay(criteria.getCreationDateTo()))));
+
+		Predicate filter = CriteriaBuilderHelper.and(
+			cb,
+			cb.and(createDefaultFilter(cb, root), createDefaultFilter(cb, root2), sourceCaseFilter),
+			userFilter,
+			criteriaFilter,
+			nameSimilarityFilter,
+			diseaseFilter,
+			reportDateFilter,
+			sexFilter,
+			birthDateFilter,
+			creationDateFilter,
+			cb.notEqual(root.get(Contact.ID), root2.get(Contact.ID)));
+
+		if (!ignoreRegion) {
+			Predicate regionFilter = cb.or(
+				cb.or(cb.isNull(root.get(Contact.REGION)), cb.isNull(root2.get(Contact.REGION))),
+				cb.equal(root.get(Contact.REGION), root2.get(Contact.REGION)));
+
+			filter = cb.and(filter, regionFilter);
+		}
+
+		if (CollectionUtils.isNotEmpty(criteria.getContactUuidsForMerge())) {
+			Set<String> contactUuidsForMerge = criteria.getContactUuidsForMerge();
+			filter = cb.and(filter, cb.or(root.get(Contact.UUID).in(contactUuidsForMerge), root2.get(Contact.UUID).in(contactUuidsForMerge)));
+		}
+
+		cq.where(filter);
+		cq.multiselect(root.get(Contact.ID), root2.get(Contact.ID), root.get(Contact.CREATION_DATE));
+		cq.orderBy(cb.desc(root.get(Contact.CREATION_DATE)));
+
+		TypedQuery<Object[]> query = em.createQuery(cq).setParameter("date_type", "epoch");
+		if (limit != null) {
+			query.setMaxResults(limit);
+		}
+
+		List<Object[]> foundIds = query.getResultList();
+
+		List<MergeContactIndexDto[]> resultList = new ArrayList<>();
+
+		if (!foundIds.isEmpty()) {
+			CriteriaQuery<MergeContactIndexDto> indexContactsCq = cb.createQuery(MergeContactIndexDto.class);
+			Root<Contact> indexRoot = indexContactsCq.from(Contact.class);
+			selectMergeIndexDtoFields(cb, indexContactsCq, indexRoot);
+			indexContactsCq.where(
+				indexRoot.get(Contact.ID).in(foundIds.stream().map(a -> Arrays.copyOf(a, 2)).flatMap(Arrays::stream).collect(Collectors.toSet())));
+			Map<Long, MergeContactIndexDto> indexContacts =
+				em.createQuery(indexContactsCq).getResultStream().collect(Collectors.toMap(c -> c.getId(), Function.identity()));
+
+			for (Object[] idPair : foundIds) {
+				try {
+					// Cloning is necessary here to allow us to add the same CaseIndexDto to the grid multiple times
+					MergeContactIndexDto parent = (MergeContactIndexDto) indexContacts.get(idPair[0]).clone();
+					MergeContactIndexDto child = (MergeContactIndexDto) indexContacts.get(idPair[1]).clone();
+
+					if (parent.getCompleteness() == null && child.getCompleteness() == null
+						|| parent.getCompleteness() != null
+							&& (child.getCompleteness() == null || (parent.getCompleteness() >= child.getCompleteness()))) {
+						resultList.add(
+							new MergeContactIndexDto[] {
+								parent,
+								child });
+					} else {
+						resultList.add(
+							new MergeContactIndexDto[] {
+								child,
+								parent });
+					}
+				} catch (CloneNotSupportedException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}
+
+		return resultList;
+	}
+
+	private void selectMergeIndexDtoFields(CriteriaBuilder cb, CriteriaQuery<MergeContactIndexDto> cq, Root<Contact> root) {
+		final ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, root);
+		cq.multiselect(listCriteriaBuilder.getMergeContactIndexSelections(root, contactQueryContext));
+	}
+
 	public Predicate createOwnershipPredicate(boolean withOwnership, From<?, ?> from, CriteriaBuilder cb, CriteriaQuery<?> query) {
 		Subquery<Boolean> sharesQuery = query.subquery(Boolean.class);
 		Root<SormasToSormasShareInfo> shareInfoFrom = sharesQuery.from(SormasToSormasShareInfo.class);
@@ -1526,11 +1685,11 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 	}
 
 	@Override
-	public void undelete(Contact contact) {
-		// undelete all samples only associated with this contact
-		contact.getSamples().stream().forEach(sample -> sampleService.undelete(sample));
+	public void restore(Contact contact) {
+		// restore all samples only associated with this contact
+		contact.getSamples().stream().forEach(sample -> sampleService.restore(sample));
 
-		super.undelete(contact);
+		super.restore(contact);
 	}
 
 	@Override

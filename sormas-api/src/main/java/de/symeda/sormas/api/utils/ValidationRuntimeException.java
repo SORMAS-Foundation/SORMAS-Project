@@ -40,6 +40,7 @@ public class ValidationRuntimeException extends RuntimeException {
 	}
 
 	public ValidationRuntimeException(Map<List<String>, String> propertyErrors) {
+		super(ConstraintValidationHelper.formatPropertyErrors(propertyErrors));
 		this.propertyErrors = propertyErrors;
 	}
 

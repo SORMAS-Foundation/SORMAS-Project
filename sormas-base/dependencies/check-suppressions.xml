@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+
+  <!-- *** False positives *** -->
+  <suppress>
+    <notes><![CDATA[
+    Addresses another software: https://github.com/google/guava
+    ]]></notes>
+	<filePath regex="true">.*\bfailureaccess.*\.jar</filePath>
+    <vulnerabilityName>CVE-2020-8908</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    Adresses older Payara Server
+    ]]></notes>
+    <cve>CVE-2022-37422</cve><!-- CVE is fixed with 5.2022.3 -->
+    <cve>CVE-2022-45129</cve><!-- CVE is fixed with 5.2022.4 -->
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    Adresses older version of Jakarta EL
+    ]]></notes>
+ 	<filePath regex="true">.*\bjavax\.el.*\.jar</filePath>
+    <vulnerabilityName>CVE-2021-28170</vulnerabilityName><!-- CVE is fixed with 3.0.4, which is used by Payara 5.2022.5 -->
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    Addresses older version of Gradle (below version 8)
+    ]]></notes>
+	<filePath regex="true">.*\bgradle-wrapper.*\.jar</filePath>
+    <cve>CVE-2019-11065</cve><!-- CVE fixed with 5.3.1 -->
+    <cve>CVE-2019-15052</cve><!-- CVE fixed with 5.6 -->
+    <cve>CVE-2019-16370</cve><!-- CVE fixed with 6.0 -->
+    <cve>CVE-2020-11979</cve><!-- CVE fixed with 6.8.0 -->
+    <cve>CVE-2021-29428</cve><!-- CVE fixed with 7.0 -->
+    <cve>CVE-2021-29429</cve><!-- CVE fixed with 7.0 -->
+    <cve>CVE-2021-32751</cve><!-- CVE fixed with 7.2 -->
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    CVE addresses "data-tools" (not Java) which dows not seem to be uses by "jackson-dataformat-hal"
+    ]]></notes>
+	<filePath regex="true">.*\bjackson-dataformat-hal.*\.jar</filePath>
+    <cve>CVE-2018-18749</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    CVE addresses Keycloak itself in old version, but triggers on artifacts with "keycloak" in the name.
+    ]]></notes>
+	<filePath regex="true">.*\bkeycloak-.*\.jar</filePath>
+    <cve>CVE-2017-12161</cve><!-- CVE is fixed with Keycloak 3.4.2, we use at least version 16 -->
+    <cve>CVE-2018-10912</cve><!-- CVE is fixed with Keycloak 4.0.0, we use at least version 16 -->
+    <cve>CVE-2020-1728</cve><!--  CVE is fixed with Keycloak 10, we use at least version 16 -->
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    CVE is fixed with Keycloak 4.0.0, we use at least version 11
+    ]]></notes>
+	<filePath regex="true">.*\bkeycloak-.*\.jar</filePath>
+    <cve>CVE-2018-10912</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    CVE is fixed with Keycloak 10, we use at least version 11
+    ]]></notes>
+	<filePath regex="true">.*\bkeycloak-.*\.jar</filePath>
+    <cve>CVE-2020-1728</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    We are using a newer version than Vaadin 6.4.9
+    ]]></notes>
+	<filePath regex="true">.*\bvaadin.*</filePath>
+    <cve>CVE-2011-0509</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    False positive documented in Dependency Check 6.0.3, see https://github.com/jeremylong/DependencyCheck/issues/2511
+    ]]></notes>
+	<filePath regex="true">.*\bvaadin-sass-compiler\.jar</filePath>
+    <cve>CVE-2019-10799</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    H2 Database is already fixed, see https://github.com/h2database/h2database/issues/1294
+    ]]></notes>
+	<filePath regex="true">.*\bh2database.*\.jar</filePath>
+    <cve>CVE-2018-14335</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    Addresses another software: https://github.com/tasks/tasks
+    ]]></notes>
+	<filePath regex="true">.*\bmaven-ant-tasks.*\.jar</filePath>
+    <vulnerabilityName>CVE-2020-22475</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    Addresses etcd itself
+    ]]></notes>
+	<filePath regex="true">.*\betcd-java.*\.jar</filePath>
+    <cve>CVE-2020-15106</cve>
+    <cve>CVE-2020-15112</cve>
+    <cve>CVE-2020-15113</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    Addresses another software: Apache James Server
+    ]]></notes>
+	<filePath regex="true">.*\bapache-mime4j.*\.jar</filePath>
+    <cve>CVE-2021-38542</cve>
+    <cve>CVE-2021-40110</cve>
+    <cve>CVE-2021-40111</cve>
+    <cve>CVE-2021-40525</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    Addresses another software: io.netty:netty
+    ]]></notes>
+	<filePath regex="true">.*\bnetty-tcnative-classes.*\.jar</filePath>
+    <cve>CVE-2014-3488</cve>
+    <cve>CVE-2015-2156</cve>
+    <cve>CVE-2019-16869</cve>
+    <cve>CVE-2019-20444</cve>
+    <cve>CVE-2019-20445</cve>
+    <cve>CVE-2021-21290</cve>
+    <cve>CVE-2021-21295</cve>
+    <cve>CVE-2021-21409</cve>
+    <cve>CVE-2021-37136</cve>
+    <cve>CVE-2021-37137</cve>
+    <cve>CVE-2021-43797</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    Adresses another software: go-yaml
+    ]]></notes>
+    <filePath regex="true">.*\bsnakeyaml.*\.jar</filePath>
+    <cve>CVE-2021-4235</cve>
+    <cve>CVE-2023-2251</cve>
+    <cve>CVE-2022-3064</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    Adresses another software: stleary/JSON-java (org.json:json)
+    ]]></notes>
+    <cve>CVE-2022-45688</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    Addresses another software: fredsmith/utils
+    ]]></notes>
+    <cve>CVE-2021-4277</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    Addresses another software: Tasks.org Android app
+    ]]></notes>
+    <cve>CVE-2022-39349</cve>
+  </suppress>
+  <!-- *** False positives END *** -->
+
+  <!-- *** Not exploitable *** -->
+  <suppress>
+    <notes><![CDATA[
+    maven-ant-tasks is not part of the release and is not relied on by the code
+    ]]></notes>
+	<filePath regex="true">.*\bmaven-ant-tasks.*\.jar/META-INF/.*\bplexus-utils.*</filePath>
+    <cve>CVE-2017-1000487</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    maven-ant-tasks is not part of the release and is not relied on by the code
+    ]]></notes>
+	<filePath regex="true">.*\bmaven-ant-tasks.*\.jar/META-INF/.*\bplexus-utils.*</filePath>
+    <vulnerabilityName>Directory traversal in org.codehaus.plexus.util.Expand</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    maven-ant-tasks is not part of the release and is not relied on by the code
+    ]]></notes>
+	<filePath regex="true">.*\bmaven-ant-tasks.*\.jar/META-INF/.*\bplexus-utils.*</filePath>
+    <vulnerabilityName>Possible XML Injection</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    Payara is always used with JDK 11 as minimum, and iiop-listeners are not exposed via web server binding by default.
+    ]]></notes>
+    <cve>CVE-2023-28462</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    1. H2 Database is used as test dependency, so not part of the release.
+    2. Payara also uses H2 Database for internal purposes but that is only accessible with local access. 
+       Someone with local access can mess with everything that is part of the running payara domain.
+    ]]></notes>
+	<filePath regex="true">.*\bh2database.*\.jar</filePath>
+    <cve>CVE-2022-45868</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    Not a problem in our use case: We don't use Kotlin for managing Multiplatform Gradle Projects.
+    ]]></notes>
+    <cve>CVE-2022-24329</cve>
+  </suppress>
+  <!-- *** Not exploitable END *** -->
+
+</suppressions>

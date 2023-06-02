@@ -48,18 +48,19 @@ import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.CSVUtils;
+import de.symeda.sormas.api.utils.LocationHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
-import de.symeda.sormas.ui.AbstractBeanTest;
-import de.symeda.sormas.ui.TestDataCreator.RDCF;
+import de.symeda.sormas.ui.AbstractUiBeanTest;
 import de.symeda.sormas.ui.importer.ContactImportSimilarityResult;
 import de.symeda.sormas.ui.importer.ImportResultStatus;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
 import de.symeda.sormas.ui.importer.PersonImportSimilarityResult;
 
-public class ContactImporterTest extends AbstractBeanTest {
+public class ContactImporterTest extends AbstractUiBeanTest {
 
 	@Test
 	public void testImportCaseContacts()
@@ -67,7 +68,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 
 		ContactFacadeEjb contactFacade = getBean(ContactFacadeEjbLocal.class);
 
-		RDCF rdcf = creator.createRDCF("Abia", "Umuahia North", "Urban Ward 2", "Anelechi Hospital");
+		var rdcf = creator.createRDCF("Abia", "Umuahia North", "Urban Ward 2", "Anelechi Hospital");
 		UserDto user = creator.createUser(
 			rdcf.region.getUuid(),
 			rdcf.district.getUuid(),
@@ -166,7 +167,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 
 		ContactFacadeEjb contactFacade = getBean(ContactFacadeEjbLocal.class);
 
-		RDCF rdcf = creator.createRDCF("Abia", "Umuahia North", "Urban Ward 2", "Anelechi Hospital");
+		var rdcf = creator.createRDCF("Abia", "Umuahia North", "Urban Ward 2", "Anelechi Hospital");
 		UserDto user = creator.createUser(
 			rdcf.region.getUuid(),
 			rdcf.district.getUuid(),
@@ -194,7 +195,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 			InvestigationStatus.PENDING,
 			new Date(),
 			rdcf,
-			"ABCDEF-GHIJKL-MNOPQR");
+			createdCase -> createdCase.setUuid("ABCDEF-GHIJKL-MNOPQR"));
 
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_contact_import_test.csv").toURI());
 		contactImporter = new ContactImporterExtension(csvFile, user, null);
@@ -221,7 +222,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 
 		InputStream errorStream =
 			new ByteArrayInputStream(((ContactImporterExtension) contactImporter).stringBuilder.toString().getBytes(StandardCharsets.UTF_8));
-		List<String[]> errorRows = getCsvReader(errorStream).readAll();
+		List<String[]> errorRows = CSVUtils.createBomCsvReader(errorStream).readAll();
 		if (errorRows.size() > 1) {
 			assertThat("Error during import: " + StringUtils.join(errorRows.get(1), ", "), errorRows, hasSize(0));
 		}
@@ -236,7 +237,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 
 		ContactFacadeEjb contactFacade = getBean(ContactFacadeEjbLocal.class);
 
-		RDCF rdcf = creator.createRDCF("Abia", "Umuahia North", "Urban Ward 2", "Anelechi Hospital");
+		var rdcf = creator.createRDCF("Abia", "Umuahia North", "Urban Ward 2", "Anelechi Hospital");
 		UserDto user = creator.createUser(
 			rdcf.region.getUuid(),
 			rdcf.district.getUuid(),
@@ -281,7 +282,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 			}
 			if ("Oona".equals(person.getFirstName())) {
 				foundOona = true;
-				assertTrue(person.getAddress().checkIsEmptyLocation());
+				assertTrue(LocationHelper.checkIsEmptyLocation(person.getAddress()));
 				assertEquals(1, person.getAddresses().size());
 				assertEquals("133", person.getAddresses().get(0).getHouseNumber());
 			}
@@ -293,7 +294,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 	@Disabled("Remove ignore once we have replaced H2, and feature properties can be changed by code")
 	public void testImportContactsWithVaccinations()
 		throws IOException, InterruptedException, CsvValidationException, InvalidColumnException, URISyntaxException {
-		RDCF rdcf = creator.createRDCF("Abia", "Umuahia North", "Urban Ward 2", "Anelechi Hospital");
+		var rdcf = creator.createRDCF("Abia", "Umuahia North", "Urban Ward 2", "Anelechi Hospital");
 		UserDto user = creator.createUser(
 			rdcf.region.getUuid(),
 			rdcf.district.getUuid(),

@@ -25,7 +25,7 @@ import android.view.View;
 import android.widget.AdapterView;
 
 import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
@@ -84,7 +84,7 @@ public class ImmunizationListActivity extends PagedBaseListActivity {
 				}
 			}
 		});
-		model = ViewModelProviders.of(this).get(ImmunizationListViewModel.class);
+		model = new ViewModelProvider(this).get(ImmunizationListViewModel.class);
 		model.initializeViewModel();
 		model.getImmunizationList().observe(this, immunizations -> {
 			adapter.submitList(immunizations);

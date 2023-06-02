@@ -46,196 +46,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONF
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONTACTS_DATA_TAB;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.EPIDEMIOLOGICAL_DATA_TAB;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_NO_POPUP_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CONFIRM;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.ADD_A_PARTICIPANT_HEADER_DE;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_CASE_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_RELATED_CONTACTS_CHECKBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.BACK_TO_CASES_LIST_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.BLOOD_ORGAN_TISSUE_DONATION_IN_THE_LAST_6_MONTHS_OPTIONS;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.BUTTONS_IN_VACCINATIONS_LOCATION;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.CANCEL_FOLLOW_UP_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_CLASSIFICATION_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_CLASSIFICATION_RADIOBUTTON;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_CLASSIFICATION_SPAN;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_CONFIRMATION_BASIS_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_IDENTIFICATION_SOURCE_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_ORIGIN;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_PERSON_TAB;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_TAB;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.CHANGE_DISEASE_CONFIRMATION_POPUP;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.CLINICAL_CONFIRMATION_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.CLINICAL_COURSE_TAB;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.COMMUNITY_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.COMMUNITY_COMBOBOX_BY_PLACE_OF_STAY;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.COMMUNITY_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.CONFIRM_ACTION;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_BUTTON_DE;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_TEMPLATES;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_TEMPLATES_POPUP_DE;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_QUARANTINE_ORDER_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_QUARANTINE_ORDER_BUTTON_DE;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.CURRENT_HOSPITALIZATION_POPUP;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.DATE_OFFICIAL_QUARANTINE_ORDER_WAS_SENT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.DATE_OF_FOLLOW_UP_STATUS_CHANGE;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.DATE_OF_FOLLOW_UP_STATUS_CHANGE_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.DATE_OF_OUTCOME;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.DATE_OF_OUTCOME_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.DATE_OF_THE_VERBAL_ORDER;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.DATE_RECEIVED_AT_DISTRICT_LEVEL_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.DATE_RECEIVED_AT_NATIONAL_LEVEL_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.DATE_RECEIVED_AT_REGION_LEVEL_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.DELETE_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.DELETE_POPUP_YES_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.DELETE_VACCINATION_REASON_POPUP_DE_VERSION;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISCARD_BUTTON_POPUP;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_VARIANT_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISTRICT_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISTRICT_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.EDIT_IMMUNIZATION_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.EDIT_SAMPLE_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.EDIT_TASK_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.EDIT_TRAVEL_ENTRY_FROM_CASE_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.EDIT_VACCINATION_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.EPIDEMIOLOGICAL_CONFIRMATION_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.EPID_NUMBER_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.ERROR_DESCRIPTION_REQUEST_PROCESSED;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.ERROR_IN_HANDOVER_HEADER_DE;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXPECTED_FOLLOWUP_LABEL;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXPECTED_FOLLOWUP_POPUP_TEXT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXPECTED_FOLLOWUP_VALUE;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXPECTED_FOLLOW_UP_UNTIL_DATE_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXTERNAL_ID_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXTERNAL_TOKEN_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXTRA_COMMENT_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXTRA_COMMENT_INPUT_SHARE_POPUP;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.FACILITY_ACTIVITY_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.FACILITY_CATEGORY_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.FACILITY_HEALTH_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.FACILITY_HEALTH_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.FACILITY_TYPE_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.FOLLOW_UP_COMMENT_FIELD;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.FOLLOW_UP_STATUS_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.FOLLOW_UP_TAB;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.FOLLOW_UP_UNTIL_DATE_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERAL_COMMENT_TEXTAREA;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERAL_COMMENT_TEXT_AREA;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERATED_DOCUMENT_NAME;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERATED_DOCUMENT_NAME_DE;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.HAND_THE_OWNERSHIP_CHECKBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.HOME_BASED_QUARANTINE_POSSIBLE_OPTIONS;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.HOSPITALIZATION_TAB;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.IMMUNIZATION_CARD_IMMUNIZATION_PERIOD_LABEL;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.IMMUNIZATION_CARD_IMMUNIZATION_STATUS_LABEL;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.IMMUNIZATION_CARD_IMMUNIZATION_UUID;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.IMMUNIZATION_CARD_MANAGEMENT_STATUS_LABEL;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.IMMUNIZATION_CARD_MEANS_OF_IMMUNIZATION_LABEL;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.INFRASTRUCTURE_DATA_POPUP;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.INTERNAL_TOKEN_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.INVESTIGATED_DATE_FIELD;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.INVESTIGATION_STATUS_OPTIONS;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.LABORATORY_DIAGNOSTIC_CONFIRMATION_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.LINKED_EVENT_TITLE;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.LINKED_SHARED_ORGANIZATION_SELECTED_VALUE;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.LINK_EVENT_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.LINK_EVENT_BUTTON_DE;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.LOST_TO_FOLLOW_UP_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_IMMUNIZATION_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_SAMPLE_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_SAMPLE_BUTTON_DE;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_TASK_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_TRAVEL_ENTRY_BUTTON_DE;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.OFFICIAL_QUARANTINE_ORDER_SENT_CHECKBOX_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.OFFICIAL_QUARANTINE_ORDER_SENT_CHECKBOX_LABEL;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.OUTCOME_OF_CASE_OPTIONS;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.OVERWRITE_FOLLOW_UP_UNTIL_DATE_LABEL;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_DESCRIPTION_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_CHECKBOX_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_CHECKBOX_LABEL;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_DISTRICT_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_DISTRICT_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_OPTIONS;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_REGION_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_REGION_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_SELECTED_VALUE;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.POINT_OF_ENTRY_DETAILS;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.POINT_OF_ENTRY_TEXT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.POPUPS_INPUTS;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.PREGNANCY_OPTIONS;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.PROHIBITION_TO_WORK_OPTIONS;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_CHANGE_COMMENT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_DATE_FROM;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_DATE_FROM_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_DATE_TO;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_DATE_TO_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDERED_BY_DOCUMENT_CHECKBOX_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDERED_BY_DOCUMENT_CHECKBOX_LABEL;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDERED_BY_DOCUMENT_DATE;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDERED_VERBALLY_CHECKBOX_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDERED_VERBALLY_CHECKBOX_LABEL;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDER_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDER_POPUP_SAMPLE_FIELD;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_POPUP_DISCARD_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_POPUP_MESSAGE;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_POPUP_SAVE_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_TYPE_DETAILS;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.REASON_FOR_DELETION_DETAILS_TEXTAREA;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFERENCE_DEFINITION_TEXT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFER_CASE_FROM_POINT_OF_ENTRY;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFER_CASE_FROM_POINT_OF_ENTRY_DISTRICT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFER_CASE_FROM_POINT_OF_ENTRY_POPUP_DE;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFER_CASE_FROM_POINT_OF_ENTRY_REGION;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFER_CASE_FROM_POINT_OF_ENTRY_SAVE_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.REGION_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.REGION_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.REINFECTION_OPTIONS;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.REJECT_SHARED_CASE_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.REPORT_DATE_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.REPORT_GPS_ACCURACY_IN_M_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.REPORT_GPS_LATITUDE_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.REPORT_GPS_LONGITUDE_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.RESPONSIBLE_COMMUNITY_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.RESPONSIBLE_DISTRICT_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.RESPONSIBLE_REGION_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.RESPONSIBLE_SURVEILLANCE_OFFICER_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.RESPONSIBLE_USER_FOR_FOLLOW_UP_STATUS_CHANGE;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.RESPONSIBLE_USER_FOR_FOLLOW_UP_STATUS_CHANGE_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.RESUME_FOLLOW_UP_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.REVOKE_CASE_POPUP_HEADER;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAHRE_SAMPLES_CHECKBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_AND_OPEN_HOSPITALIZATION_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPUP_CONTENT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.SEQUELAE_DETAILS;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.SEQUELAE_OPTIONS;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.SHARE_ORGANIZATION_POPUP_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.SHARE_PENDING_WARNING_DE;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.SHARE_REPORTS_CHECKBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.SHARE_SORMAS_2_SORMAS_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.SHARE_SORMAS_2_SORMAS_POPUP_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.SURVEILLANCE_OFFICER_FIELD_ABOVE_GENERAL_COMMENT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.SYMPTOMS_TAB;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.TRIMESTER_OPTIONS;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.UPLOAD_DOCUMENT_CHECKBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.USER_INFORMATION;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_CARD_INFO_ICON;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_CARD_INFO_POPUP_TEXT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_CARD_VACCINATION_DATE;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_CARD_VACCINATION_NAME;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_UPDATE_POPUP_HEADER;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.checkIfTextExists;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.checkTextInReportSideComponent;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.getByImmunizationUuid;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.getEditTaskButtonByNumber;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.getPreExistingConditionComboboxWithValue_DE;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.getPreExistingConditionCombobox_DE;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.*;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CONTACT_TO_BODY_FLUIDS_OPTONS;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CONTACT_TO_CASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CONTINENT_COMBOBOX;
@@ -342,6 +153,7 @@ public class EditCaseSteps implements En {
   public static final DateTimeFormatter DATE_FORMATTER_DE = DateTimeFormatter.ofPattern("d.M.yyyy");
   public static final String userDirPath = System.getProperty("user.dir");
   public static String caseUuid;
+  public static String externalUUID;
 
   @SneakyThrows
   @Inject
@@ -1420,10 +1232,9 @@ public class EditCaseSteps implements En {
         () -> webDriverHelpers.clickOnWebElementBySelector(NEW_SAMPLE_BUTTON_DE));
 
     When(
-        "I click on edit Sample",
+        "I click on view Sample",
         () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(EDIT_SAMPLE_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(EDIT_SAMPLE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SHOW_SAMPLE_BUTTON);
         });
 
     When(
@@ -2035,7 +1846,7 @@ public class EditCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_ACTION);
         });
     When(
-        "I check if editable fields are read only for an archived case",
+        "I check if editable fields are enabled for the case in view",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
           TimeUnit.SECONDS.sleep(3);
@@ -2158,6 +1969,16 @@ public class EditCaseSteps implements En {
         () -> {
           webDriverHelpers.scrollToElement(DELETE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
+        });
+
+    When(
+        "I check Delete button from case is enabled",
+        () -> {
+          webDriverHelpers.scrollToElement(DELETE_BUTTON);
+          softly.assertTrue(
+              webDriverHelpers.isElementEnabled(DELETE_BUTTON),
+              "Delete case button is not enabled");
+          softly.assertAll();
         });
 
     When(
@@ -2560,9 +2381,12 @@ public class EditCaseSteps implements En {
         "I click to share samples of the case in Share popup",
         () -> webDriverHelpers.clickOnWebElementBySelector(SAHRE_SAMPLES_CHECKBOX));
     When(
+        "I click on share immunizations of the case in Share popup",
+        () -> webDriverHelpers.clickOnWebElementBySelector(SHARE_IMMUNIZATION_CHECKBOX));
+
+    When(
         "I click to share reports of the case in Share popup",
         () -> webDriverHelpers.clickOnWebElementBySelector(SHARE_REPORTS_CHECKBOX));
-
     When(
         "I click on share button in s2s share popup and wait for share to finish",
         () -> {
@@ -2759,12 +2583,7 @@ public class EditCaseSteps implements En {
               webDriverHelpers.isElementVisibleWithTimeout(ERROR_DESCRIPTION_REQUEST_PROCESSED, 3));
           softly.assertAll();
         });
-    When(
-        "I check if edit sample button is unavailable",
-        () -> {
-          softly.assertFalse(webDriverHelpers.isElementPresent(EDIT_SAMPLE_BUTTON));
-          softly.assertAll();
-        });
+
     When(
         "I check if share warning is displayed",
         () -> {
@@ -2779,6 +2598,8 @@ public class EditCaseSteps implements En {
               webDriverHelpers.isElementVisibleWithTimeout(ERROR_IN_HANDOVER_HEADER_DE, 3));
           softly.assertAll();
         });
+
+    // TODO -> refactor, bad approach to keep logic here for 2 pages
     And(
         "^I check if editable fields are read only for shared case/contact$",
         () -> {
@@ -2786,21 +2607,24 @@ public class EditCaseSteps implements En {
           webDriverHelpers.isElementGreyedOut(EditCasePage.UUID_INPUT);
           webDriverHelpers.isElementGreyedOut(EditCasePage.SAVE_BUTTON);
         });
+
+    When("I refresh current page", () -> webDriverHelpers.refreshCurrentPage());
+
     And(
-        "I check if report side component in Edit Case has {string}",
-        (String text) -> {
-          softly.assertTrue(
-              webDriverHelpers.isElementPresent(checkTextInReportSideComponent(text)));
-          softly.assertAll();
-        });
-    And(
-        "I check if report side component in Edit Case has today date",
+        "^I click on Send to reporting tool button on Edit Case page$",
         () -> {
-          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-          softly.assertTrue(
-              webDriverHelpers.isElementPresent(
-                  checkTextInReportSideComponent(formatter.format(LocalDate.now()))));
-          softly.assertAll();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              SEND_TO_REPORTING_TOOL_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SEND_TO_REPORTING_TOOL_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_ACTION);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(REPORTING_TOOL_MESSAGE);
+        });
+
+    And(
+        "^I collect case external UUID from Edit Case page$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(EXTERNAL_ID_INPUT);
+          externalUUID = webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT);
         });
   }
 

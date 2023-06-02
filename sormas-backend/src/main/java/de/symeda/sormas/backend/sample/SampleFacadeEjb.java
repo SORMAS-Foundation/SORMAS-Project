@@ -756,8 +756,8 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	@RightsAllowed(UserRight._SAMPLE_DELETE)
-	public void deleteSample(SampleReferenceDto sampleRef, DeletionDetails deletionDetails) {
-		Sample sample = sampleService.getByReferenceDto(sampleRef);
+	public void delete(String sampleUuid, DeletionDetails deletionDetails) {
+		Sample sample = sampleService.getByUuid(sampleUuid);
 		sampleService.delete(sample, deletionDetails);
 
 		handleAssociatedEntityChanges(sample, true);
@@ -765,9 +765,9 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	@RightsAllowed(UserRight._SAMPLE_DELETE)
-	public void undelete(SampleReferenceDto sampleRef) {
-		Sample sample = sampleService.getByReferenceDto(sampleRef);
-		sampleService.undelete(sample);
+	public void restore(String sampleUuid) {
+		Sample sample = sampleService.getByUuid(sampleUuid);
+		sampleService.restore(sample);
 	}
 
 	@Override

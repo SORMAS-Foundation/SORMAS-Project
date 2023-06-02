@@ -77,7 +77,6 @@ Scenario: Create and send laboratory request via Demis
     And I check that new sample form with pathogen detection reporting process is displayed
     And I click on save sample button
     And I click on save sample button
-    And I click on YES button in Update case disease variant popup window
     And I click on the Cases button from navbar
     And I click on the first Case ID from Case Directory
     And I check that case created from laboratory message contains a sample with one test
@@ -104,7 +103,6 @@ Scenario: Create and send laboratory request via Demis
     And I check that new sample form with pathogen detection reporting process is displayed
     And I click on "save" button in new sample form with pathogen detection reporting process
     And I click on "save" button in new sample form with pathogen detection reporting process
-    And I click on YES button in Update case disease variant popup window
     And I verify that status for result 1 is set to processed in Message Directory page
     And I click on the RESET FILTERS button for Messages
     And I filter by the name of the 3 most recently created person in Messages Directory
@@ -114,7 +112,6 @@ Scenario: Create and send laboratory request via Demis
     And I fill only mandatory fields to convert laboratory message into a case for DE
     And I click on save button in the case popup
     And I click on "save and open case" button in new sample form with pathogen detection reporting process
-    And I click on YES button in Update case disease variant popup window
     Then I check that I get navigated to the Edit Case page
     And I check that case created from laboratory message contains a sample with one test
     And I navigate to case person tab
@@ -146,7 +143,7 @@ Scenario: Create and send laboratory request via Demis
     And I search created message by birthday date
     Then I check if searched message has correct birthday date
 
-  @tmsLink=SORDEV-5588 @env_d2s @LoginKeycloak
+  @tmsLink=SORDEV-5588 @env_d2s @LoginKeycloak @testIt
   Scenario: Test delete option in Lab Messages
     Given API : Login to DEMIS server
     Then I create and send Laboratory Notification
@@ -161,6 +158,7 @@ Scenario: Create and send laboratory request via Demis
     And I collect message uuid
     Then I click Delete button in Message form
     And I confirm message deletion
+    And I refresh current page
     And I check that number of displayed messages results is 0
     And I click on reset filters button from Message Directory
     And I filter by the name of the 2 most recently created person in Messages Directory
@@ -325,3 +323,67 @@ Scenario: Create and send laboratory request via Demis
     And I check if report side component in Edit Case has "Labor"
     And I check if report side component in Edit Case has "Testlabor DEMIS"
     And I check if report side component in Edit Case has today date
+
+  @tmsLink=SORDEV-6170 @env_d2s @LoginKeycloak
+  Scenario: Test [Lab Message] Make person first- and lastName editable when processing a lab message for case
+    Given API : Login to DEMIS server
+    Then I create and send Laboratory Notification
+    And I log in as a Admin User
+    Then I click on the Messages button from navbar
+    And I click on fetch messages button
+    Then I filter by last created person via API in Messages Directory
+    And I click on Verarbeiten button in Messages Directory
+    Then I check if while creating new case from demis message there is a possibility to edit first and last name
+
+  @tmsLink=SORDEV-6170 @env_d2s @LoginKeycloak
+  Scenario: Test [Lab Message] Make person first- and lastName editable when processing a lab message for contact
+    Given API : Login to DEMIS server
+    Then I create and send Laboratory Notification
+    And I log in as a Admin User
+    Then I click on the Messages button from navbar
+    And I click on fetch messages button
+    Then I filter by last created person via API in Messages Directory
+    And I click on Verarbeiten button in Messages Directory
+    Then I check if while creating new contact from demis message there is a possibility to edit first and last name
+
+  @tmsLink=SORDEV-6170 @env_d2s @LoginKeycloak
+  Scenario: Test [Lab Message] Make person first- and lastName editable when processing a lab message for event participant
+    Given API : Login to DEMIS server
+    Then I create and send Laboratory Notification
+    And I log in as a Admin User
+    Then I click on the Messages button from navbar
+    And I click on fetch messages button
+    Then I filter by last created person via API in Messages Directory
+    And I click on Verarbeiten button in Messages Directory
+    Then I check if while creating new event participant from demis message there is a possibility to edit first and last name
+
+  @tmsLink=SORQA-959 @env_d2s @LoginKeycloak
+  Scenario: Test [Lab Message] Demis - Process a Lab message that has no mapped ID for Facility in Sormas
+    Given API : Login to DEMIS server
+    When I create and send Laboratory Notification with other facility name "Other Laboratory" and facility ID "928170"
+    And I log in as a Admin User
+    Then I click on the Messages button from navbar
+    And I click on fetch messages button
+    Then I filter by last created person via API in Messages Directory
+    And I click on Verarbeiten button in Messages Directory
+    And I pick a new person in Pick or create person popup during case creation for DE
+    And I choose create new case in Pick or create entry form for DE
+    And I check that create new case form with pathogen detection reporting process is displayed for DE
+    And I fill only mandatory fields to convert laboratory message into a case for DE
+    And I click on save button in the case popup
+    Then I check that new sample form with pathogen detection reporting process is displayed
+    Then I verify that labor is prefilled with "Andere Einrichtung" in New sample form while processing a DEMIS LabMessage
+    And I verify that labor description is prefilled with "Other Laboratory" in New sample form while processing a DEMIS LabMessage
+    And I click on save sample button
+    And I click on save sample button
+    And I click on the Cases button from navbar
+    And I search the case by last created person via Demis message
+    Then I click on the first Case ID from Case Directory
+    And I click on edit Sample
+    Then I check that laboratory is set to "Andere Einrichtung" on Edit Sample page
+    And I check that laboratory details is set to "Other Laboratory" on edit Sample page
+    When I navigate to case tab
+    Then I check if report side component in Edit Case has today date
+    When I click on edit Report on Edit Case page
+    Then I check that Reporter Facility in Edit report form is set to "Andere Einrichtung (Inaktiv)"
+    And I check that Reporter Facility Details in Edit report form is set to "Other Laboratory"

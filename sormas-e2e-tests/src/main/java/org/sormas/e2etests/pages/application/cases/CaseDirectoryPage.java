@@ -188,15 +188,35 @@ public class CaseDirectoryPage {
       By.xpath("//div[@class='v-select-optiongroup v-widget']/span/label");
   public static final By POPUP_WINDOW_HEADER = By.xpath("//div[@class='v-window-closebox']");
   public static final By ACTION_REJECT_BUTTON = By.cssSelector("#actionReject");
+  public static final By POTENTIAL_DUPLICATE_POPUP_DE =
+      By.xpath("//*[contains(text(), 'Potentielle Duplikate erkannt')]");
 
   public static By getActionRejectButtonByCaseDescription(String description) {
     return By.xpath(
-        String.format("//*[contains(text(), '%s')]/..//div[@id='actionReject']", description));
+        String.format(
+            "//td[contains(text(), 'Fall')]/../*[contains(text(), '%s')]/..//div[@id='actionReject']",
+            description));
   }
 
   public static By getActionAcceptButtonByCaseDescription(String description) {
     return By.xpath(
-        String.format("//*[contains(text(), '%s')]/..//div[@id='actionAccept']", description));
+        String.format(
+            "//td[contains(text(), 'Fall')]/../*[contains(text(), '%s')]/..//div[@id='actionAccept']",
+            description));
+  }
+
+  public static By getActionAcceptButtonByContactDescription(String description) {
+    return By.xpath(
+        String.format(
+            "//td[contains(text(), 'Kontakt')]/../*[contains(text(), '%s')]/..//div[@id='actionAccept']",
+            description));
+  }
+
+  public static By getActionRejectButtonByContactDescription(String description) {
+    return By.xpath(
+        String.format(
+            "//td[contains(text(), 'Kontakt')]/../*[contains(text(), '%s')]/..//div[@id='actionReject']",
+            description));
   }
 
   public static final By REJECT_SHARED_CASE_POPUP_TEXT_AREA =
@@ -231,4 +251,38 @@ public class CaseDirectoryPage {
       By.xpath("//span[text()=\"\u00DCbergeben\"]");
   public static By REJECT_SHARED_CASE_HEADER_DE =
       By.xpath("//div[@class='popupContent']//*[contains(text(), 'Anfrage ablehnen')]");
+
+  public static By getMergeButtonForCaseForTargetSystem(String firstName, String lastName) {
+    return By.xpath(
+        String.format(
+            "(//td[contains(text(), '"
+                + firstName
+                + "')]/../td[contains(text(), '"
+                + lastName
+                + "')]/..//div[@id='actionMerge'])[1]"));
+  }
+
+  public static By getMergeButtonForCaseForSourceSystem(String firstName, String lastName) {
+    return By.xpath(
+        String.format(
+            "(//td[contains(text(), '"
+                + firstName
+                + "')]/../td[contains(text(), '"
+                + lastName
+                + "')]/..//div[@id='actionMerge'])[2]"));
+  }
+
+  public static By CONFIRM_YOUR_CHOICE_HEADER_DE =
+      By.xpath("//div[@class='popupContent']//div[contains(text(), 'Ihre Wahl best\u00E4tigen')]");
+  public static By MERGE_DUPLICATED_CASES_WARNING_POPUP_DE =
+      By.xpath("//p[contains(text(), 'Dieser Fall kann nicht mehr bearbeitet werden')]");
+  public static By ERROR_MESSAGE_HEADER_DE =
+      By.xpath("//div[@class='popupContent']//h1[contains(text(), 'Ein Fehler ist aufgetreten')]");
+
+  public static By MERGE_MESSAGE_HEADER_DE =
+      By.xpath(
+          "//*[contains(text(), 'F\u00E4lle wurden zusammengef\u00FChrt und der doppelte Fall gel\u00F6scht')]");
+  public static By WARNING_CASE_NOT_SHARED_SHARE_POPUP_DE =
+      By.xpath(
+          "//div[contains(text(), 'Wenn Sie diesen Kontakt teilen m\u00F6chten, m\u00FCssen Sie den zugeh\u00F6rigen Fall zuerst an das gleiche Zielsystem senden.')]");
 }

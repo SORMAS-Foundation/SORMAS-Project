@@ -85,13 +85,10 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
-import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
@@ -322,13 +319,6 @@ public class EventParticipantFacadeEjb
 		EventReferenceDto eventReferenceDto = dto.getEvent();
 		Event event = eventService.getByUuid(eventReferenceDto.getUuid());
 
-		if (!eventService.inJurisdiction(event) && (dto.getRegion() == null || dto.getDistrict() == null)) {
-			Region region = user.getRegion();
-			dto.setRegion(region != null ? new RegionReferenceDto(region.getUuid(), region.getName(), region.getExternalID()) : null);
-			District district = user.getDistrict();
-			dto.setDistrict(district != null ? new DistrictReferenceDto(district.getUuid(), district.getName(), district.getExternalID()) : null);
-		}
-
 		Pseudonymizer pseudonymizer = createPseudonymizer();
 		restorePseudonymizedDto(dto, existingDto, existingParticipant, pseudonymizer);
 
@@ -515,13 +505,18 @@ public class EventParticipantFacadeEjb
 	@RightsAllowed(UserRight._EVENTPARTICIPANT_DELETE)
 	public void delete(String uuid, DeletionDetails deletionDetails) throws ExternalSurveillanceToolRuntimeException {
 		EventParticipant eventParticipant = service.getByUuid(uuid);
+
+		if (!service.inJurisdictionOrOwned(eventParticipant)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.messageEventParticipantOutsideJurisdictionDeletionDenied));
+		}
+
 		service.delete(eventParticipant, deletionDetails);
 	}
 
 	@Override
 	@RightsAllowed(UserRight._EVENTPARTICIPANT_DELETE)
-	public void undelete(String uuid) {
-		super.undelete(uuid);
+	public void restore(String uuid) {
+		super.restore(uuid);
 	}
 
 	@Override
@@ -552,6 +547,24 @@ public class EventParticipantFacadeEjb
 			Join<EventParticipant, Event> event = joins.getEvent();
 			final Join<EventParticipant, Sample> samples = queryContext.getSamplesJoin();
 
+			Subquery<Number> labResultSq = cq.subquery(Number.class);
+			Root<Sample> labResultsSqRoot = labResultSq.from(Sample.class);
+			labResultSq.where(
+				cb.and(
+					cb.equal(labResultsSqRoot.get(Sample.ASSOCIATED_EVENT_PARTICIPANT), eventParticipant),
+					cb.isFalse(labResultsSqRoot.get(Sample.DELETED))));
+			labResultSq.distinct(true);
+			labResultSq.select(cb.max(labResultsSqRoot.get(Sample.PATHOGEN_TEST_RESULT)));
+
+			Subquery<Number> sampleDateSq = cq.subquery(Number.class);
+			Root<Sample> sampleSqRoot = sampleDateSq.from(Sample.class);
+			sampleDateSq.where(
+				cb.and(
+					cb.equal(sampleSqRoot.get(Sample.ASSOCIATED_EVENT_PARTICIPANT), eventParticipant),
+					cb.isFalse(sampleSqRoot.get(Sample.DELETED))));
+			sampleDateSq.distinct(true);
+			sampleDateSq.select(cb.max(sampleSqRoot.get(Sample.SAMPLE_DATE_TIME)));
+
 			Expression<Object> inJurisdictionSelector = JurisdictionHelper.booleanSelector(cb, service.inJurisdiction(queryContext));
 			Expression<Object> inJurisdictionOrOwnedSelector = JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(queryContext));
 			cq.multiselect(
@@ -565,32 +578,9 @@ public class EventParticipantFacadeEjb
 				person.get(Person.APPROXIMATE_AGE),
 				person.get(Person.APPROXIMATE_AGE_TYPE),
 				eventParticipant.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
-				// POSITIVE is the max value of available results
-				cb.max(samples.get(Sample.PATHOGEN_TEST_RESULT)),
-				// all samples have the same date, but have to be aggregated
-				cb.max(samples.get(Sample.SAMPLE_DATE_TIME)),
+				labResultSq,
+				sampleDateSq,
 				eventParticipant.get(EventParticipant.VACCINATION_STATUS),
-				joins.getEventParticipantReportingUser().get(User.UUID),
-				eventParticipant.get(EventParticipant.DELETION_REASON),
-				eventParticipant.get(EventParticipant.OTHER_DELETION_REASON),
-				inJurisdictionSelector,
-				inJurisdictionOrOwnedSelector);
-			cq.groupBy(
-				eventParticipant.get(EventParticipant.ID),
-				eventParticipant.get(EventParticipant.UUID),
-				person.get(Person.UUID),
-				resultingCase.get(Case.UUID),
-				event.get(Event.UUID),
-				person.get(Person.FIRST_NAME),
-				person.get(Person.LAST_NAME),
-				person.get(Person.SEX),
-				person.get(Person.APPROXIMATE_AGE),
-				person.get(Person.APPROXIMATE_AGE_TYPE),
-				eventParticipant.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
-				joins.getSamples().get(Sample.PATHOGEN_TEST_RESULT),
-				joins.getSamples().get(Sample.SAMPLE_DATE_TIME),
-				eventParticipant.get(EventParticipant.VACCINATION_STATUS),
-				joins.getEventParticipantReportingUser().get(User.ID),
 				joins.getEventParticipantReportingUser().get(User.UUID),
 				eventParticipant.get(EventParticipant.DELETION_REASON),
 				eventParticipant.get(EventParticipant.OTHER_DELETION_REASON),
@@ -604,15 +594,12 @@ public class EventParticipantFacadeEjb
 					.and(cb, filter, cb.equal(samples.get(Sample.PATHOGEN_TEST_RESULT), eventParticipantCriteria.getPathogenTestResult()));
 			}
 
-			Subquery latestSampleSubquery = sampleService.createSubqueryLatestSample(cq, cb, eventParticipant);
-			Predicate latestSamplePredicate =
-				cb.or(cb.isNull(samples.get(Sample.SAMPLE_DATE_TIME)), cb.equal(samples.get(Sample.SAMPLE_DATE_TIME), latestSampleSubquery));
-			filter = CriteriaBuilderHelper.and(cb, filter, latestSamplePredicate, eventParticipant.get(EventParticipant.ID).in(batchedIds));
+			filter = CriteriaBuilderHelper.and(cb, filter, eventParticipant.get(EventParticipant.ID).in(batchedIds));
 
 			if (filter != null) {
 				cq.where(filter);
 			}
-
+			cq.distinct(true);
 			sortBy(sortProperties, queryContext);
 
 			indexList.addAll(QueryHelper.getResultList(em, cq, null, null));
@@ -666,15 +653,9 @@ public class EventParticipantFacadeEjb
 				.and(cb, filter, cb.equal(samples.get(Sample.PATHOGEN_TEST_RESULT), eventParticipantCriteria.getPathogenTestResult()));
 		}
 
-		Subquery latestSampleSubquery = sampleService.createSubqueryLatestSample(cq, cb, eventParticipant);
-		Predicate latestSamplePredicate =
-			cb.or(cb.isNull(samples.get(Sample.SAMPLE_DATE_TIME)), cb.equal(samples.get(Sample.SAMPLE_DATE_TIME), latestSampleSubquery));
-		filter = CriteriaBuilderHelper.and(cb, filter, latestSamplePredicate);
-
 		if (filter != null) {
 			cq.where(filter);
 		}
-
 		cq.distinct(true);
 
 		List<Tuple> persons = QueryHelper.getResultList(em, cq, first, max);
@@ -706,12 +687,6 @@ public class EventParticipantFacadeEjb
 				case EventParticipantIndexDto.LAST_NAME:
 				case EventParticipantIndexDto.FIRST_NAME:
 					expression = joins.getPerson().get(sortProperty.propertyName);
-					break;
-				case SampleIndexDto.PATHOGEN_TEST_RESULT:
-					expression = joins.getSamples().get(SampleIndexDto.PATHOGEN_TEST_RESULT);
-					break;
-				case SampleIndexDto.SAMPLE_DATE_TIME:
-					expression = joins.getSamples().get(SampleIndexDto.SAMPLE_DATE_TIME);
 					break;
 				case EventParticipantIndexDto.CASE_UUID:
 					expression = joins.getResultingCase().get(Case.UUID);
@@ -1004,7 +979,7 @@ public class EventParticipantFacadeEjb
 		Root<EventParticipant> root = cq.from(EventParticipant.class);
 		Predicate filter = service.buildCriteriaFilter(eventParticipantCriteria, new EventParticipantQueryContext(cb, cq, root));
 		cq.where(filter);
-		cq.select(cb.count(root));
+		cq.select(cb.countDistinct(root));
 		return em.createQuery(cq).getSingleResult();
 	}
 

@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 
+import de.symeda.sormas.api.Language;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -155,6 +156,20 @@ public class EventParticipantImporter extends DataImporter {
 			} catch (ValidationRuntimeException e) {
 				eventParticipantHasImportError = true;
 				writeImportError(values, e.getMessage());
+			}
+		}
+
+		if (!eventParticipantHasImportError) {
+			ImportLineResultDto<EventParticipantDto> eventParticipantErrors = validateConstraints(newEventParticipantTemp);
+			if (eventParticipantErrors.isError()) {
+				eventParticipantHasImportError = true;
+				writeImportError(values, eventParticipantErrors.getMessage());
+			}
+
+			ImportLineResultDto<PersonDto> personErrors = validateConstraints(newPersonTemp);
+			if (personErrors.isError()) {
+				eventParticipantHasImportError = true;
+				writeImportError(values, personErrors.getMessage());
 			}
 		}
 
@@ -303,6 +318,8 @@ public class EventParticipantImporter extends DataImporter {
 	private void insertColumnEntryIntoData(EventParticipantDto eventParticipant, PersonDto person, String entry, String[] entryHeaderPath)
 		throws InvalidColumnException, ImportErrorException {
 
+		Language language = I18nProperties.getUserLanguage();
+
 		Object currentElement = eventParticipant;
 		for (int i = 0; i < entryHeaderPath.length; i++) {
 			String headerPathElementName = entryHeaderPath[i];
@@ -315,7 +332,7 @@ public class EventParticipantImporter extends DataImporter {
 						currentElement = person;
 					}
 				} else if (EventParticipantExportDto.BIRTH_DATE.equals(headerPathElementName)) {
-					BirthDateDto birthDateDto = PersonHelper.parseBirthdate(entry, currentUser.getLanguage());
+					BirthDateDto birthDateDto = PersonHelper.parseBirthdate(entry, language);
 					if (birthDateDto != null) {
 						person.setBirthdateDD(birthDateDto.getDateOfBirthDD());
 						person.setBirthdateMM(birthDateDto.getDateOfBirthMM());
@@ -410,11 +427,6 @@ public class EventParticipantImporter extends DataImporter {
 				LOGGER.error("Unexpected error when trying to import an eventparticipant: " + e.getMessage(), e);
 				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importCasesUnexpectedError));
 			}
-		}
-
-		ImportLineResultDto<EventParticipantDto> constraintErrors = validateConstraints(eventParticipant);
-		if (constraintErrors.isError()) {
-			throw new ImportErrorException(constraintErrors.getMessage());
 		}
 	}
 

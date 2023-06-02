@@ -14,13 +14,12 @@
  */
 package de.symeda.sormas.api.sample;
 
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.util.Date;
 import java.util.Set;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.ImportIgnore;
@@ -28,13 +27,14 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
-import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 
 @DependingOnFeatureType(featureType = FeatureType.SAMPLES_LAB)
@@ -86,12 +86,11 @@ public class SampleDto extends SormasToSormasShareableDto {
 	private String labSampleID;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String fieldSampleID;
-	@Required
+	@NotNull(message = Validations.requiredField)
 	private Date sampleDateTime;
 
-	@Required
+	@NotNull(message = Validations.validReportDateTime)
 	private Date reportDateTime;
-	@Required
 	private UserReferenceDto reportingUser;
 	@SensitiveData
 	@Min(value = -90, message = Validations.numberTooSmall)
@@ -104,12 +103,12 @@ public class SampleDto extends SormasToSormasShareableDto {
 
 	private Float reportLatLonAccuracy;
 
-	@Required
+	@NotNull(message = Validations.requiredField)
 	private SampleMaterial sampleMaterial;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String sampleMaterialText;
-	@Required
+	@NotNull(message = Validations.requiredField)
 	private SamplePurpose samplePurpose;
 
 	private FacilityReferenceDto lab;

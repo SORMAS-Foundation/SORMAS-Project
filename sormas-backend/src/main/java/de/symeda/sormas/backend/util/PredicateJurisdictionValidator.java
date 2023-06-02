@@ -23,6 +23,7 @@ import javax.persistence.criteria.Predicate;
 
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.jurisdiction.JurisdictionValidator;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.user.User;
 
 public abstract class PredicateJurisdictionValidator extends JurisdictionValidator<Predicate> {
@@ -40,11 +41,11 @@ public abstract class PredicateJurisdictionValidator extends JurisdictionValidat
 
 	@Override
 	protected Predicate or(List<Predicate> jurisdictionTypes) {
-		return cb.or(jurisdictionTypes.toArray(new Predicate[jurisdictionTypes.size()]));
+		return CriteriaBuilderHelper.or(cb, jurisdictionTypes.toArray(new Predicate[jurisdictionTypes.size()]));
 	}
 
 	@Override
-	protected Predicate isInJurisdiction() {
+	public Predicate isRootInJurisdiction() {
 		return user != null
 			? isInJurisdictionByJurisdictionLevel(user.getJurisdictionLevel())
 			: isInJurisdictionByJurisdictionLevelPath(userPath.get(User.JURISDICTION_LEVEL));
@@ -61,5 +62,22 @@ public abstract class PredicateJurisdictionValidator extends JurisdictionValidat
 			.when(cb.equal(jLP, JurisdictionLevel.POINT_OF_ENTRY), cb.selectCase().when(whenPointOfEntryLevel(), true).otherwise(false))
 			.otherwise(false)
 			.in(true);
+	}
+
+	public Predicate hasUserLimitedDisease() {
+		if (user != null && user.getLimitedDisease() != null) {
+			return getLimitedDiseasePredicate();
+		} else {
+			return null;
+		}
+	}
+
+	protected Predicate getLimitedDiseasePredicate() {
+		return null;
+	}
+
+	@Override
+	protected Predicate and(Predicate condition1, Predicate condition2) {
+		return CriteriaBuilderHelper.and(cb, condition1, condition2);
 	}
 }

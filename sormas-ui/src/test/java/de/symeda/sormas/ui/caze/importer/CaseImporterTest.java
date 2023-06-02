@@ -15,14 +15,19 @@
 
 package de.symeda.sormas.ui.caze.importer;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Writer;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -33,9 +38,11 @@ import java.util.function.Consumer;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.output.StringBuilderWriter;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import com.opencsv.exceptions.CsvException;
 import com.opencsv.exceptions.CsvValidationException;
 import com.vaadin.ui.UI;
 
@@ -57,20 +64,25 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.CSVUtils;
+import de.symeda.sormas.api.utils.LocationHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
-import de.symeda.sormas.ui.AbstractBeanTest;
-import de.symeda.sormas.ui.TestDataCreator;
+import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.ui.AbstractUiBeanTest;
 import de.symeda.sormas.ui.importer.CaseImportSimilarityInput;
 import de.symeda.sormas.ui.importer.CaseImportSimilarityResult;
 import de.symeda.sormas.ui.importer.ImportResultStatus;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
 import de.symeda.sormas.ui.importer.PersonImportSimilarityResult;
 
-public class CaseImporterTest extends AbstractBeanTest {
+public class CaseImporterTest extends AbstractUiBeanTest {
 
+	/**
+	 * This should be split into multiple tests. See #11618
+	 */
 	@Test
-	public void testImportAllCases() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
+	public void testImportAllCases() throws IOException, InvalidColumnException, InterruptedException, CsvException, URISyntaxException {
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Abia", "Umuahia North", "Urban Ward 2", "Anelechi Hospital");
 		UserDto user = creator.createUser(
@@ -261,6 +273,13 @@ public class CaseImporterTest extends AbstractBeanTest {
 		caseImporter = new CaseImporterExtension(csvFile, true, user);
 		importResult = caseImporter.runImport();
 
+		InputStream errorStream = new ByteArrayInputStream(
+			((CaseImporterTest.CaseImporterExtension) caseImporter).stringBuilder.toString().getBytes(StandardCharsets.UTF_8));
+		List<String[]> errorRows = CSVUtils.createBomCsvReader(errorStream).readAll();
+		if (errorRows.size() > 1) {
+			assertThat("Error during import: " + StringUtils.join(errorRows.get(1), ", "), errorRows, hasSize(0));
+		}
+
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 		assertEquals(7, getCaseFacade().count(null));
 
@@ -275,7 +294,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 
 	@Test
 	public void testLineListingImport() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
-		TestDataCreator.RDCF rdcf = new TestDataCreator().createRDCF("Abia", "Bende", "Bende Ward", "Bende Maternity Home");
+		TestDataCreator.RDCF rdcf = creator.createRDCF("Abia", "Bende", "Bende Ward", "Bende Maternity Home");
 		UserDto user = creator.createUser(
 			rdcf.region.getUuid(),
 			rdcf.district.getUuid(),
@@ -357,7 +376,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		assertTrue(CollectionUtils.isEmpty(casePerson2.getAddresses()));
 		assertEquals("132", casePerson2.getAddress().getHouseNumber());
 
-		assertTrue(casePerson3.getAddress().checkIsEmptyLocation());
+		assertTrue(LocationHelper.checkIsEmptyLocation(casePerson3.getAddress()));
 		assertEquals(1, casePerson3.getAddresses().size());
 		assertEquals("133", casePerson3.getAddresses().get(0).getHouseNumber());
 	}
@@ -365,7 +384,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 	@Test
 	public void testImportWithSamples() throws IOException, InterruptedException, CsvValidationException, InvalidColumnException, URISyntaxException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		creator.createFacility("Lab", FacilityType.LABORATORY, rdcf.region.toReference(), rdcf.district.toReference(), rdcf.community.toReference());
+		creator.createFacility("Lab", rdcf.region, rdcf.district, rdcf.community, FacilityType.LABORATORY);
 		UserDto user = creator.createUser(
 			rdcf.region.getUuid(),
 			rdcf.district.getUuid(),
@@ -403,7 +422,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		throws IOException, InterruptedException, CsvValidationException, InvalidColumnException, URISyntaxException {
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		creator.createFacility("Lab", FacilityType.LABORATORY, rdcf.region.toReference(), rdcf.district.toReference(), rdcf.community.toReference());
+		creator.createFacility("Lab", rdcf.region, rdcf.district, rdcf.community, FacilityType.LABORATORY);
 		UserDto user = creator.createUser(
 			rdcf.region.getUuid(),
 			rdcf.district.getUuid(),
@@ -453,7 +472,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		throws IOException, InterruptedException, CsvValidationException, InvalidColumnException, URISyntaxException {
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		creator.createFacility("Lab", FacilityType.LABORATORY, rdcf.region.toReference(), rdcf.district.toReference(), rdcf.community.toReference());
+		creator.createFacility("Lab", rdcf.region, rdcf.district, rdcf.community, FacilityType.LABORATORY);
 		UserDto user = creator.createUser(
 			rdcf.region.getUuid(),
 			rdcf.district.getUuid(),

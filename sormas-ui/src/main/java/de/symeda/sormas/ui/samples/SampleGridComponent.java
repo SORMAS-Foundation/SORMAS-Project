@@ -184,16 +184,29 @@ public class SampleGridComponent extends VerticalLayout {
 			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES)) {
 				shipmentFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
-				bulkOperationsDropdown = MenuBarHelper.createDropDown(
-					Captions.bulkActions,
-					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
-						ControllerProvider.getSampleController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
+				if (criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
+					bulkOperationsDropdown = MenuBarHelper.createDropDown(
+						Captions.bulkActions,
+						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
+							ControllerProvider.getSampleController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
 
-							public void run() {
-								samplesView.navigateTo(criteria);
-							}
-						});
-					}));
+								public void run() {
+									samplesView.navigateTo(criteria);
+								}
+							});
+						}));
+				} else {
+					bulkOperationsDropdown = MenuBarHelper.createDropDown(
+						Captions.bulkActions,
+						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkRestore), VaadinIcons.ARROW_BACKWARD, selectedItem -> {
+							ControllerProvider.getSampleController().restoreSelectedSamples(grid.asMultiSelect().getSelectedItems(), new Runnable() {
+
+								public void run() {
+									samplesView.navigateTo(criteria);
+								}
+							});
+						}));
+				}
 
 				bulkOperationsDropdown.setVisible(samplesView.getViewConfiguration().isInEagerMode());
 

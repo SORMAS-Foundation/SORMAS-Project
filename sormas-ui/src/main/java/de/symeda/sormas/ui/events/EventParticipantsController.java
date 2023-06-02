@@ -19,9 +19,11 @@ package de.symeda.sormas.ui.events;
 
 import java.util.Collection;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Label;
@@ -53,6 +55,7 @@ import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
+import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DeletableUtils;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -64,6 +67,13 @@ public class EventParticipantsController {
 
 	private final EventParticipantFacade eventParticipantFacade = FacadeProvider.getEventParticipantFacade();
 	private final PersonFacade personFacade = FacadeProvider.getPersonFacade();
+
+	public void registerViews(Navigator navigator) {
+
+		navigator.addView(EventParticipantsView.VIEW_NAME, EventParticipantsView.class);
+		navigator.addView(EventParticipantDataView.VIEW_NAME, EventParticipantDataView.class);
+		navigator.addView(EventParticipantPersonView.VIEW_NAME, EventParticipantPersonView.class);
+	}
 
 	public EventParticipantDto createEventParticipant(EventReferenceDto eventRef, Consumer<EventParticipantReferenceDto> doneConsumer) {
 		final EventParticipantDto eventParticipant = EventParticipantDto.build(eventRef, UserProvider.getCurrent().getUserReference());
@@ -187,6 +197,15 @@ public class EventParticipantsController {
 		}
 	}
 
+	public void restoreSelectedEventParticipants(Collection<? extends EventParticipantIndexDto> selectedRows, Runnable callback) {
+		ControllerProvider.getDeleteRestoreController()
+			.restoreSelectedItems(
+				selectedRows.stream().map(EventParticipantIndexDto::getUuid).collect(Collectors.toList()),
+				FacadeProvider.getEventParticipantFacade(),
+				CoreEntityRestoreMessages.EVENT_PARTICIPANT,
+				callback);
+	}
+
 	public void deleteEventParticipant(String eventUuid, String personUuid, Runnable callback) {
 		DeletableUtils.showDeleteWithReasonPopup(
 			String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), I18nProperties.getString(Strings.entityEventParticipant)),
@@ -203,18 +222,14 @@ public class EventParticipantsController {
 	}
 
 	public CommitDiscardWrapperComponent<EventParticipantEditForm> getEventParticipantDataEditComponent(String eventParticipantUuid) {
+
 		final EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantUuid);
 		final EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid(), false);
 		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getEventParticipantFacade().getAutomaticDeletionInfo(eventParticipantUuid);
 		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getEventParticipantFacade().getManuallyDeletionInfo(eventParticipantUuid);
 
-		final EventParticipantEditForm editForm = new EventParticipantEditForm(
-			event,
-			eventParticipant.isPseudonymized(),
-			eventParticipant.isInJurisdiction(),
-			eventParticipant.getPerson().isPseudonymized(),
-			eventParticipant.getPerson().isInJurisdiction(),
-			false);
+		final EventParticipantEditForm editForm =
+			new EventParticipantEditForm(event, eventParticipant.isPseudonymized(), eventParticipant.isInJurisdiction());
 		editForm.setValue(eventParticipant);
 		editForm.setWidth(100, Unit.PERCENTAGE);
 
@@ -232,7 +247,7 @@ public class EventParticipantsController {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
-			editComponent.addDeleteWithReasonOrUndeleteListener(
+			editComponent.addDeleteWithReasonOrRestoreListener(
 				EventParticipantsView.VIEW_NAME + "/" + eventParticipant.getEvent().getUuid(),
 				null,
 				I18nProperties.getString(Strings.entityEventParticipant),
@@ -251,7 +266,12 @@ public class EventParticipantsController {
 					() -> navigateToData(eventParticipant.getUuid()));
 		}
 
-		editComponent.restrictEditableComponentsOnEditView(UserRight.EVENTPARTICIPANT_EDIT, UserRight.EVENTPARTICIPANT_DELETE, null);
+		editComponent.restrictEditableComponentsOnEditView(
+			UserRight.EVENTPARTICIPANT_EDIT,
+			null,
+			UserRight.EVENTPARTICIPANT_DELETE,
+			FacadeProvider.getEventParticipantFacade().getEditPermissionType(eventParticipantUuid),
+			eventParticipant.isInJurisdiction());
 
 		return editComponent;
 	}
@@ -259,10 +279,8 @@ public class EventParticipantsController {
 	private CommitDiscardWrapperComponent<EventParticipantEditForm> createEventParticipantEditCommitWrapper(
 		EventParticipantEditForm editForm,
 		Consumer<EventParticipantReferenceDto> doneConsumer) {
-		final CommitDiscardWrapperComponent<EventParticipantEditForm> editComponent = new CommitDiscardWrapperComponent<>(
-			editForm,
-			true,
-			editForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EventParticipantEditForm> editComponent =
+			new CommitDiscardWrapperComponent<>(editForm, true, editForm.getFieldGroup());
 
 		editComponent.addCommitListener(() -> {
 

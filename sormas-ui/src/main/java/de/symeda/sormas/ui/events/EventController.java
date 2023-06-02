@@ -72,7 +72,6 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.BulkOperationResults;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.api.uuid.HasUuid;
@@ -83,9 +82,10 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
 import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceServiceGateway;
 import de.symeda.sormas.ui.utils.AbstractView;
-import de.symeda.sormas.ui.utils.BulkOperationHelper;
+import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
+import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DeletableUtils;
@@ -404,11 +404,16 @@ public class EventController {
 				EventCriteria eventCriteria = new EventCriteria();
 				eventCriteria.setPerson(contact.getPerson());
 				eventCriteria.setUserFilterIncluded(false);
-				List<EventIndexDto> eventIndexDto = FacadeProvider.getEventFacade().getIndexList(eventCriteria, null, null, null);
+				List<EventIndexDto> personEvents = FacadeProvider.getEventFacade().getIndexList(eventCriteria, null, null, null);
 
 				EventReferenceDto eventReferenceDto = new EventReferenceDto(selectedEvent.getUuid());
-				if (!eventIndexDto.contains(selectedEvent)) {
+				if (!personEvents.contains(selectedEvent)) {
 					createEventParticipantWithContact(eventReferenceDto, contact);
+				} else {
+					Notification notification =
+						new Notification(I18nProperties.getString(Strings.messageThisPersonAlreadyEventParticipant), "", Type.HUMANIZED_MESSAGE);
+					notification.setDelayMsec(10000);
+					notification.show(Page.getCurrent());
 				}
 			} else {
 				create(contact);
@@ -832,10 +837,8 @@ public class EventController {
 
 		EventDataForm eventEditForm = new EventDataForm(false, event.isPseudonymized(), event.isInJurisdiction());
 		eventEditForm.setValue(event);
-		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(
-			eventEditForm,
-			true,
-			eventEditForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EventDataForm> editView =
+			new CommitDiscardWrapperComponent<EventDataForm>(eventEditForm, true, eventEditForm.getFieldGroup());
 
 		editView.getButtonsPanel()
 			.addComponentAsFirst(new DeletionLabel(automaticDeletionInfoDto, manuallyDeletionInfoDto, event.isDeleted(), EventDto.I18N_PREFIX));
@@ -879,7 +882,7 @@ public class EventController {
 
 		final String uuid = event.getUuid();
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_DELETE)) {
-			editView.addDeleteWithReasonOrUndeleteListener((deleteDetails) -> {
+			editView.addDeleteWithReasonOrRestoreListener((deleteDetails) -> {
 				if (!existEventParticipantsLinkedToEvent(event)) {
 					try {
 						FacadeProvider.getEventFacade().delete(uuid, deleteDetails);
@@ -898,7 +901,7 @@ public class EventController {
 				}
 				UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
 			}, getDeleteConfirmationDetails(Collections.singletonList(eventUuid)), (deleteDetails) -> {
-				FacadeProvider.getEventFacade().undelete(uuid);
+				FacadeProvider.getEventFacade().restore(uuid);
 				UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityEvent), uuid, FacadeProvider.getEventFacade());
 		}
@@ -906,10 +909,20 @@ public class EventController {
 		// Initialize 'Archive' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_ARCHIVE)) {
 			ControllerProvider.getArchiveController()
-				.addArchivingButton(event, FacadeProvider.getEventFacade(), CoreEntityArchiveMessages.EVENT, editView, () -> navigateToData(uuid));
+				.addArchivingButton(event, FacadeProvider.getEventFacade(), CoreEntityArchiveMessages.EVENT, editView, () -> {
+					ViewModelProviders.of(EventParticipantsView.class)
+						.get(EventParticipantsViewConfiguration.class)
+						.setRelevanceStatusChangedEvent(null);
+					navigateToData(uuid);
+				});
 		}
 
-		editView.restrictEditableComponentsOnEditView(UserRight.EVENT_EDIT, UserRight.EVENT_DELETE, null);
+		editView.restrictEditableComponentsOnEditView(
+			UserRight.EVENT_EDIT,
+			null,
+			UserRight.EVENT_DELETE,
+			FacadeProvider.getEventFacade().getEditPermissionType(eventUuid),
+			event.isInJurisdiction());
 
 		return editView;
 	}
@@ -957,7 +970,7 @@ public class EventController {
 			boolean eventManagementStatusChange = form.getEventManagementStatusCheckbox().getValue();
 
 			List<EventIndexDto> selectedEventsCpy = new ArrayList<>(selectedEvents);
-			BulkOperationHelper.doBulkOperation(
+			new BulkOperationHandler().doBulkOperation(
 				selectedEntries -> eventFacade.saveBulkEvents(
 					selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
 					updatedTempEvent,
@@ -965,24 +978,18 @@ public class EventController {
 					eventInvestigationStatusChange,
 					eventManagementStatusChange),
 				selectedEventsCpy,
-				selectedEventsCpy.size(),
-				results -> handleBulkOperationDone(results, popupWindow, eventGrid, selectedEvents));
+				results -> handleBulkOperationDone((List<EventIndexDto>) results, popupWindow, eventGrid));
 		});
 
 		editView.addDiscardListener(() -> popupWindow.close());
 	}
 
-	private void handleBulkOperationDone(
-		BulkOperationResults<?> results,
-		Window popupWindow,
-		EventGrid eventGrid,
-		Collection<EventIndexDto> selectedEvents) {
+	private void handleBulkOperationDone(List<EventIndexDto> remainingEvents, Window popupWindow, EventGrid eventGrid) {
 
 		popupWindow.close();
 		eventGrid.reload();
-		if (CollectionUtils.isNotEmpty(results.getRemainingEntries())) {
-			eventGrid.asMultiSelect()
-				.selectItems(selectedEvents.stream().filter(e -> results.getRemainingEntries().contains(e.getUuid())).toArray(EventIndexDto[]::new));
+		if (CollectionUtils.isNotEmpty(remainingEvents)) {
+			eventGrid.asMultiSelect().selectItems(remainingEvents.toArray(new EventIndexDto[0]));
 		} else {
 			navigateToIndex();
 		}
@@ -1076,6 +1083,15 @@ public class EventController {
 					}
 				});
 		}
+	}
+
+	public void restoreSelectedEvents(Collection<? extends EventIndexDto> selectedRows, Runnable callback) {
+		ControllerProvider.getDeleteRestoreController()
+			.restoreSelectedItems(
+				selectedRows.stream().map(EventIndexDto::getUuid).collect(Collectors.toList()),
+				FacadeProvider.getEventFacade(),
+				CoreEntityRestoreMessages.EVENT,
+				callback);
 	}
 
 	private Boolean existEventParticipantsLinkedToEvent(EventDto event) {

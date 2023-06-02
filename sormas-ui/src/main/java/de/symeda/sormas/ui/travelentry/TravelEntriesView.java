@@ -242,13 +242,23 @@ public class TravelEntriesView extends AbstractView {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_DELETE)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			List<MenuBarHelper.MenuBarItem> bulkActions = new ArrayList<>();
-			bulkActions.add(
-				new MenuBarHelper.MenuBarItem(
-					I18nProperties.getCaption(Captions.bulkDelete),
-					VaadinIcons.TRASH,
-					mi -> grid.bulkActionHandler(
-						items -> ControllerProvider.getTravelEntryController().deleteAllSelectedItems(items, () -> navigateTo(criteria)),
-						true)));
+			if (criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
+				bulkActions.add(
+					new MenuBarHelper.MenuBarItem(
+						I18nProperties.getCaption(Captions.bulkDelete),
+						VaadinIcons.TRASH,
+						mi -> grid.bulkActionHandler(
+							items -> ControllerProvider.getTravelEntryController().deleteAllSelectedItems(items, () -> navigateTo(criteria)),
+							true)));
+			} else {
+				bulkActions.add(
+					new MenuBarHelper.MenuBarItem(
+						I18nProperties.getCaption(Captions.bulkRestore),
+						VaadinIcons.ARROW_BACKWARD,
+						mi -> grid.bulkActionHandler(
+							items -> ControllerProvider.getTravelEntryController().restoreSelectedTravelEntries(items, () -> navigateTo(criteria)),
+							true)));
+			}
 
 			bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, bulkActions);
 

@@ -50,6 +50,8 @@ public class JurisdictionHelper {
 			jurisdiction.setPointOfEntryUuid(user.getPointOfEntry().getUuid());
 		}
 
+		jurisdiction.setLimitedDisease(user.getLimitedDisease());
+
 		jurisdiction.setJurisdictionLevel(UserRole.getJurisdictionLevel(user.getUserRoles()));
 
 		return jurisdiction;
@@ -179,7 +181,7 @@ public class JurisdictionHelper {
 			jurisdiction.setReportingUserUuid(eventParticipant.getReportingUser().getUuid());
 		}
 
-		// todo https://github.com/hzi-braunschweig/SORMAS-Project/issues/5903
+		// todo https://github.com/sormas-foundation/SORMAS-Project/issues/5903
 		// if (eventParticipant.getRegion() != null) {
 		// 	jurisdiction.setRegionUuid(eventParticipant.getRegion().getUuid());
 		// }

@@ -105,7 +105,7 @@ public final class DtoHelper {
 						}
 
 						// If both entities have the same UUID, assign a new one to targetValue to create a new entity
-						if (((EntityDto) targetValue).getUuid().equals(((EntityDto) sourceValue).getUuid())) {
+						if (DataHelper.equal(((EntityDto) targetValue).getUuid(), (((EntityDto) sourceValue).getUuid()))) {
 							((EntityDto) targetValue).setUuid(DataHelper.createUuid());
 						}
 
@@ -185,10 +185,19 @@ public final class DtoHelper {
 		return target;
 	}
 
+	public static <T extends AbstractDomainObject> T fillOrBuildEntity(EntityDto source, T target, Supplier<T> newEntity, boolean checkChangeDate) {
+		return fillOrBuildEntity(source, target, newEntity, checkChangeDate, false);
+	}
+
 	/**
 	 * @return The target entity or a new entity of target was null
 	 */
-	public static <T extends AbstractDomainObject> T fillOrBuildEntity(EntityDto source, T target, Supplier<T> newEntity, boolean checkChangeDate) {
+	public static <T extends AbstractDomainObject> T fillOrBuildEntity(
+		EntityDto source,
+		T target,
+		Supplier<T> newEntity,
+		boolean checkChangeDate,
+		boolean allowUuidOverwrite) {
 		if (target == null) {
 			target = newEntity.get();
 
@@ -205,7 +214,11 @@ public final class DtoHelper {
 			} else if (DataHelper.isNullOrEmpty(source.getUuid())) {
 				// target has a uuid. do nothing -> gracefully handle missing uuids of children
 			} else if (!target.getUuid().equals(source.getUuid())) {
-				throw new MismatchUuidException(target.getUuid(), target.getClass(), source.getUuid());
+				if (allowUuidOverwrite) {
+					target.setUuid(source.getUuid());
+				} else {
+					throw new MismatchUuidException(target.getUuid(), target.getClass(), source.getUuid());
+				}
 			}
 		}
 

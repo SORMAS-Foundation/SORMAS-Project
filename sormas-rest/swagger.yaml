@@ -1,11 +1,16 @@
 openapi: 3.0.1
 info:
-  description: https://github.com/hzi-braunschweig/SORMAS-Project/tree/development/sormas-rest
+  description: "[Readme of the module on GitHub](https://github.com/sormas-foundation/SORMAS-Project/tree/development/sormas-rest).\
+    \ \n### Responses\n- 400: Bad request: The request is not valid, e.g. missing\
+    \ required data\n- 403: Forbidden: User does not have necessary user rights\n\
+    - 404: Not found: The requested entity was not found.\n- 409: Conflict: Tried\
+    \ to update data of an entity that was updated in the mean-time.\n- 500: Internal\
+    \ server error: Other exceptions\n"
   license:
     name: GPL v3
     url: https://www.gnu.org/licenses/gpl-3.0.html
   title: SORMAS REST API
-  version: 1.82.0-SNAPSHOT
+  version: 1.85.0-SNAPSHOT
 servers:
 - url: /sormas-rest
 paths:
@@ -78,7 +83,10 @@ paths:
       - Action Controller
   /actions/push:
     post:
-      operationId: postActions
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -87,20 +95,27 @@ paths:
               items:
                 $ref: '#/components/schemas/ActionDto'
       responses:
-        default:
+        "207":
           content:
-            application/json; charset=UTF-8:
+            application/json:
               schema:
                 type: array
                 items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
-          description: default response
+                  $ref: '#/components/schemas/PostResponse'
+          description: "Array of responses, matching the posted array of entities.\
+            \ Provides an HTML status code for every entity and an optional body (e.g.\
+            \ a string with an error message)."
+        default:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostResponse'
+          description: When the request body has one or no entry. The status code
+            of the response entry matches the response code and may have an optional
+            body (e.g. a string with an error message).
+      summary: Create or update one or multiple entities.
       tags:
       - Action Controller
   /actions/query:
@@ -216,7 +231,10 @@ paths:
       - Additional Test Controller
   /additionaltests/push:
     post:
-      operationId: postAdditionalTests
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_1
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -225,20 +243,27 @@ paths:
               items:
                 $ref: '#/components/schemas/AdditionalTestDto'
       responses:
-        default:
+        "207":
           content:
-            application/json; charset=UTF-8:
+            application/json:
               schema:
                 type: array
                 items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
-          description: default response
+                  $ref: '#/components/schemas/PostResponse'
+          description: "Array of responses, matching the posted array of entities.\
+            \ Provides an HTML status code for every entity and an optional body (e.g.\
+            \ a string with an error message)."
+        default:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostResponse'
+          description: When the request body has one or no entry. The status code
+            of the response entry matches the response code and may have an optional
+            body (e.g. a string with an error message).
+      summary: Create or update one or multiple entities.
       tags:
       - Additional Test Controller
   /additionaltests/query:
@@ -318,7 +343,10 @@ paths:
       - Aggregate Report Controller
   /aggregatereports/push:
     post:
-      operationId: postAggregateReports
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_2
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -327,20 +355,27 @@ paths:
               items:
                 $ref: '#/components/schemas/AggregateReportDto'
       responses:
-        default:
+        "207":
           content:
-            application/json; charset=UTF-8:
+            application/json:
               schema:
                 type: array
                 items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
-          description: default response
+                  $ref: '#/components/schemas/PostResponse'
+          description: "Array of responses, matching the posted array of entities.\
+            \ Provides an HTML status code for every entity and an optional body (e.g.\
+            \ a string with an error message)."
+        default:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostResponse'
+          description: When the request body has one or no entry. The status code
+            of the response entry matches the response code and may have an optional
+            body (e.g. a string with an error message).
+      summary: Create or update one or multiple entities.
       tags:
       - Aggregate Report Controller
   /aggregatereports/query:
@@ -487,7 +522,10 @@ paths:
       - Campaign Form Data Controller
   /campaignFormData/push:
     post:
-      operationId: postCampaignFormData
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_3
       requestBody:
         content:
           '*/*':
@@ -496,20 +534,27 @@ paths:
               items:
                 $ref: '#/components/schemas/CampaignFormDataDto'
       responses:
-        default:
+        "207":
           content:
-            application/json; charset=UTF-8:
+            application/json:
               schema:
                 type: array
                 items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
-          description: default response
+                  $ref: '#/components/schemas/PostResponse'
+          description: "Array of responses, matching the posted array of entities.\
+            \ Provides an HTML status code for every entity and an optional body (e.g.\
+            \ a string with an error message)."
+        default:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostResponse'
+          description: When the request body has one or no entry. The status code
+            of the response entry matches the response code and may have an optional
+            body (e.g. a string with an error message).
+      summary: Create or update one or multiple entities.
       tags:
       - Campaign Form Data Controller
   /campaignFormData/query:
@@ -952,7 +997,10 @@ paths:
       - Case Controller
   /cases/push:
     post:
-      operationId: postCases
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_4
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -961,20 +1009,27 @@ paths:
               items:
                 $ref: '#/components/schemas/CaseDataDto'
       responses:
-        default:
+        "207":
           content:
-            application/json; charset=UTF-8:
+            application/json:
               schema:
                 type: array
                 items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
-          description: default response
+                  $ref: '#/components/schemas/PostResponse'
+          description: "Array of responses, matching the posted array of entities.\
+            \ Provides an HTML status code for every entity and an optional body (e.g.\
+            \ a string with an error message)."
+        default:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostResponse'
+          description: When the request body has one or no entry. The status code
+            of the response entry matches the response code and may have an optional
+            body (e.g. a string with an error message).
+      summary: Create or update one or multiple entities.
       tags:
       - Case Controller
   /cases/push-detailed:
@@ -990,13 +1045,7 @@ paths:
       responses:
         default:
           content:
-            application/json; charset=UTF-8:
-              schema:
-                type: object
-                additionalProperties:
-                  type: object
-                  additionalProperties:
-                    type: string
+            application/json; charset=UTF-8: {}
           description: default response
       tags:
       - Case Controller
@@ -1208,7 +1257,10 @@ paths:
       - Clinical Visit Controller
   /clinicalvisits/push:
     post:
-      operationId: postVisits
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_5
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -1217,20 +1269,27 @@ paths:
               items:
                 $ref: '#/components/schemas/ClinicalVisitDto'
       responses:
-        default:
+        "207":
           content:
-            application/json; charset=UTF-8:
+            application/json:
               schema:
                 type: array
                 items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
-          description: default response
+                  $ref: '#/components/schemas/PostResponse'
+          description: "Array of responses, matching the posted array of entities.\
+            \ Provides an HTML status code for every entity and an optional body (e.g.\
+            \ a string with an error message)."
+        default:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostResponse'
+          description: When the request body has one or no entry. The status code
+            of the response entry matches the response code and may have an optional
+            body (e.g. a string with an error message).
+      summary: Create or update one or multiple entities.
       tags:
       - Clinical Visit Controller
   /clinicalvisits/query:
@@ -1342,7 +1401,10 @@ paths:
       - Community Controller
   /communities/push:
     post:
-      operationId: postCommunities
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_6
       requestBody:
         content:
           '*/*':
@@ -1351,20 +1413,27 @@ paths:
               items:
                 $ref: '#/components/schemas/CommunityDto'
       responses:
-        default:
+        "207":
           content:
-            application/json; charset=UTF-8:
+            application/json:
               schema:
                 type: array
                 items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
-          description: default response
+                  $ref: '#/components/schemas/PostResponse'
+          description: "Array of responses, matching the posted array of entities.\
+            \ Provides an HTML status code for every entity and an optional body (e.g.\
+            \ a string with an error message)."
+        default:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostResponse'
+          description: When the request body has one or no entry. The status code
+            of the response entry matches the response code and may have an optional
+            body (e.g. a string with an error message).
+      summary: Create or update one or multiple entities.
       tags:
       - Community Controller
   /communities/query:
@@ -1604,7 +1673,10 @@ paths:
       - Contact Controller
   /contacts/push:
     post:
-      operationId: postContacts
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_7
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -1613,20 +1685,27 @@ paths:
               items:
                 $ref: '#/components/schemas/ContactDto'
       responses:
-        default:
+        "207":
           content:
-            application/json; charset=UTF-8:
+            application/json:
               schema:
                 type: array
                 items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
-          description: default response
+                  $ref: '#/components/schemas/PostResponse'
+          description: "Array of responses, matching the posted array of entities.\
+            \ Provides an HTML status code for every entity and an optional body (e.g.\
+            \ a string with an error message)."
+        default:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostResponse'
+          description: When the request body has one or no entry. The status code
+            of the response entry matches the response code and may have an optional
+            body (e.g. a string with an error message).
+      summary: Create or update one or multiple entities.
       tags:
       - Contact Controller
   /contacts/pushWithPerson:
@@ -1794,7 +1873,10 @@ paths:
       - Continent Controller
   /continents/push:
     post:
-      operationId: postContinents
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_8
       requestBody:
         content:
           '*/*':
@@ -1803,20 +1885,27 @@ paths:
               items:
                 $ref: '#/components/schemas/ContinentDto'
       responses:
-        default:
+        "207":
           content:
-            application/json; charset=UTF-8:
+            application/json:
               schema:
                 type: array
                 items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
-          description: default response
+                  $ref: '#/components/schemas/PostResponse'
+          description: "Array of responses, matching the posted array of entities.\
+            \ Provides an HTML status code for every entity and an optional body (e.g.\
+            \ a string with an error message)."
+        default:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostResponse'
+          description: When the request body has one or no entry. The status code
+            of the response entry matches the response code and may have an optional
+            body (e.g. a string with an error message).
+      summary: Create or update one or multiple entities.
       tags:
       - Continent Controller
   /continents/query:
@@ -1928,7 +2017,10 @@ paths:
       - Country Controller
   /countries/push:
     post:
-      operationId: postCountries
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_9
       requestBody:
         content:
           '*/*':
@@ -1937,20 +2029,27 @@ paths:
               items:
                 $ref: '#/components/schemas/CountryDto'
       responses:
-        default:
+        "207":
           content:
-            application/json; charset=UTF-8:
+            application/json:
               schema:
                 type: array
                 items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
-          description: default response
+                  $ref: '#/components/schemas/PostResponse'
+          description: "Array of responses, matching the posted array of entities.\
+            \ Provides an HTML status code for every entity and an optional body (e.g.\
+            \ a string with an error message)."
+        default:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostResponse'
+          description: When the request body has one or no entry. The status code
+            of the response entry matches the response code and may have an optional
+            body (e.g. a string with an error message).
+      summary: Create or update one or multiple entities.
       tags:
       - Country Controller
   /countries/query:
@@ -2487,7 +2586,10 @@ paths:
       - District Controller
   /districts/push:
     post:
-      operationId: postDistricts
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_10
       requestBody:
         content:
           '*/*':
@@ -2496,20 +2598,27 @@ paths:
               items:
                 $ref: '#/components/schemas/DistrictDto'
       responses:
-        default:
+        "207":
           content:
-            application/json; charset=UTF-8:
+            application/json:
               schema:
                 type: array
                 items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
-          description: default response
+                  $ref: '#/components/schemas/PostResponse'
+          description: "Array of responses, matching the posted array of entities.\
+            \ Provides an HTML status code for every entity and an optional body (e.g.\
+            \ a string with an error message)."
+        default:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostResponse'
+          description: When the request body has one or no entry. The status code
+            of the response entry matches the response code and may have an optional
+            body (e.g. a string with an error message).
+      summary: Create or update one or multiple entities.
       tags:
       - District Controller
   /districts/query:
@@ -2611,14 +2720,39 @@ paths:
       - Event Group Controller
   /eventGroups/push:
     post:
-      operationId: postEventGroup
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_11
+      requestBody:
+        content:
+          application/json; charset=UTF-8:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/EventGroupDto'
       responses:
+        "207":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostResponse'
+          description: "Array of responses, matching the posted array of entities.\
+            \ Provides an HTML status code for every entity and an optional body (e.g.\
+            \ a string with an error message)."
         default:
           content:
-            application/json; charset=UTF-8:
+            application/json:
               schema:
-                $ref: '#/components/schemas/EventGroupDto'
-          description: default response
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostResponse'
+          description: When the request body has one or no entry. The status code
+            of the response entry matches the response code and may have an optional
+            body (e.g. a string with an error message).
+      summary: Create or update one or multiple entities.
       tags:
       - Event Group Controller
   /eventGroups/{uuid}:
@@ -2831,7 +2965,10 @@ paths:
       - Event Participant Controller
   /eventparticipants/push:
     post:
-      operationId: postEventParticipants
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_12
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -2840,20 +2977,27 @@ paths:
               items:
                 $ref: '#/components/schemas/EventParticipantDto'
       responses:
-        default:
+        "207":
           content:
-            application/json; charset=UTF-8:
+            application/json:
               schema:
                 type: array
                 items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
-          description: default response
+                  $ref: '#/components/schemas/PostResponse'
+          description: "Array of responses, matching the posted array of entities.\
+            \ Provides an HTML status code for every entity and an optional body (e.g.\
+            \ a string with an error message)."
+        default:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostResponse'
+          description: When the request body has one or no entry. The status code
+            of the response entry matches the response code and may have an optional
+            body (e.g. a string with an error message).
+      summary: Create or update one or multiple entities.
       tags:
       - Event Participant Controller
   /eventparticipants/query:
@@ -3151,7 +3295,10 @@ paths:
       - Event Controller
   /events/push:
     post:
-      operationId: postEvents
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_13
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -3160,20 +3307,27 @@ paths:
               items:
                 $ref: '#/components/schemas/EventDto'
       responses:
-        default:
+        "207":
           content:
-            application/json; charset=UTF-8:
+            application/json:
               schema:
                 type: array
                 items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
-          description: default response
+                  $ref: '#/components/schemas/PostResponse'
+          description: "Array of responses, matching the posted array of entities.\
+            \ Provides an HTML status code for every entity and an optional body (e.g.\
+            \ a string with an error message)."
+        default:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostResponse'
+          description: When the request body has one or no entry. The status code
+            of the response entry matches the response code and may have an optional
+            body (e.g. a string with an error message).
+      summary: Create or update one or multiple entities.
       tags:
       - Event Controller
   /events/query:
@@ -3355,7 +3509,10 @@ paths:
       - Facility Controller
   /facilities/push:
     post:
-      operationId: postSubcontinents
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_15
       requestBody:
         content:
           '*/*':
@@ -3364,20 +3521,27 @@ paths:
               items:
                 $ref: '#/components/schemas/FacilityDto'
       responses:
-        default:
+        "207":
           content:
-            application/json; charset=UTF-8:
+            application/json:
               schema:
                 type: array
                 items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
-          description: default response
+                  $ref: '#/components/schemas/PostResponse'
+          description: "Array of responses, matching the posted array of entities.\
+            \ Provides an HTML status code for every entity and an optional body (e.g.\
+            \ a string with an error message)."
+        default:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostResponse'
+          description: When the request body has one or no entry. The status code
+            of the response entry matches the response code and may have an optional
+            body (e.g. a string with an error message).
+      summary: Create or update one or multiple entities.
       tags:
       - Facility Controller
   /facilities/query:
@@ -3776,7 +3940,10 @@ paths:
       - Immunization Controller
   /immunizations/push:
     post:
-      operationId: post
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_16
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -3785,20 +3952,27 @@ paths:
               items:
                 $ref: '#/components/schemas/ImmunizationDto'
       responses:
-        default:
+        "207":
           content:
-            application/json; charset=UTF-8:
+            application/json:
               schema:
                 type: array
                 items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
-          description: default response
+                  $ref: '#/components/schemas/PostResponse'
+          description: "Array of responses, matching the posted array of entities.\
+            \ Provides an HTML status code for every entity and an optional body (e.g.\
+            \ a string with an error message)."
+        default:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostResponse'
+          description: When the request body has one or no entry. The status code
+            of the response entry matches the response code and may have an optional
+            body (e.g. a string with an error message).
+      summary: Create or update one or multiple entities.
       tags:
       - Immunization Controller
   /immunizations/query:
@@ -4288,7 +4462,10 @@ paths:
       - Outbreak Controller
   /outbreaks/push:
     post:
-      operationId: postOutbreak
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_17
       requestBody:
         content:
           '*/*':
@@ -4297,20 +4474,27 @@ paths:
               items:
                 $ref: '#/components/schemas/OutbreakDto'
       responses:
-        default:
+        "207":
           content:
-            application/json; charset=UTF-8:
+            application/json:
               schema:
                 type: array
                 items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
-          description: default response
+                  $ref: '#/components/schemas/PostResponse'
+          description: "Array of responses, matching the posted array of entities.\
+            \ Provides an HTML status code for every entity and an optional body (e.g.\
+            \ a string with an error message)."
+        default:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostResponse'
+          description: When the request body has one or no entry. The status code
+            of the response entry matches the response code and may have an optional
+            body (e.g. a string with an error message).
+      summary: Create or update one or multiple entities.
       tags:
       - Outbreak Controller
   /outbreaks/uuids:
@@ -4426,7 +4610,10 @@ paths:
       - Pathogen Test Controller
   /pathogentests/push:
     post:
-      operationId: postPathogenTests
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_18
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -4435,20 +4622,27 @@ paths:
               items:
                 $ref: '#/components/schemas/PathogenTestDto'
       responses:
-        default:
+        "207":
           content:
-            application/json; charset=UTF-8:
+            application/json:
               schema:
                 type: array
                 items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
-          description: default response
+                  $ref: '#/components/schemas/PostResponse'
+          description: "Array of responses, matching the posted array of entities.\
+            \ Provides an HTML status code for every entity and an optional body (e.g.\
+            \ a string with an error message)."
+        default:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostResponse'
+          description: When the request body has one or no entry. The status code
+            of the response entry matches the response code and may have an optional
+            body (e.g. a string with an error message).
+      summary: Create or update one or multiple entities.
       tags:
       - Pathogen Test Controller
   /pathogentests/query:
@@ -4602,7 +4796,10 @@ paths:
       - Person Controller
   /persons/push:
     post:
-      operationId: postPersons
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_19
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -4611,20 +4808,27 @@ paths:
               items:
                 $ref: '#/components/schemas/PersonDto'
       responses:
-        default:
+        "207":
           content:
-            application/json; charset=UTF-8:
+            application/json:
               schema:
                 type: array
                 items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
-          description: default response
+                  $ref: '#/components/schemas/PostResponse'
+          description: "Array of responses, matching the posted array of entities.\
+            \ Provides an HTML status code for every entity and an optional body (e.g.\
+            \ a string with an error message)."
+        default:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostResponse'
+          description: When the request body has one or no entry. The status code
+            of the response entry matches the response code and may have an optional
+            body (e.g. a string with an error message).
+      summary: Create or update one or multiple entities.
       tags:
       - Person Controller
   /persons/query:
@@ -4789,7 +4993,10 @@ paths:
       - Point Of Entry Controller
   /pointsofentry/push:
     post:
-      operationId: postPointOfEntries
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_20
       requestBody:
         content:
           '*/*':
@@ -4798,20 +5005,27 @@ paths:
               items:
                 $ref: '#/components/schemas/PointOfEntryDto'
       responses:
-        default:
+        "207":
           content:
-            application/json; charset=UTF-8:
+            application/json:
               schema:
                 type: array
                 items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
-          description: default response
+                  $ref: '#/components/schemas/PostResponse'
+          description: "Array of responses, matching the posted array of entities.\
+            \ Provides an HTML status code for every entity and an optional body (e.g.\
+            \ a string with an error message)."
+        default:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostResponse'
+          description: When the request body has one or no entry. The status code
+            of the response entry matches the response code and may have an optional
+            body (e.g. a string with an error message).
+      summary: Create or update one or multiple entities.
       tags:
       - Point Of Entry Controller
   /pointsofentry/query:
@@ -4918,7 +5132,10 @@ paths:
       - Prescription Controller
   /prescriptions/push:
     post:
-      operationId: postPrescriptions
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_21
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -4927,20 +5144,27 @@ paths:
               items:
                 $ref: '#/components/schemas/PrescriptionDto'
       responses:
-        default:
+        "207":
           content:
-            application/json; charset=UTF-8:
+            application/json:
               schema:
                 type: array
                 items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
-          description: default response
+                  $ref: '#/components/schemas/PostResponse'
+          description: "Array of responses, matching the posted array of entities.\
+            \ Provides an HTML status code for every entity and an optional body (e.g.\
+            \ a string with an error message)."
+        default:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostResponse'
+          description: When the request body has one or no entry. The status code
+            of the response entry matches the response code and may have an optional
+            body (e.g. a string with an error message).
+      summary: Create or update one or multiple entities.
       tags:
       - Prescription Controller
   /prescriptions/query:
@@ -5052,7 +5276,10 @@ paths:
       - Region Controller
   /regions/push:
     post:
-      operationId: postRegions
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_22
       requestBody:
         content:
           '*/*':
@@ -5061,20 +5288,27 @@ paths:
               items:
                 $ref: '#/components/schemas/RegionDto'
       responses:
-        default:
+        "207":
           content:
-            application/json; charset=UTF-8:
+            application/json:
               schema:
                 type: array
                 items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
-          description: default response
+                  $ref: '#/components/schemas/PostResponse'
+          description: "Array of responses, matching the posted array of entities.\
+            \ Provides an HTML status code for every entity and an optional body (e.g.\
+            \ a string with an error message)."
+        default:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostResponse'
+          description: When the request body has one or no entry. The status code
+            of the response entry matches the response code and may have an optional
+            body (e.g. a string with an error message).
+      summary: Create or update one or multiple entities.
       tags:
       - Region Controller
   /regions/query:
@@ -5253,7 +5487,10 @@ paths:
       - Sample Controller
   /samples/push:
     post:
-      operationId: postSamples
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_23
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -5262,20 +5499,27 @@ paths:
               items:
                 $ref: '#/components/schemas/SampleDto'
       responses:
-        default:
+        "207":
           content:
-            application/json; charset=UTF-8:
+            application/json:
               schema:
                 type: array
                 items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
-          description: default response
+                  $ref: '#/components/schemas/PostResponse'
+          description: "Array of responses, matching the posted array of entities.\
+            \ Provides an HTML status code for every entity and an optional body (e.g.\
+            \ a string with an error message)."
+        default:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostResponse'
+          description: When the request body has one or no entry. The status code
+            of the response entry matches the response code and may have an optional
+            body (e.g. a string with an error message).
+      summary: Create or update one or multiple entities.
       tags:
       - Sample Controller
   /samples/query:
@@ -5762,7 +6006,10 @@ paths:
       - Subcontinent Controller
   /subcontinents/push:
     post:
-      operationId: postSubcontinents_1
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_24
       requestBody:
         content:
           '*/*':
@@ -5771,20 +6018,27 @@ paths:
               items:
                 $ref: '#/components/schemas/SubcontinentDto'
       responses:
-        default:
+        "207":
           content:
-            application/json; charset=UTF-8:
+            application/json:
               schema:
                 type: array
                 items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
-          description: default response
+                  $ref: '#/components/schemas/PostResponse'
+          description: "Array of responses, matching the posted array of entities.\
+            \ Provides an HTML status code for every entity and an optional body (e.g.\
+            \ a string with an error message)."
+        default:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostResponse'
+          description: When the request body has one or no entry. The status code
+            of the response entry matches the response code and may have an optional
+            body (e.g. a string with an error message).
+      summary: Create or update one or multiple entities.
       tags:
       - Subcontinent Controller
   /subcontinents/query:
@@ -5824,7 +6078,10 @@ paths:
       - Subcontinent Controller
   /surveillancereports/push:
     post:
-      operationId: postCaseReports
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_25
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -5833,20 +6090,27 @@ paths:
               items:
                 $ref: '#/components/schemas/SurveillanceReportDto'
       responses:
-        default:
+        "207":
           content:
-            application/json; charset=UTF-8:
+            application/json:
               schema:
                 type: array
                 items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
-          description: default response
+                  $ref: '#/components/schemas/PostResponse'
+          description: "Array of responses, matching the posted array of entities.\
+            \ Provides an HTML status code for every entity and an optional body (e.g.\
+            \ a string with an error message)."
+        default:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostResponse'
+          description: When the request body has one or no entry. The status code
+            of the response entry matches the response code and may have an optional
+            body (e.g. a string with an error message).
+      summary: Create or update one or multiple entities.
       tags:
       - Surveillance Report Controller
   /surveillancereports/query/cases:
@@ -6011,7 +6275,10 @@ paths:
       - Task Controller
   /tasks/push:
     post:
-      operationId: postTasks
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_26
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -6020,20 +6287,27 @@ paths:
               items:
                 $ref: '#/components/schemas/TaskDto'
       responses:
-        default:
+        "207":
           content:
-            application/json; charset=UTF-8:
+            application/json:
               schema:
                 type: array
                 items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
-          description: default response
+                  $ref: '#/components/schemas/PostResponse'
+          description: "Array of responses, matching the posted array of entities.\
+            \ Provides an HTML status code for every entity and an optional body (e.g.\
+            \ a string with an error message)."
+        default:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostResponse'
+          description: When the request body has one or no entry. The status code
+            of the response entry matches the response code and may have an optional
+            body (e.g. a string with an error message).
+      summary: Create or update one or multiple entities.
       tags:
       - Task Controller
   /tasks/query:
@@ -6114,7 +6388,10 @@ paths:
       - Travel Entry Controller
   /travelentries/push:
     post:
-      operationId: postTravelEntries
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_27
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -6123,20 +6400,27 @@ paths:
               items:
                 $ref: '#/components/schemas/TravelEntryDto'
       responses:
-        default:
+        "207":
           content:
-            application/json; charset=UTF-8:
+            application/json:
               schema:
                 type: array
                 items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
-          description: default response
+                  $ref: '#/components/schemas/PostResponse'
+          description: "Array of responses, matching the posted array of entities.\
+            \ Provides an HTML status code for every entity and an optional body (e.g.\
+            \ a string with an error message)."
+        default:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostResponse'
+          description: When the request body has one or no entry. The status code
+            of the response entry matches the response code and may have an optional
+            body (e.g. a string with an error message).
+      summary: Create or update one or multiple entities.
       tags:
       - Travel Entry Controller
   /travelentries/{uuid}:
@@ -6241,7 +6525,10 @@ paths:
       - Treatment Controller
   /treatments/push:
     post:
-      operationId: postTreatments
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_28
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -6250,20 +6537,27 @@ paths:
               items:
                 $ref: '#/components/schemas/TreatmentDto'
       responses:
-        default:
+        "207":
           content:
-            application/json; charset=UTF-8:
+            application/json:
               schema:
                 type: array
                 items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
-          description: default response
+                  $ref: '#/components/schemas/PostResponse'
+          description: "Array of responses, matching the posted array of entities.\
+            \ Provides an HTML status code for every entity and an optional body (e.g.\
+            \ a string with an error message)."
+        default:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostResponse'
+          description: When the request body has one or no entry. The status code
+            of the response entry matches the response code and may have an optional
+            body (e.g. a string with an error message).
+      summary: Create or update one or multiple entities.
       tags:
       - Treatment Controller
   /treatments/query:
@@ -6422,6 +6716,394 @@ paths:
           description: default response
       tags:
       - User Controller
+  /users/rights:
+    get:
+      operationId: getUserRightsForCurrentUser
+      responses:
+        default:
+          content:
+            application/json; charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  type: string
+                  enum:
+                  - CASE_VIEW
+                  - CASE_CREATE
+                  - CASE_EDIT
+                  - CASE_ARCHIVE
+                  - CASE_DELETE
+                  - CASE_IMPORT
+                  - CASE_EXPORT
+                  - CASE_INVESTIGATE
+                  - CASE_CLASSIFY
+                  - CASE_CHANGE_DISEASE
+                  - CASE_CHANGE_EPID_NUMBER
+                  - CASE_TRANSFER
+                  - CASE_REFER_FROM_POE
+                  - CASE_MERGE
+                  - CASE_SHARE
+                  - CASE_RESPONSIBLE
+                  - IMMUNIZATION_VIEW
+                  - IMMUNIZATION_CREATE
+                  - IMMUNIZATION_EDIT
+                  - IMMUNIZATION_ARCHIVE
+                  - IMMUNIZATION_DELETE
+                  - PERSON_VIEW
+                  - PERSON_EDIT
+                  - PERSON_DELETE
+                  - PERSON_EXPORT
+                  - PERSON_CONTACT_DETAILS_DELETE
+                  - PERSON_MERGE
+                  - SAMPLE_VIEW
+                  - SAMPLE_CREATE
+                  - SAMPLE_EDIT
+                  - SAMPLE_DELETE
+                  - SAMPLE_EXPORT
+                  - SAMPLE_TRANSFER
+                  - SAMPLE_EDIT_NOT_OWNED
+                  - PERFORM_BULK_OPERATIONS_CASE_SAMPLES
+                  - PATHOGEN_TEST_CREATE
+                  - PATHOGEN_TEST_EDIT
+                  - PATHOGEN_TEST_DELETE
+                  - ADDITIONAL_TEST_VIEW
+                  - ADDITIONAL_TEST_CREATE
+                  - ADDITIONAL_TEST_EDIT
+                  - ADDITIONAL_TEST_DELETE
+                  - CONTACT_VIEW
+                  - CONTACT_CREATE
+                  - CONTACT_EDIT
+                  - CONTACT_ARCHIVE
+                  - CONTACT_DELETE
+                  - CONTACT_IMPORT
+                  - CONTACT_EXPORT
+                  - CONTACT_CONVERT
+                  - CONTACT_REASSIGN_CASE
+                  - CONTACT_MERGE
+                  - CONTACT_RESPONSIBLE
+                  - VISIT_CREATE
+                  - VISIT_EDIT
+                  - VISIT_DELETE
+                  - VISIT_EXPORT
+                  - TASK_VIEW
+                  - TASK_CREATE
+                  - TASK_EDIT
+                  - TASK_DELETE
+                  - TASK_EXPORT
+                  - TASK_ASSIGN
+                  - TASK_ARCHIVE
+                  - ACTION_CREATE
+                  - ACTION_DELETE
+                  - ACTION_EDIT
+                  - EVENT_VIEW
+                  - EVENT_CREATE
+                  - EVENT_EDIT
+                  - EVENT_ARCHIVE
+                  - EVENT_DELETE
+                  - EVENT_IMPORT
+                  - EVENT_EXPORT
+                  - PERFORM_BULK_OPERATIONS_EVENT
+                  - EVENT_RESPONSIBLE
+                  - EVENTPARTICIPANT_VIEW
+                  - EVENTPARTICIPANT_CREATE
+                  - EVENTPARTICIPANT_EDIT
+                  - EVENTPARTICIPANT_ARCHIVE
+                  - EVENTPARTICIPANT_DELETE
+                  - EVENTPARTICIPANT_IMPORT
+                  - PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT
+                  - EVENTGROUP_CREATE
+                  - EVENTGROUP_EDIT
+                  - EVENTGROUP_ARCHIVE
+                  - EVENTGROUP_DELETE
+                  - EVENTGROUP_LINK
+                  - USER_VIEW
+                  - USER_CREATE
+                  - USER_EDIT
+                  - USER_ROLE_VIEW
+                  - USER_ROLE_EDIT
+                  - USER_ROLE_DELETE
+                  - STATISTICS_ACCESS
+                  - STATISTICS_EXPORT
+                  - INFRASTRUCTURE_VIEW
+                  - INFRASTRUCTURE_CREATE
+                  - INFRASTRUCTURE_EDIT
+                  - INFRASTRUCTURE_ARCHIVE
+                  - INFRASTRUCTURE_IMPORT
+                  - INFRASTRUCTURE_EXPORT
+                  - POPULATION_MANAGE
+                  - DASHBOARD_SURVEILLANCE_VIEW
+                  - DASHBOARD_CONTACT_VIEW
+                  - DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS
+                  - DASHBOARD_CAMPAIGNS_VIEW
+                  - DASHBOARD_SAMPLES_VIEW
+                  - CASE_CLINICIAN_VIEW
+                  - THERAPY_VIEW
+                  - PRESCRIPTION_CREATE
+                  - PRESCRIPTION_EDIT
+                  - PRESCRIPTION_DELETE
+                  - TREATMENT_CREATE
+                  - TREATMENT_EDIT
+                  - TREATMENT_DELETE
+                  - CLINICAL_COURSE_VIEW
+                  - CLINICAL_COURSE_EDIT
+                  - CLINICAL_VISIT_CREATE
+                  - CLINICAL_VISIT_EDIT
+                  - CLINICAL_VISIT_DELETE
+                  - PORT_HEALTH_INFO_VIEW
+                  - PORT_HEALTH_INFO_EDIT
+                  - WEEKLYREPORT_VIEW
+                  - WEEKLYREPORT_CREATE
+                  - AGGREGATE_REPORT_VIEW
+                  - AGGREGATE_REPORT_EDIT
+                  - AGGREGATE_REPORT_EXPORT
+                  - SEE_PERSONAL_DATA_IN_JURISDICTION
+                  - SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION
+                  - SEE_SENSITIVE_DATA_IN_JURISDICTION
+                  - SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION
+                  - CAMPAIGN_VIEW
+                  - CAMPAIGN_EDIT
+                  - CAMPAIGN_ARCHIVE
+                  - CAMPAIGN_DELETE
+                  - CAMPAIGN_FORM_DATA_VIEW
+                  - CAMPAIGN_FORM_DATA_EDIT
+                  - CAMPAIGN_FORM_DATA_ARCHIVE
+                  - CAMPAIGN_FORM_DATA_DELETE
+                  - CAMPAIGN_FORM_DATA_EXPORT
+                  - TRAVEL_ENTRY_MANAGEMENT_ACCESS
+                  - TRAVEL_ENTRY_VIEW
+                  - TRAVEL_ENTRY_CREATE
+                  - TRAVEL_ENTRY_EDIT
+                  - TRAVEL_ENTRY_ARCHIVE
+                  - TRAVEL_ENTRY_DELETE
+                  - DOCUMENT_VIEW
+                  - DOCUMENT_UPLOAD
+                  - DOCUMENT_DELETE
+                  - PERFORM_BULK_OPERATIONS
+                  - PERFORM_BULK_OPERATIONS_PSEUDONYM
+                  - QUARANTINE_ORDER_CREATE
+                  - SORMAS_REST
+                  - SORMAS_UI
+                  - DATABASE_EXPORT_ACCESS
+                  - EXPORT_DATA_PROTECTION_DATA
+                  - BAG_EXPORT
+                  - SEND_MANUAL_EXTERNAL_MESSAGES
+                  - MANAGE_EXTERNAL_SYMPTOM_JOURNAL
+                  - EXTERNAL_VISITS
+                  - SORMAS_TO_SORMAS_CLIENT
+                  - SORMAS_TO_SORMAS_SHARE
+                  - SORMAS_TO_SORMAS_PROCESS
+                  - EXTERNAL_SURVEILLANCE_SHARE
+                  - EXTERNAL_SURVEILLANCE_DELETE
+                  - EXTERNAL_MESSAGE_VIEW
+                  - EXTERNAL_MESSAGE_PROCESS
+                  - EXTERNAL_MESSAGE_DELETE
+                  - PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES
+                  - OUTBREAK_VIEW
+                  - OUTBREAK_EDIT
+                  - MANAGE_PUBLIC_EXPORT_CONFIGURATION
+                  - DOCUMENT_TEMPLATE_MANAGEMENT
+                  - LINE_LISTING_CONFIGURE
+                  - DEV_MODE
+          description: default response
+      tags:
+      - User Controller
+  /users/rights/{uuid}:
+    get:
+      operationId: getUserRights
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          content:
+            application/json; charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  type: string
+                  enum:
+                  - CASE_VIEW
+                  - CASE_CREATE
+                  - CASE_EDIT
+                  - CASE_ARCHIVE
+                  - CASE_DELETE
+                  - CASE_IMPORT
+                  - CASE_EXPORT
+                  - CASE_INVESTIGATE
+                  - CASE_CLASSIFY
+                  - CASE_CHANGE_DISEASE
+                  - CASE_CHANGE_EPID_NUMBER
+                  - CASE_TRANSFER
+                  - CASE_REFER_FROM_POE
+                  - CASE_MERGE
+                  - CASE_SHARE
+                  - CASE_RESPONSIBLE
+                  - IMMUNIZATION_VIEW
+                  - IMMUNIZATION_CREATE
+                  - IMMUNIZATION_EDIT
+                  - IMMUNIZATION_ARCHIVE
+                  - IMMUNIZATION_DELETE
+                  - PERSON_VIEW
+                  - PERSON_EDIT
+                  - PERSON_DELETE
+                  - PERSON_EXPORT
+                  - PERSON_CONTACT_DETAILS_DELETE
+                  - PERSON_MERGE
+                  - SAMPLE_VIEW
+                  - SAMPLE_CREATE
+                  - SAMPLE_EDIT
+                  - SAMPLE_DELETE
+                  - SAMPLE_EXPORT
+                  - SAMPLE_TRANSFER
+                  - SAMPLE_EDIT_NOT_OWNED
+                  - PERFORM_BULK_OPERATIONS_CASE_SAMPLES
+                  - PATHOGEN_TEST_CREATE
+                  - PATHOGEN_TEST_EDIT
+                  - PATHOGEN_TEST_DELETE
+                  - ADDITIONAL_TEST_VIEW
+                  - ADDITIONAL_TEST_CREATE
+                  - ADDITIONAL_TEST_EDIT
+                  - ADDITIONAL_TEST_DELETE
+                  - CONTACT_VIEW
+                  - CONTACT_CREATE
+                  - CONTACT_EDIT
+                  - CONTACT_ARCHIVE
+                  - CONTACT_DELETE
+                  - CONTACT_IMPORT
+                  - CONTACT_EXPORT
+                  - CONTACT_CONVERT
+                  - CONTACT_REASSIGN_CASE
+                  - CONTACT_MERGE
+                  - CONTACT_RESPONSIBLE
+                  - VISIT_CREATE
+                  - VISIT_EDIT
+                  - VISIT_DELETE
+                  - VISIT_EXPORT
+                  - TASK_VIEW
+                  - TASK_CREATE
+                  - TASK_EDIT
+                  - TASK_DELETE
+                  - TASK_EXPORT
+                  - TASK_ASSIGN
+                  - TASK_ARCHIVE
+                  - ACTION_CREATE
+                  - ACTION_DELETE
+                  - ACTION_EDIT
+                  - EVENT_VIEW
+                  - EVENT_CREATE
+                  - EVENT_EDIT
+                  - EVENT_ARCHIVE
+                  - EVENT_DELETE
+                  - EVENT_IMPORT
+                  - EVENT_EXPORT
+                  - PERFORM_BULK_OPERATIONS_EVENT
+                  - EVENT_RESPONSIBLE
+                  - EVENTPARTICIPANT_VIEW
+                  - EVENTPARTICIPANT_CREATE
+                  - EVENTPARTICIPANT_EDIT
+                  - EVENTPARTICIPANT_ARCHIVE
+                  - EVENTPARTICIPANT_DELETE
+                  - EVENTPARTICIPANT_IMPORT
+                  - PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT
+                  - EVENTGROUP_CREATE
+                  - EVENTGROUP_EDIT
+                  - EVENTGROUP_ARCHIVE
+                  - EVENTGROUP_DELETE
+                  - EVENTGROUP_LINK
+                  - USER_VIEW
+                  - USER_CREATE
+                  - USER_EDIT
+                  - USER_ROLE_VIEW
+                  - USER_ROLE_EDIT
+                  - USER_ROLE_DELETE
+                  - STATISTICS_ACCESS
+                  - STATISTICS_EXPORT
+                  - INFRASTRUCTURE_VIEW
+                  - INFRASTRUCTURE_CREATE
+                  - INFRASTRUCTURE_EDIT
+                  - INFRASTRUCTURE_ARCHIVE
+                  - INFRASTRUCTURE_IMPORT
+                  - INFRASTRUCTURE_EXPORT
+                  - POPULATION_MANAGE
+                  - DASHBOARD_SURVEILLANCE_VIEW
+                  - DASHBOARD_CONTACT_VIEW
+                  - DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS
+                  - DASHBOARD_CAMPAIGNS_VIEW
+                  - DASHBOARD_SAMPLES_VIEW
+                  - CASE_CLINICIAN_VIEW
+                  - THERAPY_VIEW
+                  - PRESCRIPTION_CREATE
+                  - PRESCRIPTION_EDIT
+                  - PRESCRIPTION_DELETE
+                  - TREATMENT_CREATE
+                  - TREATMENT_EDIT
+                  - TREATMENT_DELETE
+                  - CLINICAL_COURSE_VIEW
+                  - CLINICAL_COURSE_EDIT
+                  - CLINICAL_VISIT_CREATE
+                  - CLINICAL_VISIT_EDIT
+                  - CLINICAL_VISIT_DELETE
+                  - PORT_HEALTH_INFO_VIEW
+                  - PORT_HEALTH_INFO_EDIT
+                  - WEEKLYREPORT_VIEW
+                  - WEEKLYREPORT_CREATE
+                  - AGGREGATE_REPORT_VIEW
+                  - AGGREGATE_REPORT_EDIT
+                  - AGGREGATE_REPORT_EXPORT
+                  - SEE_PERSONAL_DATA_IN_JURISDICTION
+                  - SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION
+                  - SEE_SENSITIVE_DATA_IN_JURISDICTION
+                  - SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION
+                  - CAMPAIGN_VIEW
+                  - CAMPAIGN_EDIT
+                  - CAMPAIGN_ARCHIVE
+                  - CAMPAIGN_DELETE
+                  - CAMPAIGN_FORM_DATA_VIEW
+                  - CAMPAIGN_FORM_DATA_EDIT
+                  - CAMPAIGN_FORM_DATA_ARCHIVE
+                  - CAMPAIGN_FORM_DATA_DELETE
+                  - CAMPAIGN_FORM_DATA_EXPORT
+                  - TRAVEL_ENTRY_MANAGEMENT_ACCESS
+                  - TRAVEL_ENTRY_VIEW
+                  - TRAVEL_ENTRY_CREATE
+                  - TRAVEL_ENTRY_EDIT
+                  - TRAVEL_ENTRY_ARCHIVE
+                  - TRAVEL_ENTRY_DELETE
+                  - DOCUMENT_VIEW
+                  - DOCUMENT_UPLOAD
+                  - DOCUMENT_DELETE
+                  - PERFORM_BULK_OPERATIONS
+                  - PERFORM_BULK_OPERATIONS_PSEUDONYM
+                  - QUARANTINE_ORDER_CREATE
+                  - SORMAS_REST
+                  - SORMAS_UI
+                  - DATABASE_EXPORT_ACCESS
+                  - EXPORT_DATA_PROTECTION_DATA
+                  - BAG_EXPORT
+                  - SEND_MANUAL_EXTERNAL_MESSAGES
+                  - MANAGE_EXTERNAL_SYMPTOM_JOURNAL
+                  - EXTERNAL_VISITS
+                  - SORMAS_TO_SORMAS_CLIENT
+                  - SORMAS_TO_SORMAS_SHARE
+                  - SORMAS_TO_SORMAS_PROCESS
+                  - EXTERNAL_SURVEILLANCE_SHARE
+                  - EXTERNAL_SURVEILLANCE_DELETE
+                  - EXTERNAL_MESSAGE_VIEW
+                  - EXTERNAL_MESSAGE_PROCESS
+                  - EXTERNAL_MESSAGE_DELETE
+                  - PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES
+                  - OUTBREAK_VIEW
+                  - OUTBREAK_EDIT
+                  - MANAGE_PUBLIC_EXPORT_CONFIGURATION
+                  - DOCUMENT_TEMPLATE_MANAGEMENT
+                  - LINE_LISTING_CONFIGURE
+                  - DEV_MODE
+          description: default response
+      tags:
+      - User Controller
   /users/userReferenceWithNoOfTask:
     post:
       operationId: getUsersWithTaskNumbers
@@ -6471,7 +7153,7 @@ paths:
   /visits-external:
     post:
       description: Upload visits with all symptom and disease related data to SORMAS.
-      operationId: postExternalVisits
+      operationId: postEntityDtos_14
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -6480,20 +7162,26 @@ paths:
               items:
                 $ref: '#/components/schemas/ExternalVisitDto'
       responses:
-        default:
+        "207":
           content:
-            application/json; charset=UTF-8:
+            application/json:
               schema:
                 type: array
                 items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
-          description: default response
+                  $ref: '#/components/schemas/PostResponse'
+          description: "Array of responses, matching the posted array of entities.\
+            \ Provides an HTML status code for every entity and an optional body (e.g.\
+            \ a string with an error message)."
+        default:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostResponse'
+          description: When the request body has one or no entry. The status code
+            of the response entry matches the response code and may have an optional
+            body (e.g. a string with an error message).
       summary: Save visits
       tags:
       - External Visits Controller
@@ -6516,12 +7204,9 @@ paths:
           content:
             application/json; charset=UTF-8:
               schema:
-                type: string
-                example:
-                - personUuid: Q56VFD-G3TXKT-R2DBIW-FTWIKAMI
-                  latestFollowUpEndDate: 1599602400000
-                - personUuid: TEYCIW-BHWHMH-MH2QIW-KBP72JMU
-                  latestFollowUpEndDate: 1593727200000
+                type: array
+                items:
+                  $ref: '#/components/schemas/PersonFollowUpEndDto'
           description: List of personUuids and their latest follow up end dates as
             UNIX timestamps.
       summary: Get follow up end dates
@@ -6579,7 +7264,7 @@ paths:
           content:
             application/json; charset=UTF-8:
               schema:
-                type: string
+                type: boolean
                 example: true
           description: "true a person with the given Uuid exists in SORMAS, false\
             \ otherwise."
@@ -6599,14 +7284,7 @@ paths:
         content:
           application/json; charset=UTF-8:
             schema:
-              type: string
-              example: |-
-                [
-                  {
-                    "status": "REGISTERED",
-                    "statusDateTime": "2020-04-15T12:55:00.000+02:00" // datetime format yyyy-MM-dd'T'HH:mm:ss.SSSZ
-                  }
-                ]
+              $ref: '#/components/schemas/PersonSymptomJournalStatusDto'
         description: "status may be one of the following:<br/>UNREGISTERED: User has\
           \ not yet sent any state<br/>REGISTERED: After successful registration in\
           \ SymptomJournal<br/>ACCEPTED: User has accepted a confirmation<br/>REJECTED:\
@@ -6616,7 +7294,7 @@ paths:
           content:
             application/json; charset=UTF-8:
               schema:
-                type: string
+                type: boolean
                 example: true
           description: "true if the status was set successfully, false otherwise."
       summary: Save symptom journal status
@@ -6715,7 +7393,10 @@ paths:
       - Visit Controller
   /visits/push:
     post:
-      operationId: postVisits_1
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_29
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -6724,20 +7405,27 @@ paths:
               items:
                 $ref: '#/components/schemas/VisitDto'
       responses:
-        default:
+        "207":
           content:
-            application/json; charset=UTF-8:
+            application/json:
               schema:
                 type: array
                 items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
-          description: default response
+                  $ref: '#/components/schemas/PostResponse'
+          description: "Array of responses, matching the posted array of entities.\
+            \ Provides an HTML status code for every entity and an optional body (e.g.\
+            \ a string with an error message)."
+        default:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostResponse'
+          description: When the request body has one or no entry. The status code
+            of the response entry matches the response code and may have an optional
+            body (e.g. a string with an error message).
+      summary: Create or update one or multiple entities.
       tags:
       - Visit Controller
   /visits/query:
@@ -6830,7 +7518,10 @@ paths:
       - Weekly Report Controller
   /weeklyreports/push:
     post:
-      operationId: postWeeklyReports
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_30
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -6839,20 +7530,27 @@ paths:
               items:
                 $ref: '#/components/schemas/WeeklyReportDto'
       responses:
-        default:
+        "207":
           content:
-            application/json; charset=UTF-8:
+            application/json:
               schema:
                 type: array
                 items:
-                  type: string
-                  enum:
-                  - OK
-                  - TOO_OLD
-                  - ERROR
-                  - VALIDATION_EXCEPTION
-                  - TRANSACTION_ROLLED_BACK_EXCEPTION
-          description: default response
+                  $ref: '#/components/schemas/PostResponse'
+          description: "Array of responses, matching the posted array of entities.\
+            \ Provides an HTML status code for every entity and an optional body (e.g.\
+            \ a string with an error message)."
+        default:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostResponse'
+          description: When the request body has one or no entry. The status code
+            of the response entry matches the response code and may have an optional
+            body (e.g. a string with an error message).
+      summary: Create or update one or multiple entities.
       tags:
       - Weekly Report Controller
   /weeklyreports/query:
@@ -6972,6 +7670,9 @@ components:
           maxLength: 36
           minLength: 20
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - actionContext
+      - date
     ActivityAsCaseDto:
       type: object
       properties:
@@ -7114,6 +7815,8 @@ components:
           - BUILDING_SECTOR
           - LOGISTICS_CENTER
           - OTHER
+      required:
+      - activityAsCaseType
     AdditionalTestCriteria:
       type: object
       properties:
@@ -7589,6 +8292,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     CampaignDashboardElement:
       type: object
       properties:
@@ -7784,6 +8489,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     CampaignFormTranslations:
       type: object
       properties:
@@ -7803,6 +8510,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     CaseCriteria:
       type: object
       properties:
@@ -8817,6 +9526,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+      required:
+      - disease
+      - person
+      - reportDate
+      - responsibleDistrict
+      - responsibleRegion
     CaseFollowUpCriteria:
       type: object
       properties:
@@ -9776,6 +10491,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     ClassificationAllOfCriteriaDto:
       type: object
       allOf:
@@ -9988,6 +10705,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     ClinicalVisitCriteria:
       type: object
       properties:
@@ -10180,6 +10899,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     ContactCriteria:
       type: object
       properties:
@@ -10856,6 +11577,10 @@ components:
           - VACCINATED
           - UNVACCINATED
           - UNKNOWN
+      required:
+      - disease
+      - person
+      - reportDateTime
     ContactIndexDetailedDto:
       type: object
       properties:
@@ -11318,6 +12043,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     ContinentCriteria:
       type: object
       properties:
@@ -11394,6 +12121,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     CoreAndPersonDtoCaseDataDto:
       type: object
       properties:
@@ -11528,6 +12257,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     CriteriaDateType:
       type: object
     CriteriaWithSortingActionCriteria:
@@ -12837,6 +13568,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     DocumentCriteria:
       type: object
       properties:
@@ -12899,6 +13632,13 @@ components:
           maxLength: 36
           minLength: 20
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - mimeType
+      - name
+      - relatedEntityType
+      - relatedEntityUuid
+      - size
+      - uploadingUser
     EpiDataDto:
       type: object
       properties:
@@ -13871,6 +14611,8 @@ components:
           maxLength: 36
           minLength: 20
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - name
     EventGroupIndexDto:
       type: object
       properties:
@@ -13895,6 +14637,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     EventGroupsIndexDto:
       type: object
       properties:
@@ -14302,6 +15046,9 @@ components:
           - VACCINATED
           - UNVACCINATED
           - UNKNOWN
+      required:
+      - event
+      - person
     EventParticipantIndexDto:
       type: object
       properties:
@@ -14383,6 +15130,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     EventReferenceDto:
       type: object
       properties:
@@ -14391,6 +15140,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     ExposureDto:
       type: object
       properties:
@@ -14732,6 +15483,8 @@ components:
           - BUILDING_SECTOR
           - LOGISTICS_CENTER
           - OTHER
+      required:
+      - exposureType
     ExternalDataDto:
       type: object
       properties:
@@ -14830,6 +15583,8 @@ components:
           - PROCESSED
           - FORWARDED
           - UNCLEAR
+        messageContentLike:
+          type: string
         messageDateFrom:
           type: string
           format: date-time
@@ -15165,6 +15920,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     ExternalVisitDto:
       type: object
       properties:
@@ -15265,6 +16022,11 @@ components:
           - UNAVAILABLE
           - UNCOOPERATIVE
           - COOPERATIVE
+      required:
+      - disease
+      - personUuid
+      - visitDateTime
+      - visitStatus
     FacilityCriteria:
       type: object
       properties:
@@ -15618,6 +16380,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     FeatureConfigurationCriteria:
       type: object
       properties:
@@ -16712,6 +17476,13 @@ components:
         validUntil:
           type: string
           format: date-time
+      required:
+      - disease
+      - meansOfImmunization
+      - person
+      - reportDate
+      - responsibleDistrict
+      - responsibleRegion
     ImmunizationIndexDto:
       type: object
       properties:
@@ -16860,6 +17631,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     InfrastructureChangeDatesDto:
       type: object
       properties:
@@ -18432,6 +19205,13 @@ components:
           pattern: "^[0-9a-zA-Z-]*$"
         viaLims:
           type: boolean
+      required:
+      - lab
+      - sample
+      - testResult
+      - testResultVerified
+      - testType
+      - testedDisease
     PeriodDto:
       type: object
       properties:
@@ -18898,6 +19678,10 @@ components:
           maxLength: 36
           minLength: 20
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - firstName
+      - lastName
+      - sex
     PersonFollowUpEndDto:
       type: object
       properties:
@@ -18969,6 +19753,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     PersonSimilarityCriteria:
       type: object
       properties:
@@ -19017,6 +19803,8 @@ components:
           - DELETED
         statusDateTime:
           type: string
+      required:
+      - status
     PointOfEntryCriteria:
       type: object
       properties:
@@ -19116,6 +19904,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     PortHealthInfoDto:
       type: object
       properties:
@@ -19220,6 +20010,14 @@ components:
           type: string
           maxLength: 512
           minLength: 0
+    PostResponse:
+      type: object
+      properties:
+        body:
+          type: object
+        statusCode:
+          type: integer
+          format: int32
     PrescriptionCriteria:
       type: object
       properties:
@@ -19379,6 +20177,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     PreviousHospitalizationDto:
       type: object
       properties:
@@ -19465,6 +20265,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     RegionCriteria:
       type: object
       properties:
@@ -19556,6 +20358,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     SampleCriteria:
       type: object
       properties:
@@ -19942,6 +20746,11 @@ components:
           maxLength: 36
           minLength: 20
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - reportDateTime
+      - sampleDateTime
+      - sampleMaterial
+      - samplePurpose
     SampleIndexDto:
       type: object
       properties:
@@ -20185,6 +20994,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     SampleReportDto:
       type: object
       properties:
@@ -20269,6 +21080,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     ShareRequestCriteria:
       type: object
       properties:
@@ -21069,6 +21882,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     SurveillanceDashboardCriteria:
       type: object
       properties:
@@ -21308,6 +22123,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     SymptomsDto:
       type: object
       properties:
@@ -22565,6 +23382,11 @@ components:
           maxLength: 36
           minLength: 20
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - assigneeUser
+      - dueDate
+      - taskContext
+      - taskType
     TaskIndexDto:
       type: object
       properties:
@@ -22851,6 +23673,8 @@ components:
           maxLength: 36
           minLength: 20
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - sampleReport
     TherapyDto:
       type: object
       properties:
@@ -22873,6 +23697,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     TranslationElement:
       type: object
       properties:
@@ -23134,6 +23960,8 @@ components:
           pattern: "^[0-9a-zA-Z-]*$"
         vaccinated:
           type: boolean
+      required:
+      - person
     TravelEntryIndexDto:
       type: object
       properties:
@@ -23188,6 +24016,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     TreatmentCriteria:
       type: object
       properties:
@@ -23390,6 +24220,7 @@ components:
           - EN_AF
           - FR
           - FR_CH
+          - FR_TN
           - DE
           - DE_CH
           - ES_EC
@@ -23509,6 +24340,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     UserReferenceWithTaskNumbersDto:
       type: object
       properties:
@@ -23524,6 +24357,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     UserRoleDto:
       type: object
       properties:
@@ -23831,6 +24666,8 @@ components:
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     VaccinationDto:
       type: object
       properties:
@@ -23942,6 +24779,8 @@ components:
           type: string
           maxLength: 1000000
           minLength: 0
+      required:
+      - reportDate
     VisitCriteria:
       type: object
       properties:
@@ -24068,6 +24907,11 @@ components:
           - COOPERATIVE
         visitUser:
           $ref: '#/components/schemas/UserReferenceDto'
+      required:
+      - person
+      - visitDateTime
+      - visitStatus
+      - visitUser
     VisitIndexDto:
       type: object
       properties:

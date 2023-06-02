@@ -59,8 +59,7 @@ public class EventParticipantSteps implements En {
           EventParticipant evPart =
               eventParticipantApiService.buildGeneratedEventParticipantWithCreationDate(
                   apiState.getCreatedEvent().getUuid(),
-                  apiState.getLastCreatedPerson().getUuid(),
-                  apiState.getLastCreatedPerson().getSex(),
+                  apiState.getLastCreatedPerson(),
                   creationDate);
           eventParticipantHelper.createEventParticipant(evPart);
           apiState.setCreatedEventParticipant(evPart);
@@ -109,6 +108,13 @@ public class EventParticipantSteps implements En {
               webDriverHelpers.isElementPresent(ENTER_BULK_EDIT_MODE_BUTTON),
               "Enter bulk edit mode button is not displayed");
           softly.assertAll();
+        });
+
+    When(
+        "I click Enter Bulk Edit Mode on Event Participant directory page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ENTER_BULK_EDIT_MODE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
         });
   }
 

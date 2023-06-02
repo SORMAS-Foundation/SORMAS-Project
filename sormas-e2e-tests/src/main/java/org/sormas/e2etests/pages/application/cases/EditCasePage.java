@@ -47,8 +47,10 @@ public class EditCasePage {
   public static final By EDIT_FIRST_TASK_BUTTON = By.cssSelector("[location='events'] #edit0");
   public static final By NEW_SAMPLE_BUTTON = By.cssSelector("[id='New sample']");
   public static final By NEW_SAMPLE_BUTTON_DE = By.cssSelector("[id='Neue Probe']");
-  public static final By EDIT_SAMPLE_BUTTON = By.xpath("//div[contains(@id, 'edit-sample')]");
 
+  public static final By SHOW_SAMPLE_BUTTON =
+      By.xpath(
+          "//div[@location='samples']//div[@class='v-button v-widget link v-button-link compact v-button-compact caption-overflow-label v-button-caption-overflow-label']");
   public static final By REPORT_DATE_INPUT = By.cssSelector("#reportDate input");
   public static final By CASE_CLASSIFICATION_COMBOBOX = By.cssSelector("#caseClassification div");
   public static final By CASE_CLASSIFICATION_SPAN =
@@ -158,7 +160,8 @@ public class EditCasePage {
   public static final By GENERAL_COMMENT_TEXTAREA = By.cssSelector("textarea#additionalDetails");
   public static final By SAVE_BUTTON = By.id("commit");
   public static final By ACTION_CANCEL = By.cssSelector(".popupContent #actionCancel");
-  public static final By DELETE_BUTTON = By.id("deleteUndelete");
+  public static final By ACTION_CLOSE = By.cssSelector(".popupContent #actionClose");
+  public static final By DELETE_BUTTON = By.id("deleteRestore");
   public static final By DELETE_POPUP_YES_BUTTON = By.cssSelector(".popupContent #actionConfirm");
   public static final By CASE_SAVED_POPUP = By.cssSelector(".v-Notification-caption");
   public static final By EXTRA_COMMENT_INPUT =
@@ -370,6 +373,8 @@ public class EditCasePage {
 
   public static final By SAHRE_SAMPLES_CHECKBOX =
       By.cssSelector(".popupContent #withSamples label");
+  public static final By SHARE_IMMUNIZATION_CHECKBOX =
+      By.cssSelector(".popupContent #withImmunizations label");
   public static final By SHARE_REPORTS_CHECKBOX =
       By.cssSelector(".popupContent #withSurveillanceReports label");
   public static final By SHARE_SORMAS_2_SORMAS_POPUP_BUTTON =
@@ -413,6 +418,11 @@ public class EditCasePage {
       By.cssSelector(".popupContent textarea");
   public static final By VACCINATION_STATUS_UPDATE_POPUP_HEADER =
       By.xpath("//div[@class='popupContent']//*[text()='Impfstatus Aktualisierung']");
+  public static final By EDIT_REPORT_BUTTON =
+      By.xpath("//div[@location='surveillanceReports']//div[contains(@id, 'edit')]");
+  public static final By REPORTER_FACILITY_INPUT = By.cssSelector(".popupContent #facility input");
+  public static final By REPORTER_FACILITY_DETAILS_INPUT =
+      By.cssSelector(".popupContent #facilityDetails");
 
   public static By checkIfTextExists(String text) {
     return By.xpath(String.format("//div[contains(text(),'%s')]", text));
@@ -421,10 +431,8 @@ public class EditCasePage {
   public static By SHARE_PENDING_WARNING_DE =
       By.xpath(
           "//div[@class='popupContent']//div[contains(text(),'Es gibt bereits eine ausstehende Anfrage an das gleiche Gesundheitsamt. Bitte widerrufen Sie die Anfrage, bevor Sie eine Neue senden.')]");
-
-  public static By checkTextInReportSideComponent(String text) {
-    return By.xpath(
-        String.format(
-            "//div[text()='Meldevorg\u00E4nge']/../../../../../..//div[text()='%s']", text));
-  }
+  public static final By SEND_TO_REPORTING_TOOL_BUTTON =
+      By.id("ExternalSurveillanceToolGateway.send");
+  public static final By REPORTING_TOOL_MESSAGE =
+      By.xpath("//div[@class='v-Notification humanized v-Notification-humanized']");
 }

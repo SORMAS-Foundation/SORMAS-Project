@@ -33,6 +33,7 @@ import com.vaadin.server.StreamResource;
 import com.vaadin.ui.UI;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -130,11 +131,11 @@ public class ContactImporter extends DataImporter {
 		ImportRelatedObjectsMapper.Builder relatedObjectsMapperBuilder = new ImportRelatedObjectsMapper.Builder();
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
-		relatedObjectsMapperBuilder.addMapper(
-			VaccinationDto.class,
-			vaccinations,
-			() -> VaccinationDto.build(currentUser.toReference()),
-			this::insertColumnEntryIntoRelatedObject);
+			relatedObjectsMapperBuilder.addMapper(
+				VaccinationDto.class,
+				vaccinations,
+				() -> VaccinationDto.build(currentUser.toReference()),
+				this::insertColumnEntryIntoRelatedObject);
 		}
 
 		ImportRelatedObjectsMapper relatedMapper = relatedObjectsMapperBuilder.build();
@@ -159,6 +160,20 @@ public class ContactImporter extends DataImporter {
 			} catch (ValidationRuntimeException e) {
 				contactHasImportError = true;
 				writeImportError(values, e.getMessage());
+			}
+		}
+
+		if (!contactHasImportError) {
+			ImportLineResultDto<ContactDto> contactErrors = validateConstraints(newContactTemp);
+			if (contactErrors.isError()) {
+				contactHasImportError = true;
+				writeImportError(values, contactErrors.getMessage());
+			}
+
+			ImportLineResultDto<PersonDto> personErrors = validateConstraints(newPersonTemp);
+			if (personErrors.isError()) {
+				contactHasImportError = true;
+				writeImportError(values, personErrors.getMessage());
 			}
 		}
 
@@ -259,7 +274,13 @@ public class ContactImporter extends DataImporter {
 					FacadeProvider.getContactFacade().save(newContact, true, false);
 
 					for (VaccinationDto vaccination : vaccinations) {
-						FacadeProvider.getVaccinationFacade().createWithImmunization(vaccination, newContact.getRegion(), newContact.getDistrict(), newContact.getPerson(), newContact.getDisease());
+						FacadeProvider.getVaccinationFacade()
+							.createWithImmunization(
+								vaccination,
+								newContact.getRegion(),
+								newContact.getDistrict(),
+								newContact.getPerson(),
+								newContact.getDisease());
 					}
 
 					consumer.result = null;
@@ -340,6 +361,8 @@ public class ContactImporter extends DataImporter {
 	private void insertColumnEntryIntoData(ContactDto contact, PersonDto person, String entry, String[] entryHeaderPath)
 		throws InvalidColumnException, ImportErrorException {
 
+		Language language = I18nProperties.getUserLanguage();
+
 		Object currentElement = contact;
 		for (int i = 0; i < entryHeaderPath.length; i++) {
 			String headerPathElementName = entryHeaderPath[i];
@@ -352,7 +375,7 @@ public class ContactImporter extends DataImporter {
 						currentElement = person;
 					}
 				} else if (ContactExportDto.BIRTH_DATE.equals(headerPathElementName)) {
-					BirthDateDto birthDateDto = PersonHelper.parseBirthdate(entry, currentUser.getLanguage());
+					BirthDateDto birthDateDto = PersonHelper.parseBirthdate(entry, language);
 					if (birthDateDto != null) {
 						person.setBirthdateDD(birthDateDto.getDateOfBirthDD());
 						person.setBirthdateMM(birthDateDto.getDateOfBirthMM());
@@ -457,16 +480,6 @@ public class ContactImporter extends DataImporter {
 				logger.error("Unexpected error when trying to import a contact: " + e.getMessage());
 				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importUnexpectedError));
 			}
-		}
-
-		ImportLineResultDto<ContactDto> contactErrors = validateConstraints(contact);
-		if (contactErrors.isError()) {
-			throw new ImportErrorException(contactErrors.getMessage());
-		}
-
-		ImportLineResultDto<PersonDto> personErrors = validateConstraints(person);
-		if (personErrors.isError()) {
-			throw new ImportErrorException(personErrors.getMessage());
 		}
 	}
 

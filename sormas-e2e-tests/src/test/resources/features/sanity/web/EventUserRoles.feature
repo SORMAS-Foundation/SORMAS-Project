@@ -4,7 +4,7 @@ Feature: Create events for different user roles
   @tmsLink=SORDEV-10359 @env_main @ignore
   Scenario Outline: Test Access to the event directory filtered on the events of a group
     Given API: I create a new event
-    Then API: I check that POST call body is "OK"
+
     And API: I check that POST call status code is 200
     Given I log in as a <user>
     When I am accessing the event tab using the created event via api

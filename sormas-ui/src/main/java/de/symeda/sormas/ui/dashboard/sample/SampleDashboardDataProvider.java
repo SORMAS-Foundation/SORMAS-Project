@@ -39,26 +39,21 @@ public class SampleDashboardDataProvider extends AbstractDashboardDataProvider<S
 	private Map<SamplePurpose, Long> sampleCountsByPurpose;
 	private Map<SpecimenCondition, Long> sampleCountsBySpecimenCondition;
 	private Map<SampleShipmentStatus, Long> sampleCountsByShipmentStatus;
+	private Map<PathogenTestResultType, Long> testResultCountsByResultType;
 
 	@Override
 	public void refreshData() {
-		sampleCountsByResultType =
-			FacadeProvider.getSampleDashboardFacade().getSampleCountsByResultType(buildDashboardCriteriaWithDates());
+		sampleCountsByResultType = FacadeProvider.getSampleDashboardFacade().getSampleCountsByResultType(buildDashboardCriteriaWithDates());
 		sampleCountsByPurpose = FacadeProvider.getSampleDashboardFacade().getSampleCountsByPurpose(buildDashboardCriteriaWithDates());
 		sampleCountsBySpecimenCondition =
 			FacadeProvider.getSampleDashboardFacade().getSampleCountsBySpecimenCondition(buildDashboardCriteriaWithDates());
-		sampleCountsByShipmentStatus =
-			FacadeProvider.getSampleDashboardFacade().getSampleCountsByShipmentStatus(buildDashboardCriteriaWithDates());
+		sampleCountsByShipmentStatus = FacadeProvider.getSampleDashboardFacade().getSampleCountsByShipmentStatus(buildDashboardCriteriaWithDates());
+		testResultCountsByResultType = FacadeProvider.getSampleDashboardFacade().getTestResultCountsByResultType(buildDashboardCriteriaWithDates());
 	}
 
 	@Override
 	protected SampleDashboardCriteria newCriteria() {
 		return new SampleDashboardCriteria();
-	}
-
-	@Override
-	protected SampleDashboardCriteria buildDashboardCriteriaWithDates() {
-		return super.buildDashboardCriteriaWithDates();
 	}
 
 	@Override
@@ -104,5 +99,9 @@ public class SampleDashboardDataProvider extends AbstractDashboardDataProvider<S
 
 	public Map<SampleShipmentStatus, Long> getSampleCountsByShipmentStatus() {
 		return sampleCountsByShipmentStatus;
+	}
+
+	public Map<PathogenTestResultType, Long> getTestResultCountsByResultType() {
+		return testResultCountsByResultType;
 	}
 }

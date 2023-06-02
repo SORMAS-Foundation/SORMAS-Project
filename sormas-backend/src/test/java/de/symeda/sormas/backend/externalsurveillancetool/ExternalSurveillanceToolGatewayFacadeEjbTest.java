@@ -479,7 +479,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 	}
 
 	@Test
-	public void testCaseDeletionAndUndeletion_WithoutCaseAllowedToBeSharedWithReportingTool(WireMockRuntimeInfo wireMockRuntime)
+	public void testCaseDeletionAndRestoration_WithoutCaseAllowedToBeSharedWithReportingTool(WireMockRuntimeInfo wireMockRuntime)
 		throws ExternalSurveillanceToolRuntimeException {
 		Date since = new Date();
 
@@ -554,7 +554,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 		assertEquals(DeletionReason.OTHER_REASON, getCaseFacade().getByUuid(caze.getUuid()).getDeletionReason());
 		assertEquals("test reason", getCaseFacade().getByUuid(caze.getUuid()).getOtherDeletionReason());
 
-		getCaseFacade().undelete(caze.getUuid());
+		getCaseFacade().restore(caze.getUuid());
 
 		// Deleted flag should be set for case, sample and pathogen test; Additional test should be deleted; Contact should not have the deleted flag; Task should not be deleted
 		assertFalse(getCaseFacade().getDeletedUuidsSince(since).contains(caze.getUuid()));
@@ -644,7 +644,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 
 		VisitDto visit = creator.createVisit(caze.getDisease(), caze.getPerson(), caze.getReportDate());
 		visit.getSymptoms().setAnorexiaAppetiteLoss(SymptomState.YES);
-		getVisitFacade().saveVisit(visit);
+		getVisitFacade().save(visit);
 
 		final Date tenYearsPlusAgo = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
 		executeInTransaction(em -> {

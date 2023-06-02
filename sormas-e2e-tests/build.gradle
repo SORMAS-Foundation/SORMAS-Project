@@ -84,6 +84,7 @@ dependencies {
 	implementation group: 'org.apache.tika', name: 'tika-core', version: '2.6.0'
 	implementation group: 'org.apache.poi', name: 'poi', version: '3.17'
 	implementation group: 'ru.yandex.qatools.ashot', name: 'ashot', version: '1.5.4'
+	implementation group: 'org.jdom', name: 'jdom', version: '2.0.2'
 
 }
 

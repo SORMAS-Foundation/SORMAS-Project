@@ -168,6 +168,10 @@ public class SampleJoins extends QueryJoins<Sample> {
 		return getOrCreate(eventParticipantJoins, () -> new EventParticipantJoins(getEventParticipant()), this::setEventParticipantJoins);
 	}
 
+	public Join<Person, Location> getEventParticipantAddress() {
+		return getEventParticipantJoins().getAddress();
+	}
+
 	public void setEventParticipantJoins(EventParticipantJoins eventParticipantJoins) {
 		this.eventParticipantJoins = eventParticipantJoins;
 	}

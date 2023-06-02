@@ -30,7 +30,7 @@ import android.view.View;
 import android.widget.AdapterView;
 
 import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import de.symeda.sormas.app.BaseListActivity;
@@ -89,7 +89,7 @@ public class SampleListActivity extends PagedBaseListActivity {
 				}
 			}
 		});
-		model = ViewModelProviders.of(this).get(SampleListViewModel.class);
+		model = new ViewModelProvider(this).get(SampleListViewModel.class);
 		model.initializeViewModel();
 		model.getSamples().observe(this, samples -> {
 			adapter.submitList(samples);

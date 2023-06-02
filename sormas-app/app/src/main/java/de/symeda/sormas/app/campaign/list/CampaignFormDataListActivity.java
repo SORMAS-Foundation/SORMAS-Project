@@ -22,7 +22,7 @@ import android.view.View;
 import android.widget.AdapterView;
 
 import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -86,7 +86,7 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity<Campaign
             }
         });
 
-        model = ViewModelProviders.of(this).get(CampaignFormDataListViewModel.class);
+        model = new ViewModelProvider(this).get(CampaignFormDataListViewModel.class);
         model.getCriteria().setCampaign(DatabaseHelper.getCampaignDao().getLastStartedCampaign());
         model.getCampaignFormDataList().observe(this, campaignFormDataPagedList -> {
             adapter.submitList(campaignFormDataPagedList);

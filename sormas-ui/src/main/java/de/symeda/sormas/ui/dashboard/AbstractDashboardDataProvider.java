@@ -34,7 +34,7 @@ public abstract class AbstractDashboardDataProvider<C extends BaseDashboardCrite
 
 	public abstract void refreshData();
 
-	protected C buildDashboardCriteriaWithDates() {
+	public C buildDashboardCriteriaWithDates() {
 		return buildDashboardCriteria().dateBetween(fromDate, toDate);
 	}
 

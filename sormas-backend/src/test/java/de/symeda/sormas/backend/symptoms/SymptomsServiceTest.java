@@ -49,7 +49,7 @@ public class SymptomsServiceTest extends AbstractBeanTest {
 
 		VisitDto visit1 = creator.createVisit(caze1.getDisease(), caze1.getPerson(), caze1.getReportDate());
 		visit1.getSymptoms().setAnorexiaAppetiteLoss(SymptomState.YES);
-		getVisitFacade().saveVisit(visit1);
+		getVisitFacade().save(visit1);
 
 		PersonDto person2 = creator.createPerson();
 		CaseDataDto caze2 = creator.createCase(user.toReference(), person2.toReference(), rdcf);
@@ -66,7 +66,7 @@ public class SymptomsServiceTest extends AbstractBeanTest {
 
 		VisitDto visit2 = creator.createVisit(caze2.getDisease(), caze2.getPerson(), caze2.getReportDate());
 		visit2.getSymptoms().setAnorexiaAppetiteLoss(SymptomState.YES);
-		getVisitFacade().saveVisit(visit2);
+		getVisitFacade().save(visit2);
 
 		final Date tenYearsPlusAgo = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.getDeletionPeriod() - 1);
 		executeInTransaction(em -> {

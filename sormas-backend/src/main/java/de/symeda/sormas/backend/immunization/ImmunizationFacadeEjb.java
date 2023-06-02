@@ -298,13 +298,18 @@ public class ImmunizationFacadeEjb
 	@RightsAllowed(UserRight._IMMUNIZATION_DELETE)
 	public void delete(String uuid, DeletionDetails deletionDetails) {
 		Immunization immunization = service.getByUuid(uuid);
+
+		if (!service.inJurisdictionOrOwned(immunization)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.messageImmunizationOutsideJurisdictionDeletionDenied));
+		}
+
 		service.delete(immunization, deletionDetails);
 	}
 
 	@Override
 	@RightsAllowed(UserRight._IMMUNIZATION_DELETE)
-	public void undelete(String uuid) {
-		super.undelete(uuid);
+	public void restore(String uuid) {
+		super.restore(uuid);
 	}
 
 	@Override
@@ -481,7 +486,7 @@ public class ImmunizationFacadeEjb
 		boolean checkChangeDate,
 		boolean includeVaccinations) {
 
-		target = DtoHelper.fillOrBuildEntity(source, target, Immunization::new, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, Immunization::build, checkChangeDate);
 
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
@@ -489,10 +494,14 @@ public class ImmunizationFacadeEjb
 		target.setReportDate(source.getReportDate());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setArchived(source.isArchived());
-		target.setImmunizationStatus(source.getImmunizationStatus());
+		if (source.getImmunizationStatus() != null) {
+			target.setImmunizationStatus(source.getImmunizationStatus());
+		}
 		target.setMeansOfImmunization(source.getMeansOfImmunization());
 		target.setMeansOfImmunizationDetails(source.getMeansOfImmunizationDetails());
-		target.setImmunizationManagementStatus(source.getImmunizationManagementStatus());
+		if (source.getImmunizationManagementStatus() != null) {
+			target.setImmunizationManagementStatus(source.getImmunizationManagementStatus());
+		}
 		target.setExternalId(source.getExternalId());
 		target.setResponsibleRegion(regionService.getByReferenceDto(source.getResponsibleRegion()));
 		target.setResponsibleDistrict(districtService.getByReferenceDto(source.getResponsibleDistrict()));

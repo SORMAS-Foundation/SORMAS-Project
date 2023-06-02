@@ -40,7 +40,6 @@ import de.symeda.sormas.ui.dashboard.DashboardCssStyles;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.DashboardType;
 import de.symeda.sormas.ui.dashboard.contacts.components.ContactsFilterLayout;
-import de.symeda.sormas.ui.dashboard.diagram.AbstractEpiCurveComponent;
 import de.symeda.sormas.ui.dashboard.map.DashboardMapComponent;
 import de.symeda.sormas.ui.dashboard.statistics.AbstractDashboardStatisticsComponent;
 import de.symeda.sormas.ui.dashboard.visualisation.DashboardNetworkComponent;
@@ -57,7 +56,7 @@ public class ContactsDashboardView extends AbstractDashboardView {
 	protected ContactsFilterLayout filterLayout;
 
 	protected AbstractDashboardStatisticsComponent statisticsComponent;
-	protected AbstractEpiCurveComponent epiCurveComponent;
+	protected ContactsEpiCurveComponent epiCurveComponent;
 	protected DashboardMapComponent mapComponent;
 	protected Optional<DashboardNetworkComponent> networkDiagramComponent;
 	protected HorizontalLayout epiCurveAndMapLayout;

@@ -103,7 +103,6 @@ import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.BulkOperationResults;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.HtmlHelper;
@@ -133,10 +132,11 @@ import de.symeda.sormas.ui.hospitalization.HospitalizationView;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.therapy.TherapyView;
 import de.symeda.sormas.ui.utils.AbstractView;
-import de.symeda.sormas.ui.utils.BulkOperationHelper;
+import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
+import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DeletableUtils;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
@@ -831,6 +831,7 @@ public class CaseController {
 				} else {
 					PersonDto searchedPerson = createForm.getSearchedPerson();
 					if (searchedPerson != null) {
+						updateHomeAddress(createForm, searchedPerson);
 						dto.setPerson(searchedPerson.toReference());
 						selectOrCreateCase(createForm, dto, searchedPerson.toReference());
 					} else {
@@ -871,6 +872,11 @@ public class CaseController {
 
 	private void transferDataToPerson(CaseCreateForm createForm, PersonDto person) {
 		createForm.getPersonCreateForm().transferDataToPerson(person);
+	}
+
+	private void updateHomeAddress(CaseCreateForm createForm, PersonDto person) {
+		createForm.getPersonCreateForm().updateHomeAddress(person);
+		FacadeProvider.getPersonFacade().save(person);
 	}
 
 	public void selectOrCreateCase(CaseDataDto caseDto, PersonDto person, Consumer<String> selectedCaseUuidConsumer) {
@@ -921,10 +927,8 @@ public class CaseController {
 			caze.isInJurisdiction());
 		caseEditForm.setValue(caze);
 
-		CommitDiscardWrapperComponent<CaseDataForm> editView = new CommitDiscardWrapperComponent<CaseDataForm>(
-			caseEditForm,
-			true,
-			caseEditForm.getFieldGroup());
+		CommitDiscardWrapperComponent<CaseDataForm> editView =
+			new CommitDiscardWrapperComponent<CaseDataForm>(caseEditForm, true, caseEditForm.getFieldGroup());
 
 		editView.getButtonsPanel()
 			.addComponentAsFirst(new DeletionLabel(automaticDeletionInfoDto, manuallyDeletionInfoDto, caze.isDeleted(), CaseDataDto.I18N_PREFIX));
@@ -957,7 +961,13 @@ public class CaseController {
 
 		appendSpecialCommands(caze, editView);
 
-		editView.restrictEditableComponentsOnEditView(UserRight.CASE_EDIT, UserRight.CASE_DELETE, null);
+		editView.restrictEditableComponentsOnEditView(
+			UserRight.CASE_EDIT,
+			null,
+			UserRight.CASE_DELETE,
+			FacadeProvider.getCaseFacade().getEditPermissionType(caze.getUuid()),
+			caze.isInJurisdiction());
+
 		return editView;
 	}
 
@@ -1031,7 +1041,7 @@ public class CaseController {
 					I18nProperties.getCaption(Captions.caseTransferCases),
 					I18nProperties.getCaption(Captions.caseEditData),
 					500,
-					e -> BulkOperationHelper.doBulkOperation(
+					e -> new BulkOperationHandler().doBulkOperation(
 						selectedEntries -> caseFacade.saveBulkEditWithFacilities(
 							selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
 							updatedBulkEditData,
@@ -1042,10 +1052,9 @@ public class CaseController {
 							surveillanceOfficerChange,
 							e),
 						selectedCasesCpy,
-						selectedCasesCpy.size(),
-						results -> handleBulkOperationDone(results, popupWindow, caseGrid, selectedCases)));
+						results -> handleBulkOperationDone((List<? extends CaseIndexDto>) results, popupWindow, caseGrid)));
 			} else {
-				BulkOperationHelper.doBulkOperation(
+				new BulkOperationHandler().doBulkOperation(
 					selectedEntries -> caseFacade.saveBulkCase(
 						selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
 						updatedBulkEditData,
@@ -1055,31 +1064,22 @@ public class CaseController {
 						outcomeChange,
 						surveillanceOfficerChange),
 					selectedCasesCpy,
-					selectedCasesCpy.size(),
-					results -> handleBulkOperationDone(results, popupWindow, caseGrid, selectedCases));
+					remainingEntries -> handleBulkOperationDone((List<? extends CaseIndexDto>) remainingEntries, popupWindow, caseGrid));
 			}
 		});
 
 		editView.addDiscardListener(popupWindow::close);
 	}
 
-	private void handleBulkOperationDone(
-		BulkOperationResults<?> results,
-		Window popupWindow,
-		AbstractCaseGrid<?> caseGrid,
-		Collection<? extends CaseIndexDto> selectedCases) {
+	private void handleBulkOperationDone(List<? extends CaseIndexDto> remainingCases, Window popupWindow, AbstractCaseGrid<?> caseGrid) {
 
 		popupWindow.close();
 		caseGrid.reload();
-		if (CollectionUtils.isNotEmpty(results.getRemainingEntries())) {
+		if (CollectionUtils.isNotEmpty(remainingCases)) {
 			if (caseGrid instanceof CaseGrid) {
-				((CaseGrid) caseGrid).asMultiSelect()
-					.selectItems(
-						selectedCases.stream().filter(c -> results.getRemainingEntries().contains(c.getUuid())).toArray(CaseIndexDto[]::new));
+				((CaseGrid) caseGrid).asMultiSelect().selectItems(remainingCases.toArray(new CaseIndexDto[0]));
 			} else if (caseGrid instanceof CaseGridDetailed) {
-				((CaseGridDetailed) caseGrid).asMultiSelect()
-					.selectItems(
-						selectedCases.stream().filter(c -> results.getRemainingEntries().contains(c.getUuid())).toArray(CaseIndexDetailedDto[]::new));
+				((CaseGridDetailed) caseGrid).asMultiSelect().selectItems(remainingCases.toArray(new CaseIndexDetailedDto[0]));
 			}
 		} else {
 			navigateToIndex();
@@ -1089,7 +1089,7 @@ public class CaseController {
 	private void appendSpecialCommands(CaseDataDto caze, CommitDiscardWrapperComponent<? extends Component> editView) {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_DELETE)) {
-			editView.addDeleteWithReasonOrUndeleteListener((deleteDetails) -> {
+			editView.addDeleteWithReasonOrRestoreListener((deleteDetails) -> {
 				if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
 					long contactCount = FacadeProvider.getContactFacade().getContactCount(caze.toReference());
 					if (contactCount > 0) {
@@ -1115,7 +1115,7 @@ public class CaseController {
 					deleteCase(caze, false, deleteDetails);
 				}
 			}, getDeleteConfirmationDetails(Collections.singletonList(caze.getUuid())), (deleteDetails) -> {
-				FacadeProvider.getCaseFacade().undelete(caze.getUuid());
+				FacadeProvider.getCaseFacade().restore(caze.getUuid());
 				UI.getCurrent().getNavigator().navigateTo(CasesView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityCase), caze.getUuid(), FacadeProvider.getCaseFacade());
 		}
@@ -1616,6 +1616,15 @@ public class CaseController {
 					}
 				});
 		}
+	}
+
+	public void restoreSelectedCases(Collection<? extends CaseIndexDto> selectedRows, Runnable callback) {
+		ControllerProvider.getDeleteRestoreController()
+			.restoreSelectedItems(
+				selectedRows.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList()),
+				FacadeProvider.getCaseFacade(),
+				CoreEntityRestoreMessages.CASE,
+				callback);
 	}
 
 	public void sendSmsToAllSelectedItems(Collection<? extends CaseIndexDto> selectedRows, Runnable callback) {

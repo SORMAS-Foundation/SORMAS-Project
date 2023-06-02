@@ -19,10 +19,12 @@
 package org.sormas.e2etests.steps.web.application.contacts;
 
 import static org.sormas.e2etests.constants.api.Endpoints.CONTACTS_PATH;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ACTION_OKAY;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONFIRM_POPUP;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FIRST_CASE_ID_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.WARNING_CASE_NOT_SHARED_SHARE_POPUP_DE;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.ACTION_CONFIRM_POPUP_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE_DOCUMENT_EMPTY_TEXT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE_UPLOADED_TEST_FILE;
@@ -36,6 +38,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVE
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_TEMPLATES;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_TEMPLATES_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_TEMPLATES_POPUP_DE;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISCARD_BUTTON_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EPID_NUMBER_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXPECTED_FOLLOWUP_LABEL;
@@ -1165,6 +1168,7 @@ public class EditContactSteps implements En {
         });
 
     When("I back to deleted contact by url", () -> webDriverHelpers.accessWebSite(currentUrl));
+    When("I back to contact by url", () -> webDriverHelpers.accessWebSite(currentUrl));
 
     When(
         "I check if External token input on case edit page is disabled",
@@ -1365,6 +1369,39 @@ public class EditContactSteps implements En {
         "I check if created contact is available in API",
         () -> {
           getContactByUUID(contactUUID);
+        });
+
+    When(
+        "I check if popup with {string} title appears",
+        (String title) -> {
+          softly.assertTrue(webDriverHelpers.isElementVisibleWithTimeout(getHeaderText(title), 5));
+          softly.assertAll();
+        });
+
+    When(
+        "I click on okay button",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_OKAY);
+        });
+
+    When(
+        "I check if warning information with related to the associated case not being shared appears in share contact popup",
+        () -> {
+          softly.assertTrue(
+              webDriverHelpers.isElementVisibleWithTimeout(
+                  WARNING_CASE_NOT_SHARED_SHARE_POPUP_DE, 2));
+          softly.assertAll();
+        });
+
+    When(
+        "I click on discard button",
+        () -> webDriverHelpers.clickOnWebElementBySelector(DISCARD_BUTTON_POPUP));
+    When(
+        "I check if popup with {string} header appears",
+        (String text) -> {
+          softly.assertTrue(
+              webDriverHelpers.isElementVisibleWithTimeout(CONTACT_CAN_NOT_BE_SHARED_HEADER_DE, 2));
+          softly.assertAll();
         });
   }
 

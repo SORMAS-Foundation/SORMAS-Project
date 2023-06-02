@@ -50,6 +50,7 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
 public class ActionListEntry extends HorizontalLayout {
 
 	private final ActionDto action;
+	HorizontalLayout titleLayout;
 	private Button editButton;
 
 	public ActionListEntry(ActionDto action) {
@@ -67,9 +68,13 @@ public class ActionListEntry extends HorizontalLayout {
 		addComponent(withContentLayout);
 		setExpandRatio(withContentLayout, 3);
 
+		titleLayout = new HorizontalLayout();
+		titleLayout.setMargin(false);
+		titleLayout.setSpacing(false);
 		Label title = new Label(MoreObjects.firstNonNull(Strings.emptyToNull(action.getTitle()), "-"));
-		title.addStyleName(CssStyles.H3);
-		withContentLayout.addComponent(title);
+		title.addStyleNames(CssStyles.H3, CssStyles.HSPACE_LEFT_3);
+		titleLayout.addComponent(title);
+		withContentLayout.addComponent(titleLayout);
 
 		HorizontalLayout topLayout = new HorizontalLayout();
 		topLayout.setMargin(false);
@@ -200,9 +205,10 @@ public class ActionListEntry extends HorizontalLayout {
 				CssStyles.BUTTON_COMPACT,
 				CssStyles.LABEL_VERTICAL_ALIGN_TOP);
 
-			addComponent(editButton);
-			setComponentAlignment(editButton, Alignment.MIDDLE_RIGHT);
-			setExpandRatio(editButton, 0);
+			titleLayout.addComponent(editButton, 0);
+			editButton.addStyleNames(CssStyles.LABEL_HEADING_TITLE, CssStyles.HSPACE_LEFT_4);
+			titleLayout.setComponentAlignment(editButton, Alignment.TOP_RIGHT);
+			titleLayout.setExpandRatio(editButton, 0);
 		}
 
 		editButton.addClickListener(editClickListener);

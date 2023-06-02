@@ -67,12 +67,13 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String PERSON_HOUSE_NUMBER = "personHouseNumber";
 	public static final String PERSON_PHONE = "personPhone";
 	public static final String PERSON_EMAIL = "personEmail";
-	public static final String REPORTER_MESSAGE_DETAILS = "externalMessageDetails";
+	public static final String EXTERNAL_MESSAGE_DETAILS = "externalMessageDetails";
 	public static final String STATUS = "status";
 	public static final String REPORT_ID = "reportId";
 	public static final String REPORT_MESSAGE_ID = "reportMessageId";
 	public static final String ASSIGNEE = "assignee";
 	public static final String SURVEILLANCE_REPORT = "surveillanceReport";
+	public static final String TSV = "tsv";
 
 	private ExternalMessageType type;
 	private Disease disease;
@@ -108,6 +109,7 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	private List<SampleReport> sampleReports;
 	private SurveillanceReport surveillanceReport;
+	private String tsv;
 
 	@Enumerated(EnumType.STRING)
 	public ExternalMessageType getType() {
@@ -371,5 +373,14 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public void setSampleReports(List<SampleReport> sampleReports) {
 		this.sampleReports = sampleReports;
+	}
+
+	@Column(insertable = false, updatable = false)
+	public String getTsv() {
+		return tsv;
+	}
+
+	public void setTsv(String tsv) {
+		this.tsv = tsv;
 	}
 }

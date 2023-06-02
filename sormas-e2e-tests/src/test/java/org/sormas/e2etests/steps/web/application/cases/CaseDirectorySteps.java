@@ -18,11 +18,13 @@
 
 package org.sormas.e2etests.steps.web.application.cases;
 
+import static org.sormas.e2etests.entities.pojo.helpers.ShortUUIDGenerator.generateShortUUID;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CLOSE;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CONFIRM;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_RELATED_CONTACTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BACK_TO_CASES_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_NEW_CASE_CHECKBOX;
@@ -55,7 +57,6 @@ import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.IMPO
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.SELECT_ANOTHER_PERSON_DE;
 import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.BULK_DELETE_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
-import static org.sormas.e2etests.steps.web.application.contacts.ContactDirectorySteps.faker;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -84,10 +85,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.common.DataOperations;
@@ -132,6 +133,7 @@ public class CaseDirectorySteps implements En {
   private static String lastName;
   private static String receivedCaseUUID;
   private static String generatedRandomString;
+  private static String generatedRandomStringContact;
 
   @Inject
   public CaseDirectorySteps(
@@ -228,7 +230,7 @@ public class CaseDirectorySteps implements En {
         "I check that an import success notification appears in the Import Case popup",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(IMPORT_SUCCESS_DE);
-          webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL);
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_CLOSE);
         });
     When(
         "I close Import Cases form",
@@ -421,6 +423,17 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(EditCasePage.UUID_INPUT);
         });
 
+    When(
+        "I open last created Case via API on {string} instance",
+        (String instance) -> {
+          String LAST_CREATED_CASE_URL =
+              runningConfiguration.getEnvironmentUrlForMarket(instance)
+                  + "/sormas-webdriver/#!cases/data/"
+                  + apiState.getCreatedCase().getUuid();
+          webDriverHelpers.accessWebSite(LAST_CREATED_CASE_URL);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(EditCasePage.UUID_INPUT);
+        });
+
     Then(
         "I check that created Case is visible with ([^\"]*) status",
         (String vaccinationStatus) -> {
@@ -444,7 +457,7 @@ public class CaseDirectorySteps implements En {
                   + "/sormas-webdriver/#!cases/data/"
                   + apiState.getCreatedCase().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_CASE_URL);
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
         });
 
     When(
@@ -1251,7 +1264,7 @@ public class CaseDirectorySteps implements En {
         "I check if csv file for detailed case is imported successfully",
         () -> {
           webDriverHelpers.isElementVisibleWithTimeout(IMPORT_SUCCESSFUL_FACILITY_IMPORT_CSV, 10);
-          webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL);
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_CLOSE);
           webDriverHelpers.clickOnWebElementBySelector(CLOSE_DETAILED_EXPORT_POPUP);
         });
 
@@ -1314,6 +1327,14 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.fillInWebElement(EXTRA_COMMENT_INPUT_SHARE_POPUP, generatedRandomString);
         });
 
+    And(
+        "I fill comment in share popup for contact with random string",
+        () -> {
+          generatedRandomStringContact = faker.beer().name();
+          webDriverHelpers.fillInWebElement(
+              EXTRA_COMMENT_INPUT_SHARE_POPUP, generatedRandomStringContact);
+        });
+
     When(
         "I click on {string} shared case button with copied case description",
         (String option) -> {
@@ -1327,6 +1348,28 @@ public class CaseDirectorySteps implements En {
                   getActionAcceptButtonByCaseDescription(generatedRandomString));
               break;
           }
+        });
+
+    When(
+        "I click on {string} shared contact button with copied contact description",
+        (String option) -> {
+          switch (option) {
+            case "reject":
+              webDriverHelpers.clickOnWebElementBySelector(
+                  getActionRejectButtonByContactDescription(generatedRandomStringContact));
+              break;
+            case "accept":
+              webDriverHelpers.clickOnWebElementBySelector(
+                  getActionAcceptButtonByContactDescription(generatedRandomStringContact));
+              break;
+          }
+        });
+
+    When(
+        "I click on Okay button in Potential duplicate popup",
+        () -> {
+          webDriverHelpers.isElementVisibleWithTimeout(POTENTIAL_DUPLICATE_POPUP_DE, 5);
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM);
         });
 
     When(
@@ -1359,6 +1402,17 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.accessWebSite(LAST_CREATED_CASE_URL);
           webDriverHelpers.isElementGreyedOut(EditCasePage.UUID_INPUT);
           webDriverHelpers.isElementGreyedOut(EditCasePage.SAVE_BUTTON);
+        });
+
+    And(
+        "I open the last created case with collected UUID by url on {string} instance",
+        (String instance) -> {
+          String LAST_CREATED_CASE_URL =
+              runningConfiguration.getEnvironmentUrlForMarket(instance)
+                  + "/sormas-ui/#!cases/data/"
+                  + CreateNewCaseSteps.casesUUID.get(0);
+          System.out.println("To jest web path: " + LAST_CREATED_CASE_URL);
+          webDriverHelpers.accessWebSite(LAST_CREATED_CASE_URL);
         });
   }
 
@@ -1438,6 +1492,7 @@ public class CaseDirectorySteps implements En {
     return detailedCasePojo;
   }
 
+  @SneakyThrows
   public static void writeCSVFromMapDetailedCase(
       Map<String, Object> detailedCase, String createdFileName, String disease, String pCondition) {
     uploadFileDirectoryAndName = userDirPath + "/uploads/" + createdFileName;
@@ -1455,13 +1510,13 @@ public class CaseDirectorySteps implements En {
       List<String[]> data = new ArrayList<String[]>();
       firstName = faker.name().firstName();
       lastName = faker.name().lastName();
-      caseUUIDFromCSV = UUID.randomUUID().toString().substring(0, 26).toUpperCase();
-      String personUUID = UUID.randomUUID().toString().substring(0, 26).toUpperCase();
+      caseUUIDFromCSV = generateShortUUID();
+      String personUUID = generateShortUUID();
+      String epidNumber = generateShortUUID();
       int lRandom = ThreadLocalRandom.current().nextInt(8999999, 9999999 + 1);
       detailedCase.computeIfPresent("id", (k, v) -> v = String.valueOf(lRandom));
       detailedCase.computeIfPresent("uuid", (k, v) -> v = caseUUIDFromCSV);
-      detailedCase.computeIfPresent(
-          "epidNumber", (k, v) -> v = UUID.randomUUID().toString().substring(0, 26).toUpperCase());
+      detailedCase.computeIfPresent("epidNumber", (k, v) -> v = epidNumber);
       detailedCase.computeIfPresent("personUuid", (k, v) -> v = personUUID);
       detailedCase.computeIfPresent("personFirstName", (k, v) -> v = firstName);
       detailedCase.computeIfPresent("personLastName", (k, v) -> v = lastName);

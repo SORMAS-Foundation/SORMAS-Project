@@ -76,8 +76,6 @@ import de.symeda.sormas.backend.util.RightsAllowed;
 @RightsAllowed(UserRight._DOCUMENT_VIEW)
 public class DocumentFacadeEjb implements DocumentFacade {
 
-	private static final String MIME_TYPE_DEFAULT = "application/octet-stream";
-
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
 
@@ -109,15 +107,11 @@ public class DocumentFacadeEjb implements DocumentFacade {
 			throw new EntityExistsException("Tried to save a document that already exists: " + dto.getUuid());
 		}
 
-		if (dto.getMimeType() == null) {
-			dto.setMimeType(MIME_TYPE_DEFAULT);
-		}
-
 		String fileExtension = getFileExtension(dto.getName());
 		checkFileExtension(fileExtension);
 		checkFileContents(dto.getName(), content, fileExtension);
 
-		Document document = fillOrBuildEntity(dto, existingDocument,true);
+		Document document = fillOrBuildEntity(dto, existingDocument, true);
 		String storageReference = documentStorageService.save(document, content);
 		try {
 			document.setStorageReference(storageReference);
@@ -138,7 +132,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 
 	private String getFileExtension(String fileName) {
 		int index = fileName.lastIndexOf('.');
-		if(index > 0) {
+		if (index > 0) {
 			return fileName.substring(index);
 		} else {
 			throw new FileExtensionNotAllowedException(String.format("File name (%s) is not properly formatted", fileName));
@@ -156,10 +150,11 @@ public class DocumentFacadeEjb implements DocumentFacade {
 
 	private void checkFileContents(String fileName, byte[] content, String fileExtension) throws IOException {
 		try {
-			getMimeTypeFromFileContents(fileName, content).getExtensions().stream()
-					.filter(fileExtension::equals)
-					.findAny()
-					.orElseThrow(() -> new FileContentsDoNotMatchExtensionException("File extension and file contents are not the same"));
+			getMimeTypeFromFileContents(fileName, content).getExtensions()
+				.stream()
+				.filter(fileExtension::equals)
+				.findAny()
+				.orElseThrow(() -> new FileContentsDoNotMatchExtensionException("File extension and file contents are not the same"));
 		} catch (MimeTypeException e) {
 			throw new FileExtensionNotAllowedException("Could not read file extension within file");
 		}
@@ -249,10 +244,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 				DocumentDto.class,
 				dto,
 				inJurisdiction,
-				(e) -> pseudonymizer.pseudonymizeUser(
-					document.getUploadingUser(),
-					userService.getCurrentUser(),
-					dto::setUploadingUser));
+				(e) -> pseudonymizer.pseudonymizeUser(document.getUploadingUser(), userService.getCurrentUser(), dto::setUploadingUser));
 		}
 	}
 

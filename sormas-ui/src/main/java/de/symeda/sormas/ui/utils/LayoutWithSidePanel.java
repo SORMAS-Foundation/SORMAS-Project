@@ -86,7 +86,7 @@ public class LayoutWithSidePanel extends CustomLayout {
 
 	public void disableIfNecessary(boolean deleted, EditPermissionType editAllowed) {
 		if (deleted) {
-			editComponent.addToActiveButtonsList(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+			editComponent.addToActiveButtonsList(CommitDiscardWrapperComponent.DELETE_RESTORE);
 			disable();
 		} else if (editAllowed != null) {
 			disableBasedOnPermissionTypes(editAllowed);
@@ -100,7 +100,7 @@ public class LayoutWithSidePanel extends CustomLayout {
 		} else if (editAllowed.equals(EditPermissionType.REFUSED)) {
 			disableWithViewAllow();
 		} else if (editAllowed.equals(EditPermissionType.WITHOUT_OWNERSHIP)) {
-			editComponent.addToActiveButtonsList(CommitDiscardWrapperComponent.DELETE_UNDELETE);
+			editComponent.addToActiveButtonsList(CommitDiscardWrapperComponent.DELETE_RESTORE);
 			disableWithViewAllow();
 		}
 	}

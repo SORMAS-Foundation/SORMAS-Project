@@ -60,7 +60,7 @@ public class EditEventPage {
   public static final By EDIT_FIRST_TASK = By.cssSelector("#edit0");
   public static final By DELETE_BUTTON_DISABLED =
       By.xpath("//div[@id='delete' and @aria-disabled='true']");
-  public static final By UNDO_DELETION_BUTTON = By.id("deleteUndelete");
+  public static final By UNDO_DELETION_BUTTON = By.id("deleteRestore");
   public static final By LINK_EVENT_GROUP_BUTTON = By.cssSelector("div#Link\\ event\\ group");
   public static final By NEW_EVENT_GROUP_RADIOBUTTON =
       By.xpath("//*[contains(text(),'New event group')]/..");
@@ -185,6 +185,8 @@ public class EditEventPage {
   public static final By VACCINATION_STATUS_COMBOBOX =
       By.xpath("//div[@id='vaccinationStatus']/div");
   public static final By NEW_IMMUNIZATION_BUTTON = By.cssSelector("[id='New immunization']");
+  public static final By NEW_IMMUNIZATION_CARD_WITH_COVID =
+      By.xpath("//div[@location='immunizations']//*[contains(text(),'COVID-19')]");
   public static final By EYE_ICON =
       By.cssSelector("[class*='v-caption-on-top']>[class*='v-popupview']");
   public static final By EVENT_PARTICIPANT_STATUS =
@@ -203,4 +205,8 @@ public class EditEventPage {
   public static final By FIRST_EVENT_PARTICIPANT_FROM_LIST = By.cssSelector("tr td a");
   public static final By CREATE_CASE_IN_EVENT_PARTICIPANT_LIST_BUTTON =
       By.xpath("(//tr//td//a)[3]");
+  public static final By FIRST_PERSON_ID_IN_EVENT_PARTICIPANT_TAB = By.xpath("//td[2]//a");
+  public static final By LINE_LISTING_HEADER = By.xpath("//div[contains(text(), 'Line listing')]");
+  public static final By CREATE_QUARANTINE_ORDER_EVENT_PARTICIPANT_BY_TEXT =
+      By.xpath("//span[contains(text(), 'Create quarantine order documents')]");
 }

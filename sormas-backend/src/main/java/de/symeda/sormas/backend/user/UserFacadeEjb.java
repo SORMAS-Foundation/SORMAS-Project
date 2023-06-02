@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -35,6 +36,7 @@ import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -49,6 +51,7 @@ import javax.validation.Valid;
 import javax.validation.ValidationException;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
@@ -942,6 +945,24 @@ public class UserFacadeEjb implements UserFacade {
 	@RightsAllowed(UserRight._USER_ROLE_VIEW)
 	public List<UserReferenceDto> getUsersHavingOnlyRole(UserRoleReferenceDto userRoleRef) {
 		return userService.getAllWithOnlyRole(userRoleRef).stream().map(UserFacadeEjb::toReferenceDto).collect(Collectors.toList());
+	}
+
+	@Override
+	@PermitAll
+	public List<UserRight> getUserRights(String userUuid) {
+
+		User user = StringUtils.isBlank(userUuid) ? currentUserService.getCurrentUser() : userService.getByUuid(userUuid);
+
+		if (user != null) {
+			if (getCurrentUser().getUuid().equals(user.getUuid())
+				|| (currentUserService.hasUserRight(UserRight.USER_ROLE_VIEW) && currentUserService.hasUserRight(UserRight.USER_VIEW))) {
+				return UserRole.getUserRights(user.getUserRoles()).stream().sorted(Comparator.comparing(Enum::name)).collect(Collectors.toList());
+			} else {
+				throw new AccessDeniedException(I18nProperties.getString(Strings.errorForbidden));
+			}
+		} else {
+			throw new EntityNotFoundException(I18nProperties.getString(Strings.errorNotFound));
+		}
 	}
 
 	public interface JurisdictionOverEntitySubqueryBuilder<ADO extends AbstractDomainObject> {

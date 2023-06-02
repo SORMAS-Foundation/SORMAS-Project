@@ -19,17 +19,14 @@
 package org.sormas.e2etests.steps.web.application.samples;
 
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.ACTION_CONFIRM_POPUP_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.EDIT_SAMPLE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAMPLES_CARD_DATE_AND_TIME_OF_RESULT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAMPLES_CARD_DATE_OF_COLLECTED_SAMPLE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAMPLES_CARD_LABORATORY;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAMPLES_CARD_NUMBER_OF_TESTS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAMPLES_CARD_TEST_TYPE;
-import static org.sormas.e2etests.pages.application.contacts.EditContactPage.NUMBER_OF_TESTS_IN_SAMPLES;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_ACTIONS_COLUMN_HEADERS;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_ACTIONS_TABLE_DATA;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_ACTIONS_TABLE_ROW;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.ONE_TEST_IN_SAMPLES_DE;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.ADD_PATHOGEN_TEST;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.ADD_PATHOGEN_TEST_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.ANTIGEN_DETECTION_TEST_OPTION_BUTTON;
@@ -360,30 +357,6 @@ public class CreateNewSampleSteps implements En {
         });
 
     When(
-        "^I validate only one sample is created with two pathogen tests",
-        () -> {
-          softly.assertEquals(
-              webDriverHelpers.getNumberOfElements(EDIT_SAMPLE_BUTTON),
-              1,
-              "Number of samples is not correct");
-          softly.assertEquals(
-              webDriverHelpers.getTextFromWebElement(NUMBER_OF_TESTS_IN_SAMPLES),
-              "Number of tests: 2",
-              "Number of tests is correct!");
-          softly.assertAll();
-        });
-
-    When(
-        "^I check that case created from laboratory message contains a sample with one test",
-        () -> {
-          softly.assertEquals(
-              webDriverHelpers.getNumberOfElements(EDIT_SAMPLE_BUTTON),
-              1,
-              "Number of samples is not correct");
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(ONE_TEST_IN_SAMPLES_DE);
-        });
-
-    When(
         "^I validate the existence of two pathogen tests",
         () -> {
           TimeUnit.SECONDS.sleep(2);
@@ -455,6 +428,22 @@ public class CreateNewSampleSteps implements En {
               RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
           fillTestResultsComment(sampleTestResult.getTestResultsComment());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+        });
+
+    When(
+        "I create a new Sample with positive test result for DE version with {string} as a labor",
+        (String option) -> {
+          sample = sampleService.buildGeneratedPositiveSampleDE();
+          selectPurposeOfSample(sample.getPurposeOfTheSample(), SAMPLE_PURPOSE_OPTIONS);
+          fillDateOfCollectionDE(sample.getDateOfCollection());
+          selectSampleType(sample.getSampleType());
+          webDriverHelpers.clickOnWebElementBySelector(ADD_PATHOGEN_TEST_BUTTON);
+          selectTestedDisease(sample.getTestedDisease());
+          selectTestResult(sample.getSampleTestResults());
+          selectTypeOfTest("Kultur");
+          selectLaboratory(option);
+          selectResultVerifiedByLabSupervisor(
+              sample.getResultVerifiedByLabSupervisor(), RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
         });
 
     When(

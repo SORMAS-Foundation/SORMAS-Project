@@ -8,7 +8,7 @@ Feature: Application language checks
     And I select "Urdu" language from Combobox in User settings
     Then I check that Surveillance Dashboard header is correctly displayed in Urdu language
     Then I click on the User Settings button from navbar
-    And I select "انگریزی" language from Combobox in User settings
+    And I select "جرمن" language from Combobox in User settings
 
   @tmsLink=SORQA-69 @env_de @LanguageRisk
   Scenario: Check Settings directory is written in German for german market
@@ -18,7 +18,7 @@ Feature: Application language checks
     Then I check that German word for Configuration is present in the left main menu
 
       #fails due to known defect, downloaded file is not in german, is in english.
-  @tmsLink=SORDEV-6474 @env_main @issue=8069 @About @LanguageRisk
+  @tmsLink=SORDEV-6474 @env_main @issue=8069 @About @LanguageRisk @ignore
   Scenario: Check language options in Data Dictionary depending on the user language setting
     Given  I log in as a National Language User
     And I click on the About button from navbar

@@ -3,7 +3,7 @@
     <parent>
         <artifactId>sormas-base</artifactId>
         <groupId>de.symeda.sormas</groupId>
-        <version>1.82.0-SNAPSHOT</version>
+        <version>1.85.0-SNAPSHOT</version>
         <relativePath>../sormas-base</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -75,7 +75,6 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
                 <executions>
                     <execution>
@@ -85,15 +84,7 @@
                     </execution>
                 </executions>
             </plugin>
-			<!-- <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<configuration>
-					<warSourceExcludes>VAADIN/gwt-unitCache/**,VAADIN/widgetsets/WEB-INF/**</warSourceExcludes>
-				</configuration>
-			</plugin> -->            
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
                     <archive>

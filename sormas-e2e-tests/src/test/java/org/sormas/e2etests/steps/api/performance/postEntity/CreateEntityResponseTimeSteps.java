@@ -250,6 +250,7 @@ public class CreateEntityResponseTimeSteps implements En {
 
   private void validateResponseBody(Response response) {
     String regexUpdatedResponseBody = response.getBody().asString().replaceAll("[^a-zA-Z0-9]", "");
-    Assert.assertEquals(regexUpdatedResponseBody, "OK", "Request response body is not correct");
+    Assert.assertEquals(
+        regexUpdatedResponseBody, "statusCode200", "Request response body is not correct");
   }
 }

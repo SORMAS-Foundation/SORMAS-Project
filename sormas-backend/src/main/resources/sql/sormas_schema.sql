@@ -12320,4 +12320,29 @@ ALTER TABLE testreport_history ADD COLUMN dateofresult varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (511, 'Add dateOfResult to TestReports #11453');
 
+-- 2023-03-27 Limit case duplicate merging comparison based on creation date and archived status #11465
+-- the index idx_cases_disease was remove to improve merge duplicate cases query this will force to use idx_cases_creationdate_desc in the query plan which is a lot more efficient
+DROP INDEX idx_cases_disease;
+
+INSERT INTO schema_version (version_number, comment) VALUES (512, 'Limit case duplicate merging comparison based on creation date and archived status #11465');
+
+-- 2023-03-31 [DEMIS2SORMAS] Introduce a messages content search field #7647
+ALTER TABLE externalmessage ADD COLUMN tsv tsvector;
+ALTER TABLE externalmessage_history ADD COLUMN tsv tsvector;
+UPDATE externalmessage SET tsv = to_tsvector('simple', unaccent(regexp_replace(externalmessagedetails,  E'[<>]', ' ', 'g')));
+CREATE INDEX idx_externalmessage_tsv ON externalmessage USING GIN (tsv);
+CREATE OR REPLACE FUNCTION externalmessage_tsv_update() RETURNS TRIGGER AS $$
+BEGIN
+    IF TG_OP = 'INSERT' OR  TG_OP = 'UPDATE' THEN
+        new.tsv = to_tsvector('simple', unaccent(regexp_replace(new.externalmessagedetails,  E'[<>]', ' ', 'g')));
+    END IF;
+
+    RETURN new;
+END
+$$ LANGUAGE 'plpgsql';
+CREATE TRIGGER externalmessage_tsv_update BEFORE INSERT OR UPDATE OF externalmessagedetails ON externalmessage
+    FOR EACH ROW EXECUTE PROCEDURE externalmessage_tsv_update();
+
+INSERT INTO schema_version (version_number, comment) VALUES (513, '[DEMIS2SORMAS] Introduce a messages content search field #7647');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

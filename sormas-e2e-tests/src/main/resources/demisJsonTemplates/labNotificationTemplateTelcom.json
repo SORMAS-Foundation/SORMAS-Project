@@ -28,6 +28,10 @@
                                     "https://demis.rki.de/fhir/StructureDefinition/NotificationLaboratorySARSCoV2"
                                 ]
                             },
+							"identifier": {
+								"system": "https://demis.rki.de/fhir/NamingSystem/NotificationId",
+								"value": "<report_UUID_to_change>"
+							},
                             "status": "preliminary",
                             "type": {
                                 "coding": [
@@ -52,13 +56,25 @@
                             "subject": {
                                 "reference": "Patient/c1378c95-57f5-4b2a-8480-aec18443d849"
                             },
-                            "date": "2020-08-03T23:32:32+02:00",
+                            "date": "2022-05-13T23:32:32+02:00",
                             "author": [
                                 {
                                     "reference": "PractitionerRole/4cb85fa7-d789-4e4f-8481-434b4c0c5f5c"
                                 }
                             ],
                             "title": "SARS-CoV-2 Labormeldung",
+							"relatesTo":  [
+								{
+									"code": "appends",
+									"targetReference": {
+										"type": "Composition",
+										"identifier": {
+											"system": "https://demis.rki.de/fhir/NamingSystem/NotificationId",
+											"value": "<report_UUID_to_change>"
+										}
+									}
+								}
+							],
                             "section": [
                                 {
                                     "code": {
@@ -88,7 +104,7 @@
                                     },
                                     "entry": [
                                         {
-                                            "reference": "Observation/16c02776-e54b-44de-9801-ef07ec388247"
+                                            "reference": "Observation/<observation_UUID_to_change>"
                                         }
                                     ]
                                 }
@@ -317,10 +333,10 @@
                         }
                     },
                     {
-                        "fullUrl": "https://demis.rki.de/fhir/Observation/16c02776-e54b-44de-9801-ef07ec388247",
+                        "fullUrl": "https://demis.rki.de/fhir/Observation/<observation_UUID_to_change>",
                         "resource": {
                             "resourceType": "Observation",
-                            "id": "16c02776-e54b-44de-9801-ef07ec388247",
+                            "id": "<observation_UUID_to_change>",
                             "meta": {
                                 "profile": [
                                     "https://demis.rki.de/fhir/StructureDefinition/PathogenDetectionSARSCoV2"
@@ -369,15 +385,15 @@
                                 "text": "Coronavirus SARS-CoV-2 (PCR)"
                             },
                             "specimen": {
-                                "reference": "Specimen/d4240515-1e02-414d-ae18-5d3925ea2de6"
+                                "reference": "Specimen/<specimen_UUID_to_change>"
                             }
                         }
                     },
                     {
-                        "fullUrl": "https://demis.rki.de/fhir/Specimen/d4240515-1e02-414d-ae18-5d3925ea2de6",
+                        "fullUrl": "https://demis.rki.de/fhir/Specimen/<specimen_UUID_to_change>",
                         "resource": {
                             "resourceType": "Specimen",
-                            "id": "d4240515-1e02-414d-ae18-5d3925ea2de6",
+                            "id": "<specimen_UUID_to_change>",
                             "meta": {
                                 "profile": [
                                     "https://demis.rki.de/fhir/StructureDefinition/SpecimenSARSCoV2"

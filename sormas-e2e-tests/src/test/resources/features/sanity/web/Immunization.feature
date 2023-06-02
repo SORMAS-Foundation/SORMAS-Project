@@ -70,13 +70,10 @@ Feature: Immunization end to end tests
   @env_main @#8565
   Scenario: Check an archived immunization if its read only
     Given API: I create a new person
-    And API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then API: I create a new case
-    And API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then API: I create 1 new immunizations for last created person
-    And API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then I log in as a Admin User
     Then I navigate to last created immunization by API via URL
@@ -178,6 +175,7 @@ Feature: Immunization end to end tests
     And I set Disease combobox to "" value from Edit Event Page
     And I click on Save Button in Edit Event directory
     And I add a participant to the event
+    And I click on Event Participant Person tab
     And I check that New immunization card is not available
     And I click on the Event participant tab
     And I back to the Event tab
@@ -366,10 +364,8 @@ Feature: Immunization end to end tests
   @tmsLink=SORQA-668 @env_de @oldfake
     Scenario: Check automatic deletion of IMMUNIZATION created 3651 days ago
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     When API: I create a new immunizations for last created person with creation date 3651 days ago
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then I log in as a Admin User
     And I click on the Configuration button from navbar
@@ -382,10 +378,8 @@ Feature: Immunization end to end tests
   @tmsLink=SORQA-677 @env_de @oldfake
   Scenario: Check automatic deletion NOT of IMMUNIZATION created 3645 days ago
     Given API: I create a new person
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     When API: I create a new immunizations for last created person with creation date 3645 days ago
-    Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then I log in as a Admin User
     And I click on the Configuration button from navbar
