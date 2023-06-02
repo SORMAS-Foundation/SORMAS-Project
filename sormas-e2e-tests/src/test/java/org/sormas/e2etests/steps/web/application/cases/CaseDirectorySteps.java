@@ -1414,6 +1414,13 @@ public class CaseDirectorySteps implements En {
           System.out.println("To jest web path: " + LAST_CREATED_CASE_URL);
           webDriverHelpers.accessWebSite(LAST_CREATED_CASE_URL);
         });
+
+    And(
+        "^I check that accept shared case button with copied case description is visible in Share Directory page$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              getActionAcceptButtonByCaseDescription(generatedRandomString));
+        });
   }
 
   private Number getRandomNumberForBirthDateDifferentThanCreated(Number created, int min, int max) {

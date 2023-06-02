@@ -2583,6 +2583,16 @@ public class EditCaseSteps implements En {
               webDriverHelpers.isElementVisibleWithTimeout(ERROR_DESCRIPTION_REQUEST_PROCESSED, 3));
           softly.assertAll();
         });
+    When(
+        "I check if popup with revoke error with handover displays",
+        () -> {
+          softly.assertTrue(
+              webDriverHelpers.isElementVisibleWithTimeout(ERROR_REVOKE_IN_HANDOVER_HEADER_DE, 3));
+          softly.assertTrue(
+              webDriverHelpers.isElementVisibleWithTimeout(
+                  ERROR_REVOKE_DESCRIPTION_REQUEST_PROCESSED, 3));
+          softly.assertAll();
+        });
 
     When(
         "I check if share warning is displayed",

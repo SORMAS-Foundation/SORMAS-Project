@@ -392,6 +392,11 @@ public class EditCasePage {
   public static final By ERROR_DESCRIPTION_REQUEST_PROCESSED =
       By.xpath(
           "//*[contains(text(),'Die Anfrage wurde bereits bearbeitet. Bitte laden Sie die Seite neu, um die neuesten \u00C4nderungen zu sehen.')]");
+  public static final By ERROR_REVOKE_IN_HANDOVER_HEADER_DE =
+      By.xpath("//*[contains(text(),'Freigabeanfrage nicht gefunden')]");
+  public static final By ERROR_REVOKE_DESCRIPTION_REQUEST_PROCESSED =
+      By.xpath(
+          "//*[contains(text(),'Die Freigabeanfrage konnte nicht gefunden werden. Sie wurde entweder vom Quellsystem zur\u00FCckgezogen oder von jemand anderem abgelehnt. Bitte laden Sie die Seite neu, um die neuesten \u00C4nderungen zu sehen.')]");
 
   public static By getPreExistingConditionCombobox_DE(String id) {
     return By.xpath(

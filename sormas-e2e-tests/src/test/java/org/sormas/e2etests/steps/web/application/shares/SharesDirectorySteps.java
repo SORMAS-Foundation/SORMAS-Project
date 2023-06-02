@@ -22,6 +22,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ACTI
 import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.POPUP_COLUMN_HEADER;
 import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.SHARE_FIRST_EYE_ICON;
 import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.SHARE_OPTION_CHECKBOX;
+import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.SHARE_REQUEST_NOT_FOUND_HEADER_DE;
 import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.SHARE_UUID_CASE_TITLE;
 import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.WARNING_ACCEPT_CASE_BEFORE_CONTACT_HEADER_DE;
 import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.getCheckBoxFromShareFormByIndex;
@@ -117,6 +118,12 @@ public class SharesDirectorySteps implements En {
                   WARNING_ACCEPT_CASE_BEFORE_CONTACT_HEADER_DE, 5));
           softly.assertAll();
           webDriverHelpers.clickOnWebElementBySelector(ACTION_OKAY);
+        });
+
+    Then(
+        "^I check if Share request not found popup message appeared for DE$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(SHARE_REQUEST_NOT_FOUND_HEADER_DE);
         });
   }
 }

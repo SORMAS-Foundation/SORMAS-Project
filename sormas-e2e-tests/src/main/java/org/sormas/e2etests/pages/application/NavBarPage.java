@@ -48,4 +48,14 @@ public class NavBarPage {
   public static final By LOGOUT_KEYCLOAK_BUTTON = By.cssSelector("[id='actionLogout-2']");
   public static final By SHARE_REQUESTS_BUTTON = By.id("shareRequests");
   public static final By MESSAGES_BUTTON = By.id("messages");
+  public static final By ERROR_NOTIFICATION_CAPTION =
+      By.xpath("//*[contains(text(),'An error has occurred')]");
+  public static final By ERROR_NOTIFICATION_DESCRIPTION =
+      By.xpath(
+          "//*[contains(text(),'An unexpected error occurred. Please contact your supervisor or administrator and inform them about it.')]");
+  public static final By ERROR_NOTIFICATION_CAPTION_DE =
+      By.xpath("//*[contains(text(),'Ein Fehler ist aufgetreten')]");
+  public static final By ERROR_NOTIFICATION_DESCRIPTION_DE =
+      By.xpath(
+          "//*[contains(text(),'Ein unerwarteter Fehler ist aufgetreten. Bitte kontaktieren Sie Ihre IT-Administration und informieren Sie sie dar\u00FCber.')]");
 }
