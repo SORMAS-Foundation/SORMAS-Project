@@ -838,10 +838,10 @@ public class EventDirectorySteps implements En {
               SEARCH_EVENT_BY_FREE_TEXT_INPUT, 20);
           webDriverHelpers.fillInWebElement(SEARCH_EVENT_BY_FREE_TEXT_INPUT, eventUuid);
           TimeUnit.SECONDS.sleep(2);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(140);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
           TimeUnit.SECONDS.sleep(2); // wait for filter
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(140);
         });
 
     When(
@@ -1302,6 +1302,7 @@ public class EventDirectorySteps implements En {
     When(
         "I set Relevance Status Filter to ([^\"]*) on Event Directory page",
         (String option) -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(RESET_FILTER);
           webDriverHelpers.selectFromCombobox(EVENT_PARTICIPANT_DISPLAY_FILTER_COMBOBOX, option);
           TimeUnit.SECONDS.sleep(3); // wait for reaction
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
