@@ -925,7 +925,7 @@ Feature: Sharing cases between environments tests
     Then I click on Ja button in Revoke case popup
     Then I back to tab number 2
     And I click on "accept" shared case button with copied case description
-    And I check if popup with error with handover displays
+    And I check if popup with revoke error with handover displays
 
   @tmsLink=SORDEV-12081 @env_s2s_1
   Scenario: Accept Reject Special Cases [6]
