@@ -153,5 +153,19 @@ public class SideCardsSteps implements En {
               "Number of samples is not correct");
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(ONE_TEST_IN_SAMPLES_DE);
         });
+
+    And(
+        "^I click on Display associated lab messages button from Samples side component$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(SAMPLES_DISPLAY_ASSOCIATED_LAB_MESSAGES_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAMPLES_DISPLAY_ASSOCIATED_LAB_MESSAGES_BUTTON);
+        });
+
+    And(
+        "^I click on Display associated external messages button from Reports side component$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(REPORTS_DISPLAY_ASSOCIATED_EXTERNAL_MESSAGES_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(REPORTS_DISPLAY_ASSOCIATED_EXTERNAL_MESSAGES_BUTTON);
+        });
   }
 }

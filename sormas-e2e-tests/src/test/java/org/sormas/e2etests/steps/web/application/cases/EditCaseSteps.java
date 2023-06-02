@@ -2626,6 +2626,13 @@ public class EditCaseSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(EXTERNAL_ID_INPUT);
           externalUUID = webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT);
         });
+
+    And(
+        "^I check if external message window appears and close it$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(LAB_MESSAGE_WINDOW_HEADER_DE);
+          webDriverHelpers.clickOnWebElementBySelector(WINDOW_CLOSE_BUTTON);
+        });
   }
 
   private Vaccination collectVaccinationData() {

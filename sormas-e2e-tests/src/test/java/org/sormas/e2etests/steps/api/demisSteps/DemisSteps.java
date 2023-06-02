@@ -790,8 +790,8 @@ public class DemisSteps implements En {
     And(
          "^I select \"([^\"]*)\" as a Laboratory in New sample form while processing a DEMIS LabMessage$",
          (String labor) -> {
-           webDriverHelpers.waitUntilIdentifiedElementIsPresent(LABORATORY_DETAILS_INPUT);
-           webDriverHelpers.fillInWebElement(LABORATORY_DETAILS_INPUT, labor);
+           webDriverHelpers.waitUntilIdentifiedElementIsPresent(LABORATORY_INPUT);
+           webDriverHelpers.fillInWebElement(LABORATORY_INPUT, labor);
         });
   }
 

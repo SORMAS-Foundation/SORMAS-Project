@@ -410,3 +410,7 @@ Scenario: Create and send laboratory request via Demis
     And I click on the Cases button from navbar
     And I search the case by last created person via Demis message
     Then I click on the first Case ID from Case Directory
+    And I click on Display associated lab messages button from Samples side component
+    And I check if external message window appears and close it
+    And I click on Display associated external messages button from Reports side component
+    And I check if external message window appears and close it
