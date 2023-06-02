@@ -405,6 +405,7 @@ Scenario: Create and send laboratory request via Demis
     Then I check that new sample form with pathogen detection reporting process is displayed
     And I check that laboratory is set to "" on Edit Sample page
     And I select "Testlabor DEMIS" as a Laboratory in New sample form while processing a DEMIS LabMessage
+    And I select "Testlabor DEMIS" as a Laboratory for pathogen in New sample form while processing a DEMIS LabMessage
     And I click on save sample button
     And I click on save sample button
     And I click on the Cases button from navbar
@@ -414,3 +415,5 @@ Scenario: Create and send laboratory request via Demis
     And I check if external message window appears and close it
     And I click on Display associated external messages button from Reports side component
     And I check if external message window appears and close it
+    When I click on edit Report on Edit Case page
+    Then I check that Reporter Facility in Edit report form is set to ""

@@ -32,6 +32,7 @@ import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPa
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CREATE_A_NEW_CASE_WITH_POSITIVE_TEST_EVENT_PARTICIPANT_HEADER_DE;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CREATE_NEW_EVENT_PARTICIPANT_RADIOBUTTON_DE;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CREATE_NEW_PERSON_RADIOBUTTON_DE;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FIRST_PATHOGEN_LABORATORY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FORWARDED_QUICK_FILTER_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FORWARDED_QUICK_FILTER_COUNTER;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.LABORATORY_DETAILS_INPUT;
@@ -792,6 +793,13 @@ public class DemisSteps implements En {
          (String labor) -> {
            webDriverHelpers.waitUntilIdentifiedElementIsPresent(LABORATORY_INPUT);
            webDriverHelpers.fillInWebElement(LABORATORY_INPUT, labor);
+        });
+
+    And(
+        "^I select \"([^\"]*)\" as a Laboratory for pathogen in New sample form while processing a DEMIS LabMessage$",
+        (String labor) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(FIRST_PATHOGEN_LABORATORY_COMBOBOX);
+          webDriverHelpers.selectFromCombobox(FIRST_PATHOGEN_LABORATORY_COMBOBOX, labor);
         });
   }
 
