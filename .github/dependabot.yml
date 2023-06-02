@@ -34,6 +34,7 @@ updates:
       - dependency-name: org.eclipse.microprofile.config:microprofile-config-api
       - dependency-name: org.glassfish:javax.el
       - dependency-name: org.glassfish.corba:glassfish-corba-omgapi
+      - dependency-name: org.glassfish.jaxb:*
       - dependency-name: org.glassfish.jersey*:jersey-*
       - dependency-name: org.glassfish.soteria:javax.security.enterprise
       - dependency-name: org.javassist:javassist
