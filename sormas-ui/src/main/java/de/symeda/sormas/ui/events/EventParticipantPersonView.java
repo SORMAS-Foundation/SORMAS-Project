@@ -45,7 +45,13 @@ public class EventParticipantPersonView extends AbstractEventParticipantView imp
 		DetailSubComponentWrapper componentWrapper = addComponentWrapper(editComponent);
 		CustomLayout layout = addPageLayout(componentWrapper, editComponent);
 		setSubComponent(componentWrapper);
-		addSideComponents(layout, CoreEntityType.EVENT_PARTICIPANT, eventParticipant.getUuid(), person.toReference(), this::showUnsavedChangesPopup);
+		addSideComponents(
+			layout,
+			CoreEntityType.EVENT_PARTICIPANT,
+			eventParticipant.getUuid(),
+			person.toReference(),
+			this::showUnsavedChangesPopup,
+			isEditAllowed());
 		setEditPermission(
 			editComponent,
 			UserProvider.getCurrent().hasUserRight(UserRight.PERSON_EDIT),
