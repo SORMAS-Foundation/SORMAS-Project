@@ -801,6 +801,18 @@ public class DemisSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(FIRST_PATHOGEN_LABORATORY_INPUT);
           webDriverHelpers.fillAndSubmitInWebElement(FIRST_PATHOGEN_LABORATORY_INPUT, labor);
         });
+
+    When(
+        "^I create and send Laboratory Notification with two positive pathogens$",
+        () -> {
+          patientLastName = faker.name().lastName();
+          patientFirstName = faker.name().firstName();
+          String json = demisApiService.prepareLabNotificationFileWithTwoPathogens(patientFirstName, patientLastName);
+
+          Assert.assertTrue(
+              demisApiService.sendLabRequest(json, loginToken),
+              "Failed to send laboratory request");
+        });
   }
 
   private List<Map<String, String>> getTableRowsData() {
