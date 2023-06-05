@@ -246,14 +246,40 @@
 			</dependency>
 
 			<dependency>
-				<groupId>org.glassfish.jersey.containers</groupId>
-				<artifactId>jersey-container-servlet</artifactId>
+				<groupId>org.glassfish.hk2</groupId>
+				<artifactId>osgi-resource-locator</artifactId>
+				<version>1.0.3</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.hk2.external</groupId>
+				<artifactId>jakarta.inject</artifactId>
+				<version>2.6.1</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.glassfish.jersey.containers.glassfish</groupId>
+				<artifactId>jersey-gf-ejb</artifactId>
+				<version>${jersey.version}</version>
+				<scope>provided</scope>
+				<!-- Do not remove: Necessary to debug underlying logic of how ExceptionMappers are resolved in the IDE.-->
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jersey.core</groupId>
+				<artifactId>jersey-client</artifactId>
 				<version>${jersey.version}</version>
 				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish.jersey.core</groupId>
-				<artifactId>jersey-client</artifactId>
+				<artifactId>jersey-common</artifactId>
+				<version>${jersey.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jersey.core</groupId>
+				<artifactId>jersey-server</artifactId>
 				<version>${jersey.version}</version>
 				<scope>provided</scope>
 			</dependency>
@@ -268,14 +294,6 @@
 				<artifactId>jersey-media-json-jackson</artifactId>
 				<version>${jersey.version}</version>
 				<scope>provided</scope>
-			</dependency>
-
-			<!-- Do not remove: Necessary to debug underlying logic of how ExceptionMappers are resolved in the IDE.-->
-			<dependency>
-				<groupId>org.glassfish.jersey.containers.glassfish</groupId>
-				<artifactId>jersey-gf-ejb</artifactId>
-				<version>${jersey.version}</version>
-				<scope>compile</scope>
 			</dependency>
 
 			<dependency>
@@ -411,6 +429,19 @@
 				<groupId>commons-logging</groupId>
 				<artifactId>commons-logging</artifactId>
 				<version>1.2</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>io.swagger.core.v3</groupId>
+				<artifactId>swagger-jaxrs2</artifactId>
+				<version>${swagger.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>io.swagger.core.v3</groupId>
+				<artifactId>swagger-jaxrs2-servlet-initializer-v2</artifactId>
+				<version>${swagger.version}</version>
 				<scope>provided</scope>
 			</dependency>
 
@@ -571,6 +602,61 @@
 						<artifactId>jackson-module-jaxb-annotations</artifactId>
 					</exclusion>
 				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>org.keycloak</groupId>
+				<artifactId>keycloak-admin-client</artifactId>
+				<version>${keycloak.version}</version>
+				<scope>provided</scope>
+				<exclusions>
+					<!-- Exclude Payara modules here -->
+					<exclusion>
+						<groupId>org.jboss.spec.javax.annotation</groupId>
+						<artifactId>jboss-annotations-api_1.3_spec</artifactId>
+						<!-- Payara module: jakarta.annotation-api -->
+					</exclusion>
+					<exclusion>
+						<groupId>org.jboss.spec.javax.ws.rs</groupId>
+						<artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
+						<!-- Payara module: jakarta.ws.rs-api -->
+					</exclusion>
+					<exclusion>
+						<groupId>org.jboss.spec.javax.xml.bind</groupId>
+						<artifactId>jboss-jaxb-api_2.3_spec</artifactId>
+						<!-- Payara module: jakarta.xml.bind-api -->
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.keycloak</groupId>
+				<artifactId>keycloak-common</artifactId>
+				<version>${keycloak.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.keycloak</groupId>
+				<artifactId>keycloak-core</artifactId>
+				<version>${keycloak.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.keycloak</groupId>
+				<artifactId>keycloak-server-spi</artifactId>
+				<version>${keycloak.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.keycloak</groupId>
+				<artifactId>keycloak-server-spi-private</artifactId>
+				<version>${keycloak.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.keycloak</groupId>
+				<artifactId>keycloak-servlet-filter-adapter</artifactId>
+				<version>${keycloak.version}</version>
+				<scope>provided</scope>
 			</dependency>
 
 			<dependency>
@@ -748,57 +834,6 @@
 			</dependency>
 
 			<dependency>
-				<groupId>org.keycloak</groupId>
-				<artifactId>keycloak-admin-client</artifactId>
-				<version>${keycloak.version}</version>
-				<exclusions>
-					<!-- Exclude Payara modules here -->
-					<exclusion>
-						<groupId>org.jboss.spec.javax.annotation</groupId>
-						<artifactId>jboss-annotations-api_1.3_spec</artifactId>
-						<!-- Payara module: jakarta.annotation-api -->
-					</exclusion>
-					<exclusion>
-						<groupId>org.jboss.spec.javax.ws.rs</groupId>
-						<artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
-						<!-- Payara module: jakarta.ws.rs-api -->
-					</exclusion>
-					<exclusion>
-						<groupId>org.jboss.spec.javax.xml.bind</groupId>
-						<artifactId>jboss-jaxb-api_2.3_spec</artifactId>
-						<!-- Payara module: jakarta.xml.bind-api -->
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>org.keycloak</groupId>
-				<artifactId>keycloak-common</artifactId>
-				<version>${keycloak.version}</version>
-				<!-- No Domain lib, because it ran with Ant into problem, see https://stackoverflow.com/questions/64857838/invalid-jdk-version-in-profile-compile-java8-release-flag-unbounded-range-9 -->
-			</dependency>
-			<dependency>
-				<groupId>org.keycloak</groupId>
-				<artifactId>keycloak-core</artifactId>
-				<version>${keycloak.version}</version>
-				<!-- No Domain lib, because it ran with Ant into problem, see https://stackoverflow.com/questions/64857838/invalid-jdk-version-in-profile-compile-java8-release-flag-unbounded-range-9 -->
-			</dependency>
-			<dependency>
-				<groupId>org.keycloak</groupId>
-				<artifactId>keycloak-server-spi</artifactId>
-				<version>${keycloak.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.keycloak</groupId>
-				<artifactId>keycloak-server-spi-private</artifactId>
-				<version>${keycloak.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.keycloak</groupId>
-				<artifactId>keycloak-servlet-filter-adapter</artifactId>
-				<version>${keycloak.version}</version>
-			</dependency>
-
-			<dependency>
 				<groupId>org.reflections</groupId>
 				<artifactId>reflections</artifactId>
 				<version>0.10.2</version>
@@ -958,12 +993,6 @@
 				<artifactId>hibernate-validator</artifactId>
 				<version>6.2.5.Final</version>
 				<scope>test</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>io.swagger.core.v3</groupId>
-				<artifactId>swagger-jaxrs2-servlet-initializer-v2</artifactId>
-				<version>${swagger.version}</version>
 			</dependency>
 
 			<dependency>
