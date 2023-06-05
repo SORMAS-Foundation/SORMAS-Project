@@ -35,7 +35,8 @@
 		<swagger.version>2.2.8</swagger.version>
 		<bouncycastle.version>1.70</bouncycastle.version>
 		<keycloak.version>21.0.1</keycloak.version>
-		<resteasy.version>3.15.3.Final</resteasy.version>
+		<resteasy.version>4.7.7.Final</resteasy.version>
+		<kotlin-stdlib.version>1.6.20</kotlin-stdlib.version>
 		<xdocreport.version>2.0.4</xdocreport.version>
 		<docx4j.version>8.3.8</docx4j.version>
 		<archunit.version>1.0.1</archunit.version>
@@ -332,13 +333,13 @@
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-core</artifactId>
 				<version>${logback.version}</version>
-				<scope>runtime</scope>
+				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-classic</artifactId>
 				<version>${logback.version}</version>
-				<scope>runtime</scope>
+				<scope>provided</scope>
 			</dependency>
 
 			<dependency>
@@ -381,9 +382,65 @@
 			</dependency>
 
 			<dependency>
+				<groupId>com.google.code.gson</groupId>
+				<artifactId>gson</artifactId>
+				<version>2.10.1</version>
+				<scope>provided</scope>
+				<!-- Version defined to resolve version conflict between multiple usages -->
+			</dependency>
+
+			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
 				<version>31.1-jre</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>com.google.http-client</groupId>
+				<artifactId>google-http-client</artifactId>
+				<version>1.42.3</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.google.http-client</groupId>
+				<artifactId>google-http-client-gson</artifactId>
+				<version>1.42.3</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>com.google.oauth-client</groupId>
+				<artifactId>google-oauth-client</artifactId>
+				<version>1.34.1</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>com.googlecode.libphonenumber</groupId>
+				<artifactId>libphonenumber</artifactId>
+				<version>8.13.3</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>com.ibm.etcd</groupId>
+				<artifactId>etcd-java</artifactId>
+				<version>0.0.22</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>com.jayway.jsonpath</groupId>
+				<artifactId>json-path</artifactId>
+				<version>2.7.0</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>com.nexmo</groupId>
+				<artifactId>client</artifactId>
+				<version>5.6.0</version>
 				<scope>provided</scope>
 			</dependency>
 
@@ -429,6 +486,25 @@
 				<groupId>commons-logging</groupId>
 				<artifactId>commons-logging</artifactId>
 				<version>1.2</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>commons-validator</groupId>
+				<artifactId>commons-validator</artifactId>
+				<version>1.7</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>fr.opensagres.xdocreport</groupId>
+				<artifactId>xdocreport</artifactId>
+				<version>${xdocreport.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>fr.opensagres.xdocreport</groupId>
+				<artifactId>fr.opensagres.xdocreport.template.velocity</artifactId>
+				<version>${xdocreport.version}</version>
 				<scope>provided</scope>
 			</dependency>
 
@@ -484,14 +560,42 @@
 			</dependency>
 
 			<dependency>
+				<groupId>org.apache.poi</groupId>
+				<artifactId>poi-ooxml</artifactId>
+				<version>5.2.3</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.tika</groupId>
+				<artifactId>tika-core</artifactId>
+				<version>${apache-tika.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.tika</groupId>
+				<artifactId>tika-parsers-standard-package</artifactId>
+				<version>${apache-tika.version}</version>
+				<scope>provided</scope>
+				<exclusions>
+					<exclusion>
+						<groupId>xml-apis</groupId>
+						<artifactId>xml-apis</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
 				<groupId>org.apache.xmlgraphics</groupId>
 				<artifactId>fop-events</artifactId>
 				<version>2.8</version>
+				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.xmlgraphics</groupId>
 				<artifactId>xmlgraphics-commons</artifactId>
 				<version>2.8</version>
+				<scope>provided</scope>
 			</dependency>
 
 			<dependency>
@@ -517,6 +621,20 @@
 				<groupId>org.checkerframework</groupId>
 				<artifactId>checker-qual</artifactId>
 				<version>3.29.0</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.docx4j</groupId>
+				<artifactId>docx4j-docx-anon</artifactId>
+				<version>${docx4j.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.docx4j</groupId>
+				<artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
+				<version>${docx4j.version}</version>
+				<scope>provided</scope>
 			</dependency>
 
 			<dependency>
@@ -605,12 +723,104 @@
 			</dependency>
 
 			<dependency>
+				<groupId>org.jboss.resteasy</groupId>
+				<artifactId>resteasy-client</artifactId>
+				<version>${resteasy.version}</version>
+				<scope>provided</scope>
+				<exclusions>
+					<exclusion>
+						<groupId>org.jboss.spec.javax.annotation</groupId>
+						<artifactId>jboss-annotations-api_1.3_spec</artifactId>
+						<!-- Payara module: jakarta.annotation-api -->
+					</exclusion>
+					<exclusion>
+						<groupId>org.jboss.spec.javax.ws.rs</groupId>
+						<artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
+						<!-- Payara module: jakarta.ws.rs-api -->
+					</exclusion>
+					<exclusion>
+						<groupId>org.jboss.spec.javax.xml.bind</groupId>
+						<artifactId>jboss-jaxb-api_2.3_spec</artifactId>
+						<!-- Payara module: jakarta.xml.bind-api -->
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.resteasy</groupId>
+				<artifactId>resteasy-jackson2-provider</artifactId>
+				<version>${resteasy.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.resteasy</groupId>
+				<artifactId>resteasy-jaxb-provider</artifactId>
+				<version>${resteasy.version}</version>
+				<scope>provided</scope>
+				<exclusions>
+					<exclusion>
+						<groupId>org.jboss.spec.javax.xml.bind</groupId>
+						<artifactId>jboss-jaxb-api_2.3_spec</artifactId>
+						<!-- Payara module: jakarta.xml.bind-api -->
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.resteasy</groupId>
+				<artifactId>resteasy-multipart-provider</artifactId>
+				<version>${resteasy.version}</version>
+				<scope>provided</scope>
+				<exclusions>
+					<exclusion>
+						<groupId>org.jboss.spec.javax.xml.bind</groupId>
+						<artifactId>jboss-jaxb-api_2.3_spec</artifactId>
+						<!-- Payara module: jakarta.xml.bind-api -->
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>org.jetbrains</groupId>
+				<artifactId>annotations</artifactId>
+				<version>17.0.0</version>
+				<scope>provided</scope>
+				<!-- Version defined to resolve version conflict between multiple usages -->
+			</dependency>
+
+			<dependency>
+				<groupId>org.jetbrains.kotlin</groupId>
+				<artifactId>kotlin-stdlib</artifactId>
+				<version>${kotlin-stdlib.version}</version>
+				<scope>provided</scope>
+				<!-- Version defined to resolve version conflict between multiple usages -->
+			</dependency>
+			<dependency>
+				<groupId>org.jetbrains.kotlin</groupId>
+				<artifactId>kotlin-stdlib-common</artifactId>
+				<version>${kotlin-stdlib.version}</version>
+				<scope>provided</scope>
+				<!-- Version defined to resolve version conflict between multiple usages -->
+			</dependency>
+			<dependency>
+				<groupId>org.jetbrains.kotlin</groupId>
+				<artifactId>kotlin-stdlib-jdk7</artifactId>
+				<version>${kotlin-stdlib.version}</version>
+				<scope>provided</scope>
+				<!-- Version defined to resolve version conflict between multiple usages -->
+			</dependency>
+			<dependency>
+				<groupId>org.jetbrains.kotlin</groupId>
+				<artifactId>kotlin-stdlib-jdk8</artifactId>
+				<version>${kotlin-stdlib.version}</version>
+				<scope>provided</scope>
+				<!-- Version defined to resolve version conflict between multiple usages -->
+			</dependency>
+
+			<dependency>
 				<groupId>org.keycloak</groupId>
 				<artifactId>keycloak-admin-client</artifactId>
 				<version>${keycloak.version}</version>
 				<scope>provided</scope>
 				<exclusions>
-					<!-- Exclude Payara modules here -->
 					<exclusion>
 						<groupId>org.jboss.spec.javax.annotation</groupId>
 						<artifactId>jboss-annotations-api_1.3_spec</artifactId>
@@ -679,6 +889,13 @@
 				</exclusions>
 			</dependency>
 
+			<dependency>
+				<groupId>org.reflections</groupId>
+				<artifactId>reflections</artifactId>
+				<version>0.10.2</version>
+				<scope>provided</scope>
+			</dependency>
+
 			<!-- manual dependency
 			SQL function copied to sormas-backend/src/main/resources/sql/versioning_function.sql
 			https://github.com/nearform/temporal_tables/releases/tag/v0.4.2
@@ -724,119 +941,27 @@
 				<groupId>ca.uhn.hapi.fhir</groupId>
 				<artifactId>hapi-fhir-structures-r4</artifactId>
 				<version>6.2.2</version>
-				<scope>runtime</scope>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>ca.uhn.hapi.fhir</groupId>
+				<artifactId>org.hl7.fhir.r4</artifactId>
+				<version>5.6.88</version>
+				<scope>provided</scope>
 			</dependency>
 
 			<!-- *** Domain libs END *** -->
 
 			<!-- *** Compile dependencies *** -->
-			<dependency>
-				<groupId>ca.uhn.hapi.fhir</groupId>
-				<artifactId>org.hl7.fhir.r4</artifactId>
-				<version>5.6.88</version>
-				<scope>compile</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>com.googlecode.libphonenumber</groupId>
-				<artifactId>libphonenumber</artifactId>
-				<version>8.13.3</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.jayway.jsonpath</groupId>
-				<artifactId>json-path</artifactId>
-				<version>2.7.0</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.nexmo</groupId>
-				<artifactId>client</artifactId>
-				<version>5.6.0</version>
-			</dependency>
-
-			<dependency>
-				<groupId>commons-validator</groupId>
-				<artifactId>commons-validator</artifactId>
-				<version>1.7</version>
-			</dependency>
-
-			<dependency>
-				<groupId>fr.opensagres.xdocreport</groupId>
-				<artifactId>xdocreport</artifactId>
-				<version>${xdocreport.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>fr.opensagres.xdocreport</groupId>
-				<artifactId>fr.opensagres.xdocreport.template.velocity</artifactId>
-				<version>${xdocreport.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>io.swagger.core.v3</groupId>
-				<artifactId>swagger-jaxrs2</artifactId>
-				<version>${swagger.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.apache.tika</groupId>
-				<artifactId>tika-core</artifactId>
-				<version>${apache-tika.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.tika</groupId>
-				<artifactId>tika-parsers-standard-package</artifactId>
-				<version>${apache-tika.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>xml-apis</groupId>
-						<artifactId>xml-apis</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-
-			<dependency>
-				<groupId>org.docx4j</groupId>
-				<artifactId>docx4j-docx-anon</artifactId>
-				<version>${docx4j.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.docx4j</groupId>
-				<artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
-				<version>${docx4j.version}</version>
-			</dependency>
 
 			<dependency>
 				<groupId>org.geotools</groupId>
 				<artifactId>gt-shapefile</artifactId>
 				<version>28.2</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.jboss.resteasy</groupId>
-				<artifactId>resteasy-client</artifactId>
-				<version>${resteasy.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jboss.resteasy</groupId>
-				<artifactId>resteasy-multipart-provider</artifactId>
-				<version>${resteasy.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jboss.resteasy</groupId>
-				<artifactId>resteasy-jackson2-provider</artifactId>
-				<version>${resteasy.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jboss.resteasy</groupId>
-				<artifactId>resteasy-jaxb-provider</artifactId>
-				<version>${resteasy.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.reflections</groupId>
-				<artifactId>reflections</artifactId>
-				<version>0.10.2</version>
+				<!-- 
+				  Kept as compile dependency because Ant collect-serverlibs fails:
+				  sormas-base\build.xml:53: org.apache.maven.artifact.InvalidArtifactRTException: For artifact {org.osgi:org.osgi.annotation:null:jar}: The version cannot be empty.
+				-->
 			</dependency>
 
 			<!-- ** Vaadin ** -->
@@ -962,12 +1087,6 @@
 			</dependency>
 
 			<dependency>
-				<groupId>org.apache.poi</groupId>
-				<artifactId>poi-ooxml</artifactId>
-				<version>5.2.3</version>
-			</dependency>
-
-			<dependency>
 				<groupId>org.hamcrest</groupId>
 				<artifactId>hamcrest</artifactId>
 				<version>${hamcrest.version}</version>
@@ -1030,29 +1149,6 @@
 			</dependency>
 
 			<!-- *** Test dependencies END *** -->
-
-			<dependency>
-				<groupId>com.ibm.etcd</groupId>
-				<artifactId>etcd-java</artifactId>
-				<version>0.0.22</version>
-			</dependency>
-
-			<!-- OIDC for S2S -->
-			<dependency>
-				<groupId>com.google.oauth-client</groupId>
-				<artifactId>google-oauth-client</artifactId>
-				<version>1.34.1</version>
-			</dependency>
-			<dependency>
-				<groupId>com.google.http-client</groupId>
-				<artifactId>google-http-client</artifactId>
-				<version>1.42.3</version>
-			</dependency>
-			<dependency>
-				<groupId>com.google.http-client</groupId>
-				<artifactId>google-http-client-gson</artifactId>
-				<version>1.42.3</version>
-			</dependency>
 
 		</dependencies>
 	</dependencyManagement>
