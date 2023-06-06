@@ -146,17 +146,15 @@ public class ImmunizationController {
 		immunizationDataForm.setValue(immunizationDto);
 
 		UserProvider currentUserProvider = UserProvider.getCurrent();
-		CommitDiscardWrapperComponent<ImmunizationDataForm> editComponent = new CommitDiscardWrapperComponent<ImmunizationDataForm>(
-			immunizationDataForm,
-			true,
-			immunizationDataForm.getFieldGroup()) {
+		CommitDiscardWrapperComponent<ImmunizationDataForm> editComponent =
+			new CommitDiscardWrapperComponent<ImmunizationDataForm>(immunizationDataForm, true, immunizationDataForm.getFieldGroup()) {
 
-			@Override
-			public void discard() {
-				immunizationDataForm.discard();
-				super.discard();
-			}
-		};
+				@Override
+				public void discard() {
+					immunizationDataForm.discard();
+					super.discard();
+				}
+			};
 
 		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getImmunizationFacade().getAutomaticDeletionInfo(immunizationDto.getUuid());
 		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getImmunizationFacade().getManuallyDeletionInfo(immunizationDto.getUuid());
@@ -218,6 +216,7 @@ public class ImmunizationController {
 			UserRight.IMMUNIZATION_EDIT,
 			null,
 			UserRight.IMMUNIZATION_DELETE,
+			UserRight.IMMUNIZATION_ARCHIVE,
 			null,
 			immunizationDto.isInJurisdiction());
 

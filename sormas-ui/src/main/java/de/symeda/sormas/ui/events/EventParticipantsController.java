@@ -270,6 +270,7 @@ public class EventParticipantsController {
 			UserRight.EVENTPARTICIPANT_EDIT,
 			null,
 			UserRight.EVENTPARTICIPANT_DELETE,
+			UserRight.EVENTPARTICIPANT_ARCHIVE,
 			FacadeProvider.getEventParticipantFacade().getEditPermissionType(eventParticipantUuid),
 			eventParticipant.isInJurisdiction());
 
