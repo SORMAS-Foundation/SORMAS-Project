@@ -55,6 +55,8 @@ public class RemoteDriverFactory implements DriverFactory {
   @Override
   public ChromeDriver getRemoteWebDriver() {
     checkIfDriverExists();
+    File remoteDriverExec = new File(remoteDriverPath);
+    remoteDriverExec.setExecutable(true);
     System.setProperty("webdriver.chrome.driver", remoteDriverPath);
     final ChromeOptions options = new ChromeOptions();
     final HashMap<String, Object> chromePreferences = new HashMap<>();
