@@ -190,8 +190,7 @@ public class DemisApiService {
   }
 
   public String prepareLabNotificationFileWithTwoFacilities(
-          String patientFirstName,
-          String patientLastName) {
+      String patientFirstName, String patientLastName) {
     DemisData demisData = runningConfiguration.getDemisData(locale);
     String file = "src/main/resources/demisJsonTemplates/labNotificationTemplateTwoFacilities.json";
     String json = readFileAsString(file);

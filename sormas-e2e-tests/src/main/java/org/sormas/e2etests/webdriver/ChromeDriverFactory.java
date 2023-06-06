@@ -18,8 +18,6 @@
 
 package org.sormas.e2etests.webdriver;
 
-import static org.openqa.selenium.remote.CapabilityType.SUPPORTS_ALERTS;
-
 import io.github.bonigarcia.wdm.WebDriverManager;
 import java.util.HashMap;
 import javax.inject.Inject;
@@ -66,7 +64,6 @@ public class ChromeDriverFactory implements DriverFactory {
     options.setCapability("javascript.enabled", true);
     options.setExperimentalOption("prefs", chromePreferences);
     options.setPageLoadStrategy(PageLoadStrategy.NORMAL);
-    options.setCapability(SUPPORTS_ALERTS, false);
     return new ChromeDriver(options);
   }
 }

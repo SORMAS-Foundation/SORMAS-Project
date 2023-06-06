@@ -440,6 +440,9 @@ public class EditCasePage {
       By.id("ExternalSurveillanceToolGateway.send");
   public static final By REPORTING_TOOL_MESSAGE =
       By.xpath("//div[@class='v-Notification humanized v-Notification-humanized']");
-  public static final By LAB_MESSAGE_WINDOW_HEADER_DE = By.xpath("//div[contains(@class, 'popupContent')]//div[contains(@class, 'v-window-outerheader')]//div[contains(text(), 'Meldung')]");
-  public static final By WINDOW_CLOSE_BUTTON = By.xpath("//div[contains(@class, 'v-window-closebox')]");
+  public static final By LAB_MESSAGE_WINDOW_HEADER_DE =
+      By.xpath(
+          "//div[contains(@class, 'popupContent')]//div[contains(@class, 'v-window-outerheader')]//div[contains(text(), 'Meldung')]");
+  public static final By WINDOW_CLOSE_BUTTON =
+      By.xpath("//div[contains(@class, 'v-window-closebox')]");
 }
