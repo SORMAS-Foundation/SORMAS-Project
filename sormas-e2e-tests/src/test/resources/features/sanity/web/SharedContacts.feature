@@ -134,7 +134,7 @@ Feature: Sharing contacts between environments tests
     Then I navigate to "s2s_2" environment
     Then I open the last created contact via API
 
-  @tmsLink=SORDEV-12087 @tmsLink=SORQA-961 @env_s2s_1
+  @tmsLink=SORDEV-12087 @env_s2s_1
   Scenario: Delete a contact in target system with handing ownership
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
     And API: I check that POST call status code is 200
@@ -175,9 +175,6 @@ Feature: Sharing contacts between environments tests
     And I click on the APPLY FILTERS button
     And I open the first contact from contacts list
     And I check if editable fields are read only for shared contact
-    And I check if handover card contains "Eigentümer: LK Fulda" information
-    And I check if handover card contains "Geteilt von: Automation ADMIN" information
-    And I check if handover card contains "shared with automated test" information
 
   @tmsLink=SORDEV-12087 @env_s2s_1
   Scenario: Delete a contact in source system without handing ownership
@@ -296,3 +293,54 @@ Feature: Sharing contacts between environments tests
     And I click on the Shares button from navbar
     And I click on the The Eye Icon located in the Shares Page
     And I check that first shared result has different id then deleted shared contact
+
+  @tmsLink=SORQA-961 @env_s2s_1
+  Scenario: Delete a contact in target system with handing ownership [rename]
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    And API: I check that POST call status code is 200
+    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    And API: I check that POST call status code is 200
+    Given API: I create a new contact with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district linked to last created case
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    Then I navigate to the last created case via the url
+    And I collect uuid of the case
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I click to hand over the ownership of the case in Share popup
+    And I fill comment in share popup with "shared with automated test"
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment
+    Given I log in as a Admin User
+    And I click on the Shares button from navbar
+    Then I accept first case in Shares Page
+    Then I navigate to "s2s_1" environment
+    Then I open the last created contact via API
+    Then I click on share contact button
+    And I click to hand over the ownership of the contact in Share popup
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with "shared with automated test"
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment
+    And I click on the Shares button from navbar
+    Then I accept first contact in Shares Page
+    And I click to accept potential duplicate in Shares Page
+    Then I navigate to "s2s_1" environment
+    Then I open the last created contact via API
+    Then I click on Delete button from contact
+    And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I click on Yes option in Confirm deletion popup
+    And I click on the Contacts button from navbar
+    Then I apply Id of last api created Contact on Contact Directory Page
+    And I apply "Alle" to ownership combobox on Case Directory Page
+    And I click on the APPLY FILTERS button
+    And I open the first contact from contacts list
+    And I check if editable fields are read only for shared contact
+    And I check if handover card contains "Eigentümer: LK Fulda" information
+    And I check if handover card contains "Geteilt von: Automation ADMIN" information
+    And I check if handover card contains "shared with automated test" information
+    Then I navigate to "s2s_2" environment
+    Then I open the last created contact via API
+    And I check if handover card contains "Eigentümer: LK Fulda" information
+    And I check if handover card contains "Geteilt von: Automation ADMIN" information
+    And I check if handover card contains "shared with automated test" information
