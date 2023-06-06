@@ -1,4 +1,4 @@
-# Gide to implement External Message Adapter
+# External Message Adapter Implementation Guide
 
 ## The project
 
