@@ -97,7 +97,7 @@ jobs:
         uses: github/codeql-action/analyze@v2
 
       - name: Run Trivy vulnerability scanner in repo mode
-        uses: aquasecurity/trivy-action@0.9.2
+        uses: aquasecurity/trivy-action@0.11.0
         with:
           scan-type: 'fs'
           ignore-unfixed: true
