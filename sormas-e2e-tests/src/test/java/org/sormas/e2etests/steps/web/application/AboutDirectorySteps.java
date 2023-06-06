@@ -8,7 +8,9 @@ import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.SAVE
 import com.google.inject.Inject;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +28,7 @@ import org.testng.asserts.SoftAssert;
 
 @Slf4j
 public class AboutDirectorySteps implements En {
+
   public static final List<String> xlsxFileContentList = new ArrayList<>();
   public static final String DATA_PROTECTION_DICTIONARY_FILE_PATH =
       String.format("sormas_data_protection_dictionary_%s_.xlsx", LocalDate.now());
@@ -37,7 +40,7 @@ public class AboutDirectorySteps implements En {
       String.format("sormas_datenschutzbeschreibungsverzeichnis_%s_.xlsx", LocalDate.now());
   public static final String CASE_CLASSIFICATION_HTML_FILE_PATH = "classification_rules.html";
   private static final String RELEASE_PAGE =
-      "https://github.com/hzi-braunschweig/SORMAS-Project/releases";
+      "https://github.com/sormas-foundation/SORMAS-Project/releases";
   private static AssertHelpers assertHelpers;
 
   @Inject
@@ -162,7 +165,7 @@ public class AboutDirectorySteps implements En {
             Assert.fail("Sormas version it doesn't  contain a clickable hyperlink");
           }
           Assert.assertTrue(
-              hrefValue.contains("github.com/hzi-braunschweig/SORMAS-Project"),
+              hrefValue.contains("github.com/sormas-foundation/SORMAS-Project"),
               "Sormas version hyperlink value is wrong");
           webDriverHelpers.clickOnWebElementBySelector(SORMAS_VERSION_LINK);
           TimeUnit.SECONDS.sleep(1);
@@ -210,7 +213,7 @@ public class AboutDirectorySteps implements En {
           TimeUnit.SECONDS.sleep(1);
           webDriverHelpers.switchToOtherWindow();
           softly.assertEquals(
-              "https://github.com/hzi-braunschweig/SORMAS-Project",
+              "https://github.com/sormas-foundation/SORMAS-Project",
               webDriverHelpers.returnURL(),
               "Sormas github link is not correct");
           softly.assertAll();
@@ -237,7 +240,6 @@ public class AboutDirectorySteps implements En {
               CASE_CLASSIFICATION_RULES_HYPERLINK, 15);
           webDriverHelpers.clickOnWebElementBySelector(CASE_CLASSIFICATION_RULES_HYPERLINK);
         });
-
     When(
         "I check if Data Dictionary in {string} record has no {string} as a disease",
         (String recordName, String disease) -> {

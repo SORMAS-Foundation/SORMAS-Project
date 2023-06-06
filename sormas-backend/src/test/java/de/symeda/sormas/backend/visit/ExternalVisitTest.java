@@ -66,7 +66,7 @@ import de.symeda.sormas.backend.person.PersonService;
  * If you need to change these tests to make it pass, you probably changed the behaviour of the ExternalVisitsResource.
  * Please note that other system used alongside with SORMAS are depending on this, so that their developers must be notified of any
  * relevant API changes some time before they go into any test and productive system. Please inform the SORMAS core development team at
- * https://gitter.im/SORMAS-Project!
+ * https://github.com/sormas-foundation/SORMAS-Project/discussions/categories/development-support!
  */
 public class ExternalVisitTest extends AbstractBeanTest {
 
@@ -87,7 +87,7 @@ public class ExternalVisitTest extends AbstractBeanTest {
 	 * If you need to change this test to make it pass, you probably changed the behaviour of the ExternalVisitsResource.
 	 * Please note that other system used alongside with SORMAS are depending on this, so that their developers must be notified of any
 	 * relevant API changes some time before they go into any test and productive system. Please inform the SORMAS core development team at
-	 * https://gitter.im/SORMAS-Project!
+	 * https://github.com/sormas-foundation/SORMAS-Project/discussions/categories/development-support!
 	 */
 	public void testGetPersonForJournal() {
 		String phoneNumber = "+496211218490";
@@ -137,7 +137,7 @@ public class ExternalVisitTest extends AbstractBeanTest {
 	 * If you need to change this test to make it pass, you probably changed the behaviour of the ExternalVisitsResource.
 	 * Please note that other system used alongside with SORMAS are depending on this, so that their developers must be notified of any
 	 * relevant API changes some time before they go into any test and productive system. Please inform the SORMAS core development team at
-	 * https://gitter.im/SORMAS-Project!
+	 * https://github.com/sormas-foundation/SORMAS-Project/discussions/categories/development-support!
 	 */
 	public void testIsValidPersonUuid() {
 		final PersonDto person = creator.createPerson("James", "Smith", Sex.MALE, 1980, 1, 1);
@@ -153,7 +153,7 @@ public class ExternalVisitTest extends AbstractBeanTest {
 	 * If you need to change this test to make it pass, you probably changed the behaviour of the ExternalVisitsResource.
 	 * Please note that other system used alongside with SORMAS are depending on this, so that their developers must be notified of any
 	 * relevant API changes some time before they go into any test and productive system. Please inform the SORMAS core development team at
-	 * https://gitter.im/SORMAS-Project!
+	 * https://github.com/sormas-foundation/SORMAS-Project/discussions/categories/development-support!
 	 */
 	public void testSetSymptomJournalStatus() {
 		PersonDto person = creator.createPerson();
@@ -171,7 +171,7 @@ public class ExternalVisitTest extends AbstractBeanTest {
 	 * If you need to change this test to make it pass, you probably changed the behaviour of the ExternalVisitsResource.
 	 * Please note that other system used alongside with SORMAS are depending on this, so that their developers must be notified of any
 	 * relevant API changes some time before they go into any test and productive system. Please inform the SORMAS core development team at
-	 * https://gitter.im/SORMAS-Project!
+	 * https://github.com/sormas-foundation/SORMAS-Project/discussions/categories/development-support!
 	 */
 	public void givenRelevantChangeShouldNotify() {
 		PersonFacadeEjb.PersonFacadeEjbLocal personFacade = getPersonFacade();
@@ -254,7 +254,7 @@ public class ExternalVisitTest extends AbstractBeanTest {
 	 * If you need to change this test to make it pass, you probably changed the behaviour of the ExternalVisitsResource.
 	 * Please note that other system used alongside with SORMAS are depending on this, so that their developers must be notified of any
 	 * relevant API changes some time before they go into any test and productive system. Please inform the SORMAS core development team at
-	 * https://gitter.im/SORMAS-Project!
+	 * https://github.com/sormas-foundation/SORMAS-Project/discussions/categories/development-support!
 	 */
 	public void testCreateExternalVisit() {
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
@@ -328,7 +328,7 @@ public class ExternalVisitTest extends AbstractBeanTest {
 	 * If you need to change this test to make it pass, you probably changed the behaviour of the ExternalVisitsResource.
 	 * Please note that other system used alongside with SORMAS are depending on this, so that their developers must be notified of any
 	 * relevant API changes some time before they go into any test and productive system. Please inform the SORMAS core development team at
-	 * https://gitter.im/SORMAS-Project!
+	 * https://github.com/sormas-foundation/SORMAS-Project/discussions/categories/development-support!
 	 */
 	public void testGetFollowUpEndDatesContactsOnly() {
 		creator.createPerson(); // Person without contact
@@ -374,7 +374,7 @@ public class ExternalVisitTest extends AbstractBeanTest {
 	 * If you need to change this test to make it pass, you probably changed the behaviour of the ExternalVisitsResource.
 	 * Please note that other system used alongside with SORMAS are depending on this, so that their developers must be notified of any
 	 * relevant API changes some time before they go into any test and productive system. Please inform the SORMAS core development team at
-	 * https://gitter.im/SORMAS-Project!
+	 * https://github.com/sormas-foundation/SORMAS-Project/discussions/categories/development-support!
 	 */
 	public void testGetFollowUpEndDatesCasesOnly() {
 		creator.createPerson(); // Person without contact
@@ -420,7 +420,7 @@ public class ExternalVisitTest extends AbstractBeanTest {
 	 * If you need to change this test to make it pass, you probably changed the behaviour of the ExternalVisitsResource.
 	 * Please note that other system used alongside with SORMAS are depending on this, so that their developers must be notified of any
 	 * relevant API changes some time before they go into any test and productive system. Please inform the SORMAS core development team at
-	 * https://gitter.im/SORMAS-Project!
+	 * https://github.com/sormas-foundation/SORMAS-Project/discussions/categories/development-support!
 	 */
 	public void testGetFollowUpEndDatesContactsAndCases() {
 		Date now = new Date();
@@ -501,7 +501,7 @@ public class ExternalVisitTest extends AbstractBeanTest {
 	 * If you need to change this method to make it pass, you probably changed the behaviour of the ExternalVisitsResource.
 	 * Please note that other system used alongside with SORMAS are depending on this, so that their developers must be notified of any
 	 * relevant API changes some time before they go into any test and productive system. Please inform the SORMAS core development team at
-	 * https://gitter.im/SORMAS-Project!
+	 * https://github.com/sormas-foundation/SORMAS-Project/discussions/categories/development-support!
 	 */
 	protected void setPersonRelevantFields(Person person) {
 		person.setFirstName("Klaus");

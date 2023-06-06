@@ -392,6 +392,11 @@ public class EditCasePage {
   public static final By ERROR_DESCRIPTION_REQUEST_PROCESSED =
       By.xpath(
           "//*[contains(text(),'Die Anfrage wurde bereits bearbeitet. Bitte laden Sie die Seite neu, um die neuesten \u00C4nderungen zu sehen.')]");
+  public static final By ERROR_REVOKE_IN_HANDOVER_HEADER_DE =
+      By.xpath("//*[contains(text(),'Freigabeanfrage nicht gefunden')]");
+  public static final By ERROR_REVOKE_DESCRIPTION_REQUEST_PROCESSED =
+      By.xpath(
+          "//*[contains(text(),'Die Freigabeanfrage konnte nicht gefunden werden. Sie wurde entweder vom Quellsystem zur\u00FCckgezogen oder von jemand anderem abgelehnt. Bitte laden Sie die Seite neu, um die neuesten \u00C4nderungen zu sehen.')]");
 
   public static By getPreExistingConditionCombobox_DE(String id) {
     return By.xpath(
@@ -431,4 +436,10 @@ public class EditCasePage {
   public static By SHARE_PENDING_WARNING_DE =
       By.xpath(
           "//div[@class='popupContent']//div[contains(text(),'Es gibt bereits eine ausstehende Anfrage an das gleiche Gesundheitsamt. Bitte widerrufen Sie die Anfrage, bevor Sie eine Neue senden.')]");
+  public static final By SEND_TO_REPORTING_TOOL_BUTTON =
+      By.id("ExternalSurveillanceToolGateway.send");
+  public static final By REPORTING_TOOL_MESSAGE =
+      By.xpath("//div[@class='v-Notification humanized v-Notification-humanized']");
+  public static final By LAB_MESSAGE_WINDOW_HEADER_DE = By.xpath("//div[contains(@class, 'popupContent')]//div[contains(@class, 'v-window-outerheader')]//div[contains(text(), 'Meldung')]");
+  public static final By WINDOW_CLOSE_BUTTON = By.xpath("//div[contains(@class, 'v-window-closebox')]");
 }

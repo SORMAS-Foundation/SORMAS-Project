@@ -1,6 +1,7 @@
 # Contributing Guidelines
 
-If you want to contribute to SORMAS by any means - for example by submitting a bug report, requesting a new feature, translating the application into a new language, or actively contributing to the source code - please make sure to read through and follow these guidelines. This allows us to consider and process your contribution as quickly and smoothly as possible. If there is anything unclear to you or you think that this guide is lacking coverage of a specific topic, please get in touch with us through our [GitHub Discussions](https://github.com/hzi-braunschweig/SORMAS-Project/discussions).
+If you want to contribute to SORMAS by any means - for example by submitting a bug report, requesting a new feature, translating the application into a new language, or actively contributing to the source code - please make sure to read through and follow these guidelines.
+This allows us to consider and process your contribution as quickly and smoothly as possible. If there is anything unclear to you or you think that this guide is lacking coverage of a specific topic, please get in touch with us through our [GitHub Discussions](https://github.com/sormas-foundation/SORMAS-Project/discussions).
 
 ## Table of Contents
 
@@ -27,9 +28,11 @@ If you want to contribute to SORMAS by any means - for example by submitting a b
 **Before creating a new issue, please search the repository for similar issues first to avoid duplicates!** You can do this by using the search field in the menu bar. If you find an issue that already covers your request or seems very similar, please comment on that issue.
 
 We are currently distinguishing the following issue types: `bug`, `change`, `feature`, `finding`, `task` and `epic`.
-Please make sure to always use one of the templates that are automatically presented to you when [creating a new issue](https://github.com/hzi-braunschweig/SORMAS-Project/issues/new/choose) because it ensures that your issue is structured and contains all the information that we need. Issues that have not been created like this will be closed and you will be asked to submit a new issue that adheres to these guidelines.
+Please make sure to always use one of the templates that are automatically presented to you when [creating a new issue](https://github.com/sormas-foundation/SORMAS-Project/issues/new/choose) because it ensures that your issue is structured and contains all the information that we need.
+Issues that have not been created like this will be closed and you will be asked to submit a new issue that adheres to these guidelines.
 
-Please add information to all mandatory sections of the issue templates, and try to fill in the optional sections if possible. Do not remove any section after submitting the issue because they might be filled later by the development team. While moving forward in the development process, developers might also extend or alter the initial issue description, e.g. to adjust it according to the outcome of a refinement process.
+Please add information to all mandatory sections of the issue templates, and try to fill in the optional sections if possible. Do not remove any section after submitting the issue because they might be filled later by the development team.
+While moving forward in the development process, developers might also extend or alter the initial issue description, e.g. to adjust it according to the outcome of a refinement process.
 
 ## Security Issues
 
@@ -45,7 +48,8 @@ Before creating a bug report, please check the following rules:
 
 1. If something seems to be working correctly but does not necessarily match your expectations of how it should be working, please consider opening a change request instead. This applies also for performance issues.
 2. If you have more than one possible bug, especially when you are tempted to create a list of independent findings in the **Bug Description**, please document each bug as separate issue.
-3. Bugs should generally only be reported as new issues if they occur on a released version. If a bug only occurs on the current development version, it has very likely been caused by implementation done in the current iteration; in this case, the issue responsible for introducing the bug has to be reopened instead of creating a new issue. This process helps to keep both the commit history and the release notes clean.
+3. Bugs should generally only be reported as new issues if they occur on a released version. If a bug only occurs on the current development version, it has very likely been caused by implementation done in the current iteration; in this case, the issue responsible for introducing the bug has to be reopened instead of creating a new issue.
+This process helps to keep both the commit history and the release notes clean.
 
 The development team defines a **severity** for bugs to distinguish the consequences for affected users:
 
@@ -99,7 +103,8 @@ The development team uses an epic as an umbrella for large change or feature str
 
 ## Contributing to the Project
 
-There are many ways in which you can contribute to this project as a non-developer. If there is something you would like to do that you don't find instructions about here - or if you want to learn how you can get involved - please contact us at sormas@helmholtz-hzi.de or through our [GitHub Discussions](https://github.com/hzi-braunschweig/SORMAS-Project/discussions) and let us know how we can assist you!
+There are many ways in which you can contribute to this project as a non-developer. If there is something you would like to do that you don't find instructions about here - or if you want to learn how you can get involved - please contact us at sormas@helmholtz-hzi.de
+or through our [GitHub Discussions](https://github.com/sormas-foundation/SORMAS-Project/discussions) and let us know how we can assist you!
 
 Some possibilities to contribute to SORMAS are:
 
@@ -108,12 +113,13 @@ Some possibilities to contribute to SORMAS are:
 
 ## Contributing to the Code
 
-If you're interested in participating in the development of SORMAS, please follow the [Development Environment Setup Instructions](DEVELOPMENT_ENVIRONMENT.md) before you start developing. If you have problems setting up your development environment or need assistance in choosing the first issue to work on, please get in touch with us through our [GitHub Discussions](https://github.com/hzi-braunschweig/SORMAS-Project/discussions) or by contacting us at sormas@helmholtz-hzi.de.
+If you're interested in participating in the development of SORMAS, please follow the [Development Environment Setup Instructions](DEVELOPMENT_ENVIRONMENT.md) before you start developing. If you have problems setting up your development environment or need assistance in choosing the first issue to work on,
+please get in touch with us through our [GitHub Discussions](https://github.com/sormas-foundation/SORMAS-Project/discussions) or by contacting us at sormas@helmholtz-hzi.de.
 
-Additionally, our [Wiki](https://github.com/hzi-braunschweig/SORMAS-Project/wiki) contains some specific development guides that cover common issues like adding new fields to an entity that we suggest to check out before you start implementing something related to those topics:
+Additionally, our [Wiki](https://github.com/sormas-foundation/SORMAS-Project/wiki) contains some specific development guides that cover common issues like adding new fields to an entity that we suggest to check out before you start implementing something related to those topics:
 
-* [Technical User Guides](https://github.com/hzi-braunschweig/SORMAS-Project/wiki#technical-user-guides)
-* [Development Guides](https://github.com/hzi-braunschweig/SORMAS-Project/wiki#development-guides)
+* [Technical User Guides](https://github.com/sormas-foundation/SORMAS-Project/wiki#technical-user-guides)
+* [Development Guides](https://github.com/sormas-foundation/SORMAS-Project/wiki#development-guides)
 
 ### Development Contributing Guidelines
 
@@ -164,7 +170,8 @@ Issues that are already marked with the `ready` label can theoretically be picke
 
 ### Submitting Pull Requests
 
-Contributing to the SORMAS code requires you to submit pull requests that will be reviewed by one of our core developers. Once a pull request has been submitted to our repository, a developer will either assign themselves as its reviewer or we will get back to you in case we won't be able to review it in time. This may e.g. happen if your pull request involves a lot of technical changes that we would like to merge together with other issues of the same nature or that could potentially break a lot of logic. Usually though, the general process looks like this:
+Contributing to the SORMAS code requires you to submit pull requests that will be reviewed by one of our core developers. Once a pull request has been submitted to our repository, a developer will either assign themselves as its reviewer or we will get back to you in case we won't be able to review it in time.
+This may e.g. happen if your pull request involves a lot of technical changes that we would like to merge together with other issues of the same nature or that could potentially break a lot of logic. Usually though, the general process looks like this:
 
 1. A developer assigns themselves as the reviewer of your pull request (core developers assign each other). Please wait until the review is done; if you think that the review is taking too long, feel free to add a comment to the pull request as a reminder to the developer.
 2. The developer might request changes to the code. If that's the case, please implement the requested changes or answer to their change request if you have questions or don't agree with a specific part of the request.
@@ -177,7 +184,8 @@ Please adhere to the following principles when submitting pull requests:
 2. Link your pull request to the issue(s) that they are associated with. This can be done either by using the "Linked issues" section at the right side when viewing a pull request, or by adding the keyword "Closes" or "Fixes" followed by the issue number to the pull request description (e.g. "Fixes #1234").
 3. Make sure that your pull request has a meaningful title. By default, GitHub will use your commit message as the title which might not be appropriate. In general, using the same name as the linked issue is a good rule of thumb.
 4. Try to not use force-push when updating an existing pull request (e.g. after changes have been requested or because you need to resolve merge conflicts).
-5. Ideally, your pull request should pass the checks done by the automatic CI pipeline before it gets reviewed. If that's not the case, please make sure that your branch is up-to-date with the current development branch. If the checks also fail for the development branch, you're not required to do anything. In any other case, please fix the issues (most likely failed unit tests) before requesting another review.
+5. Ideally, your pull request should pass the checks done by the automatic CI pipeline before it gets reviewed. If that's not the case, please make sure that your branch is up-to-date with the current development branch. If the checks also fail for the development branch, you're not required to do anything.
+In any other case, please fix the issues (most likely failed unit tests) before requesting another review.
 
 ## Development Workflow
 
@@ -193,7 +201,7 @@ For version numbers we use semantic versioning. The meaning of a given version n
 * Y: Minor version: Usually a new release of a development iteration of a few weeks, containing new features and changes.
 * Z: Micro version: Fixing problems in the last minor version to make it properly or better to use. Usually contains only bugfixes.
 
-Versions are defined as [Git tags](https://github.com/hzi-braunschweig/SORMAS-Project/tags) with [release notes](https://github.com/hzi-braunschweig/SORMAS-Project/releases) attached to the tag.
+Versions are defined as [Git tags](https://github.com/sormas-foundation/SORMAS-Project/tags) with [release notes](https://github.com/sormas-foundation/SORMAS-Project/releases) attached to the tag.
 
 An unstable version currently under development is denoted as `X.Y.Z-SNAPSHOT`.
 
@@ -211,7 +219,8 @@ An unstable version currently under development is denoted as `X.Y.Z-SNAPSHOT`.
 * **release-<version>**: To manage changes when merging from `development` to `master`. Once the new version is merged to `master`, the `release-<version>` branch is automatically removed.
 * **hotfix-<version>**: To manage changes that are needed on an already released version (on any `master` branch) that need to be fixed with a new micro release.
 
-Some branches contain the concerned version in its name, examples: `release-1.75.0`, `hotfix-1.75.1`. To manage new versions, tools are used to automatically merge between branches and tag the new version. Once the new version is merged to `master`/`master-<version`, the `release-`/`hotfix-` branch are automatically deleted. There is only one `release-` and only `hotfix-` branch allowed at same time (enforced by the used Maven plugin).
+Some branches contain the concerned version in its name, examples: `release-1.75.0`, `hotfix-1.75.1`. To manage new versions, tools are used to automatically merge between branches and tag the new version.
+Once the new version is merged to `master`/`master-<version`, the `release-`/`hotfix-` branch are automatically deleted. There is only one `release-` and only `hotfix-` branch allowed at same time (enforced by the used Maven plugin).
 
 #### Implementation branches
 

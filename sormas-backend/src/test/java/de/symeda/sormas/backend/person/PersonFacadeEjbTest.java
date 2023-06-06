@@ -472,7 +472,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	 * If you need to change this test to make it pass, you probably changed the behaviour of the ExternalVisitsResource.
 	 * Please note that other system used alongside with SORMAS are depending on this, so that their developers must be notified of any
 	 * relevant API changes some time before they go into any test and productive system. Please inform the SORMAS core development team at
-	 * https://gitter.im/SORMAS-Project!
+	 * https://github.com/sormas-foundation/SORMAS-Project/discussions/categories/development-support!
 	 */
 	public void testIsValidPersonUuid() {
 		final PersonDto person = creator.createPerson("James", "Smith", Sex.MALE, 1980, 1, 1);
@@ -485,7 +485,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	 * If you need to change this test to make it pass, you probably changed the behaviour of the ExternalVisitsResource.
 	 * Please note that other system used alongside with SORMAS are depending on this, so that their developers must be notified of any
 	 * relevant API changes some time before they go into any test and productive system. Please inform the SORMAS core development team at
-	 * https://gitter.im/SORMAS-Project!
+	 * https://github.com/sormas-foundation/SORMAS-Project/discussions/categories/development-support!
 	 */
 	public void testGetFollowUpEndDatesContactsOnly() {
 		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.REST_EXTERNAL_VISITS_USER));
@@ -528,7 +528,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	 * If you need to change this test to make it pass, you probably changed the behaviour of the ExternalVisitsResource.
 	 * Please note that other system used alongside with SORMAS are depending on this, so that their developers must be notified of any
 	 * relevant API changes some time before they go into any test and productive system. Please inform the SORMAS core development team at
-	 * https://gitter.im/SORMAS-Project!
+	 * https://github.com/sormas-foundation/SORMAS-Project/discussions/categories/development-support!
 	 */
 	public void testGetPersonForJournal() {
 		UserDto user = creator.createContactOfficer(rdcf);
@@ -1922,7 +1922,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		CaseDataDto revokedShareCase = creator.createCase(user.toReference(), person.toReference(), rdcf);
 		creator.createShareRequestInfo(
 			ShareRequestDataType.CASE,
-				userEntity,
+			userEntity,
 			"target_id",
 			true,
 			ShareRequestStatus.REVOKED,

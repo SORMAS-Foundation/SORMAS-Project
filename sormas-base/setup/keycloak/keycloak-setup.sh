@@ -138,7 +138,7 @@ if [[ ${LINUX} = true ]]; then
 else
   if [[ -z ${PSQL} ]]; then
     PSQL_DEFAULT="${PROGRAMFILES//\\/\/}/PostgreSQL/10/"
-    echo "--- Enter the name install path of Postgres on your system (default: \"${PSQL_DEFAULT}\":"
+    echo "--- Enter the name install path of Postgres on your system (default: ${PSQL_DEFAULT}:"
     read -r PSQL_DIR
     if [[ -z "${PSQL_DIR}" ]]; then
       PSQL_DIR="${PSQL_DEFAULT}"
@@ -153,6 +153,7 @@ else
 	"${PSQL}" --no-password --file=setup.sql "postgresql://postgres:${DB_PG_PW}@${DB_HOST}:${DB_PORT}/postgres"
 fi
 
+read -p "--- Press [Enter] to continue..."
 echo "Running Keycloak as a docker image"
 
 KEYCLOAK_DOCKER_CMD="-e KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN_USER} "

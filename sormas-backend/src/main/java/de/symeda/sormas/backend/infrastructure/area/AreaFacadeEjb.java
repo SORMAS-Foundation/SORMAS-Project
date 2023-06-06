@@ -104,8 +104,8 @@ public class AreaFacadeEjb extends AbstractInfrastructureFacadeEjb<Area, AreaDto
 	}
 
 	@Override
-	public Area fillOrBuildEntity(@NotNull AreaDto source, Area target, boolean checkChangeDate) {
-		target = DtoHelper.fillOrBuildEntity(source, target, Area::new, checkChangeDate);
+	public Area fillOrBuildEntity(@NotNull AreaDto source, Area target, boolean checkChangeDate, boolean allowUuidOverwrite) {
+		target = DtoHelper.fillOrBuildEntity(source, target, Area::new, checkChangeDate, allowUuidOverwrite);
 		target.setName(source.getName());
 		target.setExternalId(source.getExternalId());
 		target.setArchived(source.isArchived());

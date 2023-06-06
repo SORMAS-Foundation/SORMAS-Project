@@ -1,5 +1,7 @@
 package org.sormas.e2etests.steps.web.application;
 
+import static org.sormas.e2etests.pages.application.NavBarPage.*;
+
 import cucumber.api.java8.En;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -34,22 +36,28 @@ public class ColumnSteps implements En {
         });
 
     When(
-        "I check that column {int} is sorted alphabetically in ascending order",
-        (Integer col) -> {
-          TimeUnit.SECONDS.sleep(5); // For preventing premature data collection
-          List<String> rawColumnData = getTableColumnDataByIndex(col, 10);
-          rawColumnData.replaceAll(element -> element.toLowerCase());
-          rawColumnData.replaceAll(element -> nullifyEmptyString(element));
-          List<String> ascColumnData = new ArrayList<>(rawColumnData);
-          ascColumnData.sort(Comparator.nullsLast(Comparator.naturalOrder()));
-          log.info("List elements before test " + rawColumnData);
-          softly.assertEquals(
-              rawColumnData,
-              ascColumnData,
-              "Column " + col.toString() + " is not correctly sorted!");
+        "I check that error not appear",
+        () -> {
+          TimeUnit.SECONDS.sleep(10); // For preventing premature data collection
+          softly.assertFalse(
+              webDriverHelpers.isElementVisibleWithTimeout(ERROR_NOTIFICATION_CAPTION, 3));
+          softly.assertFalse(
+              webDriverHelpers.isElementVisibleWithTimeout(ERROR_NOTIFICATION_DESCRIPTION, 3));
           softly.assertAll();
-          log.info("List elements after test " + rawColumnData);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(DASHBOARD_BUTTON);
         });
+
+      When(
+              "I check that error not appear for DE version",
+              () -> {
+                  TimeUnit.SECONDS.sleep(10); // For preventing premature data collection
+                  softly.assertFalse(
+                          webDriverHelpers.isElementVisibleWithTimeout(ERROR_NOTIFICATION_CAPTION_DE, 3));
+                  softly.assertFalse(
+                          webDriverHelpers.isElementVisibleWithTimeout(ERROR_NOTIFICATION_DESCRIPTION_DE, 3));
+                  softly.assertAll();
+                  webDriverHelpers.waitUntilElementIsVisibleAndClickable(DASHBOARD_BUTTON);
+              });
 
     When(
         "I check that column {int} is sorted alphabetically in descending order",

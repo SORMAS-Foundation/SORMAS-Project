@@ -918,6 +918,47 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 	}
 
 	@Test
+	public void testSyncSharesWithSampleAddedOnCaseHandedOver() throws SormasToSormasException {
+		UserReferenceDto officer = creator.createSurveillanceOfficer(rdcf).toReference();
+
+		SormasToSormasOriginInfoDto originInfo = createAndSaveSormasToSormasOriginInfo(DEFAULT_SERVER_ID, true, o -> o.setWithSamples(true));
+
+		PersonDto casePerson = creator.createPerson();
+		CaseDataDto caze = creator.createCase(officer, casePerson.toReference(), rdcf, c -> {
+			c.setSormasToSormasOriginInfo(originInfo);
+		});
+
+		SampleDto sample = creator.createSample(caze.toReference(), officer, rdcf.facility);
+
+		getSormasToSormasCaseFacade().syncShares(new ShareTreeCriteria(caze.getUuid()));
+
+		Mockito
+			.when(
+				MockProducer.getSormasToSormasClient()
+					.post(eq(DEFAULT_SERVER_ID), ArgumentMatchers.contains("/cases/sync"), ArgumentMatchers.any(), ArgumentMatchers.any()))
+			.then(invocation -> {
+				SyncDataDto syncData = invocation.getArgument(2);
+
+				assertThat(syncData.getShareData().getCases().get(0).getEntity().getUuid(), is(caze.getUuid()));
+				assertThat(syncData.getShareData().getSamples().get(0).getEntity().getUuid(), is(sample.getUuid()));
+
+				return Response.noContent().build();
+			});
+
+		Mockito.verify(MockProducer.getSormasToSormasClient(), Mockito.times(1))
+			.post(eq(DEFAULT_SERVER_ID), ArgumentMatchers.contains("/cases/sync"), ArgumentMatchers.any(), ArgumentMatchers.any());
+
+		List<SormasToSormasShareInfoDto> sampleShareInfos =
+			getSormasToSormasShareInfoFacade().getIndexList(new SormasToSormasShareInfoCriteria().sample(sample.toReference()), null, null);
+		assertThat(sampleShareInfos, hasSize(1));
+
+		// no share info should be created for the case because it has an origin info so it's already shared 
+		List<SormasToSormasShareInfoDto> caseShareInfos =
+			getSormasToSormasShareInfoFacade().getIndexList(new SormasToSormasShareInfoCriteria().caze(caze.toReference()), null, null);
+		assertThat(caseShareInfos, hasSize(0));
+	}
+
+	@Test
 	public void testGetAllShares() throws SormasToSormasException {
 		UserReferenceDto officer = useSurveillanceOfficerLogin(rdcf).toReference();
 
