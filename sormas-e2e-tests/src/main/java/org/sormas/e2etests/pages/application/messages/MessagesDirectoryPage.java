@@ -123,5 +123,6 @@ public class MessagesDirectoryPage {
       By.xpath("//*[text()='Neuen Ereignisteilnehmer erstellen']");
   public static final By LABORATORY_INPUT = By.cssSelector("#lab input");
   public static final By LABORATORY_DETAILS_INPUT = By.cssSelector("#labDetails");
-  public static final By FIRST_PATHOGEN_LABORATORY_INPUT = By.xpath("(//div[contains(@id, 'lab')]//input)[2]");
+  public static final By FIRST_PATHOGEN_LABORATORY_INPUT =
+      By.xpath("(//div[contains(@id, 'lab')]//input)[2]");
 }
