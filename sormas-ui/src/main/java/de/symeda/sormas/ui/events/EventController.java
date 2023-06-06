@@ -921,6 +921,7 @@ public class EventController {
 			UserRight.EVENT_EDIT,
 			null,
 			UserRight.EVENT_DELETE,
+			UserRight.EVENT_ARCHIVE,
 			FacadeProvider.getEventFacade().getEditPermissionType(eventUuid),
 			event.isInJurisdiction());
 
