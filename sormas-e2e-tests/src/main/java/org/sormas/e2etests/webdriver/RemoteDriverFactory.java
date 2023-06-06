@@ -18,8 +18,6 @@
 
 package org.sormas.e2etests.webdriver;
 
-import static org.openqa.selenium.remote.CapabilityType.SUPPORTS_ALERTS;
-
 import java.io.File;
 import java.util.HashMap;
 import javax.inject.Inject;
@@ -79,7 +77,6 @@ public class RemoteDriverFactory implements DriverFactory {
     options.setExperimentalOption("prefs", chromePreferences);
     options.addArguments("--window-size=1920,1080");
     options.setPageLoadStrategy(PageLoadStrategy.NORMAL);
-    options.setCapability(SUPPORTS_ALERTS, false);
     return new ChromeDriver(options);
   }
 
