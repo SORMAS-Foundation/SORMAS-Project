@@ -169,8 +169,6 @@ public class CampaignController {
 			}
 		}
 
-//		campaignComponent.restrictEditableComponentsOnEditView(UserRight.CAMPAIGN_EDIT, null, UserRight.CAMPAIGN_DELETE, null, true);
-
 		campaignComponent
 			.restrictEditableComponentsOnEditView(UserRight.CAMPAIGN_EDIT, null, UserRight.CAMPAIGN_DELETE, UserRight.CAMPAIGN_ARCHIVE, null, true);
 
