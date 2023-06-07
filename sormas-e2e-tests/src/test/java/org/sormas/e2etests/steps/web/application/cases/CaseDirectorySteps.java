@@ -1006,12 +1006,16 @@ public class CaseDirectorySteps implements En {
     And(
         "I apply {string} to combobox on Case Directory Page",
         (String caseParameter) -> {
+          webDriverHelpers.checkIfElementExistsInCombobox(
+              CASE_DISPLAY_FILTER_COMBOBOX, caseParameter);
           webDriverHelpers.selectFromCombobox(CASE_DISPLAY_FILTER_COMBOBOX, caseParameter);
           TimeUnit.SECONDS.sleep(2);
         });
     And(
         "I apply {string} to ownership combobox on Case Directory Page",
         (String caseParameter) -> {
+          webDriverHelpers.checkIfElementExistsInCombobox(
+              CASE_OWNERSHIP_FILTER_COMBOBOX, caseParameter);
           webDriverHelpers.selectFromCombobox(CASE_OWNERSHIP_FILTER_COMBOBOX, caseParameter);
           TimeUnit.SECONDS.sleep(2);
         });
