@@ -823,8 +823,9 @@ public class DemisSteps implements En {
         "^I check if disease variant field is empty in New case form while processing a DEMIS LabMessage$",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_CASE_FORM_DISEASE_VARIANT_INPUT);
-          softly.assertNull(
+          softly.assertEquals(
               webDriverHelpers.getValueFromWebElement(NEW_CASE_FORM_DISEASE_VARIANT_INPUT),
+              "",
               "Disease variant is not empty");
           softly.assertAll();
         });
