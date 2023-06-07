@@ -435,6 +435,13 @@ Scenario: Create and send laboratory request via Demis
     And I fill only mandatory fields to convert laboratory message into a case for DE
     And I click on save button in the case popup
     Then I check that new sample form with pathogen detection reporting process is displayed
+    And I verify that disease variant for "first" pathogen is prefilled with "B.1.1.7 - 501Y.V1 (Alpha)" in New Sample form while processing a DEMIS LabMessage
+    And I verify that disease variant for "second" pathogen is prefilled with "B.1.1.28.1 - P.1 - 501Y.V3 (Gamma)" in New Sample form while processing a DEMIS LabMessage
+    And I click on save sample button
     And I click on save sample button
     And I click on save sample button
     And I click on YES button in Update case disease variant popup window
+    And I click on the Cases button from navbar
+    And I search the case by last created person via Demis message
+    Then I click on the first Case ID from Case Directory
+    And I check that the value selected from Disease variant combobox is "B.1.1.7 - 501Y.V1 (Alpha)" on Edit Case page

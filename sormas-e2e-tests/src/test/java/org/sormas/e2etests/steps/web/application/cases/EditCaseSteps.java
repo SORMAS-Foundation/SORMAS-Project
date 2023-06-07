@@ -2670,6 +2670,17 @@ public class EditCaseSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(LAB_MESSAGE_WINDOW_HEADER_DE);
           webDriverHelpers.clickOnWebElementBySelector(WINDOW_CLOSE_BUTTON);
         });
+
+    And(
+        "^I check that the value selected from Disease variant combobox is \"([^\"]*)\" on Edit Case page$",
+        (String expectedDiseaseVariant) -> {
+          String prefilledDiseaseVariant = webDriverHelpers.getValueFromWebElement(DISEASE_VARIANT_INPUT);
+          softly.assertEquals(
+              prefilledDiseaseVariant,
+              expectedDiseaseVariant,
+              "The disease variant is incorrectly");
+          softly.assertAll();
+        });
   }
 
   private Vaccination collectVaccinationData() {

@@ -46,6 +46,8 @@ import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPa
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGE_TIME_FROM_COMBOBOX;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGE_UUID_TEXT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_CASE_FORM_DISEASE_VARIANT_INPUT;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_FORM_FIRST_PATHOGEN_DISEASE_VARIANT_INPUT;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_FORM_SECOND_PATHOGEN_DISEASE_VARIANT_INPUT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.PATIENT_BIRTHDAY_FROM_INPUT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.PATIENT_BIRTHDAY_TO_INPUT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_CONFIRM_BUTTON;
@@ -822,9 +824,31 @@ public class DemisSteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_CASE_FORM_DISEASE_VARIANT_INPUT);
           softly.assertNull(
-                  webDriverHelpers.getValueFromWebElement(NEW_CASE_FORM_DISEASE_VARIANT_INPUT),
-                  "Disease variant is not empty");
+              webDriverHelpers.getValueFromWebElement(NEW_CASE_FORM_DISEASE_VARIANT_INPUT),
+              "Disease variant is not empty");
           softly.assertAll();
+        });
+
+    And(
+        "I verify that disease variant for {string} pathogen is prefilled with {string} in New Sample form while processing a DEMIS LabMessage",
+        (String pathogen, String diseaseVariant) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_SAMPLE_FORM_FIRST_PATHOGEN_DISEASE_VARIANT_INPUT);
+          switch(pathogen) {
+              case "first":
+                  softly.assertEquals(
+                          webDriverHelpers.getValueFromWebElement(NEW_SAMPLE_FORM_FIRST_PATHOGEN_DISEASE_VARIANT_INPUT),
+                          diseaseVariant,
+                          "The disease variant is incorrect");
+                  softly.assertAll();
+                  break;
+              case "second":
+                  softly.assertEquals(
+                          webDriverHelpers.getValueFromWebElement(NEW_SAMPLE_FORM_SECOND_PATHOGEN_DISEASE_VARIANT_INPUT),
+                          diseaseVariant,
+                          "The disease variant is incorrect");
+                  softly.assertAll();
+                  break;
+          }
         });
   }
 
