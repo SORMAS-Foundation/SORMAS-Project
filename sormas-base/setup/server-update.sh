@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #*******************************************************************************
 # SORMAS® - Surveillance Outbreak Response Management & Analysis System
 # Copyright © 2016-2019 Helmholtz-Zentrum f�r Infektionsforschung GmbH (HZI)
@@ -15,8 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #*******************************************************************************
-
-#!/bin/bash
 
 # If you want your server to show a maintenance page while the server is updated, use the following commands:
 # 	a2dissite your.sormas.server.url.conf

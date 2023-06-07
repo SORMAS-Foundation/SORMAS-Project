@@ -70,7 +70,7 @@ if [[ ${LINUX} = true ]]; then
 	USER_NAME=payara
 	DOWNLOAD_DIR=${ROOT_PREFIX}/var/www/sormas/downloads
 elif [[ ${MAC} = true ]]; then
-  ROOT_PREFIX=~/Work
+  ROOT_PREFIX=~
 else
 	ROOT_PREFIX=/c
 fi
@@ -102,7 +102,7 @@ DOMAIN_XMX=4096m
 
 # DB
 DB_HOST=localhost
-DB_PORT=5433
+DB_PORT=5432
 DB_NAME=sormas_db
 # Name of the database user; DO NOT CHANGE THIS!
 DB_USER=sormas_user
