@@ -54,9 +54,11 @@ fi
 PAYARA_VERSION=5.2021.10
 
 if  [[ $(expr "$(uname)") == "Darwin" ]]; then
-  LINUX=true
+  MAC=true
 elif [[ $(expr substr "$(uname -a)" 1 5) = "Linux" ]]; then
 	LINUX=true
+elif [[ $(expr "$(uname)") == "Darwin" ]]; then
+	MAC=true
 else
 	LINUX=false
 fi
@@ -67,6 +69,8 @@ if [[ ${LINUX} = true ]]; then
 	# make sure to update payara-sormas script when changing the user name
 	USER_NAME=payara
 	DOWNLOAD_DIR=${ROOT_PREFIX}/var/www/sormas/downloads
+elif [[ ${MAC} = true ]]; then
+  ROOT_PREFIX=~/Work
 else
 	ROOT_PREFIX=/c
 fi
@@ -98,7 +102,7 @@ DOMAIN_XMX=4096m
 
 # DB
 DB_HOST=localhost
-DB_PORT=5432
+DB_PORT=5433
 DB_NAME=sormas_db
 # Name of the database user; DO NOT CHANGE THIS!
 DB_USER=sormas_user
@@ -114,6 +118,8 @@ else
 fi
 if [[ ${LINUX} = true ]]; then
 	echo "OS: Linux"
+elif [[ ${MAC} = true ]]; then
+  echo "OS: Mac"
 else
 	echo "OS: Windows"
 fi
@@ -182,6 +188,8 @@ else
 		PAYARA_DOWNLOAD_URL="https://search.maven.org/remotecontent?filepath=fish/payara/distributions/payara/${PAYARA_VERSION}/${PAYARA_ZIP_FILE_NAME}"
 		if [[ ${LINUX} = true ]]; then
 			wget -O "${PAYARA_ZIP_FILE}" "${PAYARA_DOWNLOAD_URL}"
+		elif [[ ${MAC} = true ]]; then
+		  curl -L -o "${PAYARA_ZIP_FILE}" "${PAYARA_DOWNLOAD_URL}"
 		else
 			curl -L -o "${PAYARA_ZIP_FILE}" "${PAYARA_DOWNLOAD_URL}"
 		fi
@@ -197,7 +205,7 @@ fi
 ASENV_PATH_LINUX="${PAYARA_HOME}/glassfish/config/asenv.conf"
 ASENV_PATH_WINDOWS="${PAYARA_HOME}/glassfish/config/asenv.bat"
 
-if [[ ${LINUX} = true ]]; then
+if [[ ${LINUX} = true ]] || [[ ${MAC} = true ]]; then
 	ASENV_PATH="${ASENV_PATH_LINUX}"
 else
 	ASENV_PATH="${ASENV_PATH_WINDOWS}"
@@ -214,7 +222,7 @@ if [[ -z "${PAYARA_ZIP_FILE}" ]]; then
 fi
 
 if [[ -n "${AS_JAVA_NATIVE}" ]]; then
-	if [[ ${LINUX} = true ]]; then
+	if [[ ${LINUX} = true ]] || [[ ${MAC} = true ]]; then
 		AS_JAVA="$AS_JAVA_NATIVE"
 	else
 		AS_JAVA=$(printf "/$AS_JAVA_NATIVE" | sed 's/:\?\\/\//g')
@@ -229,7 +237,7 @@ fi
 
 # Check Java JDK
 JAVA_JDK_VERSION=11
-JAVA_VERSION=$("${JAVAC}" -version 2>&1 | sed 's/^.\+ //;s/^1\.//;s/[^0-9].*//')
+JAVA_VERSION=$("${JAVAC}" -version 2>&1 | sed 's/javac //;s/^.\+ //;s/^1\.//;s/[^0-9].*//')
 if [[ ! "${JAVA_VERSION}" =~ ^[0-9]+$ ]]; then
 	if [[ -z "${PAYARA_ZIP_FILE}" ]]; then
 		if [[ -z "${AS_JAVA}" ]]; then
@@ -257,8 +265,10 @@ fi
 if [[ -n "${PAYARA_ZIP_FILE}" ]] && [[ -n "${AS_JAVA}" ]]; then
 
 	#set Java JDK for payara
-	printf "AS_JAVA=\"${AS_JAVA}\"" >> ${ASENV_PATH_LINUX}
-	if [[ ${LINUX} != true ]]; then
+
+	if [[ ${LINUX} = true ]] || [[ ${MAC} = true ]]; then
+	  printf "AS_JAVA=\"${AS_JAVA}\"" >> ${ASENV_PATH_LINUX}
+	else
 		printf "set AS_JAVA=${AS_JAVA_NATIVE}" >> ${ASENV_PATH_WINDOWS}
 	fi
 fi
@@ -296,6 +306,8 @@ EOF
   if [[ ${LINUX} = true ]]; then
     # no host is specified as by default the postgres user has only local access
     su postgres -c "psql -p ${DB_PORT} < setup.sql"
+  elif [[ ${MAC} = true ]]; then
+      psql -p ${DB_PORT} -U postgres < setup.sql
   else
     PSQL_DEFAULT="${PROGRAMFILES//\\/\/}/PostgreSQL/10/"
     echo "--- Enter the name install path of Postgres on your system (default: \"${PSQL_DEFAULT}\":"
