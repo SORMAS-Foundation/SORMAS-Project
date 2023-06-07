@@ -129,4 +129,7 @@ public class MessagesDirectoryPage {
   public static final By NEW_CASE_FORM_DISEASE_VARIANT_INPUT = By.cssSelector(".popupContent #diseaseVariant input");
   public static final By NEW_SAMPLE_FORM_FIRST_PATHOGEN_DISEASE_VARIANT_INPUT = By.xpath("(//div[contains(@id, 'testedDiseaseVariant')]//input)[1]");
   public static final By NEW_SAMPLE_FORM_SECOND_PATHOGEN_DISEASE_VARIANT_INPUT = By.xpath("(//div[contains(@id, 'testedDiseaseVariant')]//input)[2]");
+  public static final By NEW_SAMPLE_FORM_LABORATORY_NAME = By.xpath("(//input[contains(@id, 'labDetails')])[1]");
+  public static final By NEW_SAMPLE_FORM_FIRST_PATHOGEN_LABORATORY_NAME = By.xpath("(//input[contains(@id, 'labDetails')])[2]");
+  public static final By NEW_SAMPLE_FORM_SECOND_PATHOGEN_LABORATORY_NAME = By.xpath("(//input[contains(@id, 'labDetails')])[3]");
 }

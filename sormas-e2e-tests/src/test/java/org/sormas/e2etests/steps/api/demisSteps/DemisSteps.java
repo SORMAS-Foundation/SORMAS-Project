@@ -47,7 +47,10 @@ import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPa
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGE_UUID_TEXT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_CASE_FORM_DISEASE_VARIANT_INPUT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_FORM_FIRST_PATHOGEN_DISEASE_VARIANT_INPUT;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_FORM_FIRST_PATHOGEN_LABORATORY_NAME;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_FORM_LABORATORY_NAME;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_FORM_SECOND_PATHOGEN_DISEASE_VARIANT_INPUT;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_FORM_SECOND_PATHOGEN_LABORATORY_NAME;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.PATIENT_BIRTHDAY_FROM_INPUT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.PATIENT_BIRTHDAY_TO_INPUT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_CONFIRM_BUTTON;
@@ -848,6 +851,26 @@ public class DemisSteps implements En {
                           diseaseVariant,
                           "The disease variant is incorrect");
                   softly.assertAll();
+                  break;
+          }
+        });
+
+    And(
+        "^I fill laboratory name with \"([^\"]*)\" in New Sample form while processing a DEMIS LabMessage$",
+        (String labName) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_SAMPLE_FORM_LABORATORY_NAME);
+          webDriverHelpers.clearAndFillInWebElement(NEW_SAMPLE_FORM_LABORATORY_NAME, labName);
+        });
+
+    And(
+        "^I fill \"([^\"]*)\" pathogen laboratory name with \"([^\"]*)\" in New Sample form while processing a DEMIS LabMessage$",
+        (String pathogen, String labName) -> {
+          switch (pathogen) {
+              case "first":
+                  webDriverHelpers.clearAndFillInWebElement(NEW_SAMPLE_FORM_FIRST_PATHOGEN_LABORATORY_NAME, labName);
+                  break;
+              case "second":
+                  webDriverHelpers.clearAndFillInWebElement(NEW_SAMPLE_FORM_SECOND_PATHOGEN_LABORATORY_NAME, labName);
                   break;
           }
         });

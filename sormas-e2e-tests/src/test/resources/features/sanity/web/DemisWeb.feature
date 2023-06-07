@@ -437,6 +437,9 @@ Scenario: Create and send laboratory request via Demis
     Then I check that new sample form with pathogen detection reporting process is displayed
     And I verify that disease variant for "first" pathogen is prefilled with "B.1.1.7 - 501Y.V1 (Alpha)" in New Sample form while processing a DEMIS LabMessage
     And I verify that disease variant for "second" pathogen is prefilled with "B.1.1.28.1 - P.1 - 501Y.V3 (Gamma)" in New Sample form while processing a DEMIS LabMessage
+    And I fill laboratory name with "Quick laboratory" in New Sample form while processing a DEMIS LabMessage
+    And I fill "first" pathogen laboratory name with "Quick laboratory" in New Sample form while processing a DEMIS LabMessage
+    And I fill "second" pathogen laboratory name with "Quick laboratory" in New Sample form while processing a DEMIS LabMessage
     And I click on save sample button
     And I click on save sample button
     And I click on save sample button
