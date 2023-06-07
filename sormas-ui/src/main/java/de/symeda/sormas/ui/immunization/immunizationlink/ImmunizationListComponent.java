@@ -13,10 +13,6 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 public class ImmunizationListComponent extends SideComponent {
 
-	public ImmunizationListComponent(Supplier<ImmunizationListCriteria> criteriaSupplier, String activeUuid, Consumer<Runnable> actionCallback) {
-		this(criteriaSupplier, activeUuid, actionCallback, true);
-	}
-
 	public ImmunizationListComponent(
 		Supplier<ImmunizationListCriteria> criteriaSupplier,
 		String activeUuid,
