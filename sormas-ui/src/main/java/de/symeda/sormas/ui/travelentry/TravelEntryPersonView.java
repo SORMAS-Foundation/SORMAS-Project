@@ -40,7 +40,13 @@ public class TravelEntryPersonView extends AbstractTravelEntryView implements Pe
 		DetailSubComponentWrapper componentWrapper = addComponentWrapper(editComponent);
 		CustomLayout layout = addPageLayout(componentWrapper, editComponent);
 		setSubComponent(componentWrapper);
-		addSideComponents(layout, CoreEntityType.TRAVEL_ENTRY, travelEntry.getUuid(), person.toReference(), this::showUnsavedChangesPopup);
+		addSideComponents(
+			layout,
+			CoreEntityType.TRAVEL_ENTRY,
+			travelEntry.getUuid(),
+			person.toReference(),
+			this::showUnsavedChangesPopup,
+			isEditAllowed());
 		setEditPermission(editComponent);
 	}
 

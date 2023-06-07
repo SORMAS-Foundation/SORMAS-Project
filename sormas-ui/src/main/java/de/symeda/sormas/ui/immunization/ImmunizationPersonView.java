@@ -34,7 +34,13 @@ public class ImmunizationPersonView extends AbstractImmunizationView implements 
 		DetailSubComponentWrapper componentWrapper = addComponentWrapper(editComponent);
 		CustomLayout layout = addPageLayout(componentWrapper, editComponent);
 		setSubComponent(componentWrapper);
-		addSideComponents(layout, CoreEntityType.IMMUNIZATION, immunzation.getUuid(), person.toReference(), this::showUnsavedChangesPopup);
+		addSideComponents(
+			layout,
+			CoreEntityType.IMMUNIZATION,
+			immunzation.getUuid(),
+			person.toReference(),
+			this::showUnsavedChangesPopup,
+			isEditAllowed());
 		setEditPermission(editComponent);
 	}
 
