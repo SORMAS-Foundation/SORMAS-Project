@@ -260,6 +260,14 @@
 			</dependency>
 
 			<dependency>
+				<groupId>org.glassfish.jaxb</groupId>
+				<artifactId>jaxb-runtime</artifactId>
+				<version>${glassfish.jaxb.version}</version>
+				<scope>provided</scope>
+				<!-- Payara module: jaxb-osgi -->
+			</dependency>
+
+			<dependency>
 				<groupId>org.glassfish.jersey.containers.glassfish</groupId>
 				<artifactId>jersey-gf-ejb</artifactId>
 				<version>${jersey.version}</version>
@@ -435,6 +443,17 @@
 				<artifactId>json-path</artifactId>
 				<version>2.7.0</version>
 				<scope>provided</scope>
+				<exclusions>
+					<!-- Exclude Payara modules here -->
+					<exclusion>
+						<groupId>net.minidev</groupId>
+						<artifactId>json-smart</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.ow2.asm</groupId>
+						<artifactId>asm</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 
 			<dependency>
@@ -442,6 +461,13 @@
 				<artifactId>client</artifactId>
 				<version>5.6.0</version>
 				<scope>provided</scope>
+				<exclusions>
+					<!-- Exclude Payara modules here -->
+					<exclusion>
+						<groupId>com.fasterxml.jackson.core</groupId>
+						<artifactId>jackson-databind</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 
 			<dependency>
@@ -513,6 +539,37 @@
 				<artifactId>swagger-jaxrs2</artifactId>
 				<version>${swagger.version}</version>
 				<scope>provided</scope>
+				<exclusions>
+					<!-- Exclude Payara modules here -->
+					<exclusion>
+						<groupId>com.fasterxml.jackson.core</groupId>
+						<artifactId>jackson-annotations</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.fasterxml.jackson.core</groupId>
+						<artifactId>jackson-databind</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.fasterxml.jackson.dataformat</groupId>
+						<artifactId>jackson-dataformat-yaml</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>jakarta.validation</groupId>
+						<artifactId>jakarta.validation-api</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>jakarta.xml.bind</groupId>
+						<artifactId>jakarta.xml.bind-api</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.javassist</groupId>
+						<artifactId>javassist</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.yaml</groupId>
+						<artifactId>snakeyaml</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>io.swagger.core.v3</groupId>
@@ -582,6 +639,24 @@
 						<groupId>xml-apis</groupId>
 						<artifactId>xml-apis</artifactId>
 					</exclusion>
+					<!-- Exclude Payara modules here -->
+					<exclusion>
+						<groupId>com.fasterxml.jackson.core</groupId>
+						<artifactId>jackson-core</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.fasterxml.jackson.core</groupId>
+						<artifactId>jackson-databind</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.glassfish.jaxb</groupId>
+						<artifactId>jaxb-runtime</artifactId>
+						<!-- Payara module: jaxb-osgi -->
+					</exclusion>
+					<exclusion>
+						<groupId>org.ow2.asm</groupId>
+						<artifactId>asm</artifactId>
+					</exclusion>
 				</exclusions>
 			</dependency>
 
@@ -635,6 +710,14 @@
 				<artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
 				<version>${docx4j.version}</version>
 				<scope>provided</scope>
+				<exclusions>
+					<!-- Exclude Payara modules here -->
+					<exclusion>
+						<groupId>org.glassfish.jaxb</groupId>
+						<artifactId>jaxb-runtime</artifactId>
+						<!-- Payara module: jaxb-osgi -->
+					</exclusion>
+				</exclusions>
 			</dependency>
 
 			<dependency>
@@ -644,6 +727,10 @@
 				<scope>provided</scope>
 				<exclusions>
 					<!-- Exclude Payara modules here -->
+					<exclusion>
+						<groupId>com.fasterxml</groupId>
+						<artifactId>classmate</artifactId>
+					</exclusion>
 					<exclusion>
 						<groupId>com.sun.istack</groupId>
 						<artifactId>istack-commons-runtime</artifactId>
@@ -664,6 +751,16 @@
 						<!-- Payara module: jakarta.xml.bind-api -->
 					</exclusion>
 					<exclusion>
+						<groupId>org.glassfish.jaxb</groupId>
+						<artifactId>jaxb-runtime</artifactId>
+						<!-- Payara module: jaxb-osgi -->
+					</exclusion>
+					<exclusion>
+						<groupId>org.glassfish.jaxb</groupId>
+						<artifactId>txw2</artifactId>
+						<!-- Payara module: jaxb-osgi -->
+					</exclusion>
+					<exclusion>
 						<groupId>org.javassist</groupId>
 						<artifactId>javassist</artifactId>
 					</exclusion>
@@ -680,20 +777,6 @@
 				<version>1.2.18</version>
 				<scope>provided</scope>
 				<!-- Dependency of hibernate-core - optional for jaxb-runtime and currently excluded -->
-			</dependency>
-			<dependency>
-				<groupId>org.glassfish.jaxb</groupId>
-				<artifactId>jaxb-runtime</artifactId>
-				<version>${glassfish.jaxb.version}</version>
-				<scope>provided</scope>
-				<!-- Dependency of hibernate-core - provided as payara module jaxb-osgi -->
-			</dependency>
-			<dependency>
-				<groupId>org.glassfish.jaxb</groupId>
-				<artifactId>txw2</artifactId>
-				<version>${glassfish.jaxb.version}</version>
-				<scope>provided</scope>
-				<!-- Dependency of hibernate-core - provided as payara module jaxb-osgi -->
 			</dependency>
 			<dependency>
 				<groupId>org.jvnet.staxex</groupId>
@@ -715,6 +798,7 @@
 				<scope>provided</scope>
 				<!-- Additional datatypes for hibernate-core -->
 				<exclusions>
+					<!-- Exclude Payara modules here -->
 					<exclusion>
 						<groupId>com.fasterxml.jackson.module</groupId>
 						<artifactId>jackson-module-jaxb-annotations</artifactId>
@@ -728,6 +812,15 @@
 				<version>${resteasy.version}</version>
 				<scope>provided</scope>
 				<exclusions>
+					<!-- Exclude Payara modules here -->
+					<exclusion>
+						<groupId>jakarta.activation</groupId>
+						<artifactId>jakarta.activation-api</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>jakarta.validation</groupId>
+						<artifactId>jakarta.validation-api</artifactId>
+					</exclusion>
 					<exclusion>
 						<groupId>org.jboss.spec.javax.annotation</groupId>
 						<artifactId>jboss-annotations-api_1.3_spec</artifactId>
@@ -743,6 +836,10 @@
 						<artifactId>jboss-jaxb-api_2.3_spec</artifactId>
 						<!-- Payara module: jakarta.xml.bind-api -->
 					</exclusion>
+					<exclusion>
+						<groupId>org.ow2.asm</groupId>
+						<artifactId>asm</artifactId>
+					</exclusion>
 				</exclusions>
 			</dependency>
 			<dependency>
@@ -750,6 +847,21 @@
 				<artifactId>resteasy-jackson2-provider</artifactId>
 				<version>${resteasy.version}</version>
 				<scope>provided</scope>
+				<exclusions>
+					<!-- Exclude Payara modules here -->
+					<exclusion>
+						<groupId>com.fasterxml.jackson.core</groupId>
+						<artifactId>jackson-annotations</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.fasterxml.jackson.core</groupId>
+						<artifactId>jackson-core</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.fasterxml.jackson.core</groupId>
+						<artifactId>jackson-databind</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.jboss.resteasy</groupId>
@@ -757,6 +869,12 @@
 				<version>${resteasy.version}</version>
 				<scope>provided</scope>
 				<exclusions>
+					<!-- Exclude Payara modules here -->
+					<exclusion>
+						<groupId>org.glassfish.jaxb</groupId>
+						<artifactId>jaxb-runtime</artifactId>
+						<!-- Payara module: jaxb-osgi -->
+					</exclusion>
 					<exclusion>
 						<groupId>org.jboss.spec.javax.xml.bind</groupId>
 						<artifactId>jboss-jaxb-api_2.3_spec</artifactId>
@@ -770,6 +888,11 @@
 				<version>${resteasy.version}</version>
 				<scope>provided</scope>
 				<exclusions>
+					<!-- Exclude Payara modules here -->
+					<exclusion>
+						<groupId>com.sun.mail</groupId>
+						<artifactId>jakarta.mail</artifactId>
+					</exclusion>
 					<exclusion>
 						<groupId>org.jboss.spec.javax.xml.bind</groupId>
 						<artifactId>jboss-jaxb-api_2.3_spec</artifactId>
@@ -849,6 +972,17 @@
 				<artifactId>keycloak-core</artifactId>
 				<version>${keycloak.version}</version>
 				<scope>provided</scope>
+				<exclusions>
+					<!-- Exclude Payara modules here -->
+					<exclusion>
+						<groupId>com.fasterxml.jackson.core</groupId>
+						<artifactId>jackson-core</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.fasterxml.jackson.core</groupId>
+						<artifactId>jackson-databind</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.keycloak</groupId>
@@ -867,6 +1001,21 @@
 				<artifactId>keycloak-servlet-filter-adapter</artifactId>
 				<version>${keycloak.version}</version>
 				<scope>provided</scope>
+				<exclusions>
+					<!-- Exclude Payara modules here -->
+					<exclusion>
+						<groupId>com.fasterxml.jackson.core</groupId>
+						<artifactId>jackson-annotations</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.fasterxml.jackson.core</groupId>
+						<artifactId>jackson-core</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.fasterxml.jackson.core</groupId>
+						<artifactId>jackson-databind</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 
 			<dependency>
@@ -894,6 +1043,13 @@
 				<artifactId>reflections</artifactId>
 				<version>0.10.2</version>
 				<scope>provided</scope>
+				<exclusions>
+					<!-- Exclude Payara modules here -->
+					<exclusion>
+						<groupId>org.javassist</groupId>
+						<artifactId>javassist</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 
 			<!-- manual dependency
@@ -934,6 +1090,11 @@
 						<groupId>org.springframework</groupId>
 						<artifactId>spring-beans</artifactId>
 					</exclusion>
+					<exclusion>
+						<groupId>org.springframework</groupId>
+						<artifactId>spring-jcl</artifactId>
+						<!-- spring-jcl duplicates commons-logging classes -->
+					</exclusion>
 				</exclusions>
 			</dependency>
 
@@ -942,6 +1103,21 @@
 				<artifactId>hapi-fhir-structures-r4</artifactId>
 				<version>6.2.2</version>
 				<scope>provided</scope>
+				<exclusions>
+					<!-- Exclude Payara modules here -->
+					<exclusion>
+						<groupId>com.fasterxml.jackson.core</groupId>
+						<artifactId>jackson-annotations</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.fasterxml.jackson.core</groupId>
+						<artifactId>jackson-core</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.fasterxml.jackson.core</groupId>
+						<artifactId>jackson-databind</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>ca.uhn.hapi.fhir</groupId>
