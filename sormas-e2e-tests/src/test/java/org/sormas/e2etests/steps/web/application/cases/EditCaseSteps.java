@@ -2583,6 +2583,16 @@ public class EditCaseSteps implements En {
               webDriverHelpers.isElementVisibleWithTimeout(ERROR_DESCRIPTION_REQUEST_PROCESSED, 3));
           softly.assertAll();
         });
+    When(
+        "I check if popup with revoke error with handover displays",
+        () -> {
+          softly.assertTrue(
+              webDriverHelpers.isElementVisibleWithTimeout(ERROR_REVOKE_IN_HANDOVER_HEADER_DE, 3));
+          softly.assertTrue(
+              webDriverHelpers.isElementVisibleWithTimeout(
+                  ERROR_REVOKE_DESCRIPTION_REQUEST_PROCESSED, 3));
+          softly.assertAll();
+        });
 
     When(
         "I check if share warning is displayed",
@@ -2625,6 +2635,40 @@ public class EditCaseSteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(EXTERNAL_ID_INPUT);
           externalUUID = webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT);
+        });
+
+    And(
+        "^I click on edit Report on Edit Case page$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(EDIT_REPORT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_REPORT_BUTTON);
+        });
+
+    Then(
+        "^I check that Reporter Facility in Edit report form is set to \"([^\"]*)\"$",
+        (String reporterFacility) -> {
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(REPORTER_FACILITY_INPUT),
+              reporterFacility,
+              "Reporter Facility is incorrect");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check that Reporter Facility Details in Edit report form is set to \"([^\"]*)\"$",
+        (String reporterFacilityDetails) -> {
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(REPORTER_FACILITY_DETAILS_INPUT),
+              reporterFacilityDetails,
+              "Reporter Facility Details are incorrect");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check if external message window appears and close it$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(LAB_MESSAGE_WINDOW_HEADER_DE);
+          webDriverHelpers.clickOnWebElementBySelector(WINDOW_CLOSE_BUTTON);
         });
   }
 

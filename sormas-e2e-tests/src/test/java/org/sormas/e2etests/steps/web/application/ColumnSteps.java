@@ -1,5 +1,7 @@
 package org.sormas.e2etests.steps.web.application;
 
+import static org.sormas.e2etests.pages.application.NavBarPage.*;
+
 import cucumber.api.java8.En;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -20,7 +22,6 @@ import org.testng.asserts.SoftAssert;
 public class ColumnSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
-  List<String> rawColumnDataBeforeSorting;
 
   @Inject
   public ColumnSteps(WebDriverHelpers webDriverHelpers, SoftAssert softly) {
@@ -35,32 +36,27 @@ public class ColumnSteps implements En {
         });
 
     When(
-        "I click the header of chosen column {int}",
-        (Integer col) -> {
-          TimeUnit.SECONDS.sleep(3); // For preventing premature data collection
-          rawColumnDataBeforeSorting = getTableColumnDataByIndex(col, 10);
-          log.info("List of elements element before sorting" + rawColumnDataBeforeSorting);
-          rawColumnDataBeforeSorting.replaceAll(element -> element.toLowerCase());
-          rawColumnDataBeforeSorting.replaceAll(element -> nullifyEmptyString(element));
-          webDriverHelpers.clickOnWebElementBySelector(
-              By.xpath("//thead//tr//th[" + col.toString() + "]"));
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        "I check that error not appear",
+        () -> {
+          TimeUnit.SECONDS.sleep(10); // For preventing premature data collection
+          softly.assertFalse(
+              webDriverHelpers.isElementVisibleWithTimeout(ERROR_NOTIFICATION_CAPTION, 3));
+          softly.assertFalse(
+              webDriverHelpers.isElementVisibleWithTimeout(ERROR_NOTIFICATION_DESCRIPTION, 3));
+          softly.assertAll();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(DASHBOARD_BUTTON);
         });
 
     When(
-        "I check that column {int} is sorted",
-        (Integer col) -> {
+        "I check that error not appear for DE version",
+        () -> {
           TimeUnit.SECONDS.sleep(10); // For preventing premature data collection
-          List<String> rawColumnData = getTableColumnDataByIndex(col, 10);
-          rawColumnData.replaceAll(element -> element.toLowerCase());
-          rawColumnData.replaceAll(element -> nullifyEmptyString(element));
-          log.info("List of  elements after sorting " + rawColumnData);
-          softly.assertNotEquals(
-              rawColumnData,
-              rawColumnDataBeforeSorting,
-              "Column " + col.toString() + " is not correctly sorted!");
+          softly.assertFalse(
+              webDriverHelpers.isElementVisibleWithTimeout(ERROR_NOTIFICATION_CAPTION_DE, 3));
+          softly.assertFalse(
+              webDriverHelpers.isElementVisibleWithTimeout(ERROR_NOTIFICATION_DESCRIPTION_DE, 3));
           softly.assertAll();
-          rawColumnDataBeforeSorting.clear();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(DASHBOARD_BUTTON);
         });
 
     When(

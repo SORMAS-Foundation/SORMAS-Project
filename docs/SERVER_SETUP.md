@@ -186,8 +186,9 @@ Then update `sormas.properties` file in the SORMAS domain with the property `aut
 
 In case Keycloak is set up alongside an already running instance of SORMAS, these are the steps to follow to make sure already existing users can access the system:
 1. Manually create an admin user in Keycloak for the SORMAS realm [Creating a user](https://www.keycloak.org/docs/18.0/server_admin/#proc-creating-user_server_administration_guide) *(username has to be the same as admin's username in SORMAS)*
-2. Login to SORMAS and trigger the **Sync Users** button from the **Users** page
-3. This will sync users to Keycloak keeping their original password - see [SORMAS Keycloak Service Provider](sormas-keycloak-service-provider/README.md) for more information about this
+2. If your server is not using SSL (e.g. because it's a development environment), you need to update the Root URL of the sormas-ui client in the SORMAS realm to use http instead of https
+3. Login to SORMAS and trigger the **Sync Users** button from the **Users** page
+4. This will sync users to Keycloak keeping their original password - see [SORMAS Keycloak Service Provider](sormas-keycloak-service-provider/README.md) for more information about this
 
 ### Keycloak configuration
 

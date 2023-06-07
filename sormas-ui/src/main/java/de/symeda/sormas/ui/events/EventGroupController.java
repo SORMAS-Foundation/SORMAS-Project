@@ -264,7 +264,14 @@ public class EventGroupController {
 		}
 
 		editView.addDiscardListener(SormasUI::refreshView);
-		editView.restrictEditableComponentsOnEditView(UserRight.EVENTGROUP_EDIT, null, UserRight.EVENTGROUP_DELETE, null, true);
+
+		editView.restrictEditableComponentsOnEditView(
+			UserRight.EVENTGROUP_EDIT,
+			null,
+			UserRight.EVENTGROUP_DELETE,
+			UserRight.EVENTGROUP_ARCHIVE,
+			null,
+			true);
 
 		return editView;
 
