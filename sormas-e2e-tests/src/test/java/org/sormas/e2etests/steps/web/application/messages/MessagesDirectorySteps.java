@@ -373,9 +373,10 @@ public class MessagesDirectorySteps implements En {
        "^I check if disease variant field for first record is empty in Message Directory$",
        () -> {
          webDriverHelpers.waitUntilIdentifiedElementIsPresent(FIRST_RECORD_DISEASE_VARIANT);
-         softly.assertNull(
+         softly.assertEquals(
                  webDriverHelpers.getValueFromWebElement(FIRST_RECORD_DISEASE_VARIANT),
-                 "Disease variant is not null");
+                 "",
+                 "Disease variant is not empty");
          softly.assertAll();
        });
   }
