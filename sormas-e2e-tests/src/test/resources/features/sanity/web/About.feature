@@ -7,7 +7,7 @@ Feature: About Directory end to end tests
     And I click on the About button from navbar
     Then I check that current Sormas version is shown on About directory page
 
-  @env_main @#8399
+  @tmsLink=SORDEV-999mk @env_main @#8399
   Scenario: Check all main important redirects in About section
     Given I log in as a National User
     Then I click on the About button from navbar
@@ -20,7 +20,7 @@ Feature: About Directory end to end tests
     Then I check that Data Dictionary file size is bigger than 0 bytes
     Then I delete Data Dictionary downloaded file from About Directory
 
-  @env_de @#8399
+  @tmsLink=SORDEV-999mk @env_de @#8399
   Scenario: Check important redirects in About section for DE
     Given I log in as a National User
     Then I click on the About button from navbar
@@ -31,7 +31,7 @@ Feature: About Directory end to end tests
     Then I click on Case Classification Rules hyperlink and download HTML file in About directory
     Then I delete Case Classification Html downloaded file from About Directory
 
-  @env_de @#9768
+  @tmsLink=SORDEV-999mk @env_de @#9768
   Scenario: Check Data Protection Dictionary existence and download
     Given  I log in as a Admin User
     And I click on the About button from navbar
@@ -40,7 +40,7 @@ Feature: About Directory end to end tests
     And I validate data from downloaded XLSX Deutsch Data Protection Dictionary file
     And I delete Deutsch Data Protection Dictionary downloaded file from About Directory
 
-  @env_main @#9768
+  @tmsLink=SORDEV-999mk @env_main @#9768
   Scenario: Check Data Dictionary existence and download
     Given  I log in as a National User
     And I click on the About button from navbar
