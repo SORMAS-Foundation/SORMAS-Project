@@ -23,6 +23,7 @@ import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
@@ -48,6 +49,7 @@ public class GeneralActionsSteps implements En {
     When(
         "Total number of read only fields should be {int}",
         (Integer number) -> {
+          TimeUnit.SECONDS.sleep(3); // waiting for page loaded
           softly.assertEquals(
               webDriverHelpers.getNumberOfElements(READ_ONLY_FIELDS),
               number.intValue(),
