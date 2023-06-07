@@ -51,7 +51,7 @@
                 "subject": {
                     "reference": "Patient/61ebe359-bfdc-4613-8bf2-c5e300945f0n17"
                 },
-                "date": "2020-04-16",
+                "date": "2020-08-17",
                 "author": [
                     {
                         "reference": "PractitionerRole/61ebe359-bfdc-4613-8bf2-c5e300945f0n18"
@@ -252,7 +252,7 @@
                 "identifier": [
                     {
                         "system": "https://fhir.kbv.de/NamingSystem/KBV_NS_Base_BSNR",
-                        "value": "purpleHat_Id"
+                        "value": "928170"
                     }
                 ],
                 "type": [
@@ -260,12 +260,13 @@
                         "coding": [
                             {
                                 "system": "https://demis.rki.de/fhir/CodeSystem/organizationType",
-                                "code": "laboratory"
+                                "code": "laboratory",
+				                "display": "Erregerdiagnostische Untersuchungsstelle"
                             }
                         ]
                     }
                 ],
-                "name": "PurpleHat",
+                "name": "Quick lab",
                 "telecom": [
                     {
                         "system": "phone",
@@ -389,7 +390,7 @@
                 "subject": {
                     "reference": "Patient/61ebe359-bfdc-4613-8bf2-c5e300945f0n17"
                 },
-                "valueString": "#B.1.427",
+                "valueString": "#P.1",
                 "interpretation": [
                     {
                         "coding": [
