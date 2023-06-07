@@ -374,7 +374,7 @@ public class MessagesDirectorySteps implements En {
        () -> {
          webDriverHelpers.waitUntilIdentifiedElementIsPresent(FIRST_RECORD_DISEASE_VARIANT);
          softly.assertEquals(
-                 webDriverHelpers.getValueFromWebElement(FIRST_RECORD_DISEASE_VARIANT),
+                 webDriverHelpers.getTextFromWebElement(FIRST_RECORD_DISEASE_VARIANT),
                  "",
                  "Disease variant is not empty");
          softly.assertAll();
