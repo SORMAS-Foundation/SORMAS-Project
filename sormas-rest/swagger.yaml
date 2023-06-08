@@ -6896,6 +6896,7 @@ paths:
                   - EXTERNAL_SURVEILLANCE_DELETE
                   - EXTERNAL_MESSAGE_VIEW
                   - EXTERNAL_MESSAGE_PROCESS
+                  - EXTERNAL_MESSAGE_PUSH
                   - EXTERNAL_MESSAGE_DELETE
                   - PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES
                   - OUTBREAK_VIEW
@@ -7093,6 +7094,7 @@ paths:
                   - EXTERNAL_SURVEILLANCE_DELETE
                   - EXTERNAL_MESSAGE_VIEW
                   - EXTERNAL_MESSAGE_PROCESS
+                  - EXTERNAL_MESSAGE_PUSH
                   - EXTERNAL_MESSAGE_DELETE
                   - PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES
                   - OUTBREAK_VIEW
@@ -24644,6 +24646,7 @@ components:
             - EXTERNAL_SURVEILLANCE_DELETE
             - EXTERNAL_MESSAGE_VIEW
             - EXTERNAL_MESSAGE_PROCESS
+            - EXTERNAL_MESSAGE_PUSH
             - EXTERNAL_MESSAGE_DELETE
             - PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES
             - OUTBREAK_VIEW
