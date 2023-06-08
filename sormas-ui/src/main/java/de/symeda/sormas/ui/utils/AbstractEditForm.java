@@ -32,6 +32,7 @@ import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.AbstractTextField;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -41,6 +42,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.utils.components.NotBlankTextValidator;
 
 public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements FieldGroup.CommitHandler {// implements DtoEditForm<DTO> {
 
@@ -395,6 +397,9 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 				Field<?> field = getField(propertyId);
 				if (!field.isReadOnly()) {
 					field.setRequired(required);
+					if (TextField.class.isAssignableFrom(field.getClass())) {
+						field.addValidator(new NotBlankTextValidator(I18nProperties.getRequiredError(field.getCaption())));
+					}
 				}
 			}
 		}

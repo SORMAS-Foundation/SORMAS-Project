@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.event;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,6 +29,8 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.DefaultUserRole;
@@ -185,8 +188,8 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 
 	private void assertPseudonymized(EventParticipantDto eventParticipant) {
 		assertThat(eventParticipant.getInvolvementDescription(), isEmptyString());
-		assertThat(eventParticipant.getPerson().getFirstName(), isEmptyString());
-		assertThat(eventParticipant.getPerson().getLastName(), isEmptyString());
+		assertEquals(I18nProperties.getCaption(Captions.inaccessibleValue), eventParticipant.getPerson().getFirstName());
+		assertEquals(I18nProperties.getCaption(Captions.inaccessibleValue), eventParticipant.getPerson().getLastName());
 		assertThat(eventParticipant.getPerson().getAddress().getStreet(), isEmptyString());
 		assertThat(eventParticipant.getPerson().getAddress().getHouseNumber(), isEmptyString());
 		assertThat(eventParticipant.getPerson().getAddress().getAdditionalInformation(), isEmptyString());
