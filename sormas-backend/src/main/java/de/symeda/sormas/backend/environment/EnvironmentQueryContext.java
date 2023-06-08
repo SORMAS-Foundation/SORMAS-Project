@@ -9,8 +9,8 @@ import de.symeda.sormas.backend.common.QueryContext;
 
 public class EnvironmentQueryContext extends QueryContext<Environment, EnvironmentJoins> {
 
-	public EnvironmentQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Environment> root, EnvironmentJoins joins) {
-		super(cb, query, root, joins);
+	public EnvironmentQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Environment> root) {
+		super(cb, query, root, new EnvironmentJoins(root));
 	}
 
 	@Override

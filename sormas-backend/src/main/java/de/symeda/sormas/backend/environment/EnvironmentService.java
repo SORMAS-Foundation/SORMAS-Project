@@ -10,8 +10,10 @@ import javax.persistence.criteria.Predicate;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.environment.EnvironmentCriteria;
 import de.symeda.sormas.api.event.EventCriteria;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -32,7 +34,65 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 
 	@Override
 	protected Predicate createUserFilterInternal(CriteriaBuilder cb, CriteriaQuery cq, From<?, Environment> from) {
-		return null;
+		return createUserFilter(new EnvironmentQueryContext(cb, cq, from));
+	}
+
+	public Predicate createUserFilter(EnvironmentQueryContext queryContext) {
+
+		User currentUser = getCurrentUser();
+		if (currentUser == null) {
+			return null;
+		}
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		Predicate filter = null;
+
+		@SuppressWarnings("rawtypes")
+		final CriteriaQuery cq = queryContext.getQuery();
+		final CriteriaBuilder cb = queryContext.getCriteriaBuilder();
+		final EnvironmentJoins environmentJoins = queryContext.getJoins();
+		final From<?, Environment> environmentJoin = queryContext.getRoot();
+
+		if (jurisdictionLevel != JurisdictionLevel.NATION) {
+			switch (jurisdictionLevel) {
+			case REGION:
+				if (currentUser.getRegion() != null) {
+					filter =
+						CriteriaBuilderHelper.or(cb, filter, cb.equal(environmentJoins.getLocation().get(Location.REGION), currentUser.getRegion()));
+				}
+				break;
+			case DISTRICT:
+				if (currentUser.getDistrict() != null) {
+					filter = CriteriaBuilderHelper
+						.or(cb, filter, cb.equal(environmentJoins.getLocation().get(Location.DISTRICT), currentUser.getDistrict()));
+				}
+				break;
+			case COMMUNITY:
+				if (currentUser.getCommunity() != null) {
+					filter = CriteriaBuilderHelper
+						.or(cb, filter, cb.equal(environmentJoins.getLocation().get(Location.COMMUNITY), currentUser.getCommunity()));
+				}
+				break;
+			default:
+			}
+
+			Predicate filterResponsible = cb.equal(environmentJoins.getRoot().get(Environment.REPORTING_USER), currentUser);
+			filterResponsible = cb.or(filterResponsible, cb.equal(environmentJoins.getRoot().get(Environment.RESPONSIBLE_USER), currentUser));
+
+			if (filter != null) {
+				filter = CriteriaBuilderHelper.or(cb, filter, filterResponsible);
+			} else {
+				filter = filterResponsible;
+			}
+		}
+
+		if (RequestContextHolder.isMobileSync()) {
+			Predicate limitedChangeDatePredicate = CriteriaBuilderHelper.and(cb, createLimitedChangeDateFilter(cb, environmentJoin));
+			if (limitedChangeDatePredicate != null) {
+				filter = CriteriaBuilderHelper.and(cb, filter, limitedChangeDatePredicate);
+			}
+		}
+
+		return filter;
 	}
 
 	@Override

@@ -5,6 +5,7 @@ import static java.util.Objects.isNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -170,8 +171,7 @@ public class EnvironmentFacadeEjb
 		final CriteriaQuery<Tuple> cq = cb.createTupleQuery();
 		final Root<Environment> environment = cq.from(Environment.class);
 
-		final EnvironmentJoins environmentJoins = new EnvironmentJoins(environment);
-		final EnvironmentQueryContext environmentQueryContext = new EnvironmentQueryContext(cb, cq, environment, environmentJoins);
+		final EnvironmentQueryContext environmentQueryContext = new EnvironmentQueryContext(cb, cq, environment);
 
 		List<Selection<?>> selections = new ArrayList<>();
 		selections.add(environment.get(Environment.ID));
@@ -327,6 +327,11 @@ public class EnvironmentFacadeEjb
 	@Override
 	protected CoreEntityType getCoreEntityType() {
 		return null;
+	}
+
+	@Override
+	public List<EnvironmentDto> getAllEnvironmentsAfter(Date date) {
+		return service.getAllAfter(date).stream().map(r -> toDto(r)).collect(Collectors.toList());
 	}
 
 	@LocalBean

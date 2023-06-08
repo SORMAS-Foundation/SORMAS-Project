@@ -12371,6 +12371,7 @@ CREATE TABLE environments(
     uuid varchar(36) not null unique,
     changedate timestamp not null,
     creationdate timestamp not null,
+    change_user_id bigint,
     reportdate timestamp,
     reportinguser_id bigint,
     environmentname varchar(255),
@@ -12387,12 +12388,17 @@ CREATE TABLE environments(
     otherwateruse varchar(512),
     location_id bigint,
     deleted boolean DEFAULT false,
+    deletionreason varchar(255),
+    otherdeletionreason text,
     archived boolean DEFAULT false,
+    archiveundonereason varchar(512),
+    endofprocessingdate timestamp without time zone,
     sys_period tstzrange not null,
     primary key(id)
 );
 
 ALTER TABLE environments OWNER TO sormas_user;
+ALTER TABLE environments ADD CONSTRAINT fk_change_user_id FOREIGN KEY (change_user_id) REFERENCES users (id);
 ALTER TABLE environments ADD CONSTRAINT fk_environments_reportinguser_id FOREIGN KEY (reportinguser_id) REFERENCES users(id);
 ALTER TABLE environments ADD CONSTRAINT fk_environments_responsibleuser_id FOREIGN KEY (responsibleuser_id) REFERENCES users(id);
 ALTER TABLE environments ADD CONSTRAINT fk_environments_location_id FOREIGN KEY (location_id) REFERENCES location(id);
