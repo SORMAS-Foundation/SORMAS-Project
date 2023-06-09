@@ -17,6 +17,7 @@ Feature: About Directory end to end tests
     Then I click on SORMAS Github in About directory and i get redirected to github page of sormas
     Then I click on Full Changelog in About directory and i get redirected to github project release page of sormas
     And I click on Data Dictionary hyperlink and download XLSX file from About directory
+    Then I check that Data Dictionary file size is bigger than 0 bytes
     Then I delete Data Dictionary downloaded file from About Directory
 
   @env_de @#8399
@@ -25,6 +26,7 @@ Feature: About Directory end to end tests
     Then I click on the About button from navbar
     Then I click on Sormas version in About directory and i get redirected to github
     And I click on Deutsch Data Dictionary hyperlink and download XLSX file from About directory
+    Then I check that Deutsch Data Dictionary file size is bigger than 0 bytes
     Then I delete Deutsch Data Dictionary downloaded file from About Directory
     Then I click on Case Classification Rules hyperlink and download HTML file in About directory
     Then I delete Case Classification Html downloaded file from About Directory
@@ -34,6 +36,7 @@ Feature: About Directory end to end tests
     Given  I log in as a Admin User
     And I click on the About button from navbar
     And I click on Deutsch Data Protection Dictionary hyperlink and download XLSX file from About directory
+    Then I check that Deutsch Data Protection Dictionary file size is bigger than 0 bytes
     And I validate data from downloaded XLSX Deutsch Data Protection Dictionary file
     And I delete Deutsch Data Protection Dictionary downloaded file from About Directory
 
@@ -42,6 +45,7 @@ Feature: About Directory end to end tests
     Given  I log in as a National User
     And I click on the About button from navbar
     And I click on Data Dictionary hyperlink and download XLSX file from About directory
+    Then I check that Data Dictionary file size is bigger than 0 bytes
     And I validate data from downloaded XLSX Data Dictionary file
     And I delete Data Dictionary downloaded file from About Directory
 
@@ -50,6 +54,7 @@ Feature: About Directory end to end tests
     Given I log in as a Admin User
     And I click on the About button from navbar
     And I click on Data Dictionary hyperlink and download XLSX file from About directory
+    Then I check that Data Dictionary file size is bigger than 0 bytes
     Then I check if Data Dictionary in "Person.burialDate" record has no "COVID-19" as a disease
     Then I check if Data Dictionary in "Person.burialPlaceDescription" record has no "COVID-19" as a disease
     Then I check if Data Dictionary in "Person.burialConductor" record has no "COVID-19" as a disease
@@ -60,6 +65,7 @@ Feature: About Directory end to end tests
     Given  I log in as a National User
     And I click on the About button from navbar
     And I click on Data Dictionary hyperlink and download XLSX file from About directory
+    Then I check that Data Dictionary file size is bigger than 0 bytes
     And I check if Data Dictionary contains entries name in English
     And I delete Data Dictionary downloaded file from About Directory
 
@@ -70,6 +76,7 @@ Feature: About Directory end to end tests
     Then I click on the User Settings button from navbar
     And I select "Deutsch" language from Combobox in User settings
     And I click on Data Dictionary hyperlink and download XLSX file from About directory
+    Then I check that Data Dictionary file size is bigger than 0 bytes
     And I check if Data Dictionary contains sheets names in German
     And I delete Data Dictionary downloaded file from About Directory
     Then I click on the User Settings button from navbar

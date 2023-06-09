@@ -417,3 +417,34 @@ Scenario: Create and send laboratory request via Demis
     And I check if external message window appears and close it
     When I click on edit Report on Edit Case page
     Then I check that Reporter Facility in Edit report form is set to ""
+
+  @tmsLink=SORQA-905 @env_d2s @LoginKeycloak
+  Scenario: Demis - Map no disease variant on the case if lab message contains more than 1 positive pathogen test
+    Given API : Login to DEMIS server
+    When I create and send Laboratory Notification with two positive pathogens
+    And I log in as a Admin User
+    Then I click on the Messages button from navbar
+    And I click on fetch messages button
+    Then I filter by last created person via API in Messages Directory
+    And I check if disease variant field for first record is empty in Message Directory
+    And I click on Verarbeiten button in Messages Directory
+    And I pick a new person in Pick or create person popup during case creation for DE
+    And I choose create new case in Pick or create entry form for DE
+    And I check that create new case form with pathogen detection reporting process is displayed for DE
+    And I check if disease variant field is empty in New case form while processing a DEMIS LabMessage
+    And I fill only mandatory fields to convert laboratory message into a case for DE
+    And I click on save button in the case popup
+    Then I check that new sample form with pathogen detection reporting process is displayed
+    And I verify that disease variant for "first" pathogen is prefilled with "B.1.1.7 - 501Y.V1 (Alpha)" in New Sample form while processing a DEMIS LabMessage
+    And I verify that disease variant for "second" pathogen is prefilled with "B.1.1.28.1 - P.1 - 501Y.V3 (Gamma)" in New Sample form while processing a DEMIS LabMessage
+    And I fill laboratory name with "Quick laboratory" in New Sample form while processing a DEMIS LabMessage
+    And I fill "first" pathogen laboratory name with "Quick laboratory" in New Sample form while processing a DEMIS LabMessage
+    And I fill "second" pathogen laboratory name with "Quick laboratory" in New Sample form while processing a DEMIS LabMessage
+    And I click on save sample button
+    And I click on save sample button
+    And I click on save sample button
+    And I click on YES button in Update case disease variant popup window
+    And I click on the Cases button from navbar
+    And I search the case by last created person via Demis message
+    Then I click on the first Case ID from Case Directory
+    And I check that the value selected from Disease variant combobox is "B.1.1.28.1 - P.1 - 501Y.V3 (Gamma)" on Edit Case page

@@ -61,7 +61,7 @@ public class ContactPersonView extends AbstractContactView implements PersonSide
 		DetailSubComponentWrapper componentWrapper = addComponentWrapper(editComponent);
 		CustomLayout layout = addPageLayout(componentWrapper, editComponent);
 		setSubComponent(componentWrapper);
-		addSideComponents(layout, CoreEntityType.CONTACT, contact.getUuid(), person.toReference(), this::showUnsavedChangesPopup);
+		addSideComponents(layout, CoreEntityType.CONTACT, contact.getUuid(), person.toReference(), this::showUnsavedChangesPopup, isEditAllowed());
 		setEditPermission(
 			editComponent,
 			UserProvider.getCurrent().hasUserRight(UserRight.PERSON_EDIT),

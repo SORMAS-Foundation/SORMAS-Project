@@ -1,6 +1,7 @@
 package org.sormas.e2etests.steps.web.application;
 
 import static org.sormas.e2etests.pages.application.AboutPage.*;
+import static org.sormas.e2etests.pages.application.NavBarPage.*;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.SURVEILLANCE_DASHBOARD_NAME;
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.LANGUAGE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.SAVE_BUTTON;
@@ -58,6 +59,49 @@ public class AboutDirectorySteps implements En {
           webDriverHelpers.selectFromCombobox(LANGUAGE_COMBOBOX, chosenLanguage);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+        });
+
+    When(
+        "I check that ([^\"]*) file size is bigger than 0 bytes",
+        (String dictionaryName) -> {
+          switch (dictionaryName) {
+            case "Data Protection Dictionary":
+              FilesHelper.validateFileIsNotEmpty(DATA_PROTECTION_DICTIONARY_FILE_PATH);
+              softly.assertFalse(
+                  webDriverHelpers.isElementVisibleWithTimeout(ERROR_NOTIFICATION_CAPTION, 3));
+              softly.assertFalse(
+                  webDriverHelpers.isElementVisibleWithTimeout(ERROR_NOTIFICATION_DESCRIPTION, 3));
+              softly.assertAll();
+              break;
+            case "Data Dictionary":
+              FilesHelper.validateFileIsNotEmpty(DATA_DICTIONARY_FILE_PATH);
+              softly.assertFalse(
+                  webDriverHelpers.isElementVisibleWithTimeout(ERROR_NOTIFICATION_CAPTION, 3));
+              softly.assertFalse(
+                  webDriverHelpers.isElementVisibleWithTimeout(ERROR_NOTIFICATION_DESCRIPTION, 3));
+              softly.assertAll();
+              break;
+            case "Deutsch Data Dictionary":
+              FilesHelper.validateFileIsNotEmpty(DEUTSCH_DATA_DICTIONARY_FILE_PATH);
+              softly.assertFalse(
+                  webDriverHelpers.isElementVisibleWithTimeout(ERROR_NOTIFICATION_CAPTION_DE, 3));
+              softly.assertFalse(
+                  webDriverHelpers.isElementVisibleWithTimeout(
+                      ERROR_NOTIFICATION_DESCRIPTION_DE, 3));
+              softly.assertAll();
+              break;
+            case "Deutsch Data Protection Dictionary":
+              FilesHelper.validateFileIsNotEmpty(DEUTSCH_DATA_PROTECTION_DICTIONARY_FILE_PATH);
+              softly.assertFalse(
+                  webDriverHelpers.isElementVisibleWithTimeout(ERROR_NOTIFICATION_CAPTION_DE, 3));
+              softly.assertFalse(
+                  webDriverHelpers.isElementVisibleWithTimeout(
+                      ERROR_NOTIFICATION_DESCRIPTION_DE, 3));
+              softly.assertAll();
+              break;
+            default:
+              throw new Exception("No XLSX file downloaded!");
+          }
         });
 
     When(

@@ -89,7 +89,8 @@ public interface PersonSideComponentsElement {
 		CoreEntityType entityType,
 		String entityUuid,
 		PersonReferenceDto person,
-		Consumer<Runnable> showUnsavedChangesPopup) {
+		Consumer<Runnable> showUnsavedChangesPopup,
+		boolean isEditAllowed) {
 
 		UserProvider currentUser = UserProvider.getCurrent();
 		CaseListComponent caseListComponent = null;
@@ -99,7 +100,8 @@ public interface PersonSideComponentsElement {
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)
 			&& currentUser != null
 			&& currentUser.hasUserRight(UserRight.CASE_VIEW)) {
-			caseListComponent = new CaseListComponent(person, entityType == CoreEntityType.CASE ? entityUuid : null, showUnsavedChangesPopup);
+			caseListComponent =
+				new CaseListComponent(person, entityType == CoreEntityType.CASE ? entityUuid : null, showUnsavedChangesPopup, isEditAllowed);
 			layout.addComponent(new SideComponentLayout(caseListComponent), CASES_LOC);
 		}
 
@@ -107,7 +109,7 @@ public interface PersonSideComponentsElement {
 			&& currentUser != null
 			&& currentUser.hasUserRight(UserRight.CONTACT_VIEW)) {
 			contactListComponent =
-				new ContactListComponent(person, entityType == CoreEntityType.CONTACT ? entityUuid : null, showUnsavedChangesPopup);
+				new ContactListComponent(person, entityType == CoreEntityType.CONTACT ? entityUuid : null, showUnsavedChangesPopup, isEditAllowed);
 			layout.addComponent(new SideComponentLayout(contactListComponent), CONTACTS_LOC);
 		}
 
@@ -118,7 +120,8 @@ public interface PersonSideComponentsElement {
 			eventParticipantListComponent = new EventParticipantListComponent(
 				person,
 				entityType == CoreEntityType.EVENT_PARTICIPANT ? entityUuid : null,
-				showUnsavedChangesPopup);
+				showUnsavedChangesPopup,
+				isEditAllowed);
 			layout.addComponent(new SideComponentLayout(eventParticipantListComponent), EVENT_PARTICIPANTS_LOC);
 		}
 
@@ -146,8 +149,8 @@ public interface PersonSideComponentsElement {
 				.eventParticipantUuids(eventParticipantList)
 				.sampleAssociationType(SampleAssociationType.PERSON);
 
-			SampleListComponent sampleList = new SampleListComponent(sampleCriteria, showUnsavedChangesPopup, true);
-			SampleListComponentLayout sampleListComponentLayout = new SampleListComponentLayout(sampleList, null);
+			SampleListComponent sampleList = new SampleListComponent(sampleCriteria, showUnsavedChangesPopup, isEditAllowed);
+			SampleListComponentLayout sampleListComponentLayout = new SampleListComponentLayout(sampleList, null, isEditAllowed);
 			layout.addComponent(sampleListComponentLayout, SAMPLES_LOC);
 		}
 
@@ -161,7 +164,8 @@ public interface PersonSideComponentsElement {
 					new TravelEntryListComponent(
 						travelEntryListCriteria,
 						entityType == CoreEntityType.TRAVEL_ENTRY ? entityUuid : null,
-						showUnsavedChangesPopup)),
+						showUnsavedChangesPopup,
+						isEditAllowed)),
 				TRAVEL_ENTRIES_LOC);
 		}
 
@@ -175,7 +179,8 @@ public interface PersonSideComponentsElement {
 						new ImmunizationListComponent(
 							() -> new ImmunizationListCriteria.Builder(person).build(),
 							entityType == CoreEntityType.IMMUNIZATION ? entityUuid : null,
-							showUnsavedChangesPopup)),
+							showUnsavedChangesPopup,
+							isEditAllowed)),
 					IMMUNIZATION_LOC);
 			} else {
 				layout.addComponent(
@@ -185,7 +190,7 @@ public interface PersonSideComponentsElement {
 							entityType == CoreEntityType.IMMUNIZATION ? entityUuid : null,
 							showUnsavedChangesPopup,
 							false,
-							true)),
+							isEditAllowed)),
 					VACCINATIONS_LOC);
 			}
 		}
