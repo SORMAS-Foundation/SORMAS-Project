@@ -656,6 +656,7 @@ public interface Strings {
 	String headingPersonData = "headingPersonData";
 	String headingPersonInformation = "headingPersonInformation";
 	String headingPersonOccupation = "headingPersonOccupation";
+	String headingPickEventGroup = "headingPickEventGroup";
 	String headingPickEventParticipants = "headingPickEventParticipants";
 	String headingPickEventParticipantsIncompleteSelection = "headingPickEventParticipantsIncompleteSelection";
 	String headingPickOrCreateCase = "headingPickOrCreateCase";
