@@ -273,10 +273,12 @@ public class WebDriverHelpers {
             + "') or starts-with(text(), '\" + text + \"') ]";
     waitUntilIdentifiedElementIsVisibleAndClickable(comboboxInput);
     comboboxInput.sendKeys(text);
-    waitUntilElementIsVisibleAndClickable(By.className("v-filterselect-suggestmenu"));
-    waitUntilANumberOfElementsAreVisibleAndClickable(By.xpath("//td[@role='listitem']/span"), 1);
+    //    waitUntilElementIsVisibleAndClickable(By.className("v-filterselect-suggestmenu"));
+    //    waitUntilANumberOfElementsAreVisibleAndClickable(By.xpath("//td[@role='listitem']/span"),
+    // 1);
     By dropDownValueXpath = By.xpath(comboBoxItemWithText);
-    TimeUnit.MILLISECONDS.sleep(700);
+    waitUntilANumberOfElementsAreVisibleAndClickable(dropDownValueXpath, 1);
+    TimeUnit.SECONDS.sleep(1);
     clickOnWebElementBySelector(dropDownValueXpath);
     await()
         .pollInterval(ONE_HUNDRED_MILLISECONDS)

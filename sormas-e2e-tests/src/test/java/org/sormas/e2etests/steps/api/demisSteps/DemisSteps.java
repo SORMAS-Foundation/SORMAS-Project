@@ -815,7 +815,9 @@ public class DemisSteps implements En {
         () -> {
           patientLastName = faker.name().lastName();
           patientFirstName = faker.name().firstName();
-          String json = demisApiService.prepareLabNotificationFileWithTwoPathogens(patientFirstName, patientLastName);
+          String json =
+              demisApiService.prepareLabNotificationFileWithTwoPathogens(
+                  patientFirstName, patientLastName);
 
           Assert.assertTrue(
               demisApiService.sendLabRequest(json, loginToken),
@@ -836,22 +838,25 @@ public class DemisSteps implements En {
     And(
         "I verify that disease variant for {string} pathogen is prefilled with {string} in New Sample form while processing a DEMIS LabMessage",
         (String pathogen, String diseaseVariant) -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_SAMPLE_FORM_FIRST_PATHOGEN_DISEASE_VARIANT_INPUT);
-          switch(pathogen) {
-              case "first":
-                  softly.assertEquals(
-                          webDriverHelpers.getValueFromWebElement(NEW_SAMPLE_FORM_FIRST_PATHOGEN_DISEASE_VARIANT_INPUT),
-                          diseaseVariant,
-                          "The disease variant is incorrect");
-                  softly.assertAll();
-                  break;
-              case "second":
-                  softly.assertEquals(
-                          webDriverHelpers.getValueFromWebElement(NEW_SAMPLE_FORM_SECOND_PATHOGEN_DISEASE_VARIANT_INPUT),
-                          diseaseVariant,
-                          "The disease variant is incorrect");
-                  softly.assertAll();
-                  break;
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              NEW_SAMPLE_FORM_FIRST_PATHOGEN_DISEASE_VARIANT_INPUT);
+          switch (pathogen) {
+            case "first":
+              softly.assertEquals(
+                  webDriverHelpers.getValueFromWebElement(
+                      NEW_SAMPLE_FORM_FIRST_PATHOGEN_DISEASE_VARIANT_INPUT),
+                  diseaseVariant,
+                  "The disease variant is incorrect");
+              softly.assertAll();
+              break;
+            case "second":
+              softly.assertEquals(
+                  webDriverHelpers.getValueFromWebElement(
+                      NEW_SAMPLE_FORM_SECOND_PATHOGEN_DISEASE_VARIANT_INPUT),
+                  diseaseVariant,
+                  "The disease variant is incorrect");
+              softly.assertAll();
+              break;
           }
         });
 
@@ -866,12 +871,14 @@ public class DemisSteps implements En {
         "^I fill \"([^\"]*)\" pathogen laboratory name with \"([^\"]*)\" in New Sample form while processing a DEMIS LabMessage$",
         (String pathogen, String labName) -> {
           switch (pathogen) {
-              case "first":
-                  webDriverHelpers.clearAndFillInWebElement(NEW_SAMPLE_FORM_FIRST_PATHOGEN_LABORATORY_NAME, labName);
-                  break;
-              case "second":
-                  webDriverHelpers.clearAndFillInWebElement(NEW_SAMPLE_FORM_SECOND_PATHOGEN_LABORATORY_NAME, labName);
-                  break;
+            case "first":
+              webDriverHelpers.clearAndFillInWebElement(
+                  NEW_SAMPLE_FORM_FIRST_PATHOGEN_LABORATORY_NAME, labName);
+              break;
+            case "second":
+              webDriverHelpers.clearAndFillInWebElement(
+                  NEW_SAMPLE_FORM_SECOND_PATHOGEN_LABORATORY_NAME, labName);
+              break;
           }
         });
   }
