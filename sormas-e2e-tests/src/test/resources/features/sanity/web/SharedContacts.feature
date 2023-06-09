@@ -295,7 +295,7 @@ Feature: Sharing contacts between environments tests
     And I check that first shared result has different id then deleted shared contact
 
   @tmsLink=SORQA-961 @env_s2s_1
-  Scenario: Delete a contact in target system with handing ownership [rename]
+  Scenario: Delete a contact in target system with handing ownership and check it in both systems
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
