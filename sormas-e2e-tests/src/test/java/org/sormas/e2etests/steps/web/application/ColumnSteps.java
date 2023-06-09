@@ -47,17 +47,17 @@ public class ColumnSteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(DASHBOARD_BUTTON);
         });
 
-      When(
-              "I check that error not appear for DE version",
-              () -> {
-                  TimeUnit.SECONDS.sleep(10); // For preventing premature data collection
-                  softly.assertFalse(
-                          webDriverHelpers.isElementVisibleWithTimeout(ERROR_NOTIFICATION_CAPTION_DE, 3));
-                  softly.assertFalse(
-                          webDriverHelpers.isElementVisibleWithTimeout(ERROR_NOTIFICATION_DESCRIPTION_DE, 3));
-                  softly.assertAll();
-                  webDriverHelpers.waitUntilElementIsVisibleAndClickable(DASHBOARD_BUTTON);
-              });
+    When(
+        "I check that error not appear for DE version",
+        () -> {
+          TimeUnit.SECONDS.sleep(10); // For preventing premature data collection
+          softly.assertFalse(
+              webDriverHelpers.isElementVisibleWithTimeout(ERROR_NOTIFICATION_CAPTION_DE, 3));
+          softly.assertFalse(
+              webDriverHelpers.isElementVisibleWithTimeout(ERROR_NOTIFICATION_DESCRIPTION_DE, 3));
+          softly.assertAll();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(DASHBOARD_BUTTON);
+        });
 
     When(
         "I check that column {int} is sorted alphabetically in descending order",

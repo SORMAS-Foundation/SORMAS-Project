@@ -277,7 +277,7 @@ public class WebDriverHelpers {
     //    waitUntilANumberOfElementsAreVisibleAndClickable(By.xpath("//td[@role='listitem']/span"),
     // 1);
     By dropDownValueXpath = By.xpath(comboBoxItemWithText);
-    waitUntilElementIsVisibleAndClickable(dropDownValueXpath);
+    waitUntilANumberOfElementsAreVisibleAndClickable(dropDownValueXpath, 1);
     TimeUnit.SECONDS.sleep(1);
     clickOnWebElementBySelector(dropDownValueXpath);
     await()

@@ -331,16 +331,13 @@ Feature: Sharing contacts between environments tests
     And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
     And I click on Yes option in Confirm deletion popup
     And I click on the Contacts button from navbar
-    Then I apply Id of last api created Contact on Contact Directory Page
-    And I apply "Alle" to ownership combobox on Case Directory Page
-    And I click on the APPLY FILTERS button
-    And I open the first contact from contacts list
+    Then I open the last created contact via API
     And I check if editable fields are read only for shared contact
     And I check if handover card contains "Eigentümer: LK Fulda" information
     And I check if handover card contains "Geteilt von: Automation ADMIN" information
     And I check if handover card contains "shared with automated test" information
     Then I navigate to "s2s_2" environment
     Then I open the last created contact via API
-    And I check if handover card contains "Eigentümer: LK Fulda" information
-    And I check if handover card contains "Geteilt von: Automation ADMIN" information
+    And I check if handover card contains "Gesendet von LK Barnim" information
+    And I check if handover card contains "Geteilt von: Automation Admin" information
     And I check if handover card contains "shared with automated test" information
