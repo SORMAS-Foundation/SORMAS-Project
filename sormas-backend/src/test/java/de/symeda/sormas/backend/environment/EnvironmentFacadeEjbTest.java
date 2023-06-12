@@ -7,6 +7,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.environment.EnvironmentCriteria;
+import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.environment.EnvironmentIndexDto;
 import de.symeda.sormas.api.environment.EnvironmentMedia;
 import de.symeda.sormas.api.user.UserDto;
@@ -16,7 +17,19 @@ import de.symeda.sormas.backend.TestDataCreator;
 class EnvironmentFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
-	void testGetIndexList() {
+	public void testGetByUuid() {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		EnvironmentDto environment = creator.createEnvironment("Test Environment", EnvironmentMedia.WATER, user.toReference(), rdcf);
+
+		EnvironmentDto saved = getEnvironmentFacade().getByUuid(environment.getUuid());
+
+		assertEquals(environment.getEnvironmentName(), saved.getEnvironmentName());
+		assertEquals(environment.getEnvironmentMedia(), saved.getEnvironmentMedia());
+	}
+
+	@Test
+	public void testGetIndexList() {
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createSurveillanceSupervisor(rdcf);

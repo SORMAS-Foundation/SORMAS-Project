@@ -102,7 +102,7 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 
 	@Override
 	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Environment> from) {
-		return null;
+		return cb.conjunction();
 	}
 
 	public Predicate buildCriteriaFilter(EnvironmentCriteria environmentCriteria, EnvironmentQueryContext environmentQueryContext) {
