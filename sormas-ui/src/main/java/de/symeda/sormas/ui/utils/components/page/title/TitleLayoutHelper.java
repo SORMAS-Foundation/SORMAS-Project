@@ -1,5 +1,7 @@
 package de.symeda.sormas.ui.utils.components.page.title;
 
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.person.PersonDto;
@@ -12,9 +14,11 @@ public class TitleLayoutHelper {
 
 	public static StringBuilder buildPersonString(PersonDto person) {
 		StringBuilder personString = new StringBuilder();
-		String personFullName = "";
+		final String personFullName;
 		if (!person.isPseudonymized()) {
 			personFullName = PersonDto.buildCaption(person.getFirstName(), person.getLastName());
+		} else {
+			personFullName = I18nProperties.getCaption(Captions.inaccessibleValue);
 		}
 
 		if (StringUtils.isNotBlank(personFullName)) {

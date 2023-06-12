@@ -18,7 +18,6 @@ package de.symeda.sormas.backend.event;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 import java.util.List;
@@ -188,8 +187,8 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 
 	private void assertPseudonymized(EventParticipantDto eventParticipant) {
 		assertThat(eventParticipant.getInvolvementDescription(), isEmptyString());
-		assertEquals(I18nProperties.getCaption(Captions.inaccessibleValue), eventParticipant.getPerson().getFirstName());
-		assertEquals(I18nProperties.getCaption(Captions.inaccessibleValue), eventParticipant.getPerson().getLastName());
+		assertThat(eventParticipant.getPerson().getFirstName(), is(I18nProperties.getCaption(Captions.inaccessibleValue)));
+		assertThat(eventParticipant.getPerson().getLastName(), is(I18nProperties.getCaption(Captions.inaccessibleValue)));
 		assertThat(eventParticipant.getPerson().getAddress().getStreet(), isEmptyString());
 		assertThat(eventParticipant.getPerson().getAddress().getHouseNumber(), isEmptyString());
 		assertThat(eventParticipant.getPerson().getAddress().getAdditionalInformation(), isEmptyString());

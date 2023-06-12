@@ -1,5 +1,7 @@
 package de.symeda.sormas.ui.utils.components;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.v7.data.validator.AbstractValidator;
 
 public class NotBlankTextValidator extends AbstractValidator<String> {
@@ -11,7 +13,7 @@ public class NotBlankTextValidator extends AbstractValidator<String> {
 	@Override
 	protected boolean isValidValue(String s) {
 
-		return !s.isBlank();
+		return StringUtils.isNotBlank(s);
 	}
 
 	@Override
