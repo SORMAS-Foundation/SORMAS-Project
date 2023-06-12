@@ -101,7 +101,7 @@ public class ArchivingController<F extends CoreFacade> {
 			640,
 			confirmed -> {
 				if (Boolean.TRUE.equals(confirmed)) {
-					if (dearchiveReason.getValue().isEmpty()) {
+					if (dearchiveReason.getValue().isBlank()) {
 						dearchiveReason.setComponentError(new UserError(I18nProperties.getString(Strings.messageArchiveUndoneReasonMandatory)));
 						return false;
 					}
