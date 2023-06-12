@@ -284,6 +284,7 @@ public interface Strings {
 	String errorCaseDuplicateDeletion = "errorCaseDuplicateDeletion";
 	String errorCaseMerging = "errorCaseMerging";
 	String errorCaseNotEditable = "errorCaseNotEditable";
+	String errorCaseNotEditableOutsideJurisdiction = "errorCaseNotEditableOutsideJurisdiction";
 	String errorConstraintViolation = "errorConstraintViolation";
 	String errorContactDuplicateDeletion = "errorContactDuplicateDeletion";
 	String errorContactMerging = "errorContactMerging";
@@ -318,6 +319,7 @@ public interface Strings {
 	String errorNoPopulationDataLocations = "errorNoPopulationDataLocations";
 	String errorNoRightsForChangingField = "errorNoRightsForChangingField";
 	String errorNoRightsForChangingMultipleFields = "errorNoRightsForChangingMultipleFields";
+	String errorNoRightsToPerformAction = "errorNoRightsToPerformAction";
 	String errorNotFound = "errorNotFound";
 	String errorNotifyingExternalSurveillanceTool = "errorNotifyingExternalSurveillanceTool";
 	String errorNotRequiredRights = "errorNotRequiredRights";

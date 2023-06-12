@@ -35,6 +35,7 @@ import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.MergeFacade;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -56,7 +57,7 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 
 @Remote
-public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseReferenceDto, CaseCriteria> {
+public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseReferenceDto, CaseCriteria>, MergeFacade {
 
 	long count(CaseCriteria caseCriteria, boolean ignoreUserFilter);
 
@@ -129,8 +130,6 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	void deleteWithContacts(String caseUuid, DeletionDetails deletionDetails);
 
-	void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid);
-
 	Date getOldestCaseOnsetDate();
 
 	Date getOldestCaseReportDate();
@@ -146,8 +145,6 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 	boolean doesExternalTokenExist(String externalToken, String caseUuid);
 
 	String getGenerateEpidNumber(CaseDataDto caze);
-
-	void mergeCase(String leadUuid, String otherUuid);
 
 	List<CaseSelectionDto> getSimilarCases(CaseSimilarityCriteria criteria);
 

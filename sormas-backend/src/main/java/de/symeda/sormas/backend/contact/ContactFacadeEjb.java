@@ -2096,7 +2096,7 @@ public class ContactFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._CONTACT_MERGE)
-	public void mergeContact(String leadUuid, String otherUuid) {
+	public void merge(String leadUuid, String otherUuid) {
 		ContactDto leadContactDto = getContactWithoutPseudonyimizationByUuid(leadUuid);
 		ContactDto otherContactDto = getContactWithoutPseudonyimizationByUuid(otherUuid);
 
@@ -2169,7 +2169,7 @@ public class ContactFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._CONTACT_MERGE)
-	public void deleteContactAsDuplicate(String uuid, String duplicateOfUuid) {
+	public void deleteAsDuplicate(String uuid, String duplicateOfUuid) {
 		Contact contact = service.getByUuid(uuid);
 		Contact duplicateOfContact = service.getByUuid(duplicateOfUuid);
 		contact.setDuplicateOf(duplicateOfContact);

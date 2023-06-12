@@ -1493,16 +1493,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		UserRight._CASE_CREATE,
 		UserRight._CASE_EDIT })
 	public CaseDataDto save(@Valid @NotNull CaseDataDto dto) throws ValidationRuntimeException {
-		return save(dto, true, true, true, false);
-	}
-
-	@Override
-	@RightsAllowed({
-		UserRight._CASE_CREATE,
-		UserRight._CASE_EDIT,
-		UserRight._EXTERNAL_VISITS })
-	public CaseDataDto save(@Valid @NotNull CaseDataDto dto, boolean systemSave) throws ValidationRuntimeException {
-		return save(dto, true, true, true, systemSave);
+		return save(dto, true, true, true);
 	}
 
 	@Override
@@ -1517,7 +1508,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			caseDto.setPerson(newlyCreatedPersonDto.toReference());
 			savedCoreAndPersonDto.setPerson(newlyCreatedPersonDto);
 		}
-		CaseDataDto savedCaseData = save(caseDto, true, true, true, false);
+		CaseDataDto savedCaseData = save(caseDto, true, true, true);
 		savedCoreAndPersonDto.setCoreData(savedCaseData);
 		return savedCoreAndPersonDto;
 	}
@@ -1648,14 +1639,19 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@RightsAllowed({
 		UserRight._CASE_CREATE,
 		UserRight._CASE_EDIT })
-	public CaseDataDto save(@Valid CaseDataDto dto, boolean handleChanges, boolean checkChangeDate, boolean internal, boolean systemSave)
+	public CaseDataDto save(@Valid CaseDataDto dto, boolean handleChanges, boolean checkChangeDate, boolean internal)
 		throws ValidationRuntimeException {
 
 		Case existingCase = service.getByUuid(dto.getUuid(), true);
 		FacadeHelper.checkCreateAndEditRights(existingCase, userService, UserRight.CASE_CREATE, UserRight.CASE_EDIT);
 
-		if (!systemSave && internal && existingCase != null && !service.isEditAllowed(existingCase)) {
-			throw new AccessDeniedException(I18nProperties.getString(Strings.errorCaseNotEditable));
+		if (existingCase != null && internal) {
+			EditPermissionType editPermission = service.getEditPermissionType(existingCase);
+			if (editPermission == EditPermissionType.OUTSIDE_JURISDICTION) {
+				throw new AccessDeniedException(I18nProperties.getString(Strings.errorCaseNotEditableOutsideJurisdiction));
+			} else if (editPermission != EditPermissionType.ALLOWED) {
+				throw new AccessDeniedException(I18nProperties.getString(Strings.errorCaseNotEditable));
+			}
 		}
 
 		return caseSave(dto, handleChanges, existingCase, toDto(existingCase), checkChangeDate, internal);
@@ -2671,7 +2667,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	@RightsAllowed(UserRight._CASE_MERGE)
-	public void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid) {
+	public void deleteAsDuplicate(String caseUuid, String duplicateOfCaseUuid) {
 
 		Case caze = service.getByUuid(caseUuid);
 		Case duplicateOfCase = service.getByUuid(duplicateOfCaseUuid);
@@ -3631,7 +3627,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	@RightsAllowed(UserRight._CASE_MERGE)
-	public void mergeCase(String leadUuid, String otherUuid) {
+	public void merge(String leadUuid, String otherUuid) {
 
 		mergeCase(getCaseDataWithoutPseudonyimization(leadUuid), getCaseDataWithoutPseudonyimization(otherUuid), false);
 	}
@@ -3642,7 +3638,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		// 1.1 Case
 
 		copyDtoValues(leadCaseData, otherCaseData, cloning);
-		save(leadCaseData, !cloning, true, true, false);
+		save(leadCaseData, !cloning, true, true);
 
 		// 1.2 Person - Only merge when the persons have different UUIDs
 		if (!cloning && !DataHelper.equal(leadCaseData.getPerson().getUuid(), otherCaseData.getPerson().getUuid())) {
