@@ -86,11 +86,6 @@ public class EventGroupSelectionField extends CustomField<EventGroupIndexDto> {
 		CssStyles.style(rbSelectEventGroup, CssStyles.VSPACE_NONE);
 		rbSelectEventGroup.addValueChangeListener(e -> {
 			if (e.getValue() != null) {
-				//TODO: check if this part will be used at some point
-				if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTGROUP_LINK)
-					&& UserProvider.getCurrent().hasUserRight(UserRight.EVENTGROUP_CREATE)) {
-					rbCreateEventGroup.setValue(null);
-				}
 				eventGroupGrid.setEnabled(true);
 				if (selectionChangeCallback != null) {
 					selectionChangeCallback.accept(eventGroupGrid.getSelectedItems().size() > 0);
@@ -118,8 +113,6 @@ public class EventGroupSelectionField extends CustomField<EventGroupIndexDto> {
 		rbCreateEventGroup.setItemCaptionGenerator((item) -> I18nProperties.getCaption(Captions.eventNewEventGroup));
 		rbCreateEventGroup.addValueChangeListener(e -> {
 			if (e.getValue() != null) {
-				//TODO: set null value only if both rights are present
-				//rbSelectEventGroup.setValue(null);
 				if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTGROUP_LINK)
 					&& UserProvider.getCurrent().hasUserRight(UserRight.EVENTGROUP_CREATE)) {
 					rbSelectEventGroup.setValue(null);
