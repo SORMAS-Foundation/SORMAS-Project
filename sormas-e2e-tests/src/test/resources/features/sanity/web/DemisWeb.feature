@@ -481,4 +481,4 @@ Scenario: Create and send laboratory request via Demis
     And I click on the Cases button from navbar
     And I search the case by last created person via Demis message
     Then I click on the first Case ID from Case Directory
-    And I check that the value selected from Disease variant combobox is "B.1.1.28.1 - P.1 - 501Y.V3 (Gamma)" on Edit Case page
+    And I check that the value selected from Disease variant combobox is "B.1.1.7 - 501Y.V1 (Alpha)" on Edit Case page
