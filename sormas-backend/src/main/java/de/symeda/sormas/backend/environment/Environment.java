@@ -1,16 +1,21 @@
 package de.symeda.sormas.backend.environment;
 
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
+
 import java.util.Date;
 import java.util.Map;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
-import javax.validation.Valid;
-import javax.validation.constraints.Size;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Type;
 
@@ -19,8 +24,6 @@ import de.symeda.sormas.api.environment.EnvironmentInfrastructureDetails;
 import de.symeda.sormas.api.environment.EnvironmentMedia;
 import de.symeda.sormas.api.environment.WaterType;
 import de.symeda.sormas.api.environment.WaterUse;
-import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.user.User;
@@ -50,27 +53,21 @@ public class Environment extends CoreAdo {
 
 	private Date reportDate;
 	private User reportingUser;
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String environmentName;
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String description;
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalId;
 	private User responsibleUser;
 	private InvestigationStatus investigationStatus;
 	private EnvironmentMedia environmentMedia;
 	private WaterType waterType;
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String otherWaterType;
 	private EnvironmentInfrastructureDetails infrastructureDetails;
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String otherInfrastructureDetails;
 	private Map<WaterUse, Boolean> waterUse;
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String otherWaterUse;
-	@Valid
 	private Location location;
 
+	@Temporal(TemporalType.TIMESTAMP)
 	public Date getReportDate() {
 		return reportDate;
 	}
@@ -88,6 +85,7 @@ public class Environment extends CoreAdo {
 		this.reportingUser = reportingUser;
 	}
 
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getEnvironmentName() {
 		return environmentName;
 	}
@@ -96,6 +94,7 @@ public class Environment extends CoreAdo {
 		this.environmentName = environmentName;
 	}
 
+	@Column(length = CHARACTER_LIMIT_BIG)
 	public String getDescription() {
 		return description;
 	}
@@ -104,6 +103,7 @@ public class Environment extends CoreAdo {
 		this.description = description;
 	}
 
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getExternalId() {
 		return externalId;
 	}
@@ -121,6 +121,7 @@ public class Environment extends CoreAdo {
 		this.responsibleUser = responsibleUser;
 	}
 
+	@Enumerated(EnumType.STRING)
 	public InvestigationStatus getInvestigationStatus() {
 		return investigationStatus;
 	}
@@ -129,6 +130,7 @@ public class Environment extends CoreAdo {
 		this.investigationStatus = investigationStatus;
 	}
 
+	@Enumerated(EnumType.STRING)
 	public EnvironmentMedia getEnvironmentMedia() {
 		return environmentMedia;
 	}
@@ -137,6 +139,7 @@ public class Environment extends CoreAdo {
 		this.environmentMedia = environmentMedia;
 	}
 
+	@Enumerated(EnumType.STRING)
 	public WaterType getWaterType() {
 		return waterType;
 	}
@@ -145,6 +148,7 @@ public class Environment extends CoreAdo {
 		this.waterType = waterType;
 	}
 
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getOtherWaterType() {
 		return otherWaterType;
 	}
@@ -153,6 +157,7 @@ public class Environment extends CoreAdo {
 		this.otherWaterType = otherWaterType;
 	}
 
+	@Enumerated(EnumType.STRING)
 	public EnvironmentInfrastructureDetails getInfrastructureDetails() {
 		return infrastructureDetails;
 	}
@@ -161,6 +166,7 @@ public class Environment extends CoreAdo {
 		this.infrastructureDetails = infrastructureDetails;
 	}
 
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getOtherInfrastructureDetails() {
 		return otherInfrastructureDetails;
 	}
@@ -179,6 +185,7 @@ public class Environment extends CoreAdo {
 		this.waterUse = waterUse;
 	}
 
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getOtherWaterUse() {
 		return otherWaterUse;
 	}

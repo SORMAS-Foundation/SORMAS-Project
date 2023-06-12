@@ -97,7 +97,7 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 
 	@Override
 	protected EnvironmentJoins toJoins(From<?, Environment> adoPath) {
-		return null;
+		return new EnvironmentJoins(adoPath);
 	}
 
 	@Override
