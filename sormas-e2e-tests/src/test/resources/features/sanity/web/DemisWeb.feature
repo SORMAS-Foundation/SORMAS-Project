@@ -447,7 +447,7 @@ Scenario: Create and send laboratory request via Demis
     And I click on the Cases button from navbar
     And I search the case by last created person via Demis message
     Then I click on the first Case ID from Case Directory
-    And I check that the value selected from Disease variant combobox is "B.1.1.28.1 - P.1 - 501Y.V3 (Gamma)" on Edit Case page
+    And I check that the value selected from Disease variant combobox is "B.1.1.7 - 501Y.V1 (Alpha)" on Edit Case page
 
   @tmsLink=SORQA-904 @env_d2s @LoginKeycloak
   Scenario: Demis - Map disease variant on the case while processing the lab message
@@ -460,7 +460,7 @@ Scenario: Create and send laboratory request via Demis
     Then I check that error not appear
     And I check that an upwards arrow appears in the header of column 8
     When I click the header of column 4
-    And I check that a upwards arrow appears in the header of column 4
+    And I check that an upwards arrow appears in the header of column 4
     When I click the header of column 4
     And I check that a downwards arrow appears in the header of column 4
     Then I filter by last created person via API in Messages Directory

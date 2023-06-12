@@ -218,7 +218,7 @@ public class DemisApiService {
     return json;
   }
 
-  public String prepareLabNotoficationFileWithOnePathogen(
+  public String prepareLabNotificationFileWithOnePathogen(
       String patientFirstName, String patientLastName) {
     DemisData demisData = runningConfiguration.getDemisData(locale);
     String file = "src/main/resources/demisJsonTemplates/labNotificationTemplateOnePathogen.json";
