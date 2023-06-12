@@ -825,12 +825,12 @@ public class DemisSteps implements En {
         });
 
     And(
-        "^I check if disease variant field is empty in New case form while processing a DEMIS LabMessage$",
-        () -> {
+        "I check if disease variant field is {string} in New case form while processing a DEMIS LabMessage",
+        (String diseaseVariant) -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_CASE_FORM_DISEASE_VARIANT_INPUT);
           softly.assertEquals(
               webDriverHelpers.getValueFromWebElement(NEW_CASE_FORM_DISEASE_VARIANT_INPUT),
-              "",
+              diseaseVariant,
               "Disease variant is not empty");
           softly.assertAll();
         });
@@ -880,6 +880,18 @@ public class DemisSteps implements En {
                   NEW_SAMPLE_FORM_SECOND_PATHOGEN_LABORATORY_NAME, labName);
               break;
           }
+        });
+
+    When(
+        "^I create and send Laboratory Notification with one positive pathogen$",
+        () -> {
+          patientFirstName = faker.name().firstName();
+          patientLastName = faker.name().lastName();
+          String json = demisApiService.prepareLabNotificationFileWithOnePathogen(patientFirstName, patientLastName);
+
+          Assert.assertTrue(
+                  demisApiService.sendLabRequest(json, loginToken),
+                    "Failed to send laboratory request");
         });
   }
 
