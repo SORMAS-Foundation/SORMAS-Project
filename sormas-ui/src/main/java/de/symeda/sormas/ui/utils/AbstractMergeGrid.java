@@ -40,7 +40,6 @@ import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRun
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.ui.SormasUI;
@@ -247,18 +246,14 @@ public abstract class AbstractMergeGrid<T1 extends MergeableIndexDto, T2 extends
 	protected abstract List<T1[]> getItemsForDuplicateMerging(int limit);
 
 	private void merge(T1 targetedItem, T1 itemToMergeAndDelete) {
-		try {
-			mergeFacade.merge(targetedItem.getUuid(), itemToMergeAndDelete.getUuid());
-			boolean deletePerformed = deleteAsDuplicate(targetedItem, itemToMergeAndDelete);
+		mergeFacade.merge(targetedItem.getUuid(), itemToMergeAndDelete.getUuid());
+		boolean deletePerformed = deleteAsDuplicate(targetedItem, itemToMergeAndDelete);
 
-			if (deletePerformed && mergeFacade.isDeleted(itemToMergeAndDelete.getUuid())) {
-				reload();
-				new Notification(messages.merged, Notification.Type.TRAY_NOTIFICATION).show(Page.getCurrent());
-			} else {
-				new Notification(messages.errorMerging, Notification.Type.ERROR_MESSAGE).show(Page.getCurrent());
-			}
-		} catch (AccessDeniedException e) {
-			new Notification(I18nProperties.getString(Strings.errorNoRightsToPerformAction), Notification.Type.ERROR_MESSAGE).show(Page.getCurrent());
+		if (deletePerformed && mergeFacade.isDeleted(itemToMergeAndDelete.getUuid())) {
+			reload();
+			new Notification(messages.merged, Notification.Type.TRAY_NOTIFICATION).show(Page.getCurrent());
+		} else {
+			new Notification(messages.errorMerging, Notification.Type.ERROR_MESSAGE).show(Page.getCurrent());
 		}
 	}
 
