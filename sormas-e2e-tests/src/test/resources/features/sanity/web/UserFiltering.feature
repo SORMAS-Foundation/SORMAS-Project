@@ -71,8 +71,7 @@ Feature: User directory filters checks
     And I pick "Active" value for Active filter in User Directory
     And I pick "Inactive" value for Active filter in User Directory
 
-  #@#7470 @env_main
-  @tmsLink=SORQA-461mk @env_main
+  @#7470 @env_main
   Scenario: Verify active user filter functionality
     Given I log in as a Admin User
     And I click on the Users from navbar
