@@ -1954,9 +1954,8 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		// * onset date within 30 days of each other (when defined)
 
 		Predicate userFilter = createUserFilter(caseQueryContext);
-		Predicate criteriaFilter = cb.or(createCriteriaFilter(criteria, caseQueryContext), createCriteriaFilter(criteria, caseQueryContext2));
-		Predicate relevanceStatusRoot2Filter =
-			cb.and(createRelevanceStatusFilter(criteria, caseQueryContext), createRelevanceStatusFilter(criteria, caseQueryContext2));
+		Predicate criteriaFilter = criteria != null ? createCriteriaFilter(criteria, caseQueryContext) : null;
+		Predicate relevanceStatusRoot2Filter = createRelevanceStatusFilter(criteria, caseQueryContext2);
 		Expression<String> nameSimilarityExpr = cb.concat(person.get(Person.FIRST_NAME), " ");
 		nameSimilarityExpr = cb.concat(nameSimilarityExpr, person.get(Person.LAST_NAME));
 		Expression<String> nameSimilarityExpr2 = cb.concat(person2.get(Person.FIRST_NAME), " ");
@@ -2000,12 +1999,6 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 						cb.function("date_part", Double.class, cb.parameter(String.class, "date_type"), symptoms2.get(Symptoms.ONSET_DATE)))),
 				SECONDS_30_DAYS));
 
-		Predicate creationDateFilter = cb.or(
-			cb.lessThan(root.get(Case.CREATION_DATE), root2.get(Case.CREATION_DATE)),
-			cb.or(
-				cb.lessThanOrEqualTo(root2.get(Case.CREATION_DATE), DateHelper.getStartOfDay(criteria.getCreationDateFrom())),
-				cb.greaterThanOrEqualTo(root2.get(Case.CREATION_DATE), DateHelper.getEndOfDay(criteria.getCreationDateTo()))));
-
 		Predicate filter = CriteriaBuilderHelper.and(cb, userFilter, criteriaFilter, relevanceStatusRoot2Filter, nameSimilarityFilter, diseaseFilter);
 
 		if (!showDuplicatesWithDifferentRegion) {
@@ -2022,9 +2015,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 			sexFilter,
 			birthDateFilter,
 			onsetDateFilter,
-			creationDateFilter,
 			cb.notEqual(root.get(Case.ID), root2.get(Case.ID)),
-			cb.lessThanOrEqualTo(root.get(Case.CREATION_DATE), root2.get(Case.CREATION_DATE)),
 			cb.lessThanOrEqualTo(root2.get(Case.CREATION_DATE), DateHelper.getEndOfDay(criteria.getCreationDateTo())));
 
 		if (CollectionUtils.isNotEmpty(criteria.getCaseUuidsForMerge())) {
@@ -2054,6 +2045,13 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 				em.createQuery(indexCasesCq).getResultStream().collect(Collectors.toMap(c -> c.getId(), Function.identity()));
 
 			for (Object[] idPair : foundIds) {
+				// Skip duplicate pairs
+				if (resultList.stream()
+					.anyMatch(
+						r -> (r[0].getId() == (long) idPair[0] && r[1].getId() == (long) idPair[1])
+							|| (r[0].getId() == (long) idPair[1] && r[1].getId() == (long) idPair[0]))) {
+					continue;
+				}
 				try {
 					// Cloning is necessary here to allow us to add the same CaseIndexDto to the grid multiple times
 					CaseMergeIndexDto parent = (CaseMergeIndexDto) indexCases.get(idPair[0]).clone();
