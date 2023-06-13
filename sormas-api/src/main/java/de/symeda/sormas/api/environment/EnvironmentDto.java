@@ -16,6 +16,8 @@ import de.symeda.sormas.api.utils.FieldConstraints;
 
 public class EnvironmentDto extends EntityDto {
 
+	public static final long APPROXIMATE_JSON_SIZE_IN_BYTES = 2638;
+
 	public static final String I18N_PREFIX = "Environment";
 
 	public static final String REPORT_DATE = "reportDate";

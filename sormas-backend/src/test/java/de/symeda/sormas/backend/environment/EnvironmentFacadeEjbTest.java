@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.environment.EnvironmentCriteria;
 import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.environment.EnvironmentIndexDto;
@@ -26,6 +27,13 @@ class EnvironmentFacadeEjbTest extends AbstractBeanTest {
 
 		assertEquals(environment.getEnvironmentName(), saved.getEnvironmentName());
 		assertEquals(environment.getEnvironmentMedia(), saved.getEnvironmentMedia());
+
+		environment.setInvestigationStatus(InvestigationStatus.PENDING);
+
+		getEnvironmentFacade().save(environment);
+
+		saved = getEnvironmentFacade().getByUuid(environment.getUuid());
+		assertEquals(environment.getInvestigationStatus(), saved.getInvestigationStatus());
 	}
 
 	@Test
