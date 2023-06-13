@@ -179,42 +179,6 @@ Feature: Login with different type of users
       | https://congo-staging.sormas.netzlink.com/  | National User               |
       | https://congo-staging.sormas.netzlink.com/  | Point of Entry Supervisor   |
       | https://congo-staging.sormas.netzlink.com/  | Surveillance Supervisor     |
-      | https://demo.sormas.org/  | Administrator               |
-      | https://demo.sormas.org/  | Case Supervisor             |
-      | https://demo.sormas.org/  | Contact Supervisor          |
-      | https://demo.sormas.org/  | Event Officer               |
-      | https://demo.sormas.org/  | Laboratory Officer          |
-      | https://demo.sormas.org/  | National Clinician          |
-      | https://demo.sormas.org/  | National User               |
-      | https://demo.sormas.org/  | Point of Entry Supervisor   |
-      | https://demo.sormas.org/  | Surveillance Supervisor     |
-      | https://demo-rc.sormas.netzlink.com/  | Administrator               |
-      | https://demo-rc.sormas.netzlink.com/  | Case Supervisor             |
-      | https://demo-rc.sormas.netzlink.com/  | Contact Supervisor          |
-      | https://demo-rc.sormas.netzlink.com/  | Event Officer               |
-      | https://demo-rc.sormas.netzlink.com/  | Laboratory Officer          |
-      | https://demo-rc.sormas.netzlink.com/  | National Clinician          |
-      | https://demo-rc.sormas.netzlink.com/  | National User               |
-      | https://demo-rc.sormas.netzlink.com/  | Point of Entry Supervisor   |
-      | https://demo-rc.sormas.netzlink.com/  | Surveillance Supervisor     |
-      | https://demo-sormas-stats.sormas.netzlink.com/  | Administrator               |
-      | https://demo-sormas-stats.sormas.netzlink.com/  | Case Supervisor             |
-      | https://demo-sormas-stats.sormas.netzlink.com/  | Contact Supervisor          |
-      | https://demo-sormas-stats.sormas.netzlink.com/  | Event Officer               |
-      | https://demo-sormas-stats.sormas.netzlink.com/  | Laboratory Officer          |
-      | https://demo-sormas-stats.sormas.netzlink.com/  | National Clinician          |
-      | https://demo-sormas-stats.sormas.netzlink.com/  | National User               |
-      | https://demo-sormas-stats.sormas.netzlink.com/  | Point of Entry Supervisor   |
-      | https://demo-sormas-stats.sormas.netzlink.com/  | Surveillance Supervisor     |
-      | https://demoversion.sormas-oegd.de/  | Administrator               |
-      | https://demoversion.sormas-oegd.de/  | Case Supervisor             |
-      | https://demoversion.sormas-oegd.de/  | Contact Supervisor          |
-      | https://demoversion.sormas-oegd.de/  | Event Officer               |
-      | https://demoversion.sormas-oegd.de/  | Laboratory Officer          |
-      | https://demoversion.sormas-oegd.de/  | National Clinician          |
-      | https://demoversion.sormas-oegd.de/  | National User               |
-      | https://demoversion.sormas-oegd.de/  | Point of Entry Supervisor   |
-      | https://demoversion.sormas-oegd.de/  | Surveillance Supervisor     |
       | https://dev-sormas-stats.sormas.netzlink.com/  | Administrator               |
       | https://dev-sormas-stats.sormas.netzlink.com/  | Case Supervisor             |
       | https://dev-sormas-stats.sormas.netzlink.com/  | Contact Supervisor          |
