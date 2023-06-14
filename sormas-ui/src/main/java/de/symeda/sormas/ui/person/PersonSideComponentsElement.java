@@ -151,7 +151,6 @@ public interface PersonSideComponentsElement {
 
 			SampleListComponent sampleList = new SampleListComponent(sampleCriteria, showUnsavedChangesPopup, isEditAllowed);
 			SampleListComponentLayout sampleListComponentLayout = new SampleListComponentLayout(sampleList, null, isEditAllowed);
-
 			layout.addComponent(sampleListComponentLayout, SAMPLES_LOC);
 		}
 
