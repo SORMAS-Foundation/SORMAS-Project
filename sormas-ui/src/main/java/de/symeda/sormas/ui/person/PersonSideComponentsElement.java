@@ -15,8 +15,6 @@ import de.symeda.sormas.api.contact.ContactListEntryDto;
 import de.symeda.sormas.api.event.EventParticipantListEntryDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sample.SampleAssociationType;
@@ -152,8 +150,7 @@ public interface PersonSideComponentsElement {
 				.sampleAssociationType(SampleAssociationType.PERSON);
 
 			SampleListComponent sampleList = new SampleListComponent(sampleCriteria, showUnsavedChangesPopup, isEditAllowed);
-			SampleListComponentLayout sampleListComponentLayout =
-				new SampleListComponentLayout(sampleList, I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesPerson), isEditAllowed);
+			SampleListComponentLayout sampleListComponentLayout = new SampleListComponentLayout(sampleList, null, isEditAllowed);
 
 			layout.addComponent(sampleListComponentLayout, SAMPLES_LOC);
 		}

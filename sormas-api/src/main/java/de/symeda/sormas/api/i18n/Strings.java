@@ -829,7 +829,6 @@ public interface Strings {
 	String infoCreateNewSampleDiscardsChangesCase = "infoCreateNewSampleDiscardsChangesCase";
 	String infoCreateNewSampleDiscardsChangesContact = "infoCreateNewSampleDiscardsChangesContact";
 	String infoCreateNewSampleDiscardsChangesEventParticipant = "infoCreateNewSampleDiscardsChangesEventParticipant";
-	String infoCreateNewSampleDiscardsChangesPerson = "infoCreateNewSampleDiscardsChangesPerson";
 	String infoCustomExport = "infoCustomExport";
 	String infoDashboardFinalLaboratoryResult = "infoDashboardFinalLaboratoryResult";
 	String infoDashboardIncidence = "infoDashboardIncidence";
