@@ -749,13 +749,13 @@ public class CasesView extends AbstractView {
 					menuBarItems
 						.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionArchiveCoreEntity), VaadinIcons.ARCHIVE, mi -> {
 							grid.bulkActionHandler(
-								items -> ControllerProvider.getCaseController().archiveAllSelectedItems(items, () -> navigateTo(criteria, true)),
+								items -> ControllerProvider.getCaseController().archiveAllSelectedItems(items, (AbstractCaseGrid<?>) grid),
 								true);
 						}, hasBulkOperationsRight && EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())));
 					menuBarItems
 						.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDearchiveCoreEntity), VaadinIcons.ARCHIVE, mi -> {
 							grid.bulkActionHandler(
-								items -> ControllerProvider.getCaseController().dearchiveAllSelectedItems(items, () -> navigateTo(criteria, true)),
+								items -> ControllerProvider.getCaseController().dearchiveAllSelectedItems(items, (AbstractCaseGrid<?>) grid),
 								true);
 						}, hasBulkOperationsRight && EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 					menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.sormasToSormasShare), VaadinIcons.SHARE, mi -> {

@@ -1102,35 +1102,38 @@ public class EventController {
 		return !eventParticipantList.isEmpty();
 	}
 
-	public void archiveAllSelectedItems(Collection<EventIndexDto> selectedRows, Runnable callback) {
-		List<String> eventUuids = selectedRows.stream().map(EventIndexDto::getUuid).collect(Collectors.toList());
+	public void archiveAllSelectedItems(Collection<EventIndexDto> selectedRows, EventGrid eventGrid) {
 
 		ControllerProvider.getArchiveController()
 			.archiveSelectedItems(
-				eventUuids,
+				selectedRows,
 				FacadeProvider.getEventFacade(),
 				Strings.headingNoEventsSelected,
 				Strings.confirmationArchiveEvents,
-				Strings.headingEventsArchived,
-				Strings.messageEventArchived,
-				callback);
+				remainingEntries -> handleBulkOperationDone((List<? extends EventIndexDto>) remainingEntries, eventGrid));
 	}
 
-	public void dearchiveAllSelectedItems(Collection<EventIndexDto> selectedRows, Runnable callback) {
-		List<String> eventUuids = selectedRows.stream().map(EventIndexDto::getUuid).collect(Collectors.toList());
+	private void handleBulkOperationDone(List<? extends EventIndexDto> remainingEvents, EventGrid eventGrid) {
+		eventGrid.reload();
+		if (CollectionUtils.isNotEmpty(remainingEvents)) {
+			eventGrid.asMultiSelect().selectItems(remainingEvents.toArray(new EventIndexDto[0]));
+		} else {
+			navigateToIndex();
+		}
+	}
+
+	public void dearchiveAllSelectedItems(Collection<EventIndexDto> selectedRows, EventGrid eventGrid) {
 
 		ControllerProvider.getArchiveController()
 			.dearchiveSelectedItems(
-				eventUuids,
+				selectedRows,
 				FacadeProvider.getEventFacade(),
 				Strings.headingNoEventsSelected,
 				Strings.messageNoEventsSelected,
 				Strings.confirmationDearchiveEvents,
 				Strings.entityEvent,
 				Strings.headingConfirmDearchiving,
-				Strings.headingEventsDearchived,
-				Strings.messageEventsDearchived,
-				callback);
+				remainingEntries -> handleBulkOperationDone((List<? extends EventIndexDto>) remainingEntries, eventGrid));
 	}
 
 	public TitleLayout getEventViewTitleLayout(String uuid) {

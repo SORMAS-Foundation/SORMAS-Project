@@ -1074,7 +1074,9 @@ public class CaseController {
 
 	private void handleBulkOperationDone(List<? extends CaseIndexDto> remainingCases, Window popupWindow, AbstractCaseGrid<?> caseGrid) {
 
-		popupWindow.close();
+		if (popupWindow != null) {
+			popupWindow.close();
+		}
 		caseGrid.reload();
 		if (CollectionUtils.isNotEmpty(remainingCases)) {
 			if (caseGrid instanceof CaseGrid) {
@@ -1157,37 +1159,29 @@ public class CaseController {
 		}
 	}
 
-	public void archiveAllSelectedItems(Collection<? extends CaseIndexDto> selectedRows, Runnable callback) {
-
-		List<String> caseUuids = selectedRows.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList());
+	public void archiveAllSelectedItems(Collection<? extends CaseIndexDto> selectedRows, AbstractCaseGrid<?> caseGrid) {
 
 		ControllerProvider.getCaseArchivingController()
 			.archiveSelectedItems(
-				caseUuids,
+				selectedRows,
 				FacadeProvider.getCaseFacade(),
 				Strings.headingNoCasesSelected,
 				Strings.confirmationArchiveCases,
-				Strings.headingCasesArchived,
-				Strings.messageCasesArchived,
-				callback);
+				remainingEntries -> handleBulkOperationDone((List<? extends CaseIndexDto>) remainingEntries, null, caseGrid));
 	}
 
-	public void dearchiveAllSelectedItems(Collection<? extends CaseIndexDto> selectedRows, Runnable callback) {
-
-		List<String> caseUuids = selectedRows.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList());
+	public void dearchiveAllSelectedItems(Collection<? extends CaseIndexDto> selectedRows, AbstractCaseGrid<?> caseGrid) {
 
 		ControllerProvider.getCaseArchivingController()
 			.dearchiveSelectedItems(
-				caseUuids,
+				selectedRows,
 				FacadeProvider.getCaseFacade(),
 				Strings.headingNoCasesSelected,
 				Strings.messageNoCasesSelected,
 				Strings.confirmationDearchiveCases,
 				Strings.entityCase,
 				Strings.headingConfirmDearchiving,
-				Strings.headingCasesDearchived,
-				Strings.messageCasesDearchived,
-				callback);
+				remainingEntries -> handleBulkOperationDone((List<? extends CaseIndexDto>) remainingEntries, null, caseGrid));
 	}
 
 	public CommitDiscardWrapperComponent<HospitalizationForm> getHospitalizationComponent(

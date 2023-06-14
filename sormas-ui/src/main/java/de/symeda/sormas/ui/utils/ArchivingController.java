@@ -1,8 +1,12 @@
 package de.symeda.sormas.ui.utils;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
@@ -22,6 +26,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.UtilDate;
+import de.symeda.sormas.api.uuid.HasUuid;
 
 public class ArchivingController<F extends CoreFacade> {
 
@@ -125,15 +130,13 @@ public class ArchivingController<F extends CoreFacade> {
 	}
 
 	public void archiveSelectedItems(
-		List<String> entityUuids,
+		Collection<? extends HasUuid> entities,
 		F entityFacade,
 		String noSelectionMessage,
 		String archiveConfirmationMessage,
-		String archivedHeading,
-		String archivedMessage,
-		Runnable callback) {
+		Consumer<List<? extends HasUuid>> batchCallback) {
 
-		if (entityUuids.isEmpty()) {
+		if (entities.isEmpty()) {
 			new Notification(
 				I18nProperties.getString(noSelectionMessage),
 				I18nProperties.getString(noSelectionMessage),
@@ -142,7 +145,7 @@ public class ArchivingController<F extends CoreFacade> {
 		} else {
 
 			VerticalLayout verticalLayout = new VerticalLayout();
-			Label contentLabel = new Label(String.format(I18nProperties.getString(archiveConfirmationMessage), entityUuids.size()));
+			Label contentLabel = new Label(String.format(I18nProperties.getString(archiveConfirmationMessage), entities.size()));
 			contentLabel.setWidth(100, Sizeable.Unit.PERCENTAGE);
 			verticalLayout.addComponent(contentLabel);
 			verticalLayout.setMargin(false);
@@ -157,13 +160,13 @@ public class ArchivingController<F extends CoreFacade> {
 				null,
 				e -> {
 					if (Boolean.TRUE.equals(e)) {
-						doArchive(entityFacade, entityUuids);
-						callback.run();
-						new Notification(
-							I18nProperties.getString(archivedHeading),
-							I18nProperties.getString(archivedMessage),
-							Notification.Type.HUMANIZED_MESSAGE,
-							false).show(Page.getCurrent());
+						List<? extends HasUuid> selectedCasesCpy = new ArrayList<>(entities);
+						new BulkOperationHandler().doBulkOperation(selectedEntries -> {
+							doArchive(entityFacade, selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()));
+							return selectedEntries.size();
+						}, selectedCasesCpy, remainingEntities -> {
+							batchCallback.accept(remainingEntities);
+						});
 					}
 				});
 		}
@@ -174,18 +177,16 @@ public class ArchivingController<F extends CoreFacade> {
 	}
 
 	public void dearchiveSelectedItems(
-		List<String> entityUuids,
+		Collection<? extends HasUuid> entities,
 		F entityFacade,
 		String noSelectionMessage,
 		String messageNoEntitySelected,
 		String dearchiveConfirmationMessage,
 		String entity,
 		String headingConfirmationDeachiving,
-		String headingEntityDearchived,
-		String messageEntityDearchived,
-		Runnable callback) {
+		Consumer<List<? extends HasUuid>> batchCallback) {
 
-		if (entityUuids.isEmpty()) {
+		if (entities.isEmpty()) {
 			new Notification(
 				I18nProperties.getString(noSelectionMessage),
 				I18nProperties.getString(messageNoEntitySelected),
@@ -196,7 +197,7 @@ public class ArchivingController<F extends CoreFacade> {
 
 			Label contentLabel = new Label(
 				String.format(
-					String.format(I18nProperties.getString(dearchiveConfirmationMessage), entityUuids.size()),
+					String.format(I18nProperties.getString(dearchiveConfirmationMessage), entities.size()),
 					I18nProperties.getString(entity).toLowerCase(),
 					I18nProperties.getString(entity).toLowerCase()));
 			contentLabel.setWidth(100, Sizeable.Unit.PERCENTAGE);
@@ -224,14 +225,25 @@ public class ArchivingController<F extends CoreFacade> {
 							dearchiveReason.setComponentError(new UserError(I18nProperties.getString(Strings.messageArchiveUndoneReasonMandatory)));
 							return false;
 						}
-						doDearchive(entityFacade, entityUuids, dearchiveReason.getValue());
+						List<? extends HasUuid> selectedCasesCpy = new ArrayList<>(entities);
+						new BulkOperationHandler().doBulkOperation(selectedEntries -> {
+							doDearchive(
+								entityFacade,
+								selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
+								dearchiveReason.getValue());
+							return selectedEntries.size();
+						}, selectedCasesCpy, remainingEntities -> {
+							batchCallback.accept(remainingEntities);
+						});
 
-						callback.run();
-						new Notification(
-							I18nProperties.getString(headingEntityDearchived),
-							I18nProperties.getString(messageEntityDearchived),
-							Notification.Type.HUMANIZED_MESSAGE,
-							false).show(Page.getCurrent());
+//						doDearchive(entityFacade, entityUuids, dearchiveReason.getValue());
+//
+//						callback.run();
+//						new Notification(
+//							I18nProperties.getString(headingEntityDearchived),
+//							I18nProperties.getString(messageEntityDearchived),
+//							Notification.Type.HUMANIZED_MESSAGE,
+//							false).show(Page.getCurrent());
 					}
 					return true;
 				});

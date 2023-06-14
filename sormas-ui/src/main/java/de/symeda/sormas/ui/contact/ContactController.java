@@ -783,7 +783,9 @@ public class ContactController {
 		AbstractContactGrid<?> contactGrid,
 		String caseUuid) {
 
-		popupWindow.close();
+		if (popupWindow != null) {
+			popupWindow.close();
+		}
 		contactGrid.reload();
 		if (CollectionUtils.isNotEmpty(remainingContacts)) {
 			if (contactGrid instanceof ContactGrid) {
@@ -961,35 +963,29 @@ public class ContactController {
 			});
 	}
 
-	public void archiveAllSelectedItems(Collection<ContactIndexDto> selectedRows, Runnable callback) {
-		List<String> contactUuids = selectedRows.stream().map(ContactIndexDto::getUuid).collect(Collectors.toList());
+	public void archiveAllSelectedItems(Collection<ContactIndexDto> selectedRows, AbstractContactGrid<?> contactGrid) {
 
 		ControllerProvider.getArchiveController()
 			.archiveSelectedItems(
-				contactUuids,
+				selectedRows,
 				FacadeProvider.getContactFacade(),
 				Strings.headingNoContactsSelected,
 				Strings.confirmationArchiveContacts,
-				Strings.headingContactsArchived,
-				Strings.messageContactsArchived,
-				callback);
+				results -> handleBulkOperationDone((List<? extends ContactIndexDto>) results, null, contactGrid, null));
 	}
 
-	public void dearchiveAllSelectedItems(Collection<ContactIndexDto> selectedRows, Runnable callback) {
-		List<String> contactUuids = selectedRows.stream().map(ContactIndexDto::getUuid).collect(Collectors.toList());
+	public void dearchiveAllSelectedItems(Collection<ContactIndexDto> selectedRows, AbstractContactGrid<?> contactGrid) {
 
 		ControllerProvider.getArchiveController()
 			.dearchiveSelectedItems(
-				contactUuids,
+				selectedRows,
 				FacadeProvider.getContactFacade(),
 				Strings.headingNoContactsSelected,
 				Strings.messageNoContactsSelected,
 				Strings.confirmationDearchiveContacts,
 				Strings.entityContact,
 				Strings.headingConfirmDearchiving,
-				Strings.headingContactsDearchived,
-				Strings.messageContactsDearchived,
-				callback);
+				results -> handleBulkOperationDone((List<? extends ContactIndexDto>) results, null, contactGrid, null));
 	}
 
 	public TitleLayout getContactViewTitleLayout(ContactDto contact) {
