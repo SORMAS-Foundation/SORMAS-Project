@@ -12364,4 +12364,5 @@ DO $$
 $$ LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (514, '#12008 Add EVENTGROUP_LINK user right dependency for users with EVENTGROUP_CREATE user rights', false);
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
