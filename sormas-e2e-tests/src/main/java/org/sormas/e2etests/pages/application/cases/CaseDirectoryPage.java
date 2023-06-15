@@ -242,7 +242,7 @@ public class CaseDirectoryPage {
   public static By getMergeDuplicatesButtonById(String uuid) {
     return By.xpath(
         String.format(
-            "//td//a//span[text()='%s']/../../../../../../preceding-sibling::tr//div[@id=\"actionMerge\"]",
+            "//td//a//span[text()='%s']/../../../../../..//div[@id=\"actionMerge\"]",
             uuid.substring(0, 6).toUpperCase()));
   }
 
