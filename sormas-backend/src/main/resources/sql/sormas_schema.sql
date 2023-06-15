@@ -12345,4 +12345,23 @@ CREATE TRIGGER externalmessage_tsv_update BEFORE INSERT OR UPDATE OF externalmes
 
 INSERT INTO schema_version (version_number, comment) VALUES (513, '[DEMIS2SORMAS] Introduce a messages content search field #7647');
 
+-- 2023-06-15 #12008 Add EVENTGROUP_LINK user right dependency for users with EVENTGROUP_CREATE user rights
+
+DO $$
+    DECLARE rec RECORD;
+    BEGIN
+       FOR rec IN SELECT id FROM userroles
+           LOOP
+                IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'EVENTGROUP_CREATE')) = true) THEN
+                    INSERT INTO userroles_userrights (userrole_id, userright, sys_period)
+                    SELECT rec.id, rights.r, tstzrange(now(), null)
+                    FROM (VALUES ('EVENTGROUP_LINK')) as rights (r)
+                    WHERE NOT EXISTS(SELECT uur.userrole_id FROM userroles_userrights uur where uur.userrole_id = rec.id and uur.userright = rights.r);
+                END IF;
+
+           END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (514, '#12008 Add EVENTGROUP_LINK user right dependency for users with EVENTGROUP_CREATE user rights', false);
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
