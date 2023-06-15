@@ -59,6 +59,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATI
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_CARD_VACCINATION_NAME;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.getVaccinationCardVaccinationNameByIndex;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.CASE_OR_EVENT_INFORMATION_CONTACT_TEXT_AREA;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.COMMIT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.EXTERNAL_TOKEN_CONTACT_INPUT;
@@ -1402,6 +1403,27 @@ public class EditContactSteps implements En {
           softly.assertTrue(
               webDriverHelpers.isElementVisibleWithTimeout(CONTACT_CAN_NOT_BE_SHARED_HEADER_DE, 2));
           softly.assertAll();
+        });
+
+    And(
+        "^I remove tha last contact date on Edit Contact page$",
+        () -> {
+          webDriverHelpers.clearWebElement(LAST_CONTACT_DATE);
+        });
+
+    And(
+        "I check if vaccination name for vaccine number {int} in the vaccination card is {string}",
+        (Integer vaccineNumber, String elementStatus) -> {
+          switch (elementStatus) {
+            case "greyed out":
+              webDriverHelpers.isElementGreyedOut(
+                  getVaccinationCardVaccinationNameByIndex(vaccineNumber));
+              break;
+            case "enabled":
+              webDriverHelpers.isElementEnabled(
+                  getVaccinationCardVaccinationNameByIndex(vaccineNumber));
+              break;
+          }
         });
   }
 

@@ -2010,6 +2010,20 @@ public class EditEventSteps implements En {
     When(
         "I click on discard button in line listing",
         () -> webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_DISCARD_BUTTON));
+
+    And(
+        "^I remove the event date on Edit Event page$",
+        () -> {
+          webDriverHelpers.clearWebElement(START_DATA_INPUT);
+        });
+
+    And(
+        "^I set event date field to (\\d+) days before today on Event Edit page for DE$",
+        (Integer days) -> {
+          webDriverHelpers.scrollToElement(START_DATA_INPUT);
+          webDriverHelpers.fillAndSubmitInWebElement(
+              START_DATA_INPUT, DATE_FORMATTER.format(LocalDate.now().minusDays(days)));
+        });
   }
 
   private String collectEventParticipantUuid() {

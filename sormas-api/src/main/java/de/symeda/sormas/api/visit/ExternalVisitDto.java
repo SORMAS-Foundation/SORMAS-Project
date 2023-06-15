@@ -11,6 +11,7 @@ import java.util.Date;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -33,7 +34,7 @@ public class ExternalVisitDto implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 7909093498222091926L;
 
-	@NotNull(message = Validations.requiredField)
+	@NotBlank(message = Validations.requiredField)
 	@Pattern(regexp = UUID_REGEX, message = Validations.patternNotMatching)
 	@Size(min = CHARACTER_LIMIT_UUID_MIN, max = CHARACTER_LIMIT_UUID_MAX, message = Validations.textSizeNotInRange)
 	@AuditIncludeProperty

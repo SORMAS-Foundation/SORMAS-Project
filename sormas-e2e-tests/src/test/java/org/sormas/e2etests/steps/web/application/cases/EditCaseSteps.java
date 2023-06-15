@@ -2674,7 +2674,8 @@ public class EditCaseSteps implements En {
     And(
         "^I check that the value selected from Disease variant combobox is \"([^\"]*)\" on Edit Case page$",
         (String expectedDiseaseVariant) -> {
-          String prefilledDiseaseVariant = webDriverHelpers.getValueFromWebElement(DISEASE_VARIANT_INPUT);
+          String prefilledDiseaseVariant =
+              webDriverHelpers.getValueFromWebElement(DISEASE_VARIANT_INPUT);
           softly.assertEquals(
               prefilledDiseaseVariant,
               expectedDiseaseVariant,

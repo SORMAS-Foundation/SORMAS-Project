@@ -19,7 +19,7 @@ import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 
 import java.io.Serializable;
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.audit.AuditExcludeProperty;
@@ -52,7 +52,7 @@ public class SormasToSormasOptionsDto implements Serializable {
 
 	private boolean pseudonymizeData;
 	@AuditExcludeProperty
-	@NotEmpty(message = Validations.requiredField)
+	@NotBlank(message = Validations.requiredField)
 	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String comment;
 

@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
+import static de.symeda.sormas.ui.utils.ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -252,10 +254,13 @@ public class EventGroupController {
 		// Initialize 'Archive' button
 		if (user.hasUserRight(UserRight.EVENTGROUP_ARCHIVE) && hasRegion) {
 			boolean archived = FacadeProvider.getEventGroupFacade().isArchived(uuid);
-			Button archiveEventButton =
-				ButtonHelper.createButton(archived ? Captions.actionDearchiveInfrastructure : Captions.actionArchiveInfrastructure, e -> {
+			Button archiveEventButton = ButtonHelper.createButton(
+				ARCHIVE_DEARCHIVE_BUTTON_ID,
+				I18nProperties.getCaption(archived ? Captions.actionDearchiveCoreEntity : Captions.actionArchiveCoreEntity),
+				e -> {
 					archiveOrDearchiveEventGroup(uuid, !archived);
-				}, ValoTheme.BUTTON_LINK);
+				},
+				ValoTheme.BUTTON_LINK);
 
 			editView.getButtonsPanel().addComponentAsFirst(archiveEventButton);
 			editView.getButtonsPanel().setComponentAlignment(archiveEventButton, Alignment.BOTTOM_LEFT);

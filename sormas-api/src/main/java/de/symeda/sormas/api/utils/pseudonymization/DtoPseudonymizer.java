@@ -20,6 +20,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.validation.constraints.NotBlank;
+
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.FieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
@@ -255,9 +259,14 @@ public class DtoPseudonymizer {
 		try {
 			field.setAccessible(true);
 
-			ValuePseudonymizer<?> pseudonymizer = getPseudonymizer(field, pseudonymizerClass);
-			Object emptyValue = pseudonymizer.pseudonymize(field.get(dto));
-			field.set(dto, emptyValue);
+			if (field.getAnnotation(NotBlank.class) != null && String.class.isAssignableFrom(field.getType())) {
+				field.set(dto, I18nProperties.getCaption(Captions.inaccessibleValue));
+			} else {
+				ValuePseudonymizer<?> pseudonymizer = getPseudonymizer(field, pseudonymizerClass);
+				Object emptyValue = pseudonymizer.pseudonymize(field.get(dto));
+				field.set(dto, emptyValue);
+			}
+
 		} catch (IllegalAccessException | InstantiationException e) {
 			throw new RuntimeException(e);
 		} finally {

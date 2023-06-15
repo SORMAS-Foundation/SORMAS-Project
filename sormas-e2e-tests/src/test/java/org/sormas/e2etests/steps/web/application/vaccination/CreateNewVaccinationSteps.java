@@ -331,6 +331,18 @@ public class CreateNewVaccinationSteps implements En {
               "Date is incorrect");
           softly.assertAll();
         });
+
+    And(
+        "^I set new vaccination name to \"([^\"]*)\"$",
+        (String vaccinationName) -> {
+          selectVaccineName(vaccinationName);
+        });
+
+    And(
+        "^I set the vaccination date to (\\d+) days before today$",
+        (Integer days) -> {
+          fillVaccinationDate(LocalDate.now().minusDays(days), Locale.GERMAN);
+        });
   }
 
   private void fillVaccinationDate(LocalDate date, Locale locale) {
