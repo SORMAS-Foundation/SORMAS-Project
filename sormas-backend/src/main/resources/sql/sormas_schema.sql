@@ -12345,4 +12345,9 @@ CREATE TRIGGER externalmessage_tsv_update BEFORE INSERT OR UPDATE OF externalmes
 
 INSERT INTO schema_version (version_number, comment) VALUES (513, '[DEMIS2SORMAS] Introduce a messages content search field #7647');
 
+-- 2023-06-14 Add environmental user rights and default user #11572
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'ENVIRONMENTAL_SURVEILLANCE_USER', 'ENVIRONMENTAL_SURVEILLANCE_USER');
+
+INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (514, 'Add environmental user rights and default user #11572', true);
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

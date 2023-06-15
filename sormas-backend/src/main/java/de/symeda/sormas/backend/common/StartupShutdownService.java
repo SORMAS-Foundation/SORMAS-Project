@@ -877,7 +877,9 @@ public class StartupShutdownService {
 					}
 				});
 				break;
-
+			case 514:
+				fillDefaultUserRole(DefaultUserRole.ENVIRONMENTAL_SURVEILLANCE_USER);
+				break;
 			default:
 				throw new NoSuchElementException(DataHelper.toStringNullable(versionNeedingUpgrade));
 			}
@@ -895,20 +897,22 @@ public class StartupShutdownService {
 	 * UserRoles are created via SQL to support migration for existing users.
 	 */
 	private void fillDefaultUserRoles() {
-		Arrays.stream(DefaultUserRole.values()).forEach(role -> {
-			UserRole userRole = userRoleService.getByLinkedDefaultUserRole(role);
-			userRole.setCaption(I18nProperties.getEnumCaption(role));
-			userRole.setLinkedDefaultUserRole(role);
-			userRole.setPortHealthUser(role.isPortHealthUser());
-			userRole.setHasAssociatedDistrictUser(role.hasAssociatedDistrictUser());
-			userRole.setHasOptionalHealthFacility(DefaultUserRole.hasOptionalHealthFacility(Collections.singleton(role)));
-			userRole.setEnabled(true);
-			userRole.setJurisdictionLevel(role.getJurisdictionLevel());
-			userRole.setSmsNotificationTypes(role.getSmsNotificationTypes());
-			userRole.setEmailNotificationTypes(role.getEmailNotificationTypes());
-			userRole.setUserRights(role.getDefaultUserRights());
-			userRoleService.persist(userRole);
-		});
+		Arrays.stream(DefaultUserRole.values()).forEach(this::fillDefaultUserRole);
+	}
+
+	private void fillDefaultUserRole(DefaultUserRole role) {
+		UserRole userRole = userRoleService.getByLinkedDefaultUserRole(role);
+		userRole.setCaption(I18nProperties.getEnumCaption(role));
+		userRole.setLinkedDefaultUserRole(role);
+		userRole.setPortHealthUser(role.isPortHealthUser());
+		userRole.setHasAssociatedDistrictUser(role.hasAssociatedDistrictUser());
+		userRole.setHasOptionalHealthFacility(DefaultUserRole.hasOptionalHealthFacility(Collections.singleton(role)));
+		userRole.setEnabled(true);
+		userRole.setJurisdictionLevel(role.getJurisdictionLevel());
+		userRole.setSmsNotificationTypes(role.getSmsNotificationTypes());
+		userRole.setEmailNotificationTypes(role.getEmailNotificationTypes());
+		userRole.setUserRights(role.getDefaultUserRights());
+		userRoleService.persist(userRole);
 	}
 
 	private void createImportTemplateFiles(List<FeatureConfigurationDto> featureConfigurations) {
