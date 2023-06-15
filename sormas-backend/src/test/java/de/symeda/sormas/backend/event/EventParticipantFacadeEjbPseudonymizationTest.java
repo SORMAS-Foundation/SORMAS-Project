@@ -28,6 +28,8 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.DefaultUserRole;
@@ -185,8 +187,8 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 
 	private void assertPseudonymized(EventParticipantDto eventParticipant) {
 		assertThat(eventParticipant.getInvolvementDescription(), isEmptyString());
-		assertThat(eventParticipant.getPerson().getFirstName(), isEmptyString());
-		assertThat(eventParticipant.getPerson().getLastName(), isEmptyString());
+		assertThat(eventParticipant.getPerson().getFirstName(), is(I18nProperties.getCaption(Captions.inaccessibleValue)));
+		assertThat(eventParticipant.getPerson().getLastName(), is(I18nProperties.getCaption(Captions.inaccessibleValue)));
 		assertThat(eventParticipant.getPerson().getAddress().getStreet(), isEmptyString());
 		assertThat(eventParticipant.getPerson().getAddress().getHouseNumber(), isEmptyString());
 		assertThat(eventParticipant.getPerson().getAddress().getAdditionalInformation(), isEmptyString());

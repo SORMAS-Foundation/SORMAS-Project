@@ -1503,8 +1503,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 
 		Predicate sourceCaseFilter = cb.equal(root.get(Contact.CAZE), root2.get(Contact.CAZE));
 		Predicate userFilter = createUserFilter(contactQueryContext);
-		Predicate criteriaFilter =
-			criteria != null ? cb.or(buildCriteriaFilter(criteria, contactQueryContext), buildCriteriaFilter(criteria, contactQueryContext2)) : null;
+		Predicate criteriaFilter = criteria != null ? buildCriteriaFilter(criteria, contactQueryContext) : null;
 		Expression<String> nameSimilarityExpr = cb.concat(person.get(Person.FIRST_NAME), " ");
 		nameSimilarityExpr = cb.concat(nameSimilarityExpr, person.get(Person.LAST_NAME));
 		Expression<String> nameSimilarityExpr2 = cb.concat(person2.get(Person.FIRST_NAME), " ");
@@ -1536,12 +1535,6 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 				cb.equal(person.get(Person.BIRTHDATE_MM), person2.get(Person.BIRTHDATE_MM)),
 				cb.equal(person.get(Person.BIRTHDATE_YYYY), person2.get(Person.BIRTHDATE_YYYY))));
 
-		Predicate creationDateFilter = cb.or(
-			cb.lessThan(root.get(Contact.CREATION_DATE), root2.get(Contact.CREATION_DATE)),
-			cb.or(
-				cb.lessThanOrEqualTo(root2.get(Contact.CREATION_DATE), DateHelper.getStartOfDay(criteria.getCreationDateFrom())),
-				cb.greaterThanOrEqualTo(root2.get(Contact.CREATION_DATE), DateHelper.getEndOfDay(criteria.getCreationDateTo()))));
-
 		Predicate filter = CriteriaBuilderHelper.and(
 			cb,
 			cb.and(createDefaultFilter(cb, root), createDefaultFilter(cb, root2), sourceCaseFilter),
@@ -1552,7 +1545,6 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 			reportDateFilter,
 			sexFilter,
 			birthDateFilter,
-			creationDateFilter,
 			cb.notEqual(root.get(Contact.ID), root2.get(Contact.ID)));
 
 		if (!ignoreRegion) {
@@ -1591,6 +1583,13 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 				em.createQuery(indexContactsCq).getResultStream().collect(Collectors.toMap(c -> c.getId(), Function.identity()));
 
 			for (Object[] idPair : foundIds) {
+				// Skip duplicate pairs
+				if (resultList.stream()
+					.anyMatch(
+						r -> (r[0].getId() == (long) idPair[0] && r[1].getId() == (long) idPair[1])
+							|| (r[0].getId() == (long) idPair[1] && r[1].getId() == (long) idPair[0]))) {
+					continue;
+				}
 				try {
 					// Cloning is necessary here to allow us to add the same CaseIndexDto to the grid multiple times
 					MergeContactIndexDto parent = (MergeContactIndexDto) indexContacts.get(idPair[0]).clone();

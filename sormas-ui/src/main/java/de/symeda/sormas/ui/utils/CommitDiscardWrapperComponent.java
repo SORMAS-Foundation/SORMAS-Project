@@ -983,8 +983,30 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		boolean isEditAllowed = isEditAllowed(editParentRight, editChildRight, editPermissionType);
 
 		if (!isEditAllowed) {
-			if (isInJurisdiction && isDeleteAllowed(deleteEntityRight)) {
+			if (isInJurisdiction && isUserRightAllowed(deleteEntityRight)) {
 				addToActiveButtonsList(CommitDiscardWrapperComponent.DELETE_RESTORE);
+			}
+
+			this.setNonEditable();
+		}
+	}
+
+	public void restrictEditableComponentsOnEditView(
+		UserRight editParentRight,
+		UserRight editChildRight,
+		UserRight deleteEntityRight,
+		UserRight archiveEntityRight,
+		EditPermissionType editPermissionType,
+		boolean isInJurisdiction) {
+
+		boolean isEditAllowed = isEditAllowed(editParentRight, editChildRight, editPermissionType);
+
+		if (!isEditAllowed) {
+			if (isInJurisdiction && isUserRightAllowed(deleteEntityRight)) {
+				addToActiveButtonsList(CommitDiscardWrapperComponent.DELETE_RESTORE);
+			}
+			if (isInJurisdiction && isUserRightAllowed(archiveEntityRight)) {
+				addToActiveButtonsList(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
 			}
 
 			this.setNonEditable();
@@ -995,8 +1017,8 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		this.setEditable(false, activeButtons.stream().toArray(String[]::new));
 	}
 
-	public boolean isDeleteAllowed(UserRight deleteRight) {
-		return UserProvider.getCurrent().hasUserRight(deleteRight);
+	public boolean isUserRightAllowed(UserRight userRight) {
+		return UserProvider.getCurrent().hasUserRight(userRight);
 	}
 
 	public boolean isEditAllowed(UserRight editParentRight, UserRight editChildRight, EditPermissionType editPermissionType) {

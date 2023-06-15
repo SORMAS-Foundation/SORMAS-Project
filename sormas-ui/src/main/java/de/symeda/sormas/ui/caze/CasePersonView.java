@@ -60,7 +60,7 @@ public class CasePersonView extends AbstractCaseView implements PersonSideCompon
 		DetailSubComponentWrapper componentWrapper = addComponentWrapper(editComponent);
 		CustomLayout layout = addPageLayout(componentWrapper, editComponent);
 		setSubComponent(componentWrapper);
-		addSideComponents(layout, CoreEntityType.CASE, caseData.getUuid(), person.toReference(), this::showUnsavedChangesPopup);
+		addSideComponents(layout, CoreEntityType.CASE, caseData.getUuid(), person.toReference(), this::showUnsavedChangesPopup, isEditAllowed());
 		setEditPermission(
 			editComponent,
 			UserProvider.getCurrent().hasUserRight(UserRight.PERSON_EDIT),

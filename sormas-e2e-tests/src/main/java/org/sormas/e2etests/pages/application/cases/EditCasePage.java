@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.pages.application.cases;
 
+import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.By;
 
 public class EditCasePage {
@@ -416,6 +417,11 @@ public class EditCasePage {
     return By.cssSelector(String.format("#edit%x", number));
   }
 
+  @NotNull
+  public static By getVaccinationCardVaccinationNameByIndex(Integer idx) {
+    return By.xpath(String.format("(//div[contains(text(),'Impfstoffname:')])[%x]", idx));
+  }
+
   public static final By DELETE_VACCINATION_REASON_POPUP_DE_VERSION =
       By.xpath(
           "//div[@class='popupContent']//*[text()='Grund des L\u00F6schens']/../following-sibling::div//div");
@@ -440,6 +446,9 @@ public class EditCasePage {
       By.id("ExternalSurveillanceToolGateway.send");
   public static final By REPORTING_TOOL_MESSAGE =
       By.xpath("//div[@class='v-Notification humanized v-Notification-humanized']");
-  public static final By LAB_MESSAGE_WINDOW_HEADER_DE = By.xpath("//div[contains(@class, 'popupContent')]//div[contains(@class, 'v-window-outerheader')]//div[contains(text(), 'Meldung')]");
-  public static final By WINDOW_CLOSE_BUTTON = By.xpath("//div[contains(@class, 'v-window-closebox')]");
+  public static final By LAB_MESSAGE_WINDOW_HEADER_DE =
+      By.xpath(
+          "//div[contains(@class, 'popupContent')]//div[contains(@class, 'v-window-outerheader')]//div[contains(text(), 'Meldung')]");
+  public static final By WINDOW_CLOSE_BUTTON =
+      By.xpath("//div[contains(@class, 'v-window-closebox')]");
 }

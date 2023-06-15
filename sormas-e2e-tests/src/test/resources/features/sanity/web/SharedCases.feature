@@ -23,7 +23,7 @@ Feature: Sharing cases between environments tests
     Then I navigate to "s2s_1" environment
     Then I navigate to the last created case via the url
     And I check Delete button from case is enabled
-    And Total number of read only fields should be 13
+    And Total number of read only fields should be 12
     Then I click on Delete button from case
     And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
     And I click on Yes option in Confirm deletion popup
@@ -31,7 +31,7 @@ Feature: Sharing cases between environments tests
     And I apply "Gelöschte Fälle" to combobox on Case Directory Page
     Then I click on the APPLY FILTERS button
     And I select first created case for person from Cases list
-    Then Total number of read only fields should be 0
+    Then Total number of read only fields should be 13
     And I check if handover card contains "Eigentümer: LK Fulda" information
     And I check if handover card contains "Geteilt von: Automation ADMIN" information
     And I check if handover card contains "shared to be deleted after" information

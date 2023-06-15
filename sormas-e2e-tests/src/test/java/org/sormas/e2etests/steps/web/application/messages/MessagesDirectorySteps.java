@@ -8,6 +8,7 @@ import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPa
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FETCH_MESSAGES_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FETCH_MESSAGES_NULL_DATE;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FETCH_MESSAGES_NULL_TIME_COMBOBOX;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FIRST_RECORD_DISEASE_VARIANT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FIRST_TIME_FETCH_MESSAGE_POPUP;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FORWARDED_MESSAGE_COUNTER;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.GET_NEW_MESSAGES_POPUP;
@@ -366,6 +367,17 @@ public class MessagesDirectorySteps implements En {
               softly.assertAll();
               break;
           }
+        });
+
+    And(
+        "I check if disease variant field for first record displays {string} in Message Directory",
+        (String diseaseVariant) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(FIRST_RECORD_DISEASE_VARIANT);
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(FIRST_RECORD_DISEASE_VARIANT),
+              diseaseVariant,
+              "Disease variant is not empty");
+          softly.assertAll();
         });
   }
 }
