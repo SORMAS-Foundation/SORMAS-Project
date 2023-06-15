@@ -280,7 +280,7 @@ Feature: Immunization end to end tests
     And I click on New Event option in Link to Event Form
     And I click on SAVE button in Link Event form
     And I fill event Title field on Create New Event Page
-    And I set event Date filed on Create New Event form to current date for DE
+    And I set event Date field on Create New Event form to current date for DE
     And I click SAVE button on Create New Event form
     And I click SAVE in Add Event Participant form on Edit Case Page for DE
     And I click on first Edit event button for in Events section
@@ -327,7 +327,7 @@ Feature: Immunization end to end tests
     And I click on the Events button from navbar
     And I click on the NEW EVENT button
     And I fill event Title field on Create New Event Page
-    And I set event Date filed on Create New Event form to current date for DE
+    And I set event Date field on Create New Event form to current date for DE
     And I click SAVE button on Create New Event form
     And I add a participant to the event in DE
     And I click NEW VACCINATION button for DE
