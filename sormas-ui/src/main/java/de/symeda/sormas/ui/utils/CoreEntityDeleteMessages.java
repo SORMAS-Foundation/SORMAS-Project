@@ -11,15 +11,16 @@ public enum CoreEntityDeleteMessages {
 		Strings.messageCasesDeleted,
 		Strings.messageCasesNotDeleted,
 		Strings.headingSomeCasesNotDeleted,
-		Strings.messageCountCasesNotDeleted);
+		Strings.messageCountCasesNotDeleted),
 
-	/*
-	 * CONTACT(Strings.entityContacts,
-	 * Strings.headingNoContactsSelected,
-	 * Strings.messageNoContactsSelected,
-	 * Strings.headingContactsDeleted,
-	 * Strings.messageContactsDeleted);
-	 */
+	CONTACT(Strings.entityContacts,
+		Strings.headingNoContactsSelected,
+		Strings.messageNoContactsSelected,
+		Strings.headingContactsDeleted,
+		Strings.messageContactsDeleted,
+		Strings.messageContactsNotDeleted,
+		Strings.headingSomeContactsNotDeleted,
+		Strings.messageCountContactsNotDeleted);
 
 	/*
 	 * EVENT(Strings.entityEvents,

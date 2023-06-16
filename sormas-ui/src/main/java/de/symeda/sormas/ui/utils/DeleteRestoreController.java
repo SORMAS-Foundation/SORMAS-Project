@@ -154,6 +154,7 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 						I18nProperties.getString(messages.getMessageCountEntitiesNotDeleted()),
 						String.format("<b>%s</b>", undeletedEntityCount),
 						String.format("<b>%s</b>", HtmlHelper.cleanHtml(undeletedEntitiesString))),
+					//TODO: check if for Contacts this case can exists or not
 					//TODO: change for events -> will be 2 kind of messages based on the exception type
 					I18nProperties.getString(messages.getMessageEntitiesNotDeleted())),
 				ContentMode.HTML);

@@ -715,6 +715,7 @@ public interface Strings {
 	String headingSimilarImmunization = "headingSimilarImmunization";
 	String headingSomeCasesNotDeleted = "headingSomeCasesNotDeleted";
 	String headingSomeCasesNotRestored = "headingSomeCasesNotRestored";
+	String headingSomeContactsNotDeleted = "headingSomeContactsNotDeleted";
 	String headingSomeContactsNotRestored = "headingSomeContactsNotRestored";
 	String headingSomeEventParticipantsNotRestored = "headingSomeEventParticipantsNotRestored";
 	String headingSomeEventsNotDeleted = "headingSomeEventsNotDeleted";
@@ -1091,6 +1092,7 @@ public interface Strings {
 	String messageCountCasesNotDeleted = "messageCountCasesNotDeleted";
 	String messageCountCasesNotRestored = "messageCountCasesNotRestored";
 	String messageCountContactsAlreadyInEvent = "messageCountContactsAlreadyInEvent";
+	String messageCountContactsNotDeleted = "messageCountContactsNotDeleted";
 	String messageCountContactsNotRestored = "messageCountContactsNotRestored";
 	String messageCountEventParticipantsNotRestored = "messageCountEventParticipantsNotRestored";
 	String messageCountEventsNotDeleted = "messageCountEventsNotDeleted";

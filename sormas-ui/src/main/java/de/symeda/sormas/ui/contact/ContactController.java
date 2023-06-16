@@ -90,6 +90,7 @@ import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
+import de.symeda.sormas.ui.utils.CoreEntityDeleteMessages;
 import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DeletableUtils;
@@ -801,31 +802,14 @@ public class ContactController {
 	}
 
 	public void deleteAllSelectedItems(Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {
-		if (selectedRows.size() == 0) {
-			new Notification(
-				I18nProperties.getString(Strings.headingNoContactsSelected),
-				I18nProperties.getString(Strings.messageNoContactsSelected),
-				Type.WARNING_MESSAGE,
-				false).show(Page.getCurrent());
-		} else {
-			DeletableUtils.showDeleteWithReasonPopup(
-				String.format(
-					I18nProperties.getString(Strings.confirmationDeleteContacts),
-					selectedRows.size(),
-					getDeleteConfirmationDetails(selectedRows.stream().map(ContactIndexDto::getUuid).collect(Collectors.toList()))),
-				(deleteDetails) -> {
-					for (ContactIndexDto selectedRow : selectedRows) {
-						FacadeProvider.getContactFacade().delete(selectedRow.getUuid(), deleteDetails);
-					}
-					callback.run();
-					new Notification(
-						I18nProperties.getString(Strings.headingContactsDeleted),
-						I18nProperties.getString(Strings.messageContactsDeleted),
-						Type.HUMANIZED_MESSAGE,
-						false).show(Page.getCurrent());
-				});
 
-		}
+		ControllerProvider.getDeleteRestoreController()
+			.deleteAllSelectedItems(
+				selectedRows.stream().map(ContactIndexDto::getUuid).collect(Collectors.toList()),
+				FacadeProvider.getContactFacade(),
+				CoreEntityDeleteMessages.CONTACT,
+				callback);
+
 	}
 
 	public void restoreSelectedContacts(Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {
