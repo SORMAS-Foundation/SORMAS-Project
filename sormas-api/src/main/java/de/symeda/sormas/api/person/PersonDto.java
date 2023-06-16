@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -131,13 +132,13 @@ public class PersonDto extends PseudonymizableDto {
 
 	// Fields are declared in the order they should appear in the import template
 	@Outbreaks
-	@NotNull(message = Validations.specifyFirstName)
+	@NotBlank(message = Validations.specifyFirstName)
 	@PersonalData(mandatoryField = true)
 	@SensitiveData(mandatoryField = true)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String firstName;
 	@Outbreaks
-	@NotNull(message = Validations.specifyLastName)
+	@NotBlank(message = Validations.specifyLastName)
 	@PersonalData(mandatoryField = true)
 	@SensitiveData(mandatoryField = true)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)

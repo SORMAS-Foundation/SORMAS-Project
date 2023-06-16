@@ -11,7 +11,7 @@ This is a one-stop-shop for all systems that need access to the SORMAS data:
 ## Authentication
 Access to the API is by default restricted by HTTP Basic authentication. Using OIDC/OAUTH2/Bearer authentication is
 also possible depending on how keycloak is set up.
-See [Authentication & Authorization](https://github.com/hzi-braunschweig/SORMAS-Project/wiki/Authentication-&-Authorization#keycloak).
+See [Authentication & Authorization](https://github.com/sormas-foundation/SORMAS-Project/wiki/Authentication-&-Authorization#keycloak).
 
 For basic auth use the username and password as credentials for your HTTP requests.
 The user needs to have a user role having the SORMAS_REST user right.
@@ -21,7 +21,7 @@ The SORMAS REST API is documented automatically. The OpenAPI specification files
 and can be found at `${Project Root}/sormas-rest/target/swagger.{json,yaml}`.
 
 You can render the OpenAPI specification with tools like
-[editor.swagger.io](https://editor.swagger.io/?url=https://raw.githubusercontent.com/hzi-braunschweig/SORMAS-Project/development/sormas-rest/swagger.yaml).
+[editor.swagger.io](https://editor.swagger.io/?url=https://raw.githubusercontent.com/sormas-foundation/SORMAS-Project/development/sormas-rest/swagger.yaml).
 This allows you to inspect endpoints and example payloads, generate a matching API client for many languages, and to easily interact with the API of a live instance.
 
 ## OpenAPI / Swagger
@@ -29,7 +29,7 @@ The OpenAPI files are generated with the [`swagger-maven-plugin`](https://github
 and the Swagger Annotation Framework<sup>[[1]]([SwaggerAnnotations])</sup>.
 
 If you are only interested in the OpenAPI specification files, you may either download a recent SORMAS
-[release](https://github.com/hzi-braunschweig/SORMAS-Project/releases/) where the files reside in the `openapi`
+[release](https://github.com/sormas-foundation/SORMAS-Project/releases/) where the files reside in the `openapi`
 directory, take a look at the files in `sormas-rest`, or execute the following command inside the `sormas-base` module's
 directory to build them for yourself:
 
@@ -51,7 +51,7 @@ The specification files are created at the path specified above.
 The purpose of this API is to enable communication between SORMAS and other symptom journals.
 Only users with the role `REST_EXTERNAL_VISITS_USER` are authorized to use the endpoints. Authentication is done using
 basic auth, with the user and password. For technical details please contact the dev team on
-[GitHub Discussions](https://github.com/hzi-braunschweig/SORMAS-Project/discussions).
+[GitHub Discussions](https://github.com/sormas-foundation/SORMAS-Project/discussions).
 
 
 ### Workflow Description
@@ -81,7 +81,7 @@ are related to all active contacts (and cases) of a person. Also, the communicat
 It is important to understand the meaning of two variables: the follow-up status and the symptom journal status.
 
 The follow-up status describes the follow-up for a contact or a case. Possible values are defined in
-[the FollowUpStatus enum](https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/sormas-api/src/main/java/de/symeda/sormas/api/contact/FollowUpStatus.java)
+[the FollowUpStatus enum](https://github.com/sormas-foundation/SORMAS-Project/blob/development/sormas-api/src/main/java/de/symeda/sormas/api/contact/FollowUpStatus.java)
 
 Follow up can be done with, or without an external journal, the follow-up status makes no distinction there. Because the
 follow-up status is contact and case specific,but the communication with external journals is person based, SORMAS
@@ -90,7 +90,7 @@ communicating with external journals. Whenever there is follow-up ongoing for an
 the case follow-up feature is enabled in SORMAS), SORMAS will state the `FollowUpStatus.FOLLOW_UP` for that person
 towards external journals.
 
-The [SymptomJournalStatus](https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/sormas-api/src/main/java/de/symeda/sormas/api/person/SymptomJournalStatus.java)
+The [SymptomJournalStatus](https://github.com/sormas-foundation/SORMAS-Project/blob/development/sormas-api/src/main/java/de/symeda/sormas/api/person/SymptomJournalStatus.java)
 describes the state of a person related to external symptom journals. It is not contact or case specific.
 
 

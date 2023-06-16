@@ -1272,7 +1272,7 @@ Feature: Case end to end tests
     Then I click on logout button from navbar
     Then I log in as a National User
     Then I open last edited case by API via URL navigation
-    Then I check if editable fields are read only for an archived case
+    Then I check if editable fields are enabled for the case in view
 
   @env_main @tmsLink=SORDEV-7453
   Scenario: Check cases order after case edit
@@ -1785,7 +1785,7 @@ Feature: Case end to end tests
     And I wait 30 seconds for system reaction
     Then I click on the Cases button from navbar
     And I check if created case is available in API
-    And API: I check that POST call status code is 204
+    And API: I check that GET call status code is 204
     Then I filter with first Case ID
     And I check that number of displayed cases results is 0
 
@@ -1814,7 +1814,7 @@ Feature: Case end to end tests
     And I wait 30 seconds for system reaction
     Then I click on the Cases button from navbar
     And I check if created case is available in API
-    And API: I check that POST call status code is 200
+    And API: I check that GET call status code is 200
     Then I filter with first Case ID
     And I check that number of displayed cases results is 1
 

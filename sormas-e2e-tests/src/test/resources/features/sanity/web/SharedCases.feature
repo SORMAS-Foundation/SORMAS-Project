@@ -2,16 +2,18 @@
 Feature: Sharing cases between environments tests
 
   @tmsLink=SORQA-962 @env_s2s_1
-  Scenario: Delete a shared case
+  Scenario: [S2S] Delete a shared case
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     Then I navigate to the last created case via the url
+    And I check if handover card contains "Dieser Fall ist nicht geteilt" information
     And I collect uuid of the case
     Then I click on share case button
     And I select organization to share with "s2s_2"
+    And I click to hand over the ownership of the case in Share popup
     And I fill comment in share popup with "shared to be deleted after"
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
@@ -20,6 +22,8 @@ Feature: Sharing cases between environments tests
     Then I accept first case in Shares Page
     Then I navigate to "s2s_1" environment
     Then I navigate to the last created case via the url
+    And I check Delete button from case is enabled
+    And Total number of read only fields should be 12
     Then I click on Delete button from case
     And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
     And I click on Yes option in Confirm deletion popup
@@ -27,18 +31,18 @@ Feature: Sharing cases between environments tests
     And I apply "Gelöschte Fälle" to combobox on Case Directory Page
     Then I click on the APPLY FILTERS button
     And I select first created case for person from Cases list
-    Then I check if editable fields are read only for an archived case
-    And I check if handover card contains "LK Fulda" information
+    Then Total number of read only fields should be 13
+    And I check if handover card contains "Eigentümer: LK Fulda" information
     And I check if handover card contains "Geteilt von: Automation ADMIN" information
-    And I check if handover card contains "Kommentar: shared to be deleted after" information
+    And I check if handover card contains "shared to be deleted after" information
     Then I navigate to "s2s_2" environment
     And I click on the Cases button from navbar
     And I apply "Alle" to ownership combobox on Case Directory Page
     And I apply "Aktive Fälle" to combobox on Case Directory Page
     Then I click on the APPLY FILTERS button
     And I select first created case for person from Cases list
-    Then I check if editable fields are read only for an archived case
-    And I check if handover card contains "Eigentümer: LK Barnim" information
+    Then I check if editable fields are enabled for the case in view
+    And I check if handover card contains "Gesendet von LK Barnim" information
     And I check if handover card contains "Geteilt von: Automation Admin" information
     And I check if handover card contains "shared to be deleted after" information
 
@@ -921,7 +925,7 @@ Feature: Sharing cases between environments tests
     Then I click on Ja button in Revoke case popup
     Then I back to tab number 2
     And I click on "accept" shared case button with copied case description
-    And I check if popup with error with handover displays
+    And I check if popup with revoke error with handover displays
 
   @tmsLink=SORDEV-12081 @env_s2s_1
   Scenario: Accept Reject Special Cases [6]
@@ -1027,7 +1031,7 @@ Feature: Sharing cases between environments tests
     And I apply "Alle aktiven und archivierten Fälle" to combobox on Case Directory Page
     Then I click on the APPLY FILTERS button
     And I select first created case for person from Cases list
-    Then I check if editable fields are read only for an archived case
+    Then I check if editable fields are enabled for the case in view
 
   @tmsLink=SORDEV-12087 @env_s2s_1
   Scenario: Delete a case in target system with handing ownership
@@ -1058,7 +1062,7 @@ Feature: Sharing cases between environments tests
     And I apply "Alle aktiven und archivierten Fälle" to combobox on Case Directory Page
     Then I click on the APPLY FILTERS button
     And I select first created case for person from Cases list
-    Then I check if editable fields are read only for an archived case
+    Then I check if editable fields are enabled for the case in view
 
   @tmsLink=SORDEV-12087 @env_s2s_1
   Scenario: Delete a case in source system without handing ownership
@@ -1088,7 +1092,7 @@ Feature: Sharing cases between environments tests
     And I apply "Alle aktiven und archivierten Fälle" to combobox on Case Directory Page
     Then I click on the APPLY FILTERS button
     And I select first created case for person from Cases list
-    Then I check if editable fields are read only for an archived case
+    Then I check if editable fields are enabled for the case in view
 
   @tmsLink=SORDEV-12087 @env_s2s_1
   Scenario: Delete a case in target system without handing ownership
@@ -1162,3 +1166,35 @@ Feature: Sharing cases between environments tests
     And I click on the Shares button from navbar
     Then I click on the The Eye Icon located in the Shares Page
     And I check if received case id is equal with sent
+
+  @tmsLink=SORQA-981 @env_s2s_1
+  Scenario: S2S - Delete a case that was shared but not yet accepted
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    And API: I check that POST call status code is 200
+    And API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    Then I navigate to the last created case via the url
+    And I collect uuid of the case
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment in new driver tab
+    Given I log in as a Admin User
+    And I click on the Shares button from navbar
+    And I check that accept shared case button with copied case description is visible in Share Directory page
+    Then I back to tab number 1
+    And I click on Delete button from case
+    And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I click on Yes option in Confirm deletion popup
+    And I apply "Zum Besitz" to ownership combobox on Case Directory Page
+    And I apply "Gelöschte Fälle" to combobox on Case Directory Page
+    And I click APPLY BUTTON in Case Directory Page
+    And I select first created case for person from Cases list
+    Then I check if editable fields are enabled for the case in view
+    And Total number of read only fields should be 21
+    When I back to tab number 2
+    And I click on "accept" shared case button with copied case description
+    Then I check if Share request not found popup message appeared for DE
+    And I click on okay button

@@ -32,6 +32,7 @@ import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPa
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CREATE_A_NEW_CASE_WITH_POSITIVE_TEST_EVENT_PARTICIPANT_HEADER_DE;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CREATE_NEW_EVENT_PARTICIPANT_RADIOBUTTON_DE;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CREATE_NEW_PERSON_RADIOBUTTON_DE;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FIRST_PATHOGEN_LABORATORY_INPUT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FORWARDED_QUICK_FILTER_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FORWARDED_QUICK_FILTER_COUNTER;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.LABORATORY_DETAILS_INPUT;
@@ -44,6 +45,12 @@ import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPa
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGE_POPUP_HEADER;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGE_TIME_FROM_COMBOBOX;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGE_UUID_TEXT;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_CASE_FORM_DISEASE_VARIANT_INPUT;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_FORM_FIRST_PATHOGEN_DISEASE_VARIANT_INPUT;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_FORM_FIRST_PATHOGEN_LABORATORY_NAME;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_FORM_LABORATORY_NAME;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_FORM_SECOND_PATHOGEN_DISEASE_VARIANT_INPUT;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_FORM_SECOND_PATHOGEN_LABORATORY_NAME;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.PATIENT_BIRTHDAY_FROM_INPUT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.PATIENT_BIRTHDAY_TO_INPUT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_CONFIRM_BUTTON;
@@ -773,6 +780,118 @@ public class DemisSteps implements En {
               laboratoryDetails,
               "Laboratory details field has incorrect value prefilled");
           softly.assertAll();
+        });
+
+    When(
+        "^I create and send Laboratory Notification with two different facilities$",
+        () -> {
+          patientLastName = faker.name().lastName();
+          patientFirstName = faker.name().firstName();
+          String json =
+              demisApiService.prepareLabNotificationFileWithTwoFacilities(
+                  patientFirstName, patientLastName);
+
+          Assert.assertTrue(
+              demisApiService.sendLabRequest(json, loginToken),
+              "Failed to send laboratory request");
+        });
+
+    And(
+        "^I select \"([^\"]*)\" as a Laboratory in New sample form while processing a DEMIS LabMessage$",
+        (String labor) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(LABORATORY_INPUT);
+          webDriverHelpers.fillAndSubmitInWebElement(LABORATORY_INPUT, labor);
+        });
+
+    And(
+        "^I select \"([^\"]*)\" as a Laboratory for pathogen in New sample form while processing a DEMIS LabMessage$",
+        (String labor) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(FIRST_PATHOGEN_LABORATORY_INPUT);
+          webDriverHelpers.fillAndSubmitInWebElement(FIRST_PATHOGEN_LABORATORY_INPUT, labor);
+        });
+
+    When(
+        "^I create and send Laboratory Notification with two positive pathogens$",
+        () -> {
+          patientLastName = faker.name().lastName();
+          patientFirstName = faker.name().firstName();
+          String json =
+              demisApiService.prepareLabNotificationFileWithTwoPathogens(
+                  patientFirstName, patientLastName);
+
+          Assert.assertTrue(
+              demisApiService.sendLabRequest(json, loginToken),
+              "Failed to send laboratory request");
+        });
+
+    And(
+        "I check if disease variant field is {string} in New case form while processing a DEMIS LabMessage",
+        (String diseaseVariant) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_CASE_FORM_DISEASE_VARIANT_INPUT);
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(NEW_CASE_FORM_DISEASE_VARIANT_INPUT),
+              diseaseVariant,
+              "Disease variant is not empty");
+          softly.assertAll();
+        });
+
+    And(
+        "I verify that disease variant for {string} pathogen is prefilled with {string} in New Sample form while processing a DEMIS LabMessage",
+        (String pathogen, String diseaseVariant) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              NEW_SAMPLE_FORM_FIRST_PATHOGEN_DISEASE_VARIANT_INPUT);
+          switch (pathogen) {
+            case "first":
+              softly.assertEquals(
+                  webDriverHelpers.getValueFromWebElement(
+                      NEW_SAMPLE_FORM_FIRST_PATHOGEN_DISEASE_VARIANT_INPUT),
+                  diseaseVariant,
+                  "The disease variant is incorrect");
+              softly.assertAll();
+              break;
+            case "second":
+              softly.assertEquals(
+                  webDriverHelpers.getValueFromWebElement(
+                      NEW_SAMPLE_FORM_SECOND_PATHOGEN_DISEASE_VARIANT_INPUT),
+                  diseaseVariant,
+                  "The disease variant is incorrect");
+              softly.assertAll();
+              break;
+          }
+        });
+
+    And(
+        "^I fill laboratory name with \"([^\"]*)\" in New Sample form while processing a DEMIS LabMessage$",
+        (String labName) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_SAMPLE_FORM_LABORATORY_NAME);
+          webDriverHelpers.clearAndFillInWebElement(NEW_SAMPLE_FORM_LABORATORY_NAME, labName);
+        });
+
+    And(
+        "^I fill \"([^\"]*)\" pathogen laboratory name with \"([^\"]*)\" in New Sample form while processing a DEMIS LabMessage$",
+        (String pathogen, String labName) -> {
+          switch (pathogen) {
+            case "first":
+              webDriverHelpers.clearAndFillInWebElement(
+                  NEW_SAMPLE_FORM_FIRST_PATHOGEN_LABORATORY_NAME, labName);
+              break;
+            case "second":
+              webDriverHelpers.clearAndFillInWebElement(
+                  NEW_SAMPLE_FORM_SECOND_PATHOGEN_LABORATORY_NAME, labName);
+              break;
+          }
+        });
+
+    When(
+        "^I create and send Laboratory Notification with one positive pathogen$",
+        () -> {
+          patientFirstName = faker.name().firstName();
+          patientLastName = faker.name().lastName();
+          String json = demisApiService.prepareLabNotificationFileWithOnePathogen(patientFirstName, patientLastName);
+
+          Assert.assertTrue(
+                  demisApiService.sendLabRequest(json, loginToken),
+                    "Failed to send laboratory request");
         });
   }
 

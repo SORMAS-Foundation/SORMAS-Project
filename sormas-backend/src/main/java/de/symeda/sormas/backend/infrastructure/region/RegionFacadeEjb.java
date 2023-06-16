@@ -288,8 +288,8 @@ public class RegionFacadeEjb
 	}
 
 	@Override
-	protected Region fillOrBuildEntity(@NotNull RegionDto source, Region target, boolean checkChangeDate) {
-		target = DtoHelper.fillOrBuildEntity(source, target, Region::new, checkChangeDate);
+	protected Region fillOrBuildEntity(@NotNull RegionDto source, Region target, boolean checkChangeDate, boolean allowUuidOverwrite) {
+		target = DtoHelper.fillOrBuildEntity(source, target, Region::new, checkChangeDate, allowUuidOverwrite);
 
 		target.setName(source.getName());
 		target.setEpidCode(source.getEpidCode());

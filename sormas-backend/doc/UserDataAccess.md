@@ -13,7 +13,7 @@ In general data access & synchronisation is based on the following rules:
 * all data that is created by the user
 * all data associated to the data created by the user (contacts, tasks, persons, visits)
 * special case: if an officer has access to a task or contact whose case/event/contact is not available, the association link should be inactive
-* user rights (e.g. allow seeing cases) and mapping of user roles to a jurisdiction level is documented in the [user rights table](https://github.com/hzi-braunschweig/SORMAS-Project/tree/development/sormas-api/src/main/resources/doc/SORMAS_User_Rights.xlsx)
+* user rights (e.g. allow seeing cases) and mapping of user roles to a jurisdiction level is documented in the [user rights table](https://github.com/sormas-foundation/SORMAS-Project/tree/development/sormas-api/src/main/resources/doc/SORMAS_User_Rights.xlsx)
 
 ### Case
 * only users that are permitted to see cases at all

@@ -158,8 +158,8 @@ public class CommunityFacadeEjb
 	}
 
 	@Override
-	protected Community fillOrBuildEntity(@NotNull CommunityDto source, Community target, boolean checkChangeDate) {
-		target = DtoHelper.fillOrBuildEntity(source, target, Community::new, checkChangeDate);
+	protected Community fillOrBuildEntity(@NotNull CommunityDto source, Community target, boolean checkChangeDate, boolean allowUuidOverwrite) {
+		target = DtoHelper.fillOrBuildEntity(source, target, Community::new, checkChangeDate, allowUuidOverwrite);
 
 		target.setName(source.getName());
 		target.setGrowthRate(source.getGrowthRate());

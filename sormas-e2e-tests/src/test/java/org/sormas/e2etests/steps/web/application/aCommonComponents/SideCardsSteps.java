@@ -26,6 +26,7 @@ import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
@@ -51,9 +52,13 @@ public class SideCardsSteps implements En {
     When(
         "I check if handover card contains {string} information",
         (String information) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(HANDOVER_SIDE_CARD);
+          TimeUnit.SECONDS.sleep(3);
           softly.assertTrue(
               webDriverHelpers.isElementPresent(checkTextInHandoverSideComponent(information)),
-              information + " text is not present in handover component");
+              information
+                  + " text is not present in handover component. Found only "
+                  + webDriverHelpers.getTextFromPresentWebElement(HANDOVER_SIDE_CARD));
           softly.assertAll();
         });
 
@@ -147,6 +152,24 @@ public class SideCardsSteps implements En {
               1,
               "Number of samples is not correct");
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(ONE_TEST_IN_SAMPLES_DE);
+        });
+
+    And(
+        "^I click on Display associated lab messages button from Samples side component$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              SAMPLES_DISPLAY_ASSOCIATED_LAB_MESSAGES_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(
+              SAMPLES_DISPLAY_ASSOCIATED_LAB_MESSAGES_BUTTON);
+        });
+
+    And(
+        "^I click on Display associated external messages button from Reports side component$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              REPORTS_DISPLAY_ASSOCIATED_EXTERNAL_MESSAGES_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(
+              REPORTS_DISPLAY_ASSOCIATED_EXTERNAL_MESSAGES_BUTTON);
         });
   }
 }

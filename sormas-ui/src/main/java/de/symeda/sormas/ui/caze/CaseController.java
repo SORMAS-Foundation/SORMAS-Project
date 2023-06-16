@@ -965,6 +965,7 @@ public class CaseController {
 			UserRight.CASE_EDIT,
 			null,
 			UserRight.CASE_DELETE,
+			UserRight.CASE_ARCHIVE,
 			FacadeProvider.getCaseFacade().getEditPermissionType(caze.getUuid()),
 			caze.isInJurisdiction());
 

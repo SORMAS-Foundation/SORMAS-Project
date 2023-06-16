@@ -15,7 +15,7 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.EntityDto;
@@ -42,7 +42,7 @@ public class SormasToSormasOriginInfoDto extends EntityDto {
 	private boolean withSurveillanceReports;
 	private boolean pseudonymizedData;
 
-	@NotEmpty(message = Validations.requiredField)
+	@NotBlank(message = Validations.requiredField)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String comment;
 

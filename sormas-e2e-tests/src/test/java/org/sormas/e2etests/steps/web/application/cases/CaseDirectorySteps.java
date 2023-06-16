@@ -457,7 +457,7 @@ public class CaseDirectorySteps implements En {
                   + "/sormas-webdriver/#!cases/data/"
                   + apiState.getCreatedCase().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_CASE_URL);
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
         });
 
     When(
@@ -1006,12 +1006,16 @@ public class CaseDirectorySteps implements En {
     And(
         "I apply {string} to combobox on Case Directory Page",
         (String caseParameter) -> {
+          webDriverHelpers.checkIfElementExistsInCombobox(
+              CASE_DISPLAY_FILTER_COMBOBOX, caseParameter);
           webDriverHelpers.selectFromCombobox(CASE_DISPLAY_FILTER_COMBOBOX, caseParameter);
           TimeUnit.SECONDS.sleep(2);
         });
     And(
         "I apply {string} to ownership combobox on Case Directory Page",
         (String caseParameter) -> {
+          webDriverHelpers.checkIfElementExistsInCombobox(
+              CASE_OWNERSHIP_FILTER_COMBOBOX, caseParameter);
           webDriverHelpers.selectFromCombobox(CASE_OWNERSHIP_FILTER_COMBOBOX, caseParameter);
           TimeUnit.SECONDS.sleep(2);
         });
@@ -1413,6 +1417,13 @@ public class CaseDirectorySteps implements En {
                   + CreateNewCaseSteps.casesUUID.get(0);
           System.out.println("To jest web path: " + LAST_CREATED_CASE_URL);
           webDriverHelpers.accessWebSite(LAST_CREATED_CASE_URL);
+        });
+
+    And(
+        "^I check that accept shared case button with copied case description is visible in Share Directory page$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              getActionAcceptButtonByCaseDescription(generatedRandomString));
         });
   }
 

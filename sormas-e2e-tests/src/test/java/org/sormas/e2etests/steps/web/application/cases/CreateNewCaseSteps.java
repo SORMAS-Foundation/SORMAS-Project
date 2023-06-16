@@ -171,6 +171,7 @@ public class CreateNewCaseSteps implements En {
   private static BaseSteps baseSteps;
   protected static Case oneCase;
   public static Case oneCaseDe;
+  public static Case survnetCase;
   public static final String userDirPath = System.getProperty("user.dir");
   public static List<String> casesUUID = new ArrayList<>();
   private static String currentUrl;
@@ -588,6 +589,24 @@ public class CreateNewCaseSteps implements En {
         });
 
     When("I choose {string} as a disease", (String disease) -> fillDisease(disease));
+
+    When(
+        "^I check if National Health Id, Nickname and Passport number appear in Pick or create person popup$",
+        () -> {
+          softly.assertEquals(
+              false, webDriverHelpers.isElementVisibleWithTimeout(NICKNAME_ATTRIBUTE, 2));
+          softly.assertEquals(
+              false, webDriverHelpers.isElementVisibleWithTimeout(PASSPORT_NUMBER_ATTRIBUTE, 2));
+          softly.assertEquals(
+              false, webDriverHelpers.isElementVisibleWithTimeout(NATIONAL_HEALTH_ID_ATTRIBUTE, 2));
+          softly.assertAll();
+          webDriverHelpers.clickOnWebElementBySelector(PICK_A_EXISTING_PERSON_LABEL_DE);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_A_EXISTING_CASE_LABEL_DE, 4)) {
+            webDriverHelpers.clickOnWebElementBySelector(PICK_A_EXISTING_CASE_LABEL_DE);
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          }
+        });
 
     When(
         "^I create a new case with Facility as a Place of stay$",
@@ -1469,6 +1488,8 @@ public class CreateNewCaseSteps implements En {
     When(
         "I click on Merge button for target system from received case",
         () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              getMergeButtonForCaseForTargetSystem(firstName, lastName));
           webDriverHelpers.clickOnWebElementBySelector(
               getMergeButtonForCaseForTargetSystem(firstName, lastName));
         });
@@ -1511,7 +1532,7 @@ public class CreateNewCaseSteps implements En {
         "I check if popup with merge message in german appears",
         () -> {
           softly.assertTrue(
-              webDriverHelpers.isElementVisibleWithTimeout(MERGE_MESSAGE_HEADER_DE, 30),
+              webDriverHelpers.isElementVisibleWithTimeout(MERGE_MESSAGE_HEADER_DE, 60),
               "element was not visible");
           softly.assertAll();
         });
@@ -1553,6 +1574,49 @@ public class CreateNewCaseSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
+        });
+
+    And(
+        "^I create a new case with mandatory data only for Survnet DE$",
+        () -> {
+          survnetCase = caseService.buildCaseForSurvnetFeature();
+          fillDateOfReport(survnetCase.getDateOfReport(), Locale.GERMAN);
+          selectResponsibleRegion(survnetCase.getResponsibleRegion());
+          selectResponsibleDistrict(survnetCase.getResponsibleDistrict());
+          selectPlaceOfStay(survnetCase.getPlaceOfStay());
+          fillFirstName(survnetCase.getFirstName());
+          fillLastName(survnetCase.getLastName());
+          selectSex(survnetCase.getSex());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+        });
+
+    When(
+        "^I create a new case with specific data and report date set to yesterday for DE version$",
+        () -> {
+          caze = caseService.buildGeneratedCaseDE();
+          selectCaseOrigin(caze.getCaseOrigin());
+          fillExternalId(caze.getExternalId());
+          fillDisease(caze.getDisease());
+          fillDiseaseVariant(caze.getDiseaseVariant());
+          selectResponsibleRegion(caze.getResponsibleRegion());
+          selectResponsibleDistrict(caze.getResponsibleDistrict());
+          selectResponsibleCommunity(caze.getResponsibleCommunity());
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          fillFirstName(caze.getFirstName());
+          fillLastName(caze.getLastName());
+          fillDateOfBirth(caze.getDateOfBirth(), Locale.GERMAN);
+          selectSex(caze.getSex());
+          selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
+          fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.GERMAN);
+          fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
+          fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
+          fillDateOfReport(LocalDate.now(), Locale.GERMAN);
+          fillPlaceDescription(caze.getPlaceDescription());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
   }
 

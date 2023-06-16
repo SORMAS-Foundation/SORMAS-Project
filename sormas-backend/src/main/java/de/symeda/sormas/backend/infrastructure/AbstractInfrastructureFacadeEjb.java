@@ -104,17 +104,17 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	public DTO save(DTO dto, boolean allowMerge) {
 		checkInfraDataLocked();
 		// default behaviour is to include archived data and check for the change date
-		return doSave(dto, allowMerge, true, true, duplicateErrorMessageProperty);
+		return doSave(dto, allowMerge, true, true, false);
 	}
 
 	@RightsAllowed(UserRight._SYSTEM)
 	public DTO saveFromCentral(DTO dtoToSave) {
 		// merge, but do not include archived data (we consider archive data to be completely broken)
 		// also ignore change date as merging will always cause the date to be newer to what is present in central
-		return doSave(dtoToSave, true, false, false, duplicateErrorMessageProperty);
+		return doSave(dtoToSave, true, false, false, true);
 	}
 
-	protected DTO doSave(DTO dtoToSave, boolean allowMerge, boolean includeArchived, boolean checkChangeDate, String duplicateErrorMessageProperty) {
+	protected DTO doSave(DTO dtoToSave, boolean allowMerge, boolean includeArchived, boolean checkChangeDate, boolean allowUuidOverwrite) {
 		if (dtoToSave == null) {
 			return null;
 		}
@@ -140,26 +140,34 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 			List<ADO> duplicates = findDuplicates(dtoToSave, includeArchived);
 			if (!duplicates.isEmpty()) {
 				if (allowMerge) {
-					return mergeAndPersist(dtoToSave, duplicates, checkChangeDate);
+					return mergeAndPersist(dtoToSave, duplicates, checkChangeDate, allowUuidOverwrite);
 				} else {
 					throw new ValidationRuntimeException(I18nProperties.getValidationError(duplicateErrorMessageProperty));
 				}
 			}
 		}
-		return persistEntity(dtoToSave, existingEntity, checkChangeDate);
+		return persistEntity(dtoToSave, existingEntity, checkChangeDate, false);
 	}
 
-	protected DTO persistEntity(DTO dto, ADO entityToPersist, boolean checkChangeDate) {
-		entityToPersist = fillOrBuildEntity(dto, entityToPersist, checkChangeDate);
+	protected DTO persistEntity(DTO dto, ADO entityToPersist, boolean checkChangeDate, boolean allowUuidOverwrite) {
+		entityToPersist = fillOrBuildEntity(dto, entityToPersist, checkChangeDate, allowUuidOverwrite);
 		service.ensurePersisted(entityToPersist);
 		return toDto(entityToPersist);
 	}
 
-	protected DTO mergeAndPersist(DTO dtoToSave, List<ADO> duplicates, boolean checkChangeDate) {
+	protected DTO mergeAndPersist(DTO dtoToSave, List<ADO> duplicates, boolean checkChangeDate, boolean allowUuidOverwrite) {
 		ADO existingEntity = duplicates.get(0);
 		DTO existingDto = toDto(existingEntity);
 		DtoHelper.copyDtoValues(existingDto, dtoToSave, true);
-		return persistEntity(dtoToSave, existingEntity, checkChangeDate);
+
+		return persistEntity(dtoToSave, existingEntity, checkChangeDate, allowUuidOverwrite);
+	}
+
+	protected abstract ADO fillOrBuildEntity(@NotNull DTO source, ADO target, boolean checkChangeDate, boolean allowUuidOverwrite);
+
+	@Override
+	protected ADO fillOrBuildEntity(DTO source, ADO target, boolean checkChangeDate) {
+		return fillOrBuildEntity(source, target, checkChangeDate, false);
 	}
 
 	@Override

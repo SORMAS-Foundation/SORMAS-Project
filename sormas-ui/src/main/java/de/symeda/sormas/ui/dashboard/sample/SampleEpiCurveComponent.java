@@ -95,9 +95,9 @@ public class SampleEpiCurveComponent extends AbstractEpiCurveComponent<SampleDas
 			}
 
 			return Arrays.asList(
-				new EpiCurveSeriesElement(PathogenTestResultType.POSITIVE, "#c80000", pendingUpNumbers),
-				new EpiCurveSeriesElement(PathogenTestResultType.NEGATIVE, "#32CD32", positiveNumbers),
-				new EpiCurveSeriesElement(PathogenTestResultType.PENDING, "#be6900", negativeNumbers),
+				new EpiCurveSeriesElement(PathogenTestResultType.POSITIVE, "#c80000", positiveNumbers),
+				new EpiCurveSeriesElement(PathogenTestResultType.NEGATIVE, "#32CD32", negativeNumbers),
+				new EpiCurveSeriesElement(PathogenTestResultType.PENDING, "#be6900", pendingUpNumbers),
 				new EpiCurveSeriesElement(PathogenTestResultType.INDETERMINATE, "#808080", indeterminateNumbers),
 				new EpiCurveSeriesElement(PathogenTestResultType.NOT_DONE, "#00BFFF", notDoneNumbers));
 		}

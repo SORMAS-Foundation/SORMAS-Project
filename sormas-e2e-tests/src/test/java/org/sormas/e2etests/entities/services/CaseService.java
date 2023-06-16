@@ -581,4 +581,20 @@ public class CaseService {
         .areaType("Urban")
         .build();
   }
+
+  @SneakyThrows
+  public Case buildCaseForSurvnetFeature() {
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
+
+    return Case.builder()
+        .dateOfReport(LocalDate.now())
+        .responsibleRegion("Berlin")
+        .responsibleDistrict("SK Berlin Mitte")
+        .placeOfStay("ZUHAUSE")
+        .firstName(firstName)
+        .lastName(lastName)
+        .sex(GenderValues.getRandomGenderDE())
+        .build();
+  }
 }

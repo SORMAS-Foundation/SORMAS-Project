@@ -153,6 +153,7 @@ public class EditCaseSteps implements En {
   public static final DateTimeFormatter DATE_FORMATTER_DE = DateTimeFormatter.ofPattern("d.M.yyyy");
   public static final String userDirPath = System.getProperty("user.dir");
   public static String caseUuid;
+  public static String externalUUID;
 
   @SneakyThrows
   @Inject
@@ -1845,7 +1846,7 @@ public class EditCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_ACTION);
         });
     When(
-        "I check if editable fields are read only for an archived case",
+        "I check if editable fields are enabled for the case in view",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
           TimeUnit.SECONDS.sleep(3);
@@ -1968,6 +1969,16 @@ public class EditCaseSteps implements En {
         () -> {
           webDriverHelpers.scrollToElement(DELETE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
+        });
+
+    When(
+        "I check Delete button from case is enabled",
+        () -> {
+          webDriverHelpers.scrollToElement(DELETE_BUTTON);
+          softly.assertTrue(
+              webDriverHelpers.isElementEnabled(DELETE_BUTTON),
+              "Delete case button is not enabled");
+          softly.assertAll();
         });
 
     When(
@@ -2376,7 +2387,6 @@ public class EditCaseSteps implements En {
     When(
         "I click to share reports of the case in Share popup",
         () -> webDriverHelpers.clickOnWebElementBySelector(SHARE_REPORTS_CHECKBOX));
-
     When(
         "I click on share button in s2s share popup and wait for share to finish",
         () -> {
@@ -2573,6 +2583,16 @@ public class EditCaseSteps implements En {
               webDriverHelpers.isElementVisibleWithTimeout(ERROR_DESCRIPTION_REQUEST_PROCESSED, 3));
           softly.assertAll();
         });
+    When(
+        "I check if popup with revoke error with handover displays",
+        () -> {
+          softly.assertTrue(
+              webDriverHelpers.isElementVisibleWithTimeout(ERROR_REVOKE_IN_HANDOVER_HEADER_DE, 3));
+          softly.assertTrue(
+              webDriverHelpers.isElementVisibleWithTimeout(
+                  ERROR_REVOKE_DESCRIPTION_REQUEST_PROCESSED, 3));
+          softly.assertAll();
+        });
 
     When(
         "I check if share warning is displayed",
@@ -2588,6 +2608,8 @@ public class EditCaseSteps implements En {
               webDriverHelpers.isElementVisibleWithTimeout(ERROR_IN_HANDOVER_HEADER_DE, 3));
           softly.assertAll();
         });
+
+    // TODO -> refactor, bad approach to keep logic here for 2 pages
     And(
         "^I check if editable fields are read only for shared case/contact$",
         () -> {
@@ -2597,6 +2619,69 @@ public class EditCaseSteps implements En {
         });
 
     When("I refresh current page", () -> webDriverHelpers.refreshCurrentPage());
+
+    And(
+        "^I click on Send to reporting tool button on Edit Case page$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              SEND_TO_REPORTING_TOOL_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SEND_TO_REPORTING_TOOL_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_ACTION);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(REPORTING_TOOL_MESSAGE);
+        });
+
+    And(
+        "^I collect case external UUID from Edit Case page$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(EXTERNAL_ID_INPUT);
+          externalUUID = webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT);
+        });
+
+    And(
+        "^I click on edit Report on Edit Case page$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(EDIT_REPORT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_REPORT_BUTTON);
+        });
+
+    Then(
+        "^I check that Reporter Facility in Edit report form is set to \"([^\"]*)\"$",
+        (String reporterFacility) -> {
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(REPORTER_FACILITY_INPUT),
+              reporterFacility,
+              "Reporter Facility is incorrect");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check that Reporter Facility Details in Edit report form is set to \"([^\"]*)\"$",
+        (String reporterFacilityDetails) -> {
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(REPORTER_FACILITY_DETAILS_INPUT),
+              reporterFacilityDetails,
+              "Reporter Facility Details are incorrect");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check if external message window appears and close it$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(LAB_MESSAGE_WINDOW_HEADER_DE);
+          webDriverHelpers.clickOnWebElementBySelector(WINDOW_CLOSE_BUTTON);
+        });
+
+    And(
+        "^I check that the value selected from Disease variant combobox is \"([^\"]*)\" on Edit Case page$",
+        (String expectedDiseaseVariant) -> {
+          String prefilledDiseaseVariant =
+              webDriverHelpers.getValueFromWebElement(DISEASE_VARIANT_INPUT);
+          softly.assertEquals(
+              prefilledDiseaseVariant,
+              expectedDiseaseVariant,
+              "The disease variant is incorrectly");
+          softly.assertAll();
+        });
   }
 
   private Vaccination collectVaccinationData() {
