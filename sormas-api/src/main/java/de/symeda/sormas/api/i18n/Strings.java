@@ -1070,9 +1070,9 @@ public interface Strings {
 	String messageContactsArchived = "messageContactsArchived";
 	String messageContactSaved = "messageContactSaved";
 	String messageContactsDearchived = "messageContactsDearchived";
-	String messageContactsNotDeleted = "messageContactsNotDeleted";
 	String messageContactsDeleted = "messageContactsDeleted";
 	String messageContactsMerged = "messageContactsMerged";
+	String messageContactsNotDeleted = "messageContactsNotDeleted";
 	String messageContactsNotRestored = "messageContactsNotRestored";
 	String messageContactsRestored = "messageContactsRestored";
 	String messageContactToCaseConfirmationRequired = "messageContactToCaseConfirmationRequired";
