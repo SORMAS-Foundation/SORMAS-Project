@@ -410,8 +410,6 @@ public interface Strings {
 	String headingCaseFound = "headingCaseFound";
 	String headingCaseImport = "headingCaseImport";
 	String headingCaseResponsibleJurisidction = "headingCaseResponsibleJurisidction";
-	String headingCasesArchived = "headingCasesArchived";
-	String headingCasesDearchived = "headingCasesDearchived";
 	String headingCasesDeleted = "headingCasesDeleted";
 	String headingCasesGuide = "headingCasesGuide";
 	String headingCasesInQuarantine = "headingCasesInQuarantine";
@@ -546,8 +544,6 @@ public interface Strings {
 	String headingEventParticipantResponsibleJurisdictionUpdated = "headingEventParticipantResponsibleJurisdictionUpdated";
 	String headingEventParticipantsDeleted = "headingEventParticipantsDeleted";
 	String headingEventParticipantsRestored = "headingEventParticipantsRestored";
-	String headingEventsArchived = "headingEventsArchived";
-	String headingEventsDearchived = "headingEventsDearchived";
 	String headingEventsDeleted = "headingEventsDeleted";
 	String headingEventsRestored = "headingEventsRestored";
 	String headingExplanationOfTerms = "headingExplanationOfTerms";
@@ -729,8 +725,6 @@ public interface Strings {
 	String headingSurveillanceReports = "headingSurveillanceReports";
 	String headingSymptomJournalAccountCreation = "headingSymptomJournalAccountCreation";
 	String headingSyncUsers = "headingSyncUsers";
-	String headingTasksArchived = "headingTasksArchived";
-	String headingTasksDearchived = "headingTasksDearchived";
 	String headingTasksDeleted = "headingTasksDeleted";
 	String headingTemplateNotAvailable = "headingTemplateNotAvailable";
 	String headingTests = "headingTests";
@@ -1027,10 +1021,8 @@ public interface Strings {
 	String messageCaseOutsideJurisdictionDeletionDenied = "messageCaseOutsideJurisdictionDeletionDenied";
 	String messageCaseReferredFromPoe = "messageCaseReferredFromPoe";
 	String messageCaseRelationToEventWithoutDisease = "messageCaseRelationToEventWithoutDisease";
-	String messageCasesArchived = "messageCasesArchived";
 	String messageCaseSaved = "messageCaseSaved";
 	String messageCaseSavedClassificationChanged = "messageCaseSavedClassificationChanged";
-	String messageCasesDearchived = "messageCasesDearchived";
 	String messageCasesDeleted = "messageCasesDeleted";
 	String messageCasesMerged = "messageCasesMerged";
 	String messageCasesNotDeletedReasonExternalSurveillanceTool = "messageCasesNotDeletedReasonExternalSurveillanceTool";
@@ -1065,9 +1057,7 @@ public interface Strings {
 	String messageContactDuplicateDeleted = "messageContactDuplicateDeleted";
 	String messageContactExternalTokenWarning = "messageContactExternalTokenWarning";
 	String messageContactOutsideJurisdictionDeletionDenied = "messageContactOutsideJurisdictionDeletionDenied";
-	String messageContactsArchived = "messageContactsArchived";
 	String messageContactSaved = "messageContactSaved";
-	String messageContactsDearchived = "messageContactsDearchived";
 	String messageContactsDeleted = "messageContactsDeleted";
 	String messageContactsMerged = "messageContactsMerged";
 	String messageContactsRestored = "messageContactsRestored";
@@ -1150,9 +1140,7 @@ public interface Strings {
 	String messageEventParticipantToCaseWithoutEventDisease = "messageEventParticipantToCaseWithoutEventDisease";
 	String messageEventParticipantToContactWithoutEventDisease = "messageEventParticipantToContactWithoutEventDisease";
 	String messageEventParticipationUnlinked = "messageEventParticipationUnlinked";
-	String messageEventsArchived = "messageEventsArchived";
 	String messageEventSaved = "messageEventSaved";
-	String messageEventsDearchived = "messageEventsDearchived";
 	String messageEventsDeleted = "messageEventsDeleted";
 	String messageEventsNotDeletedReason = "messageEventsNotDeletedReason";
 	String messageEventsNotDeletedReasonExternalSurveillanceTool = "messageEventsNotDeletedReasonExternalSurveillanceTool";
@@ -1305,8 +1293,6 @@ public interface Strings {
 	String messageSystemFollowUpCanceledByDropping = "messageSystemFollowUpCanceledByDropping";
 	String messageTaskArchived = "messageTaskArchived";
 	String messageTaskDearchived = "messageTaskDearchived";
-	String messageTasksArchived = "messageTasksArchived";
-	String messageTasksDearchived = "messageTasksDearchived";
 	String messageTasksDeleted = "messageTasksDeleted";
 	String messageTasksEdited = "messageTasksEdited";
 	String messageTemplateNotAvailable = "messageTemplateNotAvailable";
