@@ -137,8 +137,6 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	Date getOldestCaseOutcomeDate();
 
-	List<String> getArchivedUuidsSince(Date since);
-
 	List<String> getDeletedUuidsSince(Date since);
 
 	boolean doesEpidNumberExist(String epidNumber, String caseUuid, Disease disease);

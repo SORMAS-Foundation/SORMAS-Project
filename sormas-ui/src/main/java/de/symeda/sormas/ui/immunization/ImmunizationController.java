@@ -29,8 +29,8 @@ import de.symeda.sormas.ui.immunization.components.fields.pickorcreate.Immunizat
 import de.symeda.sormas.ui.immunization.components.fields.popup.SimilarImmunizationPopup;
 import de.symeda.sormas.ui.immunization.components.form.ImmunizationCreationForm;
 import de.symeda.sormas.ui.immunization.components.form.ImmunizationDataForm;
+import de.symeda.sormas.ui.utils.ArchivingHandlers;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
 import de.symeda.sormas.ui.utils.NotificationHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.automaticdeletion.DeletionLabel;
@@ -206,8 +206,7 @@ public class ImmunizationController {
 			ControllerProvider.getArchiveController()
 				.addArchivingButton(
 					immunizationDto,
-					FacadeProvider.getImmunizationFacade(),
-					CoreEntityArchiveMessages.IMMUNIZATION,
+					ArchivingHandlers.forImmunization(),
 					editComponent,
 					() -> navigateToImmunization(immunizationDto.getUuid()));
 		}

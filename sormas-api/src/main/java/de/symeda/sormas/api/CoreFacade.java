@@ -24,9 +24,7 @@ import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolExc
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public interface CoreFacade<DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends ReferenceDto, CRITERIA extends BaseCriteria>
-	extends BaseFacade<DTO, INDEX_DTO, REF_DTO, CRITERIA>, DeletableFacade {
-
-	boolean isArchived(String uuid);
+	extends BaseFacade<DTO, INDEX_DTO, REF_DTO, CRITERIA>, DeletableFacade, ArchivableFacade {
 
 	boolean exists(String uuid);
 
@@ -35,10 +33,6 @@ public interface CoreFacade<DTO extends EntityDto, INDEX_DTO extends Serializabl
 	DeletionInfoDto getManuallyDeletionInfo(String uuid);
 
 	void archive(String entityUuid, Date endOfProcessingDate);
-
-	void archive(List<String> entityUuid);
-
-	void dearchive(List<String> entityUuids, String dearchiveReason);
 
 	default void setArchiveInExternalSurveillanceToolForEntity(String uuid, boolean archived) throws ExternalSurveillanceToolException {
 	}

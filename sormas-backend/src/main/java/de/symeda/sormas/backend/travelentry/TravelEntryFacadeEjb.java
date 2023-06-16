@@ -17,6 +17,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.common.CoreEntityType;
@@ -417,6 +418,11 @@ public class TravelEntryFacadeEjb
 	@RightsAllowed(UserRight._TRAVEL_ENTRY_ARCHIVE)
 	public void dearchive(List<String> entityUuids, String dearchiveReason) {
 		super.dearchive(entityUuids, dearchiveReason);
+	}
+
+	@Override
+	public List<String> getArchivedUuidsSince(Date since) {
+		throw new NotImplementedException();
 	}
 
 	@Override

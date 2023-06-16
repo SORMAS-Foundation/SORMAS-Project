@@ -193,14 +193,14 @@ public class TaskGridComponent extends VerticalLayout {
 						I18nProperties.getCaption(Captions.actionArchiveCoreEntity),
 						VaadinIcons.ARCHIVE,
 						mi -> ControllerProvider.getTaskController()
-							.archiveAllSelectedItems(this.grid.asMultiSelect().getSelectedItems(), () -> tasksView.navigateTo(criteria)),
+							.archiveAllSelectedItems(this.grid.asMultiSelect().getSelectedItems(), grid, () -> tasksView.navigateTo(criteria)),
 						hasBulkOperationsRight && EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())));
 				menuBarItems.add(
 					new MenuBarHelper.MenuBarItem(
 						I18nProperties.getCaption(Captions.actionDearchiveCoreEntity),
 						VaadinIcons.ARCHIVE,
 						mi -> ControllerProvider.getTaskController()
-							.dearchiveAllSelectedItems(this.grid.asMultiSelect().getSelectedItems(), () -> tasksView.navigateTo(criteria)),
+							.dearchiveAllSelectedItems(this.grid.asMultiSelect().getSelectedItems(), grid, () -> tasksView.navigateTo(criteria)),
 						hasBulkOperationsRight && EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
 				bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, menuBarItems);

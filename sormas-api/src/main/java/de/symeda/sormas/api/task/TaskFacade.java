@@ -25,6 +25,7 @@ import java.util.Map;
 import javax.ejb.Remote;
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.ArchivableFacade;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
@@ -33,7 +34,7 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
-public interface TaskFacade {
+public interface TaskFacade extends ArchivableFacade {
 
 	TaskDto saveTask(@Valid TaskDto dto);
 
@@ -74,14 +75,6 @@ public interface TaskFacade {
 	List<TaskExportDto> getExportList(TaskCriteria criteria, Collection<String> selectedRows, int first, int max);
 
 	void sendNewAndDueTaskMessages();
-
-	void updateArchived(List<String> taskUuids, boolean archived);
-
-	void updateArchived(String taskUuid, boolean archived);
-
-	boolean isArchived(String taskUuid);
-
-	List<String> getArchivedUuidsSince(Date since);
 
 	List<String> getObsoleteUuidsSince(Date since);
 

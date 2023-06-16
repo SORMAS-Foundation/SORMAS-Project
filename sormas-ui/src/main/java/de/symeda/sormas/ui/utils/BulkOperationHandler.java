@@ -21,7 +21,7 @@ import de.symeda.sormas.ui.utils.components.progress.BulkProgressLayout;
 import de.symeda.sormas.ui.utils.components.progress.BulkProgressUpdateInfo;
 import de.symeda.sormas.ui.utils.components.progress.ProgressResult;
 
-public class BulkOperationHandler {
+public class BulkOperationHandler<T extends HasUuid> {
 
 	/**
 	 * Amount of DTOs that are forwarded to the backend in one single call
@@ -39,9 +39,9 @@ public class BulkOperationHandler {
 	private int successfulEntryCount;
 
 	public void doBulkOperation(
-		Function<List<? extends HasUuid>, Integer> bulkOperationFunction,
-		List<? extends HasUuid> selectedEntries,
-		Consumer<List<? extends HasUuid>> bulkOperationDoneCallback) {
+		Function<List<T>, Integer> bulkOperationFunction,
+		List<T> selectedEntries,
+		Consumer<List<T>> bulkOperationDoneCallback) {
 
 		initialEntryCount = selectedEntries.size();
 		if (selectedEntries.size() < BULK_ACTION_PROGRESS_THRESHOLD) {
@@ -70,7 +70,7 @@ public class BulkOperationHandler {
 				currentUI.setPollInterval(300);
 
 				try {
-					List<? extends HasUuid> remainingEntries =
+					List<T> remainingEntries =
 						performBulkOperation(bulkOperationFunction, selectedEntries, bulkProgressLayout::updateProgress);
 
 					currentUI.access(() -> {
@@ -109,9 +109,9 @@ public class BulkOperationHandler {
 		}
 	}
 
-	private List<? extends HasUuid> performBulkOperation(
-		Function<List<? extends HasUuid>, Integer> bulkOperationFunction,
-		List<? extends HasUuid> selectedEntries,
+	private List<T> performBulkOperation(
+		Function<List<T>, Integer> bulkOperationFunction,
+		List<T> selectedEntries,
 		Consumer<BulkProgressUpdateInfo> progressUpdateCallback)
 		throws InterruptedException {
 
