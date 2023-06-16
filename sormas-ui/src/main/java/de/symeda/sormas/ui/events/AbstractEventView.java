@@ -97,7 +97,6 @@ public abstract class AbstractEventView extends AbstractEditAllowedDetailView<Ev
 		}
 	}
 
-
 	protected boolean isEventDeleted() {
 		return FacadeProvider.getEventFacade().isDeleted(getEventRef().getUuid());
 	}
