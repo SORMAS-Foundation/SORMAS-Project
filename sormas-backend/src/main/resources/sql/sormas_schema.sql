@@ -12403,8 +12403,11 @@ ALTER TABLE environments ADD CONSTRAINT fk_environments_reportinguser_id FOREIGN
 ALTER TABLE environments ADD CONSTRAINT fk_environments_responsibleuser_id FOREIGN KEY (responsibleuser_id) REFERENCES users(id);
 ALTER TABLE environments ADD CONSTRAINT fk_environments_location_id FOREIGN KEY (location_id) REFERENCES location(id);
 CREATE TABLE environments_history (LIKE environments);
-CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON environments
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE ON environments
     FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'environments_history', true);
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON environments
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('environments_history', 'id');
 ALTER TABLE environments_history OWNER TO sormas_user;
 ALTER TABLE environments ALTER COLUMN wateruse set DATA TYPE jsonb using wateruse::jsonb;
 ALTER TABLE environments_history ALTER COLUMN wateruse set DATA TYPE jsonb using wateruse::jsonb;
