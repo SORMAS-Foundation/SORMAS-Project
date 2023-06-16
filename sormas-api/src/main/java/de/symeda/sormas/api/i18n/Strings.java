@@ -128,6 +128,7 @@ public interface Strings {
 	String confirmationDeleteCaseContacts = "confirmationDeleteCaseContacts";
 	String confirmationDeleteCases = "confirmationDeleteCases";
 	String confirmationDeleteContacts = "confirmationDeleteContacts";
+	String confirmationDeleteEntities = "confirmationDeleteEntities";
 	String confirmationDeleteEntity = "confirmationDeleteEntity";
 	String confirmationDeleteEntityWithDetails = "confirmationDeleteEntityWithDetails";
 	String confirmationDeleteEventParticipants = "confirmationDeleteEventParticipants";
@@ -1033,7 +1034,7 @@ public interface Strings {
 	String messageCasesDearchived = "messageCasesDearchived";
 	String messageCasesDeleted = "messageCasesDeleted";
 	String messageCasesMerged = "messageCasesMerged";
-	String messageCasesNotDeletedReasonExternalSurveillanceTool = "messageCasesNotDeletedReasonExternalSurveillanceTool";
+	String messageCasesNotDeleted = "messageCasesNotDeleted";
 	String messageCasesNotRestored = "messageCasesNotRestored";
 	String messageCasesRestored = "messageCasesRestored";
 	String messageCaseTransfered = "messageCaseTransfered";
@@ -1068,8 +1069,10 @@ public interface Strings {
 	String messageContactsArchived = "messageContactsArchived";
 	String messageContactSaved = "messageContactSaved";
 	String messageContactsDearchived = "messageContactsDearchived";
+	String messageContactsNotDeleted = "messageContactsNotDeleted";
 	String messageContactsDeleted = "messageContactsDeleted";
 	String messageContactsMerged = "messageContactsMerged";
+	String messageContactsNotRestored = "messageContactsNotRestored";
 	String messageContactsRestored = "messageContactsRestored";
 	String messageContactToCaseConfirmationRequired = "messageContactToCaseConfirmationRequired";
 	String messageContinentArchived = "messageContinentArchived";
@@ -1146,6 +1149,8 @@ public interface Strings {
 	String messageEventParticipantResponsibleJurisdictionUpdated = "messageEventParticipantResponsibleJurisdictionUpdated";
 	String messageEventParticipantSaved = "messageEventParticipantSaved";
 	String messageEventParticipantsDeleted = "messageEventParticipantsDeleted";
+	String messageEventParticipantsNotDeleted = "messageEventParticipantsNotDeleted";
+	String messageEventParticipantsNotRestored = "messageEventParticipantsNotRestored";
 	String messageEventParticipantsRestored = "messageEventParticipantsRestored";
 	String messageEventParticipantToCaseWithoutEventDisease = "messageEventParticipantToCaseWithoutEventDisease";
 	String messageEventParticipantToContactWithoutEventDisease = "messageEventParticipantToContactWithoutEventDisease";
@@ -1154,8 +1159,10 @@ public interface Strings {
 	String messageEventSaved = "messageEventSaved";
 	String messageEventsDearchived = "messageEventsDearchived";
 	String messageEventsDeleted = "messageEventsDeleted";
+	String messageEventsNotDeleted = "messageEventsNotDeleted";
 	String messageEventsNotDeletedReason = "messageEventsNotDeletedReason";
 	String messageEventsNotDeletedReasonExternalSurveillanceTool = "messageEventsNotDeletedReasonExternalSurveillanceTool";
+	String messageEventsNotRestored = "messageEventsNotRestored";
 	String messageEventsRestored = "messageEventsRestored";
 	String messageEventsSentToSurvnet = "messageEventsSentToSurvnet";
 	String messageEventSubordinateEventUnlinked = "messageEventSubordinateEventUnlinked";
@@ -1187,6 +1194,9 @@ public interface Strings {
 	String messageImmunizationOutsideJurisdictionDeletionDenied = "messageImmunizationOutsideJurisdictionDeletionDenied";
 	String messageImmunizationSaved = "messageImmunizationSaved";
 	String messageImmunizationSavedVaccinationStatusUpdated = "messageImmunizationSavedVaccinationStatusUpdated";
+	String messageImmunizationsDeleted = "messageImmunizationsDeleted";
+	String messageImmunizationsNotDeleted = "messageImmunizationsNotDeleted";
+	String messageImmunizationsNotRestored = "messageImmunizationsNotRestored";
 	String messageImmunizationsRestored = "messageImmunizationsRestored";
 	String messageImportCanceled = "messageImportCanceled";
 	String messageImportCanceledErrors = "messageImportCanceledErrors";
@@ -1278,6 +1288,8 @@ public interface Strings {
 	String messageSampleOpened = "messageSampleOpened";
 	String messageSampleSaved = "messageSampleSaved";
 	String messageSamplesDeleted = "messageSamplesDeleted";
+	String messageSamplesNotDeleted = "messageSamplesNotDeleted";
+	String messageSamplesNotRestored = "messageSamplesNotRestored";
 	String messageSamplesRestored = "messageSamplesRestored";
 	String messageSelectedPeriodTooLong = "messageSelectedPeriodTooLong";
 	String messageSetContactRegionAndDistrict = "messageSetContactRegionAndDistrict";
@@ -1312,6 +1324,8 @@ public interface Strings {
 	String messageTemplateNotAvailable = "messageTemplateNotAvailable";
 	String messageThisPersonAlreadyEventParticipant = "messageThisPersonAlreadyEventParticipant";
 	String messageTravelEntriesDeleted = "messageTravelEntriesDeleted";
+	String messageTravelEntriesNotDeleted = "messageTravelEntriesNotDeleted";
+	String messageTravelEntriesNotRestored = "messageTravelEntriesNotRestored";
 	String messageTravelEntriesRestored = "messageTravelEntriesRestored";
 	String messageTravelEntryArchived = "messageTravelEntryArchived";
 	String messageTravelEntryDearchived = "messageTravelEntryDearchived";

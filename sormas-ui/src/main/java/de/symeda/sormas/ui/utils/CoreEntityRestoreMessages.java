@@ -9,6 +9,7 @@ public enum CoreEntityRestoreMessages {
 		Strings.messageNoCasesSelected,
 		Strings.headingCasesRestored,
 		Strings.messageCasesRestored,
+		Strings.messageCasesNotRestored,
 		Strings.headingSomeCasesNotRestored,
 		Strings.messageCountCasesNotRestored),
 
@@ -17,6 +18,7 @@ public enum CoreEntityRestoreMessages {
 		Strings.messageNoContactsSelected,
 		Strings.headingContactsRestored,
 		Strings.messageContactsRestored,
+		Strings.messageContactsNotRestored,
 		Strings.headingSomeContactsNotRestored,
 		Strings.messageCountContactsNotRestored),
 
@@ -25,6 +27,7 @@ public enum CoreEntityRestoreMessages {
 		Strings.messageNoEventsSelected,
 		Strings.headingEventsRestored,
 		Strings.messageEventsRestored,
+		Strings.messageEventsNotRestored,
 		Strings.headingSomeEventsNotRestored,
 		Strings.messageCountEventsNotRestored),
 
@@ -33,6 +36,7 @@ public enum CoreEntityRestoreMessages {
 		Strings.messageNoEventParticipantsSelected,
 		Strings.headingEventParticipantsRestored,
 		Strings.messageEventParticipantsRestored,
+		Strings.messageEventParticipantsNotRestored,
 		Strings.headingSomeEventParticipantsNotRestored,
 		Strings.messageCountEventParticipantsNotRestored),
 
@@ -41,6 +45,7 @@ public enum CoreEntityRestoreMessages {
 		Strings.messageNoImmunizationsSelected,
 		Strings.headingImmunizationsRestored,
 		Strings.messageImmunizationsRestored,
+		Strings.messageImmunizationsNotRestored,
 		Strings.headingSomeImmunizationsNotRestored,
 		Strings.messageCountImmunizationsNotRestored),
 
@@ -49,6 +54,7 @@ public enum CoreEntityRestoreMessages {
 		Strings.messageNoSamplesSelected,
 		Strings.headingSamplesRestored,
 		Strings.messageSamplesRestored,
+		Strings.messageSamplesNotRestored,
 		Strings.headingSomeSamplesNotRestored,
 		Strings.messageCountSamplesNotRestored),
 
@@ -57,6 +63,7 @@ public enum CoreEntityRestoreMessages {
 		Strings.messageNoTravelEntriesSelected,
 		Strings.headingTravelEntriesRestored,
 		Strings.messageTravelEntriesRestored,
+		Strings.messageTravelEntriesNotRestored,
 		Strings.headingSomeTravelEntriesNotRestored,
 		Strings.messageCountTravelEntriesNotRestored);
 
@@ -65,6 +72,7 @@ public enum CoreEntityRestoreMessages {
 	private final String messageNoSelection;
 	private final String headingEntitiesRestored;
 	private final String messageEntitiesRestored;
+	private final String messageEntitiesNotRestored;
 	private final String headingSomeEntitiesNotRestored;
 	private final String messageCountEntitiesNotRestored;
 
@@ -74,6 +82,7 @@ public enum CoreEntityRestoreMessages {
 		String messageNoSelection,
 		String headingEntitiesRestored,
 		String messageEntitiesRestored,
+		String messageEntitiesNotRestored,
 		String headingSomeEntitiesNotRestored,
 		String messageCountEntitiesNotRestored) {
 		this.entities = entities;
@@ -81,6 +90,7 @@ public enum CoreEntityRestoreMessages {
 		this.messageNoSelection = messageNoSelection;
 		this.headingEntitiesRestored = headingEntitiesRestored;
 		this.messageEntitiesRestored = messageEntitiesRestored;
+		this.messageEntitiesNotRestored = messageEntitiesNotRestored;
 		this.headingSomeEntitiesNotRestored = headingSomeEntitiesNotRestored;
 		this.messageCountEntitiesNotRestored = messageCountEntitiesNotRestored;
 	}
@@ -103,6 +113,10 @@ public enum CoreEntityRestoreMessages {
 
 	public String getMessageEntitiesRestored() {
 		return messageEntitiesRestored;
+	}
+
+	public String getMessageEntitiesNotRestored() {
+		return messageEntitiesNotRestored;
 	}
 
 	public String getHeadingSomeEntitiesNotRestored() {
