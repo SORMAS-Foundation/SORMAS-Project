@@ -724,6 +724,7 @@ public interface Strings {
 	String headingSomeSamplesNotRestored = "headingSomeSamplesNotRestored";
 	String headingSomeTravelEntriesNotDeleted = "headingSomeTravelEntriesNotDeleted";
 	String headingSomeTravelEntriesNotRestored = "headingSomeTravelEntriesNotRestored";
+	String headingSomeVisitsNotDeleted = "headingSomeVisitsNotDeleted";
 	String headingSormasToSormasCanAcceptContactsWithoutCase = "headingSormasToSormasCanAcceptContactsWithoutCase";
 	String headingSormasToSormasCantShareContactWithoutCase = "headingSormasToSormasCantShareContactWithoutCase";
 	String headingSormasToSormasDuplicateDetection = "headingSormasToSormasDuplicateDetection";
@@ -1109,6 +1110,7 @@ public interface Strings {
 	String messageCountSamplesNotRestored = "messageCountSamplesNotRestored";
 	String messageCountTravelEntriesNotDeleted = "messageCountTravelEntriesNotDeleted";
 	String messageCountTravelEntriesNotRestored = "messageCountTravelEntriesNotRestored";
+	String messageCountVisitsNotDeleted = "messageCountVisitsNotDeleted";
 	String messageCreateCollectionTask = "messageCreateCollectionTask";
 	String messageDatabaseExportFailed = "messageDatabaseExportFailed";
 	String messageDeleteImmunizationVaccinations = "messageDeleteImmunizationVaccinations";
@@ -1363,6 +1365,7 @@ public interface Strings {
 	String messageVaccinationNotRelevantForEventParticipant = "messageVaccinationNotRelevantForEventParticipant";
 	String messageVaccinationOutsideJurisdictionDeletionDenied = "messageVaccinationOutsideJurisdictionDeletionDenied";
 	String messageVisitsDeleted = "messageVisitsDeleted";
+	String messageVisitsNotDeleted = "messageVisitsNotDeleted";
 	String messageWrongFileType = "messageWrongFileType";
 	String messageWrongTemplateFileType = "messageWrongTemplateFileType";
 	String min = "min";

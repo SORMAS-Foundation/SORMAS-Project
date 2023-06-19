@@ -29,7 +29,16 @@ public enum CoreEntityDeleteMessages {
 		Strings.messageTravelEntriesDeleted,
 		Strings.messageTravelEntriesNotDeleted,
 		Strings.headingSomeTravelEntriesNotDeleted,
-		Strings.messageCountTravelEntriesNotDeleted);
+		Strings.messageCountTravelEntriesNotDeleted),
+
+	VISIT(Strings.entityVisits,
+		Strings.headingNoVisitsSelected,
+		Strings.messageNoVisitsSelected,
+		Strings.headingVisitsDeleted,
+		Strings.messageVisitsDeleted,
+		Strings.messageVisitsNotDeleted,
+		Strings.headingSomeVisitsNotDeleted,
+		Strings.messageCountVisitsNotDeleted);
 
 	/*
 	 * EVENT(Strings.entityEvents,

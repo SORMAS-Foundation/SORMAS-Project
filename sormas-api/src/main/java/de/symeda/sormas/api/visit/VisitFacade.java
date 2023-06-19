@@ -23,6 +23,7 @@ import javax.ejb.Remote;
 import javax.validation.Valid;
 
 import de.symeda.sormas.api.BaseFacade;
+import de.symeda.sormas.api.PermanentlyDeletableFacade;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -30,7 +31,7 @@ import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
-public interface VisitFacade extends BaseFacade<VisitDto, VisitIndexDto, VisitReferenceDto, VisitCriteria> {
+public interface VisitFacade extends BaseFacade<VisitDto, VisitIndexDto, VisitReferenceDto, VisitCriteria>, PermanentlyDeletableFacade {
 
 	List<VisitDto> getAllActiveVisitsAfter(Date date);
 
@@ -45,8 +46,6 @@ public interface VisitFacade extends BaseFacade<VisitDto, VisitIndexDto, VisitRe
 	List<String> getAllActiveUuids();
 
 	List<VisitDto> getAllActiveVisitsAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
-
-	void deleteVisit(String visitUuid);
 
 	Page<VisitIndexDto> getIndexPage(VisitCriteria visitCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 

@@ -318,14 +318,12 @@ public class VisitFacadeEjb extends AbstractBaseEjb<Visit, VisitDto, VisitIndexD
 
 	@Override
 	@RightsAllowed(UserRight._VISIT_DELETE)
-	public void deleteVisit(String visitUuid) {
-
+	public void delete(String uuid) {
 		if (!userService.hasRight(UserRight.VISIT_DELETE)) {
 			throw new UnsupportedOperationException(
 				String.format("User %s is not allowed to delete visits.", userService.getCurrentUser().getUuid()));
 		}
-
-		Visit visit = service.getByUuid(visitUuid);
+		Visit visit = service.getByUuid(uuid);
 		service.deletePermanent(visit);
 	}
 

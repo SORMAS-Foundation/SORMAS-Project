@@ -20,11 +20,9 @@ package de.symeda.sormas.ui.visit;
 import java.util.Collection;
 import java.util.Date;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
-import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
@@ -47,8 +45,10 @@ import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.api.visit.VisitLogic;
 import de.symeda.sormas.api.visit.VisitReferenceDto;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.CoreEntityDeleteMessages;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class VisitController {
@@ -138,7 +138,7 @@ public class VisitController {
 
 			if (canDelete) {
 				editView.addDeleteListener(() -> {
-					FacadeProvider.getVisitFacade().deleteVisit(visitRef.getUuid());
+					FacadeProvider.getVisitFacade().delete(visitRef.getUuid());
 					UI.getCurrent().removeWindow(window);
 					if (doneConsumer != null) {
 						doneConsumer.accept(visitRef);
@@ -228,25 +228,12 @@ public class VisitController {
 	}
 
 	public void deleteAllSelectedItems(Collection<VisitIndexDto> selectedRows, Runnable callback) {
-		if (selectedRows.size() == 0) {
-			new Notification(
-				I18nProperties.getString(Strings.headingNoVisitsSelected),
-				I18nProperties.getString(Strings.messageNoVisitsSelected),
-				Type.WARNING_MESSAGE,
-				false).show(Page.getCurrent());
-		} else {
-			VaadinUiUtil
-				.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteVisits), selectedRows.size()), () -> {
-					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getVisitFacade().deleteVisit(((VisitIndexDto) selectedRow).getUuid());
-					}
-					callback.run();
-					new Notification(
-						I18nProperties.getString(Strings.headingVisitsDeleted),
-						I18nProperties.getString(Strings.messageVisitsDeleted),
-						Type.HUMANIZED_MESSAGE,
-						false).show(Page.getCurrent());
-				});
-		}
+
+		ControllerProvider.getPermanentDeleteController()
+			.deleteAllSelectedItems(
+				selectedRows.stream().map(VisitIndexDto::getUuid).collect(Collectors.toList()),
+				FacadeProvider.getVisitFacade(),
+				CoreEntityDeleteMessages.VISIT,
+				callback);
 	}
 }
