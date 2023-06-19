@@ -86,4 +86,6 @@ public interface TaskFacade extends ArchivableFacade {
 		boolean priorityChange,
 		boolean assigneeChange,
 		boolean taskStatusChange);
+
+	List<String> getArchivedUuidsSince(Date since);
 }

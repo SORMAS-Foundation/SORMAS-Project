@@ -47,8 +47,8 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.ArchivingController;
-import de.symeda.sormas.ui.utils.ArchivingHandlers;
 import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -150,7 +150,7 @@ public class TaskController {
 
 		// Initialize 'Archive' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_ARCHIVE)) {
-			ControllerProvider.getArchiveController().addArchivingButton(task, ArchivingHandlers.forTask(), editView, () -> {
+			ControllerProvider.getArchiveController().addArchivingButton(task, ArchiveHandlers.forTask(), editView, () -> {
 				popupWindow.close();
 				callback.run();
 			});
@@ -248,11 +248,11 @@ public class TaskController {
 
 	public void archiveAllSelectedItems(Collection<TaskIndexDto> selectedRows, TaskGrid taskGrid, Runnable noEntriesRemainingCallback) {
 		ControllerProvider.getArchiveController()
-			.archiveSelectedItems(selectedRows, ArchivingHandlers.forTask(), bulkOperationCallback(taskGrid, noEntriesRemainingCallback, null));
+			.archiveSelectedItems(selectedRows, ArchiveHandlers.forTask(), bulkOperationCallback(taskGrid, noEntriesRemainingCallback, null));
 	}
 
 	public void dearchiveAllSelectedItems(Collection<TaskIndexDto> selectedRows, TaskGrid taskGrid, Runnable noEntriesRemainingCallback) {
 		ControllerProvider.getArchiveController()
-			.dearchiveSelectedItems(selectedRows, ArchivingHandlers.forTask(), bulkOperationCallback(taskGrid, noEntriesRemainingCallback, null));
+			.dearchiveSelectedItems(selectedRows, ArchiveHandlers.forTask(), bulkOperationCallback(taskGrid, noEntriesRemainingCallback, null));
 	}
 }

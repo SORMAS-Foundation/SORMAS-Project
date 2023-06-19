@@ -1008,14 +1008,28 @@ public class TaskFacadeEjb implements TaskFacade {
 
 	@Override
 	@RightsAllowed(UserRight._TASK_ARCHIVE)
-	public void archive(List<String> taskUuids) {
-		IterableHelper.executeBatched(taskUuids, ARCHIVE_BATCH_SIZE, e -> taskService.updateArchived(e, true));
+	public void archive(String uuid) {
+		archive(Collections.singletonList(uuid));
 	}
 
 	@Override
 	@RightsAllowed(UserRight._TASK_ARCHIVE)
-	public void dearchive(List<String> taskUuids, String dearchiveReason) {
+	public void dearchive(String uuid) {
+		dearchive(Collections.singletonList(uuid));
+	}
+
+	@Override
+	@RightsAllowed(UserRight._TASK_ARCHIVE)
+	public List<String> archive(List<String> taskUuids) {
+		IterableHelper.executeBatched(taskUuids, ARCHIVE_BATCH_SIZE, e -> taskService.updateArchived(e, true));
+		return taskUuids;
+	}
+
+	@Override
+	@RightsAllowed(UserRight._TASK_ARCHIVE)
+	public List<String> dearchive(List<String> taskUuids) {
 		IterableHelper.executeBatched(taskUuids, ARCHIVE_BATCH_SIZE, e -> taskService.updateArchived(e, false));
+		return taskUuids;
 	}
 
 	@Override

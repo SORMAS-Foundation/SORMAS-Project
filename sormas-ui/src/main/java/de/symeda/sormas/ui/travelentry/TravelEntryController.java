@@ -27,7 +27,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.travelentry.components.TravelEntryCreateForm;
-import de.symeda.sormas.ui.utils.ArchivingHandlers;
+import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
 import de.symeda.sormas.ui.utils.DeletableUtils;
@@ -174,7 +174,7 @@ public class TravelEntryController {
 			ControllerProvider.getArchiveController()
 				.addArchivingButton(
 					travelEntry,
-					ArchivingHandlers.forTravelEntry(),
+					ArchiveHandlers.forTravelEntry(),
 					editComponent,
 					() -> navigateToTravelEntry(travelEntry.getUuid()));
 		}

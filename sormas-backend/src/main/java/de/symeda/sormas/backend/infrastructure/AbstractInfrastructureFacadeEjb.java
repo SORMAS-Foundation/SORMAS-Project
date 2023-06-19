@@ -9,6 +9,9 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.security.PermitAll;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -20,9 +23,11 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.InfrastructureDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureFacade;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.backend.common.AbstractBaseEjb;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
 import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
@@ -38,6 +43,8 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 
 	protected FeatureConfigurationFacadeEjb featureConfiguration;
 	private String duplicateErrorMessageProperty;
+	private String archivingNotPossibleMessageProperty;
+	private String dearchivingNotPossibleMessageProperty;
 
 	protected AbstractInfrastructureFacadeEjb() {
 		super();
@@ -48,10 +55,14 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 		Class<DTO> dtoClass,
 		SRV service,
 		FeatureConfigurationFacadeEjb featureConfiguration,
-		String duplicateErrorMessageProperty) {
+		String duplicateErrorMessageProperty,
+		String archivingNotPossibleMessageProperty,
+		String dearchivingNotPossibleMessageProperty) {
 		super(adoClass, dtoClass, service);
 		this.featureConfiguration = featureConfiguration;
 		this.duplicateErrorMessageProperty = duplicateErrorMessageProperty;
+		this.archivingNotPossibleMessageProperty = archivingNotPossibleMessageProperty;
+		this.dearchivingNotPossibleMessageProperty = dearchivingNotPossibleMessageProperty;
 	}
 
 	@Override
@@ -175,6 +186,10 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	public void archive(String uuid) {
 		// todo this should be really in the parent but right now there the setter for archived is not available there
 		checkInfraDataLocked();
+		if (isUsedInOtherInfrastructureData(Collections.singletonList(uuid))) {
+			throw new AccessDeniedException(I18nProperties.getString(archivingNotPossibleMessageProperty));
+		}
+
 		ADO ado = service.getByUuid(uuid);
 		if (ado != null) {
 			ado.setArchived(true);
@@ -185,6 +200,10 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	@RightsAllowed(UserRight._INFRASTRUCTURE_ARCHIVE)
 	public void dearchive(String uuid) {
 		checkInfraDataLocked();
+		if (hasArchivedParentInfrastructure(Collections.singletonList(uuid))) {
+			throw new AccessDeniedException(I18nProperties.getString(dearchivingNotPossibleMessageProperty));
+		}
+
 		ADO ado = service.getByUuid(uuid);
 		if (ado != null) {
 			ado.setArchived(false);
@@ -214,6 +233,20 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 			}
 		});
 		return dearchivedEntityUuids;
+	}
+
+	@Override
+	public boolean isArchived(String uuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<ADO> from = cq.from(adoClass);
+
+		cq.where(cb.and(cb.equal(from.get(InfrastructureAdo.ARCHIVED), true), cb.equal(from.get(AbstractDomainObject.UUID), uuid)));
+		cq.select(cb.count(from));
+
+		long count = em.createQuery(cq).getSingleResult();
+
+		return count > 0;
 	}
 
 	protected void checkInfraDataLocked() {

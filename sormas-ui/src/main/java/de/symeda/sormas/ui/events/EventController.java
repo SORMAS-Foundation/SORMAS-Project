@@ -82,7 +82,7 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
 import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceServiceGateway;
 import de.symeda.sormas.ui.utils.AbstractView;
-import de.symeda.sormas.ui.utils.ArchivingHandlers;
+import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
@@ -908,7 +908,7 @@ public class EventController {
 
 		// Initialize 'Archive' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_ARCHIVE)) {
-			ControllerProvider.getArchiveController().addArchivingButton(event, ArchivingHandlers.forEvent(), editView, () -> {
+			ControllerProvider.getArchiveController().addArchivingButton(event, ArchiveHandlers.forEvent(), editView, () -> {
 				ViewModelProviders.of(EventParticipantsView.class).get(EventParticipantsViewConfiguration.class).setRelevanceStatusChangedEvent(null);
 				navigateToData(uuid);
 			});
@@ -1105,12 +1105,12 @@ public class EventController {
 
 	public void archiveAllSelectedItems(Collection<EventIndexDto> selectedRows, EventGrid eventGrid) {
 		ControllerProvider.getArchiveController()
-			.archiveSelectedItems(selectedRows, ArchivingHandlers.forEvent(), bulkOperationCallback(eventGrid, null));
+			.archiveSelectedItems(selectedRows, ArchiveHandlers.forEvent(), bulkOperationCallback(eventGrid, null));
 	}
 
 	public void dearchiveAllSelectedItems(Collection<EventIndexDto> selectedRows, EventGrid eventGrid) {
 		ControllerProvider.getArchiveController()
-			.dearchiveSelectedItems(selectedRows, ArchivingHandlers.forEvent(), bulkOperationCallback(eventGrid, null));
+			.dearchiveSelectedItems(selectedRows, ArchiveHandlers.forEvent(), bulkOperationCallback(eventGrid, null));
 	}
 
 	public TitleLayout getEventViewTitleLayout(String uuid) {

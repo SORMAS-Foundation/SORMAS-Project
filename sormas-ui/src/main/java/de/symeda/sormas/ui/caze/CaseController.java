@@ -132,7 +132,7 @@ import de.symeda.sormas.ui.hospitalization.HospitalizationView;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.therapy.TherapyView;
 import de.symeda.sormas.ui.utils.AbstractView;
-import de.symeda.sormas.ui.utils.ArchivingHandlers;
+import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -1127,7 +1127,7 @@ public class CaseController {
 		// Initialize 'Archive' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_ARCHIVE)) {
 			ControllerProvider.getArchiveController()
-				.addArchivingButton(caze, ArchivingHandlers.forCase(), editView, () -> navigateToView(CaseDataView.VIEW_NAME, caze.getUuid(), null));
+				.addArchivingButton(caze, ArchiveHandlers.forCase(), editView, () -> navigateToView(CaseDataView.VIEW_NAME, caze.getUuid(), null));
 		}
 	}
 
@@ -1157,12 +1157,12 @@ public class CaseController {
 
 	public void archiveAllSelectedItems(Collection<CaseIndexDto> selectedRows, AbstractCaseGrid<?> caseGrid) {
 		ControllerProvider.getArchiveController()
-			.archiveSelectedItems(selectedRows, ArchivingHandlers.forCase(), bulkOperationCallback(caseGrid, null));
+			.archiveSelectedItems(selectedRows, ArchiveHandlers.forCase(), bulkOperationCallback(caseGrid, null));
 	}
 
 	public void dearchiveAllSelectedItems(Collection<CaseIndexDto> selectedRows, AbstractCaseGrid<?> caseGrid) {
 		ControllerProvider.getArchiveController()
-			.dearchiveSelectedItems(selectedRows, ArchivingHandlers.forCase(), bulkOperationCallback(caseGrid, null));
+			.dearchiveSelectedItems(selectedRows, ArchiveHandlers.forCase(), bulkOperationCallback(caseGrid, null));
 	}
 
 	public CommitDiscardWrapperComponent<HospitalizationForm> getHospitalizationComponent(

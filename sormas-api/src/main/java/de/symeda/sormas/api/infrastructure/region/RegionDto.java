@@ -49,7 +49,6 @@ public class RegionDto extends InfrastructureDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String epidCode;
 	private Float growthRate;
-	private boolean archived;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalID;
 	@DependingOnFeatureType(featureType = FeatureType.INFRASTRUCTURE_TYPE_AREA)
@@ -70,8 +69,7 @@ public class RegionDto extends InfrastructureDto {
 		String countryIsoCode,
 		String areaUuid) {
 
-		super(creationDate, changeDate, uuid);
-		this.archived = archived;
+		super(creationDate, changeDate, uuid, archived);
 		this.name = name;
 		this.epidCode = epidCode;
 		this.growthRate = growthRate;
@@ -112,14 +110,6 @@ public class RegionDto extends InfrastructureDto {
 
 	public void setGrowthRate(Float growthRate) {
 		this.growthRate = growthRate;
-	}
-
-	public boolean isArchived() {
-		return archived;
-	}
-
-	public void setArchived(boolean archived) {
-		this.archived = archived;
 	}
 
 	public String getExternalID() {

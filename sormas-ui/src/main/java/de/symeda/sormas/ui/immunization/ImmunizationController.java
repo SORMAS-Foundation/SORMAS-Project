@@ -29,7 +29,7 @@ import de.symeda.sormas.ui.immunization.components.fields.pickorcreate.Immunizat
 import de.symeda.sormas.ui.immunization.components.fields.popup.SimilarImmunizationPopup;
 import de.symeda.sormas.ui.immunization.components.form.ImmunizationCreationForm;
 import de.symeda.sormas.ui.immunization.components.form.ImmunizationDataForm;
-import de.symeda.sormas.ui.utils.ArchivingHandlers;
+import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.NotificationHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -206,7 +206,7 @@ public class ImmunizationController {
 			ControllerProvider.getArchiveController()
 				.addArchivingButton(
 					immunizationDto,
-					ArchivingHandlers.forImmunization(),
+					ArchiveHandlers.forImmunization(),
 					editComponent,
 					() -> navigateToImmunization(immunizationDto.getUuid()));
 		}

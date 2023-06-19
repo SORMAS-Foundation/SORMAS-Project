@@ -6,14 +6,14 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.ArchivableFacade;
 import de.symeda.sormas.api.BaseFacade;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.InfrastructureDataReferenceDto;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public interface InfrastructureFacade<DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends InfrastructureDataReferenceDto, CRITERIA extends BaseCriteria>
-
-	extends BaseFacade<DTO, INDEX_DTO, REF_DTO, CRITERIA> {
+	extends BaseFacade<DTO, INDEX_DTO, REF_DTO, CRITERIA>, ArchivableFacade {
 
 	DTO save(@Valid DTO dtoToSave, boolean allowMerge);
 
@@ -27,14 +27,6 @@ public interface InfrastructureFacade<DTO extends EntityDto, INDEX_DTO extends S
 	 * @return The saved DTO.
 	 */
 	DTO saveFromCentral(@Valid DTO dto);
-
-	void archive(String uuid);
-
-	void dearchive(String uuid);
-
-	List<String> archive(List<String> entityUuids);
-
-	List<String> dearchive(List<String> entityUuids);
 
 	boolean isUsedInOtherInfrastructureData(Collection<String> uuids);
 

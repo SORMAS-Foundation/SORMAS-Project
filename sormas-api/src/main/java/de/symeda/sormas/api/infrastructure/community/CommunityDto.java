@@ -48,7 +48,6 @@ public class CommunityDto extends InfrastructureDto {
 	@MappingException(reason = MappingException.FILLED_FROM_OTHER_ENTITY)
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
-	private boolean archived;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalID;
 
@@ -67,8 +66,7 @@ public class CommunityDto extends InfrastructureDto {
 		String districtExternalId,
 		String externalID) {
 
-		super(creationDate, changeDate, uuid);
-		this.archived = archived;
+		super(creationDate, changeDate, uuid, archived);
 		this.name = name;
 		this.growthRate = growthRate;
 		this.region = new RegionReferenceDto(regionUuid, regionName, regionExternalId);
@@ -110,14 +108,6 @@ public class CommunityDto extends InfrastructureDto {
 
 	public void setDistrict(DistrictReferenceDto district) {
 		this.district = district;
-	}
-
-	public boolean isArchived() {
-		return archived;
-	}
-
-	public void setArchived(boolean archived) {
-		this.archived = archived;
 	}
 
 	public String getExternalID() {
