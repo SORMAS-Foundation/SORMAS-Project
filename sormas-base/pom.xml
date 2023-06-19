@@ -445,10 +445,7 @@
 				<scope>provided</scope>
 				<exclusions>
 					<!-- Exclude Payara modules here -->
-					<exclusion>
-						<groupId>net.minidev</groupId>
-						<artifactId>json-smart</artifactId>
-					</exclusion>
+					<!-- net.minidev:json-smart is a Payara module, but for unknown reason can't be loaded by the json-path domain lib -->
 					<exclusion>
 						<groupId>org.ow2.asm</groupId>
 						<artifactId>asm</artifactId>
