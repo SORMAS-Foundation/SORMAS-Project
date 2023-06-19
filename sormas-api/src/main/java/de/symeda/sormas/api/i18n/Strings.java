@@ -717,6 +717,7 @@ public interface Strings {
 	String headingSomeCasesNotRestored = "headingSomeCasesNotRestored";
 	String headingSomeContactsNotDeleted = "headingSomeContactsNotDeleted";
 	String headingSomeContactsNotRestored = "headingSomeContactsNotRestored";
+	String headingSomeEventParticipantsNotDeleted = "headingSomeEventParticipantsNotDeleted";
 	String headingSomeEventParticipantsNotRestored = "headingSomeEventParticipantsNotRestored";
 	String headingSomeEventsNotDeleted = "headingSomeEventsNotDeleted";
 	String headingSomeEventsNotRestored = "headingSomeEventsNotRestored";
@@ -1096,6 +1097,7 @@ public interface Strings {
 	String messageCountContactsAlreadyInEvent = "messageCountContactsAlreadyInEvent";
 	String messageCountContactsNotDeleted = "messageCountContactsNotDeleted";
 	String messageCountContactsNotRestored = "messageCountContactsNotRestored";
+	String messageCountEventParticipantsNotDeleted = "messageCountEventParticipantsNotDeleted";
 	String messageCountEventParticipantsNotRestored = "messageCountEventParticipantsNotRestored";
 	String messageCountEventsNotDeleted = "messageCountEventsNotDeleted";
 	String messageCountEventsNotDeletedExternalSurveillanceTool = "messageCountEventsNotDeletedExternalSurveillanceTool";

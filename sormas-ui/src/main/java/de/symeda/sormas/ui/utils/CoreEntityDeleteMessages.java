@@ -38,7 +38,16 @@ public enum CoreEntityDeleteMessages {
 		Strings.messageVisitsDeleted,
 		Strings.messageVisitsNotDeleted,
 		Strings.headingSomeVisitsNotDeleted,
-		Strings.messageCountVisitsNotDeleted);
+		Strings.messageCountVisitsNotDeleted),
+
+	EVENT_PARTICIPANT(Strings.entityEventParticipants,
+		Strings.headingNoEventParticipantsSelected,
+		Strings.messageNoEventParticipantsSelected,
+		Strings.headingEventParticipantsDeleted,
+		Strings.messageEventParticipantsDeleted,
+		Strings.messageEventParticipantsNotDeleted,
+		Strings.headingSomeEventParticipantsNotDeleted,
+		Strings.messageCountEventParticipantsNotDeleted);
 
 	/*
 	 * EVENT(Strings.entityEvents,
@@ -48,13 +57,6 @@ public enum CoreEntityDeleteMessages {
 	 * Strings.messageEventsDeleted,
 	 * Strings.headingSomeEventsNotRestored,
 	 * Strings.messageCountEventsNotDeleted),
-	 * EVENT_PARTICIPANT(Strings.entityEventParticipants,
-	 * Strings.headingNoEventParticipantsSelected,
-	 * Strings.messageNoEventParticipantsSelected,
-	 * Strings.headingEventParticipantsRestored,
-	 * Strings.messageEventParticipantsRestored,
-	 * Strings.headingSomeEventParticipantsNotRestored,
-	 * Strings.messageCountEventParticipantsNotRestored),
 	 * IMMUNIZATION(Strings.entityImmunizations,
 	 * Strings.headingNoImmunizationsSelected,
 	 * Strings.messageNoImmunizationsSelected,
