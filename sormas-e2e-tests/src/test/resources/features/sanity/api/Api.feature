@@ -169,3 +169,9 @@ Feature: Check basic POSTs RestApi endpoints
     Then API: I create a new travel entry with creation date 14 days ago
     And API: I check that POST call status code is 200
 
+  @env_main @precon
+  Scenario: Automation_admin permissions check
+    Given API:I Login into Environment
+    Then API: I get json file with user permission file
+    And API: I check that GET call status code is 200
+    And I create template for Automation admin User Rights
