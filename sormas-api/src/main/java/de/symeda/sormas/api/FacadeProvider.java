@@ -443,7 +443,7 @@ public class FacadeProvider {
 
 	public static ExternalMessageAdapterFacade getExternalLabResultsFacade() throws NamingException {
 
-		String jndiName = FacadeProvider.getConfigFacade().getDemisJndiName();
+		String jndiName = FacadeProvider.getConfigFacade().getExternalMessageAdapterJndiName();
 		if (jndiName == null) {
 			throw new ConfigurationException("No LabResultAdapter JNDI name is configured in the sormas.properties");
 		} else {
