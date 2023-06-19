@@ -20,7 +20,16 @@ public enum CoreEntityDeleteMessages {
 		Strings.messageContactsDeleted,
 		Strings.messageContactsNotDeleted,
 		Strings.headingSomeContactsNotDeleted,
-		Strings.messageCountContactsNotDeleted);
+		Strings.messageCountContactsNotDeleted),
+
+	TRAVEL_ENTRY(Strings.entityTravelEntries,
+		Strings.headingNoTravelEntriesSelected,
+		Strings.messageNoTravelEntriesSelected,
+		Strings.headingTravelEntriesDeleted,
+		Strings.messageTravelEntriesDeleted,
+		Strings.messageTravelEntriesNotDeleted,
+		Strings.headingSomeTravelEntriesNotDeleted,
+		Strings.messageCountTravelEntriesNotDeleted);
 
 	/*
 	 * EVENT(Strings.entityEvents,
@@ -51,13 +60,6 @@ public enum CoreEntityDeleteMessages {
 	 * Strings.messageSamplesRestored,
 	 * Strings.headingSomeSamplesNotRestored,
 	 * Strings.messageCountSamplesNotRestored),
-	 * TRAVEL_ENTRY(Strings.entityTravelEntries,
-	 * Strings.headingNoTravelEntriesSelected,
-	 * Strings.messageNoTravelEntriesSelected,
-	 * Strings.headingTravelEntriesRestored,
-	 * Strings.messageTravelEntriesRestored,
-	 * Strings.headingSomeTravelEntriesNotRestored,
-	 * Strings.messageCountTravelEntriesNotRestored);
 	 */
 
 	private final String entities;

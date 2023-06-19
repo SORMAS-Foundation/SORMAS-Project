@@ -722,6 +722,7 @@ public interface Strings {
 	String headingSomeEventsNotRestored = "headingSomeEventsNotRestored";
 	String headingSomeImmunizationsNotRestored = "headingSomeImmunizationsNotRestored";
 	String headingSomeSamplesNotRestored = "headingSomeSamplesNotRestored";
+	String headingSomeTravelEntriesNotDeleted = "headingSomeTravelEntriesNotDeleted";
 	String headingSomeTravelEntriesNotRestored = "headingSomeTravelEntriesNotRestored";
 	String headingSormasToSormasCanAcceptContactsWithoutCase = "headingSormasToSormasCanAcceptContactsWithoutCase";
 	String headingSormasToSormasCantShareContactWithoutCase = "headingSormasToSormasCantShareContactWithoutCase";
@@ -1106,6 +1107,7 @@ public interface Strings {
 	String messageCountryDearchived = "messageCountryDearchived";
 	String messageCountryDearchivingNotPossible = "messageCountryDearchivingNotPossible";
 	String messageCountSamplesNotRestored = "messageCountSamplesNotRestored";
+	String messageCountTravelEntriesNotDeleted = "messageCountTravelEntriesNotDeleted";
 	String messageCountTravelEntriesNotRestored = "messageCountTravelEntriesNotRestored";
 	String messageCreateCollectionTask = "messageCreateCollectionTask";
 	String messageDatabaseExportFailed = "messageDatabaseExportFailed";

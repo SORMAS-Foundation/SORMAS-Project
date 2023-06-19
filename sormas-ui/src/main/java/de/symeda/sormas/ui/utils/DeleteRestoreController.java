@@ -55,7 +55,7 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 		String deleteWithReasonConfirmationMessage = String.format(
 			I18nProperties.getString(Strings.confirmationDeleteEntities),
 			entityUuids.size(),
-			I18nProperties.getString(messages.getEntities())) + "<br/>" + getDeleteConfirmationDetails(messages.getEntities(), entityUuids);
+			I18nProperties.getString(messages.getEntities())) + getDeleteConfirmationDetails(messages.getEntities(), entityUuids);
 
 		DeletableUtils.showDeleteWithReasonPopup(
 			deleteWithReasonConfirmationMessage,
@@ -154,7 +154,6 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 						I18nProperties.getString(messages.getMessageCountEntitiesNotDeleted()),
 						String.format("<b>%s</b>", undeletedEntityCount),
 						String.format("<b>%s</b>", HtmlHelper.cleanHtml(undeletedEntitiesString))),
-					//TODO: check if for Contacts this case can exists or not
 					//TODO: change for events -> will be 2 kind of messages based on the exception type
 					I18nProperties.getString(messages.getMessageEntitiesNotDeleted())),
 				ContentMode.HTML);
@@ -191,19 +190,10 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 		case "entityEvents":
 			hasPendingRequest = FacadeProvider.getSormasToSormasEventFacade().hasPendingRequest(entityUuids);
 			break;
-
-		/*
-		 * case "entityImmunizations":
-		 * hasPendingRequest = FacadeProvider.getSormasToSormasImm().hasPendingRequest(entityUuids);
-		 * case "entitySamples":
-		 * hasPendingRequest = FacadeProvider.getSormasToSormasContactFacade().hasPendingRequest(entityUuids);
-		 * case "entityTravelEntries":
-		 * hasPendingRequest = FacadeProvider.getSormasToSormasContactFacade().hasPendingRequest(entityUuids);
-		 */
+		default:
+			break;
 		}
-		//TODO: is default case necessary?
-		//TASK
-		return hasPendingRequest ? "<br/>" + I18nProperties.getString(Strings.messageDeleteWithPendingShareRequest) + "<br/>" : "";
+		return hasPendingRequest ? "<br/> <br/>" + I18nProperties.getString(Strings.messageDeleteWithPendingShareRequest) + "<br/>" : "";
 	}
 
 }

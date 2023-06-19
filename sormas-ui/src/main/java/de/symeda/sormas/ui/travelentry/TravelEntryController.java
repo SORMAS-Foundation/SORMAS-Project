@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
-import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -29,8 +28,8 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.travelentry.components.TravelEntryCreateForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
+import de.symeda.sormas.ui.utils.CoreEntityDeleteMessages;
 import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
-import de.symeda.sormas.ui.utils.DeletableUtils;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.automaticdeletion.DeletionLabel;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
@@ -216,27 +215,13 @@ public class TravelEntryController {
 	}
 
 	public void deleteAllSelectedItems(Collection<TravelEntryIndexDto> selectedRows, Runnable callback) {
-		if (selectedRows.size() == 0) {
-			new Notification(
-				I18nProperties.getString(Strings.headingNoTravelEntriesSelected),
-				I18nProperties.getString(Strings.messageNoTravelEntriesSelected),
-				Notification.Type.WARNING_MESSAGE,
-				false).show(Page.getCurrent());
-		} else {
-			DeletableUtils.showDeleteWithReasonPopup(
-				String.format(I18nProperties.getString(Strings.confirmationDeleteTravelEntries), selectedRows.size()),
-				(deleteDetails) -> {
-					for (TravelEntryIndexDto selectedRow : selectedRows) {
-						FacadeProvider.getTravelEntryFacade().delete(selectedRow.getUuid(), deleteDetails);
-					}
-					callback.run();
-					new Notification(
-						I18nProperties.getString(Strings.headingTravelEntriesDeleted),
-						I18nProperties.getString(Strings.messageTravelEntriesDeleted),
-						Notification.Type.HUMANIZED_MESSAGE,
-						false).show(Page.getCurrent());
-				});
-		}
+
+		ControllerProvider.getDeleteRestoreController()
+			.deleteAllSelectedItems(
+				selectedRows.stream().map(TravelEntryIndexDto::getUuid).collect(Collectors.toList()),
+				FacadeProvider.getTravelEntryFacade(),
+				CoreEntityDeleteMessages.TRAVEL_ENTRY,
+				callback);
 	}
 
 	public void restoreSelectedTravelEntries(Collection<? extends TravelEntryIndexDto> selectedRows, Runnable callback) {
