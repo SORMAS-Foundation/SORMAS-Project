@@ -766,21 +766,17 @@
 						<artifactId>jboss-transaction-api_1.2_spec</artifactId>
 						<!-- Payara module: jakarta.transaction-api -->
 					</exclusion>
+					<exclusion>
+						<groupId>com.sun.xml.fastinfoset</groupId>
+						<artifactId>FastInfoset</artifactId>
+						<!-- Optional for jaxb-runtime and currently not needed -->
+					</exclusion>
+					<exclusion>
+						<groupId>org.jvnet.staxex</groupId>
+						<artifactId>stax-ex</artifactId>
+						<!-- Optional for jaxb-runtime and currently not needed -->
+					</exclusion>
 				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>com.sun.xml.fastinfoset</groupId>
-				<artifactId>FastInfoset</artifactId>
-				<version>1.2.18</version>
-				<scope>provided</scope>
-				<!-- Dependency of hibernate-core - optional for jaxb-runtime and currently excluded -->
-			</dependency>
-			<dependency>
-				<groupId>org.jvnet.staxex</groupId>
-				<artifactId>stax-ex</artifactId>
-				<version>1.8.3</version>
-				<scope>provided</scope>
-				<!-- Dependency of hibernate-core - optional for jaxb-runtime and currently excluded -->
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>
@@ -1208,14 +1204,6 @@
 				<artifactId>junit-jupiter</artifactId>
 				<version>1.17.6</version>
 				<scope>test</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>org.jboss.weld.se</groupId>
-				<artifactId>weld-se-core</artifactId>
-				<version>3.1.9.Final</version>
-				<scope>test</scope>
-				<!-- Used by cdi-test-core -->
 			</dependency>
 
 			<dependency>
