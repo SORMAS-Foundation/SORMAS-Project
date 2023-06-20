@@ -34,7 +34,7 @@
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<swagger.version>2.2.8</swagger.version>
 		<bouncycastle.version>1.70</bouncycastle.version>
-		<keycloak.version>21.0.1</keycloak.version>
+		<keycloak.version>21.1.1</keycloak.version>
 		<resteasy.version>5.0.7.Final</resteasy.version>
 		<kotlin-stdlib.version>1.6.20</kotlin-stdlib.version>
 		<xdocreport.version>2.0.4</xdocreport.version>
