@@ -76,7 +76,7 @@ dependencies {
 	implementation  'com.detectlanguage:detectlanguage:1.1.0'
 
 	implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.9.3'
-	implementation group: 'net.lingala.zip4j', name: 'zip4j', version: '1.2.4'
+	implementation group: 'net.lingala.zip4j', name: 'zip4j', version: '2.11.5'
 
 	implementation group: 'com.github.cafdataprocessing', name: 'language-detection', version: '3.5.2-1079'
 	implementation group: 'org.apache.tika', name: 'tika-langdetect-optimaize', version: '2.6.0'
