@@ -36,7 +36,7 @@
 		<bouncycastle.version>1.70</bouncycastle.version>
 		<keycloak.version>21.0.1</keycloak.version>
 		<resteasy.version>5.0.7.Final</resteasy.version>
-		<kotlin-stdlib.version>1.6.20</kotlin-stdlib.version>
+		<kotlin-stdlib.version>1.8.22</kotlin-stdlib.version>
 		<xdocreport.version>2.0.4</xdocreport.version>
 		<docx4j.version>8.3.8</docx4j.version>
 		<archunit.version>1.0.1</archunit.version>
