@@ -97,7 +97,7 @@ public class LayoutWithSidePanel extends CustomLayout {
 		if (editAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
 			editComponent.addToActiveButtonsList(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
 			disableWithViewAllow();
-		} else if (editAllowed.equals(EditPermissionType.REFUSED)) {
+		} else if (editAllowed.equals(EditPermissionType.OUTSIDE_JURISDICTION) || editAllowed.equals(EditPermissionType.REFUSED)) {
 			disableWithViewAllow();
 		} else if (editAllowed.equals(EditPermissionType.WITHOUT_OWNERSHIP)) {
 			editComponent.addToActiveButtonsList(CommitDiscardWrapperComponent.DELETE_RESTORE);

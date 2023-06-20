@@ -1637,7 +1637,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 	public EditPermissionType getEditPermissionType(Case caze) {
 
 		if (!inJurisdictionOrOwned(caze)) {
-			return EditPermissionType.REFUSED;
+			return EditPermissionType.OUTSIDE_JURISDICTION;
 		}
 
 		if (sormasToSormasShareInfoService.isCaseOwnershipHandedOver(caze)

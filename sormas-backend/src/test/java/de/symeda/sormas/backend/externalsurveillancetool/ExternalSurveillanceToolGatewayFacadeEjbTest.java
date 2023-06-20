@@ -601,7 +601,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 			contentAsBytes);
 
 		CaseDataDto duplicateCase = creator.createCase(user.toReference(), person.toReference(), rdcf);
-		getCaseFacade().deleteCaseAsDuplicate(duplicateCase.getUuid(), caze.getUuid());
+		getCaseFacade().deleteAsDuplicate(duplicateCase.getUuid(), caze.getUuid());
 
 		final ContactDto resultingContact = creator.createContact(user.toReference(), person.toReference(), caze);
 		assertNull(resultingContact.getRegion());
