@@ -19,3 +19,14 @@ Feature: Survnet tests
     Then I wait 40 seconds for system reaction
     Then I check if date of report in SORMAS generated XML file is correct
     And I check if sex in SORMAS generated XML file is correct
+
+  @tmsLink=SORQA-1006
+  Scenario: XML Check of simple Test Case from SORMAS to "Meldesoftware"
+    Given I log in as a Survnet
+    When I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with mandatory data only and specific sex for Survnet DE
+    And I click on Send to reporting tool button on Edit Case page
+    And I collect case external UUID from Edit Case page
+    Then I wait 40 seconds for system reaction
+    And I check the SORMAS generated XML file structure

@@ -1,9 +1,6 @@
 package org.sormas.e2etests.steps.web.application.survnet;
 
 import cucumber.api.java8.En;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.jdom2.Document;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
@@ -11,6 +8,15 @@ import org.sormas.e2etests.helpers.parsers.XMLParser;
 import org.sormas.e2etests.steps.web.application.cases.CreateNewCaseSteps;
 import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
 import org.testng.asserts.SoftAssert;
+
+import javax.inject.Inject;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.sormas.e2etests.helpers.comparison.XMLComparison.compareXMLFiles;
+import static org.sormas.e2etests.helpers.comparison.XMLComparison.extractDiffNodes;
 
 @Slf4j
 public class SurvNetSteps implements En {
@@ -49,6 +55,35 @@ public class SurvNetSteps implements En {
           softly.assertEquals(sex, expectedSex, "Sex is incorrect!");
           softly.assertAll();
           System.out.println(CreateNewCaseSteps.survnetCase.getExternalId());
+        });
+
+    And(
+        "^I check the SORMAS generated XML file structure$",
+        () -> {
+          List<String> diffs =
+              compareXMLFiles(
+                  "src/main/resources/controlXml.xml", "src/main/resources/testXml.xml");
+          List<String> nodes = extractDiffNodes(diffs, "/[Transport][^\\s]+");
+
+          softly.assertEquals(nodes.size(), 10, "Number of differences is incorrect!");
+          softly.assertAll();
+
+          List<String> expectedList = new ArrayList<>();
+          expectedList.add("/Transport[1]/@CreatedAt");
+          expectedList.add("/Transport[1]/@GuidTransport");
+          expectedList.add("/Transport[1]/@TransportNumber");
+          expectedList.add("/Transport[1]/CVD[1]/@ChangedAt");
+          expectedList.add("/Transport[1]/CVD[1]/@GuidRecord");
+          expectedList.add("/Transport[1]/CVD[1]/@ReportingDate");
+          expectedList.add("/Transport[1]/CVD[1]/@Token");
+          expectedList.add("/Transport[1]/CVD[1]/Field[1]/@Value");
+          expectedList.add("/Transport[1]/CVD[1]/Track[1]/@GuidTrack");
+          expectedList.add("/Transport[1]/CVD[1]/Track[1]/@TrackedAt");
+
+          softly.assertTrue(
+              expectedList.equals(nodes),
+              "The expected differences in the XML files are different");
+          softly.assertAll();
         });
   }
 
