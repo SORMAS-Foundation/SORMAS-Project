@@ -1126,7 +1126,7 @@
 			<dependency>
 				<groupId>org.geotools</groupId>
 				<artifactId>gt-shapefile</artifactId>
-				<version>28.2</version>
+				<version>29.1</version>
 				<!-- 
 				  Kept as compile dependency because Ant collect-serverlibs fails:
 				  sormas-base\build.xml:53: org.apache.maven.artifact.InvalidArtifactRTException: For artifact {org.osgi:org.osgi.annotation:null:jar}: The version cannot be empty.
