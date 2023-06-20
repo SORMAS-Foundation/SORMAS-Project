@@ -1223,7 +1223,7 @@
 			<dependency>
 				<groupId>de.hilling.junit.cdi</groupId>
 				<artifactId>cdi-test-core</artifactId>
-				<version>3.4.0</version>
+				<version>4.3.0</version>
 				<scope>test</scope>
 			</dependency>
 
