@@ -2,7 +2,7 @@ import com.github.sherter.googlejavaformatgradleplugin.GoogleJavaFormat
 
 plugins {
 	id "com.github.sherter.google-java-format" version "0.9"
-	id "com.diffplug.spotless" version "5.12.4"
+	id "com.diffplug.spotless" version "6.19.0"
 	id "ua.eshepelyuk.ManifestClasspath" version "1.0.0"
 }
 
