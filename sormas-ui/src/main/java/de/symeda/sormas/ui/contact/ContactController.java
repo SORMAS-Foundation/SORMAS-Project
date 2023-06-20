@@ -763,7 +763,8 @@ public class ContactController {
 			boolean contactOfficerChange = district != null ? form.getContactOfficerCheckBox().getValue() : false;
 
 			List<ContactIndexDto> selectedContactsCpy = new ArrayList<>(selectedContacts);
-			new BulkOperationHandler<ContactIndexDto>().doBulkOperation(
+			BulkOperationHandler.<ContactIndexDto> forBulkEdit()
+				.doBulkOperation(
 				selectedEntries -> contactFacade.saveBulkContacts(
 					selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
 					updatedBulkEditData,

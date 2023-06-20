@@ -193,7 +193,12 @@ public enum ArchiveMessages {
 	private final String headingNoEntitySelected;
 	private final String messageNoEntitySelected;
 
+	private final String headingConfirmationArchiving = Strings.headingConfirmArchiving;
 	private final String headingConfirmationDearchiving = Strings.headingConfirmDearchiving;
+	private final String messageAllEntitiesArchived = Strings.messageAllEntitiesArchived;
+	private final String messageSomeEntitiesArchived = Strings.messageSomeEntitiesArchived;
+	private final String messageAllEntitiesDearchived = Strings.messageAllEntitiesDearchived;
+	private final String messageSomeEntitiesDearchived = Strings.messageSomeEntitiesDearchived;
 
 	ArchiveMessages(
 		String headingArchiveEntity,
@@ -258,7 +263,27 @@ public enum ArchiveMessages {
 		return messageNoEntitySelected;
 	}
 
+	public String getHeadingConfirmationArchiving() {
+		return headingConfirmationArchiving;
+	}
+
 	public String getHeadingConfirmationDearchiving() {
 		return headingConfirmationDearchiving;
+	}
+
+	public String getMessageAllEntitiesArchived() {
+		return messageAllEntitiesArchived;
+	}
+
+	public String getMessageSomeEntitiesArchived() {
+		return messageSomeEntitiesArchived;
+	}
+
+	public String getMessageAllEntitiesDearchived() {
+		return messageAllEntitiesDearchived;
+	}
+
+	public String getMessageSomeEntitiesDearchived() {
+		return messageSomeEntitiesDearchived;
 	}
 }

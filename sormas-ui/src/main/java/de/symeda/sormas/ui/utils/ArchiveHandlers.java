@@ -88,8 +88,8 @@ public final class ArchiveHandlers {
 		return new CoreEntityArchiveHandler<>(FacadeProvider.getTravelEntryFacade(), ArchiveMessages.TRAVEL_ENTRY);
 	}
 
-	public static ArchiveHandler<TaskDto, TaskFacade> forTask() {
-		return new ArchiveHandler<>(FacadeProvider.getTaskFacade(), ArchiveMessages.TASK);
+	public static TaskArchiveHandler forTask() {
+		return new TaskArchiveHandler();
 	}
 
 	public static <T extends InfrastructureDto, F extends InfrastructureFacade<T, ?, ?, ?>> InfrastructureArchiveHandler<T, F> forInfrastructure(
@@ -98,7 +98,7 @@ public final class ArchiveHandlers {
 		return new InfrastructureArchiveHandler<>(facade, messages);
 	}
 
-	public static class ArchiveHandler<T extends EntityDto, F extends ArchivableFacade> implements IArchiveHandler<T> {
+	public static abstract class ArchiveHandler<T extends EntityDto, F extends ArchivableFacade> implements IArchiveHandler<T> {
 
 		protected final F entityFacade;
 
@@ -223,6 +223,11 @@ public final class ArchiveHandlers {
 
 			return true;
 		}
+
+		@Override
+		public String getArchiveButtonCaptionProperty(boolean archived) {
+			return archived ? Captions.actionDearchiveCoreEntity : Captions.actionArchiveCoreEntity;
+		}
 	}
 
 	private static final class CaseArchiveHandler extends CoreEntityArchiveHandler<CaseDataDto, CaseFacade> {
@@ -272,6 +277,18 @@ public final class ArchiveHandlers {
 		}
 	}
 
+	public static class TaskArchiveHandler extends ArchiveHandler<TaskDto, TaskFacade> {
+
+		protected TaskArchiveHandler() {
+			super(FacadeProvider.getTaskFacade(), ArchiveMessages.TASK);
+		}
+
+		@Override
+		public String getArchiveButtonCaptionProperty(boolean archived) {
+			return archived ? Captions.actionDearchiveCoreEntity : Captions.actionArchiveCoreEntity;
+		}
+	}
+
 	public static class InfrastructureArchiveHandler<T extends InfrastructureDto, F extends InfrastructureFacade<T, ?, ?, ?>>
 		extends ArchiveHandler<T, F> {
 
@@ -300,6 +317,11 @@ public final class ArchiveHandlers {
 		@Override
 		public boolean isArchived(T entity) {
 			return entity.isArchived();
+		}
+
+		@Override
+		public String getArchiveButtonCaptionProperty(boolean archived) {
+			return archived ? Captions.actionDearchiveInfrastructure : Captions.actionArchiveInfrastructure;
 		}
 	}
 }

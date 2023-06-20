@@ -968,7 +968,8 @@ public class EventController {
 			boolean eventManagementStatusChange = form.getEventManagementStatusCheckbox().getValue();
 
 			List<EventIndexDto> selectedEventsCpy = new ArrayList<>(selectedEvents);
-			new BulkOperationHandler<EventIndexDto>().doBulkOperation(
+			BulkOperationHandler.<EventIndexDto> forBulkEdit()
+				.doBulkOperation(
 				selectedEntries -> eventFacade.saveBulkEvents(
 					selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
 					updatedTempEvent,

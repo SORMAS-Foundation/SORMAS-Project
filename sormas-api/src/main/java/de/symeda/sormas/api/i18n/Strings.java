@@ -987,6 +987,8 @@ public interface Strings {
 	String messageAllCasesLinkedToEvent = "messageAllCasesLinkedToEvent";
 	String messageAllContactsAlreadyInEvent = "messageAllContactsAlreadyInEvent";
 	String messageAllContactsLinkedToEvent = "messageAllContactsLinkedToEvent";
+	String messageAllEntitiesArchived = "messageAllEntitiesArchived";
+	String messageAllEntitiesDearchived = "messageAllEntitiesDearchived";
 	String messageAlreadyEventParticipant = "messageAlreadyEventParticipant";
 	String messageAnimalContactsHint = "messageAnimalContactsHint";
 	String messageArchiveUndoneReasonMandatory = "messageArchiveUndoneReasonMandatory";
@@ -1258,6 +1260,8 @@ public interface Strings {
 	String messageSamplesRestored = "messageSamplesRestored";
 	String messageSelectedPeriodTooLong = "messageSelectedPeriodTooLong";
 	String messageSetContactRegionAndDistrict = "messageSetContactRegionAndDistrict";
+	String messageSomeEntitiesArchived = "messageSomeEntitiesArchived";
+	String messageSomeEntitiesDearchived = "messageSomeEntitiesDearchived";
 	String messageSormasToSormasSimilarCaseFound = "messageSormasToSormasSimilarCaseFound";
 	String messageSormasToSormasSimilarCaseToContactFound = "messageSormasToSormasSimilarCaseToContactFound";
 	String messageSormasToSormasSimilarContactFound = "messageSormasToSormasSimilarContactFound";

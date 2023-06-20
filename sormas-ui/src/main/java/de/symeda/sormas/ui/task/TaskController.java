@@ -217,7 +217,8 @@ public class TaskController {
 			TaskFacade taskFacade = FacadeProvider.getTaskFacade();
 
 			List<TaskIndexDto> selectedTasksCpy = new ArrayList<>(selectedTasks);
-			new BulkOperationHandler<TaskIndexDto>().doBulkOperation(
+			BulkOperationHandler.<TaskIndexDto> forBulkEdit()
+				.doBulkOperation(
 				selectedEntries -> taskFacade.saveBulkTasks(
 					selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
 					updatedTempTask,

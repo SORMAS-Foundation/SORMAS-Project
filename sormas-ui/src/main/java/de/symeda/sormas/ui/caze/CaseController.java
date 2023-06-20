@@ -1042,7 +1042,8 @@ public class CaseController {
 					I18nProperties.getCaption(Captions.caseTransferCases),
 					I18nProperties.getCaption(Captions.caseEditData),
 					500,
-					e -> new BulkOperationHandler<T>().doBulkOperation(
+					e -> BulkOperationHandler.<T> forBulkEdit()
+						.doBulkOperation(
 						selectedEntries -> caseFacade.saveBulkEditWithFacilities(
 							selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
 							updatedBulkEditData,
@@ -1055,7 +1056,8 @@ public class CaseController {
 						selectedCasesCpy,
 						bulkOperationCallback(caseGrid, popupWindow)));
 			} else {
-				new BulkOperationHandler<T>().doBulkOperation(
+				BulkOperationHandler.<T> forBulkEdit()
+					.doBulkOperation(
 					selectedEntries -> caseFacade.saveBulkCase(
 						selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
 						updatedBulkEditData,
