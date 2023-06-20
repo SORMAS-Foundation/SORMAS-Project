@@ -56,3 +56,8 @@ updates:
     open-pull-requests-limit: 100
     schedule:
       interval: "daily"
+    # Only consider mayor updates that likely include new functionality.
+    # Minor updates and patches are not relevant for the testing module.
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-minor","version-update:semver-patch"]
