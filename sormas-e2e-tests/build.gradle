@@ -71,8 +71,8 @@ dependencies {
 	implementation  group: 'org.testng', name: 'testng', version: '6.14.3'
 	implementation  'com.opencsv:opencsv:5.6'
 
-	implementation 'org.apache.poi:poi:4.0.0'
-	implementation 'org.apache.poi:poi-ooxml:4.0.0'
+	implementation 'org.apache.poi:poi:5.2.3'
+	implementation 'org.apache.poi:poi-ooxml:5.2.3'
 	implementation  'com.detectlanguage:detectlanguage:1.1.0'
 
 	implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.9.3'
@@ -82,7 +82,7 @@ dependencies {
 	implementation group: 'org.apache.tika', name: 'tika-langdetect-optimaize', version: '2.6.0'
 	implementation group: 'org.apache.tika', name: 'tika-langdetect', version: '2.6.0', ext: 'pom'
 	implementation group: 'org.apache.tika', name: 'tika-core', version: '2.6.0'
-	implementation group: 'org.apache.poi', name: 'poi', version: '3.17'
+	implementation group: 'org.apache.poi', name: 'poi', version: '5.2.3'
 	implementation group: 'ru.yandex.qatools.ashot', name: 'ashot', version: '1.5.4'
 	implementation group: 'org.jdom', name: 'jdom', version: '2.0.2'
 
