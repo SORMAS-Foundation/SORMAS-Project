@@ -35,7 +35,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseType;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.TypeOfPlace;
@@ -49,7 +48,6 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name = "activityascase")
-@Audited
 public class ActivityAsCase extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -5570515874416024602L;

@@ -10,13 +10,11 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
-import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 @Entity(name = DiseaseConfiguration.TABLE_NAME)
-@Audited
 @AuditIgnore(retainWrites = true)
 public class DiseaseConfiguration extends AbstractDomainObject {
 

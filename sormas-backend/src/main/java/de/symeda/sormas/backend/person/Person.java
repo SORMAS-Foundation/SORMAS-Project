@@ -42,7 +42,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.externaldata.HasExternalData;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
@@ -74,7 +73,6 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 
 @Entity
-@Audited
 public class Person extends AbstractDomainObject implements HasExternalData {
 
 	private static final long serialVersionUID = -1735038738114840087L;

@@ -101,7 +101,7 @@ public class CaseFacadeEditRightsTest extends AbstractBeanTest {
 		CaseDataDto notOwnedCase = createCase(rdcf1, districtUser1);
 
 		assertThat(getCaseFacade().getEditPermissionType(ownedCase.getUuid()), is(EditPermissionType.ALLOWED));
-		assertThat(getCaseFacade().getEditPermissionType(notOwnedCase.getUuid()), is(EditPermissionType.REFUSED));
+		assertThat(getCaseFacade().getEditPermissionType(notOwnedCase.getUuid()), is(EditPermissionType.OUTSIDE_JURISDICTION));
 	}
 
 	@Test
@@ -112,7 +112,7 @@ public class CaseFacadeEditRightsTest extends AbstractBeanTest {
 		CaseDataDto notEditableCase = createCase(rdcf1, districtUser1, rdcf1);
 
 		assertThat(getCaseFacade().getEditPermissionType(editableCase.getUuid()), is(EditPermissionType.ALLOWED));
-		assertThat(getCaseFacade().getEditPermissionType(notEditableCase.getUuid()), is(EditPermissionType.REFUSED));
+		assertThat(getCaseFacade().getEditPermissionType(notEditableCase.getUuid()), is(EditPermissionType.OUTSIDE_JURISDICTION));
 	}
 
 	@Test
@@ -123,7 +123,7 @@ public class CaseFacadeEditRightsTest extends AbstractBeanTest {
 		CaseDataDto notEditableCase = createCase(rdcf1, districtUser1);
 
 		assertThat(getCaseFacade().getEditPermissionType(editableCase.getUuid()), is(EditPermissionType.ALLOWED));
-		assertThat(getCaseFacade().getEditPermissionType(notEditableCase.getUuid()), is(EditPermissionType.REFUSED));
+		assertThat(getCaseFacade().getEditPermissionType(notEditableCase.getUuid()), is(EditPermissionType.OUTSIDE_JURISDICTION));
 	}
 
 	@Test
@@ -137,7 +137,7 @@ public class CaseFacadeEditRightsTest extends AbstractBeanTest {
 
 		assertThat(getCaseFacade().getEditPermissionType(editableCaseByPlaceOfStay.getUuid()), is(EditPermissionType.ALLOWED));
 		assertThat(getCaseFacade().getEditPermissionType(editableCaseByJurisdiction.getUuid()), is(EditPermissionType.ALLOWED));
-		assertThat(getCaseFacade().getEditPermissionType(notEditableCase.getUuid()), is(EditPermissionType.REFUSED));
+		assertThat(getCaseFacade().getEditPermissionType(notEditableCase.getUuid()), is(EditPermissionType.OUTSIDE_JURISDICTION));
 	}
 
 	@Test
@@ -151,7 +151,7 @@ public class CaseFacadeEditRightsTest extends AbstractBeanTest {
 
 		assertThat(getCaseFacade().getEditPermissionType(editableCaseByPlaceOfStay.getUuid()), is(EditPermissionType.ALLOWED));
 		assertThat(getCaseFacade().getEditPermissionType(editableCaseByJurisdiction.getUuid()), is(EditPermissionType.ALLOWED));
-		assertThat(getCaseFacade().getEditPermissionType(notEditableCase.getUuid()), is(EditPermissionType.REFUSED));
+		assertThat(getCaseFacade().getEditPermissionType(notEditableCase.getUuid()), is(EditPermissionType.OUTSIDE_JURISDICTION));
 	}
 
 	@Test
@@ -164,8 +164,8 @@ public class CaseFacadeEditRightsTest extends AbstractBeanTest {
 		CaseDataDto notEditableCase = createCase(rdcf1, districtUser1, rdcf1);
 
 		assertThat(getCaseFacade().getEditPermissionType(editableCaseByPlaceOfStay.getUuid()), is(EditPermissionType.ALLOWED));
-		assertThat(getCaseFacade().getEditPermissionType(notEditableCaseByJurisdiction.getUuid()), is(EditPermissionType.REFUSED));
-		assertThat(getCaseFacade().getEditPermissionType(notEditableCase.getUuid()), is(EditPermissionType.REFUSED));
+		assertThat(getCaseFacade().getEditPermissionType(notEditableCaseByJurisdiction.getUuid()), is(EditPermissionType.OUTSIDE_JURISDICTION));
+		assertThat(getCaseFacade().getEditPermissionType(notEditableCase.getUuid()), is(EditPermissionType.OUTSIDE_JURISDICTION));
 	}
 
 	private CaseDataDto createCase(TestDataCreator.RDCF responsibleRdcf, UserDto reportingUser) {

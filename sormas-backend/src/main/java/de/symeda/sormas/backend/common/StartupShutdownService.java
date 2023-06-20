@@ -123,7 +123,6 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class StartupShutdownService {
 
 	static final String SORMAS_SCHEMA = "sql/sormas_schema.sql";
-	static final String AUDIT_SCHEMA = "sql/sormas_audit_schema.sql";
 	static final String VERSIONING_FUNCTION = "sql/temporal_tables/versioning_function.sql";
 	private static final Pattern SQL_COMMENT_PATTERN = Pattern.compile("^\\s*(--.*)?");
 	//@formatter:off
@@ -137,9 +136,6 @@ public class StartupShutdownService {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME_AUDITLOG)
-	private EntityManager emAudit;
-
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
 	@EJB
@@ -214,13 +210,10 @@ public class StartupShutdownService {
 
 		checkDatabaseConfig(em);
 
-		createVersioningFunction(UpdateQueryTransactionWrapper.TargetDb.SORMAS);
+		createVersioningFunction();
 
 		logger.info("Initiating automatic database update of main database...");
-		updateDatabase(UpdateQueryTransactionWrapper.TargetDb.SORMAS, em, SORMAS_SCHEMA);
-
-		logger.info("Initiating automatic database update of audit database...");
-		updateDatabase(UpdateQueryTransactionWrapper.TargetDb.AUDIT, emAudit, AUDIT_SCHEMA);
+		updateDatabase(em, SORMAS_SCHEMA);
 
 		I18nProperties.setDefaultLanguage(Language.fromLocaleString(configFacade.getCountryLocale()));
 
@@ -689,7 +682,7 @@ public class StartupShutdownService {
 		return versionBegin.matches(versionRegexp);
 	}
 
-	private void updateDatabase(UpdateQueryTransactionWrapper.TargetDb db, EntityManager entityManager, String schemaFileName) {
+	private void updateDatabase(EntityManager entityManager, String schemaFileName) {
 
 		logger.info("Starting automatic database update...");
 
@@ -732,7 +725,7 @@ public class StartupShutdownService {
 				// Perform the current update when the INSERT INTO schema_version statement is reached
 				if (schemaLineVersion != null) {
 					logger.info("Updating database to version {}...", schemaLineVersion);
-					updateQueryTransactionWrapper.executeUpdate(db, nextUpdateBuilder.toString());
+					updateQueryTransactionWrapper.executeUpdate(nextUpdateBuilder.toString());
 					nextUpdateBuilder.setLength(0);
 				}
 			}
@@ -744,7 +737,7 @@ public class StartupShutdownService {
 		}
 	}
 
-	private void createVersioningFunction(UpdateQueryTransactionWrapper.TargetDb db) {
+	private void createVersioningFunction() {
 
 		logger.info("Starting create versioning function...");
 
@@ -754,7 +747,7 @@ public class StartupShutdownService {
 			// escape for hibernate
 			// note: This will also escape ':' in pure strings, where a replacement may cause problems
 			versioningFunction = versioningFunction.replaceAll(":", "\\\\:");
-			updateQueryTransactionWrapper.executeUpdate(db, versioningFunction);
+			updateQueryTransactionWrapper.executeUpdate(versioningFunction);
 		} catch (IOException e) {
 			logger.error("Could not load {} file. Create versioning function not performed.", VERSIONING_FUNCTION);
 			throw new UncheckedIOException(e);
@@ -1024,29 +1017,15 @@ public class StartupShutdownService {
 	@Stateless
 	public static class UpdateQueryTransactionWrapper {
 
-		enum TargetDb {
-			SORMAS,
-			AUDIT
-		}
-
 		@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 		private EntityManager em;
-		@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME_AUDITLOG)
-		private EntityManager emAudit;
 
 		/**
 		 * Executes the passed SQL update in a new JTA transaction.
 		 */
 		@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-		public int executeUpdate(TargetDb db, String sqlStatement) {
-			switch (db) {
-			case SORMAS:
-				return em.createNativeQuery(sqlStatement).executeUpdate();
-			case AUDIT:
-				return emAudit.createNativeQuery(sqlStatement).executeUpdate();
-			default:
-				throw new IllegalStateException("Unexpected value: " + db);
-			}
+		public int executeUpdate(String sqlStatement) {
+			return em.createNativeQuery(sqlStatement).executeUpdate();
 		}
 	}
 }
