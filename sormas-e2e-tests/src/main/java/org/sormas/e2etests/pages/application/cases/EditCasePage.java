@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.pages.application.cases;
 
+import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.By;
 
 public class EditCasePage {
@@ -392,6 +393,11 @@ public class EditCasePage {
   public static final By ERROR_DESCRIPTION_REQUEST_PROCESSED =
       By.xpath(
           "//*[contains(text(),'Die Anfrage wurde bereits bearbeitet. Bitte laden Sie die Seite neu, um die neuesten \u00C4nderungen zu sehen.')]");
+  public static final By ERROR_REVOKE_IN_HANDOVER_HEADER_DE =
+      By.xpath("//*[contains(text(),'Freigabeanfrage nicht gefunden')]");
+  public static final By ERROR_REVOKE_DESCRIPTION_REQUEST_PROCESSED =
+      By.xpath(
+          "//*[contains(text(),'Die Freigabeanfrage konnte nicht gefunden werden. Sie wurde entweder vom Quellsystem zur\u00FCckgezogen oder von jemand anderem abgelehnt. Bitte laden Sie die Seite neu, um die neuesten \u00C4nderungen zu sehen.')]");
 
   public static By getPreExistingConditionCombobox_DE(String id) {
     return By.xpath(
@@ -409,6 +415,11 @@ public class EditCasePage {
 
   public static By getEditTaskButtonByNumber(Integer number) {
     return By.cssSelector(String.format("#edit%x", number));
+  }
+
+  @NotNull
+  public static By getVaccinationCardVaccinationNameByIndex(Integer idx) {
+    return By.xpath(String.format("(//div[contains(text(),'Impfstoffname:')])[%x]", idx));
   }
 
   public static final By DELETE_VACCINATION_REASON_POPUP_DE_VERSION =
@@ -435,4 +446,9 @@ public class EditCasePage {
       By.id("ExternalSurveillanceToolGateway.send");
   public static final By REPORTING_TOOL_MESSAGE =
       By.xpath("//div[@class='v-Notification humanized v-Notification-humanized']");
+  public static final By LAB_MESSAGE_WINDOW_HEADER_DE =
+      By.xpath(
+          "//div[contains(@class, 'popupContent')]//div[contains(@class, 'v-window-outerheader')]//div[contains(text(), 'Meldung')]");
+  public static final By WINDOW_CLOSE_BUTTON =
+      By.xpath("//div[contains(@class, 'v-window-closebox')]");
 }

@@ -1296,7 +1296,7 @@ public class EventDirectorySteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_POPUP_BUTTON);
           TimeUnit.SECONDS.sleep(2); // wait for spinner
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(80);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
         });
 
     When(
@@ -1304,7 +1304,7 @@ public class EventDirectorySteps implements En {
         (String option) -> {
           webDriverHelpers.selectFromCombobox(EVENT_PARTICIPANT_DISPLAY_FILTER_COMBOBOX, option);
           TimeUnit.SECONDS.sleep(3); // wait for reaction
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
         });
 
     When(

@@ -30,12 +30,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.sample.SimpleTestResultType;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 @Entity
-@Audited
 public class AdditionalTest extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -7306267901413644171L;

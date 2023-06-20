@@ -29,14 +29,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import de.symeda.sormas.api.travelentry.TravelEntryDto;
-import de.symeda.sormas.backend.travelentry.TravelEntry;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.area.AreaType;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonCriteria;
@@ -44,6 +44,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonExportDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -521,8 +522,8 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	private void assertPseudonymised(PersonDto person) {
 
 		assertThat(person.isPseudonymized(), is(true));
-		assertThat(person.getFirstName(), isEmptyString());
-		assertThat(person.getLastName(), isEmptyString());
+		assertThat(person.getFirstName(), is(I18nProperties.getCaption(Captions.inaccessibleValue)));
+		assertThat(person.getLastName(), is(I18nProperties.getCaption(Captions.inaccessibleValue)));
 		assertThat(person.getBirthdateDD(), is(nullValue()));
 
 		assertThat(person.getAddress().getRegion().getCaption(), is("Region 1"));

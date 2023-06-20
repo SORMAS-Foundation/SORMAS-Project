@@ -20,7 +20,6 @@ package de.symeda.sormas.backend.util;
 public interface ModelConstants {
 
 	String PERSISTENCE_UNIT_NAME = "SormasPU";
-	String PERSISTENCE_UNIT_NAME_AUDITLOG = "auditlogPU";
 
 	/**
 	 * A query hint to make JPA entities loaded as read-only to avoid caching and dirty checks. Usage:<br />

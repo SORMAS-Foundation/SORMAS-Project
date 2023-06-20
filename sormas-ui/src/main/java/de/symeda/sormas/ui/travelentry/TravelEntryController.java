@@ -184,6 +184,7 @@ public class TravelEntryController {
 			UserRight.TRAVEL_ENTRY_EDIT,
 			null,
 			UserRight.TRAVEL_ENTRY_DELETE,
+			UserRight.TRAVEL_ENTRY_ARCHIVE,
 			FacadeProvider.getTravelEntryFacade().getEditPermissionType(travelEntryUuid),
 			travelEntry.isInJurisdiction());
 

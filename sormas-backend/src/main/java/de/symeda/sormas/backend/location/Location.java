@@ -30,7 +30,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 
-import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.infrastructure.area.AreaType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonAddressType;
@@ -46,7 +45,6 @@ import de.symeda.sormas.backend.infrastructure.subcontinent.Subcontinent;
 import de.symeda.sormas.backend.person.Person;
 
 @Entity
-@Audited
 public class Location extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 392776645668778670L;

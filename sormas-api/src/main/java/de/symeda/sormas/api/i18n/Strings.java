@@ -284,10 +284,12 @@ public interface Strings {
 	String errorCaseDuplicateDeletion = "errorCaseDuplicateDeletion";
 	String errorCaseMerging = "errorCaseMerging";
 	String errorCaseNotEditable = "errorCaseNotEditable";
+	String errorCaseNotEditableOutsideJurisdiction = "errorCaseNotEditableOutsideJurisdiction";
 	String errorConstraintViolation = "errorConstraintViolation";
 	String errorContactDuplicateDeletion = "errorContactDuplicateDeletion";
 	String errorContactMerging = "errorContactMerging";
 	String errorContactNotEditable = "errorContactNotEditable";
+	String errorContactNotEditableOutsideJurisdiction = "errorContactNotEditableOutsideJurisdiction";
 	String errorCreatingTemplateDirectory = "errorCreatingTemplateDirectory";
 	String errorDeleteUserRoleUsedAlone = "errorDeleteUserRoleUsedAlone";
 	String errorDeletingDocument = "errorDeletingDocument";
@@ -656,6 +658,7 @@ public interface Strings {
 	String headingPersonData = "headingPersonData";
 	String headingPersonInformation = "headingPersonInformation";
 	String headingPersonOccupation = "headingPersonOccupation";
+	String headingPickEventGroup = "headingPickEventGroup";
 	String headingPickEventParticipants = "headingPickEventParticipants";
 	String headingPickEventParticipantsIncompleteSelection = "headingPickEventParticipantsIncompleteSelection";
 	String headingPickOrCreateCase = "headingPickOrCreateCase";

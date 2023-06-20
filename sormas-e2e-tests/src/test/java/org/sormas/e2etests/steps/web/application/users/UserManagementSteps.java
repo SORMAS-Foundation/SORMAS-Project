@@ -135,23 +135,23 @@ public class UserManagementSteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               USERS_COUNTER_USER_MANAGEMENT);
+
           Integer numberOfTotalUsers =
               Integer.parseInt(
                   webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
+
           webDriverHelpers.selectFromCombobox(ACTIVE_INACTIVE_COMBOBOX, "Active");
-          //
-          // webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOADING_INDICATOR);
-          //          webDriverHelpers.waitUntilIdentifiedElementDisappear(LOADING_INDICATOR);
+          TimeUnit.SECONDS.sleep(2); // waiting for page loaded
           Integer numberOfActiveUsers =
               Integer.parseInt(
                   webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
+
           webDriverHelpers.selectFromCombobox(ACTIVE_INACTIVE_COMBOBOX, "Inactive");
-          //
-          // webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOADING_INDICATOR);
-          //          webDriverHelpers.waitUntilIdentifiedElementDisappear(LOADING_INDICATOR);
+          TimeUnit.SECONDS.sleep(2); // waiting for page loaded
           Integer numberOfInactiveUsers =
               Integer.parseInt(
                   webDriverHelpers.getTextFromWebElement(USERS_COUNTER_USER_MANAGEMENT));
+
           assertHelpers.assertWithPoll(
               () ->
                   Assert.assertTrue(

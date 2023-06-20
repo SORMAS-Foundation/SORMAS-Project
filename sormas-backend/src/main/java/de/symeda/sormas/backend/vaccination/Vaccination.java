@@ -29,8 +29,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import de.symeda.auditlog.api.Audited;
-import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.caze.Vaccine;
@@ -42,7 +40,6 @@ import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.user.User;
 
 @Entity
-@Audited
 public class Vaccination extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 5143588610408312351L;
@@ -100,7 +97,6 @@ public class Vaccination extends AbstractDomainObject {
 
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinColumn(nullable = false)
-	@AuditedIgnore
 	public HealthConditions getHealthConditions() {
 		return healthConditions;
 	}

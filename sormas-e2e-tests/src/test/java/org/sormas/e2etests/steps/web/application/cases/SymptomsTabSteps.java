@@ -282,6 +282,12 @@ public class SymptomsTabSteps implements En {
               DATE_OF_SYMPTOM_INPUT,
               DATE_FORMATTER_DE.format(LocalDate.now().minusDays(numberOfDays)));
         });
+
+    And(
+        "^I change symptom onset report date to one day before the report date on Symptoms tab$",
+        () -> {
+          fillDateOfSymptomDE(LocalDate.now().minusDays(2), Locale.GERMAN);
+        });
   }
 
   private void FillSymptomsData(Symptoms symptoms) {

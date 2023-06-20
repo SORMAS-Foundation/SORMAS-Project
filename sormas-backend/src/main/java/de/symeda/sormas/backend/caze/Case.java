@@ -44,8 +44,6 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 
-import de.symeda.auditlog.api.Audited;
-import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseIdentificationSource;
@@ -104,7 +102,6 @@ import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.visit.Visit;
 
 @Entity(name = "cases")
-@Audited
 public class Case extends CoreAdo implements SormasToSormasShareable, HasExternalData {
 
 	private static final long serialVersionUID = -2697795184663562129L;
@@ -727,7 +724,6 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 	}
 
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@AuditedIgnore
 	public Symptoms getSymptoms() {
 		if (symptoms == null) {
 			symptoms = new Symptoms();
@@ -797,7 +793,6 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 	// one to one relations
 	// produces an error where two non-xa connections are opened
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@AuditedIgnore
 	public Hospitalization getHospitalization() {
 		if (hospitalization == null) {
 			hospitalization = new Hospitalization();
@@ -813,7 +808,6 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 	// one to one relations
 	// produces an error where two non-xa connections are opened
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@AuditedIgnore
 	public EpiData getEpiData() {
 		if (epiData == null) {
 			epiData = new EpiData();
@@ -829,7 +823,6 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 	// one to one relations
 	// produces an error where two non-xa connections are opened
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@AuditedIgnore
 	public Therapy getTherapy() {
 		return therapy;
 	}
@@ -842,7 +835,6 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 	// one to one relations
 	// produces an error where two non-xa connections are opened
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@AuditedIgnore
 	public ClinicalCourse getClinicalCourse() {
 		return clinicalCourse;
 	}
@@ -855,7 +847,6 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 	// one to one relations
 	// produces an error where two non-xa connections are opened
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@AuditedIgnore
 	public MaternalHistory getMaternalHistory() {
 		return maternalHistory;
 	}
@@ -867,7 +858,6 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 	// It's necessary to do a lazy fetch here because having three eager fetching
 	// one to one relations produces an error where two non-xa connections are opened
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@AuditedIgnore
 	public PortHealthInfo getPortHealthInfo() {
 		return portHealthInfo;
 	}
@@ -895,7 +885,6 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 	}
 
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@AuditedIgnore
 	public HealthConditions getHealthConditions() {
 		return healthConditions;
 	}
@@ -971,7 +960,6 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 		this.tasks = tasks;
 	}
 
-	@AuditedIgnore
 	@OneToMany(mappedBy = Visit.CAZE, fetch = FetchType.LAZY)
 	public Set<Visit> getVisits() {
 		return visits;
@@ -981,7 +969,6 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 		this.visits = visits;
 	}
 
-	@AuditedIgnore
 	@OneToMany(mappedBy = SurveillanceReport.CAZE, fetch = FetchType.LAZY)
 	public Set<SurveillanceReport> getSurveillanceReports() {
 		return surveillanceReports;
@@ -1115,7 +1102,6 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 	}
 
 	@OneToOne(cascade = {}, fetch = FetchType.LAZY)
-	@AuditedIgnore
 	public Case getDuplicateOf() {
 		return duplicateOf;
 	}
@@ -1664,7 +1650,6 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 		CascadeType.MERGE,
 		CascadeType.DETACH,
 		CascadeType.REFRESH }, fetch = FetchType.LAZY)
-	@AuditedIgnore
 	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;
 	}
@@ -1675,7 +1660,6 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 	}
 
 	@OneToMany(mappedBy = SormasToSormasShareInfo.CAZE, fetch = FetchType.LAZY)
-	@AuditedIgnore
 	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
 		return sormasToSormasShares;
 	}
