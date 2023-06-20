@@ -43,7 +43,7 @@
 		<archunit.version>1.0.1</archunit.version>
 		<junit.version>5.9.3</junit.version>
 		<hamcrest.version>2.2</hamcrest.version>
-		<mockito.version>4.11.0</mockito.version>
+		<mockito.version>5.2.0</mockito.version>
 		<apache-tika.version>2.6.0</apache-tika.version>
 		<temportal-tables.version>0.4.2</temportal-tables.version>
 
