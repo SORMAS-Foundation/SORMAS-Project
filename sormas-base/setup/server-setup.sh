@@ -53,9 +53,7 @@ fi
 
 PAYARA_VERSION=5.2022.5
 
-if  [[ $(expr "$(uname)") == "Darwin" ]]; then
-  MAC=true
-elif [[ $(expr substr "$(uname -a)" 1 5) = "Linux" ]]; then
+if [[ $(expr substr "$(uname -a)" 1 5) = "Linux" ]]; then
 	LINUX=true
 elif [[ $(expr "$(uname)") == "Darwin" ]]; then
 	MAC=true
