@@ -414,7 +414,7 @@
 			<dependency>
 				<groupId>com.google.http-client</groupId>
 				<artifactId>google-http-client-gson</artifactId>
-				<version>1.42.3</version>
+				<version>1.43.2</version>
 				<scope>provided</scope>
 			</dependency>
 
