@@ -1310,7 +1310,7 @@ public class EditCaseSteps implements En {
     When(
         "I check that text appearing in hover over Expected Follow-up is based on Symptoms collection date",
         () -> {
-          TimeUnit.SECONDS.sleep(2);
+          TimeUnit.SECONDS.sleep(4);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EXPECTED_FOLLOWUP_LABEL);
           webDriverHelpers.hoverToElement(EXPECTED_FOLLOWUP_LABEL);
           String displayedText =
