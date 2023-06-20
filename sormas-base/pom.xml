@@ -1615,7 +1615,7 @@
 				</plugin>
 				<plugin>
 					<artifactId>maven-surefire-report-plugin</artifactId>
-					<version>3.0.0-M7</version>
+					<version>3.1.2</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.cargo</groupId>
