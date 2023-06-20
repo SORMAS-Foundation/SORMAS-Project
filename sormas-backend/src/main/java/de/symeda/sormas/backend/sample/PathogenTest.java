@@ -33,7 +33,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
@@ -46,7 +45,6 @@ import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.user.User;
 
 @Entity
-@Audited
 public class PathogenTest extends DeletableAdo {
 
 	private static final long serialVersionUID = 2290351143518627813L;

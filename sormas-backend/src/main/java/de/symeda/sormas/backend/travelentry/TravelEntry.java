@@ -16,7 +16,6 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Type;
 
-import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
@@ -34,7 +33,6 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 @Entity(name = "travelentry")
-@Audited
 public class TravelEntry extends CoreAdo {
 
 	private static final long serialVersionUID = 8415313365918535184L;

@@ -139,5 +139,4 @@ public class MergeContactsView extends AbstractView {
 		filterComponent.updateDuplicateCountLabel(grid.getTreeData().getRootItems().size());
 
 	}
-
 }

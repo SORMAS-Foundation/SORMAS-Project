@@ -5,9 +5,6 @@ import java.util.List;
 
 import com.vaadin.data.TreeData;
 import com.vaadin.data.provider.TreeDataProvider;
-import com.vaadin.server.Page;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.TextRenderer;
 
@@ -18,7 +15,6 @@ import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseMergeIndexDto;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -33,10 +29,16 @@ public class MergeCasesGrid extends AbstractMergeGrid<CaseMergeIndexDto, CaseCri
 	public MergeCasesGrid() {
 		super(
 			CaseMergeIndexDto.class,
+			FacadeProvider.getCaseFacade(),
 			CaseDataView.VIEW_NAME,
 			CaseIndexDto.I18N_PREFIX,
-			Strings.confirmationMergeCaseAndDeleteOther,
-			Strings.confirmationPickCaseAndDeleteOther);
+			Messages.of(
+				Strings.confirmationMergeCaseAndDeleteOther,
+				Strings.confirmationPickCaseAndDeleteOther,
+				Strings.messageCasesMerged,
+				Strings.errorCaseMerging,
+				Strings.messageCaseDuplicateDeleted,
+				Strings.errorCaseDuplicateDeletion));
 	}
 
 	@Override
@@ -81,42 +83,6 @@ public class MergeCasesGrid extends AbstractMergeGrid<CaseMergeIndexDto, CaseCri
 	@Override
 	protected List<CaseMergeIndexDto[]> getItemsForDuplicateMerging(int limit) {
 		return FacadeProvider.getCaseFacade().getCasesForDuplicateMerging(criteria, limit, ignoreRegion);
-	}
-
-	@Override
-	protected void merge(CaseMergeIndexDto targetedCase, CaseMergeIndexDto caseToMergeAndDelete) {
-		FacadeProvider.getCaseFacade().mergeCase(targetedCase.getUuid(), caseToMergeAndDelete.getUuid());
-		boolean deletePerformed = deleteCaseAsDuplicate(targetedCase, caseToMergeAndDelete);
-
-		if (deletePerformed && FacadeProvider.getCaseFacade().isDeleted(caseToMergeAndDelete.getUuid())) {
-			reload();
-			new Notification(I18nProperties.getString(Strings.messageCasesMerged), Type.TRAY_NOTIFICATION).show(Page.getCurrent());
-		} else {
-			new Notification(I18nProperties.getString(Strings.errorCaseMerging), Type.ERROR_MESSAGE).show(Page.getCurrent());
-		}
-	}
-
-	@Override
-	protected void pick(CaseMergeIndexDto targetedCase, CaseMergeIndexDto caseToDelete) {
-		boolean deletePerformed = deleteCaseAsDuplicate(targetedCase, caseToDelete);
-
-		if (deletePerformed && FacadeProvider.getCaseFacade().isDeleted(caseToDelete.getUuid())) {
-			reload();
-			new Notification(I18nProperties.getString(Strings.messageCaseDuplicateDeleted), Type.TRAY_NOTIFICATION).show(Page.getCurrent());
-		} else {
-			new Notification(I18nProperties.getString(Strings.errorCaseDuplicateDeletion), Type.ERROR_MESSAGE).show(Page.getCurrent());
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private boolean deleteCaseAsDuplicate(CaseIndexDto caze, CaseIndexDto caseToMergeAndDelete) {
-		try {
-			FacadeProvider.getCaseFacade().deleteCaseAsDuplicate(caseToMergeAndDelete.getUuid(), caze.getUuid());
-		} catch (ExternalSurveillanceToolRuntimeException e) {
-			return false;
-		}
-
-		return true;
 	}
 
 	@Override

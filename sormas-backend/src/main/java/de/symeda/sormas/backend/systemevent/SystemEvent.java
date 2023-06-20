@@ -10,13 +10,11 @@ import javax.persistence.Enumerated;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.systemevents.SystemEventStatus;
 import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 @Entity
-@Audited
 public class SystemEvent extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "systemevent";

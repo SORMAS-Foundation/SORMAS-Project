@@ -71,6 +71,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
@@ -360,6 +361,15 @@ public class ContactFacadeEjb
 
 		if (internal && existingContact != null && !service.isEditAllowed(existingContact)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorContactNotEditable));
+		}
+
+		if (existingContact != null && internal) {
+			EditPermissionType editPermission = service.getEditPermissionType(existingContact);
+			if (editPermission == EditPermissionType.OUTSIDE_JURISDICTION) {
+				throw new AccessDeniedException(I18nProperties.getString(Strings.errorContactNotEditableOutsideJurisdiction));
+			} else if (editPermission != EditPermissionType.ALLOWED) {
+				throw new AccessDeniedException(I18nProperties.getString(Strings.errorContactNotEditable));
+			}
 		}
 
 		final ContactDto existingContactDto = toDto(existingContact);
@@ -2096,7 +2106,7 @@ public class ContactFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._CONTACT_MERGE)
-	public void mergeContact(String leadUuid, String otherUuid) {
+	public void merge(String leadUuid, String otherUuid) {
 		ContactDto leadContactDto = getContactWithoutPseudonyimizationByUuid(leadUuid);
 		ContactDto otherContactDto = getContactWithoutPseudonyimizationByUuid(otherUuid);
 
@@ -2169,7 +2179,7 @@ public class ContactFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._CONTACT_MERGE)
-	public void deleteContactAsDuplicate(String uuid, String duplicateOfUuid) {
+	public void deleteAsDuplicate(String uuid, String duplicateOfUuid) {
 		Contact contact = service.getByUuid(uuid);
 		Contact duplicateOfContact = service.getByUuid(duplicateOfUuid);
 		contact.setDuplicateOf(duplicateOfContact);

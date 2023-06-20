@@ -33,8 +33,6 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Type;
 
-import de.symeda.auditlog.api.Audited;
-import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataReferenceDto;
 import de.symeda.sormas.backend.campaign.Campaign;
@@ -48,7 +46,6 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 @Entity(name = "campaignformdata")
-@Audited
 public class CampaignFormData extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "campaignformdata";
@@ -76,7 +73,6 @@ public class CampaignFormData extends AbstractDomainObject {
 	@NotExposedToApi
 	private boolean archived;
 
-	@AuditedIgnore
 	@Type(type = ModelConstants.HIBERNATE_TYPE_JSON)
 	@Column(columnDefinition = ModelConstants.COLUMN_DEFINITION_JSON)
 	public List<CampaignFormDataEntry> getFormValues() {
