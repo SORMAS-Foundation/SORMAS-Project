@@ -16,6 +16,7 @@
 		<developmentBranch>development</developmentBranch>
 		<productionBranch>master</productionBranch>
 		<pushHotfixes>true</pushHotfixes>
+		<dependency-check.suppressionFile>check-suppressions.xml</dependency-check.suppressionFile>
 
 		<!-- *** Payara module versions *** -->
 		<glassfish.jaxb.version>2.3.7</glassfish.jaxb.version>
@@ -1645,7 +1646,7 @@
 						<skipDependencyManagement>false</skipDependencyManagement>
 						<skipTestScope>false</skipTestScope>
 						<suppressionFiles>
-							<suppressionFile>dependencies/check-suppressions.xml</suppressionFile>
+							<suppressionFile>${dependency-check.suppressionFile}</suppressionFile>
 						</suppressionFiles>
 						<assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
 					</configuration>
