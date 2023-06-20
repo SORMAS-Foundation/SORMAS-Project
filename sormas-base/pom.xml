@@ -897,7 +897,7 @@
 			<dependency>
 				<groupId>org.jetbrains</groupId>
 				<artifactId>annotations</artifactId>
-				<version>17.0.0</version>
+				<version>24.0.1</version>
 				<scope>provided</scope>
 				<!-- Version defined to resolve version conflict between multiple usages -->
 			</dependency>
