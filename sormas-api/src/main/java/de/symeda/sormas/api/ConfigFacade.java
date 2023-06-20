@@ -134,7 +134,7 @@ public interface ConfigFacade {
 
 	boolean isSmsServiceSetUp();
 
-	String getDemisJndiName();
+	String getExternalMessageAdapterJndiName();
 
 	boolean isSkipDefaultPasswordCheck();
 

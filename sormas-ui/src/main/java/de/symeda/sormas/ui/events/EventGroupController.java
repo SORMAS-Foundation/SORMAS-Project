@@ -87,8 +87,6 @@ public class EventGroupController {
 			} else {
 				ControllerProvider.getEventGroupController().create(Collections.singletonList(eventReference), null);
 			}
-		} else if (user.hasUserRight(UserRight.EVENTGROUP_CREATE)) {
-			ControllerProvider.getEventGroupController().create(Collections.singletonList(eventReference), null);
 		} else {
 			long events = FacadeProvider.getEventGroupFacade().count(eventGroupCriteria);
 			if (events > 0) {
@@ -141,7 +139,7 @@ public class EventGroupController {
 		});
 
 		selectionField.setSelectionChangeCallback((commitAllowed) -> component.getCommitButton().setEnabled(commitAllowed));
-		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateEventGroup));
+		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickEventGroup));
 	}
 
 	public void selectOrCreate(EventReferenceDto eventReference) {

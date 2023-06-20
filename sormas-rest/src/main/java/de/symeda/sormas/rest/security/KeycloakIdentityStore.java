@@ -22,7 +22,7 @@ import javax.security.enterprise.credential.CallerOnlyCredential;
 import javax.security.enterprise.identitystore.CredentialValidationResult;
 import javax.security.enterprise.identitystore.IdentityStore;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.user.UserDto;
