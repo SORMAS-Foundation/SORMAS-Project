@@ -11,31 +11,42 @@
 	<name>${project.artifactId}</name>
 
 	<dependencies>
+
+		<!-- *** Payara modules *** -->
+
+		<!-- *** Payara modules END *** -->
+
+		<!-- *** Domain libs *** -->
+
 		<dependency>
 			<groupId>org.keycloak</groupId>
 			<artifactId>keycloak-core</artifactId>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.keycloak</groupId>
 			<artifactId>keycloak-server-spi</artifactId>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.keycloak</groupId>
 			<artifactId>keycloak-server-spi-private</artifactId>
-			<scope>provided</scope>
 		</dependency>
+
+		<!-- *** Domain libs END *** -->
+
+		<!-- *** Compile dependencies *** -->
 
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>sormas-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
-		</dependency>
+
+		<!-- *** Compile dependencies END *** -->
+
+		<!-- *** Test dependencies *** -->
+
+		<!-- *** Test dependencies END *** -->
+
 	</dependencies>
 
 	<build>
