@@ -91,6 +91,15 @@ public class ArchivingController {
 		IArchiveHandler<T> archiveHandler,
 		CommitDiscardWrapperComponent<?> editView,
 		Runnable callback) {
+		addArchivingButton(entityDto, archiveHandler, editView, callback, false);
+	}
+
+	public <T extends EntityDto> void addArchivingButton(
+		T entityDto,
+		IArchiveHandler<T> archiveHandler,
+		CommitDiscardWrapperComponent<?> editView,
+		Runnable callback,
+		boolean forceCommit) {
 		boolean archived = archiveHandler.isArchived(entityDto);
 		Button archiveButton = ButtonHelper.createButton(
 			ARCHIVE_DEARCHIVE_BUTTON_ID,
@@ -98,7 +107,7 @@ public class ArchivingController {
 			e -> {
 				boolean isCommitSuccessFul = true;
 
-				if (editView.isModified()) {
+				if (editView.isModified() || forceCommit) {
 					isCommitSuccessFul = editView.commitAndHandle();
 				}
 

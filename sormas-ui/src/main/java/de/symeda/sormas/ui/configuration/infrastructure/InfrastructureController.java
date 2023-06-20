@@ -472,7 +472,7 @@ public class InfrastructureController {
 		Runnable callback) {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_ARCHIVE)) {
-			ControllerProvider.getArchiveController().addArchivingButton(entity, archiveHandler, component, callback);
+			ControllerProvider.getArchiveController().addArchivingButton(entity, archiveHandler, component, callback, true);
 		}
 	}
 

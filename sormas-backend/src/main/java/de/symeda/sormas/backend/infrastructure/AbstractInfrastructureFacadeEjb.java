@@ -236,6 +236,7 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	}
 
 	@Override
+	@RightsAllowed(UserRight._INFRASTRUCTURE_VIEW)
 	public boolean isArchived(String uuid) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
