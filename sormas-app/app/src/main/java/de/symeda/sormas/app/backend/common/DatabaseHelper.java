@@ -3053,10 +3053,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(DiseaseConfiguration.class).executeRaw(
 					"CREATE TABLE environments(id integer primary key autoincrement, uuid VARCHAR(36) NOT NULL, "
 						+ "changeDate TIMESTAMP NOT NULL, creationDate TIMESTAMP NOT NULL, lastOpenedDate TIMESTAMP, localChangeDate TIMESTAMP NOT NULL, modified INTEGER, "
-						+ "snapshot INTEGER, reportDate TIMESTAMP, reportingUser_id BIGINT REFERENCES users(id), environmentName varchar(255), description varchar(512), "
+						+ "snapshot INTEGER, reportDate TIMESTAMP, reportingUser_id BIGINT REFERENCES users(id), environmentName text, description text, "
 						+ "externalId varchar(255), responsibleUser_id BIGINT REFERENCES users(id), investigationStatus varchar(255), environmentMedia varchar(255), "
-						+ "waterType varchar(255), otherWaterType varchar(512), infrastructureDetails varchar(255), otherInfrastructureDetails varchar(512), waterUse text, "
-						+ "otherWaterUse varchar(512), location_id BIGINT, UNIQUE(snapshot, uuid));");
+						+ "waterType varchar(255), otherWaterType text, infrastructureDetails varchar(255), otherInfrastructureDetails text, waterUse text, "
+						+ "otherWaterUse text, location_id BIGINT, UNIQUE(snapshot, uuid));");
 				// ATTENTION: break should only be done after last version
 				break;
 
