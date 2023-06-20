@@ -724,6 +724,7 @@ public interface Strings {
 	String headingSomeEventsNotRestored = "headingSomeEventsNotRestored";
 	String headingSomeImmunizationsNotRestored = "headingSomeImmunizationsNotRestored";
 	String headingSomeSamplesNotRestored = "headingSomeSamplesNotRestored";
+	String headingSomeTasksNotDeleted = "headingSomeTasksNotDeleted";
 	String headingSomeTravelEntriesNotDeleted = "headingSomeTravelEntriesNotDeleted";
 	String headingSomeTravelEntriesNotRestored = "headingSomeTravelEntriesNotRestored";
 	String headingSomeVisitsNotDeleted = "headingSomeVisitsNotDeleted";
@@ -1111,6 +1112,7 @@ public interface Strings {
 	String messageCountryDearchived = "messageCountryDearchived";
 	String messageCountryDearchivingNotPossible = "messageCountryDearchivingNotPossible";
 	String messageCountSamplesNotRestored = "messageCountSamplesNotRestored";
+	String messageCountTasksNotDeleted = "messageCountTasksNotDeleted";
 	String messageCountTravelEntriesNotDeleted = "messageCountTravelEntriesNotDeleted";
 	String messageCountTravelEntriesNotRestored = "messageCountTravelEntriesNotRestored";
 	String messageCountVisitsNotDeleted = "messageCountVisitsNotDeleted";
@@ -1330,6 +1332,7 @@ public interface Strings {
 	String messageTasksDearchived = "messageTasksDearchived";
 	String messageTasksDeleted = "messageTasksDeleted";
 	String messageTasksEdited = "messageTasksEdited";
+	String messageTasksNotDeleted = "messageTasksNotDeleted";
 	String messageTemplateNotAvailable = "messageTemplateNotAvailable";
 	String messageThisPersonAlreadyEventParticipant = "messageThisPersonAlreadyEventParticipant";
 	String messageTravelEntriesDeleted = "messageTravelEntriesDeleted";

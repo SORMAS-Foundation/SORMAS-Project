@@ -134,7 +134,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		// Database should contain the created task
 		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
 
-		getTaskFacade().deleteTask(task);
+		getTaskFacade().delete(task.getUuid());
 
 		// Database should not contain the created task
 		assertNull(getTaskFacade().getByUuid(task.getUuid()));

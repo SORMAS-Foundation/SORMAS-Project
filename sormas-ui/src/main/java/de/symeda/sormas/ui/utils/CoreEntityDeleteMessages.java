@@ -47,7 +47,16 @@ public enum CoreEntityDeleteMessages {
 		Strings.messageEventParticipantsDeleted,
 		Strings.messageEventParticipantsNotDeleted,
 		Strings.headingSomeEventParticipantsNotDeleted,
-		Strings.messageCountEventParticipantsNotDeleted);
+		Strings.messageCountEventParticipantsNotDeleted),
+
+	TASK(Strings.entityTasks,
+		Strings.headingNoTasksSelected,
+		Strings.messageNoTasksSelected,
+		Strings.headingTasksDeleted,
+		Strings.messageTasksDeleted,
+		Strings.messageTasksNotDeleted,
+		Strings.headingSomeTasksNotDeleted,
+		Strings.messageCountTasksNotDeleted);
 
 	/*
 	 * EVENT(Strings.entityEvents,

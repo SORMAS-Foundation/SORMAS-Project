@@ -55,6 +55,7 @@ import de.symeda.sormas.ui.utils.ArchivingController;
 import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.CoreEntityDeleteMessages;
 import de.symeda.sormas.ui.utils.DirtyCheckPopup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -147,7 +148,7 @@ public class TaskController {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_DELETE)) {
 			editView.addDeleteListener(() -> {
-				FacadeProvider.getTaskFacade().deleteTask(task);
+				FacadeProvider.getTaskFacade().delete(task.getUuid());
 				UI.getCurrent().removeWindow(popupWindow);
 				callback.run();
 			}, I18nProperties.getString(Strings.entityTask));
@@ -193,26 +194,12 @@ public class TaskController {
 
 	public void deleteAllSelectedItems(Collection<TaskIndexDto> selectedRows, Runnable callback) {
 
-		if (selectedRows.size() == 0) {
-			new Notification(
-				I18nProperties.getString(Strings.headingNoTasksSelected),
-				I18nProperties.getString(Strings.messageNoTasksSelected),
-				Type.WARNING_MESSAGE,
-				false).show(Page.getCurrent());
-		} else {
-			VaadinUiUtil
-				.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteTasks), selectedRows.size()), () -> {
-					for (TaskIndexDto selectedRow : selectedRows) {
-						FacadeProvider.getTaskFacade().deleteTask(FacadeProvider.getTaskFacade().getByUuid(selectedRow.getUuid()));
-					}
-					callback.run();
-					new Notification(
-						I18nProperties.getString(Strings.headingTasksDeleted),
-						I18nProperties.getString(Strings.messageTasksDeleted),
-						Type.HUMANIZED_MESSAGE,
-						false).show(Page.getCurrent());
-				});
-		}
+		ControllerProvider.getPermanentDeleteController()
+			.deleteAllSelectedItems(
+				selectedRows.stream().map(TaskIndexDto::getUuid).collect(Collectors.toList()),
+				FacadeProvider.getTaskFacade(),
+				CoreEntityDeleteMessages.TASK,
+				callback);
 	}
 
 	public void showBulkTaskDataEditComponent(Collection<TaskIndexDto> selectedTasks, TaskGrid taskGrid, Runnable noEntriesRemainingCallback) {

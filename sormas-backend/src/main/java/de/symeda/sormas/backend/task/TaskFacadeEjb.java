@@ -914,8 +914,12 @@ public class TaskFacadeEjb implements TaskFacade {
 
 	@Override
 	@RightsAllowed(UserRight._TASK_DELETE)
-	public void deleteTask(TaskDto taskDto) {
-		Task task = taskService.getByUuid(taskDto.getUuid());
+	public void delete(String uuid) {
+		if (!userService.hasRight(UserRight.TASK_DELETE)) {
+			throw new UnsupportedOperationException(String.format("User %s is not allowed to delete tasks.", userService.getCurrentUser().getUuid()));
+		}
+
+		Task task = taskService.getByUuid(uuid);
 		taskService.deletePermanent(task);
 	}
 
