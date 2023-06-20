@@ -17,27 +17,27 @@
  */
 package org.sormas.e2etests.steps.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import cucumber.api.java8.En;
+import java.io.FileReader;
 import javax.inject.Inject;
-import org.json.simple.JSONObject;
-import org.sormas.e2etests.entities.services.api.TaskApiService;
+import org.json.simple.parser.JSONParser;
 import org.sormas.e2etests.entities.services.api.UserApiService;
-import org.sormas.e2etests.helpers.api.sormasrest.TaskHelper;
 import org.sormas.e2etests.helpers.api.sormasrest.UserHelper;
 import org.sormas.e2etests.helpers.environmentdata.manager.EnvironmentManager;
 import org.sormas.e2etests.state.ApiState;
+import org.testng.asserts.SoftAssert;
 
 public class UserSteps implements En {
 
-  private JSONObject jsonObject;
+  private String responseBody;
+  private String regexUpdatedResponseBody;
+  private String expectedUserRights;
 
   @Inject
   public UserSteps(
-      UserHelper userHelper,
-      TaskHelper taskHelper,
-      TaskApiService taskApiService,
-      UserApiService userApiService,
-      ApiState apiState) {
+      UserHelper userHelper, UserApiService userApiService, SoftAssert softly, ApiState apiState) {
 
     When(
         "API:I Login into Environment",
@@ -46,32 +46,84 @@ public class UserSteps implements En {
         });
 
     When(
-        "API: I get json file with user permission file",
+        "API: I get response with user permission rights",
         () -> {
-          userHelper.getUserByRightsPermissions("W5QCZW-XLFVFT-E5MK66-O3SUKE7E");
-          String responseBody = apiState.getResponse().getBody().asString();
-
-          // System.out.print(responseBody);
-          // ToDO back to encode to asci
-          userApiService.convertToJson(responseBody);
-          // System.out.print(
-          // "First json : " + userApiService.convertToJson(regexUpdatedResponseBody));
-
-          //  System.out.print("Json file from: " + userApiService.convertToJson(responseBody));
-          // System.out.print("Response body in json file: " + responseBody);
-
-          //  jsonObject = (JSONObject) JSONValue.parse(responseBody);
-          // return (String) jsonObject.get(TOKEN_IDENTIFIER);
-          ///  return jsonObject;
-          // System.out.print("  Print json object:  " + jsonObject);
+          userHelper.getUserByRightsPermissions("W5QCZW-XLFVFT-E5MK66-O3SUKE7E"); // get
+          responseBody = apiState.getResponse().getBody().asString();
+          regexUpdatedResponseBody = responseBody.replaceAll("\\s+", "");
         });
 
     When(
-        "I create template for Automation admin User Rights",
+        "API: I get response with ([^\"]*) user permission rights",
+        (String option) -> {
+          switch (option) {
+            case "Admin User":
+              userHelper.getUserByRightsPermissions("W5QCZW-XLFVFT-E5MK66-O3SUKE7E"); // get
+              break;
+            case "National User":
+              userHelper.getUserByRightsPermissions("XXFIKA-I653UK-XTLOIT-VWZYKGXY"); // get
+              break;
+          }
+          responseBody = apiState.getResponse().getBody().asString();
+          regexUpdatedResponseBody = responseBody.replaceAll("\\s+", "");
+        });
+
+    When(
+        "I prepare collection of ([^\"]*) rights based on json files",
+        (String option) -> {
+          JSONParser parser = new JSONParser();
+          ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+          Object objectToParse;
+          switch (option) {
+            case "Admin User":
+              objectToParse =
+                  parser.parse(
+                      new FileReader(
+                          "src/main/resources/userRightsJsonTemplates/AutomationAdminUserRights.json"));
+              expectedUserRights = ow.writeValueAsString(objectToParse).replaceAll("\\s+", "");
+              break;
+            case "National User":
+              objectToParse =
+                  parser.parse(
+                      new FileReader(
+                          "src/main/resources/userRightsJsonTemplates/NationalUserRights.json"));
+              expectedUserRights = ow.writeValueAsString(objectToParse).replaceAll("\\s+", "");
+              break;
+          }
+        });
+
+    When(
+        "I prepare collection of ([^\"]*) rights based on json files for De version",
+        (String option) -> {
+          JSONParser parser = new JSONParser();
+          ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+          Object objectToParse;
+          switch (option) {
+            case "Admin User":
+              objectToParse =
+                  parser.parse(
+                      new FileReader(
+                          "src/main/resources/userRightsJsonTemplates/AutomationAdminUserRightsDE.json"));
+              expectedUserRights = ow.writeValueAsString(objectToParse).replaceAll("\\s+", "");
+              break;
+            case "National User":
+              objectToParse =
+                  parser.parse(
+                      new FileReader(
+                          "src/main/resources/userRightsJsonTemplates/NationalUserRightsDE.json"));
+              expectedUserRights = ow.writeValueAsString(objectToParse).replaceAll("\\s+", "");
+              break;
+          }
+        });
+
+    When(
+        "I check that user rights are complete",
         () -> {
-          userApiService.prepareJsonFileRightsForAutomationAdmin();
-          System.out.print(
-              "Json file: " + userApiService.prepareJsonFileRightsForAutomationAdmin());
+          softly.assertEquals(
+              expectedUserRights,
+              regexUpdatedResponseBody,
+              "The user rights are no correct granted");
+          softly.assertAll();
         });
   }
 }

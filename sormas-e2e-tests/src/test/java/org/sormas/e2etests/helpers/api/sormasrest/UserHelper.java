@@ -19,9 +19,7 @@ package org.sormas.e2etests.helpers.api.sormasrest;
 
 import static org.sormas.e2etests.constants.api.Endpoints.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.http.Method;
-import io.restassured.response.Response;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
 import org.sormas.e2etests.entities.pojo.api.Request;
@@ -30,13 +28,10 @@ import org.sormas.e2etests.helpers.RestAssuredClient;
 public class UserHelper {
 
   private final RestAssuredClient restAssuredClient;
-  private final ObjectMapper objectMapper;
-  Response response;
 
   @Inject
-  public UserHelper(RestAssuredClient restAssuredClient, ObjectMapper objectMapper) {
+  public UserHelper(RestAssuredClient restAssuredClient) {
     this.restAssuredClient = restAssuredClient;
-    this.objectMapper = objectMapper;
   }
 
   @SneakyThrows
@@ -44,17 +39,4 @@ public class UserHelper {
     restAssuredClient.sendRequest(
         Request.builder().method(Method.GET).path(USERS_PATH + "/rights" + "/" + userUuid).build());
   }
-
-  @SneakyThrows
-  public void getUserByRightsPermissions2(String userUuid) {
-
-    response =
-        restAssuredClient
-            .getCustomisableClient("automation_admin", ">KO_mr+;#Y0xtc,L")
-            .get(USERS_PATH + "/rights" + "/" + userUuid)
-            .then()
-            .extract()
-            .response();
-  }
-  ;
 }
