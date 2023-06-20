@@ -38,7 +38,7 @@
 		<resteasy.version>5.0.7.Final</resteasy.version>
 		<kotlin-stdlib.version>1.6.20</kotlin-stdlib.version>
 		<xdocreport.version>2.0.4</xdocreport.version>
-		<docx4j.version>8.3.8</docx4j.version>
+		<docx4j.version>11.4.9</docx4j.version>
 		<archunit.version>1.0.1</archunit.version>
 		<junit.version>5.9.2</junit.version>
 		<hamcrest.version>2.2</hamcrest.version>
