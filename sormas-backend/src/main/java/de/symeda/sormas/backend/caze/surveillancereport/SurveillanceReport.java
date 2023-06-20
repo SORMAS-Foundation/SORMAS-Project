@@ -31,8 +31,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import de.symeda.auditlog.api.Audited;
-import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.caze.surveillancereport.ReportingType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.backend.caze.Case;
@@ -47,7 +45,6 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShar
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name = "surveillancereports")
-@Audited
 public class SurveillanceReport extends AbstractDomainObject implements SormasToSormasShareable {
 
 	private static final long serialVersionUID = -2599492274783441938L;
@@ -222,7 +219,6 @@ public class SurveillanceReport extends AbstractDomainObject implements SormasTo
 		CascadeType.MERGE,
 		CascadeType.DETACH,
 		CascadeType.REFRESH })
-	@AuditedIgnore
 	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;
 	}
@@ -233,7 +229,6 @@ public class SurveillanceReport extends AbstractDomainObject implements SormasTo
 	}
 
 	@OneToMany(mappedBy = SormasToSormasShareInfo.SURVEILLANCE_REPORT, fetch = FetchType.LAZY)
-	@AuditedIgnore
 	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
 		return sormasToSormasShares;
 	}

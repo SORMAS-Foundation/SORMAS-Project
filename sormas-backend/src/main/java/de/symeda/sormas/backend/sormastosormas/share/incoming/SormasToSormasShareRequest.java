@@ -38,7 +38,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasCasePreview;
@@ -113,7 +112,6 @@ public class SormasToSormasShareRequest extends AbstractDomainObject {
 		this.originInfo = originInfo;
 	}
 
-	@AuditedIgnore
 	@Type(type = "json")
 	@Column(columnDefinition = "json")
 	public String getCases() {
@@ -125,7 +123,6 @@ public class SormasToSormasShareRequest extends AbstractDomainObject {
 		casesList = null;
 	}
 
-	@AuditedIgnore
 	@Type(type = "json")
 	@Column(columnDefinition = "json")
 	public String getContacts() {
@@ -137,7 +134,6 @@ public class SormasToSormasShareRequest extends AbstractDomainObject {
 		contactsList = null;
 	}
 
-	@AuditedIgnore
 	@Type(type = "json")
 	@Column(columnDefinition = "json")
 	public String getEvents() {
@@ -149,7 +145,6 @@ public class SormasToSormasShareRequest extends AbstractDomainObject {
 		eventsList = null;
 	}
 
-	@AuditedIgnore
 	@Type(type = "json")
 	@Column(columnDefinition = "json")
 	public String getEventParticipants() {

@@ -36,14 +36,12 @@ import org.hibernate.annotations.TypeDef;
 
 import com.vladmihalcea.hibernate.type.array.ListArrayType;
 
-import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 @Entity(name = TestReport.TABLE_NAME)
-@Audited
 @TypeDef(name = "list-array", typeClass = ListArrayType.class)
 public class TestReport extends AbstractDomainObject {
 

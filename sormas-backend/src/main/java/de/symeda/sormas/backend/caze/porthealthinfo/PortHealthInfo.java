@@ -12,13 +12,11 @@ import javax.persistence.Enumerated;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.caze.porthealthinfo.ConveyanceType;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 @Entity
-@Audited
 public class PortHealthInfo extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 3289289799891965437L;
