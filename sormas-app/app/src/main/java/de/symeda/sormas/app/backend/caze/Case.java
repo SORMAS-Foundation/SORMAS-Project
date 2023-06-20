@@ -76,8 +76,7 @@ import de.symeda.sormas.app.backend.user.User;
 
 @Entity(name = Case.TABLE_NAME)
 @DatabaseTable(tableName = Case.TABLE_NAME)
-public class
-Case extends PseudonymizableAdo {
+public class Case extends PseudonymizableAdo {
 
 	private static final long serialVersionUID = -2697795184163562129L;
 

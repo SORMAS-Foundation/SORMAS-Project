@@ -38,9 +38,9 @@ public class EnvironmentDto extends EntityDto {
 
 	private Date reportDate;
 	private UserReferenceDto reportingUser;
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String environmentName;
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String description;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalId;
@@ -48,13 +48,13 @@ public class EnvironmentDto extends EntityDto {
 	private InvestigationStatus investigationStatus;
 	private EnvironmentMedia environmentMedia;
 	private WaterType waterType;
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherWaterType;
 	private EnvironmentInfrastructureDetails infrastructureDetails;
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherInfrastructureDetails;
 	private Map<WaterUse, Boolean> waterUse;
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherWaterUse;
 	@Valid
 	private LocationDto location;

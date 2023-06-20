@@ -36,7 +36,6 @@ public class CatchAllExceptionMapper implements ExceptionMapper<Exception> {
 				+ "If the mapper exists, make sure the exception class is declared as a javax.ejb.ApplicationException.",
 			exception.getClass().getName());
 		String message = exception.getLocalizedMessage();
-		exception.printStackTrace();
 		return Response.status(HttpStatus.SC_INTERNAL_SERVER_ERROR)
 			.entity(StringUtils.isNotBlank(message) ? message : "An exception occurred while processing the request.")
 			.build();

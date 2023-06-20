@@ -116,8 +116,6 @@ public class EnvironmentFacadeEjb
 			Root<Environment> environment = cq.from(Environment.class);
 
 			final EnvironmentJoins environmentJoins = new EnvironmentJoins(environment);
-//			final EnvironmentQueryContext environmentQueryContext = new EnvironmentQueryContext(cb, cq, environment, environmentJoins);
-
 			final Join<Environment, Location> location = environmentJoins.getLocation();
 			final Join<Location, Region> region = environmentJoins.getLocationJoins().getRegion();
 			final Join<Location, District> district = environmentJoins.getLocationJoins().getDistrict();
