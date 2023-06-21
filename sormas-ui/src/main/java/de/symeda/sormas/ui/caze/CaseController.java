@@ -132,10 +132,10 @@ import de.symeda.sormas.ui.hospitalization.HospitalizationView;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.therapy.TherapyView;
 import de.symeda.sormas.ui.utils.AbstractView;
+import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
 import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DeletableUtils;
@@ -972,7 +972,7 @@ public class CaseController {
 		return editView;
 	}
 
-	public void showBulkCaseDataEditComponent(Collection<? extends CaseIndexDto> selectedCases, AbstractCaseGrid<?> caseGrid) {
+	public <T extends CaseIndexDto> void showBulkCaseDataEditComponent(Collection<T> selectedCases, AbstractCaseGrid<?> caseGrid) {
 
 		if (selectedCases.isEmpty()) {
 			new Notification(
@@ -1034,7 +1034,7 @@ public class CaseController {
 			boolean facilityChange = form.getHealthFacilityCheckbox().getValue();
 
 			CaseFacade caseFacade = FacadeProvider.getCaseFacade();
-			List<CaseIndexDto> selectedCasesCpy = new ArrayList<>(selectedCases);
+			List<T> selectedCasesCpy = new ArrayList<>(selectedCases);
 			if (facilityChange) {
 				VaadinUiUtil.showChooseOptionPopup(
 					I18nProperties.getCaption(Captions.caseInfrastructureDataChanged),
@@ -1042,7 +1042,8 @@ public class CaseController {
 					I18nProperties.getCaption(Captions.caseTransferCases),
 					I18nProperties.getCaption(Captions.caseEditData),
 					500,
-					e -> new BulkOperationHandler().doBulkOperation(
+					e -> BulkOperationHandler.<T> forBulkEdit()
+						.doBulkOperation(
 						selectedEntries -> caseFacade.saveBulkEditWithFacilities(
 							selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
 							updatedBulkEditData,
@@ -1053,9 +1054,10 @@ public class CaseController {
 							surveillanceOfficerChange,
 							e),
 						selectedCasesCpy,
-						results -> handleBulkOperationDone((List<? extends CaseIndexDto>) results, popupWindow, caseGrid)));
+						bulkOperationCallback(caseGrid, popupWindow)));
 			} else {
-				new BulkOperationHandler().doBulkOperation(
+				BulkOperationHandler.<T> forBulkEdit()
+					.doBulkOperation(
 					selectedEntries -> caseFacade.saveBulkCase(
 						selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
 						updatedBulkEditData,
@@ -1065,26 +1067,29 @@ public class CaseController {
 						outcomeChange,
 						surveillanceOfficerChange),
 					selectedCasesCpy,
-					remainingEntries -> handleBulkOperationDone((List<? extends CaseIndexDto>) remainingEntries, popupWindow, caseGrid));
+					bulkOperationCallback(caseGrid, popupWindow));
 			}
 		});
 
 		editView.addDiscardListener(popupWindow::close);
 	}
 
-	private void handleBulkOperationDone(List<? extends CaseIndexDto> remainingCases, Window popupWindow, AbstractCaseGrid<?> caseGrid) {
-
-		popupWindow.close();
-		caseGrid.reload();
-		if (CollectionUtils.isNotEmpty(remainingCases)) {
-			if (caseGrid instanceof CaseGrid) {
-				((CaseGrid) caseGrid).asMultiSelect().selectItems(remainingCases.toArray(new CaseIndexDto[0]));
-			} else if (caseGrid instanceof CaseGridDetailed) {
-				((CaseGridDetailed) caseGrid).asMultiSelect().selectItems(remainingCases.toArray(new CaseIndexDetailedDto[0]));
+	private <T extends CaseIndexDto> Consumer<List<T>> bulkOperationCallback(AbstractCaseGrid<?> caseGrid, Window popupWindow) {
+		return remainingCases -> {
+			if (popupWindow != null) {
+				popupWindow.close();
 			}
-		} else {
-			navigateToIndex();
-		}
+			caseGrid.reload();
+			if (CollectionUtils.isNotEmpty(remainingCases)) {
+				if (caseGrid instanceof CaseGrid) {
+					((CaseGrid) caseGrid).asMultiSelect().selectItems(remainingCases.toArray(new CaseIndexDto[0]));
+				} else if (caseGrid instanceof CaseGridDetailed) {
+					((CaseGridDetailed) caseGrid).asMultiSelect().selectItems(remainingCases.toArray(new CaseIndexDetailedDto[0]));
+				}
+			} else {
+				navigateToIndex();
+			}
+		};
 	}
 
 	private void appendSpecialCommands(CaseDataDto caze, CommitDiscardWrapperComponent<? extends Component> editView) {
@@ -1123,13 +1128,8 @@ public class CaseController {
 
 		// Initialize 'Archive' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_ARCHIVE)) {
-			ControllerProvider.getCaseArchivingController()
-				.addArchivingButton(
-					caze,
-					FacadeProvider.getCaseFacade(),
-					CoreEntityArchiveMessages.CASE,
-					editView,
-					() -> navigateToView(CaseDataView.VIEW_NAME, caze.getUuid(), null));
+			ControllerProvider.getArchiveController()
+				.addArchivingButton(caze, ArchiveHandlers.forCase(), editView, () -> navigateToView(CaseDataView.VIEW_NAME, caze.getUuid(), null));
 		}
 	}
 
@@ -1157,37 +1157,14 @@ public class CaseController {
 		}
 	}
 
-	public void archiveAllSelectedItems(Collection<? extends CaseIndexDto> selectedRows, Runnable callback) {
-
-		List<String> caseUuids = selectedRows.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList());
-
-		ControllerProvider.getCaseArchivingController()
-			.archiveSelectedItems(
-				caseUuids,
-				FacadeProvider.getCaseFacade(),
-				Strings.headingNoCasesSelected,
-				Strings.confirmationArchiveCases,
-				Strings.headingCasesArchived,
-				Strings.messageCasesArchived,
-				callback);
+	public void archiveAllSelectedItems(Collection<CaseIndexDto> selectedRows, AbstractCaseGrid<?> caseGrid) {
+		ControllerProvider.getArchiveController()
+			.archiveSelectedItems(selectedRows, ArchiveHandlers.forCase(), bulkOperationCallback(caseGrid, null));
 	}
 
-	public void dearchiveAllSelectedItems(Collection<? extends CaseIndexDto> selectedRows, Runnable callback) {
-
-		List<String> caseUuids = selectedRows.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList());
-
-		ControllerProvider.getCaseArchivingController()
-			.dearchiveSelectedItems(
-				caseUuids,
-				FacadeProvider.getCaseFacade(),
-				Strings.headingNoCasesSelected,
-				Strings.messageNoCasesSelected,
-				Strings.confirmationDearchiveCases,
-				Strings.entityCase,
-				Strings.headingConfirmDearchiving,
-				Strings.headingCasesDearchived,
-				Strings.messageCasesDearchived,
-				callback);
+	public void dearchiveAllSelectedItems(Collection<CaseIndexDto> selectedRows, AbstractCaseGrid<?> caseGrid) {
+		ControllerProvider.getArchiveController()
+			.dearchiveSelectedItems(selectedRows, ArchiveHandlers.forCase(), bulkOperationCallback(caseGrid, null));
 	}
 
 	public CommitDiscardWrapperComponent<HospitalizationForm> getHospitalizationComponent(

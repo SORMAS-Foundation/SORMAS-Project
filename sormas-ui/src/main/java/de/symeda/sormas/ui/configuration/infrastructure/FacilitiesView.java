@@ -58,6 +58,8 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.configuration.infrastructure.components.SearchField;
+import de.symeda.sormas.ui.utils.ArchiveHandlers;
+import de.symeda.sormas.ui.utils.ArchiveMessages;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -381,14 +383,10 @@ public class FacilitiesView extends AbstractConfigurationView {
 								ControllerProvider.getInfrastructureController()
 									.archiveOrDearchiveAllSelectedItems(
 										true,
-										grid.asMultiSelect().getSelectedItems(),
-										InfrastructureType.FACILITY,
-										new Runnable() {
-
-											public void run() {
-												navigateTo(criteria);
-											}
-										});
+										ArchiveHandlers.forInfrastructure(FacadeProvider.getFacilityFacade(), ArchiveMessages.FACILITY),
+										grid,
+										grid::reload,
+										() -> navigateTo(criteria));
 							},
 							EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
 						new MenuBarHelper.MenuBarItem(
@@ -398,14 +396,10 @@ public class FacilitiesView extends AbstractConfigurationView {
 								ControllerProvider.getInfrastructureController()
 									.archiveOrDearchiveAllSelectedItems(
 										false,
-										grid.asMultiSelect().getSelectedItems(),
-										InfrastructureType.FACILITY,
-										new Runnable() {
-
-											public void run() {
-												navigateTo(criteria);
-											}
-										});
+										ArchiveHandlers.forInfrastructure(FacadeProvider.getFacilityFacade(), ArchiveMessages.FACILITY),
+										grid,
+										grid::reload,
+										() -> navigateTo(criteria));
 							},
 							EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
