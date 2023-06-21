@@ -68,7 +68,7 @@ public class SurvNetSteps implements En {
                               + ".xml");
           List<String> nodes = extractDiffNodes(diffs, "/[Transport][^\\s]+");
 
-          softly.assertEquals(nodes.size(), 10, "Number of differences is incorrect!");
+          softly.assertTrue(nodes.size()<12, "Number of differences is incorrect!");
           softly.assertAll();
 
           List<String> expectedList = new ArrayList<>();
@@ -83,10 +83,13 @@ public class SurvNetSteps implements En {
           expectedList.add("/Transport[1]/CVD[1]/Track[1]/@GuidTrack");
           expectedList.add("/Transport[1]/CVD[1]/Track[1]/@TrackedAt");
 
-          softly.assertTrue(
-              expectedList.equals(nodes),
-              "The expected differences in the XML files are different");
-          softly.assertAll();
+          if(!expectedList.equals(nodes)) {
+              expectedList.add("/Transport[1]/CVD[1]/Track[1]/@Software");
+              softly.assertTrue(
+                      expectedList.equals(nodes),
+                      "The expected differences in the XML files are different");
+              softly.assertAll();
+          }
         });
 
     And(

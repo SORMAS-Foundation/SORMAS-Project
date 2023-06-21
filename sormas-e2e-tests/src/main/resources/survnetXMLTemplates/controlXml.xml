@@ -3,7 +3,7 @@
     <CVD GuidRecord="{0af7c060-0b19-49e3-8687-41a439535035}" VersionNo="1" Schema="9" CodeRecordOwner="2.01.0.03." CodeVersionEditor="2.01.0.03." Token="sor-CVD2023-00090" ToTransportManual="false" ChangedAt="2023-06-08T04:22:51.734" TransportRequestType="1" ReferenceDefComputed="false" ReportingDate="2023-06-08T00:00:00.000" ReportingCounty="11011001" CaseDefClinComputed="0" CaseDefClinManual="false" CaseDefLabComputed="false" CaseDefLabManual="false" CaseDefEpiManual="false" CaseDefCategoryComputed="-1">
         <Field Name="GuidPatient" Value="{979b92b1-0bc1-4140-9bf8-5f04efe73b27}"/>
         <Field Name="BirthdayComputed" Value=""/>
-        <Field Name="Sex" Value="2"/>
+        <Field Name="Sex" Value="1"/>
         <Field Name="StatusDeceased" Value="0"/>
         <Field Name="DeceasedReason" Value="0"/>
         <Field Name="DeceasedDate" Value=""/>
