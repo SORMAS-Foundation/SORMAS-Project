@@ -24,6 +24,8 @@
 *.coffee   text
 *.css      text
 gradlew    text eol=lf
+.env       text eol=lf
+.env.example text eol=lf
 *.htm      text
 *.html     text
 *.inc      text
