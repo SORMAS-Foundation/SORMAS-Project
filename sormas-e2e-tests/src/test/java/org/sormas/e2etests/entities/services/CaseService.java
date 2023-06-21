@@ -611,7 +611,7 @@ public class CaseService {
         .placeOfStay("ZUHAUSE")
         .firstName(firstName)
         .lastName(lastName)
-        .sex(GenderValues.MALE.getGender())
+        .sex(GenderValues.MALE.getGenderDE())
         .build();
   }
 }
