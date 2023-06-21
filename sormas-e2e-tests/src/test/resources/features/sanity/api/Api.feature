@@ -169,7 +169,7 @@ Feature: Check basic POSTs RestApi endpoints
     Then API: I create a new travel entry with creation date 14 days ago
     And API: I check that POST call status code is 200
 
-  @env_main @precon
+  @env_main @tmsLink=SORDEV-5342mk
   Scenario: User permissions check
     Given API:I Login into Environment
     Then API: I get response with Admin User user permission rights
@@ -177,7 +177,7 @@ Feature: Check basic POSTs RestApi endpoints
     And I prepare collection of Admin User rights based on json files
     And I check that user rights are complete
 
-  @env_main @precon
+  @env_main @tmsLink=SORDEV-5342mk
   Scenario: User permissions check
     Given API:I Login into Environment
     Then API: I get response with National User user permission rights
@@ -185,7 +185,7 @@ Feature: Check basic POSTs RestApi endpoints
     And I prepare collection of National User rights based on json files
     And I check that user rights are complete
 
-  @env_de @precon
+  @env_de @tmsLink=SORDEV-5342mk
   Scenario: User permissions check for DE version
     Given API:I Login into Environment
     Then API: I get response with Admin User user permission rights
@@ -193,7 +193,7 @@ Feature: Check basic POSTs RestApi endpoints
     And I prepare collection of Admin User rights based on json files for De version
     And I check that user rights are complete
 
-  @env_de @precon
+  @env_de @tmsLink=SORDEV-5342mk
   Scenario: User permissions check for DE version
     Given API:I Login into Environment
     Then API: I get response with National User user permission rights
