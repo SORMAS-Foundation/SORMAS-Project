@@ -29,6 +29,7 @@ import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
@@ -53,6 +54,8 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String REPORTER_EXTERNAL_ID = "reporterExternalId";
 	public static final String REPORTER_POSTAL_CODE = "reporterPostalCode";
 	public static final String REPORTER_CITY = "reporterCity";
+	public static final String PERSON_EXTERNAL_ID = "personExternalId";
+	public static final String PERSON_NATIONAL_HEALTH_ID = "personNationalHealthId";
 	public static final String PERSON_FIRST_NAME = "personFirstName";
 	public static final String PERSON_LAST_NAME = "personLastName";
 	public static final String PERSON_SEX = "personSex";
@@ -62,9 +65,11 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String PERSON_POSTAL_CODE = "personPostalCode";
 	public static final String PERSON_CITY = "personCity";
 	public static final String PERSON_PHONE = "personPhone";
+	public static final String PERSON_PHONE_NUMBER_TYPE = "personPhoneNumberType";
 	public static final String PERSON_EMAIL = "personEmail";
 	public static final String PERSON_STREET = "personStreet";
 	public static final String PERSON_HOUSE_NUMBER = "personHouseNumber";
+	public static final String PERSON_COUNTRY_UNO_CODE = "personCountryUnoCode";
 	public static final String EXTERNAL_MESSAGE_DETAILS = "externalMessageDetails";
 	public static final String PROCESSED = "processed";
 	public static final String REPORT_ID = "reportId";
@@ -95,6 +100,10 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private String personFirstName;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String personLastName;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String personExternalId;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	private String personNationalHealthId;
 	private Sex personSex;
 	private PresentCondition personPresentCondition;
 	private Integer personBirthDateDD;
@@ -109,7 +118,10 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String personHouseNumber;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	private String personCountryUnoCode;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String personPhone;
+	private PhoneNumberType personPhoneNumberType;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String personEmail;
 	@AuditIncludeProperty
@@ -205,6 +217,22 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		this.reporterCity = reporterCity;
 	}
 
+	public String getPersonExternalId() {
+		return personExternalId;
+	}
+
+	public void setPersonExternalId(String personExternalId) {
+		this.personExternalId = personExternalId;
+	}
+
+	public String getPersonNationalHealthId() {
+		return personNationalHealthId;
+	}
+
+	public void setPersonNationalHealthId(String personNationalHealthId) {
+		this.personNationalHealthId = personNationalHealthId;
+	}
+
 	public String getPersonFirstName() {
 		return personFirstName;
 	}
@@ -293,12 +321,28 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		this.personHouseNumber = personHouseNumber;
 	}
 
+	public String getPersonCountryUnoCode() {
+		return personCountryUnoCode;
+	}
+
+	public void setPersonCountryUnoCode(String personCountryUnoCode) {
+		this.personCountryUnoCode = personCountryUnoCode;
+	}
+
 	public String getPersonPhone() {
 		return personPhone;
 	}
 
 	public void setPersonPhone(String personPhone) {
 		this.personPhone = personPhone;
+	}
+
+	public PhoneNumberType getPersonPhoneNumberType() {
+		return personPhoneNumberType;
+	}
+
+	public void setPersonPhoneNumberType(PhoneNumberType personPhoneNumberType) {
+		this.personPhoneNumberType = personPhoneNumberType;
 	}
 
 	public String getPersonEmail() {
