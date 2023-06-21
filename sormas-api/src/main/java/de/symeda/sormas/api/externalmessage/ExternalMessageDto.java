@@ -69,7 +69,7 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String PERSON_EMAIL = "personEmail";
 	public static final String PERSON_STREET = "personStreet";
 	public static final String PERSON_HOUSE_NUMBER = "personHouseNumber";
-	public static final String PERSON_COUNTRY_UNO_CODE = "personCountryUnoCode";
+	public static final String PERSON_COUNTRY_ISO_CODE = "personCountryIsoCode";
 	public static final String EXTERNAL_MESSAGE_DETAILS = "externalMessageDetails";
 	public static final String PROCESSED = "processed";
 	public static final String REPORT_ID = "reportId";
@@ -118,7 +118,7 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String personHouseNumber;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
-	private String personCountryUnoCode;
+	private String personCountryIsoCode;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String personPhone;
 	private PhoneNumberType personPhoneNumberType;
@@ -321,12 +321,12 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		this.personHouseNumber = personHouseNumber;
 	}
 
-	public String getPersonCountryUnoCode() {
-		return personCountryUnoCode;
+	public String getPersonCountryIsoCode() {
+		return personCountryIsoCode;
 	}
 
-	public void setPersonCountryUnoCode(String personCountryUnoCode) {
-		this.personCountryUnoCode = personCountryUnoCode;
+	public void setPersonCountryIsoCode(String personCountryIsoCode) {
+		this.personCountryIsoCode = personCountryIsoCode;
 	}
 
 	public String getPersonPhone() {
