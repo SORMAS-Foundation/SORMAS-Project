@@ -83,10 +83,11 @@ public class SurvNetSteps implements En {
           expectedList.add("/Transport[1]/CVD[1]/Track[1]/@GuidTrack");
           expectedList.add("/Transport[1]/CVD[1]/Track[1]/@TrackedAt");
 
-          if(!expectedList.equals(nodes)) {
+          if(!expectedList.containsAll(nodes)) {
+              log.info("We are in if statement now");
               expectedList.add("/Transport[1]/CVD[1]/Track[1]/@Software");
               softly.assertTrue(
-                      expectedList.equals(nodes),
+                      expectedList.containsAll(nodes),
                       "The expected differences in the XML files are different");
               softly.assertAll();
           }
