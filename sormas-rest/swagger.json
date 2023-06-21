@@ -17036,9 +17036,19 @@
             "maxLength" : 255,
             "minLength" : 0
           },
+          "personCountryUnoCode" : {
+            "type" : "string",
+            "maxLength" : 255,
+            "minLength" : 0
+          },
           "personEmail" : {
             "type" : "string",
             "maxLength" : 255,
+            "minLength" : 0
+          },
+          "personExternalId" : {
+            "type" : "string",
+            "maxLength" : 512,
             "minLength" : 0
           },
           "personFirstName" : {
@@ -17056,10 +17066,19 @@
             "maxLength" : 255,
             "minLength" : 0
           },
+          "personNationalHealthId" : {
+            "type" : "string",
+            "maxLength" : 255,
+            "minLength" : 0
+          },
           "personPhone" : {
             "type" : "string",
             "maxLength" : 255,
             "minLength" : 0
+          },
+          "personPhoneNumberType" : {
+            "type" : "string",
+            "enum" : [ "LANDLINE", "MOBILE", "WORK", "OTHER" ]
           },
           "personPostalCode" : {
             "type" : "string",
