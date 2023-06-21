@@ -1,6 +1,10 @@
 package de.symeda.sormas.api;
 
-public interface PermanentlyDeletableFacade<F extends PermanentlyDeletableFacade> {
+import java.util.List;
+
+public interface PermanentlyDeletableFacade {
 
 	void delete(String uuid);
+
+	void delete(List<String> uuids);
 }

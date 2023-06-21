@@ -7,6 +7,8 @@ public enum CoreEntityDeleteMessages {
 	CASE(Strings.entityCases,
 		Strings.headingNoCasesSelected,
 		Strings.messageNoCasesSelected,
+		null,
+		null,
 		Strings.headingCasesDeleted,
 		Strings.messageCasesDeleted,
 		Strings.messageCasesNotDeleted,
@@ -16,6 +18,8 @@ public enum CoreEntityDeleteMessages {
 	CONTACT(Strings.entityContacts,
 		Strings.headingNoContactsSelected,
 		Strings.messageNoContactsSelected,
+		null,
+		null,
 		Strings.headingContactsDeleted,
 		Strings.messageContactsDeleted,
 		Strings.messageContactsNotDeleted,
@@ -25,6 +29,8 @@ public enum CoreEntityDeleteMessages {
 	TRAVEL_ENTRY(Strings.entityTravelEntries,
 		Strings.headingNoTravelEntriesSelected,
 		Strings.messageNoTravelEntriesSelected,
+		null,
+		null,
 		Strings.headingTravelEntriesDeleted,
 		Strings.messageTravelEntriesDeleted,
 		Strings.messageTravelEntriesNotDeleted,
@@ -34,6 +40,8 @@ public enum CoreEntityDeleteMessages {
 	VISIT(Strings.entityVisits,
 		Strings.headingNoVisitsSelected,
 		Strings.messageNoVisitsSelected,
+		null,
+		null,
 		Strings.headingVisitsDeleted,
 		Strings.messageVisitsDeleted,
 		Strings.messageVisitsNotDeleted,
@@ -43,6 +51,8 @@ public enum CoreEntityDeleteMessages {
 	EVENT_PARTICIPANT(Strings.entityEventParticipants,
 		Strings.headingNoEventParticipantsSelected,
 		Strings.messageNoEventParticipantsSelected,
+		null,
+		null,
 		Strings.headingEventParticipantsDeleted,
 		Strings.messageEventParticipantsDeleted,
 		Strings.messageEventParticipantsNotDeleted,
@@ -52,11 +62,36 @@ public enum CoreEntityDeleteMessages {
 	TASK(Strings.entityTasks,
 		Strings.headingNoTasksSelected,
 		Strings.messageNoTasksSelected,
+		null,
+		null,
 		Strings.headingTasksDeleted,
 		Strings.messageTasksDeleted,
 		Strings.messageTasksNotDeleted,
 		Strings.headingSomeTasksNotDeleted,
-		Strings.messageCountTasksNotDeleted);
+		Strings.messageCountTasksNotDeleted),
+
+	EXTERNAL_MESSAGE(Strings.entityExternalMessages,
+		Strings.headingNoExternalMessagesSelected,
+		Strings.messageNoExternalMessagesSelected,
+		Strings.headingExternalMessagesEligibleForDeletion,
+		Strings.messageExternalMessagesEligibleForDeletion,
+		Strings.headingExternalMessagesDeleted,
+		Strings.messageExternalMessagesDeleted,
+		Strings.messageExternalMessagesNotDeleted,
+		Strings.headingSomeExternalMessagesNotDeleted,
+		Strings.messageCountExternalMessagesNotDeleted),
+
+	//TODO: the last 3 messages are not exactely necessary here
+	SAMPLE(Strings.entitySamples,
+		Strings.headingNoSamplesSelected,
+		Strings.messageNoSamplesSelected,
+		null,
+		null,
+		Strings.headingSamplesDeleted,
+		Strings.messageSamplesDeleted,
+		Strings.messageSamplesNotDeleted,
+		Strings.headingSomeSamplesNotDeleted,
+		Strings.messageCountSamplesNotDeleted);
 
 	/*
 	 * EVENT(Strings.entityEvents,
@@ -73,18 +108,13 @@ public enum CoreEntityDeleteMessages {
 	 * Strings.messageImmunizationsRestored,
 	 * Strings.headingSomeImmunizationsNotRestored,
 	 * Strings.messageCountImmunizationsNotRestored),
-	 * SAMPLE(Strings.entitySamples,
-	 * Strings.headingNoSamplesSelected,
-	 * Strings.messageNoSamplesSelected,
-	 * Strings.headingSamplesRestored,
-	 * Strings.messageSamplesRestored,
-	 * Strings.headingSomeSamplesNotRestored,
-	 * Strings.messageCountSamplesNotRestored),
 	 */
 
 	private final String entities;
 	private final String headingNoSelection;
 	private final String messageNoSelection;
+	private final String headingEntitiesEligibleForDeletion;
+	private final String messageEntitiesEligibleForDeletion;
 	private final String headingEntitiesDeleted;
 	private final String messageEntitiesDeleted;
 	private final String messageEntitiesNotDeleted;
@@ -95,6 +125,8 @@ public enum CoreEntityDeleteMessages {
 		String entities,
 		String headingNoSelection,
 		String messageNoSelection,
+		String headingEntitiesEligibleForDeletion,
+		String messageEntitiesEligibleForDeletion,
 		String headingEntitiesDeleted,
 		String messageEntitiesDeleted,
 		String messageEntitiesNotDeleted,
@@ -103,6 +135,8 @@ public enum CoreEntityDeleteMessages {
 		this.entities = entities;
 		this.headingNoSelection = headingNoSelection;
 		this.messageNoSelection = messageNoSelection;
+		this.headingEntitiesEligibleForDeletion = headingEntitiesEligibleForDeletion;
+		this.messageEntitiesEligibleForDeletion = messageEntitiesEligibleForDeletion;
 		this.headingEntitiesDeleted = headingEntitiesDeleted;
 		this.messageEntitiesDeleted = messageEntitiesDeleted;
 		this.messageEntitiesNotDeleted = messageEntitiesNotDeleted;
@@ -120,6 +154,14 @@ public enum CoreEntityDeleteMessages {
 
 	public String getMessageNoSelection() {
 		return messageNoSelection;
+	}
+
+	public String getHeadingEntitiesEligibleForDeletion() {
+		return headingEntitiesEligibleForDeletion;
+	}
+
+	public String getMessageEntitiesEligibleForDeletion() {
+		return messageEntitiesEligibleForDeletion;
 	}
 
 	public String getHeadingEntitiesDeleted() {

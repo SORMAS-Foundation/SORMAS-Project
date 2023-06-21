@@ -47,6 +47,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -921,6 +922,11 @@ public class TaskFacadeEjb implements TaskFacade {
 
 		Task task = taskService.getByUuid(uuid);
 		taskService.deletePermanent(task);
+	}
+
+	@Override
+	public void delete(List<String> uuids) {
+		throw new NotImplementedException();
 	}
 
 	@RightsAllowed(UserRight._TASK_DELETE)

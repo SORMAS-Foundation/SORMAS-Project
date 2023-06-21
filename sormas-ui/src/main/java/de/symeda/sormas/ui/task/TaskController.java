@@ -199,6 +199,7 @@ public class TaskController {
 				selectedRows.stream().map(TaskIndexDto::getUuid).collect(Collectors.toList()),
 				FacadeProvider.getTaskFacade(),
 				CoreEntityDeleteMessages.TASK,
+				true,
 				callback);
 	}
 

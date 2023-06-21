@@ -78,6 +78,7 @@ import de.symeda.sormas.ui.externalmessage.physiciansreport.PhysiciansReportProc
 import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
 import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.CoreEntityDeleteMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -274,34 +275,20 @@ public class ExternalMessageController {
 		}
 	}
 
+	//TODO: test this one
 	public void deleteAllSelectedItems(Collection<ExternalMessageIndexDto> selectedRows, Runnable callback) {
 
-		if (selectedRows.isEmpty()) {
-			new Notification(
-				I18nProperties.getString(Strings.headingNoExternalMessagesSelected),
-				I18nProperties.getString(Strings.messageNoExternalMessagesSelected),
-				Notification.Type.WARNING_MESSAGE,
-				false).show(Page.getCurrent());
-		} else if (selectedRows.stream().anyMatch(m -> m.getStatus() == ExternalMessageStatus.PROCESSED)) {
-			new Notification(
-				I18nProperties.getString(Strings.headingExternalMessagesDeleteProcessed),
-				I18nProperties.getString(Strings.messageExternalMessagesDeleteProcessed),
-				Notification.Type.ERROR_MESSAGE,
-				false).show(Page.getCurrent());
-		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow(
-				String.format(I18nProperties.getString(Strings.confirmationDeleteExternalMessages), selectedRows.size()),
-				() -> {
-					FacadeProvider.getExternalMessageFacade()
-						.deleteExternalMessages(selectedRows.stream().map(ExternalMessageIndexDto::getUuid).collect(Collectors.toList()));
-					callback.run();
-					new Notification(
-						I18nProperties.getString(Strings.headingExternalMessagesDeleted),
-						I18nProperties.getString(Strings.messageExternalMessagesDeleted),
-						Notification.Type.HUMANIZED_MESSAGE,
-						false).show(Page.getCurrent());
-				});
-		}
+		ControllerProvider.getPermanentDeleteController()
+			.deleteAllSelectedItems(
+				selectedRows.stream().map(ExternalMessageIndexDto::getUuid).collect(Collectors.toList()),
+				FacadeProvider.getTaskFacade(),
+				CoreEntityDeleteMessages.EXTERNAL_MESSAGE,
+				isEligibleForDeletion(selectedRows),
+				callback);
+	}
+
+	public boolean isEligibleForDeletion(Collection<ExternalMessageIndexDto> selectedRows) {
+		return !selectedRows.stream().anyMatch(m -> m.getStatus() == ExternalMessageStatus.PROCESSED);
 	}
 
 	private HorizontalLayout getExternalMessageButtonsPanel(ExternalMessageDto externalMessage, Runnable callback) {
@@ -319,7 +306,7 @@ public class ExternalMessageController {
 						if (FacadeProvider.getExternalMessageFacade().isProcessed(externalMessage.getUuid())) {
 							showAlreadyProcessedPopup(null, false);
 						} else {
-							FacadeProvider.getExternalMessageFacade().deleteExternalMessage(externalMessage.getUuid());
+							FacadeProvider.getExternalMessageFacade().delete(externalMessage.getUuid());
 							callback.run();
 						}
 					}),

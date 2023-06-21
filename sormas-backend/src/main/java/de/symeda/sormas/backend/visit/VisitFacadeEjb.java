@@ -46,6 +46,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -325,6 +326,11 @@ public class VisitFacadeEjb extends AbstractBaseEjb<Visit, VisitDto, VisitIndexD
 		}
 		Visit visit = service.getByUuid(uuid);
 		service.deletePermanent(visit);
+	}
+
+	@Override
+	public void delete(List<String> uuids) {
+		throw new NotImplementedException();
 	}
 
 	@Override

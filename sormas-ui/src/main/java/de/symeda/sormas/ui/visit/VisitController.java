@@ -234,6 +234,7 @@ public class VisitController {
 				selectedRows.stream().map(VisitIndexDto::getUuid).collect(Collectors.toList()),
 				FacadeProvider.getVisitFacade(),
 				CoreEntityDeleteMessages.VISIT,
+				true,
 				callback);
 	}
 }

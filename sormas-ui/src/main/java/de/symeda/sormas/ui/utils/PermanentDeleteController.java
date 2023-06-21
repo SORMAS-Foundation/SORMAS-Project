@@ -15,9 +15,19 @@ import de.symeda.sormas.api.utils.HtmlHelper;
 
 public class PermanentDeleteController<F extends PermanentlyDeletableFacade> {
 
-	public void deleteAllSelectedItems(List<String> entityUuids, F entityFacade, CoreEntityDeleteMessages messages, Runnable callback) {
+	public void deleteAllSelectedItems(
+		List<String> entityUuids,
+		F entityFacade,
+		CoreEntityDeleteMessages messages,
+		boolean isEligibleForDeletion,
+		Runnable callback) {
 		if (entityUuids.isEmpty()) {
 			displayNothingSelectedToBeDeleted(messages);
+			return;
+		}
+
+		if (!isEligibleForDeletion) {
+			displayErrorMessage(messages);
 			return;
 		}
 
@@ -81,6 +91,14 @@ public class PermanentDeleteController<F extends PermanentlyDeletableFacade> {
 			I18nProperties.getString(messages.getHeadingNoSelection()),
 			I18nProperties.getString(messages.getMessageNoSelection()),
 			Notification.Type.WARNING_MESSAGE,
+			false).show(Page.getCurrent());
+	}
+
+	private void displayErrorMessage(CoreEntityDeleteMessages messages) {
+		new Notification(
+			I18nProperties.getString(messages.getHeadingEntitiesEligibleForDeletion()),
+			I18nProperties.getString(messages.getMessageEntitiesEligibleForDeletion()),
+			Notification.Type.ERROR_MESSAGE,
 			false).show(Page.getCurrent());
 	}
 

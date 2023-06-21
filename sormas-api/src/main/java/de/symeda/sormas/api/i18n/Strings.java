@@ -247,6 +247,7 @@ public interface Strings {
 	String entityEventParticipants = "entityEventParticipants";
 	String entityEvents = "entityEvents";
 	String entityExposure = "entityExposure";
+	String entityExternalMessages = "entityExternalMessages";
 	String entityFacilities = "entityFacilities";
 	String entityFeatureConfigurations = "entityFeatureConfigurations";
 	String entityGathering = "entityGathering";
@@ -565,7 +566,7 @@ public interface Strings {
 	String headingExternalMessageProcessSample = "headingExternalMessageProcessSample";
 	String headingExternalMessageSampleInformation = "headingExternalMessageSampleInformation";
 	String headingExternalMessagesDeleted = "headingExternalMessagesDeleted";
-	String headingExternalMessagesDeleteProcessed = "headingExternalMessagesDeleteProcessed";
+	String headingExternalMessagesEligibleForDeletion = "headingExternalMessagesEligibleForDeletion";
 	String headingFatalities = "headingFatalities";
 	String headingFetchExternalMessages = "headingFetchExternalMessages";
 	String headingFileExists = "headingFileExists";
@@ -722,7 +723,9 @@ public interface Strings {
 	String headingSomeEventParticipantsNotRestored = "headingSomeEventParticipantsNotRestored";
 	String headingSomeEventsNotDeleted = "headingSomeEventsNotDeleted";
 	String headingSomeEventsNotRestored = "headingSomeEventsNotRestored";
+	String headingSomeExternalMessagesNotDeleted = "headingSomeExternalMessagesNotDeleted";
 	String headingSomeImmunizationsNotRestored = "headingSomeImmunizationsNotRestored";
+	String headingSomeSamplesNotDeleted = "headingSomeSamplesNotDeleted";
 	String headingSomeSamplesNotRestored = "headingSomeSamplesNotRestored";
 	String headingSomeTasksNotDeleted = "headingSomeTasksNotDeleted";
 	String headingSomeTravelEntriesNotDeleted = "headingSomeTravelEntriesNotDeleted";
@@ -1104,6 +1107,7 @@ public interface Strings {
 	String messageCountEventsNotDeleted = "messageCountEventsNotDeleted";
 	String messageCountEventsNotDeletedExternalSurveillanceTool = "messageCountEventsNotDeletedExternalSurveillanceTool";
 	String messageCountEventsNotRestored = "messageCountEventsNotRestored";
+	String messageCountExternalMessagesNotDeleted = "messageCountExternalMessagesNotDeleted";
 	String messageCountImmunizationsNotRestored = "messageCountImmunizationsNotRestored";
 	String messageCountriesArchived = "messageCountriesArchived";
 	String messageCountriesDearchived = "messageCountriesDearchived";
@@ -1111,6 +1115,7 @@ public interface Strings {
 	String messageCountryArchived = "messageCountryArchived";
 	String messageCountryDearchived = "messageCountryDearchived";
 	String messageCountryDearchivingNotPossible = "messageCountryDearchivingNotPossible";
+	String messageCountSamplesNotDeleted = "messageCountSamplesNotDeleted";
 	String messageCountSamplesNotRestored = "messageCountSamplesNotRestored";
 	String messageCountTasksNotDeleted = "messageCountTasksNotDeleted";
 	String messageCountTravelEntriesNotDeleted = "messageCountTravelEntriesNotDeleted";
@@ -1186,7 +1191,8 @@ public interface Strings {
 	String messageExternalLabResultsAdapterNotFound = "messageExternalLabResultsAdapterNotFound";
 	String messageExternalMessagesAssigned = "messageExternalMessagesAssigned";
 	String messageExternalMessagesDeleted = "messageExternalMessagesDeleted";
-	String messageExternalMessagesDeleteProcessed = "messageExternalMessagesDeleteProcessed";
+	String messageExternalMessagesEligibleForDeletion = "messageExternalMessagesEligibleForDeletion";
+	String messageExternalMessagesNotDeleted = "messageExternalMessagesNotDeleted";
 	String messageFacilitiesArchived = "messageFacilitiesArchived";
 	String messageFacilitiesDearchived = "messageFacilitiesDearchived";
 	String messageFacilitiesDearchivingNotPossible = "messageFacilitiesDearchivingNotPossible";
