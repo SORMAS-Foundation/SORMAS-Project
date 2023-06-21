@@ -198,5 +198,5 @@ Feature: Check basic POSTs RestApi endpoints
     Given API:I Login into Environment
     Then API: I get response with National User user permission rights
     And API: I check that GET call status code is 200
-    And I prepare collection of Admin User rights based on json files for De version
+    And I prepare collection of National User rights based on json files for De version
     And I check that user rights are complete
