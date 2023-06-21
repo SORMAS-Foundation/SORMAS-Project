@@ -15,6 +15,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.sormas.e2etests.helpers.SchemaValidator.XMLSchemaValidator.validateXMLSchema;
 import static org.sormas.e2etests.helpers.comparison.XMLComparison.compareXMLFiles;
 import static org.sormas.e2etests.helpers.comparison.XMLComparison.extractDiffNodes;
 
@@ -58,11 +59,13 @@ public class SurvNetSteps implements En {
         });
 
     And(
-        "^I check the SORMAS generated XML file structure$",
+        "^I compare the SORMAS generated XML file with the example one$",
         () -> {
           List<String> diffs =
-              compareXMLFiles(
-                  "src/main/resources/controlXml.xml", "src/main/resources/testXml.xml");
+              compareXMLFiles("src/main/resources/survnetXMLTemplates/controlXml.xml",
+                      "/srv/dockerdata/jenkins_new/sormas-files/test_"
+                              + EditCaseSteps.externalUUID.substring(1, 37)
+                              + ".xml");
           List<String> nodes = extractDiffNodes(diffs, "/[Transport][^\\s]+");
 
           softly.assertEquals(nodes.size(), 10, "Number of differences is incorrect!");
@@ -83,6 +86,18 @@ public class SurvNetSteps implements En {
           softly.assertTrue(
               expectedList.equals(nodes),
               "The expected differences in the XML files are different");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check the SORMAS generated XML file structure with XSD Schema file$",
+        () -> {
+          softly.assertTrue(
+              validateXMLSchema("src/main/resources/survnetXMLTemplates/xmlSchema.xsd",
+                      "/srv/dockerdata/jenkins_new/sormas-files/test_"
+                      + EditCaseSteps.externalUUID.substring(1, 37)
+                      + ".xml"),
+              "Generated XML file does not match an example XSD schema");
           softly.assertAll();
         });
   }

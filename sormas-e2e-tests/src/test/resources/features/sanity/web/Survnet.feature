@@ -29,4 +29,5 @@ Feature: Survnet tests
     And I click on Send to reporting tool button on Edit Case page
     And I collect case external UUID from Edit Case page
     Then I wait 40 seconds for system reaction
-    And I check the SORMAS generated XML file structure
+    And I check the SORMAS generated XML file structure with XSD Schema file
+    And I compare the SORMAS generated XML file with the example one
