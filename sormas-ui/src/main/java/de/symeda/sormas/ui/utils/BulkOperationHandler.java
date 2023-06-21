@@ -13,9 +13,11 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.ui.utils.components.progress.BulkProgressLayout;
 import de.symeda.sormas.ui.utils.components.progress.BulkProgressUpdateInfo;
@@ -69,6 +71,7 @@ public class BulkOperationHandler<T extends HasUuid> {
 			}
 			bulkOperationDoneCallback.accept(Collections.emptyList());
 		} else {
+			UserDto currentUser = FacadeProvider.getUserFacade().getCurrentUser();
 			UI currentUI = UI.getCurrent();
 
 			BulkProgressLayout bulkProgressLayout = new BulkProgressLayout(currentUI, selectedEntries.size(), this::handleCancelButtonClicked);
@@ -81,6 +84,8 @@ public class BulkOperationHandler<T extends HasUuid> {
 
 			Thread bulkThread = new Thread(() -> {
 				currentUI.setPollInterval(300);
+				I18nProperties.setUserLanguage(currentUser.getLanguage());
+				FacadeProvider.getI18nFacade().setUserLanguage(currentUser.getLanguage());
 
 				try {
 					List<T> remainingEntries = performBulkOperation(bulkOperationFunction, selectedEntries, bulkProgressLayout::updateProgress);
