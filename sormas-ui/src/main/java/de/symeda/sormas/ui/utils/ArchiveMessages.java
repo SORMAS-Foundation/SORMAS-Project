@@ -80,6 +80,7 @@ public enum ArchiveMessages {
 		Strings.messageCampaignDearchived,
 		null,
 		null),
+
 	TASK(Strings.headingConfirmArchiving,
 		Strings.confirmationArchiveTask,
 		Strings.confirmationArchiveTasks,
@@ -90,6 +91,7 @@ public enum ArchiveMessages {
 		Strings.messageTaskDearchived,
 		Strings.headingNoTasksSelected,
 		Strings.messageNoTasksSelected),
+
 	CONTINENT(Strings.headingConfirmArchiving,
 		Strings.confirmationArchiveContinent,
 		Strings.confirmationArchiveContinents,
@@ -100,6 +102,7 @@ public enum ArchiveMessages {
 		Strings.messageContinentDearchived,
 		Strings.headingNoRowsSelected,
 		Strings.messageNoRowsSelected),
+
 	SUBCONTINENT(Strings.headingConfirmArchiving,
 		Strings.confirmationArchiveSubcontinent,
 		Strings.confirmationArchiveSubcontinents,
@@ -110,6 +113,7 @@ public enum ArchiveMessages {
 		Strings.messageSubcontinentDearchived,
 		Strings.headingNoRowsSelected,
 		Strings.messageNoRowsSelected),
+
 	AREA(Strings.headingConfirmArchiving,
 		Strings.confirmationArchiveArea,
 		Strings.confirmationArchiveAreas,
@@ -120,6 +124,7 @@ public enum ArchiveMessages {
 		Strings.messageAreaDearchived,
 		Strings.headingNoRowsSelected,
 		Strings.messageNoRowsSelected),
+
 	COUNTRY(Strings.headingConfirmArchiving,
 		Strings.confirmationArchiveCountry,
 		Strings.confirmationArchiveCountries,
@@ -130,6 +135,7 @@ public enum ArchiveMessages {
 		Strings.messageCountryDearchived,
 		Strings.headingNoRowsSelected,
 		Strings.messageNoRowsSelected),
+
 	REGION(Strings.headingConfirmArchiving,
 		Strings.confirmationArchiveRegion,
 		Strings.confirmationArchiveRegions,
@@ -140,6 +146,7 @@ public enum ArchiveMessages {
 		Strings.messageRegionDearchived,
 		Strings.headingNoRowsSelected,
 		Strings.messageNoRowsSelected),
+
 	DISTRICT(Strings.headingConfirmArchiving,
 		Strings.confirmationArchiveDistrict,
 		Strings.confirmationArchiveDistricts,
@@ -150,6 +157,7 @@ public enum ArchiveMessages {
 		Strings.messageDistrictDearchived,
 		Strings.headingNoRowsSelected,
 		Strings.messageNoRowsSelected),
+
 	COMMUNITY(Strings.headingConfirmArchiving,
 		Strings.confirmationArchiveCommunity,
 		Strings.confirmationArchiveCommunities,
@@ -160,6 +168,7 @@ public enum ArchiveMessages {
 		Strings.messageCommunityDearchived,
 		Strings.headingNoRowsSelected,
 		Strings.messageNoRowsSelected),
+
 	FACILITY(Strings.headingConfirmArchiving,
 		Strings.confirmationArchiveFacility,
 		Strings.confirmationArchiveFacilities,
@@ -170,6 +179,7 @@ public enum ArchiveMessages {
 		Strings.messageFacilityDearchived,
 		Strings.headingNoRowsSelected,
 		Strings.messageNoRowsSelected),
+
 	POINT_OF_ENTRY(Strings.headingConfirmArchiving,
 		Strings.confirmationArchivePointOfEntry,
 		Strings.confirmationArchivePointsOfEntry,
