@@ -17036,7 +17036,7 @@
             "maxLength" : 255,
             "minLength" : 0
           },
-          "personCountryUnoCode" : {
+          "personCountryIsoCode" : {
             "type" : "string",
             "maxLength" : 255,
             "minLength" : 0
