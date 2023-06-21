@@ -42,6 +42,8 @@ updates:
       - dependency-name: org.yaml:snakeyaml
       # Vaadin 8.14.3 is the last free version - https://vaadin.com/vaadin-8-extended-maintenance-releases
       - dependency-name: com.vaadin:vaadin-*
+      # Newer version breaks sormas-base/build.xml -> collect-serverlibs (remove after #12074)
+      - dependency-name: commons-io:commons-io
 
   # Maintain gradle dependencies for sormas-app
   - package-ecosystem: "gradle"
