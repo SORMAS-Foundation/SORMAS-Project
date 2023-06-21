@@ -84,7 +84,6 @@ public class SurvNetSteps implements En {
           expectedList.add("/Transport[1]/CVD[1]/Track[1]/@TrackedAt");
 
           if(!expectedList.containsAll(nodes)) {
-              log.info("We are in if statement now");
               expectedList.add("/Transport[1]/CVD[1]/Track[1]/@Software");
               softly.assertTrue(
                       expectedList.containsAll(nodes),
