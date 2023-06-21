@@ -7,7 +7,6 @@ import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.DifferenceListener;
 import org.custommonkey.xmlunit.IgnoreTextAndAttributeValuesDifferenceListener;
 import org.custommonkey.xmlunit.XMLUnit;
-import org.testng.annotations.Test;
 import org.xml.sax.SAXException;
 
 import java.io.File;
@@ -18,7 +17,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@Test
 public class XMLComparison {
 
   public static List<String> extractDiffNodes(List<String> allDiffs, String regex) {
