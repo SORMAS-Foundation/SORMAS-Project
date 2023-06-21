@@ -46,14 +46,6 @@ public class UserSteps implements En {
         });
 
     When(
-        "API: I get response with user permission rights",
-        () -> {
-          userHelper.getUserByRightsPermissions("W5QCZW-XLFVFT-E5MK66-O3SUKE7E"); // get
-          responseBody = apiState.getResponse().getBody().asString();
-          regexUpdatedResponseBody = responseBody.replaceAll("\\s+", "");
-        });
-
-    When(
         "API: I get response with ([^\"]*) user permission rights",
         (String option) -> {
           switch (option) {
