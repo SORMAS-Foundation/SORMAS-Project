@@ -67,6 +67,7 @@
 
 			<!-- *** Payara modules *** -->
 			<!-- The versions here listed reflect the precise or minimal version provided as Payara module -->
+			<!-- List these dependencies to not be automatically updated by dependabot: .github/dependabot.yml , below "# payara dependencies" -->
 
 			<dependency>
 				<groupId>javax</groupId>
