@@ -332,6 +332,11 @@ public class EnvironmentFacadeEjb
 		return service.getAllAfter(date).stream().map(r -> toDto(r)).collect(Collectors.toList());
 	}
 
+	@Override
+	public List<String> getArchivedUuidsSince(Date since) {
+		return null;
+	}
+
 	@LocalBean
 	@Stateless
 	public static class EnvironmentFacadeEjbLocal extends EnvironmentFacadeEjb {
