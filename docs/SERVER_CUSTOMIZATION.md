@@ -65,7 +65,8 @@ A `MANUAL_DELETION` entry can exist in parallel to one of the other entries, and
 
 * **`CREATION`**: The creation date of the entity will be used.
 * **`END`**: The latest change date of the entity itself and any of its depending entities will be used. E.g. for cases, this includes but is not limited to its epi data, symptoms, or hospitalization.
-* **`ORIGIN`**: This is currently only implemented for travel entries and means that the report date of the entity will be used. If this is specified for any other entity, the deletion job will be stopped and throw an error.
+* **`ORIGIN`**: This is currently only implemented for travel entries and means that the arrival date of the entity will be used. If this is specified for any other entity, the deletion job will be stopped and throw an error.
+* **`REPORT`**: The report date of the entity will be used. This is currently not implemented for event participants and campaigns.
 * **`MANUAL_DELETION`**: The date on which the entity was manually deleted by a user.
 
 ## Infrastructure Data

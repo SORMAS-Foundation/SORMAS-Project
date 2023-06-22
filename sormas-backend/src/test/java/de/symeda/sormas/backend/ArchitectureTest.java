@@ -445,6 +445,12 @@ public class ArchitectureTest {
 		assertFacadeEjbAnnotated(SampleDashboardFacadeEjb.class, AuthMode.CLASS_ONLY, classes);
 	}
 
+	@ArchTest
+	public void testEnvironmentFacadeEjbAuthorization(JavaClasses classes) {
+		//TODO #11572: activate test 
+		//assertFacadeEjbAnnotated(EnvironmentFacadeEjb.class, classes);
+	}
+
 	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, JavaClasses classes) {
 		assertFacadeEjbAnnotated(facadeEjbClass, AuthMode.CLASS_AND_METHODS, Collections.emptyList(), classes);
 	}
