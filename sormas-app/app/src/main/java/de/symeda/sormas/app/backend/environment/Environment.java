@@ -3,6 +3,7 @@ package de.symeda.sormas.app.backend.environment;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_SMALL;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_TEXT;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -56,9 +57,9 @@ public class Environment extends AbstractDomainObject {
     private Date reportDate;
     @DatabaseField(foreign = true, foreignAutoRefresh = true, columnName = "reportingUser_id")
     private User reportingUser;
-    @Column(length = CHARACTER_LIMIT_SMALL)
+    @Column(length = CHARACTER_LIMIT_TEXT)
     private String environmentName;
-    @Column(length = CHARACTER_LIMIT_BIG)
+    @Column(length = CHARACTER_LIMIT_TEXT)
     private String description;
     @Column(length = CHARACTER_LIMIT_DEFAULT)
     private String externalId;
@@ -70,16 +71,16 @@ public class Environment extends AbstractDomainObject {
     private EnvironmentMedia environmentMedia;
     @Enumerated(EnumType.STRING)
     private WaterType waterType;
-    @Column(length = CHARACTER_LIMIT_DEFAULT)
+    @Column(length = CHARACTER_LIMIT_TEXT)
     private String otherWaterType;
     @Enumerated(EnumType.STRING)
     private EnvironmentInfrastructureDetails infrastructureDetails;
-    @Column(length = CHARACTER_LIMIT_DEFAULT)
+    @Column(length = CHARACTER_LIMIT_TEXT)
     private String otherInfrastructureDetails;
     @Column(name = "waterUse", length = 1024)
     private String waterUseJson;
     private Map<WaterUse, Boolean> waterUse;
-    @Column(length = CHARACTER_LIMIT_DEFAULT)
+    @Column(length = CHARACTER_LIMIT_TEXT)
     private String otherWaterUse;
     @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 2)
     private Location location;
