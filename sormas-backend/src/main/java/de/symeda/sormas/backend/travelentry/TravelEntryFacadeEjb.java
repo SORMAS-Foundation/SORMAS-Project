@@ -398,7 +398,10 @@ public class TravelEntryFacadeEjb
 	protected String getDeleteReferenceField(DeletionReference deletionReference) {
 		if (deletionReference.equals(DeletionReference.ORIGIN)) {
 			return TravelEntry.DATE_OF_ARRIVAL;
+		} else if (deletionReference == DeletionReference.REPORT) {
+			return TravelEntry.REPORT_DATE;
 		}
+
 		return super.getDeleteReferenceField(deletionReference);
 	}
 

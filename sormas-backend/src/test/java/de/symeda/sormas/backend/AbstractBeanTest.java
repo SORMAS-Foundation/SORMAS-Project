@@ -405,17 +405,17 @@ public abstract class AbstractBeanTest {
 	}
 
 	protected void createDeletionConfigurations() {
-		createDeletionConfigurations(CoreEntityType.CASE);
-		createDeletionConfigurations(CoreEntityType.CONTACT);
-		createDeletionConfigurations(CoreEntityType.EVENT);
-		createDeletionConfigurations(CoreEntityType.EVENT_PARTICIPANT);
-		createDeletionConfigurations(CoreEntityType.IMMUNIZATION);
-		createDeletionConfigurations(CoreEntityType.TRAVEL_ENTRY);
+		createDeletionConfigurations(CoreEntityType.CASE, DeletionReference.CREATION);
+		createDeletionConfigurations(CoreEntityType.CONTACT, DeletionReference.CREATION);
+		createDeletionConfigurations(CoreEntityType.EVENT, DeletionReference.CREATION);
+		createDeletionConfigurations(CoreEntityType.EVENT_PARTICIPANT, DeletionReference.CREATION);
+		createDeletionConfigurations(CoreEntityType.IMMUNIZATION, DeletionReference.CREATION);
+		createDeletionConfigurations(CoreEntityType.TRAVEL_ENTRY, DeletionReference.CREATION);
 	}
 
-	private void createDeletionConfigurations(CoreEntityType coreEntityType) {
+	protected void createDeletionConfigurations(CoreEntityType coreEntityType, DeletionReference automaticDeletionReference) {
 		DeletionConfigurationService deletionConfigurationService = getBean(DeletionConfigurationService.class);
-		deletionConfigurationService.ensurePersisted(DeletionConfiguration.build(coreEntityType, DeletionReference.CREATION, 3650));
+		deletionConfigurationService.ensurePersisted(DeletionConfiguration.build(coreEntityType, automaticDeletionReference, 3650));
 		deletionConfigurationService.ensurePersisted(DeletionConfiguration.build(coreEntityType, DeletionReference.MANUAL_DELETION, 90));
 	}
 
