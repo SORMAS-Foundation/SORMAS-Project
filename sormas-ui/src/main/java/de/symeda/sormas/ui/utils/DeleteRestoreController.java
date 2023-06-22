@@ -12,6 +12,7 @@ import com.vaadin.ui.Window;
 import de.symeda.sormas.api.DeletableFacade;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.HtmlHelper;
@@ -46,7 +47,13 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 			});
 	}
 
-	public void deleteAllSelectedItems(List<String> entityUuids, F entityFacade, CoreEntityDeleteMessages messages, Runnable callback) {
+	public void deleteAllSelectedItems(
+		List<String> entityUuids,
+		F entityFacade,
+		CoreEntityDeleteMessages messages,
+		boolean allItemsEligibleForDeletion,
+		Runnable callback) {
+
 		if (entityUuids.isEmpty()) {
 			displayNothingSelectedToBeDeleted(messages);
 			return;
@@ -59,7 +66,7 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 
 		DeletableUtils.showDeleteWithReasonPopup(
 			deleteWithReasonConfirmationMessage,
-			(deleteDetails) -> performDeleteSelectedItems(entityUuids, entityFacade, messages, deleteDetails, callback));
+			(deleteDetails) -> performDeleteSelectedItems(entityUuids, entityFacade, messages, deleteDetails, allItemsEligibleForDeletion, callback));
 
 	}
 
@@ -90,17 +97,57 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 		F entityFacade,
 		CoreEntityDeleteMessages messages,
 		DeletionDetails deleteDetails,
+		boolean allItemsAreEligibleForDeletion,
+		Runnable callback) {
+
+		if (allItemsAreEligibleForDeletion) {
+			int undeletedEntityCount = 0;
+			StringBuilder unDeletedEntitiesSb = new StringBuilder();
+			for (String selectedRow : entityUuids) {
+				try {
+					entityFacade.delete(selectedRow, deleteDetails);
+				} catch (Exception e) {
+					undeletedEntityCount++;
+					unDeletedEntitiesSb.append(selectedRow, 0, 6).append(", ");
+				}
+			}
+
+			if (unDeletedEntitiesSb.length() > 0) {
+				unDeletedEntitiesSb = new StringBuilder(" " + unDeletedEntitiesSb.substring(0, unDeletedEntitiesSb.length() - 2) + ". ");
+			}
+
+			callback.run();
+			handleDeleteResult(undeletedEntityCount, messages, unDeletedEntitiesSb.toString());
+
+		} else {
+			//for now only events with event participants will not be eligible for deletion
+			performDeleteSelectedItemsWithIneligibleItems(entityUuids, entityFacade, messages, deleteDetails, callback);
+		}
+	}
+
+	private void performDeleteSelectedItemsWithIneligibleItems(
+		List<String> entityUuids,
+		F entityFacade,
+		CoreEntityDeleteMessages messages,
+		DeletionDetails deleteDetails,
 		Runnable callback) {
 
 		int undeletedEntityCount = 0;
+		int undeletedEntityWithParticipantsCount = 0;
 		StringBuilder unDeletedEntitiesSb = new StringBuilder();
+		StringBuilder unDeletedEntitiesWithParticipantsSb = new StringBuilder();
 
 		for (String selectedRow : entityUuids) {
-			try {
-				entityFacade.delete(selectedRow, deleteDetails);
-			} catch (Exception e) {
-				undeletedEntityCount++;
-				unDeletedEntitiesSb.append(selectedRow, 0, 6).append(", ");
+			if (existEventParticipantsLinkedToEvent(selectedRow)) {
+				undeletedEntityWithParticipantsCount = undeletedEntityWithParticipantsCount + 1;
+				unDeletedEntitiesWithParticipantsSb.append(selectedRow, 0, 6).append(", ");
+			} else {
+				try {
+					entityFacade.delete(selectedRow, deleteDetails);
+				} catch (Exception e) {
+					undeletedEntityCount++;
+					unDeletedEntitiesSb.append(selectedRow, 0, 6).append(", ");
+				}
 			}
 		}
 
@@ -108,57 +155,119 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 			unDeletedEntitiesSb = new StringBuilder(" " + unDeletedEntitiesSb.substring(0, unDeletedEntitiesSb.length() - 2) + ". ");
 		}
 
+		if (unDeletedEntitiesWithParticipantsSb.length() > 0) {
+			unDeletedEntitiesWithParticipantsSb =
+				new StringBuilder(" " + unDeletedEntitiesWithParticipantsSb.substring(0, unDeletedEntitiesWithParticipantsSb.length() - 2) + ". ");
+		}
+
 		callback.run();
-		handleDeleteResult(undeletedEntityCount, messages, unDeletedEntitiesSb.toString());
+		handleDeleteWithIneligibleItemsResult(
+			undeletedEntityCount,
+			undeletedEntityWithParticipantsCount,
+			messages,
+			unDeletedEntitiesSb.toString(),
+			unDeletedEntitiesWithParticipantsSb.toString());
 	}
 
 	private void handleRestoreResult(int unrestoredEntityCount, CoreEntityRestoreMessages messages, String unrestoredEntitiesString) {
 
 		if (unrestoredEntityCount == 0) {
-			new Notification(
-				I18nProperties.getString(messages.getHeadingEntitiesRestored()),
-				I18nProperties.getString(messages.getMessageEntitiesRestored()),
-				Notification.Type.TRAY_NOTIFICATION,
-				false).show(Page.getCurrent());
+			displaySuccessNotification(messages.getHeadingEntitiesRestored(), messages.getMessageEntitiesRestored());
 		} else {
-			Window response = VaadinUiUtil.showSimplePopupWindow(
+			//TODO: add messages for all the entities, add missing strings too
+			// 	I18nProperties.getString(Strings.messageCasesNotRestored)),
+			showSimplePopUp(
 				I18nProperties.getString(messages.getHeadingSomeEntitiesNotRestored()),
-				String.format(
-					"%1s <br/> <br/> %2s",
-					String.format(
-						I18nProperties.getString(messages.getMessageCountEntitiesNotRestored()),
-						String.format("<b>%s</b>", unrestoredEntityCount),
-						String.format("<b>%s</b>", HtmlHelper.cleanHtml(unrestoredEntitiesString))),
-					//TODO: add messages for all the entities, add missing strings too
-					//	I18nProperties.getString(Strings.messageCasesNotRestored)),
-					I18nProperties.getString(messages.getMessageEntitiesNotRestored())),
-				ContentMode.HTML);
-			response.setWidth(600, Sizeable.Unit.PIXELS);
+				getDetails(
+					messages.getMessageCountEntitiesNotRestored(),
+					unrestoredEntityCount,
+					unrestoredEntitiesString,
+					messages.getMessageEntitiesNotRestored()));
 		}
 	}
 
 	private void handleDeleteResult(int undeletedEntityCount, CoreEntityDeleteMessages messages, String undeletedEntitiesString) {
 
 		if (undeletedEntityCount == 0) {
-			new Notification(
-				I18nProperties.getString(messages.getHeadingEntitiesDeleted()),
-				I18nProperties.getString(messages.getMessageEntitiesDeleted()),
-				Notification.Type.TRAY_NOTIFICATION,
-				false).show(Page.getCurrent());
+			displaySuccessNotification(messages.getHeadingEntitiesDeleted(), messages.getMessageEntitiesDeleted());
 		} else {
-			Window response = VaadinUiUtil.showSimplePopupWindow(
+
+			showSimplePopUp(
 				I18nProperties.getString(messages.getHeadingSomeEntitiesNotDeleted()),
-				String.format(
-					"%1s <br/> <br/> %2s",
-					String.format(
-						I18nProperties.getString(messages.getMessageCountEntitiesNotDeleted()),
-						String.format("<b>%s</b>", undeletedEntityCount),
-						String.format("<b>%s</b>", HtmlHelper.cleanHtml(undeletedEntitiesString))),
-					//TODO: change for events -> will be 2 kind of messages based on the exception type
-					I18nProperties.getString(messages.getMessageEntitiesNotDeleted())),
-				ContentMode.HTML);
-			response.setWidth(600, Sizeable.Unit.PIXELS);
+				getDetails(
+					messages.getMessageCountEntitiesNotDeleted(),
+					undeletedEntityCount,
+					undeletedEntitiesString,
+					messages.getMessageEntitiesNotDeleted()));
 		}
+	}
+
+	private void handleDeleteWithIneligibleItemsResult(
+		int undeletedEntityCount,
+		int undeletedEntityWithReasonCount,
+		CoreEntityDeleteMessages messages,
+		String undeletedEntitiesString,
+		String undeletedEntitiesWithReasonString) {
+
+		if (undeletedEntityCount == 0 && undeletedEntityWithReasonCount == 0) {
+			displaySuccessNotification(messages.getHeadingEntitiesDeleted(), messages.getMessageEntitiesDeleted());
+		} else {
+			StringBuilder description = new StringBuilder();
+			if (undeletedEntityWithReasonCount > 0) {
+				description
+					.append(
+						getDetails(
+							I18nProperties.getString(messages.getMessageCountEntitiesNotDeleted()),
+							undeletedEntityWithReasonCount,
+							undeletedEntitiesWithReasonString,
+							I18nProperties.getString(messages.getMessageEntitiesNotDeletedReason())))
+					.append("<br/> <br/>");
+			}
+
+			if (undeletedEntityCount > 0) {
+				description.append(
+					getDetails(
+						I18nProperties.getString(messages.getMessageCountEntitiesNotDeleted()),
+						undeletedEntityCount,
+						undeletedEntitiesString,
+						I18nProperties.getString(messages.getMessageEntitiesNotDeleted())));
+			}
+
+			showSimplePopUp(I18nProperties.getString(messages.getHeadingSomeEntitiesNotDeleted()), description.toString());
+		}
+	}
+
+	private Window showSimplePopUp(String heading, String message) {
+		Window window = VaadinUiUtil.showSimplePopupWindow(I18nProperties.getString(heading), message, ContentMode.HTML);
+
+		window.setWidth(600, Sizeable.Unit.PIXELS);
+		return window;
+	}
+
+	private String getDetails(
+		String messageCountEntitiesNotDeleted,
+		int undeletedEntityCount,
+		String undeletedEntitiesString,
+		String messageEntitiesNotDeleted) {
+
+		return String.format(
+			"%1s <br/> <br/> %2s",
+			String.format(
+				I18nProperties.getString(messageCountEntitiesNotDeleted),
+				String.format("<b>%s</b>", undeletedEntityCount),
+				String.format("<b>%s</b>", HtmlHelper.cleanHtml(undeletedEntitiesString))),
+			I18nProperties.getString(messageEntitiesNotDeleted));
+	}
+
+	private void displaySuccessNotification(String heading, String message) {
+		new Notification(I18nProperties.getString(heading), I18nProperties.getString(message), Notification.Type.TRAY_NOTIFICATION, false)
+			.show(Page.getCurrent());
+	}
+
+	private Boolean existEventParticipantsLinkedToEvent(String uuid) {
+		List<EventParticipantDto> eventParticipantList = FacadeProvider.getEventParticipantFacade().getAllActiveEventParticipantsByEvent(uuid);
+
+		return !eventParticipantList.isEmpty();
 	}
 
 	private void displayNothingSelectedToBeDeleted(CoreEntityDeleteMessages messages) {

@@ -12,6 +12,7 @@ public enum CoreEntityDeleteMessages {
 		Strings.headingCasesDeleted,
 		Strings.messageCasesDeleted,
 		Strings.messageCasesNotDeleted,
+		null,
 		Strings.headingSomeCasesNotDeleted,
 		Strings.messageCountCasesNotDeleted),
 
@@ -23,6 +24,7 @@ public enum CoreEntityDeleteMessages {
 		Strings.headingContactsDeleted,
 		Strings.messageContactsDeleted,
 		Strings.messageContactsNotDeleted,
+		null,
 		Strings.headingSomeContactsNotDeleted,
 		Strings.messageCountContactsNotDeleted),
 
@@ -34,6 +36,7 @@ public enum CoreEntityDeleteMessages {
 		Strings.headingTravelEntriesDeleted,
 		Strings.messageTravelEntriesDeleted,
 		Strings.messageTravelEntriesNotDeleted,
+		null,
 		Strings.headingSomeTravelEntriesNotDeleted,
 		Strings.messageCountTravelEntriesNotDeleted),
 
@@ -45,8 +48,21 @@ public enum CoreEntityDeleteMessages {
 		Strings.headingVisitsDeleted,
 		Strings.messageVisitsDeleted,
 		Strings.messageVisitsNotDeleted,
+		null,
 		Strings.headingSomeVisitsNotDeleted,
 		Strings.messageCountVisitsNotDeleted),
+
+	EVENT(Strings.entityEvents,
+		Strings.headingNoEventsSelected,
+		Strings.messageNoEventsSelected,
+		null,
+		null,
+		Strings.headingEventsDeleted,
+		Strings.messageEventsDeleted,
+		Strings.messageEventsNotDeleted,
+		Strings.messageEventsNotDeletedReason,
+		Strings.headingSomeEventsNotDeleted,
+		Strings.messageCountEventsNotDeleted),
 
 	EVENT_PARTICIPANT(Strings.entityEventParticipants,
 		Strings.headingNoEventParticipantsSelected,
@@ -56,6 +72,7 @@ public enum CoreEntityDeleteMessages {
 		Strings.headingEventParticipantsDeleted,
 		Strings.messageEventParticipantsDeleted,
 		Strings.messageEventParticipantsNotDeleted,
+		null,
 		Strings.headingSomeEventParticipantsNotDeleted,
 		Strings.messageCountEventParticipantsNotDeleted),
 
@@ -67,6 +84,7 @@ public enum CoreEntityDeleteMessages {
 		Strings.headingTasksDeleted,
 		Strings.messageTasksDeleted,
 		Strings.messageTasksNotDeleted,
+		null,
 		Strings.headingSomeTasksNotDeleted,
 		Strings.messageCountTasksNotDeleted),
 
@@ -78,6 +96,7 @@ public enum CoreEntityDeleteMessages {
 		Strings.headingExternalMessagesDeleted,
 		Strings.messageExternalMessagesDeleted,
 		Strings.messageExternalMessagesNotDeleted,
+		null,
 		Strings.headingSomeExternalMessagesNotDeleted,
 		Strings.messageCountExternalMessagesNotDeleted),
 
@@ -89,18 +108,9 @@ public enum CoreEntityDeleteMessages {
 		Strings.headingSamplesDeleted,
 		Strings.messageSamplesDeleted,
 		Strings.messageSamplesNotDeleted,
+		null,
 		Strings.headingSomeSamplesNotDeleted,
 		Strings.messageCountSamplesNotDeleted);
-
-	/*
-	 * EVENT(Strings.entityEvents,
-	 * Strings.headingNoEventsSelected,
-	 * Strings.messageNoEventsSelected,
-	 * Strings.headingEventsDeleted,
-	 * Strings.messageEventsDeleted,
-	 * Strings.headingSomeEventsNotRestored,
-	 * Strings.messageCountEventsNotDeleted),
-	 */
 
 	private final String entities;
 	private final String headingNoSelection;
@@ -110,6 +120,7 @@ public enum CoreEntityDeleteMessages {
 	private final String headingEntitiesDeleted;
 	private final String messageEntitiesDeleted;
 	private final String messageEntitiesNotDeleted;
+	private final String messageEntitiesNotDeletedReason;
 	private final String headingSomeEntitiesNotDeleted;
 	private final String messageCountEntitiesNotDeleted;
 
@@ -122,6 +133,7 @@ public enum CoreEntityDeleteMessages {
 		String headingEntitiesDeleted,
 		String messageEntitiesDeleted,
 		String messageEntitiesNotDeleted,
+		String messageEntitiesNotDeletedReason,
 		String headingSomeEntitiesNotDeleted,
 		String messageCountEntitiesNotDeleted) {
 		this.entities = entities;
@@ -132,6 +144,7 @@ public enum CoreEntityDeleteMessages {
 		this.headingEntitiesDeleted = headingEntitiesDeleted;
 		this.messageEntitiesDeleted = messageEntitiesDeleted;
 		this.messageEntitiesNotDeleted = messageEntitiesNotDeleted;
+		this.messageEntitiesNotDeletedReason = messageEntitiesNotDeletedReason;
 		this.headingSomeEntitiesNotDeleted = headingSomeEntitiesNotDeleted;
 		this.messageCountEntitiesNotDeleted = messageCountEntitiesNotDeleted;
 	}
@@ -166,6 +179,10 @@ public enum CoreEntityDeleteMessages {
 
 	public String getMessageEntitiesNotDeleted() {
 		return messageEntitiesNotDeleted;
+	}
+
+	public String getMessageEntitiesNotDeletedReason() {
+		return messageEntitiesNotDeletedReason;
 	}
 
 	public String getHeadingSomeEntitiesNotDeleted() {

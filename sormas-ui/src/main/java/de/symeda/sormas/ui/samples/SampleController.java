@@ -623,6 +623,7 @@ public class SampleController {
 				selectedRows.stream().map(SampleIndexDto::getUuid).collect(Collectors.toList()),
 				FacadeProvider.getSampleFacade(),
 				CoreEntityDeleteMessages.SAMPLE,
+				true,
 				callback);
 
 	}

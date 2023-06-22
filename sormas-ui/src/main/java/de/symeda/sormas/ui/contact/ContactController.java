@@ -807,6 +807,7 @@ public class ContactController {
 				selectedRows.stream().map(ContactIndexDto::getUuid).collect(Collectors.toList()),
 				FacadeProvider.getContactFacade(),
 				CoreEntityDeleteMessages.CONTACT,
+				true,
 				callback);
 
 	}

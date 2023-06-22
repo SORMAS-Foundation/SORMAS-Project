@@ -180,6 +180,7 @@ public class EventParticipantsController {
 				selectedRows.stream().map(EventParticipantIndexDto::getUuid).collect(Collectors.toList()),
 				FacadeProvider.getEventParticipantFacade(),
 				CoreEntityDeleteMessages.EVENT_PARTICIPANT,
+				true,
 				callback);
 	}
 

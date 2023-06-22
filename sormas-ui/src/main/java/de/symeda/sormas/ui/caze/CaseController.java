@@ -105,7 +105,6 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
@@ -139,7 +138,6 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CoreEntityDeleteMessages;
 import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DeletableUtils;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -1554,6 +1552,7 @@ public class CaseController {
 				selectedRows.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList()),
 				FacadeProvider.getCaseFacade(),
 				CoreEntityDeleteMessages.CASE,
+				true,
 				callback);
 
 	}

@@ -73,7 +73,6 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
@@ -85,10 +84,10 @@ import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.CoreEntityDeleteMessages;
 import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
-import de.symeda.sormas.ui.utils.DeletableUtils;
 import de.symeda.sormas.ui.utils.NotificationHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.automaticdeletion.DeletionLabel;
@@ -1006,86 +1005,31 @@ public class EventController {
 		return EventDto.build(FacadeProvider.getCountryFacade().getServerCountry(), UserProvider.getCurrent().getUser(), disease);
 	}
 
+	//TODO: test this one
 	public void deleteAllSelectedItems(Collection<EventIndexDto> selectedRows, Runnable callback) {
 
-		if (selectedRows.size() == 0) {
-			new Notification(
-				I18nProperties.getString(Strings.headingNoEventsSelected),
-				I18nProperties.getString(Strings.messageNoEventsSelected),
-				Type.WARNING_MESSAGE,
-				false).show(Page.getCurrent());
-		} else {
-			DeletableUtils.showDeleteWithReasonPopup(
-				String.format(
-					I18nProperties.getString(Strings.confirmationDeleteEvents),
-					selectedRows.size(),
-					getDeleteConfirmationDetails(selectedRows.stream().map(EventIndexDto::getUuid).collect(Collectors.toList()))),
-				(deleteDetails) -> {
-					StringBuilder nonDeletableEventsWithParticipants = new StringBuilder();
-					int countNotDeletedEventsWithParticipants = 0;
-					StringBuilder nonDeletableEventsFromExternalTool = new StringBuilder();
-					int countNotDeletedEventsFromExternalTool = 0;
-					for (EventIndexDto selectedRow : selectedRows) {
-						EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(selectedRow.getUuid(), false);
-						if (existEventParticipantsLinkedToEvent(eventDto)) {
-							countNotDeletedEventsWithParticipants = countNotDeletedEventsWithParticipants + 1;
-							nonDeletableEventsWithParticipants.append(selectedRow.getUuid(), 0, 6).append(", ");
-						} else {
-							try {
-								FacadeProvider.getEventFacade().delete(eventDto.getUuid(), deleteDetails);
-							} catch (ExternalSurveillanceToolRuntimeException e) {
-								countNotDeletedEventsFromExternalTool = countNotDeletedEventsFromExternalTool + 1;
-								nonDeletableEventsFromExternalTool.append(selectedRow.getUuid(), 0, 6).append(", ");
-							}
-						}
-					}
-					if (nonDeletableEventsWithParticipants.length() > 0) {
-						nonDeletableEventsWithParticipants = new StringBuilder(
-							" " + nonDeletableEventsWithParticipants.substring(0, nonDeletableEventsWithParticipants.length() - 2) + ". ");
-					}
-					if (nonDeletableEventsFromExternalTool.length() > 0) {
-						nonDeletableEventsFromExternalTool = new StringBuilder(
-							" " + nonDeletableEventsFromExternalTool.substring(0, nonDeletableEventsFromExternalTool.length() - 2) + ". ");
-					}
-					callback.run();
-					if (countNotDeletedEventsWithParticipants == 0 && countNotDeletedEventsFromExternalTool == 0) {
-						new Notification(
-							I18nProperties.getString(Strings.headingEventsDeleted),
-							I18nProperties.getString(Strings.messageEventsDeleted),
-							Type.HUMANIZED_MESSAGE,
-							false).show(Page.getCurrent());
-					} else {
-						StringBuilder description = new StringBuilder();
-						if (countNotDeletedEventsWithParticipants > 0) {
-							description.append(
-								String.format(
-									"%1s <br/> %2s",
-									String.format(
-										I18nProperties.getString(Strings.messageCountEventsNotDeleted),
-										String.format("<b>%s</b>", countNotDeletedEventsWithParticipants),
-										String.format("<b>%s</b>", HtmlHelper.cleanHtml(nonDeletableEventsWithParticipants.toString()))),
-									I18nProperties.getString(Strings.messageEventsNotDeletedReason)))
-								.append("<br/> <br/>");
-						}
-						if (countNotDeletedEventsFromExternalTool > 0) {
-							description.append(
-								String.format(
-									"%1s <br/> %2s",
-									String.format(
-										I18nProperties.getString(Strings.messageCountEventsNotDeletedExternalSurveillanceTool),
-										String.format("<b>%s</b>", countNotDeletedEventsFromExternalTool),
-										String.format("<b>%s</b>", HtmlHelper.cleanHtml(nonDeletableEventsFromExternalTool.toString()))),
-									I18nProperties.getString(Strings.messageEventsNotDeletedReasonExternalSurveillanceTool)));
-						}
+		ControllerProvider.getDeleteRestoreController()
+			.deleteAllSelectedItems(
+				selectedRows.stream().map(EventIndexDto::getUuid).collect(Collectors.toList()),
+				FacadeProvider.getEventFacade(),
+				CoreEntityDeleteMessages.EVENT,
+				allSelectedEventsAreEligibleForDeletion(selectedRows),
+				callback);
+	}
 
-						Window response = VaadinUiUtil.showSimplePopupWindow(
-							I18nProperties.getString(Strings.headingSomeEventsNotDeleted),
-							description.toString(),
-							ContentMode.HTML);
-						response.setWidth(600, Sizeable.Unit.PIXELS);
-					}
-				});
+	//TODO: test this logic
+	public boolean allSelectedEventsAreEligibleForDeletion(Collection<EventIndexDto> selectedRows) {
+		boolean allItemsAreEligibleForDeletion = true;
+
+		for (EventIndexDto selectedRow : selectedRows) {
+			List<EventParticipantDto> eventParticipantList =
+				FacadeProvider.getEventParticipantFacade().getAllActiveEventParticipantsByEvent(selectedRow.getUuid());
+			if (eventParticipantList.size() > 0) {
+				allItemsAreEligibleForDeletion = false;
+				break;
+			}
 		}
+		return allItemsAreEligibleForDeletion;
 	}
 
 	public void restoreSelectedEvents(Collection<? extends EventIndexDto> selectedRows, Runnable callback) {

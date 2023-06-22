@@ -1094,7 +1094,6 @@ public interface Strings {
 	String messageCountEventParticipantsNotDeleted = "messageCountEventParticipantsNotDeleted";
 	String messageCountEventParticipantsNotRestored = "messageCountEventParticipantsNotRestored";
 	String messageCountEventsNotDeleted = "messageCountEventsNotDeleted";
-	String messageCountEventsNotDeletedExternalSurveillanceTool = "messageCountEventsNotDeletedExternalSurveillanceTool";
 	String messageCountEventsNotRestored = "messageCountEventsNotRestored";
 	String messageCountExternalMessagesNotDeleted = "messageCountExternalMessagesNotDeleted";
 	String messageCountImmunizationsNotRestored = "messageCountImmunizationsNotRestored";
@@ -1161,7 +1160,6 @@ public interface Strings {
 	String messageEventsDeleted = "messageEventsDeleted";
 	String messageEventsNotDeleted = "messageEventsNotDeleted";
 	String messageEventsNotDeletedReason = "messageEventsNotDeletedReason";
-	String messageEventsNotDeletedReasonExternalSurveillanceTool = "messageEventsNotDeletedReasonExternalSurveillanceTool";
 	String messageEventsNotRestored = "messageEventsNotRestored";
 	String messageEventsRestored = "messageEventsRestored";
 	String messageEventsSentToSurvnet = "messageEventsSentToSurvnet";
