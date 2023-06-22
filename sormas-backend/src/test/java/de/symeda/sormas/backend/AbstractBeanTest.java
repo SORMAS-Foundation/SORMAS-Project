@@ -150,6 +150,8 @@ import de.symeda.sormas.backend.docgeneration.EventDocumentFacadeEjb;
 import de.symeda.sormas.backend.docgeneration.QuarantineOrderFacadeEjb;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb;
 import de.symeda.sormas.backend.document.DocumentService;
+import de.symeda.sormas.backend.environment.EnvironmentFacadeEjb.EnvironmentFacadeEjbLocal;
+import de.symeda.sormas.backend.environment.EnvironmentService;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantService;
@@ -988,5 +990,13 @@ public abstract class AbstractBeanTest {
 	public <T extends Throwable> void assertThrowsWithMessage(Class<T> expectedType, String expectedMessage, Executable executable) {
 		T throwable = assertThrows(expectedType, executable);
 		assertEquals(expectedMessage, throwable.getMessage());
+	}
+
+	public EnvironmentFacadeEjbLocal getEnvironmentFacade() {
+		return getBean(EnvironmentFacadeEjbLocal.class);
+	}
+
+	public EnvironmentService getEnvironmentService() {
+		return getBean(EnvironmentService.class);
 	}
 }

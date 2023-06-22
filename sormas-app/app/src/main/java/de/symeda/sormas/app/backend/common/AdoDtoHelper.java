@@ -75,6 +75,12 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 		throws NoConnectionException, ServerCommunicationException, ServerConnectionException, DaoException {
 	}
 
+	/**
+	 * Provides avg size of the entity DTO serialized to JSON.
+	 * To define it, create a new instance of the DTO filled with some best guess values for the use case
+	 * and check the length of the resulting JSON, multiplied by 8.
+	 * Needed to decide how much entities to synchronize at once, given the current bandwidth.
+	 */
 	protected abstract long getApproximateJsonSizeInBytes();
 
 	/**
