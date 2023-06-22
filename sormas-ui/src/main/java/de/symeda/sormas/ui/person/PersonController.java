@@ -407,16 +407,16 @@ public class PersonController {
 		}
 	}
 
-	public CommitDiscardWrapperComponent<PersonEditForm> getPersonEditComponent(String personUuid, UserRight editUserRight) {
+	public CommitDiscardWrapperComponent<PersonEditForm> getPersonEditComponent(String personUuid, boolean isEditAllowed) {
 		PersonDto personDto = personFacade.getByUuid(personUuid);
 
-		PersonEditForm editForm = new PersonEditForm(personDto.isPseudonymized(), personDto.isInJurisdiction());
+		PersonEditForm editForm = new PersonEditForm(
+			isEditAllowed && UserProvider.getCurrent().hasUserRight(UserRight.PERSON_EDIT),
+			personDto.isPseudonymized(),
+			personDto.isInJurisdiction());
 		editForm.setValue(personDto);
 
-		final CommitDiscardWrapperComponent<PersonEditForm> editView = new CommitDiscardWrapperComponent<PersonEditForm>(
-			editForm,
-			UserProvider.getCurrent().hasUserRight(editUserRight),
-			editForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<PersonEditForm> editView = new CommitDiscardWrapperComponent<>(editForm, editForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			if (!editForm.getFieldGroup().isModified()) {

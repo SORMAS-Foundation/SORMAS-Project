@@ -24,6 +24,7 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.BaseFacade;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EditPermissionFacade;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
@@ -34,7 +35,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
-public interface PersonFacade extends BaseFacade<PersonDto, PersonIndexDto, PersonReferenceDto, PersonCriteria> {
+public interface PersonFacade extends BaseFacade<PersonDto, PersonIndexDto, PersonReferenceDto, PersonCriteria>, EditPermissionFacade {
 
 	Set<PersonAssociation> getPermittedAssociations();
 
@@ -96,6 +97,4 @@ public interface PersonFacade extends BaseFacade<PersonDto, PersonIndexDto, Pers
 	boolean isEnrolledInExternalJournal(String uuid);
 
 	void copyHomeAddress(PersonReferenceDto source, PersonReferenceDto target);
-
-	boolean isEditAllowed(String uuid);
 }
