@@ -57,6 +57,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -331,6 +332,11 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		} catch (ExternalSurveillanceToolException e) {
 			throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
 		}
+	}
+
+	@Override
+	public void delete(List<String> uuids, DeletionDetails deletionDetails) {
+		throw new NotImplementedException();
 	}
 
 	@Override

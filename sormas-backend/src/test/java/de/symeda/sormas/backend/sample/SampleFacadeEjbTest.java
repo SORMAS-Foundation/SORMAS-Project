@@ -425,7 +425,8 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		assertNotNull(getPathogenTestFacade().getByUuid(firstSamplePathogenTest.getUuid()));
 		assertNotNull(getAdditionalTestFacade().getByUuid(firstSampleAdditionalTest.getUuid()));
 
-		getSampleFacade().deleteAllSamples(
+		getSampleFacade()
+			.delete(
 			Arrays.asList(firstSample.getUuid(), secondSample.getUuid()),
 			new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
@@ -487,7 +488,8 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		assertNotNull(getAdditionalTestFacade().getByUuid(secondSampleAdditionalTest.getUuid()));
 		assertNotNull(getAdditionalTestFacade().getByUuid(thirdSampleAdditionalTest.getUuid()));
 
-		getSampleFacade().deleteAllSamples(
+		getSampleFacade()
+			.delete(
 			Arrays.asList(thirdSample.getUuid(), forthSample.getUuid()),
 			new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 

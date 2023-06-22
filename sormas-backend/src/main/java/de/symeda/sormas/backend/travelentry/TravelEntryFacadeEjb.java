@@ -17,6 +17,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.common.CoreEntityType;
@@ -119,6 +120,11 @@ public class TravelEntryFacadeEjb
 		if (travelEntry.getResultingCase() != null) {
 			caseFacade.onCaseChanged(caseFacade.toDto(travelEntry.getResultingCase()), travelEntry.getResultingCase());
 		}
+	}
+
+	@Override
+	public void delete(List<String> sampleUuids, DeletionDetails deletionDetails) {
+		throw new NotImplementedException();
 	}
 
 	@Override

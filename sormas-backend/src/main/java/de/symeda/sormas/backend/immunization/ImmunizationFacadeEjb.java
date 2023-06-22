@@ -41,6 +41,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -304,6 +305,11 @@ public class ImmunizationFacadeEjb
 		}
 
 		service.delete(immunization, deletionDetails);
+	}
+
+	@Override
+	public void delete(List<String> uuids, DeletionDetails deletionDetails) {
+		throw new NotImplementedException();
 	}
 
 	@Override

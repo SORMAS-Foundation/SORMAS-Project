@@ -21,14 +21,12 @@ import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_NONE;
 import static java.util.Objects.isNull;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
-import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -82,12 +80,12 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
+import de.symeda.sormas.ui.utils.CoreEntityDeleteMessages;
 import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DateTimeField;
-import de.symeda.sormas.ui.utils.DeletableUtils;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
@@ -617,28 +615,16 @@ public class SampleController {
 		});
 	}
 
+	//TODO: Test this one
 	public void deleteAllSelectedItems(Collection<SampleIndexDto> selectedRows, Runnable callback) {
 
-		if (selectedRows.size() == 0) {
-			new Notification(
-				I18nProperties.getString(Strings.headingNoSamplesSelected),
-				I18nProperties.getString(Strings.messageNoSamplesSelected),
-				Type.WARNING_MESSAGE,
-				false).show(Page.getCurrent());
-		} else {
-			DeletableUtils.showDeleteWithReasonPopup(
-				String.format(I18nProperties.getString(Strings.confirmationDeleteSamples), selectedRows.size()),
-				(deletionDetails) -> {
-					List<String> sampleIndexDtoList = selectedRows.stream().map(SampleIndexDto::getUuid).collect(Collectors.toList());
-					FacadeProvider.getSampleFacade().deleteAllSamples(sampleIndexDtoList, deletionDetails);
-					callback.run();
-					new Notification(
-						I18nProperties.getString(Strings.headingSamplesDeleted),
-						I18nProperties.getString(Strings.messageSamplesDeleted),
-						Type.HUMANIZED_MESSAGE,
-						false).show(Page.getCurrent());
-				});
-		}
+		ControllerProvider.getDeleteRestoreController()
+			.deleteAllSelectedItems(
+				selectedRows.stream().map(SampleIndexDto::getUuid).collect(Collectors.toList()),
+				FacadeProvider.getSampleFacade(),
+				CoreEntityDeleteMessages.SAMPLE,
+				callback);
+
 	}
 
 	public void restoreSelectedSamples(Collection<? extends SampleIndexDto> selectedRows, Runnable callback) {

@@ -81,7 +81,6 @@ public enum CoreEntityDeleteMessages {
 		Strings.headingSomeExternalMessagesNotDeleted,
 		Strings.messageCountExternalMessagesNotDeleted),
 
-	//TODO: the last 3 messages are not exactely necessary here
 	SAMPLE(Strings.entitySamples,
 		Strings.headingNoSamplesSelected,
 		Strings.messageNoSamplesSelected,
@@ -101,13 +100,6 @@ public enum CoreEntityDeleteMessages {
 	 * Strings.messageEventsDeleted,
 	 * Strings.headingSomeEventsNotRestored,
 	 * Strings.messageCountEventsNotDeleted),
-	 * IMMUNIZATION(Strings.entityImmunizations,
-	 * Strings.headingNoImmunizationsSelected,
-	 * Strings.messageNoImmunizationsSelected,
-	 * Strings.headingImmunizationsRestored,
-	 * Strings.messageImmunizationsRestored,
-	 * Strings.headingSomeImmunizationsNotRestored,
-	 * Strings.messageCountImmunizationsNotRestored),
 	 */
 
 	private final String entities;

@@ -25,6 +25,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.campaign.CampaignCriteria;
@@ -355,6 +356,11 @@ public class CampaignFacadeEjb
 	public void delete(String campaignUuid, DeletionDetails deletionDetails) {
 
 		service.delete(service.getByUuid(campaignUuid), deletionDetails);
+	}
+
+	@Override
+	public void delete(List<String> uuids, DeletionDetails deletionDetails) {
+		throw new NotImplementedException();
 	}
 
 	@Override

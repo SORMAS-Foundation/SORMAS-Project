@@ -67,6 +67,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -542,6 +543,11 @@ public class ContactFacadeEjb
 	public void delete(String contactUuid, DeletionDetails deletionDetails) {
 		Contact contact = service.getByUuid(contactUuid);
 		deleteContact(contact, deletionDetails);
+	}
+
+	@Override
+	public void delete(List<String> uuids, DeletionDetails deletionDetails) {
+		throw new NotImplementedException();
 	}
 
 	@Override

@@ -772,7 +772,7 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	@RightsAllowed(UserRight._SAMPLE_DELETE)
-	public void deleteAllSamples(List<String> sampleUuids, DeletionDetails deletionDetails) {
+	public void delete(List<String> sampleUuids, DeletionDetails deletionDetails) {
 		long startTime = DateHelper.startTime();
 
 		IterableHelper
