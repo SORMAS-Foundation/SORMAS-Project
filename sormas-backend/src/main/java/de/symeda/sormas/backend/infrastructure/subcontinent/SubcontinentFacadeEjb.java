@@ -40,6 +40,7 @@ import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentCriteria;
@@ -79,7 +80,14 @@ public class SubcontinentFacadeEjb
 
 	@Inject
 	protected SubcontinentFacadeEjb(SubcontinentService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
-		super(Subcontinent.class, SubcontinentDto.class, service, featureConfiguration, Validations.importSubcontinentAlreadyExists);
+		super(
+			Subcontinent.class,
+			SubcontinentDto.class,
+			service,
+			featureConfiguration,
+			Validations.importSubcontinentAlreadyExists,
+			Strings.messageSubcontinentArchivingNotPossible,
+			Strings.messageSubcontinentDearchivingNotPossible);
 	}
 
 	public static SubcontinentReferenceDto toReferenceDto(Subcontinent entity) {

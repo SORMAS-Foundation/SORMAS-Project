@@ -1833,7 +1833,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 	public EditPermissionType getEditPermissionType(Contact contact) {
 
 		if (!inJurisdictionOrOwned(contact)) {
-			return EditPermissionType.REFUSED;
+			return EditPermissionType.OUTSIDE_JURISDICTION;
 		}
 
 		if (sormasToSormasShareInfoService.isContactOwnershipHandedOver(contact)

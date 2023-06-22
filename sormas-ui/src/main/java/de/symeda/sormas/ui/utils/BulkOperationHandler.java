@@ -21,7 +21,7 @@ import de.symeda.sormas.ui.utils.components.progress.BulkProgressLayout;
 import de.symeda.sormas.ui.utils.components.progress.BulkProgressUpdateInfo;
 import de.symeda.sormas.ui.utils.components.progress.ProgressResult;
 
-public class BulkOperationHandler {
+public class BulkOperationHandler<T extends HasUuid> {
 
 	/**
 	 * Amount of DTOs that are forwarded to the backend in one single call
@@ -38,21 +38,34 @@ public class BulkOperationHandler {
 	private int initialEntryCount;
 	private int successfulEntryCount;
 
+	private final String allEntriesProcessedMessageProperty;
+	private final String someEntriesProcessedMessageProperty;
+
+	public BulkOperationHandler(String allEntriesProcessedMessageProperty, String someEntriesProcessedMessageProperty) {
+		this.allEntriesProcessedMessageProperty = allEntriesProcessedMessageProperty;
+		this.someEntriesProcessedMessageProperty = someEntriesProcessedMessageProperty;
+	}
+
+	public static <E extends HasUuid> BulkOperationHandler<E> forBulkEdit() {
+		return new BulkOperationHandler<E>(Strings.messageEntriesEdited, Strings.messageEntriesEditedExceptArchived);
+	}
+
 	public void doBulkOperation(
-		Function<List<? extends HasUuid>, Integer> bulkOperationFunction,
-		List<? extends HasUuid> selectedEntries,
-		Consumer<List<? extends HasUuid>> bulkOperationDoneCallback) {
+		Function<List<T>, Integer> bulkOperationFunction,
+		List<T> selectedEntries,
+		Consumer<List<T>> bulkOperationDoneCallback) {
 
 		initialEntryCount = selectedEntries.size();
 		if (selectedEntries.size() < BULK_ACTION_PROGRESS_THRESHOLD) {
 			successfulEntryCount = bulkOperationFunction.apply(selectedEntries);
 			if (initialEntryCount > successfulEntryCount) {
 				NotificationHelper.showNotification(
-					String.format(I18nProperties.getString(Strings.messageEntriesEditedExceptArchived), successfulEntryCount),
+					String.format(I18nProperties.getString(someEntriesProcessedMessageProperty), successfulEntryCount),
 					Notification.Type.HUMANIZED_MESSAGE,
 					-1);
 			} else {
-				NotificationHelper.showNotification(I18nProperties.getString(Strings.messageEntriesEdited), Notification.Type.HUMANIZED_MESSAGE, -1);
+				NotificationHelper
+					.showNotification(I18nProperties.getString(allEntriesProcessedMessageProperty), Notification.Type.HUMANIZED_MESSAGE, -1);
 			}
 			bulkOperationDoneCallback.accept(Collections.emptyList());
 		} else {
@@ -70,8 +83,7 @@ public class BulkOperationHandler {
 				currentUI.setPollInterval(300);
 
 				try {
-					List<? extends HasUuid> remainingEntries =
-						performBulkOperation(bulkOperationFunction, selectedEntries, bulkProgressLayout::updateProgress);
+					List<T> remainingEntries = performBulkOperation(bulkOperationFunction, selectedEntries, bulkProgressLayout::updateProgress);
 
 					currentUI.access(() -> {
 						window.setClosable(true);
@@ -109,9 +121,9 @@ public class BulkOperationHandler {
 		}
 	}
 
-	private List<? extends HasUuid> performBulkOperation(
-		Function<List<? extends HasUuid>, Integer> bulkOperationFunction,
-		List<? extends HasUuid> selectedEntries,
+	private List<T> performBulkOperation(
+		Function<List<T>, Integer> bulkOperationFunction,
+		List<T> selectedEntries,
 		Consumer<BulkProgressUpdateInfo> progressUpdateCallback)
 		throws InterruptedException {
 

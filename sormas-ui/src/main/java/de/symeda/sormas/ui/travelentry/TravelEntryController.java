@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
+import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -26,10 +27,11 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.travelentry.components.TravelEntryCreateForm;
+import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
 import de.symeda.sormas.ui.utils.CoreEntityDeleteMessages;
 import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
+import de.symeda.sormas.ui.utils.DeletableUtils;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.automaticdeletion.DeletionLabel;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
@@ -173,8 +175,7 @@ public class TravelEntryController {
 			ControllerProvider.getArchiveController()
 				.addArchivingButton(
 					travelEntry,
-					FacadeProvider.getTravelEntryFacade(),
-					CoreEntityArchiveMessages.TRAVEL_ENTRY,
+					ArchiveHandlers.forTravelEntry(),
 					editComponent,
 					() -> navigateToTravelEntry(travelEntry.getUuid()));
 		}

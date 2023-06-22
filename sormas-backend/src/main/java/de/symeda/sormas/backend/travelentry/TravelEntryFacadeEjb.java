@@ -426,6 +426,11 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
+	public List<String> getArchivedUuidsSince(Date since) {
+		throw new NotImplementedException();
+	}
+
+	@Override
 	@RightsAllowed({
 		UserRight._TRAVEL_ENTRY_CREATE,
 		UserRight._TRAVEL_ENTRY_EDIT })

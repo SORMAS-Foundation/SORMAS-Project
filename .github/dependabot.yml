@@ -4,5 +4,62 @@ updates:
   # Maintain dependencies for GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
+    open-pull-requests-limit: 100
     schedule:
       interval: "daily"
+      
+  # Maintain maven dependencies for sormas-base, including it's modules
+  - package-ecosystem: "maven"
+    directory: "/sormas-base"
+    open-pull-requests-limit: 100
+    schedule:
+      interval: "daily"
+    ignore:
+      # payara dependencies
+      - dependency-name: javax:javaee-api
+      - dependency-name: javax:javaee-web-api
+      - dependency-name: javax.activation:activation
+      - dependency-name: javax.activation:javax.activation-api
+      - dependency-name: javax.persistence:javax.persistence-api
+      - dependency-name: javax.security.enterprise:javax.security.enterprise-api<
+      - dependency-name: javax.servlet:javax.servlet-api
+      - dependency-name: javax.validation:validation-api
+      - dependency-name: com.fasterxml.jackson.core:jackson-*
+      - dependency-name: com.github.stephenc.jcip:jcip-annotations
+      - dependency-name: com.sun.activation:jakarta.activation
+      - dependency-name: com.sun.istack:istack-commons-runtime
+      - dependency-name: com.sun.mail:javax.mail
+      - dependency-name: fish.payara.security.connectors:security-connector-oidc-client
+      - dependency-name: jakarta.*:jakarta.*
+      - dependency-name: org.eclipse.microprofile.config:microprofile-config-api
+      - dependency-name: org.glassfish:javax.el
+      - dependency-name: org.glassfish.corba:glassfish-corba-omgapi
+      - dependency-name: org.glassfish.jaxb:*
+      - dependency-name: org.glassfish.jersey*:jersey-*
+      - dependency-name: org.glassfish.soteria:javax.security.enterprise
+      - dependency-name: org.javassist:javassist
+      - dependency-name: org.jboss.logging:jboss-logging
+      - dependency-name: org.yaml:snakeyaml
+      # Vaadin 8.14.3 is the last free version - https://vaadin.com/vaadin-8-extended-maintenance-releases
+      - dependency-name: com.vaadin:vaadin-*
+      # Newer version breaks sormas-base/build.xml -> collect-serverlibs (remove after #12074)
+      - dependency-name: commons-io:commons-io
+
+  # Maintain gradle dependencies for sormas-app
+  - package-ecosystem: "gradle"
+    directory: "/sormas-app"
+    open-pull-requests-limit: 100
+    schedule:
+      interval: "daily"
+
+  # Maintain gradle dependencies for sormas-e2e-tests
+  - package-ecosystem: "gradle"
+    directory: "/sormas-e2e-tests"
+    open-pull-requests-limit: 100
+    schedule:
+      interval: "daily"
+    # Only consider mayor updates that likely include new functionality.
+    # Minor updates and patches are not relevant for the testing module.
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-minor","version-update:semver-patch"]

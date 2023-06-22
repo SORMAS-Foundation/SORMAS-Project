@@ -423,6 +423,11 @@ public class CampaignFacadeEjb
 		super.dearchive(entityUuids, dearchiveReason);
 	}
 
+	@Override
+	public List<String> getArchivedUuidsSince(Date since) {
+		throw new NotImplementedException();
+	}
+
 	@LocalBean
 	@Stateless
 	public static class CampaignFacadeEjbLocal extends CampaignFacadeEjb {

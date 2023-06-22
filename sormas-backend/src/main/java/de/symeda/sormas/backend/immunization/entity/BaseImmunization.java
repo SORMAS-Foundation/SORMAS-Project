@@ -19,7 +19,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
@@ -376,7 +375,6 @@ public class BaseImmunization extends CoreAdo implements SormasToSormasShareable
 			CascadeType.MERGE,
 			CascadeType.DETACH,
 			CascadeType.REFRESH })
-	@AuditedIgnore
 	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;
 	}
@@ -387,7 +385,6 @@ public class BaseImmunization extends CoreAdo implements SormasToSormasShareable
 	}
 
 	@OneToMany(mappedBy = SormasToSormasShareInfo.IMMUNIZATION, fetch = FetchType.LAZY)
-	@AuditedIgnore
 	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
 		return sormasToSormasShares;
 	}

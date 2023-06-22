@@ -19,7 +19,6 @@ package de.symeda.sormas.ui;
 
 import de.symeda.sormas.ui.action.ActionController;
 import de.symeda.sormas.ui.campaign.CampaignController;
-import de.symeda.sormas.ui.caze.CaseArchivingController;
 import de.symeda.sormas.ui.caze.CaseController;
 import de.symeda.sormas.ui.caze.surveillancereport.SurveillanceReportController;
 import de.symeda.sormas.ui.clinicalcourse.ClinicalCourseController;
@@ -86,7 +85,6 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final ImmunizationController immunizationController;
 	private final VaccinationController vaccinationController;
 	private final ArchivingController archivingController;
-	private final CaseArchivingController caseArchivingController;
 	private final DeleteRestoreController deleteRestoreController;
 	private final PermanentDeleteController permanentDeleteController;
 
@@ -124,7 +122,6 @@ public class ControllerProvider extends BaseControllerProvider {
 		immunizationController = new ImmunizationController();
 		vaccinationController = new VaccinationController();
 		archivingController = new ArchivingController();
-		caseArchivingController = new CaseArchivingController();
 		deleteRestoreController = new DeleteRestoreController();
 		permanentDeleteController = new PermanentDeleteController();
 	}
@@ -255,10 +252,6 @@ public class ControllerProvider extends BaseControllerProvider {
 
 	public static ArchivingController getArchiveController() {
 		return get().archivingController;
-	}
-
-	public static CaseArchivingController getCaseArchivingController() {
-		return get().caseArchivingController;
 	}
 
 	public static DeleteRestoreController getDeleteRestoreController() {

@@ -87,9 +87,9 @@ import de.symeda.sormas.ui.contact.components.linelisting.layout.LineListingLayo
 import de.symeda.sormas.ui.epidata.ContactEpiDataView;
 import de.symeda.sormas.ui.epidata.EpiDataForm;
 import de.symeda.sormas.ui.utils.AbstractView;
+import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
 import de.symeda.sormas.ui.utils.CoreEntityDeleteMessages;
 import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -699,8 +699,7 @@ public class ContactController {
 			ControllerProvider.getArchiveController()
 				.addArchivingButton(
 					contact,
-					FacadeProvider.getContactFacade(),
-					CoreEntityArchiveMessages.CONTACT,
+					ArchiveHandlers.forContact(),
 					editComponent,
 					() -> navigateToView(ContactDataView.VIEW_NAME, contact.getUuid(), false));
 		}
@@ -765,40 +764,40 @@ public class ContactController {
 			boolean contactOfficerChange = district != null ? form.getContactOfficerCheckBox().getValue() : false;
 
 			List<ContactIndexDto> selectedContactsCpy = new ArrayList<>(selectedContacts);
-			new BulkOperationHandler().doBulkOperation(
+			BulkOperationHandler.<ContactIndexDto> forBulkEdit()
+				.doBulkOperation(
 				selectedEntries -> contactFacade.saveBulkContacts(
 					selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
 					updatedBulkEditData,
 					classificationChange,
 					contactOfficerChange),
 				selectedContactsCpy,
-				results -> handleBulkOperationDone((List<? extends ContactIndexDto>) results, popupWindow, contactGrid, caseUuid));
+				bulkOperationCallback(caseUuid, contactGrid, popupWindow));
 		});
 
 		editView.addDiscardListener(popupWindow::close);
 	}
 
-	private void handleBulkOperationDone(
-		List<? extends ContactIndexDto> remainingContacts,
-		Window popupWindow,
-		AbstractContactGrid<?> contactGrid,
-		String caseUuid) {
-
-		popupWindow.close();
-		contactGrid.reload();
-		if (CollectionUtils.isNotEmpty(remainingContacts)) {
-			if (contactGrid instanceof ContactGrid) {
-				((ContactGrid) contactGrid).asMultiSelect().selectItems(remainingContacts.toArray(new ContactIndexDto[0]));
-			} else if (contactGrid instanceof ContactGridDetailed) {
-				((ContactGridDetailed) contactGrid).asMultiSelect().selectItems(remainingContacts.toArray(new ContactIndexDetailedDto[0]));
+	private Consumer<List<ContactIndexDto>> bulkOperationCallback(String caseUuid, AbstractContactGrid<?> contactGrid, Window popupWindow) {
+		return remainingContacts -> {
+			if (popupWindow != null) {
+				popupWindow.close();
 			}
-		} else {
-			if (caseUuid == null) {
-				overview();
+			contactGrid.reload();
+			if (CollectionUtils.isNotEmpty(remainingContacts)) {
+				if (contactGrid instanceof ContactGrid) {
+					((ContactGrid) contactGrid).asMultiSelect().selectItems(remainingContacts.toArray(new ContactIndexDto[0]));
+				} else if (contactGrid instanceof ContactGridDetailed) {
+					((ContactGridDetailed) contactGrid).asMultiSelect().selectItems(remainingContacts.toArray(new ContactIndexDetailedDto[0]));
+				}
 			} else {
-				caseContactsOverview(caseUuid);
+				if (caseUuid == null) {
+					overview();
+				} else {
+					caseContactsOverview(caseUuid);
+				}
 			}
-		}
+		};
 	}
 
 	public void deleteAllSelectedItems(Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {
@@ -945,35 +944,14 @@ public class ContactController {
 			});
 	}
 
-	public void archiveAllSelectedItems(Collection<ContactIndexDto> selectedRows, Runnable callback) {
-		List<String> contactUuids = selectedRows.stream().map(ContactIndexDto::getUuid).collect(Collectors.toList());
-
+	public void archiveAllSelectedItems(Collection<ContactIndexDto> selectedRows, AbstractContactGrid<?> contactGrid) {
 		ControllerProvider.getArchiveController()
-			.archiveSelectedItems(
-				contactUuids,
-				FacadeProvider.getContactFacade(),
-				Strings.headingNoContactsSelected,
-				Strings.confirmationArchiveContacts,
-				Strings.headingContactsArchived,
-				Strings.messageContactsArchived,
-				callback);
+			.archiveSelectedItems(selectedRows, ArchiveHandlers.forContact(), bulkOperationCallback(null, contactGrid, null));
 	}
 
-	public void dearchiveAllSelectedItems(Collection<ContactIndexDto> selectedRows, Runnable callback) {
-		List<String> contactUuids = selectedRows.stream().map(ContactIndexDto::getUuid).collect(Collectors.toList());
-
+	public void dearchiveAllSelectedItems(Collection<ContactIndexDto> selectedRows, AbstractContactGrid<?> contactGrid) {
 		ControllerProvider.getArchiveController()
-			.dearchiveSelectedItems(
-				contactUuids,
-				FacadeProvider.getContactFacade(),
-				Strings.headingNoContactsSelected,
-				Strings.messageNoContactsSelected,
-				Strings.confirmationDearchiveContacts,
-				Strings.entityContact,
-				Strings.headingConfirmDearchiving,
-				Strings.headingContactsDearchived,
-				Strings.messageContactsDearchived,
-				callback);
+			.dearchiveSelectedItems(selectedRows, ArchiveHandlers.forContact(), bulkOperationCallback(null, contactGrid, null));
 	}
 
 	public TitleLayout getContactViewTitleLayout(ContactDto contact) {

@@ -1,39 +1,31 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2023 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
-package de.symeda.auditlog.api.sample;
+ */
 
-import java.math.BigDecimal;
+package de.symeda.sormas.api;
 
-public class UnauditedMiddleClassEntity extends SuperClassEntity {
+import java.util.List;
 
-	public static final String WEIGHT = "weight";
+public interface ArchivableFacade {
 
-	private BigDecimal weight;
+	void archive(String uuid);
 
-	public UnauditedMiddleClassEntity(String uuid, String name) {
-		super(uuid, name);
-	}
+	void dearchive(String uuid);
 
-	public BigDecimal getWeight() {
-		return weight;
-	}
+	List<String> archive(List<String> entityUuid);
 
-	public void setWeight(BigDecimal weight) {
-		this.weight = weight;
-	}
+	List<String> dearchive(List<String> entityUuids);
+
+	boolean isArchived(String uuid);
 }

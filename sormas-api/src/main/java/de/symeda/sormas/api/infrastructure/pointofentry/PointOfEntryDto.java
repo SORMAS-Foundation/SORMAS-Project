@@ -57,7 +57,6 @@ public class PointOfEntryDto extends InfrastructureDto {
 	@Max(value = 180, message = Validations.numberTooBig)
 	private Double longitude;
 	private boolean active;
-	private boolean archived;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalID;
 
@@ -79,9 +78,8 @@ public class PointOfEntryDto extends InfrastructureDto {
 		boolean active,
 		String externalID) {
 
-		super(creationDate, changeDate, uuid);
+		super(creationDate, changeDate, uuid, archived);
 
-		this.archived = archived;
 		this.pointOfEntryType = pointOfEntryType;
 		this.name = name;
 		if (regionUuid != null) {
@@ -188,14 +186,6 @@ public class PointOfEntryDto extends InfrastructureDto {
 
 	public void setActive(boolean active) {
 		this.active = active;
-	}
-
-	public boolean isArchived() {
-		return archived;
-	}
-
-	public void setArchived(boolean archived) {
-		this.archived = archived;
 	}
 
 	public String getExternalID() {

@@ -1652,7 +1652,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		// 2. Merge
 
-		getCaseFacade().mergeCase(leadCase.getUuid(), otherCase.getUuid());
+		getCaseFacade().merge(leadCase.getUuid(), otherCase.getUuid());
 
 		// 3. Test
 
@@ -1888,7 +1888,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(null, duplicateLeadVacc1.getVaccinationInfoSource());
 		assertEquals(null, duplicateLeadVacc2.getVaccinationInfoSource());
 
-		getCaseFacade().mergeCase(leadCase.getUuid(), followCase.getUuid());
+		getCaseFacade().merge(leadCase.getUuid(), followCase.getUuid());
 
 		List<VaccinationDto> mergedVaccines = getVaccinationFacade().getAllVaccinations(leadPerson.getUuid(), leadCase.getDisease());
 

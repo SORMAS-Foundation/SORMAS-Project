@@ -26,6 +26,7 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.community.CommunityCriteria;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;
@@ -57,7 +58,14 @@ public class CommunityFacadeEjb
 
 	@Inject
 	protected CommunityFacadeEjb(CommunityService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
-		super(Community.class, CommunityDto.class, service, featureConfiguration, Validations.importCommunityAlreadyExists);
+		super(
+			Community.class,
+			CommunityDto.class,
+			service,
+			featureConfiguration,
+			Validations.importCommunityAlreadyExists,
+			Strings.messageCommunityArchivingNotPossible,
+			Strings.messageCommunityDearchivingNotPossible);
 	}
 
 	@Override

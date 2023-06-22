@@ -82,9 +82,9 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
 import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceServiceGateway;
 import de.symeda.sormas.ui.utils.AbstractView;
+import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
 import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
@@ -908,13 +908,10 @@ public class EventController {
 
 		// Initialize 'Archive' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_ARCHIVE)) {
-			ControllerProvider.getArchiveController()
-				.addArchivingButton(event, FacadeProvider.getEventFacade(), CoreEntityArchiveMessages.EVENT, editView, () -> {
-					ViewModelProviders.of(EventParticipantsView.class)
-						.get(EventParticipantsViewConfiguration.class)
-						.setRelevanceStatusChangedEvent(null);
-					navigateToData(uuid);
-				});
+			ControllerProvider.getArchiveController().addArchivingButton(event, ArchiveHandlers.forEvent(), editView, () -> {
+				ViewModelProviders.of(EventParticipantsView.class).get(EventParticipantsViewConfiguration.class).setRelevanceStatusChangedEvent(null);
+				navigateToData(uuid);
+			});
 		}
 
 		editView.restrictEditableComponentsOnEditView(
@@ -971,7 +968,8 @@ public class EventController {
 			boolean eventManagementStatusChange = form.getEventManagementStatusCheckbox().getValue();
 
 			List<EventIndexDto> selectedEventsCpy = new ArrayList<>(selectedEvents);
-			new BulkOperationHandler().doBulkOperation(
+			BulkOperationHandler.<EventIndexDto> forBulkEdit()
+				.doBulkOperation(
 				selectedEntries -> eventFacade.saveBulkEvents(
 					selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
 					updatedTempEvent,
@@ -979,21 +977,25 @@ public class EventController {
 					eventInvestigationStatusChange,
 					eventManagementStatusChange),
 				selectedEventsCpy,
-				results -> handleBulkOperationDone((List<EventIndexDto>) results, popupWindow, eventGrid));
+				bulkOperationCallback(eventGrid, popupWindow));
 		});
 
-		editView.addDiscardListener(() -> popupWindow.close());
+		editView.addDiscardListener(popupWindow::close);
 	}
 
-	private void handleBulkOperationDone(List<EventIndexDto> remainingEvents, Window popupWindow, EventGrid eventGrid) {
+	private Consumer<List<EventIndexDto>> bulkOperationCallback(EventGrid eventGrid, Window popupWindow) {
+		return remainingEvents -> {
+			if (popupWindow != null) {
+				popupWindow.close();
+			}
 
-		popupWindow.close();
-		eventGrid.reload();
-		if (CollectionUtils.isNotEmpty(remainingEvents)) {
-			eventGrid.asMultiSelect().selectItems(remainingEvents.toArray(new EventIndexDto[0]));
-		} else {
-			navigateToIndex();
-		}
+			eventGrid.reload();
+			if (CollectionUtils.isNotEmpty(remainingEvents)) {
+				eventGrid.asMultiSelect().selectItems(remainingEvents.toArray(new EventIndexDto[0]));
+			} else {
+				navigateToIndex();
+			}
+		};
 	}
 
 	public EventDto createNewEvent() {
@@ -1102,35 +1104,14 @@ public class EventController {
 		return !eventParticipantList.isEmpty();
 	}
 
-	public void archiveAllSelectedItems(Collection<EventIndexDto> selectedRows, Runnable callback) {
-		List<String> eventUuids = selectedRows.stream().map(EventIndexDto::getUuid).collect(Collectors.toList());
-
+	public void archiveAllSelectedItems(Collection<EventIndexDto> selectedRows, EventGrid eventGrid) {
 		ControllerProvider.getArchiveController()
-			.archiveSelectedItems(
-				eventUuids,
-				FacadeProvider.getEventFacade(),
-				Strings.headingNoEventsSelected,
-				Strings.confirmationArchiveEvents,
-				Strings.headingEventsArchived,
-				Strings.messageEventArchived,
-				callback);
+			.archiveSelectedItems(selectedRows, ArchiveHandlers.forEvent(), bulkOperationCallback(eventGrid, null));
 	}
 
-	public void dearchiveAllSelectedItems(Collection<EventIndexDto> selectedRows, Runnable callback) {
-		List<String> eventUuids = selectedRows.stream().map(EventIndexDto::getUuid).collect(Collectors.toList());
-
+	public void dearchiveAllSelectedItems(Collection<EventIndexDto> selectedRows, EventGrid eventGrid) {
 		ControllerProvider.getArchiveController()
-			.dearchiveSelectedItems(
-				eventUuids,
-				FacadeProvider.getEventFacade(),
-				Strings.headingNoEventsSelected,
-				Strings.messageNoEventsSelected,
-				Strings.confirmationDearchiveEvents,
-				Strings.entityEvent,
-				Strings.headingConfirmDearchiving,
-				Strings.headingEventsDearchived,
-				Strings.messageEventsDearchived,
-				callback);
+			.dearchiveSelectedItems(selectedRows, ArchiveHandlers.forEvent(), bulkOperationCallback(eventGrid, null));
 	}
 
 	public TitleLayout getEventViewTitleLayout(String uuid) {

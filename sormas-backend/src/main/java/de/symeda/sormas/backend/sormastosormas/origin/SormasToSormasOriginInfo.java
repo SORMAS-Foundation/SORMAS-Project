@@ -26,7 +26,6 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
-import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
@@ -197,7 +196,6 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sormasToSormasOriginInfo")
-	@AuditedIgnore
 	public List<Case> getCases() {
 		return cases;
 	}
@@ -207,7 +205,6 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sormasToSormasOriginInfo")
-	@AuditedIgnore
 	public List<Contact> getContacts() {
 		return contacts;
 	}
@@ -217,7 +214,6 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sormasToSormasOriginInfo")
-	@AuditedIgnore
 	public List<Event> getEvents() {
 		return events;
 	}
@@ -227,7 +223,6 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sormasToSormasOriginInfo")
-	@AuditedIgnore
 	public List<EventParticipant> getEventParticipants() {
 		return eventParticipants;
 	}
@@ -237,7 +232,6 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sormasToSormasOriginInfo")
-	@AuditedIgnore
 	public List<Sample> getSamples() {
 		return samples;
 	}
