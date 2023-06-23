@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jdom2.Document;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.helpers.parsers.XMLParser;
+import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.steps.web.application.cases.CreateNewCaseSteps;
 import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
 import org.testng.asserts.SoftAssert;
@@ -18,12 +19,14 @@ import java.util.List;
 import static org.sormas.e2etests.helpers.SchemaValidator.XMLSchemaValidator.validateXMLSchema;
 import static org.sormas.e2etests.helpers.comparison.XMLComparison.compareXMLFiles;
 import static org.sormas.e2etests.helpers.comparison.XMLComparison.extractDiffNodes;
+import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_VERSION_LINK;
 
 @Slf4j
 public class SurvNetSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+  private String sormasActualVersion;
 
   @Inject
   public SurvNetSteps(WebDriverHelpers webDriverHelpers, SoftAssert softly) {
@@ -34,31 +37,32 @@ public class SurvNetSteps implements En {
         (String typeOfDate) -> {
           Document xmlFile =
               XMLParser.getDocument(
-                  "/srv/dockerdata/jenkins_new/sormas-files/test_"
-                  + EditCaseSteps.externalUUID.substring(1, 37)
-                  + ".xml");
+              "/srv/dockerdata/jenkins_new/sormas-files/test_"
+              + EditCaseSteps.externalUUID.substring(1, 37)
+              + ".xml");
           LocalDate expectedDate = CreateNewCaseSteps.survnetCase.getDateOfReport();
+
           switch (typeOfDate) {
-              case "date of report":
-                  LocalDate dateOfReport = getReportingDate(xmlFile);
-                  softly.assertEquals(dateOfReport, expectedDate, "Date of report is incorrect!");
-                  softly.assertAll();
-                  break;
-              case "change at date":
-                  LocalDate changeAtDate = getChangedAt(xmlFile);
-                  softly.assertEquals(changeAtDate, expectedDate, "Change at date is incorrect!");
-                  softly.assertAll();
-                  break;
-              case "created at date":
-                  LocalDate createdAt = getCreatedAt(xmlFile);
-                  softly.assertEquals(createdAt, expectedDate, "Created at date is incorrect!");
-                  softly.assertAll();
-                  break;
-              case "tracked at date":
-                  LocalDate trackedAt = getTrackedAt(xmlFile);
-                  softly.assertEquals(trackedAt, expectedDate, "Tracked at date is incorrect!");
-                  softly.assertAll();
-                  break;
+            case "date of report":
+              LocalDate dateOfReport = getReportingDate(xmlFile);
+              softly.assertEquals(dateOfReport, expectedDate, "Date of report is incorrect!");
+              softly.assertAll();
+              break;
+            case "change at date":
+              LocalDate changeAtDate = getChangedAt(xmlFile);
+              softly.assertEquals(changeAtDate, expectedDate, "Change at date is incorrect!");
+              softly.assertAll();
+              break;
+            case "created at date":
+              LocalDate createdAt = getCreatedAt(xmlFile);
+              softly.assertEquals(createdAt, expectedDate, "Created at date is incorrect!");
+              softly.assertAll();
+              break;
+            case "tracked at date":
+              LocalDate trackedAt = getTrackedAt(xmlFile);
+              softly.assertEquals(trackedAt, expectedDate, "Tracked at date is incorrect!");
+              softly.assertAll();
+              break;
           }
         });
 
@@ -81,13 +85,14 @@ public class SurvNetSteps implements En {
         "^I compare the SORMAS generated XML file with the example one$",
         () -> {
           List<String> diffs =
-              compareXMLFiles("src/main/resources/survnetXMLTemplates/controlXml.xml",
-                      "/srv/dockerdata/jenkins_new/sormas-files/test_"
-                              + EditCaseSteps.externalUUID.substring(1, 37)
-                              + ".xml");
+              compareXMLFiles(
+                  "src/main/resources/survnetXMLTemplates/controlXml.xml",
+                  "/srv/dockerdata/jenkins_new/sormas-files/test_"
+                      + EditCaseSteps.externalUUID.substring(1, 37)
+                      + ".xml");
           List<String> nodes = extractDiffNodes(diffs, "/[Transport][^\\s]+");
 
-          softly.assertTrue(nodes.size()<12, "Number of differences is incorrect!");
+          softly.assertTrue(nodes.size() < 12, "Number of differences is incorrect!");
           softly.assertAll();
 
           List<String> expectedList = new ArrayList<>();
@@ -102,12 +107,12 @@ public class SurvNetSteps implements En {
           expectedList.add("/Transport[1]/CVD[1]/Track[1]/@GuidTrack");
           expectedList.add("/Transport[1]/CVD[1]/Track[1]/@TrackedAt");
 
-          if(!expectedList.containsAll(nodes)) {
-              expectedList.add("/Transport[1]/CVD[1]/Track[1]/@Software");
-              softly.assertTrue(
-                      expectedList.containsAll(nodes),
-                      "The expected differences in the XML files are different");
-              softly.assertAll();
+          if (!expectedList.containsAll(nodes)) {
+            expectedList.add("/Transport[1]/CVD[1]/Track[1]/@Software");
+            softly.assertTrue(
+                expectedList.containsAll(nodes),
+                "The expected differences in the XML files are different");
+            softly.assertAll();
           }
         });
 
@@ -115,12 +120,37 @@ public class SurvNetSteps implements En {
         "^I check the SORMAS generated XML file structure with XSD Schema file$",
         () -> {
           softly.assertTrue(
-              validateXMLSchema("src/main/resources/survnetXMLTemplates/xmlSchema.xsd",
-                      "/srv/dockerdata/jenkins_new/sormas-files/test_"
+              validateXMLSchema(
+                  "src/main/resources/survnetXMLTemplates/xmlSchema.xsd",
+                  "/srv/dockerdata/jenkins_new/sormas-files/test_"
                       + EditCaseSteps.externalUUID.substring(1, 37)
                       + ".xml"),
               "Generated XML file does not match an example XSD schema");
           softly.assertAll();
+        });
+
+    And(
+        "^I check if software info in SORMAS generated XML file is correct$",
+        () -> {
+          Document xmlFile =
+              XMLParser.getDocument(
+              "/srv/dockerdata/jenkins_new/sormas-files/test_"
+              + EditCaseSteps.externalUUID.substring(1, 37)
+              + ".xml");
+
+          String softwareInfo = getSoftwareInfo(xmlFile).substring(15, 30);
+          String expectedSoftwareInfo = sormasActualVersion;
+          softly.assertEquals(softwareInfo, expectedSoftwareInfo, "Software info is incorrect!");
+          softly.assertAll();
+        });
+
+    And(
+        "^I collect SORMAS VERSION from About page$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.ABOUT_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(SORMAS_VERSION_LINK);
+          sormasActualVersion =
+              webDriverHelpers.getTextFromWebElement(SORMAS_VERSION_LINK).substring(9, 24);
         });
   }
 
@@ -137,7 +167,7 @@ public class SurvNetSteps implements En {
   }
 
   private LocalDate getChangedAt(Document xmlFile) {
-   String reportingDate =
+    String reportingDate =
         xmlFile
             .getRootElement()
             .getChildren()
@@ -145,31 +175,26 @@ public class SurvNetSteps implements En {
             .getAttribute("ChangedAt")
             .getValue()
             .substring(0, 10);
-   return LocalDate.parse(reportingDate, DATE_FORMATTER);
-   }
+    return LocalDate.parse(reportingDate, DATE_FORMATTER);
+  }
 
   private LocalDate getCreatedAt(Document xmlFile) {
     String createdAt =
-        xmlFile
-            .getRootElement()
-            .getAttribute("CreatedAt")
-            .getValue()
-            .substring(0, 10);
+        xmlFile.getRootElement().getAttribute("CreatedAt").getValue().substring(0, 10);
     return LocalDate.parse(createdAt, DATE_FORMATTER);
   }
 
-//this is external person uuid
+  // this is external person uuid
   private String getGuidPatient(Document xmlFile) {
-    return
-        xmlFile
-            .getRootElement()
-            .getChildren()
-            .get(0)
-            .getChildren()
-            .get(0)
-            .getAttribute("Value")
-            .getValue()
-            .substring(1,37);
+    return xmlFile
+        .getRootElement()
+        .getChildren()
+        .get(0)
+        .getChildren()
+        .get(0)
+        .getAttribute("Value")
+        .getValue()
+        .substring(1, 37);
   }
 
   private LocalDate getTrackedAt(Document xmlFile) {
@@ -179,27 +204,27 @@ public class SurvNetSteps implements En {
             .getChildren()
             .get(0)
             .getChildren()
-            .get(79)
-            .getAttribute("GuidTrack")
+            .get(78)
+            .getAttribute("TrackedAt")
             .getValue()
             .substring(0, 10);
     return LocalDate.parse(trackedAt, DATE_FORMATTER);
   }
 
-  private String getSoftwareInfo (Document xmlFile) {
-    return
+  private String getSoftwareInfo(Document xmlFile) {
+    String softwareInfo =
         xmlFile
             .getRootElement()
             .getChildren()
             .get(0)
             .getChildren()
-            .get(68)
+            .get(78)
             .getAttribute("Software")
-            .getValue()
-            .substring(0, 10);
+            .getValue();
+    return softwareInfo;
   }
 
-    private String getSexDE(Document xmlFile) {
+  private String getSexDE(Document xmlFile) {
     String sexDE = null;
     String sexIndex =
         xmlFile
