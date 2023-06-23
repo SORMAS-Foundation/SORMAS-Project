@@ -179,7 +179,7 @@ public class SurvNetSteps implements En {
             .getChildren()
             .get(0)
             .getChildren()
-            .get(69)
+            .get(79)
             .getAttribute("GuidTrack")
             .getValue()
             .substring(0, 10);
