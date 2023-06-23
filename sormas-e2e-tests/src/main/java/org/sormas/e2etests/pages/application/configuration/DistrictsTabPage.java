@@ -40,7 +40,7 @@ public class DistrictsTabPage {
   public static final By RESET_FILTERS_DISTRICTS_BUTTON = By.cssSelector("#actionResetFilters");
   public static final By EDIT_DISTRICT_BUTTON = By.xpath("//span[@class='v-icon v-icon-edit']");
   public static final By ARCHIVE_DISTRICT_BUTTON =
-      By.cssSelector(".popupContent #actionArchiveInfrastructure");
+      By.cssSelector(".popupContent #archiveDearchive");
   public static final By CONFIRM_ARCHIVING_DISTRICT_TEXT =
       By.xpath("//*[contains(text(),'Archivieren best\u00E4tigen')]");
   public static final By DISTRICTS_TABLE_DATA = By.tagName("td");

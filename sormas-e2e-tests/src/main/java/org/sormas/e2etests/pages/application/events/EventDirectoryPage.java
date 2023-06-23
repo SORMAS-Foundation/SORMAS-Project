@@ -142,6 +142,7 @@ public class EventDirectoryPage {
       By.cssSelector(".popupContent [class='v-filterselect-button']");
   public static final By EVENT_PARTICIPANT_VACCINATION_STATUS_FILTER_COMBOBOX =
       By.cssSelector("[id='vaccinationStatus'] [class='v-filterselect-button']");
+  public static final By EVENT_ARCHIVED_POPUP = By.cssSelector(".v-Notification-caption");
 
   public static By VALUE_SEPARATOR_COMBOBOX_LIST(String option) {
     return By.xpath("//div[@id='VAADIN_COMBOBOX_OPTIONLIST']//*[text()='" + option + "']");
