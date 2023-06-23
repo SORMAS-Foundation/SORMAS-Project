@@ -44,6 +44,7 @@ import de.symeda.sormas.backend.dashboard.DashboardFacadeEjb;
 import de.symeda.sormas.backend.dashboard.sample.SampleDashboardFacadeEjb;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb;
+import de.symeda.sormas.backend.environment.EnvironmentFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventGroupFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
@@ -447,8 +448,7 @@ public class ArchitectureTest {
 
 	@ArchTest
 	public void testEnvironmentFacadeEjbAuthorization(JavaClasses classes) {
-		//TODO #11572: activate test 
-		//assertFacadeEjbAnnotated(EnvironmentFacadeEjb.class, classes);
+		assertFacadeEjbAnnotated(EnvironmentFacadeEjb.class, classes);
 	}
 
 	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, JavaClasses classes) {
