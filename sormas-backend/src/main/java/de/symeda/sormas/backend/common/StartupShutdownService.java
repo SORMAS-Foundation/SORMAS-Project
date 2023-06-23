@@ -870,7 +870,7 @@ public class StartupShutdownService {
 					}
 				});
 				break;
-			case 514:
+			case 516:
 				fillDefaultUserRole(DefaultUserRole.ENVIRONMENTAL_SURVEILLANCE_USER);
 				break;
 			default:
