@@ -15,12 +15,14 @@
 package de.symeda.sormas.backend.caze;
 
 import java.sql.Timestamp;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -2029,11 +2031,14 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 		TypedQuery<Object[]> typedQuery = em.createQuery(cq).setParameter("date_type", "epoch");
 		if (limit != null) {
-			typedQuery.setMaxResults(limit);
+			// Double the limit because the query result will contain each pair twice; since these duplicates will
+			// be removed, the final result list would only contain limit/2 entries otherwise
+			typedQuery.setMaxResults(limit * 2);
 		}
 
 		List<Object[]> foundIds = typedQuery.getResultList();
 		List<CaseMergeIndexDto[]> resultList = new ArrayList<>();
+		Set<AbstractMap.SimpleImmutableEntry<Long, Long>> resultIdsSet = new HashSet<>();
 
 		if (!foundIds.isEmpty()) {
 			CriteriaQuery<CaseMergeIndexDto> indexCasesCq = cb.createQuery(CaseMergeIndexDto.class);
@@ -2045,13 +2050,12 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 				em.createQuery(indexCasesCq).getResultStream().collect(Collectors.toMap(c -> c.getId(), Function.identity()));
 
 			for (Object[] idPair : foundIds) {
-				// Skip duplicate pairs
-				if (resultList.stream()
-					.anyMatch(
-						r -> (r[0].getId() == (long) idPair[0] && r[1].getId() == (long) idPair[1])
-							|| (r[0].getId() == (long) idPair[1] && r[1].getId() == (long) idPair[0]))) {
+				// Skip duplicate pairs - duplications always happen in reverse order, i.e. if idPair[0]/idPair[1]
+				// is already in the result set in this order, the duplication would be added as idPair[1]/idPair[0]
+				if (resultIdsSet.contains(new AbstractMap.SimpleImmutableEntry<>(idPair[1], idPair[0]))) {
 					continue;
 				}
+
 				try {
 					// Cloning is necessary here to allow us to add the same CaseIndexDto to the grid multiple times
 					CaseMergeIndexDto parent = (CaseMergeIndexDto) indexCases.get(idPair[0]).clone();
@@ -2070,6 +2074,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 								child,
 								parent });
 					}
+					resultIdsSet.add(new AbstractMap.SimpleImmutableEntry<>((Long) idPair[0], (Long) idPair[1]));
 				} catch (CloneNotSupportedException e) {
 					throw new RuntimeException(e);
 				}
