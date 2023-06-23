@@ -86,7 +86,6 @@ public class EventGroupSelectionField extends CustomField<EventGroupIndexDto> {
 		CssStyles.style(rbSelectEventGroup, CssStyles.VSPACE_NONE);
 		rbSelectEventGroup.addValueChangeListener(e -> {
 			if (e.getValue() != null) {
-				rbCreateEventGroup.setValue(null);
 				eventGroupGrid.setEnabled(true);
 				if (selectionChangeCallback != null) {
 					selectionChangeCallback.accept(eventGroupGrid.getSelectedItems().size() > 0);
@@ -101,9 +100,6 @@ public class EventGroupSelectionField extends CustomField<EventGroupIndexDto> {
 
 		eventGroupGrid = new EventGroupSelectionGrid(criteria);
 		eventGroupGrid.addSelectionListener(e -> {
-			if (e.getAllSelectedItems().size() > 0) {
-				rbCreateEventGroup.setValue(null);
-			}
 
 			if (selectionChangeCallback != null) {
 				selectionChangeCallback.accept(!e.getAllSelectedItems().isEmpty());
@@ -117,7 +113,10 @@ public class EventGroupSelectionField extends CustomField<EventGroupIndexDto> {
 		rbCreateEventGroup.setItemCaptionGenerator((item) -> I18nProperties.getCaption(Captions.eventNewEventGroup));
 		rbCreateEventGroup.addValueChangeListener(e -> {
 			if (e.getValue() != null) {
-				rbSelectEventGroup.setValue(null);
+				if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTGROUP_LINK)
+					&& UserProvider.getCurrent().hasUserRight(UserRight.EVENTGROUP_CREATE)) {
+					rbSelectEventGroup.setValue(null);
+				}
 				eventGroupGrid.deselectAll();
 				eventGroupGrid.setEnabled(false);
 				if (selectionChangeCallback != null) {

@@ -523,11 +523,11 @@ Feature: Sharing cases between environments tests
     And I click on the More button on Case directory page
     Then I click on Merge Duplicates on Case directory page
     And I click to CONFIRM FILTERS on Merge Duplicate Cases page
-    Then I click on Merge button for target system from received case
+    Then I click on Merge button for source system from received case
     And I confirm merge duplicated case
     Then I check if popup with merge duplicated case appears
     And I click on cancel button in merge duplicated cases popup
-    Then I click on Merge button for source system from received case
+    Then I click on Merge button for target system from received case
     And I confirm merge duplicated case
     Then I check if popup with merge message in german appears
 

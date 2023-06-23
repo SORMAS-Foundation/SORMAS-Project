@@ -14,7 +14,6 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Type;
 
-import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -25,7 +24,6 @@ import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 @Entity(name = FeatureConfiguration.TABLE_NAME)
-@Audited
 public class FeatureConfiguration extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 4027927530101427321L;

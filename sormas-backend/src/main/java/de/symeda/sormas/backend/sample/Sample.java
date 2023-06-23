@@ -44,8 +44,6 @@ import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
 
-import de.symeda.auditlog.api.Audited;
-import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.sample.AdditionalTestType;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -67,7 +65,6 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShar
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name = "samples")
-@Audited
 public class Sample extends DeletableAdo implements SormasToSormasShareable {
 
 	private static final long serialVersionUID = -7196712070188634978L;
@@ -588,7 +585,6 @@ public class Sample extends DeletableAdo implements SormasToSormasShareable {
 		CascadeType.MERGE,
 		CascadeType.DETACH,
 		CascadeType.REFRESH })
-	@AuditedIgnore
 	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;
 	}
@@ -599,7 +595,6 @@ public class Sample extends DeletableAdo implements SormasToSormasShareable {
 	}
 
 	@OneToMany(mappedBy = SormasToSormasShareInfo.SAMPLE, fetch = FetchType.LAZY)
-	@AuditedIgnore
 	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
 		return sormasToSormasShares;
 	}
@@ -609,7 +604,6 @@ public class Sample extends DeletableAdo implements SormasToSormasShareable {
 	}
 
 	@OneToMany(mappedBy = SampleReport.SAMPLE, fetch = FetchType.LAZY)
-	@AuditedIgnore
 	public List<SampleReport> getSampleReports() {
 		return sampleReports;
 	}

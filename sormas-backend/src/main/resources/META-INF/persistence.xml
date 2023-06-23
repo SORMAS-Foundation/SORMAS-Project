@@ -6,8 +6,6 @@
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 		<jta-data-source>jdbc/sormasDataPool</jta-data-source>
         
-		<mapping-file>META-INF/listener.xml</mapping-file>
-
 		<class>de.symeda.sormas.backend.action.Action</class>
 		<class>de.symeda.sormas.backend.caze.Case</class>
 		<class>de.symeda.sormas.backend.common.AbstractDomainObject</class>
@@ -15,6 +13,7 @@
 		<class>de.symeda.sormas.backend.common.CoreAdo</class>
 		<class>de.symeda.sormas.backend.contact.Contact</class>
 		<class>de.symeda.sormas.backend.epidata.EpiData</class>
+		<class>de.symeda.sormas.backend.environment.Environment</class>
 		<class>de.symeda.sormas.backend.event.Event</class>
 		<class>de.symeda.sormas.backend.event.EventParticipant</class>
 		<class>de.symeda.sormas.backend.event.EventGroup</class>
@@ -107,29 +106,5 @@
              -->
 		</properties>
 
-	</persistence-unit>
-	
-	<persistence-unit name="auditlogPU">
-        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-		<jta-data-source>jdbc/AuditlogPool</jta-data-source>
-
-		<class>de.symeda.sormas.backend.auditlog.AuditLogEntry</class>
-
-		<exclude-unlisted-classes>true</exclude-unlisted-classes>
-
-		<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
-		<validation-mode>CALLBACK</validation-mode>
-		
-		 <properties>
-         	<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL94Dialect"/>
-         	<property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform"/>
-         	<!-- don't validate on release, otherwise the automatic db update won't work
-         	<property name="hibernate.hbm2ddl.auto" value="validate"/>
-         	 -->
-			<property name="hibernate.jdbc.batch_size" value="100" />
-			<property name="hibernate.order_inserts" value="true" />
-			<property name="hibernate.order_updates" value="true" />
-      	</properties>
-		
 	</persistence-unit>
 </persistence>

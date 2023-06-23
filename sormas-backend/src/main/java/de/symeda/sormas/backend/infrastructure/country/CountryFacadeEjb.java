@@ -43,6 +43,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.country.CountryCriteria;
 import de.symeda.sormas.api.infrastructure.country.CountryDto;
@@ -86,7 +87,14 @@ public class CountryFacadeEjb
 
 	@Inject
 	protected CountryFacadeEjb(CountryService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
-		super(Country.class, CountryDto.class, service, featureConfiguration, Validations.importCountryAlreadyExists);
+		super(
+			Country.class,
+			CountryDto.class,
+			service,
+			featureConfiguration,
+			Validations.importCountryAlreadyExists,
+			null,
+			Strings.messageCountryDearchivingNotPossible);
 	}
 
 	@Override

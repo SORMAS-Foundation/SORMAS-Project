@@ -40,6 +40,7 @@ import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.district.DistrictCriteria;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
@@ -84,7 +85,14 @@ public class DistrictFacadeEjb
 
 	@Inject
 	protected DistrictFacadeEjb(DistrictService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
-		super(District.class, DistrictDto.class, service, featureConfiguration, Validations.importDistrictAlreadyExists);
+		super(
+			District.class,
+			DistrictDto.class,
+			service,
+			featureConfiguration,
+			Validations.importDistrictAlreadyExists,
+			Strings.messageDistrictArchivingNotPossible,
+			Strings.messageDistrictDearchivingNotPossible);
 	}
 
 	@Override

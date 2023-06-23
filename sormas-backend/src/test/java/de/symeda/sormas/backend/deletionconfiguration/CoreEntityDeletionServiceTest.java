@@ -112,7 +112,7 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 			contentAsBytes);
 
 		CaseDataDto duplicateCase = creator.createCase(user.toReference(), person.toReference(), rdcf);
-		getCaseFacade().deleteCaseAsDuplicate(duplicateCase.getUuid(), caze.getUuid());
+		getCaseFacade().deleteAsDuplicate(duplicateCase.getUuid(), caze.getUuid());
 
 		final ContactDto resultingContact = creator.createContact(user.toReference(), person.toReference(), caze);
 		assertNull(resultingContact.getRegion());
@@ -1003,5 +1003,29 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		assertEquals(0, getCaseService().count());
 		assertEquals(0, getShareRequestInfoService().count());
 		assertEquals(0, getSormasToSormasShareInfoService().count());
+	}
+
+	@Test
+	public void testReportDeletionReference() {
+		createDeletionConfigurations(CoreEntityType.CASE, DeletionReference.REPORT);
+		DeletionConfiguration caseDeletionConfiguration = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.CASE);
+
+		TestDataCreator.RDCF redcf = creator.createRDCF();
+		UserDto user = creator.createUser(redcf, creator.getUserRoleReference(DefaultUserRole.ADMIN));
+
+		creator.createCase(user.toReference(), creator.createPerson().toReference(), redcf, c -> {
+			c.setReportDate(new Date());
+		});
+
+		final Date exceededDeletePereiod = DateUtils.addDays(new Date(), (-1) * caseDeletionConfiguration.deletionPeriod - 1);
+		creator.createCase(user.toReference(), creator.createPerson().toReference(), redcf, c -> {
+			c.setReportDate(exceededDeletePereiod);
+		});
+
+		useSystemUser();
+		getCoreEntityDeletionService().executeAutomaticDeletion();
+		loginWith(user);
+
+		assertEquals(1, getCaseService().count());
 	}
 }

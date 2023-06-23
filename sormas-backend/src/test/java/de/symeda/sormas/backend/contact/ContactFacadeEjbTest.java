@@ -1801,7 +1801,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		otherContact.setResultingCase(resultingCase.toReference());
 		getContactFacade().save(otherContact);
 
-		getContactFacade().mergeContact(leadContact.getUuid(), otherContact.getUuid());
+		getContactFacade().merge(leadContact.getUuid(), otherContact.getUuid());
 
 		ContactDto mergedContact = getContactFacade().getByUuid(leadContact.getUuid());
 		assertEquals(I18nProperties.getString(Strings.messageSystemFollowUpCanceled), mergedContact.getFollowUpComment());
@@ -1919,7 +1919,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 		// 2. Merge
 
-		getContactFacade().mergeContact(leadContact.getUuid(), otherContact.getUuid());
+		getContactFacade().merge(leadContact.getUuid(), otherContact.getUuid());
 
 		// 3. Test
 

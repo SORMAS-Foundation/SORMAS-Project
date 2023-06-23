@@ -190,6 +190,7 @@ public class CaseDirectoryPage {
   public static final By ACTION_REJECT_BUTTON = By.cssSelector("#actionReject");
   public static final By POTENTIAL_DUPLICATE_POPUP_DE =
       By.xpath("//*[contains(text(), 'Potentielle Duplikate erkannt')]");
+  public static final By CASE_ARCHIVED_POPUP = By.cssSelector(".v-Notification-caption");
 
   public static By getActionRejectButtonByCaseDescription(String description) {
     return By.xpath(
@@ -242,7 +243,7 @@ public class CaseDirectoryPage {
   public static By getMergeDuplicatesButtonById(String uuid) {
     return By.xpath(
         String.format(
-            "//td//a//span[text()='%s']/../../../../../../preceding-sibling::tr//div[@id=\"actionMerge\"]",
+            "//td//a//span[text()='%s']/../../../../../..//div[@id=\"actionMerge\"]",
             uuid.substring(0, 6).toUpperCase()));
   }
 

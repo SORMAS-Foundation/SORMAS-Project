@@ -14,14 +14,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.therapy.TreatmentRoute;
 import de.symeda.sormas.api.therapy.TreatmentType;
 import de.symeda.sormas.api.therapy.TypeOfDrug;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 @Entity
-@Audited
 public class Prescription extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -5028702472324192079L;

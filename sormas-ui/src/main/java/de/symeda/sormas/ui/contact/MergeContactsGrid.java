@@ -6,9 +6,7 @@ import java.util.List;
 import com.vaadin.data.TreeData;
 import com.vaadin.data.provider.TreeDataProvider;
 import com.vaadin.server.ExternalResource;
-import com.vaadin.server.Page;
 import com.vaadin.ui.Link;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.TextRenderer;
 
@@ -36,10 +34,16 @@ public class MergeContactsGrid extends AbstractMergeGrid<MergeContactIndexDto, C
 	public MergeContactsGrid() {
 		super(
 			MergeContactIndexDto.class,
+			FacadeProvider.getContactFacade(),
 			ContactDataView.VIEW_NAME,
 			MergeContactIndexDto.I18N_PREFIX,
-			Strings.confirmationMergeContactAndDeleteOther,
-			Strings.confirmationPickContactAndDeleteOther);
+			Messages.of(
+				Strings.confirmationMergeContactAndDeleteOther,
+				Strings.confirmationPickContactAndDeleteOther,
+				Strings.messageContactsMerged,
+				Strings.errorContactMerging,
+				Strings.messageContactDuplicateDeleted,
+				Strings.errorContactDuplicateDeletion));
 	}
 
 	@Override
@@ -94,33 +98,6 @@ public class MergeContactsGrid extends AbstractMergeGrid<MergeContactIndexDto, C
 	@Override
 	protected List<MergeContactIndexDto[]> getItemsForDuplicateMerging(int limit) {
 		return FacadeProvider.getContactFacade().getContactsForDuplicateMerging(criteria, limit, ignoreRegion);
-	}
-
-	@Override
-	protected void merge(MergeContactIndexDto targetedContact, MergeContactIndexDto contactToMergeAndDelete) {
-		FacadeProvider.getContactFacade().mergeContact(targetedContact.getUuid(), contactToMergeAndDelete.getUuid());
-		FacadeProvider.getContactFacade().deleteContactAsDuplicate(contactToMergeAndDelete.getUuid(), targetedContact.getUuid());
-
-		if (FacadeProvider.getContactFacade().isDeleted(contactToMergeAndDelete.getUuid())) {
-			reload();
-			new Notification(I18nProperties.getString(Strings.messageContactsMerged), Notification.Type.TRAY_NOTIFICATION).show(Page.getCurrent());
-		} else {
-			new Notification(I18nProperties.getString(Strings.errorContactMerging), Notification.Type.ERROR_MESSAGE).show(Page.getCurrent());
-		}
-	}
-
-	@Override
-	protected void pick(MergeContactIndexDto targetedContact, MergeContactIndexDto contactToDelete) {
-		FacadeProvider.getContactFacade().deleteContactAsDuplicate(contactToDelete.getUuid(), targetedContact.getUuid());
-
-		if (FacadeProvider.getContactFacade().isDeleted(contactToDelete.getUuid())) {
-			reload();
-			new Notification(I18nProperties.getString(Strings.messageContactDuplicateDeleted), Notification.Type.TRAY_NOTIFICATION)
-				.show(Page.getCurrent());
-		} else {
-			new Notification(I18nProperties.getString(Strings.errorContactDuplicateDeletion), Notification.Type.ERROR_MESSAGE)
-				.show(Page.getCurrent());
-		}
 	}
 
 	@Override

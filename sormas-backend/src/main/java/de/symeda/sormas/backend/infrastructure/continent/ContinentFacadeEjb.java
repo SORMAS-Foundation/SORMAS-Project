@@ -38,6 +38,7 @@ import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.continent.ContinentCriteria;
 import de.symeda.sormas.api.infrastructure.continent.ContinentDto;
@@ -74,7 +75,14 @@ public class ContinentFacadeEjb
 
 	@Inject
 	protected ContinentFacadeEjb(ContinentService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
-		super(Continent.class, ContinentDto.class, service, featureConfiguration, Validations.importContinentAlreadyExists);
+		super(
+			Continent.class,
+			ContinentDto.class,
+			service,
+			featureConfiguration,
+			Validations.importContinentAlreadyExists,
+			Strings.messageContinentArchivingNotPossible,
+			null);
 	}
 
 	public static ContinentReferenceDto toReferenceDto(Continent entity) {
