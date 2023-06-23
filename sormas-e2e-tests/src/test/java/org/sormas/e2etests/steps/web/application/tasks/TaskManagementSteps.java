@@ -24,7 +24,8 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_C
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.CONFIRM_ARCHIVING_COMMUNITY_TEXT;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.CONFIRM_ARCHIVING_YES_BUTTON;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.CONFIRM_DEARCHIVING_COMMUNITY_TEXT;
-import static org.sormas.e2etests.pages.application.contacts.EditContactPage.NOTIFICATION_MESSAGE_POPUP;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.NOTIFICATION_ARCHIVE_MESSAGE_POPUP;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.NOTIFICATION_DELETE_MESSAGE_POPUP;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.POPUP_YES_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.APPLY_FILTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BULK_ACTIONS_EVENT_DIRECTORY;
@@ -308,11 +309,23 @@ public class TaskManagementSteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
     When(
-        "I check if popup message is {string}",
+        "I check if popup message for archiving is {string}",
         (String expectedText) -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NOTIFICATION_MESSAGE_POPUP);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NOTIFICATION_ARCHIVE_MESSAGE_POPUP);
           softly.assertEquals(
-              webDriverHelpers.getTextFromPresentWebElement(NOTIFICATION_MESSAGE_POPUP),
+              webDriverHelpers.getTextFromPresentWebElement(NOTIFICATION_ARCHIVE_MESSAGE_POPUP),
+              expectedText,
+              "Bulk action went wrong");
+          softly.assertAll();
+        });
+
+    When(
+        "I check if popup message for deleting is {string}",
+        (String expectedText) -> {
+          // here
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NOTIFICATION_DELETE_MESSAGE_POPUP);
+          softly.assertEquals(
+              webDriverHelpers.getTextFromPresentWebElement(NOTIFICATION_DELETE_MESSAGE_POPUP),
               expectedText,
               "Bulk action went wrong");
           softly.assertAll();
