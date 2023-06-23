@@ -101,6 +101,7 @@ import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.contact.MergeContactIndexDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.dashboard.DashboardContactDto;
+import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataHelper;
@@ -2315,6 +2316,15 @@ public class ContactFacadeEjb
 	public User getRandomRegionContactResponsible(Region region) {
 
 		return userService.getRandomRegionUser(region, UserRight.CONTACT_RESPONSIBLE);
+	}
+
+	@Override
+	protected String getDeleteReferenceField(DeletionReference deletionReference) {
+		if (deletionReference == DeletionReference.REPORT) {
+			return Contact.REPORT_DATE_TIME;
+		}
+
+		return super.getDeleteReferenceField(deletionReference);
 	}
 
 	@LocalBean

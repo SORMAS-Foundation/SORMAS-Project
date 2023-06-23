@@ -72,8 +72,7 @@ public class FacilitiesTabPage {
       By.cssSelector(".v-window #contactPersonEmail");
   public static final By EDIT_FIRST_FACILITY_BUTTON =
       By.xpath("(//span[@class='v-icon v-icon-edit'])[1]");
-  public static final By ARCHIVE_FACILITY_BUTTON =
-      By.cssSelector(".v-window #actionArchiveInfrastructure");
+  public static final By ARCHIVE_FACILITY_BUTTON = By.cssSelector(".v-window #archiveDearchive");
   public static final By ACTION_CONFIRM_BUTTON = By.id("actionConfirm");
   public static final By RELEVANCE_STATUS_COMBOBOX_FACILITIES_CONFIGURATION =
       By.cssSelector("#relevanceStatus > div");

@@ -52,6 +52,8 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.configuration.infrastructure.components.SearchField;
+import de.symeda.sormas.ui.utils.ArchiveHandlers;
+import de.symeda.sormas.ui.utils.ArchiveMessages;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -273,36 +275,24 @@ public class CommunitiesView extends AbstractConfigurationView {
 						new MenuBarHelper.MenuBarItem(
 							I18nProperties.getCaption(Captions.actionArchiveInfrastructure),
 							VaadinIcons.ARCHIVE,
-							selectedItem -> {
-								ControllerProvider.getInfrastructureController()
-									.archiveOrDearchiveAllSelectedItems(
-										true,
-										grid.asMultiSelect().getSelectedItems(),
-										InfrastructureType.COMMUNITY,
-										new Runnable() {
-
-											public void run() {
-												navigateTo(criteria);
-											}
-										});
-							},
+							selectedItem -> ControllerProvider.getInfrastructureController()
+								.archiveOrDearchiveAllSelectedItems(
+									true,
+									ArchiveHandlers.forInfrastructure(FacadeProvider.getCommunityFacade(), ArchiveMessages.COMMUNITY),
+									grid,
+									grid::reload,
+									() -> navigateTo(criteria)),
 							EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
 						new MenuBarHelper.MenuBarItem(
 							I18nProperties.getCaption(Captions.actionDearchiveInfrastructure),
 							VaadinIcons.ARCHIVE,
-							selectedItem -> {
-								ControllerProvider.getInfrastructureController()
-									.archiveOrDearchiveAllSelectedItems(
-										false,
-										grid.asMultiSelect().getSelectedItems(),
-										InfrastructureType.COMMUNITY,
-										new Runnable() {
-
-											public void run() {
-												navigateTo(criteria);
-											}
-										});
-							},
+							selectedItem -> ControllerProvider.getInfrastructureController()
+								.archiveOrDearchiveAllSelectedItems(
+									false,
+									ArchiveHandlers.forInfrastructure(FacadeProvider.getCommunityFacade(), ArchiveMessages.COMMUNITY),
+									grid,
+									grid::reload,
+									() -> navigateTo(criteria)),
 							EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
 					bulkOperationsDropdown.setVisible(isBulkOperationsDropdownVisible());

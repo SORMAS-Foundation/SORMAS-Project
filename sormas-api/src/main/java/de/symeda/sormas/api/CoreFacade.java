@@ -40,6 +40,8 @@ public interface CoreFacade<DTO extends EntityDto, INDEX_DTO extends Serializabl
 
 	void dearchive(List<String> entityUuids, String dearchiveReason);
 
+	List<String> getArchivedUuidsSince(Date since);
+
 	default void setArchiveInExternalSurveillanceToolForEntity(String uuid, boolean archived) throws ExternalSurveillanceToolException {
 	}
 

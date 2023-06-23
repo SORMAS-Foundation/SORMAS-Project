@@ -53,8 +53,6 @@ public interface EventParticipantFacade
 
 	EventParticipantReferenceDto getReferenceByEventAndPerson(String eventUuid, String personUuid);
 
-	List<String> getArchivedUuidsSince(Date since);
-
 	List<String> getDeletedUuidsSince(Date date);
 
 	EventParticipantDto getFirst(EventParticipantCriteria eventParticipantCriteria);

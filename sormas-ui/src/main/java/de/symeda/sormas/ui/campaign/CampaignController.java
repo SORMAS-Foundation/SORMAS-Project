@@ -43,8 +43,8 @@ import de.symeda.sormas.ui.campaign.campaigndata.CampaignFormDataView;
 import de.symeda.sormas.ui.campaign.campaigns.CampaignEditForm;
 import de.symeda.sormas.ui.campaign.campaigns.CampaignView;
 import de.symeda.sormas.ui.campaign.campaigns.CampaignsView;
+import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class CampaignController {
@@ -89,12 +89,7 @@ public class CampaignController {
 
 	private void createArchiveButton(CommitDiscardWrapperComponent<CampaignEditForm> campaignComponent, CampaignDto campaign) {
 		ControllerProvider.getArchiveController()
-			.addArchivingButton(
-				campaign,
-				FacadeProvider.getCampaignFacade(),
-				CoreEntityArchiveMessages.CAMPAIGN,
-				campaignComponent,
-				() -> navigateToCampaign(campaign.getUuid()));
+			.addArchivingButton(campaign, ArchiveHandlers.forCampaign(), campaignComponent, () -> navigateToCampaign(campaign.getUuid()));
 	}
 
 	public void createCampaignDataForm(CampaignReferenceDto campaign, CampaignFormMetaReferenceDto campaignForm) {

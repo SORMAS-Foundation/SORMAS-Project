@@ -1,49 +1,40 @@
 package de.symeda.sormas.ui.utils;
 
-import java.util.Collections;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
-import com.vaadin.server.UserError;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.DateField;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.utils.UtilDate;
+import de.symeda.sormas.api.uuid.HasUuid;
 
-public class ArchivingController<F extends CoreFacade> {
+public class ArchivingController {
 
 	public static final String ARCHIVE_DEARCHIVE_BUTTON_ID = "archiveDearchive";
 
-	public void archiveEntity(EntityDto coreEntityDto, F entityFacade, CoreEntityArchiveMessages archiveMessages, Runnable callback) {
+	private static <T extends EntityDto> void archive(EntityDto entityDto, IArchiveHandler<T> archiveHandler, Runnable callback) {
+		ArchiveMessages archiveMessages = archiveHandler.getArchiveMessages();
+
 		VerticalLayout verticalLayout = new VerticalLayout();
 
 		Label contentLabel = new Label(I18nProperties.getString(archiveMessages.getConfirmationArchiveEntity()));
 		contentLabel.setWidth(100, Sizeable.Unit.PERCENTAGE);
+		verticalLayout.setMargin(false);
 		verticalLayout.addComponent(contentLabel);
 
-		DateField endOfProcessingDate = new DateField();
-		endOfProcessingDate.setValue(UtilDate.toLocalDate(entityFacade.calculateEndOfProcessingDate(coreEntityDto.getUuid())));
-		endOfProcessingDate.setCaption(I18nProperties.getCaption(Captions.endOfProcessingDate));
-		endOfProcessingDate.setDateFormat(DateFormatHelper.getDateFormatPattern());
-		endOfProcessingDate.setEnabled(false);
-
-		verticalLayout.addComponent(endOfProcessingDate);
-		verticalLayout.setMargin(false);
-
-		addAdditionalArchiveFields(verticalLayout);
+		archiveHandler.addAdditionalArchiveFields(verticalLayout, entityDto);
 
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getString(archiveMessages.getHeadingArchiveEntity()),
@@ -53,45 +44,25 @@ public class ArchivingController<F extends CoreFacade> {
 			640,
 			e -> {
 				if (Boolean.TRUE.equals(e)) {
-					doArchive(entityFacade, coreEntityDto.getUuid(), UtilDate.from(endOfProcessingDate.getValue()));
-					Notification.show(
-						String.format(
-							I18nProperties.getString(archiveMessages.getMessageEntityArchived()),
-							I18nProperties.getString(archiveMessages.getEntityName())),
-						Notification.Type.ASSISTIVE_NOTIFICATION);
+					archiveHandler.archive(entityDto.getUuid());
+					Notification.show(I18nProperties.getString(archiveMessages.getMessageEntityArchived()), Notification.Type.ASSISTIVE_NOTIFICATION);
 
 					callback.run();
 				}
 			});
 	}
 
-	protected void doArchive(F entityFacade, String uuid, Date endOfProcessingDate) {
-		entityFacade.archive(uuid, endOfProcessingDate);
-	}
+	private static <T extends EntityDto> void dearchive(EntityDto entityDto, IArchiveHandler<T> archiveHandler, Runnable callback) {
+		ArchiveMessages archiveMessages = archiveHandler.getArchiveMessages();
 
-	protected void addAdditionalArchiveFields(VerticalLayout verticalLayout) {
-	}
-
-	public void dearchiveEntity(EntityDto coreEntityDto, F entityFacade, CoreEntityArchiveMessages archiveMessages, Runnable callback) {
 		VerticalLayout verticalLayout = new VerticalLayout();
 
-		Label contentLabel = new Label(
-			String.format(
-				I18nProperties.getString(archiveMessages.getConfirmationDearchiveEntity()),
-				I18nProperties.getString(archiveMessages.getEntityName()).toLowerCase(),
-				I18nProperties.getString(archiveMessages.getEntityName()).toLowerCase()));
+		Label contentLabel = new Label(I18nProperties.getString(archiveMessages.getConfirmationDearchiveEntity()));
 		contentLabel.setWidth(100, Sizeable.Unit.PERCENTAGE);
 		verticalLayout.addComponent(contentLabel);
 		verticalLayout.setMargin(false);
 
-		TextArea dearchiveReason = new TextArea();
-		dearchiveReason.setCaption(I18nProperties.getCaption(Captions.dearchiveReason));
-		dearchiveReason.setWidth(100, Sizeable.Unit.PERCENTAGE);
-		dearchiveReason.setRows(2);
-		dearchiveReason.setRequiredIndicatorVisible(true);
-		verticalLayout.addComponent(dearchiveReason);
-
-		addAdditionalDearchiveFields(verticalLayout);
+		archiveHandler.addAdditionalDearchiveFields(verticalLayout);
 
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getString(archiveMessages.getHeadingDearchiveEntity()),
@@ -101,170 +72,172 @@ public class ArchivingController<F extends CoreFacade> {
 			640,
 			confirmed -> {
 				if (Boolean.TRUE.equals(confirmed)) {
-					if (dearchiveReason.getValue().isBlank()) {
-						dearchiveReason.setComponentError(new UserError(I18nProperties.getString(Strings.messageArchiveUndoneReasonMandatory)));
+					if (!archiveHandler.validateAdditionalDearchivationFields()) {
 						return false;
 					}
-					doDearchive(entityFacade, Collections.singletonList(coreEntityDto.getUuid()), dearchiveReason.getValue());
-					Notification.show(
-						String.format(
-							I18nProperties.getString(archiveMessages.getMessageEntityDearchived()),
-							I18nProperties.getString(archiveMessages.getEntityName())),
-						Notification.Type.ASSISTIVE_NOTIFICATION);
+
+					archiveHandler.dearchive(entityDto.getUuid());
+					Notification
+						.show(I18nProperties.getString(archiveMessages.getMessageEntityDearchived()), Notification.Type.ASSISTIVE_NOTIFICATION);
 					callback.run();
 				}
 				return true;
 			});
 	}
 
-	protected void doDearchive(F entityFacade, List<String> uuidList, String dearchiveReason) {
-		entityFacade.dearchive(uuidList, dearchiveReason);
-	}
-
-	protected void addAdditionalDearchiveFields(VerticalLayout verticalLayout) {
-	}
-
-	public void archiveSelectedItems(
-		List<String> entityUuids,
-		F entityFacade,
-		String noSelectionMessage,
-		String archiveConfirmationMessage,
-		String archivedHeading,
-		String archivedMessage,
+	public <T extends EntityDto> void addArchivingButton(
+		T entityDto,
+		IArchiveHandler<T> archiveHandler,
+		CommitDiscardWrapperComponent<?> editView,
 		Runnable callback) {
+		addArchivingButton(entityDto, archiveHandler, editView, callback, false);
+	}
 
-		if (entityUuids.isEmpty()) {
+	public <T extends EntityDto> void addArchivingButton(
+		T entityDto,
+		IArchiveHandler<T> archiveHandler,
+		CommitDiscardWrapperComponent<?> editView,
+		Runnable callback,
+		boolean forceCommit) {
+		boolean archived = archiveHandler.isArchived(entityDto);
+		Button archiveButton = ButtonHelper
+			.createButton(ARCHIVE_DEARCHIVE_BUTTON_ID, I18nProperties.getCaption(archiveHandler.getArchiveButtonCaptionProperty(archived)), e -> {
+				boolean isCommitSuccessFul = true;
+
+				if (editView.isModified() || forceCommit) {
+					isCommitSuccessFul = editView.commitAndHandle();
+				}
+
+				if (isCommitSuccessFul) {
+					if (archived) {
+						dearchive(entityDto, archiveHandler, callback);
+					} else {
+						archive(entityDto, archiveHandler, callback);
+					}
+				}
+			}, ValoTheme.BUTTON_LINK);
+
+		editView.getButtonsPanel().addComponentAsFirst(archiveButton);
+		editView.getButtonsPanel().setComponentAlignment(archiveButton, Alignment.BOTTOM_LEFT);
+	}
+
+	public <T extends HasUuid> void archiveSelectedItems(Collection<T> entities, IArchiveHandler<?> archiveHandler, Consumer<List<T>> batchCallback) {
+		ArchiveMessages archiveMessages = archiveHandler.getArchiveMessages();
+
+		if (entities.isEmpty()) {
 			new Notification(
-				I18nProperties.getString(noSelectionMessage),
-				I18nProperties.getString(noSelectionMessage),
+				I18nProperties.getString(archiveMessages.getHeadingNoEntitySelected()),
+				I18nProperties.getString(archiveMessages.getMessageNoEntitySelected()),
 				Notification.Type.WARNING_MESSAGE,
 				false).show(Page.getCurrent());
 		} else {
 
 			VerticalLayout verticalLayout = new VerticalLayout();
-			Label contentLabel = new Label(String.format(I18nProperties.getString(archiveConfirmationMessage), entityUuids.size()));
+			Label contentLabel =
+				new Label(String.format(I18nProperties.getString(archiveMessages.getConfirmationArchiveEntities()), entities.size()));
 			contentLabel.setWidth(100, Sizeable.Unit.PERCENTAGE);
 			verticalLayout.addComponent(contentLabel);
 			verticalLayout.setMargin(false);
 
-			addAdditionalArchiveFields(verticalLayout);
+			archiveHandler.addAdditionalArchiveFields(verticalLayout, null);
 
 			VaadinUiUtil.showConfirmationPopup(
-				I18nProperties.getString(Strings.headingConfirmArchiving),
+				I18nProperties.getString(archiveMessages.getHeadingConfirmationArchiving()),
 				verticalLayout,
 				I18nProperties.getString(Strings.yes),
 				I18nProperties.getString(Strings.no),
 				null,
 				e -> {
 					if (Boolean.TRUE.equals(e)) {
-						doArchive(entityFacade, entityUuids);
-						callback.run();
-						new Notification(
-							I18nProperties.getString(archivedHeading),
-							I18nProperties.getString(archivedMessage),
-							Notification.Type.HUMANIZED_MESSAGE,
-							false).show(Page.getCurrent());
+						List<T> selectedCasesCpy = new ArrayList<>(entities);
+						this.<T> createBulkOperationHandler(archiveHandler, true)
+							.doBulkOperation(
+								selectedEntries -> archiveHandler
+									.archive(selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList())),
+								selectedCasesCpy,
+								batchCallback);
 					}
 				});
 		}
 	}
 
-	protected void doArchive(F entityFacade, List<String> entityUuids) {
-		entityFacade.archive(entityUuids);
+	private <T extends HasUuid> BulkOperationHandler<T> createBulkOperationHandler(IArchiveHandler<?> archiveHandler, boolean forArchive) {
+		ArchiveMessages archiveMessages = archiveHandler.getArchiveMessages();
+		return new BulkOperationHandler<>(
+			forArchive ? archiveMessages.getMessageAllEntitiesArchived() : archiveMessages.getMessageAllEntitiesDearchived(),
+			forArchive ? archiveMessages.getMessageSomeEntitiesArchived() : archiveMessages.getMessageSomeEntitiesDearchived());
 	}
 
-	public void dearchiveSelectedItems(
-		List<String> entityUuids,
-		F entityFacade,
-		String noSelectionMessage,
-		String messageNoEntitySelected,
-		String dearchiveConfirmationMessage,
-		String entity,
-		String headingConfirmationDeachiving,
-		String headingEntityDearchived,
-		String messageEntityDearchived,
-		Runnable callback) {
+	public <T extends HasUuid> void dearchiveSelectedItems(
+		Collection<T> entities,
+		IArchiveHandler<?> archiveHandler,
+		Consumer<List<T>> batchCallback) {
 
-		if (entityUuids.isEmpty()) {
+		ArchiveMessages archiveMessages = archiveHandler.getArchiveMessages();
+
+		if (entities.isEmpty()) {
 			new Notification(
-				I18nProperties.getString(noSelectionMessage),
-				I18nProperties.getString(messageNoEntitySelected),
+				I18nProperties.getString(archiveMessages.getHeadingNoEntitySelected()),
+				I18nProperties.getString(archiveMessages.getMessageNoEntitySelected()),
 				Notification.Type.WARNING_MESSAGE,
 				false).show(Page.getCurrent());
 		} else {
 			VerticalLayout verticalLayout = new VerticalLayout();
 
-			Label contentLabel = new Label(
-				String.format(
-					String.format(I18nProperties.getString(dearchiveConfirmationMessage), entityUuids.size()),
-					I18nProperties.getString(entity).toLowerCase(),
-					I18nProperties.getString(entity).toLowerCase()));
+			Label contentLabel = new Label(String.format(I18nProperties.getString(archiveMessages.getConfirmDearchiveEntities()), entities.size()));
 			contentLabel.setWidth(100, Sizeable.Unit.PERCENTAGE);
+			verticalLayout.setMargin(false);
 			verticalLayout.addComponent(contentLabel);
 
-			TextArea dearchiveReason = new TextArea();
-			dearchiveReason.setCaption(I18nProperties.getCaption(Captions.dearchiveReason));
-			dearchiveReason.setWidth(100, Sizeable.Unit.PERCENTAGE);
-			dearchiveReason.setRows(2);
-			dearchiveReason.setRequiredIndicatorVisible(true);
-			verticalLayout.addComponent(dearchiveReason);
-			verticalLayout.setMargin(false);
-
-			addAdditionalDearchiveFields(verticalLayout);
+			archiveHandler.addAdditionalDearchiveFields(verticalLayout);
 
 			VaadinUiUtil.showConfirmationPopup(
-				I18nProperties.getString(headingConfirmationDeachiving),
+				I18nProperties.getString(archiveMessages.getHeadingConfirmationDearchiving()),
 				verticalLayout,
 				I18nProperties.getString(Strings.yes),
 				I18nProperties.getString(Strings.no),
 				null,
 				confirmed -> {
 					if (Boolean.TRUE.equals(confirmed)) {
-						if (dearchiveReason.getValue().isEmpty()) {
-							dearchiveReason.setComponentError(new UserError(I18nProperties.getString(Strings.messageArchiveUndoneReasonMandatory)));
+						if (!archiveHandler.validateAdditionalDearchivationFields()) {
 							return false;
 						}
-						doDearchive(entityFacade, entityUuids, dearchiveReason.getValue());
 
-						callback.run();
-						new Notification(
-							I18nProperties.getString(headingEntityDearchived),
-							I18nProperties.getString(messageEntityDearchived),
-							Notification.Type.HUMANIZED_MESSAGE,
-							false).show(Page.getCurrent());
+						List<T> selectedCasesCpy = new ArrayList<>(entities);
+						this.<T> createBulkOperationHandler(archiveHandler, false)
+							.doBulkOperation(
+								selectedEntries -> archiveHandler
+									.dearchive(selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList())),
+								selectedCasesCpy,
+								batchCallback);
 					}
 					return true;
 				});
 		}
 	}
 
-	public void addArchivingButton(
-		EntityDto entityDto,
-		F coreFacade,
-		CoreEntityArchiveMessages archiveMessages,
-		CommitDiscardWrapperComponent editView,
-		Runnable callback) {
-		boolean archived = coreFacade.isArchived(entityDto.getUuid());
-		Button archiveButton = ButtonHelper.createButton(
-			ARCHIVE_DEARCHIVE_BUTTON_ID,
-			I18nProperties.getCaption(archived ? Captions.actionDearchiveCoreEntity : Captions.actionArchiveCoreEntity),
-			e -> {
-				boolean isCommitSuccessFul = true;
-				if (editView.isModified()) {
-					isCommitSuccessFul = editView.commitAndHandle();
-				}
+	public interface IArchiveHandler<T extends HasUuid> {
 
-				if (isCommitSuccessFul) {
-					if (archived) {
-						dearchiveEntity(entityDto, coreFacade, archiveMessages, callback);
-					} else {
-						archiveEntity(entityDto, coreFacade, archiveMessages, callback);
-					}
-				}
-			},
-			ValoTheme.BUTTON_LINK);
+		void archive(String entityUuid);
 
-		editView.getButtonsPanel().addComponentAsFirst(archiveButton);
-		editView.getButtonsPanel().setComponentAlignment(archiveButton, Alignment.BOTTOM_LEFT);
+		int archive(List<String> entityUuids);
+
+		void dearchive(String entityUuid);
+
+		int dearchive(List<String> entityUuids);
+
+		boolean isArchived(T entity);
+
+		ArchiveMessages getArchiveMessages();
+
+		String getArchiveButtonCaptionProperty(boolean archived);
+
+		default void addAdditionalArchiveFields(VerticalLayout verticalLayout, EntityDto entityDto) {
+		}
+
+		default void addAdditionalDearchiveFields(VerticalLayout verticalLayout) {
+		}
+
+		boolean validateAdditionalDearchivationFields();
 	}
 }

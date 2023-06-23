@@ -43,6 +43,7 @@ import org.apache.commons.collections.CollectionUtils;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -91,7 +92,14 @@ public class FacilityFacadeEjb
 
 	@Inject
 	protected FacilityFacadeEjb(FacilityService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
-		super(Facility.class, FacilityDto.class, service, featureConfiguration, Validations.importFacilityAlreadyExists);
+		super(
+			Facility.class,
+			FacilityDto.class,
+			service,
+			featureConfiguration,
+			Validations.importFacilityAlreadyExists,
+			null,
+			Strings.messageFacilityDearchivingNotPossible);
 	}
 
 	@Override
