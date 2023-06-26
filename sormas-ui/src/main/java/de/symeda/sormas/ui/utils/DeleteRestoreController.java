@@ -250,6 +250,7 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 		String undeletedEntitiesString,
 		String messageEntitiesNotDeleted) {
 
+		//TODO: fix this method, test bulk mode for events
 		return String.format(
 			"%1s <br/> <br/> %2s",
 			String.format(
