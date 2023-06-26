@@ -162,7 +162,7 @@ public class SurvNetSteps implements En {
                   + EditCaseSteps.externalUUID.substring(1, 37)
                   + ".xml");
           String externalUUID = getGuidPatient(xmlFile);
-          String expectedExternalUUID = EditPersonSteps.externalPersonUUID;
+          String expectedExternalUUID = EditPersonSteps.externalPersonUUID.substring(1,37);
           softly.assertEquals(externalUUID, expectedExternalUUID, "Person external UUID is incorrect!");
           softly.assertAll();
         });
