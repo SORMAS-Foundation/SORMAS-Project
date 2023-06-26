@@ -1591,6 +1591,21 @@ public class CreateNewCaseSteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
         });
 
+    And(
+        "^I create a new case with mandatory data only and specific sex for Survnet DE$",
+        () -> {
+          survnetCase = caseService.buildCaseForSurvnetFeatureXMLCheck();
+          fillDateOfReport(survnetCase.getDateOfReport(), Locale.GERMAN);
+          selectResponsibleRegion(survnetCase.getResponsibleRegion());
+          selectResponsibleDistrict(survnetCase.getResponsibleDistrict());
+          selectPlaceOfStay(survnetCase.getPlaceOfStay());
+          fillFirstName(survnetCase.getFirstName());
+          fillLastName(survnetCase.getLastName());
+          selectSex(survnetCase.getSex());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+        });
+
     When(
         "^I create a new case with specific data and report date set to yesterday for DE version$",
         () -> {

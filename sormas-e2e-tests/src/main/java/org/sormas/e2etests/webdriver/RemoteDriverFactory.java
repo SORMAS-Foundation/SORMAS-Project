@@ -18,10 +18,6 @@
 
 package org.sormas.e2etests.webdriver;
 
-import java.io.File;
-import java.util.HashMap;
-import javax.inject.Inject;
-import javax.inject.Named;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.PageLoadStrategy;
@@ -29,6 +25,11 @@ import org.openqa.selenium.UnexpectedAlertBehaviour;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.io.File;
+import java.util.HashMap;
 
 @Slf4j
 public class RemoteDriverFactory implements DriverFactory {
