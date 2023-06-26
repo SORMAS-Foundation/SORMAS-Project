@@ -16,6 +16,7 @@ dependencies {
 	implementation "org.junit.jupiter:junit-jupiter:5.4.2"
 	implementation("io.qameta.allure:allure-cucumber4-jvm:$allureVersion")
 	implementation("org.jsoup:jsoup:$jsoupVersion")
+	implementation 'xmlunit:xmlunit:1.6'
 	testImplementation("io.qameta.allure:allure-java-commons:$allureVersion")
 	testImplementation("io.qameta.allure:allure-rest-assured:$allureVersion")
 	testImplementation("ru.yandex.qatools.allure:allure-java-adaptor-api:$allureJavaAdapterVersion")
