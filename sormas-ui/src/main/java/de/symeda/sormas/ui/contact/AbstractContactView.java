@@ -54,7 +54,7 @@ public abstract class AbstractContactView extends AbstractEditAllowedDetailView<
 	}
 
 	@Override
-	protected CoreFacade getCoreFacade() {
+	protected CoreFacade getEditPermissionFacade() {
 		return FacadeProvider.getContactFacade();
 	}
 

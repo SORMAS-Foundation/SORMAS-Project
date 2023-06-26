@@ -28,7 +28,7 @@ public abstract class AbstractTravelEntryView extends AbstractEditAllowedDetailV
 	}
 
 	@Override
-	protected CoreFacade getCoreFacade() {
+	protected CoreFacade getEditPermissionFacade() {
 		return FacadeProvider.getTravelEntryFacade();
 	}
 
