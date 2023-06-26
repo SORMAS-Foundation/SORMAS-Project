@@ -8,6 +8,7 @@ import org.sormas.e2etests.helpers.parsers.XMLParser;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.steps.web.application.cases.CreateNewCaseSteps;
 import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
+import org.sormas.e2etests.steps.web.application.persons.EditPersonSteps;
 import org.testng.asserts.SoftAssert;
 
 import javax.inject.Inject;
@@ -78,7 +79,6 @@ public class SurvNetSteps implements En {
           String expectedSex = CreateNewCaseSteps.survnetCase.getSex();
           softly.assertEquals(sex, expectedSex, "Sex is incorrect!");
           softly.assertAll();
-          System.out.println(CreateNewCaseSteps.survnetCase.getExternalId());
         });
 
     And(
@@ -152,6 +152,20 @@ public class SurvNetSteps implements En {
           sormasActualVersion =
               webDriverHelpers.getTextFromWebElement(SORMAS_VERSION_LINK).substring(9, 24);
         });
+
+    And(
+        "^I check if external person uuid in SORMAS generated XML file is correct$",
+        () -> {
+          Document xmlFile =
+              XMLParser.getDocument(
+                  "/srv/dockerdata/jenkins_new/sormas-files/test_"
+                  + EditCaseSteps.externalUUID.substring(1, 37)
+                  + ".xml");
+          String externalUUID = getGuidPatient(xmlFile);
+          String expectedExternalUUID = EditPersonSteps.externalPersonUUID;
+          softly.assertEquals(externalUUID, expectedExternalUUID, "Person external UUID is incorrect!");
+          softly.assertAll();
+        });
   }
 
   private LocalDate getReportingDate(Document xmlFile) {
@@ -184,7 +198,6 @@ public class SurvNetSteps implements En {
     return LocalDate.parse(createdAt, DATE_FORMATTER);
   }
 
-  // this is external person uuid
   private String getGuidPatient(Document xmlFile) {
     return xmlFile
         .getRootElement()

@@ -28,6 +28,8 @@ Feature: Survnet tests
     And I create a new case with mandatory data only and specific sex for Survnet DE
     And I click on Send to reporting tool button on Edit Case page
     And I collect case external UUID from Edit Case page
+    And I navigate to case person tab
+    And I collect person external UUID from Edit Case page
     Then I wait 50 seconds for system reaction
     And I check the SORMAS generated XML file structure with XSD Schema file
     And I compare the SORMAS generated XML file with the example one
@@ -38,3 +40,5 @@ Feature: Survnet tests
     And I check if "change at date" in SORMAS generated XML file is correct
     And I check if "tracked at date" in SORMAS generated XML file is correct
     And I check if "created at date" in SORMAS generated XML file is correct
+    And I check if sex in SORMAS generated XML file is correct
+    And I check if external person uuid in SORMAS generated XML file is correct
