@@ -896,7 +896,7 @@ public class EventController {
 				} else {
 					VaadinUiUtil.showSimplePopupWindow(
 						I18nProperties.getString(Strings.headingEventNotDeleted),
-						I18nProperties.getString(Strings.messageEventsNotDeletedReason));
+						I18nProperties.getString(Strings.messageEventsNotDeletedLinkedEntitiesReason));
 				}
 				UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
 			}, getDeleteConfirmationDetails(Collections.singletonList(eventUuid)), (deleteDetails) -> {

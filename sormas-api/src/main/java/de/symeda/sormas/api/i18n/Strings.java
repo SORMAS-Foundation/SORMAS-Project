@@ -1038,6 +1038,7 @@ public interface Strings {
 	String messageCasesDeleted = "messageCasesDeleted";
 	String messageCasesMerged = "messageCasesMerged";
 	String messageCasesNotDeleted = "messageCasesNotDeleted";
+	String messageCasesNotDeletedExternalReason = "messageCasesNotDeletedExternalReason";
 	String messageCasesNotRestored = "messageCasesNotRestored";
 	String messageCasesRestored = "messageCasesRestored";
 	String messageCaseTransfered = "messageCaseTransfered";
@@ -1159,7 +1160,8 @@ public interface Strings {
 	String messageEventSaved = "messageEventSaved";
 	String messageEventsDeleted = "messageEventsDeleted";
 	String messageEventsNotDeleted = "messageEventsNotDeleted";
-	String messageEventsNotDeletedReason = "messageEventsNotDeletedReason";
+	String messageEventsNotDeletedExternalReason = "messageEventsNotDeletedExternalReason";
+	String messageEventsNotDeletedLinkedEntitiesReason = "messageEventsNotDeletedLinkedEntitiesReason";
 	String messageEventsNotRestored = "messageEventsNotRestored";
 	String messageEventsRestored = "messageEventsRestored";
 	String messageEventsSentToSurvnet = "messageEventsSentToSurvnet";

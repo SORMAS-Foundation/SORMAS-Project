@@ -35,7 +35,7 @@ public class PermanentDeleteController<F extends PermanentlyDeletableFacade> {
 		String deleteConfirmationMessage = String.format(
 			I18nProperties.getString(Strings.confirmationDeleteEntities),
 			entityUuids.size(),
-			I18nProperties.getString(messages.getEntities()));
+			I18nProperties.getString(messages.getEntities()).toLowerCase());
 
 		VaadinUiUtil
 			.showDeleteConfirmationWindow(deleteConfirmationMessage, () -> performDeleteSelectedItems(entityUuids, entityFacade, messages, callback));

@@ -13,6 +13,7 @@ import de.symeda.sormas.api.DeletableFacade;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.HtmlHelper;
@@ -32,7 +33,7 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 			String.format(
 				I18nProperties.getString(Strings.confirmationRestoreEntities),
 				entityUuids.size(),
-				I18nProperties.getString(messages.getEntities())));
+				I18nProperties.getString(messages.getEntities()).toLowerCase()));
 
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getString(Strings.headingRestoreConfirmation),
@@ -62,7 +63,7 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 		String deleteWithReasonConfirmationMessage = String.format(
 			I18nProperties.getString(Strings.confirmationDeleteEntities),
 			entityUuids.size(),
-			I18nProperties.getString(messages.getEntities())) + getDeleteConfirmationDetails(messages.getEntities(), entityUuids);
+			I18nProperties.getString(messages.getEntities()).toLowerCase()) + getDeleteConfirmationDetails(messages.getEntities(), entityUuids);
 
 		DeletableUtils.showDeleteWithReasonPopup(
 			deleteWithReasonConfirmationMessage,
@@ -102,10 +103,15 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 
 		if (allItemsAreEligibleForDeletion) {
 			int undeletedEntityCount = 0;
+			int undeletedEntityExternalReasonCount = 0;
 			StringBuilder unDeletedEntitiesSb = new StringBuilder();
+			StringBuilder unDeletedEntitiesExternalReasonSb = new StringBuilder();
 			for (String selectedRow : entityUuids) {
 				try {
 					entityFacade.delete(selectedRow, deleteDetails);
+				} catch (ExternalSurveillanceToolRuntimeException e) {
+					undeletedEntityExternalReasonCount++;
+					unDeletedEntitiesExternalReasonSb.append(selectedRow, 0, 6).append(", ");
 				} catch (Exception e) {
 					undeletedEntityCount++;
 					unDeletedEntitiesSb.append(selectedRow, 0, 6).append(", ");
@@ -116,8 +122,20 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 				unDeletedEntitiesSb = new StringBuilder(" " + unDeletedEntitiesSb.substring(0, unDeletedEntitiesSb.length() - 2) + ". ");
 			}
 
+			if (unDeletedEntitiesExternalReasonSb.length() > 0) {
+				unDeletedEntitiesExternalReasonSb =
+					new StringBuilder(" " + unDeletedEntitiesExternalReasonSb.substring(0, unDeletedEntitiesExternalReasonSb.length() - 2) + ". ");
+			}
+
 			callback.run();
-			handleDeleteResult(undeletedEntityCount, messages, unDeletedEntitiesSb.toString());
+			handleDeleteItemsResult(
+				undeletedEntityCount,
+				undeletedEntityExternalReasonCount,
+				0,
+				messages,
+				unDeletedEntitiesSb.toString(),
+				unDeletedEntitiesExternalReasonSb.toString(),
+				null);
 
 		} else {
 			//for now only events with event participants will not be eligible for deletion
@@ -133,17 +151,22 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 		Runnable callback) {
 
 		int undeletedEntityCount = 0;
-		int undeletedEntityWithParticipantsCount = 0;
+		int undeletedEntityWithLinkedEntitiesCount = 0;
+		int undeletedEntityExternalReasonCount = 0;
 		StringBuilder unDeletedEntitiesSb = new StringBuilder();
-		StringBuilder unDeletedEntitiesWithParticipantsSb = new StringBuilder();
+		StringBuilder unDeletedEntitiesWithLinkedEntitiesSb = new StringBuilder();
+		StringBuilder unDeletedEntitiesExternalReasonSb = new StringBuilder();
 
 		for (String selectedRow : entityUuids) {
 			if (existEventParticipantsLinkedToEvent(selectedRow)) {
-				undeletedEntityWithParticipantsCount = undeletedEntityWithParticipantsCount + 1;
-				unDeletedEntitiesWithParticipantsSb.append(selectedRow, 0, 6).append(", ");
+				undeletedEntityWithLinkedEntitiesCount++;
+				unDeletedEntitiesWithLinkedEntitiesSb.append(selectedRow, 0, 6).append(", ");
 			} else {
 				try {
 					entityFacade.delete(selectedRow, deleteDetails);
+				} catch (ExternalSurveillanceToolRuntimeException e) {
+					undeletedEntityExternalReasonCount++;
+					unDeletedEntitiesExternalReasonSb.append(selectedRow, 0, 6).append(", ");
 				} catch (Exception e) {
 					undeletedEntityCount++;
 					unDeletedEntitiesSb.append(selectedRow, 0, 6).append(", ");
@@ -155,18 +178,26 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 			unDeletedEntitiesSb = new StringBuilder(" " + unDeletedEntitiesSb.substring(0, unDeletedEntitiesSb.length() - 2) + ". ");
 		}
 
-		if (unDeletedEntitiesWithParticipantsSb.length() > 0) {
-			unDeletedEntitiesWithParticipantsSb =
-				new StringBuilder(" " + unDeletedEntitiesWithParticipantsSb.substring(0, unDeletedEntitiesWithParticipantsSb.length() - 2) + ". ");
+		if (unDeletedEntitiesWithLinkedEntitiesSb.length() > 0) {
+			unDeletedEntitiesWithLinkedEntitiesSb = new StringBuilder(
+				" " + unDeletedEntitiesWithLinkedEntitiesSb.substring(0, unDeletedEntitiesWithLinkedEntitiesSb.length() - 2) + ". ");
+		}
+
+		if (unDeletedEntitiesExternalReasonSb.length() > 0) {
+			unDeletedEntitiesExternalReasonSb =
+				new StringBuilder(" " + unDeletedEntitiesExternalReasonSb.substring(0, unDeletedEntitiesExternalReasonSb.length() - 2) + ". ");
 		}
 
 		callback.run();
-		handleDeleteWithIneligibleItemsResult(
+
+		handleDeleteItemsResult(
 			undeletedEntityCount,
-			undeletedEntityWithParticipantsCount,
+			undeletedEntityExternalReasonCount,
+			undeletedEntityWithLinkedEntitiesCount,
 			messages,
 			unDeletedEntitiesSb.toString(),
-			unDeletedEntitiesWithParticipantsSb.toString());
+			unDeletedEntitiesExternalReasonSb.toString(),
+			unDeletedEntitiesWithLinkedEntitiesSb.toString());
 	}
 
 	private void handleRestoreResult(int unrestoredEntityCount, CoreEntityRestoreMessages messages, String unrestoredEntitiesString) {
@@ -186,41 +217,40 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 		}
 	}
 
-	private void handleDeleteResult(int undeletedEntityCount, CoreEntityDeleteMessages messages, String undeletedEntitiesString) {
-
-		if (undeletedEntityCount == 0) {
-			displaySuccessNotification(messages.getHeadingEntitiesDeleted(), messages.getMessageEntitiesDeleted());
-		} else {
-
-			showSimplePopUp(
-				messages.getHeadingSomeEntitiesNotDeleted(),
-				getDetails(
-					messages.getMessageCountEntitiesNotDeleted(),
-					undeletedEntityCount,
-					undeletedEntitiesString,
-					messages.getMessageEntitiesNotDeleted()));
-		}
-	}
-
-	private void handleDeleteWithIneligibleItemsResult(
+	private void handleDeleteItemsResult(
 		int undeletedEntityCount,
-		int undeletedEntityWithReasonCount,
+		int undeletedEntityExternalReasonCount,
+		int undeletedEntityLinkedEntitiesReasonCount,
 		CoreEntityDeleteMessages messages,
 		String undeletedEntitiesString,
+		String undeletedEntitiesExternalReasonString,
 		String undeletedEntitiesWithReasonString) {
 
-		if (undeletedEntityCount == 0 && undeletedEntityWithReasonCount == 0) {
+		//TODO: test this condition
+		if (undeletedEntityCount == 0 && undeletedEntityExternalReasonCount == 0 && undeletedEntityLinkedEntitiesReasonCount == 0) {
 			displaySuccessNotification(messages.getHeadingEntitiesDeleted(), messages.getMessageEntitiesDeleted());
 		} else {
 			StringBuilder description = new StringBuilder();
-			if (undeletedEntityWithReasonCount > 0) {
+
+			if (undeletedEntityLinkedEntitiesReasonCount > 0) {
 				description
 					.append(
 						getDetails(
 							messages.getMessageCountEntitiesNotDeleted(),
-							undeletedEntityWithReasonCount,
+							undeletedEntityLinkedEntitiesReasonCount,
 							undeletedEntitiesWithReasonString,
-							messages.getMessageEntitiesNotDeletedReason()))
+							messages.getMessageEntitiesNotDeletedLinkedEntitiesReason()))
+					.append("<br/> <br/>");
+			}
+
+			if (undeletedEntityExternalReasonCount > 0) {
+				description
+					.append(
+						getDetails(
+							messages.getMessageCountEntitiesNotDeleted(),
+							undeletedEntityExternalReasonCount,
+							undeletedEntitiesWithReasonString,
+							messages.getMessageEntitiesNotDeletedExternalReason()))
 					.append("<br/> <br/>");
 			}
 
