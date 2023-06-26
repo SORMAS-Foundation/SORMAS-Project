@@ -44,9 +44,9 @@ public class CommunitiesTabPage {
   public static final By RESET_FILTERS_COMMUNITIES_BUTTON = By.cssSelector("#actionResetFilters");
   public static final By EDIT_COMMUNITY_BUTTON = By.xpath("//span[@class='v-icon v-icon-edit']");
   public static final By ARCHIVE_COMMUNITY_BUTTON =
-      By.cssSelector(".popupContent #actionArchiveInfrastructure");
+      By.cssSelector(".popupContent #archiveDearchive");
   public static final By DEARCHIVE_COMMUNITY_BUTTON =
-      By.cssSelector(".popupContent #actionDearchiveInfrastructure");
+      By.cssSelector(".popupContent #archiveDearchive");
   public static final By CONFIRM_ARCHIVING_COMMUNITY_TEXT =
       By.xpath("//*[contains(text(),'Confirm archiving')]");
   public static final By CONFIRM_DEARCHIVING_COMMUNITY_TEXT =
