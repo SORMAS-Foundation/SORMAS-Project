@@ -177,7 +177,7 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 			//TODO: add messages for all the entities, add missing strings too
 			// 	I18nProperties.getString(Strings.messageCasesNotRestored)),
 			showSimplePopUp(
-				I18nProperties.getString(messages.getHeadingSomeEntitiesNotRestored()),
+				messages.getHeadingSomeEntitiesNotRestored(),
 				getDetails(
 					messages.getMessageCountEntitiesNotRestored(),
 					unrestoredEntityCount,
@@ -193,7 +193,7 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 		} else {
 
 			showSimplePopUp(
-				I18nProperties.getString(messages.getHeadingSomeEntitiesNotDeleted()),
+				messages.getHeadingSomeEntitiesNotDeleted(),
 				getDetails(
 					messages.getMessageCountEntitiesNotDeleted(),
 					undeletedEntityCount,
@@ -217,23 +217,23 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 				description
 					.append(
 						getDetails(
-							I18nProperties.getString(messages.getMessageCountEntitiesNotDeleted()),
+							messages.getMessageCountEntitiesNotDeleted(),
 							undeletedEntityWithReasonCount,
 							undeletedEntitiesWithReasonString,
-							I18nProperties.getString(messages.getMessageEntitiesNotDeletedReason())))
+							messages.getMessageEntitiesNotDeletedReason()))
 					.append("<br/> <br/>");
 			}
 
 			if (undeletedEntityCount > 0) {
 				description.append(
 					getDetails(
-						I18nProperties.getString(messages.getMessageCountEntitiesNotDeleted()),
+						messages.getMessageCountEntitiesNotDeleted(),
 						undeletedEntityCount,
 						undeletedEntitiesString,
-						I18nProperties.getString(messages.getMessageEntitiesNotDeleted())));
+						messages.getMessageEntitiesNotDeleted()));
 			}
 
-			showSimplePopUp(I18nProperties.getString(messages.getHeadingSomeEntitiesNotDeleted()), description.toString());
+			showSimplePopUp(messages.getHeadingSomeEntitiesNotDeleted(), description.toString());
 		}
 	}
 
@@ -250,7 +250,6 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 		String undeletedEntitiesString,
 		String messageEntitiesNotDeleted) {
 
-		//TODO: fix this method, test bulk mode for events
 		return String.format(
 			"%1s <br/> <br/> %2s",
 			String.format(

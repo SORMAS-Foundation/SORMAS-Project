@@ -1005,7 +1005,6 @@ public class EventController {
 		return EventDto.build(FacadeProvider.getCountryFacade().getServerCountry(), UserProvider.getCurrent().getUser(), disease);
 	}
 
-	//TODO: test this one
 	public void deleteAllSelectedItems(Collection<EventIndexDto> selectedRows, Runnable callback) {
 
 		ControllerProvider.getDeleteRestoreController()
@@ -1017,7 +1016,6 @@ public class EventController {
 				callback);
 	}
 
-	//TODO: test this logic
 	public boolean allSelectedEventsAreEligibleForDeletion(Collection<EventIndexDto> selectedRows) {
 		boolean allItemsAreEligibleForDeletion = true;
 

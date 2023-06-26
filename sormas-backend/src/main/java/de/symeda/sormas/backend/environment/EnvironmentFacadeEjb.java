@@ -25,8 +25,10 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.NotImplementedException;
 
 import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.environment.EnvironmentCriteria;
 import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.environment.EnvironmentFacade;
@@ -335,6 +337,11 @@ public class EnvironmentFacadeEjb
 	@Override
 	public List<String> getArchivedUuidsSince(Date since) {
 		return null;
+	}
+
+	@Override
+	public void delete(List<String> uuids, DeletionDetails deletionDetails) {
+		throw new NotImplementedException();
 	}
 
 	@LocalBean
