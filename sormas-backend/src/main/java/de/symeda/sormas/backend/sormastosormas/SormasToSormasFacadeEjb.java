@@ -393,7 +393,9 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	 */
 	@RightsAllowed({
 		UserRight._CASE_DELETE,
+		UserRight._CASE_MERGE,
 		UserRight._CONTACT_DELETE,
+		UserRight._CONTACT_MERGE,
 		UserRight._EVENT_DELETE,
 		UserRight._SYSTEM })
 	public void revokePendingShareRequests(List<SormasToSormasShareInfo> sormasToSormasShares, boolean doDelete) throws SormasToSormasException {
