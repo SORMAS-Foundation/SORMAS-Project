@@ -2397,7 +2397,7 @@ public class EditCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SHARE_SORMAS_2_SORMAS_POPUP_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
           // TODO Workaround before SORQA-565 will be fixed
-          webDriverHelpers.refreshCurrentPage();
+         // webDriverHelpers.refreshCurrentPage();
             TimeUnit.SECONDS.sleep(5);
             webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               LINKED_SHARED_ORGANIZATION_SELECTED_VALUE, 60);
