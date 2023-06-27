@@ -2614,7 +2614,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-    @RightsAllowed(UserRight._CASE_DELETE)
+	@RightsAllowed(UserRight._CASE_DELETE)
 	public void delete(List<String> uuids, DeletionDetails deletionDetails) {
 		throw new NotImplementedException();
 	}
