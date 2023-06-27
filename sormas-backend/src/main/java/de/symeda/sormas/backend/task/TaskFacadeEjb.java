@@ -925,6 +925,7 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
+	@RightsAllowed(UserRight._TASK_DELETE)
 	public void delete(List<String> uuids) {
 		throw new NotImplementedException();
 	}

@@ -557,6 +557,7 @@ public class ContactFacadeEjb
 	}
 
 	@Override
+	@RightsAllowed(UserRight._CONTACT_DELETE)
 	public void delete(List<String> uuids, DeletionDetails deletionDetails) {
 		throw new NotImplementedException();
 	}

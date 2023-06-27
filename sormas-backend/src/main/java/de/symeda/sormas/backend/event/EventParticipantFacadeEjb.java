@@ -515,6 +515,7 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
+	@RightsAllowed(UserRight._EVENTPARTICIPANT_DELETE)
 	public void delete(List<String> uuids, DeletionDetails deletionDetails) {
 		throw new NotImplementedException();
 	}

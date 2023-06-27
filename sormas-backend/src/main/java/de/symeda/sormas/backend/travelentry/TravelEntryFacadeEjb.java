@@ -123,6 +123,7 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
+	@RightsAllowed(UserRight._TRAVEL_ENTRY_DELETE)
 	public void delete(List<String> sampleUuids, DeletionDetails deletionDetails) {
 		throw new NotImplementedException();
 	}

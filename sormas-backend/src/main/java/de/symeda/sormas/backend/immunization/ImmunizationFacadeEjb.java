@@ -309,6 +309,7 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Override
+	@RightsAllowed(UserRight._IMMUNIZATION_DELETE)
 	public void delete(List<String> uuids, DeletionDetails deletionDetails) {
 		throw new NotImplementedException();
 	}

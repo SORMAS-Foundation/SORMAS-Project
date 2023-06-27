@@ -359,6 +359,7 @@ public class CampaignFacadeEjb
 	}
 
 	@Override
+    @RightsAllowed(UserRight._CAMPAIGN_DELETE)
 	public void delete(List<String> uuids, DeletionDetails deletionDetails) {
 		throw new NotImplementedException();
 	}

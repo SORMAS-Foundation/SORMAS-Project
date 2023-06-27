@@ -329,6 +329,7 @@ public class VisitFacadeEjb extends AbstractBaseEjb<Visit, VisitDto, VisitIndexD
 	}
 
 	@Override
+	@RightsAllowed(UserRight._VISIT_DELETE)
 	public void delete(List<String> uuids) {
 		throw new NotImplementedException();
 	}
