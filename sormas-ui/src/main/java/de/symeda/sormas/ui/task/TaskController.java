@@ -150,7 +150,7 @@ public class TaskController {
 
 		// Initialize 'Archive' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_ARCHIVE)) {
-			ControllerProvider.getArchiveController().addArchivingButton(task, ArchiveHandlers.forTask(), editView, () -> {
+			ControllerProvider.getArchiveController().addArchivingButtonWithDirtyCheck(task, ArchiveHandlers.forTask(), editView, () -> {
 				popupWindow.close();
 				callback.run();
 			});

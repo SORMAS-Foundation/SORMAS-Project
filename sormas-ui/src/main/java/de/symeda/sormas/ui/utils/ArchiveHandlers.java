@@ -159,13 +159,6 @@ public final class ArchiveHandlers {
 		}
 
 		@Override
-		public int archive(List<String> entityUuids) {
-			entityFacade.archive(entityUuids);
-
-			return entityUuids.size();
-		}
-
-		@Override
 		public boolean isArchived(T entity) {
 			return entityFacade.isArchived(entity.getUuid());
 		}
@@ -177,12 +170,19 @@ public final class ArchiveHandlers {
 
 		@Override
 		public void archive(String entityUuid) {
-			archive(Collections.singletonList(entityUuid));
+			entityFacade.archive(entityUuid, UtilDate.from(endOfProcessingDateField.getValue()));
+		}
+
+		@Override
+		public int archive(List<String> entityUuids) {
+			entityFacade.archive(entityUuids);
+
+			return entityUuids.size();
 		}
 
 		@Override
 		public void dearchive(String entityUuid) {
-			dearchive(Collections.singletonList(entityUuid));
+			entityFacade.dearchive(Collections.singletonList(entityUuid), dearchiveReasonField.getValue());
 		}
 
 		@Override
