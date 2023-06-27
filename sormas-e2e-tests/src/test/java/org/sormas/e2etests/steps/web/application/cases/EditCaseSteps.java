@@ -2365,7 +2365,11 @@ public class EditCaseSteps implements En {
 
     When(
         "I click on share case button",
-        () -> webDriverHelpers.clickOnWebElementBySelector(SHARE_SORMAS_2_SORMAS_BUTTON));
+        () -> {
+            webDriverHelpers.clickOnWebElementBySelector(SHARE_SORMAS_2_SORMAS_BUTTON);
+            TimeUnit.SECONDS.sleep(4);
+        });
+
 
     When(
         "I select organization to share with {string}",
@@ -2394,7 +2398,8 @@ public class EditCaseSteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
           // TODO Workaround before SORQA-565 will be fixed
           webDriverHelpers.refreshCurrentPage();
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+            TimeUnit.SECONDS.sleep(5);
+            webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               LINKED_SHARED_ORGANIZATION_SELECTED_VALUE, 60);
         });
 
