@@ -15807,6 +15807,9 @@ components:
       properties:
         assignee:
           $ref: '#/components/schemas/UserReferenceDto'
+        caseReportDate:
+          type: string
+          format: date-time
         changeDate:
           type: string
           format: date-time
