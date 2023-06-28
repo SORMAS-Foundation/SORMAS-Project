@@ -821,6 +821,41 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>ENVIRONMENT_VIEW</role-name>
+        <group-name>ENVIRONMENT_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ENVIRONMENT_CREATE</role-name>
+        <group-name>ENVIRONMENT_CREATE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ENVIRONMENT_EDIT</role-name>
+        <group-name>ENVIRONMENT_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ENVIRONMENT_ARCHIVE</role-name>
+        <group-name>ENVIRONMENT_ARCHIVE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ENVIRONMENT_DELETE</role-name>
+        <group-name>ENVIRONMENT_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ENVIRONMENT_IMPORT</role-name>
+        <group-name>ENVIRONMENT_IMPORT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ENVIRONMENT_EXPORT</role-name>
+        <group-name>ENVIRONMENT_EXPORT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>DOCUMENT_VIEW</role-name>
         <group-name>DOCUMENT_VIEW</group-name>
     </security-role-mapping>

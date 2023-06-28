@@ -80,6 +80,7 @@ public enum FeatureType {
 		null,
 		null,
 		ImmutableMap.of(FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES, Boolean.FALSE, FeatureTypeProperty.MAX_CHANGE_DATE_PERIOD, -1)),
+	ENVIRONMENT_MANAGEMENT(true, false, null, null, null),
 
 	// FEATURE EXTENSIONS
 	ASSIGN_TASKS_TO_HIGHER_LEVEL(true,

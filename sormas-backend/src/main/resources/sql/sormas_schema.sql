@@ -12414,4 +12414,9 @@ ALTER TABLE environments_history ALTER COLUMN wateruse set DATA TYPE jsonb using
 
 INSERT INTO schema_version (version_number, comment) VALUES (515, 'Created a new Environment entity #11796');
 
+-- 2023-06-14 Add environmental user rights and default user #11572
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'ENVIRONMENTAL_SURVEILLANCE_USER', 'ENVIRONMENTAL_SURVEILLANCE_USER');
+
+INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (516, 'Add environmental user rights and default user #11572', true);
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
