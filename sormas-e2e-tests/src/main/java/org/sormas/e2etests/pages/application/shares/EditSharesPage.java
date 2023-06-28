@@ -27,12 +27,6 @@ public class EditSharesPage {
       By.cssSelector(".popupContent [class='v-grid-cell v-grid-cell-focused'] a");
   public static final By ACCEPT_BUTTON = By.cssSelector("div #actionAccept");
 
-  public static By getAcceptButtonForEntity(String uuid) {
-    return By.xpath(
-        String.format(
-            "(//a[@title='%s']//parent::td)//following::div[@id='actionAccept'][1]", uuid));
-  }
-
   public static By getCheckBoxFromShareFormByIndex(int index) {
     return By.xpath(
         String.format("(//*[@class='popupContent']//div[@class='row']//label)[%s]", index));

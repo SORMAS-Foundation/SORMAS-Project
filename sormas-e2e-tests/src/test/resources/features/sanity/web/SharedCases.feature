@@ -19,7 +19,7 @@ Feature: Sharing cases between environments tests
     Then I navigate to "s2s_2" environment
     And I log in as a Admin User
     And I click on the Shares button from navbar
-    Then I accept first case in Shares Page
+    Then I accept first entity from table in Shares Page
     Then I navigate to "s2s_1" environment
     Then I navigate to the last created case via the url
     And I check Delete button from case is enabled
@@ -385,7 +385,7 @@ Feature: Sharing cases between environments tests
     Then I navigate to "s2s_2" environment in new driver tab
     Given I log in as a Admin User
     And I click on the Shares button from navbar
-    And I accept first case in Shares Page
+    And I accept first entity from table in Shares Page
     Then I back to tab number 1
     When I open the Case Contacts tab
     And I click on the first Contact ID from Contacts Directory in Contacts in Case
@@ -402,7 +402,7 @@ Feature: Sharing cases between environments tests
     And I click on save sample button
     Then I back to tab number 2
     And I click on the Shares button from navbar
-    And I accept first contact in Shares Page
+    And I accept first entity from table in Shares Page
     And I click on the The Eye Icon located in the Shares Page
     And I click on the shortened case/contact ID to open the case
     Then I check that the number of added samples on the Edit case page is 2
@@ -430,7 +430,7 @@ Feature: Sharing cases between environments tests
     Then I navigate to "s2s_2" environment in new driver tab
     And I log in as a Admin User
     And I click on the Shares button from navbar
-    Then I accept first case in Shares Page
+    Then I accept first entity from table in Shares Page
     And I click on the The Eye Icon located in the Shares Page
     And I click on the shortened case/contact ID to open the case
     Then I check that the number of added samples on the Edit case page is 2
@@ -795,7 +795,7 @@ Feature: Sharing cases between environments tests
     Then I navigate to "s2s_2" environment in new driver tab
     Given I log in as a Admin User
     And I click on the Shares button from navbar
-    And I accept first case in Shares Page
+    And I accept first entity from table in Shares Page
     Then I back to tab number 1
     When I open the Case Contacts tab
     And I click on the first Contact ID from Contacts Directory in Contacts in Case
@@ -1010,7 +1010,7 @@ Feature: Sharing cases between environments tests
     Then I navigate to "s2s_2" environment
     Given I log in as a Admin User
     And I click on the Shares button from navbar
-    Then I accept first case in Shares Page
+    Then I accept first entity from table in Shares Page
     Then I navigate to "s2s_1" environment
     And I click on the Cases button from navbar
     And I filter by CaseID on Case directory page
@@ -1050,7 +1050,7 @@ Feature: Sharing cases between environments tests
     Then I navigate to "s2s_2" environment
     Given I log in as a Admin User
     And I click on the Shares button from navbar
-    Then I accept first case in Shares Page
+    Then I accept first entity from table in Shares Page
     And I click on the Cases button from navbar
     And I select first created case for person from Cases list
     Then I click on Delete button from case
@@ -1080,7 +1080,7 @@ Feature: Sharing cases between environments tests
     Then I navigate to "s2s_2" environment
     And I log in as a Admin User
     And I click on the Shares button from navbar
-    Then I accept first case in Shares Page
+    Then I accept first entity from table in Shares Page
     Then I navigate to "s2s_1" environment
     Then I navigate to the last created case via the url
     Then I click on Delete button from case
@@ -1110,7 +1110,7 @@ Feature: Sharing cases between environments tests
     Then I navigate to "s2s_2" environment
     Given I log in as a Admin User
     And I click on the Shares button from navbar
-    Then I accept first case in Shares Page
+    Then I accept first entity from table in Shares Page
     And I click on the Cases button from navbar
     And I filter by CaseID on Case directory page
     And I apply "Alle" to ownership combobox on Case Directory Page

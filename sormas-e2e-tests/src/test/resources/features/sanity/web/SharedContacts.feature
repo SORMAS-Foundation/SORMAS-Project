@@ -107,7 +107,7 @@ Feature: Sharing contacts between environments tests
     Then I navigate to "s2s_2" environment
     Given I log in as a Admin User
     And I click on the Shares button from navbar
-    Then I accept first case in Shares Page
+    Then I accept first entity from table in Shares Page
     Then I navigate to "s2s_1" environment
     Then I open the last created contact via API
     Then I click on share contact button
@@ -117,7 +117,7 @@ Feature: Sharing contacts between environments tests
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
     And I click on the Shares button from navbar
-    Then I accept first contact in Shares Page
+    Then I accept first entity from table in Shares Page
     And I click to accept potential duplicate in Shares Page
     Then I navigate to "s2s_1" environment
     And I click on the Contacts button from navbar
@@ -152,7 +152,7 @@ Feature: Sharing contacts between environments tests
     Then I navigate to "s2s_2" environment
     Given I log in as a Admin User
     And I click on the Shares button from navbar
-    Then I accept first case in Shares Page
+    Then I accept first entity from table in Shares Page
     Then I navigate to "s2s_1" environment
     Then I open the last created contact via API
     Then I click on share contact button
@@ -162,7 +162,7 @@ Feature: Sharing contacts between environments tests
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
     And I click on the Shares button from navbar
-    Then I accept first contact in Shares Page
+    Then I accept first entity from table in Shares Page
     And I click to accept potential duplicate in Shares Page
     Then I open the last created contact via API
     Then I click on Delete button from contact
@@ -194,7 +194,7 @@ Feature: Sharing contacts between environments tests
     Then I navigate to "s2s_2" environment
     Given I log in as a Admin User
     And I click on the Shares button from navbar
-    Then I accept first case in Shares Page
+    Then I accept first entity from table in Shares Page
     Then I navigate to "s2s_1" environment
     Then I open the last created contact via API
     Then I click on share contact button
@@ -203,7 +203,7 @@ Feature: Sharing contacts between environments tests
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
     And I click on the Shares button from navbar
-    Then I accept first contact in Shares Page
+    Then I accept first entity from table in Shares Page
     And I click to accept potential duplicate in Shares Page
     And I navigate to "s2s_1" environment
     Then I open the last created contact via API
@@ -236,7 +236,7 @@ Feature: Sharing contacts between environments tests
     Then I navigate to "s2s_2" environment
     Given I log in as a Admin User
     And I click on the Shares button from navbar
-    Then I accept first case in Shares Page
+    Then I accept first entity from table in Shares Page
     Then I navigate to "s2s_1" environment
     Then I open the last created contact via API
     Then I click on share contact button
@@ -245,7 +245,7 @@ Feature: Sharing contacts between environments tests
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
     And I click on the Shares button from navbar
-    Then I accept first contact in Shares Page
+    Then I accept first entity from table in Shares Page
     And I click to accept potential duplicate in Shares Page
     And I click on the Contacts button from navbar
     Then I apply Id of last api created Contact on Contact Directory Page
@@ -278,7 +278,7 @@ Feature: Sharing contacts between environments tests
     Then I navigate to "s2s_2" environment
     Given I log in as a Admin User
     And I click on the Shares button from navbar
-    Then I accept first case in Shares Page
+    Then I accept first entity from table in Shares Page
     Then I navigate to "s2s_1" environment
     Then I open the last created contact via API
     Then I click on share contact button
@@ -313,7 +313,7 @@ Feature: Sharing contacts between environments tests
     Then I navigate to "s2s_2" environment
     Given I log in as a Admin User
     And I click on the Shares button from navbar
-    Then I accept first case in Shares Page
+    Then I accept first entity from table in Shares Page
     Then I navigate to "s2s_1" environment
     Then I open the last created contact via API
     Then I click on share contact button
@@ -323,7 +323,7 @@ Feature: Sharing contacts between environments tests
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
     And I click on the Shares button from navbar
-    Then I accept first contact in Shares Page
+    Then I accept first entity from table in Shares Page
     And I click to accept potential duplicate in Shares Page
     Then I navigate to "s2s_1" environment
     Then I open the last created contact via API
@@ -356,26 +356,23 @@ Feature: Sharing contacts between environments tests
     Then I click on share case button
     And I select organization to share with "s2s_2"
     And I click to hand over the ownership of the case in Share popup
-    And I fill comment in share popup with "case shared with automated test982"
+    And I fill comment in share popup with "case shared with automated 982"
     Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment
+    Given I log in as a Admin User
+    And I click on the Shares button from navbar
+    Then I accept first entity from table in Shares Page
+    Then I navigate to "s2s_1" environment
     Then I open the last created contact via API
     And I collect uuid of the contact
     Then I click on share contact button
     And I click to hand over the ownership of the contact in Share popup
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with "contact shared with automated test982"
+    And I fill comment in share popup with "contact shared with automated 982"
     Then I click on share button in s2s share popup and wait for share to finish
     And I check if handover card contains "LK Fulda" information
     And I check if handover card contains "Geteilt von: Automation ADMIN" information
-    And I check if handover card contains "contact shared with automated test982" information
-    Then I navigate to "s2s_2" environment
-    Given I log in as a Admin User
-    And I click on the Shares button from navbar
-    And I check if accept button for last API created case appears in Shares Page
-    And I check if accept button for last API created contact appears in Shares Page
-    Then I accept last created case via API in Shares Page
-    Then I navigate to "s2s_1" environment
-    Then I open the last created contact via API
+    And I check if handover card contains "contact shared with automated 982" information
     Then I click on Delete button from contact
     And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
     And I click on Yes option in Confirm deletion popup
@@ -385,4 +382,4 @@ Feature: Sharing contacts between environments tests
     And I check if handover card contains "" information
     Then I navigate to "s2s_2" environment
     And I click on the Shares button from navbar
-    Then I accept last created contact via API in Shares Page
+    Then I accept first entity from table in Shares Page

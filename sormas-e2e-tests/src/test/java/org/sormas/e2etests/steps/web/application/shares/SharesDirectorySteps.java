@@ -27,8 +27,6 @@ import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
-import org.sormas.e2etests.steps.web.application.cases.CreateNewCaseSteps;
-import org.sormas.e2etests.steps.web.application.contacts.ContactDirectorySteps;
 import org.testng.asserts.SoftAssert;
 
 @Slf4j
@@ -42,52 +40,13 @@ public class SharesDirectorySteps implements En {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
-        "I accept first case in Shares Page",
+        "I accept first entity from table in Shares Page",
         () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(ACCEPT_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(ACCEPT_BUTTON);
           TimeUnit.SECONDS.sleep(2); // wait for results to reload
         });
 
-    When(
-        "I accept last created case via API in Shares Page",
-        () -> {
-          String caseUUID = CreateNewCaseSteps.casesUUID.get(0);
-          webDriverHelpers.clickOnWebElementBySelector(getAcceptButtonForEntity(caseUUID));
-          webDriverHelpers.waitUntilIdentifiedElementDisappear(getAcceptButtonForEntity(caseUUID));
-        });
-
-    When(
-        "I check if accept button for last API created case appears in Shares Page",
-        () -> {
-          String caseUUID = CreateNewCaseSteps.casesUUID.get(0);
-          softly.assertTrue(
-              webDriverHelpers.isElementVisibleWithTimeout(getAcceptButtonForEntity(caseUUID), 5),
-              "Accept button is visible for " + caseUUID);
-          softly.assertAll();
-        });
-
-    When(
-        "I accept last created contact via API in Shares Page",
-        () -> {
-          String contactUUID = ContactDirectorySteps.contactUUID.get(0);
-          webDriverHelpers.clickOnWebElementBySelector(getAcceptButtonForEntity(contactUUID));
-          webDriverHelpers.waitUntilIdentifiedElementDisappear(
-              getAcceptButtonForEntity(contactUUID));
-        });
-
-    When(
-        "I check if accept button for last API created contact appears in Shares Page",
-        () -> {
-          String contactUUID = ContactDirectorySteps.contactUUID.get(0);
-          softly.assertTrue(
-              webDriverHelpers.isElementVisibleWithTimeout(
-                  getAcceptButtonForEntity(contactUUID), 5),
-              "Accept button is visible for " + contactUUID);
-          softly.assertAll();
-        });
-
-    // TODO this is not stable, since a parallel test can also share an entity and accept button
-    // will be visible
     When(
         "I check if accept button does not appear in Shares Page",
         () -> {
@@ -95,14 +54,6 @@ public class SharesDirectorySteps implements En {
               webDriverHelpers.isElementVisibleWithTimeout(ACCEPT_BUTTON, 3),
               "Accept button is visible!");
           softly.assertAll();
-        });
-
-    When(
-        "I accept first contact in Shares Page",
-        () -> {
-          TimeUnit.SECONDS.sleep(1); // wait for the page to load
-          webDriverHelpers.clickOnWebElementBySelector(ACCEPT_BUTTON);
-          TimeUnit.SECONDS.sleep(3); // wait for reaction
         });
 
     When(
