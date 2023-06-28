@@ -2395,9 +2395,9 @@ public class EditCaseSteps implements En {
         "I click on share button in s2s share popup and wait for share to finish",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SHARE_SORMAS_2_SORMAS_POPUP_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
           // TODO Workaround before SORQA-565 will be fixed
-         // webDriverHelpers.refreshCurrentPage();
+            webDriverHelpers.refreshCurrentPage();
             TimeUnit.SECONDS.sleep(5);
             webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               LINKED_SHARED_ORGANIZATION_SELECTED_VALUE, 60);
