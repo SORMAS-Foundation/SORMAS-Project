@@ -21,9 +21,11 @@ import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_NONE;
 import static java.util.Objects.isNull;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
@@ -85,6 +87,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DateTimeField;
+import de.symeda.sormas.ui.utils.DeleteHandlers;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
@@ -614,18 +617,10 @@ public class SampleController {
 		});
 	}
 
-	//TODO: Test this one
-	public void deleteAllSelectedItems(Collection<SampleIndexDto> selectedRows, Runnable callback) {
+	public void deleteAllSelectedItems(Collection<SampleIndexDto> selectedRows, SampleGrid sampleGrid, Runnable noEntriesRemainingCallback) {
 
-		/*
-		 * ControllerProvider.getDeleteRestoreController()
-		 * .deleteAllSelectedItems(
-		 * selectedRows.stream().map(SampleIndexDto::getUuid).collect(Collectors.toList()),
-		 * FacadeProvider.getSampleFacade(),
-		 * DeleteRestoreMessages.SAMPLE,
-		 * true,
-		 * callback);
-		 */
+		ControllerProvider.getDeleteRestoreController()
+			.deleteAllSelectedItems(selectedRows, DeleteHandlers.forSample(), bulkOperationCallback(sampleGrid, noEntriesRemainingCallback, null));
 
 	}
 
@@ -683,5 +678,20 @@ public class SampleController {
 			}
 		}
 		return null;
+	}
+
+	private Consumer<List<SampleIndexDto>> bulkOperationCallback(SampleGrid sampleGrid, Runnable noEntriesRemainingCallback, Window popupWindow) {
+		return remainingSamples -> {
+			if (popupWindow != null) {
+				popupWindow.close();
+			}
+
+			sampleGrid.reload();
+			if (CollectionUtils.isNotEmpty(remainingSamples)) {
+				sampleGrid.asMultiSelect().selectItems(remainingSamples.toArray(new SampleIndexDto[0]));
+			} else {
+				noEntriesRemainingCallback.run();
+			}
+		};
 	}
 }

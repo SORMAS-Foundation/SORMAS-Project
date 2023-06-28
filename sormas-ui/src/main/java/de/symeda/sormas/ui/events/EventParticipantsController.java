@@ -369,7 +369,6 @@ public class EventParticipantsController {
 		return titleLayout;
 	}
 
-	//TODO: test this logic
 	private Consumer<List<EventParticipantIndexDto>> bulkOperationCallback(
 		EventParticipantsGrid eventParticipantsGrid,
 		Runnable noEntriesRemainingCallback,
