@@ -330,6 +330,14 @@ Scenario Outline: S2S Order filters in Shared Folder
   When I click the header of column <col>
   Then I check that error not appear for DE version
   And I check that a downwards arrow appears in the header of column <col>
+  When I click on the Outgoing radio button in Share Directory page DE
+  And I click the header of column <col>
+  Then I check that error not appear for DE version
+  And I check that an upwards arrow appears in the header of column <col>
+  When I click the header of column <col>
+  Then I check that error not appear for DE version
+  And I check that a downwards arrow appears in the header of column <col>
+
 
   Examples:
     | col |
@@ -344,6 +352,14 @@ Scenario Outline: S2S Order filters in Shared Folder
 Scenario Outline: S2S Order filters in Shared Folder by date
   Given I log in as a Admin User
   When I click on the Shares button from navbar
+  And I click the header of column <col>
+  Then I check that error not appear for DE version
+  Then I check that column <col> is sorted by date and time in ascending order DE
+  And I check that an upwards arrow appears in the header of column <col>
+  When I click the header of column <col>
+  Then I check that column <col> is sorted by date and time in descending order DE
+  And I check that a downwards arrow appears in the header of column <col>
+  When I click on the Outgoing radio button in Share Directory page DE
   And I click the header of column <col>
   Then I check that error not appear for DE version
   Then I check that column <col> is sorted by date and time in ascending order DE
