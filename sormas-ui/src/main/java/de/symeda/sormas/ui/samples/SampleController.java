@@ -80,7 +80,6 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
-import de.symeda.sormas.ui.utils.CoreEntityDeleteMessages;
 import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
@@ -618,13 +617,15 @@ public class SampleController {
 	//TODO: Test this one
 	public void deleteAllSelectedItems(Collection<SampleIndexDto> selectedRows, Runnable callback) {
 
-		ControllerProvider.getDeleteRestoreController()
-			.deleteAllSelectedItems(
-				selectedRows.stream().map(SampleIndexDto::getUuid).collect(Collectors.toList()),
-				FacadeProvider.getSampleFacade(),
-				CoreEntityDeleteMessages.SAMPLE,
-				true,
-				callback);
+		/*
+		 * ControllerProvider.getDeleteRestoreController()
+		 * .deleteAllSelectedItems(
+		 * selectedRows.stream().map(SampleIndexDto::getUuid).collect(Collectors.toList()),
+		 * FacadeProvider.getSampleFacade(),
+		 * DeleteRestoreMessages.SAMPLE,
+		 * true,
+		 * callback);
+		 */
 
 	}
 

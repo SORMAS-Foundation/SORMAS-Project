@@ -67,7 +67,6 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -559,7 +558,21 @@ public class ContactFacadeEjb
 	@Override
 	@RightsAllowed(UserRight._CONTACT_DELETE)
 	public void delete(List<String> uuids, DeletionDetails deletionDetails) {
-		throw new NotImplementedException();
+		List<String> deletedContactUuids = new ArrayList<>();
+		List<Contact> contactsToBeDeleted = contactService.getByUuids(uuids);
+
+		if (contactsToBeDeleted != null) {
+			contactsToBeDeleted.forEach(contactToBeDeleted -> {
+				if (!contactToBeDeleted.isDeleted()) {
+					try {
+						deleteContact(contactToBeDeleted, deletionDetails);
+						deletedContactUuids.add(contactToBeDeleted.getUuid());
+					} catch (Exception e) {
+						logger.error("The contact with uuid:" + contactToBeDeleted.getUuid() + "could not be deleted");
+					}
+				}
+			});
+		}
 	}
 
 	@Override

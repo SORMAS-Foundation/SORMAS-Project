@@ -51,8 +51,7 @@ import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.ArchivingController;
 import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CoreEntityDeleteMessages;
-import de.symeda.sormas.ui.utils.DirtyCheckPopup;
+import de.symeda.sormas.ui.utils.DeleteRestoreMessages;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class TaskController {
@@ -177,7 +176,7 @@ public class TaskController {
 			.deleteAllSelectedItems(
 				selectedRows.stream().map(TaskIndexDto::getUuid).collect(Collectors.toList()),
 				FacadeProvider.getTaskFacade(),
-				CoreEntityDeleteMessages.TASK,
+				DeleteRestoreMessages.TASK,
 				true,
 				callback);
 	}

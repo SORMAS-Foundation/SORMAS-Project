@@ -73,7 +73,6 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -2616,7 +2615,21 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@Override
 	@RightsAllowed(UserRight._CASE_DELETE)
 	public void delete(List<String> uuids, DeletionDetails deletionDetails) {
-		throw new NotImplementedException();
+		List<String> deletedCaseUuids = new ArrayList<>();
+		List<Case> casesToBeDeleted = caseService.getByUuids(uuids);
+
+		if (casesToBeDeleted != null) {
+			casesToBeDeleted.forEach(caseToBeDeleted -> {
+				if (!caseToBeDeleted.isDeleted()) {
+					try {
+						deleteCase(caseToBeDeleted, deletionDetails);
+						deletedCaseUuids.add(caseToBeDeleted.getUuid());
+					} catch (Exception e) {
+						logger.error("The case with uuid:" + caseToBeDeleted.getUuid() + "could not be deleted");
+					}
+				}
+			});
+		}
 	}
 
 	@Override

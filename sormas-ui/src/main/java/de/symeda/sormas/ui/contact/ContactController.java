@@ -90,10 +90,10 @@ import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CoreEntityDeleteMessages;
 import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DeletableUtils;
+import de.symeda.sormas.ui.utils.DeleteHandlers;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 import de.symeda.sormas.ui.utils.components.automaticdeletion.DeletionLabel;
@@ -800,15 +800,10 @@ public class ContactController {
 		};
 	}
 
-	public void deleteAllSelectedItems(Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {
+	public void deleteAllSelectedItems(Collection<? extends ContactIndexDto> selectedRows, AbstractContactGrid<?> contactGrid) {
 
 		ControllerProvider.getDeleteRestoreController()
-			.deleteAllSelectedItems(
-				selectedRows.stream().map(ContactIndexDto::getUuid).collect(Collectors.toList()),
-				FacadeProvider.getContactFacade(),
-				CoreEntityDeleteMessages.CONTACT,
-				true,
-				callback);
+			.deleteAllSelectedItems(selectedRows, DeleteHandlers.forContact(), bulkOperationCallback(null, contactGrid, null));
 
 	}
 

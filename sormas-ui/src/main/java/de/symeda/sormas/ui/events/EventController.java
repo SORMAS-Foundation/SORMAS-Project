@@ -84,10 +84,10 @@ import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CoreEntityDeleteMessages;
 import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.DeleteHandlers;
 import de.symeda.sormas.ui.utils.NotificationHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.automaticdeletion.DeletionLabel;
@@ -1005,15 +1005,10 @@ public class EventController {
 		return EventDto.build(FacadeProvider.getCountryFacade().getServerCountry(), UserProvider.getCurrent().getUser(), disease);
 	}
 
-	public void deleteAllSelectedItems(Collection<EventIndexDto> selectedRows, Runnable callback) {
+	public void deleteAllSelectedItems(Collection<EventIndexDto> selectedRows, EventGrid eventGrid) {
 
 		ControllerProvider.getDeleteRestoreController()
-			.deleteAllSelectedItems(
-				selectedRows.stream().map(EventIndexDto::getUuid).collect(Collectors.toList()),
-				FacadeProvider.getEventFacade(),
-				CoreEntityDeleteMessages.EVENT,
-				allSelectedEventsAreEligibleForDeletion(selectedRows),
-				callback);
+			.deleteAllSelectedItems(selectedRows, DeleteHandlers.forEvent(), bulkOperationCallback(eventGrid, null));
 	}
 
 	public boolean allSelectedEventsAreEligibleForDeletion(Collection<EventIndexDto> selectedRows) {

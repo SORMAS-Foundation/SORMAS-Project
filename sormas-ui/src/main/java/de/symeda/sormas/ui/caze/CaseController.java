@@ -135,9 +135,9 @@ import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CoreEntityDeleteMessages;
 import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DeleteHandlers;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -1545,15 +1545,13 @@ public class CaseController {
 		popupWindow.setCaption(I18nProperties.getString(Strings.classificationRulesFor) + " " + diseaseCriteria.getDisease().toString());
 	}
 
-	public void deleteAllSelectedItems(Collection<? extends CaseIndexDto> selectedRows, Runnable callback) {
+	public void deleteAllSelectedItems(Collection<? extends CaseIndexDto> selectedRows, AbstractCaseGrid<?> caseGrid) {
 
 		ControllerProvider.getDeleteRestoreController()
 			.deleteAllSelectedItems(
-				selectedRows.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList()),
-				FacadeProvider.getCaseFacade(),
-				CoreEntityDeleteMessages.CASE,
-				true,
-				callback);
+				selectedRows,
+				DeleteHandlers.forCase(),
+				bulkOperationCallback(caseGrid, null));
 
 	}
 

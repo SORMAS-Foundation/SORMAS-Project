@@ -1,12 +1,16 @@
 package de.symeda.sormas.ui.travelentry;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -28,8 +32,8 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.travelentry.components.TravelEntryCreateForm;
 import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CoreEntityDeleteMessages;
 import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
+import de.symeda.sormas.ui.utils.DeleteHandlers;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.automaticdeletion.DeletionLabel;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
@@ -213,15 +217,17 @@ public class TravelEntryController {
 		return titleLayout;
 	}
 
-	public void deleteAllSelectedItems(Collection<TravelEntryIndexDto> selectedRows, Runnable callback) {
+	public void deleteAllSelectedItems(
+		Collection<TravelEntryIndexDto> selectedRows,
+		TravelEntryGrid travelEntryGrid,
+		Runnable noEntriesRemainingCallback) {
 
 		ControllerProvider.getDeleteRestoreController()
 			.deleteAllSelectedItems(
-				selectedRows.stream().map(TravelEntryIndexDto::getUuid).collect(Collectors.toList()),
-				FacadeProvider.getTravelEntryFacade(),
-				CoreEntityDeleteMessages.TRAVEL_ENTRY,
-				true,
-				callback);
+				selectedRows,
+				DeleteHandlers.forTravelEntry(),
+				bulkOperationCallback(travelEntryGrid, noEntriesRemainingCallback, null));
+
 	}
 
 	public void restoreSelectedTravelEntries(Collection<? extends TravelEntryIndexDto> selectedRows, Runnable callback) {
@@ -231,6 +237,24 @@ public class TravelEntryController {
 				FacadeProvider.getTravelEntryFacade(),
 				CoreEntityRestoreMessages.TRAVEL_ENTRY,
 				callback);
+	}
+
+	private Consumer<List<TravelEntryIndexDto>> bulkOperationCallback(
+		TravelEntryGrid travelEntryGrid,
+		Runnable noEntriesRemainingCallback,
+		Window popupWindow) {
+		return remainingTravelEntries -> {
+			if (popupWindow != null) {
+				popupWindow.close();
+			}
+
+			travelEntryGrid.reload();
+			if (CollectionUtils.isNotEmpty(remainingTravelEntries)) {
+				travelEntryGrid.asMultiSelect().selectItems(remainingTravelEntries.toArray(new TravelEntryIndexDto[0]));
+			} else {
+				noEntriesRemainingCallback.run();
+			}
+		};
 	}
 
 }

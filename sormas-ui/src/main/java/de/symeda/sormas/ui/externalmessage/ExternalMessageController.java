@@ -78,8 +78,8 @@ import de.symeda.sormas.ui.externalmessage.physiciansreport.PhysiciansReportProc
 import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
 import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
 import de.symeda.sormas.ui.utils.ButtonHelper;
-import de.symeda.sormas.ui.utils.CoreEntityDeleteMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DeleteRestoreMessages;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class ExternalMessageController {
@@ -282,7 +282,7 @@ public class ExternalMessageController {
 			.deleteAllSelectedItems(
 				selectedRows.stream().map(ExternalMessageIndexDto::getUuid).collect(Collectors.toList()),
 				FacadeProvider.getTaskFacade(),
-				CoreEntityDeleteMessages.EXTERNAL_MESSAGE,
+				DeleteRestoreMessages.EXTERNAL_MESSAGE,
 				isEligibleForDeletion(selectedRows),
 				callback);
 	}

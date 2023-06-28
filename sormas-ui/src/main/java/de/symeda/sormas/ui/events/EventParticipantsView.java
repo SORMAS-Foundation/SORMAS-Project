@@ -223,7 +223,7 @@ public class EventParticipantsView extends AbstractEventView {
 				if (criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
 					bulkActions.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, mi -> {
 						grid.bulkActionHandler(items -> {
-							ControllerProvider.getEventParticipantController().deleteAllSelectedItems(items, () -> grid.reload());
+							ControllerProvider.getEventParticipantController().deleteAllSelectedItems(items, grid, () -> grid.reload());
 						}, true);
 					}));
 				} else {

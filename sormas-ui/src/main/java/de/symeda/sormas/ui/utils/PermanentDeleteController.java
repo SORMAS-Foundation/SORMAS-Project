@@ -18,7 +18,7 @@ public class PermanentDeleteController<F extends PermanentlyDeletableFacade> {
 	public void deleteAllSelectedItems(
 		List<String> entityUuids,
 		F entityFacade,
-		CoreEntityDeleteMessages messages,
+		DeleteRestoreMessages messages,
 		boolean isEligibleForDeletion,
 		Runnable callback) {
 		if (entityUuids.isEmpty()) {
@@ -41,7 +41,7 @@ public class PermanentDeleteController<F extends PermanentlyDeletableFacade> {
 			.showDeleteConfirmationWindow(deleteConfirmationMessage, () -> performDeleteSelectedItems(entityUuids, entityFacade, messages, callback));
 	}
 
-	private void performDeleteSelectedItems(List<String> entityUuids, F entityFacade, CoreEntityDeleteMessages messages, Runnable callback) {
+	private void performDeleteSelectedItems(List<String> entityUuids, F entityFacade, DeleteRestoreMessages messages, Runnable callback) {
 
 		int undeletedEntityCount = 0;
 		StringBuilder unDeletedEntitiesSb = new StringBuilder();
@@ -63,7 +63,7 @@ public class PermanentDeleteController<F extends PermanentlyDeletableFacade> {
 		handleDeleteResult(undeletedEntityCount, messages, unDeletedEntitiesSb.toString());
 	}
 
-	private void handleDeleteResult(int undeletedEntityCount, CoreEntityDeleteMessages messages, String undeletedEntitiesString) {
+	private void handleDeleteResult(int undeletedEntityCount, DeleteRestoreMessages messages, String undeletedEntitiesString) {
 
 		if (undeletedEntityCount == 0) {
 			new Notification(
@@ -86,7 +86,7 @@ public class PermanentDeleteController<F extends PermanentlyDeletableFacade> {
 		}
 	}
 
-	private void displayNothingSelectedToBeDeleted(CoreEntityDeleteMessages messages) {
+	private void displayNothingSelectedToBeDeleted(DeleteRestoreMessages messages) {
 		new Notification(
 			I18nProperties.getString(messages.getHeadingNoSelection()),
 			I18nProperties.getString(messages.getMessageNoSelection()),
@@ -94,7 +94,7 @@ public class PermanentDeleteController<F extends PermanentlyDeletableFacade> {
 			false).show(Page.getCurrent());
 	}
 
-	private void displayErrorMessage(CoreEntityDeleteMessages messages) {
+	private void displayErrorMessage(DeleteRestoreMessages messages) {
 		new Notification(
 			I18nProperties.getString(messages.getHeadingEntitiesEligibleForDeletion()),
 			I18nProperties.getString(messages.getMessageEntitiesEligibleForDeletion()),

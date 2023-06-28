@@ -57,7 +57,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -338,7 +337,21 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	@Override
 	@RightsAllowed(UserRight._EVENT_DELETE)
 	public void delete(List<String> uuids, DeletionDetails deletionDetails) {
-		throw new NotImplementedException();
+		List<String> deleteEventUuids = new ArrayList<>();
+		List<Event> eventsToBeDeleted = eventService.getByUuids(uuids);
+
+		if (eventsToBeDeleted != null) {
+			eventsToBeDeleted.forEach(eventToBeDeleted -> {
+				if (!eventToBeDeleted.isDeleted()) {
+					try {
+						delete(eventToBeDeleted.getUuid(), deletionDetails);
+						deleteEventUuids.add(eventToBeDeleted.getUuid());
+					} catch (Exception e) {
+						logger.error("The event with uuid:" + eventToBeDeleted.getUuid() + "could not be deleted");
+					}
+				}
+			});
+		}
 	}
 
 	@Override

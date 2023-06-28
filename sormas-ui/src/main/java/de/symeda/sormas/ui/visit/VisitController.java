@@ -48,7 +48,7 @@ import de.symeda.sormas.api.visit.VisitReferenceDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CoreEntityDeleteMessages;
+import de.symeda.sormas.ui.utils.DeleteRestoreMessages;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class VisitController {
@@ -233,7 +233,7 @@ public class VisitController {
 			.deleteAllSelectedItems(
 				selectedRows.stream().map(VisitIndexDto::getUuid).collect(Collectors.toList()),
 				FacadeProvider.getVisitFacade(),
-				CoreEntityDeleteMessages.VISIT,
+				DeleteRestoreMessages.VISIT,
 				true,
 				callback);
 	}
