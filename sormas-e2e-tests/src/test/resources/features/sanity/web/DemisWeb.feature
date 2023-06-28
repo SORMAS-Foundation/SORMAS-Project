@@ -482,3 +482,33 @@ Scenario: Create and send laboratory request via Demis
     And I search the case by last created person via Demis message
     Then I click on the first Case ID from Case Directory
     And I check that the value selected from Disease variant combobox is "B.1.1.7 - 501Y.V1 (Alpha)" on Edit Case page
+
+  @tmsLink=SORQA-958 @env_d2s @LoginKeycloak
+  Scenario: Demis - Process a Lab message that has mapped 1 existing laboratory ID from Sormas
+    Given API : Login to DEMIS server
+    And I create and send Laboratory Notification
+    Then I click on the Messages button from navbar
+    And I click on fetch messages button
+    Then I filter by last created person via API in Messages Directory
+    And I click on Verarbeiten button in Messages Directory
+    And I pick a new person in Pick or create person popup during case creation for DE
+    And I choose create new case in Pick or create entry form for DE
+    And I check that create new case form with pathogen detection reporting process is displayed for DE
+    And I fill only mandatory fields to convert laboratory message into a case for DE
+    And I click on save button in the case popup
+    Then I check that new sample form with pathogen detection reporting process is displayed
+    Then I verify that labor is prefilled with "Andere Einrichtung" in New sample form while processing a DEMIS LabMessage
+    And I verify that labor description is prefilled with "Other Laboratory" in New sample form while processing a DEMIS LabMessage
+    And I fill laboratory name with "Quick laboratory" in New Sample form while processing a DEMIS LabMessage
+    And I fill "first" pathogen laboratory name with "Quick laboratory" in New Sample form while processing a DEMIS LabMessage
+    And I click on save sample button
+    And I click on save sample button
+    And I click on the Cases button from navbar
+    And I search the case by last created person via Demis message
+    Then I click on the first Case ID from Case Directory
+    And I click on Display associated lab messages button from Samples side component
+    And I check if external message window appears and close it
+    And I click on Display associated external messages button from Reports side component
+    And I check if external message window appears and close it
+    When I click on edit Report on Edit Case page
+    Then I check that Reporter Facility in Edit report form is set to ""
