@@ -16,7 +16,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.steps.web.application.shares;
+package org.sormas.e2etests.pages.application.shares;
 
 import org.openqa.selenium.By;
 
@@ -26,6 +26,12 @@ public class EditSharesPage {
   public static final By SHARE_UUID_CASE_TITLE =
       By.cssSelector(".popupContent [class='v-grid-cell v-grid-cell-focused'] a");
   public static final By ACCEPT_BUTTON = By.cssSelector("div #actionAccept");
+
+  public static By getAcceptButtonForEntity(String uuid) {
+    return By.xpath(
+        String.format(
+            "(//a[@title='%s']//parent::td)//following::div[@id='actionAccept'][1]", uuid));
+  }
 
   public static By getCheckBoxFromShareFormByIndex(int index) {
     return By.xpath(

@@ -125,11 +125,10 @@ import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.NEW_PERSON_RADIOBUTTON_DE;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.PICK_OR_CREATE_PERSON_HEADER_DE;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.SEARCH_PERSON_BY_FREE_TEXT;
+import static org.sormas.e2etests.pages.application.shares.EditSharesPage.SHARE_UUID_CASE_TITLE;
 import static org.sormas.e2etests.steps.web.application.cases.EditCaseSteps.aCase;
 import static org.sormas.e2etests.steps.web.application.contacts.CreateNewContactSteps.contact;
 import static org.sormas.e2etests.steps.web.application.persons.PersonDirectorySteps.personSharedForAllEntities;
-import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.ACCEPT_BUTTON;
-import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.SHARE_UUID_CASE_TITLE;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
@@ -1406,12 +1405,6 @@ public class CreateNewCaseSteps implements En {
               casesUUID.get(0).substring(0, 6).toUpperCase(),
               "UUIDs are not equal");
           softly.assertAll();
-        });
-    When(
-        "I accept first case in Shares Page",
-        () -> {
-          webDriverHelpers.clickOnWebElementBySelector(ACCEPT_BUTTON);
-          TimeUnit.SECONDS.sleep(2); // wait for results to reload
         });
 
     And(

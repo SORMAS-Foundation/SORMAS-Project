@@ -341,3 +341,48 @@ Feature: Sharing contacts between environments tests
     And I check if handover card contains "Gesendet von LK Barnim" information
     And I check if handover card contains "Geteilt von: Automation Admin" information
     And I check if handover card contains "shared with automated test" information
+
+  @tmsLink=SOR-982 @env_s2s_1
+  Scenario: Delete a contact shared in source system but not accepted in target system
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    And API: I check that POST call status code is 200
+    Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
+    And API: I check that POST call status code is 200
+    Given API: I create a new contact with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district linked to last created case
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    Then I navigate to the last created case via the url
+    And I collect uuid of the case
+    Then I click on share case button
+    And I select organization to share with "s2s_2"
+    And I click to hand over the ownership of the case in Share popup
+    And I fill comment in share popup with "case shared with automated test982"
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I open the last created contact via API
+    And I collect uuid of the contact
+    Then I click on share contact button
+    And I click to hand over the ownership of the contact in Share popup
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with "contact shared with automated test982"
+    Then I click on share button in s2s share popup and wait for share to finish
+    And I check if handover card contains "LK Fulda" information
+    And I check if handover card contains "Geteilt von: Automation ADMIN" information
+    And I check if handover card contains "contact shared with automated test982" information
+    Then I navigate to "s2s_2" environment
+    Given I log in as a Admin User
+    And I click on the Shares button from navbar
+    And I check if accept button for last API created case appears in Shares Page
+    And I check if accept button for last API created contact appears in Shares Page
+    Then I accept last created case via API in Shares Page
+    Then I navigate to "s2s_1" environment
+    Then I open the last created contact via API
+    Then I click on Delete button from contact
+    And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I click on Yes option in Confirm deletion popup
+    And I click on the Contacts button from navbar
+    Then I open the last created contact via API
+    And I check if editable fields are read only for shared contact
+    And I check if handover card contains "" information
+    Then I navigate to "s2s_2" environment
+    And I click on the Shares button from navbar
+    Then I accept last created contact via API in Shares Page

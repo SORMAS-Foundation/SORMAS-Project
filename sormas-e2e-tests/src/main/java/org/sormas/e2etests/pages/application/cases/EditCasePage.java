@@ -378,11 +378,6 @@ public class EditCasePage {
       By.cssSelector(".popupContent #withImmunizations label");
   public static final By SHARE_REPORTS_CHECKBOX =
       By.cssSelector(".popupContent #withSurveillanceReports label");
-  public static final By SHARE_SORMAS_2_SORMAS_POPUP_BUTTON =
-      By.cssSelector(".popupContent #commit");
-  public static final By LINKED_SHARED_ORGANIZATION_SELECTED_VALUE =
-      By.xpath(
-          "//div[@location='sormasToSormas']//div[@class='v-slot v-slot-s-list-entry v-slot-s-list-entry-no-border']");
   public static final By CLINICAL_ASSESSMENTS_LABEL_DE =
       By.xpath("//div[contains(text(), 'Klinische Bewertungen')]");
   public static final By REJECT_SHARED_CASE_BUTTON = By.cssSelector("#sormasToSormasRevokeShare");

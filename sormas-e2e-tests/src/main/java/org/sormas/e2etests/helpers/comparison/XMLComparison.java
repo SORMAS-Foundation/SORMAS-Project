@@ -1,5 +1,12 @@
 package org.sormas.e2etests.helpers.comparison;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.DetailedDiff;
@@ -8,14 +15,6 @@ import org.custommonkey.xmlunit.DifferenceListener;
 import org.custommonkey.xmlunit.IgnoreTextAndAttributeValuesDifferenceListener;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.xml.sax.SAXException;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class XMLComparison {
 
