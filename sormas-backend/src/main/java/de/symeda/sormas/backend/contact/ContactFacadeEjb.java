@@ -581,6 +581,21 @@ public class ContactFacadeEjb
 		super.restore(uuid);
 	}
 
+	@Override
+	public void restore(List<String> uuids) {
+		List<Contact> contactsToBeRestored = contactService.getByUuids(uuids);
+
+		if (contactsToBeRestored != null) {
+			contactsToBeRestored.forEach(contactToBeRestored -> {
+				try {
+					restore(contactToBeRestored.getUuid());
+				} catch (Exception e) {
+					logger.error("The contact with uuid:" + contactToBeRestored.getUuid() + "could not be restored");
+				}
+			});
+		}
+	}
+
 	private void deleteContact(Contact contact, DeletionDetails deletionDetails) {
 
 		if (!contactService.inJurisdictionOrOwned(contact)) {

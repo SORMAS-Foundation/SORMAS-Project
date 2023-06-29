@@ -84,10 +84,9 @@ import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
-import de.symeda.sormas.ui.utils.DeleteHandlers;
+import de.symeda.sormas.ui.utils.DeleteRestoreHandlers;
 import de.symeda.sormas.ui.utils.NotificationHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.automaticdeletion.DeletionLabel;
@@ -969,14 +968,14 @@ public class EventController {
 			List<EventIndexDto> selectedEventsCpy = new ArrayList<>(selectedEvents);
 			BulkOperationHandler.<EventIndexDto> forBulkEdit()
 				.doBulkOperation(
-				selectedEntries -> eventFacade.saveBulkEvents(
-					selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
-					updatedTempEvent,
-					eventStatusChange,
-					eventInvestigationStatusChange,
-					eventManagementStatusChange),
-				selectedEventsCpy,
-				bulkOperationCallback(eventGrid, popupWindow));
+					selectedEntries -> eventFacade.saveBulkEvents(
+						selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
+						updatedTempEvent,
+						eventStatusChange,
+						eventInvestigationStatusChange,
+						eventManagementStatusChange),
+					selectedEventsCpy,
+					bulkOperationCallback(eventGrid, popupWindow));
 		});
 
 		editView.addDiscardListener(popupWindow::close);
@@ -1008,7 +1007,7 @@ public class EventController {
 	public void deleteAllSelectedItems(Collection<EventIndexDto> selectedRows, EventGrid eventGrid) {
 
 		ControllerProvider.getDeleteRestoreController()
-			.deleteAllSelectedItems(selectedRows, DeleteHandlers.forEvent(), bulkOperationCallback(eventGrid, null));
+			.deleteAllSelectedItems(selectedRows, DeleteRestoreHandlers.forEvent(), bulkOperationCallback(eventGrid, null));
 	}
 
 	public boolean allSelectedEventsAreEligibleForDeletion(Collection<EventIndexDto> selectedRows) {
@@ -1025,13 +1024,9 @@ public class EventController {
 		return allItemsAreEligibleForDeletion;
 	}
 
-	public void restoreSelectedEvents(Collection<? extends EventIndexDto> selectedRows, Runnable callback) {
+	public void restoreSelectedEvents(Collection<EventIndexDto> selectedRows, EventGrid eventGrid) {
 		ControllerProvider.getDeleteRestoreController()
-			.restoreSelectedItems(
-				selectedRows.stream().map(EventIndexDto::getUuid).collect(Collectors.toList()),
-				FacadeProvider.getEventFacade(),
-				CoreEntityRestoreMessages.EVENT,
-				callback);
+			.restoreSelectedItems(selectedRows, DeleteRestoreHandlers.forEvent(), bulkOperationCallback(eventGrid, null));
 	}
 
 	private Boolean existEventParticipantsLinkedToEvent(EventDto event) {

@@ -154,6 +154,21 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
+	public void restore(List<String> uuids) {
+		List<TravelEntry> travelEntriesToBeRestored = travelEntryService.getByUuids(uuids);
+
+		if (travelEntriesToBeRestored != null) {
+			travelEntriesToBeRestored.forEach(travelEntryToBeRestored -> {
+				try {
+					restore(travelEntryToBeRestored.getUuid());
+				} catch (Exception e) {
+					logger.error("The travel entry with uuid:" + travelEntryToBeRestored.getUuid() + "could not be restored");
+				}
+			});
+		}
+	}
+
+	@Override
 	public List<DeaContentEntry> getDeaContentOfLastTravelEntry() {
 		final TravelEntry lastTravelEntry = service.getLastTravelEntry();
 

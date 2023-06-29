@@ -25,9 +25,9 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.utils.FieldConstraints;
 
-public final class DeleteHandlers {
+public final class DeleteRestoreHandlers {
 
-	private DeleteHandlers() {
+	private DeleteRestoreHandlers() {
 
 	}
 
@@ -89,6 +89,12 @@ public final class DeleteHandlers {
 		@Override
 		public int delete(List<String> uuids, DeletionDetails deletionDetails) {
 			entityFacade.delete(uuids, deletionDetails);
+			return uuids.size();
+		}
+
+		@Override
+		public int restore(List<String> uuids) {
+			entityFacade.restore(uuids);
 			return uuids.size();
 		}
 
@@ -189,6 +195,12 @@ public final class DeleteHandlers {
 		@Override
 		public int delete(List<String> uuids, DeletionDetails deletionDetails) {
 			entityFacade.delete(uuids, deletionDetails);
+			return uuids.size();
+		}
+
+		@Override
+		public int restore(List<String> uuids) {
+			entityFacade.restore(uuids);
 			return uuids.size();
 		}
 

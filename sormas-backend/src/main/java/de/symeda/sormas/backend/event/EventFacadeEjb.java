@@ -360,6 +360,21 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		super.restore(uuid);
 	}
 
+	@Override
+	public void restore(List<String> uuids) {
+		List<Event> eventsToBeRestored = eventService.getByUuids(uuids);
+
+		if (eventsToBeRestored != null) {
+			eventsToBeRestored.forEach(eventToBeRestored -> {
+				try {
+					restore(eventToBeRestored.getUuid());
+				} catch (Exception e) {
+					logger.error("The event with uuid:" + eventToBeRestored.getUuid() + "could not be restored");
+				}
+			});
+		}
+	}
+
 	private void deleteEvent(Event event, DeletionDetails deletionDetails) throws ExternalSurveillanceToolException {
 		if (!eventService.inJurisdictionOrOwned(event)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.messageEventOutsideJurisdictionDeletionDenied));

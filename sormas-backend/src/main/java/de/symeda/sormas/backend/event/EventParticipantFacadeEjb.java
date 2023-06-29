@@ -540,6 +540,21 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
+	public void restore(List<String> uuids) {
+		List<EventParticipant> eventParticipantsToBeRestored = service.getByUuids(uuids);
+
+		if (eventParticipantsToBeRestored != null) {
+			eventParticipantsToBeRestored.forEach(eventParticipantToBeRestored -> {
+				try {
+					restore(eventParticipantToBeRestored.getUuid());
+				} catch (Exception e) {
+					logger.error("The event participant with uuid:" + eventParticipantToBeRestored.getUuid() + "could not be restored");
+				}
+			});
+		}
+	}
+
+	@Override
 	public List<EventParticipantIndexDto> getIndexList(
 		EventParticipantCriteria eventParticipantCriteria,
 		Integer first,

@@ -544,7 +544,7 @@ public class ContactsView extends AbstractView {
 								I18nProperties.getCaption(Captions.bulkRestore),
 								VaadinIcons.ARROW_BACKWARD,
 								mi -> grid.bulkActionHandler(
-									items -> ControllerProvider.getContactController().restoreSelectedContacts(items, () -> navigateTo(criteria)),
+									items -> ControllerProvider.getContactController().restoreSelectedContacts(items, (AbstractContactGrid<?>) grid),
 									true),
 								hasBulkOperationsRight),
 						new MenuBarHelper.MenuBarItem(

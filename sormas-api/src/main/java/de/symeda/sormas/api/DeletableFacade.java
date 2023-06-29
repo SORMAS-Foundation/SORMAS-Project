@@ -4,7 +4,6 @@ import java.util.List;
 
 import de.symeda.sormas.api.common.DeletionDetails;
 
-// TODO: Refactor to DeletableRestorableFacade
 public interface DeletableFacade {
 
 	void delete(String uuid, DeletionDetails deletionDetails);
@@ -12,6 +11,8 @@ public interface DeletableFacade {
 	void delete(List<String> uuids, DeletionDetails deletionDetails);
 
 	void restore(String uuid);
+
+	void restore(List<String> uuids);
 
 	boolean isDeleted(String uuid);
 }

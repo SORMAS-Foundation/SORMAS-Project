@@ -3,7 +3,6 @@ package de.symeda.sormas.ui.travelentry;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -32,8 +31,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.travelentry.components.TravelEntryCreateForm;
 import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
-import de.symeda.sormas.ui.utils.DeleteHandlers;
+import de.symeda.sormas.ui.utils.DeleteRestoreHandlers;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.automaticdeletion.DeletionLabel;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
@@ -175,11 +173,7 @@ public class TravelEntryController {
 		// Initialize 'Archive' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_ARCHIVE)) {
 			ControllerProvider.getArchiveController()
-				.addArchivingButton(
-					travelEntry,
-					ArchiveHandlers.forTravelEntry(),
-					editComponent,
-					() -> navigateToTravelEntry(travelEntry.getUuid()));
+				.addArchivingButton(travelEntry, ArchiveHandlers.forTravelEntry(), editComponent, () -> navigateToTravelEntry(travelEntry.getUuid()));
 		}
 
 		editComponent.restrictEditableComponentsOnEditView(
@@ -225,18 +219,20 @@ public class TravelEntryController {
 		ControllerProvider.getDeleteRestoreController()
 			.deleteAllSelectedItems(
 				selectedRows,
-				DeleteHandlers.forTravelEntry(),
+				DeleteRestoreHandlers.forTravelEntry(),
 				bulkOperationCallback(travelEntryGrid, noEntriesRemainingCallback, null));
 
 	}
 
-	public void restoreSelectedTravelEntries(Collection<? extends TravelEntryIndexDto> selectedRows, Runnable callback) {
+	public void restoreSelectedTravelEntries(
+		Collection<TravelEntryIndexDto> selectedRows,
+		TravelEntryGrid travelEntryGrid,
+		Runnable noEntriesRemainingCallback) {
 		ControllerProvider.getDeleteRestoreController()
 			.restoreSelectedItems(
-				selectedRows.stream().map(TravelEntryIndexDto::getUuid).collect(Collectors.toList()),
-				FacadeProvider.getTravelEntryFacade(),
-				CoreEntityRestoreMessages.TRAVEL_ENTRY,
-				callback);
+				selectedRows,
+				DeleteRestoreHandlers.forTravelEntry(),
+				bulkOperationCallback(travelEntryGrid, noEntriesRemainingCallback, null));
 	}
 
 	private Consumer<List<TravelEntryIndexDto>> bulkOperationCallback(

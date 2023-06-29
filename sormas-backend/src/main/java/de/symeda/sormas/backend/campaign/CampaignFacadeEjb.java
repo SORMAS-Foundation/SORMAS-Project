@@ -371,6 +371,11 @@ public class CampaignFacadeEjb
 	}
 
 	@Override
+	public void restore(List<String> uuids) {
+		throw new NotImplementedException();
+	}
+
+	@Override
 	protected void pseudonymizeDto(Campaign source, CampaignDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
 		// No pseudonymization for Campaign entities
 	}

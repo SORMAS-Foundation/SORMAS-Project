@@ -195,12 +195,8 @@ public class SampleGridComponent extends VerticalLayout {
 					bulkOperationsDropdown = MenuBarHelper.createDropDown(
 						Captions.bulkActions,
 						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkRestore), VaadinIcons.ARROW_BACKWARD, selectedItem -> {
-							ControllerProvider.getSampleController().restoreSelectedSamples(grid.asMultiSelect().getSelectedItems(), new Runnable() {
-
-								public void run() {
-									samplesView.navigateTo(criteria);
-								}
-							});
+							ControllerProvider.getSampleController()
+								.restoreSelectedSamples(grid.asMultiSelect().getSelectedItems(), grid, () -> samplesView.navigateTo(criteria));
 						}));
 				}
 

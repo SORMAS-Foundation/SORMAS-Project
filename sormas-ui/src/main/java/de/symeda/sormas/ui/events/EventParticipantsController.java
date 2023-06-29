@@ -20,7 +20,6 @@ package de.symeda.sormas.ui.events;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -57,10 +56,9 @@ import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DeletableUtils;
-import de.symeda.sormas.ui.utils.DeleteHandlers;
+import de.symeda.sormas.ui.utils.DeleteRestoreHandlers;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.automaticdeletion.DeletionLabel;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
@@ -184,18 +182,21 @@ public class EventParticipantsController {
 		ControllerProvider.getDeleteRestoreController()
 			.deleteAllSelectedItems(
 				selectedRows,
-				DeleteHandlers.forEventParticipant(),
+				DeleteRestoreHandlers.forEventParticipant(),
 				bulkOperationCallback(eventParticipantGrid, noEntriesRemainingCallback, null));
 
 	}
 
-	public void restoreSelectedEventParticipants(Collection<? extends EventParticipantIndexDto> selectedRows, Runnable callback) {
+	public void restoreSelectedEventParticipants(
+		Collection<EventParticipantIndexDto> selectedRows,
+		EventParticipantsGrid eventParticipantGrid,
+		Runnable noEntriesRemainingCallback) {
+
 		ControllerProvider.getDeleteRestoreController()
 			.restoreSelectedItems(
-				selectedRows.stream().map(EventParticipantIndexDto::getUuid).collect(Collectors.toList()),
-				FacadeProvider.getEventParticipantFacade(),
-				CoreEntityRestoreMessages.EVENT_PARTICIPANT,
-				callback);
+				selectedRows,
+				DeleteRestoreHandlers.forEventParticipant(),
+				bulkOperationCallback(eventParticipantGrid, noEntriesRemainingCallback, null));
 	}
 
 	public void deleteEventParticipant(String eventUuid, String personUuid, Runnable callback) {

@@ -50,7 +50,7 @@ import de.symeda.sormas.api.visit.VisitReferenceDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.DeleteHandlers;
+import de.symeda.sormas.ui.utils.DeleteRestoreHandlers;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class VisitController {
@@ -232,7 +232,10 @@ public class VisitController {
 	public void deleteAllSelectedItems(Collection<VisitIndexDto> selectedRows, VisitGrid visitGrid, Runnable noEntriesRemainingCallback) {
 
 		ControllerProvider.getPermanentDeleteController()
-			.deleteAllSelectedItems(selectedRows, DeleteHandlers.forVisit(), bulkOperationCallback(visitGrid, noEntriesRemainingCallback, null));
+			.deleteAllSelectedItems(
+				selectedRows,
+				DeleteRestoreHandlers.forVisit(),
+				bulkOperationCallback(visitGrid, noEntriesRemainingCallback, null));
 
 	}
 

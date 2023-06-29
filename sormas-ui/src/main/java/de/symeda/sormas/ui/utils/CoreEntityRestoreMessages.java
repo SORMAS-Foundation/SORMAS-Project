@@ -2,6 +2,7 @@ package de.symeda.sormas.ui.utils;
 
 import de.symeda.sormas.api.i18n.Strings;
 
+// TODO: Delete this class
 public enum CoreEntityRestoreMessages {
 
 	CASE(Strings.entityCases,

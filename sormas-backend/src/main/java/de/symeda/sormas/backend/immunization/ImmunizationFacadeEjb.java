@@ -320,6 +320,12 @@ public class ImmunizationFacadeEjb
 		super.restore(uuid);
 	}
 
+	//TODO: if is possible the immunization restore in bulk mode
+	@Override
+	public void restore(List<String> uuids) {
+		throw new NotImplementedException();
+	}
+
 	@Override
 	public List<ImmunizationDto> getSimilarImmunizations(ImmunizationSimilarityCriteria criteria) {
 		return service.getSimilarImmunizations(criteria).stream().map(result -> {

@@ -51,7 +51,7 @@ import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.ArchivingController;
 import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.DeleteHandlers;
+import de.symeda.sormas.ui.utils.DeleteRestoreHandlers;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class TaskController {
@@ -173,7 +173,7 @@ public class TaskController {
 	public void deleteAllSelectedItems(Collection<TaskIndexDto> selectedRows, TaskGrid taskGrid, Runnable noEntriesRemainingCallback) {
 
 		ControllerProvider.getPermanentDeleteController()
-			.deleteAllSelectedItems(selectedRows, DeleteHandlers.forTask(), bulkOperationCallback(taskGrid, noEntriesRemainingCallback, null));
+			.deleteAllSelectedItems(selectedRows, DeleteRestoreHandlers.forTask(), bulkOperationCallback(taskGrid, noEntriesRemainingCallback, null));
 
 	}
 

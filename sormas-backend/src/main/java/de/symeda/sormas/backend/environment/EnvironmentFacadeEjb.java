@@ -356,6 +356,11 @@ public class EnvironmentFacadeEjb
 		throw new NotImplementedException();
 	}
 
+	@Override
+	public void restore(List<String> uuids) {
+		throw new NotImplementedException();
+	}
+
 	@LocalBean
 	@Stateless
 	public static class EnvironmentFacadeEjbLocal extends EnvironmentFacadeEjb {

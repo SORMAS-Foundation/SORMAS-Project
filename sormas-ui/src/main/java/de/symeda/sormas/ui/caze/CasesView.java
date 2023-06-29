@@ -730,7 +730,7 @@ public class CasesView extends AbstractView {
 						menuBarItems
 							.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkRestore), VaadinIcons.ARROW_BACKWARD, mi -> {
 								grid.bulkActionHandler(
-									items -> ControllerProvider.getCaseController().restoreSelectedCases(items, () -> navigateTo(criteria)),
+									items -> ControllerProvider.getCaseController().restoreSelectedCases(items, (AbstractCaseGrid<?>) grid),
 									true);
 							}, hasBulkOperationsRight));
 					}

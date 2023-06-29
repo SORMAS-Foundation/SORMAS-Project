@@ -771,6 +771,21 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
+	public void restore(List<String> uuids) {
+		List<Sample> samplesToBeRestored = sampleService.getByUuids(uuids);
+
+		if (samplesToBeRestored != null) {
+			samplesToBeRestored.forEach(sampleToBeRestored -> {
+				try {
+					restore(sampleToBeRestored.getUuid());
+				} catch (Exception e) {
+					logger.error("The sample with uuid:" + sampleToBeRestored.getUuid() + "could not be restored");
+				}
+			});
+		}
+	}
+
+	@Override
 	@RightsAllowed(UserRight._SAMPLE_DELETE)
 	public void delete(List<String> sampleUuids, DeletionDetails deletionDetails) {
 		long startTime = DateHelper.startTime();

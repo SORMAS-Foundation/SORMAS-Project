@@ -81,7 +81,7 @@ import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
 import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DeleteHandlers;
+import de.symeda.sormas.ui.utils.DeleteRestoreHandlers;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class ExternalMessageController {
@@ -286,7 +286,7 @@ public class ExternalMessageController {
 		ControllerProvider.getPermanentDeleteController()
 			.deleteAllSelectedItems(
 				selectedRows,
-				DeleteHandlers.forExternalMessage(),
+				DeleteRestoreHandlers.forExternalMessage(),
 				bulkOperationCallback(externalMessageGrid, noEntriesRemainingCallback, null));
 
 	}

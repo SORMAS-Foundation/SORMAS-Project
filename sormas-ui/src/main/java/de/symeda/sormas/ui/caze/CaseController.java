@@ -135,9 +135,8 @@ import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DeleteHandlers;
+import de.symeda.sormas.ui.utils.DeleteRestoreHandlers;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -1043,30 +1042,30 @@ public class CaseController {
 					500,
 					e -> BulkOperationHandler.<T> forBulkEdit()
 						.doBulkOperation(
-						selectedEntries -> caseFacade.saveBulkEditWithFacilities(
+							selectedEntries -> caseFacade.saveBulkEditWithFacilities(
+								selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
+								updatedBulkEditData,
+								diseaseChange,
+								classificationChange,
+								investigationStatusChange,
+								outcomeChange,
+								surveillanceOfficerChange,
+								e),
+							selectedCasesCpy,
+							bulkOperationCallback(caseGrid, popupWindow)));
+			} else {
+				BulkOperationHandler.<T> forBulkEdit()
+					.doBulkOperation(
+						selectedEntries -> caseFacade.saveBulkCase(
 							selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
 							updatedBulkEditData,
 							diseaseChange,
 							classificationChange,
 							investigationStatusChange,
 							outcomeChange,
-							surveillanceOfficerChange,
-							e),
+							surveillanceOfficerChange),
 						selectedCasesCpy,
-						bulkOperationCallback(caseGrid, popupWindow)));
-			} else {
-				BulkOperationHandler.<T> forBulkEdit()
-					.doBulkOperation(
-					selectedEntries -> caseFacade.saveBulkCase(
-						selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
-						updatedBulkEditData,
-						diseaseChange,
-						classificationChange,
-						investigationStatusChange,
-						outcomeChange,
-						surveillanceOfficerChange),
-					selectedCasesCpy,
-					bulkOperationCallback(caseGrid, popupWindow));
+						bulkOperationCallback(caseGrid, popupWindow));
 			}
 		});
 
@@ -1548,20 +1547,13 @@ public class CaseController {
 	public void deleteAllSelectedItems(Collection<? extends CaseIndexDto> selectedRows, AbstractCaseGrid<?> caseGrid) {
 
 		ControllerProvider.getDeleteRestoreController()
-			.deleteAllSelectedItems(
-				selectedRows,
-				DeleteHandlers.forCase(),
-				bulkOperationCallback(caseGrid, null));
+			.deleteAllSelectedItems(selectedRows, DeleteRestoreHandlers.forCase(), bulkOperationCallback(caseGrid, null));
 
 	}
 
-	public void restoreSelectedCases(Collection<? extends CaseIndexDto> selectedRows, Runnable callback) {
+	public void restoreSelectedCases(Collection<? extends CaseIndexDto> selectedRows, AbstractCaseGrid<?> caseGrid) {
 		ControllerProvider.getDeleteRestoreController()
-			.restoreSelectedItems(
-				selectedRows.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList()),
-				FacadeProvider.getCaseFacade(),
-				CoreEntityRestoreMessages.CASE,
-				callback);
+			.restoreSelectedItems(selectedRows, DeleteRestoreHandlers.forCase(), bulkOperationCallback(caseGrid, null));
 	}
 
 	public void sendSmsToAllSelectedItems(Collection<? extends CaseIndexDto> selectedRows, Runnable callback) {

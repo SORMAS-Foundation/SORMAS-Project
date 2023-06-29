@@ -7,32 +7,30 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.vaadin.server.Page;
-import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.DeletableFacade;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
-import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.api.uuid.HasUuid;
 
 public class DeleteRestoreController<F extends DeletableFacade> {
 
-	public void restoreSelectedItems(List<String> entityUuids, F entityFacade, CoreEntityRestoreMessages messages, Runnable callback) {
+	public <T extends HasUuid> void restoreSelectedItems(
+		Collection<T> entities,
+		IDeleteRestoreHandler<?> deleteHandler,
+		Consumer<List<T>> batchCallback) {
 
-		//TODO: extract to checkIfSelectionExists
-		if (entityUuids.isEmpty()) {
-			displayNothingSelectedToBeRestored(messages);
+		if (entities.isEmpty()) {
+			displayNothingSelectedToBeRestored(deleteHandler.getDeleteRestoreMessages());
 			return;
 		}
 
@@ -40,8 +38,8 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 		restoreConfirmationMessage.setValue(
 			String.format(
 				I18nProperties.getString(Strings.confirmationRestoreEntities),
-				entityUuids.size(),
-				I18nProperties.getString(messages.getEntities()).toLowerCase()));
+				entities.size(),
+				I18nProperties.getString(deleteHandler.getDeleteRestoreMessages().getEntities()).toLowerCase()));
 
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getString(Strings.headingRestoreConfirmation),
@@ -51,7 +49,12 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 			500,
 			confirmed -> {
 				if (Boolean.TRUE.equals(confirmed)) {
-					performRestoreSelectedItems(entityUuids, entityFacade, messages, callback);
+					List<T> selectedEntitiesCpy = new ArrayList<>(entities);
+					this.<T> createBulkOperationHandler(deleteHandler, true)
+						.doBulkOperation(
+							selectedEntries -> deleteHandler.restore(selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList())),
+							selectedEntitiesCpy,
+							batchCallback);
 				}
 			});
 	}
@@ -71,17 +74,6 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 			entities.size(),
 			I18nProperties.getString(deleteHandler.getDeleteRestoreMessages().getEntities()).toLowerCase())
 			+ getDeleteConfirmationDetails(deleteHandler.getDeleteRestoreMessages().getEntities(), entities);
-
-		/*
-		 * DeletableUtils.showDeleteWithReasonPopup(
-		 * deleteWithReasonConfirmationMessage,
-		 * (deleteDetails) -> performDeleteSelectedItems(
-		 * entities,
-		 * deleteHandler,
-		 * deleteDetails,
-		 * allItemsEligibleForDeletion,
-		 * batchCallback));
-		 */
 
 		VerticalLayout verticalLayout = new VerticalLayout();
 		verticalLayout.setMargin(false);
@@ -123,37 +115,34 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 
 	}
 
-	private <T extends HasUuid> BulkOperationHandler<T> createBulkOperationHandler(
-		IDeleteRestoreHandler<?> deleteHandler,
-		boolean forDelete) {
+	private <T extends HasUuid> BulkOperationHandler<T> createBulkOperationHandler(IDeleteRestoreHandler<?> deleteHandler, boolean forDelete) {
 		DeleteRestoreMessages deleteRestoreMessages = deleteHandler.getDeleteRestoreMessages();
 		return new BulkOperationHandler<>(
-			//add the restore messages
-			forDelete ? deleteRestoreMessages.getMessageEntitiesDeleted() : deleteRestoreMessages.getMessageEntitiesDeleted(),
-			forDelete ? deleteRestoreMessages.getMessageEntitiesNotDeleted() : deleteRestoreMessages.getMessageEntitiesNotDeleted());
+
+			forDelete ? deleteRestoreMessages.getMessageEntitiesDeleted() : deleteRestoreMessages.getMessageEntitiesRestored(),
+			forDelete ? deleteRestoreMessages.getMessageEntitiesNotDeleted() : deleteRestoreMessages.getMessageEntitiesNotRestored());
 	}
 
-	private void performRestoreSelectedItems(List<String> entityUuids, F entityFacade, CoreEntityRestoreMessages messages, Runnable callback) {
-
-		int unrestoredEntityCount = 0;
-		StringBuilder unrestoredEntitiesSb = new StringBuilder();
-
-		for (String selectedRow : entityUuids) {
-			try {
-				entityFacade.restore(selectedRow);
-			} catch (Exception e) {
-				unrestoredEntityCount++;
-				unrestoredEntitiesSb.append(selectedRow, 0, 6).append(", ");
-			}
-		}
-
-		if (unrestoredEntitiesSb.length() > 0) {
-			unrestoredEntitiesSb = new StringBuilder(" " + unrestoredEntitiesSb.substring(0, unrestoredEntitiesSb.length() - 2) + ". ");
-		}
-
-		callback.run();
-		handleRestoreResult(unrestoredEntityCount, messages, unrestoredEntitiesSb.toString());
-	}
+	/*
+	 * private void performRestoreSelectedItems(List<String> entityUuids, F entityFacade, CoreEntityRestoreMessages messages, Runnable
+	 * callback) {
+	 * int unrestoredEntityCount = 0;
+	 * StringBuilder unrestoredEntitiesSb = new StringBuilder();
+	 * for (String selectedRow : entityUuids) {
+	 * try {
+	 * entityFacade.restore(selectedRow);
+	 * } catch (Exception e) {
+	 * unrestoredEntityCount++;
+	 * unrestoredEntitiesSb.append(selectedRow, 0, 6).append(", ");
+	 * }
+	 * }
+	 * if (unrestoredEntitiesSb.length() > 0) {
+	 * unrestoredEntitiesSb = new StringBuilder(" " + unrestoredEntitiesSb.substring(0, unrestoredEntitiesSb.length() - 2) + ". ");
+	 * }
+	 * callback.run();
+	 * handleRestoreResult(unrestoredEntityCount, messages, unrestoredEntitiesSb.toString());
+	 * }
+	 */
 
 	/*
 	 * private <T extends HasUuid> void performDeleteSelectedItems(
@@ -254,105 +243,100 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 	 * }
 	 */
 
-	private void handleRestoreResult(int unrestoredEntityCount, CoreEntityRestoreMessages messages, String unrestoredEntitiesString) {
+	/*
+	 * private void handleRestoreResult(int unrestoredEntityCount, CoreEntityRestoreMessages messages, String unrestoredEntitiesString) {
+	 * if (unrestoredEntityCount == 0) {
+	 * displaySuccessNotification(messages.getHeadingEntitiesRestored(), messages.getMessageEntitiesRestored());
+	 * } else {
+	 * //TODO: add messages for all the entities, add missing strings too
+	 * // I18nProperties.getString(Strings.messageCasesNotRestored)),
+	 * showSimplePopUp(
+	 * messages.getHeadingSomeEntitiesNotRestored(),
+	 * getDetails(
+	 * messages.getMessageCountEntitiesNotRestored(),
+	 * unrestoredEntityCount,
+	 * unrestoredEntitiesString,
+	 * messages.getMessageEntitiesNotRestored()));
+	 * }
+	 * }
+	 */
 
-		if (unrestoredEntityCount == 0) {
-			displaySuccessNotification(messages.getHeadingEntitiesRestored(), messages.getMessageEntitiesRestored());
-		} else {
-			//TODO: add messages for all the entities, add missing strings too
-			// 	I18nProperties.getString(Strings.messageCasesNotRestored)),
-			showSimplePopUp(
-				messages.getHeadingSomeEntitiesNotRestored(),
-				getDetails(
-					messages.getMessageCountEntitiesNotRestored(),
-					unrestoredEntityCount,
-					unrestoredEntitiesString,
-					messages.getMessageEntitiesNotRestored()));
-		}
-	}
+	/*
+	 * private void handleDeleteItemsResult(
+	 * int undeletedEntityCount,
+	 * int undeletedEntityExternalReasonCount,
+	 * int undeletedEntityLinkedEntitiesReasonCount,
+	 * DeleteRestoreMessages messages,
+	 * String undeletedEntitiesString,
+	 * String undeletedEntitiesExternalReasonString,
+	 * String undeletedEntitiesLinkedEntitiesReasonString) {
+	 * //TODO: test this condition
+	 * if (undeletedEntityCount == 0 && undeletedEntityExternalReasonCount == 0 && undeletedEntityLinkedEntitiesReasonCount == 0) {
+	 * displaySuccessNotification(messages.getHeadingEntitiesDeleted(), messages.getMessageEntitiesDeleted());
+	 * } else {
+	 * StringBuilder description = new StringBuilder();
+	 * if (undeletedEntityLinkedEntitiesReasonCount > 0) {
+	 * description
+	 * .append(
+	 * getDetails(
+	 * messages.getMessageCountEntitiesNotDeleted(),
+	 * undeletedEntityLinkedEntitiesReasonCount,
+	 * undeletedEntitiesLinkedEntitiesReasonString,
+	 * messages.getMessageEntitiesNotDeletedLinkedEntitiesReason()))
+	 * .append("<br/> <br/>");
+	 * }
+	 * if (undeletedEntityExternalReasonCount > 0) {
+	 * description
+	 * .append(
+	 * getDetails(
+	 * messages.getMessageCountEntitiesNotDeleted(),
+	 * undeletedEntityExternalReasonCount,
+	 * undeletedEntitiesExternalReasonString,
+	 * messages.getMessageEntitiesNotDeletedExternalReason()))
+	 * .append("<br/> <br/>");
+	 * }
+	 * if (undeletedEntityCount > 0) {
+	 * description.append(
+	 * getDetails(
+	 * messages.getMessageCountEntitiesNotDeleted(),
+	 * undeletedEntityCount,
+	 * undeletedEntitiesString,
+	 * messages.getMessageEntitiesNotDeleted()));
+	 * }
+	 * showSimplePopUp(messages.getHeadingSomeEntitiesNotDeleted(), description.toString());
+	 * }
+	 * }
+	 */
 
-	private void handleDeleteItemsResult(
-		int undeletedEntityCount,
-		int undeletedEntityExternalReasonCount,
-		int undeletedEntityLinkedEntitiesReasonCount,
-		DeleteRestoreMessages messages,
-		String undeletedEntitiesString,
-		String undeletedEntitiesExternalReasonString,
-		String undeletedEntitiesLinkedEntitiesReasonString) {
-
-		//TODO: test this condition
-		if (undeletedEntityCount == 0 && undeletedEntityExternalReasonCount == 0 && undeletedEntityLinkedEntitiesReasonCount == 0) {
-			displaySuccessNotification(messages.getHeadingEntitiesDeleted(), messages.getMessageEntitiesDeleted());
-		} else {
-			StringBuilder description = new StringBuilder();
-
-			if (undeletedEntityLinkedEntitiesReasonCount > 0) {
-				description
-					.append(
-						getDetails(
-							messages.getMessageCountEntitiesNotDeleted(),
-							undeletedEntityLinkedEntitiesReasonCount,
-							undeletedEntitiesLinkedEntitiesReasonString,
-							messages.getMessageEntitiesNotDeletedLinkedEntitiesReason()))
-					.append("<br/> <br/>");
-			}
-
-			if (undeletedEntityExternalReasonCount > 0) {
-				description
-					.append(
-						getDetails(
-							messages.getMessageCountEntitiesNotDeleted(),
-							undeletedEntityExternalReasonCount,
-							undeletedEntitiesExternalReasonString,
-							messages.getMessageEntitiesNotDeletedExternalReason()))
-					.append("<br/> <br/>");
-			}
-
-			if (undeletedEntityCount > 0) {
-				description.append(
-					getDetails(
-						messages.getMessageCountEntitiesNotDeleted(),
-						undeletedEntityCount,
-						undeletedEntitiesString,
-						messages.getMessageEntitiesNotDeleted()));
-			}
-
-			showSimplePopUp(messages.getHeadingSomeEntitiesNotDeleted(), description.toString());
-		}
-	}
-
-	private Window showSimplePopUp(String heading, String message) {
-		Window window = VaadinUiUtil.showSimplePopupWindow(I18nProperties.getString(heading), message, ContentMode.HTML);
-
-		window.setWidth(600, Sizeable.Unit.PIXELS);
-		return window;
-	}
-
-	private String getDetails(
-		String messageCountEntitiesNotDeleted,
-		int undeletedEntityCount,
-		String undeletedEntitiesString,
-		String messageEntitiesNotDeleted) {
-
-		return String.format(
-			"%1s <br/> <br/> %2s",
-			String.format(
-				I18nProperties.getString(messageCountEntitiesNotDeleted),
-				String.format("<b>%s</b>", undeletedEntityCount),
-				String.format("<b>%s</b>", HtmlHelper.cleanHtml(undeletedEntitiesString))),
-			I18nProperties.getString(messageEntitiesNotDeleted));
-	}
-
-	private void displaySuccessNotification(String heading, String message) {
-		new Notification(I18nProperties.getString(heading), I18nProperties.getString(message), Notification.Type.TRAY_NOTIFICATION, false)
-			.show(Page.getCurrent());
-	}
-
-	private Boolean existEventParticipantsLinkedToEvent(String uuid) {
-		List<EventParticipantDto> eventParticipantList = FacadeProvider.getEventParticipantFacade().getAllActiveEventParticipantsByEvent(uuid);
-
-		return !eventParticipantList.isEmpty();
-	}
+	/*
+	 * private Window showSimplePopUp(String heading, String message) {
+	 * Window window = VaadinUiUtil.showSimplePopupWindow(I18nProperties.getString(heading), message, ContentMode.HTML);
+	 * window.setWidth(600, Sizeable.Unit.PIXELS);
+	 * return window;
+	 * }
+	 * private String getDetails(
+	 * String messageCountEntitiesNotDeleted,
+	 * int undeletedEntityCount,
+	 * String undeletedEntitiesString,
+	 * String messageEntitiesNotDeleted) {
+	 * return String.format(
+	 * "%1s <br/> <br/> %2s",
+	 * String.format(
+	 * I18nProperties.getString(messageCountEntitiesNotDeleted),
+	 * String.format("<b>%s</b>", undeletedEntityCount),
+	 * String.format("<b>%s</b>", HtmlHelper.cleanHtml(undeletedEntitiesString))),
+	 * I18nProperties.getString(messageEntitiesNotDeleted));
+	 * }
+	 * private void displaySuccessNotification(String heading, String message) {
+	 * new Notification(I18nProperties.getString(heading), I18nProperties.getString(message), Notification.Type.TRAY_NOTIFICATION, false)
+	 * .show(Page.getCurrent());
+	 * }
+	 * private Boolean existEventParticipantsLinkedToEvent(String uuid) {
+	 * List<EventParticipantDto> eventParticipantList =
+	 * FacadeProvider.getEventParticipantFacade().getAllActiveEventParticipantsByEvent(uuid);
+	 * return !eventParticipantList.isEmpty();
+	 * }
+	 */
 
 	private void displayNothingSelectedToBeDeleted(DeleteRestoreMessages messages) {
 		new Notification(
@@ -362,7 +346,7 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 			false).show(Page.getCurrent());
 	}
 
-	private void displayNothingSelectedToBeRestored(CoreEntityRestoreMessages messages) {
+	private void displayNothingSelectedToBeRestored(DeleteRestoreMessages messages) {
 		new Notification(
 			I18nProperties.getString(messages.getHeadingNoSelection()),
 			I18nProperties.getString(messages.getMessageNoSelection()),
@@ -395,6 +379,8 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 		void delete(String uuid, DeletionDetails deletionDetails);
 
 		int delete(List<String> uuids, DeletionDetails deletionDetails);
+
+		int restore(List<String> uuids);
 
 		DeleteRestoreMessages getDeleteRestoreMessages();
 

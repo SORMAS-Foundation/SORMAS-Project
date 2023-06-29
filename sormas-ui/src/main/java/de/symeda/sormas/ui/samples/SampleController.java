@@ -23,7 +23,6 @@ import static java.util.Objects.isNull;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -82,12 +81,11 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
-import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DateTimeField;
-import de.symeda.sormas.ui.utils.DeleteHandlers;
+import de.symeda.sormas.ui.utils.DeleteRestoreHandlers;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
@@ -620,17 +618,20 @@ public class SampleController {
 	public void deleteAllSelectedItems(Collection<SampleIndexDto> selectedRows, SampleGrid sampleGrid, Runnable noEntriesRemainingCallback) {
 
 		ControllerProvider.getDeleteRestoreController()
-			.deleteAllSelectedItems(selectedRows, DeleteHandlers.forSample(), bulkOperationCallback(sampleGrid, noEntriesRemainingCallback, null));
+			.deleteAllSelectedItems(
+				selectedRows,
+				DeleteRestoreHandlers.forSample(),
+				bulkOperationCallback(sampleGrid, noEntriesRemainingCallback, null));
 
 	}
 
-	public void restoreSelectedSamples(Collection<? extends SampleIndexDto> selectedRows, Runnable callback) {
+	public void restoreSelectedSamples(Collection<SampleIndexDto> selectedRows, SampleGrid sampleGrid, Runnable noEntriesRemainingCallback) {
+
 		ControllerProvider.getDeleteRestoreController()
 			.restoreSelectedItems(
-				selectedRows.stream().map(SampleIndexDto::getUuid).collect(Collectors.toList()),
-				FacadeProvider.getSampleFacade(),
-				CoreEntityRestoreMessages.SAMPLE,
-				callback);
+				selectedRows,
+				DeleteRestoreHandlers.forSample(),
+				bulkOperationCallback(sampleGrid, noEntriesRemainingCallback, null));
 	}
 
 	public TitleLayout getSampleViewTitleLayout(SampleDto sample) {

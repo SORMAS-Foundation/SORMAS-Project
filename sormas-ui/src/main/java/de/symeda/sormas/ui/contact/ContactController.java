@@ -90,10 +90,9 @@ import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DeletableUtils;
-import de.symeda.sormas.ui.utils.DeleteHandlers;
+import de.symeda.sormas.ui.utils.DeleteRestoreHandlers;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 import de.symeda.sormas.ui.utils.components.automaticdeletion.DeletionLabel;
@@ -766,13 +765,13 @@ public class ContactController {
 			List<ContactIndexDto> selectedContactsCpy = new ArrayList<>(selectedContacts);
 			BulkOperationHandler.<ContactIndexDto> forBulkEdit()
 				.doBulkOperation(
-				selectedEntries -> contactFacade.saveBulkContacts(
-					selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
-					updatedBulkEditData,
-					classificationChange,
-					contactOfficerChange),
-				selectedContactsCpy,
-				bulkOperationCallback(caseUuid, contactGrid, popupWindow));
+					selectedEntries -> contactFacade.saveBulkContacts(
+						selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
+						updatedBulkEditData,
+						classificationChange,
+						contactOfficerChange),
+					selectedContactsCpy,
+					bulkOperationCallback(caseUuid, contactGrid, popupWindow));
 		});
 
 		editView.addDiscardListener(popupWindow::close);
@@ -803,17 +802,13 @@ public class ContactController {
 	public void deleteAllSelectedItems(Collection<? extends ContactIndexDto> selectedRows, AbstractContactGrid<?> contactGrid) {
 
 		ControllerProvider.getDeleteRestoreController()
-			.deleteAllSelectedItems(selectedRows, DeleteHandlers.forContact(), bulkOperationCallback(null, contactGrid, null));
+			.deleteAllSelectedItems(selectedRows, DeleteRestoreHandlers.forContact(), bulkOperationCallback(null, contactGrid, null));
 
 	}
 
-	public void restoreSelectedContacts(Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {
+	public void restoreSelectedContacts(Collection<? extends ContactIndexDto> selectedRows, AbstractContactGrid<?> contactGrid) {
 		ControllerProvider.getDeleteRestoreController()
-			.restoreSelectedItems(
-				selectedRows.stream().map(ContactIndexDto::getUuid).collect(Collectors.toList()),
-				FacadeProvider.getContactFacade(),
-				CoreEntityRestoreMessages.CONTACT,
-				callback);
+			.restoreSelectedItems(selectedRows, DeleteRestoreHandlers.forContact(), bulkOperationCallback(null, contactGrid, null));
 	}
 
 	public void cancelFollowUpOfAllSelectedItems(Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {

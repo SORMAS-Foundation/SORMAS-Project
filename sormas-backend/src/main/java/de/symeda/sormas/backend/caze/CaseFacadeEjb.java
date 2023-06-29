@@ -2639,6 +2639,21 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
+	public void restore(List<String> uuids) {
+		List<Case> casesToBeRestored = caseService.getByUuids(uuids);
+
+		if (casesToBeRestored != null) {
+			casesToBeRestored.forEach(caseToBeRestored -> {
+				try {
+					restore(caseToBeRestored.getUuid());
+				} catch (Exception e) {
+					logger.error("The case with uuid:" + caseToBeRestored.getUuid() + "could not be restored");
+				}
+			});
+		}
+	}
+
+	@Override
 	@RightsAllowed(UserRight._CASE_DELETE)
 	public void deleteWithContacts(String caseUuid, DeletionDetails deletionDetails) {
 
