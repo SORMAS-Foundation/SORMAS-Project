@@ -350,6 +350,7 @@ public class EnvironmentFacadeEjb
 		return null;
 	}
 
+	@RightsAllowed(UserRight._ENVIRONMENT_DELETE)
 	@Override
 	public void delete(List<String> uuids, DeletionDetails deletionDetails) {
 		throw new NotImplementedException();
