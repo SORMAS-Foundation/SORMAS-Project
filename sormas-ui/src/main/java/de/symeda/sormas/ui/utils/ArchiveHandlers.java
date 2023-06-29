@@ -244,6 +244,11 @@ public final class ArchiveHandlers {
 		}
 
 		@Override
+		public void dearchive(String entityUuid) {
+			entityFacade.dearchive(Collections.singletonList(entityUuid), dearchiveReasonField.getValue(), archiveWithContacts.getValue());
+		}
+
+		@Override
 		public int archive(List<String> entityUuids) {
 			entityFacade.archive(entityUuids, archiveWithContacts.getValue());
 
