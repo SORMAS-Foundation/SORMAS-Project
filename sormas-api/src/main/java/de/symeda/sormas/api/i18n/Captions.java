@@ -1044,7 +1044,7 @@ public interface Captions {
 	String endOfProcessingDate = "endOfProcessingDate";
 	String Environment = "Environment";
 	String Environment_description = "Environment.description";
-	String Environment_environmentMeda = "Environment.environmentMeda";
+	String Environment_environmentMedia = "Environment.environmentMedia";
 	String Environment_environmentName = "Environment.environmentName";
 	String Environment_externalId = "Environment.externalId";
 	String Environment_infrastructureDetails = "Environment.infrastructureDetails";
@@ -1056,8 +1056,14 @@ public interface Captions {
 	String Environment_reportDate = "Environment.reportDate";
 	String Environment_reportingUser = "Environment.reportingUser";
 	String Environment_responsibleUser = "Environment.responsibleUser";
+	String Environment_uuid = "Environment.uuid";
 	String Environment_waterType = "Environment.waterType";
 	String Environment_waterUse = "Environment.waterUse";
+	String environmentActiveEnvironments = "environmentActiveEnvironments";
+	String environmentAllActiveAndArchivedEnvironments = "environmentAllActiveAndArchivedEnvironments";
+	String environmentArchivedEnvironments = "environmentArchivedEnvironments";
+	String environmentDeletedEnvironments = "environmentDeletedEnvironments";
+	String environmentNewEnvironment = "environmentNewEnvironment";
 	String EpiData = "EpiData";
 	String EpiData_activitiesAsCase = "EpiData.activitiesAsCase";
 	String EpiData_activityAsCaseDetailsKnown = "EpiData.activityAsCaseDetailsKnown";
@@ -1596,6 +1602,7 @@ public interface Captions {
 	String mainMenuContacts = "mainMenuContacts";
 	String mainMenuDashboard = "mainMenuDashboard";
 	String mainMenuEntries = "mainMenuEntries";
+	String mainMenuEnvironments = "mainMenuEnvironments";
 	String mainMenuEvents = "mainMenuEvents";
 	String mainMenuExternalMessages = "mainMenuExternalMessages";
 	String mainMenuImmunizations = "mainMenuImmunizations";
@@ -2629,6 +2636,7 @@ public interface Captions {
 	String View_dashboard_contacts = "View.dashboard.contacts";
 	String View_dashboard_samples = "View.dashboard.samples";
 	String View_dashboard_surveillance = "View.dashboard.surveillance";
+	String View_environments = "View.environments";
 	String View_events = "View.events";
 	String View_events_archive = "View.events.archive";
 	String View_events_data = "View.events.data";
