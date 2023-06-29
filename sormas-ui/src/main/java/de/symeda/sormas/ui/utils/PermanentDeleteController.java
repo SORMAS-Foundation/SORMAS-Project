@@ -1,44 +1,83 @@
 package de.symeda.sormas.ui.utils;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.PermanentlyDeletableFacade;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.HtmlHelper;
+import de.symeda.sormas.api.uuid.HasUuid;
 
 public class PermanentDeleteController<F extends PermanentlyDeletableFacade> {
 
-	public void deleteAllSelectedItems(
-		List<String> entityUuids,
-		F entityFacade,
-		DeleteRestoreMessages messages,
-		boolean isEligibleForDeletion,
-		Runnable callback) {
-		if (entityUuids.isEmpty()) {
-			displayNothingSelectedToBeDeleted(messages);
+	public <T extends HasUuid> void deleteAllSelectedItems(
+		Collection<T> entities,
+		IPermanentDeleteHandler<?> deleteHandler,
+		Consumer<List<T>> batchCallback) {
+
+		if (entities.isEmpty()) {
+			displayNothingSelectedToBeDeleted(deleteHandler.getDeleteRestoreMessages());
 			return;
 		}
 
-		if (!isEligibleForDeletion) {
-			displayErrorMessage(messages);
-			return;
-		}
+		/*
+		 * if (!isEligibleForDeletion) {
+		 * displayErrorMessage(messages);
+		 * return;
+		 * }
+		 */
 
 		//TODO: test the permanent delete for case or event
 		String deleteConfirmationMessage = String.format(
 			I18nProperties.getString(Strings.confirmationDeleteEntities),
-			entityUuids.size(),
-			I18nProperties.getString(messages.getEntities()).toLowerCase());
+			entities.size(),
+			I18nProperties.getString(deleteHandler.getDeleteRestoreMessages().getEntities()).toLowerCase());
 
-		VaadinUiUtil
-			.showDeleteConfirmationWindow(deleteConfirmationMessage, () -> performDeleteSelectedItems(entityUuids, entityFacade, messages, callback));
+		/*
+		 * VaadinUiUtil
+		 * .showDeleteConfirmationWindow(deleteConfirmationMessage, () -> performDeleteSelectedItems(entityUuids, entityFacade, messages,
+		 * callback));
+		 */
+		VerticalLayout verticalLayout = new VerticalLayout();
+		verticalLayout.setMargin(false);
+
+		Label contentLabel = new Label(deleteConfirmationMessage, ContentMode.HTML);
+		contentLabel.addStyleName(CssStyles.LABEL_WHITE_SPACE_NORMAL);
+		contentLabel.setWidthFull();
+		verticalLayout.addComponent(contentLabel);
+
+		VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getString(Strings.headingDeleteConfirmation),
+			verticalLayout,
+			I18nProperties.getString(Strings.yes),
+			I18nProperties.getString(Strings.no),
+			640,
+			confirmed -> {
+				if (Boolean.TRUE.equals(confirmed)) {
+
+					List<T> selectedEntitiesCpy = new ArrayList<>(entities);
+					this.<T> createBulkOperationHandler(deleteHandler)
+						.doBulkOperation(
+							selectedEntries -> deleteHandler.delete(selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList())),
+							selectedEntitiesCpy,
+							batchCallback);
+				}
+
+				return true;
+			});
+
 	}
 
 	private void performDeleteSelectedItems(List<String> entityUuids, F entityFacade, DeleteRestoreMessages messages, Runnable callback) {
@@ -100,6 +139,19 @@ public class PermanentDeleteController<F extends PermanentlyDeletableFacade> {
 			I18nProperties.getString(messages.getMessageEntitiesEligibleForDeletion()),
 			Notification.Type.ERROR_MESSAGE,
 			false).show(Page.getCurrent());
+	}
+
+	//TODO: check if can be deleted and added as we have for bulk edit
+	private <T extends HasUuid> BulkOperationHandler<T> createBulkOperationHandler(IPermanentDeleteHandler<?> deleteHandler) {
+		DeleteRestoreMessages deleteRestoreMessages = deleteHandler.getDeleteRestoreMessages();
+		return new BulkOperationHandler<>(deleteRestoreMessages.getMessageEntitiesDeleted(), deleteRestoreMessages.getMessageEntitiesNotDeleted());
+	}
+
+	public interface IPermanentDeleteHandler<T extends HasUuid> {
+
+		int delete(List<String> uuids);
+
+		DeleteRestoreMessages getDeleteRestoreMessages();
 	}
 
 }

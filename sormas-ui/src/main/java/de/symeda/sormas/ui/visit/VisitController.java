@@ -19,8 +19,10 @@ package de.symeda.sormas.ui.visit;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
+
+import org.apache.commons.collections.CollectionUtils;
 
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.UI;
@@ -48,7 +50,7 @@ import de.symeda.sormas.api.visit.VisitReferenceDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.DeleteRestoreMessages;
+import de.symeda.sormas.ui.utils.DeleteHandlers;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class VisitController {
@@ -227,14 +229,25 @@ public class VisitController {
 		return createNewVisit(caze.getPerson(), caze.getDisease());
 	}
 
-	public void deleteAllSelectedItems(Collection<VisitIndexDto> selectedRows, Runnable callback) {
+	public void deleteAllSelectedItems(Collection<VisitIndexDto> selectedRows, VisitGrid visitGrid, Runnable noEntriesRemainingCallback) {
 
 		ControllerProvider.getPermanentDeleteController()
-			.deleteAllSelectedItems(
-				selectedRows.stream().map(VisitIndexDto::getUuid).collect(Collectors.toList()),
-				FacadeProvider.getVisitFacade(),
-				DeleteRestoreMessages.VISIT,
-				true,
-				callback);
+			.deleteAllSelectedItems(selectedRows, DeleteHandlers.forVisit(), bulkOperationCallback(visitGrid, noEntriesRemainingCallback, null));
+
+	}
+
+	private Consumer<List<VisitIndexDto>> bulkOperationCallback(VisitGrid visitGrid, Runnable noEntriesRemainingCallback, Window popupWindow) {
+		return remainingVisits -> {
+			if (popupWindow != null) {
+				popupWindow.close();
+			}
+
+			visitGrid.reload();
+			if (CollectionUtils.isNotEmpty(remainingVisits)) {
+				visitGrid.asMultiSelect().selectItems(remainingVisits.toArray(new VisitIndexDto[0]));
+			} else {
+				noEntriesRemainingCallback.run();
+			}
+		};
 	}
 }

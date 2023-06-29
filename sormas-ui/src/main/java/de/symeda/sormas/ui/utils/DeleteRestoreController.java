@@ -58,7 +58,7 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 
 	public <T extends HasUuid> void deleteAllSelectedItems(
 		Collection<T> entities,
-		DeleteRestoreController.IDeleteHandler<?> deleteHandler,
+		IDeleteRestoreHandler<?> deleteHandler,
 		Consumer<List<T>> batchCallback) {
 
 		if (entities.isEmpty()) {
@@ -124,7 +124,7 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 	}
 
 	private <T extends HasUuid> BulkOperationHandler<T> createBulkOperationHandler(
-		DeleteRestoreController.IDeleteHandler<?> deleteHandler,
+		IDeleteRestoreHandler<?> deleteHandler,
 		boolean forDelete) {
 		DeleteRestoreMessages deleteRestoreMessages = deleteHandler.getDeleteRestoreMessages();
 		return new BulkOperationHandler<>(
@@ -390,7 +390,7 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 		return hasPendingRequest ? "<br/> <br/>" + I18nProperties.getString(Strings.messageDeleteWithPendingShareRequest) + "<br/>" : "";
 	}
 
-	public interface IDeleteHandler<T extends HasUuid> {
+	public interface IDeleteRestoreHandler<T extends HasUuid> {
 
 		void delete(String uuid, DeletionDetails deletionDetails);
 

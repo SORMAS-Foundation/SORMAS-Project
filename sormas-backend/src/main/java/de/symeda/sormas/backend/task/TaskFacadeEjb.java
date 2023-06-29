@@ -47,7 +47,6 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -927,7 +926,19 @@ public class TaskFacadeEjb implements TaskFacade {
 	@Override
 	@RightsAllowed(UserRight._TASK_DELETE)
 	public void delete(List<String> uuids) {
-		throw new NotImplementedException();
+		List<String> deletedTaskUuids = new ArrayList<>();
+		List<Task> tasksToBeDeleted = taskService.getByUuids(uuids);
+
+		if (tasksToBeDeleted != null) {
+			tasksToBeDeleted.forEach(taskToBeDeleted -> {
+				try {
+					delete(taskToBeDeleted.getUuid());
+					deletedTaskUuids.add(taskToBeDeleted.getUuid());
+				} catch (Exception e) {
+					logger.error("The task with uuid:" + taskToBeDeleted.getUuid() + "could not be deleted");
+				}
+			});
+		}
 	}
 
 	@RightsAllowed(UserRight._TASK_DELETE)

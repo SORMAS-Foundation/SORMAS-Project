@@ -21,10 +21,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import javax.naming.NamingException;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -79,7 +81,7 @@ import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
 import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DeleteRestoreMessages;
+import de.symeda.sormas.ui.utils.DeleteHandlers;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class ExternalMessageController {
@@ -276,15 +278,17 @@ public class ExternalMessageController {
 	}
 
 	//TODO: test this one
-	public void deleteAllSelectedItems(Collection<ExternalMessageIndexDto> selectedRows, Runnable callback) {
+	public void deleteAllSelectedItems(
+		Collection<ExternalMessageIndexDto> selectedRows,
+		ExternalMessageGrid externalMessageGrid,
+		Runnable noEntriesRemainingCallback) {
 
 		ControllerProvider.getPermanentDeleteController()
 			.deleteAllSelectedItems(
-				selectedRows.stream().map(ExternalMessageIndexDto::getUuid).collect(Collectors.toList()),
-				FacadeProvider.getTaskFacade(),
-				DeleteRestoreMessages.EXTERNAL_MESSAGE,
-				isEligibleForDeletion(selectedRows),
-				callback);
+				selectedRows,
+				DeleteHandlers.forExternalMessage(),
+				bulkOperationCallback(externalMessageGrid, noEntriesRemainingCallback, null));
+
 	}
 
 	public boolean isEligibleForDeletion(Collection<ExternalMessageIndexDto> selectedRows) {
@@ -468,5 +472,23 @@ public class ExternalMessageController {
 
 	public void registerViews(Navigator navigator) {
 		navigator.addView(ExternalMessagesView.VIEW_NAME, ExternalMessagesView.class);
+	}
+
+	private Consumer<List<ExternalMessageIndexDto>> bulkOperationCallback(
+		ExternalMessageGrid externalMessageGrid,
+		Runnable noEntriesRemainingCallback,
+		Window popupWindow) {
+		return remainingExternalMessages -> {
+			if (popupWindow != null) {
+				popupWindow.close();
+			}
+
+			externalMessageGrid.reload();
+			if (CollectionUtils.isNotEmpty(remainingExternalMessages)) {
+				externalMessageGrid.asMultiSelect().selectItems(remainingExternalMessages.toArray(new ExternalMessageIndexDto[0]));
+			} else {
+				noEntriesRemainingCallback.run();
+			}
+		};
 	}
 }

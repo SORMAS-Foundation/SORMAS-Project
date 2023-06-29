@@ -15,6 +15,7 @@ import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.DeletableFacade;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.PermanentlyDeletableFacade;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.i18n.Captions;
@@ -30,31 +31,44 @@ public final class DeleteHandlers {
 
 	}
 
-	public static CoreEntityDeleteHandler forCase() {
-		return new CoreEntityDeleteHandler<>(FacadeProvider.getCaseFacade(), DeleteRestoreMessages.CASE);
+	public static CoreEntityDeleteRestoreHandler forCase() {
+		return new CoreEntityDeleteRestoreHandler<>(FacadeProvider.getCaseFacade(), DeleteRestoreMessages.CASE);
 	}
 
-	public static CoreEntityDeleteHandler forContact() {
-		return new CoreEntityDeleteHandler<>(FacadeProvider.getContactFacade(), DeleteRestoreMessages.CONTACT);
+	public static CoreEntityDeleteRestoreHandler forContact() {
+		return new CoreEntityDeleteRestoreHandler<>(FacadeProvider.getContactFacade(), DeleteRestoreMessages.CONTACT);
 	}
 
-	public static CoreEntityDeleteHandler forEvent() {
-		return new CoreEntityDeleteHandler<>(FacadeProvider.getEventFacade(), DeleteRestoreMessages.EVENT);
+	public static CoreEntityDeleteRestoreHandler forEvent() {
+		return new CoreEntityDeleteRestoreHandler<>(FacadeProvider.getEventFacade(), DeleteRestoreMessages.EVENT);
 	}
 
-	public static CoreEntityDeleteHandler forEventParticipant() {
-		return new CoreEntityDeleteHandler<>(FacadeProvider.getEventParticipantFacade(), DeleteRestoreMessages.EVENT_PARTICIPANT);
+	public static CoreEntityDeleteRestoreHandler forEventParticipant() {
+		return new CoreEntityDeleteRestoreHandler<>(FacadeProvider.getEventParticipantFacade(), DeleteRestoreMessages.EVENT_PARTICIPANT);
 	}
 
-	public static CoreEntityDeleteHandler forTravelEntry() {
-		return new CoreEntityDeleteHandler<>(FacadeProvider.getTravelEntryFacade(), DeleteRestoreMessages.TRAVEL_ENTRY);
+	public static CoreEntityDeleteRestoreHandler forTravelEntry() {
+		return new CoreEntityDeleteRestoreHandler<>(FacadeProvider.getTravelEntryFacade(), DeleteRestoreMessages.TRAVEL_ENTRY);
 	}
 
-	public static SampleDeleteHandler forSample() {
-		return new SampleDeleteHandler();
+	public static SampleDeleteRestoreHandler forSample() {
+		return new SampleDeleteRestoreHandler();
 	}
 
-	public static class DeleteHandler<T extends EntityDto, F extends DeletableFacade> implements DeleteRestoreController.IDeleteHandler<T> {
+	public static PermanentDeleteHandler forTask() {
+		return new PermanentDeleteHandler(FacadeProvider.getTaskFacade(), DeleteRestoreMessages.TASK);
+	}
+
+	public static PermanentDeleteHandler forVisit() {
+		return new PermanentDeleteHandler(FacadeProvider.getVisitFacade(), DeleteRestoreMessages.VISIT);
+	}
+
+	public static PermanentDeleteHandler forExternalMessage() {
+		return new PermanentDeleteHandler(FacadeProvider.getExternalMessageFacade(), DeleteRestoreMessages.EXTERNAL_MESSAGE);
+	}
+
+	public static class DeleteRestoreHandler<T extends EntityDto, F extends DeletableFacade>
+		implements DeleteRestoreController.IDeleteRestoreHandler<T> {
 
 		protected final F entityFacade;
 		private final DeleteRestoreMessages deleteRestoreMessages;
@@ -62,7 +76,7 @@ public final class DeleteHandlers {
 		protected ComboBox<DeletionReason> deleteReasonComboBox;
 		protected TextArea otherDeletionReason;
 
-		private DeleteHandler(F entityFacade, DeleteRestoreMessages deleteRestoreMessages) {
+		private DeleteRestoreHandler(F entityFacade, DeleteRestoreMessages deleteRestoreMessages) {
 			this.entityFacade = entityFacade;
 			this.deleteRestoreMessages = deleteRestoreMessages;
 		}
@@ -153,8 +167,8 @@ public final class DeleteHandlers {
 	}
 
 	//TODO: check if can extend the basic handler class
-	public static class CoreEntityDeleteHandler<T extends EntityDto, F extends CoreFacade<T, ?, ?, ?>>
-		implements DeleteRestoreController.IDeleteHandler<T> {
+	public static class CoreEntityDeleteRestoreHandler<T extends EntityDto, F extends CoreFacade<T, ?, ?, ?>>
+		implements DeleteRestoreController.IDeleteRestoreHandler<T> {
 
 		protected final F entityFacade;
 		private final DeleteRestoreMessages deleteRestoreMessages;
@@ -162,7 +176,7 @@ public final class DeleteHandlers {
 		protected ComboBox<DeletionReason> deleteReasonComboBox;
 		protected TextArea otherDeletionReason;
 
-		public CoreEntityDeleteHandler(F entityFacade, DeleteRestoreMessages deleteRestoreMessages) {
+		public CoreEntityDeleteRestoreHandler(F entityFacade, DeleteRestoreMessages deleteRestoreMessages) {
 			this.entityFacade = entityFacade;
 			this.deleteRestoreMessages = deleteRestoreMessages;
 		}
@@ -252,10 +266,33 @@ public final class DeleteHandlers {
 		}
 	}
 
-	public static class SampleDeleteHandler extends DeleteHandler<SampleDto, SampleFacade> {
+	public static class SampleDeleteRestoreHandler extends DeleteRestoreHandler<SampleDto, SampleFacade> {
 
-		protected SampleDeleteHandler() {
+		protected SampleDeleteRestoreHandler() {
 			super(FacadeProvider.getSampleFacade(), DeleteRestoreMessages.SAMPLE);
+		}
+	}
+
+	public static class PermanentDeleteHandler<T extends EntityDto, F extends PermanentlyDeletableFacade>
+		implements PermanentDeleteController.IPermanentDeleteHandler<T> {
+
+		protected final F entityFacade;
+		private final DeleteRestoreMessages deleteRestoreMessages;
+
+		private PermanentDeleteHandler(F entityFacade, DeleteRestoreMessages deleteRestoreMessages) {
+			this.entityFacade = entityFacade;
+			this.deleteRestoreMessages = deleteRestoreMessages;
+		}
+
+		@Override
+		public int delete(List<String> uuids) {
+			entityFacade.delete(uuids);
+			return uuids.size();
+		}
+
+		@Override
+		public DeleteRestoreMessages getDeleteRestoreMessages() {
+			return deleteRestoreMessages;
 		}
 	}
 }

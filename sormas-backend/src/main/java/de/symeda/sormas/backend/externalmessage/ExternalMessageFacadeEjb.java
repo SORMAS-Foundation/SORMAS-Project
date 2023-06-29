@@ -336,11 +336,20 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	@RightsAllowed(UserRight._EXTERNAL_MESSAGE_DELETE)
 	public void delete(List<String> uuids) {
 		//TODO: check if delete appears in the bulk operation list without having delete rights
-		List<ExternalMessage> externalMessages = externalMessageService.getByUuids(uuids);
-		for (ExternalMessage externalMessage : externalMessages) {
-			if (externalMessage.getStatus() != ExternalMessageStatus.PROCESSED) {
-				externalMessageService.deletePermanent(externalMessage);
-			}
+		List<String> deletedExternalMessageUuids = new ArrayList<>();
+		List<ExternalMessage> externalMessagesToBeDeleted = externalMessageService.getByUuids(uuids);
+
+		if (externalMessagesToBeDeleted != null) {
+			externalMessagesToBeDeleted.forEach(externalMessageToBeDeleted -> {
+				if (externalMessageToBeDeleted.getStatus() != ExternalMessageStatus.PROCESSED) {
+					try {
+						externalMessageService.deletePermanent(externalMessageToBeDeleted);
+						deletedExternalMessageUuids.add(externalMessageToBeDeleted.getUuid());
+					} catch (Exception e) {
+						logger.error("The external message with uuid:" + externalMessageToBeDeleted.getUuid() + "could not be deleted");
+					}
+				}
+			});
 		}
 	}
 

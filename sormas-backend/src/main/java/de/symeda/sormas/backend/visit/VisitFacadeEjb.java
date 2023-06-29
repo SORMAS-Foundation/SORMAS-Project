@@ -46,7 +46,6 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,6 +115,8 @@ public class VisitFacadeEjb extends AbstractBaseEjb<Visit, VisitDto, VisitIndexD
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
+	@EJB
+	private VisitService visitService;
 	@EJB
 	private ContactService contactService;
 	@EJB
@@ -331,7 +332,19 @@ public class VisitFacadeEjb extends AbstractBaseEjb<Visit, VisitDto, VisitIndexD
 	@Override
 	@RightsAllowed(UserRight._VISIT_DELETE)
 	public void delete(List<String> uuids) {
-		throw new NotImplementedException();
+		List<String> deletedVisitUuids = new ArrayList<>();
+		List<Visit> visitsToBeDeleted = visitService.getByUuids(uuids);
+
+		if (visitsToBeDeleted != null) {
+			visitsToBeDeleted.forEach(visitToBeDeleted -> {
+				try {
+					delete(visitToBeDeleted.getUuid());
+					deletedVisitUuids.add(visitToBeDeleted.getUuid());
+				} catch (Exception e) {
+					logger.error("The visit with uuid:" + visitToBeDeleted.getUuid() + "could not be deleted");
+				}
+			});
+		}
 	}
 
 	@Override

@@ -51,7 +51,7 @@ import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.ArchivingController;
 import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.DeleteRestoreMessages;
+import de.symeda.sormas.ui.utils.DeleteHandlers;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class TaskController {
@@ -170,15 +170,11 @@ public class TaskController {
 		return task;
 	}
 
-	public void deleteAllSelectedItems(Collection<TaskIndexDto> selectedRows, Runnable callback) {
+	public void deleteAllSelectedItems(Collection<TaskIndexDto> selectedRows, TaskGrid taskGrid, Runnable noEntriesRemainingCallback) {
 
 		ControllerProvider.getPermanentDeleteController()
-			.deleteAllSelectedItems(
-				selectedRows.stream().map(TaskIndexDto::getUuid).collect(Collectors.toList()),
-				FacadeProvider.getTaskFacade(),
-				DeleteRestoreMessages.TASK,
-				true,
-				callback);
+			.deleteAllSelectedItems(selectedRows, DeleteHandlers.forTask(), bulkOperationCallback(taskGrid, noEntriesRemainingCallback, null));
+
 	}
 
 	public void showBulkTaskDataEditComponent(Collection<TaskIndexDto> selectedTasks, TaskGrid taskGrid, Runnable noEntriesRemainingCallback) {
@@ -207,14 +203,14 @@ public class TaskController {
 			List<TaskIndexDto> selectedTasksCpy = new ArrayList<>(selectedTasks);
 			BulkOperationHandler.<TaskIndexDto> forBulkEdit()
 				.doBulkOperation(
-				selectedEntries -> taskFacade.saveBulkTasks(
-					selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
-					updatedTempTask,
-					form.getPriorityCheckbox().getValue(),
-					form.getAssigneeCheckbox().getValue(),
-					form.getTaskStatusCheckbox().getValue()),
-				selectedTasksCpy,
-				bulkOperationCallback(taskGrid, noEntriesRemainingCallback, popupWindow));
+					selectedEntries -> taskFacade.saveBulkTasks(
+						selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
+						updatedTempTask,
+						form.getPriorityCheckbox().getValue(),
+						form.getAssigneeCheckbox().getValue(),
+						form.getTaskStatusCheckbox().getValue()),
+					selectedTasksCpy,
+					bulkOperationCallback(taskGrid, noEntriesRemainingCallback, popupWindow));
 		});
 
 		editView.addDiscardListener(popupWindow::close);
