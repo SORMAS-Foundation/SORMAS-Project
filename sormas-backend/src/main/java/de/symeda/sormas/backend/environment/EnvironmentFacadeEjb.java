@@ -34,6 +34,7 @@ import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.environment.EnvironmentFacade;
 import de.symeda.sormas.api.environment.EnvironmentIndexDto;
 import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.FacadeHelper;
@@ -49,8 +50,10 @@ import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "EnvironmentFacade")
+@RightsAllowed(UserRight._ENVIRONMENT_VIEW)
 public class EnvironmentFacadeEjb
 	extends AbstractCoreFacadeEjb<Environment, EnvironmentDto, EnvironmentIndexDto, EnvironmentReferenceDto, EnvironmentService, EnvironmentCriteria>
 	implements EnvironmentFacade {
@@ -81,13 +84,21 @@ public class EnvironmentFacadeEjb
 	private LocationFacadeEjb.LocationFacadeEjbLocal locationFacade;
 
 	@Override
+	@RightsAllowed({
+		UserRight._ENVIRONMENT_EDIT,
+		UserRight._ENVIRONMENT_CREATE })
 	public EnvironmentDto save(EnvironmentDto dto) {
 		return save(dto, true);
 	}
 
+	@RightsAllowed({
+		UserRight._ENVIRONMENT_EDIT,
+		UserRight._ENVIRONMENT_CREATE })
 	public EnvironmentDto save(EnvironmentDto dto, boolean checkChangeDate) {
 
 		Environment existingEnvironment = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
+
+		FacadeHelper.checkCreateAndEditRights(existingEnvironment, userService, UserRight.ENVIRONMENT_CREATE, UserRight.ENVIRONMENT_EDIT);
 
 		validate(dto);
 		Environment environment = fillOrBuildEntity(dto, existingEnvironment, checkChangeDate);

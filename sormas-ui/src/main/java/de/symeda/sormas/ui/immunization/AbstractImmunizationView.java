@@ -22,7 +22,7 @@ public abstract class AbstractImmunizationView extends AbstractEditAllowedDetail
 	}
 
 	@Override
-	protected CoreFacade getCoreFacade() {
+	protected CoreFacade getEditPermissionFacade() {
 		return FacadeProvider.getImmunizationFacade();
 	}
 

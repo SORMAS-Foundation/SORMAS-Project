@@ -51,4 +51,6 @@ public class EditSharesPage {
   public static By SHARE_REQUEST_NOT_FOUND_HEADER_DE =
       By.xpath(
           "//*[@class='popupContent']//div[contains(text(), 'Freigabeanfrage nicht gefunden')]");
+  public static By OUTGOING_VIEW_SWITCHER_RADIO_BUTTON_DE =
+      By.xpath("//label[contains(text(), 'Ausgehend')]");
 }

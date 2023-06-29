@@ -42,7 +42,7 @@ public abstract class AbstractEventView extends AbstractEditAllowedDetailView<Ev
 	}
 
 	@Override
-	protected CoreFacade getCoreFacade() {
+	protected CoreFacade getEditPermissionFacade() {
 		return FacadeProvider.getEventFacade();
 	}
 
