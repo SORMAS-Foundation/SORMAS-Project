@@ -926,29 +926,22 @@ public class TaskFacadeEjb implements TaskFacade {
 	@Override
 	@RightsAllowed(UserRight._TASK_DELETE)
 	public void delete(List<String> uuids) {
-		List<String> deletedTaskUuids = new ArrayList<>();
-		List<Task> tasksToBeDeleted = taskService.getByUuids(uuids);
-
-		if (tasksToBeDeleted != null) {
-			tasksToBeDeleted.forEach(taskToBeDeleted -> {
-				try {
-					delete(taskToBeDeleted.getUuid());
-					deletedTaskUuids.add(taskToBeDeleted.getUuid());
-				} catch (Exception e) {
-					logger.error("The task with uuid:" + taskToBeDeleted.getUuid() + "could not be deleted");
-				}
-			});
-		}
+		deleteTasks(uuids);
 	}
 
 	@RightsAllowed(UserRight._TASK_DELETE)
 	public List<String> deleteTasks(List<String> tasksUuids) {
 		List<String> deletedTaskUuids = new ArrayList<>();
 		List<Task> tasksToBeDeleted = taskService.getByUuids(tasksUuids);
+
 		if (tasksToBeDeleted != null) {
 			tasksToBeDeleted.forEach(taskToBeDeleted -> {
-				taskService.deletePermanent(taskToBeDeleted);
-				deletedTaskUuids.add(taskToBeDeleted.getUuid());
+				try {
+					taskService.deletePermanent(taskToBeDeleted);
+					deletedTaskUuids.add(taskToBeDeleted.getUuid());
+				} catch (Exception e) {
+					logger.error("The task with uuid:" + taskToBeDeleted.getUuid() + "could not be deleted");
+				}
 			});
 		}
 		return deletedTaskUuids;

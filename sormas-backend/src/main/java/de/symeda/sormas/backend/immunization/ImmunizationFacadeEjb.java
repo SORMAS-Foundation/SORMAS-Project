@@ -41,7 +41,6 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -311,7 +310,7 @@ public class ImmunizationFacadeEjb
 	@Override
 	@RightsAllowed(UserRight._IMMUNIZATION_DELETE)
 	public void delete(List<String> uuids, DeletionDetails deletionDetails) {
-		throw new NotImplementedException();
+		deleteImmunizations(uuids, deletionDetails);
 	}
 
 	@Override
@@ -320,10 +319,29 @@ public class ImmunizationFacadeEjb
 		super.restore(uuid);
 	}
 
-	//TODO: if is possible the immunization restore in bulk mode
 	@Override
+	@RightsAllowed(UserRight._IMMUNIZATION_DELETE)
 	public void restore(List<String> uuids) {
-		throw new NotImplementedException();
+		restoreImmunizations(uuids);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._IMMUNIZATION_DELETE)
+	public List<String> restoreImmunizations(List<String> uuids) {
+		List<String> restoredImmunizationUuids = new ArrayList<>();
+		List<Immunization> immunizationsToBeRestored = service.getByUuids(uuids);
+
+		if (immunizationsToBeRestored != null) {
+			immunizationsToBeRestored.forEach(immunizationToBeRestored -> {
+				try {
+					service.restore(immunizationToBeRestored);
+					restoredImmunizationUuids.add(immunizationToBeRestored.getUuid());
+				} catch (Exception e) {
+					logger.error("The immunization with uuid:" + immunizationToBeRestored.getUuid() + "could not be restored");
+				}
+			});
+		}
+		return restoredImmunizationUuids;
 	}
 
 	@Override

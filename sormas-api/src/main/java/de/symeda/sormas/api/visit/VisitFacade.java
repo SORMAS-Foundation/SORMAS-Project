@@ -64,4 +64,6 @@ public interface VisitFacade extends BaseFacade<VisitDto, VisitIndexDto, VisitRe
 	List<VisitDto> getVisitsByContactAndPeriod(ContactReferenceDto contactRef, Date begin, Date end);
 
 	VisitDto getLastVisitByCase(CaseReferenceDto caseRef);
+
+	List<String> deleteVisits(List<String> uuids);
 }

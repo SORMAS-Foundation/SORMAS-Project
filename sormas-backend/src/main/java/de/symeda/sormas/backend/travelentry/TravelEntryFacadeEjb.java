@@ -130,6 +130,12 @@ public class TravelEntryFacadeEjb
 	@Override
 	@RightsAllowed(UserRight._TRAVEL_ENTRY_DELETE)
 	public void delete(List<String> uuids, DeletionDetails deletionDetails) {
+		deleteTravelEntries(uuids, deletionDetails);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._TRAVEL_ENTRY_DELETE)
+	public List<String> deleteTravelEntries(List<String> uuids, DeletionDetails deletionDetails) {
 		List<String> deletedTravelEntryUuids = new ArrayList<>();
 		List<TravelEntry> travelEntriesToBeDeleted = travelEntryService.getByUuids(uuids);
 
@@ -145,6 +151,8 @@ public class TravelEntryFacadeEjb
 				}
 			});
 		}
+
+		return deletedTravelEntryUuids;
 	}
 
 	@Override

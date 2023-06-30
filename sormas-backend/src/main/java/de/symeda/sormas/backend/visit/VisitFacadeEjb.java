@@ -332,6 +332,12 @@ public class VisitFacadeEjb extends AbstractBaseEjb<Visit, VisitDto, VisitIndexD
 	@Override
 	@RightsAllowed(UserRight._VISIT_DELETE)
 	public void delete(List<String> uuids) {
+		deleteVisits(uuids);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._VISIT_DELETE)
+	public List<String> deleteVisits(List<String> uuids) {
 		List<String> deletedVisitUuids = new ArrayList<>();
 		List<Visit> visitsToBeDeleted = visitService.getByUuids(uuids);
 
@@ -345,6 +351,8 @@ public class VisitFacadeEjb extends AbstractBaseEjb<Visit, VisitDto, VisitIndexD
 				}
 			});
 		}
+
+		return deletedVisitUuids;
 	}
 
 	@Override
