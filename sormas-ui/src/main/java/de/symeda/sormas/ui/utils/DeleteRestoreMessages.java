@@ -12,6 +12,8 @@ public enum DeleteRestoreMessages {
 		Strings.headingCasesDeleted,
 		Strings.messageCasesDeleted,
 		Strings.messageCasesNotDeleted,
+		Strings.messageCasesNotDeletedExternalReason,
+		null,
 		Strings.headingSomeCasesNotDeleted,
 		Strings.messageCountCasesNotDeleted,
 
@@ -29,6 +31,8 @@ public enum DeleteRestoreMessages {
 		Strings.headingEventsDeleted,
 		Strings.messageEventsDeleted,
 		Strings.messageEventsNotDeleted,
+		Strings.messageEventsNotDeletedExternalReason,
+		Strings.messageEventsNotDeletedLinkedEntitiesReason,
 		Strings.headingSomeEventsNotDeleted,
 		Strings.messageCountEventsNotDeleted,
 
@@ -46,6 +50,8 @@ public enum DeleteRestoreMessages {
 		Strings.headingEventParticipantsDeleted,
 		Strings.messageEventParticipantsDeleted,
 		Strings.messageEventParticipantsNotDeleted,
+		null,
+		null,
 		Strings.headingSomeEventParticipantsNotDeleted,
 		Strings.messageCountEventParticipantsNotDeleted,
 
@@ -63,6 +69,8 @@ public enum DeleteRestoreMessages {
 		Strings.headingContactsDeleted,
 		Strings.messageContactsDeleted,
 		Strings.messageContactsNotDeleted,
+		null,
+		null,
 		Strings.headingSomeContactsNotDeleted,
 		Strings.messageCountContactsNotDeleted,
 
@@ -80,6 +88,8 @@ public enum DeleteRestoreMessages {
 		Strings.headingTravelEntriesDeleted,
 		Strings.messageTravelEntriesDeleted,
 		Strings.messageTravelEntriesNotDeleted,
+		null,
+		null,
 		Strings.headingSomeTravelEntriesNotDeleted,
 		Strings.messageCountTravelEntriesNotDeleted,
 
@@ -97,6 +107,8 @@ public enum DeleteRestoreMessages {
 		Strings.headingVisitsDeleted,
 		Strings.messageVisitsDeleted,
 		Strings.messageVisitsNotDeleted,
+		null,
+		null,
 		Strings.headingSomeVisitsNotDeleted,
 		Strings.messageCountVisitsNotDeleted,
 		null,
@@ -113,6 +125,8 @@ public enum DeleteRestoreMessages {
 		Strings.headingTasksDeleted,
 		Strings.messageTasksDeleted,
 		Strings.messageTasksNotDeleted,
+		null,
+		null,
 		Strings.headingSomeTasksNotDeleted,
 		Strings.messageCountTasksNotDeleted,
 		null,
@@ -129,6 +143,8 @@ public enum DeleteRestoreMessages {
 		Strings.headingExternalMessagesDeleted,
 		Strings.messageExternalMessagesDeleted,
 		Strings.messageExternalMessagesNotDeleted,
+		null,
+		null,
 		Strings.headingSomeExternalMessagesNotDeleted,
 		Strings.messageCountExternalMessagesNotDeleted,
 		null,
@@ -145,6 +161,8 @@ public enum DeleteRestoreMessages {
 		Strings.headingSamplesDeleted,
 		Strings.messageSamplesDeleted,
 		Strings.messageSamplesNotDeleted,
+		null,
+		null,
 		Strings.headingSomeSamplesNotDeleted,
 		Strings.messageCountSamplesNotDeleted,
 
@@ -157,6 +175,8 @@ public enum DeleteRestoreMessages {
 	IMMUNIZATION(Strings.entityImmunizations,
 		Strings.headingNoImmunizationsSelected,
 		Strings.messageNoImmunizationsSelected,
+		null,
+		null,
 		null,
 		null,
 		null,
@@ -178,7 +198,8 @@ public enum DeleteRestoreMessages {
 	private final String headingEntitiesDeleted;
 	private final String messageEntitiesDeleted;
 	private final String messageEntitiesNotDeleted;
-
+	private final String messageEntitiesNotDeletedExternalReason;
+	private final String messageEntitiesNotDeletedLinkedEntitiesReason;
 	private final String headingSomeEntitiesNotDeleted;
 	private final String messageCountEntitiesNotDeleted;
 
@@ -197,6 +218,8 @@ public enum DeleteRestoreMessages {
 		String headingEntitiesDeleted,
 		String messageEntitiesDeleted,
 		String messageEntitiesNotDeleted,
+		String messageEntitiesNotDeletedExternalReason,
+		String messageEntitiesNotDeletedLinkedEntitiesReason,
 		String headingSomeEntitiesNotDeleted,
 		String messageCountEntitiesNotDeleted,
 		String headingEntitiesRestored,
@@ -213,6 +236,8 @@ public enum DeleteRestoreMessages {
 		this.headingEntitiesDeleted = headingEntitiesDeleted;
 		this.messageEntitiesDeleted = messageEntitiesDeleted;
 		this.messageEntitiesNotDeleted = messageEntitiesNotDeleted;
+		this.messageEntitiesNotDeletedExternalReason = messageEntitiesNotDeletedExternalReason;
+		this.messageEntitiesNotDeletedLinkedEntitiesReason = messageEntitiesNotDeletedLinkedEntitiesReason;
 
 		this.headingSomeEntitiesNotDeleted = headingSomeEntitiesNotDeleted;
 		this.messageCountEntitiesNotDeleted = messageCountEntitiesNotDeleted;

@@ -2615,21 +2615,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@Override
 	@RightsAllowed(UserRight._CASE_DELETE)
 	public void delete(List<String> uuids, DeletionDetails deletionDetails) {
-		List<String> deletedCaseUuids = new ArrayList<>();
-		List<Case> casesToBeDeleted = caseService.getByUuids(uuids);
-
-		if (casesToBeDeleted != null) {
-			casesToBeDeleted.forEach(caseToBeDeleted -> {
-				if (!caseToBeDeleted.isDeleted()) {
-					try {
-						deleteCase(caseToBeDeleted, deletionDetails);
-						deletedCaseUuids.add(caseToBeDeleted.getUuid());
-					} catch (Exception e) {
-						logger.error("The case with uuid:" + caseToBeDeleted.getUuid() + "could not be deleted");
-					}
-				}
-			});
-		}
+		deleteCases(uuids, deletionDetails);
 	}
 
 	@Override
@@ -2640,17 +2626,28 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	public void restore(List<String> uuids) {
+		restoreCases(uuids);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._CASE_DELETE)
+	public List<String> restoreCases(List<String> uuids) {
+		List<String> restoredCasesUuids = new ArrayList<>();
 		List<Case> casesToBeRestored = caseService.getByUuids(uuids);
 
 		if (casesToBeRestored != null) {
 			casesToBeRestored.forEach(caseToBeRestored -> {
-				try {
-					restore(caseToBeRestored.getUuid());
-				} catch (Exception e) {
-					logger.error("The case with uuid:" + caseToBeRestored.getUuid() + "could not be restored");
+				if (!caseToBeRestored.isDeleted()) {
+					try {
+						restore(caseToBeRestored.getUuid());
+						restoredCasesUuids.add(caseToBeRestored.getUuid());
+					} catch (ExternalSurveillanceToolRuntimeException | SormasToSormasRuntimeException | AccessDeniedException e) {
+						logger.error("The case with uuid {} could not be restored", caseToBeRestored.getUuid(), e);
+					}
 				}
 			});
 		}
+		return restoredCasesUuids;
 	}
 
 	@Override
