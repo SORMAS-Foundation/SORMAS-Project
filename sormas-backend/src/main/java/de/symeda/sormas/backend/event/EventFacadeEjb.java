@@ -337,21 +337,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	@Override
 	@RightsAllowed(UserRight._EVENT_DELETE)
 	public void delete(List<String> uuids, DeletionDetails deletionDetails) {
-		List<String> deleteEventUuids = new ArrayList<>();
-		List<Event> eventsToBeDeleted = eventService.getByUuids(uuids);
-
-		if (eventsToBeDeleted != null) {
-			eventsToBeDeleted.forEach(eventToBeDeleted -> {
-				if (!eventToBeDeleted.isDeleted()) {
-					try {
-						delete(eventToBeDeleted.getUuid(), deletionDetails);
-						deleteEventUuids.add(eventToBeDeleted.getUuid());
-					} catch (Exception e) {
-						logger.error("The event with uuid:" + eventToBeDeleted.getUuid() + "could not be deleted");
-					}
-				}
-			});
-		}
+		deleteEvents(uuids, deletionDetails);
 	}
 
 	@Override
@@ -362,17 +348,26 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 	@Override
 	public void restore(List<String> uuids) {
+		restoreEvents(uuids);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._EVENT_DELETE)
+	public List<String> restoreEvents(List<String> uuids) {
+		List<String> restoredEventsUuids = new ArrayList<>();
 		List<Event> eventsToBeRestored = eventService.getByUuids(uuids);
 
 		if (eventsToBeRestored != null) {
 			eventsToBeRestored.forEach(eventToBeRestored -> {
 				try {
 					restore(eventToBeRestored.getUuid());
-				} catch (Exception e) {
+					restoredEventsUuids.add(eventToBeRestored.getUuid());
+				} catch (ExternalSurveillanceToolRuntimeException | SormasToSormasRuntimeException | AccessDeniedException e) {
 					logger.error("The event with uuid:" + eventToBeRestored.getUuid() + "could not be restored");
 				}
 			});
 		}
+		return restoredEventsUuids;
 	}
 
 	private void deleteEvent(Event event, DeletionDetails deletionDetails) throws ExternalSurveillanceToolException {
@@ -399,7 +394,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 					try {
 						deleteEvent(eventToBeDeleted, deletionDetails);
 						deletedEventUuids.add(eventToBeDeleted.getUuid());
-					} catch (ExternalSurveillanceToolException e) {
+					} catch (ExternalSurveillanceToolException | AccessDeniedException e) {
 						logger.error("The event with uuid:" + eventToBeDeleted.getUuid() + "could not be deleted");
 					}
 				}

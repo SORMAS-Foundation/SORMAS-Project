@@ -126,7 +126,6 @@ import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.sample.Sample;
-import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareInfoHelper;
@@ -175,9 +174,6 @@ public class EventParticipantFacadeEjb
 	private VaccinationFacadeEjb.VaccinationFacadeEjbLocal vaccinationFacade;
 	@EJB
 	private VaccinationService vaccinationService;
-
-	@EJB
-	private SampleService sampleService;
 
 	public EventParticipantFacadeEjb() {
 	}
@@ -540,18 +536,28 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
+	@RightsAllowed(UserRight._EVENTPARTICIPANT_DELETE)
 	public void restore(List<String> uuids) {
+		restoreEventParticipants(uuids);
+	}
+
+	@Override
+	public List<String> restoreEventParticipants(List<String> uuids) {
+		List<String> restoredEventParticipantUuids = new ArrayList<>();
 		List<EventParticipant> eventParticipantsToBeRestored = service.getByUuids(uuids);
 
 		if (eventParticipantsToBeRestored != null) {
 			eventParticipantsToBeRestored.forEach(eventParticipantToBeRestored -> {
 				try {
 					restore(eventParticipantToBeRestored.getUuid());
+					restoredEventParticipantUuids.add(eventParticipantToBeRestored.getUuid());
 				} catch (Exception e) {
 					logger.error("The event participant with uuid:" + eventParticipantToBeRestored.getUuid() + "could not be restored");
 				}
 			});
 		}
+
+		return restoredEventParticipantUuids;
 	}
 
 	@Override

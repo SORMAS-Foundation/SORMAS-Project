@@ -570,17 +570,7 @@ public class ContactFacadeEjb
 	@Override
 	@RightsAllowed(UserRight._CONTACT_DELETE)
 	public void restore(List<String> uuids) {
-		List<Contact> contactsToBeRestored = contactService.getByUuids(uuids);
-
-		if (contactsToBeRestored != null) {
-			contactsToBeRestored.forEach(contactToBeRestored -> {
-				try {
-					restore(contactToBeRestored.getUuid());
-				} catch (Exception e) {
-					logger.error("The contact with uuid:" + contactToBeRestored.getUuid() + "could not be restored");
-				}
-			});
-		}
+		restoreContacts(uuids);
 	}
 
 	@Override

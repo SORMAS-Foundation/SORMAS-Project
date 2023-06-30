@@ -48,6 +48,8 @@ public interface EventFacade extends CoreFacade<EventDto, EventIndexDto, EventRe
 
 	List<String> deleteEvents(List<String> eventUuids, DeletionDetails deletionDetails);
 
+	List<String> restoreEvents(List<String> eventUuids);
+
 	Page<EventIndexDto> getIndexPage(@NotNull EventCriteria eventCriteria, Integer offset, Integer size, List<SortProperty> sortProperties);
 
 	List<EventExportDto> getExportList(EventCriteria eventCriteria, Collection<String> selectedRows, Integer first, Integer max);

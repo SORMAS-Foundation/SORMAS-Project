@@ -2632,7 +2632,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@Override
 	@RightsAllowed(UserRight._CASE_DELETE)
 	public List<String> restoreCases(List<String> uuids) {
-		List<String> restoredCasesUuids = new ArrayList<>();
+		List<String> restoredCaseUuids = new ArrayList<>();
 		List<Case> casesToBeRestored = caseService.getByUuids(uuids);
 
 		if (casesToBeRestored != null) {
@@ -2640,14 +2640,14 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				if (!caseToBeRestored.isDeleted()) {
 					try {
 						restore(caseToBeRestored.getUuid());
-						restoredCasesUuids.add(caseToBeRestored.getUuid());
+						restoredCaseUuids.add(caseToBeRestored.getUuid());
 					} catch (ExternalSurveillanceToolRuntimeException | SormasToSormasRuntimeException | AccessDeniedException e) {
 						logger.error("The case with uuid {} could not be restored", caseToBeRestored.getUuid(), e);
 					}
 				}
 			});
 		}
-		return restoredCasesUuids;
+		return restoredCaseUuids;
 	}
 
 	@Override
@@ -2681,21 +2681,21 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@Override
 	public List<String> deleteCases(List<String> caseUuids, DeletionDetails deletionDetails) {
 
-		List<String> deletedCasesUuids = new ArrayList<>();
+		List<String> deletedCaseUuids = new ArrayList<>();
 		List<Case> casesToBeDeleted = service.getByUuids(caseUuids);
 		if (casesToBeDeleted != null) {
 			casesToBeDeleted.forEach(caseToBeDeleted -> {
 				if (!caseToBeDeleted.isDeleted()) {
 					try {
 						deleteCase(caseToBeDeleted, deletionDetails);
-						deletedCasesUuids.add(caseToBeDeleted.getUuid());
+						deletedCaseUuids.add(caseToBeDeleted.getUuid());
 					} catch (ExternalSurveillanceToolRuntimeException | SormasToSormasRuntimeException | AccessDeniedException e) {
 						logger.error("The case with uuid {} could not be deleted", caseToBeDeleted.getUuid(), e);
 					}
 				}
 			});
 		}
-		return deletedCasesUuids;
+		return deletedCaseUuids;
 	}
 
 	@Override
