@@ -9,16 +9,36 @@ import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DateFilterOption;
+import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class EnvironmentCriteria extends BaseCriteria implements Serializable {
+
+	public static final String FREE_TEXT = "freeText";
+	public static final String REGION = "region";
+	public static final String DISTRICT = "district";
+	public static final String COMMUNITY = "community";
+	public static final String REPORT_DATE_FROM = "reportDateFrom";
+	public static final String REPORT_DATE_TO = "reportDateTo";
+	public static final String INVESTIGATION_STATUS = "investigationStatus";
+	public static final String ENVIRONMENT_MEDIA = "environmentMedia";
+	public static final String RELEVANCE_STATUS = "relevanceStatus";
+	public static final String RESPONSIBLE_USER = "responsibleUser";
+	public static final String GPS_LAT_FROM = "gpsLatFrom";
+	public static final String GPS_LAT_TO = "gpsLatTo";
+	public static final String GPS_LON_FROM = "gpsLonFrom";
+	public static final String GPS_LON_TO = "gpsLonTo";
+	private static final long serialVersionUID = -2947852193651003088L;
 
 	private String freeText;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
+	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
 	private Date reportDateFrom;
 	private Date reportDateTo;
+
 	private InvestigationStatus investigationStatus;
 	private EnvironmentMedia environmentMedia;
 	private EntityRelevanceStatus relevanceStatus;
@@ -28,6 +48,7 @@ public class EnvironmentCriteria extends BaseCriteria implements Serializable {
 	private Double gpsLonFrom;
 	private Double gpsLonTo;
 
+	@IgnoreForUrl
 	public String getFreeText() {
 		return freeText;
 	}
@@ -78,6 +99,14 @@ public class EnvironmentCriteria extends BaseCriteria implements Serializable {
 
 	public void setCommunity(CommunityReferenceDto community) {
 		this.community = community;
+	}
+
+	public DateFilterOption getDateFilterOption() {
+		return dateFilterOption;
+	}
+
+	public void setDateFilterOption(DateFilterOption dateFilterOption) {
+		this.dateFilterOption = dateFilterOption;
 	}
 
 	public Date getReportDateFrom() {
@@ -132,6 +161,7 @@ public class EnvironmentCriteria extends BaseCriteria implements Serializable {
 		this.environmentMedia = environmentMedia;
 	}
 
+	@IgnoreForUrl
 	public EntityRelevanceStatus getRelevanceStatus() {
 		return relevanceStatus;
 	}
@@ -158,6 +188,7 @@ public class EnvironmentCriteria extends BaseCriteria implements Serializable {
 		this.responsibleUser = responsibleUser;
 	}
 
+	@IgnoreForUrl
 	public Double getGpsLatFrom() {
 		return gpsLatFrom;
 	}
@@ -171,6 +202,7 @@ public class EnvironmentCriteria extends BaseCriteria implements Serializable {
 		this.gpsLatFrom = gpsLatFrom;
 	}
 
+	@IgnoreForUrl
 	public Double getGpsLatTo() {
 		return gpsLatTo;
 	}
@@ -184,6 +216,7 @@ public class EnvironmentCriteria extends BaseCriteria implements Serializable {
 		this.gpsLatTo = gpsLatTo;
 	}
 
+	@IgnoreForUrl
 	public Double getGpsLonFrom() {
 		return gpsLonFrom;
 	}
@@ -197,6 +230,7 @@ public class EnvironmentCriteria extends BaseCriteria implements Serializable {
 		this.gpsLonFrom = gpsLonFrom;
 	}
 
+	@IgnoreForUrl
 	public Double getGpsLonTo() {
 		return gpsLonTo;
 	}
@@ -208,5 +242,11 @@ public class EnvironmentCriteria extends BaseCriteria implements Serializable {
 
 	public void setGpsLonTo(Double gpsLonTo) {
 		this.gpsLonTo = gpsLonTo;
+	}
+
+	public void reportDateBetween(Date reportDateFrom, Date reportDateTo, DateFilterOption dateFilterOption) {
+		this.reportDateFrom = reportDateFrom;
+		this.reportDateTo = reportDateTo;
+		this.dateFilterOption = dateFilterOption;
 	}
 }

@@ -28,6 +28,7 @@ import de.symeda.sormas.ui.contact.ContactController;
 import de.symeda.sormas.ui.customexport.CustomExportController;
 import de.symeda.sormas.ui.dashboard.DashboardController;
 import de.symeda.sormas.ui.docgeneration.DocGenerationController;
+import de.symeda.sormas.ui.environment.EnvironmentController;
 import de.symeda.sormas.ui.events.EventController;
 import de.symeda.sormas.ui.events.EventGroupController;
 import de.symeda.sormas.ui.events.EventParticipantsController;
@@ -86,6 +87,7 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final VaccinationController vaccinationController;
 	private final ArchivingController archivingController;
 	private final DeleteRestoreController deleteRestoreController;
+	private final EnvironmentController environmentController;
 	private final PermanentDeleteController permanentDeleteController;
 
 	public ControllerProvider() {
@@ -123,6 +125,7 @@ public class ControllerProvider extends BaseControllerProvider {
 		vaccinationController = new VaccinationController();
 		archivingController = new ArchivingController();
 		deleteRestoreController = new DeleteRestoreController();
+		environmentController = new EnvironmentController();
 		permanentDeleteController = new PermanentDeleteController();
 	}
 
@@ -258,6 +261,9 @@ public class ControllerProvider extends BaseControllerProvider {
 		return get().deleteRestoreController;
 	}
 
+	public static EnvironmentController getEnvironmentController() {
+		return get().environmentController;
+	}
 	public static PermanentDeleteController getPermanentDeleteController() {
 		return get().permanentDeleteController;
 	}
