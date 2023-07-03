@@ -1,16 +1,6 @@
 package org.sormas.e2etests.steps.web.application.survnet;
 
-import static org.sormas.e2etests.helpers.SchemaValidator.XMLSchemaValidator.validateXMLSchema;
-import static org.sormas.e2etests.helpers.comparison.XMLComparison.compareXMLFiles;
-import static org.sormas.e2etests.helpers.comparison.XMLComparison.extractDiffNodes;
-import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_VERSION_LINK;
-
 import cucumber.api.java8.En;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.jdom2.Document;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
@@ -21,12 +11,24 @@ import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
 import org.sormas.e2etests.steps.web.application.persons.EditPersonSteps;
 import org.testng.asserts.SoftAssert;
 
+import javax.inject.Inject;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.sormas.e2etests.helpers.SchemaValidator.XMLSchemaValidator.validateXMLSchema;
+import static org.sormas.e2etests.helpers.comparison.XMLComparison.compareXMLFiles;
+import static org.sormas.e2etests.helpers.comparison.XMLComparison.extractDiffNodes;
+import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_VERSION_LINK;
+
 @Slf4j
 public class SurvNetSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
   private String sormasActualVersion;
+  private static Document singleXmlFile;
 
   @Inject
   public SurvNetSteps(WebDriverHelpers webDriverHelpers, SoftAssert softly) {
@@ -35,31 +37,31 @@ public class SurvNetSteps implements En {
     Then(
         "I check if {string} in SORMAS generated XML file is correct",
         (String typeOfDate) -> {
-          Document xmlFile =
-              XMLParser.getDocument(
-                  "/srv/dockerdata/jenkins_new/sormas-files/test_"
-                      + EditCaseSteps.externalUUID.substring(1, 37)
-                      + ".xml");
+//          Document xmlFile =
+//              XMLParser.getDocument(
+//                  "/srv/dockerdata/jenkins_new/sormas-files/test_"
+//                      + EditCaseSteps.externalUUID.substring(1, 37)
+//                      + ".xml");
           LocalDate expectedDate = CreateNewCaseSteps.survnetCase.getDateOfReport();
 
           switch (typeOfDate) {
             case "date of report":
-              LocalDate dateOfReport = getReportingDate(xmlFile);
+              LocalDate dateOfReport = getReportingDate(singleXmlFile);
               softly.assertEquals(dateOfReport, expectedDate, "Date of report is incorrect!");
               softly.assertAll();
               break;
             case "change at date":
-              LocalDate changeAtDate = getChangedAt(xmlFile);
+              LocalDate changeAtDate = getChangedAt(singleXmlFile);
               softly.assertEquals(changeAtDate, expectedDate, "Change at date is incorrect!");
               softly.assertAll();
               break;
             case "created at date":
-              LocalDate createdAt = getCreatedAt(xmlFile);
+              LocalDate createdAt = getCreatedAt(singleXmlFile);
               softly.assertEquals(createdAt, expectedDate, "Created at date is incorrect!");
               softly.assertAll();
               break;
             case "tracked at date":
-              LocalDate trackedAt = getTrackedAt(xmlFile);
+              LocalDate trackedAt = getTrackedAt(singleXmlFile);
               softly.assertEquals(trackedAt, expectedDate, "Tracked at date is incorrect!");
               softly.assertAll();
               break;
@@ -69,12 +71,12 @@ public class SurvNetSteps implements En {
     And(
         "^I check if sex in SORMAS generated XML file is correct$",
         () -> {
-          Document xmlFile =
-              XMLParser.getDocument(
-                  "/srv/dockerdata/jenkins_new/sormas-files/test_"
-                      + EditCaseSteps.externalUUID.substring(1, 37)
-                      + ".xml");
-          String sex = getSexDE(xmlFile);
+//          Document xmlFile =
+//              XMLParser.getDocument(
+//                  "/srv/dockerdata/jenkins_new/sormas-files/test_"
+//                      + EditCaseSteps.externalUUID.substring(1, 37)
+//                      + ".xml");
+          String sex = getSexDE(singleXmlFile);
           String expectedSex = CreateNewCaseSteps.survnetCase.getSex();
           softly.assertEquals(sex, expectedSex, "Sex is incorrect!");
           softly.assertAll();
@@ -166,6 +168,16 @@ public class SurvNetSteps implements En {
               externalUUID, expectedExternalUUID, "Person external UUID is incorrect!");
           softly.assertAll();
         });
+
+    And(
+        "^I open SORMAS generated XML file for single message$",
+        () -> {
+          singleXmlFile = XMLParser.getDocument(
+              "/srv/dockerdata/jenkins_new/sormas-files/test_"
+              + EditCaseSteps.externalUUID.substring(1, 37)
+              + ".xml");
+        });
+
   }
 
   private LocalDate getReportingDate(Document xmlFile) {

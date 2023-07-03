@@ -17,6 +17,7 @@ Feature: Survnet tests
     And I click on Send to reporting tool button on Edit Case page
     And I collect case external UUID from Edit Case page
     Then I wait 40 seconds for system reaction
+    And I open SORMAS generated XML file for single message
     Then I check if "date of report" in SORMAS generated XML file is correct
     And I check if sex in SORMAS generated XML file is correct
 
@@ -42,3 +43,21 @@ Feature: Survnet tests
     And I check if "created at date" in SORMAS generated XML file is correct
     And I check if sex in SORMAS generated XML file is correct
     And I check if external person uuid in SORMAS generated XML file is correct
+
+  @tmsLink=SORQA-1011
+  Scenario: Automate "Bulk sending cases from SORMAS to "Meldesoftware"
+    Given I log in as a Admin User
+    When I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with mandatory data only and specific sex for Survnet DE
+    And I collect uuid of the case
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with mandatory data only and specific sex for Survnet DE
+    And I collect uuid of the case
+    And I click on the Cases button from navbar
+    Then I click on the More button on Case directory page
+    And I click Enter Bulk Edit Mode on Case directory page
+    When I select 2 last created UI result in grid in Case Directory for Bulk Action
+    And I click on Bulk Actions combobox on Case Directory Page
+    And I click Send to reporting tool button on Case Directory page
