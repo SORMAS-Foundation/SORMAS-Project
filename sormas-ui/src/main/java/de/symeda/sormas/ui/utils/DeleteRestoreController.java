@@ -54,7 +54,7 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 			confirmed -> {
 				if (Boolean.TRUE.equals(confirmed)) {
 					List<T> selectedEntitiesCpy = new ArrayList<>(entities);
-					this.<T> createBulkOperationHandler(deleteHandler, true)
+					this.<T> createBulkOperationHandler(deleteHandler, false)
 						.doBulkOperation(
 							selectedEntries -> deleteHandler.restore(selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList())),
 							selectedEntitiesCpy,
