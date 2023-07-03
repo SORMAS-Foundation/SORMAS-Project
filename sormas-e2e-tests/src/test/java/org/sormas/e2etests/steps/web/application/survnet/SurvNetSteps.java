@@ -37,11 +37,6 @@ public class SurvNetSteps implements En {
     Then(
         "I check if {string} in SORMAS generated XML file is correct",
         (String typeOfDate) -> {
-//          Document xmlFile =
-//              XMLParser.getDocument(
-//                  "/srv/dockerdata/jenkins_new/sormas-files/test_"
-//                      + EditCaseSteps.externalUUID.substring(1, 37)
-//                      + ".xml");
           LocalDate expectedDate = CreateNewCaseSteps.survnetCase.getDateOfReport();
 
           switch (typeOfDate) {
@@ -71,11 +66,6 @@ public class SurvNetSteps implements En {
     And(
         "^I check if sex in SORMAS generated XML file is correct$",
         () -> {
-//          Document xmlFile =
-//              XMLParser.getDocument(
-//                  "/srv/dockerdata/jenkins_new/sormas-files/test_"
-//                      + EditCaseSteps.externalUUID.substring(1, 37)
-//                      + ".xml");
           String sex = getSexDE(singleXmlFile);
           String expectedSex = CreateNewCaseSteps.survnetCase.getSex();
           softly.assertEquals(sex, expectedSex, "Sex is incorrect!");
@@ -133,13 +123,7 @@ public class SurvNetSteps implements En {
     And(
         "^I check if software info in SORMAS generated XML file is correct$",
         () -> {
-          Document xmlFile =
-              XMLParser.getDocument(
-                  "/srv/dockerdata/jenkins_new/sormas-files/test_"
-                      + EditCaseSteps.externalUUID.substring(1, 37)
-                      + ".xml");
-
-          String softwareInfo = getSoftwareInfo(xmlFile).substring(15, 30);
+          String softwareInfo = getSoftwareInfo(singleXmlFile).substring(15, 30);
           String expectedSoftwareInfo = sormasActualVersion;
           softly.assertEquals(softwareInfo, expectedSoftwareInfo, "Software info is incorrect!");
           softly.assertAll();
@@ -157,12 +141,7 @@ public class SurvNetSteps implements En {
     And(
         "^I check if external person uuid in SORMAS generated XML file is correct$",
         () -> {
-          Document xmlFile =
-              XMLParser.getDocument(
-                  "/srv/dockerdata/jenkins_new/sormas-files/test_"
-                      + EditCaseSteps.externalUUID.substring(1, 37)
-                      + ".xml");
-          String externalUUID = getGuidPatient(xmlFile);
+          String externalUUID = getGuidPatient(singleXmlFile);
           String expectedExternalUUID = EditPersonSteps.externalPersonUUID.substring(1, 37);
           softly.assertEquals(
               externalUUID, expectedExternalUUID, "Person external UUID is incorrect!");

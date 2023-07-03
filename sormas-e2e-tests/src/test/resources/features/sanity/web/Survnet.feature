@@ -36,6 +36,7 @@ Feature: Survnet tests
     And I compare the SORMAS generated XML file with the example one
     And I click on the About button from navbar
     And I collect SORMAS VERSION from About page
+    And I open SORMAS generated XML file for single message
     And I check if software info in SORMAS generated XML file is correct
     Then I check if "date of report" in SORMAS generated XML file is correct
     And I check if "change at date" in SORMAS generated XML file is correct
