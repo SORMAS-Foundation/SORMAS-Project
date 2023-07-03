@@ -1526,6 +1526,11 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		return CoreEntityType.EVENT;
 	}
 
+	@Override
+	public boolean isInJurisdictionOrOwned(String uuid) {
+		return service.inJurisdictionOrOwned(service.getByUuid(uuid));
+	}
+
 	@LocalBean
 	@Stateless
 	public static class EventFacadeEjbLocal extends EventFacadeEjb {

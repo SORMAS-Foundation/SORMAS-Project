@@ -1905,12 +1905,6 @@ public class EditCaseSteps implements En {
         });
 
     And(
-        "I fill comment in share popup with {string}",
-        (String comment) -> {
-          webDriverHelpers.fillInWebElement(EXTRA_COMMENT_INPUT_SHARE_POPUP, comment);
-        });
-
-    And(
         "I fill in the Internal Token field in Edit Case page with ([^\"]*)",
         (String token) -> {
           webDriverHelpers.scrollToElementUntilIsVisible(INTERNAL_TOKEN_INPUT);
@@ -2387,23 +2381,6 @@ public class EditCaseSteps implements En {
     When(
         "I click to share reports of the case in Share popup",
         () -> webDriverHelpers.clickOnWebElementBySelector(SHARE_REPORTS_CHECKBOX));
-    When(
-        "I click on share button in s2s share popup and wait for share to finish",
-        () -> {
-          webDriverHelpers.clickOnWebElementBySelector(SHARE_SORMAS_2_SORMAS_POPUP_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
-          // TODO Workaround before SORQA-565 will be fixed
-          webDriverHelpers.refreshCurrentPage();
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              LINKED_SHARED_ORGANIZATION_SELECTED_VALUE, 60);
-        });
-
-    When(
-        "I click on share button in s2s share popup",
-        () -> {
-          webDriverHelpers.clickOnWebElementBySelector(SHARE_SORMAS_2_SORMAS_POPUP_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
-        });
 
     And(
         "^I check that displayed vaccination name is equal to \"([^\"]*)\" on Edit case page$",
@@ -2617,8 +2594,6 @@ public class EditCaseSteps implements En {
           webDriverHelpers.isElementGreyedOut(EditCasePage.UUID_INPUT);
           webDriverHelpers.isElementGreyedOut(EditCasePage.SAVE_BUTTON);
         });
-
-    When("I refresh current page", () -> webDriverHelpers.refreshCurrentPage());
 
     And(
         "^I click on Send to reporting tool button on Edit Case page$",

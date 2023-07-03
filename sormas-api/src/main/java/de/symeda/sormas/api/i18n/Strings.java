@@ -300,9 +300,9 @@ public interface Strings {
 	String errorDocumentGenerationMultipleDiseasses = "errorDocumentGenerationMultipleDiseasses";
 	String errorEntityNotEditable = "errorEntityNotEditable";
 	String errorEntityOutdated = "errorEntityOutdated";
-	String errorEventFromAnotherJurisdiction = "errorEventFromAnotherJurisdiction";
 	String errorEventNotEditable = "errorEventNotEditable";
 	String errorEventParticipantNotEditable = "errorEventParticipantNotEditable";
+	String errorEventsFromAnotherJurisdiction = "errorEventsFromAnotherJurisdiction";
 	String errorEventUnlinkEventGroupFromAnotherJurisdiction = "errorEventUnlinkEventGroupFromAnotherJurisdiction";
 	String errorExternalSurveillanceToolCasesNotSharable = "errorExternalSurveillanceToolCasesNotSharable";
 	String errorExternalSurveillanceToolEventNotOwned = "errorExternalSurveillanceToolEventNotOwned";

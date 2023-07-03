@@ -67,8 +67,8 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EV
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENTS_RADIO_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENTS_TABLE_DATA;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENTS_TABLE_ROW;
-import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_COMMUNITY_COMBOBOX_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_ARCHIVED_POPUP;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_COMMUNITY_COMBOBOX_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_DISPLAY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_DISTRICT_COMBOBOX_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_EXPORT_BASIC_BUTTON;
@@ -839,7 +839,7 @@ public class EventDirectorySteps implements En {
               SEARCH_EVENT_BY_FREE_TEXT_INPUT, 20);
           webDriverHelpers.fillInWebElement(SEARCH_EVENT_BY_FREE_TEXT_INPUT, eventUuid);
           TimeUnit.SECONDS.sleep(2);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(160);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
           TimeUnit.SECONDS.sleep(2); // wait for filter
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);

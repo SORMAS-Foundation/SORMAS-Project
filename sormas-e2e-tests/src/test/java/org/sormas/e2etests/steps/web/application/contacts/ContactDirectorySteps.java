@@ -222,6 +222,7 @@ public class ContactDirectorySteps implements En {
   public static EpidemiologicalData dataSavedFromCheckbox;
   public static EpidemiologicalData specificCaseData;
   public static Contact contact;
+  public static List<String> contactUUID = new ArrayList<>();
   public static final String userDirPath = System.getProperty("user.dir");
   public static Faker faker;
 
@@ -258,6 +259,23 @@ public class ContactDirectorySteps implements En {
                   + apiState.getCreatedContact().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_CONTACT_URL);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
+        });
+
+    When(
+        "I open the last created contact via API from {string}",
+        (String environmentIdentifier) -> {
+          String LAST_CREATED_CONTACT_URL =
+              runningConfiguration.getEnvironmentUrlForMarket(environmentIdentifier)
+                  + "/sormas-webdriver/#!contacts/data/"
+                  + apiState.getCreatedContact().getUuid();
+          webDriverHelpers.accessWebSite(LAST_CREATED_CONTACT_URL);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
+        });
+
+    When(
+        "I collect uuid of the contact",
+        () -> {
+          contactUUID.add(webDriverHelpers.getValueFromWebElement(UUID_INPUT));
         });
     When(
         "^I navigate to the last created UI contact via the url$",

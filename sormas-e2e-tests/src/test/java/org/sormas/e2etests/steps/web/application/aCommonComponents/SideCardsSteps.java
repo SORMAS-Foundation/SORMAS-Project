@@ -171,5 +171,21 @@ public class SideCardsSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(
               REPORTS_DISPLAY_ASSOCIATED_EXTERNAL_MESSAGES_BUTTON);
         });
+    When(
+        "I click on share button in s2s share popup and wait for share to finish",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SHARE_SORMAS_2_SORMAS_POPUP_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          // TODO Workaround before SORQA-565 will be fixed
+          webDriverHelpers.refreshCurrentPage();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              LINKED_SHARED_ORGANIZATION_SELECTED_VALUE, 60);
+        });
+    When(
+        "I click on share button in s2s share popup",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SHARE_SORMAS_2_SORMAS_POPUP_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+        });
   }
 }

@@ -56,5 +56,6 @@ public class GeneralActionsSteps implements En {
               " text is not present in handover component");
           softly.assertAll();
         });
+    When("I refresh current page", () -> webDriverHelpers.refreshCurrentPage());
   }
 }
