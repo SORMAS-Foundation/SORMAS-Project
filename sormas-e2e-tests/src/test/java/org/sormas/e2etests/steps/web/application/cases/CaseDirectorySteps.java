@@ -28,7 +28,6 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CO
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_RELATED_CONTACTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BACK_TO_CASES_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_NEW_CASE_CHECKBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXTRA_COMMENT_INPUT_SHARE_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_CREATE_CASE_POPUP_HEADER;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_CREATE_PERSON_POPUP_HEADER;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFERENCE_DEFINITION_TEXT;
@@ -132,8 +131,6 @@ public class CaseDirectorySteps implements En {
   private static String firstName;
   private static String lastName;
   private static String receivedCaseUUID;
-  private static String generatedRandomString;
-  private static String generatedRandomStringContact;
 
   @Inject
   public CaseDirectorySteps(
@@ -1325,51 +1322,6 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
-    And(
-        "I fill comment in share popup with random string",
-        () -> {
-          generatedRandomString = faker.beer().name();
-          webDriverHelpers.fillInWebElement(EXTRA_COMMENT_INPUT_SHARE_POPUP, generatedRandomString);
-        });
-
-    And(
-        "I fill comment in share popup for contact with random string",
-        () -> {
-          generatedRandomStringContact = faker.beer().name();
-          webDriverHelpers.fillInWebElement(
-              EXTRA_COMMENT_INPUT_SHARE_POPUP, generatedRandomStringContact);
-        });
-
-    When(
-        "I click on {string} shared case button with copied case description",
-        (String option) -> {
-          switch (option) {
-            case "reject":
-              webDriverHelpers.clickOnWebElementBySelector(
-                  getActionRejectButtonByCaseDescription(generatedRandomString));
-              break;
-            case "accept":
-              webDriverHelpers.clickOnWebElementBySelector(
-                  getActionAcceptButtonByCaseDescription(generatedRandomString));
-              break;
-          }
-        });
-
-    When(
-        "I click on {string} shared contact button with copied contact description",
-        (String option) -> {
-          switch (option) {
-            case "reject":
-              webDriverHelpers.clickOnWebElementBySelector(
-                  getActionRejectButtonByContactDescription(generatedRandomStringContact));
-              break;
-            case "accept":
-              webDriverHelpers.clickOnWebElementBySelector(
-                  getActionAcceptButtonByContactDescription(generatedRandomStringContact));
-              break;
-          }
-        });
-
     When(
         "I click on Okay button in Potential duplicate popup",
         () -> {
@@ -1418,13 +1370,6 @@ public class CaseDirectorySteps implements En {
                   + CreateNewCaseSteps.casesUUID.get(0);
           System.out.println("To jest web path: " + LAST_CREATED_CASE_URL);
           webDriverHelpers.accessWebSite(LAST_CREATED_CASE_URL);
-        });
-
-    And(
-        "^I check that accept shared case button with copied case description is visible in Share Directory page$",
-        () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
-              getActionAcceptButtonByCaseDescription(generatedRandomString));
         });
   }
 

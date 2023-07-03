@@ -67,8 +67,8 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EV
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENTS_RADIO_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENTS_TABLE_DATA;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENTS_TABLE_ROW;
-import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_COMMUNITY_COMBOBOX_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_ARCHIVED_POPUP;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_COMMUNITY_COMBOBOX_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_DISPLAY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_DISTRICT_COMBOBOX_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_EXPORT_BASIC_BUTTON;
