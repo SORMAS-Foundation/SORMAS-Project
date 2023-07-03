@@ -93,32 +93,82 @@ public class ArchivingController {
 		addArchivingButton(entityDto, archiveHandler, editView, callback, false);
 	}
 
+	public <T extends EntityDto> void addArchivingButtonWithDirtyCheck(
+		T entityDto,
+		IArchiveHandler<T> archiveHandler,
+		CommitDiscardWrapperComponent<?> editView,
+		Runnable callback) {
+		addArchivingButton(
+			entityDto,
+			archiveHandler,
+			editView,
+			archived -> archiveDearchiveWithDirtyCheck(entityDto, archived, archiveHandler, editView, callback));
+	}
+
 	public <T extends EntityDto> void addArchivingButton(
 		T entityDto,
 		IArchiveHandler<T> archiveHandler,
 		CommitDiscardWrapperComponent<?> editView,
 		Runnable callback,
 		boolean forceCommit) {
+		addArchivingButton(
+			entityDto,
+			archiveHandler,
+			editView,
+			archived -> archiveOrDearchiveWithCommit(entityDto, archived, archiveHandler, editView, callback, forceCommit));
+	}
+
+	private <T extends EntityDto> void addArchivingButton(
+		T entityDto,
+		IArchiveHandler<T> archiveHandler,
+		CommitDiscardWrapperComponent<?> editView,
+		Consumer<Boolean> doArchiveDearchive) {
 		boolean archived = archiveHandler.isArchived(entityDto);
 		Button archiveButton = ButtonHelper
 			.createButton(ARCHIVE_DEARCHIVE_BUTTON_ID, I18nProperties.getCaption(archiveHandler.getArchiveButtonCaptionProperty(archived)), e -> {
-				boolean isCommitSuccessFul = true;
-
-				if (editView.isModified() || forceCommit) {
-					isCommitSuccessFul = editView.commitAndHandle();
-				}
-
-				if (isCommitSuccessFul) {
-					if (archived) {
-						dearchive(entityDto, archiveHandler, callback);
-					} else {
-						archive(entityDto, archiveHandler, callback);
-					}
-				}
+				doArchiveDearchive.accept(archived);
 			}, ValoTheme.BUTTON_LINK);
 
 		editView.getButtonsPanel().addComponentAsFirst(archiveButton);
 		editView.getButtonsPanel().setComponentAlignment(archiveButton, Alignment.BOTTOM_LEFT);
+	}
+
+	private <T extends EntityDto> void archiveOrDearchiveWithCommit(
+		T entityDto,
+		boolean archived,
+		IArchiveHandler<T> archiveHandler,
+		CommitDiscardWrapperComponent<?> editView,
+		Runnable callback,
+		boolean forceCommit) {
+		boolean isCommitSuccessFul = true;
+		if (editView.isModified() || forceCommit) {
+			isCommitSuccessFul = editView.commitAndHandle();
+		}
+
+		if (isCommitSuccessFul) {
+			archiveOrDearchive(entityDto, archived, archiveHandler, callback);
+		}
+	}
+
+	private <T extends EntityDto> void archiveDearchiveWithDirtyCheck(
+		T entityDto,
+		boolean archived,
+		IArchiveHandler<T> archiveHandler,
+		CommitDiscardWrapperComponent<?> editView,
+		Runnable callback) {
+		if (editView.isDirty()) {
+			DirtyCheckPopup.show(editView, () -> archiveOrDearchive(entityDto, archived, archiveHandler, callback));
+		} else {
+			archiveOrDearchive(entityDto, archived, archiveHandler, callback);
+		}
+	}
+
+	private <T extends EntityDto> void archiveOrDearchive(T entityDto, boolean archived, IArchiveHandler<T> archiveHandler, Runnable callback) {
+		if (archived) {
+			dearchive(entityDto, archiveHandler, callback);
+		} else {
+			archive(entityDto, archiveHandler, callback);
+		}
 	}
 
 	public <T extends HasUuid> void archiveSelectedItems(Collection<T> entities, IArchiveHandler<?> archiveHandler, Consumer<List<T>> batchCallback) {

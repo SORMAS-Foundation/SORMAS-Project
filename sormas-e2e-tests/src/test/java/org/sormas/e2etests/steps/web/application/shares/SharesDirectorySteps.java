@@ -19,6 +19,7 @@
 package org.sormas.e2etests.steps.web.application.shares;
 
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ACTION_OKAY;
 import static org.sormas.e2etests.pages.application.shares.EditSharesPage.*;
 
 import com.github.javafaker.Faker;
@@ -210,6 +211,15 @@ public class SharesDirectorySteps implements En {
         "^I check if Share request not found popup message appeared for DE$",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(SHARE_REQUEST_NOT_FOUND_HEADER_DE);
+        });
+
+    When(
+        "^I click on the Outgoing radio button in Share Directory page DE$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              OUTGOING_VIEW_SWITCHER_RADIO_BUTTON_DE);
+          webDriverHelpers.clickOnWebElementBySelector(OUTGOING_VIEW_SWITCHER_RADIO_BUTTON_DE);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
         });
   }
 }

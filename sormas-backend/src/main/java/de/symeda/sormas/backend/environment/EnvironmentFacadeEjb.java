@@ -4,7 +4,6 @@ package de.symeda.sormas.backend.environment;
 import static java.util.Objects.isNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,18 +23,18 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 
-import org.apache.commons.collections4.CollectionUtils;
-
 import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.environment.EnvironmentCriteria;
 import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.environment.EnvironmentFacade;
 import de.symeda.sormas.api.environment.EnvironmentIndexDto;
 import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -47,8 +46,10 @@ import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "EnvironmentFacade")
+@RightsAllowed(UserRight._ENVIRONMENT_VIEW)
 public class EnvironmentFacadeEjb
 	extends AbstractCoreFacadeEjb<Environment, EnvironmentDto, EnvironmentIndexDto, EnvironmentReferenceDto, EnvironmentService, EnvironmentCriteria>
 	implements EnvironmentFacade {
@@ -61,31 +62,25 @@ public class EnvironmentFacadeEjb
 		super(Environment.class, EnvironmentDto.class, service);
 	}
 
-	public static final List<String> VALID_SORT_PROPERTY_NAMES = Arrays.asList(
-		EnvironmentIndexDto.UUID,
-		EnvironmentIndexDto.ENVIRONMENT_MEDIA,
-		EnvironmentIndexDto.ENVIRONMENT_NAME,
-		EnvironmentIndexDto.GPS_LAT,
-		EnvironmentIndexDto.GPS_LON,
-		EnvironmentIndexDto.REGION,
-		EnvironmentIndexDto.DISTRICT,
-		EnvironmentIndexDto.COMMUNITY,
-		EnvironmentIndexDto.POSTAL_CODE,
-		EnvironmentIndexDto.CITY,
-		EnvironmentIndexDto.INVESTIGATION_STATUS,
-		EnvironmentIndexDto.REPORT_DATE);
-
 	@EJB
 	private LocationFacadeEjb.LocationFacadeEjbLocal locationFacade;
 
 	@Override
+	@RightsAllowed({
+		UserRight._ENVIRONMENT_EDIT,
+		UserRight._ENVIRONMENT_CREATE })
 	public EnvironmentDto save(EnvironmentDto dto) {
 		return save(dto, true);
 	}
 
+	@RightsAllowed({
+		UserRight._ENVIRONMENT_EDIT,
+		UserRight._ENVIRONMENT_CREATE })
 	public EnvironmentDto save(EnvironmentDto dto, boolean checkChangeDate) {
 
 		Environment existingEnvironment = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
+
+		FacadeHelper.checkCreateAndEditRights(existingEnvironment, userService, UserRight.ENVIRONMENT_CREATE, UserRight.ENVIRONMENT_EDIT);
 
 		validate(dto);
 		Environment environment = fillOrBuildEntity(dto, existingEnvironment, checkChangeDate);
@@ -99,6 +94,14 @@ public class EnvironmentFacadeEjb
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Environment> environment = cq.from(Environment.class);
+
+		final EnvironmentQueryContext environmentQueryContext = new EnvironmentQueryContext(cb, cq, environment);
+
+		Predicate filter = CriteriaBuilderHelper
+			.and(cb, service.createUserFilter(environmentQueryContext), service.buildCriteriaFilter(criteria, environmentQueryContext));
+		if (filter != null) {
+			cq.where(filter);
+		}
 
 		cq.select(cb.countDistinct(environment));
 		return em.createQuery(cq).getSingleResult();
@@ -114,6 +117,8 @@ public class EnvironmentFacadeEjb
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<EnvironmentIndexDto> cq = cb.createQuery(EnvironmentIndexDto.class);
 			Root<Environment> environment = cq.from(Environment.class);
+
+			final EnvironmentQueryContext environmentQueryContext = new EnvironmentQueryContext(cb, cq, environment);
 
 			final EnvironmentJoins environmentJoins = new EnvironmentJoins(environment);
 			final Join<Environment, Location> location = environmentJoins.getLocation();
@@ -137,30 +142,12 @@ public class EnvironmentFacadeEjb
 				environment.get(Environment.INVESTIGATION_STATUS));
 
 			cq.where(environment.get(Environment.ID).in(batchedIds));
-			cq.orderBy(getOrderList(sortProperties, cb, environment));
-			cq.distinct(true);
+			sortBy(sortProperties, environmentQueryContext);
 
 			environments.addAll(QueryHelper.getResultList(em, cq, null, null));
 		});
 
 		return environments;
-	}
-
-	private List<Order> getOrderList(List<SortProperty> sortProperties, CriteriaBuilder cb, Root<Environment> environmentRoot) {
-		List<Order> order = new ArrayList<>();
-
-		if (!CollectionUtils.isEmpty(sortProperties)) {
-			for (SortProperty sortProperty : sortProperties) {
-				if (VALID_SORT_PROPERTY_NAMES.contains(sortProperty.propertyName)) {
-					Expression<?> expression = environmentRoot.get(sortProperty.propertyName);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-				}
-			}
-		}
-
-		order.add(cb.desc(environmentRoot.get(Environment.REPORT_DATE)));
-
-		return order;
 	}
 
 	private List<Long> getIndexListIds(EnvironmentCriteria environmentCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
@@ -177,8 +164,8 @@ public class EnvironmentFacadeEjb
 
 		cq.multiselect(selections);
 
-		Predicate filter = service.buildCriteriaFilter(environmentCriteria, environmentQueryContext);
-
+		Predicate filter = CriteriaBuilderHelper
+			.and(cb, service.createUserFilter(environmentQueryContext), service.buildCriteriaFilter(environmentCriteria, environmentQueryContext));
 		if (filter != null) {
 			cq.where(filter);
 		}
@@ -198,11 +185,11 @@ public class EnvironmentFacadeEjb
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
 				case EnvironmentIndexDto.UUID:
+				case EnvironmentIndexDto.EXTERNAL_ID:
 				case EnvironmentIndexDto.ENVIRONMENT_NAME:
 				case EnvironmentIndexDto.ENVIRONMENT_MEDIA:
-				case EnvironmentIndexDto.GPS_LAT:
-				case EnvironmentIndexDto.GPS_LON:
 				case EnvironmentIndexDto.INVESTIGATION_STATUS:
+				case EnvironmentIndexDto.REPORT_DATE:
 					expression = environmentQueryContext.getRoot().get(sortProperty.propertyName);
 					break;
 				case EnvironmentIndexDto.REGION:
@@ -218,6 +205,8 @@ public class EnvironmentFacadeEjb
 					expression = community.get(Community.NAME);
 					break;
 				case EnvironmentIndexDto.POSTAL_CODE:
+				case EnvironmentIndexDto.LATITUDE:
+				case EnvironmentIndexDto.LONGITUDE:
 				case EnvironmentIndexDto.CITY:
 					Join<Environment, Location> location = environmentQueryContext.getJoins().getLocation();
 					expression = location.get(sortProperty.propertyName);

@@ -5,7 +5,8 @@ ext {
 	 */
 	getVersionName = {
 
-		def pom = new XmlSlurper().parse(new File('pom.xml'))
+		// "file" instead of "new File" because sometimes it interprets relative to the gradle dist instead of this script
+		def pom = new XmlSlurper().parse(file('pom.xml'))
 
 		def localVersion = pom.version
 		def parentVersion = pom.parent.version

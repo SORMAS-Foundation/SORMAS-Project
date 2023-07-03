@@ -63,14 +63,6 @@ public class EventGroupController {
 
 		EventDto eventByUuid = FacadeProvider.getEventFacade().getEventByUuid(eventReference.getUuid(), false);
 		UserProvider user = UserProvider.getCurrent();
-		if ((!user.hasNationJurisdictionLevel() && !user.hasRegion(eventByUuid.getEventLocation().getRegion())) && !user.isAdmin()) {
-			new Notification(
-				I18nProperties.getString(Strings.headingEventGroupLinkEventIssue),
-				I18nProperties.getString(Strings.errorEventFromAnotherJurisdiction),
-				Type.ERROR_MESSAGE,
-				false).show(Page.getCurrent());
-			return;
-		}
 
 		EventGroupCriteria eventGroupCriteria = new EventGroupCriteria();
 		Set<String> eventGroupUuids = FacadeProvider.getEventGroupFacade()
@@ -360,25 +352,17 @@ public class EventGroupController {
 		}
 
 		UserProvider user = UserProvider.getCurrent();
-		if (!user.hasUserRight(UserRight.EVENTGROUP_CREATE) && !user.hasUserRight(UserRight.EVENTGROUP_LINK)) {
-			new Notification(
-				I18nProperties.getString(Strings.headingEventGroupLinkEventIssue),
-				I18nProperties.getString(Strings.errorNotRequiredRights),
-				Type.ERROR_MESSAGE,
-				false).show(Page.getCurrent());
-		}
 
 		List<EventReferenceDto> eventReferences = selectedItems.stream().map(EventIndexDto::toReference).collect(Collectors.toList());
 		List<String> eventUuids = eventReferences.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList());
 
 		if (!user.hasNationJurisdictionLevel()) {
-			Set<RegionReferenceDto> regions = FacadeProvider.getEventFacade().getAllRegionsRelatedToEventUuids(eventUuids);
-			for (RegionReferenceDto region : regions) {
-				if (!user.hasRegion(region)) {
+			for (String eventUuid : eventUuids) {
+				if (!FacadeProvider.getEventFacade().isInJurisdictionOrOwned(eventUuid)) {
 					new Notification(
 						I18nProperties.getString(Strings.headingEventGroupLinkEventIssue),
-						I18nProperties.getString(Strings.errorEventFromAnotherJurisdiction),
-						Type.ERROR_MESSAGE,
+						I18nProperties.getString(Strings.errorEventsFromAnotherJurisdiction),
+						Type.WARNING_MESSAGE,
 						false).show(Page.getCurrent());
 					return;
 				}

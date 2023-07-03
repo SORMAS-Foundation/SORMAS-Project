@@ -298,9 +298,9 @@ public interface Strings {
 	String errorDocumentGenerationMultipleDiseasses = "errorDocumentGenerationMultipleDiseasses";
 	String errorEntityNotEditable = "errorEntityNotEditable";
 	String errorEntityOutdated = "errorEntityOutdated";
-	String errorEventFromAnotherJurisdiction = "errorEventFromAnotherJurisdiction";
 	String errorEventNotEditable = "errorEventNotEditable";
 	String errorEventParticipantNotEditable = "errorEventParticipantNotEditable";
+	String errorEventsFromAnotherJurisdiction = "errorEventsFromAnotherJurisdiction";
 	String errorEventUnlinkEventGroupFromAnotherJurisdiction = "errorEventUnlinkEventGroupFromAnotherJurisdiction";
 	String errorExternalSurveillanceToolCasesNotSharable = "errorExternalSurveillanceToolCasesNotSharable";
 	String errorExternalSurveillanceToolEventNotOwned = "errorExternalSurveillanceToolEventNotOwned";
@@ -1425,6 +1425,15 @@ public interface Strings {
 	String promptDateTo = "promptDateTo";
 	String promptDisease = "promptDisease";
 	String promptDistrict = "promptDistrict";
+	String promptEnvironmentDateFrom = "promptEnvironmentDateFrom";
+	String promptEnvironmentDateTo = "promptEnvironmentDateTo";
+	String promptEnvironmentEpiWeekFrom = "promptEnvironmentEpiWeekFrom";
+	String promptEnvironmentEpiWeekTo = "promptEnvironmentEpiWeekTo";
+	String promptEnvironmentFreeTextSearch = "promptEnvironmentFreeTextSearch";
+	String promptEnvironmentLatFrom = "promptEnvironmentLatFrom";
+	String promptEnvironmentLatTo = "promptEnvironmentLatTo";
+	String promptEnvironmentLonFrom = "promptEnvironmentLonFrom";
+	String promptEnvironmentLonTo = "promptEnvironmentLonTo";
 	String promptEventDateFrom = "promptEventDateFrom";
 	String promptEventDateTo = "promptEventDateTo";
 	String promptEventDateType = "promptEventDateType";

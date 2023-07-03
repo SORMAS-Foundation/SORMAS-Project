@@ -69,4 +69,6 @@ public class EditSharesPage {
           "//*[@class='popupContent']//div[contains(text(), 'Freigabeanfrage nicht gefunden')]");
   public static final By ENTITY_NOT_FOUND_POPUP =
       By.xpath("//div[text()='Freigabeanfrage nicht gefunden']");
+  public static By OUTGOING_VIEW_SWITCHER_RADIO_BUTTON_DE =
+      By.xpath("//label[contains(text(), 'Ausgehend')]");
 }
