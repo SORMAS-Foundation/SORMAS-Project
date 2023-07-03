@@ -1905,12 +1905,6 @@ public class EditCaseSteps implements En {
         });
 
     And(
-        "I fill comment in share popup with {string}",
-        (String comment) -> {
-          webDriverHelpers.fillInWebElement(EXTRA_COMMENT_INPUT_SHARE_POPUP, comment);
-        });
-
-    And(
         "I fill in the Internal Token field in Edit Case page with ([^\"]*)",
         (String token) -> {
           webDriverHelpers.scrollToElementUntilIsVisible(INTERNAL_TOKEN_INPUT);
@@ -2600,8 +2594,6 @@ public class EditCaseSteps implements En {
           webDriverHelpers.isElementGreyedOut(EditCasePage.UUID_INPUT);
           webDriverHelpers.isElementGreyedOut(EditCasePage.SAVE_BUTTON);
         });
-
-    When("I refresh current page", () -> webDriverHelpers.refreshCurrentPage());
 
     And(
         "^I click on Send to reporting tool button on Edit Case page$",

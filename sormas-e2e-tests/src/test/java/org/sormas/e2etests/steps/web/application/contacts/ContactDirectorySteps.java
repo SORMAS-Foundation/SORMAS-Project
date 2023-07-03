@@ -262,6 +262,17 @@ public class ContactDirectorySteps implements En {
         });
 
     When(
+        "I open the last created contact via API from {string}",
+        (String environmentIdentifier) -> {
+          String LAST_CREATED_CONTACT_URL =
+              runningConfiguration.getEnvironmentUrlForMarket(environmentIdentifier)
+                  + "/sormas-webdriver/#!contacts/data/"
+                  + apiState.getCreatedContact().getUuid();
+          webDriverHelpers.accessWebSite(LAST_CREATED_CONTACT_URL);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
+        });
+
+    When(
         "I collect uuid of the contact",
         () -> {
           contactUUID.add(webDriverHelpers.getValueFromWebElement(UUID_INPUT));

@@ -192,13 +192,6 @@ public class CaseDirectoryPage {
       By.xpath("//*[contains(text(), 'Potentielle Duplikate erkannt')]");
   public static final By CASE_ARCHIVED_POPUP = By.cssSelector(".v-Notification-caption");
 
-  public static By getActionRejectButtonByCaseDescription(String description) {
-    return By.xpath(
-        String.format(
-            "//td[contains(text(), 'Fall')]/../*[contains(text(), '%s')]/..//div[@id='actionReject']",
-            description));
-  }
-
   public static By getActionAcceptButtonByCaseDescription(String description) {
     return By.xpath(
         String.format(
@@ -210,13 +203,6 @@ public class CaseDirectoryPage {
     return By.xpath(
         String.format(
             "//td[contains(text(), 'Kontakt')]/../*[contains(text(), '%s')]/..//div[@id='actionAccept']",
-            description));
-  }
-
-  public static By getActionRejectButtonByContactDescription(String description) {
-    return By.xpath(
-        String.format(
-            "//td[contains(text(), 'Kontakt')]/../*[contains(text(), '%s')]/..//div[@id='actionReject']",
             description));
   }
 

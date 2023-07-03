@@ -59,7 +59,7 @@ Feature: Sharing cases between environments tests
     Then I click on share case button
     And I select organization to share with "s2s_2"
     And I click to hand over the ownership of the case in Share popup
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
     When I log in as a Admin User
@@ -91,7 +91,7 @@ Feature: Sharing cases between environments tests
     And I open the last created Case via API
     Then I click on share case button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     And I click to share samples of the case in Share popup
     And I click on share immunizations of the case in Share popup
     Then I click on share button in s2s share popup and wait for share to finish
@@ -134,7 +134,7 @@ Feature: Sharing cases between environments tests
     And I open the last created Case via API
     Then I click on share case button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
     And I log in as a Admin User
@@ -173,7 +173,7 @@ Feature: Sharing cases between environments tests
     And I open the last created Case via API
     Then I click on share case button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
     And I log in as a Admin User
@@ -205,7 +205,7 @@ Feature: Sharing cases between environments tests
     Then I click on share case button
     And I select organization to share with "s2s_2"
     And I click to hand over the ownership of the case in Share popup
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     And I click NEW VACCINATION button for DE
     And I fill new vaccination data in new Vaccination form for DE
@@ -249,7 +249,7 @@ Feature: Sharing cases between environments tests
     Then I click on share case button
     And I select organization to share with "s2s_2"
     And I click to hand over the ownership of the case in Share popup
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
     And I log in as a Admin User
@@ -295,7 +295,7 @@ Feature: Sharing cases between environments tests
     Then I click on share case button
     And I select organization to share with "s2s_2"
     And I click to hand over the ownership of the case in Share popup
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
     And I log in as a Admin User
@@ -341,7 +341,7 @@ Feature: Sharing cases between environments tests
     Then I click on share case button
     And I select organization to share with "s2s_2"
     And I click to hand over the ownership of the case in Share popup
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
     And I log in as a Admin User
@@ -380,7 +380,7 @@ Feature: Sharing cases between environments tests
     And I open the last created Case via API
     Then I click on share case button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
     Given I log in as a Admin User
@@ -395,7 +395,7 @@ Feature: Sharing cases between environments tests
     And I click on share contact button
     And I select organization to share with "s2s_2"
     And I click to share samples of the case in Share popup
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     And I click on New Sample in German
     And I create a new Sample with only required fields for DE version
@@ -422,7 +422,7 @@ Feature: Sharing cases between environments tests
     Then I click on share case button
     And I select organization to share with "s2s_2"
     And I click to share samples of the case in Share popup
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     And I click on New Sample in German
     And I create a new Sample with only required fields for DE version
@@ -452,7 +452,7 @@ Feature: Sharing cases between environments tests
     Then I click on share case button
     And I select organization to share with "s2s_2"
     And I click to hand over the ownership of the case in Share popup
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I back to tab number 2
     And I click on the Shares button from navbar
@@ -483,7 +483,7 @@ Feature: Sharing cases between environments tests
     Then I click on share case button
     And I select organization to share with "s2s_2"
     And I click to hand over the ownership of the case in Share popup
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I back to tab number 2
     And I click on the Shares button from navbar
@@ -513,7 +513,7 @@ Feature: Sharing cases between environments tests
     Then I back to tab number 1
     Then I click on share case button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I back to tab number 2
     And I click on the Shares button from navbar
@@ -554,7 +554,7 @@ Feature: Sharing cases between environments tests
     Then I click on the first Case ID from Case Directory
     Then I click on share case button
     And I select organization to share with "s2s_3"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_3" environment in new driver tab
     Given I log in as a Admin User
@@ -586,7 +586,7 @@ Feature: Sharing cases between environments tests
     Then I click on share case button
     And I click to hand over the ownership of the case in Share popup
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     And I open the last created Case via API
     Then I click on share case button
@@ -606,7 +606,7 @@ Feature: Sharing cases between environments tests
     Then I click on share case button
     And I click to hand over the ownership of the case in Share popup
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
     Given I log in as a Admin User
@@ -627,7 +627,7 @@ Feature: Sharing cases between environments tests
     And I open the last created Case via API
     Then I click on share case button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     And I click to share samples of the case in Share popup
     And I click to share reports of the case in Share popup
     Then I click on share button in s2s share popup and wait for share to finish
@@ -648,7 +648,7 @@ Feature: Sharing cases between environments tests
     Then I click on Ja button in Revoke case popup
     Then I click on share case button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
     Given I log in as a Admin User
@@ -657,7 +657,7 @@ Feature: Sharing cases between environments tests
     Then I back to tab number 1
     Then I click on share case button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     And I click to hand over the ownership of the case in Share popup
     Then I click on share button in s2s share popup and wait for share to finish
 
@@ -675,7 +675,7 @@ Feature: Sharing cases between environments tests
     And I open the last created Case via API
     Then I click on share case button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     And I click to hand over the ownership of the case in Share popup
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to Contacts tab in Edit case page
@@ -683,7 +683,7 @@ Feature: Sharing cases between environments tests
     Then I click on share contact button
     And I click to hand over the ownership of the case in Share popup
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I click on share contact button
     And I select organization to share with "s2s_2"
@@ -718,7 +718,7 @@ Feature: Sharing cases between environments tests
     And I open the last created Case via API
     Then I click on share case button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     And I click to share samples of the case in Share popup
     And I click to share reports of the case in Share popup
     Then I click on share button in s2s share popup and wait for share to finish
@@ -727,7 +727,7 @@ Feature: Sharing cases between environments tests
     Then I click on share contact button
     And I click to share samples of the case in Share popup
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I click on share contact button
     And I select organization to share with "s2s_2"
@@ -768,7 +768,7 @@ Feature: Sharing cases between environments tests
     Then I click on share case button
     And I check that share associated contacts checkbox is not visible in Share form for DE
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
     Given I log in as a Admin User
@@ -790,7 +790,7 @@ Feature: Sharing cases between environments tests
     And I open the last created Case via API
     Then I click on share case button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
     Given I log in as a Admin User
@@ -802,7 +802,7 @@ Feature: Sharing cases between environments tests
     And I click on share contact button
     And I check that share associated contacts checkbox is not visible in Share form for DE
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     And I back to tab number 2
     And I click on the Shares button from navbar
@@ -820,7 +820,7 @@ Feature: Sharing cases between environments tests
     And I collect uuid of the case
     Then I click on share case button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
     Given I log in as a Admin User
@@ -842,7 +842,7 @@ Feature: Sharing cases between environments tests
     And I collect uuid of the case
     Then I click on share case button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
     Given I log in as a Admin User
@@ -864,7 +864,7 @@ Feature: Sharing cases between environments tests
     And I collect uuid of the case
     Then I click on share case button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
     Given I log in as a Admin User
@@ -875,7 +875,7 @@ Feature: Sharing cases between environments tests
     Then I navigate to the last created case via the url
     Then I click on share case button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
     And I click on the Shares button from navbar
@@ -893,7 +893,7 @@ Feature: Sharing cases between environments tests
     Then I click on share case button
     And I click to hand over the ownership of the case in Share popup
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
     Given I log in as a Admin User
@@ -915,7 +915,7 @@ Feature: Sharing cases between environments tests
     Then I click on share case button
     And I click to hand over the ownership of the case in Share popup
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
     Given I log in as a Admin User
@@ -939,7 +939,7 @@ Feature: Sharing cases between environments tests
     Then I click on share case button
     And I click to hand over the ownership of the case in Share popup
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
     Given I log in as a Admin User
@@ -976,7 +976,7 @@ Feature: Sharing cases between environments tests
     Then I click on share case button
     And I click to hand over the ownership of the case in Share popup
     And I select organization to share with "s2s_3"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_3" environment in new driver tab
     Given I log in as a Admin User
@@ -1178,7 +1178,7 @@ Feature: Sharing cases between environments tests
     And I collect uuid of the case
     Then I click on share case button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
     Given I log in as a Admin User

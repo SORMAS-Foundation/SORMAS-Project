@@ -28,7 +28,7 @@ Feature: Sharing contacts between environments tests
     And I navigate to case tab
     Then I click on share case button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to Contacts tab in Edit case page
     And I open the first contact from contacts list
@@ -78,7 +78,7 @@ Feature: Sharing contacts between environments tests
     Then I click on share case button
     And I select organization to share with "s2s_2"
     And I click to hand over the ownership of the case in Share popup
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I open the Case Contacts tab
     And I click on the first Contact ID from Contacts Directory in Contacts in Case
@@ -356,30 +356,30 @@ Feature: Sharing contacts between environments tests
     Then I click on share case button
     And I select organization to share with "s2s_2"
     And I click to hand over the ownership of the case in Share popup
-    And I fill comment in share popup with "case shared with automated 982"
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
-    Then I navigate to "s2s_2" environment
+    Then I navigate to "s2s_2" environment in new driver tab
     Given I log in as a Admin User
     And I click on the Shares button from navbar
+    And I check that accept shared case button with copied case description is visible in Share Directory page
     Then I accept first entity from table in Shares Page
-    Then I navigate to "s2s_1" environment
-    Then I open the last created contact via API
+    Then I back to tab number 1
+    Then I open the last created contact via API from "s2s_1"
     And I collect uuid of the contact
     Then I click on share contact button
     And I click to hand over the ownership of the contact in Share popup
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with "contact shared with automated 982"
+    And I fill comment in share popup for contact with random string
     Then I click on share button in s2s share popup and wait for share to finish
     And I check if handover card contains "LK Fulda" information
     And I check if handover card contains "Geteilt von: Automation ADMIN" information
-    And I check if handover card contains "contact shared with automated 982" information
+    Then I back to tab number 2
+    And I refresh current page
+    And I check that accept shared contact button with copied contact description is visible in Share Directory page
+    Then I back to tab number 1
     Then I click on Delete button from contact
     And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
     And I click on Yes option in Confirm deletion popup
-    And I click on the Contacts button from navbar
-    Then I open the last created contact via API
-    And I check if editable fields are read only for shared contact
-    And I check if handover card contains "" information
-    Then I navigate to "s2s_2" environment
-    And I click on the Shares button from navbar
-    Then I accept first entity from table in Shares Page
+    Then I back to tab number 2
+    Then I click on "accept" shared contact button with copied contact description
+    Then I check that entity not found error popup is displayed in Share Directory page
