@@ -81,11 +81,10 @@ public class EventGroupMemberList extends PaginationList<EventIndexDto> {
 			UserProvider user = UserProvider.getCurrent();
 			if (user.hasUserRight(UserRight.EVENTGROUP_LINK)) {
 				listEntry.addUnlinkEventListener(i, (ClickListener) clickEvent -> {
-					if (!user.hasNationJurisdictionLevel() && !user.hasRegion(new RegionReferenceDto(event.getRegionUuid()))
-							&& !user.isAdmin()) {
+					if (!user.hasNationJurisdictionLevel() && !user.hasRegion(new RegionReferenceDto(event.getRegionUuid())) && !user.isAdmin()) {
 						new Notification(
 							I18nProperties.getString(Strings.headingEventGroupUnlinkEventIssue),
-							I18nProperties.getString(Strings.errorEventFromAnotherJurisdiction),
+							I18nProperties.getString(Strings.errorEventsFromAnotherJurisdiction),
 							Notification.Type.ERROR_MESSAGE,
 							false).show(Page.getCurrent());
 						return;
