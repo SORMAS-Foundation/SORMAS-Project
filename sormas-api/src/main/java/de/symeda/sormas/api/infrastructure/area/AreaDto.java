@@ -24,7 +24,6 @@ public class AreaDto extends InfrastructureDto {
 	private String name;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalId;
-	private boolean archived;
 
 	public static AreaDto build() {
 		AreaDto area = new AreaDto();
@@ -50,14 +49,6 @@ public class AreaDto extends InfrastructureDto {
 
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
-	}
-
-	public boolean isArchived() {
-		return archived;
-	}
-
-	public void setArchived(boolean archived) {
-		this.archived = archived;
 	}
 
 	@Override

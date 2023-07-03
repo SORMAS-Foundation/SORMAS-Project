@@ -22,6 +22,7 @@ import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.*;
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.NEW_EVENT_BUTTON;
 
 import com.github.javafaker.Faker;
 import com.opencsv.CSVParser;
@@ -324,12 +325,29 @@ public class CreateNewEventSteps implements En {
         });
 
     And(
-        "^I set event Date filed on Create New Event form to current date for DE$",
+        "^I set event Date field on Create New Event form to current date for DE$",
         () -> {
           webDriverHelpers.scrollToElement(START_DATA_EVENT);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(START_DATA_EVENT);
           webDriverHelpers.fillInWebElement(
               START_DATA_EVENT, DATE_FORMATTER.format(LocalDate.now()));
+        });
+
+    And(
+        "^I create a new event with mandatory fields for DE version$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_EVENT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(NEW_EVENT_BUTTON);
+          newEvent = eventService.buildGeneratedEventDE();
+          fillDateOfReport(LocalDate.now(), Locale.GERMAN);
+          selectEventStatus(newEvent.getEventStatus());
+          fillTitle(newEvent.getTitle());
+          selectResponsibleRegion(newEvent.getRegion());
+          selectResponsibleDistrict(newEvent.getDistrict());
+          selectDisease(newEvent.getDisease());
+          fillStartData(LocalDate.now().minusDays(1), Locale.GERMAN);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(NEW_EVENT_CREATED_DE_MESSAGE);
         });
   }
 

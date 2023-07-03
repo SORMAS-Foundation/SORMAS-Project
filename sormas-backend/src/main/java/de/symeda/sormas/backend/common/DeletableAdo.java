@@ -5,7 +5,6 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.MappedSuperclass;
 
-import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.common.DeletionReason;
 
 /**
@@ -14,7 +13,6 @@ import de.symeda.sormas.api.common.DeletionReason;
  * relevant for external systems that share data with or use data from SORMAS.
  */
 @MappedSuperclass
-@Audited
 public abstract class DeletableAdo extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 6512756286608581221L;

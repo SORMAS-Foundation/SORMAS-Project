@@ -68,6 +68,7 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.BirthDateDto;
@@ -2044,6 +2045,11 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	@Override
 	public boolean isEditAllowed(String uuid) {
 		return service.isEditAllowed(uuid);
+	}
+
+	@Override
+	public EditPermissionType getEditPermissionType(String uuid) {
+		return isEditAllowed(uuid) ? EditPermissionType.ALLOWED : EditPermissionType.REFUSED;
 	}
 
 	@LocalBean

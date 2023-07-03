@@ -1221,6 +1221,7 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(EditContactPage.DELETE_POPUP_YES_BUTTON);
           TimeUnit.SECONDS.sleep(3); // wait for response after confirm
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_ARCHIVED_POPUP);
         });
 
     Then(

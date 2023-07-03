@@ -68,6 +68,7 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EV
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENTS_TABLE_DATA;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENTS_TABLE_ROW;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_COMMUNITY_COMBOBOX_INPUT;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_ARCHIVED_POPUP;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_DISPLAY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_DISTRICT_COMBOBOX_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_EXPORT_BASIC_BUTTON;
@@ -1296,7 +1297,8 @@ public class EventDirectorySteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_POPUP_BUTTON);
           TimeUnit.SECONDS.sleep(2); // wait for spinner
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(80);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
+          webDriverHelpers.clickOnWebElementBySelector(EVENT_ARCHIVED_POPUP);
         });
 
     When(
@@ -1304,7 +1306,7 @@ public class EventDirectorySteps implements En {
         (String option) -> {
           webDriverHelpers.selectFromCombobox(EVENT_PARTICIPANT_DISPLAY_FILTER_COMBOBOX, option);
           TimeUnit.SECONDS.sleep(3); // wait for reaction
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
         });
 
     When(

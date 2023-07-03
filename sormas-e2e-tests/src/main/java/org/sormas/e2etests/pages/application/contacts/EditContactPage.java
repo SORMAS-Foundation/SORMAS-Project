@@ -188,7 +188,11 @@ public class EditContactPage {
     return By.xpath(String.format("//table/tbody/tr[%s]/td[1]/a", index));
   }
 
-  public static final By NOTIFICATION_MESSAGE_POPUP = By.cssSelector(".v-Notification-description");
+  public static final By NOTIFICATION_CAPTION_MESSAGE_POPUP =
+      By.cssSelector(".v-Notification-caption");
+  public static final By NOTIFICATION_DESCRIPTION_MESSAGE_POPUP =
+      By.cssSelector(".v-Notification-description");
+
   public static final By EDIT_VACCINATION_BUTTON =
       By.xpath(
           "//div[@location='vaccinations']//div[@class='v-button v-widget link v-button-link compact v-button-compact caption-overflow-label v-button-caption-overflow-label']");

@@ -30,7 +30,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.action.ActionContext;
 import de.symeda.sormas.api.action.ActionMeasure;
 import de.symeda.sormas.api.action.ActionPriority;
@@ -40,7 +39,6 @@ import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.user.User;
 
 @Entity
-@Audited
 public class Action extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -4754578341242164661L;

@@ -36,7 +36,7 @@ public class EventGroupListComponent extends SideComponent {
 
 		super(I18nProperties.getCaption(Captions.eventGroups), actionCallback);
 
-		if (FacadeProvider.getEventFacade().inJurisdictionOrOwned(eventReference.getUuid())) {
+		if (FacadeProvider.getEventFacade().isInJurisdictionOrOwned(eventReference.getUuid())) {
 			addCreateButton(
 				I18nProperties.getCaption(Captions.linkEventGroup),
 				() -> ControllerProvider.getEventGroupController().create(eventReference),

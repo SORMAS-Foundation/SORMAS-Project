@@ -594,7 +594,11 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 				.containsAll(Arrays.asList(TaskContext.GENERAL, TaskContext.CASE, TaskContext.CONTACT, TaskContext.EVENT, TaskContext.TRAVEL_ENTRY)));
 
 		UserDto noEventNoCaseViewUser = creator.createUser(
-			"", "", "", "NoEve", "NoCase",
+			"",
+			"",
+			"",
+			"NoEve",
+			"NoCase",
 			creator.createUserRole(
 				"NoEventNoCaseView",
 				JurisdictionLevel.NATION,
@@ -725,7 +729,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 
 		TaskDto task =
 			creator.createTask(TaskContext.GENERAL, TaskType.ANIMAL_TESTING, TaskStatus.PENDING, null, null, null, new Date(), user.toReference());
-		getTaskFacade().updateArchived(task.getUuid(), true);
+		getTaskFacade().archive(Collections.singletonList(task.getUuid()));
 
 		List<TaskIndexDto> archivedTasks =
 			getTaskFacade().getIndexList(new TaskCriteria().relevanceStatus(EntityRelevanceStatus.ARCHIVED), null, null, null);
@@ -771,7 +775,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 			creator.createTask(TaskContext.GENERAL, TaskType.ANIMAL_TESTING, TaskStatus.PENDING, null, null, null, new Date(), user.toReference());
 		assertThat(getTaskFacade().getEditPermissionType(task.getUuid()), is(EditPermissionType.ALLOWED));
 
-		getTaskFacade().updateArchived(task.getUuid(), true);
+		getTaskFacade().archive(Collections.singletonList(task.getUuid()));
 		setEditArchiveFeature(true);
 		assertThat(getTaskFacade().getEditPermissionType(task.getUuid()), is(EditPermissionType.ALLOWED));
 		setEditArchiveFeature(false);

@@ -31,8 +31,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
-import de.symeda.auditlog.api.Audited;
-import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.CoreAdo;
@@ -46,7 +44,6 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShar
 import de.symeda.sormas.backend.user.User;
 
 @Entity
-@Audited
 public class EventParticipant extends CoreAdo implements SormasToSormasShareable {
 
 	private static final long serialVersionUID = -9006001699517297107L;
@@ -158,7 +155,6 @@ public class EventParticipant extends CoreAdo implements SormasToSormasShareable
 			CascadeType.MERGE,
 			CascadeType.DETACH,
 			CascadeType.REFRESH })
-	@AuditedIgnore
 	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;
 	}
@@ -169,7 +165,6 @@ public class EventParticipant extends CoreAdo implements SormasToSormasShareable
 	}
 
 	@OneToMany(mappedBy = SormasToSormasShareInfo.EVENT_PARTICIPANT, fetch = FetchType.LAZY)
-	@AuditedIgnore
 	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
 		return sormasToSormasShares;
 	}

@@ -19,6 +19,7 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
 
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.area.AreaCriteria;
 import de.symeda.sormas.api.infrastructure.area.AreaDto;
@@ -43,7 +44,14 @@ public class AreaFacadeEjb extends AbstractInfrastructureFacadeEjb<Area, AreaDto
 
 	@Inject
 	protected AreaFacadeEjb(AreaService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
-		super(Area.class, AreaDto.class, service, featureConfiguration, Validations.importAreaAlreadyExists);
+		super(
+			Area.class,
+			AreaDto.class,
+			service,
+			featureConfiguration,
+			Validations.importAreaAlreadyExists,
+			Strings.messageAreaArchivingNotPossible,
+			null);
 	}
 
 	@Override

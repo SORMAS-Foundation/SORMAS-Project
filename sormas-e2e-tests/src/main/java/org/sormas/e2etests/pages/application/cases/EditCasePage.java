@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.pages.application.cases;
 
+import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.By;
 
 public class EditCasePage {
@@ -414,6 +415,11 @@ public class EditCasePage {
 
   public static By getEditTaskButtonByNumber(Integer number) {
     return By.cssSelector(String.format("#edit%x", number));
+  }
+
+  @NotNull
+  public static By getVaccinationCardVaccinationNameByIndex(Integer idx) {
+    return By.xpath(String.format("(//div[contains(text(),'Impfstoffname:')])[%x]", idx));
   }
 
   public static final By DELETE_VACCINATION_REASON_POPUP_DE_VERSION =

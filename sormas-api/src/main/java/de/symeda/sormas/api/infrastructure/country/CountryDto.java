@@ -37,7 +37,6 @@ public class CountryDto extends InfrastructureDto {
 	private String isoCode;
 	@Size(min = 1, max = 3, message = Validations.textSizeNotInRange)
 	private String unoCode;
-	private boolean archived;
 	private SubcontinentReferenceDto subcontinent;
 
 	public CountryDto(
@@ -53,8 +52,7 @@ public class CountryDto extends InfrastructureDto {
 		String subcontinentName,
 		String subcontinentExternalId) {
 
-		super(creationDate, changeDate, uuid);
-		this.archived = archived;
+		super(creationDate, changeDate, uuid, archived);
 		this.defaultName = defaultName;
 		this.externalId = externalId;
 		this.isoCode = isoCode;
@@ -99,15 +97,6 @@ public class CountryDto extends InfrastructureDto {
 	public void setUnoCode(String unoCode) {
 		this.unoCode = unoCode;
 	}
-
-	public boolean isArchived() {
-		return archived;
-	}
-
-	public void setArchived(boolean archived) {
-		this.archived = archived;
-	}
-
 	public SubcontinentReferenceDto getSubcontinent() {
 		return subcontinent;
 	}

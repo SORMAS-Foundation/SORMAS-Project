@@ -134,7 +134,7 @@ public class RelatedLabMessageHandler extends AbstractRelatedLabMessageHandler {
 		RelatedLabMessageHandlerChain chain) {
 
 		CorrectionPanel<PersonDto> personCorrectionPanel = new CorrectionPanel<>(
-			() -> new PersonEditForm(person.isPseudonymized(), person.isInJurisdiction()),
+			() -> new PersonEditForm(true, person.isPseudonymized(), person.isInJurisdiction()),
 			person,
 			updatedPerson,
 			Strings.headingPreviousPersonInformation,

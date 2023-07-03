@@ -36,7 +36,7 @@ public abstract class AbstractCampaignDataView extends AbstractEditAllowedDetail
 	}
 
 	@Override
-	protected CoreFacade getCoreFacade() {
+	protected CoreFacade getEditPermissionFacade() {
 		return FacadeProvider.getCampaignFacade();
 	}
 
