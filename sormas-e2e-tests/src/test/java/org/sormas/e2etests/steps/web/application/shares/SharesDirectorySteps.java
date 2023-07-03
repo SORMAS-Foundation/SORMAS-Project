@@ -18,7 +18,17 @@
 
 package org.sormas.e2etests.steps.web.application.shares;
 
+import cucumber.api.java8.En;
+import lombok.extern.slf4j.Slf4j;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.state.ApiState;
+import org.testng.asserts.SoftAssert;
+
+import javax.inject.Inject;
+import java.util.concurrent.TimeUnit;
+
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ACTION_OKAY;
+import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.OUTGOING_VIEW_SWITCHER_RADIO_BUTTON_DE;
 import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.POPUP_COLUMN_HEADER;
 import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.SHARE_FIRST_EYE_ICON;
 import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.SHARE_OPTION_CHECKBOX;
@@ -27,14 +37,6 @@ import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.SH
 import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.WARNING_ACCEPT_CASE_BEFORE_CONTACT_HEADER_DE;
 import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.getCheckBoxFromShareFormByIndex;
 import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.getPopupColumnHeaderByIndex;
-
-import cucumber.api.java8.En;
-import java.util.concurrent.TimeUnit;
-import javax.inject.Inject;
-import lombok.extern.slf4j.Slf4j;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.state.ApiState;
-import org.testng.asserts.SoftAssert;
 
 @Slf4j
 public class SharesDirectorySteps implements En {
@@ -124,6 +126,15 @@ public class SharesDirectorySteps implements En {
         "^I check if Share request not found popup message appeared for DE$",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(SHARE_REQUEST_NOT_FOUND_HEADER_DE);
+        });
+
+    When(
+        "^I click on the Outgoing radio button in Share Directory page DE$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              OUTGOING_VIEW_SWITCHER_RADIO_BUTTON_DE);
+          webDriverHelpers.clickOnWebElementBySelector(OUTGOING_VIEW_SWITCHER_RADIO_BUTTON_DE);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
         });
   }
 }

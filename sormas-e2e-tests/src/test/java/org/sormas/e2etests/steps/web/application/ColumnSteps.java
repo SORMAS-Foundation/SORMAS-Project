@@ -1,8 +1,12 @@
 package org.sormas.e2etests.steps.web.application;
 
-import static org.sormas.e2etests.pages.application.NavBarPage.*;
-
 import cucumber.api.java8.En;
+import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.By;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.testng.asserts.SoftAssert;
+
+import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,11 +16,12 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import javax.inject.Inject;
-import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.testng.asserts.SoftAssert;
+
+import static org.sormas.e2etests.pages.application.NavBarPage.DASHBOARD_BUTTON;
+import static org.sormas.e2etests.pages.application.NavBarPage.ERROR_NOTIFICATION_CAPTION;
+import static org.sormas.e2etests.pages.application.NavBarPage.ERROR_NOTIFICATION_CAPTION_DE;
+import static org.sormas.e2etests.pages.application.NavBarPage.ERROR_NOTIFICATION_DESCRIPTION;
+import static org.sormas.e2etests.pages.application.NavBarPage.ERROR_NOTIFICATION_DESCRIPTION_DE;
 
 @Slf4j
 public class ColumnSteps implements En {
@@ -220,12 +225,42 @@ public class ColumnSteps implements En {
         });
 
     When(
+        "I check that column {int} is sorted by date and time in ascending order DE",
+        (Integer col) -> {
+          TimeUnit.SECONDS.sleep(3); // For preventing premature data collection
+          List<String> rawColumnData = getTableColumnDataByIndex(col, 10);
+          rawColumnData.replaceAll(element -> nullifyEmptyString(element));
+          rawColumnData.replaceAll(element -> makeDateTimeSortableDE(element));
+          List<String> ascColumnData = new ArrayList<>(rawColumnData);
+          ascColumnData.sort(Comparator.nullsLast(Comparator.naturalOrder()));
+          softly.assertEquals(
+              rawColumnData, ascColumnData, "Column " + col + " is not correctly sorted!");
+          softly.assertAll();
+        });
+
+    When(
         "I check that column {int} is sorted by date and time in descending order",
         (Integer col) -> {
           TimeUnit.SECONDS.sleep(3); // For preventing premature data collection
           List<String> rawColumnData = getTableColumnDataByIndex(col, 10);
           rawColumnData.replaceAll(element -> nullifyEmptyString(element));
           rawColumnData.replaceAll(element -> makeDateTimeSortable(element));
+          List<String> desColumnData = new ArrayList<>(rawColumnData);
+          desColumnData.sort(Comparator.nullsFirst(Comparator.reverseOrder()));
+          softly.assertEquals(
+              rawColumnData,
+              desColumnData,
+              "Column " + col.toString() + " is not correctly sorted!");
+          softly.assertAll();
+        });
+
+    When(
+        "I check that column {int} is sorted by date and time in descending order DE",
+        (Integer col) -> {
+          TimeUnit.SECONDS.sleep(3); // For preventing premature data collection
+          List<String> rawColumnData = getTableColumnDataByIndex(col, 10);
+          rawColumnData.replaceAll(element -> nullifyEmptyString(element));
+          rawColumnData.replaceAll(element -> makeDateTimeSortableDE(element));
           List<String> desColumnData = new ArrayList<>(rawColumnData);
           desColumnData.sort(Comparator.nullsFirst(Comparator.reverseOrder()));
           softly.assertEquals(
@@ -301,6 +336,15 @@ public class ColumnSteps implements En {
     if (dateTime != null) {
       dateTime =
           LocalDateTime.parse(dateTime, DateTimeFormatter.ofPattern("M/d/yyyy h:mm a"))
+              .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+    }
+    return dateTime;
+  }
+
+  private String makeDateTimeSortableDE(String dateTime) {
+    if (dateTime != null) {
+      dateTime =
+          LocalDateTime.parse(dateTime, DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))
               .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
     }
     return dateTime;
