@@ -2637,13 +2637,11 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		if (casesToBeRestored != null) {
 			casesToBeRestored.forEach(caseToBeRestored -> {
-				if (!caseToBeRestored.isDeleted()) {
-					try {
-						restore(caseToBeRestored.getUuid());
-						restoredCaseUuids.add(caseToBeRestored.getUuid());
-					} catch (ExternalSurveillanceToolRuntimeException | SormasToSormasRuntimeException | AccessDeniedException e) {
-						logger.error("The case with uuid {} could not be restored", caseToBeRestored.getUuid(), e);
-					}
+				try {
+					restore(caseToBeRestored.getUuid());
+					restoredCaseUuids.add(caseToBeRestored.getUuid());
+				} catch (Exception e) {
+					logger.error("The case with uuid {} could not be restored", caseToBeRestored.getUuid(), e);
 				}
 			});
 		}

@@ -362,8 +362,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 				try {
 					restore(eventToBeRestored.getUuid());
 					restoredEventsUuids.add(eventToBeRestored.getUuid());
-				} catch (ExternalSurveillanceToolRuntimeException | SormasToSormasRuntimeException | AccessDeniedException e) {
-					logger.error("The event with uuid:" + eventToBeRestored.getUuid() + "could not be restored");
+				} catch (Exception e) {
+					logger.error("The event with uuid: " + eventToBeRestored.getUuid() + " could not be restored");
 				}
 			});
 		}
