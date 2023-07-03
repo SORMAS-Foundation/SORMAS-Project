@@ -1497,7 +1497,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	@Override
-	public boolean inJurisdictionOrOwned(String uuid) {
+	public boolean isInJurisdictionOrOwned(String uuid) {
 		return service.inJurisdictionOrOwned(service.getByUuid(uuid));
 	}
 
