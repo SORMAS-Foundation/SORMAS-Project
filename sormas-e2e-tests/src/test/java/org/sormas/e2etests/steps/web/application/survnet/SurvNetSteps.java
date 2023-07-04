@@ -65,23 +65,23 @@ public class SurvNetSteps implements En {
         });
 
     And(
-        "I check if sex in SORMAS generated {string} XML file is correct",
-        (String fileType) -> {
-            switch (fileType) {
-                case "single":
-                    String sex = getSexDE(singleXmlFile);
-                    String expectedSex = CreateNewCaseSteps.survnetCase.getSex();
-                    softly.assertEquals(sex, expectedSex, "Sex is incorrect!");
-                    softly.assertAll();
-                    break;
-                case "bulk":
-                    String sexBulkMode = getSexDE(bulkXmlFile);
-                    String expectedSexBulkMode = CreateNewCaseSteps.survnetCase.getSex();
-                    softly.assertEquals(sexBulkMode, expectedSexBulkMode, "Sex is incorrect!");
-                    softly.assertAll();
-                    break;
-            }
+        "I check if sex in SORMAS generated single XML file is correct",
+        () -> {
+          String sex = getSexDE(singleXmlFile, 1);
+          String expectedSex = CreateNewCaseSteps.survnetCase.getSex();
+          softly.assertEquals(sex, expectedSex, "Sex is incorrect!");
+          softly.assertAll();
+        });
 
+    And(
+        "I check if sex for all {int} cases in SORMAS generated bulk XML file is correct",
+        (Integer caseNumber) -> {
+          for (int i=0; i<caseNumber; i++) {
+            String sex = getSexDE(bulkXmlFile, caseNumber);
+            String expectedSex = EditPersonSteps.personSex.get(i);
+            softly.assertEquals(sex, expectedSex, "Sex is incorrect!");
+            softly.assertAll();
+          }
         });
 
     And(
@@ -248,13 +248,13 @@ public class SurvNetSteps implements En {
     return softwareInfo;
   }
 
-  private String getSexDE(Document xmlFile) {
+  private String getSexDE(Document xmlFile, int caseNumber) {
     String sexDE = null;
     String sexIndex =
         xmlFile
             .getRootElement()
             .getChildren()
-            .get(0)
+            .get(caseNumber)
             .getChildren()
             .get(2)
             .getAttribute("Value")

@@ -19,7 +19,7 @@ Feature: Survnet tests
     Then I wait 40 seconds for system reaction
     And I open SORMAS generated XML file for single message
     Then I check if "date of report" in SORMAS generated XML file is correct
-    And I check if sex in SORMAS generated "single" XML file is correct
+    And I check if sex in SORMAS generated single XML file is correct
 
   @tmsLink=SORQA-1006
   Scenario: XML Check of simple Test Case from SORMAS to "Meldesoftware"
@@ -42,7 +42,7 @@ Feature: Survnet tests
     And I check if "change at date" in SORMAS generated XML file is correct
     And I check if "tracked at date" in SORMAS generated XML file is correct
     And I check if "created at date" in SORMAS generated XML file is correct
-    And I check if sex in SORMAS generated "single" XML file is correct
+    And I check if sex in SORMAS generated single XML file is correct
     And I check if external person uuid in SORMAS generated XML file is correct
 
   @tmsLink=SORQA-1011
@@ -51,11 +51,13 @@ Feature: Survnet tests
     When I click on the Cases button from navbar
     And I click on the NEW CASE button
     And I create a new case with mandatory data only and specific sex for Survnet DE
-    And I collect uuid of the case
+    And I navigate to case person tab
+    And I collect sex of the person from Edit Person page
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     And I create a new case with mandatory data only and specific sex for Survnet DE
-    And I collect uuid of the case
+    And I navigate to case person tab
+    And I collect sex of the person from Edit Person page
     And I click on the Cases button from navbar
     Then I click on the More button on Case directory page
     And I click Enter Bulk Edit Mode on Case directory page
@@ -70,4 +72,4 @@ Feature: Survnet tests
     And I filter with second Case ID
     And I click on the first Case ID from Case Directory
     And I open SORMAS generated XML file for bulk message
-    And I check if sex in SORMAS generated "bulk" XML file is correct
+    Then I check if sex for all 2 cases in SORMAS generated bulk XML file is correct
