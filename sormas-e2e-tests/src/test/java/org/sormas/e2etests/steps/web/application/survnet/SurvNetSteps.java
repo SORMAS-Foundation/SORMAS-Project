@@ -29,6 +29,7 @@ public class SurvNetSteps implements En {
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
   private String sormasActualVersion;
   private static Document singleXmlFile;
+  private static Document bulkXmlFile;
 
   @Inject
   public SurvNetSteps(WebDriverHelpers webDriverHelpers, SoftAssert softly) {
@@ -64,12 +65,23 @@ public class SurvNetSteps implements En {
         });
 
     And(
-        "^I check if sex in SORMAS generated XML file is correct$",
-        () -> {
-          String sex = getSexDE(singleXmlFile);
-          String expectedSex = CreateNewCaseSteps.survnetCase.getSex();
-          softly.assertEquals(sex, expectedSex, "Sex is incorrect!");
-          softly.assertAll();
+        "I check if sex in SORMAS generated {string} XML file is correct",
+        (String fileType) -> {
+            switch (fileType) {
+                case "single":
+                    String sex = getSexDE(singleXmlFile);
+                    String expectedSex = CreateNewCaseSteps.survnetCase.getSex();
+                    softly.assertEquals(sex, expectedSex, "Sex is incorrect!");
+                    softly.assertAll();
+                    break;
+                case "bulk":
+                    String sexBulkMode = getSexDE(bulkXmlFile);
+                    String expectedSexBulkMode = CreateNewCaseSteps.survnetCase.getSex();
+                    softly.assertEquals(sexBulkMode, expectedSexBulkMode, "Sex is incorrect!");
+                    softly.assertAll();
+                    break;
+            }
+
         });
 
     And(
@@ -79,7 +91,7 @@ public class SurvNetSteps implements En {
               compareXMLFiles(
                   "src/main/resources/survnetXMLTemplates/controlXml.xml",
                   "/srv/dockerdata/jenkins_new/sormas-files/test_"
-                      + EditCaseSteps.externalUUID.substring(1, 37)
+                      + EditCaseSteps.externalUUID.get(0).substring(1, 37)
                       + ".xml");
           List<String> nodes = extractDiffNodes(diffs, "/[Transport][^\\s]+");
 
@@ -114,7 +126,7 @@ public class SurvNetSteps implements En {
               validateXMLSchema(
                   "src/main/resources/survnetXMLTemplates/xmlSchema.xsd",
                   "/srv/dockerdata/jenkins_new/sormas-files/test_"
-                      + EditCaseSteps.externalUUID.substring(1, 37)
+                      + EditCaseSteps.externalUUID.get(0).substring(1, 37)
                       + ".xml"),
               "Generated XML file does not match an example XSD schema");
           softly.assertAll();
@@ -153,7 +165,15 @@ public class SurvNetSteps implements En {
         () -> {
           singleXmlFile = XMLParser.getDocument(
               "/srv/dockerdata/jenkins_new/sormas-files/test_"
-              + EditCaseSteps.externalUUID.substring(1, 37)
+              + EditCaseSteps.externalUUID.get(0).substring(1, 37)
+              + ".xml");
+        });
+
+    And(
+        "^I open SORMAS generated XML file for bulk message$",
+        () -> {
+          bulkXmlFile = XMLParser.getDocument("/srv/dockerdata/jenkins_new/sormas-files/bulk_"
+              + EditCaseSteps.externalUUID.get(0).substring(1, 37)
               + ".xml");
         });
 

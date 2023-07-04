@@ -19,7 +19,7 @@ Feature: Survnet tests
     Then I wait 40 seconds for system reaction
     And I open SORMAS generated XML file for single message
     Then I check if "date of report" in SORMAS generated XML file is correct
-    And I check if sex in SORMAS generated XML file is correct
+    And I check if sex in SORMAS generated "single" XML file is correct
 
   @tmsLink=SORQA-1006
   Scenario: XML Check of simple Test Case from SORMAS to "Meldesoftware"
@@ -42,7 +42,7 @@ Feature: Survnet tests
     And I check if "change at date" in SORMAS generated XML file is correct
     And I check if "tracked at date" in SORMAS generated XML file is correct
     And I check if "created at date" in SORMAS generated XML file is correct
-    And I check if sex in SORMAS generated XML file is correct
+    And I check if sex in SORMAS generated "single" XML file is correct
     And I check if external person uuid in SORMAS generated XML file is correct
 
   @tmsLink=SORQA-1011
@@ -62,3 +62,10 @@ Feature: Survnet tests
     When I select 2 last created UI result in grid in Case Directory for Bulk Action
     And I click on Bulk Actions combobox on Case Directory Page
     And I click Send to reporting tool button on Case Directory page
+    And I filter with first Case ID
+    And I click on the first Case ID from Case Directory
+    And I collect case external UUID from Edit Case page
+    And I filter with second Case ID
+    And I click on the first Case ID from Case Directory
+    And I open SORMAS generated XML file for bulk message
+    And I check if sex in SORMAS generated "bulk" XML file is correct
