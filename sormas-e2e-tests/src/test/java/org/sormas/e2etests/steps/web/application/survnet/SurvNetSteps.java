@@ -77,7 +77,7 @@ public class SurvNetSteps implements En {
         "I check if sex for all {int} cases in SORMAS generated bulk XML file is correct",
         (Integer caseNumber) -> {
           for (int i=0; i<caseNumber; i++) {
-            String sex = getSexDE(bulkXmlFile, caseNumber);
+            String sex = getSexDE(bulkXmlFile, i);
             String expectedSex = EditPersonSteps.personSex.get(i);
             softly.assertEquals(sex, expectedSex, "Sex is incorrect!");
             softly.assertAll();
