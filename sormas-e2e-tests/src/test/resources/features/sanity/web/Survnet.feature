@@ -51,11 +51,13 @@ Feature: Survnet tests
     When I click on the Cases button from navbar
     And I click on the NEW CASE button
     And I create a new case with mandatory data only and specific sex for Survnet DE
+    And I collect uuid of the case
     And I navigate to case person tab
     And I collect sex of the person from Edit Person page
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     And I create a new case with mandatory data only and specific sex for Survnet DE
+    And I collect uuid of the case
     And I navigate to case person tab
     And I collect sex of the person from Edit Person page
     And I click on the Cases button from navbar
