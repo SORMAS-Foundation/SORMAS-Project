@@ -75,3 +75,5 @@ Feature: Survnet tests
     And I click on the first Case ID from Case Directory
     And I open SORMAS generated XML file for bulk message
     Then I check if sex for all 2 cases in SORMAS generated bulk XML file is correct
+    And I check if external person uuid for all 2 cases in SORMAS generated bult XML file is correct
+    And I check if "date of report" for all 2 cases in SORMAS generated bulk XML file is correct

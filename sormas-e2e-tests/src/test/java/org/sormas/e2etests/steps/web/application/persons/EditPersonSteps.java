@@ -131,7 +131,7 @@ public class EditPersonSteps implements En {
   protected Person collectedPerson;
   public static Person newGeneratedPerson;
   private static String personFirstName;
-  public static String externalPersonUUID;
+  public static List<String> externalPersonUUID = new ArrayList<>();
   public static List<String> personSex = new ArrayList<>();
 
   @Inject
@@ -615,7 +615,7 @@ public class EditPersonSteps implements En {
         "^I collect person external UUID from Edit Case page$",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(EXTERNAL_ID_INPUT);
-          externalPersonUUID = webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT);
+          externalPersonUUID.add(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT));
         });
 
     And(

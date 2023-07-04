@@ -42,12 +42,12 @@ public class SurvNetSteps implements En {
 
           switch (typeOfDate) {
             case "date of report":
-              LocalDate dateOfReport = getReportingDate(singleXmlFile);
+              LocalDate dateOfReport = getReportingDate(singleXmlFile, 0);
               softly.assertEquals(dateOfReport, expectedDate, "Date of report is incorrect!");
               softly.assertAll();
               break;
             case "change at date":
-              LocalDate changeAtDate = getChangedAt(singleXmlFile);
+              LocalDate changeAtDate = getChangedAt(singleXmlFile, 0);
               softly.assertEquals(changeAtDate, expectedDate, "Change at date is incorrect!");
               softly.assertAll();
               break;
@@ -57,7 +57,7 @@ public class SurvNetSteps implements En {
               softly.assertAll();
               break;
             case "tracked at date":
-              LocalDate trackedAt = getTrackedAt(singleXmlFile);
+              LocalDate trackedAt = getTrackedAt(singleXmlFile, 0);
               softly.assertEquals(trackedAt, expectedDate, "Tracked at date is incorrect!");
               softly.assertAll();
               break;
@@ -153,8 +153,8 @@ public class SurvNetSteps implements En {
     And(
         "^I check if external person uuid in SORMAS generated XML file is correct$",
         () -> {
-          String externalUUID = getGuidPatient(singleXmlFile);
-          String expectedExternalUUID = EditPersonSteps.externalPersonUUID.substring(1, 37);
+          String externalUUID = getGuidPatient(singleXmlFile, 0);
+          String expectedExternalUUID = EditPersonSteps.externalPersonUUID.get(0).substring(1, 37);
           softly.assertEquals(
               externalUUID, expectedExternalUUID, "Person external UUID is incorrect!");
           softly.assertAll();
@@ -177,26 +177,68 @@ public class SurvNetSteps implements En {
               + ".xml");
         });
 
+    And(
+        "^I check if external person uuid for all (\\d+) cases in SORMAS generated bult XML file is correct$",
+        (Integer caseNumber) -> {
+          for (int i=0; i<caseNumber; i++) {
+            String externalUUID = getGuidPatient(bulkXmlFile, caseNumber);
+            String expectedExternalUUID = EditPersonSteps.externalPersonUUID.get(i).substring(1, 37);
+            softly.assertEquals(
+                externalUUID, expectedExternalUUID, "Person external UUID is incorrect!");
+            softly.assertAll();
+          }
+        });
+
+    And(
+       "^I check if \"([^\"]*)\" for all (\\d+) cases in SORMAS generated bulk XML file is correct$",
+       (String typeOfDate, Integer caseNumber) -> {
+          LocalDate expectedDate = CreateNewCaseSteps.survnetCase.getDateOfReport();
+
+          switch (typeOfDate) {
+              case "date of report":
+                  for (int i=0; i<caseNumber; i++) {
+                      LocalDate dateOfReport = getReportingDate(bulkXmlFile, i);
+                      softly.assertEquals(dateOfReport, expectedDate, "Date of report is incorrect!");
+                      softly.assertAll();
+                  }
+                  break;
+              case "change at date":
+                  for (int i=0; i<caseNumber; i++) {
+                      LocalDate changeAtDate = getChangedAt(bulkXmlFile, i);
+                      softly.assertEquals(changeAtDate, expectedDate, "Change at date is incorrect!");
+                      softly.assertAll();
+                  }
+                  break;
+              case "tracked at date":
+                  for (int i=0; i<caseNumber; i++) {
+                      LocalDate trackedAt = getTrackedAt(bulkXmlFile, i);
+                      softly.assertEquals(trackedAt, expectedDate, "Tracked at date is incorrect!");
+                      softly.assertAll();
+                  }
+                  break;
+          }
+        });
+
   }
 
-  private LocalDate getReportingDate(Document xmlFile) {
+  private LocalDate getReportingDate(Document xmlFile, int caseNumber) {
     String reportingDate =
         xmlFile
             .getRootElement()
             .getChildren()
-            .get(0)
+            .get(caseNumber)
             .getAttribute("ReportingDate")
             .getValue()
             .substring(0, 10);
     return LocalDate.parse(reportingDate, DATE_FORMATTER);
   }
 
-  private LocalDate getChangedAt(Document xmlFile) {
+  private LocalDate getChangedAt(Document xmlFile, int caseNumber) {
     String reportingDate =
         xmlFile
             .getRootElement()
             .getChildren()
-            .get(0)
+            .get(caseNumber)
             .getAttribute("ChangedAt")
             .getValue()
             .substring(0, 10);
@@ -209,11 +251,11 @@ public class SurvNetSteps implements En {
     return LocalDate.parse(createdAt, DATE_FORMATTER);
   }
 
-  private String getGuidPatient(Document xmlFile) {
+  private String getGuidPatient(Document xmlFile, int caseNumber) {
     return xmlFile
         .getRootElement()
         .getChildren()
-        .get(0)
+        .get(caseNumber)
         .getChildren()
         .get(0)
         .getAttribute("Value")
@@ -221,12 +263,12 @@ public class SurvNetSteps implements En {
         .substring(1, 37);
   }
 
-  private LocalDate getTrackedAt(Document xmlFile) {
+  private LocalDate getTrackedAt(Document xmlFile, int caseNumber) {
     String trackedAt =
         xmlFile
             .getRootElement()
             .getChildren()
-            .get(0)
+            .get(caseNumber)
             .getChildren()
             .get(78)
             .getAttribute("TrackedAt")
