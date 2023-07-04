@@ -181,7 +181,7 @@ public class SurvNetSteps implements En {
         "^I check if external person uuid for all (\\d+) cases in SORMAS generated bult XML file is correct$",
         (Integer caseNumber) -> {
           for (int i=0; i<caseNumber; i++) {
-            String externalUUID = getGuidPatient(bulkXmlFile, caseNumber);
+            String externalUUID = getGuidPatient(bulkXmlFile, i);
             String expectedExternalUUID = EditPersonSteps.externalPersonUUID.get(i).substring(1, 37);
             softly.assertEquals(
                 externalUUID, expectedExternalUUID, "Person external UUID is incorrect!");
