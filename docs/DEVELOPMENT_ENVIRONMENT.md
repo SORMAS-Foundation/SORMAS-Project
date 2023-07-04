@@ -36,7 +36,8 @@ Please follow the [Server Installation Instructions](../docs/SERVER_SETUP.md#sor
 - Make sure that under `File -> Project Structure -> Modules` all modules EXCEPT sormas-app are recognized; if not, add the missing modules with the `+` button
 - Navigate to `File -> Settings -> Plugins` and make sure that Glassfish integration is enabled
 - Make a copy of `sormas-base/dev.env.example`, rename it to `dev.env` and set `GLASSFISH_DOMAIN_ROOT` to the location of the SORMAS domain inside your Payara installation
-- Either run `mvn install` on the `sormas-base` project (e.g. by opening the Maven view and executing `sormas-base -> Lifecycle -> install`) or execute the `dev/build.sh` script (for example with Git Bash)
+- Run `mvn install` on the `sormas-base` project (e.g. by opening the Maven view and executing `sormas-base -> Lifecycle -> install`). \
+  Alternatively, execute the `dev/build.sh` script. You can create a run configuration and use the Git bash executable as interpreter to directly run it from the IDE.
 - Execute `dev/deploy-serverlibs.sh` script
 - Add a Payara server to IntelliJ:
   - Open `Run -> Edit Configurations`, add a new configuration and choose the Glassfish server template
