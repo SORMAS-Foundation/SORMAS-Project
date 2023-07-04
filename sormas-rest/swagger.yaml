@@ -13775,6 +13775,17 @@ components:
         creationDate:
           type: string
           format: date-time
+        deleted:
+          type: boolean
+        deletionReason:
+          type: string
+          enum:
+          - GDPR
+          - DELETION_REQUEST
+          - CREATED_WITH_NO_LEGAL_REASON
+          - TRANSFERRED_RESPONSIBILITY
+          - DUPLICATE_ENTRIES
+          - OTHER_REASON
         description:
           type: string
           maxLength: 1000000
@@ -13794,6 +13805,8 @@ components:
           type: string
           maxLength: 512
           minLength: 0
+        inJurisdiction:
+          type: boolean
         infrastructureDetails:
           type: string
           enum:
@@ -13814,6 +13827,10 @@ components:
           - DISCARDED
         location:
           $ref: '#/components/schemas/LocationDto'
+        otherDeletionReason:
+          type: string
+          maxLength: 1000000
+          minLength: 0
         otherInfrastructureDetails:
           type: string
           maxLength: 1000000
@@ -13826,6 +13843,8 @@ components:
           type: string
           maxLength: 1000000
           minLength: 0
+        pseudonymized:
+          type: boolean
         reportDate:
           type: string
           format: date-time
