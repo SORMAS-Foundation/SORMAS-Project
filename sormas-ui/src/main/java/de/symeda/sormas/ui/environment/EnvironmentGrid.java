@@ -24,8 +24,10 @@ import de.symeda.sormas.api.environment.EnvironmentCriteria;
 import de.symeda.sormas.api.environment.EnvironmentIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
+import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
@@ -69,6 +71,9 @@ public class EnvironmentGrid extends FilteredGrid<EnvironmentIndexDto, Environme
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.findPrefixCaption(column.getId(), EnvironmentIndexDto.I18N_PREFIX, LocationDto.I18N_PREFIX));
 		}
+
+		addItemClickListener(
+			new ShowDetailsListener<>(EnvironmentIndexDto.UUID, e -> ControllerProvider.getEnvironmentController().navigateToEnvironment(e.getUuid())));
 	}
 
 	public void reload() {
