@@ -73,7 +73,7 @@ public class EnvironmentGrid extends FilteredGrid<EnvironmentIndexDto, Environme
 		}
 
 		addItemClickListener(
-			new ShowDetailsListener<>(EnvironmentIndexDto.UUID, e -> ControllerProvider.getEnvironmentController().navigateToData(e.getUuid())));
+			new ShowDetailsListener<>(EnvironmentIndexDto.UUID, e -> ControllerProvider.getEnvironmentController().navigateToEnvironment(e.getUuid())));
 	}
 
 	public void reload() {

@@ -58,7 +58,7 @@ public class EnvironmentController {
 		if (curentUser != null) {
 			EnvironmentCreateForm createForm;
 			createForm = new EnvironmentCreateForm();
-			final EnvironmentDto environment = EnvironmentDto.build(curentUser.getUserReference());
+			final EnvironmentDto environment = EnvironmentDto.build(curentUser.getUser());
 			createForm.setValue(environment);
 			final CommitDiscardWrapperComponent<EnvironmentCreateForm> editView = new CommitDiscardWrapperComponent<>(
 				createForm,
@@ -71,7 +71,7 @@ public class EnvironmentController {
 					FacadeProvider.getEnvironmentFacade().save(dto);
 					Notification.show(I18nProperties.getString(Strings.messageEnvironmentCreated), Notification.Type.WARNING_MESSAGE);
 
-					navigateToData(dto.getUuid());
+					navigateToEnvironment(dto.getUuid());
 				}
 			});
 			return editView;
@@ -81,10 +81,15 @@ public class EnvironmentController {
 
 	}
 
-	public void navigateToData(String uuid) {
-		String navigationState = EnvironmentDataView.VIEW_NAME + "/" + uuid;
+	public void navigateToEnvironment(String uuid) {
+		navigateToView(EnvironmentDataView.VIEW_NAME, uuid);
+	}
+
+	public void navigateToView(String viewName, String uuid){
+		final String navigationState = viewName + "/" + uuid;
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
+
 
 	public CommitDiscardWrapperComponent<EnvironmentDataForm> getEnvironmentDataEditComponent(
 		String environmentUuid,
@@ -135,7 +140,7 @@ public class EnvironmentController {
 		// Initialize 'Archive' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_ARCHIVE)) {
 			ControllerProvider.getArchiveController()
-				.addArchivingButton(environmentDto, ArchiveHandlers.forEnvironment(), editComponent, () -> navigateToData(environmentDto.getUuid()));
+				.addArchivingButton(environmentDto, ArchiveHandlers.forEnvironment(), editComponent, () -> navigateToEnvironment(environmentDto.getUuid()));
 		}
 
 		editComponent.restrictEditableComponentsOnEditView(

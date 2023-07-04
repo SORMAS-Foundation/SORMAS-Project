@@ -61,7 +61,7 @@ public abstract class AbstractEnvironmentView extends AbstractEditAllowedDetailV
 
 		menu.removeAllViews();
 		menu.addView(EnvironmentsView.VIEW_NAME, I18nProperties.getCaption(Captions.environmentEnvironmentsList));
-		menu.addView(EnvironmentDataView.VIEW_NAME, I18nProperties.getCaption(EnvironmentDto.I18N_PREFIX, params));
+		menu.addView(EnvironmentDataView.VIEW_NAME, I18nProperties.getCaption(EnvironmentDto.I18N_PREFIX), params);
 
 		setMainHeaderComponent(ControllerProvider.getEnvironmentController().getEnvironmentViewTitleLayout(getReference().getUuid()));
 	}

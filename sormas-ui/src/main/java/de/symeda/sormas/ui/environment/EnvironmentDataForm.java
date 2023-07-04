@@ -103,7 +103,6 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 
 		Label useOfWaterHeading = new Label(I18nProperties.getString(Strings.headingWaterUse));
 		CssStyles.style(useOfWaterHeading, CssStyles.LABEL_XLARGE, CssStyles.VSPACE_TOP_3);
-		getContent().addComponent(useOfWaterHeading, WATER_USE_LOC);
 		useOfWaterLayout.addComponent(useOfWaterHeading);
 
 		getContent().addComponent(useOfWaterLayout, WATER_USE_LOC);

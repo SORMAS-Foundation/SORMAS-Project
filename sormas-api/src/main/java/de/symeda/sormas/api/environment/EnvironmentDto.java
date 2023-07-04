@@ -75,17 +75,16 @@ public class EnvironmentDto extends PseudonymizableDto {
 		final EnvironmentDto environment = new EnvironmentDto();
 		environment.setUuid(DataHelper.createUuid());
 		environment.setLocation(LocationDto.build());
-		final UserDto currentUser = FacadeProvider.getUserFacade().getCurrentUser();
+
+		return environment;
+	}
+
+	public static EnvironmentDto build(UserDto currentUser) {
+		EnvironmentDto environment = build();
 		environment.setReportingUser(currentUser.toReference());
 		environment.getLocation().setRegion(currentUser.getRegion());
 		environment.getLocation().setDistrict(currentUser.getDistrict());
 		environment.setInvestigationStatus(InvestigationStatus.PENDING);
-		return environment;
-	}
-
-	public static EnvironmentDto build(UserReferenceDto reportingUser) {
-		EnvironmentDto environment = build();
-		environment.setReportingUser(reportingUser);
 
 		return environment;
 	}
