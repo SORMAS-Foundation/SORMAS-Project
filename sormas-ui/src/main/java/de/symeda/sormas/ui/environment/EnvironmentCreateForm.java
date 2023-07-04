@@ -40,8 +40,6 @@ public class EnvironmentCreateForm extends AbstractEditForm<EnvironmentDto> {
             fluidRowLocs("", EnvironmentDto.RESPONSIBLE_USER);
     //@formatter:on
 
-//	private List<UserReferenceDto> districtEnvironmentResponsibles = new ArrayList<>();
-
 	public EnvironmentCreateForm() {
 		super(
 			EnvironmentDto.class,
