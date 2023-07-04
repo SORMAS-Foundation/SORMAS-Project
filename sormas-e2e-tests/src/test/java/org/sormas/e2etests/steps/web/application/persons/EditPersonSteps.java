@@ -622,7 +622,7 @@ public class EditPersonSteps implements En {
         "^I collect sex of the person from Edit Person page$",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(SEX_INPUT);
-          personSex.add(webDriverHelpers.getTextFromWebElement(SEX_INPUT));
+          personSex.add(webDriverHelpers.getValueFromWebElement(SEX_INPUT));
         });
   }
 
