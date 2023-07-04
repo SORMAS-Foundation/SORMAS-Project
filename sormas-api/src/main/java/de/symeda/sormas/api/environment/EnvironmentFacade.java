@@ -11,4 +11,6 @@ import de.symeda.sormas.api.CoreFacade;
 public interface EnvironmentFacade extends CoreFacade<EnvironmentDto, EnvironmentIndexDto, EnvironmentReferenceDto, EnvironmentCriteria> {
 
 	List<EnvironmentDto> getAllEnvironmentsAfter(Date date);
+
+	EnvironmentDto getEnvironmentDataByUuid(String uuid);
 }

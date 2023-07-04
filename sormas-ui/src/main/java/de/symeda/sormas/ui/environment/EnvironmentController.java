@@ -15,11 +15,162 @@
 
 package de.symeda.sormas.ui.environment;
 
+import java.util.function.Consumer;
+
 import com.vaadin.navigator.Navigator;
+import com.vaadin.ui.Notification;
+
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
+import de.symeda.sormas.api.environment.EnvironmentDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.ArchiveHandlers;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.components.automaticdeletion.DeletionLabel;
+import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 
 public class EnvironmentController {
 
 	public void registerViews(Navigator navigator) {
 		navigator.addView(EnvironmentsView.VIEW_NAME, EnvironmentsView.class);
+		navigator.addView(EnvironmentDataView.VIEW_NAME, EnvironmentDataView.class);
 	}
+
+	public void create() {
+		CommitDiscardWrapperComponent<EnvironmentCreateForm> environmentCreateComponent = getEnvironmentCreateComponent();
+		if (environmentCreateComponent != null) {
+			VaadinUiUtil.showModalPopupWindow(environmentCreateComponent, I18nProperties.getString(Strings.headingCreateNewEnvironment));
+		}
+
+	}
+
+	public CommitDiscardWrapperComponent<EnvironmentCreateForm> getEnvironmentCreateComponent() {
+		UserProvider curentUser = UserProvider.getCurrent();
+
+		if (curentUser != null) {
+			EnvironmentCreateForm createForm;
+			createForm = new EnvironmentCreateForm();
+			final EnvironmentDto environment = EnvironmentDto.build();
+			environment.setReportingUser(curentUser.getUserReference());
+			environment.getLocation().setRegion(curentUser.getUser().getRegion());
+			environment.getLocation().setDistrict(curentUser.getUser().getDistrict());
+			environment.setInvestigationStatus(InvestigationStatus.PENDING);
+			createForm.setValue(environment);
+			final CommitDiscardWrapperComponent<EnvironmentCreateForm> editView = new CommitDiscardWrapperComponent<>(
+				createForm,
+				UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_CREATE),
+				createForm.getFieldGroup());
+
+			editView.addCommitListener(() -> {
+				if (!createForm.getFieldGroup().isModified()) {
+					EnvironmentDto dto = createForm.getValue();
+					FacadeProvider.getEnvironmentFacade().save(dto);
+					Notification.show(I18nProperties.getString(Strings.messageEnvironmentCreated), Notification.Type.WARNING_MESSAGE);
+
+					navigateToData(dto.getUuid());
+				}
+			});
+			return editView;
+		}
+
+		return null;
+
+	}
+
+	public void navigateToData(String uuid) {
+		String navigationState = EnvironmentDataView.VIEW_NAME + "/" + uuid;
+		SormasUI.get().getNavigator().navigateTo(navigationState);
+	}
+
+	public CommitDiscardWrapperComponent<EnvironmentDataForm> getEnvironmentDataEditComponent(
+		String environmentUuid,
+		Consumer<Runnable> actionCallback) {
+
+		EnvironmentDto environmentDto = FacadeProvider.getEnvironmentFacade().getEnvironmentDataByUuid(environmentUuid);
+		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getEnvironmentFacade().getAutomaticDeletionInfo(environmentUuid);
+		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getEnvironmentFacade().getManuallyDeletionInfo(environmentUuid);
+
+		EnvironmentDataForm environmentDataForm = new EnvironmentDataForm(actionCallback);
+		environmentDataForm.setValue(environmentDto);
+
+		CommitDiscardWrapperComponent<EnvironmentDataForm> editComponent =
+			new CommitDiscardWrapperComponent<>(environmentDataForm, true, environmentDataForm.getFieldGroup());
+
+		editComponent.addCommitListener(() -> {
+			if (!environmentDataForm.getFieldGroup().isModified()) {
+				EnvironmentDto dto = environmentDataForm.getValue();
+
+				FacadeProvider.getEnvironmentFacade().save(dto);
+
+				Notification.show(I18nProperties.getString(Strings.messageEnvironmentSaved), Notification.Type.WARNING_MESSAGE);
+				SormasUI.refreshView();
+			}
+		});
+
+		editComponent.getButtonsPanel()
+			.addComponentAsFirst(
+				new DeletionLabel(automaticDeletionInfoDto, manuallyDeletionInfoDto, environmentDto.isDeleted(), EnvironmentDto.I18N_PREFIX));
+
+		if (environmentDto.isDeleted()) {
+			editComponent.getWrappedComponent().getField(EnvironmentDto.DELETION_REASON).setVisible(true);
+			if (editComponent.getWrappedComponent().getField(EnvironmentDto.DELETION_REASON).getValue() == DeletionReason.OTHER_REASON) {
+				editComponent.getWrappedComponent().getField(EnvironmentDto.OTHER_DELETION_REASON).setVisible(true);
+			}
+		}
+
+		// Initialize 'Delete' button
+		if (UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_DELETE)) {
+			editComponent.addDeleteWithReasonOrRestoreListener(
+				EnvironmentsView.VIEW_NAME,
+				null,
+				I18nProperties.getString(Strings.entityEnvironment),
+				environmentDto.getUuid(),
+				FacadeProvider.getEnvironmentFacade());
+		}
+
+		// Initialize 'Archive' button
+		if (UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_ARCHIVE)) {
+			ControllerProvider.getArchiveController()
+				.addArchivingButton(environmentDto, ArchiveHandlers.forEnvironment(), editComponent, () -> navigateToData(environmentDto.getUuid()));
+		}
+
+		editComponent.restrictEditableComponentsOnEditView(
+			UserRight.ENVIRONMENT_EDIT,
+			null,
+			UserRight.ENVIRONMENT_DELETE,
+			UserRight.ENVIRONMENT_ARCHIVE,
+			FacadeProvider.getEnvironmentFacade().getEditPermissionType(environmentDto.getUuid()),
+			true);
+
+		return editComponent;
+	}
+
+	public TitleLayout getEnvironmentViewTitleLayout(String uuid) {
+		EnvironmentDto environmentDto = findEnvironment(uuid);
+
+		TitleLayout titleLayout = new TitleLayout();
+
+		String shortUuid = DataHelper.getShortUuid(environmentDto.getUuid());
+
+		StringBuilder mainRowText = new StringBuilder(environmentDto.getEnvironmentName());
+		mainRowText.append(mainRowText.length() > 0 ? " (" + shortUuid + ")" : shortUuid);
+
+		titleLayout.addMainRow(mainRowText.toString());
+
+		return titleLayout;
+	}
+
+	private EnvironmentDto findEnvironment(String uuid) {
+		return FacadeProvider.getEnvironmentFacade().getByUuid(uuid);
+	}
+
 }

@@ -24,6 +24,7 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.environment.EnvironmentCriteria;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
@@ -49,9 +50,13 @@ public class EnvironmentsView extends AbstractView {
 			.getOrDefault(EnvironmentCriteria.class, () -> new EnvironmentCriteria().relevanceStatus(EntityRelevanceStatus.ACTIVE));
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_CREATE)) {
-			final Button btnNewContact = ButtonHelper.createIconButton(Captions.environmentNewEnvironment, VaadinIcons.PLUS_CIRCLE, e -> {
-			}, ValoTheme.BUTTON_PRIMARY);
+			final Button btnNewContact = ButtonHelper.createIconButton(
+				Captions.environmentNewEnvironment,
+				VaadinIcons.PLUS_CIRCLE,
+				e -> ControllerProvider.getEnvironmentController().create(),
+				ValoTheme.BUTTON_PRIMARY);
 			addHeaderComponent(btnNewContact);
+
 		}
 
 		gridComponent = new EnvironmentGridComponent(gridCriteria, viewConfiguration, () -> navigateTo(gridCriteria, true), () -> {

@@ -24,12 +24,17 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 
 import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.environment.EnvironmentCriteria;
 import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.environment.EnvironmentFacade;
 import de.symeda.sormas.api.environment.EnvironmentIndexDto;
 import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.FacadeHelper;
@@ -256,6 +261,10 @@ public class EnvironmentFacadeEjb
 		target.setResponsibleUser(userService.getByReferenceDto(source.getResponsibleUser()));
 		target.setWaterType(source.getWaterType());
 		target.setWaterUse(source.getWaterUse());
+
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
 		return target;
 	}
 
@@ -284,6 +293,10 @@ public class EnvironmentFacadeEjb
 		target.setWaterType(source.getWaterType());
 		target.setWaterUse(source.getWaterUse());
 
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
+
 		return target;
 	}
 
@@ -299,6 +312,36 @@ public class EnvironmentFacadeEjb
 		}
 
 		return new EnvironmentReferenceDto(entity.getUuid(), entity.getEnvironmentName());
+	}
+
+	@Override
+	@RightsAllowed(UserRight._ENVIRONMENT_ARCHIVE)
+	public void archive(String entityUuid, Date endOfProcessingDate) {
+		super.archive(entityUuid, endOfProcessingDate);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._ENVIRONMENT_ARCHIVE)
+	public void dearchive(List<String> entityUuids, String dearchiveReason) {
+		super.dearchive(entityUuids, dearchiveReason);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._ENVIRONMENT_DELETE)
+	public void delete(String uuid, DeletionDetails deletionDetails) throws ExternalSurveillanceToolRuntimeException {
+		Environment environment = service.getByUuid(uuid);
+
+		if (!service.inJurisdictionOrOwned(environment)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.messageEventParticipantOutsideJurisdictionDeletionDenied));
+		}
+
+		service.delete(environment, deletionDetails);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._ENVIRONMENT_DELETE)
+	public void restore(String uuid) {
+		super.restore(uuid);
 	}
 
 	@Override
@@ -319,6 +362,11 @@ public class EnvironmentFacadeEjb
 	@Override
 	public List<EnvironmentDto> getAllEnvironmentsAfter(Date date) {
 		return service.getAllAfter(date).stream().map(r -> toDto(r)).collect(Collectors.toList());
+	}
+
+	@Override
+	public EnvironmentDto getEnvironmentDataByUuid(String uuid) {
+		return toPseudonymizedDto(service.getByUuid(uuid, true));
 	}
 
 	@Override
