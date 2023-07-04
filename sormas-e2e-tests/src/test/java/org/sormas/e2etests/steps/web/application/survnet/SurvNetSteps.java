@@ -67,7 +67,7 @@ public class SurvNetSteps implements En {
     And(
         "I check if sex in SORMAS generated single XML file is correct",
         () -> {
-          String sex = getSexDE(singleXmlFile, 1);
+          String sex = getSexDE(singleXmlFile, 0);
           String expectedSex = CreateNewCaseSteps.survnetCase.getSex();
           softly.assertEquals(sex, expectedSex, "Sex is incorrect!");
           softly.assertAll();
