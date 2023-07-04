@@ -66,6 +66,7 @@ Feature: Survnet tests
     And I filter with first Case ID
     And I click on the first Case ID from Case Directory
     And I collect case external UUID from Edit Case page
+    And I back to the cases list from edit case
     And I filter with second Case ID
     And I click on the first Case ID from Case Directory
     And I open SORMAS generated XML file for bulk message
