@@ -6,16 +6,15 @@ import java.util.Map;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
-import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
@@ -63,6 +62,8 @@ public class EnvironmentDto extends PseudonymizableDto {
 	private Map<WaterUse, Boolean> waterUse;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherWaterUse;
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
 	@Valid
 	private LocationDto location;
 
@@ -75,6 +76,7 @@ public class EnvironmentDto extends PseudonymizableDto {
 		final EnvironmentDto environment = new EnvironmentDto();
 		environment.setUuid(DataHelper.createUuid());
 		environment.setLocation(LocationDto.build());
+		environment.setInvestigationStatus(InvestigationStatus.PENDING);
 
 		return environment;
 	}
@@ -84,7 +86,6 @@ public class EnvironmentDto extends PseudonymizableDto {
 		environment.setReportingUser(currentUser.toReference());
 		environment.getLocation().setRegion(currentUser.getRegion());
 		environment.getLocation().setDistrict(currentUser.getDistrict());
-		environment.setInvestigationStatus(InvestigationStatus.PENDING);
 
 		return environment;
 	}

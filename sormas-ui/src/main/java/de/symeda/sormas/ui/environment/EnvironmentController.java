@@ -15,8 +15,6 @@
 
 package de.symeda.sormas.ui.environment;
 
-import java.util.function.Consumer;
-
 import com.vaadin.navigator.Navigator;
 import com.vaadin.ui.Notification;
 
@@ -85,21 +83,24 @@ public class EnvironmentController {
 		navigateToView(EnvironmentDataView.VIEW_NAME, uuid);
 	}
 
-	public void navigateToView(String viewName, String uuid){
+	public void navigateToView(String viewName, String uuid) {
 		final String navigationState = viewName + "/" + uuid;
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 
-
 	public CommitDiscardWrapperComponent<EnvironmentDataForm> getEnvironmentDataEditComponent(
 		String environmentUuid,
-		Consumer<Runnable> actionCallback) {
+		UserRight editUserRight,
+		boolean isEditAllowed) {
 
 		EnvironmentDto environmentDto = FacadeProvider.getEnvironmentFacade().getByUuid(environmentUuid);
 		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getEnvironmentFacade().getAutomaticDeletionInfo(environmentUuid);
 		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getEnvironmentFacade().getManuallyDeletionInfo(environmentUuid);
 
-		EnvironmentDataForm environmentDataForm = new EnvironmentDataForm();
+		EnvironmentDataForm environmentDataForm = new EnvironmentDataForm(
+			environmentDto.isPseudonymized(),
+			environmentDto.isInJurisdiction(),
+			isEditAllowed && UserProvider.getCurrent().hasUserRight(editUserRight));
 		environmentDataForm.setValue(environmentDto);
 
 		CommitDiscardWrapperComponent<EnvironmentDataForm> editComponent =
@@ -140,7 +141,11 @@ public class EnvironmentController {
 		// Initialize 'Archive' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_ARCHIVE)) {
 			ControllerProvider.getArchiveController()
-				.addArchivingButton(environmentDto, ArchiveHandlers.forEnvironment(), editComponent, () -> navigateToEnvironment(environmentDto.getUuid()));
+				.addArchivingButton(
+					environmentDto,
+					ArchiveHandlers.forEnvironment(),
+					editComponent,
+					() -> navigateToEnvironment(environmentDto.getUuid()));
 		}
 
 		editComponent.restrictEditableComponentsOnEditView(

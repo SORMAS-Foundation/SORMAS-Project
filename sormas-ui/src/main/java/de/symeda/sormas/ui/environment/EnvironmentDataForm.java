@@ -32,6 +32,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CheckBoxTree;
@@ -65,13 +66,14 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 
 	private WaterUseCheckBoxTree waterUseCheckBoxTree;
 
-	public EnvironmentDataForm() {
+	public EnvironmentDataForm(boolean isPseudonymized, boolean inJurisdiction, boolean isEditAllowed) {
 		super(
 			EnvironmentDto.class,
 			EnvironmentDto.I18N_PREFIX,
 			false,
 			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
-			UiFieldAccessCheckers.getNoop());
+			UiFieldAccessCheckers.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized),
+			isEditAllowed);
 		addFields();
 	}
 
@@ -155,8 +157,6 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 			List<UserReferenceDto> districtEnvironmentResponsibles = new ArrayList<>();
 			if (district != null) {
 				districtEnvironmentResponsibles = FacadeProvider.getUserFacade().getUserRefsByDistrict(district, true, UserRight.ENVIRONMENT_EDIT);
-			} else {
-				districtEnvironmentResponsibles.clear();
 			}
 			FieldHelper.updateItems(responsibleUserField, districtEnvironmentResponsibles);
 		});

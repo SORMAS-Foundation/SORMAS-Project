@@ -82,8 +82,6 @@ public class EnvironmentCreateForm extends AbstractEditForm<EnvironmentDto> {
 			List<UserReferenceDto> districtEnvironmentResponsibles = new ArrayList<>();
 			if (district != null) {
 				districtEnvironmentResponsibles = FacadeProvider.getUserFacade().getUserRefsByDistrict(district, true, UserRight.ENVIRONMENT_EDIT);
-			} else {
-				districtEnvironmentResponsibles.clear();
 			}
 			FieldHelper.updateItems(responsibleUserField, districtEnvironmentResponsibles);
 		});
