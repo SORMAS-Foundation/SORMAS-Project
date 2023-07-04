@@ -25,4 +25,4 @@
 source apply-settings.sh
 
 # 1. Command chain
-$MVN_BIN -f ../pom.xml -Dmaven.test.skip=$BUILD_SKIP_TESTS $MVN_OPTIONS $PROFILES clean install
+"$MVN_BIN" -f ../pom.xml -Dmaven.test.skip=$BUILD_SKIP_TESTS $MVN_OPTIONS $PROFILES clean install
