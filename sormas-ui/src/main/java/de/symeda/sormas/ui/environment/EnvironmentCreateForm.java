@@ -1,6 +1,8 @@
 package de.symeda.sormas.ui.environment;
 
+import static de.symeda.sormas.ui.utils.CssStyles.ERROR_COLOR_PRIMARY;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
+import static de.symeda.sormas.ui.utils.CssStyles.style;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
@@ -31,7 +33,7 @@ public class EnvironmentCreateForm extends AbstractEditForm<EnvironmentDto> {
 	private static final String LOCATION_HEADING_LOC = "locationHeadingLoc";
 
 	//@formatter:off
-    private static final String HTML_LAYOUT = fluidRowLocs(EnvironmentDto.REPORT_DATE, "")
+    private static final String HTML_LAYOUT = fluidRowLocs(EnvironmentDto.REPORT_DATE, EnvironmentDto.EXTERNAL_ID)
             + fluidRowLocs(EnvironmentDto.ENVIRONMENT_MEDIA, "") + fluidRowLocs(EnvironmentDto.ENVIRONMENT_NAME, "")+
             loc(LOCATION_HEADING_LOC) +
             fluidRowLocs(EnvironmentDto.LOCATION) +
@@ -59,6 +61,9 @@ public class EnvironmentCreateForm extends AbstractEditForm<EnvironmentDto> {
 	protected void addFields() {
 
 		addField(EnvironmentDto.REPORT_DATE, DateField.class);
+		TextField externalIdField = addField(EnvironmentDto.EXTERNAL_ID, TextField.class);
+		style(externalIdField, ERROR_COLOR_PRIMARY);
+
 		addField(EnvironmentDto.ENVIRONMENT_MEDIA, ComboBox.class);
 		addField(EnvironmentDto.ENVIRONMENT_NAME, TextField.class);
 

@@ -1,6 +1,8 @@
 package de.symeda.sormas.ui.environment;
 
+import static de.symeda.sormas.ui.utils.CssStyles.ERROR_COLOR_PRIMARY;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
+import static de.symeda.sormas.ui.utils.CssStyles.style;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
@@ -43,7 +45,8 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 	private static final String WATER_USE_LOC = "waterUseLoc";
 
 	//@formatter:off
-	private static final String HTML_LAYOUT = fluidRowLocs(EnvironmentDto.UUID, EnvironmentDto.REPORT_DATE, EnvironmentDto.REPORTING_USER) +
+	private static final String HTML_LAYOUT = fluidRowLocs(EnvironmentDto.UUID, EnvironmentDto.EXTERNAL_ID) +
+			fluidRowLocs(EnvironmentDto.REPORT_DATE, EnvironmentDto.REPORTING_USER) +
 			fluidRowLocs(EnvironmentDto.INVESTIGATION_STATUS, "") +
 			fluidRowLocs(EnvironmentDto.ENVIRONMENT_MEDIA, "") +
 			fluidRowLocs(EnvironmentDto.WATER_TYPE, EnvironmentDto.OTHER_WATER_TYPE) +
@@ -85,6 +88,9 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 
 		addField(EnvironmentDto.REPORT_DATE, DateField.class);
 
+		TextField externalIdField = addField(EnvironmentDto.EXTERNAL_ID, TextField.class);
+		style(externalIdField, ERROR_COLOR_PRIMARY);
+
 		addField(EnvironmentDto.REPORTING_USER).setReadOnly(true);
 
 		addField(EnvironmentDto.INVESTIGATION_STATUS, ComboBox.class);
@@ -111,9 +117,7 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 		otherWaterUse.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
 
 		waterUseCheckBoxTree = new WaterUseCheckBoxTree(
-			Arrays.stream(WaterUse.values())
-				.map(this::environmentEvidenceDetailToCheckBoxElement)
-				.collect(Collectors.toList()),
+			Arrays.stream(WaterUse.values()).map(this::environmentEvidenceDetailToCheckBoxElement).collect(Collectors.toList()),
 			() -> {
 				if (isWaterUseOtherChecked()) {
 					otherWaterUse.setVisible(true);
