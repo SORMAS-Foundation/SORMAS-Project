@@ -70,9 +70,13 @@ Feature: Survnet tests
     And I filter with first Case ID
     And I click on the first Case ID from Case Directory
     And I collect case external UUID from Edit Case page
+    And I navigate to case person tab
+    And I collect person external UUID from Edit Case page
     And I back to the cases list from edit case
     And I filter with second Case ID
     And I click on the first Case ID from Case Directory
+    And I navigate to case person tab
+    And I collect person external UUID from Edit Case page
     And I open SORMAS generated XML file for bulk message
     Then I check if sex for all 2 cases in SORMAS generated bulk XML file is correct
     And I check if external person uuid for all 2 cases in SORMAS generated bult XML file is correct
