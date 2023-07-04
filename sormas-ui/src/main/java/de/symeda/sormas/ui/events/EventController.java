@@ -970,14 +970,14 @@ public class EventController {
 			List<EventIndexDto> selectedEventsCpy = new ArrayList<>(selectedEvents);
 			BulkOperationHandler.<EventIndexDto> forBulkEdit()
 				.doBulkOperation(
-				selectedEntries -> eventFacade.saveBulkEvents(
-					selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
-					updatedTempEvent,
-					eventStatusChange,
-					eventInvestigationStatusChange,
-					eventManagementStatusChange),
-				selectedEventsCpy,
-				bulkOperationCallback(eventGrid, popupWindow));
+					selectedEntries -> eventFacade.saveBulkEvents(
+						selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
+						updatedTempEvent,
+						eventStatusChange,
+						eventInvestigationStatusChange,
+						eventManagementStatusChange),
+					selectedEventsCpy,
+					bulkOperationCallback(eventGrid, popupWindow));
 		});
 
 		editView.addDiscardListener(popupWindow::close);
@@ -1136,9 +1136,7 @@ public class EventController {
 		return titleLayout;
 	}
 
-	public void sendAllSelectedToExternalSurveillanceTool(Set<EventIndexDto> selectedRows, Runnable callback) {
-		List<String> selectedUuids = selectedRows.stream().map(EventIndexDto::getUuid).collect(Collectors.toList());
-
+	public void sendAllSelectedToExternalSurveillanceTool(Set<EventIndexDto> selectedRows, EventGrid eventGrid) {
 		// Show an error when at least one selected event is not a CLUSTER event
 		Optional<? extends EventIndexDto> nonClusterEvent = selectedRows.stream().filter(e -> e.getEventStatus() != EventStatus.CLUSTER).findFirst();
 		if (nonClusterEvent.isPresent()) {
@@ -1153,10 +1151,11 @@ public class EventController {
 		}
 
 		// Show an error when at least one selected event is not owned by this server because ownership has been handed over
+		List<String> selectedUuids = selectedRows.stream().map(EventIndexDto::getUuid).collect(Collectors.toList());
 		List<String> ownershipHandedOverUuids = FacadeProvider.getEventFacade().getEventUuidsWithOwnershipHandedOver(selectedUuids);
 		if (CollectionUtils.isNotEmpty(ownershipHandedOverUuids)) {
-			List<String> uuidsWithoutNotSharable =
-				selectedUuids.stream().filter(uuid -> !ownershipHandedOverUuids.contains(uuid)).collect(Collectors.toList());
+			List<EventIndexDto> withoutNotSharable =
+				selectedRows.stream().filter(e -> !ownershipHandedOverUuids.contains(e.getUuid())).collect(Collectors.toList());
 
 			TextArea notShareableListComponent = new TextArea("", new ArrayList<>(ownershipHandedOverUuids).toString());
 			notShareableListComponent.setWidthFull();
@@ -1170,17 +1169,22 @@ public class EventController {
 				new VerticalLayout(notSharableLabel, notShareableListComponent),
 				String.format(
 					I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_excludeAndSend),
-					uuidsWithoutNotSharable.size(),
-					selectedUuids.size()),
+					withoutNotSharable.size(),
+					selectedRows.size()),
 				I18nProperties.getCaption(Captions.actionCancel),
 				800,
 				(confirmed) -> {
 					if (confirmed) {
-						ExternalSurveillanceServiceGateway.sendEventsToExternalSurveillanceTool(selectedUuids, callback, false);
+						ExternalSurveillanceServiceGateway
+							.sendEventsToExternalSurveillanceTool(withoutNotSharable, false, bulkOperationCallback(eventGrid, null));
 					}
 				});
 		} else {
-			ExternalSurveillanceServiceGateway.sendEventsToExternalSurveillanceTool(selectedUuids, callback, true);
+			ExternalSurveillanceServiceGateway.sendEventsToExternalSurveillanceTool(selectedRows, true, bulkOperationCallback(eventGrid, null));
 		}
+	}
+
+	public void linkAllToGroup(Set<EventIndexDto> selectedItems) {
+		ControllerProvider.getEventGroupController().linkAllToGroup(selectedItems);
 	}
 }

@@ -775,8 +775,8 @@ public class CasesView extends AbstractView {
 										showNoCasesSelectedWarning(caseGrid);
 										return;
 									}
-									ControllerProvider.getCaseController().sendCasesToExternalSurveillanceTool(items, () -> navigateTo(criteria));
 
+									ControllerProvider.getCaseController().sendCasesToExternalSurveillanceTool(items, (AbstractCaseGrid<?>) grid);
 								});
 							},
 							FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()));

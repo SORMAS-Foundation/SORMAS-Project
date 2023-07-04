@@ -7,6 +7,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
@@ -117,8 +119,14 @@ public class BulkOperationHandler<T extends HasUuid> {
 						}
 
 					});
-				} catch (InterruptedException e) {
-					throw new RuntimeException(e);
+				} catch (Exception e) {
+					LoggerFactory.getLogger(BulkOperationHandler.class).error("Error during bulk operation", e);
+					bulkProgressLayout.finishProgress(ProgressResult.FAILURE, I18nProperties.getString(Strings.errorWasReported), () -> {
+						window.close();
+						bulkOperationDoneCallback.accept(selectedEntries);
+					});
+				} finally {
+					currentUI.setPollInterval(-1);
 				}
 			});
 

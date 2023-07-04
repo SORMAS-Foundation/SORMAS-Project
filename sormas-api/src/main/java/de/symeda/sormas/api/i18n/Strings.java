@@ -372,6 +372,7 @@ public interface Strings {
 	String ExternalSurveillanceToolGateway_notificationEntrySent = "ExternalSurveillanceToolGateway.notificationEntrySent";
 	String ExternalSurveillanceToolGateway_notificationErrorDeleting = "ExternalSurveillanceToolGateway.notificationErrorDeleting";
 	String ExternalSurveillanceToolGateway_notificationErrorSending = "ExternalSurveillanceToolGateway.notificationErrorSending";
+	String ExternalSurveillanceToolGateway_notificationSomeEntriesSent = "ExternalSurveillanceToolGateway.notificationSomeEntriesSent";
 	String ExternalSurveillanceToolGateway_sharedAt = "ExternalSurveillanceToolGateway.sharedAt";
 	String ExternalSurveillanceToolGateway_unableToSend = "ExternalSurveillanceToolGateway.unableToSend";
 	String ExternalSurveillanceToolGateway_versionRequestError = "ExternalSurveillanceToolGateway.versionRequestError";
@@ -566,9 +567,7 @@ public interface Strings {
 	String headingFetchExternalMessages = "headingFetchExternalMessages";
 	String headingFileExists = "headingFileExists";
 	String headingFilters = "headingFilters";
-	String headingFollowUpCanceled = "headingFollowUpCanceled";
 	String headingFollowUpStatus = "headingFollowUpStatus";
-	String headingFollowUpStatusChanged = "headingFollowUpStatusChanged";
 	String headingGenerateCases = "headingGenerateCases";
 	String headingGenerateContacts = "headingGenerateContacts";
 	String headingHealthConditions = "headingHealthConditions";
@@ -1139,6 +1138,7 @@ public interface Strings {
 	String messageEventParticipationUnlinked = "messageEventParticipationUnlinked";
 	String messageEventSaved = "messageEventSaved";
 	String messageEventsDeleted = "messageEventsDeleted";
+	String messageEventsLinkedToGroup = "messageEventsLinkedToGroup";
 	String messageEventsNotDeletedReason = "messageEventsNotDeletedReason";
 	String messageEventsNotDeletedReasonExternalSurveillanceTool = "messageEventsNotDeletedReasonExternalSurveillanceTool";
 	String messageEventsRestored = "messageEventsRestored";
@@ -1162,7 +1162,9 @@ public interface Strings {
 	String messageFacilityDearchivingNotPossible = "messageFacilityDearchivingNotPossible";
 	String messageFacilityMulitChanged = "messageFacilityMulitChanged";
 	String messageFollowUpCanceled = "messageFollowUpCanceled";
+	String messageFollowUpCanceledForSome = "messageFollowUpCanceledForSome";
 	String messageFollowUpStatusChanged = "messageFollowUpStatusChanged";
+	String messageFollowUpStatusChangedForSome = "messageFollowUpStatusChangedForSome";
 	String messageForwardedExternalMessageFound = "messageForwardedExternalMessageFound";
 	String messageGdpr = "messageGdpr";
 	String messageGdprCheck = "messageGdprCheck";
@@ -1265,6 +1267,7 @@ public interface Strings {
 	String messageSetContactRegionAndDistrict = "messageSetContactRegionAndDistrict";
 	String messageSomeEntitiesArchived = "messageSomeEntitiesArchived";
 	String messageSomeEntitiesDearchived = "messageSomeEntitiesDearchived";
+	String messageSomeEventsLinkedToGroup = "messageSomeEventsLinkedToGroup";
 	String messageSormasToSormasSimilarCaseFound = "messageSormasToSormasSimilarCaseFound";
 	String messageSormasToSormasSimilarCaseToContactFound = "messageSormasToSormasSimilarCaseToContactFound";
 	String messageSormasToSormasSimilarContactFound = "messageSormasToSormasSimilarContactFound";

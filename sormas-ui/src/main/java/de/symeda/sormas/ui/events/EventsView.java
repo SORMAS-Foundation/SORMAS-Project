@@ -587,8 +587,7 @@ public class EventsView extends AbstractView {
 							I18nProperties.getCaption(Captions.actionGroupEvent),
 							VaadinIcons.FILE_TREE,
 							mi -> grid.bulkActionHandler(
-								items -> ControllerProvider.getEventGroupController()
-									.linkAllToGroup(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(eventCriteria)))));
+								items -> ControllerProvider.getEventController().linkAllToGroup(eventGrid.asMultiSelect().getSelectedItems()))));
 				}
 				bulkActions.add(
 					new MenuBarHelper.MenuBarItem(
@@ -596,9 +595,7 @@ public class EventsView extends AbstractView {
 						VaadinIcons.SHARE,
 						mi -> grid.bulkActionHandler(
 							items -> ControllerProvider.getEventController()
-								.sendAllSelectedToExternalSurveillanceTool(
-									eventGrid.asMultiSelect().getSelectedItems(),
-									() -> navigateTo(eventCriteria))),
+								.sendAllSelectedToExternalSurveillanceTool(eventGrid.asMultiSelect().getSelectedItems(), eventGrid)),
 						FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()));
 
 				if (isDocGenerationAllowed()) {

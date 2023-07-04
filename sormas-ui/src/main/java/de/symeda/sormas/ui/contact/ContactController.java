@@ -765,13 +765,13 @@ public class ContactController {
 			List<ContactIndexDto> selectedContactsCpy = new ArrayList<>(selectedContacts);
 			BulkOperationHandler.<ContactIndexDto> forBulkEdit()
 				.doBulkOperation(
-				selectedEntries -> contactFacade.saveBulkContacts(
-					selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
-					updatedBulkEditData,
-					classificationChange,
-					contactOfficerChange),
-				selectedContactsCpy,
-				bulkOperationCallback(caseUuid, contactGrid, popupWindow));
+					selectedEntries -> contactFacade.saveBulkContacts(
+						selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
+						updatedBulkEditData,
+						classificationChange,
+						contactOfficerChange),
+					selectedContactsCpy,
+					bulkOperationCallback(caseUuid, contactGrid, popupWindow));
 		});
 
 		editView.addDiscardListener(popupWindow::close);
@@ -836,9 +836,12 @@ public class ContactController {
 				callback);
 	}
 
-	public void cancelFollowUpOfAllSelectedItems(Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {
+	public void cancelFollowUpOfAllSelectedItems(
+		Collection<? extends ContactIndexDto> selectedRows,
+		String caseUuid,
+		AbstractContactGrid<?> contactGrid) {
 
-		if (selectedRows.size() == 0) {
+		if (selectedRows.isEmpty()) {
 			new Notification(
 				I18nProperties.getString(Strings.headingNoContactsSelected),
 				I18nProperties.getString(Strings.messageNoContactsSelected),
@@ -852,30 +855,33 @@ public class ContactController {
 				I18nProperties.getString(Strings.no),
 				640,
 				confirmed -> {
-					if (confirmed) {
-						for (ContactIndexDto contact : selectedRows) {
-							if (!FollowUpStatus.NO_FOLLOW_UP.equals(contact.getFollowUpStatus())
-								&& !FollowUpStatus.CANCELED.equals(contact.getFollowUpStatus())) {
-								ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(contact.getUuid());
-								contactDto.setFollowUpStatus(FollowUpStatus.CANCELED);
-								contactDto.addToFollowUpComment(
-									String.format(I18nProperties.getString(Strings.infoCanceledBy), UserProvider.getCurrent().getUserName()));
-								FacadeProvider.getContactFacade().save(contactDto);
-							}
-						}
-						callback.run();
-						new Notification(
-							I18nProperties.getString(Strings.headingFollowUpCanceled),
-							I18nProperties.getString(Strings.messageFollowUpCanceled),
-							Type.HUMANIZED_MESSAGE,
-							false).show(Page.getCurrent());
+					if (Boolean.TRUE.equals(confirmed)) {
+						String userName = UserProvider.getCurrent().getUserName();
+
+						new BulkOperationHandler<ContactIndexDto>(Strings.messageFollowUpCanceled, Strings.messageFollowUpCanceledForSome)
+							.doBulkOperation(batch -> {
+								for (ContactIndexDto contact : batch) {
+									if (!FollowUpStatus.NO_FOLLOW_UP.equals(contact.getFollowUpStatus())
+										&& !FollowUpStatus.CANCELED.equals(contact.getFollowUpStatus())) {
+										ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(contact.getUuid());
+										contactDto.setFollowUpStatus(FollowUpStatus.CANCELED);
+										contactDto.addToFollowUpComment(String.format(I18nProperties.getString(Strings.infoCanceledBy), userName));
+										FacadeProvider.getContactFacade().save(contactDto);
+									}
+								}
+
+								return batch.size();
+							}, new ArrayList<>(selectedRows), bulkOperationCallback(caseUuid, contactGrid, null));
 					}
 				});
 		}
 	}
 
-	public void setAllSelectedItemsToLostToFollowUp(Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {
-		if (selectedRows.size() == 0) {
+	public void setAllSelectedItemsToLostToFollowUp(
+		Collection<? extends ContactIndexDto> selectedRows,
+		String caseUuid,
+		AbstractContactGrid<?> contactGrid) {
+		if (selectedRows.isEmpty()) {
 			new Notification(
 				I18nProperties.getString(Strings.headingNoContactsSelected),
 				I18nProperties.getString(Strings.messageNoContactsSelected),
@@ -889,22 +895,23 @@ public class ContactController {
 				I18nProperties.getString(Strings.no),
 				640,
 				confirmed -> {
-					if (confirmed) {
-						for (ContactIndexDto contact : selectedRows) {
-							if (contact.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
-								ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(contact.getUuid());
-								contactDto.setFollowUpStatus(FollowUpStatus.LOST);
-								contactDto.addToFollowUpComment(
-									String.format(I18nProperties.getString(Strings.infoLostToFollowUpBy), UserProvider.getCurrent().getUserName()));
-								FacadeProvider.getContactFacade().save(contactDto);
-							}
-						}
-						callback.run();
-						new Notification(
-							I18nProperties.getString(Strings.headingFollowUpStatusChanged),
-							I18nProperties.getString(Strings.messageFollowUpStatusChanged),
-							Type.HUMANIZED_MESSAGE,
-							false).show(Page.getCurrent());
+					if (Boolean.TRUE.equals(confirmed)) {
+						String userName = UserProvider.getCurrent().getUserName();
+
+						new BulkOperationHandler<ContactIndexDto>(Strings.messageFollowUpStatusChanged, Strings.messageFollowUpStatusChangedForSome)
+							.doBulkOperation(batch -> {
+								for (ContactIndexDto contact : batch) {
+									if (contact.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
+										ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(contact.getUuid());
+										contactDto.setFollowUpStatus(FollowUpStatus.LOST);
+										contactDto
+											.addToFollowUpComment(String.format(I18nProperties.getString(Strings.infoLostToFollowUpBy), userName));
+										FacadeProvider.getContactFacade().save(contactDto);
+									}
+								}
+
+								return batch.size();
+							}, new ArrayList<>(selectedRows), bulkOperationCallback(caseUuid, contactGrid, null));
 					}
 				});
 		}

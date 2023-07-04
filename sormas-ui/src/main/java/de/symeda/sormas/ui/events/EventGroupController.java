@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.events;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.vaadin.server.Page;
@@ -52,6 +53,7 @@ import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.events.groups.EventGroupSelectionField;
 import de.symeda.sormas.ui.utils.ArchivingController;
+import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -118,14 +120,6 @@ public class EventGroupController {
 			if (selectedEventGroup != null) {
 				FacadeProvider.getEventGroupFacade().linkEventsToGroup(eventReferences, selectedEventGroup.toReference());
 				FacadeProvider.getEventGroupFacade().notifyEventAddedToEventGroup(selectedEventGroup.toReference(), eventReferences);
-
-				Notification.show(I18nProperties.getString(Strings.messageEventLinkedToGroup), Type.TRAY_NOTIFICATION);
-
-				if (callback != null) {
-					callback.run();
-				} else {
-					SormasUI.refreshView();
-				}
 			}
 		});
 
@@ -137,7 +131,7 @@ public class EventGroupController {
 		selectOrCreate(Collections.singletonList(eventReference), null);
 	}
 
-	public void selectOrCreate(List<EventReferenceDto> eventReferences, Runnable callback) {
+	public void selectOrCreate(List<EventReferenceDto> eventReferences, Consumer<EventReferenceDto> callback) {
 		Set<String> excludedEventGroupUuids = FacadeProvider.getEventGroupFacade()
 			.getCommonEventGroupsByEvents(eventReferences)
 			.stream()
@@ -150,8 +144,13 @@ public class EventGroupController {
 		component.addCommitListener(() -> {
 			EventGroupIndexDto selectedEventGroup = selectionField.getValue();
 			if (selectedEventGroup != null) {
-				FacadeProvider.getEventGroupFacade().linkEventsToGroup(eventReferences, selectedEventGroup.toReference());
-				FacadeProvider.getEventGroupFacade().notifyEventAddedToEventGroup(selectedEventGroup.toReference(), eventReferences);
+				new BulkOperationHandler<EventReferenceDto>(Strings.messageEventsLinkedToGroup, Strings.messageSomeEventsLinkedToGroup)
+					.doBulkOperation(batch -> {
+						FacadeProvider.getEventGroupFacade().linkEventsToGroup(batch, selectedEventGroup.toReference());
+						FacadeProvider.getEventGroupFacade().notifyEventAddedToEventGroup(selectedEventGroup.toReference(), batch);
+
+						return batch.size();
+					}, eventReferences, callback);
 
 				Notification.show(I18nProperties.getString(Strings.messageEventLinkedToGroup), Type.TRAY_NOTIFICATION);
 
@@ -341,7 +340,7 @@ public class EventGroupController {
 		}
 	}
 
-	public void linkAllToGroup(Set<EventIndexDto> selectedItems, Runnable callback) {
+	public void linkAllToGroup(Set<EventIndexDto> selectedItems) {
 		if (selectedItems.size() == 0) {
 			new Notification(
 				I18nProperties.getString(Strings.headingNoEventsSelected),
