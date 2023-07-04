@@ -38,7 +38,6 @@ public class EnvironmentCreateForm extends AbstractEditForm<EnvironmentDto> {
             fluidRowLocs("", EnvironmentDto.RESPONSIBLE_USER);
     //@formatter:on
 
-	private LocationEditForm locationForm;
 	private List<UserReferenceDto> districtEnvironmentResponsibles = new ArrayList<>();
 
 	public EnvironmentCreateForm() {
@@ -60,14 +59,14 @@ public class EnvironmentCreateForm extends AbstractEditForm<EnvironmentDto> {
 	protected void addFields() {
 
 		addField(EnvironmentDto.REPORT_DATE, DateField.class);
-		ComboBox environmentMedia = addField(EnvironmentDto.ENVIRONMENT_MEDIA, ComboBox.class);
+		addField(EnvironmentDto.ENVIRONMENT_MEDIA, ComboBox.class);
 		addField(EnvironmentDto.ENVIRONMENT_NAME, TextField.class);
 
 		Label locationHeadingLabel = new Label(I18nProperties.getString(Strings.headingLocation));
 		locationHeadingLabel.addStyleName(H3);
 		getContent().addComponent(locationHeadingLabel, LOCATION_HEADING_LOC);
 
-		locationForm = addField(EnvironmentDto.LOCATION, LocationEditForm.class);
+		LocationEditForm locationForm = addField(EnvironmentDto.LOCATION, LocationEditForm.class);
 		locationForm.setCaption(null);
 
 		ComboBox districtField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.DISTRICT);

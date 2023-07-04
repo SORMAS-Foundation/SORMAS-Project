@@ -41,7 +41,6 @@ import de.symeda.sormas.ui.utils.ResizableTextAreaWrapper;
 public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 
 	private static final String LOCATION_HEADING_LOC = "locationHeadingLoc";
-	private static final String WATER_USE = "waterUse";
 	private static final String WATER_USE_LOC = "waterUseLoc";
 
 	//@formatter:off
@@ -62,19 +61,17 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 			fluidRowLocs(EnvironmentDto.OTHER_DELETION_REASON);
     //@formatter:on
 
-	private final Consumer<Runnable> actionCallback;
-	private LocationEditForm locationForm;
 	private WaterUseCheckBoxTree waterUseCheckBoxTree;
 	private List<UserReferenceDto> districtEnvironmentResponsibles = new ArrayList<>();
 
-	public EnvironmentDataForm(Consumer<Runnable> actionCallback) {
+	public EnvironmentDataForm() {
 		super(
 			EnvironmentDto.class,
 			EnvironmentDto.I18N_PREFIX,
 			false,
 			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
 			UiFieldAccessCheckers.getNoop());
-		this.actionCallback = actionCallback;
+//		this.actionCallback = actionCallback;
 		addFields();
 	}
 
@@ -93,7 +90,7 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 
 		addField(EnvironmentDto.REPORTING_USER).setReadOnly(true);
 
-		ComboBox investigationStatus = addField(EnvironmentDto.INVESTIGATION_STATUS, ComboBox.class);
+		addField(EnvironmentDto.INVESTIGATION_STATUS, ComboBox.class);
 		ComboBox environmentMedia = addField(EnvironmentDto.ENVIRONMENT_MEDIA, ComboBox.class);
 
 		ComboBox waterType = addField(EnvironmentDto.WATER_TYPE, ComboBox.class);
@@ -119,7 +116,7 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 
 		waterUseCheckBoxTree = new WaterUseCheckBoxTree(
 			Arrays.stream(WaterUse.values())
-				.map(waterUseDetail -> environmentEvidenceDetailToCheckBoxElement(waterUseDetail))
+				.map(this::environmentEvidenceDetailToCheckBoxElement)
 				.collect(Collectors.toList()),
 			() -> {
 				if (isWaterUseOtherChecked()) {
@@ -141,7 +138,7 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 		locationHeadingLabel.addStyleName(H3);
 		getContent().addComponent(locationHeadingLabel, LOCATION_HEADING_LOC);
 
-		locationForm = addField(EnvironmentDto.LOCATION, LocationEditForm.class);
+		LocationEditForm locationForm = addField(EnvironmentDto.LOCATION, LocationEditForm.class);
 		locationForm.setCaption(null);
 
 		ComboBox districtField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.DISTRICT);

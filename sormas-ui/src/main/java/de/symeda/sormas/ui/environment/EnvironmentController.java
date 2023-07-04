@@ -99,7 +99,7 @@ public class EnvironmentController {
 		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getEnvironmentFacade().getAutomaticDeletionInfo(environmentUuid);
 		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getEnvironmentFacade().getManuallyDeletionInfo(environmentUuid);
 
-		EnvironmentDataForm environmentDataForm = new EnvironmentDataForm(actionCallback);
+		EnvironmentDataForm environmentDataForm = new EnvironmentDataForm();
 		environmentDataForm.setValue(environmentDto);
 
 		CommitDiscardWrapperComponent<EnvironmentDataForm> editComponent =

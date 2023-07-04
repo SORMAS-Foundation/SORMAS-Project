@@ -66,9 +66,4 @@ public abstract class AbstractEnvironmentView extends AbstractEditAllowedDetailV
 		setMainHeaderComponent(ControllerProvider.getEnvironmentController().getEnvironmentViewTitleLayout(getReference().getUuid()));
 	}
 
-	@Override
-	protected void setSubComponent(DirtyStateComponent newComponent) {
-		super.setSubComponent(newComponent);
-	}
-
 }
