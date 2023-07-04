@@ -7,7 +7,6 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.vaadin.ui.Label;
@@ -62,7 +61,6 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
     //@formatter:on
 
 	private WaterUseCheckBoxTree waterUseCheckBoxTree;
-	private List<UserReferenceDto> districtEnvironmentResponsibles = new ArrayList<>();
 
 	public EnvironmentDataForm() {
 		super(
@@ -71,7 +69,6 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 			false,
 			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
 			UiFieldAccessCheckers.getNoop());
-//		this.actionCallback = actionCallback;
 		addFields();
 	}
 
@@ -152,12 +149,13 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 
 		districtField.addValueChangeListener(e -> {
 			DistrictReferenceDto district = (DistrictReferenceDto) districtField.getValue();
+			List<UserReferenceDto> districtEnvironmentResponsibles = new ArrayList<>();
 			if (district != null) {
 				districtEnvironmentResponsibles = FacadeProvider.getUserFacade().getUserRefsByDistrict(district, true, UserRight.ENVIRONMENT_EDIT);
 			} else {
 				districtEnvironmentResponsibles.clear();
 			}
-			addDistrict(responsibleUserField);
+			FieldHelper.updateItems(responsibleUserField, districtEnvironmentResponsibles);
 		});
 
 		setRequired(
@@ -202,13 +200,6 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 
 	private CheckBoxTree.CheckBoxElement<WaterUse> environmentEvidenceDetailToCheckBoxElement(WaterUse waterUse) {
 		return new CheckBoxTree.CheckBoxElement<>(null, waterUse);
-	}
-
-	private void addDistrict(ComboBox responsibleUserField) {
-		List<UserReferenceDto> responsibleUsers = new ArrayList<>();
-		responsibleUsers.addAll(districtEnvironmentResponsibles);
-
-		FieldHelper.updateItems(responsibleUserField, responsibleUsers);
 	}
 
 	@Override

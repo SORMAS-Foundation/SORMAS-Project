@@ -30,9 +30,12 @@ import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.environment.EnvironmentFacade;
 import de.symeda.sormas.api.environment.EnvironmentIndexDto;
 import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.immunization.ImmunizationDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -45,6 +48,7 @@ import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
+import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -346,12 +350,20 @@ public class EnvironmentFacadeEjb
 
 	@Override
 	protected void pseudonymizeDto(Environment source, EnvironmentDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
-
+		if (dto != null) {
+			pseudonymizer.pseudonymizeDto(EnvironmentDto.class, dto, inJurisdiction, e -> {
+				pseudonymizer.pseudonymizeUser(source.getReportingUser(), userService.getCurrentUser(), dto::setReportingUser);
+			});
+		}
 	}
 
 	@Override
 	protected void restorePseudonymizedDto(EnvironmentDto dto, EnvironmentDto existingDto, Environment entity, Pseudonymizer pseudonymizer) {
-
+		if (existingDto != null) {
+			boolean inJurisdiction = service.inJurisdictionOrOwned(entity);
+			pseudonymizer.restorePseudonymizedValues(EnvironmentDto.class, dto, existingDto, inJurisdiction);
+			pseudonymizer.restoreUser(entity.getReportingUser(), userService.getCurrentUser(), dto, dto::setReportingUser);
+		}
 	}
 
 	@Override
@@ -362,11 +374,6 @@ public class EnvironmentFacadeEjb
 	@Override
 	public List<EnvironmentDto> getAllEnvironmentsAfter(Date date) {
 		return service.getAllAfter(date).stream().map(r -> toDto(r)).collect(Collectors.toList());
-	}
-
-	@Override
-	public EnvironmentDto getEnvironmentDataByUuid(String uuid) {
-		return toPseudonymizedDto(service.getByUuid(uuid, true));
 	}
 
 	@Override

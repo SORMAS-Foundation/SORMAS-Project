@@ -6,10 +6,14 @@ import java.util.Map;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
@@ -71,6 +75,17 @@ public class EnvironmentDto extends PseudonymizableDto {
 		final EnvironmentDto environment = new EnvironmentDto();
 		environment.setUuid(DataHelper.createUuid());
 		environment.setLocation(LocationDto.build());
+		final UserDto currentUser = FacadeProvider.getUserFacade().getCurrentUser();
+		environment.setReportingUser(currentUser.toReference());
+		environment.getLocation().setRegion(currentUser.getRegion());
+		environment.getLocation().setDistrict(currentUser.getDistrict());
+		environment.setInvestigationStatus(InvestigationStatus.PENDING);
+		return environment;
+	}
+
+	public static EnvironmentDto build(UserReferenceDto reportingUser) {
+		EnvironmentDto environment = build();
+		environment.setReportingUser(reportingUser);
 
 		return environment;
 	}

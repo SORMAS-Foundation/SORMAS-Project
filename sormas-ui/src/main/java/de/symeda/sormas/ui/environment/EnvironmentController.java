@@ -21,7 +21,6 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.ui.Notification;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
 import de.symeda.sormas.api.environment.EnvironmentDto;
@@ -59,11 +58,7 @@ public class EnvironmentController {
 		if (curentUser != null) {
 			EnvironmentCreateForm createForm;
 			createForm = new EnvironmentCreateForm();
-			final EnvironmentDto environment = EnvironmentDto.build();
-			environment.setReportingUser(curentUser.getUserReference());
-			environment.getLocation().setRegion(curentUser.getUser().getRegion());
-			environment.getLocation().setDistrict(curentUser.getUser().getDistrict());
-			environment.setInvestigationStatus(InvestigationStatus.PENDING);
+			final EnvironmentDto environment = EnvironmentDto.build(curentUser.getUserReference());
 			createForm.setValue(environment);
 			final CommitDiscardWrapperComponent<EnvironmentCreateForm> editView = new CommitDiscardWrapperComponent<>(
 				createForm,
@@ -95,7 +90,7 @@ public class EnvironmentController {
 		String environmentUuid,
 		Consumer<Runnable> actionCallback) {
 
-		EnvironmentDto environmentDto = FacadeProvider.getEnvironmentFacade().getEnvironmentDataByUuid(environmentUuid);
+		EnvironmentDto environmentDto = FacadeProvider.getEnvironmentFacade().getByUuid(environmentUuid);
 		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getEnvironmentFacade().getAutomaticDeletionInfo(environmentUuid);
 		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getEnvironmentFacade().getManuallyDeletionInfo(environmentUuid);
 

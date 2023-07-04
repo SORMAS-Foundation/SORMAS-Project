@@ -38,7 +38,7 @@ public class EnvironmentCreateForm extends AbstractEditForm<EnvironmentDto> {
             fluidRowLocs("", EnvironmentDto.RESPONSIBLE_USER);
     //@formatter:on
 
-	private List<UserReferenceDto> districtEnvironmentResponsibles = new ArrayList<>();
+//	private List<UserReferenceDto> districtEnvironmentResponsibles = new ArrayList<>();
 
 	public EnvironmentCreateForm() {
 		super(
@@ -76,20 +76,15 @@ public class EnvironmentCreateForm extends AbstractEditForm<EnvironmentDto> {
 
 		districtField.addValueChangeListener(e -> {
 			DistrictReferenceDto district = (DistrictReferenceDto) districtField.getValue();
+			List<UserReferenceDto> districtEnvironmentResponsibles = new ArrayList<>();
 			if (district != null) {
 				districtEnvironmentResponsibles = FacadeProvider.getUserFacade().getUserRefsByDistrict(district, true, UserRight.ENVIRONMENT_EDIT);
 			} else {
 				districtEnvironmentResponsibles.clear();
 			}
-			addDistrict(responsibleUserField);
+			FieldHelper.updateItems(responsibleUserField, districtEnvironmentResponsibles);
 		});
 
 		setRequired(true, EnvironmentDto.REPORT_DATE, EnvironmentDto.ENVIRONMENT_MEDIA, EnvironmentDto.ENVIRONMENT_NAME);
-	}
-
-	private void addDistrict(ComboBox responsibleUserField) {
-		List<UserReferenceDto> responsibleUsers = new ArrayList<>();
-		responsibleUsers.addAll(districtEnvironmentResponsibles);
-		FieldHelper.updateItems(responsibleUserField, responsibleUsers);
 	}
 }
