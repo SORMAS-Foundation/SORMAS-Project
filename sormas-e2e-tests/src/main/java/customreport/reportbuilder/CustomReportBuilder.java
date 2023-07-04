@@ -49,7 +49,7 @@ public abstract class CustomReportBuilder {
           StandardOpenOption.CREATE);
 
     } catch (Exception e) {
-      log.info("Error when writing Custom report file: {}", e.getStackTrace());
+      log.info("Error when writing Custom report file: {}", e.getMessage());
     }
   }
 }
