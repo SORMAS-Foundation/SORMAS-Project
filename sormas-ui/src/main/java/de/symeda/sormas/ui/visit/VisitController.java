@@ -235,6 +235,7 @@ public class VisitController {
 			.deleteAllSelectedItems(
 				selectedRows,
 				DeleteRestoreHandlers.forVisit(),
+				true,
 				bulkOperationCallback(visitGrid, noEntriesRemainingCallback, null));
 
 	}

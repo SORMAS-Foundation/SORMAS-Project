@@ -25,6 +25,7 @@ public class PermanentDeleteController<F extends PermanentlyDeletableFacade> {
 	public <T extends HasUuid> void deleteAllSelectedItems(
 		Collection<T> entities,
 		IPermanentDeleteHandler<?> deleteHandler,
+		boolean allItemsAreEligibleForDeletion,
 		Consumer<List<T>> batchCallback) {
 
 		if (entities.isEmpty()) {
@@ -32,12 +33,10 @@ public class PermanentDeleteController<F extends PermanentlyDeletableFacade> {
 			return;
 		}
 
-		/*
-		 * if (!isEligibleForDeletion) {
-		 * displayErrorMessage(messages);
-		 * return;
-		 * }
-		 */
+		if (!allItemsAreEligibleForDeletion) {
+			displayErrorMessage(deleteHandler.getDeleteRestoreMessages());
+			return;
+		}
 
 		//TODO: test the permanent delete for case or event
 		String deleteConfirmationMessage = String.format(
@@ -141,7 +140,6 @@ public class PermanentDeleteController<F extends PermanentlyDeletableFacade> {
 			false).show(Page.getCurrent());
 	}
 
-	//TODO: check if can be deleted and added as we have for bulk edit
 	private <T extends HasUuid> BulkOperationHandler<T> createBulkOperationHandler(IPermanentDeleteHandler<?> deleteHandler) {
 		DeleteRestoreMessages deleteRestoreMessages = deleteHandler.getDeleteRestoreMessages();
 		return new BulkOperationHandler<>(deleteRestoreMessages.getMessageEntitiesDeleted(), deleteRestoreMessages.getMessageEntitiesNotDeleted());

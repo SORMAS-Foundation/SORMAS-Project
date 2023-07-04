@@ -173,7 +173,11 @@ public class TaskController {
 	public void deleteAllSelectedItems(Collection<TaskIndexDto> selectedRows, TaskGrid taskGrid, Runnable noEntriesRemainingCallback) {
 
 		ControllerProvider.getPermanentDeleteController()
-			.deleteAllSelectedItems(selectedRows, DeleteRestoreHandlers.forTask(), bulkOperationCallback(taskGrid, noEntriesRemainingCallback, null));
+			.deleteAllSelectedItems(
+				selectedRows,
+				DeleteRestoreHandlers.forTask(),
+				true,
+				bulkOperationCallback(taskGrid, noEntriesRemainingCallback, null));
 
 	}
 

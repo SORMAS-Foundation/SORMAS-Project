@@ -287,6 +287,7 @@ public class ExternalMessageController {
 			.deleteAllSelectedItems(
 				selectedRows,
 				DeleteRestoreHandlers.forExternalMessage(),
+				isEligibleForDeletion(selectedRows),
 				bulkOperationCallback(externalMessageGrid, noEntriesRemainingCallback, null));
 
 	}
