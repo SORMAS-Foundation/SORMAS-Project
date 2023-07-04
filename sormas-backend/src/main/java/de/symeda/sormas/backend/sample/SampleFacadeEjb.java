@@ -795,7 +795,6 @@ public class SampleFacadeEjb implements SampleFacade {
 		return restoredSampleUuids;
 	}
 
-	//TODO: check if deleteSamples method can be used
 	@Override
 	@RightsAllowed(UserRight._SAMPLE_DELETE)
 	public void delete(List<String> sampleUuids, DeletionDetails deletionDetails) {

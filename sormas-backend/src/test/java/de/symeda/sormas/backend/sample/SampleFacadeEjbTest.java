@@ -426,9 +426,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		assertNotNull(getAdditionalTestFacade().getByUuid(firstSampleAdditionalTest.getUuid()));
 
 		getSampleFacade()
-			.delete(
-			Arrays.asList(firstSample.getUuid(), secondSample.getUuid()),
-			new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
+			.delete(Arrays.asList(firstSample.getUuid(), secondSample.getUuid()), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
 		// Sample and pathogen test should be marked as deleted, additional test should be deleted
 		List<String> sampleUuids = getSampleFacade().getDeletedUuidsSince(since);
@@ -489,9 +487,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		assertNotNull(getAdditionalTestFacade().getByUuid(thirdSampleAdditionalTest.getUuid()));
 
 		getSampleFacade()
-			.delete(
-			Arrays.asList(thirdSample.getUuid(), forthSample.getUuid()),
-			new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
+			.delete(Arrays.asList(thirdSample.getUuid(), forthSample.getUuid()), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
 		// Sample and pathogen test should be marked as deleted, additional tests should be deleted
 		List<String> sampleUuids = getSampleFacade().getDeletedUuidsSince(since);

@@ -18,6 +18,8 @@ public interface TravelEntryFacade extends CoreFacade<TravelEntryDto, TravelEntr
 
 	List<String> deleteTravelEntries(List<String> uuids, DeletionDetails deletionDetails);
 
+	List<String> restoreTravelEntries(List<String> uuids);
+
 	List<TravelEntryListEntryDto> getEntriesList(TravelEntryListCriteria criteria, Integer first, Integer max);
 
 	Page<TravelEntryIndexDto> getIndexPage(TravelEntryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);

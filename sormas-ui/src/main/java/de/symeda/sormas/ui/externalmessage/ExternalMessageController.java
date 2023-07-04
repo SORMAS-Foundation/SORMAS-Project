@@ -277,7 +277,6 @@ public class ExternalMessageController {
 		}
 	}
 
-	//TODO: test this one
 	public void deleteAllSelectedItems(
 		Collection<ExternalMessageIndexDto> selectedRows,
 		ExternalMessageGrid externalMessageGrid,

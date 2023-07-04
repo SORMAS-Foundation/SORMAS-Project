@@ -162,18 +162,29 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
+	@RightsAllowed(UserRight._TRAVEL_ENTRY_DELETE)
 	public void restore(List<String> uuids) {
+		restoreTravelEntries(uuids);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._TRAVEL_ENTRY_DELETE)
+	public List<String> restoreTravelEntries(List<String> uuids) {
+		List<String> restoredTravelEntryUuids = new ArrayList<>();
 		List<TravelEntry> travelEntriesToBeRestored = travelEntryService.getByUuids(uuids);
 
 		if (travelEntriesToBeRestored != null) {
 			travelEntriesToBeRestored.forEach(travelEntryToBeRestored -> {
 				try {
 					restore(travelEntryToBeRestored.getUuid());
+					restoredTravelEntryUuids.add(travelEntryToBeRestored.getUuid());
 				} catch (Exception e) {
 					logger.error("The travel entry with uuid:" + travelEntryToBeRestored.getUuid() + "could not be restored");
 				}
 			});
 		}
+
+		return restoredTravelEntryUuids;
 	}
 
 	@Override

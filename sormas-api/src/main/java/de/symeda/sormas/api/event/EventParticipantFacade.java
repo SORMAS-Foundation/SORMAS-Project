@@ -23,6 +23,7 @@ import javax.ejb.Remote;
 
 import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -56,6 +57,8 @@ public interface EventParticipantFacade
 	List<String> restoreEventParticipants(List<String> uuids);
 
 	List<String> getDeletedUuidsSince(Date date);
+
+	List<String> deleteEventParticipants(List<String> uuids, DeletionDetails deletionDetails);
 
 	EventParticipantDto getFirst(EventParticipantCriteria eventParticipantCriteria);
 

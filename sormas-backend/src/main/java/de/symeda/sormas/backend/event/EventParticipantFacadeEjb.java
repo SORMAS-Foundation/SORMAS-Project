@@ -512,6 +512,12 @@ public class EventParticipantFacadeEjb
 	@Override
 	@RightsAllowed(UserRight._EVENTPARTICIPANT_DELETE)
 	public void delete(List<String> uuids, DeletionDetails deletionDetails) {
+		deleteEventParticipants(uuids, deletionDetails);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._EVENTPARTICIPANT_DELETE)
+	public List<String> deleteEventParticipants(List<String> uuids, DeletionDetails deletionDetails) {
 		List<String> deletedEventParticipantUuids = new ArrayList<>();
 		List<EventParticipant> eventParticipantsToBeDeleted = service.getByUuids(uuids);
 
@@ -527,6 +533,8 @@ public class EventParticipantFacadeEjb
 				}
 			});
 		}
+
+		return deletedEventParticipantUuids;
 	}
 
 	@Override
