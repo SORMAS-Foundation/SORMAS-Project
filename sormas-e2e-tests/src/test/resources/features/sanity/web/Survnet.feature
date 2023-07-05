@@ -8,6 +8,13 @@ Feature: Survnet tests
     Then I check that the Survnet Converter version is not an unavailable on About directory
     And I check that the Survnet Converter version is correctly displayed on About directory
 
+  @tmsLink=SORQA-1031 @precon
+  Scenario: Check user login and language settings of SurvNet User in SORMAS
+    Given I log in as a Survnet
+    And I check that Surveillance Dashboard header is correctly displayed in German language
+    When I click on the User Settings button from navbar
+    Then I check that Deutsch language is selected in User Settings
+
   @tmsLink=SORQA-957
   Scenario: Test send simple Case from SORMAS to "Meldesoftware"
     Given I log in as a Survnet
