@@ -1263,6 +1263,7 @@ public interface Strings {
 	String messageSamplesRestored = "messageSamplesRestored";
 	String messageSelectedPeriodTooLong = "messageSelectedPeriodTooLong";
 	String messageSetContactRegionAndDistrict = "messageSetContactRegionAndDistrict";
+	String messageSomeContactsLinkedToEvent = "messageSomeContactsLinkedToEvent";
 	String messageSomeEntitiesArchived = "messageSomeEntitiesArchived";
 	String messageSomeEntitiesDearchived = "messageSomeEntitiesDearchived";
 	String messageSomeEventsLinkedToGroup = "messageSomeEventsLinkedToGroup";

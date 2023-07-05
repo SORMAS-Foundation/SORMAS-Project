@@ -42,16 +42,23 @@ public class BulkOperationHandler<T extends HasUuid> {
 	private int initialEntryCount;
 	private int successfulEntryCount;
 
-	private final String allEntriesProcessedMessageProperty;
-	private final String someEntriesProcessedMessageProperty;
+	private final String allEntriesProcessedMessage;
+	private final String someEntriesProcessedMessage;
+
+	private boolean messagesTranslated;
 
 	public BulkOperationHandler(String allEntriesProcessedMessageProperty, String someEntriesProcessedMessageProperty) {
-		this.allEntriesProcessedMessageProperty = allEntriesProcessedMessageProperty;
-		this.someEntriesProcessedMessageProperty = someEntriesProcessedMessageProperty;
+		this.allEntriesProcessedMessage = I18nProperties.getString(allEntriesProcessedMessageProperty);
+		this.someEntriesProcessedMessage = I18nProperties.getString(someEntriesProcessedMessageProperty);
+	}
+
+	public BulkOperationHandler(String allEntriesProcessedMessage, String someEntriesProcessedMessage, boolean messagesTranslated) {
+		this.allEntriesProcessedMessage = messagesTranslated ? allEntriesProcessedMessage : I18nProperties.getString(allEntriesProcessedMessage);
+		this.someEntriesProcessedMessage = messagesTranslated ? someEntriesProcessedMessage : I18nProperties.getString(someEntriesProcessedMessage);
 	}
 
 	public static <E extends HasUuid> BulkOperationHandler<E> forBulkEdit() {
-		return new BulkOperationHandler<E>(Strings.messageEntriesEdited, Strings.messageEntriesEditedExceptArchived);
+		return new BulkOperationHandler<>(Strings.messageEntriesEdited, Strings.messageEntriesEditedExceptArchived);
 	}
 
 	public void doBulkOperation(
@@ -63,13 +70,10 @@ public class BulkOperationHandler<T extends HasUuid> {
 		if (selectedEntries.size() < BULK_ACTION_PROGRESS_THRESHOLD) {
 			successfulEntryCount = bulkOperationFunction.apply(selectedEntries);
 			if (initialEntryCount > successfulEntryCount) {
-				NotificationHelper.showNotification(
-					String.format(I18nProperties.getString(someEntriesProcessedMessageProperty), successfulEntryCount),
-					Notification.Type.HUMANIZED_MESSAGE,
-					-1);
-			} else {
 				NotificationHelper
-					.showNotification(I18nProperties.getString(allEntriesProcessedMessageProperty), Notification.Type.HUMANIZED_MESSAGE, -1);
+					.showNotification(String.format(someEntriesProcessedMessage, successfulEntryCount), Notification.Type.HUMANIZED_MESSAGE, -1);
+			} else {
+				NotificationHelper.showNotification(allEntriesProcessedMessage, Notification.Type.HUMANIZED_MESSAGE, -1);
 			}
 			bulkOperationDoneCallback.accept(Collections.emptyList());
 		} else {

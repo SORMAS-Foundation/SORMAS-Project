@@ -1013,4 +1013,29 @@ public class ContactController {
 
 		return titleLayout;
 	}
+
+	public void linkSelectedContactsToEvent(Collection<? extends ContactIndexDto> selectedRows, AbstractContactGrid<?> contactGrid) {
+		if (selectedRows.isEmpty()) {
+			new Notification(
+				I18nProperties.getString(Strings.headingNoContactsSelected),
+				I18nProperties.getString(Strings.messageNoContactsSelected),
+				Notification.Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
+			return;
+		}
+
+		if (!selectedRows.stream().allMatch(contact -> contact.getDisease().equals(selectedRows.stream().findAny().get().getDisease()))) {
+			new Notification(I18nProperties.getString(Strings.messageBulkContactsWithDifferentDiseasesSelected), Notification.Type.WARNING_MESSAGE)
+				.show(Page.getCurrent());
+			return;
+		}
+
+		ControllerProvider.getEventController()
+			.selectOrCreateEventForContactList(selectedRows.stream().map(ContactIndexDto::toReference).collect(Collectors.toList()), remaining -> {
+				bulkOperationCallback(null, contactGrid, null).accept(
+					selectedRows.stream()
+						.filter(s -> remaining.stream().anyMatch(r -> r.getUuid().equals(s.getUuid())))
+						.collect(Collectors.toList()));
+			});
+	}
 }

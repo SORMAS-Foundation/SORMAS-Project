@@ -1223,7 +1223,7 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
-	public List<EventParticipantDto> getByEventAndPersons(String eventUuid, Collection<String> personUuids) {
+	public List<EventParticipantDto> getByEventAndPersons(String eventUuid, List<String> personUuids) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<EventParticipant> cq = cb.createQuery(EventParticipant.class);
 		Root<EventParticipant> eventParticipantRoot = cq.from(EventParticipant.class);
