@@ -2,6 +2,7 @@ package org.sormas.e2etests.steps.web.application.survnet;
 
 import cucumber.api.java8.En;
 import lombok.extern.slf4j.Slf4j;
+import org.jdom2.DataConversionException;
 import org.jdom2.Document;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.helpers.parsers.XMLParser;
@@ -13,6 +14,7 @@ import org.testng.asserts.SoftAssert;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,7 +78,7 @@ public class SurvNetSteps implements En {
     And(
         "I check if sex for all {int} cases in SORMAS generated bulk XML file is correct",
         (Integer caseNumber) -> {
-          for (int i=0; i<caseNumber; i++) {
+          for (int i = 0; i < caseNumber; i++) {
             String sex = getSexDE(bulkXmlFile, i);
             String expectedSex = EditPersonSteps.personSex.get(i);
             softly.assertEquals(sex, expectedSex, "Sex is incorrect!");
@@ -163,26 +165,30 @@ public class SurvNetSteps implements En {
     And(
         "^I open SORMAS generated XML file for single message$",
         () -> {
-          singleXmlFile = XMLParser.getDocument(
-              "/srv/dockerdata/jenkins_new/sormas-files/test_"
-              + EditCaseSteps.externalUUID.get(0).substring(1, 37)
-              + ".xml");
+          singleXmlFile =
+              XMLParser.getDocument(
+                  "/srv/dockerdata/jenkins_new/sormas-files/test_"
+                      + EditCaseSteps.externalUUID.get(0).substring(1, 37)
+                      + ".xml");
         });
 
     And(
         "^I open SORMAS generated XML file for bulk message$",
         () -> {
-          bulkXmlFile = XMLParser.getDocument("/srv/dockerdata/jenkins_new/sormas-files/bulk_"
-              + EditCaseSteps.externalUUID.get(0).substring(1, 37)
-              + ".xml");
+          bulkXmlFile =
+              XMLParser.getDocument(
+                  "/srv/dockerdata/jenkins_new/sormas-files/bulk_"
+                      + EditCaseSteps.externalUUID.get(0).substring(1, 37)
+                      + ".xml");
         });
 
     And(
         "^I check if external person uuid for all (\\d+) cases in SORMAS generated bult XML file is correct$",
         (Integer caseNumber) -> {
-          for (int i=0; i<caseNumber; i++) {
+          for (int i = 0; i < caseNumber; i++) {
             String externalUUID = getGuidPatient(bulkXmlFile, i);
-            String expectedExternalUUID = EditPersonSteps.externalPersonUUID.get(i).substring(1, 37);
+            String expectedExternalUUID =
+                EditPersonSteps.externalPersonUUID.get(i).substring(1, 37);
             softly.assertEquals(
                 externalUUID, expectedExternalUUID, "Person external UUID is incorrect!");
             softly.assertAll();
@@ -190,35 +196,45 @@ public class SurvNetSteps implements En {
         });
 
     And(
-       "^I check if \"([^\"]*)\" for all (\\d+) cases in SORMAS generated bulk XML file is correct$",
-       (String typeOfDate, Integer caseNumber) -> {
+        "^I check if \"([^\"]*)\" for all (\\d+) cases in SORMAS generated bulk XML file is correct$",
+        (String typeOfDate, Integer caseNumber) -> {
           LocalDate expectedDate = CreateNewCaseSteps.survnetCase.getDateOfReport();
 
           switch (typeOfDate) {
-              case "date of report":
-                  for (int i=0; i<caseNumber; i++) {
-                      LocalDate dateOfReport = getReportingDate(bulkXmlFile, i);
-                      softly.assertEquals(dateOfReport, expectedDate, "Date of report is incorrect!");
-                      softly.assertAll();
-                  }
-                  break;
-              case "change at date":
-                  for (int i=0; i<caseNumber; i++) {
-                      LocalDate changeAtDate = getChangedAt(bulkXmlFile, i);
-                      softly.assertEquals(changeAtDate, expectedDate, "Change at date is incorrect!");
-                      softly.assertAll();
-                  }
-                  break;
-              case "tracked at date":
-                  for (int i=0; i<caseNumber; i++) {
-                      LocalDate trackedAt = getTrackedAt(bulkXmlFile, i);
-                      softly.assertEquals(trackedAt, expectedDate, "Tracked at date is incorrect!");
-                      softly.assertAll();
-                  }
-                  break;
+            case "date of report":
+              for (int i = 0; i < caseNumber; i++) {
+                LocalDate dateOfReport = getReportingDate(bulkXmlFile, i);
+                softly.assertEquals(dateOfReport, expectedDate, "Date of report is incorrect!");
+                softly.assertAll();
+              }
+              break;
+            case "change at date":
+              for (int i = 0; i < caseNumber; i++) {
+                LocalDate changeAtDate = getChangedAt(bulkXmlFile, i);
+                softly.assertEquals(changeAtDate, expectedDate, "Change at date is incorrect!");
+                softly.assertAll();
+              }
+              break;
+            case "tracked at date":
+              for (int i = 0; i < caseNumber; i++) {
+                LocalDate trackedAt = getTrackedAt(bulkXmlFile, i);
+                softly.assertEquals(trackedAt, expectedDate, "Tracked at date is incorrect!");
+                softly.assertAll();
+              }
+              break;
           }
         });
 
+    And(
+        "^I check if age computed field in SORMAS generated XML file is correct$",
+        () -> {
+          int computedAge = getAgeComputed(singleXmlFile);
+          int expectedComputedAge =
+              Period.between(CreateNewCaseSteps.survnetCase.getDateOfBirth(), LocalDate.now())
+                  .getYears();
+          softly.assertEquals(computedAge, expectedComputedAge, "Computed age is incorrect!");
+          softly.assertAll();
+        });
   }
 
   private LocalDate getReportingDate(Document xmlFile, int caseNumber) {
@@ -317,5 +333,23 @@ public class SurvNetSteps implements En {
         break;
     }
     return sexDE;
+  }
+
+  private int getAgeComputed(Document xmlFile) {
+    int ageComputed = 0;
+    try {
+      ageComputed =
+          xmlFile
+              .getRootElement()
+              .getChildren()
+              .get(0)
+              .getChildren()
+              .get(81)
+              .getAttribute("Value")
+              .getIntValue();
+    } catch (DataConversionException e) {
+      e.printStackTrace();
+    }
+    return ageComputed;
   }
 }

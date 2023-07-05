@@ -18,11 +18,8 @@
 
 package org.sormas.e2etests.entities.services;
 
-import static org.sormas.e2etests.entities.pojo.helpers.ShortUUIDGenerator.generateShortUUID;
-
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
-import java.time.LocalDate;
 import lombok.SneakyThrows;
 import org.sormas.e2etests.entities.pojo.web.Case;
 import org.sormas.e2etests.enums.CommunityValues;
@@ -31,6 +28,10 @@ import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.GenderValues;
 import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.helpers.strings.ASCIIHelper;
+
+import java.time.LocalDate;
+
+import static org.sormas.e2etests.entities.pojo.helpers.ShortUUIDGenerator.generateShortUUID;
 
 public class CaseService {
   private final Faker faker;
@@ -595,6 +596,27 @@ public class CaseService {
         .firstName(firstName)
         .lastName(lastName)
         .sex(GenderValues.getRandomGenderDE())
+        .build();
+  }
+
+  @SneakyThrows
+  public Case buildCaseForSurvnetFeatureWithDateOfBirth() {
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
+
+    return Case.builder()
+        .dateOfReport(LocalDate.now())
+        .responsibleRegion("Berlin")
+        .responsibleDistrict("SK Berlin Mitte")
+        .placeOfStay("ZUHAUSE")
+        .firstName(firstName)
+        .lastName(lastName)
+        .sex(GenderValues.getRandomGenderDE())
+        .dateOfBirth(
+            LocalDate.of(
+                faker.number().numberBetween(1900, 2002),
+                faker.number().numberBetween(1, 12),
+                faker.number().numberBetween(1, 27)))
         .build();
   }
 

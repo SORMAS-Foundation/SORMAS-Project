@@ -23,7 +23,7 @@ Feature: Survnet tests
     And I create a new case with mandatory data only for Survnet DE
     And I click on Send to reporting tool button on Edit Case page
     And I collect case external UUID from Edit Case page
-    Then I wait 40 seconds for system reaction
+    Then I wait 50 seconds for system reaction
     And I open SORMAS generated XML file for single message
     Then I check if "date of report" in SORMAS generated XML file is correct
     And I check if sex in SORMAS generated single XML file is correct
@@ -88,3 +88,15 @@ Feature: Survnet tests
     Then I check if sex for all 2 cases in SORMAS generated bulk XML file is correct
     And I check if external person uuid for all 2 cases in SORMAS generated bult XML file is correct
     And I check if "date of report" for all 2 cases in SORMAS generated bulk XML file is correct
+
+  @tmsLink=SORQA-1027
+  Scenario: Calculated age in case when sending from SORMAS to Meldesoftware
+    Given I log in as a Survnet
+    When I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with mandatory data only and birth date for Survnet DE
+    And I click on Send to reporting tool button on Edit Case page
+    And I collect case external UUID from Edit Case page
+    Then I wait 50 seconds for system reaction
+    And I open SORMAS generated XML file for single message
+    Then I check if age computed field in SORMAS generated XML file is correct
