@@ -1184,7 +1184,7 @@ public class EventController {
 		}
 	}
 
-	public void linkAllToGroup(Set<EventIndexDto> selectedItems) {
-		ControllerProvider.getEventGroupController().linkAllToGroup(selectedItems);
+	public void linkAllToGroup(Set<EventIndexDto> selectedItems, EventGrid eventGrid) {
+		ControllerProvider.getEventGroupController().linkAllToGroup(selectedItems, bulkOperationCallback(eventGrid, null));
 	}
 }

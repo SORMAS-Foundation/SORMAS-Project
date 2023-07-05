@@ -587,7 +587,8 @@ public class EventsView extends AbstractView {
 							I18nProperties.getCaption(Captions.actionGroupEvent),
 							VaadinIcons.FILE_TREE,
 							mi -> grid.bulkActionHandler(
-								items -> ControllerProvider.getEventController().linkAllToGroup(eventGrid.asMultiSelect().getSelectedItems()))));
+								items -> ControllerProvider.getEventController()
+									.linkAllToGroup(eventGrid.asMultiSelect().getSelectedItems(), eventGrid))));
 				}
 				bulkActions.add(
 					new MenuBarHelper.MenuBarItem(

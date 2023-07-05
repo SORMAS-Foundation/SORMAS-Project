@@ -18,6 +18,7 @@
 package de.symeda.sormas.api.event;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
@@ -58,7 +59,7 @@ public interface EventGroupFacade {
 
 	void linkEventsToGroup(List<EventReferenceDto> eventReferences, EventGroupReferenceDto eventGroupReference);
 
-	void linkEventsToGroups(List<EventReferenceDto> eventReferences, List<EventGroupReferenceDto> eventGroupReferences);
+	void linkEventsToGroups(List<String> eventUuids, List<String> eventGroupReferences);
 
 	void unlinkEventGroup(EventReferenceDto eventReference, EventGroupReferenceDto eventGroupReference);
 
@@ -71,6 +72,8 @@ public interface EventGroupFacade {
 	void notifyEventEventGroupCreated(EventGroupReferenceDto eventGroupReference);
 
 	void notifyEventAddedToEventGroup(EventGroupReferenceDto eventGroupReference, List<EventReferenceDto> eventReferences);
+
+	void notifyEventAddedToEventGroup(String eventGroupUuid, Set<String> eventUuids);
 
 	void notifyEventRemovedFromEventGroup(EventGroupReferenceDto eventGroupReference, List<EventReferenceDto> eventReferences);
 }

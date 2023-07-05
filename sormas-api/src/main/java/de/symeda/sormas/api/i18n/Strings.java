@@ -746,8 +746,6 @@ public interface Strings {
 	String headingUpdatePersonContactDetails = "headingUpdatePersonContactDetails";
 	String headingUploadSuccess = "headingUploadSuccess";
 	String headingUserData = "headingUserData";
-	String headingUsersDisabled = "headingUsersDisabled";
-	String headingUsersEnabled = "headingUsersEnabled";
 	String headingUserSettings = "headingUserSettings";
 	String headingVaccination = "headingVaccination";
 	String headingViewAdditionalTest = "headingViewAdditionalTest";
@@ -1268,6 +1266,8 @@ public interface Strings {
 	String messageSomeEntitiesArchived = "messageSomeEntitiesArchived";
 	String messageSomeEntitiesDearchived = "messageSomeEntitiesDearchived";
 	String messageSomeEventsLinkedToGroup = "messageSomeEventsLinkedToGroup";
+	String messageSomeUsersDisabled = "messageSomeUsersDisabled";
+	String messageSomeUsersEnabled = "messageSomeUsersEnabled";
 	String messageSormasToSormasSimilarCaseFound = "messageSormasToSormasSimilarCaseFound";
 	String messageSormasToSormasSimilarCaseToContactFound = "messageSormasToSormasSimilarCaseToContactFound";
 	String messageSormasToSormasSimilarContactFound = "messageSormasToSormasSimilarContactFound";
