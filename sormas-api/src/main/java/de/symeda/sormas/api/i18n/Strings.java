@@ -68,6 +68,8 @@ public interface Strings {
 	String confirmationArchiveCountry = "confirmationArchiveCountry";
 	String confirmationArchiveDistrict = "confirmationArchiveDistrict";
 	String confirmationArchiveDistricts = "confirmationArchiveDistricts";
+	String confirmationArchiveEnvironment = "confirmationArchiveEnvironment";
+	String confirmationArchiveEnvironments = "confirmationArchiveEnvironments";
 	String confirmationArchiveEvent = "confirmationArchiveEvent";
 	String confirmationArchiveEventGroup = "confirmationArchiveEventGroup";
 	String confirmationArchiveEventParticipant = "confirmationArchiveEventParticipant";
@@ -107,6 +109,8 @@ public interface Strings {
 	String confirmationDearchiveCountry = "confirmationDearchiveCountry";
 	String confirmationDearchiveDistrict = "confirmationDearchiveDistrict";
 	String confirmationDearchiveDistricts = "confirmationDearchiveDistricts";
+	String confirmationDearchiveEnvironment = "confirmationDearchiveEnvironment";
+	String confirmationDearchiveEnvironments = "confirmationDearchiveEnvironments";
 	String confirmationDearchiveEvent = "confirmationDearchiveEvent";
 	String confirmationDearchiveEventGroup = "confirmationDearchiveEventGroup";
 	String confirmationDearchiveEventParticipant = "confirmationDearchiveEventParticipant";
@@ -239,6 +243,7 @@ public interface Strings {
 	String entityDistrict = "entityDistrict";
 	String entityDistricts = "entityDistricts";
 	String entityDocuments = "entityDocuments";
+	String entityEnvironment = "entityEnvironment";
 	String entityEvent = "entityEvent";
 	String entityEventActions = "entityEventActions";
 	String entityEventGroup = "entityEventGroup";
@@ -300,6 +305,7 @@ public interface Strings {
 	String errorDocumentGenerationMultipleDiseasses = "errorDocumentGenerationMultipleDiseasses";
 	String errorEntityNotEditable = "errorEntityNotEditable";
 	String errorEntityOutdated = "errorEntityOutdated";
+	String errorEventFromAnotherJurisdiction = "errorEventFromAnotherJurisdiction";
 	String errorEventNotEditable = "errorEventNotEditable";
 	String errorEventParticipantNotEditable = "errorEventParticipantNotEditable";
 	String errorEventsFromAnotherJurisdiction = "errorEventsFromAnotherJurisdiction";
@@ -392,6 +398,7 @@ public interface Strings {
 	String headingArchiveCampaign = "headingArchiveCampaign";
 	String headingArchiveCase = "headingArchiveCase";
 	String headingArchiveContact = "headingArchiveContact";
+	String headingArchiveEnvironment = "headingArchiveEnvironment";
 	String headingArchiveEvent = "headingArchiveEvent";
 	String headingArchiveEventGroup = "headingArchiveEventGroup";
 	String headingArchiveEventParticipant = "headingArchiveEventParticipant";
@@ -470,6 +477,7 @@ public interface Strings {
 	String headingCreateNewClinicalVisit = "headingCreateNewClinicalVisit";
 	String headingCreateNewContact = "headingCreateNewContact";
 	String headingCreateNewContactIssue = "headingCreateNewContactIssue";
+	String headingCreateNewEnvironment = "headingCreateNewEnvironment";
 	String headingCreateNewEvent = "headingCreateNewEvent";
 	String headingCreateNewEventGroup = "headingCreateNewEventGroup";
 	String headingCreateNewEventParticipant = "headingCreateNewEventParticipant";
@@ -493,6 +501,7 @@ public interface Strings {
 	String headingDearchiveCampaign = "headingDearchiveCampaign";
 	String headingDearchiveCase = "headingDearchiveCase";
 	String headingDearchiveContact = "headingDearchiveContact";
+	String headingDearchiveEnvironment = "headingDearchiveEnvironment";
 	String headingDearchiveEvent = "headingDearchiveEvent";
 	String headingDearchiveEventGroup = "headingDearchiveEventGroup";
 	String headingDearchiveEventParticipant = "headingDearchiveEventParticipant";
@@ -633,6 +642,7 @@ public interface Strings {
 	String headingNoCasesSelected = "headingNoCasesSelected";
 	String headingNoClinicalVisitsSelected = "headingNoClinicalVisitsSelected";
 	String headingNoContactsSelected = "headingNoContactsSelected";
+	String headingNoEnvironmentSelected = "headingNoEnvironmentSelected";
 	String headingNoEventFound = "headingNoEventFound";
 	String headingNoEventParticipantsSelected = "headingNoEventParticipantsSelected";
 	String headingNoEventsSelected = "headingNoEventsSelected";
@@ -773,6 +783,7 @@ public interface Strings {
 	String headingVisits = "headingVisits";
 	String headingVisitsDeleted = "headingVisitsDeleted";
 	String headingVisualization = "headingVisualization";
+	String headingWaterUse = "headingWaterUse";
 	String headingWrongFileType = "headingWrongFileType";
 	String immunizationRecoveryHeading = "immunizationRecoveryHeading";
 	String immunizationVaccinationHeading = "immunizationVaccinationHeading";
@@ -1128,6 +1139,10 @@ public interface Strings {
 	String messageEntriesEdited = "messageEntriesEdited";
 	String messageEntriesEditedExceptArchived = "messageEntriesEditedExceptArchived";
 	String messageEntryCreated = "messageEntryCreated";
+	String messageEnvironmentArchived = "messageEnvironmentArchived";
+	String messageEnvironmentCreated = "messageEnvironmentCreated";
+	String messageEnvironmentDearchived = "messageEnvironmentDearchived";
+	String messageEnvironmentSaved = "messageEnvironmentSaved";
 	String messageEpiDataHint = "messageEpiDataHint";
 	String messageEpidNumberWarning = "messageEpidNumberWarning";
 	String messageErrorReportNotAvailable = "messageErrorReportNotAvailable";
@@ -1233,6 +1248,7 @@ public interface Strings {
 	String messageNoDocumentTemplateUploadFile = "messageNoDocumentTemplateUploadFile";
 	String messageNoDocumentUploadFile = "messageNoDocumentUploadFile";
 	String messageNoEndDate = "messageNoEndDate";
+	String messageNoEnvironmentsSelected = "messageNoEnvironmentsSelected";
 	String messageNoEventFound = "messageNoEventFound";
 	String messageNoEventParticipantsSelected = "messageNoEventParticipantsSelected";
 	String messageNoEventsSelected = "messageNoEventsSelected";

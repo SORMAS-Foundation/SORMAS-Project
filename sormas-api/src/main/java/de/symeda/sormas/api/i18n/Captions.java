@@ -1063,6 +1063,7 @@ public interface Captions {
 	String environmentAllActiveAndArchivedEnvironments = "environmentAllActiveAndArchivedEnvironments";
 	String environmentArchivedEnvironments = "environmentArchivedEnvironments";
 	String environmentDeletedEnvironments = "environmentDeletedEnvironments";
+	String environmentEnvironmentsList = "environmentEnvironmentsList";
 	String environmentNewEnvironment = "environmentNewEnvironment";
 	String EpiData = "EpiData";
 	String EpiData_activitiesAsCase = "EpiData.activitiesAsCase";

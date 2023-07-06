@@ -12,6 +12,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Fetch;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -104,7 +106,9 @@ public class CurrentUserService {
 		// do eager loading in this case
 		final Root<User> user = cq.from(User.class);
 		user.fetch(User.ADDRESS);
-		user.fetch(User.USER_ROLES);
+		Fetch<Object, Object> fetch = user.fetch(User.USER_ROLES);
+		fetch.fetch(UserRole.EMAIL_NOTIFICATIONS, JoinType.LEFT);
+		fetch.fetch(UserRole.SMS_NOTIFICATIONS, JoinType.LEFT);
 
 		final Predicate equal = cb.equal(cb.lower(user.get(User.USER_NAME)), userNameParam);
 		cq.select(user).distinct(true);
