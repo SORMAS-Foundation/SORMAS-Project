@@ -43,6 +43,7 @@ public class EventGroupListComponent extends SideComponent {
 				UserRight.EVENTGROUP_CREATE,
 				UserRight.EVENTGROUP_LINK);
 		}
+
 		EventGroupList eventList = new EventGroupList(eventReference);
 		addComponent(eventList);
 		eventList.reload();
