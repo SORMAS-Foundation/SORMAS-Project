@@ -123,6 +123,11 @@ public class CurrentUserService {
 		if (currentUser != null) {
 			unproxy(currentUser.getRegion());
 			unproxy(currentUser.getDistrict());
+			unproxy(currentUser.getCommunity());
+			unproxy(currentUser.getHealthFacility());
+			unproxy(currentUser.getPointOfEntry());
+			unproxy(currentUser.getLaboratory());
+			unproxy(currentUser.getAssociatedOfficer());
 		}
 
 		return currentUser;
