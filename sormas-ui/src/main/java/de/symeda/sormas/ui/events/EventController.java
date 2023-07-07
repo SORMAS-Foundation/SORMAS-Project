@@ -975,6 +975,8 @@ public class EventController {
 						eventInvestigationStatusChange,
 						eventManagementStatusChange),
 					selectedEventsCpy,
+					null,
+					null,
 					bulkOperationCallback(eventGrid, popupWindow));
 		});
 
@@ -1007,21 +1009,33 @@ public class EventController {
 	public void deleteAllSelectedItems(Collection<EventIndexDto> selectedRows, EventGrid eventGrid) {
 
 		ControllerProvider.getDeleteRestoreController()
-			.deleteAllSelectedItems(selectedRows, DeleteRestoreHandlers.forEvent(), bulkOperationCallback(eventGrid, null));
+			.deleteAllSelectedItems(
+				selectedRows,
+				getEligibleEvents(selectedRows),
+				getIneligibleEvents(selectedRows),
+				DeleteRestoreHandlers.forEvent(),
+				bulkOperationCallback(eventGrid, null));
 	}
 
-	public boolean allSelectedEventsAreEligibleForDeletion(Collection<EventIndexDto> selectedRows) {
-		boolean allItemsAreEligibleForDeletion = true;
+	public Collection<EventIndexDto> getEligibleEvents(Collection<EventIndexDto> selectedRows) {
+		Collection<EventIndexDto> ineligibleEvents = getIneligibleEvents(selectedRows);
+		if (ineligibleEvents != null && ineligibleEvents.size() > 0) {
+			return selectedRows.stream().filter(row -> !ineligibleEvents.contains(row)).collect(Collectors.toCollection(ArrayList::new));
+		} else {
+			return selectedRows;
+		}
+	}
 
+	public Collection<EventIndexDto> getIneligibleEvents(Collection<EventIndexDto> selectedRows) {
+		Collection<EventIndexDto> ineligibleEvents = new ArrayList<>();
 		for (EventIndexDto selectedRow : selectedRows) {
 			List<EventParticipantDto> eventParticipantList =
 				FacadeProvider.getEventParticipantFacade().getAllActiveEventParticipantsByEvent(selectedRow.getUuid());
 			if (eventParticipantList.size() > 0) {
-				allItemsAreEligibleForDeletion = false;
-				break;
+				ineligibleEvents.add(selectedRow);
 			}
 		}
-		return allItemsAreEligibleForDeletion;
+		return ineligibleEvents;
 	}
 
 	public void restoreSelectedEvents(Collection<EventIndexDto> selectedRows, EventGrid eventGrid) {

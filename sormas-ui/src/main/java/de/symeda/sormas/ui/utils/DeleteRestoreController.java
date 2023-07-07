@@ -20,7 +20,6 @@ import de.symeda.sormas.api.DeletableFacade;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
-import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.HtmlHelper;
@@ -54,10 +53,13 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 			confirmed -> {
 				if (Boolean.TRUE.equals(confirmed)) {
 					List<T> selectedEntitiesCpy = new ArrayList<>(entities);
+					List<T> selectedEligibleEntitiesCpy = new ArrayList<>(entities);
 					this.<T> createBulkOperationHandler(deleteHandler, false)
 						.doBulkOperation(
 							selectedEntries -> deleteHandler.restore(selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList())),
 							selectedEntitiesCpy,
+							selectedEligibleEntitiesCpy,
+							null,
 							batchCallback);
 				}
 			});
@@ -65,6 +67,8 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 
 	public <T extends HasUuid> void deleteAllSelectedItems(
 		Collection<T> entities,
+		Collection<T> eligibleEntities,
+		Collection<T> ineligibleEntities,
 		IDeleteRestoreHandler<?> deleteHandler,
 		Consumer<List<T>> batchCallback) {
 
@@ -103,6 +107,8 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 					deleteHandler.clearOtherReason();
 
 					List<T> selectedEntitiesCpy = new ArrayList<>(entities);
+					List<T> selectedEligibleEntitiesCpy = eligibleEntities != null ? new ArrayList<>(eligibleEntities) : new ArrayList<>(entities);
+					List<T> selectedIneligibleEntitiesCpy = ineligibleEntities != null ? new ArrayList<>(ineligibleEntities) : null;
 					this.<T> createBulkOperationHandler(deleteHandler, true)
 						.doBulkOperation(
 							selectedEntries -> deleteHandler.delete(
@@ -111,12 +117,13 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 									deleteHandler.getDeleteReasonComboBox().getValue(),
 									deleteHandler.getOtherDeletionReason().getValue())),
 							selectedEntitiesCpy,
+							selectedEligibleEntitiesCpy,
+							selectedIneligibleEntitiesCpy,
 							batchCallback);
 				}
 
 				return true;
 			});
-
 	}
 
 	private <T extends HasUuid> BulkOperationHandler<T> createBulkOperationHandler(IDeleteRestoreHandler<?> deleteHandler, boolean forDelete) {
@@ -124,25 +131,12 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 		return new BulkOperationHandler<>(
 
 			forDelete ? deleteRestoreMessages.getMessageEntitiesDeleted() : deleteRestoreMessages.getMessageEntitiesRestored(),
-			forDelete ? deleteRestoreMessages.getMessageEntitiesNotDeleted() : deleteRestoreMessages.getMessageEntitiesNotRestored());
-	}
-
-	private void performRestoreSelectedItems(List<String> entityUuids, F entityFacade, DeleteRestoreMessages messages, Runnable callback) {
-		int unrestoredEntityCount = 0;
-		StringBuilder unrestoredEntitiesSb = new StringBuilder();
-		for (String selectedRow : entityUuids) {
-			try {
-				entityFacade.restore(selectedRow);
-			} catch (Exception e) {
-				unrestoredEntityCount++;
-				unrestoredEntitiesSb.append(selectedRow, 0, 6).append(", ");
-			}
-		}
-		if (unrestoredEntitiesSb.length() > 0) {
-			unrestoredEntitiesSb = new StringBuilder(" " + unrestoredEntitiesSb.substring(0, unrestoredEntitiesSb.length() - 2) + ". ");
-		}
-		callback.run();
-		handleRestoreResult(unrestoredEntityCount, messages, unrestoredEntitiesSb.toString());
+			//TODO: change the label name to notEligibleItems
+			forDelete ? deleteRestoreMessages.getMessageEntitiesNotDeletedLinkedEntitiesReason() : null,
+			forDelete ? deleteRestoreMessages.getHeadingSomeEntitiesNotDeleted() : deleteRestoreMessages.getHeadingSomeEntitiesNotRestored(),
+			forDelete ? deleteRestoreMessages.getMessageCountEntitiesNotDeleted() : deleteRestoreMessages.getMessageCountEntitiesNotRestored(),
+			forDelete ? deleteRestoreMessages.getMessageEntitiesNotDeleted() : deleteRestoreMessages.getMessageEntitiesNotRestored(),
+			forDelete ? deleteRestoreMessages.getMessageNoEligibleEntitySelected() : null);
 	}
 
 	private void handleRestoreResult(int unrestoredEntityCount, DeleteRestoreMessages messages, String unrestoredEntitiesString) {
@@ -160,105 +154,6 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 					messages.getMessageEntitiesNotRestored()));
 		}
 	}
-
-	/*
-	 * private <T extends HasUuid> void performDeleteSelectedItems(
-	 * Collection<T> entities,
-	 * F entityFacade,
-	 * DeleteRestoreMessages messages,
-	 * DeletionDetails deleteDetails,
-	 * boolean allItemsAreEligibleForDeletion,
-	 * Consumer<List<T>> batchCallback) {
-	 * if (allItemsAreEligibleForDeletion) {
-	 * int undeletedEntityCount = 0;
-	 * int undeletedEntityExternalReasonCount = 0;
-	 * StringBuilder unDeletedEntitiesSb = new StringBuilder();
-	 * StringBuilder unDeletedEntitiesExternalReasonSb = new StringBuilder();
-	 * for (String selectedRow : entities) {
-	 * try {
-	 * entityFacade.delete(selectedRow, deleteDetails);
-	 * } catch (ExternalSurveillanceToolRuntimeException e) {
-	 * undeletedEntityExternalReasonCount++;
-	 * unDeletedEntitiesExternalReasonSb.append(selectedRow, 0, 6).append(", ");
-	 * } catch (Exception e) {
-	 * undeletedEntityCount++;
-	 * unDeletedEntitiesSb.append(selectedRow, 0, 6).append(", ");
-	 * }
-	 * }
-	 * if (unDeletedEntitiesSb.length() > 0) {
-	 * unDeletedEntitiesSb = new StringBuilder(" " + unDeletedEntitiesSb.substring(0, unDeletedEntitiesSb.length() - 2) + ". ");
-	 * }
-	 * if (unDeletedEntitiesExternalReasonSb.length() > 0) {
-	 * unDeletedEntitiesExternalReasonSb =
-	 * new StringBuilder(" " + unDeletedEntitiesExternalReasonSb.substring(0, unDeletedEntitiesExternalReasonSb.length() - 2) + ". ");
-	 * }
-	 * //callback.run();
-	 * handleDeleteItemsResult(
-	 * undeletedEntityCount,
-	 * undeletedEntityExternalReasonCount,
-	 * 0,
-	 * messages,
-	 * unDeletedEntitiesSb.toString(),
-	 * unDeletedEntitiesExternalReasonSb.toString(),
-	 * null);
-	 * } else {
-	 * //for now only events with event participants will not be eligible for deletion
-	 * performDeleteSelectedItemsWithIneligibleItems(entities, entityFacade, messages, deleteDetails, batchCallback);
-	 * }
-	 * }
-	 */
-
-	/*
-	 * private <T extends HasUuid> void performDeleteSelectedItemsWithIneligibleItems(
-	 * Collection<T> entities,
-	 * F entityFacade,
-	 * DeleteRestoreMessages messages,
-	 * DeletionDetails deleteDetails,
-	 * Consumer<List<T>> batchCallback) {
-	 * int undeletedEntityCount = 0;
-	 * int undeletedEntityWithLinkedEntitiesCount = 0;
-	 * int undeletedEntityExternalReasonCount = 0;
-	 * StringBuilder unDeletedEntitiesSb = new StringBuilder();
-	 * StringBuilder unDeletedEntitiesWithLinkedEntitiesSb = new StringBuilder();
-	 * StringBuilder unDeletedEntitiesExternalReasonSb = new StringBuilder();
-	 * for (String selectedRow : entities) {
-	 * if (existEventParticipantsLinkedToEvent(selectedRow)) {
-	 * undeletedEntityWithLinkedEntitiesCount++;
-	 * unDeletedEntitiesWithLinkedEntitiesSb.append(selectedRow, 0, 6).append(", ");
-	 * } else {
-	 * try {
-	 * entityFacade.delete(selectedRow, deleteDetails);
-	 * } catch (ExternalSurveillanceToolRuntimeException e) {
-	 * undeletedEntityExternalReasonCount++;
-	 * unDeletedEntitiesExternalReasonSb.append(selectedRow, 0, 6).append(", ");
-	 * } catch (Exception e) {
-	 * undeletedEntityCount++;
-	 * unDeletedEntitiesSb.append(selectedRow, 0, 6).append(", ");
-	 * }
-	 * }
-	 * }
-	 * if (unDeletedEntitiesSb.length() > 0) {
-	 * unDeletedEntitiesSb = new StringBuilder(" " + unDeletedEntitiesSb.substring(0, unDeletedEntitiesSb.length() - 2) + ". ");
-	 * }
-	 * if (unDeletedEntitiesWithLinkedEntitiesSb.length() > 0) {
-	 * unDeletedEntitiesWithLinkedEntitiesSb = new StringBuilder(
-	 * " " + unDeletedEntitiesWithLinkedEntitiesSb.substring(0, unDeletedEntitiesWithLinkedEntitiesSb.length() - 2) + ". ");
-	 * }
-	 * if (unDeletedEntitiesExternalReasonSb.length() > 0) {
-	 * unDeletedEntitiesExternalReasonSb =
-	 * new StringBuilder(" " + unDeletedEntitiesExternalReasonSb.substring(0, unDeletedEntitiesExternalReasonSb.length() - 2) + ". ");
-	 * }
-	 * //callback.run();
-	 * handleDeleteItemsResult(
-	 * undeletedEntityCount,
-	 * undeletedEntityExternalReasonCount,
-	 * undeletedEntityWithLinkedEntitiesCount,
-	 * messages,
-	 * unDeletedEntitiesSb.toString(),
-	 * unDeletedEntitiesExternalReasonSb.toString(),
-	 * unDeletedEntitiesWithLinkedEntitiesSb.toString());
-	 * }
-	 */
 
 	private void handleDeleteItemsResult(
 		int undeletedEntityCount,
@@ -330,11 +225,6 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 	private void displaySuccessNotification(String heading, String message) {
 		new Notification(I18nProperties.getString(heading), I18nProperties.getString(message), Notification.Type.TRAY_NOTIFICATION, false)
 			.show(Page.getCurrent());
-	}
-
-	private Boolean existEventParticipantsLinkedToEvent(String uuid) {
-		List<EventParticipantDto> eventParticipantList = FacadeProvider.getEventParticipantFacade().getAllActiveEventParticipantsByEvent(uuid);
-		return !eventParticipantList.isEmpty();
 	}
 
 	private void displayNothingSelectedToBeDeleted(DeleteRestoreMessages messages) {

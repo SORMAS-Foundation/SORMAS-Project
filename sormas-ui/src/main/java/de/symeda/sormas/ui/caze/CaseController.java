@@ -1052,6 +1052,8 @@ public class CaseController {
 								surveillanceOfficerChange,
 								e),
 							selectedCasesCpy,
+							null,
+							null,
 							bulkOperationCallback(caseGrid, popupWindow)));
 			} else {
 				BulkOperationHandler.<T> forBulkEdit()
@@ -1065,6 +1067,8 @@ public class CaseController {
 							outcomeChange,
 							surveillanceOfficerChange),
 						selectedCasesCpy,
+						null,
+						null,
 						bulkOperationCallback(caseGrid, popupWindow));
 			}
 		});
@@ -1547,7 +1551,7 @@ public class CaseController {
 	public void deleteAllSelectedItems(Collection<? extends CaseIndexDto> selectedRows, AbstractCaseGrid<?> caseGrid) {
 
 		ControllerProvider.getDeleteRestoreController()
-			.deleteAllSelectedItems(selectedRows, DeleteRestoreHandlers.forCase(), bulkOperationCallback(caseGrid, null));
+			.deleteAllSelectedItems(selectedRows, null, null, DeleteRestoreHandlers.forCase(), bulkOperationCallback(caseGrid, null));
 
 	}
 

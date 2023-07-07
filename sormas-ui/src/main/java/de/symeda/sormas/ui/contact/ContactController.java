@@ -771,6 +771,8 @@ public class ContactController {
 						classificationChange,
 						contactOfficerChange),
 					selectedContactsCpy,
+					null,
+					null,
 					bulkOperationCallback(caseUuid, contactGrid, popupWindow));
 		});
 
@@ -802,7 +804,7 @@ public class ContactController {
 	public void deleteAllSelectedItems(Collection<? extends ContactIndexDto> selectedRows, AbstractContactGrid<?> contactGrid) {
 
 		ControllerProvider.getDeleteRestoreController()
-			.deleteAllSelectedItems(selectedRows, DeleteRestoreHandlers.forContact(), bulkOperationCallback(null, contactGrid, null));
+			.deleteAllSelectedItems(selectedRows, null, null, DeleteRestoreHandlers.forContact(), bulkOperationCallback(null, contactGrid, null));
 
 	}
 

@@ -214,6 +214,8 @@ public class TaskController {
 						form.getAssigneeCheckbox().getValue(),
 						form.getTaskStatusCheckbox().getValue()),
 					selectedTasksCpy,
+					null,
+					null,
 					bulkOperationCallback(taskGrid, noEntriesRemainingCallback, popupWindow));
 		});
 
