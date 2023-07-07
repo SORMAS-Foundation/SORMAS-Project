@@ -167,21 +167,21 @@ public class SurvNetSteps implements En {
         });
 
     And(
-        "^I open SORMAS generated XML file for single message$",
+        "^I open SORMAS generated XML file for single case message$",
         () -> {
           singleXmlFile =
               XMLParser.getDocument(
-                  "/srv/dockerdata/jenkins_new/sormas-files/test_"
+                  "/srv/dockerdata/jenkins_new/sormas-files/case_"
                       + EditCaseSteps.externalUUID.get(0).substring(1, 37)
                       + ".xml");
         });
 
     And(
-        "^I open SORMAS generated XML file for bulk message$",
+        "^I open SORMAS generated XML file for bulk case message$",
         () -> {
           bulkXmlFile =
               XMLParser.getDocument(
-                  "/srv/dockerdata/jenkins_new/sormas-files/bulk_"
+                  "/srv/dockerdata/jenkins_new/sormas-files/bulk_case"
                       + EditCaseSteps.externalUUID.get(0).substring(1, 37)
                       + ".xml");
         });
@@ -244,7 +244,10 @@ public class SurvNetSteps implements En {
         "^I open SORMAS generated XML file for event single message$",
         () -> {
           singleXmlFile =
-              XMLParser.getDocument("/srv/dockerdata/jenkins_new/sormas-files/test_.xml");
+              XMLParser.getDocument(
+                  "/srv/dockerdata/jenkins_new/sormas-files/event_"
+                      + EditEventSteps.externalEventUUID.get(0).substring(1,37)
+                      + ".xml");
         });
 
     And(

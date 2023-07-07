@@ -24,7 +24,7 @@ Feature: Survnet tests
     And I click on Send to reporting tool button on Edit Case page
     And I collect case external UUID from Edit Case page
     Then I wait 50 seconds for system reaction
-    And I open SORMAS generated XML file for single message
+    And I open SORMAS generated XML file for single case message
     Then I check if "date of report" in SORMAS generated XML file is correct
     And I check if sex in SORMAS generated single XML file is correct
 
@@ -43,7 +43,7 @@ Feature: Survnet tests
     And I compare the SORMAS generated XML file with the example one
     And I click on the About button from navbar
     And I collect SORMAS VERSION from About page
-    And I open SORMAS generated XML file for single message
+    And I open SORMAS generated XML file for single case message
     And I check if software info in SORMAS generated XML file is correct
     Then I check if "date of report" in SORMAS generated XML file is correct
     And I check if "change at date" in SORMAS generated XML file is correct
@@ -84,7 +84,7 @@ Feature: Survnet tests
     And I click on the first Case ID from Case Directory
     And I navigate to case person tab
     And I collect person external UUID from Edit Case page
-    And I open SORMAS generated XML file for bulk message
+    And I open SORMAS generated XML file for bulk case message
     Then I check if sex for all 2 cases in SORMAS generated bulk XML file is correct
     And I check if external person uuid for all 2 cases in SORMAS generated bult XML file is correct
     And I check if "date of report" for all 2 cases in SORMAS generated bulk XML file is correct
@@ -98,7 +98,7 @@ Feature: Survnet tests
     And I click on Send to reporting tool button on Edit Case page
     And I collect case external UUID from Edit Case page
     Then I wait 50 seconds for system reaction
-    And I open SORMAS generated XML file for single message
+    And I open SORMAS generated XML file for single case message
     Then I check if age computed field in SORMAS generated XML file is correct
 
   @tmsLink=SORQA-1030
