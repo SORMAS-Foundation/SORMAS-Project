@@ -252,7 +252,7 @@ public class SurvNetSteps implements En {
         () -> {
           softly.assertEquals(
               getGuidRecord(singleXmlFile, 0),
-              EditEventSteps.externalEventUUID.get(0),
+              EditEventSteps.externalEventUUID.get(0).substring(1,37),
               "External event UUID is incorrect!");
           softly.assertAll();
         });
