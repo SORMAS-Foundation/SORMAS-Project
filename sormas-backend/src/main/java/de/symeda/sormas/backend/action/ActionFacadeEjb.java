@@ -242,7 +242,7 @@ public class ActionFacadeEjb implements ActionFacade {
 	@Override
 	public EditPermissionType getEditPermissionType(String uuid) {
 		if (!isInJurisdiction(uuid)) {
-			return EditPermissionType.REFUSED;
+			return EditPermissionType.OUTSIDE_JURISDICTION;
 		}
 
 		return EditPermissionType.ALLOWED;

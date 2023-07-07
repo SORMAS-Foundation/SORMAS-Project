@@ -520,12 +520,13 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	@Override
 	public EditPermissionType getEditPermissionType(EventParticipant eventParticipant) {
 
-		if (eventParticipant.getSormasToSormasOriginInfo() != null && !eventParticipant.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
-			return EditPermissionType.REFUSED;
+		if (!inJurisdiction(eventParticipant)) {
+			return EditPermissionType.OUTSIDE_JURISDICTION;
 		}
 
-		if (!inJurisdiction(eventParticipant) || sormasToSormasShareInfoService.isEventParticipantOwnershipHandedOver(eventParticipant)) {
-			return EditPermissionType.REFUSED;
+		if (sormasToSormasShareInfoService.isEventParticipantOwnershipHandedOver(eventParticipant)
+			|| eventParticipant.getSormasToSormasOriginInfo() != null && !eventParticipant.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
+			return EditPermissionType.WITHOUT_OWNERSHIP;
 		}
 
 		return super.getEditPermissionType(eventParticipant);

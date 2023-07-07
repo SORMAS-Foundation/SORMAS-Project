@@ -19,7 +19,6 @@ package de.symeda.sormas.ui;
 
 import de.symeda.sormas.ui.action.ActionController;
 import de.symeda.sormas.ui.campaign.CampaignController;
-import de.symeda.sormas.ui.caze.CaseArchivingController;
 import de.symeda.sormas.ui.caze.CaseController;
 import de.symeda.sormas.ui.caze.surveillancereport.SurveillanceReportController;
 import de.symeda.sormas.ui.clinicalcourse.ClinicalCourseController;
@@ -29,6 +28,7 @@ import de.symeda.sormas.ui.contact.ContactController;
 import de.symeda.sormas.ui.customexport.CustomExportController;
 import de.symeda.sormas.ui.dashboard.DashboardController;
 import de.symeda.sormas.ui.docgeneration.DocGenerationController;
+import de.symeda.sormas.ui.environment.EnvironmentController;
 import de.symeda.sormas.ui.events.EventController;
 import de.symeda.sormas.ui.events.EventGroupController;
 import de.symeda.sormas.ui.events.EventParticipantsController;
@@ -85,8 +85,8 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final ImmunizationController immunizationController;
 	private final VaccinationController vaccinationController;
 	private final ArchivingController archivingController;
-	private final CaseArchivingController caseArchivingController;
 	private final DeleteRestoreController deleteRestoreController;
+	private final EnvironmentController environmentController;
 
 	public ControllerProvider() {
 		super();
@@ -122,8 +122,8 @@ public class ControllerProvider extends BaseControllerProvider {
 		immunizationController = new ImmunizationController();
 		vaccinationController = new VaccinationController();
 		archivingController = new ArchivingController();
-		caseArchivingController = new CaseArchivingController();
 		deleteRestoreController = new DeleteRestoreController();
+		environmentController = new EnvironmentController();
 	}
 
 	protected static ControllerProvider get() {
@@ -254,12 +254,11 @@ public class ControllerProvider extends BaseControllerProvider {
 		return get().archivingController;
 	}
 
-	public static CaseArchivingController getCaseArchivingController() {
-		return get().caseArchivingController;
-	}
-
 	public static DeleteRestoreController getDeleteRestoreController() {
 		return get().deleteRestoreController;
 	}
 
+	public static EnvironmentController getEnvironmentController() {
+		return get().environmentController;
+	}
 }

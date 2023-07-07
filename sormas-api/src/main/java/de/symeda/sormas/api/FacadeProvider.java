@@ -45,6 +45,7 @@ import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
 import de.symeda.sormas.api.docgeneneration.EventDocumentFacade;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.document.DocumentFacade;
+import de.symeda.sormas.api.environment.EnvironmentFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventGroupFacade;
@@ -443,7 +444,7 @@ public class FacadeProvider {
 
 	public static ExternalMessageAdapterFacade getExternalLabResultsFacade() throws NamingException {
 
-		String jndiName = FacadeProvider.getConfigFacade().getDemisJndiName();
+		String jndiName = FacadeProvider.getConfigFacade().getExternalMessageAdapterJndiName();
 		if (jndiName == null) {
 			throw new ConfigurationException("No LabResultAdapter JNDI name is configured in the sormas.properties");
 		} else {
@@ -497,6 +498,10 @@ public class FacadeProvider {
 
 	public static DeletionConfigurationFacade getDeletionConfigurationFacade() {
 		return get().lookupEjbRemote(DeletionConfigurationFacade.class);
+	}
+
+	public static EnvironmentFacade getEnvironmentFacade() {
+		return get().lookupEjbRemote(EnvironmentFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")

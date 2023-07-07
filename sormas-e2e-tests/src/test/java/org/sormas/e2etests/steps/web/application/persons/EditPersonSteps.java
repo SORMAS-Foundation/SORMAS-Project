@@ -18,6 +18,36 @@
 
 package org.sormas.e2etests.steps.web.application.persons;
 
+import com.github.javafaker.Faker;
+import cucumber.api.java8.En;
+import org.openqa.selenium.ElementClickInterceptedException;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.Person;
+import org.sormas.e2etests.entities.services.PersonService;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
+import org.sormas.e2etests.helpers.AssertHelpers;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.contacts.EditContactPersonPage;
+import org.sormas.e2etests.pages.application.persons.EditPersonPage;
+import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.BaseSteps;
+import org.sormas.e2etests.steps.web.application.cases.CreateNewCaseSteps;
+import org.sormas.e2etests.steps.web.application.contacts.CreateNewContactSteps;
+import org.sormas.e2etests.steps.web.application.contacts.EditContactPersonSteps;
+import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
+import org.sormas.e2etests.steps.web.application.immunizations.EditImmunizationSteps;
+import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
+
+import javax.inject.Inject;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EDIT_TRAVEL_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SAVE_BUTTON;
@@ -94,34 +124,6 @@ import static org.sormas.e2etests.pages.application.persons.EditPersonPage.getBy
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static org.sormas.e2etests.steps.web.application.entries.CreateNewTravelEntrySteps.aTravelEntry;
 
-import com.github.javafaker.Faker;
-import cucumber.api.java8.En;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.TextStyle;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-import javax.inject.Inject;
-import org.openqa.selenium.ElementClickInterceptedException;
-import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.entities.pojo.web.Person;
-import org.sormas.e2etests.entities.services.PersonService;
-import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
-import org.sormas.e2etests.helpers.AssertHelpers;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pages.application.contacts.EditContactPersonPage;
-import org.sormas.e2etests.pages.application.persons.EditPersonPage;
-import org.sormas.e2etests.state.ApiState;
-import org.sormas.e2etests.steps.BaseSteps;
-import org.sormas.e2etests.steps.web.application.cases.CreateNewCaseSteps;
-import org.sormas.e2etests.steps.web.application.contacts.CreateNewContactSteps;
-import org.sormas.e2etests.steps.web.application.contacts.EditContactPersonSteps;
-import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
-import org.sormas.e2etests.steps.web.application.immunizations.EditImmunizationSteps;
-import org.testng.Assert;
-import org.testng.asserts.SoftAssert;
-
 public class EditPersonSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
@@ -129,6 +131,8 @@ public class EditPersonSteps implements En {
   protected Person collectedPerson;
   public static Person newGeneratedPerson;
   private static String personFirstName;
+  public static List<String> externalPersonUUID = new ArrayList<>();
+  public static List<String> personSex = new ArrayList<>();
 
   @Inject
   public EditPersonSteps(
@@ -605,6 +609,20 @@ public class EditPersonSteps implements En {
               CreateNewCaseSteps.oneCaseDe.getFirstName(),
               "Names are not equal!!");
           softly.assertAll();
+        });
+
+    And(
+        "^I collect person external UUID from Edit Case page$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(EXTERNAL_ID_INPUT);
+          externalPersonUUID.add(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT));
+        });
+
+    And(
+        "^I collect sex of the person from Edit Person page$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(SEX_INPUT);
+          personSex.add(webDriverHelpers.getValueFromWebElement(SEX_INPUT));
         });
   }
 

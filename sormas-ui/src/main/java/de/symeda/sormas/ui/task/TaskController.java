@@ -20,25 +20,21 @@ package de.symeda.sormas.ui.task;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 
 import com.vaadin.server.Page;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -51,11 +47,10 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.ArchivingController;
 import de.symeda.sormas.ui.utils.BulkOperationHandler;
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.DirtyCheckPopup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class TaskController {
@@ -155,27 +150,10 @@ public class TaskController {
 
 		// Initialize 'Archive' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_ARCHIVE)) {
-			boolean archived = FacadeProvider.getTaskFacade().isArchived(task.getUuid());
-			Button archiveButton = ButtonHelper.createButton(
-				ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID,
-				I18nProperties.getCaption(archived ? Captions.actionDearchiveCoreEntity : Captions.actionArchiveCoreEntity),
-				e -> {
-					if (editView.isDirty()) {
-						DirtyCheckPopup.show(editView, () -> archiveOrDearchive(task, !archived, () -> {
-							popupWindow.close();
-							callback.run();
-						}));
-					} else {
-						archiveOrDearchive(task, !archived, () -> {
-							popupWindow.close();
-							callback.run();
-						});
-					}
-				},
-				ValoTheme.BUTTON_LINK);
-
-			editView.getButtonsPanel().addComponentAsFirst(archiveButton);
-			editView.getButtonsPanel().setComponentAlignment(archiveButton, Alignment.BOTTOM_LEFT);
+			ControllerProvider.getArchiveController().addArchivingButtonWithDirtyCheck(task, ArchiveHandlers.forTask(), editView, () -> {
+				popupWindow.close();
+				callback.run();
+			});
 		}
 
 		editView.addToActiveButtonsList(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
@@ -239,7 +217,8 @@ public class TaskController {
 			TaskFacade taskFacade = FacadeProvider.getTaskFacade();
 
 			List<TaskIndexDto> selectedTasksCpy = new ArrayList<>(selectedTasks);
-			new BulkOperationHandler().doBulkOperation(
+			BulkOperationHandler.<TaskIndexDto> forBulkEdit()
+				.doBulkOperation(
 				selectedEntries -> taskFacade.saveBulkTasks(
 					selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
 					updatedTempTask,
@@ -247,104 +226,34 @@ public class TaskController {
 					form.getAssigneeCheckbox().getValue(),
 					form.getTaskStatusCheckbox().getValue()),
 				selectedTasksCpy,
-				results -> handleBulkOperationDone((List<TaskIndexDto>) results, popupWindow, taskGrid, noEntriesRemainingCallback));
+				bulkOperationCallback(taskGrid, noEntriesRemainingCallback, popupWindow));
 		});
 
 		editView.addDiscardListener(popupWindow::close);
 	}
 
-	private void handleBulkOperationDone(
-		List<TaskIndexDto> remainingTasks,
-		Window popupWindow,
-		TaskGrid taskGrid,
-		Runnable noEntriesRemainingCallback) {
+	private Consumer<List<TaskIndexDto>> bulkOperationCallback(TaskGrid taskGrid, Runnable noEntriesRemainingCallback, Window popupWindow) {
+		return remainingTasks -> {
+			if (popupWindow != null) {
+				popupWindow.close();
+			}
 
-		popupWindow.close();
-		taskGrid.reload();
-		if (CollectionUtils.isNotEmpty(remainingTasks)) {
-			taskGrid.asMultiSelect().selectItems(remainingTasks.toArray(new TaskIndexDto[0]));
-		} else {
-			noEntriesRemainingCallback.run();
-		}
+			taskGrid.reload();
+			if (CollectionUtils.isNotEmpty(remainingTasks)) {
+				taskGrid.asMultiSelect().selectItems(remainingTasks.toArray(new TaskIndexDto[0]));
+			} else {
+				noEntriesRemainingCallback.run();
+			}
+		};
 	}
 
-	private void archiveOrDearchive(TaskDto task, boolean archive, Runnable callback) {
-
-		VaadinUiUtil.showConfirmationPopup(
-			archive ? I18nProperties.getString(Strings.headingConfirmArchiving) : I18nProperties.getString(Strings.headingConfirmDearchiving),
-			new Label(
-				archive ? I18nProperties.getString(Strings.confirmationArchiveTask) : I18nProperties.getString(Strings.confirmationDearchiveTask)),
-			I18nProperties.getString(Strings.yes),
-			I18nProperties.getString(Strings.no),
-			null,
-			e -> {
-				if (Boolean.TRUE.equals(e)) {
-					FacadeProvider.getTaskFacade().updateArchived(task.getUuid(), archive);
-					callback.run();
-					Notification.show(
-						archive ? I18nProperties.getString(Strings.messageTaskArchived) : I18nProperties.getString(Strings.messageTaskDearchived),
-						Type.ASSISTIVE_NOTIFICATION);
-				}
-			});
+	public void archiveAllSelectedItems(Collection<TaskIndexDto> selectedRows, TaskGrid taskGrid, Runnable noEntriesRemainingCallback) {
+		ControllerProvider.getArchiveController()
+			.archiveSelectedItems(selectedRows, ArchiveHandlers.forTask(), bulkOperationCallback(taskGrid, noEntriesRemainingCallback, null));
 	}
 
-	public void archiveAllSelectedItems(Collection<? extends TaskIndexDto> selectedRows, Runnable callback) {
-
-		if (selectedRows.size() == 0) {
-			new Notification(
-				I18nProperties.getString(Strings.headingNoTasksSelected),
-				I18nProperties.getString(Strings.messageNoTasksSelected),
-				Type.WARNING_MESSAGE,
-				false).show(Page.getCurrent());
-		} else {
-			VaadinUiUtil.showConfirmationPopup(
-				I18nProperties.getString(Strings.headingConfirmArchiving),
-				new Label(String.format(I18nProperties.getString(Strings.confirmationArchiveTasks), selectedRows.size())),
-				I18nProperties.getString(Strings.yes),
-				I18nProperties.getString(Strings.no),
-				null,
-				e -> {
-					if (e.booleanValue()) {
-						List<String> caseUuids = selectedRows.stream().map(TaskIndexDto::getUuid).collect(Collectors.toList());
-						FacadeProvider.getTaskFacade().updateArchived(caseUuids, true);
-						callback.run();
-						new Notification(
-							I18nProperties.getString(Strings.headingTasksArchived),
-							I18nProperties.getString(Strings.messageTasksArchived),
-							Type.HUMANIZED_MESSAGE,
-							false).show(Page.getCurrent());
-					}
-				});
-		}
-	}
-
-	public void dearchiveAllSelectedItems(Collection<? extends TaskIndexDto> selectedRows, Runnable callback) {
-
-		if (selectedRows.size() == 0) {
-			new Notification(
-				I18nProperties.getString(Strings.headingNoTasksSelected),
-				I18nProperties.getString(Strings.messageNoTasksSelected),
-				Type.WARNING_MESSAGE,
-				false).show(Page.getCurrent());
-		} else {
-			VaadinUiUtil.showConfirmationPopup(
-				I18nProperties.getString(Strings.headingConfirmDearchiving),
-				new Label(String.format(I18nProperties.getString(Strings.confirmationDearchiveTasks), selectedRows.size())),
-				I18nProperties.getString(Strings.yes),
-				I18nProperties.getString(Strings.no),
-				null,
-				e -> {
-					if (e.booleanValue() == true) {
-						List<String> caseUuids = selectedRows.stream().map(TaskIndexDto::getUuid).collect(Collectors.toList());
-						FacadeProvider.getTaskFacade().updateArchived(caseUuids, false);
-						callback.run();
-						new Notification(
-							I18nProperties.getString(Strings.headingTasksDearchived),
-							I18nProperties.getString(Strings.messageTasksDearchived),
-							Type.HUMANIZED_MESSAGE,
-							false).show(Page.getCurrent());
-					}
-				});
-		}
+	public void dearchiveAllSelectedItems(Collection<TaskIndexDto> selectedRows, TaskGrid taskGrid, Runnable noEntriesRemainingCallback) {
+		ControllerProvider.getArchiveController()
+			.dearchiveSelectedItems(selectedRows, ArchiveHandlers.forTask(), bulkOperationCallback(taskGrid, noEntriesRemainingCallback, null));
 	}
 }

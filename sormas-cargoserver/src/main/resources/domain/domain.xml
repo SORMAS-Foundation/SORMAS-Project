@@ -54,14 +54,6 @@
             <property name="portNumber" value="${SORMAS_POSTGRES_PORT}"/>
         </jdbc-connection-pool>
         <jdbc-resource pool-name="sormasDataPool" jndi-name="jdbc/sormasDataPool"/>
-        <jdbc-connection-pool datasource-classname="org.postgresql.xa.PGXADataSource" name="sormasAuditlogPool" validation-classname="org.glassfish.api.jdbc.validation.PostgresConnectionValidation" is-connection-validation-required="true" connection-validation-method="custom-validation" res-type="javax.sql.XADataSource">
-            <property name="password" value="sormas"/>
-            <property name="databaseName" value="sormas_audit_db"/>
-            <property name="serverName" value="${SORMAS_POSTGRES_SERVER}"/>
-            <property name="user" value="sormas_user"/>
-            <property name="portNumber" value="${SORMAS_POSTGRES_PORT}"/>
-        </jdbc-connection-pool>
-        <jdbc-resource pool-name="sormasAuditlogPool" jndi-name="jdbc/AuditlogPool"/>
         <mail-resource auth="false" host="localhost" from="nail@example.com" user="user" jndi-name="mail/MailSession"/>
         <custom-resource factory-class="org.glassfish.resources.custom.factory.PropertiesFactory" res-type="java.util.Properties" jndi-name="sormas/Properties">
             <property name="org.glassfish.resources.custom.factory.PropertiesFactory.fileName" value="${com.sun.aas.instanceRoot}/sormas.properties"/>

@@ -2,7 +2,8 @@ package de.symeda.sormas.api;
 
 public enum EditPermissionType {
 	ALLOWED,
-	ARCHIVING_STATUS_ONLY,
 	REFUSED,
+	ARCHIVING_STATUS_ONLY,
+	OUTSIDE_JURISDICTION,
 	WITHOUT_OWNERSHIP
 }

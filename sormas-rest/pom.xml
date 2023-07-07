@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>de.symeda.sormas</groupId>
 		<artifactId>sormas-base</artifactId>
-		<version>1.85.0-SNAPSHOT</version>
+		<version>1.86.0-SNAPSHOT</version>
 		<relativePath>../sormas-base</relativePath>
 	</parent>
 
@@ -17,63 +17,21 @@
 
 	<dependencies>
 
+		<!-- *** Payara modules *** -->
+
 		<dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-web-api</artifactId>
 		</dependency>
-
-		<dependency>
-			<groupId>com.opencsv</groupId>
-			<artifactId>opencsv</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>sormas-api</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.glassfish.jersey.containers</groupId>
-			<artifactId>jersey-container-servlet</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.media</groupId>
-			<artifactId>jersey-media-json-jackson</artifactId>
-		</dependency>
-
 	  	<dependency>
 			<groupId>javax.security.enterprise</groupId>
 			<artifactId>javax.security.enterprise-api</artifactId>
 		</dependency>
 
 		<dependency>
-			<groupId>io.swagger.core.v3</groupId>
-			<artifactId>swagger-jaxrs2</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>io.swagger.core.v3</groupId>
-			<artifactId>swagger-jaxrs2-servlet-initializer-v2</artifactId>
-		</dependency>
-
-		<!-- Keycloak -->
-		<dependency>
-			<groupId>org.keycloak</groupId>
-			<artifactId>keycloak-servlet-filter-adapter</artifactId>
-		</dependency>
-
-		<!-- OpenID -->
-		<dependency>
 			<groupId>fish.payara.api</groupId>
 			<artifactId>payara-api</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>fish.payara.security.connectors</groupId>
 			<artifactId>security-connector-oidc-client</artifactId>
@@ -85,22 +43,75 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.glassfish.jersey.containers.glassfish</groupId>
-			<artifactId>jersey-gf-ejb</artifactId>
-		</dependency>
-
-		<dependency>
 			<groupId>org.glassfish.soteria</groupId>
 			<artifactId>javax.security.enterprise</artifactId>
 		</dependency>
 
 		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<!-- Avoids: Failed to execute goal io.swagger.core.v3:swagger-maven-plugin:2.2.8:resolve (rest api) on project sormas-rest: 
-				Execution rest api of goal io.swagger.core.v3:swagger-maven-plugin:2.2.8:resolve failed: A required class was missing while 
-				executing io.swagger.core.v3:swagger-maven-plugin:2.2.8:resolve: com/google/common/collect/ImmutableMap -->
+			<groupId>org.glassfish.jersey.containers.glassfish</groupId>
+			<artifactId>jersey-gf-ejb</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.core</groupId>
+			<artifactId>jersey-server</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-json-jackson</artifactId>
+		</dependency>
+
+		<!-- *** Payara modules END *** -->
+
+		<!-- *** Domain libs *** -->
+
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-jaxrs2</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-jaxrs2-servlet-initializer-v2</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-collections4</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.keycloak</groupId>
+			<artifactId>keycloak-servlet-filter-adapter</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+
+		<!-- *** Domain libs END *** -->
+
+		<!-- *** Test dependencies *** -->
+
+		<!-- *** Test dependencies END *** -->
+
+		<!-- *** Compile dependencies *** -->
+
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>sormas-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<!-- *** Compile dependencies END *** -->
 
 	</dependencies>
 

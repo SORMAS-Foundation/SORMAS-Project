@@ -14,7 +14,7 @@
 /sormas-widgetset/bin
 /deploy/bundles
 deploy
-/sormas-base/build.properties
+/sormas-base/dev.env
 /sormas-base/bin
 /sormas-ui/bin
 

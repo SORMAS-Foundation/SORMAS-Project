@@ -25,7 +25,6 @@ public class ContinentDto extends InfrastructureDto {
 	private String defaultName;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String externalId;
-	private boolean archived;
 
 	public static ContinentDto build() {
 		ContinentDto dto = new ContinentDto();
@@ -47,14 +46,6 @@ public class ContinentDto extends InfrastructureDto {
 
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
-	}
-
-	public boolean isArchived() {
-		return archived;
-	}
-
-	public void setArchived(boolean archived) {
-		this.archived = archived;
 	}
 
 	@Override

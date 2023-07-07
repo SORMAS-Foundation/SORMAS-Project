@@ -18,6 +18,54 @@
 
 package org.sormas.e2etests.steps.web.application.cases;
 
+import cucumber.api.java8.En;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.openqa.selenium.By;
+import org.sormas.e2etests.common.DataOperations;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.Case;
+import org.sormas.e2etests.entities.pojo.web.QuarantineOrder;
+import org.sormas.e2etests.entities.pojo.web.Vaccination;
+import org.sormas.e2etests.entities.pojo.web.epidemiologicalData.Exposure;
+import org.sormas.e2etests.entities.services.CaseDocumentService;
+import org.sormas.e2etests.entities.services.CaseService;
+import org.sormas.e2etests.enums.CaseClassification;
+import org.sormas.e2etests.enums.CaseOutcome;
+import org.sormas.e2etests.enums.YesNoUnknownOptions;
+import org.sormas.e2etests.enums.cases.epidemiologicalData.ExposureDetailsRole;
+import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfActivityExposure;
+import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
+import org.sormas.e2etests.helpers.AssertHelpers;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.helpers.files.FilesHelper;
+import org.sormas.e2etests.pages.application.NavBarPage;
+import org.sormas.e2etests.pages.application.cases.EditCasePage;
+import org.sormas.e2etests.pages.application.contacts.EditContactPage;
+import org.sormas.e2etests.pages.application.events.EditEventPage;
+import org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage;
+import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.web.application.contacts.EditContactSteps;
+import org.sormas.e2etests.steps.web.application.immunizations.EditImmunizationSteps;
+import org.sormas.e2etests.steps.web.application.samples.CreateNewSampleSteps;
+import org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps;
+import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
+
+import javax.inject.Inject;
+import java.io.FileInputStream;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import static org.sormas.e2etests.enums.CaseOutcome.DECEASED;
 import static org.sormas.e2etests.enums.CaseOutcome.FACILITY_OTHER;
 import static org.sormas.e2etests.enums.CaseOutcome.INVESTIGATION_DISCARDED;
@@ -93,52 +141,6 @@ import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELET
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static org.sormas.e2etests.steps.web.application.contacts.ContactDirectorySteps.exposureData;
 
-import cucumber.api.java8.En;
-import java.io.FileInputStream;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import javax.inject.Inject;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.openxml4j.opc.OPCPackage;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
-import org.openqa.selenium.By;
-import org.sormas.e2etests.common.DataOperations;
-import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.entities.pojo.web.Case;
-import org.sormas.e2etests.entities.pojo.web.QuarantineOrder;
-import org.sormas.e2etests.entities.pojo.web.Vaccination;
-import org.sormas.e2etests.entities.pojo.web.epidemiologicalData.Exposure;
-import org.sormas.e2etests.entities.services.CaseDocumentService;
-import org.sormas.e2etests.entities.services.CaseService;
-import org.sormas.e2etests.enums.CaseClassification;
-import org.sormas.e2etests.enums.CaseOutcome;
-import org.sormas.e2etests.enums.YesNoUnknownOptions;
-import org.sormas.e2etests.enums.cases.epidemiologicalData.ExposureDetailsRole;
-import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfActivityExposure;
-import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
-import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
-import org.sormas.e2etests.helpers.AssertHelpers;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.helpers.files.FilesHelper;
-import org.sormas.e2etests.pages.application.NavBarPage;
-import org.sormas.e2etests.pages.application.cases.EditCasePage;
-import org.sormas.e2etests.pages.application.contacts.EditContactPage;
-import org.sormas.e2etests.pages.application.events.EditEventPage;
-import org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage;
-import org.sormas.e2etests.state.ApiState;
-import org.sormas.e2etests.steps.web.application.contacts.EditContactSteps;
-import org.sormas.e2etests.steps.web.application.immunizations.EditImmunizationSteps;
-import org.sormas.e2etests.steps.web.application.samples.CreateNewSampleSteps;
-import org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps;
-import org.testng.Assert;
-import org.testng.asserts.SoftAssert;
-
 @Slf4j
 public class EditCaseSteps implements En {
 
@@ -153,7 +155,7 @@ public class EditCaseSteps implements En {
   public static final DateTimeFormatter DATE_FORMATTER_DE = DateTimeFormatter.ofPattern("d.M.yyyy");
   public static final String userDirPath = System.getProperty("user.dir");
   public static String caseUuid;
-  public static String externalUUID;
+  public static List<String> externalUUID = new ArrayList<>();
 
   @SneakyThrows
   @Inject
@@ -1310,7 +1312,7 @@ public class EditCaseSteps implements En {
     When(
         "I check that text appearing in hover over Expected Follow-up is based on Symptoms collection date",
         () -> {
-          TimeUnit.SECONDS.sleep(2);
+          TimeUnit.SECONDS.sleep(4);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EXPECTED_FOLLOWUP_LABEL);
           webDriverHelpers.hoverToElement(EXPECTED_FOLLOWUP_LABEL);
           String displayedText =
@@ -1905,12 +1907,6 @@ public class EditCaseSteps implements En {
         });
 
     And(
-        "I fill comment in share popup with {string}",
-        (String comment) -> {
-          webDriverHelpers.fillInWebElement(EXTRA_COMMENT_INPUT_SHARE_POPUP, comment);
-        });
-
-    And(
         "I fill in the Internal Token field in Edit Case page with ([^\"]*)",
         (String token) -> {
           webDriverHelpers.scrollToElementUntilIsVisible(INTERNAL_TOKEN_INPUT);
@@ -2387,23 +2383,6 @@ public class EditCaseSteps implements En {
     When(
         "I click to share reports of the case in Share popup",
         () -> webDriverHelpers.clickOnWebElementBySelector(SHARE_REPORTS_CHECKBOX));
-    When(
-        "I click on share button in s2s share popup and wait for share to finish",
-        () -> {
-          webDriverHelpers.clickOnWebElementBySelector(SHARE_SORMAS_2_SORMAS_POPUP_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
-          // TODO Workaround before SORQA-565 will be fixed
-          webDriverHelpers.refreshCurrentPage();
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              LINKED_SHARED_ORGANIZATION_SELECTED_VALUE, 60);
-        });
-
-    When(
-        "I click on share button in s2s share popup",
-        () -> {
-          webDriverHelpers.clickOnWebElementBySelector(SHARE_SORMAS_2_SORMAS_POPUP_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
-        });
 
     And(
         "^I check that displayed vaccination name is equal to \"([^\"]*)\" on Edit case page$",
@@ -2618,8 +2597,6 @@ public class EditCaseSteps implements En {
           webDriverHelpers.isElementGreyedOut(EditCasePage.SAVE_BUTTON);
         });
 
-    When("I refresh current page", () -> webDriverHelpers.refreshCurrentPage());
-
     And(
         "^I click on Send to reporting tool button on Edit Case page$",
         () -> {
@@ -2634,7 +2611,7 @@ public class EditCaseSteps implements En {
         "^I collect case external UUID from Edit Case page$",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(EXTERNAL_ID_INPUT);
-          externalUUID = webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT);
+          externalUUID.add(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT));
         });
 
     And(

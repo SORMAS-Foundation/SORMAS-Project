@@ -7,13 +7,11 @@ import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 @Entity
-@Audited
 public class PersonContactDetail extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "personcontactdetail";

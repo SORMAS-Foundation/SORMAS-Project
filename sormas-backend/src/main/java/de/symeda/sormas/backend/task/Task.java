@@ -34,8 +34,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import de.symeda.auditlog.api.Audited;
-import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -49,7 +47,6 @@ import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.user.User;
 
 @Entity
-@Audited
 public class Task extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -4754578341242164661L;
@@ -227,7 +224,6 @@ public class Task extends AbstractDomainObject {
 		this.assignedByUser = assignedByUser;
 	}
 
-	@AuditedIgnore
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = TASK_OBSERVER_TABLE,
 		joinColumns = @JoinColumn(name = TASK_OBSERVER_JOIN_COLUMN),

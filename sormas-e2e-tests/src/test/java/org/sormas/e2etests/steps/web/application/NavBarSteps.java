@@ -92,7 +92,7 @@ public class NavBarSteps implements En {
         () -> {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.EVENTS_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(160);
         });
 
     When(

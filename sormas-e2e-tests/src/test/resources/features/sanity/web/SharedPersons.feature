@@ -20,7 +20,7 @@ Feature: Sharing persons between environments tests
     And I navigate to "s2s_2" environment in new driver tab
     Given I log in as a Admin User
     And I click on the Shares button from navbar
-    Then I accept first case in Shares Page
+    Then I accept first entity from table in Shares Page
     When I back to tab number 1
     Then I navigate to "s2s_1" environment
     Then I open the last created contact via API
@@ -32,7 +32,7 @@ Feature: Sharing persons between environments tests
     When I back to tab number 2
     And I navigate to "s2s_2" environment
     And I click on the Shares button from navbar
-    Then I accept first contact in Shares Page
+    Then I accept first entity from table in Shares Page
     And I click to accept potential duplicate in Shares Page
     And I click on the Contacts button from navbar
     And I open the first contact from contacts list
@@ -61,7 +61,7 @@ Feature: Sharing persons between environments tests
     And I navigate to "s2s_2" environment in new driver tab
     Given I log in as a Admin User
     And I click on the Shares button from navbar
-    Then I accept first case in Shares Page
+    Then I accept first entity from table in Shares Page
     And I click on the Cases button from navbar
     And I filter Cases by collected case uuid
     And I click on the first Case ID from Case Directory
@@ -88,7 +88,7 @@ Feature: Sharing persons between environments tests
     And I navigate to "s2s_2" environment in new driver tab
     Given I log in as a Admin User
     And I click on the Shares button from navbar
-    Then I accept first case in Shares Page
+    Then I accept first entity from table in Shares Page
     And I click on the The Eye Icon located in the Shares Page
     And I click on the shortened case/contact ID to open the case
     And I check if editable fields are read only for shared case/contact
@@ -147,7 +147,7 @@ Feature: Sharing persons between environments tests
     And I navigate to "s2s_2" environment in new driver tab
     Given I log in as a Admin User
     And I click on the Shares button from navbar
-    Then I accept first case in Shares Page
+    Then I accept first entity from table in Shares Page
     When I back to tab number 1
     And I navigate to Contacts tab in Edit case page
     And I open a contact using the collected contact UUID
@@ -157,7 +157,7 @@ Feature: Sharing persons between environments tests
     Then I click on share button in s2s share popup and wait for share to finish
     When I back to tab number 2
     And I click on the Shares button from navbar
-    Then I accept first contact in Shares Page
+    Then I accept first entity from table in Shares Page
     And I click on the The Eye Icon located in the Shares Page
     And I click on the shortened case/contact ID to open the case
     And I check if editable fields are read only for shared case/contact

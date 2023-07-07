@@ -40,8 +40,6 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Type;
 
-import de.symeda.auditlog.api.Audited;
-import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.DiseaseTransmissionMode;
@@ -77,7 +75,6 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 @Entity(name = "events")
-@Audited
 public class Event extends CoreAdo implements SormasToSormasShareable, HasExternalData {
 
 	private static final long serialVersionUID = 4964495716032049582L;
@@ -763,7 +760,6 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 		CascadeType.MERGE,
 		CascadeType.DETACH,
 		CascadeType.REFRESH })
-	@AuditedIgnore
 	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;
 	}
@@ -773,7 +769,6 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 	}
 
 	@OneToMany(mappedBy = SormasToSormasShareInfo.EVENT, fetch = FetchType.LAZY)
-	@AuditedIgnore
 	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
 		return sormasToSormasShares;
 	}
@@ -791,7 +786,6 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 		this.internalToken = internalToken;
 	}
 
-	@AuditedIgnore
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = EVENTS_EVENT_GROUPS_TABLE_NAME,
 		joinColumns = @JoinColumn(name = "event_id"),

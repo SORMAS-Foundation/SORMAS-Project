@@ -630,7 +630,6 @@ Feature: Create events
   @tmsLink=SORDEV-10265 @env_main
   Scenario: Manual archiving for bulk event participants
     Given API: I create a new event
-
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I click on the Events button from navbar

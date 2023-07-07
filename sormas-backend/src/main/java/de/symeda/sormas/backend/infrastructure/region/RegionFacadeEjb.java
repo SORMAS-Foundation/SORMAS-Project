@@ -38,6 +38,7 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionCriteria;
@@ -86,7 +87,14 @@ public class RegionFacadeEjb
 
 	@Inject
 	protected RegionFacadeEjb(RegionService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
-		super(Region.class, RegionDto.class, service, featureConfiguration, Validations.importRegionAlreadyExists);
+		super(
+			Region.class,
+			RegionDto.class,
+			service,
+			featureConfiguration,
+			Validations.importRegionAlreadyExists,
+			Strings.messageRegionArchivingNotPossible,
+			null);
 	}
 
 	@Override

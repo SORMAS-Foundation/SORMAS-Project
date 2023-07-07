@@ -17,8 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
-import static de.symeda.sormas.ui.utils.ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -53,6 +51,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.events.groups.EventGroupSelectionField;
+import de.symeda.sormas.ui.utils.ArchivingController;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -64,14 +63,6 @@ public class EventGroupController {
 
 		EventDto eventByUuid = FacadeProvider.getEventFacade().getEventByUuid(eventReference.getUuid(), false);
 		UserProvider user = UserProvider.getCurrent();
-		if ((!user.hasNationJurisdictionLevel() && !user.hasRegion(eventByUuid.getEventLocation().getRegion())) && !user.isAdmin()) {
-			new Notification(
-				I18nProperties.getString(Strings.headingEventGroupLinkEventIssue),
-				I18nProperties.getString(Strings.errorEventFromAnotherJurisdiction),
-				Type.ERROR_MESSAGE,
-				false).show(Page.getCurrent());
-			return;
-		}
 
 		EventGroupCriteria eventGroupCriteria = new EventGroupCriteria();
 		Set<String> eventGroupUuids = FacadeProvider.getEventGroupFacade()
@@ -87,8 +78,6 @@ public class EventGroupController {
 			} else {
 				ControllerProvider.getEventGroupController().create(Collections.singletonList(eventReference), null);
 			}
-		} else if (user.hasUserRight(UserRight.EVENTGROUP_CREATE)) {
-			ControllerProvider.getEventGroupController().create(Collections.singletonList(eventReference), null);
 		} else {
 			long events = FacadeProvider.getEventGroupFacade().count(eventGroupCriteria);
 			if (events > 0) {
@@ -141,7 +130,7 @@ public class EventGroupController {
 		});
 
 		selectionField.setSelectionChangeCallback((commitAllowed) -> component.getCommitButton().setEnabled(commitAllowed));
-		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateEventGroup));
+		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickEventGroup));
 	}
 
 	public void selectOrCreate(EventReferenceDto eventReference) {
@@ -257,11 +246,9 @@ public class EventGroupController {
 		if (user.hasUserRight(UserRight.EVENTGROUP_ARCHIVE) && hasRegion) {
 			boolean archived = FacadeProvider.getEventGroupFacade().isArchived(uuid);
 			Button archiveEventButton = ButtonHelper.createButton(
-				ARCHIVE_DEARCHIVE_BUTTON_ID,
+				ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID,
 				I18nProperties.getCaption(archived ? Captions.actionDearchiveCoreEntity : Captions.actionArchiveCoreEntity),
-				e -> {
-					archiveOrDearchiveEventGroup(uuid, !archived);
-				},
+				e -> archiveOrDearchiveEventGroup(uuid, !archived),
 				ValoTheme.BUTTON_LINK);
 
 			editView.getButtonsPanel().addComponentAsFirst(archiveEventButton);
@@ -365,25 +352,17 @@ public class EventGroupController {
 		}
 
 		UserProvider user = UserProvider.getCurrent();
-		if (!user.hasUserRight(UserRight.EVENTGROUP_CREATE) && !user.hasUserRight(UserRight.EVENTGROUP_LINK)) {
-			new Notification(
-				I18nProperties.getString(Strings.headingEventGroupLinkEventIssue),
-				I18nProperties.getString(Strings.errorNotRequiredRights),
-				Type.ERROR_MESSAGE,
-				false).show(Page.getCurrent());
-		}
 
 		List<EventReferenceDto> eventReferences = selectedItems.stream().map(EventIndexDto::toReference).collect(Collectors.toList());
 		List<String> eventUuids = eventReferences.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList());
 
 		if (!user.hasNationJurisdictionLevel()) {
-			Set<RegionReferenceDto> regions = FacadeProvider.getEventFacade().getAllRegionsRelatedToEventUuids(eventUuids);
-			for (RegionReferenceDto region : regions) {
-				if (!user.hasRegion(region)) {
+			for (String eventUuid : eventUuids) {
+				if (!FacadeProvider.getEventFacade().isInJurisdictionOrOwned(eventUuid)) {
 					new Notification(
 						I18nProperties.getString(Strings.headingEventGroupLinkEventIssue),
-						I18nProperties.getString(Strings.errorEventFromAnotherJurisdiction),
-						Type.ERROR_MESSAGE,
+						I18nProperties.getString(Strings.errorEventsFromAnotherJurisdiction),
+						Type.WARNING_MESSAGE,
 						false).show(Page.getCurrent());
 					return;
 				}

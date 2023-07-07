@@ -73,6 +73,7 @@ import de.symeda.sormas.ui.dashboard.campaigns.CampaignDashboardView;
 import de.symeda.sormas.ui.dashboard.contacts.ContactsDashboardView;
 import de.symeda.sormas.ui.dashboard.sample.SampleDashboardView;
 import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
+import de.symeda.sormas.ui.environment.EnvironmentsView;
 import de.symeda.sormas.ui.events.EventGroupDataView;
 import de.symeda.sormas.ui.events.EventsView;
 import de.symeda.sormas.ui.externalmessage.ExternalMessagesView;
@@ -124,6 +125,8 @@ public class MainScreen extends HorizontalLayout {
 					defaultView = SampleDashboardView.VIEW_NAME;
 				} else if (nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasExternalLaboratoryJurisdictionLevel()) {
 					defaultView = SamplesView.VIEW_NAME;
+				} else if (permitted(FeatureType.ENVIRONMENT_MANAGEMENT, UserRight.ENVIRONMENT_VIEW)) {
+					defaultView = EnvironmentsView.VIEW_NAME;
 				} else if (permitted(FeatureType.TASK_MANAGEMENT, UserRight.TASK_VIEW)) {
 					defaultView = TasksView.VIEW_NAME;
 				} else {
@@ -270,6 +273,15 @@ public class MainScreen extends HorizontalLayout {
 		if (permitted(FeatureType.SAMPLES_LAB, UserRight.SAMPLE_VIEW)) {
 			ControllerProvider.getSampleController().registerViews(navigator);
 			menu.addView(SamplesView.class, SamplesView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuSamples), VaadinIcons.DATABASE);
+		}
+
+		if (permitted(FeatureType.ENVIRONMENT_MANAGEMENT, UserRight.ENVIRONMENT_VIEW)) {
+			ControllerProvider.getEnvironmentController().registerViews(navigator);
+			menu.addView(
+				EnvironmentsView.class,
+				EnvironmentsView.VIEW_NAME,
+				I18nProperties.getCaption(Captions.mainMenuEnvironments),
+				VaadinIcons.GLOBE);
 		}
 
 		if (permitted(FeatureType.IMMUNIZATION_MANAGEMENT, UserRight.IMMUNIZATION_VIEW)
@@ -423,6 +435,7 @@ public class MainScreen extends HorizontalLayout {
 				EventsView.VIEW_NAME,
 				EventGroupDataView.VIEW_NAME,
 				SamplesView.VIEW_NAME,
+				EnvironmentsView.VIEW_NAME,
 				CampaignsView.VIEW_NAME,
 				CampaignDataView.VIEW_NAME,
 				CampaignStatisticsView.VIEW_NAME,

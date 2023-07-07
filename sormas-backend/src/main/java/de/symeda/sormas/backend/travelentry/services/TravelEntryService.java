@@ -266,7 +266,7 @@ public class TravelEntryService extends BaseTravelEntryService {
 	public EditPermissionType getEditPermissionType(TravelEntry travelEntry) {
 
 		if (!inJurisdictionOrOwned(travelEntry)) {
-			return EditPermissionType.REFUSED;
+			return EditPermissionType.OUTSIDE_JURISDICTION;
 		}
 
 		return super.getEditPermissionType(travelEntry);
