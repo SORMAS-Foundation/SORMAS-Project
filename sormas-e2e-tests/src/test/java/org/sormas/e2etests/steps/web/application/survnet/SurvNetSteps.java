@@ -12,6 +12,7 @@ import org.sormas.e2etests.helpers.parsers.XMLParser;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.steps.web.application.cases.CreateNewCaseSteps;
 import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
+import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
 import org.sormas.e2etests.steps.web.application.persons.EditPersonSteps;
 import org.testng.asserts.SoftAssert;
 
@@ -238,6 +239,23 @@ public class SurvNetSteps implements En {
           softly.assertEquals(computedAge, expectedComputedAge, "Computed age is incorrect!");
           softly.assertAll();
         });
+
+    And(
+        "^I open SORMAS generated XML file for event single message$",
+        () -> {
+          singleXmlFile =
+              XMLParser.getDocument("/srv/dockerdata/jenkins_new/sormas-files/test_.xml");
+        });
+
+    And(
+        "^I check if event external UUID in SORMAS generated XML file is correct$",
+        () -> {
+          softly.assertEquals(
+              getGuidRecord(singleXmlFile, 0),
+              EditEventSteps.externalEventUUID.get(0),
+              "External event UUID is incorrect!");
+          softly.assertAll();
+        });
   }
 
   private LocalDate getReportingDate(Document xmlFile, int caseNumber) {
@@ -268,6 +286,16 @@ public class SurvNetSteps implements En {
     String createdAt =
         xmlFile.getRootElement().getAttribute("CreatedAt").getValue().substring(0, 10);
     return LocalDate.parse(createdAt, DATE_FORMATTER);
+  }
+
+  private String getGuidRecord(Document xmlFile, int caseNumber) {
+    return xmlFile
+        .getRootElement()
+        .getChildren()
+        .get(caseNumber)
+        .getAttribute("GuidRecord")
+        .getValue()
+        .substring(1, 37);
   }
 
   private String getGuidPatient(Document xmlFile, int caseNumber) {

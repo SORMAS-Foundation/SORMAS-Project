@@ -112,3 +112,7 @@ Feature: Survnet tests
     And I click on the Event participant tab
     And I back to the Event tab
     And I click on Send to reporting tool button on Edit Case page
+    And I collect event external UUID from Edit Event page
+    Then I wait 50 seconds for system reaction
+    And I open SORMAS generated XML file for event single message
+    And I check if event external UUID in SORMAS generated XML file is correct
