@@ -100,3 +100,9 @@ Feature: Survnet tests
     Then I wait 50 seconds for system reaction
     And I open SORMAS generated XML file for single message
     Then I check if age computed field in SORMAS generated XML file is correct
+
+  @tmsLink=SORQA-1030
+  Scenario: Check Event type Cluster when sending from SORMAS to Meldesoftware
+    Given I log in as a Survnet
+    When I click on the Events button from navbar
+    And I create a new cluster event for DE version
