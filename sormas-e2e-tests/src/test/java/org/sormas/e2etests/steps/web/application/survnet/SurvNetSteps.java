@@ -2,8 +2,11 @@ package org.sormas.e2etests.steps.web.application.survnet;
 
 import cucumber.api.java8.En;
 import lombok.extern.slf4j.Slf4j;
+import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.Namespace;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.helpers.parsers.XMLParser;
 import org.sormas.e2etests.pages.application.NavBarPage;
@@ -351,5 +354,25 @@ public class SurvNetSteps implements En {
       e.printStackTrace();
     }
     return ageComputed;
+  }
+
+  private String getValueFromSpecificFieldByName(Document xmlFile, String name) {
+    Element rootElement = xmlFile.getRootElement();
+    Namespace ns = rootElement.getNamespace();
+    String value = null;
+
+    Element field =
+        xmlFile.getRootElement().getChildren().get(0).getChildren("Field", ns).stream()
+            .filter(e -> e.getAttributeValue("Name").equals(name))
+            .findFirst()
+            .orElse(null);
+
+    if (field != null) {
+      Attribute valueAttribute = field.getAttribute("Value");
+      if (valueAttribute != null) {
+        value = valueAttribute.getValue();
+      }
+    }
+    return value;
   }
 }
