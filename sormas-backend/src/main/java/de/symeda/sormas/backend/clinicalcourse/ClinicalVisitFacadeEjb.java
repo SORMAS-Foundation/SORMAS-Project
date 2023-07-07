@@ -226,17 +226,22 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 		UserRight._CLINICAL_VISIT_CREATE,
 		UserRight._CLINICAL_VISIT_EDIT })
 	public ClinicalVisitDto saveClinicalVisit(ClinicalVisitDto clinicalVisit, String caseUuid) {
-		return saveClinicalVisit(clinicalVisit, caseUuid, true);
+		return saveClinicalVisit(clinicalVisit, caseUuid, true, false);
 	}
 
-	@RightsAllowed({
-		UserRight._CLINICAL_VISIT_CREATE,
-		UserRight._CLINICAL_VISIT_EDIT })
-	public ClinicalVisitDto saveClinicalVisit(ClinicalVisitDto clinicalVisit, String caseUuid, boolean handleChanges) {
+	@RightsAllowed(UserRight._CASE_CREATE)
+	public ClinicalVisitDto saveMergedCasesClinicalVisit(ClinicalVisitDto clinicalVisit, String caseUuid, boolean handleChanges) {
+		return saveClinicalVisit(clinicalVisit, caseUuid, handleChanges, true);
+	}
+
+	private ClinicalVisitDto saveClinicalVisit(ClinicalVisitDto clinicalVisit, String caseUuid, boolean handleChanges, boolean isCaseMerge) {
 		SymptomsHelper.updateIsSymptomatic(clinicalVisit.getSymptoms());
 
 		ClinicalVisit existingClinicalVisit = service.getByUuid(clinicalVisit.getUuid());
-		FacadeHelper.checkCreateAndEditRights(existingClinicalVisit, userService, UserRight.CLINICAL_VISIT_CREATE, UserRight.CLINICAL_VISIT_EDIT);
+
+		if (!isCaseMerge) {
+			FacadeHelper.checkCreateAndEditRights(existingClinicalVisit, userService, UserRight.CLINICAL_VISIT_CREATE, UserRight.CLINICAL_VISIT_EDIT);
+		}
 
 		restorePseudonymizedDto(clinicalVisit, existingClinicalVisit);
 
