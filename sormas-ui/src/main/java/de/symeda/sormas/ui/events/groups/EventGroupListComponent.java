@@ -22,7 +22,6 @@ package de.symeda.sormas.ui.events.groups;
 
 import java.util.function.Consumer;
 
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -36,13 +35,12 @@ public class EventGroupListComponent extends SideComponent {
 
 		super(I18nProperties.getCaption(Captions.eventGroups), actionCallback);
 
-		if (FacadeProvider.getEventFacade().isInJurisdictionOrOwned(eventReference.getUuid())) {
-			addCreateButton(
-				I18nProperties.getCaption(Captions.linkEventGroup),
-				() -> ControllerProvider.getEventGroupController().create(eventReference),
-				UserRight.EVENTGROUP_CREATE,
-				UserRight.EVENTGROUP_LINK);
-		}
+		addCreateButton(
+			I18nProperties.getCaption(Captions.linkEventGroup),
+			() -> ControllerProvider.getEventGroupController().create(eventReference),
+			UserRight.EVENTGROUP_CREATE,
+			UserRight.EVENTGROUP_LINK);
+
 		EventGroupList eventList = new EventGroupList(eventReference);
 		addComponent(eventList);
 		eventList.reload();

@@ -91,7 +91,7 @@ public class EventGroupList extends PaginationList<EventGroupIndexDto> {
 						&& !userProvider.isAdmin()) {
 						new Notification(
 							I18nProperties.getString(Strings.headingEventGroupUnlinkEventIssue),
-							I18nProperties.getString(Strings.errorEventsFromAnotherJurisdiction),
+							I18nProperties.getString(Strings.errorEventFromAnotherJurisdiction),
 							Notification.Type.ERROR_MESSAGE,
 							false).show(Page.getCurrent());
 						return;

@@ -64,6 +64,15 @@ public class EventGroupController {
 		EventDto eventByUuid = FacadeProvider.getEventFacade().getEventByUuid(eventReference.getUuid(), false);
 		UserProvider user = UserProvider.getCurrent();
 
+		if ((!user.hasNationJurisdictionLevel() && !user.hasRegion(eventByUuid.getEventLocation().getRegion())) && !user.isAdmin()) {
+			new Notification(
+				I18nProperties.getString(Strings.headingEventGroupLinkEventIssue),
+				I18nProperties.getString(Strings.errorEventFromAnotherJurisdiction),
+				Type.ERROR_MESSAGE,
+				false).show(Page.getCurrent());
+			return;
+		}
+
 		EventGroupCriteria eventGroupCriteria = new EventGroupCriteria();
 		Set<String> eventGroupUuids = FacadeProvider.getEventGroupFacade()
 			.getCommonEventGroupsByEvents(Collections.singletonList(eventByUuid.toReference()))
