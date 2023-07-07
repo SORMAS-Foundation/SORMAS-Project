@@ -106,3 +106,9 @@ Feature: Survnet tests
     Given I log in as a Survnet
     When I click on the Events button from navbar
     And I create a new cluster event for DE version
+    And I add only required data for event participant creation for DE
+    And I click on the Event participant tab
+    And I add only required data for event participant creation for DE
+    And I click on the Event participant tab
+    And I back to the Event tab
+    And I click on Send to reporting tool button on Edit Case page
