@@ -728,15 +728,6 @@ Feature: Login with different type of users
       | https://test-de.sormas.netzlink.com/  | National User               |
       | https://test-de.sormas.netzlink.com/  | Point of Entry Supervisor   |
       | https://test-de.sormas.netzlink.com/  | Surveillance Supervisor     |
-      | https://test-de1.sormas.netzlink.com/  | Administrator               |
-      | https://test-de1.sormas.netzlink.com/  | Case Supervisor             |
-      | https://test-de1.sormas.netzlink.com/  | Contact Supervisor          |
-      | https://test-de1.sormas.netzlink.com/  | Event Officer               |
-      | https://test-de1.sormas.netzlink.com/  | Laboratory Officer          |
-      | https://test-de1.sormas.netzlink.com/  | National Clinician          |
-      | https://test-de1.sormas.netzlink.com/  | National User               |
-      | https://test-de1.sormas.netzlink.com/  | Point of Entry Supervisor   |
-      | https://test-de1.sormas.netzlink.com/  | Surveillance Supervisor     |
       | https://test-de2.sormas.netzlink.com/  | Administrator               |
       | https://test-de2.sormas.netzlink.com/  | Case Supervisor             |
       | https://test-de2.sormas.netzlink.com/  | Contact Supervisor          |
