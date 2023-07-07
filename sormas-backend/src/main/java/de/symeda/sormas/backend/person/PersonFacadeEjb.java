@@ -1846,7 +1846,6 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 			DtoHelper.copyDtoValues(leadPersonDto, otherPersonDto, false, PersonDto.ADDRESS);
 			processPersonAddressMerge(leadPersonDto, otherPersonDto);
-
 			save(leadPersonDto);
 		}
 
@@ -1983,10 +1982,11 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 	private void processPersonAddressMerge(PersonDto leadPersonDto, PersonDto otherPersonDto) {
 		if (locationFacade.areDifferentLocation(leadPersonDto.getAddress(), otherPersonDto.getAddress())) {
-			LocationDto otherAddress = otherPersonDto.getAddress();
-			otherAddress.setAddressType(PersonAddressType.OTHER_ADDRESS);
-			otherAddress.setAddressTypeDetails(I18nProperties.getString(Strings.messagePersonMergedAddressDescription));
-			leadPersonDto.addAddress(otherAddress);
+			LocationDto newAddress = LocationDto.build();
+			DtoHelper.copyDtoValues(newAddress, otherPersonDto.getAddress(), true);
+			newAddress.setAddressType(PersonAddressType.OTHER_ADDRESS);
+			newAddress.setAddressTypeDetails(I18nProperties.getString(Strings.messagePersonMergedAddressDescription));
+			leadPersonDto.addAddress(newAddress);
 		} else {
 			DtoHelper.copyDtoValues(leadPersonDto.getAddress(), otherPersonDto.getAddress(), false);
 		}
