@@ -181,7 +181,7 @@ public class SurvNetSteps implements En {
         () -> {
           bulkXmlFile =
               XMLParser.getDocument(
-                  "/srv/dockerdata/jenkins_new/sormas-files/bulk_case"
+                  "/srv/dockerdata/jenkins_new/sormas-files/bulk_case_"
                       + EditCaseSteps.externalUUID.get(0).substring(1, 37)
                       + ".xml");
         });
