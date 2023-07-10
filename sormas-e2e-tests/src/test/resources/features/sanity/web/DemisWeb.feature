@@ -8,6 +8,7 @@ Scenario: Create and send laboratory request via Demis
   And I log in as a National User
   Then I click on the Messages button from navbar
   And I click on fetch messages button
+  And I filter by last created person via API in Messages Directory
   And I check if first and last name of patient request sent via Demis are correct
 
   @tmsLink=SORDEV-7491 @env_d2s @LoginKeycloak
@@ -17,6 +18,7 @@ Scenario: Create and send laboratory request via Demis
     And I log in as a National User
     Then I click on the Messages button from navbar
     And I click on fetch messages button
+    And I filter by last created person via API in Messages Directory
     And I check if first and last name of patient request sent via Demis are correct
     Then I click on the eye icon next for the first fetched message
     And I check if fetched message has UUID field
@@ -143,7 +145,7 @@ Scenario: Create and send laboratory request via Demis
     And I search created message by birthday date
     Then I check if searched message has correct birthday date
 
-  @tmsLink=SORDEV-5588 @env_d2s @LoginKeycloak @testIt
+  @tmsLink=SORDEV-5588 @env_d2s @LoginKeycloak
   Scenario: Test delete option in Lab Messages
     Given API : Login to DEMIS server
     Then I create and send Laboratory Notification
@@ -174,6 +176,7 @@ Scenario: Create and send laboratory request via Demis
     When I log in as a National User
     And I click on the Messages button from navbar
     And I click on fetch messages button
+    And I filter by last created person via API in Messages Directory
     Then I click on the eye icon next for the first fetched message
     And I collect message uuid
     And I click on the Mark as unclear button

@@ -19,6 +19,9 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 
+import org.hibernate.Hibernate;
+import org.hibernate.proxy.HibernateProxy;
+
 import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -116,6 +119,28 @@ public class CurrentUserService {
 
 		final TypedQuery<User> q = em.createQuery(cq).setParameter(userNameParam, userName.toLowerCase());
 
-		return q.getResultList().stream().findFirst().orElse(null);
+		User currentUser = q.getResultList().stream().findFirst().orElse(null);
+		if (currentUser != null) {
+			unproxy(currentUser.getRegion());
+			unproxy(currentUser.getDistrict());
+			unproxy(currentUser.getCommunity());
+			unproxy(currentUser.getHealthFacility());
+			unproxy(currentUser.getPointOfEntry());
+			unproxy(currentUser.getLaboratory());
+			unproxy(currentUser.getAssociatedOfficer());
+		}
+
+		return currentUser;
+	}
+
+	public static <T> T unproxy(T proxied) {
+		if (proxied instanceof HibernateProxy) {
+			Hibernate.initialize(proxied);
+			@SuppressWarnings("unchecked")
+			T obj = (T) ((HibernateProxy) proxied).getHibernateLazyInitializer().getImplementation();
+			return obj;
+		} else {
+			return proxied;
+		}
 	}
 }
