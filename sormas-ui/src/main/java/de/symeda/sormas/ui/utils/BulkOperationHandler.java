@@ -51,6 +51,7 @@ public class BulkOperationHandler<T extends HasUuid> {
 	private final String countEntriesNotDeletedMessageProperty;
 	private final String someEntriesProcessedMessageProperty;
 	private final String noEligibleEntityMessageProperty;
+	private final String infoBulkProcessFinishedWithSkipsProperty;
 
 	public BulkOperationHandler(
 		String allEntriesProcessedMessageProperty,
@@ -58,17 +59,26 @@ public class BulkOperationHandler<T extends HasUuid> {
 		String headingSomeEntitiesNotDeleted,
 		String countEntriesNotProcessedMessageProperty,
 		String someEntriesProcessedMessageProperty,
-		String noEligibleEntityMessageProperty) {
+		String noEligibleEntityMessageProperty,
+		String infoBulkProcessFinishedWithSkipsProperty) {
 		this.allEntriesProcessedMessageProperty = allEntriesProcessedMessageProperty;
 		this.ineligibleEntriesNotProcessedMessageProperty = ineligibleEntriesNotProcessedMessageProperty;
 		this.headingSomeEntitiesNotDeleted = headingSomeEntitiesNotDeleted;
 		this.countEntriesNotDeletedMessageProperty = countEntriesNotProcessedMessageProperty;
 		this.someEntriesProcessedMessageProperty = someEntriesProcessedMessageProperty;
 		this.noEligibleEntityMessageProperty = noEligibleEntityMessageProperty;
+		this.infoBulkProcessFinishedWithSkipsProperty = infoBulkProcessFinishedWithSkipsProperty;
 	}
 
 	public static <E extends HasUuid> BulkOperationHandler<E> forBulkEdit() {
-		return new BulkOperationHandler<E>(Strings.messageEntriesEdited, null, null, null, Strings.messageEntriesEditedExceptArchived, null);
+		return new BulkOperationHandler<E>(
+			Strings.messageEntriesEdited,
+			null,
+			null,
+			null,
+			Strings.messageEntriesEditedExceptArchived,
+			null,
+			Strings.infoBulkProcessFinishedWithSkips);
 	}
 
 	public void doBulkOperation(
@@ -129,7 +139,6 @@ public class BulkOperationHandler<T extends HasUuid> {
 			BulkProgressLayout bulkProgressLayout = new BulkProgressLayout(currentUI, selectedEntries.size(), this::handleCancelButtonClicked);
 			addWindow(bulkProgressLayout, currentUI);
 
-			//List<T> finalSelectedEligibleEntries = selectedEligibleEntries;
 			List<T> finalSelectedEligibleEntries = selectedEligibleEntries;
 			Thread bulkThread = new Thread(() -> {
 				currentUI.setPollInterval(300);
@@ -171,10 +180,10 @@ public class BulkOperationHandler<T extends HasUuid> {
 										bulkOperationDoneCallback.accept(remainingEntries);
 									});
 							} else {
-								//TODO: add a refresh here to recalculate the number of events in filters
+
 								bulkProgressLayout.finishProgress(
 									ProgressResult.SUCCESS_WITH_WARNING,
-									I18nProperties.getString(Strings.infoBulkProcessFinishedWithSkips),
+									I18nProperties.getString(Strings.infoBulkProcessFinishedWithIneligibleItems),
 									() -> {
 										window.close();
 										bulkOperationDoneCallback.accept(remainingEntries);
@@ -183,7 +192,7 @@ public class BulkOperationHandler<T extends HasUuid> {
 						} else {
 							bulkProgressLayout.finishProgress(
 								ProgressResult.SUCCESS_WITH_WARNING,
-								I18nProperties.getString(Strings.infoBulkProcessFinishedWithSkips),
+								I18nProperties.getString(infoBulkProcessFinishedWithSkipsProperty),
 								() -> {
 									window.close();
 									bulkOperationDoneCallback.accept(remainingEntries);

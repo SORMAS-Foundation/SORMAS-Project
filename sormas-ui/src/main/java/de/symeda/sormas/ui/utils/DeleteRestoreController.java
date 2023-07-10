@@ -7,14 +7,12 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.vaadin.server.Page;
-import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.DeletableFacade;
 import de.symeda.sormas.api.FacadeProvider;
@@ -22,7 +20,6 @@ import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.api.uuid.HasUuid;
 
 public class DeleteRestoreController<F extends DeletableFacade> {
@@ -131,100 +128,12 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 		return new BulkOperationHandler<>(
 
 			forDelete ? deleteRestoreMessages.getMessageEntitiesDeleted() : deleteRestoreMessages.getMessageEntitiesRestored(),
-			//TODO: change the label name to notEligibleItems
 			forDelete ? deleteRestoreMessages.getMessageEntitiesNotDeletedLinkedEntitiesReason() : null,
 			forDelete ? deleteRestoreMessages.getHeadingSomeEntitiesNotDeleted() : deleteRestoreMessages.getHeadingSomeEntitiesNotRestored(),
 			forDelete ? deleteRestoreMessages.getMessageCountEntitiesNotDeleted() : deleteRestoreMessages.getMessageCountEntitiesNotRestored(),
 			forDelete ? deleteRestoreMessages.getMessageEntitiesNotDeleted() : deleteRestoreMessages.getMessageEntitiesNotRestored(),
-			forDelete ? deleteRestoreMessages.getMessageNoEligibleEntitySelected() : null);
-	}
-
-	private void handleRestoreResult(int unrestoredEntityCount, DeleteRestoreMessages messages, String unrestoredEntitiesString) {
-		if (unrestoredEntityCount == 0) {
-			displaySuccessNotification(messages.getHeadingEntitiesRestored(), messages.getMessageEntitiesRestored());
-		} else {
-			//TODO: add messages for all the entities, add missing strings too
-			// I18nProperties.getString(Strings.messageCasesNotRestored)),
-			showSimplePopUp(
-				messages.getHeadingSomeEntitiesNotRestored(),
-				getDetails(
-					messages.getMessageCountEntitiesNotRestored(),
-					unrestoredEntityCount,
-					unrestoredEntitiesString,
-					messages.getMessageEntitiesNotRestored()));
-		}
-	}
-
-	private void handleDeleteItemsResult(
-		int undeletedEntityCount,
-		int undeletedEntityExternalReasonCount,
-		int undeletedEntityLinkedEntitiesReasonCount,
-		DeleteRestoreMessages messages,
-		String undeletedEntitiesString,
-		String undeletedEntitiesExternalReasonString,
-		String undeletedEntitiesLinkedEntitiesReasonString) {
-		//TODO: test this condition
-		if (undeletedEntityCount == 0 && undeletedEntityExternalReasonCount == 0 && undeletedEntityLinkedEntitiesReasonCount == 0) {
-			displaySuccessNotification(messages.getHeadingEntitiesDeleted(), messages.getMessageEntitiesDeleted());
-		} else {
-			StringBuilder description = new StringBuilder();
-			if (undeletedEntityLinkedEntitiesReasonCount > 0) {
-				description
-					.append(
-						getDetails(
-							messages.getMessageCountEntitiesNotDeleted(),
-							undeletedEntityLinkedEntitiesReasonCount,
-							undeletedEntitiesLinkedEntitiesReasonString,
-							""))
-					//messages.getMessageEntitiesNotDeletedLinkedEntitiesReason()""))
-					.append("<br/> <br/>");
-			}
-			if (undeletedEntityExternalReasonCount > 0) {
-				description
-					.append(
-						getDetails(
-							messages.getMessageCountEntitiesNotDeleted(),
-							undeletedEntityExternalReasonCount,
-							undeletedEntitiesExternalReasonString,
-							""))
-					//messages.getMessageEntitiesNotDeletedExternalReason()))
-					.append("<br/> <br/>");
-			}
-			if (undeletedEntityCount > 0) {
-				description.append(
-					getDetails(
-						messages.getMessageCountEntitiesNotDeleted(),
-						undeletedEntityCount,
-						undeletedEntitiesString,
-						messages.getMessageEntitiesNotDeleted()));
-			}
-			showSimplePopUp(messages.getHeadingSomeEntitiesNotDeleted(), description.toString());
-		}
-	}
-
-	private Window showSimplePopUp(String heading, String message) {
-		Window window = VaadinUiUtil.showSimplePopupWindow(I18nProperties.getString(heading), message, ContentMode.HTML);
-		window.setWidth(600, Sizeable.Unit.PIXELS);
-		return window;
-	}
-
-	private String getDetails(
-		String messageCountEntitiesNotDeleted,
-		int undeletedEntityCount,
-		String undeletedEntitiesString,
-		String messageEntitiesNotDeleted) {
-		return String.format(
-			"%1s <br/> <br/> %2s",
-			String.format(
-				I18nProperties.getString(messageCountEntitiesNotDeleted),
-				String.format("<b>%s</b>", undeletedEntityCount),
-				String.format("<b>%s</b>", HtmlHelper.cleanHtml(undeletedEntitiesString))),
-			I18nProperties.getString(messageEntitiesNotDeleted));
-	}
-
-	private void displaySuccessNotification(String heading, String message) {
-		new Notification(I18nProperties.getString(heading), I18nProperties.getString(message), Notification.Type.TRAY_NOTIFICATION, false)
-			.show(Page.getCurrent());
+			forDelete ? deleteRestoreMessages.getMessageNoEligibleEntitySelected() : null,
+			Strings.infoBulkDeleteProcessFinishedWithSkips);
 	}
 
 	private void displayNothingSelectedToBeDeleted(DeleteRestoreMessages messages) {

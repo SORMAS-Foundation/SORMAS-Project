@@ -805,9 +805,11 @@ public interface Strings {
 	String infoAutomaticDeletionTooltipYears = "infoAutomaticDeletionTooltipYears";
 	String infoBAGExport = "infoBAGExport";
 	String infoBasicExport = "infoBasicExport";
+	String infoBulkDeleteProcessFinishedWithSkips = "infoBulkDeleteProcessFinishedWithSkips";
 	String infoBulkProcess = "infoBulkProcess";
 	String infoBulkProcessCancelled = "infoBulkProcessCancelled";
 	String infoBulkProcessFinished = "infoBulkProcessFinished";
+	String infoBulkProcessFinishedWithIneligibleItems = "infoBulkProcessFinishedWithIneligibleItems";
 	String infoBulkProcessFinishedWithSkips = "infoBulkProcessFinishedWithSkips";
 	String infoBulkProcessNoEligibleEntries = "infoBulkProcessNoEligibleEntries";
 	String infoBulkUnresponsiveWindowHint = "infoBulkUnresponsiveWindowHint";
