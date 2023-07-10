@@ -44,7 +44,7 @@ public class SurvNetSteps implements En {
     Then(
         "I check if {string} in SORMAS generated XML file is correct",
         (String typeOfDate) -> {
-          LocalDate expectedDate = CreateNewCaseSteps.survnetCase.getDateOfReport();
+          LocalDate expectedDate = LocalDate.now();
 
           switch (typeOfDate) {
             case "date of report":
@@ -96,7 +96,7 @@ public class SurvNetSteps implements En {
           List<String> diffs =
               compareXMLFiles(
                   "src/main/resources/survnetXMLTemplates/controlXml.xml",
-                  "/srv/dockerdata/jenkins_new/sormas-files/test_"
+                  "/srv/dockerdata/jenkins_new/sormas-files/case_"
                       + EditCaseSteps.externalUUID.get(0).substring(1, 37)
                       + ".xml");
           List<String> nodes = extractDiffNodes(diffs, "/[Transport][^\\s]+");
@@ -131,7 +131,7 @@ public class SurvNetSteps implements En {
           softly.assertTrue(
               validateXMLSchema(
                   "src/main/resources/survnetXMLTemplates/xmlSchema.xsd",
-                  "/srv/dockerdata/jenkins_new/sormas-files/test_"
+                  "/srv/dockerdata/jenkins_new/sormas-files/case_"
                       + EditCaseSteps.externalUUID.get(0).substring(1, 37)
                       + ".xml"),
               "Generated XML file does not match an example XSD schema");
