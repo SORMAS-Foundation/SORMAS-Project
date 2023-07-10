@@ -141,4 +141,5 @@ public class CreateNewCasePage {
       By.xpath("//label[text()='W\u00E4hlen Sie eine passende Person']");
   public static final By SELECT_EXISTING_CASE_DE =
       By.xpath("//label[text()='Einen vorhandenen Fall w\u00E4hlen']");
+  public static final By CATEGORY_SAVED_POPUP = By.cssSelector(".v-Notification-caption");
 }

@@ -89,6 +89,29 @@ Feature: Survnet tests
     And I check if external person uuid for all 2 cases in SORMAS generated bult XML file is correct
     And I check if "date of report" for all 2 cases in SORMAS generated bulk XML file is correct
 
+  @tmsLink=SORQA-1029
+  Scenario: Symptoms in case when sending from SORMAS to Meldesoftware
+  Given I log in as a Survnet
+    When I click on the Cases button from navbar
+    And I click on the NEW CASE button
+
+    And I open locally SORMAS generated XML file for single message
+
+    And I create a new case with mandatory data only for Survnet DE
+    And I navigate to symptoms tab
+    Then I change all symptoms fields to "JA" option field and save on Survnet
+   # And I set "Fever" Symptoms to "JA" on the Symptoms tab
+   # And I set "Shivering" Symptoms to "JA" on the Symptoms tab
+ #   And I save the Symptoms data
+    And I navigate to case tab
+    And I click on Send to reporting tool button on Edit Case page
+    And I collect case external UUID from Edit Case page
+    Then I wait 50 seconds for system reaction
+  #  Then I open SORMAS generated XML file for single message
+    And I check if "OnsetOfDisease" SYMPTOM in SORMAS generated single XML file is correct
+
+
+
   @tmsLink=SORQA-1027
   Scenario: Calculated age in case when sending from SORMAS to Meldesoftware
     Given I log in as a Survnet
