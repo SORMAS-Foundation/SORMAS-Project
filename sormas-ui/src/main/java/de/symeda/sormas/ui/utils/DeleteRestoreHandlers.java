@@ -171,12 +171,6 @@ public final class DeleteRestoreHandlers {
 		}
 	}
 
-	//TODO: check if can extend the basic handler class
-	/*
-	 * public static class CoreEntityDeleteRestoreHandler<T extends EntityDto, F extends CoreFacade<T, ?, ?, ?>>
-	 * implements DeleteRestoreController.IDeleteRestoreHandler<T> {
-	 */
-
 	public static class CoreEntityDeleteRestoreHandler<T extends EntityDto, F extends CoreFacade<T, ?, ?, ?>> extends DeleteRestoreHandler<T, F>
 		implements DeleteRestoreController.IDeleteRestoreHandler<T> {
 
