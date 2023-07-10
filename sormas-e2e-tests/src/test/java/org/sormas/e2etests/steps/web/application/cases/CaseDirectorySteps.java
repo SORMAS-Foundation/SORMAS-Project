@@ -18,8 +18,159 @@
 
 package org.sormas.e2etests.steps.web.application.cases;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.javafaker.Faker;
+import com.google.common.truth.Truth;
+import com.opencsv.CSVParser;
+import com.opencsv.CSVParserBuilder;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.CSVWriter;
+import com.opencsv.exceptions.CsvException;
+import cucumber.api.java8.En;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.By;
+import org.sormas.e2etests.common.DataOperations;
+import org.sormas.e2etests.entities.pojo.csv.DetailedCaseCSV;
+import org.sormas.e2etests.entities.pojo.csv.DetailedCaseCSVSymptoms;
+import org.sormas.e2etests.enums.CaseOutcome;
+import org.sormas.e2etests.enums.DiseasesValues;
+import org.sormas.e2etests.enums.DistrictsValues;
+import org.sormas.e2etests.enums.FacilityCategory;
+import org.sormas.e2etests.enums.FollowUpStatus;
+import org.sormas.e2etests.enums.PresentCondition;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
+import org.sormas.e2etests.helpers.AssertHelpers;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.helpers.files.FilesHelper;
+import org.sormas.e2etests.pages.application.cases.EditCasePage;
+import org.sormas.e2etests.pages.application.contacts.EditContactPage;
+import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.BaseSteps;
+import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
+
+import javax.inject.Inject;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.DateFormatSymbols;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
+
 import static org.sormas.e2etests.entities.pojo.helpers.ShortUUIDGenerator.generateShortUUID;
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ACTION_OKAY;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ACTION_RESET_POPUP;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ACTION_SEARCH_POPUP;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALLBUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALL_RESULTS_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_ACTIONS;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_ACTIONS_ARCHIVE;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_ACTIONS_VALUES;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_CREATE_QUARANTINE_ORDER;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_EDIT_INFORMATION;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASES_FROM_OTHER_INSTANCES_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASES_FROM_OTHER_JURISDICTIONS_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASES_HELP_NEEDED_IN_QUARANTINE_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASES_WITHOUT_FACILITY_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASES_WITHOUT_GEO_COORDINATES_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASES_WITHOUT_RESPONSIBLE_OFFICER_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASES_WITH_EVENTS_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASES_WITH_EXTENDED_QUARANTINE_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASES_WITH_FULFILLED_REFERENCE_DEFINITION_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASES_WITH_REDUCED_QUARANTINE_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASES_WITH_REINFECTION_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_APPLY_FILTERS_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_ARCHIVED_POPUP;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_CLASSIFICATION_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_COMMUNITY_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DATA_TYPE_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DAY_FILTER;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DIRECTORY_DETAILED_RADIOBUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DISEASE_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DISEASE_VARIANT_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DISPLAY_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DISTRICT_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_EPIDEMIOLOGICAL_DATA_TAB;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_FACILITY_CATEGORY_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_FACILITY_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_FACILITY_TYPE_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_FOLLOWUP_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_GRID_RESULTS_ROWS;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_MONTH_FILTER;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_ORIGIN_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_OUTCOME_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_OWNERSHIP_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_PRESENT_CONDITION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_QUARANTINE_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_REGION_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_REINFECTION_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_REPORTING_USER_FILTER;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_RESET_FILTERS_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_SURVOFF_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_VACCINATION_STATUS_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_YEAR_FILTER;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CLOSE_FORM_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONFIRM_POPUP;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CREATE_NEW_PERSON_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_FROM_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_TO_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_TYPE_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DETAILED_IMPORT_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DOWNLOAD_DATA_DICTIONARY_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DOWNLOAD_IMPORT_GUIDE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ENTER_BULK_EDIT_MODE;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.EPI_DATA_TAB;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.EXCLAMATION_MARK_MESSAGE_PICK_OR_CREATE_PERSON_POPUP;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.EXCLAMATION_MARK_PICK_OR_CREATE_PERSON_POPUP;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FIRST_CASE_ID_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FIRST_RESULT_IN_GRID;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.GRID_HEADERS;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.IMPORT_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.INVESTIGATION_DISCARDED_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.INVESTIGATION_DONE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.INVESTIGATION_PENDING_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.LEAVE_BULK_EDIT_MODE;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.LINE_LISTING_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.MERGE_DUPLICATES_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.MERGE_DUPLICATES_WARNING_POPUP;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.MORE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.NAME_UUID_EPID_NUMBER_LIKE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.NEW_CASE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.NEW_CASE_DATE_FROM_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.NEW_EVENT_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.POTENTIAL_DUPLICATE_POPUP_DE;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.REJECT_SHARED_CASE_HEADER_DE;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.REJECT_SHARED_CASE_POPUP_TEXT_AREA;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.RESULTS_GRID_HEADER;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SEARCH_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SEND_TO_REPORTING_TOOL_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SHARE_OPTION_BULK_ACTION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SHOW_MORE_LESS_FILTERS;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.TOTAL_CASES_COUNTER;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getCaseResultsUuidLocator;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getCheckboxByIndex;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getMergeDuplicatesButtonById;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getResultByIndex;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getVaccinationStatusCasesByText;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE_INPUT;
@@ -27,11 +178,12 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CL
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CONFIRM;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_RELATED_CONTACTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BACK_TO_CASES_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CONFIRM_ACTION;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_NEW_CASE_CHECKBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXTRA_COMMENT_INPUT_SHARE_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_CREATE_CASE_POPUP_HEADER;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_CREATE_PERSON_POPUP_HEADER;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFERENCE_DEFINITION_TEXT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.REPORTING_TOOL_MESSAGE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPUP_CONTENT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.getCaseIDPathByIndex;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.COMMIT_BUTTON;
@@ -58,59 +210,6 @@ import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.SELE
 import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.BULK_DELETE_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.javafaker.Faker;
-import com.google.common.truth.Truth;
-import com.opencsv.CSVParser;
-import com.opencsv.CSVParserBuilder;
-import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderBuilder;
-import com.opencsv.CSVWriter;
-import com.opencsv.exceptions.CsvException;
-import cucumber.api.java8.En;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.DateFormatSymbols;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
-import javax.inject.Inject;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
-import org.sormas.e2etests.common.DataOperations;
-import org.sormas.e2etests.entities.pojo.csv.DetailedCaseCSV;
-import org.sormas.e2etests.entities.pojo.csv.DetailedCaseCSVSymptoms;
-import org.sormas.e2etests.enums.CaseOutcome;
-import org.sormas.e2etests.enums.DiseasesValues;
-import org.sormas.e2etests.enums.DistrictsValues;
-import org.sormas.e2etests.enums.FacilityCategory;
-import org.sormas.e2etests.enums.FollowUpStatus;
-import org.sormas.e2etests.enums.PresentCondition;
-import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
-import org.sormas.e2etests.helpers.AssertHelpers;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.helpers.files.FilesHelper;
-import org.sormas.e2etests.pages.application.cases.EditCasePage;
-import org.sormas.e2etests.pages.application.contacts.EditContactPage;
-import org.sormas.e2etests.state.ApiState;
-import org.sormas.e2etests.steps.BaseSteps;
-import org.testng.Assert;
-import org.testng.asserts.SoftAssert;
-
 @Slf4j
 public class CaseDirectorySteps implements En {
 
@@ -132,8 +231,6 @@ public class CaseDirectorySteps implements En {
   private static String firstName;
   private static String lastName;
   private static String receivedCaseUUID;
-  private static String generatedRandomString;
-  private static String generatedRandomStringContact;
 
   @Inject
   public CaseDirectorySteps(
@@ -1221,6 +1318,7 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(EditContactPage.DELETE_POPUP_YES_BUTTON);
           TimeUnit.SECONDS.sleep(3); // wait for response after confirm
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_ARCHIVED_POPUP);
         });
 
     Then(
@@ -1324,51 +1422,6 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
-    And(
-        "I fill comment in share popup with random string",
-        () -> {
-          generatedRandomString = faker.beer().name();
-          webDriverHelpers.fillInWebElement(EXTRA_COMMENT_INPUT_SHARE_POPUP, generatedRandomString);
-        });
-
-    And(
-        "I fill comment in share popup for contact with random string",
-        () -> {
-          generatedRandomStringContact = faker.beer().name();
-          webDriverHelpers.fillInWebElement(
-              EXTRA_COMMENT_INPUT_SHARE_POPUP, generatedRandomStringContact);
-        });
-
-    When(
-        "I click on {string} shared case button with copied case description",
-        (String option) -> {
-          switch (option) {
-            case "reject":
-              webDriverHelpers.clickOnWebElementBySelector(
-                  getActionRejectButtonByCaseDescription(generatedRandomString));
-              break;
-            case "accept":
-              webDriverHelpers.clickOnWebElementBySelector(
-                  getActionAcceptButtonByCaseDescription(generatedRandomString));
-              break;
-          }
-        });
-
-    When(
-        "I click on {string} shared contact button with copied contact description",
-        (String option) -> {
-          switch (option) {
-            case "reject":
-              webDriverHelpers.clickOnWebElementBySelector(
-                  getActionRejectButtonByContactDescription(generatedRandomStringContact));
-              break;
-            case "accept":
-              webDriverHelpers.clickOnWebElementBySelector(
-                  getActionAcceptButtonByContactDescription(generatedRandomStringContact));
-              break;
-          }
-        });
-
     When(
         "I click on Okay button in Potential duplicate popup",
         () -> {
@@ -1419,12 +1472,27 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.accessWebSite(LAST_CREATED_CASE_URL);
         });
 
+    When(
+         "^I select (\\d+) last created UI result in grid in Case Directory for Bulk Action$",
+         (Integer number) -> {
+           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+           for (int i = 0; i < number; i++) {
+             webDriverHelpers.scrollToElement(
+                 getCheckboxByUUID(CreateNewCaseSteps.casesUUID.get(i)));
+             webDriverHelpers.clickOnWebElementBySelector(
+                 getCheckboxByUUID(CreateNewCaseSteps.casesUUID.get(i)));
+           }
+         });
+
     And(
-        "^I check that accept shared case button with copied case description is visible in Share Directory page$",
+        "^I click Send to reporting tool button on Case Directory page$",
         () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
-              getActionAcceptButtonByCaseDescription(generatedRandomString));
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(SEND_TO_REPORTING_TOOL_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SEND_TO_REPORTING_TOOL_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_ACTION);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(REPORTING_TOOL_MESSAGE);
         });
+
   }
 
   private Number getRandomNumberForBirthDateDifferentThanCreated(Number created, int min, int max) {

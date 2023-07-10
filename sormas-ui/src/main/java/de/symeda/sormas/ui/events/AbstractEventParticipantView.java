@@ -25,7 +25,7 @@ public abstract class AbstractEventParticipantView extends AbstractEditAllowedDe
 	}
 
 	@Override
-	protected CoreFacade getCoreFacade() {
+	protected CoreFacade getEditPermissionFacade() {
 		return FacadeProvider.getEventParticipantFacade();
 	}
 

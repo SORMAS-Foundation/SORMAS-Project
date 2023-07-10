@@ -17,7 +17,7 @@ package de.symeda.sormas.ui.utils;
 
 import com.vaadin.ui.Component;
 
-import de.symeda.sormas.api.CoreFacade;
+import de.symeda.sormas.api.EditPermissionFacade;
 import de.symeda.sormas.api.ReferenceDto;
 
 /**
@@ -35,11 +35,11 @@ public abstract class AbstractEditAllowedDetailView<R extends ReferenceDto> exte
 
 	}
 
-	protected abstract CoreFacade getCoreFacade();
+	protected abstract EditPermissionFacade getEditPermissionFacade();
 
 	protected boolean isEditAllowed() {
 		String uuid = getReference().getUuid();
-		return getCoreFacade().isEditAllowed(uuid);
+		return getEditPermissionFacade().isEditAllowed(uuid);
 	}
 
 	protected void setEditPermission(Component component) {

@@ -567,10 +567,8 @@ public class EventsView extends AbstractView {
 						new MenuBarHelper.MenuBarItem(
 							I18nProperties.getCaption(Captions.actionArchiveCoreEntity),
 							VaadinIcons.ARCHIVE,
-							mi -> grid.bulkActionHandler(
-								items -> ControllerProvider.getEventController()
-									.archiveAllSelectedItems(items, () -> navigateTo(eventCriteria, true)),
-								true),
+							mi -> grid
+								.bulkActionHandler(items -> ControllerProvider.getEventController().archiveAllSelectedItems(items, eventGrid), true),
 							EntityRelevanceStatus.ACTIVE.equals(eventCriteria.getRelevanceStatus())));
 					bulkActions.add(
 						new MenuBarHelper.MenuBarItem(
@@ -578,7 +576,7 @@ public class EventsView extends AbstractView {
 							VaadinIcons.ARCHIVE,
 							mi -> grid.bulkActionHandler(
 								items -> ControllerProvider.getEventController()
-									.dearchiveAllSelectedItems(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(eventCriteria, true)),
+									.dearchiveAllSelectedItems(eventGrid.asMultiSelect().getSelectedItems(), eventGrid),
 								true),
 							EntityRelevanceStatus.ARCHIVED.equals(eventCriteria.getRelevanceStatus())));
 				}

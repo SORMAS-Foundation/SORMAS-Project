@@ -28,8 +28,6 @@ import de.symeda.sormas.api.utils.SortProperty;
 @Remote
 public interface ImmunizationFacade extends CoreFacade<ImmunizationDto, ImmunizationIndexDto, ImmunizationReferenceDto, ImmunizationCriteria> {
 
-	List<String> getArchivedUuidsSince(Date since);
-
 	void archiveAllArchivableImmunizations(int daysAfterImmunizationsGetsArchived);
 
 	List<String> getDeletedUuidsSince(Date since);

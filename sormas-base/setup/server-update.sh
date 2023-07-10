@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #*******************************************************************************
 # SORMAS® - Surveillance Outbreak Response Management & Analysis System
 # Copyright © 2016-2019 Helmholtz-Zentrum f�r Infektionsforschung GmbH (HZI)
@@ -15,8 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #*******************************************************************************
-
-#!/bin/bash
 
 # If you want your server to show a maintenance page while the server is updated, use the following commands:
 # 	a2dissite your.sormas.server.url.conf
@@ -36,7 +36,6 @@ DOMAIN_NAME="sormas"
 DOWNLOADS_PATH=/var/www/sormas/downloads
 DB_BACKUP_PATH=/root/deploy/sormas/backup
 DATABASE_NAME="sormas_db"
-DATABASE_AUDIT_NAME="sormas_audit_db"
 LOG_FILE_PATH=$DOMAIN_PATH/$DOMAIN_NAME/logs
 UPDATE_LOG_PATH=$DOMAIN_PATH/$DOMAIN_NAME/update-logs
 UPDATE_LOG_FILE_NAME=server_update_`date +"%Y-%m-%d_%H-%M-%S"`.txt
@@ -200,14 +199,6 @@ if [ $(expr substr "$(uname -a)" 1 5) = "Linux" ]; then
 		echo "Main database backup failed and will be skipped..."
 	else
 		echo "Main database backup successfully completed..."
-	fi
-
-	sudo -u postgres pg_dump -Fc -b $DATABASE_AUDIT_NAME > $DB_BACKUP_PATH/$DATABASE_AUDIT_NAME"_"`date +"%Y-%m-%d_%H-%M-%S"`".dump"
-
-	if [ $? -ne 0 ]; then
-		echo "Audit database backup failed and will be skipped..."
-	else
-		echo "Audit database backup successfully completed..."
 	fi
 else
 	echo "Database backups will be skipped because it seems the server is not running on a Linux system."

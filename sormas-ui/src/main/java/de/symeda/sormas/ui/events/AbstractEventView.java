@@ -42,7 +42,7 @@ public abstract class AbstractEventView extends AbstractEditAllowedDetailView<Ev
 	}
 
 	@Override
-	protected CoreFacade getCoreFacade() {
+	protected CoreFacade getEditPermissionFacade() {
 		return FacadeProvider.getEventFacade();
 	}
 
@@ -96,7 +96,6 @@ public abstract class AbstractEventView extends AbstractEditAllowedDetailView<Ev
 			newComponent.setEnabled(false);
 		}
 	}
-
 
 	protected boolean isEventDeleted() {
 		return FacadeProvider.getEventFacade().isDeleted(getEventRef().getUuid());

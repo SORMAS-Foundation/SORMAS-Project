@@ -12345,4 +12345,78 @@ CREATE TRIGGER externalmessage_tsv_update BEFORE INSERT OR UPDATE OF externalmes
 
 INSERT INTO schema_version (version_number, comment) VALUES (513, '[DEMIS2SORMAS] Introduce a messages content search field #7647');
 
+-- 2023-06-15 #12008 Add EVENTGROUP_LINK user right dependency for users with EVENTGROUP_CREATE user rights
+
+DO $$
+    DECLARE rec RECORD;
+    BEGIN
+       FOR rec IN SELECT id FROM userroles
+           LOOP
+                IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'EVENTGROUP_CREATE')) = true) THEN
+                    INSERT INTO userroles_userrights (userrole_id, userright, sys_period)
+                    SELECT rec.id, rights.r, tstzrange(now(), null)
+                    FROM (VALUES ('EVENTGROUP_LINK')) as rights (r)
+                    WHERE NOT EXISTS(SELECT uur.userrole_id FROM userroles_userrights uur where uur.userrole_id = rec.id and uur.userright = rights.r);
+                END IF;
+
+           END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (514, '#12008 Add EVENTGROUP_LINK user right dependency for users with EVENTGROUP_CREATE user rights', false);
+
+-- 2023-05-10 Created a new Environment entity #11796
+CREATE TABLE environments(
+    id bigint not null,
+    uuid varchar(36) not null unique,
+    changedate timestamp not null,
+    creationdate timestamp not null,
+    change_user_id bigint,
+    reportdate timestamp,
+    reportinguser_id bigint,
+    environmentname text,
+    description text,
+    externalid varchar(512),
+    responsibleuser_id bigint,
+    investigationstatus varchar(255),
+    environmentmedia varchar(255),
+    watertype varchar(255),
+    otherwatertype text,
+    infrastructuredetails varchar(255),
+    otherinfrastructuredetails text,
+    wateruse json,
+    otherwateruse text,
+    location_id bigint,
+    deleted boolean DEFAULT false,
+    deletionreason varchar(255),
+    otherdeletionreason text,
+    archived boolean DEFAULT false,
+    archiveundonereason varchar(512),
+    endofprocessingdate timestamp without time zone,
+    sys_period tstzrange not null,
+    primary key(id)
+);
+
+ALTER TABLE environments OWNER TO sormas_user;
+ALTER TABLE environments ADD CONSTRAINT fk_change_user_id FOREIGN KEY (change_user_id) REFERENCES users (id);
+ALTER TABLE environments ADD CONSTRAINT fk_environments_reportinguser_id FOREIGN KEY (reportinguser_id) REFERENCES users(id);
+ALTER TABLE environments ADD CONSTRAINT fk_environments_responsibleuser_id FOREIGN KEY (responsibleuser_id) REFERENCES users(id);
+ALTER TABLE environments ADD CONSTRAINT fk_environments_location_id FOREIGN KEY (location_id) REFERENCES location(id);
+CREATE TABLE environments_history (LIKE environments);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE ON environments
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'environments_history', true);
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON environments
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('environments_history', 'id');
+ALTER TABLE environments_history OWNER TO sormas_user;
+ALTER TABLE environments ALTER COLUMN wateruse set DATA TYPE jsonb using wateruse::jsonb;
+ALTER TABLE environments_history ALTER COLUMN wateruse set DATA TYPE jsonb using wateruse::jsonb;
+
+INSERT INTO schema_version (version_number, comment) VALUES (515, 'Created a new Environment entity #11796');
+
+-- 2023-06-14 Add environmental user rights and default user #11572
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'ENVIRONMENTAL_SURVEILLANCE_USER', 'ENVIRONMENTAL_SURVEILLANCE_USER');
+
+INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (516, 'Add environmental user rights and default user #11572', true);
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

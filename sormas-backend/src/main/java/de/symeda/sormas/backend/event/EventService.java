@@ -1020,7 +1020,7 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 	public EditPermissionType getEditPermissionType(Event event) {
 
 		if (!inJurisdictionOrOwned(event)) {
-			return EditPermissionType.REFUSED;
+			return EditPermissionType.OUTSIDE_JURISDICTION;
 		}
 
 		if (sormasToSormasShareInfoService.isEventOwnershipHandedOver(event)

@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -69,7 +70,14 @@ public class PointOfEntryFacadeEjb
 
 	@Inject
 	protected PointOfEntryFacadeEjb(PointOfEntryService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
-		super(PointOfEntry.class, PointOfEntryDto.class, service, featureConfiguration, Validations.importPointOfEntryAlreadyExists);
+		super(
+			PointOfEntry.class,
+			PointOfEntryDto.class,
+			service,
+			featureConfiguration,
+			Validations.importPointOfEntryAlreadyExists,
+			null,
+			Strings.messagePointOfEntryDearchivingNotPossible);
 	}
 
 	public static PointOfEntryReferenceDto toReferenceDto(PointOfEntry entity) {

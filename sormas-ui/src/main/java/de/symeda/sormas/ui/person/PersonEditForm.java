@@ -244,14 +244,15 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addFields();
 	}
 
-	public PersonEditForm(boolean isPseudonymized, boolean inJurisdiction) {
+	public PersonEditForm(boolean isEditAllowed, boolean isPseudonymized, boolean inJurisdiction) {
 		super(
 			PersonDto.class,
 			PersonDto.I18N_PREFIX,
 			false,
 			new FieldVisibilityCheckers().add(new OutbreakFieldVisibilityChecker(ViewMode.NORMAL))
 				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
-			UiFieldAccessCheckers.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized));
+			UiFieldAccessCheckers.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized),
+			isEditAllowed);
 
 		CssStyles.style(CssStyles.H3, occupationHeader, addressHeader, addressesHeader, contactInformationHeader);
 		getContent().addComponent(occupationHeader, OCCUPATION_HEADER);

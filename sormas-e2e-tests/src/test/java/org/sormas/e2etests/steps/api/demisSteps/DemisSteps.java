@@ -887,11 +887,13 @@ public class DemisSteps implements En {
         () -> {
           patientFirstName = faker.name().firstName();
           patientLastName = faker.name().lastName();
-          String json = demisApiService.prepareLabNotificationFileWithOnePathogen(patientFirstName, patientLastName);
+          String json =
+              demisApiService.prepareLabNotificationFileWithOnePathogen(
+                  patientFirstName, patientLastName);
 
           Assert.assertTrue(
-                  demisApiService.sendLabRequest(json, loginToken),
-                    "Failed to send laboratory request");
+              demisApiService.sendLabRequest(json, loginToken),
+              "Failed to send laboratory request");
         });
   }
 

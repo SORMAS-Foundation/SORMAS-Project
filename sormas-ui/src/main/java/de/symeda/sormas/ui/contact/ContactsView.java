@@ -551,14 +551,14 @@ public class ContactsView extends AbstractView {
 							I18nProperties.getCaption(Captions.actionArchiveCoreEntity),
 							VaadinIcons.ARCHIVE,
 							mi -> grid.bulkActionHandler(
-								items -> ControllerProvider.getContactController().archiveAllSelectedItems(items, () -> navigateTo(criteria, true)),
+								items -> ControllerProvider.getContactController().archiveAllSelectedItems(items, (AbstractContactGrid<?>) grid),
 								true),
 							hasBulkOperationsRight && EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
 						new MenuBarHelper.MenuBarItem(
 							I18nProperties.getCaption(Captions.actionDearchiveCoreEntity),
 							VaadinIcons.ARCHIVE,
 							mi -> grid.bulkActionHandler(
-								items -> ControllerProvider.getContactController().dearchiveAllSelectedItems(items, () -> navigateTo(criteria, true)),
+								items -> ControllerProvider.getContactController().dearchiveAllSelectedItems(items, (AbstractContactGrid<?>) grid),
 								true),
 							hasBulkOperationsRight && EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())),
 						new MenuBarHelper.MenuBarItem(

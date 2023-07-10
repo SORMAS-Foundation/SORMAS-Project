@@ -1,0 +1,74 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www3.rki.de/ns/SurvNet/2021/01/Transport" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="Transport">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="CVD">
+          <xs:complexType>
+            <xs:choice maxOccurs="unbounded" minOccurs="0">
+              <xs:element name="Field" maxOccurs="unbounded" minOccurs="0">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute type="xs:string" name="Name" use="optional"/>
+                      <xs:attribute type="xs:string" name="Value" use="optional"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="Track">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute type="xs:string" name="GuidTrack"/>
+                      <xs:attribute type="xs:byte" name="Action"/>
+                      <xs:attribute type="xs:dateTime" name="TrackedAt"/>
+                      <xs:attribute type="xs:string" name="CodeSite"/>
+                      <xs:attribute type="xs:byte" name="VersionNoSite"/>
+                      <xs:attribute type="xs:string" name="Software"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="Addressee">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute type="xs:float" name="CodeSite" use="optional"/>
+                      <xs:attribute type="xs:string" name="Implicit" use="optional"/>
+                      <xs:attribute type="xs:string" name="Explicit" use="optional"/>
+                      <xs:attribute type="xs:string" name="Name" use="optional"/>
+                      <xs:attribute type="xs:byte" name="Value" use="optional"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+            </xs:choice>
+            <xs:attribute type="xs:string" name="GuidRecord"/>
+            <xs:attribute type="xs:byte" name="VersionNo"/>
+            <xs:attribute type="xs:byte" name="Schema"/>
+            <xs:attribute type="xs:string" name="CodeRecordOwner"/>
+            <xs:attribute type="xs:string" name="CodeVersionEditor"/>
+            <xs:attribute type="xs:string" name="Token"/>
+            <xs:attribute type="xs:string" name="ToTransportManual"/>
+            <xs:attribute type="xs:dateTime" name="ChangedAt"/>
+            <xs:attribute type="xs:byte" name="TransportRequestType"/>
+            <xs:attribute type="xs:string" name="ReferenceDefComputed"/>
+            <xs:attribute type="xs:dateTime" name="ReportingDate"/>
+            <xs:attribute type="xs:int" name="ReportingCounty"/>
+            <xs:attribute type="xs:byte" name="CaseDefClinComputed"/>
+            <xs:attribute type="xs:string" name="CaseDefClinManual"/>
+            <xs:attribute type="xs:string" name="CaseDefLabComputed"/>
+            <xs:attribute type="xs:string" name="CaseDefLabManual"/>
+            <xs:attribute type="xs:string" name="CaseDefEpiManual"/>
+            <xs:attribute type="xs:byte" name="CaseDefCategoryComputed"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute type="xs:string" name="GuidTransport"/>
+      <xs:attribute type="xs:string" name="CodeSiteSender"/>
+      <xs:attribute type="xs:string" name="CodeSiteReceiver"/>
+      <xs:attribute type="xs:short" name="TransportNumber"/>
+      <xs:attribute type="xs:dateTime" name="CreatedAt"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

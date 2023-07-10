@@ -400,9 +400,12 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 		ImmunizationJoins joins = immunizationQueryContext.getJoins();
 
 		final Subquery<String> caseSubquery = createPersonLinkedToOtherCoreEntitySubQuery(cb, cq, joins.getPerson(), Case.class, Case.PERSON);
-		final Subquery<String> contactSubquery = createPersonLinkedToOtherCoreEntitySubQuery(cb, cq, joins.getPerson(), Contact.class, Contact.PERSON);
-		final Subquery<String> eventParticipantSubquery = createPersonLinkedToOtherCoreEntitySubQuery(cb, cq, joins.getPerson(), EventParticipant.class, EventParticipant.PERSON);
-		final Subquery<String> travelEntrySubquery = createPersonLinkedToOtherCoreEntitySubQuery(cb, cq, joins.getPerson(), TravelEntry.class, TravelEntry.PERSON);
+		final Subquery<String> contactSubquery =
+			createPersonLinkedToOtherCoreEntitySubQuery(cb, cq, joins.getPerson(), Contact.class, Contact.PERSON);
+		final Subquery<String> eventParticipantSubquery =
+			createPersonLinkedToOtherCoreEntitySubQuery(cb, cq, joins.getPerson(), EventParticipant.class, EventParticipant.PERSON);
+		final Subquery<String> travelEntrySubquery =
+			createPersonLinkedToOtherCoreEntitySubQuery(cb, cq, joins.getPerson(), TravelEntry.class, TravelEntry.PERSON);
 
 		cq.where(
 			cb.and(
@@ -614,12 +617,13 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 	@Override
 	public EditPermissionType getEditPermissionType(Immunization immunization) {
 
-		if (immunization.getSormasToSormasOriginInfo() != null && !immunization.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
-			return EditPermissionType.REFUSED;
+		if (!inJurisdictionOrOwned(immunization)) {
+			return EditPermissionType.OUTSIDE_JURISDICTION;
 		}
 
-		if (!inJurisdictionOrOwned(immunization) || sormasToSormasShareInfoService.isImmunizationsOwnershipHandedOver(immunization)) {
-			return EditPermissionType.REFUSED;
+		if (sormasToSormasShareInfoService.isImmunizationsOwnershipHandedOver(immunization)
+			|| immunization.getSormasToSormasOriginInfo() != null && !immunization.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
+			return EditPermissionType.WITHOUT_OWNERSHIP;
 		}
 
 		return super.getEditPermissionType(immunization);

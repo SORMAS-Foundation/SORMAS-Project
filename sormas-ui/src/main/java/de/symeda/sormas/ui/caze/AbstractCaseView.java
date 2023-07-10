@@ -103,7 +103,7 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 	}
 
 	@Override
-	protected CoreFacade getCoreFacade() {
+	protected CoreFacade getEditPermissionFacade() {
 		return FacadeProvider.getCaseFacade();
 	}
 

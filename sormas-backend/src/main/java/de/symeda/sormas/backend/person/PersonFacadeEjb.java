@@ -68,6 +68,7 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.BirthDateDto;
@@ -1845,7 +1846,6 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 			DtoHelper.copyDtoValues(leadPersonDto, otherPersonDto, false, PersonDto.ADDRESS);
 			processPersonAddressMerge(leadPersonDto, otherPersonDto);
-
 			save(leadPersonDto);
 		}
 
@@ -1982,10 +1982,11 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 	private void processPersonAddressMerge(PersonDto leadPersonDto, PersonDto otherPersonDto) {
 		if (locationFacade.areDifferentLocation(leadPersonDto.getAddress(), otherPersonDto.getAddress())) {
-			LocationDto otherAddress = otherPersonDto.getAddress();
-			otherAddress.setAddressType(PersonAddressType.OTHER_ADDRESS);
-			otherAddress.setAddressTypeDetails(I18nProperties.getString(Strings.messagePersonMergedAddressDescription));
-			leadPersonDto.addAddress(otherAddress);
+			LocationDto newAddress = LocationDto.build();
+			DtoHelper.copyDtoValues(newAddress, otherPersonDto.getAddress(), true);
+			newAddress.setAddressType(PersonAddressType.OTHER_ADDRESS);
+			newAddress.setAddressTypeDetails(I18nProperties.getString(Strings.messagePersonMergedAddressDescription));
+			leadPersonDto.addAddress(newAddress);
 		} else {
 			DtoHelper.copyDtoValues(leadPersonDto.getAddress(), otherPersonDto.getAddress(), false);
 		}
@@ -2044,6 +2045,11 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	@Override
 	public boolean isEditAllowed(String uuid) {
 		return service.isEditAllowed(uuid);
+	}
+
+	@Override
+	public EditPermissionType getEditPermissionType(String uuid) {
+		return isEditAllowed(uuid) ? EditPermissionType.ALLOWED : EditPermissionType.REFUSED;
 	}
 
 	@LocalBean
