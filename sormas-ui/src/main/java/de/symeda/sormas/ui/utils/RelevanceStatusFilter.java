@@ -36,6 +36,7 @@ public final class RelevanceStatusFilter {
 		String allActiveAndArchivedCaption,
 		String deletedCaption,
 		EntityRelevanceStatus initialValue,
+		UserRight deleteUserRight,
 		Consumer<EntityRelevanceStatus> changeListener) {
 
 		ComboBox relevanceStatusFilter = ComboBoxHelper.createComboBoxV7();
@@ -47,7 +48,7 @@ public final class RelevanceStatusFilter {
 		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(archivedCaption));
 		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(allActiveAndArchivedCaption));
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_DELETE)) {
+		if (UserProvider.getCurrent().hasUserRight(deleteUserRight)) {
 			relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.DELETED, I18nProperties.getCaption(deletedCaption));
 		} else {
 			relevanceStatusFilter.removeItem(EntityRelevanceStatus.DELETED);
