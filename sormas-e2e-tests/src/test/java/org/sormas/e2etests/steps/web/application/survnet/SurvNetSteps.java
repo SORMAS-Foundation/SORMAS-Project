@@ -24,8 +24,21 @@ import org.sormas.e2etests.helpers.parsers.XMLParser;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.steps.web.application.cases.CreateNewCaseSteps;
 import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
+import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
 import org.sormas.e2etests.steps.web.application.persons.EditPersonSteps;
 import org.testng.asserts.SoftAssert;
+
+import javax.inject.Inject;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.sormas.e2etests.helpers.SchemaValidator.XMLSchemaValidator.validateXMLSchema;
+import static org.sormas.e2etests.helpers.comparison.XMLComparison.compareXMLFiles;
+import static org.sormas.e2etests.helpers.comparison.XMLComparison.extractDiffNodes;
+import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_VERSION_LINK;
 
 @Slf4j
 public class SurvNetSteps implements En {
@@ -43,7 +56,7 @@ public class SurvNetSteps implements En {
     Then(
         "I check if {string} in SORMAS generated XML file is correct",
         (String typeOfDate) -> {
-          LocalDate expectedDate = CreateNewCaseSteps.survnetCase.getDateOfReport();
+          LocalDate expectedDate = LocalDate.now();
 
           switch (typeOfDate) {
             case "date of report":
@@ -427,7 +440,7 @@ public class SurvNetSteps implements En {
           List<String> diffs =
               compareXMLFiles(
                   "src/main/resources/survnetXMLTemplates/controlXml.xml",
-                  "/srv/dockerdata/jenkins_new/sormas-files/test_"
+                  "/srv/dockerdata/jenkins_new/sormas-files/case_"
                       + EditCaseSteps.externalUUID.get(0).substring(1, 37)
                       + ".xml");
           List<String> nodes = extractDiffNodes(diffs, "/[Transport][^\\s]+");
@@ -462,7 +475,7 @@ public class SurvNetSteps implements En {
           softly.assertTrue(
               validateXMLSchema(
                   "src/main/resources/survnetXMLTemplates/xmlSchema.xsd",
-                  "/srv/dockerdata/jenkins_new/sormas-files/test_"
+                  "/srv/dockerdata/jenkins_new/sormas-files/case_"
                       + EditCaseSteps.externalUUID.get(0).substring(1, 37)
                       + ".xml"),
               "Generated XML file does not match an example XSD schema");
@@ -498,11 +511,11 @@ public class SurvNetSteps implements En {
         });
 
     And(
-        "^I open SORMAS generated XML file for single message$",
+        "^I open SORMAS generated XML file for single case message$",
         () -> {
           singleXmlFile =
               XMLParser.getDocument(
-                  "/srv/dockerdata/jenkins_new/sormas-files/test_"
+                  "/srv/dockerdata/jenkins_new/sormas-files/case_"
                       + EditCaseSteps.externalUUID.get(0).substring(1, 37)
                       + ".xml");
         });
@@ -516,11 +529,11 @@ public class SurvNetSteps implements En {
         });
 
     And(
-        "^I open SORMAS generated XML file for bulk message$",
+        "^I open SORMAS generated XML file for bulk case message$",
         () -> {
           bulkXmlFile =
               XMLParser.getDocument(
-                  "/srv/dockerdata/jenkins_new/sormas-files/bulk_"
+                  "/srv/dockerdata/jenkins_new/sormas-files/bulk_case_"
                       + EditCaseSteps.externalUUID.get(0).substring(1, 37)
                       + ".xml");
         });
@@ -578,6 +591,26 @@ public class SurvNetSteps implements En {
           softly.assertEquals(computedAge, expectedComputedAge, "Computed age is incorrect!");
           softly.assertAll();
         });
+
+    And(
+        "^I open SORMAS generated XML file for event single message$",
+        () -> {
+          singleXmlFile =
+              XMLParser.getDocument(
+                  "/srv/dockerdata/jenkins_new/sormas-files/event_"
+                      + EditEventSteps.externalEventUUID.get(0).substring(1,37)
+                      + ".xml");
+        });
+
+    And(
+        "^I check if event external UUID in SORMAS generated XML file is correct$",
+        () -> {
+          softly.assertEquals(
+              getGuidRecord(singleXmlFile, 0),
+              EditEventSteps.externalEventUUID.get(0).substring(1,37),
+              "External event UUID is incorrect!");
+          softly.assertAll();
+        });
   }
 
   private LocalDate getReportingDate(Document xmlFile, int caseNumber) {
@@ -608,6 +641,16 @@ public class SurvNetSteps implements En {
     String createdAt =
         xmlFile.getRootElement().getAttribute("CreatedAt").getValue().substring(0, 10);
     return LocalDate.parse(createdAt, DATE_FORMATTER);
+  }
+
+  private String getGuidRecord(Document xmlFile, int caseNumber) {
+    return xmlFile
+        .getRootElement()
+        .getChildren()
+        .get(caseNumber)
+        .getAttribute("GuidRecord")
+        .getValue()
+        .substring(1, 37);
   }
 
   private String getGuidPatient(Document xmlFile, int caseNumber) {
