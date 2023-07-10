@@ -500,6 +500,8 @@ Scenario: Create and send laboratory request via Demis
     And I check that create new case form with pathogen detection reporting process is displayed for DE
     And I fill only mandatory fields to convert laboratory message into a case for DE
     And I click on save button in the case popup
+    Then I check that multiple samples window pops up
+    And I confirm multiple samples window
     Then I check that new sample form with pathogen detection reporting process is displayed
     And I click on save sample button
     And I click on save sample button

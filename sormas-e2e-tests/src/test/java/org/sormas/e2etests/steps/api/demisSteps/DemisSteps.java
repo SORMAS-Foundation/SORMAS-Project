@@ -75,6 +75,7 @@ import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPa
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGE_POPUP_HEADER;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGE_TIME_FROM_COMBOBOX;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGE_UUID_TEXT;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MULTIPLE_SAMPLES_HEADER;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_CASE_FORM_DISEASE_VARIANT_INPUT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_FORM_FIRST_PATHOGEN_DISEASE_VARIANT_INPUT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_FORM_FIRST_PATHOGEN_LABORATORY_NAME;
@@ -909,6 +910,19 @@ public class DemisSteps implements En {
           Assert.assertTrue(
               demisApiService.sendLabRequest(json, loginToken),
               "Failed to send laboratory request");
+        });
+
+    Then(
+        "^I check that multiple samples window pops up$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(MULTIPLE_SAMPLES_HEADER);
+        });
+
+    And(
+        "^I confirm multiple samples window$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(POPUP_CONFIRM_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(POPUP_CONFIRM_BUTTON);
         });
   }
 

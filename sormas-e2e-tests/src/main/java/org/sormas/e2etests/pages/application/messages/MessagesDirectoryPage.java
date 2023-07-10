@@ -138,4 +138,5 @@ public class MessagesDirectoryPage {
       By.xpath("(//input[contains(@id, 'labDetails')])[2]");
   public static final By NEW_SAMPLE_FORM_SECOND_PATHOGEN_LABORATORY_NAME =
       By.xpath("(//input[contains(@id, 'labDetails')])[3]");
+  public static final By MULTIPLE_SAMPLES_HEADER = By.xpath("//div[@class= 'v-window-header'][text()='Mehrere Proben']");
 }
