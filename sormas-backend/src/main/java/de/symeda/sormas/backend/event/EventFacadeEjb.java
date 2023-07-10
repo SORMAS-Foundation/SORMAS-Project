@@ -353,6 +353,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	@Override
+	@RightsAllowed(UserRight._EVENT_DELETE)
 	public void restore(List<String> uuids) {
 		restoreEvents(uuids);
 	}
