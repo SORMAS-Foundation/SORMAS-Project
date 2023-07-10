@@ -27,6 +27,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.environment.EnvironmentCriteria;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -115,6 +116,7 @@ public class EnvironmentGridComponent extends VerticalLayout {
 				Captions.environmentAllActiveAndArchivedEnvironments,
 				Captions.environmentDeletedEnvironments,
 				criteria.getRelevanceStatus(),
+				UserRight.ENVIRONMENT_DELETE,
 				relevanceStatus -> {
 					criteria.setRelevanceStatus(relevanceStatus);
 					filterChangeHandler.run();
