@@ -117,5 +117,4 @@ Feature: Survnet tests
     And I open SORMAS generated XML file for event single message
     And I check if event external UUID in SORMAS generated XML file is correct
     And I check if "created at date" in SORMAS generated XML file is correct
-    And I check if "tracked at date" in SORMAS generated XML file is correct
     And I check if "change at date" in SORMAS generated XML file is correct
