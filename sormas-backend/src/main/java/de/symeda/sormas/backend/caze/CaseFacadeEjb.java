@@ -2719,7 +2719,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			// getByExternalId(caze) throws NPE (see #10820) so we use the service directly.
 			// Can potentially be changed back once 10844 is done.
 			List<Case> casesWithSameExternalId = service.getByExternalId(caze.getExternalID());
-			if (casesWithSameExternalId != null && casesWithSameExternalId.size() == 1) {
+			if (casesWithSameExternalId != null && casesWithSameExternalId.size() == 1 && externalShareInfoService.isCaseShared(caze.getId())) {
 				externalSurveillanceToolGatewayFacade.deleteCasesInternal(Collections.singletonList(toDto(caze)));
 			}
 		}

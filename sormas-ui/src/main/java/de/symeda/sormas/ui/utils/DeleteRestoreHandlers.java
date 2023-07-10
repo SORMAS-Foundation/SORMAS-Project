@@ -83,7 +83,6 @@ public final class DeleteRestoreHandlers {
 
 		@Override
 		public void delete(String uuid, DeletionDetails deletionDetails) {
-
 		}
 
 		@Override
@@ -173,108 +172,16 @@ public final class DeleteRestoreHandlers {
 	}
 
 	//TODO: check if can extend the basic handler class
-	public static class CoreEntityDeleteRestoreHandler<T extends EntityDto, F extends CoreFacade<T, ?, ?, ?>>
+	/*
+	 * public static class CoreEntityDeleteRestoreHandler<T extends EntityDto, F extends CoreFacade<T, ?, ?, ?>>
+	 * implements DeleteRestoreController.IDeleteRestoreHandler<T> {
+	 */
+
+	public static class CoreEntityDeleteRestoreHandler<T extends EntityDto, F extends CoreFacade<T, ?, ?, ?>> extends DeleteRestoreHandler<T, F>
 		implements DeleteRestoreController.IDeleteRestoreHandler<T> {
 
-		protected final F entityFacade;
-		private final DeleteRestoreMessages deleteRestoreMessages;
-
-		protected ComboBox<DeletionReason> deleteReasonComboBox;
-		protected TextArea otherDeletionReason;
-
-		public CoreEntityDeleteRestoreHandler(F entityFacade, DeleteRestoreMessages deleteRestoreMessages) {
-			this.entityFacade = entityFacade;
-			this.deleteRestoreMessages = deleteRestoreMessages;
-		}
-
-		@Override
-		public void delete(String uuid, DeletionDetails deletionDetails) {
-
-		}
-
-		@Override
-		public int delete(List<String> uuids, DeletionDetails deletionDetails) {
-			entityFacade.delete(uuids, deletionDetails);
-			return uuids.size();
-		}
-
-		@Override
-		public int restore(List<String> uuids) {
-			entityFacade.restore(uuids);
-			return uuids.size();
-		}
-
-		@Override
-		public DeleteRestoreMessages getDeleteRestoreMessages() {
-			return deleteRestoreMessages;
-		}
-
-		@Override
-		public void addAdditionalDeleteReasonField(VerticalLayout verticalLayout) {
-			deleteReasonComboBox = new ComboBox(null, Arrays.asList(DeletionReason.values()));
-			deleteReasonComboBox.setCaption(I18nProperties.getCaption(Captions.deletionReason));
-			deleteReasonComboBox.setWidth(100, Sizeable.Unit.PERCENTAGE);
-			deleteReasonComboBox.setRequiredIndicatorVisible(true);
-			verticalLayout.addComponent(deleteReasonComboBox);
-
-			otherDeletionReason = new TextArea();
-			otherDeletionReason.setCaption(I18nProperties.getCaption(Captions.otherDeletionReason));
-			verticalLayout.addComponent(otherDeletionReason);
-			otherDeletionReason.setVisible(false);
-			otherDeletionReason.setWidth(100, Sizeable.Unit.PERCENTAGE);
-			otherDeletionReason.setRows(3);
-			otherDeletionReason.setMaxLength(FieldConstraints.CHARACTER_LIMIT_TEXT);
-			otherDeletionReason.setRequiredIndicatorVisible(true);
-
-			deleteReasonComboBox.addValueChangeListener(valueChangeEvent -> {
-				otherDeletionReason.setVisible(valueChangeEvent.getValue() == (DeletionReason.OTHER_REASON));
-			});
-
-			deleteReasonComboBox.addValueChangeListener(valueChangeEvent -> {
-				if (deleteReasonComboBox.isEmpty()) {
-					deleteReasonComboBox.setComponentError(new UserError(I18nProperties.getString(Strings.messageDeleteReasonNotFilled)));
-				} else {
-					deleteReasonComboBox.setComponentError(null);
-				}
-			});
-
-			otherDeletionReason.addValueChangeListener(valueChangeEvent -> {
-				if (deleteReasonComboBox.getValue() == DeletionReason.OTHER_REASON && StringUtils.isBlank(otherDeletionReason.getValue())) {
-					otherDeletionReason.setComponentError(new UserError(I18nProperties.getString(Strings.messageOtherDeleteReasonNotFilled)));
-				} else {
-					otherDeletionReason.setComponentError(null);
-				}
-			});
-		}
-
-		@Override
-		public TextArea getOtherDeletionReason() {
-			return otherDeletionReason;
-		}
-
-		@Override
-		public ComboBox<DeletionReason> getDeleteReasonComboBox() {
-			return deleteReasonComboBox;
-		}
-
-		@Override
-		public void clearOtherReason() {
-			if (deleteReasonComboBox.getValue() != DeletionReason.OTHER_REASON && !StringUtils.isBlank(otherDeletionReason.getValue())) {
-				otherDeletionReason.clear();
-			}
-		}
-
-		@Override
-		public boolean validateAdditionalDeleteReasonFields() {
-			if (deleteReasonComboBox.isEmpty()) {
-				deleteReasonComboBox.setComponentError(new UserError(I18nProperties.getString(Strings.messageDeleteReasonNotFilled)));
-				return false;
-			} else if (deleteReasonComboBox.getValue() == DeletionReason.OTHER_REASON && StringUtils.isBlank(otherDeletionReason.getValue())) {
-				otherDeletionReason.setComponentError(new UserError(I18nProperties.getString(Strings.messageOtherDeleteReasonNotFilled)));
-				return false;
-			}
-
-			return true;
+		protected CoreEntityDeleteRestoreHandler(F entityFacade, DeleteRestoreMessages deleteRestoreMessages) {
+			super(entityFacade, deleteRestoreMessages);
 		}
 	}
 
