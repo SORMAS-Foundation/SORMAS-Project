@@ -35,7 +35,6 @@ import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -81,12 +80,13 @@ public class EventGroupMemberList extends PaginationList<EventIndexDto> {
 			UserProvider user = UserProvider.getCurrent();
 			if (user.hasUserRight(UserRight.EVENTGROUP_LINK)) {
 				listEntry.addUnlinkEventListener(i, (ClickListener) clickEvent -> {
-					if (!user.hasNationJurisdictionLevel() && !user.hasRegion(new RegionReferenceDto(event.getRegionUuid()))
-							&& !user.isAdmin()) {
+					if (!FacadeProvider.getEventFacade().isInJurisdictionOrOwned(event.getUuid())
+						&& !user.hasNationJurisdictionLevel()
+						&& !user.isAdmin()) {
 						new Notification(
 							I18nProperties.getString(Strings.headingEventGroupUnlinkEventIssue),
 							I18nProperties.getString(Strings.errorEventFromAnotherJurisdiction),
-							Notification.Type.ERROR_MESSAGE,
+							Notification.Type.WARNING_MESSAGE,
 							false).show(Page.getCurrent());
 						return;
 					}

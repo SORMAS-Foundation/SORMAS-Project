@@ -16,7 +16,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.steps.web.application.shares;
+package org.sormas.e2etests.pages.application.shares;
 
 import org.openqa.selenium.By;
 
@@ -25,6 +25,22 @@ public class EditSharesPage {
   public static final By SHARE_FIRST_EYE_ICON = By.xpath("(//span[@class='v-icon v-icon-eye'])[1]");
   public static final By SHARE_UUID_CASE_TITLE =
       By.cssSelector(".popupContent [class='v-grid-cell v-grid-cell-focused'] a");
+  public static final By EXTRA_COMMENT_INPUT_SHARE_POPUP = By.cssSelector(".popupContent #comment");
+
+  public static By getActionRejectButtonByContactDescription(String description) {
+    return By.xpath(
+        String.format(
+            "//td[contains(text(), 'Kontakt')]/../*[contains(text(), '%s')]/..//div[@id='actionReject']",
+            description));
+  }
+
+  public static By getActionRejectButtonByCaseDescription(String description) {
+    return By.xpath(
+        String.format(
+            "//td[contains(text(), 'Fall')]/../*[contains(text(), '%s')]/..//div[@id='actionReject']",
+            description));
+  }
+
   public static final By ACCEPT_BUTTON = By.cssSelector("div #actionAccept");
 
   public static By getCheckBoxFromShareFormByIndex(int index) {
@@ -51,6 +67,8 @@ public class EditSharesPage {
   public static By SHARE_REQUEST_NOT_FOUND_HEADER_DE =
       By.xpath(
           "//*[@class='popupContent']//div[contains(text(), 'Freigabeanfrage nicht gefunden')]");
+  public static final By ENTITY_NOT_FOUND_POPUP =
+      By.xpath("//div[text()='Freigabeanfrage nicht gefunden']");
   public static By OUTGOING_VIEW_SWITCHER_RADIO_BUTTON_DE =
       By.xpath("//label[contains(text(), 'Ausgehend')]");
 }

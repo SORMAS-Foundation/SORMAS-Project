@@ -1,12 +1,12 @@
 package org.sormas.e2etests.steps.web.application;
 
-import cucumber.api.java8.En;
-import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.testng.asserts.SoftAssert;
+import static org.sormas.e2etests.pages.application.NavBarPage.DASHBOARD_BUTTON;
+import static org.sormas.e2etests.pages.application.NavBarPage.ERROR_NOTIFICATION_CAPTION;
+import static org.sormas.e2etests.pages.application.NavBarPage.ERROR_NOTIFICATION_CAPTION_DE;
+import static org.sormas.e2etests.pages.application.NavBarPage.ERROR_NOTIFICATION_DESCRIPTION;
+import static org.sormas.e2etests.pages.application.NavBarPage.ERROR_NOTIFICATION_DESCRIPTION_DE;
 
-import javax.inject.Inject;
+import cucumber.api.java8.En;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,12 +16,11 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import static org.sormas.e2etests.pages.application.NavBarPage.DASHBOARD_BUTTON;
-import static org.sormas.e2etests.pages.application.NavBarPage.ERROR_NOTIFICATION_CAPTION;
-import static org.sormas.e2etests.pages.application.NavBarPage.ERROR_NOTIFICATION_CAPTION_DE;
-import static org.sormas.e2etests.pages.application.NavBarPage.ERROR_NOTIFICATION_DESCRIPTION;
-import static org.sormas.e2etests.pages.application.NavBarPage.ERROR_NOTIFICATION_DESCRIPTION_DE;
+import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.By;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.testng.asserts.SoftAssert;
 
 @Slf4j
 public class ColumnSteps implements En {

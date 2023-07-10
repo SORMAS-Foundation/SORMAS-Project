@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.*;
 import net.lingala.zip4j.exception.ZipException;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.testng.asserts.SoftAssert;

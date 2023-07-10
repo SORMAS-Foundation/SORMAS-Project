@@ -26,7 +26,6 @@ import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -49,8 +48,8 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 		+ fluidRowLocs(EventParticipantDto.INVOLVEMENT_DESCRIPTION)
 		+ loc(MEDICAL_INFORMATION_LOC)
 		+ fluidRowLocs(EventParticipantDto.VACCINATION_STATUS)
-		+ fluidRowLocs(CaseDataDto.DELETION_REASON)
-		+ fluidRowLocs(CaseDataDto.OTHER_DELETION_REASON);
+		+ fluidRowLocs(EventParticipantDto.DELETION_REASON)
+		+ fluidRowLocs(EventParticipantDto.OTHER_DELETION_REASON);
 
 	private final EventDto event;
 

@@ -32,7 +32,8 @@ public class SideCards {
   public static By HANDOVER_SIDE_CARD = By.xpath("//div[@location='sormasToSormas']");
 
   public static By checkTextInHandoverSideComponent(String text) {
-    return By.xpath(String.format("//div[@location='sormasToSormas']//div[text()='%s']", text));
+    return By.xpath(
+        String.format("//div[@location='sormasToSormas']//div[contains(text(),'%s')]", text));
   }
 
   public static By checkTextInSampleSideComponent(String text) {
@@ -51,4 +52,10 @@ public class SideCards {
         String.format(
             "//div[text()='Meldevorg\u00E4nge']/../../../../../..//div[text()='%s']", text));
   }
+
+  public static final By LINKED_SHARED_ORGANIZATION_SELECTED_VALUE =
+      By.xpath(
+          "//div[@location='sormasToSormas']//div[@class='v-slot v-slot-s-list-entry v-slot-s-list-entry-no-border']");
+  public static final By SHARE_SORMAS_2_SORMAS_POPUP_BUTTON =
+      By.cssSelector(".popupContent #commit");
 }

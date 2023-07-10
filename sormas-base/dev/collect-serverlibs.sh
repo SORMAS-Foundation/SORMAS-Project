@@ -28,4 +28,4 @@ COLLECT_SERVERLIBS_PATH=../deploy/serverlibs
 
 # 1. Command chain
 rm ../$COLLECT_SERVERLIBS_PATH/*.jar
-$MVN_BIN -f ../../sormas-serverlibs/pom.xml -DincludeScope=compile -DoutputDirectory=$COLLECT_SERVERLIBS_PATH $MVN_OPTIONS dependency:copy-dependencies
+"$MVN_BIN" -f ../../sormas-serverlibs/pom.xml -DincludeScope=compile -DoutputDirectory=$COLLECT_SERVERLIBS_PATH $MVN_OPTIONS dependency:copy-dependencies

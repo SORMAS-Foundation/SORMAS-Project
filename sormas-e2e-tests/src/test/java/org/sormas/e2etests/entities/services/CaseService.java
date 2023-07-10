@@ -600,6 +600,27 @@ public class CaseService {
   }
 
   @SneakyThrows
+  public Case buildCaseForSurvnetFeatureWithDateOfBirth() {
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
+
+    return Case.builder()
+        .dateOfReport(LocalDate.now())
+        .responsibleRegion("Berlin")
+        .responsibleDistrict("SK Berlin Mitte")
+        .placeOfStay("ZUHAUSE")
+        .firstName(firstName)
+        .lastName(lastName)
+        .sex(GenderValues.getRandomGenderDE())
+        .dateOfBirth(
+            LocalDate.of(
+                faker.number().numberBetween(1900, 2002),
+                faker.number().numberBetween(1, 12),
+                faker.number().numberBetween(1, 27)))
+        .build();
+  }
+
+  @SneakyThrows
   public Case buildCaseForSurvnetFeatureXMLCheck() {
     firstName = faker.name().firstName();
     lastName = faker.name().lastName();

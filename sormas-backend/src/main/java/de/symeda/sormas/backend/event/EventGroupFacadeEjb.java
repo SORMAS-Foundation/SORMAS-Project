@@ -76,6 +76,7 @@ import de.symeda.sormas.backend.common.NotificationService;
 import de.symeda.sormas.backend.common.messaging.MessageContents;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
+import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.sample.Sample;
@@ -103,6 +104,8 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 	private UserService userService;
 	@EJB
 	private NotificationService notificationService;
+	@EJB
+	private EventFacadeEjbLocal eventFacade;
 
 	@Override
 	public EventGroupReferenceDto getReferenceByUuid(String uuid) {
@@ -374,12 +377,9 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 
 		for (Event event : events) {
 			final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-			if ((jurisdictionLevel != JurisdictionLevel.NATION) && !currentUser.isAdmin()) {
-				Region region = event.getEventLocation().getRegion();
-				if (!userService.hasRegion(new RegionReferenceDto(region.getUuid()))) {
-					throw new UnsupportedOperationException(
-						"User " + currentUser.getUuid() + " is not allowed to link events from another region to an event group.");
-				}
+			if (!eventFacade.isInJurisdictionOrOwned(event.getUuid()) && (jurisdictionLevel != JurisdictionLevel.NATION) && !currentUser.isAdmin()) {
+				throw new UnsupportedOperationException(
+					"User " + currentUser.getUuid() + " is not allowed to link events from another region to an event group.");
 			}
 
 			// Check that the event group is not already related to this event
@@ -418,12 +418,9 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 		Event event = eventService.getByUuid(eventReference.getUuid());
 
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-		if ((jurisdictionLevel != JurisdictionLevel.NATION) && !currentUser.isAdmin()) {
-			Region region = event.getEventLocation().getRegion();
-			if (!userService.hasRegion(new RegionReferenceDto(region.getUuid()))) {
-				throw new UnsupportedOperationException(
-					"User " + currentUser.getUuid() + " is not allowed to unlink events from another region to an event group.");
-			}
+		if (!eventFacade.isInJurisdictionOrOwned(event.getUuid()) && (jurisdictionLevel != JurisdictionLevel.NATION) && !currentUser.isAdmin()) {
+			throw new UnsupportedOperationException(
+				"User " + currentUser.getUuid() + " is not allowed to unlink events from another region to an event group.");
 		}
 
 		// Check that the event group is not already unlinked to this event

@@ -192,7 +192,7 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				cb.between(joins.getLocation().get(Location.LONGITUDE), environmentCriteria.getGpsLonFrom(), environmentCriteria.getGpsLatTo()));
+				cb.between(joins.getLocation().get(Location.LONGITUDE), environmentCriteria.getGpsLonFrom(), environmentCriteria.getGpsLonTo()));
 		} else if (environmentCriteria.getGpsLonFrom() != null) {
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.greaterThanOrEqualTo(joins.getLocation().get(Location.LONGITUDE), environmentCriteria.getGpsLonFrom()));

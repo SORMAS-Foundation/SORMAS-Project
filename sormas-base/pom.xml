@@ -1093,11 +1093,16 @@
 				</exclusions>
 			</dependency>
 
+			<!-- *** Domain libs END *** -->
+
+			<!-- *** Compile dependencies *** -->
+
 			<dependency>
 				<groupId>ca.uhn.hapi.fhir</groupId>
 				<artifactId>hapi-fhir-structures-r4</artifactId>
 				<version>6.2.2</version>
-				<scope>provided</scope>
+				<scope>compile</scope>
+				<!-- Kept as compile dependency to avoid version conflicts and classpath problems with sormas-demis-adapter -->
 				<exclusions>
 					<!-- Exclude Payara modules here -->
 					<exclusion>
@@ -1118,12 +1123,9 @@
 				<groupId>ca.uhn.hapi.fhir</groupId>
 				<artifactId>org.hl7.fhir.r4</artifactId>
 				<version>5.6.88</version>
-				<scope>provided</scope>
+				<scope>compile</scope>
+				<!-- Kept as compile dependency to avoid version conflicts and classpath problems with sormas-demis-adapter -->
 			</dependency>
-
-			<!-- *** Domain libs END *** -->
-
-			<!-- *** Compile dependencies *** -->
 
 			<dependency>
 				<groupId>org.geotools</groupId>
