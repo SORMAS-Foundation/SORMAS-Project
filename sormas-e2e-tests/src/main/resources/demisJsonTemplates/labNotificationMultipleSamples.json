@@ -695,7 +695,7 @@
                         ],
                         "city": "Berlin",
                         "state": "DE-BE",
-                        "postalCode": "10115",
+                        "postalCode": "<postal_code_to_change>",
                         "country": "20422"
                     }
                 ]
