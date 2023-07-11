@@ -360,10 +360,11 @@ public class CreateNewSampleSteps implements En {
     When(
         "I validate the existence of {string} pathogen tests",
         (String number) -> {
+          int numberInt = Integer.parseInt(number);
           TimeUnit.SECONDS.sleep(2);
           softly.assertEquals(
               webDriverHelpers.getNumberOfElements(EDIT_PATHOGEN_TEST),
-              number,
+              numberInt,
               "Number of pathogen tests is not correct");
           softly.assertAll();
         });
