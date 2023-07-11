@@ -18,6 +18,34 @@
 
 package org.sormas.e2etests.steps.web.application.samples;
 
+import com.github.javafaker.Faker;
+import cucumber.api.java8.En;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.Sample;
+import org.sormas.e2etests.entities.pojo.web.SampleAdditionalTest;
+import org.sormas.e2etests.entities.services.SampleAdditionalTestService;
+import org.sormas.e2etests.entities.services.SampleService;
+import org.sormas.e2etests.enums.PathogenTestResults;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.BaseSteps;
+import org.testng.asserts.SoftAssert;
+
+import javax.inject.Inject;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.ACTION_CONFIRM_POPUP_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAMPLES_CARD_DATE_AND_TIME_OF_RESULT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAMPLES_CARD_DATE_OF_COLLECTED_SAMPLE;
@@ -118,33 +146,6 @@ import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_EDIT_PURPOSE_OPTIONS;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_RECEIVED_CHECKBOX;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_SHIPPED_CHECKBOX;
-
-import com.github.javafaker.Faker;
-import cucumber.api.java8.En;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import javax.inject.Inject;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
-import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.entities.pojo.web.Sample;
-import org.sormas.e2etests.entities.pojo.web.SampleAdditionalTest;
-import org.sormas.e2etests.entities.services.SampleAdditionalTestService;
-import org.sormas.e2etests.entities.services.SampleService;
-import org.sormas.e2etests.enums.PathogenTestResults;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.state.ApiState;
-import org.sormas.e2etests.steps.BaseSteps;
-import org.testng.asserts.SoftAssert;
 
 public class CreateNewSampleSteps implements En {
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
@@ -357,12 +358,12 @@ public class CreateNewSampleSteps implements En {
         });
 
     When(
-        "^I validate the existence of two pathogen tests",
-        () -> {
+        "I validate the existence of {string} pathogen tests",
+        (String number) -> {
           TimeUnit.SECONDS.sleep(2);
           softly.assertEquals(
               webDriverHelpers.getNumberOfElements(EDIT_PATHOGEN_TEST),
-              2,
+              number,
               "Number of pathogen tests is not correct");
           softly.assertAll();
         });

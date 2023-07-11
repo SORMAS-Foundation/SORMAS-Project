@@ -143,13 +143,10 @@ Feature: Sample Functionalities
   @env_main @tmsLink=SORDEV-5493
   Scenario: Add a Additional test from Samples and verify the fields
     Given API: I create a new person
-
     And API: I check that POST call status code is 200
     And API: I create a new case
-
     And API: I check that POST call status code is 200
     And API: I create a new sample
-
     And API: I check that POST call status code is 200
     When I log in as a Admin User
     And I click on the Sample button from navbar
@@ -161,10 +158,8 @@ Feature: Sample Functionalities
   @#8556 @env_main
   Scenario: Add two positive Pathogen Test Result of different diseases to a Sample of a Contact
     Given API: I create a new person
-
     And API: I check that POST call status code is 200
     Then API: I create a new contact
-
     And API: I check that POST call status code is 200
     When I log in as a National User
     Then I open the last created contact via API
@@ -184,15 +179,13 @@ Feature: Sample Functionalities
     Then I open the last created contact via API
     Then I validate only one sample is created with two pathogen tests
     Then I click on edit Sample
-    Then I validate the existence of two pathogen tests
+    Then I validate the existence of "2" pathogen tests
 
   @env_main @#8560
   Scenario: Display date and time for pathogen test result on sample card
     Given API: I create a new person
-
     And API: I check that POST call status code is 200
     Then API: I create a new contact
-
     And API: I check that POST call status code is 200
     When I log in as a National User
     Then I open the last created contact via API
@@ -253,10 +246,8 @@ Feature: Sample Functionalities
   @tmsLink=SORDEV-7427 @env_de
   Scenario: Test Make date fields in sample creation mask and information non-compulsory
     When API: I create a new person
-
     And API: I check that POST call status code is 200
     Then API: I create a new case
-
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I open the last created Case via API

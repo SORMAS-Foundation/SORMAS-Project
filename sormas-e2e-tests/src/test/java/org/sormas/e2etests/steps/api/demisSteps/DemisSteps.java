@@ -62,6 +62,7 @@ import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPa
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CREATE_A_NEW_CASE_WITH_POSITIVE_TEST_EVENT_PARTICIPANT_HEADER_DE;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CREATE_NEW_EVENT_PARTICIPANT_RADIOBUTTON_DE;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CREATE_NEW_PERSON_RADIOBUTTON_DE;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CREATE_NEW_SAMPLE_CHECKBOX;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FIRST_PATHOGEN_LABORATORY_INPUT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FORWARDED_QUICK_FILTER_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FORWARDED_QUICK_FILTER_COUNTER;
@@ -99,6 +100,7 @@ import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPa
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.VERARBEITEN_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.checkMappedValueSelector;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.RESET_FILTERS_BUTTON;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SAVE_SAMPLE_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.TYPE_OF_TEST_INPUT;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.PCR_TEST_SPECIFICATION_INPUT;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
@@ -923,6 +925,14 @@ public class DemisSteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(POPUP_CONFIRM_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(POPUP_CONFIRM_BUTTON);
+        });
+
+    And(
+        "^I pick a new sample in Pick or create sample popup during processing case$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CREATE_NEW_SAMPLE_CHECKBOX);
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_SAMPLE_CHECKBOX);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
         });
   }
 

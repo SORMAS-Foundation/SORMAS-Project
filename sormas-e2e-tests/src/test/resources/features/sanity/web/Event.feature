@@ -883,7 +883,7 @@ Feature: Create events
     Then I navigate to a specific Event Participant of an Event based on UUID
     Then I validate only one sample is created with two pathogen tests
     Then I click on edit Sample
-    Then I validate the existence of two pathogen tests
+    Then I validate the existence of "2" pathogen tests
 
   @env_main @#8565
   Scenario: Check an archived event if its read only
