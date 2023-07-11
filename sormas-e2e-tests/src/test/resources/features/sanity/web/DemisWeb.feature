@@ -519,11 +519,11 @@ Scenario: Create and send laboratory request via Demis
     And I click on edit sample icon of the 1 displayed sample on Edit Case page
     And I check that lab sample id match specimen id from Demis message on Edit Sample page
     And I validate the existence of "2" pathogen tests
-    And I back to the cases list from edit case
+    And I back to the case from Edit Sample page DE
     When I click on edit sample icon of the 2 displayed sample on Edit Case page
     Then I check that lab sample id match specimen id from Demis message on Edit Sample page
     And I validate the existence of "1" pathogen tests
-    And I back to the cases list from edit case
+    And I back to the case from Edit Sample page DE
     And I check if report side component in Edit Case has today date
     When I click on edit Report on Edit Case page
     And I click on Display associated external messages button from Reports side component

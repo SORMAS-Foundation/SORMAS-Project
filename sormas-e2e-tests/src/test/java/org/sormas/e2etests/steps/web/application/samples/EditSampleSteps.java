@@ -36,6 +36,7 @@ import java.time.format.DateTimeFormatter;
 
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SAVE_EDIT_SAMPLE_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.ADDIITONAL_NEW_TEST_RESULT_BUTTON;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.BACK_TO_CASE_DE_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.COLLECTED_DATE_TIME_COMBOBOX;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.COLLECTED_DATE_TIME_INPUT;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.COMMENT_AREA_INPUT;
@@ -320,6 +321,13 @@ public class EditSampleSteps implements En {
                   DemisApiService.specimenUUID,
                   "Sample id is incorrect");
           softly.assertAll();
+        });
+
+    And(
+        "^I back to the case from Edit Sample page DE$",
+        () -> {
+          webDriverHelpers.scrollToElement(BACK_TO_CASE_DE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(BACK_TO_CASE_DE_BUTTON);
         });
   }
 
