@@ -94,12 +94,9 @@ public class BulkOperationHandler<T extends HasUuid> {
 
 		if (selectedEntries.size() < BULK_ACTION_PROGRESS_THRESHOLD) {
 			if (initialEligibleEntryCount > 0) {
-				if (areIneligibleEntriesSelected(selectedIneligibleEntries)) {
-					successfulEntryCount =
-						areIneligibleEntriesSelected(selectedIneligibleEntries) ? bulkOperationFunction.apply(selectedEligibleEntries) : 0;
-				} else {
-					successfulEntryCount = bulkOperationFunction.apply(selectedEntries);
-				}
+				successfulEntryCount = areIneligibleEntriesSelected(selectedIneligibleEntries)
+					? bulkOperationFunction.apply(selectedEligibleEntries)
+					: bulkOperationFunction.apply(selectedEntries);
 			}
 
 			if (initialEligibleEntryCount == 0 && successfulEntryCount == 0) {
