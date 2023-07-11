@@ -20,14 +20,14 @@ package org.sormas.e2etests.enums;
 import lombok.Getter;
 
 @Getter
-public enum JaNeinUnbekanntOptions {
+public enum YesNoUnknownOptionsDE {
   JA("JA"),
   NEIN("NEIN"),
   UNBEKANNT("UNBEKANNT");
 
   private final String option;
 
-  JaNeinUnbekanntOptions(String option) {
+  YesNoUnknownOptionsDE(String option) {
     this.option = option;
   }
 

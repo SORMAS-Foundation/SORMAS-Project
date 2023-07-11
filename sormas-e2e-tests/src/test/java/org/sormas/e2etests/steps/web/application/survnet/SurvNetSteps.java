@@ -92,331 +92,283 @@ public class SurvNetSteps implements En {
         });
 
     And(
-        "I check if \"([^\"]*)\" SYMPTOMS in SORMAS generated single XML file is correctS",
-        (String symptom) -> {
-          // ToDO -consider to change all expecrted... to mor global expectedValue !!!
-          String expectedValue = null;
-          String symptomOption;
-          String symptomUI;
-
-          switch (symptom) {
-            case "Fever":
-              // String symptomOption = getValueFromSpecificFieldByName(singleXmlFile,
-              // "Symptom0088");
-              //  String symptomUI = symptoms.getFever();
-
-              //  if (symptomUI == "JA") expectedValue = "true";
-              //   else expectedValue = "false";
-
-              //  softly.assertEquals(feverOption, expectedValue, "Fever checkbox value is
-              // incorrect!");
-              softly.assertAll();
-              break;
-            case "Shivering":
-              String expectedShivering = null;
-              String shiveringOption =
-                  getValueFromSpecificFieldByName(singleXmlFile, "Symptom0101");
-              String symptomShivering = symptoms.getFever();
-
-              if (symptomShivering == "JA") expectedShivering = "true";
-              else expectedShivering = "false";
-
-              softly.assertEquals(
-                  shiveringOption, expectedShivering, "Shivering checkbox value is incorrect!");
-              softly.assertAll();
-              break;
-          }
-        });
-
-    And(
         "I check if \"([^\"]*)\" SYMPTOM in SORMAS generated single XML file is correct",
         (String symptom) -> {
           // ToDO -consider to change all expecrted... to mor global expectedValue !!!
           String expectedValue = null;
           switch (symptom) {
             case "Fever":
-              String expectedFever = null;
-              String feverOption = getValueFromSpecificFieldByName(singleXmlFile, "Symptom0088");
-              String symptomFever = symptoms.getFever();
+              String feverOptionFromXml =
+                  getValueFromSpecificFieldByName(singleXmlFile, "Symptom0088");
+              String feverOptionFromUI = symptoms.getFever();
 
-              if (symptomFever == "JA") expectedFever = "true";
-              else expectedFever = "false";
+              if (feverOptionFromUI == "JA") expectedValue = "true";
+              else expectedValue = "false";
 
-              softly.assertEquals(feverOption, expectedFever, "Fever checkbox value is incorrect!");
+              softly.assertEquals(
+                  feverOptionFromXml, expectedValue, symptom + " checkbox value is incorrect!");
               softly.assertAll();
               break;
             case "Shivering":
-              String expectedShivering = null;
-              String shiveringOption =
+              String shiveringOptionFromXml =
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0101");
-              String symptomShivering = symptoms.getFever();
+              String shiveringOptionFromUI = symptoms.getFever();
 
-              if (symptomShivering == "JA") expectedShivering = "true";
-              else expectedShivering = "false";
+              if (shiveringOptionFromUI == "JA") expectedValue = "true";
+              else expectedValue = "false";
 
               softly.assertEquals(
-                  shiveringOption, expectedShivering, "Shivering checkbox value is incorrect!");
+                  shiveringOptionFromXml, expectedValue, symptom + " checkbox value is incorrect!");
               softly.assertAll();
               break;
             case "Headache":
-              String expectedHeadache = null;
-              String headacheOption = getValueFromSpecificFieldByName(singleXmlFile, "Symptom0101");
-              String symptomHeadache = symptoms.getHeadache();
-
-              if (symptomHeadache == "JA") expectedHeadache = "true";
-              else expectedHeadache = "false";
-
-              softly.assertEquals(
-                  headacheOption, expectedHeadache, "Headache checkbox value is incorrect!");
-              softly.assertAll();
-              break;
-            case "MusclePain":
-              String expectedMusclePain = null;
-              String musclePaineOption =
+              String headacheOptionFromXml =
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0101");
-              String symptomMusclePain = symptoms.getMusclePain();
+              String headacheOptionFromUI = symptoms.getHeadache();
 
-              if (symptomMusclePain == "JA") expectedMusclePain = "true";
-              else expectedMusclePain = "false";
+              if (headacheOptionFromUI == "JA") expectedValue = "true";
+              else expectedValue = "false";
 
               softly.assertEquals(
-                  musclePaineOption, expectedMusclePain, "MusclePain checkbox value is incorrect!");
+                  headacheOptionFromXml,
+                  expectedValue,
+                  symptom + " Headache checkbox value is incorrect!");
               softly.assertAll();
               break;
-            case "FeelingIll":
-              String expectedFeelingIll = null;
-              String feelingIllOption =
+            case "Muscle Pain":
+              String musclePaineOptionFromXml =
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0101");
-              String symptomFeelingIll = symptoms.getFeelingIll();
+              String musclePaineOptionFromUI = symptoms.getMusclePain();
 
-              if (symptomFeelingIll == "JA") expectedFeelingIll = "true";
-              else expectedFeelingIll = "false";
+              if (musclePaineOptionFromUI == "JA") expectedValue = "true";
+              else expectedValue = "false";
 
               softly.assertEquals(
-                  feelingIllOption, expectedFeelingIll, "FeelingIll checkbox value is incorrect!");
+                  musclePaineOptionFromXml,
+                  expectedValue,
+                  symptom + " checkbox value is incorrect!");
               softly.assertAll();
               break;
-            case "ChillsSweats":
+            case "Feeling Ill":
+              String feelingIllOptionFromXml =
+                  getValueFromSpecificFieldByName(singleXmlFile, "Symptom0101");
+              String feelingIllOptionFromUI = symptoms.getFeelingIll();
+
+              if (feelingIllOptionFromUI == "JA") expectedValue = "true";
+              else expectedValue = "false";
+
+              softly.assertEquals(
+                  feelingIllOptionFromXml,
+                  expectedValue,
+                  symptom + " checkbox value is incorrect!");
+              softly.assertAll();
+              break;
+            case "Chills Sweats":
               System.out.print("Not mapped to xml !!!");
               break;
-            case "AcuteRespiratoryDistressSyndrome":
-              String expectedAcuteRespiratoryDistressSyndrome = null;
-              String acuteRespiratoryDistressSyndromeOption =
+            case "Acute Respiratory Distress Syndrome":
+              String acuteRespiratoryDistressSyndromeOptionFromXml =
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0394");
-              String symptomAcuteRespiratoryDistressSyndrome =
+              String acuteRespiratoryDistressSyndromeOptionFromUI =
                   symptoms.getAcuteRespiratoryDistressSyndrome();
 
-              if (symptomAcuteRespiratoryDistressSyndrome == "JA")
-                expectedAcuteRespiratoryDistressSyndrome = "true";
-              else expectedAcuteRespiratoryDistressSyndrome = "false";
+              if (acuteRespiratoryDistressSyndromeOptionFromUI == "JA") expectedValue = "true";
+              else expectedValue = "false";
 
               softly.assertEquals(
-                  acuteRespiratoryDistressSyndromeOption,
-                  expectedAcuteRespiratoryDistressSyndrome,
-                  "AcuteRespiratoryDistressSyndrome checkbox value is incorrect!");
+                  acuteRespiratoryDistressSyndromeOptionFromXml,
+                  expectedValue,
+                  symptom + "AcuteRespiratoryDistressSyndrome checkbox value is incorrect!");
               softly.assertAll();
               break;
-            case "SoreThroat":
-              String expectedSoreThroat = null;
-              String soreThroatOption =
+            case "Sore Throat":
+              String soreThroatOptionFromXml =
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0103");
-              String symptomSoreThroat = symptoms.getSoreThroat();
+              String soreThroatOptionFromUI = symptoms.getSoreThroat();
 
-              if (symptomSoreThroat == "JA") expectedSoreThroat = "true";
-              else expectedSoreThroat = "false";
+              if (soreThroatOptionFromUI == "JA") expectedValue = "true";
+              else expectedValue = "false";
 
               softly.assertEquals(
-                  soreThroatOption, expectedSoreThroat, "SoreThroat checkbox value is incorrect!");
+                  soreThroatOptionFromXml,
+                  expectedValue,
+                  symptom + " checkbox value is incorrect!");
               softly.assertAll();
               break;
             case "Cough":
-              String expectedCough = null;
-              String coughOption = getValueFromSpecificFieldByName(singleXmlFile, "Symptom0130");
-              String symptomCought = symptoms.getCough();
+              String coughOptionFromXml =
+                  getValueFromSpecificFieldByName(singleXmlFile, "Symptom0130");
+              String coughOptionFromUI = symptoms.getCough();
 
-              if (symptomCought == "JA") expectedCough = "true";
-              else expectedCough = "false";
-
-              softly.assertEquals(coughOption, expectedCough, "Cough checkbox value is incorrect!");
-              softly.assertAll();
-              break;
-            case "RunnyNose":
-              String expectedRunnyNose = null;
-              String runnyNoseOption =
-                  getValueFromSpecificFieldByName(singleXmlFile, "Symptom0225");
-              String symptomRunnyNose = symptoms.getRunnyNose();
-
-              if (symptomRunnyNose == "JA") expectedRunnyNose = "true";
-              else expectedRunnyNose = "false";
+              if (coughOptionFromUI == "JA") expectedValue = "true";
+              else expectedValue = "false";
 
               softly.assertEquals(
-                  runnyNoseOption, expectedRunnyNose, "RunnyNose checkbox value is incorrect!");
+                  coughOptionFromXml, expectedValue, symptom + " checkbox value is incorrect!");
               softly.assertAll();
               break;
-            case "PneumoniaClinicalOrRadiologic":
-              String expectedPneumoniaClinicalOrRadiologic = null;
-              String pneumoniaClinicalOrRadiologicOption =
+            case "Runny Nose":
+              String runnyNoseOptionFromXml =
+                  getValueFromSpecificFieldByName(singleXmlFile, "Symptom0225");
+              String runnyNoseOptionFromUI = symptoms.getRunnyNose();
+
+              if (runnyNoseOptionFromUI == "JA") expectedValue = "true";
+              else expectedValue = "false";
+
+              softly.assertEquals(
+                  runnyNoseOptionFromXml, expectedValue, symptom + " checkbox value is incorrect!");
+              softly.assertAll();
+              break;
+            case "Pneumonia Clinical Or Radiologic":
+              String pneumoniaClinicalOrRadiologicOptionFromXml =
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0158");
-              String symptomPneumoniaClinicalOrRadiologic =
+              String pneumoniaClinicalOrRadiologicOptionFromUI =
                   symptoms.getPneumoniaClinicalOrRadiologic();
 
-              if (symptomPneumoniaClinicalOrRadiologic == "JA")
-                expectedPneumoniaClinicalOrRadiologic = "true";
-              else expectedPneumoniaClinicalOrRadiologic = "false";
+              if (pneumoniaClinicalOrRadiologicOptionFromUI == "JA") expectedValue = "true";
+              else expectedValue = "false";
 
               softly.assertEquals(
-                  pneumoniaClinicalOrRadiologicOption,
-                  expectedPneumoniaClinicalOrRadiologic,
-                  "PneumoniaClinicalOrRadiologic checkbox value is incorrect!");
+                  pneumoniaClinicalOrRadiologicOptionFromXml,
+                  expectedValue,
+                  symptom + " checkbox value is incorrect!");
               softly.assertAll();
               break;
-            case "RespiratoryDiseaseVentilation":
-              String expectedRespiratoryDiseaseVentilation = null;
-              String respiratoryDiseaseVentilationOption =
+            case "Respiratory Disease Ventilation":
+              String respiratoryDiseaseVentilationOptionFromXml =
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0393");
-              String symptomRespiratoryDiseaseVentilation =
+              String respiratoryDiseaseVentilationOptionFromUI =
                   symptoms.getRespiratoryDiseaseVentilation();
 
-              if (symptomRespiratoryDiseaseVentilation == "JA")
-                expectedRespiratoryDiseaseVentilation = "true";
-              else expectedRespiratoryDiseaseVentilation = "false";
+              if (respiratoryDiseaseVentilationOptionFromUI == "JA") expectedValue = "true";
+              else expectedValue = "false";
 
               softly.assertEquals(
-                  respiratoryDiseaseVentilationOption,
-                  expectedRespiratoryDiseaseVentilation,
-                  "RespiratoryDiseaseVentilation checkbox value is incorrect!");
+                  respiratoryDiseaseVentilationOptionFromXml,
+                  expectedValue,
+                  symptom + " checkbox value is incorrect!");
               softly.assertAll();
               break;
-            case "oxygenSaturationLower94":
+            case "Oxygen Saturation Lower94":
               System.out.print("Not mapped to xml !!!");
               break;
-            case "RapidBreathing":
-              String expectedRapidBreathing = null;
-              String rapidBreathingOption =
+            case "Rapid Breathing":
+              String rapidBreathingOptionFromXml =
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0418");
-              String symptomRapidBreathing = symptoms.getRapidBreathing();
+              String rapidBreathingOptionFromUI = symptoms.getRapidBreathing();
 
-              if (symptomRapidBreathing == "JA") expectedRapidBreathing = "true";
-              else expectedRapidBreathing = "false";
+              if (rapidBreathingOptionFromUI == "JA") expectedValue = "true";
+              else expectedValue = "false";
 
               softly.assertEquals(
-                  rapidBreathingOption,
-                  expectedRapidBreathing,
-                  "RapidBreathing checkbox value is incorrect!");
+                  rapidBreathingOptionFromXml,
+                  expectedValue,
+                  symptom + " checkbox value is incorrect!");
               softly.assertAll();
               break;
-            case "DifficultyBreathing":
-              String expecteDdifficultyBreathing = null;
-              String difficultyBreathingOption =
+            case "Difficulty Breathing":
+              String difficultyBreathingOptionFromXml =
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0064");
-              String symptomDifficultyBreathing = symptoms.getDifficultyBreathing();
+              String difficultyBreathingOptionFromUI = symptoms.getDifficultyBreathing();
 
-              if (symptomDifficultyBreathing == "JA") expecteDdifficultyBreathing = "true";
-              else expecteDdifficultyBreathing = "false";
+              if (difficultyBreathingOptionFromUI == "JA") expectedValue = "true";
+              else expectedValue = "false";
 
               softly.assertEquals(
-                  difficultyBreathingOption,
-                  expecteDdifficultyBreathing,
-                  "RapidBreathing checkbox value is incorrect!");
+                  difficultyBreathingOptionFromXml,
+                  expectedValue,
+                  symptom + " checkbox value is incorrect!");
               softly.assertAll();
               break;
-            case "FastHeartRate":
-              String expectedFastHeartRate = null;
-              String fastHeartRateOption =
+            case "Fast Heart Rate":
+              String fastHeartRateOptionFromXml =
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0245");
-              String symptomFastHeartRate = symptoms.getFastHeartRate();
+              String fastHeartRateOptionFromUI = symptoms.getFastHeartRate();
 
-              if (symptomFastHeartRate == "JA") expectedFastHeartRate = "true";
-              else expectedFastHeartRate = "false";
+              if (fastHeartRateOptionFromUI == "JA") expectedValue = "true";
+              else expectedValue = "false";
 
               softly.assertEquals(
-                  fastHeartRateOption,
-                  expectedFastHeartRate,
-                  "FastHeartRate checkbox value is incorrect!");
+                  fastHeartRateOptionFromXml,
+                  expectedValue,
+                  symptom + " checkbox value is incorrect!");
               softly.assertAll();
               break;
             case "Diarrhea":
-              String expectedDiarrhea = null;
-              String diarrheaOption = getValueFromSpecificFieldByName(singleXmlFile, "Symptom0062");
-              String symptomDiarrhea = symptoms.getDiarrhea();
+              String diarrheaOptionFromXml =
+                  getValueFromSpecificFieldByName(singleXmlFile, "Symptom0062");
+              String diarrheaOptionFromUI = symptoms.getDiarrhea();
 
-              if (symptomDiarrhea == "JA") expectedDiarrhea = "true";
-              else expectedDiarrhea = "false";
+              if (diarrheaOptionFromUI == "JA") expectedValue = "true";
+              else expectedValue = "false";
 
               softly.assertEquals(
-                  diarrheaOption, expectedDiarrhea, "Diarrhea checkbox value is incorrect!");
+                  diarrheaOptionFromXml, expectedValue, symptom + " checkbox value is incorrect!");
               softly.assertAll();
               break;
             case "Nausea":
-              String expectedNausea = null;
-              String nauseaOption = getValueFromSpecificFieldByName(singleXmlFile, "Symptom0101");
-              String symptomNausea = symptoms.getNausea();
-
-              if (symptomNausea == "JA") expectedNausea = "true";
-              else expectedNausea = "false";
-
-              softly.assertEquals(
-                  nauseaOption, expectedNausea, symptom + " checkbox value is incorrect!");
-              softly.assertAll();
-              break;
-            case "LossOfSmell":
-              String expectedLossOfSmell = null;
-              String lossOfSmellOption =
-                  getValueFromSpecificFieldByName(singleXmlFile, "Symptom0416");
-              String symptomLossOfSmell = symptoms.getLossOfSmell();
-
-              if (symptomLossOfSmell == "JA") expectedLossOfSmell = "true";
-              else expectedLossOfSmell = "false";
-
-              softly.assertEquals(
-                  lossOfSmellOption,
-                  expectedLossOfSmell,
-                  symptom + " checkbox value is incorrect!");
-              softly.assertAll();
-              break;
-            case "LossOfTaste":
-              String expectedLossOfTaste = null;
-              String lossOfTasteOption =
-                  getValueFromSpecificFieldByName(singleXmlFile, "Symptom0417");
-              String symptomLossOfTaste = symptoms.getLossOfTaste();
-
-              if (symptomLossOfTaste == "JA") expectedLossOfTaste = "true";
-              else expectedLossOfTaste = "false";
-
-              softly.assertEquals(
-                  lossOfTasteOption,
-                  expectedLossOfTaste,
-                  symptom + " checkbox value is incorrect!");
-              softly.assertAll();
-              break;
-            case "OtherNonHemorrhagicSymptoms":
-              String expectedOtherNonHemorrhagicSymptoms = null;
-              String otherNonHemorrhagicSymptomsOption =
+              String nauseaOptionFromXml =
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0101");
-              String symptomOtherNonHemorrhagicSymptoms = symptoms.getOtherNonHemorrhagicSymptoms();
+              String nauseaOptionFromUI = symptoms.getNausea();
 
-              if (symptomOtherNonHemorrhagicSymptoms == "JA")
-                expectedOtherNonHemorrhagicSymptoms = "true";
-              else expectedOtherNonHemorrhagicSymptoms = "false";
+              if (nauseaOptionFromUI == "JA") expectedValue = "true";
+              else expectedValue = "false";
 
               softly.assertEquals(
-                  otherNonHemorrhagicSymptomsOption,
-                  expectedOtherNonHemorrhagicSymptoms,
+                  nauseaOptionFromXml, expectedValue, symptom + " checkbox value is incorrect!");
+              softly.assertAll();
+              break;
+            case "Loss Of Smell":
+              String lossOfSmellOptionfromXml =
+                  getValueFromSpecificFieldByName(singleXmlFile, "Symptom0416");
+              String lossOfSmellOptionfromUI = symptoms.getLossOfSmell();
+
+              if (lossOfSmellOptionfromUI == "JA") expectedValue = "true";
+              else expectedValue = "false";
+
+              softly.assertEquals(
+                  lossOfSmellOptionfromXml,
+                  expectedValue,
                   symptom + " checkbox value is incorrect!");
               softly.assertAll();
               break;
-            case "otherNonHemorrhagicSymptomsText": // mandatory comment field for
-              // OtherNonHemorrhagicSymptoms!!!
-              System.out.print("Not mapped to xml !!!");
-              break;
-            case "OnsetOfDisease":
-              String onsetOfDiseaseOptionDate =
-                  getValueFromSpecificFieldByName(singleXmlFile, "OnsetOfDisease").substring(0, 10);
-              String expectedOnsetOfDiseaseDate = symptoms.getDateOfSymptom().toString();
+            case "Loss OfTaste":
+              String lossOfTasteOptionFromXml =
+                  getValueFromSpecificFieldByName(singleXmlFile, "Symptom0417");
+              String lossOfTasteOptionFromUI = symptoms.getLossOfTaste();
+
+              if (lossOfTasteOptionFromUI == "JA") expectedValue = "true";
+              else expectedValue = "false";
 
               softly.assertEquals(
-                  onsetOfDiseaseOptionDate,
-                  expectedOnsetOfDiseaseDate,
+                  lossOfTasteOptionFromXml,
+                  expectedValue,
+                  symptom + " checkbox value is incorrect!");
+              softly.assertAll();
+              break;
+            case "Other Non Hemorrhagic Symptoms":
+              String otherNonHemorrhagicSymptomsOptionFromXml =
+                  getValueFromSpecificFieldByName(singleXmlFile, "Symptom0101");
+              String otherNonHemorrhagicSymptomsOptionFromUI =
+                  symptoms.getOtherNonHemorrhagicSymptoms();
+
+              if (otherNonHemorrhagicSymptomsOptionFromUI == "JA") expectedValue = "true";
+              else expectedValue = "false";
+
+              softly.assertEquals(
+                  otherNonHemorrhagicSymptomsOptionFromXml,
+                  expectedValue,
+                  symptom + " checkbox value is incorrect!");
+              softly.assertAll();
+              break;
+            case "Onset Of Disease":
+              String onsetOfDiseaseOptionDateFromXml =
+                  getValueFromSpecificFieldByName(singleXmlFile, "OnsetOfDisease").substring(0, 10);
+              String expectedOnsetOfDiseaseDateFromUI = symptoms.getDateOfSymptom().toString();
+
+              softly.assertEquals(
+                  onsetOfDiseaseOptionDateFromXml,
+                  expectedOnsetOfDiseaseDateFromUI,
                   symptom + " date value is incorrect!");
               softly.assertAll();
               break;
@@ -521,14 +473,6 @@ public class SurvNetSteps implements En {
         });
 
     And(
-        "^I open locally SORMAS generated XML file for single message$",
-        () -> {
-          singleXmlFile =
-              XMLParser.getDocument(
-                  "C:\\Sormas\\SORMAS-Project\\sormas-e2e-tests\\src\\main\\resources\\survnetXMLTemplates\\FeverShivering.xml");
-        });
-
-    And(
         "^I open SORMAS generated XML file for bulk case message$",
         () -> {
           bulkXmlFile =
@@ -598,7 +542,7 @@ public class SurvNetSteps implements En {
           singleXmlFile =
               XMLParser.getDocument(
                   "/srv/dockerdata/jenkins_new/sormas-files/event_"
-                      + EditEventSteps.externalEventUUID.get(0).substring(1,37)
+                      + EditEventSteps.externalEventUUID.get(0).substring(1, 37)
                       + ".xml");
         });
 
@@ -607,7 +551,7 @@ public class SurvNetSteps implements En {
         () -> {
           softly.assertEquals(
               getGuidRecord(singleXmlFile, 0),
-              EditEventSteps.externalEventUUID.get(0).substring(1,37),
+              EditEventSteps.externalEventUUID.get(0).substring(1, 37),
               "External event UUID is incorrect!");
           softly.assertAll();
         });

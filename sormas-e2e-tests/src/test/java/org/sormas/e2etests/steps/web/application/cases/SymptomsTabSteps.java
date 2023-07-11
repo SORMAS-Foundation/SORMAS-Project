@@ -206,29 +206,28 @@ public class SymptomsTabSteps implements En {
         });
 
     When(
-        "I change all symptoms fields to {string} option field and save on Survnet",
+        "I change all symptoms fields to {string} option field and save for Survnet DE",
         (String option) -> {
           switch (option) {
             case "NO":
-              break;
-            case "NO_AND_OTHER_SYMPTOMS_TO_YES":
+              symptoms = symptomService.buildEditGeneratedSymptomsSurvnetWithNoOptionsDE();
+              FillSymptomsDataSurvnet(symptoms);
+              webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
               break;
             case "UNKNOWN":
-              break;
-            case "JA":
-              symptoms = symptomService.buildEditGeneratedSymptomsSurvnet();
+              symptoms = symptomService.buildEditGeneratedSymptomsSurvnetWithUnknownOptionsDE();
               FillSymptomsDataSurvnet(symptoms);
-              fillOtherSymptoms(
-                  symptoms.getSymptomsComments()); // otherNonHemorrhagicSymptomsText field conected
-              // with selectOtherClinicalSymptoms //not mapped
-              selectFistSymptom(symptoms.getFirstSymptom()); // not mapped
-              fillOtherSymptoms(symptoms.getSymptomsComments());  //notmapped
-              fillSymptomsComments(symptoms.getSymptomsComments()); //not mapped
-
+              webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+              break;
+            case "YES":
+              symptoms = symptomService.buildEditGeneratedSymptomsSurvnetDE();
+              FillSymptomsDataSurvnet(symptoms);
+              fillOtherSymptoms(symptoms.getSymptomsComments());
+              selectFistSymptom(symptoms.getFirstSymptom());
+              fillOtherSymptoms(symptoms.getSymptomsComments());
+              fillSymptomsComments(symptoms.getSymptomsComments());
               fillDateOfSymptomDE(symptoms.getDateOfSymptom(), Locale.GERMAN);
               webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-
-              // Todo obluzenuie ponizszego capture(CATEGORY_SAVED_POPUP)
               webDriverHelpers.waitUntilElementIsVisibleAndClickable(CATEGORY_SAVED_POPUP);
               webDriverHelpers.clickOnWebElementBySelector(CATEGORY_SAVED_POPUP);
               break;
@@ -274,25 +273,6 @@ public class SymptomsTabSteps implements En {
 
     And(
         "^I set Fever Symptoms to \"([^\"]*)\" on the Symptoms tab$",
-        (String option) -> {
-          selectFever(option);
-        });
-
-    And(
-        "^I set \"([^\"]*)\" Symptoms to \"([^\"]*)\" on the Symptoms tab$",
-        (String symptom, String option) -> {
-          switch (symptom) {
-            case "Fever":
-              selectFever(option);
-              break;
-            case "Shivering":
-              selectShivering(option);
-              break;
-          }
-        });
-
-    And(
-        "^I collect \"([^\"]*)\" Symptoms checkbox value from the Symptoms tab",
         (String option) -> {
           selectFever(option);
         });
@@ -380,67 +360,6 @@ public class SymptomsTabSteps implements En {
     selectFistSymptom(symptoms.getFirstSymptom());
   }
 
-  private void FillSymptomsDataSurvnet(Symptoms symptoms) {
-    selectMaximumBodyTemperatureInCCombobox(symptoms.getMaximumBodyTemperatureInC());
-    selectSourceOfBodyTemperature(symptoms.getSourceOfBodyTemperature());
-    // selectFever(symptoms.getFever()); --ok
-    // selectShivering(symptoms.getShivering()); --ok
-    // selectHeadache(symptoms.getHeadache()); --oh
-    // selectMusclePain(symptoms.getMusclePain()); --ok
-    // selectFeelingIll(symptoms.getFeelingIll()); --ok
-    // selectChillsOrSweats(symptoms.getChillsOrSweats()); --ok
-    // selectAcuteRespiratoryDistressSyndrome(symptoms.getAcuteRespiratoryDistressSyndrome());
-    // selectSoreThroat(symptoms.getSoreThroat()); --ok
-    // selectCough(symptoms.getCough());  --ok
-    // selectRunnyNose(symptoms.getRunnyNose()); --ok
-    // selectPneumoniaClinicalOrRadiologic(symptoms.getPneumoniaClinicalOrRadiologic());
-    // selectRespiratoryDiseaseVentilation(symptoms.getRespiratoryDiseaseVentilation());
-    // selectOxygenSaturationLower94(symptoms.getOxygenSaturationLower94());  --not mapped
-    // selectRapidBreathing(symptoms.getRapidBreathing()); --ok
-    // selectDifficultyBreathing(symptoms.getDifficultyBreathing()); --ok
-    // selectFastHeartRate(symptoms.getFastHeartRate()); --ok
-    // selectDiarrhea(symptoms.getDiarrhea()); --ok
-    // selectNausea(symptoms.getNausea()); --ok
-    // selectLossOfSmell(symptoms.getLossOfSmell()); --ok
-    // selectLossOfTaste(symptoms.getLossOfTaste()); --ok
-    selectOtherClinicalSymptoms(symptoms.getOtherNonHemorrhagicSymptoms());
-
-    // selectChillsOrSweats(symptoms.getChillsOrSweats());
-    // selectHeadache(symptoms.getHeadache());
-    // selectMusclePain(symptoms.getMusclePain());
-    // selectAcuteRespiratoryDistressSyndrome(symptoms.getAcuteRespiratoryDistressSyndrome());
-    // selectCough(symptoms.getCough());
-    // selectPneumoniaClinicalOrRadiologic(symptoms.getPneumoniaClinicalOrRadiologic());
-    // selectDifficultyBreathing(symptoms.getDifficultyBreathing());
-    // selectRapidBreathing(symptoms.getRapidBreathing());
-    // selectRunnyNose(symptoms.getRunnyNose());
-    // selectSoreThroat(symptoms.getSoreThroat());
-    // selectDiarrhea(symptoms.getDiarrhea());
-    // selectNausea(symptoms.getNausea());
-    // selectLossOfSmell(symptoms.getLossOfSmell());
-    // selectLossOfTaste(symptoms.getLossOfTaste());
-    // selectOtherClinicalSymptoms(symptoms.getOtherNonHemorrhagicSymptoms());
-    // selectAbnormalLungXrayFindings(symptoms.getAbnormalLungXrayFindings());
-    // selectFatigueWeakness(symptoms.getFatigueWeakness());
-    // selectJointPain(symptoms.getJointPain());
-    // selectCoughWithHeamoptysis(symptoms.getCoughWithHeamoptysis());
-    // selectCoughWithSputum(symptoms.getCoughWithSputum());
-    // selectFluidInLungCavityXray(symptoms.getFluidInLungCavityXray());
-    // selectFluidInLungCavityAuscultation(symptoms.getFluidInLungCavityAuscultation());
-    // selectInDrawingOfChestWall(symptoms.getInDrawingOfChestWall());
-    // selectAbdominalPain(symptoms.getAbdominalPain());
-    // selectVomiting(symptoms.getVomiting());
-    // selectSkinUlcers(symptoms.getSkinUlcers());
-    // selectUnexplainedBleeding(symptoms.getUnexplainedBleeding());
-    // selectComa(symptoms.getComa());
-    // selectLymphadenopathy(symptoms.getLymphadenopathy());
-    // selectInabilityToWalk(symptoms.getInabilityToWalk());
-    // selectSkinRash(symptoms.getSkinRash());
-    // selectConfusedDisoriented(symptoms.getConfusedDisoriented());
-    // selectSeizures(symptoms.getSeizures());
-    // selectFistSymptom(symptoms.getFirstSymptom());
-  }
-
   private void FillSymptomsDataForNoUnknown(Symptoms symptoms) {
     selectMaximumBodyTemperatureInCCombobox(symptoms.getMaximumBodyTemperatureInC());
     selectSourceOfBodyTemperature(symptoms.getSourceOfBodyTemperature());
@@ -478,6 +397,32 @@ public class SymptomsTabSteps implements En {
     selectConfusedDisoriented(symptoms.getConfusedDisoriented());
     selectSeizures(symptoms.getSeizures());
     selectOtherComplications(symptoms.getOtherComplications());
+  }
+
+  private void FillSymptomsDataSurvnet(Symptoms symptoms) {
+    selectMaximumBodyTemperatureInCCombobox(symptoms.getMaximumBodyTemperatureInC());
+    selectSourceOfBodyTemperature(symptoms.getSourceOfBodyTemperature());
+    selectFever(symptoms.getFever());
+    selectShivering(symptoms.getShivering());
+    selectHeadache(symptoms.getHeadache());
+    selectMusclePain(symptoms.getMusclePain());
+    selectFeelingIll(symptoms.getFeelingIll());
+    selectChillsOrSweats(symptoms.getChillsOrSweats());
+    selectAcuteRespiratoryDistressSyndrome(symptoms.getAcuteRespiratoryDistressSyndrome());
+    selectSoreThroat(symptoms.getSoreThroat());
+    selectCough(symptoms.getCough());
+    selectRunnyNose(symptoms.getRunnyNose());
+    selectPneumoniaClinicalOrRadiologic(symptoms.getPneumoniaClinicalOrRadiologic());
+    selectRespiratoryDiseaseVentilation(symptoms.getRespiratoryDiseaseVentilation());
+    selectOxygenSaturationLower94(symptoms.getOxygenSaturationLower94());
+    selectRapidBreathing(symptoms.getRapidBreathing());
+    selectDifficultyBreathing(symptoms.getDifficultyBreathing());
+    selectFastHeartRate(symptoms.getFastHeartRate());
+    selectDiarrhea(symptoms.getDiarrhea());
+    selectNausea(symptoms.getNausea());
+    selectLossOfSmell(symptoms.getLossOfSmell());
+    selectLossOfTaste(symptoms.getLossOfTaste());
+    selectOtherClinicalSymptoms(symptoms.getOtherNonHemorrhagicSymptoms());
   }
 
   private Symptoms collectSymptomsData() {
