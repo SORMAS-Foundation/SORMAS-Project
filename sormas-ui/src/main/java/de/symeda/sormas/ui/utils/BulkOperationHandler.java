@@ -47,8 +47,8 @@ public class BulkOperationHandler<T extends HasUuid> {
 
 	private final String allEntriesProcessedMessageProperty;
 	private final String ineligibleEntriesNotProcessedMessageProperty;
-	private final String headingSomeEntitiesNotDeleted;
-	private final String countEntriesNotDeletedMessageProperty;
+	private final String headingSomeEntitiesNotProcessed;
+	private final String countEntriesNotProcessedMessageProperty;
 	private final String someEntriesProcessedMessageProperty;
 	private final String noEligibleEntityMessageProperty;
 	private final String infoBulkProcessFinishedWithSkipsProperty;
@@ -56,15 +56,15 @@ public class BulkOperationHandler<T extends HasUuid> {
 	public BulkOperationHandler(
 		String allEntriesProcessedMessageProperty,
 		String ineligibleEntriesNotProcessedMessageProperty,
-		String headingSomeEntitiesNotDeleted,
+		String headingSomeEntitiesNotProcessed,
 		String countEntriesNotProcessedMessageProperty,
 		String someEntriesProcessedMessageProperty,
 		String noEligibleEntityMessageProperty,
 		String infoBulkProcessFinishedWithSkipsProperty) {
 		this.allEntriesProcessedMessageProperty = allEntriesProcessedMessageProperty;
 		this.ineligibleEntriesNotProcessedMessageProperty = ineligibleEntriesNotProcessedMessageProperty;
-		this.headingSomeEntitiesNotDeleted = headingSomeEntitiesNotDeleted;
-		this.countEntriesNotDeletedMessageProperty = countEntriesNotProcessedMessageProperty;
+		this.headingSomeEntitiesNotProcessed = headingSomeEntitiesNotProcessed;
+		this.countEntriesNotProcessedMessageProperty = countEntriesNotProcessedMessageProperty;
 		this.someEntriesProcessedMessageProperty = someEntriesProcessedMessageProperty;
 		this.noEligibleEntityMessageProperty = noEligibleEntityMessageProperty;
 		this.infoBulkProcessFinishedWithSkipsProperty = infoBulkProcessFinishedWithSkipsProperty;
@@ -118,15 +118,15 @@ public class BulkOperationHandler<T extends HasUuid> {
 				if (areIneligibleEntriesSelected(selectedIneligibleEntries)) {
 					String description = getErrorDescription(
 						selectedIneligibleEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
-						I18nProperties.getString(countEntriesNotDeletedMessageProperty),
+						I18nProperties.getString(countEntriesNotProcessedMessageProperty),
 						I18nProperties.getString(ineligibleEntriesNotProcessedMessageProperty));
 
 					Window response =
-						VaadinUiUtil.showSimplePopupWindow(I18nProperties.getString(headingSomeEntitiesNotDeleted), description, ContentMode.HTML);
+						VaadinUiUtil.showSimplePopupWindow(I18nProperties.getString(headingSomeEntitiesNotProcessed), description, ContentMode.HTML);
 
 					response.setWidth(600, Sizeable.Unit.PIXELS);
 				} else {
-					//all the selected eligible entities were deleted
+					//all the selected eligible entities were processed
 					NotificationHelper
 						.showNotification(I18nProperties.getString(allEntriesProcessedMessageProperty), Notification.Type.HUMANIZED_MESSAGE, -1);
 				}
@@ -267,14 +267,14 @@ public class BulkOperationHandler<T extends HasUuid> {
 
 	private String getErrorDescription(
 		List<String> ineligibleEntityUuids,
-		String messageCountEntriesNotDeleted,
+		String messageCountEntriesNotProcessed,
 		String messageIneligibleEntriesNotProcessed) {
 		StringBuilder description = new StringBuilder();
 		description.append(
 			String.format(
 				"%1s <br/> %2s",
 				String.format(
-					messageCountEntriesNotDeleted,
+					messageCountEntriesNotProcessed,
 					String.format("<b>%s</b>", ineligibleEntityUuids.size()),
 					String.format("<b>%s</b>", HtmlHelper.cleanHtml(getIneligibleItemsString(ineligibleEntityUuids)))),
 				messageIneligibleEntriesNotProcessed))
