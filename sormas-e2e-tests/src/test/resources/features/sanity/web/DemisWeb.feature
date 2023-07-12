@@ -526,6 +526,7 @@ Scenario: Create and send laboratory request via Demis
     And I back to the case from Edit Sample page DE
     And I check if report side component in Edit Case has today date
     When I click on edit Report on Edit Case page
+    And I click on discard button
     And I click on Display associated external messages button from Reports side component
     And I check if external message window appears and close it
     Then I click on the Messages button from navbar
