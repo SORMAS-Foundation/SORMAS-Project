@@ -209,4 +209,5 @@ public class EditEventPage {
   public static final By LINE_LISTING_HEADER = By.xpath("//div[contains(text(), 'Line listing')]");
   public static final By CREATE_QUARANTINE_ORDER_EVENT_PARTICIPANT_BY_TEXT =
       By.xpath("//span[contains(text(), 'Create quarantine order documents')]");
+  public static final By EVENT_EXTERNAL_ID_INPUT = By.id("externalId");
 }

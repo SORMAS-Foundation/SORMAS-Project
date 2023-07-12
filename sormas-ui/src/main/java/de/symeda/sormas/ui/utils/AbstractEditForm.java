@@ -16,7 +16,9 @@
 package de.symeda.sormas.ui.utils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -398,7 +400,15 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 				if (!field.isReadOnly()) {
 					field.setRequired(required);
 					if (TextField.class.isAssignableFrom(field.getClass())) {
-						field.addValidator(new NotBlankTextValidator(I18nProperties.getRequiredError(field.getCaption())));
+						if (required) {
+							field.addValidator(new NotBlankTextValidator(I18nProperties.getRequiredError(field.getCaption())));
+						} else {
+							final Collection<Validator> validators = field.getValidators();
+							final Optional<Validator> first = validators.stream()
+								.filter(validator -> validator.getClass().isAssignableFrom(NotBlankTextValidator.class))
+								.findFirst();
+							first.ifPresent(field::removeValidator);
+						}
 					}
 				}
 			}

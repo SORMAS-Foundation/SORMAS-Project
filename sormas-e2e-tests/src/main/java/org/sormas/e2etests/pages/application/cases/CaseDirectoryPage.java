@@ -192,13 +192,6 @@ public class CaseDirectoryPage {
       By.xpath("//*[contains(text(), 'Potentielle Duplikate erkannt')]");
   public static final By CASE_ARCHIVED_POPUP = By.cssSelector(".v-Notification-caption");
 
-  public static By getActionRejectButtonByCaseDescription(String description) {
-    return By.xpath(
-        String.format(
-            "//td[contains(text(), 'Fall')]/../*[contains(text(), '%s')]/..//div[@id='actionReject']",
-            description));
-  }
-
   public static By getActionAcceptButtonByCaseDescription(String description) {
     return By.xpath(
         String.format(
@@ -210,13 +203,6 @@ public class CaseDirectoryPage {
     return By.xpath(
         String.format(
             "//td[contains(text(), 'Kontakt')]/../*[contains(text(), '%s')]/..//div[@id='actionAccept']",
-            description));
-  }
-
-  public static By getActionRejectButtonByContactDescription(String description) {
-    return By.xpath(
-        String.format(
-            "//td[contains(text(), 'Kontakt')]/../*[contains(text(), '%s')]/..//div[@id='actionReject']",
             description));
   }
 
@@ -286,4 +272,5 @@ public class CaseDirectoryPage {
   public static By WARNING_CASE_NOT_SHARED_SHARE_POPUP_DE =
       By.xpath(
           "//div[contains(text(), 'Wenn Sie diesen Kontakt teilen m\u00F6chten, m\u00FCssen Sie den zugeh\u00F6rigen Fall zuerst an das gleiche Zielsystem senden.')]");
+  public static By SEND_TO_REPORTING_TOOL_BUTTON = By.xpath("//span[contains(text(), 'Senden')]");
 }

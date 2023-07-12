@@ -10,7 +10,7 @@ info:
     name: GPL v3
     url: https://www.gnu.org/licenses/gpl-3.0.html
   title: SORMAS REST API
-  version: 1.86.0-SNAPSHOT
+  version: 1.87.0-SNAPSHOT
 servers:
 - url: /sormas-rest
 paths:
@@ -6986,6 +6986,13 @@ paths:
                   - TRAVEL_ENTRY_EDIT
                   - TRAVEL_ENTRY_ARCHIVE
                   - TRAVEL_ENTRY_DELETE
+                  - ENVIRONMENT_VIEW
+                  - ENVIRONMENT_CREATE
+                  - ENVIRONMENT_EDIT
+                  - ENVIRONMENT_ARCHIVE
+                  - ENVIRONMENT_DELETE
+                  - ENVIRONMENT_IMPORT
+                  - ENVIRONMENT_EXPORT
                   - DOCUMENT_VIEW
                   - DOCUMENT_UPLOAD
                   - DOCUMENT_DELETE
@@ -7184,6 +7191,13 @@ paths:
                   - TRAVEL_ENTRY_EDIT
                   - TRAVEL_ENTRY_ARCHIVE
                   - TRAVEL_ENTRY_DELETE
+                  - ENVIRONMENT_VIEW
+                  - ENVIRONMENT_CREATE
+                  - ENVIRONMENT_EDIT
+                  - ENVIRONMENT_ARCHIVE
+                  - ENVIRONMENT_DELETE
+                  - ENVIRONMENT_IMPORT
+                  - ENVIRONMENT_EXPORT
                   - DOCUMENT_VIEW
                   - DOCUMENT_UPLOAD
                   - DOCUMENT_DELETE
@@ -13761,6 +13775,17 @@ components:
         creationDate:
           type: string
           format: date-time
+        deleted:
+          type: boolean
+        deletionReason:
+          type: string
+          enum:
+          - GDPR
+          - DELETION_REQUEST
+          - CREATED_WITH_NO_LEGAL_REASON
+          - TRANSFERRED_RESPONSIBILITY
+          - DUPLICATE_ENTRIES
+          - OTHER_REASON
         description:
           type: string
           maxLength: 1000000
@@ -13780,6 +13805,8 @@ components:
           type: string
           maxLength: 512
           minLength: 0
+        inJurisdiction:
+          type: boolean
         infrastructureDetails:
           type: string
           enum:
@@ -13800,6 +13827,10 @@ components:
           - DISCARDED
         location:
           $ref: '#/components/schemas/LocationDto'
+        otherDeletionReason:
+          type: string
+          maxLength: 1000000
+          minLength: 0
         otherInfrastructureDetails:
           type: string
           maxLength: 1000000
@@ -13812,6 +13843,8 @@ components:
           type: string
           maxLength: 1000000
           minLength: 0
+        pseudonymized:
+          type: boolean
         reportDate:
           type: string
           format: date-time
@@ -15807,6 +15840,9 @@ components:
       properties:
         assignee:
           $ref: '#/components/schemas/UserReferenceDto'
+        caseReportDate:
+          type: string
+          format: date-time
         changeDate:
           type: string
           format: date-time
@@ -16692,6 +16728,7 @@ components:
             - DASHBOARD_CAMPAIGNS
             - DASHBOARD_SAMPLES
             - LIMITED_SYNCHRONIZATION
+            - ENVIRONMENT_MANAGEMENT
             - ASSIGN_TASKS_TO_HIGHER_LEVEL
             - CASE_FOLLOWUP
             - DOCUMENTS
@@ -16839,6 +16876,7 @@ components:
           - DASHBOARD_CAMPAIGNS
           - DASHBOARD_SAMPLES
           - LIMITED_SYNCHRONIZATION
+          - ENVIRONMENT_MANAGEMENT
           - ASSIGN_TASKS_TO_HIGHER_LEVEL
           - CASE_FOLLOWUP
           - DOCUMENTS
@@ -24659,6 +24697,7 @@ components:
           - POE_INFORMANT
           - POE_SUPERVISOR
           - POE_NATIONAL_USER
+          - ENVIRONMENTAL_SURVEILLANCE_USER
           - IMPORT_USER
           - REST_EXTERNAL_VISITS_USER
           - SORMAS_TO_SORMAS_CLIENT
@@ -24840,6 +24879,13 @@ components:
             - TRAVEL_ENTRY_EDIT
             - TRAVEL_ENTRY_ARCHIVE
             - TRAVEL_ENTRY_DELETE
+            - ENVIRONMENT_VIEW
+            - ENVIRONMENT_CREATE
+            - ENVIRONMENT_EDIT
+            - ENVIRONMENT_ARCHIVE
+            - ENVIRONMENT_DELETE
+            - ENVIRONMENT_IMPORT
+            - ENVIRONMENT_EXPORT
             - DOCUMENT_VIEW
             - DOCUMENT_UPLOAD
             - DOCUMENT_DELETE

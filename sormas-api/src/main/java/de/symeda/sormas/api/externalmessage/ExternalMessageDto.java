@@ -49,7 +49,7 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String DISEASE_VARIANT = "diseaseVariant";
 	public static final String DISEASE_VARIANT_DETAILS = "diseaseVariantDetails";
 	public static final String MESSAGE_DATE_TIME = "messageDateTime";
-
+	public static final String CASE_REPORT_DATE = "caseReportDate";
 	public static final String REPORTER_NAME = "reporterName";
 	public static final String REPORTER_EXTERNAL_ID = "reporterExternalId";
 	public static final String REPORTER_POSTAL_CODE = "reporterPostalCode";
@@ -86,10 +86,10 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private String diseaseVariantDetails;
 	@AuditIncludeProperty
 	private Date messageDateTime;
+	private Date caseReportDate;
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String reporterName;
-
 	private List<String> reporterExternalIds;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String reporterPostalCode;
@@ -183,6 +183,14 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	public void setMessageDateTime(Date messageDateTime) {
 		this.messageDateTime = messageDateTime;
+	}
+
+	public Date getCaseReportDate() {
+		return caseReportDate;
+	}
+
+	public void setCaseReportDate(Date caseReportDate) {
+		this.caseReportDate = caseReportDate;
 	}
 
 	public String getReporterName() {

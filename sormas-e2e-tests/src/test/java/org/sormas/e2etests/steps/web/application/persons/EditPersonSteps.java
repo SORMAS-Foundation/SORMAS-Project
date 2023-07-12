@@ -43,6 +43,7 @@ import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -130,7 +131,8 @@ public class EditPersonSteps implements En {
   protected Person collectedPerson;
   public static Person newGeneratedPerson;
   private static String personFirstName;
-  public static String externalPersonUUID;
+  public static List<String> externalPersonUUID = new ArrayList<>();
+  public static List<String> personSex = new ArrayList<>();
 
   @Inject
   public EditPersonSteps(
@@ -613,7 +615,14 @@ public class EditPersonSteps implements En {
         "^I collect person external UUID from Edit Case page$",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(EXTERNAL_ID_INPUT);
-          externalPersonUUID = webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT);
+          externalPersonUUID.add(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT));
+        });
+
+    And(
+        "^I collect sex of the person from Edit Person page$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(SEX_INPUT);
+          personSex.add(webDriverHelpers.getValueFromWebElement(SEX_INPUT));
         });
   }
 

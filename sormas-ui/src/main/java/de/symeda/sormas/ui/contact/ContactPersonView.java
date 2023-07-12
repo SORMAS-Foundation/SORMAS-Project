@@ -68,9 +68,4 @@ public class ContactPersonView extends AbstractContactView implements PersonSide
 			PersonDto.ADDRESSES,
 			PersonDto.PERSON_CONTACT_DETAILS);
 	}
-
-	@Override
-	protected boolean isEditAllowed() {
-		return FacadeProvider.getPersonFacade().isEditAllowed(person.getUuid());
-	}
 }

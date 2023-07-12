@@ -18,16 +18,11 @@
 
 package org.sormas.e2etests.steps.web.application.shares;
 
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ACTION_OKAY;
-import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.POPUP_COLUMN_HEADER;
-import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.SHARE_FIRST_EYE_ICON;
-import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.SHARE_OPTION_CHECKBOX;
-import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.SHARE_REQUEST_NOT_FOUND_HEADER_DE;
-import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.SHARE_UUID_CASE_TITLE;
-import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.WARNING_ACCEPT_CASE_BEFORE_CONTACT_HEADER_DE;
-import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.getCheckBoxFromShareFormByIndex;
-import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.getPopupColumnHeaderByIndex;
+import static org.sormas.e2etests.pages.application.shares.EditSharesPage.*;
 
+import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -40,11 +35,103 @@ import org.testng.asserts.SoftAssert;
 public class SharesDirectorySteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
+  public static Faker faker;
+  private static String generatedRandomStringCase;
+  private static String generatedRandomStringContact;
 
   @Inject
   public SharesDirectorySteps(
-      WebDriverHelpers webDriverHelpers, SoftAssert softly, ApiState apiState) {
+      WebDriverHelpers webDriverHelpers, SoftAssert softly, ApiState apiState, Faker faker) {
     this.webDriverHelpers = webDriverHelpers;
+    this.faker = faker;
+
+    When(
+        "I accept first entity from table in Shares Page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ACCEPT_BUTTON);
+          TimeUnit.SECONDS.sleep(2); // wait for results to reload
+        });
+
+    When(
+        "I click on {string} shared contact button with copied contact description",
+        (String option) -> {
+          switch (option) {
+            case "reject":
+              webDriverHelpers.clickOnWebElementBySelector(
+                  getActionRejectButtonByContactDescription(generatedRandomStringContact));
+              break;
+            case "accept":
+              webDriverHelpers.clickOnWebElementBySelector(
+                  getActionAcceptButtonByContactDescription(generatedRandomStringContact));
+              break;
+          }
+        });
+
+    When(
+        "I click on {string} shared case button with copied case description",
+        (String option) -> {
+          switch (option) {
+            case "reject":
+              webDriverHelpers.clickOnWebElementBySelector(
+                  getActionRejectButtonByCaseDescription(generatedRandomStringCase));
+              break;
+            case "accept":
+              webDriverHelpers.clickOnWebElementBySelector(
+                  getActionAcceptButtonByCaseDescription(generatedRandomStringCase));
+              break;
+          }
+        });
+
+    And(
+        "^I check that accept shared case button with copied case description is visible in Share Directory page$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              getActionAcceptButtonByCaseDescription(generatedRandomStringCase));
+        });
+
+    And(
+        "^I check that accept shared contact button with copied contact description is visible in Share Directory page$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              getActionAcceptButtonByContactDescription(generatedRandomStringContact));
+        });
+
+    And(
+        "^I check that entity not found error popup is displayed in Share Directory page$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(ENTITY_NOT_FOUND_POPUP);
+        });
+
+    And(
+        "I fill comment in share popup with {string}",
+        (String comment) -> {
+          webDriverHelpers.fillInWebElement(EXTRA_COMMENT_INPUT_SHARE_POPUP, comment);
+        });
+
+    When(
+        "I check if accept button does not appear in Shares Page",
+        () -> {
+          softly.assertFalse(
+              webDriverHelpers.isElementVisibleWithTimeout(ACCEPT_BUTTON, 3),
+              "Accept button is visible!");
+          softly.assertAll();
+        });
+
+    And(
+        "I fill comment in share popup for case with random string",
+        () -> {
+          generatedRandomStringCase = faker.beer().name();
+          webDriverHelpers.fillInWebElement(
+              EXTRA_COMMENT_INPUT_SHARE_POPUP, generatedRandomStringCase);
+        });
+
+    And(
+        "I fill comment in share popup for contact with random string",
+        () -> {
+          generatedRandomStringContact = faker.beer().name();
+          webDriverHelpers.fillInWebElement(
+              EXTRA_COMMENT_INPUT_SHARE_POPUP, generatedRandomStringContact);
+        });
 
     When(
         "I click on the The Eye Icon located in the Shares Page",
@@ -124,6 +211,15 @@ public class SharesDirectorySteps implements En {
         "^I check if Share request not found popup message appeared for DE$",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(SHARE_REQUEST_NOT_FOUND_HEADER_DE);
+        });
+
+    When(
+        "^I click on the Outgoing radio button in Share Directory page DE$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              OUTGOING_VIEW_SWITCHER_RADIO_BUTTON_DE);
+          webDriverHelpers.clickOnWebElementBySelector(OUTGOING_VIEW_SWITCHER_RADIO_BUTTON_DE);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
         });
   }
 }
