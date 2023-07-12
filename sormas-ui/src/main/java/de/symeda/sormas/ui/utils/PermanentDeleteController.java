@@ -81,11 +81,8 @@ public class PermanentDeleteController<F extends PermanentlyDeletableFacade> {
 	}
 
 	private void displayErrorMessage(DeleteRestoreMessages messages) {
-		new Notification(
-			I18nProperties.getString(messages.getHeadingEntitiesEligibleForDeletion()),
-			I18nProperties.getString(messages.getMessageEntitiesEligibleForDeletion()),
-			Notification.Type.ERROR_MESSAGE,
-			false).show(Page.getCurrent());
+		new Notification(I18nProperties.getString(messages.getMessageEntitiesEligibleForDeletion()), Notification.Type.ERROR_MESSAGE)
+			.show(Page.getCurrent());
 	}
 
 	private <T extends HasUuid> BulkOperationHandler<T> createBulkOperationHandler(IPermanentDeleteHandler<?> deleteHandler) {

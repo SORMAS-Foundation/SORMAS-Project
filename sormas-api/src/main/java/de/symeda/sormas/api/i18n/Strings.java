@@ -572,7 +572,6 @@ public interface Strings {
 	String headingExternalMessageProcessSample = "headingExternalMessageProcessSample";
 	String headingExternalMessageSampleInformation = "headingExternalMessageSampleInformation";
 	String headingExternalMessagesDeleted = "headingExternalMessagesDeleted";
-	String headingExternalMessagesEligibleForDeletion = "headingExternalMessagesEligibleForDeletion";
 	String headingFatalities = "headingFatalities";
 	String headingFetchExternalMessages = "headingFetchExternalMessages";
 	String headingFileExists = "headingFileExists";
