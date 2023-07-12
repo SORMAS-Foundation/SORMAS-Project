@@ -28,6 +28,8 @@ public enum UserRoles {
   LaboratoryOfficer("Laboratory Officer"),
   POESupervisor("Point of Entry Supervisor"),
   AdminUser("Admin User"),
+  SurvnetUser("Survnet"),
+  SormasToSormasUser("S2S"),
   RestUser("Rest AUTOMATION");
 
   private final String role;

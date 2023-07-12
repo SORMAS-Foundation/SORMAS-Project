@@ -1,7 +1,7 @@
 @UI @Sanity @ShareCases @SharedData
 Feature: Sharing cases between environments tests
 
-  @tmsLink=SORQA-962 @env_s2s_1
+  @tmsLink=SOR-4489 @env_s2s_1
   Scenario: [S2S] Delete a shared case
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
     And API: I check that POST call status code is 200
