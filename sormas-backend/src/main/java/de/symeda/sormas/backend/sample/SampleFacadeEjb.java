@@ -765,20 +765,7 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	@RightsAllowed(UserRight._SAMPLE_DELETE)
-	public void restore(List<String> uuids) {
-		restoreSamples(uuids);
-	}
-
-	@Override
-	@RightsAllowed(UserRight._SAMPLE_DELETE)
-	public void restore(String sampleUuid) {
-		Sample sample = sampleService.getByUuid(sampleUuid);
-		sampleService.restore(sample);
-	}
-
-	@Override
-	@RightsAllowed(UserRight._SAMPLE_DELETE)
-	public List<String> restoreSamples(List<String> uuids) {
+	public List<String> restore(List<String> uuids) {
 		List<String> restoredSampleUuids = new ArrayList<>();
 		List<Sample> samplesToBeRestored = sampleService.getByUuids(uuids);
 
@@ -793,6 +780,13 @@ public class SampleFacadeEjb implements SampleFacade {
 			});
 		}
 		return restoredSampleUuids;
+	}
+
+	@Override
+	@RightsAllowed(UserRight._SAMPLE_DELETE)
+	public void restore(String sampleUuid) {
+		Sample sample = sampleService.getByUuid(sampleUuid);
+		sampleService.restore(sample);
 	}
 
 	@Override

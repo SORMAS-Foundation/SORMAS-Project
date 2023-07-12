@@ -54,8 +54,6 @@ public interface EventParticipantFacade
 
 	EventParticipantReferenceDto getReferenceByEventAndPerson(String eventUuid, String personUuid);
 
-	List<String> restoreEventParticipants(List<String> uuids);
-
 	List<String> getDeletedUuidsSince(Date date);
 
 	List<String> deleteEventParticipants(List<String> uuids, DeletionDetails deletionDetails);

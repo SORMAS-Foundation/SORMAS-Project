@@ -569,13 +569,7 @@ public class ContactFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._CONTACT_DELETE)
-	public void restore(List<String> uuids) {
-		restoreContacts(uuids);
-	}
-
-	@Override
-	@RightsAllowed(UserRight._CONTACT_DELETE)
-	public List<String> restoreContacts(List<String> uuids) {
+	public List<String> restore(List<String> uuids) {
 		List<String> restoredContactUuids = new ArrayList<>();
 		List<Contact> contactsToBeRestored = contactService.getByUuids(uuids);
 

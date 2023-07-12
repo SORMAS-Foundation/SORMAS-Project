@@ -2626,13 +2626,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	@RightsAllowed(UserRight._CASE_DELETE)
-	public void restore(List<String> uuids) {
-		restoreCases(uuids);
-	}
-
-	@Override
-	@RightsAllowed(UserRight._CASE_DELETE)
-	public List<String> restoreCases(List<String> uuids) {
+	public List<String> restore(List<String> uuids) {
 		List<String> restoredCaseUuids = new ArrayList<>();
 		List<Case> casesToBeRestored = caseService.getByUuids(uuids);
 

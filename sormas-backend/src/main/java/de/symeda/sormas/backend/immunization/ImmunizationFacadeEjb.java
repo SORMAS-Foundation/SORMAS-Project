@@ -321,13 +321,7 @@ public class ImmunizationFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._IMMUNIZATION_DELETE)
-	public void restore(List<String> uuids) {
-		restoreImmunizations(uuids);
-	}
-
-	@Override
-	@RightsAllowed(UserRight._IMMUNIZATION_DELETE)
-	public List<String> restoreImmunizations(List<String> uuids) {
+	public List<String> restore(List<String> uuids) {
 		List<String> restoredImmunizationUuids = new ArrayList<>();
 		List<Immunization> immunizationsToBeRestored = service.getByUuids(uuids);
 

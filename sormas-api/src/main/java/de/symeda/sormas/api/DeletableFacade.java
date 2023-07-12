@@ -12,7 +12,7 @@ public interface DeletableFacade {
 
 	void restore(String uuid);
 
-	void restore(List<String> uuids);
+	List<String> restore(List<String> uuids);
 
 	boolean isDeleted(String uuid);
 }

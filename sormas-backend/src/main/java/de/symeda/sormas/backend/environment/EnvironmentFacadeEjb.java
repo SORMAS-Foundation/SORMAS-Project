@@ -387,7 +387,7 @@ public class EnvironmentFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._ENVIRONMENT_DELETE)
-	public void restore(List<String> uuids) {
+	public List<String> restore(List<String> uuids) {
 		throw new NotImplementedException();
 	}
 

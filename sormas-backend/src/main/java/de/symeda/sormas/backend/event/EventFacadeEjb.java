@@ -354,13 +354,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 	@Override
 	@RightsAllowed(UserRight._EVENT_DELETE)
-	public void restore(List<String> uuids) {
-		restoreEvents(uuids);
-	}
-
-	@Override
-	@RightsAllowed(UserRight._EVENT_DELETE)
-	public List<String> restoreEvents(List<String> uuids) {
+	public List<String> restore(List<String> uuids) {
 		List<String> restoredEventsUuids = new ArrayList<>();
 		List<Event> eventsToBeRestored = eventService.getByUuids(uuids);
 

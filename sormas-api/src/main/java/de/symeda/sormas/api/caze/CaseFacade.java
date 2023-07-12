@@ -126,8 +126,6 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	List<String> deleteCases(List<String> caseUuids, DeletionDetails deletionDetails);
 
-	List<String> restoreCases(List<String> caseUuids);
-
 	void deleteWithContacts(String caseUuid, DeletionDetails deletionDetails);
 
 	Date getOldestCaseOnsetDate();

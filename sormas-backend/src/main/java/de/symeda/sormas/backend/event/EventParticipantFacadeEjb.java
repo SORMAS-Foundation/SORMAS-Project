@@ -545,13 +545,7 @@ public class EventParticipantFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._EVENTPARTICIPANT_DELETE)
-	public void restore(List<String> uuids) {
-		restoreEventParticipants(uuids);
-	}
-
-	@Override
-	@RightsAllowed(UserRight._EVENTPARTICIPANT_DELETE)
-	public List<String> restoreEventParticipants(List<String> uuids) {
+	public List<String> restore(List<String> uuids) {
 		List<String> restoredEventParticipantUuids = new ArrayList<>();
 		List<EventParticipant> eventParticipantsToBeRestored = service.getByUuids(uuids);
 

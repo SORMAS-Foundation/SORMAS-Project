@@ -163,13 +163,7 @@ public class TravelEntryFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._TRAVEL_ENTRY_DELETE)
-	public void restore(List<String> uuids) {
-		restoreTravelEntries(uuids);
-	}
-
-	@Override
-	@RightsAllowed(UserRight._TRAVEL_ENTRY_DELETE)
-	public List<String> restoreTravelEntries(List<String> uuids) {
+	public List<String> restore(List<String> uuids) {
 		List<String> restoredTravelEntryUuids = new ArrayList<>();
 		List<TravelEntry> travelEntriesToBeRestored = travelEntryService.getByUuids(uuids);
 
