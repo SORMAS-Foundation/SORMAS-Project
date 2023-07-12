@@ -1008,34 +1008,26 @@ public class EventController {
 
 	public void deleteAllSelectedItems(Collection<EventIndexDto> selectedRows, EventGrid eventGrid) {
 
+		Collection<EventIndexDto> ineligibleEvents = new ArrayList<>();
+		selectedRows.stream().forEach(row -> {
+			List<EventParticipantDto> eventParticipantList =
+				FacadeProvider.getEventParticipantFacade().getAllActiveEventParticipantsByEvent(row.getUuid());
+			if (eventParticipantList.size() > 0) {
+				ineligibleEvents.add(row);
+			}
+		});
+
+		Collection<EventIndexDto> eligibleEvents = ineligibleEvents.size() > 0
+			? selectedRows.stream().filter(row -> !ineligibleEvents.contains(row)).collect(Collectors.toCollection(ArrayList::new))
+			: selectedRows;
+
 		ControllerProvider.getDeleteRestoreController()
 			.deleteAllSelectedItems(
 				selectedRows,
-				getEligibleEvents(selectedRows),
-				getIneligibleEvents(selectedRows),
+				eligibleEvents,
+				ineligibleEvents,
 				DeleteRestoreHandlers.forEvent(),
 				bulkOperationCallback(eventGrid, null));
-	}
-
-	public Collection<EventIndexDto> getEligibleEvents(Collection<EventIndexDto> selectedRows) {
-		Collection<EventIndexDto> ineligibleEvents = getIneligibleEvents(selectedRows);
-		if (ineligibleEvents != null && ineligibleEvents.size() > 0) {
-			return selectedRows.stream().filter(row -> !ineligibleEvents.contains(row)).collect(Collectors.toCollection(ArrayList::new));
-		} else {
-			return selectedRows;
-		}
-	}
-
-	public Collection<EventIndexDto> getIneligibleEvents(Collection<EventIndexDto> selectedRows) {
-		Collection<EventIndexDto> ineligibleEvents = new ArrayList<>();
-		for (EventIndexDto selectedRow : selectedRows) {
-			List<EventParticipantDto> eventParticipantList =
-				FacadeProvider.getEventParticipantFacade().getAllActiveEventParticipantsByEvent(selectedRow.getUuid());
-			if (eventParticipantList.size() > 0) {
-				ineligibleEvents.add(selectedRow);
-			}
-		}
-		return ineligibleEvents;
 	}
 
 	public void restoreSelectedEvents(Collection<EventIndexDto> selectedRows, EventGrid eventGrid) {
