@@ -60,6 +60,7 @@ public class DemisApiService {
   private final String CONTENT_TYPE_APPLICATION_JSON = "application/json";
   private JSONObject jsonObject;
   public static final String specimenUUID = UUID.randomUUID().toString();
+  public static final String secondSpecimenUUID = UUID.randomUUID().toString();
 
   @Inject
   public DemisApiService(RunningConfiguration runningConfiguration) {
@@ -249,7 +250,7 @@ public class DemisApiService {
     json = json.replace("\"<second_person_last_name_to_change>\"", "\"" + patientLastName + "\"");
     json = json.replace("\"<second_person_first_name_to_change>\"", "\"" + patientFirstName + "\"");
     json = json.replace("<specimen_UUID_to_change>", specimenUUID);
-    json = json.replace("<second_specimen_UUID_to_change>", UUID.randomUUID().toString());
+    json = json.replace("<second_specimen_UUID_to_change>", secondSpecimenUUID);
     json = json.replace("<observation_UUID_to_change>", UUID.randomUUID().toString());
     json = json.replace("<second_observation_UUID_to_change>", UUID.randomUUID().toString());
     json = json.replace("<third_observation_UUID_to_change>", UUID.randomUUID().toString());

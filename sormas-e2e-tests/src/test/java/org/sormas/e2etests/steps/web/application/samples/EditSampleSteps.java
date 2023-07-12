@@ -314,13 +314,24 @@ public class EditSampleSteps implements En {
         });
 
     Then(
-        "^I check that lab sample id match specimen id from Demis message on Edit Sample page$",
-        () -> {
-          softly.assertEquals(
-                  webDriverHelpers.getValueFromWebElement(LAB_SAMPLE_ID_INPUT),
-                  DemisApiService.specimenUUID,
-                  "Sample id is incorrect");
-          softly.assertAll();
+        "I check that lab sample id match {string} specimen id from Demis message on Edit Sample page",
+        (String specimen) -> {
+            switch (specimen) {
+              case "first":
+                softly.assertEquals(
+                    webDriverHelpers.getValueFromWebElement(LAB_SAMPLE_ID_INPUT),
+                    DemisApiService.specimenUUID,
+                    "Sample id is incorrect");
+                softly.assertAll();
+                break;
+              case "second":
+                softly.assertEquals(
+                    webDriverHelpers.getValueFromWebElement(LAB_SAMPLE_ID_INPUT),
+                    DemisApiService.secondSpecimenUUID,
+                    "Sample id is incorrect");
+                softly.assertAll();
+                break;
+            }
         });
 
     And(
