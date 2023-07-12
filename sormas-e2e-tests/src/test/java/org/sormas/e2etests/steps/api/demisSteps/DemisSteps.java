@@ -934,6 +934,16 @@ public class DemisSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_SAMPLE_CHECKBOX);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
         });
+
+    And(
+        "^I create and send Laboratory Notification with one existing facility$",
+        () -> {
+          patientFirstName = faker.name().firstName();
+          patientLastName = faker.name().lastName();
+          String json = demisApiService.prepareLabNotificationFileWithOneExistingFacility(patientFirstName, patientLastName);
+
+          Assert.assertTrue(demisApiService.sendLabRequest(json, loginToken), "Failed to send laboratory request");
+        });
   }
 
   private List<Map<String, String>> getTableRowsData() {
