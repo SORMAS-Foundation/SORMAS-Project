@@ -133,7 +133,7 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 			forDelete ? deleteRestoreMessages.getMessageCountEntitiesNotDeleted() : deleteRestoreMessages.getMessageCountEntitiesNotRestored(),
 			forDelete ? deleteRestoreMessages.getMessageEntitiesNotDeleted() : deleteRestoreMessages.getMessageEntitiesNotRestored(),
 			forDelete ? deleteRestoreMessages.getMessageNoEligibleEntitySelected() : null,
-			Strings.infoBulkDeleteProcessFinishedWithSkips);
+			Strings.infoBulkProcessFinishedWithSkipsOutsideJurisdiction);
 	}
 
 	private void displayNothingSelectedToBeDeleted(DeleteRestoreMessages messages) {

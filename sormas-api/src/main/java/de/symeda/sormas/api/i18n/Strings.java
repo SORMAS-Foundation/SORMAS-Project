@@ -804,7 +804,7 @@ public interface Strings {
 	String infoAutomaticDeletionTooltipYears = "infoAutomaticDeletionTooltipYears";
 	String infoBAGExport = "infoBAGExport";
 	String infoBasicExport = "infoBasicExport";
-	String infoBulkDeleteProcessFinishedWithSkips = "infoBulkDeleteProcessFinishedWithSkips";
+	String infoBulkProcessFinishedWithSkipsOutsideJurisdiction = "infoBulkProcessFinishedWithSkipsOutsideJurisdiction";
 	String infoBulkProcess = "infoBulkProcess";
 	String infoBulkProcessCancelled = "infoBulkProcessCancelled";
 	String infoBulkProcessFinished = "infoBulkProcessFinished";

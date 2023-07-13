@@ -94,7 +94,7 @@ public class PermanentDeleteController<F extends PermanentlyDeletableFacade> {
 			deleteRestoreMessages.getMessageCountEntitiesNotDeleted(),
 			deleteRestoreMessages.getMessageEntitiesNotDeleted(),
 			null,
-			Strings.infoBulkDeleteProcessFinishedWithSkips);
+			Strings.infoBulkProcessFinishedWithSkipsOutsideJurisdiction);
 	}
 
 	public interface IPermanentDeleteHandler<T extends HasUuid> {
