@@ -532,3 +532,37 @@ Scenario: Create and send laboratory request via Demis
     Then I click on the Messages button from navbar
     And I filter by last created person via API in Messages Directory
     And I verify that status for result 1 is set to processed in Message Directory page
+
+  @tmsLink=SORQA-958 @env_d2s @LoginKeycloak
+  Scenario: Demis - Process a Lab message that has mapped 1 existing laboratory ID from Sormas
+    Given API : Login to DEMIS server
+    When I create and send Laboratory Notification with one existing facility
+    And I log in as a Admin User
+    And I click on the Messages button from navbar
+    And I click on fetch messages button
+    And I filter by last created person via API in Messages Directory
+    And I click on Verarbeiten button in Messages Directory
+    And I pick a new person in Pick or create person popup during case creation for DE
+    And I choose create new case in Pick or create entry form for DE
+    And I check that create new case form with pathogen detection reporting process is displayed for DE
+    And I fill only mandatory fields to convert laboratory message into a case for DE
+    And I click on save button in the case popup
+    Then I check that new sample form with pathogen detection reporting process is displayed
+    And I verify that labor is prefilled with "Testlabor DEMIS" in New sample form while processing a DEMIS LabMessage
+    When I click on save sample button
+    And I click on save sample button
+    And I click on the Cases button from navbar
+    And I search the case by last created person via Demis message
+    And I click on the first Case ID from Case Directory
+    And I click on Display associated lab messages button from Samples side component
+    Then I check if external message window appears and close it
+    And I click on Display associated external messages button from Reports side component
+    And I check if external message window appears and close it
+    When I click on edit Report on Edit Case page
+    Then I check that Reporter Facility in Edit report form is set to "Testlabor DEMIS (Inaktiv)"
+    And I click on discard button
+    And I click on the Messages button from navbar
+    And I filter by last created person via API in Messages Directory
+    And I verify that status for result 1 is set to processed in Message Directory page
+    And I click on the eye icon next for the first fetched message
+    And I check if external message window appears and close it

@@ -18,60 +18,6 @@
 
 package org.sormas.e2etests.steps.web.application.cases;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.javafaker.Faker;
-import com.google.common.truth.Truth;
-import com.opencsv.CSVParser;
-import com.opencsv.CSVParserBuilder;
-import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderBuilder;
-import com.opencsv.CSVWriter;
-import com.opencsv.exceptions.CsvException;
-import cucumber.api.java8.En;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
-import org.sormas.e2etests.common.DataOperations;
-import org.sormas.e2etests.entities.pojo.csv.DetailedCaseCSV;
-import org.sormas.e2etests.entities.pojo.csv.DetailedCaseCSVSymptoms;
-import org.sormas.e2etests.enums.CaseOutcome;
-import org.sormas.e2etests.enums.DiseasesValues;
-import org.sormas.e2etests.enums.DistrictsValues;
-import org.sormas.e2etests.enums.FacilityCategory;
-import org.sormas.e2etests.enums.FollowUpStatus;
-import org.sormas.e2etests.enums.PresentCondition;
-import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
-import org.sormas.e2etests.helpers.AssertHelpers;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.helpers.files.FilesHelper;
-import org.sormas.e2etests.pages.application.cases.EditCasePage;
-import org.sormas.e2etests.pages.application.contacts.EditContactPage;
-import org.sormas.e2etests.state.ApiState;
-import org.sormas.e2etests.steps.BaseSteps;
-import org.testng.Assert;
-import org.testng.asserts.SoftAssert;
-
-import javax.inject.Inject;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.DateFormatSymbols;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
-
 import static org.sormas.e2etests.entities.pojo.helpers.ShortUUIDGenerator.generateShortUUID;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ACTION_OKAY;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ACTION_RESET_POPUP;
@@ -209,6 +155,59 @@ import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.IMPO
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.SELECT_ANOTHER_PERSON_DE;
 import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.BULK_DELETE_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.javafaker.Faker;
+import com.google.common.truth.Truth;
+import com.opencsv.CSVParser;
+import com.opencsv.CSVParserBuilder;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.CSVWriter;
+import com.opencsv.exceptions.CsvException;
+import cucumber.api.java8.En;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.DateFormatSymbols;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.By;
+import org.sormas.e2etests.common.DataOperations;
+import org.sormas.e2etests.entities.pojo.csv.DetailedCaseCSV;
+import org.sormas.e2etests.entities.pojo.csv.DetailedCaseCSVSymptoms;
+import org.sormas.e2etests.enums.CaseOutcome;
+import org.sormas.e2etests.enums.DiseasesValues;
+import org.sormas.e2etests.enums.DistrictsValues;
+import org.sormas.e2etests.enums.FacilityCategory;
+import org.sormas.e2etests.enums.FollowUpStatus;
+import org.sormas.e2etests.enums.PresentCondition;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
+import org.sormas.e2etests.helpers.AssertHelpers;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.helpers.files.FilesHelper;
+import org.sormas.e2etests.pages.application.cases.EditCasePage;
+import org.sormas.e2etests.pages.application.contacts.EditContactPage;
+import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.BaseSteps;
+import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
 
 @Slf4j
 public class CaseDirectorySteps implements En {
@@ -1473,16 +1472,16 @@ public class CaseDirectorySteps implements En {
         });
 
     When(
-         "^I select (\\d+) last created UI result in grid in Case Directory for Bulk Action$",
-         (Integer number) -> {
-           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
-           for (int i = 0; i < number; i++) {
-             webDriverHelpers.scrollToElement(
-                 getCheckboxByUUID(CreateNewCaseSteps.casesUUID.get(i)));
-             webDriverHelpers.clickOnWebElementBySelector(
-                 getCheckboxByUUID(CreateNewCaseSteps.casesUUID.get(i)));
-           }
-         });
+        "^I select (\\d+) last created UI result in grid in Case Directory for Bulk Action$",
+        (Integer number) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          for (int i = 0; i < number; i++) {
+            webDriverHelpers.scrollToElement(
+                getCheckboxByUUID(CreateNewCaseSteps.casesUUID.get(i)));
+            webDriverHelpers.clickOnWebElementBySelector(
+                getCheckboxByUUID(CreateNewCaseSteps.casesUUID.get(i)));
+          }
+        });
 
     And(
         "^I click Send to reporting tool button on Case Directory page$",
@@ -1492,7 +1491,6 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_ACTION);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(REPORTING_TOOL_MESSAGE);
         });
-
   }
 
   private Number getRandomNumberForBirthDateDifferentThanCreated(Number created, int min, int max) {
