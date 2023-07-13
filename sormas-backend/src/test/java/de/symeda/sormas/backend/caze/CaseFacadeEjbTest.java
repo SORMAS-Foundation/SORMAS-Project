@@ -2831,13 +2831,13 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		loginWith(surveillanceOfficer);
 
-		List<String> deleteUuids = getCaseFacade().deleteCases(caseUuidList, new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
+		List<String> deleteUuids = getCaseFacade().delete(caseUuidList, new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
 		assertEquals(1, deleteUuids.size());
 		assertEquals(caze1.getUuid(), deleteUuids.get(0));
 
 		loginWith(nationalUser);
-		getCaseFacade().deleteCases(caseUuidList, new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
+		getCaseFacade().delete(caseUuidList, new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 		assertEquals(0, getCaseFacade().getAllActiveUuids().size());
 	}
 

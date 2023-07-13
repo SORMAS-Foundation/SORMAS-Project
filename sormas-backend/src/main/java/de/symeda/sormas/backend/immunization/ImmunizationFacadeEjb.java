@@ -309,8 +309,16 @@ public class ImmunizationFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._IMMUNIZATION_DELETE)
-	public void delete(List<String> uuids, DeletionDetails deletionDetails) {
-		deleteImmunizations(uuids, deletionDetails);
+	public List<String> delete(List<String> uuids, DeletionDetails deletionDetails) {
+		List<String> deletedImmunizationUuids = new ArrayList<>();
+		List<Immunization> immunizationsToBeDeleted = service.getByUuids(uuids);
+		if (immunizationsToBeDeleted != null) {
+			immunizationsToBeDeleted.forEach(immunizationToBeDeleted -> {
+				service.delete(immunizationToBeDeleted, deletionDetails);
+				deletedImmunizationUuids.add(immunizationToBeDeleted.getUuid());
+			});
+		}
+		return deletedImmunizationUuids;
 	}
 
 	@Override
@@ -481,19 +489,6 @@ public class ImmunizationFacadeEjb
 		List<ImmunizationIndexDto> immunizationIndexList = getIndexList(immunizationCriteria, offset, size, sortProperties);
 		long totalElementCount = count(immunizationCriteria);
 		return new Page<>(immunizationIndexList, offset, size, totalElementCount);
-	}
-
-	@RightsAllowed(UserRight._IMMUNIZATION_DELETE)
-	public List<String> deleteImmunizations(List<String> immunizationUuids, DeletionDetails deletionDetails) {
-		List<String> deletedImmunizationUuids = new ArrayList<>();
-		List<Immunization> immunizationsToBeDeleted = service.getByUuids(immunizationUuids);
-		if (immunizationsToBeDeleted != null) {
-			immunizationsToBeDeleted.forEach(immunizationToBeDeleted -> {
-				service.delete(immunizationToBeDeleted, deletionDetails);
-				deletedImmunizationUuids.add(immunizationToBeDeleted.getUuid());
-			});
-		}
-		return deletedImmunizationUuids;
 	}
 
 	@Override

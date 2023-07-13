@@ -342,8 +342,22 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 	@Override
 	@RightsAllowed(UserRight._EVENT_DELETE)
-	public void delete(List<String> uuids, DeletionDetails deletionDetails) {
-		deleteEvents(uuids, deletionDetails);
+	public List<String> delete(List<String> uuids, DeletionDetails deletionDetails) {
+		List<String> deletedEventUuids = new ArrayList<>();
+		List<Event> eventsToBeDeleted = service.getByUuids(uuids);
+		if (eventsToBeDeleted != null) {
+			eventsToBeDeleted.forEach(eventToBeDeleted -> {
+				if (!eventToBeDeleted.isDeleted()) {
+					try {
+						deleteEvent(eventToBeDeleted, deletionDetails);
+						deletedEventUuids.add(eventToBeDeleted.getUuid());
+					} catch (ExternalSurveillanceToolRuntimeException | SormasToSormasRuntimeException | AccessDeniedException e) {
+						logger.error("The event with uuid:" + eventToBeDeleted.getUuid() + "could not be deleted");
+					}
+				}
+			});
+		}
+		return deletedEventUuids;
 	}
 
 	@Override
@@ -369,26 +383,6 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 			});
 		}
 		return restoredEventsUuids;
-	}
-
-	@RightsAllowed(UserRight._EVENT_DELETE)
-	public List<String> deleteEvents(List<String> eventUuids, DeletionDetails deletionDetails) {
-
-		List<String> deletedEventUuids = new ArrayList<>();
-		List<Event> eventsToBeDeleted = service.getByUuids(eventUuids);
-		if (eventsToBeDeleted != null) {
-			eventsToBeDeleted.forEach(eventToBeDeleted -> {
-				if (!eventToBeDeleted.isDeleted()) {
-					try {
-						deleteEvent(eventToBeDeleted, deletionDetails);
-						deletedEventUuids.add(eventToBeDeleted.getUuid());
-					} catch (ExternalSurveillanceToolRuntimeException | SormasToSormasRuntimeException | AccessDeniedException e) {
-						logger.error("The event with uuid:" + eventToBeDeleted.getUuid() + "could not be deleted");
-					}
-				}
-			});
-		}
-		return deletedEventUuids;
 	}
 
 	@RightsAllowed({

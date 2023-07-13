@@ -8,7 +8,7 @@ public interface DeletableFacade {
 
 	void delete(String uuid, DeletionDetails deletionDetails);
 
-	void delete(List<String> uuids, DeletionDetails deletionDetails);
+    List<String> delete(List<String> uuids, DeletionDetails deletionDetails);
 
 	void restore(String uuid);
 

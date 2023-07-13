@@ -557,8 +557,22 @@ public class ContactFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._CONTACT_DELETE)
-	public void delete(List<String> uuids, DeletionDetails deletionDetails) {
-		deleteContacts(uuids, deletionDetails);
+	public List<String> delete(List<String> uuids, DeletionDetails deletionDetails) {
+		List<String> deletedContactUuids = new ArrayList<>();
+		List<Contact> contactsToBeDeleted = service.getByUuids(uuids);
+		if (contactsToBeDeleted != null) {
+			contactsToBeDeleted.forEach(contactToBeDeleted -> {
+				if (!contactToBeDeleted.isDeleted()) {
+					try {
+						deleteContact(contactToBeDeleted, deletionDetails);
+						deletedContactUuids.add(contactToBeDeleted.getUuid());
+					} catch (AccessDeniedException e) {
+						logger.error("The contact with uuid {} could not be deleted", contactToBeDeleted.getUuid(), e);
+					}
+				}
+			});
+		}
+		return deletedContactUuids;
 	}
 
 	@Override
@@ -603,25 +617,6 @@ public class ContactFacadeEjb
 		if (contact.getCaze() != null) {
 			caseFacade.onCaseChanged(caseFacade.toDto(contact.getCaze()), contact.getCaze());
 		}
-	}
-
-	@RightsAllowed(UserRight._CONTACT_DELETE)
-	public List<String> deleteContacts(List<String> contactUuids, DeletionDetails deletionDetails) {
-		List<String> deletedContactUuids = new ArrayList<>();
-		List<Contact> contactsToBeDeleted = service.getByUuids(contactUuids);
-		if (contactsToBeDeleted != null) {
-			contactsToBeDeleted.forEach(contactToBeDeleted -> {
-				if (!contactToBeDeleted.isDeleted()) {
-					try {
-						deleteContact(contactToBeDeleted, deletionDetails);
-						deletedContactUuids.add(contactToBeDeleted.getUuid());
-					} catch (AccessDeniedException e) {
-						logger.error("The contact with uuid {} could not be deleted", contactToBeDeleted.getUuid(), e);
-					}
-				}
-			});
-		}
-		return deletedContactUuids;
 	}
 
 	@Override

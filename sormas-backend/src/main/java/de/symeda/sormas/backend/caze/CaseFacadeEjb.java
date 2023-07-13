@@ -2614,8 +2614,22 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	@RightsAllowed(UserRight._CASE_DELETE)
-	public void delete(List<String> uuids, DeletionDetails deletionDetails) {
-		deleteCases(uuids, deletionDetails);
+	public List<String> delete(List<String> uuids, DeletionDetails deletionDetails) {
+		List<String> deletedCaseUuids = new ArrayList<>();
+		List<Case> casesToBeDeleted = service.getByUuids(uuids);
+		if (casesToBeDeleted != null) {
+			casesToBeDeleted.forEach(caseToBeDeleted -> {
+				if (!caseToBeDeleted.isDeleted()) {
+					try {
+						deleteCase(caseToBeDeleted, deletionDetails);
+						deletedCaseUuids.add(caseToBeDeleted.getUuid());
+					} catch (ExternalSurveillanceToolRuntimeException | SormasToSormasRuntimeException | AccessDeniedException e) {
+						logger.error("The case with uuid {} could not be deleted", caseToBeDeleted.getUuid(), e);
+					}
+				}
+			});
+		}
+		return deletedCaseUuids;
 	}
 
 	@Override
@@ -2668,27 +2682,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 
 		service.delete(caze, deletionDetails);
-	}
-
-	@RightsAllowed(UserRight._CASE_DELETE)
-	@Override
-	public List<String> deleteCases(List<String> caseUuids, DeletionDetails deletionDetails) {
-
-		List<String> deletedCaseUuids = new ArrayList<>();
-		List<Case> casesToBeDeleted = service.getByUuids(caseUuids);
-		if (casesToBeDeleted != null) {
-			casesToBeDeleted.forEach(caseToBeDeleted -> {
-				if (!caseToBeDeleted.isDeleted()) {
-					try {
-						deleteCase(caseToBeDeleted, deletionDetails);
-						deletedCaseUuids.add(caseToBeDeleted.getUuid());
-					} catch (ExternalSurveillanceToolRuntimeException | SormasToSormasRuntimeException | AccessDeniedException e) {
-						logger.error("The case with uuid {} could not be deleted", caseToBeDeleted.getUuid(), e);
-					}
-				}
-			});
-		}
-		return deletedCaseUuids;
 	}
 
 	@Override
