@@ -44,6 +44,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Vaccination;
@@ -71,6 +72,21 @@ public class CreateNewVaccinationSteps implements En {
           fillVaccinationDate(vaccination.getVaccinationDate(), Locale.GERMAN);
           selectVaccineName(vaccination.getVaccineName());
           selectVaccineManufacturer(vaccination.getVaccineManufacturer());
+          fillVaccineType(vaccination.getVaccineType());
+          selectVaccinationInfoSource(vaccination.getVaccinationInfoSource());
+          fillVaccineDose(vaccination.getVaccineDose());
+          fillInn(vaccination.getInn());
+          fillUniiCode(vaccination.getUniiCode());
+          fillBatchNumber(vaccination.getBatchNumber());
+          fillAtcCode(vaccination.getAtcCode());
+        });
+
+    When(
+        "I fill new vaccination data in new Vaccination form in Survnet for DE",
+        () -> {
+          vaccination = vaccinationService.buildGeneratedVaccinationSurvnetDE();
+          fillVaccinationDate(vaccination.getVaccinationDate(), Locale.GERMAN);
+          selectVaccineName(vaccination.getVaccineName());
           fillVaccineType(vaccination.getVaccineType());
           selectVaccinationInfoSource(vaccination.getVaccinationInfoSource());
           fillVaccineDose(vaccination.getVaccineDose());
