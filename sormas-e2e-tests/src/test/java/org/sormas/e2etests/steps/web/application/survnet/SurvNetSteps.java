@@ -4,18 +4,8 @@ import static org.sormas.e2etests.helpers.SchemaValidator.XMLSchemaValidator.val
 import static org.sormas.e2etests.helpers.comparison.XMLComparison.compareXMLFiles;
 import static org.sormas.e2etests.helpers.comparison.XMLComparison.extractDiffNodes;
 import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_VERSION_LINK;
-import static org.sormas.e2etests.steps.web.application.cases.SymptomsTabSteps.symptoms;
-
-import static org.sormas.e2etests.helpers.SchemaValidator.XMLSchemaValidator.validateXMLSchema;
-import static org.sormas.e2etests.helpers.comparison.XMLComparison.compareXMLFiles;
-import static org.sormas.e2etests.helpers.comparison.XMLComparison.extractDiffNodes;
-import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_VERSION_LINK;
-
-import static org.sormas.e2etests.helpers.SchemaValidator.XMLSchemaValidator.validateXMLSchema;
-import static org.sormas.e2etests.helpers.comparison.XMLComparison.compareXMLFiles;
-import static org.sormas.e2etests.helpers.comparison.XMLComparison.extractDiffNodes;
-import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_VERSION_LINK;
 import static org.sormas.e2etests.steps.web.application.cases.EditCaseSteps.externalUUID;
+import static org.sormas.e2etests.steps.web.application.cases.SymptomsTabSteps.symptoms;
 import static org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps.vaccination;
 
 import cucumber.api.java8.En;
@@ -59,33 +49,31 @@ public class SurvNetSteps implements En {
 
           switch (typeOfDate) {
             case "date of report":
-                LocalDate dateOfReport =
-                        getDateValueFromSpecificFieldByName(singleXmlFile, "ReportingDate");
-                softly.assertEquals(dateOfReport, expectedDate, "Date of report is incorrect!");
-                softly.assertAll();
+              LocalDate dateOfReport = getReportingDate(singleXmlFile, 0);
+              softly.assertEquals(dateOfReport, expectedDate, "Date of report is incorrect!");
+              softly.assertAll();
               break;
             case "change at date":
-                LocalDate changeAtDate =
-                        getDateValueFromSpecificFieldByName(singleXmlFile, "ChangedAt");
-                softly.assertEquals(changeAtDate, expectedDate, "Change at date is incorrect!");
-                softly.assertAll();
+              LocalDate changeAtDate = getChangedAt(singleXmlFile, 0);
+              softly.assertEquals(changeAtDate, expectedDate, "Change at date is incorrect!");
+              softly.assertAll();
               break;
             case "created at date":
-                LocalDate createdAtDate =
-                        getDateValueFromSpecificFieldByName(singleXmlFile, "CreatedAt");
-                softly.assertEquals(createdAtDate, expectedDate, "Created at date is incorrect!");
-                softly.assertAll();
+              LocalDate createdAt = getCreatedAt(singleXmlFile);
+              softly.assertEquals(createdAt, expectedDate, "Created at date is incorrect!");
+              softly.assertAll();
               break;
             case "tracked at date":
-                LocalDate trackedAtDate =
-                        getDateValueFromSpecificFieldByName(singleXmlFile, "TrackedAt");
-                softly.assertEquals(trackedAtDate, expectedDate, "Tracked at date is incorrect!");
-                softly.assertAll();
+              LocalDate trackedAt = getTrackedAt(singleXmlFile, 0);
+              softly.assertEquals(trackedAt, expectedDate, "Tracked at date is incorrect!");
+              softly.assertAll();
               break;
             case "vaccination date":
               LocalDate vaccinationDate =
-                  getDateValueFromSpecificFieldByName(singleXmlFile, "VaccinationDate");
-              softly.assertEquals(vaccinationDate, expectedDate, "Vaccination date is incorrect!");
+                      getDateValueFromSpecificChildrenFieldByName(singleXmlFile, "VaccinationDate");
+              LocalDate expectedVaccinationDate = vaccination.getVaccinationDate();
+              softly.assertEquals(
+                  vaccinationDate, expectedVaccinationDate, "Vaccination date is incorrect!");
               softly.assertAll();
               break;
           }
@@ -755,7 +743,7 @@ public class SurvNetSteps implements En {
     return value;
   }
 
-  private LocalDate getDateValueFromSpecificFieldByName(Document xmlFile, String name) {
+  private LocalDate getDateValueFromSpecificChildrenFieldByName(Document xmlFile, String name) {
     Element rootElement = xmlFile.getRootElement();
     Namespace ns = rootElement.getNamespace();
     String value = null;
