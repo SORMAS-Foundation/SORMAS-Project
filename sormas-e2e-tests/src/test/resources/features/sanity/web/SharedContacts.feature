@@ -342,7 +342,7 @@ Feature: Sharing contacts between environments tests
     And I check if handover card contains "Geteilt von: Automation Admin" information
     And I check if handover card contains "shared with automated test" information
 
-  @tmsLink=SOR-982 @env_s2s_1
+  @tmsLink=SOR-4483 @env_s2s_1
   Scenario: Delete a contact shared in source system but not accepted in target system
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
     And API: I check that POST call status code is 200

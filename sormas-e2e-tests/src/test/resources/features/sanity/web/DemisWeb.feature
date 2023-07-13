@@ -485,3 +485,50 @@ Scenario: Create and send laboratory request via Demis
     And I search the case by last created person via Demis message
     Then I click on the first Case ID from Case Directory
     And I check that the value selected from Disease variant combobox is "B.1.1.7 - 501Y.V1 (Alpha)" on Edit Case page
+
+  @tmsLink=SORQA-979 @env_d2s @LoginKeycloak
+  Scenario: Demis - Process a Lab message that has multiple samples
+    Given API : Login to DEMIS server
+    When I create and send Laboratory Notification with two samples
+    And I log in as a Admin User
+    And I click on the Messages button from navbar
+    And I click on fetch messages button
+    Then I filter by last created person via API in Messages Directory
+    And I click on Verarbeiten button in Messages Directory
+    And I pick a new person in Pick or create person popup during case creation for DE
+    And I choose create new case in Pick or create entry form for DE
+    And I check that create new case form with pathogen detection reporting process is displayed for DE
+    And I fill only mandatory fields to convert laboratory message into a case for DE
+    When I click on save button in the case popup
+    Then I check that multiple samples window pops up
+    And I confirm multiple samples window
+    And I check that new sample form with pathogen detection reporting process is displayed
+    And I click on save sample button
+    And I click on save sample button
+    And I click on save sample button
+    And I click on YES button in Update case disease variant popup window
+    And I pick a new sample in Pick or create sample popup during processing case
+    When I check that new sample form with pathogen detection reporting process is displayed
+    And I click on save sample button
+    And I click on save sample button
+    And I click on YES button in Update case disease variant popup window
+    And I click on the Cases button from navbar
+    And I search the case by last created person via Demis message
+    Then I click on the first Case ID from Case Directory
+    And I check that the number of added samples on the Edit case page is 2
+    And I click on edit sample icon of the 1 displayed sample on Edit Case page
+    And I check that lab sample id match "first" specimen id from Demis message on Edit Sample page
+    And I validate the existence of "2" pathogen tests
+    And I back to the case from Edit Sample page DE
+    When I click on edit sample icon of the 2 displayed sample on Edit Case page
+    Then I check that lab sample id match "second" specimen id from Demis message on Edit Sample page
+    And I validate the existence of "1" pathogen tests
+    And I back to the case from Edit Sample page DE
+    And I check if report side component in Edit Case has today date
+    When I click on edit Report on Edit Case page
+    And I click on discard button
+    And I click on Display associated external messages button from Reports side component
+    And I check if external message window appears and close it
+    Then I click on the Messages button from navbar
+    And I filter by last created person via API in Messages Directory
+    And I verify that status for result 1 is set to processed in Message Directory page

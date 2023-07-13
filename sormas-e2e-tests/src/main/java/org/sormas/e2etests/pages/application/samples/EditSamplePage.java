@@ -81,4 +81,5 @@ public class EditSamplePage {
       By.cssSelector("[class='popupContent'] [id='pcrTestSpecification'] input");
   public static final By SEE_SAMPLES_FOR_THIS_PERSON_BUTTON_DE =
       By.id("Proben f\u00FCr diese Person ansehen");
+  public static final By BACK_TO_CASE_DE_BUTTON = By.xpath("//div[@class='v-link v-widget v-caption v-link-v-caption']//span[contains(text(), 'Fall')]");
 }
