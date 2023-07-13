@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -52,6 +53,7 @@ import javax.validation.ValidationException;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
@@ -66,6 +68,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskContextIndexCriteria;
@@ -839,10 +842,19 @@ public class UserFacadeEjb implements UserFacade {
 
 		caseQuery.where(cb.equal(surveillanceOfficerJoin.get(AbstractDomainObject.UUID), userUuid));
 		List<Case> cases = em.createQuery(caseQuery).getResultList();
+
+		List<User> possibleUsersBasedOnCasesResponsibleDistrict = getPossibleUsersBasedOnCasesResponsibleDistrict(cases);
+		List<User> possibleUsersBasedOnCasesDistrict = getPossibleUsersBasedOnCasesDistrict(cases);
+		Set<User> possibleUsersBasedOnCasesFacility = getPossibleUsersBasedOnCasesFacility(cases);
+
 		cases.forEach(c -> {
 			c.setSurveillanceOfficer(null);
-			caseFacade.setCaseResponsible(c);
-			caseService.ensurePersisted(c);
+			caseFacade.setCaseResponsible(
+				c,
+				true,
+				possibleUsersBasedOnCasesResponsibleDistrict,
+				possibleUsersBasedOnCasesDistrict,
+				possibleUsersBasedOnCasesFacility);
 			caseFacade.reassignTasksOfCase(c, true);
 		});
 
@@ -856,6 +868,67 @@ public class UserFacadeEjb implements UserFacade {
 			c.setContactOfficer(null);
 			contactService.ensurePersisted(c);
 		});
+	}
+
+	private List<User> getPossibleUsersBasedOnCasesResponsibleDistrict(List<Case> cases) {
+		List<String> responsibleDistrictsUuidsAmongCases = cases.stream()
+			.map(Case::getResponsibleDistrict)
+			.collect(Collectors.toSet())
+			.stream()
+			.filter(Objects::nonNull)
+			.collect(Collectors.toSet())
+			.stream()
+			.map(District::getUuid)
+			.collect(Collectors.toList());
+
+		List<User> possibleUserForReplacement = getUsersFromCasesByDistricts(responsibleDistrictsUuidsAmongCases);
+
+		return possibleUserForReplacement;
+	}
+
+	private List<User> getPossibleUsersBasedOnCasesDistrict(List<Case> cases) {
+		List<String> districtsUuidsAmongCases = cases.stream()
+			.map(Case::getDistrict)
+			.collect(Collectors.toSet())
+			.stream()
+			.filter(Objects::nonNull)
+			.collect(Collectors.toSet())
+			.stream()
+			.map(District::getUuid)
+			.collect(Collectors.toList());
+
+		List<User> possibleUserForReplacement = getUsersFromCasesByDistricts(districtsUuidsAmongCases);
+
+		return possibleUserForReplacement;
+	}
+
+	@NotNull
+	private List<User> getUsersFromCasesByDistricts(List<String> districtsUuidsAmongCases) {
+		List<User> possibleUserForReplacement = userService
+			.getUserReferencesByJurisdictions(
+				null,
+				districtsUuidsAmongCases,
+				null,
+				Collections.singletonList(JurisdictionLevel.DISTRICT),
+				Arrays.asList(UserRight.CASE_RESPONSIBLE))
+			.stream()
+			.map(userReference -> userService.getByUuid(userReference.getUuid()))
+			.collect(Collectors.toList());
+		return possibleUserForReplacement;
+	}
+
+	private Set<User> getPossibleUsersBasedOnCasesFacility(List<Case> cases) {
+		Set<Facility> possibleFacilities = cases.stream().map(Case::getHealthFacility).collect(Collectors.toSet());
+
+		Set<User> possibleUsersForAvailableFacilities = new HashSet<>();
+
+		possibleFacilities.forEach(facility -> {
+			if (!facility.getUuid().equals(FacilityDto.NONE_FACILITY_UUID) && !facility.getUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
+				possibleUsersForAvailableFacilities.addAll(userService.getFacilityUsersOfHospital(facility));
+			}
+		});
+
+		return possibleUsersForAvailableFacilities;
 	}
 
 	@Override
