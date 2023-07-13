@@ -89,7 +89,7 @@ Feature: Survnet tests
     And I check if external person uuid for all 2 cases in SORMAS generated bult XML file is correct
     And I check if "date of report" for all 2 cases in SORMAS generated bulk XML file is correct
 
-  @tmsLink=SORQA-1029
+  @tmsLink=SORQA-1028
   Scenario: Symptoms in case when sending from SORMAS to Meldesoftware with YES checkbox option for Survnet DE
   Given I log in as a Survnet
     When I click on the Cases button from navbar
@@ -125,7 +125,7 @@ Feature: Survnet tests
     And I check if "Other Non Hemorrhagic Symptoms" SYMPTOM in SORMAS generated single XML file is correct
     And I check if "Onset Of Disease" SYMPTOM in SORMAS generated single XML file is correct
 
-  @tmsLink=SORQA-1029
+  @tmsLink=SORQA-1028
   Scenario: Symptoms in case when sending from SORMAS to Meldesoftware with NO checkbox option for Survnet DE
     Given I log in as a Survnet
     When I click on the Cases button from navbar
@@ -160,7 +160,7 @@ Feature: Survnet tests
     And I check if "Loss OfTaste" SYMPTOM in SORMAS generated single XML file is correct
     And I check if "Other Non Hemorrhagic Symptoms" SYMPTOM in SORMAS generated single XML file is correct
 
-  @tmsLink=SORQA-1029
+  @tmsLink=SORQA-1028
   Scenario: Symptoms in case when sending from SORMAS to Meldesoftware with UNKNOWN checkbox option for Survnet DE
     Given I log in as a Survnet
     When I click on the Cases button from navbar
