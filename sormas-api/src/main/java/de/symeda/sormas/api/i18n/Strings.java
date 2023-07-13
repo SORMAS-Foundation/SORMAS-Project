@@ -804,12 +804,12 @@ public interface Strings {
 	String infoAutomaticDeletionTooltipYears = "infoAutomaticDeletionTooltipYears";
 	String infoBAGExport = "infoBAGExport";
 	String infoBasicExport = "infoBasicExport";
-	String infoBulkProcessFinishedWithSkipsOutsideJurisdiction = "infoBulkProcessFinishedWithSkipsOutsideJurisdiction";
 	String infoBulkProcess = "infoBulkProcess";
 	String infoBulkProcessCancelled = "infoBulkProcessCancelled";
 	String infoBulkProcessFinished = "infoBulkProcessFinished";
 	String infoBulkProcessFinishedWithIneligibleItems = "infoBulkProcessFinishedWithIneligibleItems";
 	String infoBulkProcessFinishedWithSkips = "infoBulkProcessFinishedWithSkips";
+	String infoBulkProcessFinishedWithSkipsOutsideJurisdiction = "infoBulkProcessFinishedWithSkipsOutsideJurisdiction";
 	String infoBulkProcessNoEligibleEntries = "infoBulkProcessNoEligibleEntries";
 	String infoBulkUnresponsiveWindowHint = "infoBulkUnresponsiveWindowHint";
 	String infoCalculateCompleteness = "infoCalculateCompleteness";
