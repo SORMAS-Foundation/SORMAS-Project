@@ -36,7 +36,7 @@
 		<swagger.version>2.2.15</swagger.version>
 		<bouncycastle.version>1.70</bouncycastle.version>
 		<grpc.version>1.56.1</grpc.version>
-		<keycloak.version>21.0.1</keycloak.version>
+		<keycloak.version>22.0.0</keycloak.version>
 		<netty.version>4.1.94.Final</netty.version>
 		<resteasy.version>5.0.7.Final</resteasy.version>
 		<kotlin-stdlib.version>1.8.22</kotlin-stdlib.version>
