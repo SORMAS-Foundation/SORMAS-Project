@@ -156,9 +156,6 @@ public class SurvNetSteps implements En {
                   symptom + " checkbox value is incorrect!");
               softly.assertAll();
               break;
-            case "Chills Sweats":
-              System.out.print("Not mapped to xml !!!");
-              break;
             case "Acute Respiratory Distress Syndrome":
               String acuteRespiratoryDistressSyndromeOptionFromXml =
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0394");
@@ -241,9 +238,6 @@ public class SurvNetSteps implements En {
                   expectedValue,
                   symptom + " checkbox value is incorrect!");
               softly.assertAll();
-              break;
-            case "Oxygen Saturation Lower94":
-              System.out.print("Not mapped to xml !!!");
               break;
             case "Rapid Breathing":
               String rapidBreathingOptionFromXml =

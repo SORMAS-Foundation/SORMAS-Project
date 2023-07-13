@@ -178,14 +178,12 @@ Feature: Survnet tests
     And I check if "Headache" SYMPTOM in SORMAS generated single XML file is correct
     And I check if "Muscle Pain" SYMPTOM in SORMAS generated single XML file is correct
     And I check if "Feeling Ill" SYMPTOM in SORMAS generated single XML file is correct
-    And I check if "Chills Sweats" SYMPTOM in SORMAS generated single XML file is correct
     And I check if "Acute Respiratory Distress Syndrome" SYMPTOM in SORMAS generated single XML file is correct
     And I check if "Sore Throat" SYMPTOM in SORMAS generated single XML file is correct
     And I check if "Cough" SYMPTOM in SORMAS generated single XML file is correct
     And I check if "Runny Nose" SYMPTOM in SORMAS generated single XML file is correct
     And I check if "Pneumonia Clinical Or Radiologic" SYMPTOM in SORMAS generated single XML file is correct
     And I check if "Respiratory Disease Ventilation" SYMPTOM in SORMAS generated single XML file is correct
-    And I check if "Oxygen Saturation Lower94" SYMPTOM in SORMAS generated single XML file is correct
     And I check if "Rapid Breathing" SYMPTOM in SORMAS generated single XML file is correct
     And I check if "Difficulty Breathing" SYMPTOM in SORMAS generated single XML file is correct
     And I check if "Fast Heart Rate" SYMPTOM in SORMAS generated single XML file is correct
