@@ -12722,8 +12722,20 @@
         }, {
           "type" : "object",
           "properties" : {
+            "classificationCriteria" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/components/schemas/ClassificationCriteriaDto"
+              }
+            },
             "criteriaName" : {
               "type" : "string"
+            },
+            "subCriteria" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/components/schemas/ClassificationCriteriaDto"
+              }
             }
           }
         } ]
@@ -12827,12 +12839,24 @@
         }, {
           "type" : "object",
           "properties" : {
+            "classificationCriteria" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/components/schemas/ClassificationCriteriaDto"
+              }
+            },
             "criteriaName" : {
               "type" : "string"
             },
             "requiredAmount" : {
               "type" : "integer",
               "format" : "int32"
+            },
+            "subCriteria" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/components/schemas/ClassificationCriteriaDto"
+              }
             }
           }
         } ]
