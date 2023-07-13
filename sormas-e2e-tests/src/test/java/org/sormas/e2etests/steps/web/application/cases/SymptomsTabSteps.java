@@ -21,6 +21,7 @@ package org.sormas.e2etests.steps.web.application.cases;
 import static org.sormas.e2etests.enums.YesNoUnknownOptions.NO;
 import static org.sormas.e2etests.enums.YesNoUnknownOptions.UNKNOWN;
 import static org.sormas.e2etests.enums.YesNoUnknownOptions.YES;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CATEGORY_SAVED_POPUP;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.cases.FollowUpTabPage.ABDOMINAL_PAIN_OPTIONS;
@@ -204,6 +205,35 @@ public class SymptomsTabSteps implements En {
           }
         });
 
+    When(
+        "I change all symptoms fields to {string} option field and save for Survnet DE",
+        (String option) -> {
+          switch (option) {
+            case "NO":
+              symptoms = symptomService.buildEditGeneratedSymptomsSurvnetWithNoOptionsDE();
+              FillSymptomsDataSurvnet(symptoms);
+              webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+              break;
+            case "UNKNOWN":
+              symptoms = symptomService.buildEditGeneratedSymptomsSurvnetWithUnknownOptionsDE();
+              FillSymptomsDataSurvnet(symptoms);
+              webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+              break;
+            case "YES":
+              symptoms = symptomService.buildEditGeneratedSymptomsSurvnetDE();
+              FillSymptomsDataSurvnet(symptoms);
+              fillOtherSymptoms(symptoms.getSymptomsComments());
+              selectFistSymptom(symptoms.getFirstSymptom());
+              fillOtherSymptoms(symptoms.getSymptomsComments());
+              fillSymptomsComments(symptoms.getSymptomsComments());
+              fillDateOfSymptomDE(symptoms.getDateOfSymptom(), Locale.GERMAN);
+              webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(CATEGORY_SAVED_POPUP);
+              webDriverHelpers.clickOnWebElementBySelector(CATEGORY_SAVED_POPUP);
+              break;
+          }
+        });
+
     // TODO refactor this to be provide the checkbox and select any option not only yes
     And(
         "I check Yes Option for Soar Throat on Symptoms tab page",
@@ -367,6 +397,32 @@ public class SymptomsTabSteps implements En {
     selectConfusedDisoriented(symptoms.getConfusedDisoriented());
     selectSeizures(symptoms.getSeizures());
     selectOtherComplications(symptoms.getOtherComplications());
+  }
+
+  private void FillSymptomsDataSurvnet(Symptoms symptoms) {
+    selectMaximumBodyTemperatureInCCombobox(symptoms.getMaximumBodyTemperatureInC());
+    selectSourceOfBodyTemperature(symptoms.getSourceOfBodyTemperature());
+    selectFever(symptoms.getFever());
+    selectShivering(symptoms.getShivering());
+    selectHeadache(symptoms.getHeadache());
+    selectMusclePain(symptoms.getMusclePain());
+    selectFeelingIll(symptoms.getFeelingIll());
+    selectChillsOrSweats(symptoms.getChillsOrSweats());
+    selectAcuteRespiratoryDistressSyndrome(symptoms.getAcuteRespiratoryDistressSyndrome());
+    selectSoreThroat(symptoms.getSoreThroat());
+    selectCough(symptoms.getCough());
+    selectRunnyNose(symptoms.getRunnyNose());
+    selectPneumoniaClinicalOrRadiologic(symptoms.getPneumoniaClinicalOrRadiologic());
+    selectRespiratoryDiseaseVentilation(symptoms.getRespiratoryDiseaseVentilation());
+    selectOxygenSaturationLower94(symptoms.getOxygenSaturationLower94());
+    selectRapidBreathing(symptoms.getRapidBreathing());
+    selectDifficultyBreathing(symptoms.getDifficultyBreathing());
+    selectFastHeartRate(symptoms.getFastHeartRate());
+    selectDiarrhea(symptoms.getDiarrhea());
+    selectNausea(symptoms.getNausea());
+    selectLossOfSmell(symptoms.getLossOfSmell());
+    selectLossOfTaste(symptoms.getLossOfTaste());
+    selectOtherClinicalSymptoms(symptoms.getOtherNonHemorrhagicSymptoms());
   }
 
   private Symptoms collectSymptomsData() {
