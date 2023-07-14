@@ -56,6 +56,7 @@ import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
+import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
@@ -88,6 +89,7 @@ import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
+import de.symeda.sormas.backend.share.ExternalShareInfoCountAndLatestDate;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
@@ -310,8 +312,7 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 
 	public void setArchiveInExternalSurveillanceToolForEntities(List<String> entityUuids, boolean archived) {
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()) {
-			List<String> sharedEventUuids = externalShareInfoService.getSharedEventUuidsWithoutDeletedStatus(entityUuids);
-
+			List<String> sharedEventUuids = getSharedEventUuids(entityUuids);
 			if (!sharedEventUuids.isEmpty()) {
 				try {
 					externalSurveillanceToolGatewayFacade.sendEventsInternal(sharedEventUuids, archived);
@@ -320,6 +321,26 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 				}
 			}
 		}
+	}
+
+	public List<String> getSharedEventUuids(List<String> entityUuids) {
+		List<Long> eventIds = getEventIds(entityUuids);
+		List<String> sharedEventUuids = new ArrayList<>();
+		List<ExternalShareInfoCountAndLatestDate> eventShareInfos =
+			externalShareInfoService.getShareCountAndLatestDate(eventIds, ExternalShareInfo.EVENT);
+		eventShareInfos.stream().forEach(shareInfo -> {
+			if (shareInfo.getLatestStatus() != ExternalShareStatus.DELETED) {
+				sharedEventUuids.add(shareInfo.getAssociatedObjectUuid());
+			}
+		});
+
+		return sharedEventUuids;
+	}
+
+	public List<Long> getEventIds(List<String> entityUuids) {
+		List<Long> eventIds = new ArrayList<>();
+		entityUuids.stream().forEach(uuid -> eventIds.add(this.getByUuid(uuid).getId()));
+		return eventIds;
 	}
 
 	public void setArchiveInExternalSurveillanceToolForEntity(String eventUuid, boolean archived) {
