@@ -26,7 +26,7 @@ public enum VaccineNameValues {
   COMIRNATY("Comirnaty (COVID-19-mRNA Impfstoff)"),
   MRNA_BIVALENT_BA_1_BIONTECH_PFIZER("mRNA/bivalent BA.1 (BioNTech/Pfizer)"),
   MRNA_BIVALENT_BA_4_5_BIONTECH_PFIZER("mRNA/bivalent BA.4/5 (BioNTech/Pfizer)"),
-  COVID_19_Impfstoff_Moderna("COVID-19 Impfstoff Moderna (mRNA-Impfstoff)"),
+  COVID_19_IMPFSTOFF_MODERNA("COVID-19 Impfstoff Moderna (mRNA-Impfstoff)"),
   MRNA_BIVALENT_BA_1_MODERNA("mRNA/bivalent BA.1 (Moderna)"),
   MRNA_BIVALENT_BA_4_5_MODERNA("mRNA/bivalent BA.4/5 (Moderna)"),
   INAKTIVIERT("inaktiviert (Valneva)"),
