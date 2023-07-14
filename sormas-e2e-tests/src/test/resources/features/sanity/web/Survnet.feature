@@ -243,3 +243,4 @@ Feature: Survnet tests
     And I check if "date of report" in SORMAS generated XML file is correct
     And I check if "vaccination date" in SORMAS generated XML file is correct
     And I check if Vaccine name in SORMAS generated XML file is correct
+
