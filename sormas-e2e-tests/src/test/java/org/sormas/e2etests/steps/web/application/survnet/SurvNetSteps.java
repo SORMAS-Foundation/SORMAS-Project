@@ -131,7 +131,6 @@ public class SurvNetSteps implements En {
     And(
         "I check if \"([^\"]*)\" SYMPTOM in SORMAS generated single XML file is correct",
         (String symptom) -> {
-          // ToDO -consider to change all expecrted... to mor global expectedValue !!!
           String expectedValue = null;
           switch (symptom) {
             case "Fever":
@@ -139,7 +138,7 @@ public class SurvNetSteps implements En {
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0088");
               String feverOptionFromUI = symptoms.getFever();
 
-              if (feverOptionFromUI == "JA") expectedValue = "true";
+              if (feverOptionFromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -151,7 +150,7 @@ public class SurvNetSteps implements En {
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0101");
               String shiveringOptionFromUI = symptoms.getFever();
 
-              if (shiveringOptionFromUI == "JA") expectedValue = "true";
+              if (shiveringOptionFromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -163,7 +162,7 @@ public class SurvNetSteps implements En {
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0101");
               String headacheOptionFromUI = symptoms.getHeadache();
 
-              if (headacheOptionFromUI == "JA") expectedValue = "true";
+              if (headacheOptionFromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -177,7 +176,7 @@ public class SurvNetSteps implements En {
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0101");
               String musclePaineOptionFromUI = symptoms.getMusclePain();
 
-              if (musclePaineOptionFromUI == "JA") expectedValue = "true";
+              if (musclePaineOptionFromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -191,7 +190,7 @@ public class SurvNetSteps implements En {
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0101");
               String feelingIllOptionFromUI = symptoms.getFeelingIll();
 
-              if (feelingIllOptionFromUI == "JA") expectedValue = "true";
+              if (feelingIllOptionFromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -206,7 +205,7 @@ public class SurvNetSteps implements En {
               String acuteRespiratoryDistressSyndromeOptionFromUI =
                   symptoms.getAcuteRespiratoryDistressSyndrome();
 
-              if (acuteRespiratoryDistressSyndromeOptionFromUI == "JA") expectedValue = "true";
+              if (acuteRespiratoryDistressSyndromeOptionFromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -220,7 +219,7 @@ public class SurvNetSteps implements En {
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0103");
               String soreThroatOptionFromUI = symptoms.getSoreThroat();
 
-              if (soreThroatOptionFromUI == "JA") expectedValue = "true";
+              if (soreThroatOptionFromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -234,7 +233,7 @@ public class SurvNetSteps implements En {
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0130");
               String coughOptionFromUI = symptoms.getCough();
 
-              if (coughOptionFromUI == "JA") expectedValue = "true";
+              if (coughOptionFromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -246,7 +245,7 @@ public class SurvNetSteps implements En {
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0225");
               String runnyNoseOptionFromUI = symptoms.getRunnyNose();
 
-              if (runnyNoseOptionFromUI == "JA") expectedValue = "true";
+              if (runnyNoseOptionFromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -259,7 +258,7 @@ public class SurvNetSteps implements En {
               String pneumoniaClinicalOrRadiologicOptionFromUI =
                   symptoms.getPneumoniaClinicalOrRadiologic();
 
-              if (pneumoniaClinicalOrRadiologicOptionFromUI == "JA") expectedValue = "true";
+              if (pneumoniaClinicalOrRadiologicOptionFromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -274,7 +273,7 @@ public class SurvNetSteps implements En {
               String respiratoryDiseaseVentilationOptionFromUI =
                   symptoms.getRespiratoryDiseaseVentilation();
 
-              if (respiratoryDiseaseVentilationOptionFromUI == "JA") expectedValue = "true";
+              if (respiratoryDiseaseVentilationOptionFromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -288,7 +287,7 @@ public class SurvNetSteps implements En {
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0418");
               String rapidBreathingOptionFromUI = symptoms.getRapidBreathing();
 
-              if (rapidBreathingOptionFromUI == "JA") expectedValue = "true";
+              if (rapidBreathingOptionFromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -302,7 +301,7 @@ public class SurvNetSteps implements En {
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0064");
               String difficultyBreathingOptionFromUI = symptoms.getDifficultyBreathing();
 
-              if (difficultyBreathingOptionFromUI == "JA") expectedValue = "true";
+              if (difficultyBreathingOptionFromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -316,7 +315,7 @@ public class SurvNetSteps implements En {
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0245");
               String fastHeartRateOptionFromUI = symptoms.getFastHeartRate();
 
-              if (fastHeartRateOptionFromUI == "JA") expectedValue = "true";
+              if (fastHeartRateOptionFromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -330,7 +329,7 @@ public class SurvNetSteps implements En {
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0062");
               String diarrheaOptionFromUI = symptoms.getDiarrhea();
 
-              if (diarrheaOptionFromUI == "JA") expectedValue = "true";
+              if (diarrheaOptionFromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -342,7 +341,7 @@ public class SurvNetSteps implements En {
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0101");
               String nauseaOptionFromUI = symptoms.getNausea();
 
-              if (nauseaOptionFromUI == "JA") expectedValue = "true";
+              if (nauseaOptionFromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -354,7 +353,7 @@ public class SurvNetSteps implements En {
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0416");
               String lossOfSmellOptionfromUI = symptoms.getLossOfSmell();
 
-              if (lossOfSmellOptionfromUI == "JA") expectedValue = "true";
+              if (lossOfSmellOptionfromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -368,7 +367,7 @@ public class SurvNetSteps implements En {
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0417");
               String lossOfTasteOptionFromUI = symptoms.getLossOfTaste();
 
-              if (lossOfTasteOptionFromUI == "JA") expectedValue = "true";
+              if (lossOfTasteOptionFromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -383,7 +382,7 @@ public class SurvNetSteps implements En {
               String otherNonHemorrhagicSymptomsOptionFromUI =
                   symptoms.getOtherNonHemorrhagicSymptoms();
 
-              if (otherNonHemorrhagicSymptomsOptionFromUI == "JA") expectedValue = "true";
+              if (otherNonHemorrhagicSymptomsOptionFromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
