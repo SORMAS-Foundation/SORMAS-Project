@@ -6,7 +6,7 @@ import static org.sormas.e2etests.helpers.comparison.XMLComparison.extractDiffNo
 import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_VERSION_LINK;
 import static org.sormas.e2etests.steps.web.application.cases.EditCaseSteps.externalUUID;
 import static org.sormas.e2etests.steps.web.application.cases.SymptomsTabSteps.symptoms;
-import static org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps.vaccination;
+import static org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps.*;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
@@ -70,7 +70,7 @@ public class SurvNetSteps implements En {
               break;
             case "vaccination date":
               LocalDate vaccinationDate =
-                      getDateValueFromSpecificChildrenFieldByName(singleXmlFile, "VaccinationDate");
+                  getDateValueFromSpecificChildNodeFieldByName(singleXmlFile, "VaccinationDate");
               LocalDate expectedVaccinationDate = vaccination.getVaccinationDate();
               softly.assertEquals(
                   vaccinationDate, expectedVaccinationDate, "Vaccination date is incorrect!");
@@ -83,7 +83,8 @@ public class SurvNetSteps implements En {
         "I check if Vaccine name in SORMAS generated XML file is correct",
         () -> {
           String vaccineNamefromXml = getValueFromSpecificFieldByName(singleXmlFile, "Vaccine");
-          String expectedVaccineName = vaccination.getVaccineName();
+          String expectedVaccineName = randomVaccinationName;
+
           String vaccineName = null;
           switch (vaccineNamefromXml) {
             case "201":
@@ -743,7 +744,7 @@ public class SurvNetSteps implements En {
     return value;
   }
 
-  private LocalDate getDateValueFromSpecificChildrenFieldByName(Document xmlFile, String name) {
+  private LocalDate getDateValueFromSpecificChildNodeFieldByName(Document xmlFile, String name) {
     Element rootElement = xmlFile.getRootElement();
     Namespace ns = rootElement.getNamespace();
     String value = null;

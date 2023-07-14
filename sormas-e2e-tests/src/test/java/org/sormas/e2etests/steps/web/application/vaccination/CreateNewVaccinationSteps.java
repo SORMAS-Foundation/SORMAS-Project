@@ -44,7 +44,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Vaccination;
@@ -59,6 +58,7 @@ public class CreateNewVaccinationSteps implements En {
   public static Vaccination duplicatedVacinationDe;
   public static Vaccination collectedVaccination;
   public static final DateTimeFormatter formatterDE = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+  public static String randomVaccinationName;
 
   @Inject
   public CreateNewVaccinationSteps(
@@ -94,6 +94,7 @@ public class CreateNewVaccinationSteps implements En {
           fillUniiCode(vaccination.getUniiCode());
           fillBatchNumber(vaccination.getBatchNumber());
           fillAtcCode(vaccination.getAtcCode());
+          randomVaccinationName = vaccination.getVaccineName();
         });
     When(
         "I fill new duplicate vaccination data in new Vaccination form for DE without vaccination date and name",
