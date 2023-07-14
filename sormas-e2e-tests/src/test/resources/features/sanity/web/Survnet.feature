@@ -222,3 +222,16 @@ Feature: Survnet tests
     And I check if event external UUID in SORMAS generated XML file is correct
     And I check if "created at date" in SORMAS generated XML file is correct
     And I check if "change at date" in SORMAS generated XML file is correct
+
+  @tmsLink=SORQA-1029
+  Scenario: Pre-existing disease in case when sending from SORMAS to Meldesoftware
+    Given I log in as a Survnet
+    When I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with mandatory data only for Survnet DE
+    Then I change all pre-existing conditions to "YES" on Edit Case page
+    And I navigate to case tab
+    And I click on Send to reporting tool button on Edit Case page
+    And I collect case external UUID from Edit Case page
+    Then I wait 50 seconds for system reaction
+    And I open SORMAS generated XML file for single case message
