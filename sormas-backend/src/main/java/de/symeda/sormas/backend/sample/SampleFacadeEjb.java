@@ -765,6 +765,25 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	@RightsAllowed(UserRight._SAMPLE_DELETE)
+	public List<String> restore(List<String> uuids) {
+		List<String> restoredSampleUuids = new ArrayList<>();
+		List<Sample> samplesToBeRestored = sampleService.getByUuids(uuids);
+
+		if (samplesToBeRestored != null) {
+			samplesToBeRestored.forEach(sampleToBeRestored -> {
+				try {
+					restore(sampleToBeRestored.getUuid());
+					restoredSampleUuids.add(sampleToBeRestored.getUuid());
+				} catch (Exception e) {
+					logger.error("The sample with uuid:" + sampleToBeRestored.getUuid() + "could not be restored");
+				}
+			});
+		}
+		return restoredSampleUuids;
+	}
+
+	@Override
+	@RightsAllowed(UserRight._SAMPLE_DELETE)
 	public void restore(String sampleUuid) {
 		Sample sample = sampleService.getByUuid(sampleUuid);
 		sampleService.restore(sample);
@@ -772,12 +791,13 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	@RightsAllowed(UserRight._SAMPLE_DELETE)
-	public void deleteAllSamples(List<String> sampleUuids, DeletionDetails deletionDetails) {
+	public List<String> delete(List<String> sampleUuids, DeletionDetails deletionDetails) {
 		long startTime = DateHelper.startTime();
 
 		IterableHelper
 			.executeBatched(sampleUuids, DELETED_BATCH_SIZE, batchedSampleUuids -> sampleService.deleteAll(batchedSampleUuids, deletionDetails));
 		logger.debug("deleteAllSamples(sampleUuids) finished. samplesCount = {}, {}ms", sampleUuids.size(), DateHelper.durationMillies(startTime));
+		return sampleUuids;
 	}
 
 	@RightsAllowed(UserRight._SAMPLE_DELETE)

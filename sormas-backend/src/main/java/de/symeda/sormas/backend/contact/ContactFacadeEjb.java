@@ -557,8 +557,48 @@ public class ContactFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._CONTACT_DELETE)
+	public List<String> delete(List<String> uuids, DeletionDetails deletionDetails) {
+		List<String> deletedContactUuids = new ArrayList<>();
+		List<Contact> contactsToBeDeleted = service.getByUuids(uuids);
+		if (contactsToBeDeleted != null) {
+			contactsToBeDeleted.forEach(contactToBeDeleted -> {
+				if (!contactToBeDeleted.isDeleted()) {
+					try {
+						deleteContact(contactToBeDeleted, deletionDetails);
+						deletedContactUuids.add(contactToBeDeleted.getUuid());
+					} catch (AccessDeniedException e) {
+						logger.error("The contact with uuid {} could not be deleted", contactToBeDeleted.getUuid(), e);
+					}
+				}
+			});
+		}
+		return deletedContactUuids;
+	}
+
+	@Override
+	@RightsAllowed(UserRight._CONTACT_DELETE)
 	public void restore(String uuid) {
 		super.restore(uuid);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._CONTACT_DELETE)
+	public List<String> restore(List<String> uuids) {
+		List<String> restoredContactUuids = new ArrayList<>();
+		List<Contact> contactsToBeRestored = contactService.getByUuids(uuids);
+
+		if (contactsToBeRestored != null) {
+			contactsToBeRestored.forEach(contactToBeRestored -> {
+				try {
+					restore(contactToBeRestored.getUuid());
+					restoredContactUuids.add(contactToBeRestored.getUuid());
+				} catch (Exception e) {
+					logger.error("The contact with uuid:" + contactToBeRestored.getUuid() + "could not be restored");
+				}
+			});
+		}
+
+		return restoredContactUuids;
 	}
 
 	private void deleteContact(Contact contact, DeletionDetails deletionDetails) {
@@ -577,26 +617,6 @@ public class ContactFacadeEjb
 		if (contact.getCaze() != null) {
 			caseFacade.onCaseChanged(caseFacade.toDto(contact.getCaze()), contact.getCaze());
 		}
-	}
-
-	@RightsAllowed(UserRight._CONTACT_DELETE)
-	public List<String> deleteContacts(List<String> contactUuids, DeletionDetails deletionDetails) {
-		List<String> deletedContactUuids = new ArrayList<>();
-		List<Contact> contactsToBeDeleted = service.getByUuids(contactUuids);
-		if (contactsToBeDeleted != null) {
-			contactsToBeDeleted.forEach(contactToBeDeleted -> {
-				if (!contactToBeDeleted.isDeleted()) {
-					try {
-						deleteContact(contactToBeDeleted, deletionDetails);
-						deletedContactUuids.add(contactToBeDeleted.getUuid());
-					} catch (AccessDeniedException e) {
-						logger.error("The contact with uuid {} could not be deleted", contactToBeDeleted.getUuid(), e);
-					}
-				}
-			});
-		}
-		return deletedContactUuids;
-
 	}
 
 	@Override

@@ -21,10 +21,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import javax.naming.NamingException;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -79,6 +81,7 @@ import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
 import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DeleteRestoreHandlers;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class ExternalMessageController {
@@ -274,34 +277,22 @@ public class ExternalMessageController {
 		}
 	}
 
-	public void deleteAllSelectedItems(Collection<ExternalMessageIndexDto> selectedRows, Runnable callback) {
+	public void deleteAllSelectedItems(
+		Collection<ExternalMessageIndexDto> selectedRows,
+		ExternalMessageGrid externalMessageGrid,
+		Runnable noEntriesRemainingCallback) {
 
-		if (selectedRows.isEmpty()) {
-			new Notification(
-				I18nProperties.getString(Strings.headingNoExternalMessagesSelected),
-				I18nProperties.getString(Strings.messageNoExternalMessagesSelected),
-				Notification.Type.WARNING_MESSAGE,
-				false).show(Page.getCurrent());
-		} else if (selectedRows.stream().anyMatch(m -> m.getStatus() == ExternalMessageStatus.PROCESSED)) {
-			new Notification(
-				I18nProperties.getString(Strings.headingExternalMessagesDeleteProcessed),
-				I18nProperties.getString(Strings.messageExternalMessagesDeleteProcessed),
-				Notification.Type.ERROR_MESSAGE,
-				false).show(Page.getCurrent());
-		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow(
-				String.format(I18nProperties.getString(Strings.confirmationDeleteExternalMessages), selectedRows.size()),
-				() -> {
-					FacadeProvider.getExternalMessageFacade()
-						.deleteExternalMessages(selectedRows.stream().map(ExternalMessageIndexDto::getUuid).collect(Collectors.toList()));
-					callback.run();
-					new Notification(
-						I18nProperties.getString(Strings.headingExternalMessagesDeleted),
-						I18nProperties.getString(Strings.messageExternalMessagesDeleted),
-						Notification.Type.HUMANIZED_MESSAGE,
-						false).show(Page.getCurrent());
-				});
-		}
+		ControllerProvider.getPermanentDeleteController()
+			.deleteAllSelectedItems(
+				selectedRows,
+				DeleteRestoreHandlers.forExternalMessage(),
+				isEligibleForDeletion(selectedRows),
+				bulkOperationCallback(externalMessageGrid, noEntriesRemainingCallback, null));
+
+	}
+
+	public boolean isEligibleForDeletion(Collection<ExternalMessageIndexDto> selectedRows) {
+		return !selectedRows.stream().anyMatch(m -> m.getStatus() == ExternalMessageStatus.PROCESSED);
 	}
 
 	private HorizontalLayout getExternalMessageButtonsPanel(ExternalMessageDto externalMessage, Runnable callback) {
@@ -319,7 +310,7 @@ public class ExternalMessageController {
 						if (FacadeProvider.getExternalMessageFacade().isProcessed(externalMessage.getUuid())) {
 							showAlreadyProcessedPopup(null, false);
 						} else {
-							FacadeProvider.getExternalMessageFacade().deleteExternalMessage(externalMessage.getUuid());
+							FacadeProvider.getExternalMessageFacade().delete(externalMessage.getUuid());
 							callback.run();
 						}
 					}),
@@ -481,5 +472,23 @@ public class ExternalMessageController {
 
 	public void registerViews(Navigator navigator) {
 		navigator.addView(ExternalMessagesView.VIEW_NAME, ExternalMessagesView.class);
+	}
+
+	private Consumer<List<ExternalMessageIndexDto>> bulkOperationCallback(
+		ExternalMessageGrid externalMessageGrid,
+		Runnable noEntriesRemainingCallback,
+		Window popupWindow) {
+		return remainingExternalMessages -> {
+			if (popupWindow != null) {
+				popupWindow.close();
+			}
+
+			externalMessageGrid.reload();
+			if (CollectionUtils.isNotEmpty(remainingExternalMessages)) {
+				externalMessageGrid.asMultiSelect().selectItems(remainingExternalMessages.toArray(new ExternalMessageIndexDto[0]));
+			} else {
+				noEntriesRemainingCallback.run();
+			}
+		};
 	}
 }
