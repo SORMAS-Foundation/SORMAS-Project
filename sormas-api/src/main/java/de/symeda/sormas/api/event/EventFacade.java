@@ -28,7 +28,6 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
@@ -45,8 +44,6 @@ public interface EventFacade extends CoreFacade<EventDto, EventIndexDto, EventRe
 	List<String> getAllActiveUuids();
 
 	List<EventDto> getAllByCase(CaseDataDto caseDataDto);
-
-	List<String> deleteEvents(List<String> eventUuids, DeletionDetails deletionDetails);
 
 	Page<EventIndexDto> getIndexPage(@NotNull EventCriteria eventCriteria, Integer offset, Integer size, List<SortProperty> sortProperties);
 

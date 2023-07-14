@@ -362,12 +362,12 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		UserDto user = creator.createSurveillanceOfficer(rdcf1);
 		loginWith(user);
 		List<String> deleteUuids =
-			getContactFacade().deleteContacts(contactUuidList, new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
+			getContactFacade().delete(contactUuidList, new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 		assertEquals(1, deleteUuids.size());
 		assertEquals(contact1.getUuid(), deleteUuids.get(0));
 
 		loginWith(creatorUser);
-		getContactFacade().deleteContacts(contactUuidList, new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
+		getContactFacade().delete(contactUuidList, new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 		assertEquals(0, getContactFacade().getAllActiveUuids().size());
 	}
 

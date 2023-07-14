@@ -93,12 +93,8 @@ public class ContactVisitsView extends AbstractContactView {
 				MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
 					Captions.bulkActions,
 					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
-						ControllerProvider.getVisitController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
-
-							public void run() {
-								navigateTo(criteria);
-							}
-						});
+						ControllerProvider.getVisitController()
+							.deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), grid, () -> navigateTo(criteria));
 					}));
 
 				topLayout.addComponent(bulkOperationsDropdown);

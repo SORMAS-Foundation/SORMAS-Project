@@ -29,7 +29,7 @@
 
 		<!-- *** Other dependency versions *** -->
 		<slf4j.version>2.0.7</slf4j.version>
-		<logback.version>1.3.5</logback.version>
+		<logback.version>1.4.8</logback.version>
 		<vaadin.version.warning>TODO: Remove bootstrap.js in widgetset</vaadin.version.warning>
 		<vaadin.version>8.14.3</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
@@ -39,9 +39,9 @@
 		<keycloak.version>21.0.1</keycloak.version>
 		<netty.version>4.1.94.Final</netty.version>
 		<resteasy.version>5.0.7.Final</resteasy.version>
-		<kotlin-stdlib.version>1.8.22</kotlin-stdlib.version>
+		<kotlin-stdlib.version>1.9.0</kotlin-stdlib.version>
 		<xdocreport.version>2.0.4</xdocreport.version>
-		<docx4j.version>8.3.8</docx4j.version>
+		<docx4j.version>8.3.9</docx4j.version>
 		<archunit.version>1.0.1</archunit.version>
 		<junit.version>5.9.3</junit.version>
 		<hamcrest.version>2.2</hamcrest.version>
@@ -445,7 +445,7 @@
 			<dependency>
 				<groupId>com.jayway.jsonpath</groupId>
 				<artifactId>json-path</artifactId>
-				<version>2.7.0</version>
+				<version>2.8.0</version>
 				<scope>provided</scope>
 				<exclusions>
 					<!-- Exclude Payara modules here -->
@@ -958,7 +958,7 @@
 			<dependency>
 				<groupId>org.jetbrains</groupId>
 				<artifactId>annotations</artifactId>
-				<version>17.0.0</version>
+				<version>24.0.1</version>
 				<scope>provided</scope>
 				<!-- Version defined to resolve version conflict between multiple usages -->
 			</dependency>
@@ -1159,7 +1159,7 @@
 			<dependency>
 				<groupId>ca.uhn.hapi.fhir</groupId>
 				<artifactId>hapi-fhir-structures-r4</artifactId>
-				<version>6.2.2</version>
+				<version>6.6.2</version>
 				<scope>compile</scope>
 				<!-- Kept as compile dependency to avoid version conflicts and classpath problems with sormas-demis-adapter -->
 				<exclusions>
@@ -1181,7 +1181,7 @@
 			<dependency>
 				<groupId>ca.uhn.hapi.fhir</groupId>
 				<artifactId>org.hl7.fhir.r4</artifactId>
-				<version>5.6.88</version>
+				<version>6.0.21</version>
 				<scope>compile</scope>
 				<!-- Kept as compile dependency to avoid version conflicts and classpath problems with sormas-demis-adapter -->
 			</dependency>
@@ -1259,7 +1259,7 @@
 			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>1.17.6</version>
+				<version>1.18.3</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>

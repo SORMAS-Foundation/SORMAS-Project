@@ -309,8 +309,41 @@ public class ImmunizationFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._IMMUNIZATION_DELETE)
+	public List<String> delete(List<String> uuids, DeletionDetails deletionDetails) {
+		List<String> deletedImmunizationUuids = new ArrayList<>();
+		List<Immunization> immunizationsToBeDeleted = service.getByUuids(uuids);
+		if (immunizationsToBeDeleted != null) {
+			immunizationsToBeDeleted.forEach(immunizationToBeDeleted -> {
+				service.delete(immunizationToBeDeleted, deletionDetails);
+				deletedImmunizationUuids.add(immunizationToBeDeleted.getUuid());
+			});
+		}
+		return deletedImmunizationUuids;
+	}
+
+	@Override
+	@RightsAllowed(UserRight._IMMUNIZATION_DELETE)
 	public void restore(String uuid) {
 		super.restore(uuid);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._IMMUNIZATION_DELETE)
+	public List<String> restore(List<String> uuids) {
+		List<String> restoredImmunizationUuids = new ArrayList<>();
+		List<Immunization> immunizationsToBeRestored = service.getByUuids(uuids);
+
+		if (immunizationsToBeRestored != null) {
+			immunizationsToBeRestored.forEach(immunizationToBeRestored -> {
+				try {
+					service.restore(immunizationToBeRestored);
+					restoredImmunizationUuids.add(immunizationToBeRestored.getUuid());
+				} catch (Exception e) {
+					logger.error("The immunization with uuid:" + immunizationToBeRestored.getUuid() + "could not be restored");
+				}
+			});
+		}
+		return restoredImmunizationUuids;
 	}
 
 	@Override
@@ -456,19 +489,6 @@ public class ImmunizationFacadeEjb
 		List<ImmunizationIndexDto> immunizationIndexList = getIndexList(immunizationCriteria, offset, size, sortProperties);
 		long totalElementCount = count(immunizationCriteria);
 		return new Page<>(immunizationIndexList, offset, size, totalElementCount);
-	}
-
-	@RightsAllowed(UserRight._IMMUNIZATION_DELETE)
-	public List<String> deleteImmunizations(List<String> immunizationUuids, DeletionDetails deletionDetails) {
-		List<String> deletedImmunizationUuids = new ArrayList<>();
-		List<Immunization> immunizationsToBeDeleted = service.getByUuids(immunizationUuids);
-		if (immunizationsToBeDeleted != null) {
-			immunizationsToBeDeleted.forEach(immunizationToBeDeleted -> {
-				service.delete(immunizationToBeDeleted, deletionDetails);
-				deletedImmunizationUuids.add(immunizationToBeDeleted.getUuid());
-			});
-		}
-		return deletedImmunizationUuids;
 	}
 
 	@Override

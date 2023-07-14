@@ -186,7 +186,7 @@ public class TaskGridComponent extends VerticalLayout {
 						I18nProperties.getCaption(Captions.bulkDelete),
 						VaadinIcons.TRASH,
 						selectedItem -> ControllerProvider.getTaskController()
-							.deleteAllSelectedItems(this.grid.asMultiSelect().getSelectedItems(), () -> tasksView.navigateTo(criteria)),
+							.deleteAllSelectedItems(this.grid.asMultiSelect().getSelectedItems(), grid, () -> tasksView.navigateTo(criteria)),
 						hasBulkOperationsRight));
 				menuBarItems.add(
 					new MenuBarHelper.MenuBarItem(

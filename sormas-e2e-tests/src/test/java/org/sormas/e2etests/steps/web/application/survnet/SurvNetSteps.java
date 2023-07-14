@@ -4,12 +4,9 @@ import static org.sormas.e2etests.helpers.SchemaValidator.XMLSchemaValidator.val
 import static org.sormas.e2etests.helpers.comparison.XMLComparison.compareXMLFiles;
 import static org.sormas.e2etests.helpers.comparison.XMLComparison.extractDiffNodes;
 import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_VERSION_LINK;
+import static org.sormas.e2etests.steps.web.application.cases.EditCaseSteps.externalUUID;
 import static org.sormas.e2etests.steps.web.application.cases.SymptomsTabSteps.symptoms;
-
-import static org.sormas.e2etests.helpers.SchemaValidator.XMLSchemaValidator.validateXMLSchema;
-import static org.sormas.e2etests.helpers.comparison.XMLComparison.compareXMLFiles;
-import static org.sormas.e2etests.helpers.comparison.XMLComparison.extractDiffNodes;
-import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_VERSION_LINK;
+import static org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps.*;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
@@ -28,7 +25,6 @@ import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.helpers.parsers.XMLParser;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.steps.web.application.cases.CreateNewCaseSteps;
-import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
 import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
 import org.sormas.e2etests.steps.web.application.persons.EditPersonSteps;
 import org.testng.asserts.SoftAssert;
@@ -72,7 +68,55 @@ public class SurvNetSteps implements En {
               softly.assertEquals(trackedAt, expectedDate, "Tracked at date is incorrect!");
               softly.assertAll();
               break;
+            case "vaccination date":
+              LocalDate vaccinationDate =
+                  getDateValueFromSpecificChildNodeFieldByName(singleXmlFile, "VaccinationDate");
+              LocalDate expectedVaccinationDate = vaccination.getVaccinationDate();
+              softly.assertEquals(
+                  vaccinationDate, expectedVaccinationDate, "Vaccination date is incorrect!");
+              softly.assertAll();
+              break;
           }
+        });
+
+    Then(
+        "I check if Vaccine name in SORMAS generated XML file is correct",
+        () -> {
+          String vaccineNamefromXml = getValueFromSpecificFieldByName(singleXmlFile, "Vaccine");
+          String expectedVaccineName = randomVaccinationName;
+
+          String vaccineName = null;
+          switch (vaccineNamefromXml) {
+            case "201":
+              vaccineName = "Comirnaty (COVID-19-mRNA Impfstoff)";
+              break;
+            case "211":
+              vaccineName = "mRNA/bivalent BA.1 (BioNTech/Pfizer)";
+              break;
+            case "215":
+              vaccineName = "mRNA/bivalent BA.4/5 (BioNTech/Pfizer)";
+              break;
+            case "202":
+              vaccineName = "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)";
+              break;
+            case "212":
+              vaccineName = "mRNA/bivalent BA.1 (Moderna)";
+              break;
+            case "216":
+              vaccineName = "mRNA/bivalent BA.4/5 (Moderna)";
+              break;
+            case "213":
+              vaccineName = "inaktiviert (Valneva)";
+              break;
+            case "206":
+              vaccineName = "NVX-CoV2373 COVID-19 Impfstoff (Novavax)";
+              break;
+            case "214":
+              vaccineName = "proteinbasiert, rekombinant (Novavax)";
+              break;
+          }
+          softly.assertEquals(vaccineName, expectedVaccineName, "Vaccine name is incorrect!");
+          softly.assertAll();
         });
 
     And(
@@ -87,7 +131,6 @@ public class SurvNetSteps implements En {
     And(
         "I check if \"([^\"]*)\" SYMPTOM in SORMAS generated single XML file is correct",
         (String symptom) -> {
-          // ToDO -consider to change all expecrted... to mor global expectedValue !!!
           String expectedValue = null;
           switch (symptom) {
             case "Fever":
@@ -95,7 +138,7 @@ public class SurvNetSteps implements En {
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0088");
               String feverOptionFromUI = symptoms.getFever();
 
-              if (feverOptionFromUI == "JA") expectedValue = "true";
+              if (feverOptionFromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -107,7 +150,7 @@ public class SurvNetSteps implements En {
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0101");
               String shiveringOptionFromUI = symptoms.getFever();
 
-              if (shiveringOptionFromUI == "JA") expectedValue = "true";
+              if (shiveringOptionFromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -119,7 +162,7 @@ public class SurvNetSteps implements En {
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0101");
               String headacheOptionFromUI = symptoms.getHeadache();
 
-              if (headacheOptionFromUI == "JA") expectedValue = "true";
+              if (headacheOptionFromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -133,7 +176,7 @@ public class SurvNetSteps implements En {
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0101");
               String musclePaineOptionFromUI = symptoms.getMusclePain();
 
-              if (musclePaineOptionFromUI == "JA") expectedValue = "true";
+              if (musclePaineOptionFromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -147,7 +190,7 @@ public class SurvNetSteps implements En {
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0101");
               String feelingIllOptionFromUI = symptoms.getFeelingIll();
 
-              if (feelingIllOptionFromUI == "JA") expectedValue = "true";
+              if (feelingIllOptionFromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -162,7 +205,7 @@ public class SurvNetSteps implements En {
               String acuteRespiratoryDistressSyndromeOptionFromUI =
                   symptoms.getAcuteRespiratoryDistressSyndrome();
 
-              if (acuteRespiratoryDistressSyndromeOptionFromUI == "JA") expectedValue = "true";
+              if (acuteRespiratoryDistressSyndromeOptionFromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -176,7 +219,7 @@ public class SurvNetSteps implements En {
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0103");
               String soreThroatOptionFromUI = symptoms.getSoreThroat();
 
-              if (soreThroatOptionFromUI == "JA") expectedValue = "true";
+              if (soreThroatOptionFromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -190,7 +233,7 @@ public class SurvNetSteps implements En {
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0130");
               String coughOptionFromUI = symptoms.getCough();
 
-              if (coughOptionFromUI == "JA") expectedValue = "true";
+              if (coughOptionFromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -202,7 +245,7 @@ public class SurvNetSteps implements En {
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0225");
               String runnyNoseOptionFromUI = symptoms.getRunnyNose();
 
-              if (runnyNoseOptionFromUI == "JA") expectedValue = "true";
+              if (runnyNoseOptionFromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -215,7 +258,7 @@ public class SurvNetSteps implements En {
               String pneumoniaClinicalOrRadiologicOptionFromUI =
                   symptoms.getPneumoniaClinicalOrRadiologic();
 
-              if (pneumoniaClinicalOrRadiologicOptionFromUI == "JA") expectedValue = "true";
+              if (pneumoniaClinicalOrRadiologicOptionFromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -230,7 +273,7 @@ public class SurvNetSteps implements En {
               String respiratoryDiseaseVentilationOptionFromUI =
                   symptoms.getRespiratoryDiseaseVentilation();
 
-              if (respiratoryDiseaseVentilationOptionFromUI == "JA") expectedValue = "true";
+              if (respiratoryDiseaseVentilationOptionFromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -244,7 +287,7 @@ public class SurvNetSteps implements En {
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0418");
               String rapidBreathingOptionFromUI = symptoms.getRapidBreathing();
 
-              if (rapidBreathingOptionFromUI == "JA") expectedValue = "true";
+              if (rapidBreathingOptionFromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -258,7 +301,7 @@ public class SurvNetSteps implements En {
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0064");
               String difficultyBreathingOptionFromUI = symptoms.getDifficultyBreathing();
 
-              if (difficultyBreathingOptionFromUI == "JA") expectedValue = "true";
+              if (difficultyBreathingOptionFromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -272,7 +315,7 @@ public class SurvNetSteps implements En {
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0245");
               String fastHeartRateOptionFromUI = symptoms.getFastHeartRate();
 
-              if (fastHeartRateOptionFromUI == "JA") expectedValue = "true";
+              if (fastHeartRateOptionFromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -286,7 +329,7 @@ public class SurvNetSteps implements En {
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0062");
               String diarrheaOptionFromUI = symptoms.getDiarrhea();
 
-              if (diarrheaOptionFromUI == "JA") expectedValue = "true";
+              if (diarrheaOptionFromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -298,7 +341,7 @@ public class SurvNetSteps implements En {
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0101");
               String nauseaOptionFromUI = symptoms.getNausea();
 
-              if (nauseaOptionFromUI == "JA") expectedValue = "true";
+              if (nauseaOptionFromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -310,7 +353,7 @@ public class SurvNetSteps implements En {
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0416");
               String lossOfSmellOptionfromUI = symptoms.getLossOfSmell();
 
-              if (lossOfSmellOptionfromUI == "JA") expectedValue = "true";
+              if (lossOfSmellOptionfromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -324,7 +367,7 @@ public class SurvNetSteps implements En {
                   getValueFromSpecificFieldByName(singleXmlFile, "Symptom0417");
               String lossOfTasteOptionFromUI = symptoms.getLossOfTaste();
 
-              if (lossOfTasteOptionFromUI == "JA") expectedValue = "true";
+              if (lossOfTasteOptionFromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -339,7 +382,7 @@ public class SurvNetSteps implements En {
               String otherNonHemorrhagicSymptomsOptionFromUI =
                   symptoms.getOtherNonHemorrhagicSymptoms();
 
-              if (otherNonHemorrhagicSymptomsOptionFromUI == "JA") expectedValue = "true";
+              if (otherNonHemorrhagicSymptomsOptionFromUI.equals("JA")) expectedValue = "true";
               else expectedValue = "false";
 
               softly.assertEquals(
@@ -380,7 +423,7 @@ public class SurvNetSteps implements En {
               compareXMLFiles(
                   "src/main/resources/survnetXMLTemplates/controlXml.xml",
                   "/srv/dockerdata/jenkins_new/sormas-files/case_"
-                      + EditCaseSteps.externalUUID.get(0).substring(1, 37)
+                      + externalUUID.get(0).substring(1, 37)
                       + ".xml");
           List<String> nodes = extractDiffNodes(diffs, "/[Transport][^\\s]+");
 
@@ -415,7 +458,7 @@ public class SurvNetSteps implements En {
               validateXMLSchema(
                   "src/main/resources/survnetXMLTemplates/xmlSchema.xsd",
                   "/srv/dockerdata/jenkins_new/sormas-files/case_"
-                      + EditCaseSteps.externalUUID.get(0).substring(1, 37)
+                      + externalUUID.get(0).substring(1, 37)
                       + ".xml"),
               "Generated XML file does not match an example XSD schema");
           softly.assertAll();
@@ -455,7 +498,7 @@ public class SurvNetSteps implements En {
           singleXmlFile =
               XMLParser.getDocument(
                   "/srv/dockerdata/jenkins_new/sormas-files/case_"
-                      + EditCaseSteps.externalUUID.get(0).substring(1, 37)
+                      + externalUUID.get(0).substring(1, 37)
                       + ".xml");
         });
 
@@ -465,7 +508,7 @@ public class SurvNetSteps implements En {
           bulkXmlFile =
               XMLParser.getDocument(
                   "/srv/dockerdata/jenkins_new/sormas-files/bulk_case_"
-                      + EditCaseSteps.externalUUID.get(0).substring(1, 37)
+                      + externalUUID.get(0).substring(1, 37)
                       + ".xml");
         });
 
@@ -540,6 +583,16 @@ public class SurvNetSteps implements En {
               getGuidRecord(singleXmlFile, 0),
               EditEventSteps.externalEventUUID.get(0).substring(1, 37),
               "External event UUID is incorrect!");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check if case external UUID in SORMAS generated XML file is correct$",
+        () -> {
+          softly.assertEquals(
+              getGuidRecord(singleXmlFile, 0),
+              externalUUID.get(0).substring(1, 37),
+              "External case UUID is incorrect!");
           softly.assertAll();
         });
   }
@@ -688,5 +741,26 @@ public class SurvNetSteps implements En {
       }
     }
     return value;
+  }
+
+  private LocalDate getDateValueFromSpecificChildNodeFieldByName(Document xmlFile, String name) {
+    Element rootElement = xmlFile.getRootElement();
+    Namespace ns = rootElement.getNamespace();
+    String value = null;
+
+    Element field =
+        xmlFile.getRootElement().getChildren().get(0).getChildren("Field", ns).stream()
+            .filter(e -> e.getAttributeValue("Name").equals(name))
+            .findFirst()
+            .orElse(null);
+
+    if (field != null) {
+      Attribute valueAttribute = field.getAttribute("Value");
+      if (valueAttribute != null) {
+        value = valueAttribute.getValue().substring(0, 10);
+        ;
+      }
+    }
+    return LocalDate.parse(value, DATE_FORMATTER);
   }
 }

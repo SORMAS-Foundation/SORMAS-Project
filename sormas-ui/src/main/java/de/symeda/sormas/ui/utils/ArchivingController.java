@@ -205,6 +205,8 @@ public class ArchivingController {
 								selectedEntries -> archiveHandler
 									.archive(selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList())),
 								selectedCasesCpy,
+								null,
+								null,
 								batchCallback);
 					}
 				});
@@ -215,7 +217,12 @@ public class ArchivingController {
 		ArchiveMessages archiveMessages = archiveHandler.getArchiveMessages();
 		return new BulkOperationHandler<>(
 			forArchive ? archiveMessages.getMessageAllEntitiesArchived() : archiveMessages.getMessageAllEntitiesDearchived(),
-			forArchive ? archiveMessages.getMessageSomeEntitiesArchived() : archiveMessages.getMessageSomeEntitiesDearchived());
+			null,
+			null,
+			null,
+			forArchive ? archiveMessages.getMessageSomeEntitiesArchived() : archiveMessages.getMessageSomeEntitiesDearchived(),
+			null,
+			Strings.infoBulkProcessFinishedWithSkips);
 	}
 
 	public <T extends HasUuid> void dearchiveSelectedItems(
@@ -259,6 +266,8 @@ public class ArchivingController {
 								selectedEntries -> archiveHandler
 									.dearchive(selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList())),
 								selectedCasesCpy,
+								null,
+								null,
 								batchCallback);
 					}
 					return true;
