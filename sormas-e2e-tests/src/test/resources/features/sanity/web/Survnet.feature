@@ -222,3 +222,25 @@ Feature: Survnet tests
     And I check if event external UUID in SORMAS generated XML file is correct
     And I check if "created at date" in SORMAS generated XML file is correct
     And I check if "change at date" in SORMAS generated XML file is correct
+
+  @tmsLink=SORQA-1035
+  Scenario: Check Vaccination and Vaccination Status of case when sending from SORMAS to Meldesoftware
+    Given I log in as a Survnet
+    When I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with mandatory data only for Survnet DE
+    And I navigate to case tab
+    Then I click NEW VACCINATION button for DE
+    And I fill new vaccination data in new Vaccination form in Survnet for DE
+    And I set the vaccination date 14 days before the date of symptom in displayed vaccination form
+    And I click SAVE button in new Vaccination form
+    Then I check if Vaccination Status is set to "Geimpft" on Edit Case page
+    And I click on Send to reporting tool button on Edit Case page
+    And I collect case external UUID from Edit Case page
+    Then I wait 50 seconds for system reaction
+    And I open SORMAS generated XML file for single case message
+    And I check if case external UUID in SORMAS generated XML file is correct
+    And I check if "date of report" in SORMAS generated XML file is correct
+    And I check if "vaccination date" in SORMAS generated XML file is correct
+    And I check if Vaccine name in SORMAS generated XML file is correct
+

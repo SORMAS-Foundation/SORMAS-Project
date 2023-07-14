@@ -4,12 +4,9 @@ import static org.sormas.e2etests.helpers.SchemaValidator.XMLSchemaValidator.val
 import static org.sormas.e2etests.helpers.comparison.XMLComparison.compareXMLFiles;
 import static org.sormas.e2etests.helpers.comparison.XMLComparison.extractDiffNodes;
 import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_VERSION_LINK;
+import static org.sormas.e2etests.steps.web.application.cases.EditCaseSteps.externalUUID;
 import static org.sormas.e2etests.steps.web.application.cases.SymptomsTabSteps.symptoms;
-
-import static org.sormas.e2etests.helpers.SchemaValidator.XMLSchemaValidator.validateXMLSchema;
-import static org.sormas.e2etests.helpers.comparison.XMLComparison.compareXMLFiles;
-import static org.sormas.e2etests.helpers.comparison.XMLComparison.extractDiffNodes;
-import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_VERSION_LINK;
+import static org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps.*;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
@@ -28,7 +25,6 @@ import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.helpers.parsers.XMLParser;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.steps.web.application.cases.CreateNewCaseSteps;
-import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
 import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
 import org.sormas.e2etests.steps.web.application.persons.EditPersonSteps;
 import org.testng.asserts.SoftAssert;
@@ -72,7 +68,55 @@ public class SurvNetSteps implements En {
               softly.assertEquals(trackedAt, expectedDate, "Tracked at date is incorrect!");
               softly.assertAll();
               break;
+            case "vaccination date":
+              LocalDate vaccinationDate =
+                  getDateValueFromSpecificChildNodeFieldByName(singleXmlFile, "VaccinationDate");
+              LocalDate expectedVaccinationDate = vaccination.getVaccinationDate();
+              softly.assertEquals(
+                  vaccinationDate, expectedVaccinationDate, "Vaccination date is incorrect!");
+              softly.assertAll();
+              break;
           }
+        });
+
+    Then(
+        "I check if Vaccine name in SORMAS generated XML file is correct",
+        () -> {
+          String vaccineNamefromXml = getValueFromSpecificFieldByName(singleXmlFile, "Vaccine");
+          String expectedVaccineName = randomVaccinationName;
+
+          String vaccineName = null;
+          switch (vaccineNamefromXml) {
+            case "201":
+              vaccineName = "Comirnaty (COVID-19-mRNA Impfstoff)";
+              break;
+            case "211":
+              vaccineName = "mRNA/bivalent BA.1 (BioNTech/Pfizer)";
+              break;
+            case "215":
+              vaccineName = "mRNA/bivalent BA.4/5 (BioNTech/Pfizer)";
+              break;
+            case "202":
+              vaccineName = "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)";
+              break;
+            case "212":
+              vaccineName = "mRNA/bivalent BA.1 (Moderna)";
+              break;
+            case "216":
+              vaccineName = "mRNA/bivalent BA.4/5 (Moderna)";
+              break;
+            case "213":
+              vaccineName = "inaktiviert (Valneva)";
+              break;
+            case "206":
+              vaccineName = "NVX-CoV2373 COVID-19 Impfstoff (Novavax)";
+              break;
+            case "214":
+              vaccineName = "proteinbasiert, rekombinant (Novavax)";
+              break;
+          }
+          softly.assertEquals(vaccineName, expectedVaccineName, "Vaccine name is incorrect!");
+          softly.assertAll();
         });
 
     And(
@@ -380,7 +424,7 @@ public class SurvNetSteps implements En {
               compareXMLFiles(
                   "src/main/resources/survnetXMLTemplates/controlXml.xml",
                   "/srv/dockerdata/jenkins_new/sormas-files/case_"
-                      + EditCaseSteps.externalUUID.get(0).substring(1, 37)
+                      + externalUUID.get(0).substring(1, 37)
                       + ".xml");
           List<String> nodes = extractDiffNodes(diffs, "/[Transport][^\\s]+");
 
@@ -415,7 +459,7 @@ public class SurvNetSteps implements En {
               validateXMLSchema(
                   "src/main/resources/survnetXMLTemplates/xmlSchema.xsd",
                   "/srv/dockerdata/jenkins_new/sormas-files/case_"
-                      + EditCaseSteps.externalUUID.get(0).substring(1, 37)
+                      + externalUUID.get(0).substring(1, 37)
                       + ".xml"),
               "Generated XML file does not match an example XSD schema");
           softly.assertAll();
@@ -455,7 +499,7 @@ public class SurvNetSteps implements En {
           singleXmlFile =
               XMLParser.getDocument(
                   "/srv/dockerdata/jenkins_new/sormas-files/case_"
-                      + EditCaseSteps.externalUUID.get(0).substring(1, 37)
+                      + externalUUID.get(0).substring(1, 37)
                       + ".xml");
         });
 
@@ -465,7 +509,7 @@ public class SurvNetSteps implements En {
           bulkXmlFile =
               XMLParser.getDocument(
                   "/srv/dockerdata/jenkins_new/sormas-files/bulk_case_"
-                      + EditCaseSteps.externalUUID.get(0).substring(1, 37)
+                      + externalUUID.get(0).substring(1, 37)
                       + ".xml");
         });
 
@@ -540,6 +584,16 @@ public class SurvNetSteps implements En {
               getGuidRecord(singleXmlFile, 0),
               EditEventSteps.externalEventUUID.get(0).substring(1, 37),
               "External event UUID is incorrect!");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check if case external UUID in SORMAS generated XML file is correct$",
+        () -> {
+          softly.assertEquals(
+              getGuidRecord(singleXmlFile, 0),
+              externalUUID.get(0).substring(1, 37),
+              "External case UUID is incorrect!");
           softly.assertAll();
         });
   }
@@ -688,5 +742,26 @@ public class SurvNetSteps implements En {
       }
     }
     return value;
+  }
+
+  private LocalDate getDateValueFromSpecificChildNodeFieldByName(Document xmlFile, String name) {
+    Element rootElement = xmlFile.getRootElement();
+    Namespace ns = rootElement.getNamespace();
+    String value = null;
+
+    Element field =
+        xmlFile.getRootElement().getChildren().get(0).getChildren("Field", ns).stream()
+            .filter(e -> e.getAttributeValue("Name").equals(name))
+            .findFirst()
+            .orElse(null);
+
+    if (field != null) {
+      Attribute valueAttribute = field.getAttribute("Value");
+      if (valueAttribute != null) {
+        value = valueAttribute.getValue().substring(0, 10);
+        ;
+      }
+    }
+    return LocalDate.parse(value, DATE_FORMATTER);
   }
 }
