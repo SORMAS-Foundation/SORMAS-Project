@@ -407,6 +407,10 @@ public class EditCasePage {
             id, value));
   }
 
+  public static By getPreExistingConditionComboboxToSelectValue_DE(String disease) {
+    return By.cssSelector(String.format("#%s [class='v-checkbox v-select-option']", disease));
+  }
+
   public static By getEditTaskButtonByNumber(Integer number) {
     return By.cssSelector(String.format("#edit%x", number));
   }

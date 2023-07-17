@@ -1,20 +1,6 @@
 package org.sormas.e2etests.steps.web.application.survnet;
 
-import static org.sormas.e2etests.helpers.SchemaValidator.XMLSchemaValidator.validateXMLSchema;
-import static org.sormas.e2etests.helpers.comparison.XMLComparison.compareXMLFiles;
-import static org.sormas.e2etests.helpers.comparison.XMLComparison.extractDiffNodes;
-import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_VERSION_LINK;
-import static org.sormas.e2etests.steps.web.application.cases.EditCaseSteps.externalUUID;
-import static org.sormas.e2etests.steps.web.application.cases.SymptomsTabSteps.symptoms;
-import static org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps.*;
-
 import cucumber.api.java8.En;
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
@@ -28,6 +14,22 @@ import org.sormas.e2etests.steps.web.application.cases.CreateNewCaseSteps;
 import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
 import org.sormas.e2etests.steps.web.application.persons.EditPersonSteps;
 import org.testng.asserts.SoftAssert;
+
+import javax.inject.Inject;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.sormas.e2etests.helpers.SchemaValidator.XMLSchemaValidator.validateXMLSchema;
+import static org.sormas.e2etests.helpers.comparison.XMLComparison.compareXMLFiles;
+import static org.sormas.e2etests.helpers.comparison.XMLComparison.extractDiffNodes;
+import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_VERSION_LINK;
+import static org.sormas.e2etests.steps.web.application.cases.EditCaseSteps.externalUUID;
+import static org.sormas.e2etests.steps.web.application.cases.SymptomsTabSteps.symptoms;
+import static org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps.randomVaccinationName;
+import static org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps.vaccination;
 
 @Slf4j
 public class SurvNetSteps implements En {
@@ -594,6 +596,80 @@ public class SurvNetSteps implements En {
               externalUUID.get(0).substring(1, 37),
               "External case UUID is incorrect!");
           softly.assertAll();
+        });
+
+    And(
+        "^I check if the Pre-existing condition \"([^\"]*)\" has \"([^\"]*)\" value mapped in SORMAS generated single XML file$",
+        (String disease, String value) -> {
+          String mappedValue = null;
+
+          switch (value) {
+              case"positive":
+                  mappedValue = "20";
+                  break;
+              case"negative":
+                  mappedValue = "0";
+                  break;
+            }
+
+          switch (disease) {
+              case "diabetes":
+                  softly.assertEquals(
+                          getValueFromSpecificFieldByName(singleXmlFile, "Risk0005"),
+                          mappedValue,
+                          "Diabetes mapped value is incorrect!");
+                  softly.assertAll();
+                  break;
+              case "immunodeficiencyIncludingHiv":
+                  softly.assertEquals(
+                          getValueFromSpecificFieldByName(singleXmlFile, "Risk0008"),
+                          mappedValue,
+                          "Immunodeficiency mapped value is incorrect!");
+                  softly.assertAll();
+                  break;
+              case "chronicLiverDisease":
+                  softly.assertEquals(
+                          getValueFromSpecificFieldByName(singleXmlFile, "Risk0006"),
+                          mappedValue,
+                          "Liver disease mapped value is incorrect!");
+                  softly.assertAll();
+                  break;
+              case "malignancyChemotherapy":
+                  softly.assertEquals(
+                          getValueFromSpecificFieldByName(singleXmlFile, "Risk0011"),
+                          mappedValue,
+                          "Malignancy chemotherapy mapped value is incorrect!");
+                  softly.assertAll();
+                  break;
+              case "chronicPulmonaryDisease":
+                  softly.assertEquals(
+                          getValueFromSpecificFieldByName(singleXmlFile, "Risk0010"),
+                          mappedValue,
+                          "Chronic pulmonary disease mapped value is incorrect!");
+                  softly.assertAll();
+                  break;
+              case "chronicKidneyDisease":
+                  softly.assertEquals(
+                          getValueFromSpecificFieldByName(singleXmlFile, "Risk0009"),
+                          mappedValue,
+                          "Chronic kidney disease mapped value is incorrect!");
+                  softly.assertAll();
+                  break;
+              case "chronicNeurologicCondition":
+                  softly.assertEquals(
+                          getValueFromSpecificFieldByName(singleXmlFile, "Risk0007"),
+                          mappedValue,
+                          "Chronic neurologic condition mapped value is incorrect!");
+                  softly.assertAll();
+                  break;
+              case "cardiovascularDiseaseIncludingHypertension":
+                  softly.assertEquals(
+                          getValueFromSpecificFieldByName(singleXmlFile, "Risk0004"),
+                          mappedValue,
+                          "Cardiovascular disease mapped value is incorrect!");
+                  softly.assertAll();
+                  break;
+          }
         });
   }
 
