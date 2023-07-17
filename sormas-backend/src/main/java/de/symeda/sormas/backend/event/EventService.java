@@ -328,7 +328,7 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 		List<String> sharedEventUuids = new ArrayList<>();
 		List<ExternalShareInfoCountAndLatestDate> eventShareInfos =
 			externalShareInfoService.getShareCountAndLatestDate(eventIds, ExternalShareInfo.EVENT);
-		eventShareInfos.stream().forEach(shareInfo -> {
+		eventShareInfos.forEach(shareInfo -> {
 			if (shareInfo.getLatestStatus() != ExternalShareStatus.DELETED) {
 				sharedEventUuids.add(shareInfo.getAssociatedObjectUuid());
 			}
@@ -339,7 +339,7 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 
 	public List<Long> getEventIds(List<String> entityUuids) {
 		List<Long> eventIds = new ArrayList<>();
-		entityUuids.stream().forEach(uuid -> eventIds.add(this.getByUuid(uuid).getId()));
+		entityUuids.forEach(uuid -> eventIds.add(this.getByUuid(uuid).getId()));
 		return eventIds;
 	}
 

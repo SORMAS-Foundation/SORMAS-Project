@@ -1145,11 +1145,11 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 	}
 
 	public List<String> getSharedCaseUuids(List<String> entityUuids) {
-		List<Long> eventIds = getCaseIds(entityUuids);
+		List<Long> caseIds = getCaseIds(entityUuids);
 		List<String> sharedCaseUuids = new ArrayList<>();
 		List<ExternalShareInfoCountAndLatestDate> caseShareInfos =
-			externalShareInfoService.getShareCountAndLatestDate(eventIds, ExternalShareInfo.CAZE);
-		caseShareInfos.stream().forEach(shareInfo -> {
+			externalShareInfoService.getShareCountAndLatestDate(caseIds, ExternalShareInfo.CAZE);
+		caseShareInfos.forEach(shareInfo -> {
 			if (shareInfo.getLatestStatus() != ExternalShareStatus.DELETED) {
 				sharedCaseUuids.add(shareInfo.getAssociatedObjectUuid());
 			}
@@ -1160,7 +1160,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 	public List<Long> getCaseIds(List<String> entityUuids) {
 		List<Long> caseIds = new ArrayList<>();
-		entityUuids.stream().forEach(uuid -> caseIds.add(this.getByUuid(uuid).getId()));
+		entityUuids.forEach(uuid -> caseIds.add(this.getByUuid(uuid).getId()));
 		return caseIds;
 	}
 
