@@ -601,14 +601,14 @@ public class SurvNetSteps implements En {
     And(
         "^I check if the Pre-existing condition \"([^\"]*)\" has \"([^\"]*)\" value mapped in SORMAS generated single XML file$",
         (String disease, String value) -> {
-          int mappedValue = 0;
+          String mappedValue = null;
 
           switch (value) {
               case"positive":
-                  mappedValue = 20;
+                  mappedValue = "20";
                   break;
               case"negative":
-                  mappedValue = 0;
+                  mappedValue = "0";
                   break;
             }
 
