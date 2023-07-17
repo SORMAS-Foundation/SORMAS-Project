@@ -245,29 +245,35 @@ Feature: Survnet tests
     And I check if Vaccine name in SORMAS generated XML file is correct
 
   @tmsLink=SORQA-1029
-  Scenario: Pre-existing disease in case when sending from SORMAS to Meldesoftware
+  Scenario Outline: Pre-existing disease in case when sending from SORMAS to Meldesoftware
     Given I log in as a Survnet
     When I click on the Cases button from navbar
     And I click on the NEW CASE button
     And I create a new case with mandatory data only for Survnet DE
     And I select the Pre-existing condition "diabetes" as "Ja" on Edit Case page
-    And I select the Pre-existing condition "immunodeficiencyIncludingHiv" as "Ja" on Edit Case page
-    And I select the Pre-existing condition "chronicLiverDisease" as "Ja" on Edit Case page
-    And I select the Pre-existing condition "malignancyChemotherapy" as "Ja" on Edit Case page
-    And I select the Pre-existing condition "chronicPulmonaryDisease" as "Ja" on Edit Case page
-    And I select the Pre-existing condition "chronicKidneyDisease" as "Ja" on Edit Case page
-    And I select the Pre-existing condition "chronicNeurologicCondition" as "Ja" on Edit Case page
-    And I select the Pre-existing condition "cardiovascularDiseaseIncludingHypertension" as "Ja" on Edit Case page
+    And I select the Pre-existing condition "immunodeficiencyIncludingHiv" as <option> on Edit Case page
+    And I select the Pre-existing condition "chronicLiverDisease" as <option> on Edit Case page
+    And I select the Pre-existing condition "malignancyChemotherapy" as <option> on Edit Case page
+    And I select the Pre-existing condition "chronicPulmonaryDisease" as <option> on Edit Case page
+    And I select the Pre-existing condition "chronicKidneyDisease" as <option> on Edit Case page
+    And I select the Pre-existing condition "chronicNeurologicCondition" as <option> on Edit Case page
+    And I select the Pre-existing condition "cardiovascularDiseaseIncludingHypertension" as <option> on Edit Case page
     And I click on save button from Edit Case page
     And I click on Send to reporting tool button on Edit Case page
     And I collect case external UUID from Edit Case page
     Then I wait 50 seconds for system reaction
     And I open SORMAS generated XML file for single case message
-    And I check if the Pre-existing condition "diabetes" has "positive" value mapped in SORMAS generated single XML file
-    And I check if the Pre-existing condition "immunodeficiencyIncludingHiv" has "positive" value mapped in SORMAS generated single XML file
-    And I check if the Pre-existing condition "chronicLiverDisease" has "positive" value mapped in SORMAS generated single XML file
-    And I check if the Pre-existing condition "malignancyChemotherapy" has "positive" value mapped in SORMAS generated single XML file
-    And I check if the Pre-existing condition "chronicPulmonaryDisease" has "positive" value mapped in SORMAS generated single XML file
-    And I check if the Pre-existing condition "chronicKidneyDisease" has "positive" value mapped in SORMAS generated single XML file
-    And I check if the Pre-existing condition "chronicNeurologicCondition" has "positive" value mapped in SORMAS generated single XML file
-    And I check if the Pre-existing condition "cardiovascularDiseaseIncludingHypertension" has "positive" value mapped in SORMAS generated single XML file
+    And I check if the Pre-existing condition "diabetes" has <result> value mapped in SORMAS generated single XML file
+    And I check if the Pre-existing condition "immunodeficiencyIncludingHiv" has <result> value mapped in SORMAS generated single XML file
+    And I check if the Pre-existing condition "chronicLiverDisease" has <result> value mapped in SORMAS generated single XML file
+    And I check if the Pre-existing condition "malignancyChemotherapy" has <result> value mapped in SORMAS generated single XML file
+    And I check if the Pre-existing condition "chronicPulmonaryDisease" has <result> value mapped in SORMAS generated single XML file
+    And I check if the Pre-existing condition "chronicKidneyDisease" has <result> value mapped in SORMAS generated single XML file
+    And I check if the Pre-existing condition "chronicNeurologicCondition" has <result> value mapped in SORMAS generated single XML file
+    And I check if the Pre-existing condition "cardiovascularDiseaseIncludingHypertension" has <result> value mapped in SORMAS generated single XML file
+
+    Examples:
+      | option      | result       |
+      | "Ja"        |  "positive"  |
+      | "Nein"      |  "negative"  |
+      | "Unbekannt" |  "negative"  |
