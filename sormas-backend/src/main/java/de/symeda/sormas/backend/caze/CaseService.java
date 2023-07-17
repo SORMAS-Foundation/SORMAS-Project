@@ -94,6 +94,7 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
@@ -153,6 +154,7 @@ import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
+import de.symeda.sormas.backend.share.ExternalShareInfoCountAndLatestDate;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
@@ -1129,8 +1131,8 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()) {
 			List<String> uuidsAllowedToBeShared = getEntityUuidsAllowedToBeShared(entityUuids);
 			if (!uuidsAllowedToBeShared.isEmpty()) {
-				List<String> sharedCaseUuids = externalShareInfoService.getSharedCaseUuidsWithoutDeletedStatus(uuidsAllowedToBeShared);
 
+				List<String> sharedCaseUuids = getSharedCaseUuids(uuidsAllowedToBeShared);
 				if (!sharedCaseUuids.isEmpty()) {
 					try {
 						externalSurveillanceToolGatewayFacade.sendCasesInternal(entityUuids, archived);
@@ -1140,6 +1142,26 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 				}
 			}
 		}
+	}
+
+	public List<String> getSharedCaseUuids(List<String> entityUuids) {
+		List<Long> caseIds = getCaseIds(entityUuids);
+		List<String> sharedCaseUuids = new ArrayList<>();
+		List<ExternalShareInfoCountAndLatestDate> caseShareInfos =
+			externalShareInfoService.getShareCountAndLatestDate(caseIds, ExternalShareInfo.CAZE);
+		caseShareInfos.forEach(shareInfo -> {
+			if (shareInfo.getLatestStatus() != ExternalShareStatus.DELETED) {
+				sharedCaseUuids.add(shareInfo.getAssociatedObjectUuid());
+			}
+		});
+
+		return sharedCaseUuids;
+	}
+
+	public List<Long> getCaseIds(List<String> entityUuids) {
+		List<Long> caseIds = new ArrayList<>();
+		entityUuids.forEach(uuid -> caseIds.add(this.getByUuid(uuid).getId()));
+		return caseIds;
 	}
 
 	public List<String> getEntityUuidsAllowedToBeShared(List<String> entityUuids) {
@@ -1241,7 +1263,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 	/**
 	 * @param cb
-	 * @param casePath
+	 * @param joins
 	 * @param date
 	 * @param includeExtendedChangeDateFilters
 	 *            additional change dates filters for: sample, pathogenTests, patient and location
