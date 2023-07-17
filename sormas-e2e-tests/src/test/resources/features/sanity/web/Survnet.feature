@@ -277,3 +277,23 @@ Feature: Survnet tests
       | "Ja"        |  "positive"  |
       | "Nein"      |  "negative"  |
       | "Unbekannt" |  "negative"  |
+
+  @tmsLink=SORQA-1029 @precon
+  Scenario: Pre-existing disease in case with 4 diseases when sending from SORMAS to Meldesoftware
+    Given I log in as a Survnet
+    When I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with mandatory data only for Survnet DE
+    And I select the Pre-existing condition "diabetes" as "ja" on Edit Case page
+    And I select the Pre-existing condition "immunodeficiencyIncludingHiv" as "ja" on Edit Case page
+    And I select the Pre-existing condition "chronicLiverDisease" as "ja" on Edit Case page
+    And I select the Pre-existing condition "malignancyChemotherapy" as "ja" on Edit Case page
+    And I click on save button from Edit Case page
+    And I click on Send to reporting tool button on Edit Case page
+    And I collect case external UUID from Edit Case page
+    Then I wait 50 seconds for system reaction
+    And I open SORMAS generated XML file for single case message
+    And I check if the Pre-existing condition "diabetes" has "positive" value mapped in SORMAS generated single XML file
+    And I check if the Pre-existing condition "immunodeficiencyIncludingHiv" has "positive" value mapped in SORMAS generated single XML file
+    And I check if the Pre-existing condition "chronicLiverDisease" has "positive" value mapped in SORMAS generated single XML file
+    And I check if the Pre-existing condition "malignancyChemotherapy" has "positive" value mapped in SORMAS generated single XML file
