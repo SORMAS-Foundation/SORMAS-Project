@@ -1263,7 +1263,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 	/**
 	 * @param cb
-	 * @param casePath
+	 * @param joins
 	 * @param date
 	 * @param includeExtendedChangeDateFilters
 	 *            additional change dates filters for: sample, pathogenTests, patient and location
