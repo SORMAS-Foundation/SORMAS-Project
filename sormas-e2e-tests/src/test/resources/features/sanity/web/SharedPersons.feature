@@ -9,7 +9,7 @@ Feature: Sharing persons between environments tests
     And API: I check that POST call status code is 200
     Given API: I create a new contact with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district linked to last created case
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     Then I navigate to the last created case via the url
     And I collect uuid of the case
     Then I click on share case button
@@ -18,7 +18,7 @@ Feature: Sharing persons between environments tests
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
     And I navigate to "s2s_2" environment in new driver tab
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Shares button from navbar
     Then I accept first entity from table in Shares Page
     When I back to tab number 1
@@ -50,7 +50,7 @@ Feature: Sharing persons between environments tests
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     Then I navigate to the last created case via the url
     And I collect uuid of the case
     Then I click on share case button
@@ -59,7 +59,7 @@ Feature: Sharing persons between environments tests
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
     And I navigate to "s2s_2" environment in new driver tab
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Shares button from navbar
     Then I accept first entity from table in Shares Page
     And I click on the Cases button from navbar
@@ -75,7 +75,7 @@ Feature: Sharing persons between environments tests
 
   @tmsLink=SORDEV-12088 @env_s2s_1
   Scenario: [S2S] Simultaneous Work on Person [3]
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     And I fill new case data for duplicates merge with for one person data for DE
@@ -86,7 +86,7 @@ Feature: Sharing persons between environments tests
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
     And I navigate to "s2s_2" environment in new driver tab
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Shares button from navbar
     Then I accept first entity from table in Shares Page
     And I click on the The Eye Icon located in the Shares Page
@@ -128,7 +128,7 @@ Feature: Sharing persons between environments tests
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     And I fill a new contact form with same person data with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district for DE version
@@ -145,7 +145,7 @@ Feature: Sharing persons between environments tests
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
     And I navigate to "s2s_2" environment in new driver tab
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Shares button from navbar
     Then I accept first entity from table in Shares Page
     When I back to tab number 1
