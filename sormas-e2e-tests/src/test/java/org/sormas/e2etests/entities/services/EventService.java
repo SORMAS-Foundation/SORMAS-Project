@@ -17,12 +17,13 @@ package org.sormas.e2etests.entities.services;
 
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
-import java.time.LocalDate;
 import org.sormas.e2etests.entities.pojo.web.Event;
 import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.RegionsValues;
+
+import java.time.LocalDate;
 
 public class EventService {
 
@@ -146,6 +147,17 @@ public class EventService {
         .eventLocation("Public place")
         .riskLevel("High risk")
         .sourceType("Mathematical model")
+        .build();
+  }
+
+  public Event buildClusterWithMandatoryFields() {
+    String timestamp = String.valueOf(System.currentTimeMillis());
+    return Event.builder()
+        .eventStatus("CLUSTER")
+        .reportDate(LocalDate.now())
+        .title("EVENT_AUTOMATION_" + timestamp + faker.address().city())
+        .region("Berlin")
+        .district("SK Berlin Mitte")
         .build();
   }
 

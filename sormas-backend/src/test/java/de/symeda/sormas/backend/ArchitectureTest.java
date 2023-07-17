@@ -276,8 +276,7 @@ public class ArchitectureTest {
 				"getExternalMessagesAdapterVersion",
 				"fetchAndSaveExternalMessages",
 				"bulkAssignExternalMessages",
-				"deleteExternalMessage",
-				"deleteExternalMessages"),
+				"delete"),
 			classes);
 	}
 

@@ -1,6 +1,20 @@
 package org.sormas.e2etests.steps.web.application.survnet;
 
+import static org.sormas.e2etests.helpers.SchemaValidator.XMLSchemaValidator.validateXMLSchema;
+import static org.sormas.e2etests.helpers.comparison.XMLComparison.compareXMLFiles;
+import static org.sormas.e2etests.helpers.comparison.XMLComparison.extractDiffNodes;
+import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_VERSION_LINK;
+import static org.sormas.e2etests.steps.web.application.cases.EditCaseSteps.externalUUID;
+import static org.sormas.e2etests.steps.web.application.cases.SymptomsTabSteps.symptoms;
+import static org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps.*;
+
 import cucumber.api.java8.En;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
@@ -11,21 +25,9 @@ import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.helpers.parsers.XMLParser;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.steps.web.application.cases.CreateNewCaseSteps;
-import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
+import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
 import org.sormas.e2etests.steps.web.application.persons.EditPersonSteps;
 import org.testng.asserts.SoftAssert;
-
-import javax.inject.Inject;
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.sormas.e2etests.helpers.SchemaValidator.XMLSchemaValidator.validateXMLSchema;
-import static org.sormas.e2etests.helpers.comparison.XMLComparison.compareXMLFiles;
-import static org.sormas.e2etests.helpers.comparison.XMLComparison.extractDiffNodes;
-import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_VERSION_LINK;
 
 @Slf4j
 public class SurvNetSteps implements En {
@@ -43,7 +45,7 @@ public class SurvNetSteps implements En {
     Then(
         "I check if {string} in SORMAS generated XML file is correct",
         (String typeOfDate) -> {
-          LocalDate expectedDate = CreateNewCaseSteps.survnetCase.getDateOfReport();
+          LocalDate expectedDate = LocalDate.now();
 
           switch (typeOfDate) {
             case "date of report":
@@ -66,7 +68,55 @@ public class SurvNetSteps implements En {
               softly.assertEquals(trackedAt, expectedDate, "Tracked at date is incorrect!");
               softly.assertAll();
               break;
+            case "vaccination date":
+              LocalDate vaccinationDate =
+                  getDateValueFromSpecificChildNodeFieldByName(singleXmlFile, "VaccinationDate");
+              LocalDate expectedVaccinationDate = vaccination.getVaccinationDate();
+              softly.assertEquals(
+                  vaccinationDate, expectedVaccinationDate, "Vaccination date is incorrect!");
+              softly.assertAll();
+              break;
           }
+        });
+
+    Then(
+        "I check if Vaccine name in SORMAS generated XML file is correct",
+        () -> {
+          String vaccineNamefromXml = getValueFromSpecificFieldByName(singleXmlFile, "Vaccine");
+          String expectedVaccineName = randomVaccinationName;
+
+          String vaccineName = null;
+          switch (vaccineNamefromXml) {
+            case "201":
+              vaccineName = "Comirnaty (COVID-19-mRNA Impfstoff)";
+              break;
+            case "211":
+              vaccineName = "mRNA/bivalent BA.1 (BioNTech/Pfizer)";
+              break;
+            case "215":
+              vaccineName = "mRNA/bivalent BA.4/5 (BioNTech/Pfizer)";
+              break;
+            case "202":
+              vaccineName = "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)";
+              break;
+            case "212":
+              vaccineName = "mRNA/bivalent BA.1 (Moderna)";
+              break;
+            case "216":
+              vaccineName = "mRNA/bivalent BA.4/5 (Moderna)";
+              break;
+            case "213":
+              vaccineName = "inaktiviert (Valneva)";
+              break;
+            case "206":
+              vaccineName = "NVX-CoV2373 COVID-19 Impfstoff (Novavax)";
+              break;
+            case "214":
+              vaccineName = "proteinbasiert, rekombinant (Novavax)";
+              break;
+          }
+          softly.assertEquals(vaccineName, expectedVaccineName, "Vaccine name is incorrect!");
+          softly.assertAll();
         });
 
     And(
@@ -76,6 +126,283 @@ public class SurvNetSteps implements En {
           String expectedSex = CreateNewCaseSteps.survnetCase.getSex();
           softly.assertEquals(sex, expectedSex, "Sex is incorrect!");
           softly.assertAll();
+        });
+
+    And(
+        "I check if \"([^\"]*)\" SYMPTOM in SORMAS generated single XML file is correct",
+        (String symptom) -> {
+          String expectedValue = null;
+          switch (symptom) {
+            case "Fever":
+              String feverOptionFromXml =
+                  getValueFromSpecificFieldByName(singleXmlFile, "Symptom0088");
+              String feverOptionFromUI = symptoms.getFever();
+
+              if (feverOptionFromUI.equals("JA")) expectedValue = "true";
+              else expectedValue = "false";
+
+              softly.assertEquals(
+                  feverOptionFromXml, expectedValue, symptom + " checkbox value is incorrect!");
+              softly.assertAll();
+              break;
+            case "Shivering":
+              String shiveringOptionFromXml =
+                  getValueFromSpecificFieldByName(singleXmlFile, "Symptom0101");
+              String shiveringOptionFromUI = symptoms.getFever();
+
+              if (shiveringOptionFromUI.equals("JA")) expectedValue = "true";
+              else expectedValue = "false";
+
+              softly.assertEquals(
+                  shiveringOptionFromXml, expectedValue, symptom + " checkbox value is incorrect!");
+              softly.assertAll();
+              break;
+            case "Headache":
+              String headacheOptionFromXml =
+                  getValueFromSpecificFieldByName(singleXmlFile, "Symptom0101");
+              String headacheOptionFromUI = symptoms.getHeadache();
+
+              if (headacheOptionFromUI.equals("JA")) expectedValue = "true";
+              else expectedValue = "false";
+
+              softly.assertEquals(
+                  headacheOptionFromXml,
+                  expectedValue,
+                  symptom + " Headache checkbox value is incorrect!");
+              softly.assertAll();
+              break;
+            case "Muscle Pain":
+              String musclePaineOptionFromXml =
+                  getValueFromSpecificFieldByName(singleXmlFile, "Symptom0101");
+              String musclePaineOptionFromUI = symptoms.getMusclePain();
+
+              if (musclePaineOptionFromUI.equals("JA")) expectedValue = "true";
+              else expectedValue = "false";
+
+              softly.assertEquals(
+                  musclePaineOptionFromXml,
+                  expectedValue,
+                  symptom + " checkbox value is incorrect!");
+              softly.assertAll();
+              break;
+            case "Feeling Ill":
+              String feelingIllOptionFromXml =
+                  getValueFromSpecificFieldByName(singleXmlFile, "Symptom0101");
+              String feelingIllOptionFromUI = symptoms.getFeelingIll();
+
+              if (feelingIllOptionFromUI.equals("JA")) expectedValue = "true";
+              else expectedValue = "false";
+
+              softly.assertEquals(
+                  feelingIllOptionFromXml,
+                  expectedValue,
+                  symptom + " checkbox value is incorrect!");
+              softly.assertAll();
+              break;
+            case "Acute Respiratory Distress Syndrome":
+              String acuteRespiratoryDistressSyndromeOptionFromXml =
+                  getValueFromSpecificFieldByName(singleXmlFile, "Symptom0394");
+              String acuteRespiratoryDistressSyndromeOptionFromUI =
+                  symptoms.getAcuteRespiratoryDistressSyndrome();
+
+              if (acuteRespiratoryDistressSyndromeOptionFromUI.equals("JA")) expectedValue = "true";
+              else expectedValue = "false";
+
+              softly.assertEquals(
+                  acuteRespiratoryDistressSyndromeOptionFromXml,
+                  expectedValue,
+                  symptom + "AcuteRespiratoryDistressSyndrome checkbox value is incorrect!");
+              softly.assertAll();
+              break;
+            case "Sore Throat":
+              String soreThroatOptionFromXml =
+                  getValueFromSpecificFieldByName(singleXmlFile, "Symptom0103");
+              String soreThroatOptionFromUI = symptoms.getSoreThroat();
+
+              if (soreThroatOptionFromUI.equals("JA")) expectedValue = "true";
+              else expectedValue = "false";
+
+              softly.assertEquals(
+                  soreThroatOptionFromXml,
+                  expectedValue,
+                  symptom + " checkbox value is incorrect!");
+              softly.assertAll();
+              break;
+            case "Cough":
+              String coughOptionFromXml =
+                  getValueFromSpecificFieldByName(singleXmlFile, "Symptom0130");
+              String coughOptionFromUI = symptoms.getCough();
+
+              if (coughOptionFromUI.equals("JA")) expectedValue = "true";
+              else expectedValue = "false";
+
+              softly.assertEquals(
+                  coughOptionFromXml, expectedValue, symptom + " checkbox value is incorrect!");
+              softly.assertAll();
+              break;
+            case "Runny Nose":
+              String runnyNoseOptionFromXml =
+                  getValueFromSpecificFieldByName(singleXmlFile, "Symptom0225");
+              String runnyNoseOptionFromUI = symptoms.getRunnyNose();
+
+              if (runnyNoseOptionFromUI.equals("JA")) expectedValue = "true";
+              else expectedValue = "false";
+
+              softly.assertEquals(
+                  runnyNoseOptionFromXml, expectedValue, symptom + " checkbox value is incorrect!");
+              softly.assertAll();
+              break;
+            case "Pneumonia Clinical Or Radiologic":
+              String pneumoniaClinicalOrRadiologicOptionFromXml =
+                  getValueFromSpecificFieldByName(singleXmlFile, "Symptom0158");
+              String pneumoniaClinicalOrRadiologicOptionFromUI =
+                  symptoms.getPneumoniaClinicalOrRadiologic();
+
+              if (pneumoniaClinicalOrRadiologicOptionFromUI.equals("JA")) expectedValue = "true";
+              else expectedValue = "false";
+
+              softly.assertEquals(
+                  pneumoniaClinicalOrRadiologicOptionFromXml,
+                  expectedValue,
+                  symptom + " checkbox value is incorrect!");
+              softly.assertAll();
+              break;
+            case "Respiratory Disease Ventilation":
+              String respiratoryDiseaseVentilationOptionFromXml =
+                  getValueFromSpecificFieldByName(singleXmlFile, "Symptom0393");
+              String respiratoryDiseaseVentilationOptionFromUI =
+                  symptoms.getRespiratoryDiseaseVentilation();
+
+              if (respiratoryDiseaseVentilationOptionFromUI.equals("JA")) expectedValue = "true";
+              else expectedValue = "false";
+
+              softly.assertEquals(
+                  respiratoryDiseaseVentilationOptionFromXml,
+                  expectedValue,
+                  symptom + " checkbox value is incorrect!");
+              softly.assertAll();
+              break;
+            case "Rapid Breathing":
+              String rapidBreathingOptionFromXml =
+                  getValueFromSpecificFieldByName(singleXmlFile, "Symptom0418");
+              String rapidBreathingOptionFromUI = symptoms.getRapidBreathing();
+
+              if (rapidBreathingOptionFromUI.equals("JA")) expectedValue = "true";
+              else expectedValue = "false";
+
+              softly.assertEquals(
+                  rapidBreathingOptionFromXml,
+                  expectedValue,
+                  symptom + " checkbox value is incorrect!");
+              softly.assertAll();
+              break;
+            case "Difficulty Breathing":
+              String difficultyBreathingOptionFromXml =
+                  getValueFromSpecificFieldByName(singleXmlFile, "Symptom0064");
+              String difficultyBreathingOptionFromUI = symptoms.getDifficultyBreathing();
+
+              if (difficultyBreathingOptionFromUI.equals("JA")) expectedValue = "true";
+              else expectedValue = "false";
+
+              softly.assertEquals(
+                  difficultyBreathingOptionFromXml,
+                  expectedValue,
+                  symptom + " checkbox value is incorrect!");
+              softly.assertAll();
+              break;
+            case "Fast Heart Rate":
+              String fastHeartRateOptionFromXml =
+                  getValueFromSpecificFieldByName(singleXmlFile, "Symptom0245");
+              String fastHeartRateOptionFromUI = symptoms.getFastHeartRate();
+
+              if (fastHeartRateOptionFromUI.equals("JA")) expectedValue = "true";
+              else expectedValue = "false";
+
+              softly.assertEquals(
+                  fastHeartRateOptionFromXml,
+                  expectedValue,
+                  symptom + " checkbox value is incorrect!");
+              softly.assertAll();
+              break;
+            case "Diarrhea":
+              String diarrheaOptionFromXml =
+                  getValueFromSpecificFieldByName(singleXmlFile, "Symptom0062");
+              String diarrheaOptionFromUI = symptoms.getDiarrhea();
+
+              if (diarrheaOptionFromUI.equals("JA")) expectedValue = "true";
+              else expectedValue = "false";
+
+              softly.assertEquals(
+                  diarrheaOptionFromXml, expectedValue, symptom + " checkbox value is incorrect!");
+              softly.assertAll();
+              break;
+            case "Nausea":
+              String nauseaOptionFromXml =
+                  getValueFromSpecificFieldByName(singleXmlFile, "Symptom0101");
+              String nauseaOptionFromUI = symptoms.getNausea();
+
+              if (nauseaOptionFromUI.equals("JA")) expectedValue = "true";
+              else expectedValue = "false";
+
+              softly.assertEquals(
+                  nauseaOptionFromXml, expectedValue, symptom + " checkbox value is incorrect!");
+              softly.assertAll();
+              break;
+            case "Loss Of Smell":
+              String lossOfSmellOptionfromXml =
+                  getValueFromSpecificFieldByName(singleXmlFile, "Symptom0416");
+              String lossOfSmellOptionfromUI = symptoms.getLossOfSmell();
+
+              if (lossOfSmellOptionfromUI.equals("JA")) expectedValue = "true";
+              else expectedValue = "false";
+
+              softly.assertEquals(
+                  lossOfSmellOptionfromXml,
+                  expectedValue,
+                  symptom + " checkbox value is incorrect!");
+              softly.assertAll();
+              break;
+            case "Loss OfTaste":
+              String lossOfTasteOptionFromXml =
+                  getValueFromSpecificFieldByName(singleXmlFile, "Symptom0417");
+              String lossOfTasteOptionFromUI = symptoms.getLossOfTaste();
+
+              if (lossOfTasteOptionFromUI.equals("JA")) expectedValue = "true";
+              else expectedValue = "false";
+
+              softly.assertEquals(
+                  lossOfTasteOptionFromXml,
+                  expectedValue,
+                  symptom + " checkbox value is incorrect!");
+              softly.assertAll();
+              break;
+            case "Other Non Hemorrhagic Symptoms":
+              String otherNonHemorrhagicSymptomsOptionFromXml =
+                  getValueFromSpecificFieldByName(singleXmlFile, "Symptom0101");
+              String otherNonHemorrhagicSymptomsOptionFromUI =
+                  symptoms.getOtherNonHemorrhagicSymptoms();
+
+              if (otherNonHemorrhagicSymptomsOptionFromUI.equals("JA")) expectedValue = "true";
+              else expectedValue = "false";
+
+              softly.assertEquals(
+                  otherNonHemorrhagicSymptomsOptionFromXml,
+                  expectedValue,
+                  symptom + " checkbox value is incorrect!");
+              softly.assertAll();
+              break;
+            case "Onset Of Disease":
+              String onsetOfDiseaseOptionDateFromXml =
+                  getValueFromSpecificFieldByName(singleXmlFile, "OnsetOfDisease").substring(0, 10);
+              String expectedOnsetOfDiseaseDateFromUI = symptoms.getDateOfSymptom().toString();
+
+              softly.assertEquals(
+                  onsetOfDiseaseOptionDateFromXml,
+                  expectedOnsetOfDiseaseDateFromUI,
+                  symptom + " date value is incorrect!");
+              softly.assertAll();
+              break;
+          }
         });
 
     And(
@@ -95,8 +422,8 @@ public class SurvNetSteps implements En {
           List<String> diffs =
               compareXMLFiles(
                   "src/main/resources/survnetXMLTemplates/controlXml.xml",
-                  "/srv/dockerdata/jenkins_new/sormas-files/test_"
-                      + EditCaseSteps.externalUUID.get(0).substring(1, 37)
+                  "/srv/dockerdata/jenkins_new/sormas-files/case_"
+                      + externalUUID.get(0).substring(1, 37)
                       + ".xml");
           List<String> nodes = extractDiffNodes(diffs, "/[Transport][^\\s]+");
 
@@ -130,8 +457,8 @@ public class SurvNetSteps implements En {
           softly.assertTrue(
               validateXMLSchema(
                   "src/main/resources/survnetXMLTemplates/xmlSchema.xsd",
-                  "/srv/dockerdata/jenkins_new/sormas-files/test_"
-                      + EditCaseSteps.externalUUID.get(0).substring(1, 37)
+                  "/srv/dockerdata/jenkins_new/sormas-files/case_"
+                      + externalUUID.get(0).substring(1, 37)
                       + ".xml"),
               "Generated XML file does not match an example XSD schema");
           softly.assertAll();
@@ -166,22 +493,22 @@ public class SurvNetSteps implements En {
         });
 
     And(
-        "^I open SORMAS generated XML file for single message$",
+        "^I open SORMAS generated XML file for single case message$",
         () -> {
           singleXmlFile =
               XMLParser.getDocument(
-                  "/srv/dockerdata/jenkins_new/sormas-files/test_"
-                      + EditCaseSteps.externalUUID.get(0).substring(1, 37)
+                  "/srv/dockerdata/jenkins_new/sormas-files/case_"
+                      + externalUUID.get(0).substring(1, 37)
                       + ".xml");
         });
 
     And(
-        "^I open SORMAS generated XML file for bulk message$",
+        "^I open SORMAS generated XML file for bulk case message$",
         () -> {
           bulkXmlFile =
               XMLParser.getDocument(
-                  "/srv/dockerdata/jenkins_new/sormas-files/bulk_"
-                      + EditCaseSteps.externalUUID.get(0).substring(1, 37)
+                  "/srv/dockerdata/jenkins_new/sormas-files/bulk_case_"
+                      + externalUUID.get(0).substring(1, 37)
                       + ".xml");
         });
 
@@ -238,6 +565,36 @@ public class SurvNetSteps implements En {
           softly.assertEquals(computedAge, expectedComputedAge, "Computed age is incorrect!");
           softly.assertAll();
         });
+
+    And(
+        "^I open SORMAS generated XML file for event single message$",
+        () -> {
+          singleXmlFile =
+              XMLParser.getDocument(
+                  "/srv/dockerdata/jenkins_new/sormas-files/event_"
+                      + EditEventSteps.externalEventUUID.get(0).substring(1, 37)
+                      + ".xml");
+        });
+
+    And(
+        "^I check if event external UUID in SORMAS generated XML file is correct$",
+        () -> {
+          softly.assertEquals(
+              getGuidRecord(singleXmlFile, 0),
+              EditEventSteps.externalEventUUID.get(0).substring(1, 37),
+              "External event UUID is incorrect!");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check if case external UUID in SORMAS generated XML file is correct$",
+        () -> {
+          softly.assertEquals(
+              getGuidRecord(singleXmlFile, 0),
+              externalUUID.get(0).substring(1, 37),
+              "External case UUID is incorrect!");
+          softly.assertAll();
+        });
   }
 
   private LocalDate getReportingDate(Document xmlFile, int caseNumber) {
@@ -268,6 +625,16 @@ public class SurvNetSteps implements En {
     String createdAt =
         xmlFile.getRootElement().getAttribute("CreatedAt").getValue().substring(0, 10);
     return LocalDate.parse(createdAt, DATE_FORMATTER);
+  }
+
+  private String getGuidRecord(Document xmlFile, int caseNumber) {
+    return xmlFile
+        .getRootElement()
+        .getChildren()
+        .get(caseNumber)
+        .getAttribute("GuidRecord")
+        .getValue()
+        .substring(1, 37);
   }
 
   private String getGuidPatient(Document xmlFile, int caseNumber) {
@@ -374,5 +741,26 @@ public class SurvNetSteps implements En {
       }
     }
     return value;
+  }
+
+  private LocalDate getDateValueFromSpecificChildNodeFieldByName(Document xmlFile, String name) {
+    Element rootElement = xmlFile.getRootElement();
+    Namespace ns = rootElement.getNamespace();
+    String value = null;
+
+    Element field =
+        xmlFile.getRootElement().getChildren().get(0).getChildren("Field", ns).stream()
+            .filter(e -> e.getAttributeValue("Name").equals(name))
+            .findFirst()
+            .orElse(null);
+
+    if (field != null) {
+      Attribute valueAttribute = field.getAttribute("Value");
+      if (valueAttribute != null) {
+        value = valueAttribute.getValue().substring(0, 10);
+        ;
+      }
+    }
+    return LocalDate.parse(value, DATE_FORMATTER);
   }
 }

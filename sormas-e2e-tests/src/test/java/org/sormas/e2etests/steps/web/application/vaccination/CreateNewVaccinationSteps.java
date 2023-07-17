@@ -58,6 +58,7 @@ public class CreateNewVaccinationSteps implements En {
   public static Vaccination duplicatedVacinationDe;
   public static Vaccination collectedVaccination;
   public static final DateTimeFormatter formatterDE = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+  public static String randomVaccinationName;
 
   @Inject
   public CreateNewVaccinationSteps(
@@ -78,6 +79,22 @@ public class CreateNewVaccinationSteps implements En {
           fillUniiCode(vaccination.getUniiCode());
           fillBatchNumber(vaccination.getBatchNumber());
           fillAtcCode(vaccination.getAtcCode());
+        });
+
+    When(
+        "I fill new vaccination data in new Vaccination form in Survnet for DE",
+        () -> {
+          vaccination = vaccinationService.buildGeneratedVaccinationSurvnetDE();
+          fillVaccinationDate(vaccination.getVaccinationDate(), Locale.GERMAN);
+          selectVaccineName(vaccination.getVaccineName());
+          fillVaccineType(vaccination.getVaccineType());
+          selectVaccinationInfoSource(vaccination.getVaccinationInfoSource());
+          fillVaccineDose(vaccination.getVaccineDose());
+          fillInn(vaccination.getInn());
+          fillUniiCode(vaccination.getUniiCode());
+          fillBatchNumber(vaccination.getBatchNumber());
+          fillAtcCode(vaccination.getAtcCode());
+          randomVaccinationName = vaccination.getVaccineName();
         });
     When(
         "I fill new duplicate vaccination data in new Vaccination form for DE without vaccination date and name",

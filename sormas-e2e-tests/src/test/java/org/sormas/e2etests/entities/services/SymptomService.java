@@ -22,6 +22,7 @@ import static org.sormas.e2etests.entities.pojo.helpers.ShortUUIDGenerator.gener
 import static org.sormas.e2etests.enums.YesNoUnknownOptions.NO;
 import static org.sormas.e2etests.enums.YesNoUnknownOptions.UNKNOWN;
 import static org.sormas.e2etests.enums.YesNoUnknownOptions.YES;
+import static org.sormas.e2etests.enums.YesNoUnknownOptionsDE.*;
 
 import com.google.inject.Inject;
 import java.time.LocalDate;
@@ -160,6 +161,98 @@ public class SymptomService {
         .confusedDisoriented(UNKNOWN.toString())
         .seizures(UNKNOWN.toString())
         .otherComplications(UNKNOWN.toString())
+        .symptomsComments(generateShortUUID())
+        .build();
+  }
+
+  @SneakyThrows
+  public Symptoms buildEditGeneratedSymptomsSurvnetDE() {
+    return Symptoms.builder()
+        .maximumBodyTemperatureInC("35,2")
+        .sourceOfBodyTemperature("rektal")
+        .fever(JA.toString())
+        .shivering(JA.toString())
+        .headache(JA.toString())
+        .musclePain(JA.toString())
+        .feelingIll(JA.toString())
+        .chillsOrSweats(JA.toString())
+        .acuteRespiratoryDistressSyndrome(JA.toString())
+        .soreThroat(JA.toString())
+        .cough(JA.toString())
+        .runnyNose(JA.toString())
+        .pneumoniaClinicalOrRadiologic(JA.toString())
+        .respiratoryDiseaseVentilation(JA.toString())
+        .oxygenSaturationLower94(JA.toString())
+        .rapidBreathing(JA.toString())
+        .difficultyBreathing(JA.toString())
+        .fastHeartRate(JA.toString())
+        .diarrhea(JA.toString())
+        .nausea(JA.toString())
+        .lossOfSmell(JA.toString())
+        .lossOfTaste(JA.toString())
+        .otherNonHemorrhagicSymptoms(JA.toString())
+        .symptomsComments(generateShortUUID())
+        .firstSymptom("Andere klinische Symptome")
+        .dateOfSymptom(LocalDate.now().minusDays(2))
+        .build();
+  }
+
+  @SneakyThrows
+  public Symptoms buildEditGeneratedSymptomsSurvnetWithNoOptionsDE() {
+    return Symptoms.builder()
+        .maximumBodyTemperatureInC("35,2")
+        .sourceOfBodyTemperature("rektal")
+        .fever(NEIN.toString())
+        .shivering(NEIN.toString())
+        .headache(NEIN.toString())
+        .musclePain(NEIN.toString())
+        .feelingIll(NEIN.toString())
+        .chillsOrSweats(NEIN.toString())
+        .acuteRespiratoryDistressSyndrome(NEIN.toString())
+        .soreThroat(NEIN.toString())
+        .cough(NEIN.toString())
+        .runnyNose(NEIN.toString())
+        .pneumoniaClinicalOrRadiologic(NEIN.toString())
+        .respiratoryDiseaseVentilation(NEIN.toString())
+        .oxygenSaturationLower94(NEIN.toString())
+        .rapidBreathing(NEIN.toString())
+        .difficultyBreathing(NEIN.toString())
+        .fastHeartRate(NEIN.toString())
+        .diarrhea(NEIN.toString())
+        .nausea(NEIN.toString())
+        .lossOfSmell(NEIN.toString())
+        .lossOfTaste(NEIN.toString())
+        .otherNonHemorrhagicSymptoms(NEIN.toString())
+        .symptomsComments(generateShortUUID())
+        .build();
+  }
+
+  @SneakyThrows
+  public Symptoms buildEditGeneratedSymptomsSurvnetWithUnknownOptionsDE() {
+    return Symptoms.builder()
+        .maximumBodyTemperatureInC("35,2")
+        .sourceOfBodyTemperature("rektal")
+        .fever(UNBEKANNT.toString())
+        .shivering(UNBEKANNT.toString())
+        .headache(UNBEKANNT.toString())
+        .musclePain(UNBEKANNT.toString())
+        .feelingIll(UNBEKANNT.toString())
+        .chillsOrSweats(UNBEKANNT.toString())
+        .acuteRespiratoryDistressSyndrome(UNBEKANNT.toString())
+        .soreThroat(UNBEKANNT.toString())
+        .cough(UNBEKANNT.toString())
+        .runnyNose(UNBEKANNT.toString())
+        .pneumoniaClinicalOrRadiologic(UNBEKANNT.toString())
+        .respiratoryDiseaseVentilation(UNBEKANNT.toString())
+        .oxygenSaturationLower94(UNBEKANNT.toString())
+        .rapidBreathing(UNBEKANNT.toString())
+        .difficultyBreathing(UNBEKANNT.toString())
+        .fastHeartRate(UNBEKANNT.toString())
+        .diarrhea(UNBEKANNT.toString())
+        .nausea(UNBEKANNT.toString())
+        .lossOfSmell(UNBEKANNT.toString())
+        .lossOfTaste(UNBEKANNT.toString())
+        .otherNonHemorrhagicSymptoms(UNBEKANNT.toString())
         .symptomsComments(generateShortUUID())
         .build();
   }

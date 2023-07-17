@@ -248,7 +248,8 @@ public class TravelEntriesView extends AbstractView {
 						I18nProperties.getCaption(Captions.bulkDelete),
 						VaadinIcons.TRASH,
 						mi -> grid.bulkActionHandler(
-							items -> ControllerProvider.getTravelEntryController().deleteAllSelectedItems(items, () -> navigateTo(criteria)),
+							items -> ControllerProvider.getTravelEntryController()
+								.deleteAllSelectedItems(items, (TravelEntryGrid) grid, () -> navigateTo(criteria)),
 							true)));
 			} else {
 				bulkActions.add(
@@ -256,7 +257,8 @@ public class TravelEntriesView extends AbstractView {
 						I18nProperties.getCaption(Captions.bulkRestore),
 						VaadinIcons.ARROW_BACKWARD,
 						mi -> grid.bulkActionHandler(
-							items -> ControllerProvider.getTravelEntryController().restoreSelectedTravelEntries(items, () -> navigateTo(criteria)),
+							items -> ControllerProvider.getTravelEntryController()
+								.restoreSelectedTravelEntries(items, (TravelEntryGrid) grid, () -> navigateTo(criteria)),
 							true)));
 			}
 

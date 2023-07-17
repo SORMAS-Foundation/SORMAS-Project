@@ -360,8 +360,20 @@ public class CampaignFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._CAMPAIGN_DELETE)
+	public List<String> delete(List<String> uuids, DeletionDetails deletionDetails) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	@RightsAllowed(UserRight._CAMPAIGN_DELETE)
 	public void restore(String uuid) {
 		super.restore(uuid);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._CAMPAIGN_DELETE)
+	public List<String> restore(List<String> uuids) {
+		throw new NotImplementedException();
 	}
 
 	@Override

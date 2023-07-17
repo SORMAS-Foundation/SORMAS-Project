@@ -7,7 +7,7 @@
       "url" : "https://www.gnu.org/licenses/gpl-3.0.html"
     },
     "title" : "SORMAS REST API",
-    "version" : "1.86.0-SNAPSHOT"
+    "version" : "1.87.0-SNAPSHOT"
   },
   "servers" : [ {
     "url" : "/sormas-rest"
@@ -12722,8 +12722,20 @@
         }, {
           "type" : "object",
           "properties" : {
+            "classificationCriteria" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/components/schemas/ClassificationCriteriaDto"
+              }
+            },
             "criteriaName" : {
               "type" : "string"
+            },
+            "subCriteria" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/components/schemas/ClassificationCriteriaDto"
+              }
             }
           }
         } ]
@@ -12827,12 +12839,24 @@
         }, {
           "type" : "object",
           "properties" : {
+            "classificationCriteria" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/components/schemas/ClassificationCriteriaDto"
+              }
+            },
             "criteriaName" : {
               "type" : "string"
             },
             "requiredAmount" : {
               "type" : "integer",
               "format" : "int32"
+            },
+            "subCriteria" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/components/schemas/ClassificationCriteriaDto"
+              }
             }
           }
         } ]

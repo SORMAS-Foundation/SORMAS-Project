@@ -537,14 +537,14 @@ public class ContactsView extends AbstractView {
 								I18nProperties.getCaption(Captions.bulkDelete),
 								VaadinIcons.TRASH,
 								mi -> grid.bulkActionHandler(
-									items -> ControllerProvider.getContactController().deleteAllSelectedItems(items, () -> navigateTo(criteria)),
+									items -> ControllerProvider.getContactController().deleteAllSelectedItems(items, (AbstractContactGrid<?>) grid),
 									true),
 								hasBulkOperationsRight)
 							: new MenuBarHelper.MenuBarItem(
 								I18nProperties.getCaption(Captions.bulkRestore),
 								VaadinIcons.ARROW_BACKWARD,
 								mi -> grid.bulkActionHandler(
-									items -> ControllerProvider.getContactController().restoreSelectedContacts(items, () -> navigateTo(criteria)),
+									items -> ControllerProvider.getContactController().restoreSelectedContacts(items, (AbstractContactGrid<?>) grid),
 									true),
 								hasBulkOperationsRight),
 						new MenuBarHelper.MenuBarItem(

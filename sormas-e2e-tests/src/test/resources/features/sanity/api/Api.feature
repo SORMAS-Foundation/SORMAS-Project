@@ -170,33 +170,43 @@ Feature: Check basic POSTs RestApi endpoints
     And API: I check that POST call status code is 200
 
   @env_main @precon
-  Scenario: User permissions check
+  Scenario Outline: User permissions check <user>
     Given API:I Login into Environment
-    Then API: I get response with Admin User user permission rights
+    Then API: I get response with <user> user permission rights
     And API: I check that GET call status code is 200
-    And I prepare collection of Admin User rights based on json files
+    And I prepare collection of <user> rights based on json files
     And I check that user rights are complete
 
-  @env_main @precon
-  Scenario: User permissions check
-    Given API:I Login into Environment
-    Then API: I get response with National User user permission rights
-    And API: I check that GET call status code is 200
-    And I prepare collection of National User rights based on json files
-    And I check that user rights are complete
+    Examples:
+      |user                   |
+      | Admin User            |
+      | National User         |
 
   @env_de @precon
-  Scenario: User permissions check for DE version
+  Scenario Outline: User permissions check <user> DE version
     Given API:I Login into Environment
-    Then API: I get response with Admin User user permission rights
+    Then API: I get response with <user> user permission rights
     And API: I check that GET call status code is 200
-    And I prepare collection of Admin User rights based on json files for De version
+    And I prepare collection of <user> rights based on json files for De version
     And I check that user rights are complete
 
-  @env_de @precon
-  Scenario: User permissions check for DE version
+    Examples:
+      |user                   |
+      | Admin User            |
+      | National User         |
+
+  @env_survnet @precon
+  Scenario: User permissions check for Survnet User
     Given API:I Login into Environment
-    Then API: I get response with National User user permission rights
+    Then API: I get response with Survnet user permission rights
     And API: I check that GET call status code is 200
-    And I prepare collection of National User rights based on json files for De version
+    And I prepare collection of Survnet rights based on json files
+    And I check that user rights are complete
+
+  @env_s2s_1 @precon
+  Scenario: User permissions check for SormasToSormas User
+    Given API:I Login into Environment
+    Then API: I get response with S2S user permission rights
+    And API: I check that GET call status code is 200
+    And I prepare collection of S2S rights based on json files
     And I check that user rights are complete

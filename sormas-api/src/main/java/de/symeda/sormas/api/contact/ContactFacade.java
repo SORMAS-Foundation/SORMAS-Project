@@ -33,7 +33,6 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.MergeFacade;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.CoreAndPersonDto;
-import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.dashboard.DashboardContactDto;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
@@ -60,8 +59,6 @@ public interface ContactFacade extends CoreFacade<ContactDto, ContactIndexDto, C
 	Long countContactsForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to);
 
 	List<MapContactDto> getContactsForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to);
-
-	List<String> deleteContacts(List<String> contactUuids, DeletionDetails deletionDetails);
 
 	FollowUpPeriodDto getCalculatedFollowUpUntilDate(ContactDto contactDto, boolean ignoreOverwrite);
 

@@ -58,4 +58,7 @@ public class SideCards {
           "//div[@location='sormasToSormas']//div[@class='v-slot v-slot-s-list-entry v-slot-s-list-entry-no-border']");
   public static final By SHARE_SORMAS_2_SORMAS_POPUP_BUTTON =
       By.cssSelector(".popupContent #commit");
+  public static By getEditSampleButtonByNumber(Integer number) {
+    return By.xpath(String.format("(//div[contains(@id, 'edit-sample')])[%x]", number));
+  }
 }

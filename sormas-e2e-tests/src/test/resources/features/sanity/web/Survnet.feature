@@ -24,7 +24,7 @@ Feature: Survnet tests
     And I click on Send to reporting tool button on Edit Case page
     And I collect case external UUID from Edit Case page
     Then I wait 50 seconds for system reaction
-    And I open SORMAS generated XML file for single message
+    And I open SORMAS generated XML file for single case message
     Then I check if "date of report" in SORMAS generated XML file is correct
     And I check if sex in SORMAS generated single XML file is correct
 
@@ -43,7 +43,7 @@ Feature: Survnet tests
     And I compare the SORMAS generated XML file with the example one
     And I click on the About button from navbar
     And I collect SORMAS VERSION from About page
-    And I open SORMAS generated XML file for single message
+    And I open SORMAS generated XML file for single case message
     And I check if software info in SORMAS generated XML file is correct
     Then I check if "date of report" in SORMAS generated XML file is correct
     And I check if "change at date" in SORMAS generated XML file is correct
@@ -84,10 +84,114 @@ Feature: Survnet tests
     And I click on the first Case ID from Case Directory
     And I navigate to case person tab
     And I collect person external UUID from Edit Case page
-    And I open SORMAS generated XML file for bulk message
+    And I open SORMAS generated XML file for bulk case message
     Then I check if sex for all 2 cases in SORMAS generated bulk XML file is correct
     And I check if external person uuid for all 2 cases in SORMAS generated bult XML file is correct
     And I check if "date of report" for all 2 cases in SORMAS generated bulk XML file is correct
+
+  @tmsLink=SORQA-1028
+  Scenario: Symptoms in case when sending from SORMAS to Meldesoftware with YES checkbox option for Survnet DE
+  Given I log in as a Survnet
+    When I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with mandatory data only for Survnet DE
+    And I navigate to symptoms tab
+    Then I change all symptoms fields to "YES" option field and save for Survnet DE
+    And I navigate to case tab
+    And I click on Send to reporting tool button on Edit Case page
+    And I collect case external UUID from Edit Case page
+    Then I wait 50 seconds for system reaction
+    Then I open SORMAS generated XML file for single case message
+    And I check if "Fever" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Shivering" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Headache" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Muscle Pain" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Feeling Ill" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Chills Sweats" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Acute Respiratory Distress Syndrome" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Sore Throat" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Cough" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Runny Nose" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Pneumonia Clinical Or Radiologic" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Respiratory Disease Ventilation" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Oxygen Saturation Lower94" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Rapid Breathing" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Difficulty Breathing" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Fast Heart Rate" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Diarrhea" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Nausea" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Loss Of Smell" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Loss OfTaste" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Other Non Hemorrhagic Symptoms" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Onset Of Disease" SYMPTOM in SORMAS generated single XML file is correct
+
+  @tmsLink=SORQA-1028
+  Scenario: Symptoms in case when sending from SORMAS to Meldesoftware with NO checkbox option for Survnet DE
+    Given I log in as a Survnet
+    When I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with mandatory data only for Survnet DE
+    And I navigate to symptoms tab
+    Then I change all symptoms fields to "NO" option field and save for Survnet DE
+    And I navigate to case tab
+    And I click on Send to reporting tool button on Edit Case page
+    And I collect case external UUID from Edit Case page
+    Then I wait 50 seconds for system reaction
+    And I open SORMAS generated XML file for single case message
+    And I check if "Fever" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Shivering" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Headache" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Muscle Pain" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Feeling Ill" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Chills Sweats" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Acute Respiratory Distress Syndrome" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Sore Throat" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Cough" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Runny Nose" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Pneumonia Clinical Or Radiologic" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Respiratory Disease Ventilation" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Oxygen Saturation Lower94" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Rapid Breathing" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Difficulty Breathing" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Fast Heart Rate" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Diarrhea" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Nausea" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Loss Of Smell" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Loss OfTaste" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Other Non Hemorrhagic Symptoms" SYMPTOM in SORMAS generated single XML file is correct
+
+  @tmsLink=SORQA-1028
+  Scenario: Symptoms in case when sending from SORMAS to Meldesoftware with UNKNOWN checkbox option for Survnet DE
+    Given I log in as a Survnet
+    When I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with mandatory data only for Survnet DE
+    And I navigate to symptoms tab
+    Then I change all symptoms fields to "UNKNOWN" option field and save for Survnet DE
+    And I navigate to case tab
+    And I click on Send to reporting tool button on Edit Case page
+    And I collect case external UUID from Edit Case page
+    Then I wait 50 seconds for system reaction
+    And I open SORMAS generated XML file for single case message
+    And I check if "Fever" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Shivering" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Headache" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Muscle Pain" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Feeling Ill" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Acute Respiratory Distress Syndrome" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Sore Throat" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Cough" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Runny Nose" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Pneumonia Clinical Or Radiologic" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Respiratory Disease Ventilation" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Rapid Breathing" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Difficulty Breathing" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Fast Heart Rate" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Diarrhea" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Nausea" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Loss Of Smell" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Loss OfTaste" SYMPTOM in SORMAS generated single XML file is correct
+    And I check if "Other Non Hemorrhagic Symptoms" SYMPTOM in SORMAS generated single XML file is correct
 
   @tmsLink=SORQA-1027
   Scenario: Calculated age in case when sending from SORMAS to Meldesoftware
@@ -98,5 +202,45 @@ Feature: Survnet tests
     And I click on Send to reporting tool button on Edit Case page
     And I collect case external UUID from Edit Case page
     Then I wait 50 seconds for system reaction
-    And I open SORMAS generated XML file for single message
+    And I open SORMAS generated XML file for single case message
     Then I check if age computed field in SORMAS generated XML file is correct
+
+  @tmsLink=SORQA-1030
+  Scenario: Check Event type Cluster when sending from SORMAS to Meldesoftware
+    Given I log in as a Survnet
+    When I click on the Events button from navbar
+    And I create a new cluster event for DE version
+    And I add only required data for event participant creation for DE
+    And I click on the Event participant tab
+    And I add only required data for event participant creation for DE
+    And I click on the Event participant tab
+    And I back to the Event tab
+    And I click on Send to reporting tool button on Edit Case page
+    And I collect event external UUID from Edit Event page
+    Then I wait 50 seconds for system reaction
+    And I open SORMAS generated XML file for event single message
+    And I check if event external UUID in SORMAS generated XML file is correct
+    And I check if "created at date" in SORMAS generated XML file is correct
+    And I check if "change at date" in SORMAS generated XML file is correct
+
+  @tmsLink=SORQA-1035
+  Scenario: Check Vaccination and Vaccination Status of case when sending from SORMAS to Meldesoftware
+    Given I log in as a Survnet
+    When I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with mandatory data only for Survnet DE
+    And I navigate to case tab
+    Then I click NEW VACCINATION button for DE
+    And I fill new vaccination data in new Vaccination form in Survnet for DE
+    And I set the vaccination date 14 days before the date of symptom in displayed vaccination form
+    And I click SAVE button in new Vaccination form
+    Then I check if Vaccination Status is set to "Geimpft" on Edit Case page
+    And I click on Send to reporting tool button on Edit Case page
+    And I collect case external UUID from Edit Case page
+    Then I wait 50 seconds for system reaction
+    And I open SORMAS generated XML file for single case message
+    And I check if case external UUID in SORMAS generated XML file is correct
+    And I check if "date of report" in SORMAS generated XML file is correct
+    And I check if "vaccination date" in SORMAS generated XML file is correct
+    And I check if Vaccine name in SORMAS generated XML file is correct
+

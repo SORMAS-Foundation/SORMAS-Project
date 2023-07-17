@@ -328,18 +328,27 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 	@Override
 	@RightsAllowed(UserRight._EXTERNAL_MESSAGE_DELETE)
-	public void deleteExternalMessage(String uuid) {
+	public void delete(String uuid) {
 		externalMessageService.deletePermanent(externalMessageService.getByUuid(uuid));
 	}
 
 	@Override
 	@RightsAllowed(UserRight._EXTERNAL_MESSAGE_DELETE)
-	public void deleteExternalMessages(List<String> uuids) {
-		List<ExternalMessage> externalMessages = externalMessageService.getByUuids(uuids);
-		for (ExternalMessage externalMessage : externalMessages) {
-			if (externalMessage.getStatus() != ExternalMessageStatus.PROCESSED) {
-				externalMessageService.deletePermanent(externalMessage);
-			}
+	public void delete(List<String> uuids) {
+		List<String> deletedExternalMessageUuids = new ArrayList<>();
+		List<ExternalMessage> externalMessagesToBeDeleted = externalMessageService.getByUuids(uuids);
+
+		if (externalMessagesToBeDeleted != null) {
+			externalMessagesToBeDeleted.forEach(externalMessageToBeDeleted -> {
+				if (externalMessageToBeDeleted.getStatus() != ExternalMessageStatus.PROCESSED) {
+					try {
+						externalMessageService.deletePermanent(externalMessageToBeDeleted);
+						deletedExternalMessageUuids.add(externalMessageToBeDeleted.getUuid());
+					} catch (Exception e) {
+						logger.error("The external message with uuid:" + externalMessageToBeDeleted.getUuid() + "could not be deleted");
+					}
+				}
+			});
 		}
 	}
 
