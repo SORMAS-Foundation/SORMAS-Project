@@ -250,7 +250,7 @@ Feature: Survnet tests
     When I click on the Cases button from navbar
     And I click on the NEW CASE button
     And I create a new case with mandatory data only for Survnet DE
-    And I select the Pre-existing condition "diabetes" as "Ja" on Edit Case page
+    And I select the Pre-existing condition "diabetes" as <option>> on Edit Case page
     And I select the Pre-existing condition "immunodeficiencyIncludingHiv" as <option> on Edit Case page
     And I select the Pre-existing condition "chronicLiverDisease" as <option> on Edit Case page
     And I select the Pre-existing condition "malignancyChemotherapy" as <option> on Edit Case page
