@@ -83,6 +83,13 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setTestedDiseaseVariantDetails(source.getTestedDiseaseVariantDetails());
 		target.setPreliminary(source.getPreliminary());
 		target.setTestPcrTestSpecification(source.getTestPcrTestSpecification());
+		target.setCqValue(source.getCqValue());
+		target.setCtValueE(source.getCtValueE());
+		target.setCtValueN(source.getCtValueN());
+		target.setCtValueRdrp(source.getCtValueRdrp());
+		target.setCtValueS(source.getCtValueS());
+		target.setCtValueOrf1(source.getCtValueOrf1());
+		target.setCtValueRdrpS(source.getCtValueRdrpS());
 
 		return target;
 	}
@@ -108,6 +115,13 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setTestedDiseaseVariantDetails(source.getTestedDiseaseVariantDetails());
 		target.setPreliminary(source.getPreliminary());
 		target.setTestPcrTestSpecification(source.getTestPcrTestSpecification());
+		target.setCqValue(source.getCqValue());
+		target.setCtValueE(source.getCtValueE());
+		target.setCtValueN(source.getCtValueN());
+		target.setCtValueRdrp(source.getCtValueRdrp());
+		target.setCtValueS(source.getCtValueS());
+		target.setCtValueOrf1(source.getCtValueOrf1());
+		target.setCtValueRdrpS(source.getCtValueRdrpS());
 
 		return target;
 	}
