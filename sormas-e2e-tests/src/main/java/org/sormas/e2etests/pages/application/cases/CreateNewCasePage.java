@@ -53,6 +53,8 @@ public class CreateNewCasePage {
   public static final By EPID_NUMBER_INPUT = By.cssSelector(".popupContent #epidNumber");
   public static final By PLACE_OF_STAY =
       By.cssSelector(".popupContent div[location='facilityOrHomeLoc'] span.v-select-option label");
+  public static final By REINFECTION =
+      By.cssSelector(".popupContent div[location='reInfection'] span.v-select-option label");
   public static final By PLACE_DESCRIPTION_INPUT =
       By.cssSelector(".popupContent #healthFacilityDetails");
   public static final By DATE_OF_BIRTH_YEAR_COMBOBOX =
