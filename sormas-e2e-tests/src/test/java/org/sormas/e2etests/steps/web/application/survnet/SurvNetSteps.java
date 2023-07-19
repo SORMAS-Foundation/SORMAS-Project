@@ -165,63 +165,63 @@ public class SurvNetSteps implements En {
               softly.assertEquals(
                   getValueFromSpecificFieldByName(singleXmlFile, "ReinfectionDetailCVD01"),
                   PreviousCovidInfectionIsKnownValue.toString(),
-                  "checkbox value in xml is incorrect");
+                  "Previous covid infection is known value is incorrect");
               softly.assertAll();
               break;
             case "CURRENT COVID INFECTION IS KNOWN":
               softly.assertEquals(
                   getValueFromSpecificFieldByName(singleXmlFile, "ReinfectionDetailCVD02"),
                   CurrentCovidInfectionIsKnownValue.toString(),
-                  "checkbox value in xml is incorrect");
+                  "Current covid infection is known value is incorrect");
               softly.assertAll();
               break;
             case "CURRENT COVID INFECTION DO NOT MATCH":
               softly.assertEquals(
                   getValueFromSpecificFieldByName(singleXmlFile, "ReinfectionDetailCVD03"),
                   CurrentCovidInfectionDoNotMatchValue.toString(),
-                  "checkbox value in xml is incorrect");
+                  "Current covid infection do not match is incorrect");
               softly.assertAll();
               break;
             case "PERSON HAS OVERCOME ACUTE RESPIRATORY":
               softly.assertEquals(
                   getValueFromSpecificFieldByName(singleXmlFile, "ReinfectionDetailCVD05"),
                   PersonHasOvercomeAcuteRespiratory.toString(),
-                  "checkbox value in xml is incorrect");
+                  "Person has overcome acute respiratory value is incorrect");
               softly.assertAll();
               break;
             case "PERSON HAD AN ASYMPTOMATIC COVID INFECTION":
               softly.assertEquals(
                   getValueFromSpecificFieldByName(singleXmlFile, "ReinfectionDetailCVD06"),
                   PersonHadAnAsymptomaticCovidInfection.toString(),
-                  "checkbox value in xml is incorrect");
+                  "Person had an asymptomatic covid infection value is incorrect");
               softly.assertAll();
               break;
             case "COVID GENOM COPY NUMBER":
               softly.assertEquals(
                   getValueFromSpecificFieldByName(singleXmlFile, "ReinfectionDetailCVD09"),
                   CovidGenomeCopyNumber.toString(),
-                  "checkbox value in xml is incorrect");
+                  "Covid genom copy number value is incorrect");
               softly.assertAll();
               break;
             case "INDIVIDUAL TESTED POSITIVE FOR COVID BY PCR":
               softly.assertEquals(
                   getValueFromSpecificFieldByName(singleXmlFile, "ReinfectionDetailCVD10"),
                   IndividualTestedPositiveForCovidByPCR.toString(),
-                  "checkbox value in xml is incorrect");
+                  "Individual tested positive for covid by pcr value is incorrect");
               softly.assertAll();
               break;
             case "PERSON TESTED CONCLUSIVELY NEGATIVE BY PRC":
               softly.assertEquals(
                   getValueFromSpecificFieldByName(singleXmlFile, "ReinfectionDetailCVD07"),
                   PersonTestedConclusivelyNegativeByPCR.toString(),
-                  "checkbox value in xml is incorrect");
+                  "Person tested conclusively negative by pcr value is incorrect");
               softly.assertAll();
               break;
             case "THE LAST POSITIVE PCR DETECTION WAS MORE THAN 3 MONTHS AGO":
               softly.assertEquals(
                   getValueFromSpecificFieldByName(singleXmlFile, "ReinfectionDetailCVD08"),
                   TheLastPositivePCRDetectionWasMoreThan3MonthsAgo.toString(),
-                  "checkbox value in xml is incorrect");
+                  "The last positive pcr detection was more then 3 months ago value is incorrect");
               softly.assertAll();
               break;
           }

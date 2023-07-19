@@ -1675,7 +1675,7 @@ public class CreateNewCaseSteps implements En {
   }
 
   private void selectReinfection(String reinfection) {
-    webDriverHelpers.clickWebElementByText(REINFECTION, reinfection);
+    webDriverHelpers.clickWebElementByText(REINFECTION_SPAN, reinfection);
   }
 
   private void fillPlaceDescription(String placeDescription) {
