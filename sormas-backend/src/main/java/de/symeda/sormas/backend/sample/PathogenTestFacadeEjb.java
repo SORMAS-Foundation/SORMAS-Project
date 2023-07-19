@@ -68,6 +68,8 @@ import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.country.CountryService;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -107,6 +109,8 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	private UserService userService;
 	@EJB
 	private NotificationService notificationService;
+	@EJB
+	private CountryService countryService;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -398,6 +402,15 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setDeletionReason(source.getDeletionReason());
 		target.setOtherDeletionReason(source.getOtherDeletionReason());
 
+		target.setPrescriberPhysicianCode(source.getPrescriberPhysicianCode());
+		target.setPrescriberFirstName(source.getPrescriberFirstName());
+		target.setPrescriberLastName(source.getPrescriberLastName());
+		target.setPrescriberPhoneNumber(source.getPrescriberPhoneNumber());
+		target.setPrescriberAddress(source.getPrescriberAddress());
+		target.setPrescriberPostalCode(source.getPrescriberPostalCode());
+		target.setPrescriberCity(source.getPrescriberCity());
+		target.setPrescriberCountry(CountryFacadeEjb.toReferenceDto(source.getPrescriberCountry()));
+
 		return target;
 	}
 
@@ -472,6 +485,15 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setDeleted(source.isDeleted());
 		target.setDeletionReason(source.getDeletionReason());
 		target.setOtherDeletionReason(source.getOtherDeletionReason());
+
+		target.setPrescriberPhysicianCode(source.getPrescriberPhysicianCode());
+		target.setPrescriberFirstName(source.getPrescriberFirstName());
+		target.setPrescriberLastName(source.getPrescriberLastName());
+		target.setPrescriberPhoneNumber(source.getPrescriberPhoneNumber());
+		target.setPrescriberAddress(source.getPrescriberAddress());
+		target.setPrescriberPostalCode(source.getPrescriberPostalCode());
+		target.setPrescriberCity(source.getPrescriberCity());
+		target.setPrescriberCountry(countryService.getByReferenceDto(source.getPrescriberCountry()));
 
 		return target;
 	}

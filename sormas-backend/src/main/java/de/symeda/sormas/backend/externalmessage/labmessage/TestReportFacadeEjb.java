@@ -24,6 +24,8 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportFacade;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.country.CountryService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.RightsAllowed;
 
@@ -33,9 +35,10 @@ public class TestReportFacadeEjb implements TestReportFacade {
 
 	@EJB
 	private SampleReportService sampleReportService;
-
 	@EJB
 	private TestReportService testReportService;
+	@EJB
+	private CountryService countryService;
 
 	@Override
 	public TestReportDto getByUuid(String uuid) {
@@ -90,6 +93,14 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setCtValueS(source.getCtValueS());
 		target.setCtValueOrf1(source.getCtValueOrf1());
 		target.setCtValueRdrpS(source.getCtValueRdrpS());
+		target.setPrescriberPhysicianCode(source.getPrescriberPhysicianCode());
+		target.setPrescriberFirstName(source.getPrescriberFirstName());
+		target.setPrescriberLastName(source.getPrescriberLastName());
+		target.setPrescriberPhoneNumber(source.getPrescriberPhoneNumber());
+		target.setPrescriberAddress(source.getPrescriberAddress());
+		target.setPrescriberPostalCode(source.getPrescriberPostalCode());
+		target.setPrescriberCity(source.getPrescriberCity());
+		target.setPrescriberCountry(CountryFacadeEjb.toReferenceDto(source.getPrescriberCountry()));
 
 		return target;
 	}
@@ -122,6 +133,14 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setCtValueS(source.getCtValueS());
 		target.setCtValueOrf1(source.getCtValueOrf1());
 		target.setCtValueRdrpS(source.getCtValueRdrpS());
+		target.setPrescriberPhysicianCode(source.getPrescriberPhysicianCode());
+		target.setPrescriberFirstName(source.getPrescriberFirstName());
+		target.setPrescriberLastName(source.getPrescriberLastName());
+		target.setPrescriberPhoneNumber(source.getPrescriberPhoneNumber());
+		target.setPrescriberAddress(source.getPrescriberAddress());
+		target.setPrescriberPostalCode(source.getPrescriberPostalCode());
+		target.setPrescriberCity(source.getPrescriberCity());
+		target.setPrescriberCountry(countryService.getByReferenceDto(source.getPrescriberCountry()));
 
 		return target;
 	}
