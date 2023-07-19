@@ -19989,6 +19989,30 @@
             "type" : "string",
             "format" : "date-time"
           },
+          "ctValueE" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "ctValueN" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "ctValueOrf1" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "ctValueRdrp" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "ctValueRdrpS" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "ctValueS" : {
+            "type" : "number",
+            "format" : "float"
+          },
           "deleted" : {
             "type" : "boolean"
           },
@@ -23725,9 +23749,37 @@
             "type" : "string",
             "format" : "date-time"
           },
+          "cqValue" : {
+            "type" : "number",
+            "format" : "float"
+          },
           "creationDate" : {
             "type" : "string",
             "format" : "date-time"
+          },
+          "ctValueE" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "ctValueN" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "ctValueOrf1" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "ctValueRdrp" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "ctValueRdrpS" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "ctValueS" : {
+            "type" : "number",
+            "format" : "float"
           },
           "dateOfResult" : {
             "type" : "string",
