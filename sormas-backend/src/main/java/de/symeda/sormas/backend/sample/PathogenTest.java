@@ -69,6 +69,12 @@ public class PathogenTest extends DeletableAdo {
 	public static final String FOUR_FOLD_INCREASE_ANTIBODY_TITER = "fourFoldIncreaseAntibodyTiter";
 	public static final String SEROTYPE = "serotype";
 	public static final String CQ_VALUE = "cqValue";
+	public static final String CT_VALUE_E = "ctValueE";
+	public static final String CT_VALUE_N = "ctValueN";
+	public static final String CT_VALUE_RDRP = "ctValueRdrp";
+	public static final String CT_VALUE_S = "ctValueS";
+	public static final String CT_VALUE_ORF_1 = "ctValueOrf1";
+	public static final String CT_VALUE_RDRP_S = "ctValueRdrpS";
 	public static final String REPORT_DATE = "reportDate";
 
 	private Sample sample;
@@ -91,6 +97,12 @@ public class PathogenTest extends DeletableAdo {
 	private boolean fourFoldIncreaseAntibodyTiter;
 	private String serotype;
 	private Float cqValue;
+	private Float ctValueE;
+	private Float ctValueN;
+	private Float ctValueRdrp;
+	private Float ctValueS;
+	private Float ctValueOrf1;
+	private Float ctValueRdrpS;
 	private Date reportDate;
 	private boolean viaLims;
 	private String externalId;
@@ -273,6 +285,60 @@ public class PathogenTest extends DeletableAdo {
 
 	public void setCqValue(Float cqValue) {
 		this.cqValue = cqValue;
+	}
+
+	@Column
+	public Float getCtValueE() {
+		return ctValueE;
+	}
+
+	public void setCtValueE(Float ctValueE) {
+		this.ctValueE = ctValueE;
+	}
+
+	@Column
+	public Float getCtValueN() {
+		return ctValueN;
+	}
+
+	public void setCtValueN(Float ctValueN) {
+		this.ctValueN = ctValueN;
+	}
+
+	@Column
+	public Float getCtValueRdrp() {
+		return ctValueRdrp;
+	}
+
+	public void setCtValueRdrp(Float ctValueRdrp) {
+		this.ctValueRdrp = ctValueRdrp;
+	}
+
+	@Column
+	public Float getCtValueS() {
+		return ctValueS;
+	}
+
+	public void setCtValueS(Float ctValueS) {
+		this.ctValueS = ctValueS;
+	}
+
+	@Column
+	public Float getCtValueOrf1() {
+		return ctValueOrf1;
+	}
+
+	public void setCtValueOrf1(Float ctValueOrf1) {
+		this.ctValueOrf1 = ctValueOrf1;
+	}
+
+	@Column
+	public Float getCtValueRdrpS() {
+		return ctValueRdrpS;
+	}
+
+	public void setCtValueRdrpS(Float ctValueRdrpS) {
+		this.ctValueRdrpS = ctValueRdrpS;
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)

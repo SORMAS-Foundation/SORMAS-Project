@@ -6,6 +6,7 @@ import java.util.List;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
@@ -15,6 +16,7 @@ import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
+import de.symeda.sormas.api.utils.HideForCountriesExcept;
 
 @DependingOnFeatureType(featureType = FeatureType.EXTERNAL_MESSAGES)
 public class TestReportDto extends EntityDto {
@@ -32,6 +34,13 @@ public class TestReportDto extends EntityDto {
 	public static final String TEST_RESULT = "testResult";
 	public static final String DATE_OF_RESULT = "dateOfResult";
 	public static final String TEST_PCR_TEST_SPECIFICATION = "testPcrTestSpecification";
+	public static final String CQ_VALUE = "cqValue";
+	public static final String CT_VALUE_E = "ctValueE";
+	public static final String CT_VALUE_N = "ctValueN";
+	public static final String CT_VALUE_RDRP = "ctValueRdrp";
+	public static final String CT_VALUE_S = "ctValueS";
+	public static final String CT_VALUE_ORF_1 = "ctValueOrf1";
+	public static final String CT_VALUE_RDRP_S = "ctValueRdrpS";
 
 	@NotNull(message = Validations.requiredField)
 	private SampleReportReferenceDto sampleReport;
@@ -63,6 +72,21 @@ public class TestReportDto extends EntityDto {
 
 	private Boolean preliminary;
 	private PCRTestSpecification testPcrTestSpecification;
+
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private Float cqValue;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private Float ctValueE;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private Float ctValueN;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private Float ctValueRdrp;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private Float ctValueS;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private Float ctValueOrf1;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private Float ctValueRdrpS;
 
 	public SampleReportReferenceDto getSampleReport() {
 		return sampleReport;
@@ -212,5 +236,61 @@ public class TestReportDto extends EntityDto {
 
 	public void setTestPcrTestSpecification(PCRTestSpecification testPcrTestSpecification) {
 		this.testPcrTestSpecification = testPcrTestSpecification;
+	}
+
+	public Float getCqValue() {
+		return cqValue;
+	}
+
+	public void setCqValue(Float cqValue) {
+		this.cqValue = cqValue;
+	}
+
+	public Float getCtValueE() {
+		return ctValueE;
+	}
+
+	public void setCtValueE(Float ctValueE) {
+		this.ctValueE = ctValueE;
+	}
+
+	public Float getCtValueN() {
+		return ctValueN;
+	}
+
+	public void setCtValueN(Float ctValueN) {
+		this.ctValueN = ctValueN;
+	}
+
+	public Float getCtValueRdrp() {
+		return ctValueRdrp;
+	}
+
+	public void setCtValueRdrp(Float ctValueRdrp) {
+		this.ctValueRdrp = ctValueRdrp;
+	}
+
+	public Float getCtValueS() {
+		return ctValueS;
+	}
+
+	public void setCtValueS(Float ctValueS) {
+		this.ctValueS = ctValueS;
+	}
+
+	public Float getCtValueOrf1() {
+		return ctValueOrf1;
+	}
+
+	public void setCtValueOrf1(Float ctValueOrf1) {
+		this.ctValueOrf1 = ctValueOrf1;
+	}
+
+	public Float getCtValueRdrpS() {
+		return ctValueRdrpS;
+	}
+
+	public void setCtValueRdrpS(Float ctValueRdrpS) {
+		this.ctValueRdrpS = ctValueRdrpS;
 	}
 }

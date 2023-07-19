@@ -12419,4 +12419,35 @@ INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaul
 
 INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (516, 'Add environmental user rights and default user #11572', true);
 
+-- 2023-07-18 Add ct value fields to pathogen tests and test reports #12314
+ALTER TABLE pathogentest ADD COLUMN ctvaluee real;
+ALTER TABLE pathogentest ADD COLUMN ctvaluen real;
+ALTER TABLE pathogentest ADD COLUMN ctvaluerdrp real;
+ALTER TABLE pathogentest ADD COLUMN ctvalues real;
+ALTER TABLE pathogentest ADD COLUMN ctvalueorf1 real;
+ALTER TABLE pathogentest ADD COLUMN ctvaluerdrps real;
+ALTER TABLE pathogentest_history ADD COLUMN ctvaluee real;
+ALTER TABLE pathogentest_history ADD COLUMN ctvaluen real;
+ALTER TABLE pathogentest_history ADD COLUMN ctvaluerdrp real;
+ALTER TABLE pathogentest_history ADD COLUMN ctvalues real;
+ALTER TABLE pathogentest_history ADD COLUMN ctvalueorf1 real;
+ALTER TABLE pathogentest_history ADD COLUMN ctvaluerdrps real;
+
+ALTER TABLE testreport ADD COLUMN cqvalue real;
+ALTER TABLE testreport ADD COLUMN ctvaluee real;
+ALTER TABLE testreport ADD COLUMN ctvaluen real;
+ALTER TABLE testreport ADD COLUMN ctvaluerdrp real;
+ALTER TABLE testreport ADD COLUMN ctvalues real;
+ALTER TABLE testreport ADD COLUMN ctvalueorf1 real;
+ALTER TABLE testreport ADD COLUMN ctvaluerdrps real;
+ALTER TABLE testreport_history ADD COLUMN cqvalue real;
+ALTER TABLE testreport_history ADD COLUMN ctvaluee real;
+ALTER TABLE testreport_history ADD COLUMN ctvaluen real;
+ALTER TABLE testreport_history ADD COLUMN ctvaluerdrp real;
+ALTER TABLE testreport_history ADD COLUMN ctvalues real;
+ALTER TABLE testreport_history ADD COLUMN ctvalueorf1 real;
+ALTER TABLE testreport_history ADD COLUMN ctvaluerdrps real;
+
+INSERT INTO schema_version (version_number, comment) VALUES (517, 'Add ct value fields to pathogen tests and test reports #12314');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

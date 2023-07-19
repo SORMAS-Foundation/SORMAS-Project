@@ -339,22 +339,18 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	public List<PathogenTestDto> getPositiveOrLatest(List<String> sampleUuids) {
 
 		Collection<PathogenTestDto> dtos = toPseudonymizedDtos(pathogenTestService.getBySampleUuids(sampleUuids, true)).stream()
-			.collect(
-				Collectors.toMap(
-					s -> s.getSample().getUuid(),
-					s -> s,
-					(s1, s2) -> {
+			.collect(Collectors.toMap(s -> s.getSample().getUuid(), s -> s, (s1, s2) -> {
 
-						// keep the positive one
-						if (s1.getTestResult() == PathogenTestResultType.POSITIVE) {
-							return s1;
-						} else if (s2.getTestResult() == PathogenTestResultType.POSITIVE) {
-							return s2;
-						}
+				// keep the positive one
+				if (s1.getTestResult() == PathogenTestResultType.POSITIVE) {
+					return s1;
+				} else if (s2.getTestResult() == PathogenTestResultType.POSITIVE) {
+					return s2;
+				}
 
-						// ordered by creation date by default, so always keep the first one
-						return s1;
-					}))
+				// ordered by creation date by default, so always keep the first one
+				return s1;
+			}))
 			.values();
 		return new ArrayList<>(dtos);
 	}
@@ -386,6 +382,12 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
 		target.setSerotype(source.getSerotype());
 		target.setCqValue(source.getCqValue());
+		target.setCtValueE(source.getCtValueE());
+		target.setCtValueN(source.getCtValueN());
+		target.setCtValueRdrp(source.getCtValueRdrp());
+		target.setCtValueS(source.getCtValueS());
+		target.setCtValueOrf1(source.getCtValueOrf1());
+		target.setCtValueRdrpS(source.getCtValueRdrpS());
 		target.setReportDate(source.getReportDate());
 		target.setViaLims(source.isViaLims());
 		target.setExternalId(source.getExternalId());
@@ -455,6 +457,12 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
 		target.setSerotype(source.getSerotype());
 		target.setCqValue(source.getCqValue());
+		target.setCtValueE(source.getCtValueE());
+		target.setCtValueN(source.getCtValueN());
+		target.setCtValueRdrp(source.getCtValueRdrp());
+		target.setCtValueS(source.getCtValueS());
+		target.setCtValueOrf1(source.getCtValueOrf1());
+		target.setCtValueRdrpS(source.getCtValueRdrpS());
 		target.setReportDate(source.getReportDate());
 		target.setViaLims(source.isViaLims());
 		target.setExternalId(source.getExternalId());

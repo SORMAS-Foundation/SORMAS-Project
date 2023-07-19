@@ -62,6 +62,13 @@ public class TestReport extends AbstractDomainObject {
 	public static final String TEST_RESULT_VERIFIED = "testResultVerified";
 	public static final String TEST_RESULT_TEXT = "testResultText";
 	public static final String TEST_PCR_TEST_SPECIFICATION = "testPcrTestSpecification";
+	public static final String CQ_VALUE = "cqValue";
+	public static final String CT_VALUE_E = "ctValueE";
+	public static final String CT_VALUE_N = "ctValueN";
+	public static final String CT_VALUE_RDRP = "ctValueRdrp";
+	public static final String CT_VALUE_S = "ctValueS";
+	public static final String CT_VALUE_ORF_1 = "ctValueOrf1";
+	public static final String CT_VALUE_RDRP_S = "ctValueRdrpS";
 
 	private String testLabName;
 	private List<String> testLabExternalIds;
@@ -81,6 +88,13 @@ public class TestReport extends AbstractDomainObject {
 	private String testedDiseaseVariantDetails;
 	private Boolean preliminary;
 	private PCRTestSpecification testPcrTestSpecification;
+	private Float cqValue;
+	private Float ctValueE;
+	private Float ctValueN;
+	private Float ctValueRdrp;
+	private Float ctValueS;
+	private Float ctValueOrf1;
+	private Float ctValueRdrpS;
 
 	private SampleReport sampleReport;
 
@@ -243,5 +257,68 @@ public class TestReport extends AbstractDomainObject {
 
 	public void setSampleReport(SampleReport sampleReport) {
 		this.sampleReport = sampleReport;
+	}
+
+	@Column
+	public Float getCqValue() {
+		return cqValue;
+	}
+
+	public void setCqValue(Float cqValue) {
+		this.cqValue = cqValue;
+	}
+
+	@Column
+	public Float getCtValueE() {
+		return ctValueE;
+	}
+
+	public void setCtValueE(Float ctValueE) {
+		this.ctValueE = ctValueE;
+	}
+
+	@Column
+	public Float getCtValueN() {
+		return ctValueN;
+	}
+
+	public void setCtValueN(Float ctValueN) {
+		this.ctValueN = ctValueN;
+	}
+
+	@Column
+	public Float getCtValueRdrp() {
+		return ctValueRdrp;
+	}
+
+	public void setCtValueRdrp(Float ctValueRdrp) {
+		this.ctValueRdrp = ctValueRdrp;
+	}
+
+	@Column
+	public Float getCtValueS() {
+		return ctValueS;
+	}
+
+	public void setCtValueS(Float ctValueS) {
+		this.ctValueS = ctValueS;
+	}
+
+	@Column
+	public Float getCtValueOrf1() {
+		return ctValueOrf1;
+	}
+
+	public void setCtValueOrf1(Float ctValueOrf1) {
+		this.ctValueOrf1 = ctValueOrf1;
+	}
+
+	@Column
+	public Float getCtValueRdrpS() {
+		return ctValueRdrpS;
+	}
+
+	public void setCtValueRdrpS(Float ctValueRdrpS) {
+		this.ctValueRdrpS = ctValueRdrpS;
 	}
 }
