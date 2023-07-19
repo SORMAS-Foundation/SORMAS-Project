@@ -77,4 +77,5 @@ public class TravelEntryPage {
       By.xpath("//div/b[text()='Import erfolgreich!']");
   public static final By CLOSE_IMPORT_TRAVEL_ENTRY_POPUP =
       By.cssSelector(".popupContent .v-window-closebox");
+  public static final By TRAVEL_ENTRY_DELETE_POPUP = By.cssSelector(".v-Notification-caption");
 }
