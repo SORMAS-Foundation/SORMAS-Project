@@ -12477,7 +12477,7 @@ ALTER TABLE testreport ADD COLUMN prescriberaddress text;
 ALTER TABLE testreport ADD COLUMN prescriberpostalcode text;
 ALTER TABLE testreport ADD COLUMN prescribercity text;
 ALTER TABLE testreport ADD COLUMN prescribercountry_id bigint;
-ALTER TABLE testreport ADD COLUMN prescriberphysiciancode text;
+ALTER TABLE testreport_history ADD COLUMN prescriberphysiciancode text;
 ALTER TABLE testreport_history ADD COLUMN prescriberfirstname text;
 ALTER TABLE testreport_history ADD COLUMN prescriberlastname text;
 ALTER TABLE testreport_history ADD COLUMN prescriberphonenumber text;
@@ -12485,7 +12485,7 @@ ALTER TABLE testreport_history ADD COLUMN prescriberaddress text;
 ALTER TABLE testreport_history ADD COLUMN prescriberpostalcode text;
 ALTER TABLE testreport_history ADD COLUMN prescribercity text;
 ALTER TABLE testreport_history ADD COLUMN prescribercountry_id bigint;
-ALTER TABLE testreport ADD CONSTRAINT fk_pathogentest_prescribercountry_id FOREIGN KEY (prescribercountry_id) REFERENCES country (id);
+ALTER TABLE testreport ADD CONSTRAINT fk_testreport_prescribercountry_id FOREIGN KEY (prescribercountry_id) REFERENCES country (id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (518, 'Add prescriber fields to pathogen tests and test reports #12318');
 
