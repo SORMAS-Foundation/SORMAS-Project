@@ -19353,6 +19353,36 @@ components:
           - N501Y_MUTATION_DETECTION
         preliminary:
           type: boolean
+        prescriberAddress:
+          type: string
+          maxLength: 1000000
+          minLength: 0
+        prescriberCity:
+          type: string
+          maxLength: 1000000
+          minLength: 0
+        prescriberCountry:
+          $ref: '#/components/schemas/CountryReferenceDto'
+        prescriberFirstName:
+          type: string
+          maxLength: 1000000
+          minLength: 0
+        prescriberLastName:
+          type: string
+          maxLength: 1000000
+          minLength: 0
+        prescriberPhoneNumber:
+          type: string
+          maxLength: 1000000
+          minLength: 0
+        prescriberPhysicianCode:
+          type: string
+          maxLength: 1000000
+          minLength: 0
+        prescriberPostalCode:
+          type: string
+          maxLength: 1000000
+          minLength: 0
         pseudonymized:
           type: boolean
         reportDate:
@@ -23902,6 +23932,36 @@ components:
           minLength: 0
         preliminary:
           type: boolean
+        prescriberAddress:
+          type: string
+          maxLength: 1000000
+          minLength: 0
+        prescriberCity:
+          type: string
+          maxLength: 1000000
+          minLength: 0
+        prescriberCountry:
+          $ref: '#/components/schemas/CountryReferenceDto'
+        prescriberFirstName:
+          type: string
+          maxLength: 1000000
+          minLength: 0
+        prescriberLastName:
+          type: string
+          maxLength: 1000000
+          minLength: 0
+        prescriberPhoneNumber:
+          type: string
+          maxLength: 1000000
+          minLength: 0
+        prescriberPhysicianCode:
+          type: string
+          maxLength: 1000000
+          minLength: 0
+        prescriberPostalCode:
+          type: string
+          maxLength: 1000000
+          minLength: 0
         sampleReport:
           $ref: '#/components/schemas/SampleReportReferenceDto'
         testDateTime:
