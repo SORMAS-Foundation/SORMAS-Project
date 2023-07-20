@@ -923,7 +923,9 @@ public class UserFacadeEjb implements UserFacade {
 		Set<User> possibleUsersForAvailableFacilities = new HashSet<>();
 
 		possibleFacilities.forEach(facility -> {
-			if (!FacilityDto.NONE_FACILITY_UUID.equals(facility.getUuid()) && !FacilityDto.OTHER_FACILITY_UUID.equals(facility.getUuid())) {
+			if (facility != null
+				&& !FacilityDto.NONE_FACILITY_UUID.equals(facility.getUuid())
+				&& !FacilityDto.OTHER_FACILITY_UUID.equals(facility.getUuid())) {
 				possibleUsersForAvailableFacilities.addAll(userService.getFacilityUsersOfHospital(facility));
 			}
 		});
