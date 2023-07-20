@@ -200,7 +200,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_SAMPL
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_SAMPLE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_TRAVEL_ENTRY_BUTTON_DE;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.NOSOCOMIAL_OUTBRAKE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.NOSOCOMIAL_OUTBRAKE_LABEL;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.OFFICIAL_QUARANTINE_ORDER_SENT_CHECKBOX_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.OFFICIAL_QUARANTINE_ORDER_SENT_CHECKBOX_LABEL;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.OUTCOME_OF_CASE_OPTIONS;
@@ -2881,15 +2881,15 @@ public class EditCaseSteps implements En {
     And(
         "^I click the Resulted from nosocomial outbreak checkbox on Edit Case page for DE$",
         () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NOSOCOMIAL_OUTBRAKE_INPUT);
-          webDriverHelpers.clickOnWebElementBySelector(NOSOCOMIAL_OUTBRAKE_INPUT);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NOSOCOMIAL_OUTBRAKE_LABEL);
+          webDriverHelpers.clickOnWebElementBySelector(NOSOCOMIAL_OUTBRAKE_LABEL);
         });
 
     And(
         "^I select \"([^\"]*)\" from the infection settings on Edit Case page$",
         (String infectionOption) -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(INFECTION_SETTINGS_INPUT);
-          webDriverHelpers.selectFromCombobox(INFECTION_SETTINGS_INPUT, infectionOption);
+          webDriverHelpers.fillInWebElement(INFECTION_SETTINGS_INPUT, infectionOption);
         });
   }
 
