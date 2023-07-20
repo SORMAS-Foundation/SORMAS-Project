@@ -330,7 +330,7 @@ Feature: Survnet tests
 
   @tmsLink=SORQA-1032
   Scenario Outline: Check "nosokomialen Ausbruch" in case when sending from SORMAS to Meldesoftware
-    Given I log in as Survnet
+    Given I log in as a Survnet
     When I click on the Cases button from navbar
     And I click on the NEW CASE button
     And I create a new case with mandatory data only for Survnet DE
