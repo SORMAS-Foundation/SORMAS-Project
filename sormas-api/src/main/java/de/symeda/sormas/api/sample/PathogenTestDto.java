@@ -28,6 +28,7 @@ import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
@@ -82,6 +83,14 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String PRELIMINARY = "preliminary";
 	public static final String DELETION_REASON = "deletionReason";
 	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
+	public static final String PRESCRIBER_PHYSICIAN_CODE = "prescriberPhysicianCode";
+	public static final String PRESCRIBER_FIRST_NAME = "prescriberFirstName";
+	public static final String PRESCRIBER_LAST_NAME = "prescriberLastName";
+	public static final String PRESCRIBER_PHONE_NUMBER = "prescriberPhoneNumber";
+	public static final String PRESCRIBER_ADDRESS = "prescriberAddress";
+	public static final String PRESCRIBER_POSTAL_CODE = "prescriberPostalCode";
+	public static final String PRESCRIBER_CITY = "prescriberCity";
+	public static final String PRESCRIBER_COUNTRY = "prescriberCountry";
 
 	@NotNull(message = Validations.validSample)
 	private SampleReferenceDto sample;
@@ -144,11 +153,40 @@ public class PathogenTestDto extends PseudonymizableDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalOrderId;
 	private Boolean preliminary;
-
 	private boolean deleted;
 	private DeletionReason deletionReason;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherDeletionReason;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String prescriberPhysicianCode;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String prescriberFirstName;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String prescriberLastName;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String prescriberPhoneNumber;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String prescriberAddress;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String prescriberPostalCode;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String prescriberCity;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private CountryReferenceDto prescriberCountry;
 
 	public static PathogenTestDto build(SampleDto sample, UserDto currentUser) {
 
@@ -453,6 +491,70 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	public void setOtherDeletionReason(String otherDeletionReason) {
 		this.otherDeletionReason = otherDeletionReason;
+	}
+
+	public String getPrescriberPhysicianCode() {
+		return prescriberPhysicianCode;
+	}
+
+	public void setPrescriberPhysicianCode(String prescriberPhysicianCode) {
+		this.prescriberPhysicianCode = prescriberPhysicianCode;
+	}
+
+	public String getPrescriberFirstName() {
+		return prescriberFirstName;
+	}
+
+	public void setPrescriberFirstName(String prescriberFirstName) {
+		this.prescriberFirstName = prescriberFirstName;
+	}
+
+	public String getPrescriberLastName() {
+		return prescriberLastName;
+	}
+
+	public void setPrescriberLastName(String prescriberLastName) {
+		this.prescriberLastName = prescriberLastName;
+	}
+
+	public String getPrescriberPhoneNumber() {
+		return prescriberPhoneNumber;
+	}
+
+	public void setPrescriberPhoneNumber(String prescriberPhoneNumber) {
+		this.prescriberPhoneNumber = prescriberPhoneNumber;
+	}
+
+	public String getPrescriberAddress() {
+		return prescriberAddress;
+	}
+
+	public void setPrescriberAddress(String prescriberAddress) {
+		this.prescriberAddress = prescriberAddress;
+	}
+
+	public String getPrescriberPostalCode() {
+		return prescriberPostalCode;
+	}
+
+	public void setPrescriberPostalCode(String prescriberPostalCode) {
+		this.prescriberPostalCode = prescriberPostalCode;
+	}
+
+	public String getPrescriberCity() {
+		return prescriberCity;
+	}
+
+	public void setPrescriberCity(String prescriberCity) {
+		this.prescriberCity = prescriberCity;
+	}
+
+	public CountryReferenceDto getPrescriberCountry() {
+		return prescriberCountry;
+	}
+
+	public void setPrescriberCountry(CountryReferenceDto prescriberCountry) {
+		this.prescriberCountry = prescriberCountry;
 	}
 
 	@Override

@@ -41,6 +41,7 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.disease.DiseaseVariantConverter;
+import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.user.User;
 
@@ -76,6 +77,14 @@ public class PathogenTest extends DeletableAdo {
 	public static final String CT_VALUE_ORF_1 = "ctValueOrf1";
 	public static final String CT_VALUE_RDRP_S = "ctValueRdrpS";
 	public static final String REPORT_DATE = "reportDate";
+	public static final String PRESCRIBER_PHYSICIAN_CODE = "prescriberPhysicianCode";
+	public static final String PRESCRIBER_FIRST_NAME = "prescriberFirstName";
+	public static final String PRESCRIBER_LAST_NAME = "prescriberLastName";
+	public static final String PRESCRIBER_PHONE_NUMBER = "prescriberPhoneNumber";
+	public static final String PRESCRIBER_ADDRESS = "prescriberAddress";
+	public static final String PRESCRIBER_POSTAL_CODE = "prescriberPostalCode";
+	public static final String PRESCRIBER_CITY = "prescriberCity";
+	public static final String PRESCRIBER_COUNTRY = "prescriberCountry";
 
 	private Sample sample;
 	private Disease testedDisease;
@@ -108,6 +117,14 @@ public class PathogenTest extends DeletableAdo {
 	private String externalId;
 	private String externalOrderId;
 	private Boolean preliminary;
+	private String prescriberPhysicianCode;
+	private String prescriberFirstName;
+	private String prescriberLastName;
+	private String prescriberPhoneNumber;
+	private String prescriberAddress;
+	private String prescriberPostalCode;
+	private String prescriberCity;
+	private Country prescriberCountry;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(nullable = false)
@@ -384,6 +401,78 @@ public class PathogenTest extends DeletableAdo {
 
 	public void setPreliminary(Boolean preliminary) {
 		this.preliminary = preliminary;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getPrescriberPhysicianCode() {
+		return prescriberPhysicianCode;
+	}
+
+	public void setPrescriberPhysicianCode(String prescriberPhysicianCode) {
+		this.prescriberPhysicianCode = prescriberPhysicianCode;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getPrescriberFirstName() {
+		return prescriberFirstName;
+	}
+
+	public void setPrescriberFirstName(String prescriberFirstName) {
+		this.prescriberFirstName = prescriberFirstName;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getPrescriberLastName() {
+		return prescriberLastName;
+	}
+
+	public void setPrescriberLastName(String prescriberLastName) {
+		this.prescriberLastName = prescriberLastName;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getPrescriberPhoneNumber() {
+		return prescriberPhoneNumber;
+	}
+
+	public void setPrescriberPhoneNumber(String prescriberPhoneNumber) {
+		this.prescriberPhoneNumber = prescriberPhoneNumber;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getPrescriberAddress() {
+		return prescriberAddress;
+	}
+
+	public void setPrescriberAddress(String prescriberAddress) {
+		this.prescriberAddress = prescriberAddress;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getPrescriberPostalCode() {
+		return prescriberPostalCode;
+	}
+
+	public void setPrescriberPostalCode(String prescriberPostalCode) {
+		this.prescriberPostalCode = prescriberPostalCode;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getPrescriberCity() {
+		return prescriberCity;
+	}
+
+	public void setPrescriberCity(String prescriberCity) {
+		this.prescriberCity = prescriberCity;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	public Country getPrescriberCountry() {
+		return prescriberCountry;
+	}
+
+	public void setPrescriberCountry(Country prescriberCountry) {
+		this.prescriberCountry = prescriberCountry;
 	}
 
 	public PathogenTestReferenceDto toReference() {
