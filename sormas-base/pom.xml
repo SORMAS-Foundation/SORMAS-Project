@@ -779,6 +779,13 @@
 			</dependency>
 
 			<dependency>
+				<groupId>org.geotools</groupId>
+				<artifactId>gt-shapefile</artifactId>
+				<version>28.2</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-core</artifactId>
 				<version>5.6.15.Final</version>
@@ -1184,16 +1191,6 @@
 				<version>6.0.21</version>
 				<scope>compile</scope>
 				<!-- Kept as compile dependency to avoid version conflicts and classpath problems with sormas-demis-adapter -->
-			</dependency>
-
-			<dependency>
-				<groupId>org.geotools</groupId>
-				<artifactId>gt-shapefile</artifactId>
-				<version>28.2</version>
-				<!-- 
-				  Kept as compile dependency because Ant collect-serverlibs fails:
-				  sormas-base\build.xml:53: org.apache.maven.artifact.InvalidArtifactRTException: For artifact {org.osgi:org.osgi.annotation:null:jar}: The version cannot be empty.
-				-->
 			</dependency>
 
 			<!-- ** Vaadin ** -->
