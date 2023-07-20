@@ -24,5 +24,7 @@ public interface CountryFacade extends GeoLocationFacade<CountryDto, CountryInde
 
 	CountryReferenceDto getServerCountry();
 
+	CountryReferenceDto getCountryByIsoCode(String isoCode);
+
 	boolean hasArchivedParentInfrastructure(Collection<String> countryUuids);
 }
