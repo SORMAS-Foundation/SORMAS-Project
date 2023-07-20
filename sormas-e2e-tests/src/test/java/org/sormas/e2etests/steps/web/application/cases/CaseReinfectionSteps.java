@@ -99,6 +99,15 @@ public class CaseReinfectionSteps implements En {
   private final SoftAssert softly;
   public static final DateTimeFormatter DATE_FORMATTER_DE = DateTimeFormatter.ofPattern("d.M.yyyy");
   private static BaseSteps baseSteps;
+  public static Boolean PreviousCovidInfectionIsKnownValue;
+  public static Boolean CurrentCovidInfectionIsKnownValue;
+  public static Boolean CurrentCovidInfectionDoNotMatchValue;
+  public static Boolean PersonHasOvercomeAcuteRespiratory;
+  public static Boolean PersonHadAnAsymptomaticCovidInfection;
+  public static Boolean CovidGenomeCopyNumber;
+  public static Boolean IndividualTestedPositiveForCovidByPCR;
+  public static Boolean PersonTestedConclusivelyNegativeByPCR;
+  public static Boolean TheLastPositivePCRDetectionWasMoreThan3MonthsAgo;
 
   @Inject
   public CaseReinfectionSteps(
@@ -305,6 +314,40 @@ public class CaseReinfectionSteps implements En {
         });
 
     When(
+        "I check all checkboxes with Information on the preceding infection in reinfection section in Edit case for DE version",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(
+              PERSON_HAS_OVERCOME_ACUTE_RESPIRATORY_DE_LABEL);
+          webDriverHelpers.clickOnWebElementBySelector(
+              PERSON_HAD_AN_ASYMPTOMATIC_COVID_INFECTION_DE_LABEL);
+        });
+
+    When(
+        "I check all checkboxes with More information on the evaluation of reinfection in reinfection section in Edit case for DE version",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(COVID_GENOME_COPY_NUMBER_DE_LABEL);
+          webDriverHelpers.clickOnWebElementBySelector(
+              INDIVIDUAL_TESTED_POSITIVE_FOR_COVID_BY_PCR_DE_LABEL);
+        });
+
+    When(
+        "I check all checkboxes with Previous infection completed in reinfection section in Edit case for DE version",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(
+              PERSON_TESTED_CONCLUSIVELY_NEGATIVE_BY_PRC_LABEL);
+          webDriverHelpers.clickOnWebElementBySelector(
+              THE_LAST_POSITIVE_PCR_DETECTION_WAS_MORE_THAN_3_MONTHS_AGO_DE_LABEL);
+        });
+
+    When(
+        "I check all checkboxes with in reinfection section in Edit case for DE version",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(COVID_GENOME_COPY_NUMBER_DE_LABEL);
+          webDriverHelpers.clickOnWebElementBySelector(
+              INDIVIDUAL_TESTED_POSITIVE_FOR_COVID_BY_PCR_DE_LABEL);
+        });
+
+    When(
         "I clear all checkboxes with genome sequence in reinfection section in Edit case for DE version",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(PREVIOUS_COVID_INFECTION_IS_KNOWN_DE_LABEL);
@@ -379,6 +422,36 @@ public class CaseReinfectionSteps implements En {
               INDIVIDUAL_TESTED_POSITIVE_FOR_COVID_BY_PCR_DE_LABEL);
           webDriverHelpers.clickOnWebElementBySelector(
               PERSON_TESTED_CONCLUSIVELY_NEGATIVE_BY_PRC_LABEL);
+        });
+
+    When(
+        "I collect values from all checkboxes from reinfection section in Edit case for DE version",
+        () -> {
+          PreviousCovidInfectionIsKnownValue =
+              webDriverHelpers.isElementEnabled(PREVIOUS_COVID_INFECTION_IS_KNOWN_DE_LABEL);
+          CurrentCovidInfectionIsKnownValue =
+              webDriverHelpers.isElementEnabled(CURRENT_COVID_INFECTION_IS_KNOWN_DE_LABEL);
+          CurrentCovidInfectionDoNotMatchValue =
+              webDriverHelpers.isElementEnabled(
+                  PREVIOUS_AND_CURRENT_COVID_INFECTION_IS_KNOWN_DE_LABEL);
+
+          PersonHasOvercomeAcuteRespiratory =
+              webDriverHelpers.isElementEnabled(PERSON_HAS_OVERCOME_ACUTE_RESPIRATORY_DE_LABEL);
+          PersonHadAnAsymptomaticCovidInfection =
+              webDriverHelpers.isElementEnabled(
+                  PERSON_HAD_AN_ASYMPTOMATIC_COVID_INFECTION_DE_LABEL);
+
+          CovidGenomeCopyNumber =
+              webDriverHelpers.isElementEnabled(COVID_GENOME_COPY_NUMBER_DE_LABEL);
+          IndividualTestedPositiveForCovidByPCR =
+              webDriverHelpers.isElementEnabled(
+                  INDIVIDUAL_TESTED_POSITIVE_FOR_COVID_BY_PCR_DE_LABEL);
+
+          PersonTestedConclusivelyNegativeByPCR =
+              webDriverHelpers.isElementEnabled(PERSON_TESTED_CONCLUSIVELY_NEGATIVE_BY_PRC_LABEL);
+          TheLastPositivePCRDetectionWasMoreThan3MonthsAgo =
+              webDriverHelpers.isElementEnabled(
+                  THE_LAST_POSITIVE_PCR_DETECTION_WAS_MORE_THAN_3_MONTHS_AGO_DE_LABEL);
         });
 
     When(

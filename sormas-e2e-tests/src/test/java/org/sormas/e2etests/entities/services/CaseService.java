@@ -599,6 +599,23 @@ public class CaseService {
   }
 
   @SneakyThrows
+  public Case buildCaseForSurvnetFeatureWithReinfection() {
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
+
+    return Case.builder()
+        .dateOfReport(LocalDate.now())
+        .responsibleRegion("Berlin")
+        .responsibleDistrict("SK Berlin Mitte")
+        .placeOfStay("ZUHAUSE")
+        .reinfection("JA")
+        .firstName(firstName)
+        .lastName(lastName)
+        .sex(GenderValues.getRandomGenderDE())
+        .build();
+  }
+
+  @SneakyThrows
   public Case buildCaseForSurvnetFeatureWithDateOfBirth() {
     firstName = faker.name().firstName();
     lastName = faker.name().lastName();
