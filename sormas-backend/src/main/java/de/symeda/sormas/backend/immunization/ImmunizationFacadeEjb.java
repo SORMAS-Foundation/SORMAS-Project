@@ -52,6 +52,8 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -309,16 +311,18 @@ public class ImmunizationFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._IMMUNIZATION_DELETE)
-	public List<String> delete(List<String> uuids, DeletionDetails deletionDetails) {
+	public List<ProcessedEntity> delete(List<String> uuids, DeletionDetails deletionDetails) {
+		List<ProcessedEntity> processedImmunizations = new ArrayList<>();
+
 		List<String> deletedImmunizationUuids = new ArrayList<>();
 		List<Immunization> immunizationsToBeDeleted = service.getByUuids(uuids);
 		if (immunizationsToBeDeleted != null) {
 			immunizationsToBeDeleted.forEach(immunizationToBeDeleted -> {
 				service.delete(immunizationToBeDeleted, deletionDetails);
-				deletedImmunizationUuids.add(immunizationToBeDeleted.getUuid());
+				processedImmunizations.add(new ProcessedEntity(immunizationToBeDeleted.getUuid(), ProcessedEntityStatus.SUCCESS));
 			});
 		}
-		return deletedImmunizationUuids;
+		return processedImmunizations;
 	}
 
 	@Override
@@ -329,21 +333,21 @@ public class ImmunizationFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._IMMUNIZATION_DELETE)
-	public List<String> restore(List<String> uuids) {
-		List<String> restoredImmunizationUuids = new ArrayList<>();
+	public List<ProcessedEntity> restore(List<String> uuids) {
+		List<ProcessedEntity> processedImmunizationUuids = new ArrayList<>();
 		List<Immunization> immunizationsToBeRestored = service.getByUuids(uuids);
 
 		if (immunizationsToBeRestored != null) {
 			immunizationsToBeRestored.forEach(immunizationToBeRestored -> {
 				try {
 					service.restore(immunizationToBeRestored);
-					restoredImmunizationUuids.add(immunizationToBeRestored.getUuid());
+					processedImmunizationUuids.add(new ProcessedEntity(immunizationToBeRestored.getUuid(), ProcessedEntityStatus.SUCCESS));
 				} catch (Exception e) {
 					logger.error("The immunization with uuid:" + immunizationToBeRestored.getUuid() + "could not be restored");
 				}
 			});
 		}
-		return restoredImmunizationUuids;
+		return processedImmunizationUuids;
 	}
 
 	@Override
@@ -745,8 +749,8 @@ public class ImmunizationFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._IMMUNIZATION_ARCHIVE)
-	public void dearchive(List<String> entityUuids, String dearchiveReason) {
-		super.dearchive(entityUuids, dearchiveReason);
+	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
+		return super.dearchive(entityUuids, dearchiveReason);
 	}
 
 	@Override

@@ -15,6 +15,9 @@
 
 package de.symeda.sormas.api.externalsurveillancetool;
 
+import javax.ejb.ApplicationException;
+
+@ApplicationException(rollback = false)
 public class ExternalSurveillanceToolRuntimeException extends RuntimeException {
 
 	private static final long serialVersionUID = -3526487657644154163L;

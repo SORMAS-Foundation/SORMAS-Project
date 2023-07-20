@@ -13,6 +13,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.PermanentlyDeletableFacade;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.uuid.HasUuid;
@@ -99,7 +100,7 @@ public class PermanentDeleteController<F extends PermanentlyDeletableFacade> {
 
 	public interface IPermanentDeleteHandler<T extends HasUuid> {
 
-		int delete(List<String> uuids);
+		List<ProcessedEntity> delete(List<String> uuids);
 
 		DeleteRestoreMessages getDeleteRestoreMessages();
 	}

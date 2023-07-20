@@ -31,6 +31,7 @@ import javax.ws.rs.core.Response;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.infrastructure.country.CountryCriteria;
 import de.symeda.sormas.api.infrastructure.country.CountryDto;
 import de.symeda.sormas.api.infrastructure.country.CountryIndexDto;
@@ -76,14 +77,16 @@ public class CountryResource extends EntityDtoResource<CountryDto> {
 
 	@POST
 	@Path("/archive")
-	public List<String> archive(@RequestBody List<String> uuids) {
-		return FacadeProvider.getCountryFacade().archive(uuids);
+	public List<ProcessedEntity> archive(@RequestBody List<String> uuids) {
+		List<ProcessedEntity> processedEntities = FacadeProvider.getCountryFacade().archive(uuids);
+		return processedEntities;
 	}
 
 	@POST
 	@Path("/dearchive")
-	public List<String> dearchive(@RequestBody List<String> uuids) {
-		return FacadeProvider.getCountryFacade().dearchive(uuids);
+	public List<ProcessedEntity> dearchive(@RequestBody List<String> uuids) {
+		List<ProcessedEntity> processedEntities = FacadeProvider.getCountryFacade().dearchive(uuids);
+		return processedEntities;
 	}
 
 	@Override

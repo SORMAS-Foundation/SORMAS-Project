@@ -47,6 +47,7 @@ import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.utils.Experimental;
@@ -210,7 +211,7 @@ public class CaseResource extends EntityDtoResource<CaseDataDto> {
 
 	@POST
 	@Path("/delete")
-	public List<String> delete(List<String> uuids) {
+	public List<ProcessedEntity> delete(List<String> uuids) {
 		return FacadeProvider.getCaseFacade().delete(uuids, new DeletionDetails(DeletionReason.OTHER_REASON, "Deleted via ReST call"));
 	}
 

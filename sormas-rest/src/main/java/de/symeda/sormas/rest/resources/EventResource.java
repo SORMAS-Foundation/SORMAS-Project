@@ -34,6 +34,7 @@ import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
@@ -136,7 +137,7 @@ public class EventResource extends EntityDtoResource<EventDto> {
 
 	@POST
 	@Path("/delete")
-	public List<String> delete(List<String> uuids) {
+	public List<ProcessedEntity> delete(List<String> uuids) {
 		return FacadeProvider.getEventFacade().delete(uuids, new DeletionDetails(DeletionReason.OTHER_REASON, "Deleted via ReST call"));
 	}
 

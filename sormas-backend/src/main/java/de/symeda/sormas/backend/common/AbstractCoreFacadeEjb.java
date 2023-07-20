@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.common;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -38,6 +39,7 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -221,13 +223,17 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	}
 
 	@DenyAll
-	public void archive(List<String> entityUuids) {
+	public List<ProcessedEntity> archive(List<String> entityUuids) {
+		List<ProcessedEntity> processedEntities = new ArrayList<>();
 		service.archive(entityUuids);
+		return processedEntities;
 	}
 
 	@DenyAll
-	public void dearchive(List<String> entityUuids, String dearchiveReason) {
+	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
+		List<ProcessedEntity> processedEntities = new ArrayList<>();
 		service.dearchive(entityUuids, dearchiveReason);
+		return processedEntities;
 	}
 
 	public Date calculateEndOfProcessingDate(String entityUuid) {

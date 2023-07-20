@@ -42,6 +42,8 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.customizableenum.CustomEnumNotFoundException;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
@@ -334,8 +336,8 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 	@Override
 	@RightsAllowed(UserRight._EXTERNAL_MESSAGE_DELETE)
-	public void delete(List<String> uuids) {
-		List<String> deletedExternalMessageUuids = new ArrayList<>();
+	public List<ProcessedEntity> delete(List<String> uuids) {
+		List<ProcessedEntity> processedExternalMessages = new ArrayList<>();
 		List<ExternalMessage> externalMessagesToBeDeleted = externalMessageService.getByUuids(uuids);
 
 		if (externalMessagesToBeDeleted != null) {
@@ -343,13 +345,15 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 				if (externalMessageToBeDeleted.getStatus() != ExternalMessageStatus.PROCESSED) {
 					try {
 						externalMessageService.deletePermanent(externalMessageToBeDeleted);
-						deletedExternalMessageUuids.add(externalMessageToBeDeleted.getUuid());
+						processedExternalMessages.add(new ProcessedEntity(externalMessageToBeDeleted.getUuid(), ProcessedEntityStatus.SUCCESS));
 					} catch (Exception e) {
 						logger.error("The external message with uuid:" + externalMessageToBeDeleted.getUuid() + "could not be deleted");
 					}
 				}
 			});
 		}
+
+		return processedExternalMessages;
 	}
 
 	@Override

@@ -60,6 +60,7 @@ import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -361,10 +362,10 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 		UserDto user = creator.createSurveillanceOfficer(rdcf1);
 		loginWith(user);
-		List<String> deleteUuids =
+		List<ProcessedEntity> deleteUuids =
 			getContactFacade().delete(contactUuidList, new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 		assertEquals(1, deleteUuids.size());
-		assertEquals(contact1.getUuid(), deleteUuids.get(0));
+		assertEquals(contact1.getUuid(), deleteUuids.get(0).getEntityUuid());
 
 		loginWith(creatorUser);
 		getContactFacade().delete(contactUuidList, new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));

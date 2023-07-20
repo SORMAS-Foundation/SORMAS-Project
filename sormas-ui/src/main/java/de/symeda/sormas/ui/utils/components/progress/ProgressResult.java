@@ -19,6 +19,22 @@ public enum ProgressResult {
 
 	SUCCESS,
 	SUCCESS_WITH_WARNING,
+	/**
+	 * ExternalSurveillanceToolRuntimeException was thrown during the processing of the entity
+	 */
+	EXTERNAL_SURVEILLANCE_FAILURE,
+	/**
+	 * SormasToSormasRuntimeException was thrown during the processing of the entity
+	 */
+	SORMAS_TO_SORMAS_FAILURE,
+	/**
+	 * AccessDeniedException was thrown during the processing of the entity
+	 */
+	ACCESS_DENIED_FAILURE,
+	MISSING_USER_RIGHTS,
+	/**
+	 * A general exception was thrown during the processing of the entity
+	 */
 	FAILURE;
 
 }

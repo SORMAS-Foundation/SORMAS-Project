@@ -81,6 +81,8 @@ import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.contact.ContactBulkEditData;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -557,22 +559,22 @@ public class ContactFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._CONTACT_DELETE)
-	public List<String> delete(List<String> uuids, DeletionDetails deletionDetails) {
-		List<String> deletedContactUuids = new ArrayList<>();
+	public List<ProcessedEntity> delete(List<String> uuids, DeletionDetails deletionDetails) {
+		List<ProcessedEntity> processedContacts = new ArrayList<>();
 		List<Contact> contactsToBeDeleted = service.getByUuids(uuids);
 		if (contactsToBeDeleted != null) {
 			contactsToBeDeleted.forEach(contactToBeDeleted -> {
 				if (!contactToBeDeleted.isDeleted()) {
 					try {
 						deleteContact(contactToBeDeleted, deletionDetails);
-						deletedContactUuids.add(contactToBeDeleted.getUuid());
+						processedContacts.add(new ProcessedEntity(contactToBeDeleted.getUuid(), ProcessedEntityStatus.SUCCESS));
 					} catch (AccessDeniedException e) {
 						logger.error("The contact with uuid {} could not be deleted", contactToBeDeleted.getUuid(), e);
 					}
 				}
 			});
 		}
-		return deletedContactUuids;
+		return processedContacts;
 	}
 
 	@Override
@@ -583,22 +585,22 @@ public class ContactFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._CONTACT_DELETE)
-	public List<String> restore(List<String> uuids) {
-		List<String> restoredContactUuids = new ArrayList<>();
+	public List<ProcessedEntity> restore(List<String> uuids) {
+		List<ProcessedEntity> processedContacts = new ArrayList<>();
 		List<Contact> contactsToBeRestored = contactService.getByUuids(uuids);
 
 		if (contactsToBeRestored != null) {
 			contactsToBeRestored.forEach(contactToBeRestored -> {
 				try {
 					restore(contactToBeRestored.getUuid());
-					restoredContactUuids.add(contactToBeRestored.getUuid());
+					processedContacts.add(new ProcessedEntity(contactToBeRestored.getUuid(), ProcessedEntityStatus.SUCCESS));
 				} catch (Exception e) {
 					logger.error("The contact with uuid:" + contactToBeRestored.getUuid() + "could not be restored");
 				}
 			});
 		}
 
-		return restoredContactUuids;
+		return processedContacts;
 	}
 
 	private void deleteContact(Contact contact, DeletionDetails deletionDetails) {
@@ -627,14 +629,14 @@ public class ContactFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._CONTACT_ARCHIVE)
-	public void archive(List<String> entityUuids) {
-		super.archive(entityUuids);
+	public List<ProcessedEntity> archive(List<String> entityUuids) {
+		return super.archive(entityUuids);
 	}
 
 	@Override
 	@RightsAllowed(UserRight._CONTACT_ARCHIVE)
-	public void dearchive(List<String> entityUuids, String dearchiveReason) {
-		super.dearchive(entityUuids, dearchiveReason);
+	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
+		return super.dearchive(entityUuids, dearchiveReason);
 	}
 
 	@Override
@@ -2250,12 +2252,14 @@ public class ContactFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._CONTACT_EDIT)
-	public Integer saveBulkContacts(
+	public List<ProcessedEntity> saveBulkContacts(
 		List<String> contactUuidList,
 		ContactBulkEditData updatedContactBulkEditData,
 		boolean classificationChange,
 		boolean contactOfficerChange)
 		throws ValidationRuntimeException {
+
+		List<ProcessedEntity> processedEntities = new ArrayList();
 
 		int changedContacts = 0;
 		for (String contactUuid : contactUuidList) {
@@ -2272,10 +2276,11 @@ public class ContactFacadeEjb
 				}
 
 				save(existingContactDto);
+				processedEntities.add(new ProcessedEntity(contactUuid, ProcessedEntityStatus.SUCCESS));
 				changedContacts++;
 			}
 		}
-		return changedContacts;
+		return processedEntities;
 	}
 
 	@Override

@@ -131,6 +131,8 @@ import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -1517,7 +1519,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@RightsAllowed({
 		UserRight._CASE_EDIT })
-	public Integer saveBulkCase(
+	public List<ProcessedEntity> saveBulkCase(
 		List<String> caseUuidList,
 		@Valid CaseBulkEditData updatedCaseBulkEditData,
 		boolean diseaseChange,
@@ -1526,6 +1528,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		boolean outcomeChange,
 		boolean surveillanceOfficerChange)
 		throws ValidationRuntimeException {
+
+		List<ProcessedEntity> processedCases = new ArrayList<>();
 
 		int changedCases = 0;
 		for (String caseUuid : caseUuidList) {
@@ -1542,15 +1546,18 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					outcomeChange,
 					surveillanceOfficerChange);
 				doSave(caze, true, existingCaseDto, true);
+				processedCases.add(new ProcessedEntity(caseUuid, ProcessedEntityStatus.SUCCESS));
 				changedCases++;
 			}
 		}
-		return changedCases;
+		//return changedCases;
+
+		return processedCases;
 	}
 
 	@RightsAllowed({
 		UserRight._CASE_EDIT })
-	public Integer saveBulkEditWithFacilities(
+	public List<ProcessedEntity> saveBulkEditWithFacilities(
 		List<String> caseUuidList,
 		@Valid CaseBulkEditData updatedCaseBulkEditData,
 		boolean diseaseChange,
@@ -1559,6 +1566,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		boolean outcomeChange,
 		boolean surveillanceOfficerChange,
 		Boolean doTransfer) {
+
+		List<ProcessedEntity> processedCases = new ArrayList<>();
 
 		Region newRegion = regionService.getByUuid(updatedCaseBulkEditData.getRegion().getUuid());
 		District newDistrict = districtService.getByUuid(updatedCaseBulkEditData.getDistrict().getUuid());
@@ -1588,12 +1597,16 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				caze.setHealthFacility(newFacility);
 				caze.setHealthFacilityDetails(updatedCaseBulkEditData.getHealthFacilityDetails());
 				CaseLogic.handleHospitalization(toDto(caze), existingCaseDto, doTransfer);
+
 				doSave(caze, true, existingCaseDto, true);
+				processedCases.add(new ProcessedEntity(caseUuid, ProcessedEntityStatus.SUCCESS));
+
 				changedCases++;
 			}
 		}
 
-		return changedCases;
+		//return changedCases;
+		return processedCases;
 	}
 
 	private void updateCaseWithBulkData(
@@ -2653,22 +2666,34 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	@RightsAllowed(UserRight._CASE_DELETE)
-	public List<String> delete(List<String> uuids, DeletionDetails deletionDetails) {
-		List<String> deletedCaseUuids = new ArrayList<>();
+	public List<ProcessedEntity> delete(List<String> uuids, DeletionDetails deletionDetails) {
+		List<ProcessedEntity> processedCases = new ArrayList<>();
 		List<Case> casesToBeDeleted = service.getByUuids(uuids);
+
 		if (casesToBeDeleted != null) {
-			casesToBeDeleted.forEach(caseToBeDeleted -> {
+			for (int i = 0; i < casesToBeDeleted.size(); i++) {
+				Case caseToBeDeleted = casesToBeDeleted.get(i);
 				if (!caseToBeDeleted.isDeleted()) {
 					try {
 						deleteCase(caseToBeDeleted, deletionDetails);
-						deletedCaseUuids.add(caseToBeDeleted.getUuid());
-					} catch (ExternalSurveillanceToolRuntimeException | SormasToSormasRuntimeException | AccessDeniedException e) {
-						logger.error("The case with uuid {} could not be deleted", caseToBeDeleted.getUuid(), e);
+						processedCases.add(new ProcessedEntity(caseToBeDeleted.getUuid(), ProcessedEntityStatus.SUCCESS));
+					} catch (ExternalSurveillanceToolRuntimeException e) {
+						processedCases.add(new ProcessedEntity(caseToBeDeleted.getUuid(), ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
+					} catch (SormasToSormasRuntimeException e) {
+						processedCases.add(new ProcessedEntity(caseToBeDeleted.getUuid(), ProcessedEntityStatus.SORMAS_TO_SORMAS_FAILURE));
+					} catch (AccessDeniedException e) {
+						processedCases.add(new ProcessedEntity(caseToBeDeleted.getUuid(), ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+					} catch (Exception e) {
+						processedCases.add(new ProcessedEntity(caseToBeDeleted.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+						//TODO: check if we still need the logger or every exception will be logged when is thrown
 					}
+					//logger.error("The case with uuid {} could not be deleted", caseToBeDeleted.getUuid(), e);
 				}
-			});
+			}
+			//	}
 		}
-		return deletedCaseUuids;
+		//if the cases with exceptions will not be sent back will be noted as skipped -> check if we can update the skipped indicator based on status
+		return processedCases;
 	}
 
 	@Override
@@ -2679,21 +2704,21 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	@RightsAllowed(UserRight._CASE_DELETE)
-	public List<String> restore(List<String> uuids) {
-		List<String> restoredCaseUuids = new ArrayList<>();
+	public List<ProcessedEntity> restore(List<String> uuids) {
+		List<ProcessedEntity> processedCases = new ArrayList<>();
 		List<Case> casesToBeRestored = caseService.getByUuids(uuids);
 
 		if (casesToBeRestored != null) {
 			casesToBeRestored.forEach(caseToBeRestored -> {
 				try {
 					restore(caseToBeRestored.getUuid());
-					restoredCaseUuids.add(caseToBeRestored.getUuid());
+					processedCases.add(new ProcessedEntity(caseToBeRestored.getUuid(), ProcessedEntityStatus.SUCCESS));
 				} catch (Exception e) {
 					logger.error("The case with uuid {} could not be restored", caseToBeRestored.getUuid(), e);
 				}
 			});
 		}
-		return restoredCaseUuids;
+		return processedCases;
 	}
 
 	@Override
@@ -2753,32 +2778,42 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	@RightsAllowed(UserRight._CASE_ARCHIVE)
-	public void archive(String entityUuid, Date endOfProcessingDate, boolean includeContacts) {
+	public List<ProcessedEntity> archive(String entityUuid, Date endOfProcessingDate, boolean includeContacts) {
 		super.archive(entityUuid, endOfProcessingDate);
 		if (includeContacts) {
 			List<String> caseContacts = contactService.getAllUuidsByCaseUuids(Collections.singletonList(entityUuid));
 			contactService.archive(caseContacts);
 		}
+		List<ProcessedEntity> processedEntities = new ArrayList<>();
+		return processedEntities;
 	}
 
 	@Override
 	@RightsAllowed(UserRight._CASE_ARCHIVE)
-	public void archive(List<String> entityUuids, boolean includeContacts) {
+	public List<ProcessedEntity> archive(List<String> entityUuids, boolean includeContacts) {
 		super.archive(entityUuids);
+
+		List<ProcessedEntity> processedEntities = new ArrayList<>();
 		if (includeContacts) {
 			List<String> caseContacts = contactService.getAllUuidsByCaseUuids(entityUuids);
 			contactService.archive(caseContacts);
 		}
+
+		return processedEntities;
 	}
 
 	@Override
 	@RightsAllowed(UserRight._CASE_ARCHIVE)
-	public void dearchive(List<String> entityUuids, String dearchiveReason, boolean includeContacts) {
+	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason, boolean includeContacts) {
 		super.dearchive(entityUuids, dearchiveReason);
+		List<ProcessedEntity> processedEntities = new ArrayList<>();
+
 		if (includeContacts) {
 			List<String> caseContacts = contactService.getAllUuidsByCaseUuids(entityUuids);
 			contactService.dearchive(caseContacts, dearchiveReason);
 		}
+
+		return processedEntities;
 	}
 
 	@Override

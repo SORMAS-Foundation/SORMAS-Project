@@ -18,6 +18,7 @@ import de.symeda.sormas.api.DeletableFacade;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.uuid.HasUuid;
@@ -176,9 +177,9 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 
 		void delete(String uuid, DeletionDetails deletionDetails);
 
-		int delete(List<String> uuids, DeletionDetails deletionDetails);
+		List<ProcessedEntity> delete(List<String> uuids, DeletionDetails deletionDetails);
 
-		int restore(List<String> uuids);
+		List<ProcessedEntity> restore(List<String> uuids);
 
 		DeleteRestoreMessages getDeleteRestoreMessages();
 

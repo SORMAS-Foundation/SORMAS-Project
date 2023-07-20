@@ -31,6 +31,7 @@ import javax.ws.rs.core.Response;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.infrastructure.region.RegionCriteria;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.infrastructure.region.RegionIndexDto;
@@ -76,13 +77,13 @@ public class RegionResource extends EntityDtoResource<RegionDto> {
 
 	@POST
 	@Path("/archive")
-	public List<String> archive(@RequestBody List<String> uuids) {
+	public List<ProcessedEntity> archive(@RequestBody List<String> uuids) {
 		return FacadeProvider.getRegionFacade().archive(uuids);
 	}
 
 	@POST
 	@Path("/dearchive")
-	public List<String> dearchive(@RequestBody List<String> uuids) {
+	public List<ProcessedEntity> dearchive(@RequestBody List<String> uuids) {
 		return FacadeProvider.getRegionFacade().dearchive(uuids);
 	}
 

@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.utils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
@@ -16,6 +17,8 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -32,11 +35,11 @@ public class BulkOperationHandler<T extends HasUuid> {
 	 * Amount of DTOs that are forwarded to the backend in one single call
 	 * when displaying a progress layout.
 	 */
-	public static final int BULK_ACTION_BATCH_SIZE = 20;
+	public static final int BULK_ACTION_BATCH_SIZE = 5;
 	/**
 	 * Amount of DTOs that have to be selected for the progress layout to be displayed.
 	 */
-	public static final int BULK_ACTION_PROGRESS_THRESHOLD = 40;
+	public static final int BULK_ACTION_PROGRESS_THRESHOLD = 10;
 	private boolean cancelAfterCurrentBatch;
 	private boolean cancelButtonClicked;
 	private final Lock cancelLock = new ReentrantLock();
@@ -82,7 +85,7 @@ public class BulkOperationHandler<T extends HasUuid> {
 	}
 
 	public void doBulkOperation(
-		Function<List<T>, Integer> bulkOperationFunction,
+		Function<List<T>, List<ProcessedEntity>> bulkOperationFunction,
 		List<T> selectedEntries,
 		List<T> selectedEligibleEntries,
 		List<T> selectedIneligibleEntries,
@@ -93,10 +96,22 @@ public class BulkOperationHandler<T extends HasUuid> {
 		selectedEligibleEntries = !areIneligibleEntriesSelected(selectedIneligibleEntries) ? selectedEntries : selectedEligibleEntries;
 
 		if (selectedEntries.size() < BULK_ACTION_PROGRESS_THRESHOLD) {
+			List<ProcessedEntity> processedEntities = new ArrayList<>();
 			if (initialEligibleEntryCount > 0) {
-				successfulEntryCount = areIneligibleEntriesSelected(selectedIneligibleEntries)
+				processedEntities = areIneligibleEntriesSelected(selectedIneligibleEntries)
 					? bulkOperationFunction.apply(selectedEligibleEntries)
 					: bulkOperationFunction.apply(selectedEntries);
+
+				successfulEntryCount = processedEntities.stream()
+					.filter(processedEntity -> processedEntity.getProcessedEntityStatus().equals(ProcessedEntityStatus.SUCCESS))
+					.collect(Collectors.toList())
+					.size();
+			}
+
+			//If the user does not have the proper rights to perform the action, there will be no processed entities
+			if (processedEntities.size() == 0 && initialEligibleEntryCount > 0) {
+				NotificationHelper.showNotification(I18nProperties.getString(Strings.errorForbidden), Notification.Type.WARNING_MESSAGE, -1);
+				return;
 			}
 
 			if (initialEligibleEntryCount == 0 && successfulEntryCount == 0) {
@@ -143,11 +158,30 @@ public class BulkOperationHandler<T extends HasUuid> {
 				FacadeProvider.getI18nFacade().setUserLanguage(currentUser.getLanguage());
 
 				try {
-					List<T> remainingEntries =
-						performBulkOperation(bulkOperationFunction, finalSelectedEligibleEntries, bulkProgressLayout::updateProgress);
+					List<String> entityUuidsNotProcessedExternalSurveillanceReason = new ArrayList<>();
+					List<String> entityUuidsNotProcessedGeneralReason = new ArrayList<>();
+					List<T> remainingEntries = performBulkOperation(
+						bulkOperationFunction,
+						finalSelectedEligibleEntries,
+						entityUuidsNotProcessedExternalSurveillanceReason,
+						entityUuidsNotProcessedGeneralReason,
+						bulkProgressLayout::updateProgress);
 
 					currentUI.access(() -> {
 						window.setClosable(true);
+
+						//If the user does not have the proper rights to perform the action, there will be no processed entities
+						if (remainingEntries.size() == initialEligibleEntryCount) {
+							bulkProgressLayout.finishProgress(
+								ProgressResult.FAILURE,
+								//I18nProperties.getString(Strings.infoBulkProcessNoEligibleEntries),
+								I18nProperties.getString(Strings.errorForbidden),
+								() -> {
+									window.close();
+									bulkOperationDoneCallback.accept(Collections.emptyList());
+								});
+							return;
+						}
 
 						if (initialEligibleEntryCount == 0) {
 							bulkProgressLayout.finishProgress(
@@ -207,8 +241,10 @@ public class BulkOperationHandler<T extends HasUuid> {
 	}
 
 	private List<T> performBulkOperation(
-		Function<List<T>, Integer> bulkOperationFunction,
+		Function<List<T>, List<ProcessedEntity>> bulkOperationFunction,
 		List<T> selectedEntries,
+		List<String> entitiesNotProcessedExternalSurveillanceFailure,
+		List<String> entitiesNotProcessedGeneralReason,
 		Consumer<BulkProgressUpdateInfo> progressUpdateCallback)
 		throws InterruptedException {
 
@@ -226,12 +262,31 @@ public class BulkOperationHandler<T extends HasUuid> {
 					}
 
 					int entriesInBatch = Math.min(BULK_ACTION_BATCH_SIZE, selectedEntries.size() - i);
-					int successfullyProcessedInBatch =
+
+					List<ProcessedEntity> processedEntities =
 						bulkOperationFunction.apply(selectedEntries.subList(i, Math.min(i + BULK_ACTION_BATCH_SIZE, selectedEntries.size())));
+
+					//If the user does not have the proper rights to perform the action, there will be no processed entities
+					//send as parameter initialEligibleEntryCount?
+					if (processedEntities.size() == 0) {
+						break;
+					} else {
+						entitiesNotProcessedExternalSurveillanceFailure
+							.addAll(getList(processedEntities, ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
+						// entitiesNotProcessedExternalSurveillanceFailure.addAll(getList(processedEntities, ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
+						//   entitiesNotProcessedExternalSurveillanceFailure.addAll(getList(processedEntities, ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
+					}
+
+					int successfullyProcessedInBatch = processedEntities.stream()
+						.filter(processedEntity -> processedEntity.getProcessedEntityStatus().equals(ProcessedEntityStatus.SUCCESS))
+						.collect(Collectors.toList())
+						.size();
+
 					successfulEntryCount += successfullyProcessedInBatch;
 					lastProcessedEntry = Math.min(i + BULK_ACTION_BATCH_SIZE, selectedEntries.size() - 1);
 					progressUpdateCallback.accept(
 						new BulkProgressUpdateInfo(entriesInBatch, successfullyProcessedInBatch, entriesInBatch - successfullyProcessedInBatch));
+
 				}
 			}
 		} finally {
@@ -299,6 +354,13 @@ public class BulkOperationHandler<T extends HasUuid> {
 
 	public boolean areIneligibleEntriesSelected(List<T> selectedIneligibleEntries) {
 		return selectedIneligibleEntries != null && selectedIneligibleEntries.size() > 0;
+	}
+
+	public List<String> getList(List<ProcessedEntity> processedEntities, ProcessedEntityStatus status) {
+		return processedEntities.stream()
+			.filter(processedEntity -> processedEntity.getProcessedEntityStatus().equals(status))
+			.map(ProcessedEntity::getEntityUuid)
+			.collect(Collectors.toList());
 	}
 
 	public Window getWindow() {

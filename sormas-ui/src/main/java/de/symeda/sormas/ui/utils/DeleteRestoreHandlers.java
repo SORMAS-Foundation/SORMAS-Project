@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.utils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,6 +19,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PermanentlyDeletableFacade;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -86,15 +88,24 @@ public final class DeleteRestoreHandlers {
 		}
 
 		@Override
-		public int delete(List<String> uuids, DeletionDetails deletionDetails) {
-			entityFacade.delete(uuids, deletionDetails);
-			return uuids.size();
+		public List<ProcessedEntity> delete(List<String> uuids, DeletionDetails deletionDetails) {
+			List<ProcessedEntity> deletedEntities = new ArrayList();
+			try {
+				deletedEntities = entityFacade.delete(uuids, deletionDetails);
+			} catch (Exception e) {
+
+			}
+
+			//return deletedEntities.size();
+			return deletedEntities;
 		}
 
 		@Override
-		public int restore(List<String> uuids) {
-			entityFacade.restore(uuids);
-			return uuids.size();
+		public List<ProcessedEntity> restore(List<String> uuids) {
+			List<ProcessedEntity> restoredEntities = entityFacade.restore(uuids);
+			//return uuids.size();
+
+			return restoredEntities;
 		}
 
 		@Override
@@ -198,9 +209,10 @@ public final class DeleteRestoreHandlers {
 		}
 
 		@Override
-		public int delete(List<String> uuids) {
-			entityFacade.delete(uuids);
-			return uuids.size();
+		public List<ProcessedEntity> delete(List<String> uuids) {
+			List<ProcessedEntity> processedEntities = entityFacade.delete(uuids);
+			//return uuids.size();
+			return processedEntities;
 		}
 
 		@Override

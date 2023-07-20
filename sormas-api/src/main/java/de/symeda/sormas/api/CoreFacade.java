@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
@@ -36,9 +37,9 @@ public interface CoreFacade<DTO extends EntityDto, INDEX_DTO extends Serializabl
 
 	void archive(String entityUuid, Date endOfProcessingDate);
 
-	void archive(List<String> entityUuid);
+	List<ProcessedEntity> archive(List<String> entityUuid);
 
-	void dearchive(List<String> entityUuids, String dearchiveReason);
+	List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason);
 
 	List<String> getArchivedUuidsSince(Date since);
 

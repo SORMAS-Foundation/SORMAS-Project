@@ -27,6 +27,7 @@ import org.apache.commons.lang3.NotImplementedException;
 
 import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.environment.EnvironmentCriteria;
 import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.environment.EnvironmentFacade;
@@ -324,8 +325,8 @@ public class EnvironmentFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._ENVIRONMENT_ARCHIVE)
-	public void dearchive(List<String> entityUuids, String dearchiveReason) {
-		super.dearchive(entityUuids, dearchiveReason);
+	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
+		return super.dearchive(entityUuids, dearchiveReason);
 	}
 
 	@Override
@@ -381,13 +382,13 @@ public class EnvironmentFacadeEjb
 
 	@RightsAllowed(UserRight._ENVIRONMENT_DELETE)
 	@Override
-	public List<String> delete(List<String> uuids, DeletionDetails deletionDetails) {
+	public List<ProcessedEntity> delete(List<String> uuids, DeletionDetails deletionDetails) {
 		throw new NotImplementedException();
 	}
 
 	@Override
 	@RightsAllowed(UserRight._ENVIRONMENT_DELETE)
-	public List<String> restore(List<String> uuids) {
+	public List<ProcessedEntity> restore(List<String> uuids) {
 		throw new NotImplementedException();
 	}
 

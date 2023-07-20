@@ -35,6 +35,7 @@ import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIndexDetailedDto;
@@ -148,8 +149,11 @@ public class ContactResource extends EntityDtoResource<ContactDto> {
 
 	@POST
 	@Path("/delete")
-	public List<String> delete(List<String> uuids) {
-		return FacadeProvider.getContactFacade().delete(uuids, new DeletionDetails(DeletionReason.OTHER_REASON, "Deleted via ReST call"));
+	public List<ProcessedEntity> delete(List<String> uuids) {
+		List<ProcessedEntity> processedEntities =
+			FacadeProvider.getContactFacade().delete(uuids, new DeletionDetails(DeletionReason.OTHER_REASON, "Deleted via ReST call"));
+
+		return processedEntities;
 	}
 
 	@GET

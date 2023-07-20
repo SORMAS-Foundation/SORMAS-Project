@@ -31,6 +31,7 @@ import javax.ws.rs.core.Response;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.infrastructure.facility.FacilityCriteria;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityIndexDto;
@@ -82,13 +83,13 @@ public class FacilityResource extends EntityDtoResource<FacilityDto> {
 
 	@POST
 	@Path("/archive")
-	public List<String> archive(@RequestBody List<String> uuids) {
+	public List<ProcessedEntity> archive(@RequestBody List<String> uuids) {
 		return FacadeProvider.getFacilityFacade().archive(uuids);
 	}
 
 	@POST
 	@Path("/dearchive")
-	public List<String> dearchive(@RequestBody List<String> uuids) {
+	public List<ProcessedEntity> dearchive(@RequestBody List<String> uuids) {
 		return FacadeProvider.getFacilityFacade().dearchive(uuids);
 	}
 

@@ -54,6 +54,8 @@ import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -361,12 +363,14 @@ public class TaskFacadeEjb implements TaskFacade {
 
 	@Override
 	@RightsAllowed(UserRight._TASK_EDIT)
-	public Integer saveBulkTasks(
+	public List<ProcessedEntity> saveBulkTasks(
 		List<String> taskUuidList,
 		TaskDto updatedTempTask,
 		boolean priorityChange,
 		boolean assigneeChange,
 		boolean taskStatusChange) {
+
+		List<ProcessedEntity> processedTasks = new ArrayList<>();
 
 		UserReferenceDto currentUser = userService.getCurrentUser().toReference();
 
@@ -387,9 +391,11 @@ public class TaskFacadeEjb implements TaskFacade {
 			}
 
 			saveTask(taskDto);
+			processedTasks.add(new ProcessedEntity(taskUuid, ProcessedEntityStatus.SUCCESS));
 			changedTasks++;
 		}
-		return changedTasks;
+		//return changedTasks;
+		return processedTasks;
 	}
 
 	private void notifyAboutNewAssignee(Task task, User newAssignee, User oldAssignee) {
@@ -925,26 +931,21 @@ public class TaskFacadeEjb implements TaskFacade {
 
 	@Override
 	@RightsAllowed(UserRight._TASK_DELETE)
-	public void delete(List<String> uuids) {
-		deleteTasks(uuids);
-	}
-
-	@RightsAllowed(UserRight._TASK_DELETE)
-	public List<String> deleteTasks(List<String> tasksUuids) {
-		List<String> deletedTaskUuids = new ArrayList<>();
-		List<Task> tasksToBeDeleted = taskService.getByUuids(tasksUuids);
+	public List<ProcessedEntity> delete(List<String> uuids) {
+		List<ProcessedEntity> processedTasks = new ArrayList<>();
+		List<Task> tasksToBeDeleted = taskService.getByUuids(uuids);
 
 		if (tasksToBeDeleted != null) {
 			tasksToBeDeleted.forEach(taskToBeDeleted -> {
 				try {
 					taskService.deletePermanent(taskToBeDeleted);
-					deletedTaskUuids.add(taskToBeDeleted.getUuid());
+					processedTasks.add(new ProcessedEntity(taskToBeDeleted.getUuid(), ProcessedEntityStatus.SUCCESS));
 				} catch (Exception e) {
 					logger.error("The task with uuid:" + taskToBeDeleted.getUuid() + "could not be deleted");
 				}
 			});
 		}
-		return deletedTaskUuids;
+		return processedTasks;
 	}
 
 	@Override
@@ -1029,22 +1030,29 @@ public class TaskFacadeEjb implements TaskFacade {
 
 	@Override
 	@RightsAllowed(UserRight._TASK_ARCHIVE)
-	public void dearchive(String uuid) {
+	public List<ProcessedEntity> dearchive(String uuid) {
 		dearchive(Collections.singletonList(uuid));
+		return null;
 	}
 
 	@Override
 	@RightsAllowed(UserRight._TASK_ARCHIVE)
-	public List<String> archive(List<String> taskUuids) {
+	public List<ProcessedEntity> archive(List<String> taskUuids) {
+		List<ProcessedEntity> processedTasks = new ArrayList<>();
 		IterableHelper.executeBatched(taskUuids, ARCHIVE_BATCH_SIZE, e -> taskService.updateArchived(e, true));
-		return taskUuids;
+		//return taskUuids;
+		//TODO: change this logic
+		return processedTasks;
 	}
 
 	@Override
 	@RightsAllowed(UserRight._TASK_ARCHIVE)
-	public List<String> dearchive(List<String> taskUuids) {
+	public List<ProcessedEntity> dearchive(List<String> taskUuids) {
+		List<ProcessedEntity> processedTasks = new ArrayList<>();
 		IterableHelper.executeBatched(taskUuids, ARCHIVE_BATCH_SIZE, e -> taskService.updateArchived(e, false));
-		return taskUuids;
+		//return taskUuids;
+		//TODO: change this logic
+		return processedTasks;
 	}
 
 	@Override

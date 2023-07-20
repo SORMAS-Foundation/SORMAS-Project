@@ -31,6 +31,7 @@ import javax.ws.rs.core.Response;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.infrastructure.continent.ContinentCriteria;
 import de.symeda.sormas.api.infrastructure.continent.ContinentDto;
 import de.symeda.sormas.api.infrastructure.continent.ContinentIndexDto;
@@ -71,14 +72,15 @@ public class ContinentResource extends EntityDtoResource<ContinentDto> {
 
 	@POST
 	@Path("/archive")
-	public List<String> archive(@RequestBody List<String> uuids) {
+	public List<ProcessedEntity> archive(@RequestBody List<String> uuids) {
 		return FacadeProvider.getContinentFacade().archive(uuids);
 	}
 
 	@POST
 	@Path("/dearchive")
-	public List<String> dearchive(@RequestBody List<String> uuids) {
-		return FacadeProvider.getContinentFacade().dearchive(uuids);
+	public List<ProcessedEntity> dearchive(@RequestBody List<String> uuids) {
+		List<ProcessedEntity> processedEntities = FacadeProvider.getContinentFacade().dearchive(uuids);
+		return processedEntities;
 	}
 
 	@Override

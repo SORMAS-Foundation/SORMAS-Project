@@ -30,6 +30,7 @@ import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.PermanentlyDeletableFacade;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -65,8 +66,6 @@ public interface TaskFacade extends PermanentlyDeletableFacade, ArchivableFacade
 
 	List<String> getAllActiveUuids();
 
-	List<String> deleteTasks(List<String> taskUuids);
-
 	long count(TaskCriteria criteria);
 
 	List<TaskIndexDto> getIndexList(TaskCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
@@ -79,7 +78,7 @@ public interface TaskFacade extends PermanentlyDeletableFacade, ArchivableFacade
 
 	EditPermissionType getEditPermissionType(String uuid);
 
-	Integer saveBulkTasks(
+	List<ProcessedEntity> saveBulkTasks(
 		List<String> taskUuidList,
 		TaskDto updatedTempTask,
 		boolean priorityChange,

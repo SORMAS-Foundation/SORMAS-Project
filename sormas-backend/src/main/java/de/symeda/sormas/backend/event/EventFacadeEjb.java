@@ -67,6 +67,8 @@ import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDetailedReferenceDto;
@@ -342,22 +344,23 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 	@Override
 	@RightsAllowed(UserRight._EVENT_DELETE)
-	public List<String> delete(List<String> uuids, DeletionDetails deletionDetails) {
-		List<String> deletedEventUuids = new ArrayList<>();
+	public List<ProcessedEntity> delete(List<String> uuids, DeletionDetails deletionDetails) {
+		List<ProcessedEntity> processedEvents = new ArrayList<>();
+
 		List<Event> eventsToBeDeleted = service.getByUuids(uuids);
 		if (eventsToBeDeleted != null) {
 			eventsToBeDeleted.forEach(eventToBeDeleted -> {
 				if (!eventToBeDeleted.isDeleted()) {
 					try {
 						deleteEvent(eventToBeDeleted, deletionDetails);
-						deletedEventUuids.add(eventToBeDeleted.getUuid());
+						processedEvents.add(new ProcessedEntity(eventToBeDeleted.getUuid(), ProcessedEntityStatus.SUCCESS));
 					} catch (ExternalSurveillanceToolRuntimeException | SormasToSormasRuntimeException | AccessDeniedException e) {
 						logger.error("The event with uuid:" + eventToBeDeleted.getUuid() + "could not be deleted");
 					}
 				}
 			});
 		}
-		return deletedEventUuids;
+		return processedEvents;
 	}
 
 	@Override
@@ -368,21 +371,22 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 	@Override
 	@RightsAllowed(UserRight._EVENT_DELETE)
-	public List<String> restore(List<String> uuids) {
-		List<String> restoredEventsUuids = new ArrayList<>();
+	public List<ProcessedEntity> restore(List<String> uuids) {
+		List<ProcessedEntity> processedEvents = new ArrayList<>();
+
 		List<Event> eventsToBeRestored = eventService.getByUuids(uuids);
 
 		if (eventsToBeRestored != null) {
 			eventsToBeRestored.forEach(eventToBeRestored -> {
 				try {
 					restore(eventToBeRestored.getUuid());
-					restoredEventsUuids.add(eventToBeRestored.getUuid());
+					processedEvents.add(new ProcessedEntity(eventToBeRestored.getUuid(), ProcessedEntityStatus.SUCCESS));
 				} catch (Exception e) {
 					logger.error("The event with uuid: " + eventToBeRestored.getUuid() + " could not be restored");
 				}
 			});
 		}
-		return restoredEventsUuids;
+		return processedEvents;
 	}
 
 	@RightsAllowed({
@@ -1029,18 +1033,23 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 	@Override
 	@RightsAllowed(UserRight._EVENT_ARCHIVE)
-	public void archive(List<String> eventUuids) {
+	public List<ProcessedEntity> archive(List<String> eventUuids) {
 		super.archive(eventUuids);
 		List<String> eventParticipantList = eventParticipantService.getAllUuidsByEventUuids(eventUuids);
 		eventParticipantService.archive(eventParticipantList);
+		List<ProcessedEntity> processedEntities = new ArrayList<>();
+		return processedEntities;
 	}
 
 	@Override
 	@RightsAllowed(UserRight._EVENT_ARCHIVE)
-	public void dearchive(List<String> eventUuids, String dearchiveReason) {
+	public List<ProcessedEntity> dearchive(List<String> eventUuids, String dearchiveReason) {
 		super.dearchive(eventUuids, dearchiveReason);
 		List<String> eventParticipantList = eventParticipantService.getAllUuidsByEventUuids(eventUuids);
 		eventParticipantService.dearchive(eventParticipantList, dearchiveReason);
+
+		List<ProcessedEntity> processedEntities = new ArrayList<>();
+		return processedEntities;
 	}
 
 	@Override
@@ -1465,12 +1474,14 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 	@Override
 	@RightsAllowed(UserRight._EVENT_EDIT)
-	public Integer saveBulkEvents(
+	public List<ProcessedEntity> saveBulkEvents(
 		List<String> eventUuidList,
 		EventDto updatedTempEvent,
 		boolean eventStatusChange,
 		boolean eventInvestigationStatusChange,
 		boolean eventManagementStatusChange) {
+
+		List<ProcessedEntity> processedEvents = new ArrayList();
 
 		int changedEvents = 0;
 		for (String eventUuid : eventUuidList) {
@@ -1491,10 +1502,11 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 				}
 
 				save(eventDto);
+				processedEvents.add(new ProcessedEntity(eventUuid, ProcessedEntityStatus.SUCCESS));
 				changedEvents++;
 			}
 		}
-		return changedEvents;
+		return processedEvents;
 
 	}
 

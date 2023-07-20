@@ -90,6 +90,7 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -2831,10 +2832,10 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		loginWith(surveillanceOfficer);
 
-		List<String> deleteUuids = getCaseFacade().delete(caseUuidList, new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
+		List<ProcessedEntity> deleteUuids = getCaseFacade().delete(caseUuidList, new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
 		assertEquals(1, deleteUuids.size());
-		assertEquals(caze1.getUuid(), deleteUuids.get(0));
+		assertEquals(caze1.getUuid(), deleteUuids.get(0).getEntityUuid());
 
 		loginWith(nationalUser);
 		getCaseFacade().delete(caseUuidList, new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));

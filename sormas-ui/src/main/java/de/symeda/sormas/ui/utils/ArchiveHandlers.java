@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.ui.utils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -34,6 +35,7 @@ import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignFacade;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.environment.EnvironmentDto;
@@ -121,17 +123,21 @@ public final class ArchiveHandlers {
 		}
 
 		@Override
-		public int archive(List<String> entityUuids) {
-			return entityFacade.archive(entityUuids).size();
+		public List<ProcessedEntity> archive(List<String> entityUuids) {
+			List<ProcessedEntity> processedEntities = entityFacade.archive(entityUuids);
+			return processedEntities;
 		}
 
 		@Override
-		public void dearchive(String entityUuid) {
-			entityFacade.dearchive(entityUuid);
+		public List<ProcessedEntity> dearchive(String entityUuid) {
+			List<ProcessedEntity> processedEntities = entityFacade.dearchive(entityUuid);
+			return processedEntities;
 		}
 
-		public int dearchive(List<String> entityUuids) {
-			return entityFacade.dearchive(entityUuids).size();
+		public List<ProcessedEntity> dearchive(List<String> entityUuids) {
+			//return entityFacade.dearchive(entityUuids).size();
+			List<ProcessedEntity> processedEntities = entityFacade.dearchive(entityUuids);
+			return processedEntities;
 		}
 
 		@Override
@@ -180,21 +186,24 @@ public final class ArchiveHandlers {
 		}
 
 		@Override
-		public int archive(List<String> entityUuids) {
-			entityFacade.archive(entityUuids);
+		public List<ProcessedEntity> archive(List<String> entityUuids) {
+			List<ProcessedEntity> processedEntities = entityFacade.archive(entityUuids);
 
-			return entityUuids.size();
+			//return entityUuids.size();
+			return processedEntities;
 		}
 
 		@Override
-		public void dearchive(String entityUuid) {
-			entityFacade.dearchive(Collections.singletonList(entityUuid), dearchiveReasonField.getValue());
+		public List<ProcessedEntity> dearchive(String entityUuid) {
+			List<ProcessedEntity> processedEntities = entityFacade.dearchive(Collections.singletonList(entityUuid), dearchiveReasonField.getValue());
+			return processedEntities;
 		}
 
 		@Override
-		public int dearchive(List<String> entityUuids) {
-			entityFacade.dearchive(entityUuids, dearchiveReasonField.getValue());
-			return entityUuids.size();
+		public List<ProcessedEntity> dearchive(List<String> entityUuids) {
+			List<ProcessedEntity> processedEntities = entityFacade.dearchive(entityUuids, dearchiveReasonField.getValue());
+			//return entityUuids.size();
+			return processedEntities;
 		}
 
 		@Override
@@ -250,21 +259,25 @@ public final class ArchiveHandlers {
 		}
 
 		@Override
-		public void dearchive(String entityUuid) {
-			entityFacade.dearchive(Collections.singletonList(entityUuid), dearchiveReasonField.getValue(), archiveWithContacts.getValue());
+		public List<ProcessedEntity> dearchive(String entityUuid) {
+			List<ProcessedEntity> processedEntities =
+				entityFacade.dearchive(Collections.singletonList(entityUuid), dearchiveReasonField.getValue(), archiveWithContacts.getValue());
+			return processedEntities;
 		}
 
 		@Override
-		public int archive(List<String> entityUuids) {
-			entityFacade.archive(entityUuids, archiveWithContacts.getValue());
+		public List<ProcessedEntity> archive(List<String> entityUuids) {
+			List<ProcessedEntity> processedEntities = entityFacade.archive(entityUuids, archiveWithContacts.getValue());
 
-			return entityUuids.size();
+			//return entityUuids.size();
+			return processedEntities;
 		}
 
 		@Override
-		public int dearchive(List<String> uuidList) {
-			entityFacade.dearchive(uuidList, dearchiveReasonField.getValue(), archiveWithContacts.getValue());
-			return uuidList.size();
+		public List<ProcessedEntity> dearchive(List<String> uuidList) {
+			List<ProcessedEntity> processedEntities =
+				entityFacade.dearchive(uuidList, dearchiveReasonField.getValue(), archiveWithContacts.getValue());
+			return processedEntities;
 		}
 
 		@Override
@@ -317,12 +330,14 @@ public final class ArchiveHandlers {
 		}
 
 		@Override
-		public void dearchive(String entityUuid) {
+		public List<ProcessedEntity> dearchive(String entityUuid) {
 			try {
 				super.dearchive(entityUuid);
 			} catch (AccessDeniedException e) {
 				Notification.show(e.getMessage(), Notification.Type.WARNING_MESSAGE);
 			}
+			List<ProcessedEntity> processedEntities = new ArrayList<>();
+			return processedEntities;
 		}
 
 		@Override

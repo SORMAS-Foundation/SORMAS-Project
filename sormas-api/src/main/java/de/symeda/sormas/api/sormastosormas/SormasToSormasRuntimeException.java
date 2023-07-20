@@ -15,8 +15,11 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
+import javax.ejb.ApplicationException;
+
 import de.symeda.sormas.api.i18n.I18nProperties;
 
+@ApplicationException(rollback = false)
 public class SormasToSormasRuntimeException extends RuntimeException {
 
 	public SormasToSormasRuntimeException(SormasToSormasException exception) {

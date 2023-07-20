@@ -34,6 +34,7 @@ import de.symeda.sormas.api.MergeFacade;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.CoreAndPersonDto;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.dashboard.DashboardContactDto;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
@@ -146,7 +147,7 @@ public interface ContactFacade extends CoreFacade<ContactDto, ContactIndexDto, C
 
 	void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException;
 
-	Integer saveBulkContacts(
+	List<ProcessedEntity> saveBulkContacts(
 		List<String> contactUuidlist,
 		@Valid ContactBulkEditData updatedContacBulkEditData,
 		boolean classificationChange,

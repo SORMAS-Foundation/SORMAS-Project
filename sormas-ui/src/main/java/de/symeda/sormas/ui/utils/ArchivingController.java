@@ -16,6 +16,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.uuid.HasUuid;
@@ -279,11 +280,11 @@ public class ArchivingController {
 
 		void archive(String entityUuid);
 
-		int archive(List<String> entityUuids);
+		List<ProcessedEntity> archive(List<String> entityUuids);
 
-		void dearchive(String entityUuid);
+		List<ProcessedEntity> dearchive(String entityUuid);
 
-		int dearchive(List<String> entityUuids);
+		List<ProcessedEntity> dearchive(List<String> entityUuids);
 
 		boolean isArchived(T entity);
 

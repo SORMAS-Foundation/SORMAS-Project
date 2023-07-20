@@ -1176,7 +1176,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 	}
 
 	@Override
-	public void delete(Case caze, DeletionDetails deletionDetails) {
+	public void delete(Case caze, DeletionDetails deletionDetails) throws ExternalSurveillanceToolRuntimeException {
 
 		// Soft-delete all samples that are only associated with this case
 		caze.getSamples()
