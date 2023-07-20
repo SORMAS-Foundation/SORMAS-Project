@@ -334,11 +334,9 @@ public class TaskManagementSteps implements En {
     When(
         "I check if popup message for deleting is {string}",
         (String expectedText) -> {
-          // here
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
-              NOTIFICATION_DESCRIPTION_MESSAGE_POPUP);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NOTIFICATION_CAPTION_MESSAGE_POPUP);
           softly.assertEquals(
-              webDriverHelpers.getTextFromPresentWebElement(NOTIFICATION_DESCRIPTION_MESSAGE_POPUP),
+              webDriverHelpers.getTextFromPresentWebElement(NOTIFICATION_CAPTION_MESSAGE_POPUP),
               expectedText,
               "Bulk action went wrong");
           softly.assertAll();
