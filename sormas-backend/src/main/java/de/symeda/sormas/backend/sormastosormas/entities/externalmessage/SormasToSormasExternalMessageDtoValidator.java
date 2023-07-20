@@ -34,6 +34,8 @@ public class SormasToSormasExternalMessageDtoValidator
 		ValidationErrors validationErrors = new ValidationErrors(buildExternalMessageValidationGroupName(externalMessage));
 
 		final String groupNameTag = Captions.ExternalMessage;
+		infraValidator
+			.validateCountry(externalMessage.getPersonCountry(), groupNameTag, validationErrors, externalMessage::setPersonCountry, direction);
 		if (externalMessage.getSampleReports() != null) {
 			externalMessage.getSampleReports().forEach(s -> {
 				if (s.getTestReports() != null) {
