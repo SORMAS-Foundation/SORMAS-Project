@@ -2739,12 +2739,22 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 		externalJournalService.handleExternalJournalPersonUpdateAsync(caze.getPerson().toReference());
 
+		//just for testing
 		try {
-			sormasToSormasFacade.revokePendingShareRequests(caze.getSormasToSormasShares(), true);
+			if (caze.getUuid().equals("FHUY7T-TDIBAJ-BCOUS4-XFNJDPOQ")) {
+				throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasRequestProcessed);
+			}
 		} catch (SormasToSormasException e) {
 			throw new SormasToSormasRuntimeException(e);
 		}
 
+		/*
+		 * try {
+		 * sormasToSormasFacade.revokePendingShareRequests(caze.getSormasToSormasShares(), true);
+		 * } catch (SormasToSormasException e) {
+		 * throw new SormasToSormasRuntimeException(e);
+		 * }
+		 */
 		service.delete(caze, deletionDetails);
 	}
 

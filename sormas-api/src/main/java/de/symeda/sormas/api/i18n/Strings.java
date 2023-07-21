@@ -1051,7 +1051,6 @@ public interface Strings {
 	String messageCasesDeleted = "messageCasesDeleted";
 	String messageCasesMerged = "messageCasesMerged";
 	String messageCasesNotDeleted = "messageCasesNotDeleted";
-	String messageCasesNotDeletedExternalReason = "messageCasesNotDeletedExternalReason";
 	String messageCasesNotRestored = "messageCasesNotRestored";
 	String messageCasesRestored = "messageCasesRestored";
 	String messageCaseTransfered = "messageCaseTransfered";
@@ -1101,13 +1100,18 @@ public interface Strings {
 	String messageCopyPassword = "messageCopyPassword";
 	String messageCountCasesAlreadyInEvent = "messageCountCasesAlreadyInEvent";
 	String messageCountCasesNotDeleted = "messageCountCasesNotDeleted";
+	String messageCountCasesNotDeletedExternalReason = "messageCountCasesNotDeletedExternalReason";
+	String messageCountCasesNotDeletedSormasToSormasReason = "messageCountCasesNotDeletedSormasToSormasReason";
 	String messageCountCasesNotRestored = "messageCountCasesNotRestored";
 	String messageCountContactsAlreadyInEvent = "messageCountContactsAlreadyInEvent";
 	String messageCountContactsNotDeleted = "messageCountContactsNotDeleted";
+	String messageCountContactsNotDeletedSormasToSormasReason = "messageCountContactsNotDeletedSormasToSormasReason";
 	String messageCountContactsNotRestored = "messageCountContactsNotRestored";
 	String messageCountEventParticipantsNotDeleted = "messageCountEventParticipantsNotDeleted";
 	String messageCountEventParticipantsNotRestored = "messageCountEventParticipantsNotRestored";
 	String messageCountEventsNotDeleted = "messageCountEventsNotDeleted";
+	String messageCountEventsNotDeletedExternalReason = "messageCountEventsNotDeletedExternalReason";
+	String messageCountEventsNotDeletedSormasToSormasReason = "messageCountEventsNotDeletedSormasToSormasReason";
 	String messageCountEventsNotRestored = "messageCountEventsNotRestored";
 	String messageCountExternalMessagesNotDeleted = "messageCountExternalMessagesNotDeleted";
 	String messageCountImmunizationsNotRestored = "messageCountImmunizationsNotRestored";
@@ -1177,7 +1181,6 @@ public interface Strings {
 	String messageEventSaved = "messageEventSaved";
 	String messageEventsDeleted = "messageEventsDeleted";
 	String messageEventsNotDeleted = "messageEventsNotDeleted";
-	String messageEventsNotDeletedExternalReason = "messageEventsNotDeletedExternalReason";
 	String messageEventsNotDeletedLinkedEntitiesReason = "messageEventsNotDeletedLinkedEntitiesReason";
 	String messageEventsNotRestored = "messageEventsNotRestored";
 	String messageEventsRestored = "messageEventsRestored";

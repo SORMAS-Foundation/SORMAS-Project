@@ -219,6 +219,9 @@ public class ArchivingController {
 		return new BulkOperationHandler<>(
 			forArchive ? archiveMessages.getMessageAllEntitiesArchived() : archiveMessages.getMessageAllEntitiesDearchived(),
 			null,
+			//TODO: add value to someEntriesNotProcessedExternalReason
+			null,
+			null,
 			null,
 			null,
 			forArchive ? archiveMessages.getMessageSomeEntitiesArchived() : archiveMessages.getMessageSomeEntitiesDearchived(),
