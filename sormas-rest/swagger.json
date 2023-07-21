@@ -17324,10 +17324,8 @@
             "maxLength" : 255,
             "minLength" : 0
           },
-          "personCountryIsoCode" : {
-            "type" : "string",
-            "maxLength" : 255,
-            "minLength" : 0
+          "personCountry" : {
+            "$ref" : "#/components/schemas/CountryReferenceDto"
           },
           "personEmail" : {
             "type" : "string",
