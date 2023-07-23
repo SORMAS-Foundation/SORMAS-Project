@@ -354,8 +354,24 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 					try {
 						deleteEvent(eventToBeDeleted, deletionDetails);
 						processedEvents.add(new ProcessedEntity(eventToBeDeleted.getUuid(), ProcessedEntityStatus.SUCCESS));
-					} catch (ExternalSurveillanceToolRuntimeException | SormasToSormasRuntimeException | AccessDeniedException e) {
-						logger.error("The event with uuid:" + eventToBeDeleted.getUuid() + "could not be deleted");
+					} catch (ExternalSurveillanceToolRuntimeException e) {
+						processedEvents.add(new ProcessedEntity(eventToBeDeleted.getUuid(), ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
+						logger.error(
+							"The event with uuid {} could not be deleted due to a ExternalSurveillanceToolRuntimeException",
+							eventToBeDeleted.getUuid(),
+							e);
+					} catch (SormasToSormasRuntimeException e) {
+						processedEvents.add(new ProcessedEntity(eventToBeDeleted.getUuid(), ProcessedEntityStatus.SORMAS_TO_SORMAS_FAILURE));
+						logger.error(
+							"The event with uuid {} could not be deleted due to a SormasToSormasRuntimeException",
+							eventToBeDeleted.getUuid(),
+							e);
+					} catch (AccessDeniedException e) {
+						processedEvents.add(new ProcessedEntity(eventToBeDeleted.getUuid(), ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+						logger.error("The event with uuid {} could not be deleted due to a AccessDeniedException", eventToBeDeleted.getUuid(), e);
+					} catch (Exception e) {
+						processedEvents.add(new ProcessedEntity(eventToBeDeleted.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+						logger.error("The event with uuid {} could not be deleted due to an Exception", eventToBeDeleted.getUuid(), e);
 					}
 				}
 			});

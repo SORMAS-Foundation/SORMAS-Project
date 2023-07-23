@@ -224,6 +224,7 @@ public class ArchivingController {
 			null,
 			null,
 			null,
+			null,
 			forArchive ? archiveMessages.getMessageSomeEntitiesArchived() : archiveMessages.getMessageSomeEntitiesDearchived(),
 			null,
 			Strings.infoBulkProcessFinishedWithSkips);

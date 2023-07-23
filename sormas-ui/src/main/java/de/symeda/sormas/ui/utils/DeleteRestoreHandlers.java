@@ -90,13 +90,13 @@ public final class DeleteRestoreHandlers {
 		@Override
 		public List<ProcessedEntity> delete(List<String> uuids, DeletionDetails deletionDetails) {
 			List<ProcessedEntity> deletedEntities = new ArrayList();
+			//TODO: check if try-catch is needed here
 			try {
 				deletedEntities = entityFacade.delete(uuids, deletionDetails);
 			} catch (Exception e) {
 
 			}
 
-			//return deletedEntities.size();
 			return deletedEntities;
 		}
 
@@ -211,7 +211,6 @@ public final class DeleteRestoreHandlers {
 		@Override
 		public List<ProcessedEntity> delete(List<String> uuids) {
 			List<ProcessedEntity> processedEntities = entityFacade.delete(uuids);
-			//return uuids.size();
 			return processedEntities;
 		}
 

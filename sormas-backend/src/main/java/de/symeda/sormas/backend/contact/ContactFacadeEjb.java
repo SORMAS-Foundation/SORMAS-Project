@@ -111,6 +111,7 @@ import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.followup.FollowUpDto;
@@ -562,18 +563,36 @@ public class ContactFacadeEjb
 	public List<ProcessedEntity> delete(List<String> uuids, DeletionDetails deletionDetails) {
 		List<ProcessedEntity> processedContacts = new ArrayList<>();
 		List<Contact> contactsToBeDeleted = service.getByUuids(uuids);
+
 		if (contactsToBeDeleted != null) {
 			contactsToBeDeleted.forEach(contactToBeDeleted -> {
 				if (!contactToBeDeleted.isDeleted()) {
 					try {
 						deleteContact(contactToBeDeleted, deletionDetails);
 						processedContacts.add(new ProcessedEntity(contactToBeDeleted.getUuid(), ProcessedEntityStatus.SUCCESS));
+					} catch (ExternalSurveillanceToolRuntimeException e) {
+						processedContacts.add(new ProcessedEntity(contactToBeDeleted.getUuid(), ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
+						logger.error(
+							"The contact with uuid {} could not be deleted due to a ExternalSurveillanceToolRuntimeException",
+							contactToBeDeleted.getUuid(),
+							e);
+					} catch (SormasToSormasRuntimeException e) {
+						processedContacts.add(new ProcessedEntity(contactToBeDeleted.getUuid(), ProcessedEntityStatus.SORMAS_TO_SORMAS_FAILURE));
+						logger.error(
+							"The contact with uuid {} could not be deleted due to a SormasToSormasRuntimeException",
+							contactToBeDeleted.getUuid(),
+							e);
 					} catch (AccessDeniedException e) {
+						processedContacts.add(new ProcessedEntity(contactToBeDeleted.getUuid(), ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+						logger.error("The contact with uuid {} could not be deleted due to a AccessDeniedException", contactToBeDeleted.getUuid(), e);
+					} catch (Exception e) {
+						processedContacts.add(new ProcessedEntity(contactToBeDeleted.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
 						logger.error("The contact with uuid {} could not be deleted", contactToBeDeleted.getUuid(), e);
 					}
 				}
 			});
 		}
+
 		return processedContacts;
 	}
 

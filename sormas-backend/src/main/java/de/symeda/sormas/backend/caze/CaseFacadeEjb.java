@@ -2671,27 +2671,34 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		List<Case> casesToBeDeleted = service.getByUuids(uuids);
 
 		if (casesToBeDeleted != null) {
-			for (int i = 0; i < casesToBeDeleted.size(); i++) {
-				Case caseToBeDeleted = casesToBeDeleted.get(i);
+			casesToBeDeleted.forEach(caseToBeDeleted -> {
 				if (!caseToBeDeleted.isDeleted()) {
 					try {
 						deleteCase(caseToBeDeleted, deletionDetails);
 						processedCases.add(new ProcessedEntity(caseToBeDeleted.getUuid(), ProcessedEntityStatus.SUCCESS));
 					} catch (ExternalSurveillanceToolRuntimeException e) {
 						processedCases.add(new ProcessedEntity(caseToBeDeleted.getUuid(), ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
+						logger.error(
+							"The case with uuid {} could not be deleted due to a ExternalSurveillanceToolRuntimeException",
+							caseToBeDeleted.getUuid(),
+							e);
 					} catch (SormasToSormasRuntimeException e) {
 						processedCases.add(new ProcessedEntity(caseToBeDeleted.getUuid(), ProcessedEntityStatus.SORMAS_TO_SORMAS_FAILURE));
+						logger.error(
+							"The case with uuid {} could not be deleted due to a SormasToSormasRuntimeException",
+							caseToBeDeleted.getUuid(),
+							e);
 					} catch (AccessDeniedException e) {
 						processedCases.add(new ProcessedEntity(caseToBeDeleted.getUuid(), ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+						logger.error("The case with uuid {} could not be deleted due to a AccessDeniedException", caseToBeDeleted.getUuid(), e);
 					} catch (Exception e) {
 						processedCases.add(new ProcessedEntity(caseToBeDeleted.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
-						//TODO: check if we still need the logger or every exception will be logged when is thrown
+						logger.error("The case with uuid {} could not be deleted due to an Exception", caseToBeDeleted.getUuid(), e);
 					}
-					//logger.error("The case with uuid {} could not be deleted", caseToBeDeleted.getUuid(), e);
 				}
-			}
-			//	}
+			});
 		}
+
 		//if the cases with exceptions will not be sent back will be noted as skipped -> check if we can update the skipped indicator based on status
 		return processedCases;
 	}

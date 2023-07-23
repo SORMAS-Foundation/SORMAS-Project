@@ -254,7 +254,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 		try {
 			response = request.post(Entity.json(params));
 		} catch (Exception e) {
-			//logger.error("Failed to send delete request to external surveillance tool", e);
+			logger.error("Failed to send delete request to external surveillance tool", e);
 			throw new ExternalSurveillanceToolException(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationErrorDeleting));
 		}
 

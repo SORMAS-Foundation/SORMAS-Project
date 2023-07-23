@@ -91,9 +91,10 @@ public class PermanentDeleteController<F extends PermanentlyDeletableFacade> {
 		return new BulkOperationHandler<>(
 			deleteRestoreMessages.getMessageEntitiesDeleted(),
 			null,
-			null,
 			deleteRestoreMessages.getHeadingSomeEntitiesNotDeleted(),
+			deleteRestoreMessages.getHeadingEntitiesNotDeleted(),
 			deleteRestoreMessages.getMessageCountEntitiesNotDeleted(),
+			null,
 			null,
 			deleteRestoreMessages.getMessageEntitiesNotDeleted(),
 			null,
