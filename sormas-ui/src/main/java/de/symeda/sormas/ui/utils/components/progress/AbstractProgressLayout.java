@@ -39,7 +39,9 @@ public abstract class AbstractProgressLayout<P extends ProgressUpdateInfo> exten
 	private final int totalCount;
 
 	private HorizontalLayout infoLayout;
+	private HorizontalLayout descriptionLayout;
 	private Label infoLabel;
+	private Label descriptionLabel;
 	/**
 	 * The component that is displayed to the left of the info label,
 	 * indicating the result of the operation; set to a progress circle in the beginning
@@ -61,7 +63,7 @@ public abstract class AbstractProgressLayout<P extends ProgressUpdateInfo> exten
 	private Button closeButton;
 	private final Runnable cancelCallback;
 
-	public AbstractProgressLayout(UI currentUI, String initialInfoText, int totalCount, Runnable cancelCallback) {
+	public AbstractProgressLayout(UI currentUI, String initialInfoText, int totalCount, String descriptionText, Runnable cancelCallback) {
 
 		this.currentUI = currentUI;
 		this.totalCount = totalCount;
@@ -71,6 +73,7 @@ public abstract class AbstractProgressLayout<P extends ProgressUpdateInfo> exten
 		setMargin(true);
 
 		initInfoSection(initialInfoText);
+		initDescriptionSection(descriptionText);
 		initProgressSection();
 		initButtonPanel();
 		initHintSection();
@@ -102,7 +105,7 @@ public abstract class AbstractProgressLayout<P extends ProgressUpdateInfo> exten
 	 * Sets the result icon, hides the Cancel button, shows the Close button, and
 	 * optionally replaces the info text.
 	 */
-	public void finishProgress(ProgressResult result, String newInfoText, Runnable closeCallback) {
+	public void finishProgress(ProgressResult result, String newInfoText, String descriptionText, Runnable closeCallback) {
 
 		infoLayout.removeComponent(progressResultComponent);
 		switch (result) {
@@ -120,6 +123,10 @@ public abstract class AbstractProgressLayout<P extends ProgressUpdateInfo> exten
 
 		if (newInfoText != null) {
 			infoLabel.setValue(newInfoText);
+		}
+
+		if (descriptionText != null) {
+			descriptionLabel.setValue(descriptionText);
 		}
 
 		cancelButton.setVisible(false);
@@ -147,6 +154,22 @@ public abstract class AbstractProgressLayout<P extends ProgressUpdateInfo> exten
 		infoLayout.setExpandRatio(infoLabel, 1);
 
 		addComponent(infoLayout);
+	}
+
+	private void initDescriptionSection(String descriptionText) {
+		descriptionLayout = new HorizontalLayout();
+		descriptionLayout.setWidth(90, Unit.PERCENTAGE);
+		descriptionLayout.setSpacing(true);
+
+		descriptionLabel = new Label(descriptionText);
+		descriptionLabel.setContentMode(ContentMode.HTML);
+		descriptionLabel.setWidthFull();
+		descriptionLabel.addStyleNames(CssStyles.VSPACE_TOP_3, CssStyles.HSPACE_LEFT_1);
+
+		descriptionLayout.addComponent(descriptionLabel);
+		descriptionLayout.setExpandRatio(descriptionLabel, 1);
+
+		addComponent(descriptionLayout);
 	}
 
 	private void initInfoComponents() {

@@ -46,7 +46,7 @@ public class ImportProgressLayout extends AbstractProgressLayout<ImportProgressU
 
 	public ImportProgressLayout(UI currentUI, int totalCount, Runnable cancelCallback, boolean showDuplicates, boolean showSkips) {
 
-		super(currentUI, String.format(I18nProperties.getString(Strings.infoImportProcess), totalCount), totalCount, cancelCallback);
+		super(currentUI, String.format(I18nProperties.getString(Strings.infoImportProcess), totalCount), totalCount, null, cancelCallback);
 		this.showDuplicates = showDuplicates;
 		this.showSkips = showSkips;
 		initAdditionalProgressStatusComponents();

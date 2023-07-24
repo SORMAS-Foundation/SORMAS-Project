@@ -827,6 +827,7 @@ public interface Strings {
 	String infoBulkProcessCancelled = "infoBulkProcessCancelled";
 	String infoBulkProcessFinished = "infoBulkProcessFinished";
 	String infoBulkProcessFinishedWithIneligibleItems = "infoBulkProcessFinishedWithIneligibleItems";
+	String infoBulkProcessFinishedWithoutSuccess = "infoBulkProcessFinishedWithoutSuccess";
 	String infoBulkProcessFinishedWithSkips = "infoBulkProcessFinishedWithSkips";
 	String infoBulkProcessFinishedWithSkipsOutsideJurisdiction = "infoBulkProcessFinishedWithSkipsOutsideJurisdiction";
 	String infoBulkProcessNoEligibleEntries = "infoBulkProcessNoEligibleEntries";

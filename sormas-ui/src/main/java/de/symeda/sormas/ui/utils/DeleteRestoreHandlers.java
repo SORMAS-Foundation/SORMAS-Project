@@ -1,6 +1,5 @@
 package de.symeda.sormas.ui.utils;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -89,15 +88,7 @@ public final class DeleteRestoreHandlers {
 
 		@Override
 		public List<ProcessedEntity> delete(List<String> uuids, DeletionDetails deletionDetails) {
-			List<ProcessedEntity> deletedEntities = new ArrayList();
-			//TODO: check if try-catch is needed here
-			try {
-				deletedEntities = entityFacade.delete(uuids, deletionDetails);
-			} catch (Exception e) {
-
-			}
-
-			return deletedEntities;
+			return entityFacade.delete(uuids, deletionDetails);
 		}
 
 		@Override

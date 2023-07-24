@@ -201,7 +201,7 @@ public abstract class DataImporter {
 						newInfoText = I18nProperties.getString(Strings.messageImportCanceledErrors);
 						break;
 					}
-					progressLayout.finishProgress(progressResult, newInfoText, window::close);
+					progressLayout.finishProgress(progressResult, newInfoText, null, window::close);
 
 					window.addCloseListener(e -> {
 						if (importResult == ImportResultStatus.COMPLETED_WITH_ERRORS || importResult == ImportResultStatus.CANCELED_WITH_ERRORS) {
@@ -218,6 +218,7 @@ public abstract class DataImporter {
 					progressLayout.finishProgress(
 						ProgressResult.FAILURE,
 						String.format(I18nProperties.getString(Strings.messageImportInvalidColumn), e.getColumnName()),
+						null,
 						window::close);
 					currentUI.setPollInterval(-1);
 				});
@@ -226,7 +227,8 @@ public abstract class DataImporter {
 
 				currentUI.access(() -> {
 					window.setClosable(true);
-					progressLayout.finishProgress(ProgressResult.FAILURE, I18nProperties.getString(Strings.messageImportFailedFull), window::close);
+					progressLayout
+						.finishProgress(ProgressResult.FAILURE, I18nProperties.getString(Strings.messageImportFailedFull), null, window::close);
 					currentUI.setPollInterval(-1);
 				});
 			}

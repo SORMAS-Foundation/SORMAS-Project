@@ -227,7 +227,8 @@ public class ArchivingController {
 			null,
 			forArchive ? archiveMessages.getMessageSomeEntitiesArchived() : archiveMessages.getMessageSomeEntitiesDearchived(),
 			null,
-			Strings.infoBulkProcessFinishedWithSkips);
+			Strings.infoBulkProcessFinishedWithSkips,
+			Strings.infoBulkProcessFinishedWithoutSuccess);
 	}
 
 	public <T extends HasUuid> void dearchiveSelectedItems(
