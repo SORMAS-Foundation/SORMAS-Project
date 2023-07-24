@@ -318,8 +318,14 @@ public class ImmunizationFacadeEjb
 		if (immunizationsToBeDeleted != null) {
 			immunizationsToBeDeleted.forEach(immunizationToBeDeleted -> {
 				try {
-					service.delete(immunizationToBeDeleted, deletionDetails);
+					delete(immunizationToBeDeleted.getUuid(), deletionDetails);
 					processedImmunizations.add(new ProcessedEntity(immunizationToBeDeleted.getUuid(), ProcessedEntityStatus.SUCCESS));
+				} catch (AccessDeniedException e) {
+					processedImmunizations.add(new ProcessedEntity(immunizationToBeDeleted.getUuid(), ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+					logger.error(
+						"The immunization with uuid {} could not be deleted due to a AccessDeniedException",
+						immunizationToBeDeleted.getUuid(),
+						e);
 				} catch (Exception e) {
 					processedImmunizations.add(new ProcessedEntity(immunizationToBeDeleted.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
 					logger.error("The immunization with uuid {} could not be deleted due to an Exception", immunizationToBeDeleted.getUuid(), e);

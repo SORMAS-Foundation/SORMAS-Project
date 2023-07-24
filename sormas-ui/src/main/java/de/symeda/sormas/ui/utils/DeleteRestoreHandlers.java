@@ -102,10 +102,7 @@ public final class DeleteRestoreHandlers {
 
 		@Override
 		public List<ProcessedEntity> restore(List<String> uuids) {
-			List<ProcessedEntity> restoredEntities = entityFacade.restore(uuids);
-			//return uuids.size();
-
-			return restoredEntities;
+			return entityFacade.restore(uuids);
 		}
 
 		@Override

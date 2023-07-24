@@ -2742,6 +2742,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	private void deleteCase(Case caze, DeletionDetails deletionDetails)
 		throws ExternalSurveillanceToolRuntimeException, SormasToSormasRuntimeException, AccessDeniedException {
 
+		//TODO: test this one
 		if (!caseService.inJurisdictionOrOwned(caze)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.messageCaseOutsideJurisdictionDeletionDenied));
 		}

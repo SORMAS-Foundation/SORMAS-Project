@@ -939,8 +939,11 @@ public class TaskFacadeEjb implements TaskFacade {
 		if (tasksToBeDeleted != null) {
 			tasksToBeDeleted.forEach(taskToBeDeleted -> {
 				try {
-					taskService.deletePermanent(taskToBeDeleted);
+					delete(taskToBeDeleted.getUuid());
 					processedTasks.add(new ProcessedEntity(taskToBeDeleted.getUuid(), ProcessedEntityStatus.SUCCESS));
+				} catch (AccessDeniedException e) {
+					processedTasks.add(new ProcessedEntity(taskToBeDeleted.getUuid(), ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+					logger.error("The task with uuid {} could not be deleted due to an AccessDeniedException", taskToBeDeleted.getUuid(), e);
 				} catch (Exception e) {
 					processedTasks.add(new ProcessedEntity(taskToBeDeleted.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
 					logger.error("The task with uuid {} could not be deleted due to an Exception", taskToBeDeleted.getUuid(), e);
