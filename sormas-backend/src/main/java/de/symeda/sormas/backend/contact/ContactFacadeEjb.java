@@ -614,7 +614,8 @@ public class ContactFacadeEjb
 					restore(contactToBeRestored.getUuid());
 					processedContacts.add(new ProcessedEntity(contactToBeRestored.getUuid(), ProcessedEntityStatus.SUCCESS));
 				} catch (Exception e) {
-					logger.error("The contact with uuid:" + contactToBeRestored.getUuid() + "could not be restored");
+					processedContacts.add(new ProcessedEntity(contactToBeRestored.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+					logger.error("The contact with uuid {} could not be restored due to an Exception", contactToBeRestored.getUuid(), e);
 				}
 			});
 		}

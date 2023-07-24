@@ -389,7 +389,6 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	@RightsAllowed(UserRight._EVENT_DELETE)
 	public List<ProcessedEntity> restore(List<String> uuids) {
 		List<ProcessedEntity> processedEvents = new ArrayList<>();
-
 		List<Event> eventsToBeRestored = eventService.getByUuids(uuids);
 
 		if (eventsToBeRestored != null) {
@@ -398,7 +397,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 					restore(eventToBeRestored.getUuid());
 					processedEvents.add(new ProcessedEntity(eventToBeRestored.getUuid(), ProcessedEntityStatus.SUCCESS));
 				} catch (Exception e) {
-					logger.error("The event with uuid: " + eventToBeRestored.getUuid() + " could not be restored");
+					processedEvents.add(new ProcessedEntity(eventToBeRestored.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+					logger.error("The event with uuid {} could not be restored due to an Exception", eventToBeRestored.getUuid(), e);
 				}
 			});
 		}

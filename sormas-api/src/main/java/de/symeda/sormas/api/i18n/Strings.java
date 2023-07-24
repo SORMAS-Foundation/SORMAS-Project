@@ -424,6 +424,7 @@ public interface Strings {
 	String headingCasesGuide = "headingCasesGuide";
 	String headingCasesInQuarantine = "headingCasesInQuarantine";
 	String headingCasesNotDeleted = "headingCasesNotDeleted";
+	String headingCasesNotRestored = "headingCasesNotRestored";
 	String headingCasesPlacedInQuarantine = "headingCasesPlacedInQuarantine";
 	String headingCasesRestored = "headingCasesRestored";
 	String headingCasesResultingFromContacts = "headingCasesResultingFromContacts";
@@ -461,6 +462,7 @@ public interface Strings {
 	String headingContactsInQuarantine = "headingContactsInQuarantine";
 	String headingContactsLostToFollowUp = "headingContactsLostToFollowUp";
 	String headingContactsNotDeleted = "headingContactsNotDeleted";
+	String headingContactsNotRestored = "headingContactsNotRestored";
 	String headingContactsPerCase = "headingContactsPerCase";
 	String headingContactsPlacedInQuarantine = "headingContactsPlacedInQuarantine";
 	String headingContactsRestored = "headingContactsRestored";
@@ -558,9 +560,11 @@ public interface Strings {
 	String headingEventParticipantResponsibleJurisdictionUpdated = "headingEventParticipantResponsibleJurisdictionUpdated";
 	String headingEventParticipantsDeleted = "headingEventParticipantsDeleted";
 	String headingEventParticipantsNotDeleted = "headingEventParticipantsNotDeleted";
+	String headingEventParticipantsNotRestored = "headingEventParticipantsNotRestored";
 	String headingEventParticipantsRestored = "headingEventParticipantsRestored";
 	String headingEventsDeleted = "headingEventsDeleted";
 	String headingEventsNotDeleted = "headingEventsNotDeleted";
+	String headingEventsNotRestored = "headingEventsNotRestored";
 	String headingEventsRestored = "headingEventsRestored";
 	String headingExplanationOfTerms = "headingExplanationOfTerms";
 	String headingExportFailed = "headingExportFailed";
@@ -590,6 +594,9 @@ public interface Strings {
 	String headingHospitalization = "headingHospitalization";
 	String headingHowToMergeCases = "headingHowToMergeCases";
 	String headingHowToMergeContacts = "headingHowToMergeContacts";
+	String headingImmunizationsDeleted = "headingImmunizationsDeleted";
+	String headingImmunizationsNotDeleted = "headingImmunizationsNotDeleted";
+	String headingImmunizationsNotRestored = "headingImmunizationsNotRestored";
 	String headingImmunizationsRestored = "headingImmunizationsRestored";
 	String headingImportAllContinents = "headingImportAllContinents";
 	String headingImportAllCountries = "headingImportAllCountries";
@@ -709,6 +716,7 @@ public interface Strings {
 	String headingSampleDashboardMap = "headingSampleDashboardMap";
 	String headingSamplesDeleted = "headingSamplesDeleted";
 	String headingSamplesNotDeleted = "headingSamplesNotDeleted";
+	String headingSamplesNotRestored = "headingSamplesNotRestored";
 	String headingSamplesRestored = "headingSamplesRestored";
 	String headingSaveNotification = "headingSaveNotification";
 	String headingSaveUser = "headingSaveUser";
@@ -736,6 +744,7 @@ public interface Strings {
 	String headingSomeEventsNotDeleted = "headingSomeEventsNotDeleted";
 	String headingSomeEventsNotRestored = "headingSomeEventsNotRestored";
 	String headingSomeExternalMessagesNotDeleted = "headingSomeExternalMessagesNotDeleted";
+	String headingSomeImmunizationsNotDeleted = "headingSomeImmunizationsNotDeleted";
 	String headingSomeImmunizationsNotRestored = "headingSomeImmunizationsNotRestored";
 	String headingSomeSamplesNotDeleted = "headingSomeSamplesNotDeleted";
 	String headingSomeSamplesNotRestored = "headingSomeSamplesNotRestored";
@@ -758,6 +767,7 @@ public interface Strings {
 	String headingTransferCase = "headingTransferCase";
 	String headingTravelEntriesDeleted = "headingTravelEntriesDeleted";
 	String headingTravelEntriesNotDeleted = "headingTravelEntriesNotDeleted";
+	String headingTravelEntriesNotRestored = "headingTravelEntriesNotRestored";
 	String headingTravelEntriesRestored = "headingTravelEntriesRestored";
 	String headingTravelEntryData = "headingTravelEntryData";
 	String headingTreatments = "headingTreatments";
@@ -1123,6 +1133,7 @@ public interface Strings {
 	String messageCountEventsNotDeletedSormasToSormasReason = "messageCountEventsNotDeletedSormasToSormasReason";
 	String messageCountEventsNotRestored = "messageCountEventsNotRestored";
 	String messageCountExternalMessagesNotDeleted = "messageCountExternalMessagesNotDeleted";
+	String messageCountImmunizationsNotDeleted = "messageCountImmunizationsNotDeleted";
 	String messageCountImmunizationsNotRestored = "messageCountImmunizationsNotRestored";
 	String messageCountriesArchived = "messageCountriesArchived";
 	String messageCountriesDearchived = "messageCountriesDearchived";

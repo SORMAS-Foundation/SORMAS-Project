@@ -347,7 +347,8 @@ public class ImmunizationFacadeEjb
 					service.restore(immunizationToBeRestored);
 					processedImmunizationUuids.add(new ProcessedEntity(immunizationToBeRestored.getUuid(), ProcessedEntityStatus.SUCCESS));
 				} catch (Exception e) {
-					logger.error("The immunization with uuid:" + immunizationToBeRestored.getUuid() + "could not be restored");
+					processedImmunizationUuids.add(new ProcessedEntity(immunizationToBeRestored.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+					logger.error("The immunization with uuid {} could not be restored due to an Exception", immunizationToBeRestored.getUuid(), e);
 				}
 			});
 		}

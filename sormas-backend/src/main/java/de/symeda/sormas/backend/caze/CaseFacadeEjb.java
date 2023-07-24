@@ -2721,7 +2721,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					restore(caseToBeRestored.getUuid());
 					processedCases.add(new ProcessedEntity(caseToBeRestored.getUuid(), ProcessedEntityStatus.SUCCESS));
 				} catch (Exception e) {
-					logger.error("The case with uuid {} could not be restored", caseToBeRestored.getUuid(), e);
+					processedCases.add(new ProcessedEntity(caseToBeRestored.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+					logger.error("The case with uuid {} could not be restored due to an Exception", caseToBeRestored.getUuid(), e);
 				}
 			});
 		}

@@ -555,18 +555,21 @@ public class EventParticipantFacadeEjb
 		List<ProcessedEntity> processedEventParticipants = new ArrayList<>();
 		List<EventParticipant> eventParticipantsToBeRestored = service.getByUuids(uuids);
 
-		/*
-		 * if (eventParticipantsToBeRestored != null) {
-		 * eventParticipantsToBeRestored.forEach(eventParticipantToBeRestored -> {
-		 * try {
-		 * restore(eventParticipantToBeRestored.getUuid());
-		 * restoredEventParticipantUuids.add(eventParticipantToBeRestored.getUuid());
-		 * } catch (Exception e) {
-		 * logger.error("The event participant with uuid:" + eventParticipantToBeRestored.getUuid() + "could not be restored");
-		 * }
-		 * });
-		 * }
-		 */
+		if (eventParticipantsToBeRestored != null) {
+			eventParticipantsToBeRestored.forEach(eventParticipantToBeRestored -> {
+				try {
+					restore(eventParticipantToBeRestored.getUuid());
+					processedEventParticipants.add(new ProcessedEntity(eventParticipantToBeRestored.getUuid(), ProcessedEntityStatus.SUCCESS));
+				} catch (Exception e) {
+					processedEventParticipants
+						.add(new ProcessedEntity(eventParticipantToBeRestored.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+					logger.error(
+						"The event participant with uuid {} could not be restored due to an Exception",
+						eventParticipantToBeRestored.getUuid(),
+						e);
+				}
+			});
+		}
 
 		return processedEventParticipants;
 	}

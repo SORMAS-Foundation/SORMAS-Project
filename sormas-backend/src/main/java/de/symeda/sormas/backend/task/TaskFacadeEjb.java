@@ -74,6 +74,7 @@ import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -922,7 +923,7 @@ public class TaskFacadeEjb implements TaskFacade {
 	@RightsAllowed(UserRight._TASK_DELETE)
 	public void delete(String uuid) {
 		if (!userService.hasRight(UserRight.TASK_DELETE)) {
-			throw new UnsupportedOperationException(String.format("User %s is not allowed to delete tasks.", userService.getCurrentUser().getUuid()));
+			throw new AccessDeniedException(String.format("User %s is not allowed to delete tasks.", userService.getCurrentUser().getUuid()));
 		}
 
 		Task task = taskService.getByUuid(uuid);

@@ -55,7 +55,6 @@ public class BulkOperationHandler<T extends HasUuid> {
 	private final String ineligibleEntriesNotProcessedMessageProperty;
 	private final String headingSomeEntitiesNotProcessed;
 	private final String headingNoProcessedEntities;
-
 	private final String countEntriesNotProcessedMessageProperty;
 	private final String countEntriesNotProcessedExternalReasonProperty;
 	private final String countEntriesNotProcessedSormasToSormasReasonProperty;

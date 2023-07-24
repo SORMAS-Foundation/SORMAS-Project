@@ -777,7 +777,8 @@ public class SampleFacadeEjb implements SampleFacade {
 					restore(sampleToBeRestored.getUuid());
 					processedSamples.add(new ProcessedEntity(sampleToBeRestored.getUuid(), ProcessedEntityStatus.SUCCESS));
 				} catch (Exception e) {
-					logger.error("The sample with uuid:" + sampleToBeRestored.getUuid() + "could not be restored");
+					processedSamples.add(new ProcessedEntity(sampleToBeRestored.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+					logger.error("The sample with uuid {} could not be restored due to an Exception", sampleToBeRestored.getUuid(), e);
 				}
 			});
 		}

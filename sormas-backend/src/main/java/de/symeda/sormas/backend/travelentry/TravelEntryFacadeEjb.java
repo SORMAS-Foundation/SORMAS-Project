@@ -177,7 +177,8 @@ public class TravelEntryFacadeEjb
 					restore(travelEntryToBeRestored.getUuid());
 					processedTravelEntries.add(new ProcessedEntity(travelEntryToBeRestored.getUuid(), ProcessedEntityStatus.SUCCESS));
 				} catch (Exception e) {
-					logger.error("The travel entry with uuid:" + travelEntryToBeRestored.getUuid() + "could not be restored");
+					processedTravelEntries.add(new ProcessedEntity(travelEntryToBeRestored.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+					logger.error("The travel entry with uuid {} could not be restored due to an Exception", travelEntryToBeRestored.getUuid(), e);
 				}
 			});
 		}
