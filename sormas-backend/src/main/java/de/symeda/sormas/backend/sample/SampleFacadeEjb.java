@@ -796,14 +796,21 @@ public class SampleFacadeEjb implements SampleFacade {
 	public List<ProcessedEntity> delete(List<String> sampleUuids, DeletionDetails deletionDetails) {
 		long startTime = DateHelper.startTime();
 
-		//TODO: fix this implementation
-		List<ProcessedEntity> processedEntities = new ArrayList<>();
-
+		List<ProcessedEntity> processedSamples = new ArrayList<>();
 		IterableHelper
 			.executeBatched(sampleUuids, DELETED_BATCH_SIZE, batchedSampleUuids -> sampleService.deleteAll(batchedSampleUuids, deletionDetails));
 		logger.debug("deleteAllSamples(sampleUuids) finished. samplesCount = {}, {}ms", sampleUuids.size(), DateHelper.durationMillies(startTime));
-		//return sampleUuids;
-		return processedEntities;
+
+		List<SampleDto> samplesList = getByUuids(sampleUuids);
+		for (SampleDto sample : samplesList) {
+			if (sample.isDeleted()) {
+				processedSamples.add(new ProcessedEntity(sample.getUuid(), ProcessedEntityStatus.SUCCESS));
+			} else {
+				processedSamples.add(new ProcessedEntity(sample.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+			}
+		}
+
+		return processedSamples;
 	}
 
 	@RightsAllowed(UserRight._SAMPLE_DELETE)

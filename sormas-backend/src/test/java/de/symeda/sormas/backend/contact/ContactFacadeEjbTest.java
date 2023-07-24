@@ -332,6 +332,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(FollowUpStatus.CANCELED, contact.getFollowUpStatus());
 	}
 
+	//TODO: fix this tests
 	@Test
 	public void testDeleteContactsOutsideJurisdiction() {
 		RDCF rdcf = creator.createRDCF();

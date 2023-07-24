@@ -347,7 +347,12 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 						externalMessageService.deletePermanent(externalMessageToBeDeleted);
 						processedExternalMessages.add(new ProcessedEntity(externalMessageToBeDeleted.getUuid(), ProcessedEntityStatus.SUCCESS));
 					} catch (Exception e) {
-						logger.error("The external message with uuid:" + externalMessageToBeDeleted.getUuid() + "could not be deleted");
+						processedExternalMessages
+							.add(new ProcessedEntity(externalMessageToBeDeleted.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+						logger.error(
+							"The external message with uuid {} could not be deleted due to an Exception",
+							externalMessageToBeDeleted.getUuid(),
+							e);
 					}
 				}
 			});

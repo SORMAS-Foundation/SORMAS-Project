@@ -141,7 +141,15 @@ public class TravelEntryFacadeEjb
 					try {
 						delete(travelEntryToBeDeleted.getUuid(), deletionDetails);
 						processedTravelEntries.add(new ProcessedEntity(travelEntryToBeDeleted.getUuid(), ProcessedEntityStatus.SUCCESS));
+					} catch (AccessDeniedException e) {
+						processedTravelEntries
+							.add(new ProcessedEntity(travelEntryToBeDeleted.getUuid(), ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+						logger.error(
+							"The travel entry with uuid {} could not be deleted due to an AccessDeniedException",
+							travelEntryToBeDeleted.getUuid(),
+							e);
 					} catch (Exception e) {
+						processedTravelEntries.add(new ProcessedEntity(travelEntryToBeDeleted.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
 						logger.error("The travel entry with uuid:" + travelEntryToBeDeleted.getUuid() + "could not be deleted");
 					}
 				}

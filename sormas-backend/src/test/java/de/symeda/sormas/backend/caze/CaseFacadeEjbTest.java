@@ -2815,6 +2815,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals("test reason", getCaseFacade().getByUuid(caze.getUuid()).getOtherDeletionReason());
 	}
 
+	//TODO: fis this one
 	@Test
 	public void testDeleteCasesOutsideJurisdiction() {
 

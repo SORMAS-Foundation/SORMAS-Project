@@ -941,7 +941,8 @@ public class TaskFacadeEjb implements TaskFacade {
 					taskService.deletePermanent(taskToBeDeleted);
 					processedTasks.add(new ProcessedEntity(taskToBeDeleted.getUuid(), ProcessedEntityStatus.SUCCESS));
 				} catch (Exception e) {
-					logger.error("The task with uuid:" + taskToBeDeleted.getUuid() + "could not be deleted");
+					processedTasks.add(new ProcessedEntity(taskToBeDeleted.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+					logger.error("The task with uuid {} could not be deleted due to an Exception", taskToBeDeleted.getUuid(), e);
 				}
 			});
 		}

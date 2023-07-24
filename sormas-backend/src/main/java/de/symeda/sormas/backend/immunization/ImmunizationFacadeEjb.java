@@ -313,13 +313,17 @@ public class ImmunizationFacadeEjb
 	@RightsAllowed(UserRight._IMMUNIZATION_DELETE)
 	public List<ProcessedEntity> delete(List<String> uuids, DeletionDetails deletionDetails) {
 		List<ProcessedEntity> processedImmunizations = new ArrayList<>();
-
-		List<String> deletedImmunizationUuids = new ArrayList<>();
 		List<Immunization> immunizationsToBeDeleted = service.getByUuids(uuids);
+
 		if (immunizationsToBeDeleted != null) {
 			immunizationsToBeDeleted.forEach(immunizationToBeDeleted -> {
-				service.delete(immunizationToBeDeleted, deletionDetails);
-				processedImmunizations.add(new ProcessedEntity(immunizationToBeDeleted.getUuid(), ProcessedEntityStatus.SUCCESS));
+				try {
+					service.delete(immunizationToBeDeleted, deletionDetails);
+					processedImmunizations.add(new ProcessedEntity(immunizationToBeDeleted.getUuid(), ProcessedEntityStatus.SUCCESS));
+				} catch (Exception e) {
+					processedImmunizations.add(new ProcessedEntity(immunizationToBeDeleted.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+					logger.error("The immunization with uuid {} could not be deleted due to an Exception", immunizationToBeDeleted.getUuid(), e);
+				}
 			});
 		}
 		return processedImmunizations;

@@ -66,6 +66,7 @@ import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -324,8 +325,7 @@ public class VisitFacadeEjb extends AbstractBaseEjb<Visit, VisitDto, VisitIndexD
 	@RightsAllowed(UserRight._VISIT_DELETE)
 	public void delete(String uuid) {
 		if (!userService.hasRight(UserRight.VISIT_DELETE)) {
-			throw new UnsupportedOperationException(
-				String.format("User %s is not allowed to delete visits.", userService.getCurrentUser().getUuid()));
+			throw new AccessDeniedException(String.format("User %s is not allowed to delete visits.", userService.getCurrentUser().getUuid()));
 		}
 		Visit visit = service.getByUuid(uuid);
 		service.deletePermanent(visit);
@@ -342,8 +342,12 @@ public class VisitFacadeEjb extends AbstractBaseEjb<Visit, VisitDto, VisitIndexD
 				try {
 					delete(visitToBeDeleted.getUuid());
 					processedVisits.add(new ProcessedEntity(visitToBeDeleted.getUuid(), ProcessedEntityStatus.SUCCESS));
+				} catch (AccessDeniedException e) {
+					processedVisits.add(new ProcessedEntity(visitToBeDeleted.getUuid(), ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+					logger.error("The visit with uuid {} could not be deleted due to a AccessDeniedException", visitToBeDeleted.getUuid(), e);
 				} catch (Exception e) {
-					logger.error("The visit with uuid:" + visitToBeDeleted.getUuid() + "could not be deleted");
+					processedVisits.add(new ProcessedEntity(visitToBeDeleted.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+					logger.error("The visit with uuid {} could not be deleted due to an Exception", visitToBeDeleted.getUuid(), e);
 				}
 			});
 		}

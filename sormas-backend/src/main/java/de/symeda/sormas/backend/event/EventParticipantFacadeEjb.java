@@ -68,6 +68,7 @@ import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -517,18 +518,26 @@ public class EventParticipantFacadeEjb
 		List<EventParticipant> eventParticipantsToBeDeleted = service.getByUuids(uuids);
 
 		if (eventParticipantsToBeDeleted != null) {
-			/*
-			 * eventParticipantsToBeDeleted.forEach(eventParticipantToBeDeleted -> {
-			 * if (!eventParticipantToBeDeleted.isDeleted()) {
-			 * try {
-			 * delete(eventParticipantToBeDeleted.getUuid(), deletionDetails);
-			 * deletedEventParticipantUuids.add(eventParticipantToBeDeleted.getUuid());
-			 * } catch (Exception e) {
-			 * logger.error("The event participant with uuid:" + eventParticipantToBeDeleted.getUuid() + "could not be deleted");
-			 * }
-			 * }
-			 * });
-			 */
+			eventParticipantsToBeDeleted.forEach(eventParticipantToBeDeleted -> {
+				if (!eventParticipantToBeDeleted.isDeleted()) {
+					try {
+						delete(eventParticipantToBeDeleted.getUuid(), deletionDetails);
+						processedEventParticipants.add(new ProcessedEntity(eventParticipantToBeDeleted.getUuid(), ProcessedEntityStatus.SUCCESS));
+					} catch (AccessDeniedException e) {
+						processedEventParticipants
+							.add(new ProcessedEntity(eventParticipantToBeDeleted.getUuid(), ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+						logger.error(
+							"The event participant with uuid {} could not be deleted due to a AccessDeniedException",
+							eventParticipantToBeDeleted.getUuid(),
+							e);
+					} catch (Exception e) {
+						processedEventParticipants
+							.add(new ProcessedEntity(eventParticipantToBeDeleted.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+						logger.error(
+							"The event participant with uuid:" + eventParticipantToBeDeleted.getUuid() + "could not be deleted due to an Exception");
+					}
+				}
+			});
 		}
 
 		return processedEventParticipants;
