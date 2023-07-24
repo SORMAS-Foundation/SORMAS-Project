@@ -174,7 +174,7 @@ public class BulkOperationHandler<T extends HasUuid> {
 						String description = buildDescription(ineligibleEntriesDescription, processedEntities);
 
 						if (cancelAfterCurrentBatch) {
-							handleProgressResultBasedOnSuccessfullEntryCount(
+							handleProgressResultBasedOnSuccessfulEntryCount(
 								bulkProgressLayout,
 								true,
 								description,
@@ -198,7 +198,7 @@ public class BulkOperationHandler<T extends HasUuid> {
 									});
 							}
 						} else {
-							handleProgressResultBasedOnSuccessfullEntryCount(
+							handleProgressResultBasedOnSuccessfulEntryCount(
 								bulkProgressLayout,
 								false,
 								description,
@@ -215,7 +215,7 @@ public class BulkOperationHandler<T extends HasUuid> {
 		}
 	}
 
-	public void handleProgressResultBasedOnSuccessfullEntryCount(
+	public void handleProgressResultBasedOnSuccessfulEntryCount(
 		BulkProgressLayout bulkProgressLayout,
 		boolean cancelAfterCurrentBatch,
 		String description,
@@ -279,13 +279,7 @@ public class BulkOperationHandler<T extends HasUuid> {
 			return;
 		}
 
-		String ineligibleEntriesDescription = StringUtils.EMPTY;
-		if (areIneligibleEntriesSelected) {
-			ineligibleEntriesDescription = getErrorDescription(
-				selectedIneligibleEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
-				I18nProperties.getString(countEntriesNotProcessedMessageProperty),
-				I18nProperties.getString(ineligibleEntriesNotProcessedMessageProperty));
-		}
+		String ineligibleEntriesDescription = buildIneligibleEntriesDescription(areIneligibleEntriesSelected, selectedIneligibleEntries);
 
 		String heading = successfulEntryCount > 0
 			? I18nProperties.getString(headingSomeEntitiesNotProcessed)
@@ -489,7 +483,6 @@ public class BulkOperationHandler<T extends HasUuid> {
 	public List<ProcessedEntity> getFailedEntitiesByStatus(List<ProcessedEntity> processedEntities, ProcessedEntityStatus status) {
 		return processedEntities.stream()
 			.filter(processedEntity -> processedEntity.getProcessedEntityStatus().equals(status))
-			//.map(ProcessedEntity::getEntityUuid)
 			.collect(Collectors.toList());
 	}
 
