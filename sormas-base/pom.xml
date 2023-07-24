@@ -1749,7 +1749,7 @@
 				<plugin>
 					<groupId>com.googlecode.maven-download-plugin</groupId>
 					<artifactId>download-maven-plugin</artifactId>
-					<version>1.7.0</version>
+					<version>1.7.1</version>
 				</plugin>
 				<plugin>
 					<groupId>io.swagger.core.v3</groupId>
