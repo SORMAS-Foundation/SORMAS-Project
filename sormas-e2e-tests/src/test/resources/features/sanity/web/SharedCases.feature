@@ -7,7 +7,7 @@ Feature: Sharing cases between environments tests
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     And API: I check that POST call status code is 200
-    Given I log in as a S2S
+    Given I log in as a Admin User
     Then I navigate to the last created case via the url
     And I check if handover card contains "Dieser Fall ist nicht geteilt" information
     And I collect uuid of the case
@@ -23,7 +23,7 @@ Feature: Sharing cases between environments tests
     Then I navigate to "s2s_1" environment
     Then I navigate to the last created case via the url
     And I check Delete button from case is enabled
-    And Total number of read only fields should be 12
+    And Total number of read  only fields should be 12
     Then I click on Delete button from case
     And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
     And I click on Yes option in Confirm deletion popup

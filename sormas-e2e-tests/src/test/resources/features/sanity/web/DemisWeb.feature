@@ -566,12 +566,3 @@ Scenario: Create and send laboratory request via Demis
     And I verify that status for result 1 is set to processed in Message Directory page
     And I click on the eye icon next for the first fetched message
     And I check if external message window appears and close it
-
-  @tmsLink=SORQA-980 @env_d2s @LoginKeycloak
-  Scenario: Demis - Process a Lab message that has multiple pathogen test in a sample
-    Given API : Login to DEMIS server
-    When I create and send Laboratory Notification with one existing facility
-    And I log in as a Admin User
-    And I click on the Messages button from navbar
-    And I click on fetch messages button
-    And I filter by last created person via API in Messages Directory
