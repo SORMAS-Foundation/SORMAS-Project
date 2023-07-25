@@ -281,7 +281,7 @@ public class DemisApiService {
     json = json.replace("\"<postal_code_to_change>\"", "\"" + demisData.getPostalCode() + "\"");
     json = json.replace("\"<last_name_to_change>\"", "\"" + patientLastName + "\"");
     json = json.replace("\"<first_name_to_change>\"", "\"" + patientFirstName + "\"");
-    json = json.replace("<specimen_UUID_to_change>", UUID.randomUUID().toString());
+    json = json.replace("<specimen_UUID_to_change>", specimenUUID);
     json = json.replace("<observation_UUID_to_change>", UUID.randomUUID().toString());
     json = json.replace("<second_observation_UUID_to_change>", UUID.randomUUID().toString());
     return json;

@@ -583,12 +583,25 @@ Scenario: Create and send laboratory request via Demis
     And I click on save button in the case popup
     Then I check that new sample form with pathogen detection reporting process is displayed
     And I fill laboratory name with "Testing laboratory" in New Sample form while processing a DEMIS LabMessage
+    And I verify that test type for "first" pathogen is prefilled with "Nukleinsäure-Nachweis (z.B. PCR)" in New Sample form while processing a DEMIS LabMessage
+    And I verify that test type for "second" pathogen is prefilled with "Gesamtgenomsequenzierung" in New Sample form while processing a DEMIS LabMessage
     And I fill "first" pathogen laboratory name with "Testing laboratory pathogen 1" in New Sample form while processing a DEMIS LabMessage
     And I fill "second" pathogen laboratory name with "Testing laboratory pathogen 2" in New Sample form while processing a DEMIS LabMessage
     And I click on save sample button
     And I click on save sample button
     And I click on save sample button
-    And I click on YES button in Update case disease variant popup window
     And I click on the Cases button from navbar
     And I search the case by last created person via Demis message
     Then I click on the first Case ID from Case Directory
+    And I click on edit sample icon of the 1 displayed sample on Edit Case page
+    And I check that lab sample id match "first" specimen id from Demis message on Edit Sample page
+    And I validate the existence of "2" pathogen tests
+    And I back to the case from Edit Sample page DE
+    And I check if report side component in Edit Case has today date
+    When I click on edit Report on Edit Case page
+    And I click on discard button
+    And I click on Display associated external messages button from Reports side component
+    And I check if external message window appears and close it
+    Then I click on the Messages button from navbar
+    And I filter by last created person via API in Messages Directory
+    And I verify that status for result 1 is set to processed in Message Directory page
