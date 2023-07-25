@@ -289,6 +289,7 @@ import static org.sormas.e2etests.pages.application.immunizations.EditImmunizati
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.EVENT_PARTICIPANTS_DATA_TAB;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SAMPLE_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_SAMPLE_REASON_POPUP;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_SAMPLE_REASON_POPUP_FOR_DE;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static org.sormas.e2etests.steps.web.application.contacts.ContactDirectorySteps.exposureData;
 
@@ -1665,6 +1666,19 @@ public class EditCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
           webDriverHelpers.selectFromCombobox(
               DELETE_SAMPLE_REASON_POPUP, "Entity created without legal reason");
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_POPUP_YES_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CASE_APPLY_FILTERS_BUTTON);
+        });
+
+    When(
+        "I delete the case for DE",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
+          webDriverHelpers.scrollToElement(DELETE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
+          webDriverHelpers.selectFromCombobox(
+              DELETE_SAMPLE_REASON_POPUP_FOR_DE,
+              "L\u00F6schen auf Anforderung der betroffenen Person nach DSGVO");
           webDriverHelpers.clickOnWebElementBySelector(DELETE_POPUP_YES_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(CASE_APPLY_FILTERS_BUTTON);
         });
