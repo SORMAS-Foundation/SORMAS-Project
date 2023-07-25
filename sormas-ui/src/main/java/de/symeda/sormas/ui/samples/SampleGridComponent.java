@@ -181,7 +181,8 @@ public class SampleGridComponent extends VerticalLayout {
 			}
 
 			// Bulk operation dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES)) {
+			boolean bulkOperationsRight = UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES);
+			if (bulkOperationsRight) {
 				shipmentFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
 				if (criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
@@ -190,14 +191,14 @@ public class SampleGridComponent extends VerticalLayout {
 						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
 							ControllerProvider.getSampleController()
 								.deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), grid, () -> samplesView.navigateTo(criteria));
-						}));
+						}, UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_DELETE)));
 				} else {
 					bulkOperationsDropdown = MenuBarHelper.createDropDown(
 						Captions.bulkActions,
 						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkRestore), VaadinIcons.ARROW_BACKWARD, selectedItem -> {
 							ControllerProvider.getSampleController()
 								.restoreSelectedSamples(grid.asMultiSelect().getSelectedItems(), grid, () -> samplesView.navigateTo(criteria));
-						}));
+						}, UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_DELETE)));
 				}
 
 				bulkOperationsDropdown.setVisible(samplesView.getViewConfiguration().isInEagerMode());
