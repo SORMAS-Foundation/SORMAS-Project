@@ -135,6 +135,7 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 			forDelete ? deleteRestoreMessages.getMessageCountEntitiesNotDeleted() : deleteRestoreMessages.getMessageCountEntitiesNotRestored(),
 			forDelete ? deleteRestoreMessages.getMessageCountEntitiesNotDeletedExternalReason() : null,
 			forDelete ? deleteRestoreMessages.getMessageCountEntitiesNotDeletedSormasToSormasReason() : null,
+			forDelete ? deleteRestoreMessages.getMessageCountEntitiesNotDeletedAccessDeniedReason() : null,
 			forDelete ? deleteRestoreMessages.getMessageEntitiesNotDeleted() : deleteRestoreMessages.getMessageEntitiesNotRestored(),
 			forDelete ? deleteRestoreMessages.getMessageNoEligibleEntitySelected() : null,
 			Strings.infoBulkProcessFinishedWithSkipsOutsideJurisdiction,

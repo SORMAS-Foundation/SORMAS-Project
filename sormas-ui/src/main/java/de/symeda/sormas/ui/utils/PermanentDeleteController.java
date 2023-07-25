@@ -96,6 +96,7 @@ public class PermanentDeleteController<F extends PermanentlyDeletableFacade> {
 			deleteRestoreMessages.getMessageCountEntitiesNotDeleted(),
 			null,
 			null,
+			deleteRestoreMessages.getMessageCountEntitiesNotDeletedAccessDeniedReason(),
 			deleteRestoreMessages.getMessageEntitiesNotDeleted(),
 			null,
 			Strings.infoBulkProcessFinishedWithSkipsOutsideJurisdiction,
