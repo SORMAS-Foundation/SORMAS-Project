@@ -347,3 +347,29 @@ Feature: Survnet tests
     | setting |
     | "Ambulant" |
     | "Stationär" |
+
+  @tmsLink=SORQA-1046
+  Scenario: Re-send Case from SORMAS to Meldesoftware
+    Given I log in as a Survnet
+    When I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with mandatory data only for Survnet DE
+    Then I get the case person UUID displayed on Edit case page
+    And I click on Send to reporting tool button on Edit Case page
+    Then I check that Reporting tool in Survnet box contain "gesendet am" entry
+    And I delete the case for DE
+    And I apply "Gelöschte Fälle" to combobox on Case Directory Page
+    Then I click on the APPLY FILTERS button
+    And I click on the first Case ID from Case Directory
+    Then I check that Reporting tool in Survnet box contain "gelöscht am" entry
+    Then I click on Restore button from case
+    And I apply "Aktive Fälle" to combobox on Case Directory Page
+    And I click on the first Case ID from Case Directory
+    Then I get the case person UUID displayed on Edit case page
+    And I click on Send to reporting tool button on Edit Case page
+    Then I click on the Archive case button
+    Then I check the end of processing date in the archive popup and select Archive contacts checkbox for DE
+    And I click on save case button
+    And I click on De-Archive case button
+    And I fill De-Archive case popup with test automation reason
+    And I validate the existence of "5" Reporting Tools entries in Survnet box

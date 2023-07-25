@@ -1827,6 +1827,24 @@ public class EditCaseSteps implements En {
         });
 
     When(
+        "I check the end of processing date in the archive popup and select Archive contacts checkbox for DE",
+        () -> {
+          String endOfProcessingDate;
+          endOfProcessingDate =
+              webDriverHelpers.getValueFromWebElement(END_OF_PROCESSING_DATE_POPUP_INPUT);
+
+          softly.assertEquals(
+              endOfProcessingDate,
+              LocalDate.now().format(DateTimeFormatter.ofPattern("d.MM.yyyy")),
+              "End of processing date is invalid");
+          softly.assertAll();
+          webDriverHelpers.clickOnWebElementBySelector(ARCHIVE_RELATED_CONTACTS_CHECKBOX);
+          webDriverHelpers.clickOnWebElementBySelector(EditContactPage.DELETE_POPUP_YES_BUTTON);
+          TimeUnit.SECONDS.sleep(3); // wait for response after confirm
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
         "I check the end of processing date in the archive popup and not select Archive contacts checkbox",
         () -> {
           String endOfProcessingDate;
@@ -2169,6 +2187,13 @@ public class EditCaseSteps implements En {
 
     When(
         "I click on Delete button from case",
+        () -> {
+          webDriverHelpers.scrollToElement(DELETE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
+        });
+
+    When(
+        "I click on Restore button from case",
         () -> {
           webDriverHelpers.scrollToElement(DELETE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
@@ -2824,6 +2849,15 @@ public class EditCaseSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(REPORTING_TOOL_MESSAGE);
         });
 
+    When(
+        "I check that Reporting tool in Survnet box contain {string} entry",
+        (String entry) -> {
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(checkTextInReportingToolComponent(entry)),
+              "Element is not present");
+          softly.assertAll();
+        });
+
     And(
         "^I collect case external UUID from Edit Case page$",
         () -> {
@@ -3413,5 +3447,12 @@ public class EditCaseSteps implements En {
 
   private void fillExtraComment(String extraComment) {
     webDriverHelpers.fillInAndLeaveWebElement(EditCasePage.EXTRA_COMMENT_TEXTAREA, extraComment);
+  }
+
+  public static By checkTextInReportingToolComponent(String text) {
+    return By.xpath(
+        String.format(
+            "//div[contains(@location,'externalSurvToolGateway')]//div[contains(text(), '%s')]",
+            text));
   }
 }
