@@ -570,8 +570,25 @@ Scenario: Create and send laboratory request via Demis
   @tmsLink=SORQA-980 @env_d2s @LoginKeycloak
   Scenario: Demis - Process a Lab message that has multiple pathogen test in a sample
     Given API : Login to DEMIS server
-    When I create and send Laboratory Notification with one existing facility
+    When I create and send Laboratory Notification with multiple pathogen in one sample
     And I log in as a Admin User
     And I click on the Messages button from navbar
     And I click on fetch messages button
     And I filter by last created person via API in Messages Directory
+    And I click on Verarbeiten button in Messages Directory
+    And I pick a new person in Pick or create person popup during case creation for DE
+    And I choose create new case in Pick or create entry form for DE
+    And I check that create new case form with pathogen detection reporting process is displayed for DE
+    And I fill only mandatory fields to convert laboratory message into a case for DE
+    And I click on save button in the case popup
+    Then I check that new sample form with pathogen detection reporting process is displayed
+    And I fill laboratory name with "Testing laboratory" in New Sample form while processing a DEMIS LabMessage
+    And I fill "first" pathogen laboratory name with "Testing laboratory pathogen 1" in New Sample form while processing a DEMIS LabMessage
+    And I fill "second" pathogen laboratory name with "Testing laboratory pathogen 2" in New Sample form while processing a DEMIS LabMessage
+    And I click on save sample button
+    And I click on save sample button
+    And I click on save sample button
+    And I click on YES button in Update case disease variant popup window
+    And I click on the Cases button from navbar
+    And I search the case by last created person via Demis message
+    Then I click on the first Case ID from Case Directory

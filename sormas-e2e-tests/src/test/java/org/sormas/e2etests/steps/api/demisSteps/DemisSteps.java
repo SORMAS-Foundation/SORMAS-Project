@@ -944,6 +944,16 @@ public class DemisSteps implements En {
 
           Assert.assertTrue(demisApiService.sendLabRequest(json, loginToken), "Failed to send laboratory request");
         });
+
+    When(
+        "^I create and send Laboratory Notification with multiple pathogen in one sample$",
+        () -> {
+          patientFirstName = faker.name().firstName();
+          patientLastName = faker.name().lastName();
+          String json = demisApiService.prepareLabNotificationFileWithMultiplePathogenOneSample(patientFirstName, patientLastName);
+
+          Assert.assertTrue(demisApiService.sendLabRequest(json, loginToken), "Failed to send laboratory request");
+        });
   }
 
   private List<Map<String, String>> getTableRowsData() {
