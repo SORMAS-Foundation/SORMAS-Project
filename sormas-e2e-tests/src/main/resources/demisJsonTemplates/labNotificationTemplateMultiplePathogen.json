@@ -279,7 +279,7 @@
                             "Kurzer Weg 15"
                         ],
                         "city": "Teststadt",
-                        "postalCode": "13055",
+                        "postalCode": "<postal_code_to_change",
                         "country": "20422"
                     }
                 ]
@@ -494,9 +494,9 @@
                 "name":  [
                     {
                         "use": "official",
-                        "family": "Mantle",
+                        "family": "Kroft",
                         "given":  [
-                            "Karl-Heinz"
+                            "Lara"
                         ]
                     }
                 ],
@@ -520,7 +520,7 @@
                         ],
                         "city": "Berlin",
                         "state": "DE-BE",
-                        "postalCode": "10117",
+                        "postalCode": "<postal_code_to_change>",
                         "country": "20422"
                     }
                 ]
