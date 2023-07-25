@@ -214,12 +214,14 @@ public class ArchivingController {
 		}
 	}
 
+	//TODO: check the necessary labels below
 	private <T extends HasUuid> BulkOperationHandler<T> createBulkOperationHandler(IArchiveHandler<?> archiveHandler, boolean forArchive) {
 		ArchiveMessages archiveMessages = archiveHandler.getArchiveMessages();
 		return new BulkOperationHandler<>(
 			forArchive ? archiveMessages.getMessageAllEntitiesArchived() : archiveMessages.getMessageAllEntitiesDearchived(),
 			null,
 			//TODO: add value to someEntriesNotProcessedExternalReason
+			null,
 			null,
 			null,
 			null,

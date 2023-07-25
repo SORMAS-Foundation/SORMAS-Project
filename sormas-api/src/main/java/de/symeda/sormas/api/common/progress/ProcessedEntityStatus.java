@@ -4,6 +4,10 @@ public enum ProcessedEntityStatus {
 
 	SUCCESS,
 	/**
+	 * The entity does not corresponds to the criterias needed in order to be processed (e.g. Events with Participants can not be deleted)
+	 */
+	NOT_ELIGIBLE,
+	/**
 	 * ExternalSurveillanceToolRuntimeException was thrown during the processing of the entity
 	 */
 	EXTERNAL_SURVEILLANCE_FAILURE,
