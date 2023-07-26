@@ -12489,4 +12489,9 @@ ALTER TABLE testreport ADD CONSTRAINT fk_testreport_prescribercountry_id FOREIGN
 
 INSERT INTO schema_version (version_number, comment) VALUES (518, 'Add prescriber fields to pathogen tests and test reports #12318');
 
+-- 2023-07-26 Add the 'See personal data inside jurisdiction' user right to the default Environmental Surveillance User #12284
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'SEE_PERSONAL_DATA_IN_JURISDICTION' FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'ENVIRONMENTAL_SURVEILLANCE_USER';
+
+INSERT INTO schema_version (version_number, comment) VALUES (519, 'Add the ''See personal data inside jurisdiction'' user right to the default Environmental Surveillance User #12284');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
