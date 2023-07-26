@@ -3061,6 +3061,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 						+ "externalId varchar(255), responsibleUser_id BIGINT REFERENCES users(id), investigationStatus varchar(255), environmentMedia varchar(255), "
 						+ "waterType varchar(255), otherWaterType text, infrastructureDetails varchar(255), otherInfrastructureDetails text, waterUse text, "
 						+ "otherWaterUse text, location_id BIGINT, UNIQUE(snapshot, uuid));");
+
+			case 345:
+				currentVersion = 345;
+				getDao(EnvironmentDao.class).executeRaw("ALTER TABLE environments  uuid VARCHAR(36) NOT NULL UNIQUE");
+				getDao(EnvironmentDao.class).executeRaw("ALTER TABLE environments reportDate TIMESTAMP NOT NULL");
+
 				// ATTENTION: break should only be done after last version
 				break;
 

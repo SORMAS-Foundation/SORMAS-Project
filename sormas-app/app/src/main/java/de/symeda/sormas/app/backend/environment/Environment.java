@@ -77,7 +77,7 @@ public class Environment extends AbstractDomainObject {
 	private EnvironmentInfrastructureDetails infrastructureDetails;
 	@Column(length = CHARACTER_LIMIT_TEXT)
 	private String otherInfrastructureDetails;
-	@Column(name = "wateruse", length = 1024)
+	@Column(name = "waterUse", length = 1024)
 	private String waterUseJson;
 	private Map<WaterUse, Boolean> wateruse;
 	@Column(length = CHARACTER_LIMIT_TEXT)

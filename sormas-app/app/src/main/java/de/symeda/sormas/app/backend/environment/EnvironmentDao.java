@@ -34,7 +34,7 @@ public class EnvironmentDao extends AbstractAdoDao<Environment> {
 			QueryBuilder<Environment, Long> queryBuilder = queryBuilder();
 			return queryBuilder.orderBy(Environment.CHANGE_DATE, false).query();
 		} catch (SQLException e) {
-			Log.e(getTableName(), "Could not perform getAllActive on Environment");
+			Log.e(getTableName(), "Could not perform getAllActive on Environment", e);
 			throw new RuntimeException();
 		}
 	}
@@ -43,7 +43,7 @@ public class EnvironmentDao extends AbstractAdoDao<Environment> {
 		try {
 			return buildQueryBuilder(criteria).countOf();
 		} catch (SQLException e) {
-			Log.e(getTableName(), "Could not perform countByCriteria on Environment");
+			Log.e(getTableName(), "Could not perform countByCriteria on Environment", e);
 			throw new RuntimeException();
 		}
 	}
@@ -52,7 +52,7 @@ public class EnvironmentDao extends AbstractAdoDao<Environment> {
 		try {
 			return buildQueryBuilder(criteria).orderBy(Environment.LOCAL_CHANGE_DATE, false).offset(offset).limit(limit).query();
 		} catch (SQLException e) {
-			Log.e(getTableName(), "Could not perform queryByCriteria on Environment");
+			Log.e(getTableName(), "Could not perform queryByCriteria on Environment", e);
 			throw new RuntimeException();
 		}
 	}

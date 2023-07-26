@@ -147,7 +147,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 		try {
 			boolean pullAndRemoveObsoleteNecessary = ConfigProvider.getLastObsoleteUuidsSyncDate() == null
-				|| DateHelper.getFullDaysBetween(ConfigProvider.getLastObsoleteUuidsSyncDate(), new Date()) >= 0;
+				|| DateHelper.getFullDaysBetween(ConfigProvider.getLastObsoleteUuidsSyncDate(), new Date()) >= 1;
 			syncCallbacks
 				.ifPresent(c -> c.getUpdateStepNumberCallback().accept(syncMode == SyncMode.Changes ? pullAndRemoveObsoleteNecessary ? 5 : 4 : 6));
 			syncCallbacks.ifPresent(c -> c.getShowDialogCallback().run());
