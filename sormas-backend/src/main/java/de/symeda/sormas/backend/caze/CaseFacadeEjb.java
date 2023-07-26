@@ -136,6 +136,7 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataHelper;
@@ -1627,8 +1628,10 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				existingCase.setDiseaseVariant(null);
 				existingCase.setDiseaseVariantDetails(null);
 			} else if (diseaseVariantChange) {
-				existingCase.setDiseaseVariant(updatedCaseBulkEditData.getDiseaseVariant());
-				existingCase.setDiseaseVariantDetails(updatedCaseBulkEditData.getDiseaseVariantDetails());
+				DiseaseVariant diseaseVariant = updatedCaseBulkEditData.getDiseaseVariant();
+				existingCase.setDiseaseVariant(diseaseVariant);
+
+				existingCase.setDiseaseVariantDetails(diseaseVariant == null ? null : updatedCaseBulkEditData.getDiseaseVariantDetails());
 			}
 
 			existingCase.setDiseaseDetails(updatedCaseBulkEditData.getDiseaseDetails());
