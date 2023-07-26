@@ -381,6 +381,7 @@
     <string name="heading_sample_read">Lettura Campione</string>
     <string name="heading_sample_summary">Riepilogo Campione</string>
     <string name="heading_samples_list">Elenco Campioni</string>
+    <string name="heading_environments_list">Environment Listing</string>
     <string name="heading_immunization_edit">Edit Immunization</string>
     <string name="heading_immunization_new">New Immunization</string>
     <string name="heading_immunization_read">Read Immunization</string>
@@ -501,6 +502,7 @@
     <string name="main_menu_events">Eventi</string>
     <string name="main_menu_reports">Rapporti</string>
     <string name="main_menu_samples">Campioni</string>
+    <string name="main_menu_environments">Environments</string>
     <string name="main_menu_immunizations">Immunizations</string>
     <string name="main_menu_settings">Impostazioni</string>
     <string name="main_menu_tasks">Attività</string>
@@ -652,6 +654,7 @@
     <string name="value_treatment_date_time_unknown">Data Di Trattamento N/A</string>
     <string name="value_type_unknown">Tipo N/A</string>
     <string name="value_uuid_unknown">ID N/A</string>
+    <string name="value_external_id_unknown">ExternalID N/A</string>
     <string name="value_visit_date_unknown">Data Di Visita N/A</string>
     <string name="value_visit_remarks_unknown">Osservazioni N/A</string>
     <string name="value_visit_time_unknown">Data Di Visita N/A</string>
