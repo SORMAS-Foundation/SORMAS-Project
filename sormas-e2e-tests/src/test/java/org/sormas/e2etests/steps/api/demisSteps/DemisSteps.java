@@ -80,9 +80,11 @@ import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPa
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_CASE_FORM_DISEASE_VARIANT_INPUT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_FORM_FIRST_PATHOGEN_DISEASE_VARIANT_INPUT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_FORM_FIRST_PATHOGEN_LABORATORY_NAME;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_FORM_FIRST_PATHOGEN_TEST_TYPE_INPUT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_FORM_LABORATORY_NAME;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_FORM_SECOND_PATHOGEN_DISEASE_VARIANT_INPUT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_FORM_SECOND_PATHOGEN_LABORATORY_NAME;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_FORM_SECOND_PATHOGEN_TEST_TYPE_INPUT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.PATIENT_BIRTHDAY_FROM_INPUT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.PATIENT_BIRTHDAY_TO_INPUT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_CONFIRM_BUTTON;
@@ -943,6 +945,38 @@ public class DemisSteps implements En {
           String json = demisApiService.prepareLabNotificationFileWithOneExistingFacility(patientFirstName, patientLastName);
 
           Assert.assertTrue(demisApiService.sendLabRequest(json, loginToken), "Failed to send laboratory request");
+        });
+
+    When(
+        "^I create and send Laboratory Notification with multiple pathogen in one sample$",
+        () -> {
+          patientFirstName = faker.name().firstName();
+          patientLastName = faker.name().lastName();
+          String json = demisApiService.prepareLabNotificationFileWithMultiplePathogenOneSample(patientFirstName, patientLastName);
+
+          Assert.assertTrue(demisApiService.sendLabRequest(json, loginToken), "Failed to send laboratory request");
+        });
+
+    And(
+        "^I verify that test type for \"([^\"]*)\" pathogen is prefilled with \"([^\"]*)\" in New Sample form while processing a DEMIS LabMessage$",
+        (String pathogen, String testType) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_SAMPLE_FORM_FIRST_PATHOGEN_TEST_TYPE_INPUT);
+          switch (pathogen) {
+            case "first":
+                softly.assertEquals(
+                    webDriverHelpers.getValueFromWebElement(NEW_SAMPLE_FORM_FIRST_PATHOGEN_TEST_TYPE_INPUT),
+                    testType,
+                    "The disease variant is incorrect");
+                softly.assertAll();
+                break;
+            case "second":
+                softly.assertEquals(
+                    webDriverHelpers.getValueFromWebElement(NEW_SAMPLE_FORM_SECOND_PATHOGEN_TEST_TYPE_INPUT),
+                    testType,
+                    "The disease variant is incorrect");
+                softly.assertAll();
+                break;
+          }
         });
   }
 
