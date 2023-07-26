@@ -73,6 +73,9 @@ public class EditSamplePage {
   public static final By DELETE_SAMPLE_REASON_POPUP =
       By.xpath(
           "//div[@class='popupContent']//*[text()='Reason for deletion']/../following-sibling::div//div");
+  public static final By DELETE_SAMPLE_REASON_POPUP_FOR_DE =
+      By.xpath(
+          "//div[@class='popupContent']//*[text()='Grund des L\u00F6schens']/../following-sibling::div//div");
   public static final By EDIT_PATHOGEN_TEST =
       By.cssSelector(".v-align-right.v-slot.v-slot-compact.v-slot-link > div[role='button']");
   public static final By TESTED_DISEASE_VARIANT =
