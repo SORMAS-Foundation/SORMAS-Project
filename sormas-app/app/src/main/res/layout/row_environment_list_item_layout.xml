@@ -104,9 +104,39 @@
                     android:orientation="vertical"
                     >
 
-                    <!-- Environment Description -->
+                    <!-- Environment Name -->
                     <TextView
                         android:id="@+id/environment_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                    android:gravity="top"
+                    android:textColor="@color/row_entry_secondary_text"
+                    android:textSize="@dimen/row_entry_secondary_text_size"
+                    app:defaultValue='@{@string/value_not_available}'
+                    app:value="@{data.environmentName}"
+                    />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="fill"
+                android:gravity="fill"
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    >
+
+                    <!-- Environment Media -->
+                    <TextView
+                        android:id="@+id/environment_media"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_marginBottom="@dimen/listActivityRowSecondaryTextVerticalMargin"
@@ -115,12 +145,14 @@
                         android:textColor="@color/row_entry_secondary_text"
                         android:textSize="@dimen/row_entry_secondary_text_size"
                         app:defaultValue='@{@string/value_not_available}'
-                        app:value="@{data.environmentName}"
+                        app:value="@{data.environmentMedia}"
                         />
 
                 </LinearLayout>
 
             </LinearLayout>
+
+
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -130,7 +162,7 @@
                 android:orientation="horizontal"
                 >
 
-                <!-- Environment Media -->
+                <!-- Environment InvestigationStatus -->
                 <TextView
                     android:id="@+id/environment_environmentInvestigationStatus"
                     android:layout_width="wrap_content"
