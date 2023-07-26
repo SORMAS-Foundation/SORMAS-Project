@@ -27,7 +27,7 @@
         <variable
             name="data"
             type="de.symeda.sormas.app.backend.environment.Environment" />
-            <import type="de.symeda.sormas.api.caze.InvestigationStatus" />
+        <import type="de.symeda.sormas.api.caze.InvestigationStatus" />
     </data>
 
 
@@ -104,12 +104,11 @@
                     android:orientation="vertical"
                     >
 
-                    <!-- Environment Description -->
+                    <!-- Environment Name -->
                     <TextView
                         android:id="@+id/environment_name"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:layout_marginBottom="@dimen/listActivityRowSecondaryTextVerticalMargin"
                         android:layout_weight="1"
                         android:gravity="top"
                         android:textColor="@color/row_entry_secondary_text"
@@ -124,13 +123,46 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="fill"
+                android:gravity="fill"
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    >
+
+                    <!-- Environment Media -->
+                    <TextView
+                        android:id="@+id/environment_media"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_marginBottom="@dimen/listActivityRowSecondaryTextVerticalMargin"
+                        android:layout_weight="1"
+                        android:gravity="top"
+                        android:textColor="@color/row_entry_secondary_text"
+                        android:textSize="@dimen/row_entry_secondary_text_size"
+                        app:defaultValue='@{@string/value_not_available}'
+                        app:value="@{data.environmentMedia}"
+                        />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_marginRight="@dimen/listItemConentIndentRight"
                 android:orientation="horizontal"
                 >
 
-                <!-- Environment Media -->
+                <!-- Environment InvestigationStatus -->
                 <TextView
                     android:id="@+id/environment_environmentInvestigationStatus"
                     android:layout_width="wrap_content"
@@ -139,8 +171,8 @@
                     android:fontFamily="sans-serif"
                     android:gravity="left"
                     android:textColor="@{InvestigationStatus.DONE==data.investigationStatus ? @color/green : InvestigationStatus.PENDING==data.investigationStatus ?  @color/orange : @color/listActivityRowPrimaryText}"
-                android:textSize="@dimen/row_entry_secondary_text_size"
-                app:value="@{data.investigationStatus}" />
+                    android:textSize="@dimen/row_entry_secondary_text_size"
+                    app:value="@{data.investigationStatus}" />
 
                 <!-- Event Location -->
                 <TextView
