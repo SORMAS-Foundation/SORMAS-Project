@@ -53,6 +53,8 @@ public class EditCasePage {
       By.xpath(
           "//div[@location='samples']//div[@class='v-button v-widget link v-button-link compact v-button-compact caption-overflow-label v-button-caption-overflow-label']");
   public static final By REPORT_DATE_INPUT = By.cssSelector("#reportDate input");
+  public static final By PREVIOUS_INFECTION_DATE_INPUT =
+      By.cssSelector("#previousInfectionDate input");
   public static final By CASE_CLASSIFICATION_COMBOBOX = By.cssSelector("#caseClassification div");
   public static final By CASE_CLASSIFICATION_SPAN =
       By.cssSelector("#caseClassification span input:checked+label");
@@ -449,4 +451,6 @@ public class EditCasePage {
           "//div[contains(@class, 'popupContent')]//div[contains(@class, 'v-window-outerheader')]//div[contains(text(), 'Meldung')]");
   public static final By WINDOW_CLOSE_BUTTON =
       By.xpath("//div[contains(@class, 'v-window-closebox')]");
+  public static final By NOSOCOMIAL_OUTBRAKE_LABEL = By.cssSelector("#nosocomialOutbreak label");
+  public static final By INFECTION_SETTINGS_INPUT = By.cssSelector("#infectionSetting input");
 }
