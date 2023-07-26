@@ -381,7 +381,7 @@
     <string name="heading_sample_read">نمونہ پڑھیں</string>
     <string name="heading_sample_summary">نمونہ کا خلاصہ</string>
     <string name="heading_samples_list">نمونہ کی فہرست</string>
-    <string name="heading_environments_list">Environment Listing</string>
+    <string name="heading_environments_list">ماحولیات کی فہرست</string>
     <string name="heading_immunization_edit">امیونائزیشن میں ترمیم کریں</string>
     <string name="heading_immunization_new">نئی امیونائزیشن</string>
     <string name="heading_immunization_read">امیونائزیشن پڑھیں</string>
@@ -502,7 +502,7 @@
     <string name="main_menu_events">تقریبات</string>
     <string name="main_menu_reports">رپورٹس</string>
     <string name="main_menu_samples">نمونے</string>
-    <string name="main_menu_environments">Environments</string>
+    <string name="main_menu_environments">ماحولیات</string>
     <string name="main_menu_immunizations">امیونائزیشنز</string>
     <string name="main_menu_settings">ترتیبات</string>
     <string name="main_menu_tasks">کام</string>
@@ -654,7 +654,7 @@
     <string name="value_treatment_date_time_unknown">علاج کی تاریخ دستیاب نہیں ہے</string>
     <string name="value_type_unknown">قسم دستیاب نہیں ہے</string>
     <string name="value_uuid_unknown">شناخت دستیاب نہیں ہے</string>
-    <string name="value_external_id_unknown">ExternalID N/A</string>
+    <string name="value_external_id_unknown">بیرونی ID دستیاب نہیں ہے</string>
     <string name="value_visit_date_unknown">دورہ کی تاریخ دستیاب نہیں ہے</string>
     <string name="value_visit_remarks_unknown">ریمارکس دستیاب نہیں ہیں۔</string>
     <string name="value_visit_time_unknown">وزٹ کا وقت دستیاب نہیں ہے</string>
