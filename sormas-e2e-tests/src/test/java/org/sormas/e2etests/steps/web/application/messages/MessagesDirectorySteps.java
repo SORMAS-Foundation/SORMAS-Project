@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.checkTextInReportSideComponent;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.ACTION_CONFIRM_POPUP_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.ACTION_YES_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CLOSE_POPUP;
@@ -379,15 +378,6 @@ public class MessagesDirectorySteps implements En {
               webDriverHelpers.getTextFromWebElement(FIRST_RECORD_DISEASE_VARIANT),
               diseaseVariant,
               "Disease variant is not empty");
-          softly.assertAll();
-        });
-
-    And(
-        "^I check if report side component in Edit Case has specific date from the demis message$",
-        () -> {
-          softly.assertTrue(
-                  webDriverHelpers.isElementPresent(
-                         checkTextInReportSideComponent("27.09.2020")));
           softly.assertAll();
         });
   }

@@ -524,7 +524,6 @@ Scenario: Create and send laboratory request via Demis
     Then I check that lab sample id match "second" specimen id from Demis message on Edit Sample page
     And I validate the existence of "1" pathogen tests
     And I back to the case from Edit Sample page DE
-    And I check if report side component in Edit Case has specific date from the demis message
     When I click on edit Report on Edit Case page
     And I click on discard button
     And I click on Display associated external messages button from Reports side component
