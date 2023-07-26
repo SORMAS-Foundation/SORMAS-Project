@@ -3856,6 +3856,36 @@
         "tags" : [ "Environment Controller" ]
       }
     },
+    "/environments/obsolete/{since}" : {
+      "get" : {
+        "operationId" : "getObsoleteUuidsSince_2",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "since",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "string"
+                  }
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "Environment Controller" ]
+      }
+    },
     "/environments/push" : {
       "post" : {
         "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
@@ -4331,7 +4361,7 @@
     },
     "/eventparticipants/obsolete/{since}" : {
       "get" : {
-        "operationId" : "getObsoleteUuidsSince_2",
+        "operationId" : "getObsoleteUuidsSince_3",
         "parameters" : [ {
           "in" : "path",
           "name" : "since",
@@ -4815,7 +4845,7 @@
     },
     "/events/obsolete/{since}" : {
       "get" : {
-        "operationId" : "getObsoleteUuidsSince_3",
+        "operationId" : "getObsoleteUuidsSince_4",
         "parameters" : [ {
           "in" : "path",
           "name" : "since",
@@ -5663,7 +5693,7 @@
     },
     "/immunizations/obsolete/{since}" : {
       "get" : {
-        "operationId" : "getObsoleteUuidsSince_4",
+        "operationId" : "getObsoleteUuidsSince_5",
         "parameters" : [ {
           "in" : "path",
           "name" : "since",
@@ -7808,7 +7838,7 @@
     },
     "/samples/obsolete/{since}" : {
       "get" : {
-        "operationId" : "getObsoleteUuidsSince_5",
+        "operationId" : "getObsoleteUuidsSince_6",
         "parameters" : [ {
           "in" : "path",
           "name" : "since",
@@ -8968,7 +8998,7 @@
     },
     "/tasks/obsolete/{since}" : {
       "get" : {
-        "operationId" : "getObsoleteUuidsSince_6",
+        "operationId" : "getObsoleteUuidsSince_7",
         "parameters" : [ {
           "in" : "path",
           "name" : "since",
