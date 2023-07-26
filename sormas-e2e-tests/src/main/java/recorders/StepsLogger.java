@@ -115,8 +115,7 @@ public class StepsLogger implements StepLifecycleListener {
 
   @SneakyThrows
   private List<InputStream> collectWarningElements() {
-    List<WebElement> warningsList =
-        driver.findElements(By.xpath("//*[contains(@class,'error')]"));
+    List<WebElement> warningsList = driver.findElements(By.xpath("//*[contains(@class,'error')]"));
     List<InputStream> attachments = new ArrayList<>();
     String fileName = "warning_element%s.jpg";
     for (int i = 0; i < warningsList.size(); i++) {

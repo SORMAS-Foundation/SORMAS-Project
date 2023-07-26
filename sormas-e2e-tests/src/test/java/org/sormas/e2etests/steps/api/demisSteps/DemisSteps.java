@@ -1,35 +1,5 @@
 package org.sormas.e2etests.steps.api.demisSteps;
 
-import com.github.javafaker.Faker;
-import cucumber.api.java8.En;
-import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
-import org.sormas.e2etests.entities.pojo.web.Event;
-import org.sormas.e2etests.entities.services.EventService;
-import org.sormas.e2etests.entities.services.api.demis.DemisApiService;
-import org.sormas.e2etests.envconfig.dto.demis.DemisData;
-import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.steps.BaseSteps;
-import org.sormas.e2etests.steps.web.application.messages.MessagesTableViewHeaders;
-import org.testng.Assert;
-import org.testng.asserts.SoftAssert;
-
-import javax.inject.Inject;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.FIRST_NAME_INPUT;
@@ -104,6 +74,35 @@ import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.TYPE_OF_TEST_INPUT;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.PCR_TEST_SPECIFICATION_INPUT;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
+
+import com.github.javafaker.Faker;
+import cucumber.api.java8.En;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.sormas.e2etests.entities.pojo.web.Event;
+import org.sormas.e2etests.entities.services.EventService;
+import org.sormas.e2etests.entities.services.api.demis.DemisApiService;
+import org.sormas.e2etests.envconfig.dto.demis.DemisData;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.steps.BaseSteps;
+import org.sormas.e2etests.steps.web.application.messages.MessagesTableViewHeaders;
+import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
 
 @Slf4j
 public class DemisSteps implements En {
@@ -940,9 +939,13 @@ public class DemisSteps implements En {
         () -> {
           patientFirstName = faker.name().firstName();
           patientLastName = faker.name().lastName();
-          String json = demisApiService.prepareLabNotificationFileWithOneExistingFacility(patientFirstName, patientLastName);
+          String json =
+              demisApiService.prepareLabNotificationFileWithOneExistingFacility(
+                  patientFirstName, patientLastName);
 
-          Assert.assertTrue(demisApiService.sendLabRequest(json, loginToken), "Failed to send laboratory request");
+          Assert.assertTrue(
+              demisApiService.sendLabRequest(json, loginToken),
+              "Failed to send laboratory request");
         });
   }
 

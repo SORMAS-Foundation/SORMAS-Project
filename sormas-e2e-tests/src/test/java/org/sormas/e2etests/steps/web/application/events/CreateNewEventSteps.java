@@ -18,34 +18,6 @@
 
 package org.sormas.e2etests.steps.web.application.events;
 
-import com.github.javafaker.Faker;
-import com.opencsv.CSVParser;
-import com.opencsv.CSVParserBuilder;
-import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderBuilder;
-import com.opencsv.exceptions.CsvException;
-import cucumber.api.java8.En;
-import lombok.extern.slf4j.Slf4j;
-import org.sormas.e2etests.entities.pojo.web.Event;
-import org.sormas.e2etests.entities.services.EventService;
-import org.sormas.e2etests.enums.DistrictsValues;
-import org.sormas.e2etests.enums.RegionsValues;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.testng.asserts.SoftAssert;
-
-import javax.inject.Inject;
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.DISEASE_VARIANT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.END_DATA_EVENT;
@@ -74,6 +46,33 @@ import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.TI
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.TYPE_OF_PLACE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.NEW_EVENT_BUTTON;
+
+import com.github.javafaker.Faker;
+import com.opencsv.CSVParser;
+import com.opencsv.CSVParserBuilder;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.exceptions.CsvException;
+import cucumber.api.java8.En;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
+import org.sormas.e2etests.entities.pojo.web.Event;
+import org.sormas.e2etests.entities.services.EventService;
+import org.sormas.e2etests.enums.DistrictsValues;
+import org.sormas.e2etests.enums.RegionsValues;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.testng.asserts.SoftAssert;
 
 @Slf4j
 public class CreateNewEventSteps implements En {

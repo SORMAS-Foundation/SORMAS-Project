@@ -18,18 +18,6 @@
 
 package org.sormas.e2etests.steps.web.application.aCommonComponents;
 
-import com.github.javafaker.Faker;
-import cucumber.api.java8.En;
-import lombok.SneakyThrows;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.steps.BaseSteps;
-import org.testng.asserts.SoftAssert;
-
-import javax.inject.Inject;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.concurrent.TimeUnit;
-
 import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.ADDED_SAMPLES_IN_SAMPLE_CARD;
 import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.EDIT_SAMPLE_BUTTON;
 import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.HANDOVER_SIDE_CARD;
@@ -44,6 +32,17 @@ import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.
 import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.getEditSampleButtonByNumber;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.NUMBER_OF_TESTS_IN_SAMPLES;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.ONE_TEST_IN_SAMPLES_DE;
+
+import com.github.javafaker.Faker;
+import cucumber.api.java8.En;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
+import lombok.SneakyThrows;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.steps.BaseSteps;
+import org.testng.asserts.SoftAssert;
 
 public class SideCardsSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
@@ -188,8 +187,6 @@ public class SideCardsSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SHARE_SORMAS_2_SORMAS_POPUP_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
-          // TODO Workaround before SORQA-565 will be fixed
-          webDriverHelpers.refreshCurrentPage();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               LINKED_SHARED_ORGANIZATION_SELECTED_VALUE, 60);
         });
