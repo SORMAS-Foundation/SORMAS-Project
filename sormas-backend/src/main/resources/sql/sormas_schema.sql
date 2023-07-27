@@ -12490,8 +12490,19 @@ ALTER TABLE testreport ADD CONSTRAINT fk_testreport_prescribercountry_id FOREIGN
 INSERT INTO schema_version (version_number, comment) VALUES (518, 'Add prescriber fields to pathogen tests and test reports #12318');
 
 -- 2023-07-26 Add the 'See personal data inside jurisdiction' user right to the default Environmental Surveillance User #12284
-INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'SEE_PERSONAL_DATA_IN_JURISDICTION' FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'ENVIRONMENTAL_SURVEILLANCE_USER';
+
+DO $$
+    DECLARE ur RECORD;
+    BEGIN
+        FOR ur IN SELECT id FROM userroles WHERE linkeddefaultuserrole = 'ENVIRONMENTAL_SURVEILLANCE_USER'
+            LOOP
+                IF NOT EXISTS (SELECT 1 FROM userroles_userrights WHERE userrole_id = ur.id AND userright = 'SEE_PERSONAL_DATA_IN_JURISDICTION') THEN
+                    INSERT INTO userroles_userrights (userrole_id, userright) VALUES (ur.id, 'SEE_PERSONAL_DATA_IN_JURISDICTION');
+                    UPDATE userroles set changedate = now() WHERE id = ur.id AND linkeddefaultuserrole = 'ENVIRONMENTAL_SURVEILLANCE_USER';
+                END IF;
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment) VALUES (519, 'Add the ''See personal data inside jurisdiction'' user right to the default Environmental Surveillance User #12284');
-
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
