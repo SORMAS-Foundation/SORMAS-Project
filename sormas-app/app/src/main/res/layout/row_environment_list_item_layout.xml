@@ -27,7 +27,7 @@
         <variable
             name="data"
             type="de.symeda.sormas.app.backend.environment.Environment" />
-            <import type="de.symeda.sormas.api.caze.InvestigationStatus" />
+        <import type="de.symeda.sormas.api.caze.InvestigationStatus" />
     </data>
 
 
@@ -110,12 +110,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
-                    android:gravity="top"
-                    android:textColor="@color/row_entry_secondary_text"
-                    android:textSize="@dimen/row_entry_secondary_text_size"
-                    app:defaultValue='@{@string/value_not_available}'
-                    app:value="@{data.environmentName}"
-                    />
+                        android:gravity="top"
+                        android:textColor="@color/row_entry_secondary_text"
+                        android:textSize="@dimen/row_entry_secondary_text_size"
+                        app:defaultValue='@{@string/value_not_available}'
+                        app:value="@{data.environmentName}"
+                        />
 
                 </LinearLayout>
 
@@ -171,8 +171,8 @@
                     android:fontFamily="sans-serif"
                     android:gravity="left"
                     android:textColor="@{InvestigationStatus.DONE==data.investigationStatus ? @color/green : InvestigationStatus.PENDING==data.investigationStatus ?  @color/orange : @color/listActivityRowPrimaryText}"
-                android:textSize="@dimen/row_entry_secondary_text_size"
-                app:value="@{data.investigationStatus}" />
+                    android:textSize="@dimen/row_entry_secondary_text_size"
+                    app:value="@{data.investigationStatus}" />
 
                 <!-- Event Location -->
                 <TextView
