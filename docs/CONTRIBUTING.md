@@ -237,8 +237,8 @@ Dependencies are managed in Maven POM files. For most dependencies the version i
 
 **Process**: At the beginning of each iteration, look over all [dependency update PRs](https://github.com/SORMAS-Foundation/SORMAS-Project/pulls?q=is%3Apr+is%3Aopen+label%3Adependencies) created by dependabot and process them according to the following rules:
 1. Always use "Rebase and merge" instead of creating a merge commit! If needed use the comment `@dependabot rebase` to rebase the PR to the latest development commit.
-2. If all CI checks are successful, minor versions can be merged
-3. For mayor version updates read the changelog to understand implications and possible migration steps of the update. \
+2. If all CI checks are successful, minor and micro version updates can be merged
+3. For major version updates read the changelog to understand implications and possible migration steps of the update. \
   Decide on you own wheter it is necessary to manually test the PR before merging.
 4. If CI checks are negative or migration steps are needed, decide whether the update is important enough to justify the effort of additional work. \
 If the PR is not needed, you can use `@dependabot ignore this major version` or `@dependabot ignore this minor version`.
