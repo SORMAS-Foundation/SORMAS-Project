@@ -135,6 +135,12 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 					"Invalid enum value " + value + " for customizable enum type " + type + " and disease " + disease));
 	}
 
+	@Lock(LockType.READ)
+	@Override
+	public boolean existsEnumValue(CustomizableEnumType type, String value, Disease disease) {
+		return getEnumValues(type, disease).stream().anyMatch(e -> e.getValue().equals(value));
+	}
+
 	/**
 	 * @return Entries are currently not returned in any specific order
 	 */

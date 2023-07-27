@@ -220,6 +220,7 @@ public interface Captions {
 	String bulkContactOfficer = "bulkContactOfficer";
 	String bulkDelete = "bulkDelete";
 	String bulkDisease = "bulkDisease";
+	String bulkDiseaseVariant = "bulkDiseaseVariant";
 	String bulkEdit = "bulkEdit";
 	String bulkEditAssignee = "bulkEditAssignee";
 	String bulkEventInvestigationStatus = "bulkEventInvestigationStatus";
