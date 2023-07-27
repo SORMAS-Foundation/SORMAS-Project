@@ -37,6 +37,7 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LAST
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PLACE_OF_STAY_DISTRICT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PLACE_OF_STAY_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISTRICT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REGION_COMBOBOX;
@@ -85,6 +86,7 @@ import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPa
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_FORM_SECOND_PATHOGEN_DISEASE_VARIANT_INPUT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_FORM_SECOND_PATHOGEN_LABORATORY_NAME;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_FORM_SECOND_PATHOGEN_TEST_TYPE_INPUT;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEXT_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.PATIENT_BIRTHDAY_FROM_INPUT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.PATIENT_BIRTHDAY_TO_INPUT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_CONFIRM_BUTTON;
@@ -977,6 +979,24 @@ public class DemisSteps implements En {
                 softly.assertAll();
                 break;
           }
+        });
+
+    When(
+        "^I create and send Laboratory Notification for physician report$",
+        () -> {
+            patientFirstName = faker.name().firstName();
+            patientLastName = faker.name().lastName();
+            String json = demisApiService.prepareLabNotificationFileForPhysicianReport(patientFirstName, patientLastName);
+
+            Assert.assertTrue(demisApiService.sendLabRequest(json, loginToken), "Failed to send laboratory request");
+        });
+
+    And(
+        "^I click next button while processing a DEMIS LabMessage$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEXT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(NEXT_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CASE_SAVED_POPUP);
         });
   }
 

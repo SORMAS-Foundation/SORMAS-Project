@@ -144,4 +144,5 @@ public class MessagesDirectoryPage {
           By.xpath("(//div[contains(@id, 'testType')]//input)[1]");
   public static final By NEW_SAMPLE_FORM_SECOND_PATHOGEN_TEST_TYPE_INPUT =
           By.xpath("(//div[contains(@id, 'testType')]//input)[2]");
+  public static final By NEXT_BUTTON = By.id("actionNext");
 }
