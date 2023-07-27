@@ -2072,6 +2072,11 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 				em.createQuery(indexCasesCq).getResultStream().collect(Collectors.toMap(c -> c.getId(), Function.identity()));
 
 			for (Object[] idPair : foundIds) {
+				// Abort the operation if the limit has been reached
+				if (limit != null && resultIdsSet.size() >= limit) {
+					break;
+				}
+
 				// Skip duplicate pairs - duplications always happen in reverse order, i.e. if idPair[0]/idPair[1]
 				// is already in the result set in this order, the duplication would be added as idPair[1]/idPair[0]
 				if (resultIdsSet.contains(new AbstractMap.SimpleImmutableEntry<>(idPair[1], idPair[0]))) {
