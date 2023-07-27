@@ -12,10 +12,15 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Fetch;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
+
+import org.hibernate.Hibernate;
+import org.hibernate.proxy.HibernateProxy;
 
 import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.api.user.UserRight;
@@ -104,7 +109,9 @@ public class CurrentUserService {
 		// do eager loading in this case
 		final Root<User> user = cq.from(User.class);
 		user.fetch(User.ADDRESS);
-		user.fetch(User.USER_ROLES);
+		Fetch<Object, Object> fetch = user.fetch(User.USER_ROLES);
+		fetch.fetch(UserRole.EMAIL_NOTIFICATIONS, JoinType.LEFT);
+		fetch.fetch(UserRole.SMS_NOTIFICATIONS, JoinType.LEFT);
 
 		final Predicate equal = cb.equal(cb.lower(user.get(User.USER_NAME)), userNameParam);
 		cq.select(user).distinct(true);
@@ -112,6 +119,28 @@ public class CurrentUserService {
 
 		final TypedQuery<User> q = em.createQuery(cq).setParameter(userNameParam, userName.toLowerCase());
 
-		return q.getResultList().stream().findFirst().orElse(null);
+		User currentUser = q.getResultList().stream().findFirst().orElse(null);
+		if (currentUser != null) {
+			unproxy(currentUser.getRegion());
+			unproxy(currentUser.getDistrict());
+			unproxy(currentUser.getCommunity());
+			unproxy(currentUser.getHealthFacility());
+			unproxy(currentUser.getPointOfEntry());
+			unproxy(currentUser.getLaboratory());
+			unproxy(currentUser.getAssociatedOfficer());
+		}
+
+		return currentUser;
+	}
+
+	public static <T> T unproxy(T proxied) {
+		if (proxied instanceof HibernateProxy) {
+			Hibernate.initialize(proxied);
+			@SuppressWarnings("unchecked")
+			T obj = (T) ((HibernateProxy) proxied).getHibernateLazyInitializer().getImplementation();
+			return obj;
+		} else {
+			return proxied;
+		}
 	}
 }

@@ -21,6 +21,7 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageService;
+import de.symeda.sormas.backend.infrastructure.country.CountryService;
 
 @ExtendWith(MockitoExtension.class)
 public class TestReportFacadeEjbMappingTest {
@@ -36,6 +37,9 @@ public class TestReportFacadeEjbMappingTest {
 
 	@Mock
 	private TestReportService testReportService;
+
+	@Mock
+	private CountryService countryService;
 
 	@Test
 	public void testFromDto() {

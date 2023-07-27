@@ -18,9 +18,10 @@
 package de.symeda.sormas.ui.events;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
@@ -55,9 +56,9 @@ import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DeletableUtils;
+import de.symeda.sormas.ui.utils.DeleteRestoreHandlers;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.automaticdeletion.DeletionLabel;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
@@ -173,37 +174,31 @@ public class EventParticipantsController {
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 
-	public void deleteAllSelectedItems(Collection<EventParticipantIndexDto> selectedRows, Runnable callback) {
-		if (selectedRows.size() == 0) {
-			new Notification(
-				I18nProperties.getString(Strings.headingNoEventParticipantsSelected),
-				I18nProperties.getString(Strings.messageNoEventParticipantsSelected),
-				Type.WARNING_MESSAGE,
-				false).show(Page.getCurrent());
-		} else {
-			DeletableUtils.showDeleteWithReasonPopup(
-				String.format(I18nProperties.getString(Strings.confirmationDeleteEventParticipants), selectedRows.size()),
-				(deleteDetails) -> {
-					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getEventParticipantFacade().delete(((EventParticipantIndexDto) selectedRow).getUuid(), deleteDetails);
-					}
-					callback.run();
-					new Notification(
-						I18nProperties.getString(Strings.headingEventParticipantsDeleted),
-						I18nProperties.getString(Strings.messageEventParticipantsDeleted),
-						Type.HUMANIZED_MESSAGE,
-						false).show(Page.getCurrent());
-				});
-		}
+	public void deleteAllSelectedItems(
+		Collection<EventParticipantIndexDto> selectedRows,
+		EventParticipantsGrid eventParticipantGrid,
+		Runnable noEntriesRemainingCallback) {
+
+		ControllerProvider.getDeleteRestoreController()
+			.deleteAllSelectedItems(
+				selectedRows,
+				null,
+				null,
+				DeleteRestoreHandlers.forEventParticipant(),
+				bulkOperationCallback(eventParticipantGrid, noEntriesRemainingCallback, null));
+
 	}
 
-	public void restoreSelectedEventParticipants(Collection<? extends EventParticipantIndexDto> selectedRows, Runnable callback) {
+	public void restoreSelectedEventParticipants(
+		Collection<EventParticipantIndexDto> selectedRows,
+		EventParticipantsGrid eventParticipantGrid,
+		Runnable noEntriesRemainingCallback) {
+
 		ControllerProvider.getDeleteRestoreController()
 			.restoreSelectedItems(
-				selectedRows.stream().map(EventParticipantIndexDto::getUuid).collect(Collectors.toList()),
-				FacadeProvider.getEventParticipantFacade(),
-				CoreEntityRestoreMessages.EVENT_PARTICIPANT,
-				callback);
+				selectedRows,
+				DeleteRestoreHandlers.forEventParticipant(),
+				bulkOperationCallback(eventParticipantGrid, noEntriesRemainingCallback, null));
 	}
 
 	public void deleteEventParticipant(String eventUuid, String personUuid, Runnable callback) {
@@ -375,5 +370,23 @@ public class EventParticipantsController {
 		titleLayout.addMainRow(mainRowText.toString());
 
 		return titleLayout;
+	}
+
+	private Consumer<List<EventParticipantIndexDto>> bulkOperationCallback(
+		EventParticipantsGrid eventParticipantsGrid,
+		Runnable noEntriesRemainingCallback,
+		Window popupWindow) {
+		return remainingEventParticipants -> {
+			if (popupWindow != null) {
+				popupWindow.close();
+			}
+
+			eventParticipantsGrid.reload();
+			if (CollectionUtils.isNotEmpty(remainingEventParticipants)) {
+				eventParticipantsGrid.asMultiSelect().selectItems(remainingEventParticipants.toArray(new EventParticipantIndexDto[0]));
+			} else {
+				noEntriesRemainingCallback.run();
+			}
+		};
 	}
 }

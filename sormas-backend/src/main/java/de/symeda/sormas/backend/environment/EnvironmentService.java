@@ -192,7 +192,7 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				cb.between(joins.getLocation().get(Location.LONGITUDE), environmentCriteria.getGpsLonFrom(), environmentCriteria.getGpsLatTo()));
+				cb.between(joins.getLocation().get(Location.LONGITUDE), environmentCriteria.getGpsLonFrom(), environmentCriteria.getGpsLonTo()));
 		} else if (environmentCriteria.getGpsLonFrom() != null) {
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.greaterThanOrEqualTo(joins.getLocation().get(Location.LONGITUDE), environmentCriteria.getGpsLonFrom()));
@@ -210,5 +210,17 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 	 */
 	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, Environment> root) {
 		return cb.isFalse(root.get(Environment.DELETED));
+	}
+
+	@Override
+	@SuppressWarnings("rawtypes")
+	protected Predicate createRelevantDataFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Environment> from) {
+
+		Predicate filter = createDefaultFilter(cb, from);
+		if (getCurrentUser() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilterInternal(cb, cq, from));
+		}
+
+		return filter;
 	}
 }

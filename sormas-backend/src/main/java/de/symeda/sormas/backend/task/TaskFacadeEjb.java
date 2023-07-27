@@ -914,19 +914,34 @@ public class TaskFacadeEjb implements TaskFacade {
 
 	@Override
 	@RightsAllowed(UserRight._TASK_DELETE)
-	public void deleteTask(TaskDto taskDto) {
-		Task task = taskService.getByUuid(taskDto.getUuid());
+	public void delete(String uuid) {
+		if (!userService.hasRight(UserRight.TASK_DELETE)) {
+			throw new UnsupportedOperationException(String.format("User %s is not allowed to delete tasks.", userService.getCurrentUser().getUuid()));
+		}
+
+		Task task = taskService.getByUuid(uuid);
 		taskService.deletePermanent(task);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._TASK_DELETE)
+	public void delete(List<String> uuids) {
+		deleteTasks(uuids);
 	}
 
 	@RightsAllowed(UserRight._TASK_DELETE)
 	public List<String> deleteTasks(List<String> tasksUuids) {
 		List<String> deletedTaskUuids = new ArrayList<>();
 		List<Task> tasksToBeDeleted = taskService.getByUuids(tasksUuids);
+
 		if (tasksToBeDeleted != null) {
 			tasksToBeDeleted.forEach(taskToBeDeleted -> {
-				taskService.deletePermanent(taskToBeDeleted);
-				deletedTaskUuids.add(taskToBeDeleted.getUuid());
+				try {
+					taskService.deletePermanent(taskToBeDeleted);
+					deletedTaskUuids.add(taskToBeDeleted.getUuid());
+				} catch (Exception e) {
+					logger.error("The task with uuid:" + taskToBeDeleted.getUuid() + "could not be deleted");
+				}
 			});
 		}
 		return deletedTaskUuids;

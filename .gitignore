@@ -14,7 +14,7 @@
 /sormas-widgetset/bin
 /deploy/bundles
 deploy
-/sormas-base/build.properties
+/sormas-base/dev.env
 /sormas-base/bin
 /sormas-ui/bin
 
@@ -25,6 +25,7 @@ deploy
 /sormas-app/java_pid21052.hprof
 bin
 /sormas-base/setup/setup.log
+/sormas-base/setup/keycloak/keycloak_setup.log
 
 # Exclude maven wrapper
 !/.mvn/wrapper/maven-wrapper.jar

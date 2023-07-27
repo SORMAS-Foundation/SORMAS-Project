@@ -34,6 +34,8 @@ updates:
       - dependency-name: org.eclipse.microprofile.config:microprofile-config-api
       - dependency-name: org.glassfish:javax.el
       - dependency-name: org.glassfish.corba:glassfish-corba-omgapi
+      - dependency-name: org.glassfish.hk2:*
+      - dependency-name: org.glassfish.hk2.*:*
       - dependency-name: org.glassfish.jaxb:*
       - dependency-name: org.glassfish.jersey*:jersey-*
       - dependency-name: org.glassfish.soteria:javax.security.enterprise
@@ -42,8 +44,6 @@ updates:
       - dependency-name: org.yaml:snakeyaml
       # Vaadin 8.14.3 is the last free version - https://vaadin.com/vaadin-8-extended-maintenance-releases
       - dependency-name: com.vaadin:vaadin-*
-      # Newer version breaks sormas-base/build.xml -> collect-serverlibs (remove after #12074)
-      - dependency-name: commons-io:commons-io
 
   # Maintain gradle dependencies for sormas-app
   - package-ecosystem: "gradle"

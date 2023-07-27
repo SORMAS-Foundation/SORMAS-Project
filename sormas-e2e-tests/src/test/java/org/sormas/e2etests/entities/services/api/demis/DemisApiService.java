@@ -17,21 +17,26 @@
  */
 package org.sormas.e2etests.entities.services.api.demis;
 
-import static org.sormas.e2etests.steps.BaseSteps.locale;
-
-import java.net.SocketTimeoutException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.UUID;
-import javax.inject.Inject;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.*;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.sormas.e2etests.envconfig.dto.demis.DemisData;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.api.demis.okhttpclient.SormasOkHttpClient;
+
+import javax.inject.Inject;
+import java.net.SocketTimeoutException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.UUID;
+
+import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 @Slf4j
 public class DemisApiService {
@@ -54,6 +59,8 @@ public class DemisApiService {
   private final String AUTHORIZATION_HEADER = "Authorization";
   private final String CONTENT_TYPE_APPLICATION_JSON = "application/json";
   private JSONObject jsonObject;
+  public static final String specimenUUID = UUID.randomUUID().toString();
+  public static final String secondSpecimenUUID = UUID.randomUUID().toString();
 
   @Inject
   public DemisApiService(RunningConfiguration runningConfiguration) {
@@ -229,6 +236,54 @@ public class DemisApiService {
     json = json.replace("<specimen_UUID_to_change>", UUID.randomUUID().toString());
     json = json.replace("<observation_UUID_to_change>", UUID.randomUUID().toString());
     json = json.replace("<report_UUID_to_change>", UUID.randomUUID().toString());
+    return json;
+  }
+
+  public String prepareLabNotificationFileWithTwoSamples(
+      String patientFirstName, String patientLastName) {
+    DemisData demisData = runningConfiguration.getDemisData(locale);
+    String file = "src/main/resources/demisJsonTemplates/labNotificationMultipleSamples.json";
+    String json = readFileAsString(file);
+    json = json.replace("\"<postal_code_to_change>\"", "\"" + demisData.getPostalCode() + "\"");
+    json = json.replace("\"<last_name_to_change>\"", "\"" + patientLastName + "\"");
+    json = json.replace("\"<first_name_to_change>\"", "\"" + patientFirstName + "\"");
+    json = json.replace("\"<second_person_last_name_to_change>\"", "\"" + patientLastName + "\"");
+    json = json.replace("\"<second_person_first_name_to_change>\"", "\"" + patientFirstName + "\"");
+    json = json.replace("<specimen_UUID_to_change>", specimenUUID);
+    json = json.replace("<second_specimen_UUID_to_change>", secondSpecimenUUID);
+    json = json.replace("<observation_UUID_to_change>", UUID.randomUUID().toString());
+    json = json.replace("<second_observation_UUID_to_change>", UUID.randomUUID().toString());
+    json = json.replace("<third_observation_UUID_to_change>", UUID.randomUUID().toString());
+    json = json.replace("<report_UUID_to_change>", UUID.randomUUID().toString());
+    return json;
+  }
+
+  public String prepareLabNotificationFileWithOneExistingFacility(
+          String patientFirstName, String patientLastName) {
+    DemisData demisData = runningConfiguration.getDemisData(locale);
+    String file = "src/main/resources/demisJsonTemplates/labNotificationTemplateWithExistingFacility.json";
+    String json = readFileAsString(file);
+    json = json.replace("<report_UUID_to_change>", UUID.randomUUID().toString());
+    json = json.replace("\"<last_name_to_change>\"", "\"" + patientLastName + "\"");
+    json = json.replace("\"<first_name_to_change>\"", "\"" + patientFirstName + "\"");
+    json = json.replace("<observation_UUID_to_change>", UUID.randomUUID().toString());
+    json = json.replace("\"<postal_code_to_change>\"", "\"" + demisData.getPostalCode() + "\"");
+    json = json.replace("<specimen_UUID_to_change>", UUID.randomUUID().toString());
+    return json;
+  }
+
+  public String prepareLabNotificationFileWithMultiplePathogenOneSample(
+          String patientFirstName, String patientLastName) {
+    DemisData demisData = runningConfiguration.getDemisData(locale);
+    String file = "src/main/resources/demisJsonTemplates/labNotificationTemplateMultiplePathogen.json";
+    String json = readFileAsString(file);
+    json = json.replace("<report_UUID_to_change>", UUID.randomUUID().toString());
+    json = json.replace("\"<postal_code_to_change>\"", "\"" + demisData.getPostalCode() + "\"");
+    json = json.replace("\"<last_name_to_change>\"", "\"" + patientLastName + "\"");
+    json = json.replace("\"<first_name_to_change>\"", "\"" + patientFirstName + "\"");
+    json = json.replace("<specimen_UUID_to_change>", specimenUUID);
+    json = json.replace("<observation_UUID_to_change>", UUID.randomUUID().toString());
+    json = json.replace("<second_observation_UUID_to_change>", UUID.randomUUID().toString());
     return json;
   }
 

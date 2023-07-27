@@ -15,8 +15,8 @@ public class EnvironmentIndexDto extends AbstractUuidDto {
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
-	public static final String GPS_LAT = "gpsLat";
-	public static final String GPS_LON = "gpsLon";
+	public static final String LATITUDE = "latitude";
+	public static final String LONGITUDE = "longitude";
 	public static final String POSTAL_CODE = "postalCode";
 	public static final String CITY = "city";
 	public static final String REPORT_DATE = "reportDate";
@@ -29,8 +29,8 @@ public class EnvironmentIndexDto extends AbstractUuidDto {
 	private String region;
 	private String district;
 	private String community;
-	private Double gpsLat;
-	private Double gpsLon;
+	private Double latitude;
+	private Double longitude;
 	private String postalCode;
 	private String city;
 	private Date reportDate;
@@ -44,8 +44,8 @@ public class EnvironmentIndexDto extends AbstractUuidDto {
 		String region,
 		String district,
 		String community,
-		Double gpsLat,
-		Double gpsLon,
+		Double latitude,
+		Double longitude,
 		String postalCode,
 		String city,
 		Date reportDate,
@@ -58,8 +58,8 @@ public class EnvironmentIndexDto extends AbstractUuidDto {
 		this.region = region;
 		this.district = district;
 		this.community = community;
-		this.gpsLat = gpsLat;
-		this.gpsLon = gpsLon;
+		this.latitude = latitude;
+		this.longitude = longitude;
 		this.postalCode = postalCode;
 		this.city = city;
 		this.reportDate = reportDate;
@@ -118,20 +118,20 @@ public class EnvironmentIndexDto extends AbstractUuidDto {
 		this.community = community;
 	}
 
-	public Double getGpsLat() {
-		return gpsLat;
+	public Double getLatitude() {
+		return latitude;
 	}
 
-	public void setGpsLat(Double gpsLat) {
-		this.gpsLat = gpsLat;
+	public void setLatitude(Double latitude) {
+		this.latitude = latitude;
 	}
 
-	public Double getGpsLon() {
-		return gpsLon;
+	public Double getLongitude() {
+		return longitude;
 	}
 
-	public void setGpsLon(Double gpsLon) {
-		this.gpsLon = gpsLon;
+	public void setLongitude(Double longitude) {
+		this.longitude = longitude;
 	}
 
 	public String getPostalCode() {

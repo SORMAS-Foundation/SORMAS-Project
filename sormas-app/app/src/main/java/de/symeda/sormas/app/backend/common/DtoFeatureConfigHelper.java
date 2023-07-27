@@ -79,4 +79,8 @@ public class DtoFeatureConfigHelper {
 	public static boolean isFeatureConfigForClinicalVisitsEnabled() {
 		return DatabaseHelper.getFeatureConfigurationDao().isFeatureEnabled(FeatureType.CLINICAL_MANAGEMENT);
 	}
+
+	public static boolean isFeatureConfigForEnvironmentEnabled() {
+		return DatabaseHelper.getFeatureConfigurationDao().isFeatureEnabled(FeatureType.ENVIRONMENT_MANAGEMENT);
+	}
 }

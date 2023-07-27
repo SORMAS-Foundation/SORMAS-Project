@@ -20,13 +20,14 @@ package de.symeda.sormas.ui;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class ViewModelProvider {
 
 	private Map<Class<?>, Object> viewModels = new HashMap<Class<?>, Object>();
 
 	public <M extends Object> M get(Class<M> modelClass) {
-		return get(modelClass, null);
+		return get(modelClass, (M) null);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -44,6 +45,10 @@ public class ViewModelProvider {
 			}
 		}
 		return (M) viewModels.get(modelClass);
+	}
+
+	public <M> M getOrDefault(Class<M> modelClass, Supplier<M> defaultModelFactory) {
+		return (M) viewModels.computeIfAbsent(modelClass, cls -> defaultModelFactory.get());
 	}
 
 	public <M extends Object> void remove(Class<M> modelClass) {

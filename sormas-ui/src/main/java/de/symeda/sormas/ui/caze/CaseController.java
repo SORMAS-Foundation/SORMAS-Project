@@ -105,7 +105,6 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
@@ -136,9 +135,8 @@ import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DeletableUtils;
+import de.symeda.sormas.ui.utils.DeleteRestoreHandlers;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -1044,30 +1042,34 @@ public class CaseController {
 					500,
 					e -> BulkOperationHandler.<T> forBulkEdit()
 						.doBulkOperation(
-						selectedEntries -> caseFacade.saveBulkEditWithFacilities(
+							selectedEntries -> caseFacade.saveBulkEditWithFacilities(
+								selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
+								updatedBulkEditData,
+								diseaseChange,
+								classificationChange,
+								investigationStatusChange,
+								outcomeChange,
+								surveillanceOfficerChange,
+								e),
+							selectedCasesCpy,
+							null,
+							null,
+							bulkOperationCallback(caseGrid, popupWindow)));
+			} else {
+				BulkOperationHandler.<T> forBulkEdit()
+					.doBulkOperation(
+						selectedEntries -> caseFacade.saveBulkCase(
 							selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
 							updatedBulkEditData,
 							diseaseChange,
 							classificationChange,
 							investigationStatusChange,
 							outcomeChange,
-							surveillanceOfficerChange,
-							e),
+							surveillanceOfficerChange),
 						selectedCasesCpy,
-						bulkOperationCallback(caseGrid, popupWindow)));
-			} else {
-				BulkOperationHandler.<T> forBulkEdit()
-					.doBulkOperation(
-					selectedEntries -> caseFacade.saveBulkCase(
-						selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
-						updatedBulkEditData,
-						diseaseChange,
-						classificationChange,
-						investigationStatusChange,
-						outcomeChange,
-						surveillanceOfficerChange),
-					selectedCasesCpy,
-					bulkOperationCallback(caseGrid, popupWindow));
+						null,
+						null,
+						bulkOperationCallback(caseGrid, popupWindow));
 			}
 		});
 
@@ -1546,63 +1548,16 @@ public class CaseController {
 		popupWindow.setCaption(I18nProperties.getString(Strings.classificationRulesFor) + " " + diseaseCriteria.getDisease().toString());
 	}
 
-	public void deleteAllSelectedItems(Collection<? extends CaseIndexDto> selectedRows, Runnable callback) {
+	public void deleteAllSelectedItems(Collection<? extends CaseIndexDto> selectedRows, AbstractCaseGrid<?> caseGrid) {
 
-		if (selectedRows.size() == 0) {
-			new Notification(
-				I18nProperties.getString(Strings.headingNoCasesSelected),
-				I18nProperties.getString(Strings.messageNoCasesSelected),
-				Type.WARNING_MESSAGE,
-				false).show(Page.getCurrent());
-		} else {
-			DeletableUtils.showDeleteWithReasonPopup(
-				String.format(I18nProperties.getString(Strings.confirmationDeleteCases), selectedRows.size()) + "<br/>"
-					+ getDeleteConfirmationDetails(selectedRows.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList())),
-				(deleteDetails) -> {
-					int countNotDeletedCases = 0;
-					StringBuilder nonDeletableCases = new StringBuilder();
-					for (CaseIndexDto selectedRow : selectedRows) {
-						try {
-							FacadeProvider.getCaseFacade().delete(selectedRow.getUuid(), deleteDetails);
-						} catch (ExternalSurveillanceToolRuntimeException e) {
-							countNotDeletedCases++;
-							nonDeletableCases.append(selectedRow.getUuid(), 0, 6).append(", ");
-						}
-					}
-					if (nonDeletableCases.length() > 0) {
-						nonDeletableCases = new StringBuilder(" " + nonDeletableCases.substring(0, nonDeletableCases.length() - 2) + ". ");
-					}
-					callback.run();
-					if (countNotDeletedCases == 0) {
-						new Notification(
-							I18nProperties.getString(Strings.headingCasesDeleted),
-							I18nProperties.getString(Strings.messageCasesDeleted),
-							Type.HUMANIZED_MESSAGE,
-							false).show(Page.getCurrent());
-					} else {
-						Window response = VaadinUiUtil.showSimplePopupWindow(
-							I18nProperties.getString(Strings.headingSomeCasesNotDeleted),
-							String.format(
-								"%1s <br/> <br/> %2s",
-								String.format(
-									I18nProperties.getString(Strings.messageCountCasesNotDeleted),
-									String.format("<b>%s</b>", countNotDeletedCases),
-									String.format("<b>%s</b>", HtmlHelper.cleanHtml(nonDeletableCases.toString()))),
-								I18nProperties.getString(Strings.messageCasesNotDeletedReasonExternalSurveillanceTool)),
-							ContentMode.HTML);
-						response.setWidth(600, Sizeable.Unit.PIXELS);
-					}
-				});
-		}
+		ControllerProvider.getDeleteRestoreController()
+			.deleteAllSelectedItems(selectedRows, null, null, DeleteRestoreHandlers.forCase(), bulkOperationCallback(caseGrid, null));
+
 	}
 
-	public void restoreSelectedCases(Collection<? extends CaseIndexDto> selectedRows, Runnable callback) {
+	public void restoreSelectedCases(Collection<? extends CaseIndexDto> selectedRows, AbstractCaseGrid<?> caseGrid) {
 		ControllerProvider.getDeleteRestoreController()
-			.restoreSelectedItems(
-				selectedRows.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList()),
-				FacadeProvider.getCaseFacade(),
-				CoreEntityRestoreMessages.CASE,
-				callback);
+			.restoreSelectedItems(selectedRows, DeleteRestoreHandlers.forCase(), bulkOperationCallback(caseGrid, null));
 	}
 
 	public void sendSmsToAllSelectedItems(Collection<? extends CaseIndexDto> selectedRows, Runnable callback) {

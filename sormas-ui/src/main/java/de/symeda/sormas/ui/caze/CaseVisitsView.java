@@ -83,7 +83,7 @@ public class CaseVisitsView extends AbstractCaseView {
 					Captions.bulkActions,
 					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
 						ControllerProvider.getVisitController()
-							.deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
+							.deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), grid, () -> navigateTo(criteria));
 					}));
 				topLayout.addComponent(bulkOperationsDropdown);
 				topLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.MIDDLE_RIGHT);

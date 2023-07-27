@@ -27,6 +27,7 @@ import javax.validation.Valid;
 
 import de.symeda.sormas.api.ArchivableFacade;
 import de.symeda.sormas.api.EditPermissionType;
+import de.symeda.sormas.api.PermanentlyDeletableFacade;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -34,7 +35,7 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
-public interface TaskFacade extends ArchivableFacade {
+public interface TaskFacade extends PermanentlyDeletableFacade, ArchivableFacade {
 
 	TaskDto saveTask(@Valid TaskDto dto);
 
@@ -63,8 +64,6 @@ public interface TaskFacade extends ArchivableFacade {
 	TaskDto getByUuid(String uuid);
 
 	List<String> getAllActiveUuids();
-
-	void deleteTask(TaskDto taskDto);
 
 	List<String> deleteTasks(List<String> taskUuids);
 

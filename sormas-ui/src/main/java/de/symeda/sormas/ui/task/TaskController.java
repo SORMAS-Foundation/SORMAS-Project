@@ -51,6 +51,7 @@ import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.ArchivingController;
 import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.DeleteRestoreHandlers;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class TaskController {
@@ -142,7 +143,7 @@ public class TaskController {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_DELETE)) {
 			editView.addDeleteListener(() -> {
-				FacadeProvider.getTaskFacade().deleteTask(task);
+				FacadeProvider.getTaskFacade().delete(task.getUuid());
 				UI.getCurrent().removeWindow(popupWindow);
 				callback.run();
 			}, I18nProperties.getString(Strings.entityTask));
@@ -150,7 +151,7 @@ public class TaskController {
 
 		// Initialize 'Archive' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_ARCHIVE)) {
-			ControllerProvider.getArchiveController().addArchivingButton(task, ArchiveHandlers.forTask(), editView, () -> {
+			ControllerProvider.getArchiveController().addArchivingButtonWithDirtyCheck(task, ArchiveHandlers.forTask(), editView, () -> {
 				popupWindow.close();
 				callback.run();
 			});
@@ -169,28 +170,15 @@ public class TaskController {
 		return task;
 	}
 
-	public void deleteAllSelectedItems(Collection<TaskIndexDto> selectedRows, Runnable callback) {
+	public void deleteAllSelectedItems(Collection<TaskIndexDto> selectedRows, TaskGrid taskGrid, Runnable noEntriesRemainingCallback) {
 
-		if (selectedRows.size() == 0) {
-			new Notification(
-				I18nProperties.getString(Strings.headingNoTasksSelected),
-				I18nProperties.getString(Strings.messageNoTasksSelected),
-				Type.WARNING_MESSAGE,
-				false).show(Page.getCurrent());
-		} else {
-			VaadinUiUtil
-				.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteTasks), selectedRows.size()), () -> {
-					for (TaskIndexDto selectedRow : selectedRows) {
-						FacadeProvider.getTaskFacade().deleteTask(FacadeProvider.getTaskFacade().getByUuid(selectedRow.getUuid()));
-					}
-					callback.run();
-					new Notification(
-						I18nProperties.getString(Strings.headingTasksDeleted),
-						I18nProperties.getString(Strings.messageTasksDeleted),
-						Type.HUMANIZED_MESSAGE,
-						false).show(Page.getCurrent());
-				});
-		}
+		ControllerProvider.getPermanentDeleteController()
+			.deleteAllSelectedItems(
+				selectedRows,
+				DeleteRestoreHandlers.forTask(),
+				true,
+				bulkOperationCallback(taskGrid, noEntriesRemainingCallback, null));
+
 	}
 
 	public void showBulkTaskDataEditComponent(Collection<TaskIndexDto> selectedTasks, TaskGrid taskGrid, Runnable noEntriesRemainingCallback) {
@@ -219,14 +207,16 @@ public class TaskController {
 			List<TaskIndexDto> selectedTasksCpy = new ArrayList<>(selectedTasks);
 			BulkOperationHandler.<TaskIndexDto> forBulkEdit()
 				.doBulkOperation(
-				selectedEntries -> taskFacade.saveBulkTasks(
-					selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
-					updatedTempTask,
-					form.getPriorityCheckbox().getValue(),
-					form.getAssigneeCheckbox().getValue(),
-					form.getTaskStatusCheckbox().getValue()),
-				selectedTasksCpy,
-				bulkOperationCallback(taskGrid, noEntriesRemainingCallback, popupWindow));
+					selectedEntries -> taskFacade.saveBulkTasks(
+						selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
+						updatedTempTask,
+						form.getPriorityCheckbox().getValue(),
+						form.getAssigneeCheckbox().getValue(),
+						form.getTaskStatusCheckbox().getValue()),
+					selectedTasksCpy,
+					null,
+					null,
+					bulkOperationCallback(taskGrid, noEntriesRemainingCallback, popupWindow));
 		});
 
 		editView.addDiscardListener(popupWindow::close);

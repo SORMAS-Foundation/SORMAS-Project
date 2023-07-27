@@ -196,6 +196,7 @@ import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.therapy.TherapyReferenceDto;
 import de.symeda.sormas.api.therapy.TreatmentCriteria;
 import de.symeda.sormas.api.therapy.TreatmentDto;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -2353,7 +2354,19 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@RightsAllowed(UserRight._CASE_EDIT)
 	public void setCaseResponsible(Case caze) {
-		if (featureConfigurationFacade.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.AUTOMATIC_RESPONSIBILITY_ASSIGNMENT)) {
+		setCaseResponsible(caze, false, null, null, null);
+	}
+
+	@RightsAllowed(UserRight._CASE_EDIT)
+	public void setCaseResponsible(
+		Case caze,
+		boolean neededFeatureAlreadyChecked,
+		List<User> possibleUsersForReplacementSurvOfficerBasedOnResponsibleDistrict,
+		List<User> possibleUsersForReplacementSurvOfficerBasedOnDistrict,
+		Set<User> possibleUsersForReplacementFacilityUsers) {
+		if (neededFeatureAlreadyChecked
+			|| featureConfigurationFacade
+				.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.AUTOMATIC_RESPONSIBILITY_ASSIGNMENT)) {
 			District reportingUserDistrict = caze.getReportingUser().getDistrict();
 
 			if (userRoleService.hasUserRight(caze.getReportingUser().getUserRoles(), UserRight.CASE_RESPONSIBLE)
@@ -2362,20 +2375,46 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					|| reportingUserDistrict.equals(caze.getDistrict()))) {
 				caze.setSurveillanceOfficer(caze.getReportingUser());
 			} else {
-				List<User> hospitalUsers = caze.getHealthFacility() != null && FacilityType.HOSPITAL.equals(caze.getHealthFacility().getType())
-					? userService.getFacilityUsersOfHospital(caze.getHealthFacility())
-					: new ArrayList<>();
+				List<User> hospitalUsers;
+				if (possibleUsersForReplacementFacilityUsers == null) {
+					hospitalUsers = caze.getHealthFacility() != null && FacilityType.HOSPITAL.equals(caze.getHealthFacility().getType())
+						? userService.getFacilityUsersOfHospital(caze.getHealthFacility())
+						: new ArrayList<>();
+				} else {
+					hospitalUsers = possibleUsersForReplacementFacilityUsers.stream()
+						.filter(
+							user -> user.getHealthFacility().equals(caze.getHealthFacility())
+								&& user.getJurisdictionLevel().equals(JurisdictionLevel.HEALTH_FACILITY))
+						.collect(Collectors.toList());
+				}
 				Random rand = new Random();
+
 				if (!hospitalUsers.isEmpty()) {
 					caze.setSurveillanceOfficer(hospitalUsers.get(rand.nextInt(hospitalUsers.size())).getAssociatedOfficer());
-				} else {
+				}
+
+				else {
 					User survOff = null;
 					if (caze.getResponsibleDistrict() != null) {
-						survOff = getRandomDistrictCaseResponsible(caze.getResponsibleDistrict());
+						if (possibleUsersForReplacementSurvOfficerBasedOnResponsibleDistrict == null) {
+							survOff = getRandomDistrictCaseResponsible(caze.getResponsibleDistrict());
+						} else if (!possibleUsersForReplacementSurvOfficerBasedOnResponsibleDistrict.isEmpty()) {
+							List<User> collect = possibleUsersForReplacementSurvOfficerBasedOnResponsibleDistrict.stream()
+								.filter(user -> caze.getResponsibleDistrict().equals(user.getDistrict()))
+								.collect(Collectors.toList());
+							survOff = collect.size() > 0 ? collect.get(new Random().nextInt(collect.size())) : null;
+						}
 					}
 
 					if (survOff == null && caze.getDistrict() != null) {
-						survOff = getRandomDistrictCaseResponsible(caze.getDistrict());
+						if (possibleUsersForReplacementSurvOfficerBasedOnDistrict == null) {
+							survOff = getRandomDistrictCaseResponsible(caze.getDistrict());
+						} else if (!possibleUsersForReplacementSurvOfficerBasedOnDistrict.isEmpty()) {
+							List<User> collect = possibleUsersForReplacementSurvOfficerBasedOnDistrict.stream()
+								.filter(user -> caze.getDistrict().equals(user.getDistrict()))
+								.collect(Collectors.toList());
+							survOff = collect.size() > 0 ? collect.get(new Random().nextInt(collect.size())) : null;
+						}
 					}
 
 					caze.setSurveillanceOfficer(survOff);
@@ -2614,8 +2653,47 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	@RightsAllowed(UserRight._CASE_DELETE)
+	public List<String> delete(List<String> uuids, DeletionDetails deletionDetails) {
+		List<String> deletedCaseUuids = new ArrayList<>();
+		List<Case> casesToBeDeleted = service.getByUuids(uuids);
+		if (casesToBeDeleted != null) {
+			casesToBeDeleted.forEach(caseToBeDeleted -> {
+				if (!caseToBeDeleted.isDeleted()) {
+					try {
+						deleteCase(caseToBeDeleted, deletionDetails);
+						deletedCaseUuids.add(caseToBeDeleted.getUuid());
+					} catch (ExternalSurveillanceToolRuntimeException | SormasToSormasRuntimeException | AccessDeniedException e) {
+						logger.error("The case with uuid {} could not be deleted", caseToBeDeleted.getUuid(), e);
+					}
+				}
+			});
+		}
+		return deletedCaseUuids;
+	}
+
+	@Override
+	@RightsAllowed(UserRight._CASE_DELETE)
 	public void restore(String uuid) {
 		super.restore(uuid);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._CASE_DELETE)
+	public List<String> restore(List<String> uuids) {
+		List<String> restoredCaseUuids = new ArrayList<>();
+		List<Case> casesToBeRestored = caseService.getByUuids(uuids);
+
+		if (casesToBeRestored != null) {
+			casesToBeRestored.forEach(caseToBeRestored -> {
+				try {
+					restore(caseToBeRestored.getUuid());
+					restoredCaseUuids.add(caseToBeRestored.getUuid());
+				} catch (Exception e) {
+					logger.error("The case with uuid {} could not be restored", caseToBeRestored.getUuid(), e);
+				}
+			});
+		}
+		return restoredCaseUuids;
 	}
 
 	@Override
@@ -2629,7 +2707,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	private void deleteCase(Case caze, DeletionDetails deletionDetails)
-		throws ExternalSurveillanceToolRuntimeException, SormasToSormasRuntimeException {
+		throws ExternalSurveillanceToolRuntimeException, SormasToSormasRuntimeException, AccessDeniedException {
 
 		if (!caseService.inJurisdictionOrOwned(caze)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.messageCaseOutsideJurisdictionDeletionDenied));
@@ -2643,27 +2721,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 
 		service.delete(caze, deletionDetails);
-	}
-
-	@RightsAllowed(UserRight._CASE_DELETE)
-	@Override
-	public List<String> deleteCases(List<String> caseUuids, DeletionDetails deletionDetails) {
-
-		List<String> deletedCasesUuids = new ArrayList<>();
-		List<Case> casesToBeDeleted = service.getByUuids(caseUuids);
-		if (casesToBeDeleted != null) {
-			casesToBeDeleted.forEach(caseToBeDeleted -> {
-				if (!caseToBeDeleted.isDeleted()) {
-					try {
-						deleteCase(caseToBeDeleted, deletionDetails);
-						deletedCasesUuids.add(caseToBeDeleted.getUuid());
-					} catch (ExternalSurveillanceToolRuntimeException | SormasToSormasRuntimeException | AccessDeniedException e) {
-						logger.error("The case with uuid {} could not be deleted", caseToBeDeleted.getUuid(), e);
-					}
-				}
-			});
-		}
-		return deletedCasesUuids;
 	}
 
 	@Override
@@ -2680,6 +2737,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@RightsAllowed({
 		UserRight._CASE_DELETE,
+		UserRight._CASE_MERGE,
 		UserRight._SYSTEM })
 	public void deleteCaseInExternalSurveillanceTool(Case caze) throws ExternalSurveillanceToolException {
 
@@ -2687,7 +2745,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			// getByExternalId(caze) throws NPE (see #10820) so we use the service directly.
 			// Can potentially be changed back once 10844 is done.
 			List<Case> casesWithSameExternalId = service.getByExternalId(caze.getExternalID());
-			if (casesWithSameExternalId != null && casesWithSameExternalId.size() == 1) {
+			if (casesWithSameExternalId != null && casesWithSameExternalId.size() == 1 && externalShareInfoService.isCaseShared(caze.getId())) {
 				externalSurveillanceToolGatewayFacade.deleteCasesInternal(Collections.singletonList(toDto(caze)));
 			}
 		}
@@ -3748,7 +3806,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			if (cloning) {
 				ClinicalVisitDto newClinicalVisit = ClinicalVisitDto.build(leadCaseData.getClinicalCourse().toReference(), leadCase.getDisease());
 				DtoHelper.copyDtoValues(newClinicalVisit, ClinicalVisitFacadeEjb.toDto(clinicalVisit), cloning);
-				clinicalVisitFacade.saveClinicalVisit(newClinicalVisit, leadCase.getUuid(), false);
+				clinicalVisitFacade.saveClinicalVisitForMergedCases(newClinicalVisit, leadCase.getUuid(), false);
 			} else {
 				// simply move existing entities to the merge target
 				clinicalVisit.setClinicalCourse(leadCase.getClinicalCourse());

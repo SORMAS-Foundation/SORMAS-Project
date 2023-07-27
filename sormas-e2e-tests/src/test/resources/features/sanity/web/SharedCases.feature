@@ -1,13 +1,13 @@
 @UI @Sanity @ShareCases @SharedData
 Feature: Sharing cases between environments tests
 
-  @tmsLink=SORQA-962 @env_s2s_1
+  @tmsLink=SOR-4489 @env_s2s_1
   Scenario: [S2S] Delete a shared case
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     Then I navigate to the last created case via the url
     And I check if handover card contains "Dieser Fall ist nicht geteilt" information
     And I collect uuid of the case
@@ -17,9 +17,9 @@ Feature: Sharing cases between environments tests
     And I fill comment in share popup with "shared to be deleted after"
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
-    And I log in as a Admin User
+    And I log in as a S2S
     And I click on the Shares button from navbar
-    Then I accept first case in Shares Page
+    Then I accept first entity from table in Shares Page
     Then I navigate to "s2s_1" environment
     Then I navigate to the last created case via the url
     And I check Delete button from case is enabled
@@ -33,7 +33,7 @@ Feature: Sharing cases between environments tests
     And I select first created case for person from Cases list
     Then Total number of read only fields should be 13
     And I check if handover card contains "Eigentümer: LK Fulda" information
-    And I check if handover card contains "Geteilt von: Automation ADMIN" information
+    And I check if handover card contains "Geteilt von: S2S USER" information
     And I check if handover card contains "shared to be deleted after" information
     Then I navigate to "s2s_2" environment
     And I click on the Cases button from navbar
@@ -43,12 +43,12 @@ Feature: Sharing cases between environments tests
     And I select first created case for person from Cases list
     Then I check if editable fields are enabled for the case in view
     And I check if handover card contains "Gesendet von LK Barnim" information
-    And I check if handover card contains "Geteilt von: Automation Admin" information
+    And I check if handover card contains "Geteilt von: S2S User" information
     And I check if handover card contains "shared to be deleted after" information
 
   @tmsLink=SORDEV-13953 @env_s2s_1
   Scenario: S2S - Share a case that was Archived
-    Given I log in as a Admin User
+    Given I log in as a S2S
     When I click on the Cases button from navbar
     Then I click on the NEW CASE button
     And I fill a new case form for DE version with mandatory data with "Berlin" as a region and "SK Berlin Mitte" as a district
@@ -59,10 +59,10 @@ Feature: Sharing cases between environments tests
     Then I click on share case button
     And I select organization to share with "s2s_2"
     And I click to hand over the ownership of the case in Share popup
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
-    When I log in as a Admin User
+    When I log in as a S2S
     And I click on the Shares button from navbar
     And I click on "accept" shared case button with copied case description
     And I open the last created case with collected UUID by url on "s2s_2" instance
@@ -77,7 +77,7 @@ Feature: Sharing cases between environments tests
     And API: I check that POST call status code is 200
     Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I open the last created Case via API
     Then I click on save button in the case popup
     And I click NEW VACCINATION button for DE
@@ -91,7 +91,7 @@ Feature: Sharing cases between environments tests
     And I open the last created Case via API
     Then I click on share case button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     And I click to share samples of the case in Share popup
     And I click on share immunizations of the case in Share popup
     Then I click on share button in s2s share popup and wait for share to finish
@@ -104,7 +104,7 @@ Feature: Sharing cases between environments tests
     And I fill new vaccination data in new Vaccination form for DE with "Comirnaty (COVID-19-mRNA Impfstoff)" as a vaccine name
     And I click SAVE button in new Vaccination form
     Then I navigate to "s2s_2" environment in new driver tab
-    And I log in as a Admin User
+    And I log in as a S2S
     And I click on the Shares button from navbar
     And I click on "accept" shared case button with copied case description
     Then I open last created Case via API on "s2s_2" instance
@@ -120,7 +120,7 @@ Feature: Sharing cases between environments tests
     And API: I check that POST call status code is 200
     Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I open the last created Case via API
     Then I click on save button in the case popup
     And I click NEW VACCINATION button for DE
@@ -134,10 +134,10 @@ Feature: Sharing cases between environments tests
     And I open the last created Case via API
     Then I click on share case button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
-    And I log in as a Admin User
+    And I log in as a S2S
     And I click on the Shares button from navbar
     And I click on "accept" shared case button with copied case description
     Then I back to tab number 1
@@ -159,7 +159,7 @@ Feature: Sharing cases between environments tests
     And API: I check that POST call status code is 200
     Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I open the last created Case via API
     Then I click on save button in the case popup
     And I click NEW VACCINATION button for DE
@@ -173,10 +173,10 @@ Feature: Sharing cases between environments tests
     And I open the last created Case via API
     Then I click on share case button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
-    And I log in as a Admin User
+    And I log in as a S2S
     And I click on the Shares button from navbar
     And I click on "accept" shared case button with copied case description
     Then I open last created Case via API on "s2s_2" instance
@@ -200,12 +200,12 @@ Feature: Sharing cases between environments tests
     And API: I check that POST call status code is 200
     Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I open the last created Case via API
     Then I click on share case button
     And I select organization to share with "s2s_2"
     And I click to hand over the ownership of the case in Share popup
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     And I click NEW VACCINATION button for DE
     And I fill new vaccination data in new Vaccination form for DE
@@ -217,7 +217,7 @@ Feature: Sharing cases between environments tests
     And I save the created sample with pathogen test
     And I open the last created Case via API
     Then I navigate to "s2s_2" environment in new driver tab
-    And I log in as a Admin User
+    And I log in as a S2S
     And I click on the Shares button from navbar
     And I click on "accept" shared case button with copied case description
     And I click on the Cases button from navbar
@@ -234,7 +234,7 @@ Feature: Sharing cases between environments tests
     And API: I check that POST call status code is 200
     Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I open the last created Case via API
     Then I click on save button in the case popup
     And I click NEW VACCINATION button for DE
@@ -249,10 +249,10 @@ Feature: Sharing cases between environments tests
     Then I click on share case button
     And I select organization to share with "s2s_2"
     And I click to hand over the ownership of the case in Share popup
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
-    And I log in as a Admin User
+    And I log in as a S2S
     And I click on the Shares button from navbar
     And I click on "accept" shared case button with copied case description
     And I click on the Cases button from navbar
@@ -280,7 +280,7 @@ Feature: Sharing cases between environments tests
     And API: I check that POST call status code is 200
     Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I open the last created Case via API
     Then I click on save button in the case popup
     And I click NEW VACCINATION button for DE
@@ -295,10 +295,10 @@ Feature: Sharing cases between environments tests
     Then I click on share case button
     And I select organization to share with "s2s_2"
     And I click to hand over the ownership of the case in Share popup
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
-    And I log in as a Admin User
+    And I log in as a S2S
     And I click on the Shares button from navbar
     And I click on "accept" shared case button with copied case description
     And I click on the Cases button from navbar
@@ -326,7 +326,7 @@ Feature: Sharing cases between environments tests
     And API: I check that POST call status code is 200
     Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I open the last created Case via API
     Then I click on save button in the case popup
     And I click NEW VACCINATION button for DE
@@ -341,10 +341,10 @@ Feature: Sharing cases between environments tests
     Then I click on share case button
     And I select organization to share with "s2s_2"
     And I click to hand over the ownership of the case in Share popup
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
-    And I log in as a Admin User
+    And I log in as a S2S
     And I click on the Shares button from navbar
     And I click on "accept" shared case button with copied case description
     And I click on the Cases button from navbar
@@ -372,7 +372,7 @@ Feature: Sharing cases between environments tests
     And API: I check that POST call status code is 200
     Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I open the last created Case via API
     When I open the Case Contacts tab
     Then I click on new contact button from Case Contacts tab
@@ -380,12 +380,12 @@ Feature: Sharing cases between environments tests
     And I open the last created Case via API
     Then I click on share case button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Shares button from navbar
-    And I accept first case in Shares Page
+    And I accept first entity from table in Shares Page
     Then I back to tab number 1
     When I open the Case Contacts tab
     And I click on the first Contact ID from Contacts Directory in Contacts in Case
@@ -395,14 +395,14 @@ Feature: Sharing cases between environments tests
     And I click on share contact button
     And I select organization to share with "s2s_2"
     And I click to share samples of the case in Share popup
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     And I click on New Sample in German
     And I create a new Sample with only required fields for DE version
     And I click on save sample button
     Then I back to tab number 2
     And I click on the Shares button from navbar
-    And I accept first contact in Shares Page
+    And I accept first entity from table in Shares Page
     And I click on the The Eye Icon located in the Shares Page
     And I click on the shortened case/contact ID to open the case
     Then I check that the number of added samples on the Edit case page is 2
@@ -411,7 +411,7 @@ Feature: Sharing cases between environments tests
 
   @tmsLink=SORDEV-12449 @env_s2s_1
   Scenario: S2S_added sample after sharing a case/contact does not get shared [1]
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     Then I create a new case with specific person name and "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district for DE version
@@ -422,28 +422,28 @@ Feature: Sharing cases between environments tests
     Then I click on share case button
     And I select organization to share with "s2s_2"
     And I click to share samples of the case in Share popup
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     And I click on New Sample in German
     And I create a new Sample with only required fields for DE version
     And I click on save sample button
     Then I navigate to "s2s_2" environment in new driver tab
-    And I log in as a Admin User
+    And I log in as a S2S
     And I click on the Shares button from navbar
-    Then I accept first case in Shares Page
+    Then I accept first entity from table in Shares Page
     And I click on the The Eye Icon located in the Shares Page
     And I click on the shortened case/contact ID to open the case
     Then I check that the number of added samples on the Edit case page is 2
 
   @tmsLink=SORDEV-12094 @env_s2s_1
   Scenario: [S2S] Mergen with hand over the ownership - merge for source system
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     Then I create a new case with specific person name and "Hessen" region and "LK Fulda" district for DE version
     Then I click on save button in the case popup
     Then I navigate to "s2s_2" environment in new driver tab
-    And I log in as a Admin User
+    And I log in as a S2S
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     Then I create a new case with specific person name and "Hessen" region and "LK Fulda" district for DE version
@@ -452,7 +452,7 @@ Feature: Sharing cases between environments tests
     Then I click on share case button
     And I select organization to share with "s2s_2"
     And I click to hand over the ownership of the case in Share popup
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I back to tab number 2
     And I click on the Shares button from navbar
@@ -468,13 +468,13 @@ Feature: Sharing cases between environments tests
 
   @tmsLink=SORDEV-12094 @env_s2s_1
   Scenario: [S2S] Mergen with hand over the ownership - merge for target system
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     Then I create a new case with specific person name and "Hessen" region and "LK Fulda" district for DE version
     Then I click on save button in the case popup
     Then I navigate to "s2s_2" environment in new driver tab
-    And I log in as a Admin User
+    And I log in as a S2S
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     Then I create a new case with specific person name and "Hessen" region and "LK Fulda" district for DE version
@@ -483,7 +483,7 @@ Feature: Sharing cases between environments tests
     Then I click on share case button
     And I select organization to share with "s2s_2"
     And I click to hand over the ownership of the case in Share popup
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I back to tab number 2
     And I click on the Shares button from navbar
@@ -499,13 +499,13 @@ Feature: Sharing cases between environments tests
 
   @tmsLink=SORDEV-12094 @env_s2s_1
   Scenario: [S2S] Mergen without hand over the ownership
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     Then I create a new case with mandatory data with person name and "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district for DE version
     Then I click on save button in the case popup
     Then I navigate to "s2s_2" environment in new driver tab
-    And I log in as a Admin User
+    And I log in as a S2S
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     Then  I create a new case with mandatory data with person name and "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district for DE version
@@ -513,7 +513,7 @@ Feature: Sharing cases between environments tests
     Then I back to tab number 1
     Then I click on share case button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I back to tab number 2
     And I click on the Shares button from navbar
@@ -523,11 +523,11 @@ Feature: Sharing cases between environments tests
     And I click on the More button on Case directory page
     Then I click on Merge Duplicates on Case directory page
     And I click to CONFIRM FILTERS on Merge Duplicate Cases page
-    Then I click on Merge button for target system from received case
+    Then I click on Merge button for source system from received case
     And I confirm merge duplicated case
     Then I check if popup with merge duplicated case appears
     And I click on cancel button in merge duplicated cases popup
-    Then I click on Merge button for source system from received case
+    Then I click on Merge button for target system from received case
     And I confirm merge duplicated case
     Then I check if popup with merge message in german appears
 
@@ -535,7 +535,7 @@ Feature: Sharing cases between environments tests
   Scenario: S2S_Processed lab messages should be transferred [2]
     Given API : Login to DEMIS server
     Then I create and send Laboratory Notification
-    And I log in as a Admin User
+    And I log in as a S2S
     Then I click on the Messages button from navbar
     And I click on fetch messages button
     Then I filter by last created person via API in Messages Directory
@@ -554,10 +554,10 @@ Feature: Sharing cases between environments tests
     Then I click on the first Case ID from Case Directory
     Then I click on share case button
     And I select organization to share with "s2s_3"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_3" environment in new driver tab
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Shares button from navbar
     And I click on "accept" shared case button with copied case description
     And I click on the Cases button from navbar
@@ -577,7 +577,7 @@ Feature: Sharing cases between environments tests
     And API: I check that POST call status code is 200
     Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I open the last created Case via API
     When I open the Case Contacts tab
     Then I click on new contact button from Case Contacts tab
@@ -586,7 +586,7 @@ Feature: Sharing cases between environments tests
     Then I click on share case button
     And I click to hand over the ownership of the case in Share popup
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     And I open the last created Case via API
     Then I click on share case button
@@ -606,10 +606,10 @@ Feature: Sharing cases between environments tests
     Then I click on share case button
     And I click to hand over the ownership of the case in Share popup
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Shares button from navbar
     And I click on "accept" shared case button with copied case description
 
@@ -619,7 +619,7 @@ Feature: Sharing cases between environments tests
     And API: I check that POST call status code is 200
     Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I open the last created Case via API
     When I open the Case Contacts tab
     Then I click on new contact button from Case Contacts tab
@@ -627,7 +627,7 @@ Feature: Sharing cases between environments tests
     And I open the last created Case via API
     Then I click on share case button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     And I click to share samples of the case in Share popup
     And I click to share reports of the case in Share popup
     Then I click on share button in s2s share popup and wait for share to finish
@@ -648,16 +648,16 @@ Feature: Sharing cases between environments tests
     Then I click on Ja button in Revoke case popup
     Then I click on share case button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Shares button from navbar
     And I click on "accept" shared case button with copied case description
     Then I back to tab number 1
     Then I click on share case button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     And I click to hand over the ownership of the case in Share popup
     Then I click on share button in s2s share popup and wait for share to finish
 
@@ -667,7 +667,7 @@ Feature: Sharing cases between environments tests
     And API: I check that POST call status code is 200
     Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I open the last created Case via API
     When I open the Case Contacts tab
     Then I click on new contact button from Case Contacts tab
@@ -675,7 +675,7 @@ Feature: Sharing cases between environments tests
     And I open the last created Case via API
     Then I click on share case button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     And I click to hand over the ownership of the case in Share popup
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to Contacts tab in Edit case page
@@ -683,7 +683,7 @@ Feature: Sharing cases between environments tests
     Then I click on share contact button
     And I click to hand over the ownership of the case in Share popup
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I click on share contact button
     And I select organization to share with "s2s_2"
@@ -700,7 +700,7 @@ Feature: Sharing cases between environments tests
     And I click to hand over the ownership of the case in Share popup
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Shares button from navbar
     And I click on "accept" shared contact button with copied contact description
 
@@ -710,7 +710,7 @@ Feature: Sharing cases between environments tests
     And API: I check that POST call status code is 200
     Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I open the last created Case via API
     When I open the Case Contacts tab
     Then I click on new contact button from Case Contacts tab
@@ -718,7 +718,7 @@ Feature: Sharing cases between environments tests
     And I open the last created Case via API
     Then I click on share case button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     And I click to share samples of the case in Share popup
     And I click to share reports of the case in Share popup
     Then I click on share button in s2s share popup and wait for share to finish
@@ -727,7 +727,7 @@ Feature: Sharing cases between environments tests
     Then I click on share contact button
     And I click to share samples of the case in Share popup
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I click on share contact button
     And I select organization to share with "s2s_2"
@@ -743,7 +743,7 @@ Feature: Sharing cases between environments tests
     And I fill comment in share popup for contact with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Shares button from navbar
     And I click on "accept" shared contact button with copied contact description
     Then I back to tab number 1
@@ -759,7 +759,7 @@ Feature: Sharing cases between environments tests
     And API: I check that POST call status code is 200
     Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I open the last created Case via API
     When I open the Case Contacts tab
     Then I click on new contact button from Case Contacts tab
@@ -768,10 +768,10 @@ Feature: Sharing cases between environments tests
     Then I click on share case button
     And I check that share associated contacts checkbox is not visible in Share form for DE
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Shares button from navbar
     And I click on the The Eye Icon located in the Shares Page
     And I check that "KONTAKT-ID" column header is not visible in Share request details window for DE
@@ -782,7 +782,7 @@ Feature: Sharing cases between environments tests
     And API: I check that POST call status code is 200
     Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I open the last created Case via API
     When I open the Case Contacts tab
     Then I click on new contact button from Case Contacts tab
@@ -790,19 +790,19 @@ Feature: Sharing cases between environments tests
     And I open the last created Case via API
     Then I click on share case button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Shares button from navbar
-    And I accept first case in Shares Page
+    And I accept first entity from table in Shares Page
     Then I back to tab number 1
     When I open the Case Contacts tab
     And I click on the first Contact ID from Contacts Directory in Contacts in Case
     And I click on share contact button
     And I check that share associated contacts checkbox is not visible in Share form for DE
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     And I back to tab number 2
     And I click on the Shares button from navbar
@@ -815,15 +815,15 @@ Feature: Sharing cases between environments tests
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     Then I navigate to the last created case via the url
     And I collect uuid of the case
     Then I click on share case button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Shares button from navbar
     And I click on "reject" shared case button with copied case description
     Then I fill comment field in Reject share request popup and click confirm
@@ -837,15 +837,15 @@ Feature: Sharing cases between environments tests
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     Then I navigate to the last created case via the url
     And I collect uuid of the case
     Then I click on share case button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Shares button from navbar
     And I click on "accept" shared case button with copied case description
     Then I back to tab number 1
@@ -859,15 +859,15 @@ Feature: Sharing cases between environments tests
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     Then I navigate to the last created case via the url
     And I collect uuid of the case
     Then I click on share case button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Shares button from navbar
     And I click on "reject" shared case button with copied case description
     Then I fill comment field in Reject share request popup and click confirm
@@ -875,7 +875,7 @@ Feature: Sharing cases between environments tests
     Then I navigate to the last created case via the url
     Then I click on share case button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
     And I click on the Shares button from navbar
@@ -887,16 +887,16 @@ Feature: Sharing cases between environments tests
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     Then I navigate to the last created case via the url
     And I collect uuid of the case
     Then I click on share case button
     And I click to hand over the ownership of the case in Share popup
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Shares button from navbar
     And I click on "accept" shared case button with copied case description
     Then I navigate to "s2s_1" environment
@@ -909,16 +909,16 @@ Feature: Sharing cases between environments tests
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     Then I navigate to the last created case via the url
     And I collect uuid of the case
     Then I click on share case button
     And I click to hand over the ownership of the case in Share popup
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Shares button from navbar
     Then I back to tab number 1
     And I click on revoke share button
@@ -933,16 +933,16 @@ Feature: Sharing cases between environments tests
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     Then I navigate to the last created case via the url
     And I collect uuid of the case
     Then I click on share case button
     And I click to hand over the ownership of the case in Share popup
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Shares button from navbar
     Then I back to tab number 1
     And I click on revoke share button
@@ -956,7 +956,7 @@ Feature: Sharing cases between environments tests
   Scenario: S2S_Processed lab messages should be transferred [1]
     Given API : Login to DEMIS server
     Then I create and send Laboratory Notification
-    And I log in as a Admin User
+    And I log in as a S2S
     Then I click on the Messages button from navbar
     And I click on fetch messages button
     Then I filter by last created person via API in Messages Directory
@@ -976,10 +976,10 @@ Feature: Sharing cases between environments tests
     Then I click on share case button
     And I click to hand over the ownership of the case in Share popup
     And I select organization to share with "s2s_3"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_3" environment in new driver tab
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Shares button from navbar
     And I click on "accept" shared case button with copied case description
     And I click on the Cases button from navbar
@@ -999,7 +999,7 @@ Feature: Sharing cases between environments tests
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     Then I navigate to the last created case via the url
     And I collect uuid of the case
     Then I click on share case button
@@ -1008,9 +1008,9 @@ Feature: Sharing cases between environments tests
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Shares button from navbar
-    Then I accept first case in Shares Page
+    Then I accept first entity from table in Shares Page
     Then I navigate to "s2s_1" environment
     And I click on the Cases button from navbar
     And I filter by CaseID on Case directory page
@@ -1039,7 +1039,7 @@ Feature: Sharing cases between environments tests
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     Then I navigate to the last created case via the url
     And I collect uuid of the case
     Then I click on share case button
@@ -1048,9 +1048,9 @@ Feature: Sharing cases between environments tests
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Shares button from navbar
-    Then I accept first case in Shares Page
+    Then I accept first entity from table in Shares Page
     And I click on the Cases button from navbar
     And I select first created case for person from Cases list
     Then I click on Delete button from case
@@ -1070,7 +1070,7 @@ Feature: Sharing cases between environments tests
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     Then I navigate to the last created case via the url
     And I collect uuid of the case
     Then I click on share case button
@@ -1078,9 +1078,9 @@ Feature: Sharing cases between environments tests
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
-    And I log in as a Admin User
+    And I log in as a S2S
     And I click on the Shares button from navbar
-    Then I accept first case in Shares Page
+    Then I accept first entity from table in Shares Page
     Then I navigate to "s2s_1" environment
     Then I navigate to the last created case via the url
     Then I click on Delete button from case
@@ -1100,7 +1100,7 @@ Feature: Sharing cases between environments tests
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     Then I navigate to the last created case via the url
     And I collect uuid of the case
     Then I click on share case button
@@ -1108,9 +1108,9 @@ Feature: Sharing cases between environments tests
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Shares button from navbar
-    Then I accept first case in Shares Page
+    Then I accept first entity from table in Shares Page
     And I click on the Cases button from navbar
     And I filter by CaseID on Case directory page
     And I apply "Alle" to ownership combobox on Case Directory Page
@@ -1133,7 +1133,7 @@ Feature: Sharing cases between environments tests
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     Then I navigate to the last created case via the url
     Then I click on share case button
     And I select organization to share with "s2s_2"
@@ -1143,7 +1143,7 @@ Feature: Sharing cases between environments tests
     And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
     And I click on Yes option in Confirm deletion popup
     Then I navigate to "s2s_2" environment
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Shares button from navbar
     And I click on the The Eye Icon located in the Shares Page
     Then I check that first shared result has different id then deleted shared case
@@ -1154,7 +1154,7 @@ Feature: Sharing cases between environments tests
     And API: I check that POST call status code is 200
     Given API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     Then I navigate to the last created case via the url
     And I collect uuid of the case
     Then I click on share case button
@@ -1162,7 +1162,7 @@ Feature: Sharing cases between environments tests
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Shares button from navbar
     Then I click on the The Eye Icon located in the Shares Page
     And I check if received case id is equal with sent
@@ -1173,15 +1173,15 @@ Feature: Sharing cases between environments tests
     And API: I check that POST call status code is 200
     And API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     Then I navigate to the last created case via the url
     And I collect uuid of the case
     Then I click on share case button
     And I select organization to share with "s2s_2"
-    And I fill comment in share popup with random string
+    And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Shares button from navbar
     And I check that accept shared case button with copied case description is visible in Share Directory page
     Then I back to tab number 1

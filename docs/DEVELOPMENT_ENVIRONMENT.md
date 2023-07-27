@@ -19,11 +19,9 @@ Note: To work with the Android app JDK 17 is needed for the gradle build. The ne
 
 The SORMAS CI is using JDK 17 to build all modules. The only known difference though are slight differences in the Java time API that affect unit tests, so again there is no need to setup two JDKs on your local system.
 
-## Step 3: Install Maven & Ant
-Download and install Maven for your operating system, see [binaries](https://dlcdn.apache.org/maven/maven-3/3.6.3/binaries/)
-*IMPORTANT*: M2_HOME environment variable needs to be set. By default, for newer version, it is set to MAVEN_HOME. But Ant script is looking for M2_HOME, please refer to the [official documentation](https://maven.apache.org/install.html)
-
-Download and install Ant, it can be done from [Ant site](https://ant.apache.org/bindownload.cgi) or with packages from your Linux distribution.
+## Step 3: Install Maven
+The scripts in `sormas-base/dev` expect `mvn` as command-line tool.
+Download and install Maven for your operating system, see [binaries](https://dlcdn.apache.org/maven/maven-3/3.6.3/binaries/).
 
 ## Step 4: Install a Local SORMAS Server
 Please follow the [Server Installation Instructions](../docs/SERVER_SETUP.md#sormas-installation) to set up a local SORMAS instance that you will use to test your code. Alternatively, you can also use [Maven Cargo](../sormas-cargoserver/README.md), or a [Docker installation](SERVER_DOCKER_SETUP.md) (not recommended at this time).
@@ -36,9 +34,11 @@ Please follow the [Server Installation Instructions](../docs/SERVER_SETUP.md#sor
 - *Optional:* Clone the SORMAS-Project repository if you haven't done so already
 - Open the project in IntelliJ. Make sure the project is recognized by IntelliJ as a `maven project`; if not, right-click the `pom.xml` file in `sormas-base` and select `Add as maven project`.
 - Make sure that under `File -> Project Structure -> Modules` all modules EXCEPT sormas-app are recognized; if not, add the missing modules with the `+` button
-- Navigate to `File -> Settings -> Plugins` and make sure that Glassfish & Ant integrations are enabled
-- Make a copy of `sormas-base/build.properties.example`, rename it to `build.properties` and set `glassfish.domain.root` to the location of the SORMAS domain inside your Payara installation
-- Run `mvn install` on the `sormas-base` project (e.g. by opening the Maven view and executing `sormas-base -> Lifecycle -> install`)
+- Navigate to `File -> Settings -> Plugins` and make sure that Glassfish integration is enabled
+- Make a copy of `sormas-base/dev.env.example`, rename it to `dev.env` and set `GLASSFISH_DOMAIN_ROOT` to the location of the SORMAS domain inside your Payara installation
+- Run `mvn install` on the `sormas-base` project (e.g. by opening the Maven view and executing `sormas-base -> Lifecycle -> install`). \
+  Alternatively, execute the `dev/build.sh` script. You can create a run configuration and use the Git bash executable as interpreter to directly run it from the IDE.
+- Execute `dev/deploy-serverlibs.sh` script
 - Add a Payara server to IntelliJ:
   - Open `Run -> Edit Configurations`, add a new configuration and choose the Glassfish server template
   - Click on `Configure` next to `Application server` and create a new server configuration by selecting your Payara installation directory
@@ -50,8 +50,6 @@ Please follow the [Server Installation Instructions](../docs/SERVER_SETUP.md#sor
   - Open the `Logs` tab and add a new log file pointing to the `logs/server.log` file in your SORMAS domain
   - Open the `Startup/Connection` tab and make sure that `Pass environment variables` is NOT checked; ignore warnings about the debug configuration not being correct
   - Open the `config/domain.xml` file in your domain directory and make sure that the `java-config` node contains the following code: `<java-config classpath-suffix="" debug-enabled="true" debug-options="-agentlib:jdwp=transport=dt_socket,address=6009,server=n,suspend=y" ...`
-- Open the Ant window, click on the `+` icon and select the `sormas-base/build.xml` file
-- Execute the `install` and `deploy-serverlibs` Ant scripts
 - Set the default working directory for run configurations by navigating to `Run -> Edit Configurations -> Templates -> Application` and setting `Working directory` to `$MODULE_WORKING_DIR$`
 - *Optional:* Setup database access from Intellij: Open View -> Tool View -> Database, click on + icon and select DataSource -> PostgreSQL and configure the database (set user and password and download the missing driver files if needed)
 
@@ -66,10 +64,9 @@ Please follow the [Server Installation Instructions](../docs/SERVER_SETUP.md#sor
 - Install the [Payara Tools plugin](https://marketplace.eclipse.org/content/payara-tools)
 - Install the [Vaadin Plugin for Eclipse](https://marketplace.eclipse.org/content/vaadin-plugin-eclipse); the commercial UI designer is not needed
 - Add a Payara server to Eclipse and enter the credentials you specified when setting up the local SORMAS server
-- Make a copy of `sormas-base/build.properties.example`, rename it to `build.properties` and set `glassfish.domain.root` to the location of the SORMAS domain inside your Payara installation
-- Drag the `sormas-base/build.xml` file into the Ant view in Eclipse
-- Either run `mvn install` on the `sormas-base` project or execute the `install [default]` Ant script (this needs a Maven installation on your system with the M2_HOME variable set)
-- Execute the `deploy-serverlibs` Ant script
+- Make a copy of `sormas-base/dev.env.example`, rename it to `dev.env` and set `GLASSFISH_DOMAIN_ROOT` to the location of the SORMAS domain inside your Payara installation
+- Either run `mvn install` on the `sormas-base` project or execute the `dev/build.sh` script (for example with Git Bash)
+- Execute `dev/deploy-serverlibs.sh` script
 - Highlight all Eclipse projects and choose `Maven -> Update Project` from the right-click menu; perform the update for all projects
 - Start the Glassfish server and deploy `sormas-ear`, `sormas-rest` and `sormas-ui` by dragging the respective projects onto it, or use the `Add and Remove...` function by right-clicking on the server (make sure to respect this order as there are depdendencies between artifacts at startup)
 - Open your browser and type in `http://localhost:6080/sormas-ui` to test whether the server and IDE have been set up correctly
@@ -87,7 +84,7 @@ Please follow the [Server Installation Instructions](../docs/SERVER_SETUP.md#sor
 - Add an emulator and set the SDK version to the `minSdkVersion` or `targetSdkVersion` from `build.gradle`; we suggest to test your code on both, but `minSdkVersion` should be preferred to ensure compatibility to the minimum supported SDK
 - Click on `Run 'app'` to install and run the app on your emulator; enter `http://10.0.2.2:6080/sormas-rest` as the server URL when you start the newly installed app for the first time
 
-**Important:** Whenever you do or pull changes in the `sormas-api` project that you want to use in the mobile app or that are referenced there already, you need to execute the `install` Ant script to notify the `sormas-app` project of the changes.
+**Important:** Whenever you do or pull changes in the `sormas-api` project that you want to use in the mobile app or that are referenced there already, you need to execute the `dev/build.sh` script to notify the `sormas-app` project of the changes.
 
 ## Step 6: Configure Code Formatting and Import Settings
 In order to ensure a consistent code style and prevent so-called edit wars, we have set up custom configuration files for automatic code formatting and import ordering. Please make sure to adhere to the following steps for your IDE(s) before you start developing.
@@ -132,12 +129,12 @@ Optional, but strongly recommended:
    -> For every installation, kill all Java/javaw processes and check the availability of 6048 port number.
    -> Delete files with generated domain folders and payara. In order to have a clean installation of each next ./server-setup.sh run.
 
-6. M2_HOME need to be set. By default, for newer version, it is set to MAVEN_HOME. But Ant script is looking for M2_HOME
+6. For the `sormas-base/dev` scripts Maven needs to be installed as command-line tool or defined in `sormas-base/dev.env` as `MVN_BIN` which Maven to be used.
 
 7. For eclipse formatted plugin, there is an issue for Idea: <https://plugins.jetbrains.com/plugin/6546-eclipse-code-formatter> - `cannot save settings Path to custom eclipse folder is not valid` - it works only when settings were saved from down to up. And not vice versa.
 
 If something is still not working:
- -> Stop the payara domain, run Ant deploy-serverlibs to update libs
+ -> Stop the payara domain, run `dev/deploy-serverlibs.sh` to update libs
  -> clean up (delete all from domains/sormas/autodeploy, domains/sormas/applications, domains/sormas/generated, and domains/sormas/osgi-cache) try to build again by executing `mvn clean install -DskipTests` on the `sormas-base` module
  -> start the domain and deploy again
 

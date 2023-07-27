@@ -25,6 +25,7 @@ import android.widget.TextView;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.location.Location;
 
 /**
  * Created by Orson on 30/12/2017.
@@ -64,5 +65,13 @@ public class ViewHelper {
 	public static void removeInaccessibleTextViewFormat(TextView textField) {
 		textField.setTextColor(textField.getContext().getResources().getColor(R.color.listActivityRowPrimaryText));
 		textField.setTypeface(null, Typeface.NORMAL);
+	}
+
+	public static String getLatLonLocation(Location location) {
+		if (location == null || location.getLatLonString().isEmpty()) {
+			return null;
+		} else {
+			return "GPS: " + location.getLatLonString();
+		}
 	}
 }

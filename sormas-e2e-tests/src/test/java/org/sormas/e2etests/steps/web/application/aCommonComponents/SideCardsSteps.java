@@ -18,20 +18,32 @@
 
 package org.sormas.e2etests.steps.web.application.aCommonComponents;
 
-import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.*;
-import static org.sormas.e2etests.pages.application.contacts.EditContactPage.NUMBER_OF_TESTS_IN_SAMPLES;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.ONE_TEST_IN_SAMPLES_DE;
-
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.concurrent.TimeUnit;
-import javax.inject.Inject;
 import lombok.SneakyThrows;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.testng.asserts.SoftAssert;
+
+import javax.inject.Inject;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.concurrent.TimeUnit;
+
+import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.ADDED_SAMPLES_IN_SAMPLE_CARD;
+import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.EDIT_SAMPLE_BUTTON;
+import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.HANDOVER_SIDE_CARD;
+import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.LINKED_SHARED_ORGANIZATION_SELECTED_VALUE;
+import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.REPORTS_DISPLAY_ASSOCIATED_EXTERNAL_MESSAGES_BUTTON;
+import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.SAMPLES_DISPLAY_ASSOCIATED_LAB_MESSAGES_BUTTON;
+import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.SHARE_SORMAS_2_SORMAS_POPUP_BUTTON;
+import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.checkTextInHandoverSideComponent;
+import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.checkTextInImmunizationSideComponent;
+import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.checkTextInReportSideComponent;
+import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.checkTextInSampleSideComponent;
+import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.getEditSampleButtonByNumber;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.NUMBER_OF_TESTS_IN_SAMPLES;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.ONE_TEST_IN_SAMPLES_DE;
 
 public class SideCardsSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
@@ -170,6 +182,29 @@ public class SideCardsSteps implements En {
               REPORTS_DISPLAY_ASSOCIATED_EXTERNAL_MESSAGES_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(
               REPORTS_DISPLAY_ASSOCIATED_EXTERNAL_MESSAGES_BUTTON);
+        });
+    When(
+        "I click on share button in s2s share popup and wait for share to finish",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SHARE_SORMAS_2_SORMAS_POPUP_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          // TODO Workaround before SORQA-565 will be fixed
+          webDriverHelpers.refreshCurrentPage();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              LINKED_SHARED_ORGANIZATION_SELECTED_VALUE, 60);
+        });
+    When(
+        "I click on share button in s2s share popup",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SHARE_SORMAS_2_SORMAS_POPUP_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+        });
+
+    And(
+        "^I click on edit sample icon of the (\\d+) displayed sample on Edit Case page$",
+        (Integer sampleNumber) -> {
+          webDriverHelpers.clickOnWebElementBySelector(getEditSampleButtonByNumber(sampleNumber));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
         });
   }
 }

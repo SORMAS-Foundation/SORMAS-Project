@@ -1,13 +1,15 @@
 package de.symeda.sormas.ui.travelentry;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.function.Consumer;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
-import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -29,8 +31,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.travelentry.components.TravelEntryCreateForm;
 import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
-import de.symeda.sormas.ui.utils.DeletableUtils;
+import de.symeda.sormas.ui.utils.DeleteRestoreHandlers;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.automaticdeletion.DeletionLabel;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
@@ -172,11 +173,7 @@ public class TravelEntryController {
 		// Initialize 'Archive' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_ARCHIVE)) {
 			ControllerProvider.getArchiveController()
-				.addArchivingButton(
-					travelEntry,
-					ArchiveHandlers.forTravelEntry(),
-					editComponent,
-					() -> navigateToTravelEntry(travelEntry.getUuid()));
+				.addArchivingButton(travelEntry, ArchiveHandlers.forTravelEntry(), editComponent, () -> navigateToTravelEntry(travelEntry.getUuid()));
 		}
 
 		editComponent.restrictEditableComponentsOnEditView(
@@ -214,37 +211,48 @@ public class TravelEntryController {
 		return titleLayout;
 	}
 
-	public void deleteAllSelectedItems(Collection<TravelEntryIndexDto> selectedRows, Runnable callback) {
-		if (selectedRows.size() == 0) {
-			new Notification(
-				I18nProperties.getString(Strings.headingNoTravelEntriesSelected),
-				I18nProperties.getString(Strings.messageNoTravelEntriesSelected),
-				Notification.Type.WARNING_MESSAGE,
-				false).show(Page.getCurrent());
-		} else {
-			DeletableUtils.showDeleteWithReasonPopup(
-				String.format(I18nProperties.getString(Strings.confirmationDeleteTravelEntries), selectedRows.size()),
-				(deleteDetails) -> {
-					for (TravelEntryIndexDto selectedRow : selectedRows) {
-						FacadeProvider.getTravelEntryFacade().delete(selectedRow.getUuid(), deleteDetails);
-					}
-					callback.run();
-					new Notification(
-						I18nProperties.getString(Strings.headingTravelEntriesDeleted),
-						I18nProperties.getString(Strings.messageTravelEntriesDeleted),
-						Notification.Type.HUMANIZED_MESSAGE,
-						false).show(Page.getCurrent());
-				});
-		}
+	public void deleteAllSelectedItems(
+		Collection<TravelEntryIndexDto> selectedRows,
+		TravelEntryGrid travelEntryGrid,
+		Runnable noEntriesRemainingCallback) {
+
+		ControllerProvider.getDeleteRestoreController()
+			.deleteAllSelectedItems(
+				selectedRows,
+				null,
+				null,
+				DeleteRestoreHandlers.forTravelEntry(),
+				bulkOperationCallback(travelEntryGrid, noEntriesRemainingCallback, null));
+
 	}
 
-	public void restoreSelectedTravelEntries(Collection<? extends TravelEntryIndexDto> selectedRows, Runnable callback) {
+	public void restoreSelectedTravelEntries(
+		Collection<TravelEntryIndexDto> selectedRows,
+		TravelEntryGrid travelEntryGrid,
+		Runnable noEntriesRemainingCallback) {
 		ControllerProvider.getDeleteRestoreController()
 			.restoreSelectedItems(
-				selectedRows.stream().map(TravelEntryIndexDto::getUuid).collect(Collectors.toList()),
-				FacadeProvider.getTravelEntryFacade(),
-				CoreEntityRestoreMessages.TRAVEL_ENTRY,
-				callback);
+				selectedRows,
+				DeleteRestoreHandlers.forTravelEntry(),
+				bulkOperationCallback(travelEntryGrid, noEntriesRemainingCallback, null));
+	}
+
+	private Consumer<List<TravelEntryIndexDto>> bulkOperationCallback(
+		TravelEntryGrid travelEntryGrid,
+		Runnable noEntriesRemainingCallback,
+		Window popupWindow) {
+		return remainingTravelEntries -> {
+			if (popupWindow != null) {
+				popupWindow.close();
+			}
+
+			travelEntryGrid.reload();
+			if (CollectionUtils.isNotEmpty(remainingTravelEntries)) {
+				travelEntryGrid.asMultiSelect().selectItems(remainingTravelEntries.toArray(new TravelEntryIndexDto[0]));
+			} else {
+				noEntriesRemainingCallback.run();
+			}
+		};
 	}
 
 }

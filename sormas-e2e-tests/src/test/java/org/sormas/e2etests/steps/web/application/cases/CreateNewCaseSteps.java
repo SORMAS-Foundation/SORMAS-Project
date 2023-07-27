@@ -18,6 +18,38 @@
 
 package org.sormas.e2etests.steps.web.application.cases;
 
+import com.github.javafaker.Faker;
+import cucumber.api.java8.En;
+import io.restassured.http.Method;
+import lombok.SneakyThrows;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.sormas.e2etests.entities.pojo.api.Request;
+import org.sormas.e2etests.entities.pojo.web.Case;
+import org.sormas.e2etests.entities.services.CaseService;
+import org.sormas.e2etests.enums.GenderValues;
+import org.sormas.e2etests.helpers.RestAssuredClient;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.helpers.files.FilesHelper;
+import org.sormas.e2etests.pages.application.cases.EditCasePage;
+import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.BaseSteps;
+import org.testng.asserts.SoftAssert;
+
+import javax.inject.Inject;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import static org.sormas.e2etests.constants.api.Endpoints.CASES_PATH;
 import static org.sormas.e2etests.entities.pojo.helpers.ShortUUIDGenerator.generateShortUUID;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_APPLY_FILTERS_BUTTON;
@@ -89,6 +121,7 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.POIN
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PRESENT_CONDITION_OF_PERSON_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PRIMARY_EMAIL_ADDRESS_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PRIMARY_PHONE_NUMBER_INPUT;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.REINFECTION_SPAN;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.RESPONSIBLE_COMMUNITY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.RESPONSIBLE_DISTRICT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.RESPONSIBLE_JURISDICTION_LABEL;
@@ -125,42 +158,10 @@ import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.NEW_PERSON_RADIOBUTTON_DE;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.PICK_OR_CREATE_PERSON_HEADER_DE;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.SEARCH_PERSON_BY_FREE_TEXT;
+import static org.sormas.e2etests.pages.application.shares.EditSharesPage.SHARE_UUID_CASE_TITLE;
 import static org.sormas.e2etests.steps.web.application.cases.EditCaseSteps.aCase;
 import static org.sormas.e2etests.steps.web.application.contacts.CreateNewContactSteps.contact;
 import static org.sormas.e2etests.steps.web.application.persons.PersonDirectorySteps.personSharedForAllEntities;
-import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.ACCEPT_BUTTON;
-import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.SHARE_UUID_CASE_TITLE;
-
-import com.github.javafaker.Faker;
-import cucumber.api.java8.En;
-import io.restassured.http.Method;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.TextStyle;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import javax.inject.Inject;
-import lombok.SneakyThrows;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
-import org.sormas.e2etests.entities.pojo.api.Request;
-import org.sormas.e2etests.entities.pojo.web.Case;
-import org.sormas.e2etests.entities.services.CaseService;
-import org.sormas.e2etests.enums.GenderValues;
-import org.sormas.e2etests.helpers.RestAssuredClient;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.helpers.files.FilesHelper;
-import org.sormas.e2etests.pages.application.cases.EditCasePage;
-import org.sormas.e2etests.state.ApiState;
-import org.sormas.e2etests.steps.BaseSteps;
-import org.testng.asserts.SoftAssert;
 
 public class CreateNewCaseSteps implements En {
 
@@ -1407,12 +1408,6 @@ public class CreateNewCaseSteps implements En {
               "UUIDs are not equal");
           softly.assertAll();
         });
-    When(
-        "I accept first case in Shares Page",
-        () -> {
-          webDriverHelpers.clickOnWebElementBySelector(ACCEPT_BUTTON);
-          TimeUnit.SECONDS.sleep(2); // wait for results to reload
-        });
 
     And(
         "^I choose create new case in Pick or create entry form for DE$",
@@ -1588,6 +1583,37 @@ public class CreateNewCaseSteps implements En {
           fillLastName(survnetCase.getLastName());
           selectSex(survnetCase.getSex());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+        });
+
+    And(
+        "^I create a new case with mandatory data only with Reinfection option for Survnet DE$",
+        () -> {
+          survnetCase = caseService.buildCaseForSurvnetFeatureWithReinfection();
+          fillDateOfReport(survnetCase.getDateOfReport(), Locale.GERMAN);
+          selectResponsibleRegion(survnetCase.getResponsibleRegion());
+          selectResponsibleDistrict(survnetCase.getResponsibleDistrict());
+          selectReinfection(survnetCase.getReinfection());
+          selectPlaceOfStay(survnetCase.getPlaceOfStay());
+          fillFirstName(survnetCase.getFirstName());
+          fillLastName(survnetCase.getLastName());
+          selectSex(survnetCase.getSex());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+        });
+
+    And(
+        "^I create a new case with mandatory data only and specific sex for Survnet DE$",
+        () -> {
+          survnetCase = caseService.buildCaseForSurvnetFeatureXMLCheck();
+          fillDateOfReport(survnetCase.getDateOfReport(), Locale.GERMAN);
+          selectResponsibleRegion(survnetCase.getResponsibleRegion());
+          selectResponsibleDistrict(survnetCase.getResponsibleDistrict());
+          selectPlaceOfStay(survnetCase.getPlaceOfStay());
+          fillFirstName(survnetCase.getFirstName());
+          fillLastName(survnetCase.getLastName());
+          selectSex(survnetCase.getSex());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
         });
 
@@ -1617,6 +1643,22 @@ public class CreateNewCaseSteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+        });
+
+    And(
+        "^I create a new case with mandatory data only and birth date for Survnet DE$",
+        () -> {
+          survnetCase = caseService.buildCaseForSurvnetFeatureWithDateOfBirth();
+          fillDateOfReport(survnetCase.getDateOfReport(), Locale.GERMAN);
+          selectResponsibleRegion(survnetCase.getResponsibleRegion());
+          selectResponsibleDistrict(survnetCase.getResponsibleDistrict());
+          selectPlaceOfStay(survnetCase.getPlaceOfStay());
+          fillFirstName(survnetCase.getFirstName());
+          fillLastName(survnetCase.getLastName());
+          selectSex(survnetCase.getSex());
+          fillDateOfBirth(survnetCase.getDateOfBirth(), Locale.GERMAN);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
         });
   }
 
@@ -1697,6 +1739,10 @@ public class CreateNewCaseSteps implements En {
 
   private void selectPlaceOfStay(String placeOfStay) {
     webDriverHelpers.clickWebElementByText(PLACE_OF_STAY, placeOfStay);
+  }
+
+  private void selectReinfection(String reinfection) {
+    webDriverHelpers.clickWebElementByText(REINFECTION_SPAN, reinfection);
   }
 
   private void fillPlaceDescription(String placeDescription) {

@@ -21,6 +21,7 @@ import java.util.List;
 
 import javax.validation.constraints.Size;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
@@ -29,6 +30,7 @@ import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
@@ -37,6 +39,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
+import de.symeda.sormas.api.utils.HideForCountriesExcept;
 
 @AuditedClass
 @DependingOnFeatureType(featureType = FeatureType.EXTERNAL_MESSAGES)
@@ -49,7 +52,7 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String DISEASE_VARIANT = "diseaseVariant";
 	public static final String DISEASE_VARIANT_DETAILS = "diseaseVariantDetails";
 	public static final String MESSAGE_DATE_TIME = "messageDateTime";
-
+	public static final String CASE_REPORT_DATE = "caseReportDate";
 	public static final String REPORTER_NAME = "reporterName";
 	public static final String REPORTER_EXTERNAL_ID = "reporterExternalId";
 	public static final String REPORTER_POSTAL_CODE = "reporterPostalCode";
@@ -69,7 +72,7 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String PERSON_EMAIL = "personEmail";
 	public static final String PERSON_STREET = "personStreet";
 	public static final String PERSON_HOUSE_NUMBER = "personHouseNumber";
-	public static final String PERSON_COUNTRY_ISO_CODE = "personCountryIsoCode";
+	public static final String PERSON_COUNTRY = "personCountry";
 	public static final String EXTERNAL_MESSAGE_DETAILS = "externalMessageDetails";
 	public static final String PROCESSED = "processed";
 	public static final String REPORT_ID = "reportId";
@@ -86,10 +89,10 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private String diseaseVariantDetails;
 	@AuditIncludeProperty
 	private Date messageDateTime;
+	private Date caseReportDate;
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String reporterName;
-
 	private List<String> reporterExternalIds;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String reporterPostalCode;
@@ -100,8 +103,10 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private String personFirstName;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String personLastName;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String personExternalId;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String personNationalHealthId;
 	private Sex personSex;
@@ -117,10 +122,11 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private String personStreet;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String personHouseNumber;
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
-	private String personCountryIsoCode;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private CountryReferenceDto personCountry;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String personPhone;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	private PhoneNumberType personPhoneNumberType;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String personEmail;
@@ -183,6 +189,14 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	public void setMessageDateTime(Date messageDateTime) {
 		this.messageDateTime = messageDateTime;
+	}
+
+	public Date getCaseReportDate() {
+		return caseReportDate;
+	}
+
+	public void setCaseReportDate(Date caseReportDate) {
+		this.caseReportDate = caseReportDate;
 	}
 
 	public String getReporterName() {
@@ -321,12 +335,12 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		this.personHouseNumber = personHouseNumber;
 	}
 
-	public String getPersonCountryIsoCode() {
-		return personCountryIsoCode;
+	public CountryReferenceDto getPersonCountry() {
+		return personCountry;
 	}
 
-	public void setPersonCountryIsoCode(String personCountryIsoCode) {
-		this.personCountryIsoCode = personCountryIsoCode;
+	public void setPersonCountry(CountryReferenceDto personCountry) {
+		this.personCountry = personCountry;
 	}
 
 	public String getPersonPhone() {

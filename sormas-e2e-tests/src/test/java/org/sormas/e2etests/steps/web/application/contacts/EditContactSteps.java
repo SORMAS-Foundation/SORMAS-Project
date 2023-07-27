@@ -78,7 +78,6 @@ import static org.sormas.e2etests.pages.application.events.EventParticipantsPage
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.DELETE_BUTTON;
 import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.TASK_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.GENERAL_SEARCH_INPUT;
-import static org.sormas.e2etests.steps.web.application.shares.EditSharesPage.ACCEPT_BUTTON;
 
 import cucumber.api.java8.En;
 import io.restassured.http.Method;
@@ -517,21 +516,7 @@ public class EditContactSteps implements En {
     When(
         "I click to hand over the ownership of the contact in Share popup",
         () -> webDriverHelpers.clickOnWebElementBySelector(HAND_THE_OWNERSHIP_CHECKBOX));
-    When(
-        "I accept first contact in Shares Page",
-        () -> {
-          TimeUnit.SECONDS.sleep(1); // wait for the page to load
-          webDriverHelpers.clickOnWebElementBySelector(ACCEPT_BUTTON);
-          TimeUnit.SECONDS.sleep(3); // wait for reaction
-        });
-    When(
-        "I check if accept button does not appear in Shares Page",
-        () -> {
-          softly.assertFalse(
-              webDriverHelpers.isElementVisibleWithTimeout(ACCEPT_BUTTON, 3),
-              "Accept button is visible!");
-          softly.assertAll();
-        });
+
     When(
         "I click to accept potential duplicate in Shares Page",
         () -> webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM));

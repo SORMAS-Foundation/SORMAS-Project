@@ -53,6 +53,8 @@ public class EditCasePage {
       By.xpath(
           "//div[@location='samples']//div[@class='v-button v-widget link v-button-link compact v-button-compact caption-overflow-label v-button-caption-overflow-label']");
   public static final By REPORT_DATE_INPUT = By.cssSelector("#reportDate input");
+  public static final By PREVIOUS_INFECTION_DATE_INPUT =
+      By.cssSelector("#previousInfectionDate input");
   public static final By CASE_CLASSIFICATION_COMBOBOX = By.cssSelector("#caseClassification div");
   public static final By CASE_CLASSIFICATION_SPAN =
       By.cssSelector("#caseClassification span input:checked+label");
@@ -167,7 +169,6 @@ public class EditCasePage {
   public static final By CASE_SAVED_POPUP = By.cssSelector(".v-Notification-caption");
   public static final By EXTRA_COMMENT_INPUT =
       By.cssSelector(".popupContent [class='v-textfield v-widget v-has-width']");
-  public static final By EXTRA_COMMENT_INPUT_SHARE_POPUP = By.cssSelector(".popupContent #comment");
   public static final By CREATE_DOCUMENT_BUTTON = By.cssSelector("[id='Create']");
   public static final By CREATE_DOCUMENT_BUTTON_DE = By.cssSelector("[id='Erstellen']");
 
@@ -378,11 +379,6 @@ public class EditCasePage {
       By.cssSelector(".popupContent #withImmunizations label");
   public static final By SHARE_REPORTS_CHECKBOX =
       By.cssSelector(".popupContent #withSurveillanceReports label");
-  public static final By SHARE_SORMAS_2_SORMAS_POPUP_BUTTON =
-      By.cssSelector(".popupContent #commit");
-  public static final By LINKED_SHARED_ORGANIZATION_SELECTED_VALUE =
-      By.xpath(
-          "//div[@location='sormasToSormas']//div[@class='v-slot v-slot-s-list-entry v-slot-s-list-entry-no-border']");
   public static final By CLINICAL_ASSESSMENTS_LABEL_DE =
       By.xpath("//div[contains(text(), 'Klinische Bewertungen')]");
   public static final By REJECT_SHARED_CASE_BUTTON = By.cssSelector("#sormasToSormasRevokeShare");
@@ -398,6 +394,9 @@ public class EditCasePage {
   public static final By ERROR_REVOKE_DESCRIPTION_REQUEST_PROCESSED =
       By.xpath(
           "//*[contains(text(),'Die Freigabeanfrage konnte nicht gefunden werden. Sie wurde entweder vom Quellsystem zur\u00FCckgezogen oder von jemand anderem abgelehnt. Bitte laden Sie die Seite neu, um die neuesten \u00C4nderungen zu sehen.')]");
+  public static final By REPORTING_TOOLS_FOR_SURVNET_USER =
+      By.xpath(
+          "//div[contains(@location,'externalSurvToolGateway')]//div[contains(text(), 'Surv NETAUTO')]");
 
   public static By getPreExistingConditionCombobox_DE(String id) {
     return By.xpath(
@@ -411,6 +410,10 @@ public class EditCasePage {
         String.format(
             "//div[@id='%s']//input[@value='on' and @checked]/following-sibling::label[contains(text(),'%s')]",
             id, value));
+  }
+
+  public static By getPreExistingConditionComboboxToSelectValue_DE(String disease) {
+    return By.cssSelector(String.format("#%s [class='v-checkbox v-select-option']", disease));
   }
 
   public static By getEditTaskButtonByNumber(Integer number) {
@@ -451,4 +454,6 @@ public class EditCasePage {
           "//div[contains(@class, 'popupContent')]//div[contains(@class, 'v-window-outerheader')]//div[contains(text(), 'Meldung')]");
   public static final By WINDOW_CLOSE_BUTTON =
       By.xpath("//div[contains(@class, 'v-window-closebox')]");
+  public static final By NOSOCOMIAL_OUTBRAKE_LABEL = By.cssSelector("#nosocomialOutbreak label");
+  public static final By INFECTION_SETTINGS_INPUT = By.cssSelector("#infectionSetting input");
 }

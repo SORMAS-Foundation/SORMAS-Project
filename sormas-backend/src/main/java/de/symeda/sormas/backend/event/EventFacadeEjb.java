@@ -318,8 +318,18 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 	@Override
 	@RightsAllowed(UserRight._EVENT_DELETE)
-	public void delete(String eventUuid, DeletionDetails deletionDetails) {
+	public void delete(String eventUuid, DeletionDetails deletionDetails)
+		throws ExternalSurveillanceToolRuntimeException, SormasToSormasRuntimeException {
 		Event event = service.getByUuid(eventUuid);
+		deleteEvent(event, deletionDetails);
+	}
+
+	private void deleteEvent(Event event, DeletionDetails deletionDetails)
+		throws ExternalSurveillanceToolRuntimeException, SormasToSormasRuntimeException, AccessDeniedException {
+
+		if (!eventService.inJurisdictionOrOwned(event)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.messageEventOutsideJurisdictionDeletionDenied));
+		}
 
 		try {
 			sormasToSormasFacade.revokePendingShareRequests(event.getSormasToSormasShares(), true);
@@ -327,11 +337,27 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 			throw new SormasToSormasRuntimeException(e);
 		}
 
-		try {
-			deleteEvent(event, deletionDetails);
-		} catch (ExternalSurveillanceToolException e) {
-			throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+		service.delete(event, deletionDetails);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._EVENT_DELETE)
+	public List<String> delete(List<String> uuids, DeletionDetails deletionDetails) {
+		List<String> deletedEventUuids = new ArrayList<>();
+		List<Event> eventsToBeDeleted = service.getByUuids(uuids);
+		if (eventsToBeDeleted != null) {
+			eventsToBeDeleted.forEach(eventToBeDeleted -> {
+				if (!eventToBeDeleted.isDeleted()) {
+					try {
+						deleteEvent(eventToBeDeleted, deletionDetails);
+						deletedEventUuids.add(eventToBeDeleted.getUuid());
+					} catch (ExternalSurveillanceToolRuntimeException | SormasToSormasRuntimeException | AccessDeniedException e) {
+						logger.error("The event with uuid:" + eventToBeDeleted.getUuid() + "could not be deleted");
+					}
+				}
+			});
 		}
+		return deletedEventUuids;
 	}
 
 	@Override
@@ -340,37 +366,23 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		super.restore(uuid);
 	}
 
-	private void deleteEvent(Event event, DeletionDetails deletionDetails) throws ExternalSurveillanceToolException {
-		if (!eventService.inJurisdictionOrOwned(event)) {
-			throw new AccessDeniedException(I18nProperties.getString(Strings.messageEventOutsideJurisdictionDeletionDenied));
-		}
-
-		if (event.getEventStatus() == EventStatus.CLUSTER
-			&& externalSurveillanceToolFacade.isFeatureEnabled()
-			&& externalShareInfoService.isEventShared(event.getId())) {
-			externalSurveillanceToolFacade.deleteEventsInternal(Collections.singletonList(toDto(event)));
-		}
-
-		service.delete(event, deletionDetails);
-	}
-
+	@Override
 	@RightsAllowed(UserRight._EVENT_DELETE)
-	public List<String> deleteEvents(List<String> eventUuids, DeletionDetails deletionDetails) {
-		List<String> deletedEventUuids = new ArrayList<>();
-		List<Event> eventsToBeDeleted = service.getByUuids(eventUuids);
-		if (eventsToBeDeleted != null) {
-			eventsToBeDeleted.forEach(eventToBeDeleted -> {
-				if (!eventToBeDeleted.isDeleted()) {
-					try {
-						deleteEvent(eventToBeDeleted, deletionDetails);
-						deletedEventUuids.add(eventToBeDeleted.getUuid());
-					} catch (ExternalSurveillanceToolException e) {
-						logger.error("The event with uuid:" + eventToBeDeleted.getUuid() + "could not be deleted");
-					}
+	public List<String> restore(List<String> uuids) {
+		List<String> restoredEventsUuids = new ArrayList<>();
+		List<Event> eventsToBeRestored = eventService.getByUuids(uuids);
+
+		if (eventsToBeRestored != null) {
+			eventsToBeRestored.forEach(eventToBeRestored -> {
+				try {
+					restore(eventToBeRestored.getUuid());
+					restoredEventsUuids.add(eventToBeRestored.getUuid());
+				} catch (Exception e) {
+					logger.error("The event with uuid: " + eventToBeRestored.getUuid() + " could not be restored");
 				}
 			});
 		}
-		return deletedEventUuids;
+		return restoredEventsUuids;
 	}
 
 	@RightsAllowed({
@@ -380,7 +392,11 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled() && StringUtils.isNotBlank(event.getExternalId())) {
 			List<Event> eventsWithSameExternalId = service.getByExternalId(event.getExternalId());
-			if (eventsWithSameExternalId != null && eventsWithSameExternalId.size() == 1) {
+			if (eventsWithSameExternalId != null
+				&& eventsWithSameExternalId.size() == 1
+				&& event.getEventStatus() == EventStatus.CLUSTER
+				&& externalSurveillanceToolFacade.isFeatureEnabled()
+				&& externalShareInfoService.isEventShared(event.getId())) {
 				externalSurveillanceToolGatewayFacade.deleteEventsInternal(Collections.singletonList(toDto(event)));
 			}
 		}
@@ -1494,6 +1510,11 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	@Override
 	protected CoreEntityType getCoreEntityType() {
 		return CoreEntityType.EVENT;
+	}
+
+	@Override
+	public boolean isInJurisdictionOrOwned(String uuid) {
+		return service.inJurisdictionOrOwned(service.getByUuid(uuid));
 	}
 
 	@LocalBean

@@ -36,6 +36,8 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactFacade;
+import de.symeda.sormas.api.environment.EnvironmentDto;
+import de.symeda.sormas.api.environment.EnvironmentFacade;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -66,6 +68,10 @@ public final class ArchiveHandlers {
 
 	public static CoreEntityArchiveHandler<ContactDto, ContactFacade> forContact() {
 		return new CoreEntityArchiveHandler<>(FacadeProvider.getContactFacade(), ArchiveMessages.CONTACT);
+	}
+
+	public static CoreEntityArchiveHandler<EnvironmentDto, EnvironmentFacade> forEnvironment() {
+		return new CoreEntityArchiveHandler<>(FacadeProvider.getEnvironmentFacade(), ArchiveMessages.ENVIRONMENT);
 	}
 
 	public static CoreEntityArchiveHandler<EventDto, EventFacade> forEvent() {
@@ -159,13 +165,6 @@ public final class ArchiveHandlers {
 		}
 
 		@Override
-		public int archive(List<String> entityUuids) {
-			entityFacade.archive(entityUuids);
-
-			return entityUuids.size();
-		}
-
-		@Override
 		public boolean isArchived(T entity) {
 			return entityFacade.isArchived(entity.getUuid());
 		}
@@ -177,12 +176,19 @@ public final class ArchiveHandlers {
 
 		@Override
 		public void archive(String entityUuid) {
-			archive(Collections.singletonList(entityUuid));
+			entityFacade.archive(entityUuid, UtilDate.from(endOfProcessingDateField.getValue()));
+		}
+
+		@Override
+		public int archive(List<String> entityUuids) {
+			entityFacade.archive(entityUuids);
+
+			return entityUuids.size();
 		}
 
 		@Override
 		public void dearchive(String entityUuid) {
-			dearchive(Collections.singletonList(entityUuid));
+			entityFacade.dearchive(Collections.singletonList(entityUuid), dearchiveReasonField.getValue());
 		}
 
 		@Override
@@ -241,6 +247,11 @@ public final class ArchiveHandlers {
 		@Override
 		public void archive(String entityUuid) {
 			entityFacade.archive(entityUuid, UtilDate.from(endOfProcessingDateField.getValue()), archiveWithContacts.getValue());
+		}
+
+		@Override
+		public void dearchive(String entityUuid) {
+			entityFacade.dearchive(Collections.singletonList(entityUuid), dearchiveReasonField.getValue(), archiveWithContacts.getValue());
 		}
 
 		@Override

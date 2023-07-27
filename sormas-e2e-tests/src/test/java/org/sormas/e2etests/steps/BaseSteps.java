@@ -103,6 +103,9 @@ public class BaseSteps implements StepLifecycleListener {
       }
       driverManager.releaseRemoteWebDriver(scenario.getName());
     }
+    if (scenario.getStatus().toString().equalsIgnoreCase("UNDEFINED")) {
+      Assert.fail("Test has invalid/missing steps");
+    }
     log.info("Finished test: {}", scenario.getName());
   }
 
