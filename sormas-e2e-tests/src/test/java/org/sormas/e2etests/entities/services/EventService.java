@@ -17,13 +17,12 @@ package org.sormas.e2etests.entities.services;
 
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
+import java.time.LocalDate;
 import org.sormas.e2etests.entities.pojo.web.Event;
 import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.RegionsValues;
-
-import java.time.LocalDate;
 
 public class EventService {
 

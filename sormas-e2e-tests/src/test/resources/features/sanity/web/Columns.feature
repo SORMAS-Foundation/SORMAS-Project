@@ -322,7 +322,7 @@ Scenario Outline: Sort column <col> by date in Entries directory
 
 @tmsLink=SORQA-985 @env_s2s_2
 Scenario Outline: S2S Order filters in Shared Folder
-  Given I log in as a Admin User
+  Given I log in as a S2S
   When I click on the Shares button from navbar
   And I click the header of column <col>
   Then I check that error not appear for DE version
@@ -350,7 +350,7 @@ Scenario Outline: S2S Order filters in Shared Folder
 
 @tmsLink=SORQA-985 @env_s2s_2
 Scenario Outline: S2S Order filters in Shared Folder by date
-  Given I log in as a Admin User
+  Given I log in as a S2S
   When I click on the Shares button from navbar
   And I click the header of column <col>
   Then I check that error not appear for DE version
