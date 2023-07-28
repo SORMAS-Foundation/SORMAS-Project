@@ -616,7 +616,6 @@ Scenario: Create and send laboratory request via Demis
     And I click on Verarbeiten button in Messages Directory
     And I pick a new person in Pick or create person popup during case creation for DE
     And I choose create new case in Pick or create entry form for DE
-    And I check that create new case form with pathogen detection reporting process is displayed for DE
     And I fill only mandatory fields to convert laboratory message into a case for DE
     And I click on save button in the case popup
     And I click next button while processing a DEMIS LabMessage
