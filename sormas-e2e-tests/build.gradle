@@ -2,7 +2,7 @@ import com.github.sherter.googlejavaformatgradleplugin.GoogleJavaFormat
 
 plugins {
 	id "com.github.sherter.google-java-format" version "0.9"
-	id "com.diffplug.spotless" version "5.12.4"
+	id "com.diffplug.spotless" version "6.19.0"
 	id "ua.eshepelyuk.ManifestClasspath" version "1.0.0"
 }
 
@@ -51,7 +51,7 @@ dependencies {
 	implementation("ch.qos.logback:logback-classic:$logBackVersion")
 	implementation("ch.qos.logback:logback-core:$logBackVersion")
 
-	implementation 'org.slf4j:slf4j-api:1.7.30'
+	implementation 'org.slf4j:slf4j-api:2.0.7'
 
 	implementation("com.github.javafaker:javafaker:$javaFakerVersion") { exclude module: "org.yaml" }
 
@@ -69,21 +69,22 @@ dependencies {
 	implementation group: 'org.jfree', name: 'jfreechart', version: '1.5.0'
 	implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
 	implementation 'commons-beanutils:commons-beanutils:1.9.4'
-	implementation  group: 'org.testng', name: 'testng', version: '6.14.3'
-	implementation  'com.opencsv:opencsv:5.6'
+	implementation  group: 'org.testng', name: 'testng', version: '7.8.0'
+	implementation  'com.opencsv:opencsv:5.7.1'
 
-	implementation 'org.apache.poi:poi:4.0.0'
-	implementation 'org.apache.poi:poi-ooxml:4.0.0'
+	implementation 'org.apache.poi:poi:5.2.3'
+	implementation 'org.apache.poi:poi-ooxml:5.2.3'
+	implementation group: 'org.apache.poi', name: 'poi', version: '5.2.3'
+
 	implementation  'com.detectlanguage:detectlanguage:1.1.0'
 
 	implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.9.3'
-	implementation group: 'net.lingala.zip4j', name: 'zip4j', version: '1.2.4'
+	implementation group: 'net.lingala.zip4j', name: 'zip4j', version: '2.11.5'
 
-	implementation group: 'com.github.cafdataprocessing', name: 'language-detection', version: '3.5.2-1079'
+	implementation group: 'com.github.cafdataprocessing', name: 'language-detection', version: '4.1.0-1206'
 	implementation group: 'org.apache.tika', name: 'tika-langdetect-optimaize', version: '2.6.0'
 	implementation group: 'org.apache.tika', name: 'tika-langdetect', version: '2.6.0', ext: 'pom'
 	implementation group: 'org.apache.tika', name: 'tika-core', version: '2.6.0'
-	implementation group: 'org.apache.poi', name: 'poi', version: '3.17'
 	implementation group: 'ru.yandex.qatools.ashot', name: 'ashot', version: '1.5.4'
 	implementation group: 'org.jdom', name: 'jdom', version: '2.0.2'
 

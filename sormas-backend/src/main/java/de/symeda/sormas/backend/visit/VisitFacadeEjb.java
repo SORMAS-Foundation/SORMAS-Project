@@ -116,6 +116,8 @@ public class VisitFacadeEjb extends AbstractBaseEjb<Visit, VisitDto, VisitIndexD
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
+	private VisitService visitService;
+	@EJB
 	private ContactService contactService;
 	@EJB
 	private CaseService caseService;
@@ -318,15 +320,39 @@ public class VisitFacadeEjb extends AbstractBaseEjb<Visit, VisitDto, VisitIndexD
 
 	@Override
 	@RightsAllowed(UserRight._VISIT_DELETE)
-	public void deleteVisit(String visitUuid) {
-
+	public void delete(String uuid) {
 		if (!userService.hasRight(UserRight.VISIT_DELETE)) {
 			throw new UnsupportedOperationException(
 				String.format("User %s is not allowed to delete visits.", userService.getCurrentUser().getUuid()));
 		}
-
-		Visit visit = service.getByUuid(visitUuid);
+		Visit visit = service.getByUuid(uuid);
 		service.deletePermanent(visit);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._VISIT_DELETE)
+	public void delete(List<String> uuids) {
+		deleteVisits(uuids);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._VISIT_DELETE)
+	public List<String> deleteVisits(List<String> uuids) {
+		List<String> deletedVisitUuids = new ArrayList<>();
+		List<Visit> visitsToBeDeleted = visitService.getByUuids(uuids);
+
+		if (visitsToBeDeleted != null) {
+			visitsToBeDeleted.forEach(visitToBeDeleted -> {
+				try {
+					delete(visitToBeDeleted.getUuid());
+					deletedVisitUuids.add(visitToBeDeleted.getUuid());
+				} catch (Exception e) {
+					logger.error("The visit with uuid:" + visitToBeDeleted.getUuid() + "could not be deleted");
+				}
+			});
+		}
+
+		return deletedVisitUuids;
 	}
 
 	@Override

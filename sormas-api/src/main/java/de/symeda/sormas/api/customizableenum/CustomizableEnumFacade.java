@@ -64,6 +64,19 @@ public interface CustomizableEnumFacade {
 	<T extends CustomizableEnum> T getEnumValue(CustomizableEnumType type, String value, Disease disease) throws CustomEnumNotFoundException;
 
 	/**
+	 * Checks if the specified enum value exists for the specified type and disease.
+	 * 
+	 * @param type
+	 *            The type for which to retrieve the enum value
+	 * @param value
+	 *            The values to search for
+	 * @param disease
+	 *            The disease for which to retrieve the enum values. If null, all enum values that are disease-independent are retrieved
+	 * @return true if the enum value exists
+	 */
+	boolean existsEnumValue(CustomizableEnumType type, String value, Disease disease);
+
+	/**
 	 * Retrieves the cached contents of all enum value instances of the specified type. The results are already
 	 * internationalized based on the user's language, or the server language as a fallback. If the enum values for the
 	 * specified type and disease have not been requested yet, the cache is extended with them on demand.

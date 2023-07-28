@@ -36,7 +36,9 @@ Please follow the [Server Installation Instructions](../docs/SERVER_SETUP.md#sor
 - Make sure that under `File -> Project Structure -> Modules` all modules EXCEPT sormas-app are recognized; if not, add the missing modules with the `+` button
 - Navigate to `File -> Settings -> Plugins` and make sure that Glassfish integration is enabled
 - Make a copy of `sormas-base/dev.env.example`, rename it to `dev.env` and set `GLASSFISH_DOMAIN_ROOT` to the location of the SORMAS domain inside your Payara installation
-- Run `mvn install` on the `sormas-base` project (e.g. by opening the Maven view and executing `sormas-base -> Lifecycle -> install`)
+- Run `mvn install` on the `sormas-base` project (e.g. by opening the Maven view and executing `sormas-base -> Lifecycle -> install`). \
+  Alternatively, execute the `dev/build.sh` script. You can create a run configuration and use the Git bash executable as interpreter to directly run it from the IDE.
+- Execute `dev/deploy-serverlibs.sh` script
 - Add a Payara server to IntelliJ:
   - Open `Run -> Edit Configurations`, add a new configuration and choose the Glassfish server template
   - Click on `Configure` next to `Application server` and create a new server configuration by selecting your Payara installation directory
@@ -48,7 +50,6 @@ Please follow the [Server Installation Instructions](../docs/SERVER_SETUP.md#sor
   - Open the `Logs` tab and add a new log file pointing to the `logs/server.log` file in your SORMAS domain
   - Open the `Startup/Connection` tab and make sure that `Pass environment variables` is NOT checked; ignore warnings about the debug configuration not being correct
   - Open the `config/domain.xml` file in your domain directory and make sure that the `java-config` node contains the following code: `<java-config classpath-suffix="" debug-enabled="true" debug-options="-agentlib:jdwp=transport=dt_socket,address=6009,server=n,suspend=y" ...`
-- Execute the `dev/build.sh` and `dev/deploy-serverlibs.sh` scripts
 - Set the default working directory for run configurations by navigating to `Run -> Edit Configurations -> Templates -> Application` and setting `Working directory` to `$MODULE_WORKING_DIR$`
 - *Optional:* Setup database access from Intellij: Open View -> Tool View -> Database, click on + icon and select DataSource -> PostgreSQL and configure the database (set user and password and download the missing driver files if needed)
 

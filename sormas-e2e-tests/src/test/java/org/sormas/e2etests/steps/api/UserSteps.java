@@ -17,6 +17,8 @@
  */
 package org.sormas.e2etests.steps.api;
 
+import static org.sormas.e2etests.steps.BaseSteps.locale;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import cucumber.api.java8.En;
@@ -24,6 +26,8 @@ import java.io.FileReader;
 import javax.inject.Inject;
 import org.json.simple.parser.JSONParser;
 import org.sormas.e2etests.entities.services.api.UserApiService;
+import org.sormas.e2etests.enums.UserRoles;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.api.sormasrest.UserHelper;
 import org.sormas.e2etests.helpers.environmentdata.manager.EnvironmentManager;
 import org.sormas.e2etests.state.ApiState;
@@ -37,23 +41,45 @@ public class UserSteps implements En {
 
   @Inject
   public UserSteps(
-      UserHelper userHelper, UserApiService userApiService, SoftAssert softly, ApiState apiState) {
+      UserHelper userHelper,
+      UserApiService userApiService,
+      SoftAssert softly,
+      ApiState apiState,
+      RunningConfiguration runningConfiguration) {
 
     When(
         "API:I Login into Environment",
         () -> {
-          EnvironmentManager loginIntoEnvironment = userApiService.loginIntoEnvironment();
+          EnvironmentManager environmentManager = userApiService.loginIntoEnvironment();
         });
 
     When(
-        "API: I get response with ([^\"]*) user permission rights",
+        "^API: I get response with ([^\"]*) user permission rights$",
         (String option) -> {
           switch (option) {
             case "Admin User":
-              userHelper.getUserByRightsPermissions("W5QCZW-XLFVFT-E5MK66-O3SUKE7E"); // get
+              userHelper.getUserByRightsPermissions(
+                  runningConfiguration
+                      .getUserByRole(locale, UserRoles.AdminUser.getRole())
+                      .getUuid());
               break;
             case "National User":
-              userHelper.getUserByRightsPermissions("XXFIKA-I653UK-XTLOIT-VWZYKGXY"); // get
+              userHelper.getUserByRightsPermissions(
+                  runningConfiguration
+                      .getUserByRole(locale, UserRoles.NationalUser.getRole())
+                      .getUuid());
+              break;
+            case "Survnet":
+              userHelper.getUserByRightsPermissions(
+                  runningConfiguration
+                      .getUserByRole(locale, UserRoles.SurvnetUser.getRole())
+                      .getUuid());
+              break;
+            case "S2S":
+              userHelper.getUserByRightsPermissions(
+                  runningConfiguration
+                      .getUserByRole(locale, UserRoles.SormasToSormasUser.getRole())
+                      .getUuid());
               break;
           }
           responseBody = apiState.getResponse().getBody().asString();
@@ -61,7 +87,7 @@ public class UserSteps implements En {
         });
 
     When(
-        "I prepare collection of ([^\"]*) rights based on json files",
+        "^I prepare collection of ([^\"]*) rights based on json files$",
         (String option) -> {
           JSONParser parser = new JSONParser();
           ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
@@ -81,11 +107,25 @@ public class UserSteps implements En {
                           "src/main/resources/userRightsJsonTemplates/NationalUserRights.json"));
               expectedUserRights = ow.writeValueAsString(objectToParse).replaceAll("\\s+", "");
               break;
+            case "Survnet":
+              objectToParse =
+                  parser.parse(
+                      new FileReader(
+                          "src/main/resources/userRightsJsonTemplates/SurvnetUserRights.json"));
+              expectedUserRights = ow.writeValueAsString(objectToParse).replaceAll("\\s+", "");
+              break;
+            case "S2S":
+              objectToParse =
+                  parser.parse(
+                      new FileReader(
+                          "src/main/resources/userRightsJsonTemplates/SormasToSormasUserRights.json"));
+              expectedUserRights = ow.writeValueAsString(objectToParse).replaceAll("\\s+", "");
+              break;
           }
         });
 
     When(
-        "I prepare collection of ([^\"]*) rights based on json files for De version",
+        "^I prepare collection of ([^\"]*) rights based on json files for De version$",
         (String option) -> {
           JSONParser parser = new JSONParser();
           ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();

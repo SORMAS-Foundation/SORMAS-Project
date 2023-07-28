@@ -550,7 +550,7 @@ public class EventsView extends AbstractView {
 								I18nProperties.getCaption(Captions.bulkDelete),
 								VaadinIcons.TRASH,
 								mi -> grid.bulkActionHandler(
-									items -> ControllerProvider.getEventController().deleteAllSelectedItems(items, () -> navigateTo(eventCriteria)),
+									items -> ControllerProvider.getEventController().deleteAllSelectedItems(items, (EventGrid) grid),
 									true)));
 					} else {
 						bulkActions.add(
@@ -558,7 +558,7 @@ public class EventsView extends AbstractView {
 								I18nProperties.getCaption(Captions.bulkRestore),
 								VaadinIcons.ARROW_BACKWARD,
 								mi -> grid.bulkActionHandler(
-									items -> ControllerProvider.getEventController().restoreSelectedEvents(items, () -> navigateTo(eventCriteria)),
+									items -> ControllerProvider.getEventController().restoreSelectedEvents(items, (EventGrid) grid),
 									true)));
 					}
 				}

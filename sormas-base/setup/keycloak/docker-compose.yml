@@ -1,0 +1,62 @@
+version: '2.3'
+
+services:
+  keycloak:
+    links:
+      - keycloak-postgres
+    depends_on:
+      keycloak-postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    labels:
+      - autoheal=true
+    image: hzibraunschweig/sormas-keycloak:${SORMAS_DOCKER_VERSION}
+    ports:
+      - ${KEYCLOAK_PORT}:8080
+    environment:
+      - KC_HOSTNAME=${KEYCLOAK_HOST}
+      - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN_USER}
+      - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
+      - KC_DB_URL_HOST=${KEYCLOAK_DB_HOST}
+      - KC_DB_USERNAME=${KEYCLOAK_DB_USER}
+      - KC_DB_PASSWORD=${KEYCLOAK_DB_PASSWORD}
+      - PROXY_ADDRESS_FORWARDING=true
+      - SORMAS_HOST_URL=${SORMAS_HOST}
+      - KEYCLOAK_SORMAS_UI_SECRET=${KEYCLOAK_SORMAS_UI_SECRET}
+      - KEYCLOAK_SORMAS_REST_SECRET=${KEYCLOAK_SORMAS_REST_SECRET}
+      - KEYCLOAK_SORMAS_BACKEND_SECRET=${KEYCLOAK_SORMAS_BACKEND_SECRET}
+    cpus: ${KEYCLOAK_CPUS}
+    mem_limit: ${KEYCLOAK_MEM}
+    mem_reservation: ${KEYCLOAK_MEM_RESERVED}
+    healthcheck:
+      test: ["CMD", "/opt/keycloak/bin/kcadm.sh", "config", "credentials", "--server", "http://localhost:8080/keycloak", "--realm", "master", "--user", "${KEYCLOAK_ADMIN_USER}", "--password", "${KEYCLOAK_ADMIN_PASSWORD}"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 300s
+
+  keycloak-postgres:
+    volumes:
+      - ${SORMAS_PATH}/keycloak/psqldata:/var/lib/postgresql/data
+    ports:
+      - 5433:5432
+    expose:
+      - 5432
+    restart: unless-stopped
+    labels:
+      - autoheal=true
+    command: -c 'config_file=/etc/postgresql/postgresql.conf'
+    image: hzibraunschweig/keycloak-postgres:${SORMAS_DOCKER_VERSION}
+    environment:
+      - POSTGRES_PASSWORD=${KEYCLOAK_DB_PASSWORD}
+      - POSTGRES_USER=${KEYCLOAK_DB_USER}
+      - POSTGRES_DB=${KEYCLOAK_DB_NAME}
+    cpus: ${KEYCLOAK_DB_CPUS}
+    mem_limit: ${KEYCLOAK_DB_MEM}
+    mem_reservation: ${KEYCLOAK_DB_MEM_RESERVED}
+    healthcheck:
+      test: [ "CMD", "psql", "-U", "${KEYCLOAK_DB_USER}", "-c", "SELECT 1;", "${KEYCLOAK_DB_NAME}" ]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 30s

@@ -1161,6 +1161,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		otherPersonAddress.setRegion(new RegionReferenceDto(rdcf2.region.getUuid()));
 		otherPersonAddress.setDistrict(new DistrictReferenceDto(rdcf2.district.getUuid()));
 		otherPersonAddress.setCommunity(new CommunityReferenceDto(rdcf2.community.getUuid()));
+		otherPersonAddress.setDetails("Other person address");
 
 		List<LocationDto> leadAddresses = new ArrayList<>();
 		LocationDto leadAddresses1 = LocationDto.build();
@@ -1202,7 +1203,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			PersonAddressType.OTHER_ADDRESS,
 			leadPerson.getAddresses()
 				.stream()
-				.filter(field -> field.getUuid().equals(otherPersonAddress.getUuid()))
+				.filter(field -> otherPersonAddress.getDetails().equals(field.getDetails()))
 				.findFirst()
 				.get()
 				.getAddressType());
@@ -1210,7 +1211,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			I18nProperties.getString(Strings.messagePersonMergedAddressDescription),
 			leadPerson.getAddresses()
 				.stream()
-				.filter(field -> field.getUuid().equals(otherPersonAddress.getUuid()))
+				.filter(field -> otherPersonAddress.getDetails().equals(field.getDetails()))
 				.findFirst()
 				.get()
 				.getAddressTypeDetails());

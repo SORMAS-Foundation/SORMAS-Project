@@ -211,4 +211,16 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, Environment> root) {
 		return cb.isFalse(root.get(Environment.DELETED));
 	}
+
+	@Override
+	@SuppressWarnings("rawtypes")
+	protected Predicate createRelevantDataFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Environment> from) {
+
+		Predicate filter = createDefaultFilter(cb, from);
+		if (getCurrentUser() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilterInternal(cb, cq, from));
+		}
+
+		return filter;
+	}
 }

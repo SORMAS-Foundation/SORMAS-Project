@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.travelentry;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -19,6 +20,8 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
@@ -66,6 +69,8 @@ import de.symeda.sormas.backend.util.RightsAllowed;
 public class TravelEntryFacadeEjb
 	extends AbstractCoreFacadeEjb<TravelEntry, TravelEntryDto, TravelEntryIndexDto, TravelEntryReferenceDto, TravelEntryService, TravelEntryCriteria>
 	implements TravelEntryFacade {
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
 	private TravelEntryListService travelEntryListService;
@@ -124,8 +129,50 @@ public class TravelEntryFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._TRAVEL_ENTRY_DELETE)
+	public List<String> delete(List<String> uuids, DeletionDetails deletionDetails) {
+		List<String> deletedTravelEntryUuids = new ArrayList<>();
+		List<TravelEntry> travelEntriesToBeDeleted = travelEntryService.getByUuids(uuids);
+
+		if (travelEntriesToBeDeleted != null) {
+			travelEntriesToBeDeleted.forEach(travelEntryToBeDeleted -> {
+				if (!travelEntryToBeDeleted.isDeleted()) {
+					try {
+						delete(travelEntryToBeDeleted.getUuid(), deletionDetails);
+						deletedTravelEntryUuids.add(travelEntryToBeDeleted.getUuid());
+					} catch (Exception e) {
+						logger.error("The travel entry with uuid:" + travelEntryToBeDeleted.getUuid() + "could not be deleted");
+					}
+				}
+			});
+		}
+
+		return deletedTravelEntryUuids;
+	}
+
+	@Override
+	@RightsAllowed(UserRight._TRAVEL_ENTRY_DELETE)
 	public void restore(String uuid) {
 		super.restore(uuid);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._TRAVEL_ENTRY_DELETE)
+	public List<String> restore(List<String> uuids) {
+		List<String> restoredTravelEntryUuids = new ArrayList<>();
+		List<TravelEntry> travelEntriesToBeRestored = travelEntryService.getByUuids(uuids);
+
+		if (travelEntriesToBeRestored != null) {
+			travelEntriesToBeRestored.forEach(travelEntryToBeRestored -> {
+				try {
+					restore(travelEntryToBeRestored.getUuid());
+					restoredTravelEntryUuids.add(travelEntryToBeRestored.getUuid());
+				} catch (Exception e) {
+					logger.error("The travel entry with uuid:" + travelEntryToBeRestored.getUuid() + "could not be restored");
+				}
+			});
+		}
+
+		return restoredTravelEntryUuids;
 	}
 
 	@Override

@@ -272,4 +272,5 @@ public class CaseDirectoryPage {
   public static By WARNING_CASE_NOT_SHARED_SHARE_POPUP_DE =
       By.xpath(
           "//div[contains(text(), 'Wenn Sie diesen Kontakt teilen m\u00F6chten, m\u00FCssen Sie den zugeh\u00F6rigen Fall zuerst an das gleiche Zielsystem senden.')]");
+  public static By SEND_TO_REPORTING_TOOL_BUTTON = By.xpath("//span[contains(text(), 'Senden')]");
 }

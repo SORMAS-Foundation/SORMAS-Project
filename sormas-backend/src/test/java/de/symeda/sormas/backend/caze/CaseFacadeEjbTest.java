@@ -23,6 +23,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -57,6 +58,7 @@ import javax.validation.ValidatorFactory;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
@@ -64,6 +66,7 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseType;
+import de.symeda.sormas.api.caze.CaseBulkEditData;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -94,6 +97,8 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
@@ -171,6 +176,7 @@ import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -2831,13 +2837,13 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		loginWith(surveillanceOfficer);
 
-		List<String> deleteUuids = getCaseFacade().deleteCases(caseUuidList, new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
+		List<String> deleteUuids = getCaseFacade().delete(caseUuidList, new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
 		assertEquals(1, deleteUuids.size());
 		assertEquals(caze1.getUuid(), deleteUuids.get(0));
 
 		loginWith(nationalUser);
-		getCaseFacade().deleteCases(caseUuidList, new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
+		getCaseFacade().delete(caseUuidList, new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 		assertEquals(0, getCaseFacade().getAllActiveUuids().size());
 	}
 
@@ -3083,6 +3089,66 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		List<CaseDataDto> duplicatedCases = getCaseFacade().getDuplicatesWithPathogenTest(covidCase.getPerson(), pathogenTestDto);
 		assertEquals(1, duplicatedCases.size());
 		assertEquals(anthraxCase.getUuid(), duplicatedCases.get(0).getUuid());
+	}
+
+	@Test
+	public void testBulkUpdateBulkEditDiseaseVariant() {
+		CaseDataDto case1 =
+			creator.createCase(surveillanceSupervisor.toReference(), creator.createPerson().toReference(), rdcf, c -> c.setDisease(Disease.ANTHRAX));
+		CaseDataDto case2 =
+			creator.createCase(surveillanceSupervisor.toReference(), creator.createPerson().toReference(), rdcf, c -> c.setDisease(Disease.ANTHRAX));
+
+		DiseaseVariant diseaseVariant = creator.createDiseaseVariant("BF.1.2", Disease.CORONAVIRUS);
+		Mockito
+			.when(MockProducer.getCustomizableEnumFacadeForConverter().getEnumValue(CustomizableEnumType.DISEASE_VARIANT, diseaseVariant.getValue()))
+			.thenReturn(diseaseVariant);
+
+		CaseBulkEditData bulkEditData = new CaseBulkEditData();
+		bulkEditData.setDisease(Disease.CORONAVIRUS);
+		bulkEditData.setDiseaseVariant(diseaseVariant);
+		bulkEditData.setDiseaseVariantDetails("test variant details");
+
+		getCaseFacade().saveBulkCase(Arrays.asList(case1.getUuid(), case2.getUuid()), bulkEditData, true, true, false, false, false, false);
+
+		case1 = getCaseFacade().getByUuid(case1.getUuid());
+		assertThat(case1.getDisease(), is(Disease.CORONAVIRUS));
+		assertThat(case1.getDiseaseVariant(), is(diseaseVariant));
+		assertThat(case1.getDiseaseVariantDetails(), is("test variant details"));
+
+		case2 = getCaseFacade().getByUuid(case2.getUuid());
+		assertThat(case2.getDisease(), is(Disease.CORONAVIRUS));
+		assertThat(case2.getDiseaseVariant(), is(diseaseVariant));
+		assertThat(case2.getDiseaseVariantDetails(), is("test variant details"));
+
+		// unset variant
+		bulkEditData.setDiseaseVariant(null);
+		getCaseFacade().saveBulkCase(Collections.singletonList(case1.getUuid()), bulkEditData, true, true, false, false, false, false);
+		case1 = getCaseFacade().getByUuid(case1.getUuid());
+		assertThat(case1.getDisease(), is(Disease.CORONAVIRUS));
+		assertThat(case1.getDiseaseVariant(), is(nullValue()));
+		assertThat(case1.getDiseaseVariantDetails(), is(nullValue()));
+	}
+
+	@Test
+	public void testBulkUpdateBulkEditDiseaseClearVariantOfChangedDisease() {
+		DiseaseVariant diseaseVariant = creator.createDiseaseVariant("BF.1.2", Disease.CORONAVIRUS);
+		Mockito
+			.when(MockProducer.getCustomizableEnumFacadeForConverter().getEnumValue(CustomizableEnumType.DISEASE_VARIANT, diseaseVariant.getValue()))
+			.thenReturn(diseaseVariant);
+		CaseDataDto caze = creator.createCase(surveillanceSupervisor.toReference(), creator.createPerson().toReference(), rdcf, c -> {
+			c.setDisease(Disease.CORONAVIRUS);
+			c.setDiseaseVariant(diseaseVariant);
+			c.setDiseaseVariantDetails("Variant details");
+		});
+
+		CaseBulkEditData bulkEditData = new CaseBulkEditData();
+		bulkEditData.setDisease(Disease.ANTHRAX);
+
+		getCaseFacade().saveBulkCase(Collections.singletonList(caze.getUuid()), bulkEditData, true, false, false, false, false, false);
+		caze = getCaseFacade().getByUuid(caze.getUuid());
+		assertThat(caze.getDisease(), is(Disease.ANTHRAX));
+		assertThat(caze.getDiseaseVariant(), is(nullValue()));
+		assertThat(caze.getDiseaseVariantDetails(), is(nullValue()));
 	}
 
 	private static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ";

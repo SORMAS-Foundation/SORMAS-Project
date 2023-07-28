@@ -12419,4 +12419,74 @@ INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaul
 
 INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (516, 'Add environmental user rights and default user #11572', true);
 
+-- 2023-07-18 Add ct value fields to pathogen tests and test reports #12314
+ALTER TABLE pathogentest ADD COLUMN ctvaluee real;
+ALTER TABLE pathogentest ADD COLUMN ctvaluen real;
+ALTER TABLE pathogentest ADD COLUMN ctvaluerdrp real;
+ALTER TABLE pathogentest ADD COLUMN ctvalues real;
+ALTER TABLE pathogentest ADD COLUMN ctvalueorf1 real;
+ALTER TABLE pathogentest ADD COLUMN ctvaluerdrps real;
+ALTER TABLE pathogentest_history ADD COLUMN ctvaluee real;
+ALTER TABLE pathogentest_history ADD COLUMN ctvaluen real;
+ALTER TABLE pathogentest_history ADD COLUMN ctvaluerdrp real;
+ALTER TABLE pathogentest_history ADD COLUMN ctvalues real;
+ALTER TABLE pathogentest_history ADD COLUMN ctvalueorf1 real;
+ALTER TABLE pathogentest_history ADD COLUMN ctvaluerdrps real;
+
+ALTER TABLE testreport ADD COLUMN cqvalue real;
+ALTER TABLE testreport ADD COLUMN ctvaluee real;
+ALTER TABLE testreport ADD COLUMN ctvaluen real;
+ALTER TABLE testreport ADD COLUMN ctvaluerdrp real;
+ALTER TABLE testreport ADD COLUMN ctvalues real;
+ALTER TABLE testreport ADD COLUMN ctvalueorf1 real;
+ALTER TABLE testreport ADD COLUMN ctvaluerdrps real;
+ALTER TABLE testreport_history ADD COLUMN cqvalue real;
+ALTER TABLE testreport_history ADD COLUMN ctvaluee real;
+ALTER TABLE testreport_history ADD COLUMN ctvaluen real;
+ALTER TABLE testreport_history ADD COLUMN ctvaluerdrp real;
+ALTER TABLE testreport_history ADD COLUMN ctvalues real;
+ALTER TABLE testreport_history ADD COLUMN ctvalueorf1 real;
+ALTER TABLE testreport_history ADD COLUMN ctvaluerdrps real;
+
+INSERT INTO schema_version (version_number, comment) VALUES (517, 'Add ct value fields to pathogen tests and test reports #12314');
+
+-- 2023-07-19 Add prescriber fields to pathogen tests and test reports #12318
+ALTER TABLE pathogentest ADD COLUMN prescriberphysiciancode text;
+ALTER TABLE pathogentest ADD COLUMN prescriberfirstname text;
+ALTER TABLE pathogentest ADD COLUMN prescriberlastname text;
+ALTER TABLE pathogentest ADD COLUMN prescriberphonenumber text;
+ALTER TABLE pathogentest ADD COLUMN prescriberaddress text;
+ALTER TABLE pathogentest ADD COLUMN prescriberpostalcode text;
+ALTER TABLE pathogentest ADD COLUMN prescribercity text;
+ALTER TABLE pathogentest ADD COLUMN prescribercountry_id bigint;
+ALTER TABLE pathogentest_history ADD COLUMN prescriberphysiciancode text;
+ALTER TABLE pathogentest_history ADD COLUMN prescriberfirstname text;
+ALTER TABLE pathogentest_history ADD COLUMN prescriberlastname text;
+ALTER TABLE pathogentest_history ADD COLUMN prescriberphonenumber text;
+ALTER TABLE pathogentest_history ADD COLUMN prescriberaddress text;
+ALTER TABLE pathogentest_history ADD COLUMN prescriberpostalcode text;
+ALTER TABLE pathogentest_history ADD COLUMN prescribercity text;
+ALTER TABLE pathogentest_history ADD COLUMN prescribercountry_id bigint;
+ALTER TABLE pathogentest ADD CONSTRAINT fk_pathogentest_prescribercountry_id FOREIGN KEY (prescribercountry_id) REFERENCES country (id);
+
+ALTER TABLE testreport ADD COLUMN prescriberphysiciancode text;
+ALTER TABLE testreport ADD COLUMN prescriberfirstname text;
+ALTER TABLE testreport ADD COLUMN prescriberlastname text;
+ALTER TABLE testreport ADD COLUMN prescriberphonenumber text;
+ALTER TABLE testreport ADD COLUMN prescriberaddress text;
+ALTER TABLE testreport ADD COLUMN prescriberpostalcode text;
+ALTER TABLE testreport ADD COLUMN prescribercity text;
+ALTER TABLE testreport ADD COLUMN prescribercountry_id bigint;
+ALTER TABLE testreport_history ADD COLUMN prescriberphysiciancode text;
+ALTER TABLE testreport_history ADD COLUMN prescriberfirstname text;
+ALTER TABLE testreport_history ADD COLUMN prescriberlastname text;
+ALTER TABLE testreport_history ADD COLUMN prescriberphonenumber text;
+ALTER TABLE testreport_history ADD COLUMN prescriberaddress text;
+ALTER TABLE testreport_history ADD COLUMN prescriberpostalcode text;
+ALTER TABLE testreport_history ADD COLUMN prescribercity text;
+ALTER TABLE testreport_history ADD COLUMN prescribercountry_id bigint;
+ALTER TABLE testreport ADD CONSTRAINT fk_testreport_prescribercountry_id FOREIGN KEY (prescribercountry_id) REFERENCES country (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (518, 'Add prescriber fields to pathogen tests and test reports #12318');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

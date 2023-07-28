@@ -26,6 +26,17 @@ public enum ArchiveMessages {
 		Strings.headingNoContactsSelected,
 		Strings.messageNoContactsSelected),
 
+	ENVIRONMENT(Strings.headingArchiveEnvironment,
+		Strings.confirmationArchiveEnvironment,
+		Strings.confirmationArchiveEnvironments,
+		Strings.messageEnvironmentArchived,
+		Strings.headingDearchiveEnvironment,
+		Strings.confirmationDearchiveEnvironment,
+		Strings.confirmationDearchiveEnvironments,
+		Strings.messageEnvironmentDearchived,
+		Strings.headingNoEnvironmentSelected,
+		Strings.messageNoEnvironmentsSelected),
+
 	EVENT(Strings.headingArchiveEvent,
 		Strings.confirmationArchiveEvent,
 		Strings.confirmationArchiveEvents,

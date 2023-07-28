@@ -723,14 +723,14 @@ public class CasesView extends AbstractView {
 					if (criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
 						menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, mi -> {
 							grid.bulkActionHandler(
-								items -> ControllerProvider.getCaseController().deleteAllSelectedItems(items, () -> navigateTo(criteria)),
+								items -> ControllerProvider.getCaseController().deleteAllSelectedItems(items, (AbstractCaseGrid<?>) grid),
 								true);
 						}, hasBulkOperationsRight));
 					} else {
 						menuBarItems
 							.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkRestore), VaadinIcons.ARROW_BACKWARD, mi -> {
 								grid.bulkActionHandler(
-									items -> ControllerProvider.getCaseController().restoreSelectedCases(items, () -> navigateTo(criteria)),
+									items -> ControllerProvider.getCaseController().restoreSelectedCases(items, (AbstractCaseGrid<?>) grid),
 									true);
 							}, hasBulkOperationsRight));
 					}

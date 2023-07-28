@@ -77,6 +77,7 @@ public class RemoteDriverFactory implements DriverFactory {
     options.setExperimentalOption("prefs", chromePreferences);
     options.addArguments("--window-size=1920,1080");
     options.setPageLoadStrategy(PageLoadStrategy.NORMAL);
+    options.addArguments("--remote-allow-origins=*");
     return new ChromeDriver(options);
   }
 

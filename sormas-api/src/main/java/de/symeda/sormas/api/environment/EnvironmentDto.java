@@ -6,15 +6,19 @@ import java.util.Map;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.FieldConstraints;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
-public class EnvironmentDto extends EntityDto {
+public class EnvironmentDto extends PseudonymizableDto {
 
 	public static final long APPROXIMATE_JSON_SIZE_IN_BYTES = 2638;
 
@@ -35,6 +39,8 @@ public class EnvironmentDto extends EntityDto {
 	public static final String WATER_USE = "waterUse";
 	public static final String OTHER_WATER_USE = "otherWaterUse";
 	public static final String LOCATION = "location";
+	public static final String DELETION_REASON = "deletionReason";
+	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 
 	private Date reportDate;
 	private UserReferenceDto reportingUser;
@@ -56,12 +62,30 @@ public class EnvironmentDto extends EntityDto {
 	private Map<WaterUse, Boolean> waterUse;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherWaterUse;
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
 	@Valid
 	private LocationDto location;
+
+	private boolean deleted;
+	private DeletionReason deletionReason;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String otherDeletionReason;
 
 	public static EnvironmentDto build() {
 		final EnvironmentDto environment = new EnvironmentDto();
 		environment.setUuid(DataHelper.createUuid());
+		environment.setLocation(LocationDto.build());
+		environment.setInvestigationStatus(InvestigationStatus.PENDING);
+
+		return environment;
+	}
+
+	public static EnvironmentDto build(UserDto currentUser) {
+		EnvironmentDto environment = build();
+		environment.setReportingUser(currentUser.toReference());
+		environment.getLocation().setRegion(currentUser.getRegion());
+		environment.getLocation().setDistrict(currentUser.getDistrict());
 
 		return environment;
 	}
@@ -184,5 +208,29 @@ public class EnvironmentDto extends EntityDto {
 
 	public void setLocation(LocationDto location) {
 		this.location = location;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	public DeletionReason getDeletionReason() {
+		return deletionReason;
+	}
+
+	public void setDeletionReason(DeletionReason deletionReason) {
+		this.deletionReason = deletionReason;
+	}
+
+	public String getOtherDeletionReason() {
+		return otherDeletionReason;
+	}
+
+	public void setOtherDeletionReason(String otherDeletionReason) {
+		this.otherDeletionReason = otherDeletionReason;
 	}
 }

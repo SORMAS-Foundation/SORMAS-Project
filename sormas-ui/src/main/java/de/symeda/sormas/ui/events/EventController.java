@@ -76,7 +76,6 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
@@ -88,10 +87,9 @@ import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
-import de.symeda.sormas.ui.utils.DeletableUtils;
+import de.symeda.sormas.ui.utils.DeleteRestoreHandlers;
 import de.symeda.sormas.ui.utils.NotificationHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.automaticdeletion.DeletionLabel;
@@ -899,7 +897,7 @@ public class EventController {
 				} else {
 					VaadinUiUtil.showSimplePopupWindow(
 						I18nProperties.getString(Strings.headingEventNotDeleted),
-						I18nProperties.getString(Strings.messageEventsNotDeletedReason));
+						I18nProperties.getString(Strings.messageEventsNotDeletedLinkedEntitiesReason));
 				}
 				UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
 			}, getDeleteConfirmationDetails(Collections.singletonList(eventUuid)), (deleteDetails) -> {
@@ -979,6 +977,8 @@ public class EventController {
 						eventInvestigationStatusChange,
 						eventManagementStatusChange),
 					selectedEventsCpy,
+					null,
+					null,
 					bulkOperationCallback(eventGrid, popupWindow));
 		});
 
@@ -1008,95 +1008,33 @@ public class EventController {
 		return EventDto.build(FacadeProvider.getCountryFacade().getServerCountry(), UserProvider.getCurrent().getUser(), disease);
 	}
 
-	public void deleteAllSelectedItems(Collection<EventIndexDto> selectedRows, Runnable callback) {
+	public void deleteAllSelectedItems(Collection<EventIndexDto> selectedRows, EventGrid eventGrid) {
 
-		if (selectedRows.size() == 0) {
-			new Notification(
-				I18nProperties.getString(Strings.headingNoEventsSelected),
-				I18nProperties.getString(Strings.messageNoEventsSelected),
-				Type.WARNING_MESSAGE,
-				false).show(Page.getCurrent());
-		} else {
-			DeletableUtils.showDeleteWithReasonPopup(
-				String.format(
-					I18nProperties.getString(Strings.confirmationDeleteEvents),
-					selectedRows.size(),
-					getDeleteConfirmationDetails(selectedRows.stream().map(EventIndexDto::getUuid).collect(Collectors.toList()))),
-				(deleteDetails) -> {
-					StringBuilder nonDeletableEventsWithParticipants = new StringBuilder();
-					int countNotDeletedEventsWithParticipants = 0;
-					StringBuilder nonDeletableEventsFromExternalTool = new StringBuilder();
-					int countNotDeletedEventsFromExternalTool = 0;
-					for (EventIndexDto selectedRow : selectedRows) {
-						EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(selectedRow.getUuid(), false);
-						if (existEventParticipantsLinkedToEvent(eventDto)) {
-							countNotDeletedEventsWithParticipants = countNotDeletedEventsWithParticipants + 1;
-							nonDeletableEventsWithParticipants.append(selectedRow.getUuid(), 0, 6).append(", ");
-						} else {
-							try {
-								FacadeProvider.getEventFacade().delete(eventDto.getUuid(), deleteDetails);
-							} catch (ExternalSurveillanceToolRuntimeException e) {
-								countNotDeletedEventsFromExternalTool = countNotDeletedEventsFromExternalTool + 1;
-								nonDeletableEventsFromExternalTool.append(selectedRow.getUuid(), 0, 6).append(", ");
-							}
-						}
-					}
-					if (nonDeletableEventsWithParticipants.length() > 0) {
-						nonDeletableEventsWithParticipants = new StringBuilder(
-							" " + nonDeletableEventsWithParticipants.substring(0, nonDeletableEventsWithParticipants.length() - 2) + ". ");
-					}
-					if (nonDeletableEventsFromExternalTool.length() > 0) {
-						nonDeletableEventsFromExternalTool = new StringBuilder(
-							" " + nonDeletableEventsFromExternalTool.substring(0, nonDeletableEventsFromExternalTool.length() - 2) + ". ");
-					}
-					callback.run();
-					if (countNotDeletedEventsWithParticipants == 0 && countNotDeletedEventsFromExternalTool == 0) {
-						new Notification(
-							I18nProperties.getString(Strings.headingEventsDeleted),
-							I18nProperties.getString(Strings.messageEventsDeleted),
-							Type.HUMANIZED_MESSAGE,
-							false).show(Page.getCurrent());
-					} else {
-						StringBuilder description = new StringBuilder();
-						if (countNotDeletedEventsWithParticipants > 0) {
-							description.append(
-								String.format(
-									"%1s <br/> %2s",
-									String.format(
-										I18nProperties.getString(Strings.messageCountEventsNotDeleted),
-										String.format("<b>%s</b>", countNotDeletedEventsWithParticipants),
-										String.format("<b>%s</b>", HtmlHelper.cleanHtml(nonDeletableEventsWithParticipants.toString()))),
-									I18nProperties.getString(Strings.messageEventsNotDeletedReason)))
-								.append("<br/> <br/>");
-						}
-						if (countNotDeletedEventsFromExternalTool > 0) {
-							description.append(
-								String.format(
-									"%1s <br/> %2s",
-									String.format(
-										I18nProperties.getString(Strings.messageCountEventsNotDeletedExternalSurveillanceTool),
-										String.format("<b>%s</b>", countNotDeletedEventsFromExternalTool),
-										String.format("<b>%s</b>", HtmlHelper.cleanHtml(nonDeletableEventsFromExternalTool.toString()))),
-									I18nProperties.getString(Strings.messageEventsNotDeletedReasonExternalSurveillanceTool)));
-						}
+		Collection<EventIndexDto> ineligibleEvents = new ArrayList<>();
+		selectedRows.stream().forEach(row -> {
+			List<EventParticipantDto> eventParticipantList =
+				FacadeProvider.getEventParticipantFacade().getAllActiveEventParticipantsByEvent(row.getUuid());
+			if (eventParticipantList.size() > 0) {
+				ineligibleEvents.add(row);
+			}
+		});
 
-						Window response = VaadinUiUtil.showSimplePopupWindow(
-							I18nProperties.getString(Strings.headingSomeEventsNotDeleted),
-							description.toString(),
-							ContentMode.HTML);
-						response.setWidth(600, Sizeable.Unit.PIXELS);
-					}
-				});
-		}
+		Collection<EventIndexDto> eligibleEvents = ineligibleEvents.size() > 0
+			? selectedRows.stream().filter(row -> !ineligibleEvents.contains(row)).collect(Collectors.toCollection(ArrayList::new))
+			: selectedRows;
+
+		ControllerProvider.getDeleteRestoreController()
+			.deleteAllSelectedItems(
+				selectedRows,
+				eligibleEvents,
+				ineligibleEvents,
+				DeleteRestoreHandlers.forEvent(),
+				bulkOperationCallback(eventGrid, null));
 	}
 
-	public void restoreSelectedEvents(Collection<? extends EventIndexDto> selectedRows, Runnable callback) {
+	public void restoreSelectedEvents(Collection<EventIndexDto> selectedRows, EventGrid eventGrid) {
 		ControllerProvider.getDeleteRestoreController()
-			.restoreSelectedItems(
-				selectedRows.stream().map(EventIndexDto::getUuid).collect(Collectors.toList()),
-				FacadeProvider.getEventFacade(),
-				CoreEntityRestoreMessages.EVENT,
-				callback);
+			.restoreSelectedItems(selectedRows, DeleteRestoreHandlers.forEvent(), bulkOperationCallback(eventGrid, null));
 	}
 
 	private Boolean existEventParticipantsLinkedToEvent(EventDto event) {

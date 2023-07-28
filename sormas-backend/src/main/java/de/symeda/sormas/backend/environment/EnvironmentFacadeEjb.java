@@ -23,13 +23,20 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 
+import org.apache.commons.lang3.NotImplementedException;
+
 import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.environment.EnvironmentCriteria;
 import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.environment.EnvironmentFacade;
 import de.symeda.sormas.api.environment.EnvironmentIndexDto;
 import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.FacadeHelper;
@@ -256,6 +263,10 @@ public class EnvironmentFacadeEjb
 		target.setResponsibleUser(userService.getByReferenceDto(source.getResponsibleUser()));
 		target.setWaterType(source.getWaterType());
 		target.setWaterUse(source.getWaterUse());
+
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
 		return target;
 	}
 
@@ -284,6 +295,10 @@ public class EnvironmentFacadeEjb
 		target.setWaterType(source.getWaterType());
 		target.setWaterUse(source.getWaterUse());
 
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
+
 		return target;
 	}
 
@@ -302,13 +317,51 @@ public class EnvironmentFacadeEjb
 	}
 
 	@Override
-	protected void pseudonymizeDto(Environment source, EnvironmentDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+	@RightsAllowed(UserRight._ENVIRONMENT_ARCHIVE)
+	public void archive(String entityUuid, Date endOfProcessingDate) {
+		super.archive(entityUuid, endOfProcessingDate);
+	}
 
+	@Override
+	@RightsAllowed(UserRight._ENVIRONMENT_ARCHIVE)
+	public void dearchive(List<String> entityUuids, String dearchiveReason) {
+		super.dearchive(entityUuids, dearchiveReason);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._ENVIRONMENT_DELETE)
+	public void delete(String uuid, DeletionDetails deletionDetails) throws ExternalSurveillanceToolRuntimeException {
+		Environment environment = service.getByUuid(uuid);
+
+		if (!service.inJurisdictionOrOwned(environment)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.messageEventParticipantOutsideJurisdictionDeletionDenied));
+		}
+
+		service.delete(environment, deletionDetails);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._ENVIRONMENT_DELETE)
+	public void restore(String uuid) {
+		super.restore(uuid);
+	}
+
+	@Override
+	protected void pseudonymizeDto(Environment source, EnvironmentDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+		if (dto != null) {
+			pseudonymizer.pseudonymizeDto(EnvironmentDto.class, dto, inJurisdiction, e -> {
+				pseudonymizer.pseudonymizeUser(source.getReportingUser(), userService.getCurrentUser(), dto::setReportingUser);
+			});
+		}
 	}
 
 	@Override
 	protected void restorePseudonymizedDto(EnvironmentDto dto, EnvironmentDto existingDto, Environment entity, Pseudonymizer pseudonymizer) {
-
+		if (existingDto != null) {
+			boolean inJurisdiction = service.inJurisdictionOrOwned(entity);
+			pseudonymizer.restorePseudonymizedValues(EnvironmentDto.class, dto, existingDto, inJurisdiction);
+			pseudonymizer.restoreUser(entity.getReportingUser(), userService.getCurrentUser(), dto, dto::setReportingUser);
+		}
 	}
 
 	@Override
@@ -324,6 +377,18 @@ public class EnvironmentFacadeEjb
 	@Override
 	public List<String> getArchivedUuidsSince(Date since) {
 		return null;
+	}
+
+	@RightsAllowed(UserRight._ENVIRONMENT_DELETE)
+	@Override
+	public List<String> delete(List<String> uuids, DeletionDetails deletionDetails) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	@RightsAllowed(UserRight._ENVIRONMENT_DELETE)
+	public List<String> restore(List<String> uuids) {
+		throw new NotImplementedException();
 	}
 
 	@LocalBean

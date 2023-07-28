@@ -377,7 +377,10 @@ public abstract class InfraValidationSoundnessTest extends AbstractBeanTest {
 		if (childObject == null) {
 			// populate the field
 
-			final Class<?> erasedType = currentField.getType().getErasedType();
+			Class<?> erasedType = currentField.getType().getErasedType();
+			if (erasedType == List.class) {
+				erasedType = ArrayList.class;
+			}
 			if (path.peek() == null) {
 				// we reached a leaf, get the InfrastructureDataReferenceDto(String uuid, String caption, String externalId) constructor
 				// in case this call errors, make sure that a constructor (String uuid, String caption, String externalId) is available in

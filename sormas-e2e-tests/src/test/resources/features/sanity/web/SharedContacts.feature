@@ -7,7 +7,7 @@ Feature: Sharing contacts between environments tests
     And API: I check that POST call status code is 200
     Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     And API: I check that POST call status code is 200
-    Then I log in as a Admin User
+    Then I log in as a S2S
     When I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     And I fill a new contact form for DE version with mandatory data with "Baden-Württemberg" as a region and "LK Alb-Donau-Kreis" as a disctrict
@@ -37,7 +37,7 @@ Feature: Sharing contacts between environments tests
     And I fill comment in share popup for contact with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
-    And I log in as a Admin User
+    And I log in as a S2S
     And I click on the Shares button from navbar
     And I click on "accept" shared contact button with copied contact description
     Then I check if a warning pop-up message appears that the Case should be accepted first
@@ -52,7 +52,7 @@ Feature: Sharing contacts between environments tests
     And API: I check that POST call status code is 200
     Then API: I create a new case with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district and "General Hospital" facility
     And API: I check that POST call status code is 200
-    Then I log in as a Admin User
+    Then I log in as a S2S
     When I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     And I fill a new contact form for DE version with mandatory data with "Baden-Württemberg" as a region and "LK Alb-Donau-Kreis" as a disctrict
@@ -97,7 +97,7 @@ Feature: Sharing contacts between environments tests
     And API: I check that POST call status code is 200
     Given API: I create a new contact with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district linked to last created case
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     Then I navigate to the last created case via the url
     And I collect uuid of the case
     Then I click on share case button
@@ -105,7 +105,7 @@ Feature: Sharing contacts between environments tests
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Shares button from navbar
     Then I accept first entity from table in Shares Page
     Then I navigate to "s2s_1" environment
@@ -142,7 +142,7 @@ Feature: Sharing contacts between environments tests
     And API: I check that POST call status code is 200
     Given API: I create a new contact with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district linked to last created case
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     Then I navigate to the last created case via the url
     And I collect uuid of the case
     Then I click on share case button
@@ -150,7 +150,7 @@ Feature: Sharing contacts between environments tests
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Shares button from navbar
     Then I accept first entity from table in Shares Page
     Then I navigate to "s2s_1" environment
@@ -184,7 +184,7 @@ Feature: Sharing contacts between environments tests
     And API: I check that POST call status code is 200
     Given API: I create a new contact with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district linked to last created case
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     Then I navigate to the last created case via the url
     And I collect uuid of the case
     Then I click on share case button
@@ -192,7 +192,7 @@ Feature: Sharing contacts between environments tests
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Shares button from navbar
     Then I accept first entity from table in Shares Page
     Then I navigate to "s2s_1" environment
@@ -226,7 +226,7 @@ Feature: Sharing contacts between environments tests
     And API: I check that POST call status code is 200
     Given API: I create a new contact with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district linked to last created case
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     Then I navigate to the last created case via the url
     And I collect uuid of the case
     Then I click on share case button
@@ -234,7 +234,7 @@ Feature: Sharing contacts between environments tests
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Shares button from navbar
     Then I accept first entity from table in Shares Page
     Then I navigate to "s2s_1" environment
@@ -269,14 +269,14 @@ Feature: Sharing contacts between environments tests
     And API: I check that POST call status code is 200
     Given API: I create a new contact with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district linked to last created case
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     Then I navigate to the last created case via the url
     Then I click on share case button
     And I select organization to share with "s2s_2"
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Shares button from navbar
     Then I accept first entity from table in Shares Page
     Then I navigate to "s2s_1" environment
@@ -302,7 +302,7 @@ Feature: Sharing contacts between environments tests
     And API: I check that POST call status code is 200
     Given API: I create a new contact with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district linked to last created case
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     Then I navigate to the last created case via the url
     And I collect uuid of the case
     Then I click on share case button
@@ -311,7 +311,7 @@ Feature: Sharing contacts between environments tests
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Shares button from navbar
     Then I accept first entity from table in Shares Page
     Then I navigate to "s2s_1" environment
@@ -334,15 +334,15 @@ Feature: Sharing contacts between environments tests
     Then I open the last created contact via API
     And I check if editable fields are read only for shared contact
     And I check if handover card contains "Eigentümer: LK Fulda" information
-    And I check if handover card contains "Geteilt von: Automation ADMIN" information
+    And I check if handover card contains "Geteilt von: S2S USER" information
     And I check if handover card contains "shared with automated test" information
     Then I navigate to "s2s_2" environment
     Then I open the last created contact via API
     And I check if handover card contains "Gesendet von LK Barnim" information
-    And I check if handover card contains "Geteilt von: Automation Admin" information
+    And I check if handover card contains "Geteilt von: S2S User" information
     And I check if handover card contains "shared with automated test" information
 
-  @tmsLink=SOR-982 @env_s2s_1
+  @tmsLink=SOR-4483 @env_s2s_1
   Scenario: Delete a contact shared in source system but not accepted in target system
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
     And API: I check that POST call status code is 200
@@ -350,7 +350,7 @@ Feature: Sharing contacts between environments tests
     And API: I check that POST call status code is 200
     Given API: I create a new contact with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district linked to last created case
     And API: I check that POST call status code is 200
-    Given I log in as a Admin User
+    Given I log in as a S2S
     Then I navigate to the last created case via the url
     And I collect uuid of the case
     Then I click on share case button
@@ -359,7 +359,7 @@ Feature: Sharing contacts between environments tests
     And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
-    Given I log in as a Admin User
+    Given I log in as a S2S
     And I click on the Shares button from navbar
     And I check that accept shared case button with copied case description is visible in Share Directory page
     Then I accept first entity from table in Shares Page
@@ -372,7 +372,7 @@ Feature: Sharing contacts between environments tests
     And I fill comment in share popup for contact with random string
     Then I click on share button in s2s share popup and wait for share to finish
     And I check if handover card contains "LK Fulda" information
-    And I check if handover card contains "Geteilt von: Automation ADMIN" information
+    And I check if handover card contains "Geteilt von: S2S USER" information
     Then I back to tab number 2
     And I refresh current page
     And I check that accept shared contact button with copied contact description is visible in Share Directory page

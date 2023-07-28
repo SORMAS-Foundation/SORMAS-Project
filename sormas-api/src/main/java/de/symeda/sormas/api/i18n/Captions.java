@@ -220,6 +220,7 @@ public interface Captions {
 	String bulkContactOfficer = "bulkContactOfficer";
 	String bulkDelete = "bulkDelete";
 	String bulkDisease = "bulkDisease";
+	String bulkDiseaseVariant = "bulkDiseaseVariant";
 	String bulkEdit = "bulkEdit";
 	String bulkEditAssignee = "bulkEditAssignee";
 	String bulkEventInvestigationStatus = "bulkEventInvestigationStatus";
@@ -1063,6 +1064,7 @@ public interface Captions {
 	String environmentAllActiveAndArchivedEnvironments = "environmentAllActiveAndArchivedEnvironments";
 	String environmentArchivedEnvironments = "environmentArchivedEnvironments";
 	String environmentDeletedEnvironments = "environmentDeletedEnvironments";
+	String environmentEnvironmentsList = "environmentEnvironmentsList";
 	String environmentNewEnvironment = "environmentNewEnvironment";
 	String EpiData = "EpiData";
 	String EpiData_activitiesAsCase = "EpiData.activitiesAsCase";

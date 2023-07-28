@@ -20,19 +20,12 @@ package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.entities.pojo.helpers.ShortUUIDGenerator.generateShortUUID;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CREATE_NEW_PERSON_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SEND_TO_REPORTING_TOOL_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CLOSE;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CONFIRM;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_RELATED_CONTACTS_CHECKBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.BACK_TO_CASES_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_NEW_CASE_CHECKBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_CREATE_CASE_POPUP_HEADER;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_CREATE_PERSON_POPUP_HEADER;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFERENCE_DEFINITION_TEXT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPUP_CONTENT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.getCaseIDPathByIndex;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.*;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.COMMIT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.FIRST_RESULT_IN_GRID_IMPORT_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.IMPORT_CASE_CONTACTS_BUTTON;
@@ -1006,8 +999,22 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.checkIfElementExistsInCombobox(
               CASE_DISPLAY_FILTER_COMBOBOX, caseParameter);
           webDriverHelpers.selectFromCombobox(CASE_DISPLAY_FILTER_COMBOBOX, caseParameter);
-          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FIRST_CASE_ID);
         });
+
+    When(
+        "I validate the existence of {string} Reporting Tools entries in Survnet box",
+        (String number) -> {
+          int numberInt = Integer.parseInt(number);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              EditCasePage.SEND_TO_REPORTING_TOOL_BUTTON);
+          softly.assertEquals(
+              webDriverHelpers.getNumberOfElements(REPORTING_TOOLS_FOR_SURVNET_USER),
+              numberInt,
+              "Number of sent entries to Survnet is not correct");
+          softly.assertAll();
+        });
+
     And(
         "I apply {string} to ownership combobox on Case Directory Page",
         (String caseParameter) -> {
@@ -1370,6 +1377,27 @@ public class CaseDirectorySteps implements En {
                   + CreateNewCaseSteps.casesUUID.get(0);
           System.out.println("To jest web path: " + LAST_CREATED_CASE_URL);
           webDriverHelpers.accessWebSite(LAST_CREATED_CASE_URL);
+        });
+
+    When(
+        "^I select (\\d+) last created UI result in grid in Case Directory for Bulk Action$",
+        (Integer number) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          for (int i = 0; i < number; i++) {
+            webDriverHelpers.scrollToElement(
+                getCheckboxByUUID(CreateNewCaseSteps.casesUUID.get(i)));
+            webDriverHelpers.clickOnWebElementBySelector(
+                getCheckboxByUUID(CreateNewCaseSteps.casesUUID.get(i)));
+          }
+        });
+
+    And(
+        "^I click Send to reporting tool button on Case Directory page$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(SEND_TO_REPORTING_TOOL_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SEND_TO_REPORTING_TOOL_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_ACTION);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(REPORTING_TOOL_MESSAGE);
         });
   }
 
