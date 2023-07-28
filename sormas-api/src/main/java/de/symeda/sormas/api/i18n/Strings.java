@@ -722,6 +722,7 @@ public interface Strings {
 	String headingSimilarImmunization = "headingSimilarImmunization";
 	String headingSomeCasesNotDeleted = "headingSomeCasesNotDeleted";
 	String headingSomeCasesNotRestored = "headingSomeCasesNotRestored";
+	String headingSomeContactsAlreadyInEvent = "headingSomeContactsAlreadyInEvent";
 	String headingSomeContactsNotDeleted = "headingSomeContactsNotDeleted";
 	String headingSomeContactsNotRestored = "headingSomeContactsNotRestored";
 	String headingSomeEventParticipantsNotDeleted = "headingSomeEventParticipantsNotDeleted";

@@ -68,18 +68,19 @@ public class EventGroupController {
 		Consumer<List<EventReferenceDto>> callback) {
 
 		String messageEventsLinkedToGroup = eventReferences.size() > 1 ? Strings.messageEventsLinkedToGroup : Strings.messageEventLinkedToGroup;
-		new BulkOperationHandler<EventReferenceDto>(messageEventsLinkedToGroup, Strings.messageSomeEventsLinkedToGroup).doBulkOperation(batch -> {
-			FacadeProvider.getEventGroupFacade()
-				.linkEventsToGroups(
-					batch.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList()),
-					Collections.singletonList(eventGroupReference.getUuid()));
-			FacadeProvider.getEventGroupFacade()
-				.notifyEventAddedToEventGroup(
-					eventGroupReference.getUuid(),
-					batch.stream().map(EventReferenceDto::getUuid).collect(Collectors.toSet()));
+		new BulkOperationHandler<EventReferenceDto>(messageEventsLinkedToGroup, null, null, null, Strings.messageSomeEventsLinkedToGroup, null, null)
+			.doBulkOperation(batch -> {
+				FacadeProvider.getEventGroupFacade()
+					.linkEventsToGroups(
+						batch.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList()),
+						Collections.singletonList(eventGroupReference.getUuid()));
+				FacadeProvider.getEventGroupFacade()
+					.notifyEventAddedToEventGroup(
+						eventGroupReference.getUuid(),
+						batch.stream().map(EventReferenceDto::getUuid).collect(Collectors.toSet()));
 
-			return batch.size();
-		}, new ArrayList<>(eventReferences), callback);
+				return batch.size();
+			}, new ArrayList<>(eventReferences), null, null, callback);
 	}
 
 	public void create(EventReferenceDto eventReference) {

@@ -55,8 +55,6 @@ public class BulkOperationHandler<T extends HasUuid> {
 	private final String noEligibleEntityMessageProperty;
 	private final String infoBulkProcessFinishedWithSkipsProperty;
 
-	private boolean messagesTranslated;
-
 	public BulkOperationHandler(
 		String allEntriesProcessedMessageProperty,
 		String ineligibleEntriesNotProcessedMessageProperty,
@@ -120,7 +118,9 @@ public class BulkOperationHandler<T extends HasUuid> {
 					String description = getErrorDescription(
 						selectedIneligibleEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
 						I18nProperties.getString(countEntriesNotProcessedMessageProperty),
-						I18nProperties.getString(ineligibleEntriesNotProcessedMessageProperty));
+						ineligibleEntriesNotProcessedMessageProperty != null
+							? I18nProperties.getString(ineligibleEntriesNotProcessedMessageProperty)
+							: "");
 
 					Window response =
 						VaadinUiUtil.showSimplePopupWindow(I18nProperties.getString(headingSomeEntitiesNotProcessed), description, ContentMode.HTML);

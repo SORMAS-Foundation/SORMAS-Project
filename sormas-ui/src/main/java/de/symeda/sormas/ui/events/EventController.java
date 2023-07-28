@@ -328,28 +328,31 @@ public class EventController {
 
 		List<EventParticipantDto> byEventAndPersons = FacadeProvider.getEventParticipantFacade()
 			.getByEventAndPersons(eventReferenceDto.getUuid(), new ArrayList<>(contactByPersonUuid.keySet()));
-		byEventAndPersons.forEach(eventParticipant -> contactByPersonUuid.remove(eventParticipant.getPerson().getUuid()));
 
-		if (contactByPersonUuid.isEmpty()) {
-			NotificationHelper.showNotification(I18nProperties.getString(Strings.messageAllContactsAlreadyInEvent), Type.HUMANIZED_MESSAGE, 10000);
+		List<ContactDto> alreadyLinkedContacts = new ArrayList<>();
 
-			return;
-		}
+		byEventAndPersons.forEach(eventParticipant -> {
+			String personUuid = eventParticipant.getPerson().getUuid();
+
+			alreadyLinkedContacts.add(contactByPersonUuid.get(personUuid));
+			contactByPersonUuid.remove(personUuid);
+		});
 
 		//Create EventParticipants for the remaining contacts
 
 		List<PersonDto> remainingPersons = FacadeProvider.getPersonFacade().getByUuids(new ArrayList<>(contactByPersonUuid.keySet()));
 		Map<String, PersonDto> personByUuid = remainingPersons.stream().collect(Collectors.toMap(EntityDto::getUuid, Functions.identity()));
 
-		int contactsAlreadyLinkedToEvent = contacts.size() - contactByPersonUuid.size();
-		String allLinkedMessage = contactsAlreadyLinkedToEvent == 0
-			? I18nProperties.getString(Strings.messageAllContactsLinkedToEvent)
-			: String.format(I18nProperties.getString(Strings.messageCountContactsAlreadyInEvent), contactsAlreadyLinkedToEvent);
-
 		UserReferenceDto currentUser = UserProvider.getCurrent().getUserReference();
 
-		new BulkOperationHandler<ContactDto>(allLinkedMessage, I18nProperties.getString(Strings.messageSomeContactsLinkedToEvent), true)
-			.doBulkOperation(batch -> {
+		new BulkOperationHandler<ContactDto>(
+			Strings.messageAllContactsLinkedToEvent,
+			null,
+			Strings.headingSomeContactsAlreadyInEvent,
+			Strings.messageCountContactsAlreadyInEvent,
+			Strings.messageSomeContactsLinkedToEvent,
+			Strings.messageAllContactsAlreadyInEvent,
+			null).doBulkOperation(batch -> {
 				batch.forEach(contactDataDto -> {
 					EventParticipantDto ep =
 						EventParticipantDto.buildFromPerson(personByUuid.get(contactDataDto.getPerson().getUuid()), eventReferenceDto, currentUser);
@@ -357,7 +360,7 @@ public class EventController {
 				});
 
 				return batch.size();
-			}, new ArrayList<>(contactByPersonUuid.values()), callback);
+			}, new ArrayList<>(contacts), new ArrayList<>(contactByPersonUuid.values()), alreadyLinkedContacts, callback);
 	}
 
 	public void selectEvent(EventGroupReferenceDto eventGroupReference) {

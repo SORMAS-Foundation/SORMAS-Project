@@ -121,7 +121,12 @@ public class ExternalSurveillanceServiceGateway {
 			ArrayList<T> selectedCasesCpy = new ArrayList<>(selectedCases);
 			new BulkOperationHandler<T>(
 				Strings.ExternalSurveillanceToolGateway_notificationEntriesSent,
-				Strings.ExternalSurveillanceToolGateway_notificationSomeEntriesSent).doBulkOperation(batch -> {
+				null,
+				null,
+				null,
+				Strings.ExternalSurveillanceToolGateway_notificationSomeEntriesSent,
+				null,
+				null).doBulkOperation(batch -> {
 					try {
 						FacadeProvider.getExternalSurveillanceToolFacade()
 							.sendCases(batch.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList()));
@@ -130,7 +135,7 @@ public class ExternalSurveillanceServiceGateway {
 					}
 
 					return batch.size();
-				}, selectedCasesCpy, callback);
+				}, selectedCasesCpy, null, null, callback);
 
 		}, null, shouldConfirm, null);
 	}
@@ -143,7 +148,12 @@ public class ExternalSurveillanceServiceGateway {
 			ArrayList<EventIndexDto> selectedEventsCpy = new ArrayList<>(selectedEvents);
 			new BulkOperationHandler<EventIndexDto>(
 				Strings.ExternalSurveillanceToolGateway_notificationEntriesSent,
-				Strings.ExternalSurveillanceToolGateway_notificationSomeEntriesSent).doBulkOperation(batch -> {
+				null,
+				null,
+				null,
+				Strings.ExternalSurveillanceToolGateway_notificationSomeEntriesSent,
+				null,
+				null).doBulkOperation(batch -> {
 					try {
 						FacadeProvider.getExternalSurveillanceToolFacade()
 							.sendEvents(batch.stream().map(EventIndexDto::getUuid).collect(Collectors.toList()));
@@ -152,7 +162,7 @@ public class ExternalSurveillanceServiceGateway {
 					}
 
 					return batch.size();
-				}, selectedEventsCpy, callback);
+				}, selectedEventsCpy, null, null, callback);
 		}, null, shouldConfirm, null);
 	}
 

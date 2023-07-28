@@ -367,19 +367,20 @@ public class UserController {
 						return;
 					}
 
-					new BulkOperationHandler<UserDto>(Strings.messageUsersEnabled, Strings.messageSomeUsersEnabled).doBulkOperation(batch -> {
-						List<String> uuids = batch.stream().map(UserDto::getUuid).collect(Collectors.toList());
-						FacadeProvider.getUserFacade().enableUsers(uuids);
+					new BulkOperationHandler<UserDto>(Strings.messageUsersEnabled, null, null, null, Strings.messageSomeUsersEnabled, null, null)
+						.doBulkOperation(batch -> {
+							List<String> uuids = batch.stream().map(UserDto::getUuid).collect(Collectors.toList());
+							FacadeProvider.getUserFacade().enableUsers(uuids);
 
-						return batch.size();
-					}, new ArrayList<>(selectedRows), remaining -> {
-						userGrid.reload();
-						if (CollectionUtils.isNotEmpty(remaining)) {
-							userGrid.asMultiSelect().selectItems(remaining.toArray(new UserDto[0]));
-						} else {
-							overview();
-						}
-					});
+							return batch.size();
+						}, new ArrayList<>(selectedRows), null, null, remaining -> {
+							userGrid.reload();
+							if (CollectionUtils.isNotEmpty(remaining)) {
+								userGrid.asMultiSelect().selectItems(remaining.toArray(new UserDto[0]));
+							} else {
+								overview();
+							}
+						});
 				});
 		}
 	}
@@ -404,19 +405,20 @@ public class UserController {
 						return;
 					}
 
-					new BulkOperationHandler<UserDto>(Strings.messageUsersDisabled, Strings.messageSomeUsersDisabled).doBulkOperation(batch -> {
-						List<String> uuids = batch.stream().map(UserDto::getUuid).collect(Collectors.toList());
-						FacadeProvider.getUserFacade().disableUsers(uuids);
+					new BulkOperationHandler<UserDto>(Strings.messageUsersDisabled, null, null, null, Strings.messageSomeUsersDisabled, null, null)
+						.doBulkOperation(batch -> {
+							List<String> uuids = batch.stream().map(UserDto::getUuid).collect(Collectors.toList());
+							FacadeProvider.getUserFacade().disableUsers(uuids);
 
-						return batch.size();
-					}, new ArrayList<>(selectedRows), remaining -> {
-						userGrid.reload();
-						if (CollectionUtils.isNotEmpty(remaining)) {
-							userGrid.asMultiSelect().selectItems(remaining.toArray(new UserDto[0]));
-						} else {
-							overview();
-						}
-					});
+							return batch.size();
+						}, new ArrayList<>(selectedRows), null, null, remaining -> {
+							userGrid.reload();
+							if (CollectionUtils.isNotEmpty(remaining)) {
+								userGrid.asMultiSelect().selectItems(remaining.toArray(new UserDto[0]));
+							} else {
+								overview();
+							}
+						});
 				});
 		}
 	}

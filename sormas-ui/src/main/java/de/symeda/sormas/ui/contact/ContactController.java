@@ -835,8 +835,14 @@ public class ContactController {
 					if (Boolean.TRUE.equals(confirmed)) {
 						String userName = UserProvider.getCurrent().getUserName();
 
-						new BulkOperationHandler<ContactIndexDto>(Strings.messageFollowUpCanceled, Strings.messageFollowUpCanceledForSome)
-							.doBulkOperation(batch -> {
+						new BulkOperationHandler<ContactIndexDto>(
+							Strings.messageFollowUpCanceled,
+							null,
+							null,
+							null,
+							Strings.messageFollowUpCanceledForSome,
+							null,
+							null).doBulkOperation(batch -> {
 								for (ContactIndexDto contact : batch) {
 									if (!FollowUpStatus.NO_FOLLOW_UP.equals(contact.getFollowUpStatus())
 										&& !FollowUpStatus.CANCELED.equals(contact.getFollowUpStatus())) {
@@ -848,7 +854,7 @@ public class ContactController {
 								}
 
 								return batch.size();
-							}, new ArrayList<>(selectedRows), bulkOperationCallback(caseUuid, contactGrid, null));
+							}, new ArrayList<>(selectedRows), null, null, bulkOperationCallback(caseUuid, contactGrid, null));
 					}
 				});
 		}
@@ -875,8 +881,14 @@ public class ContactController {
 					if (Boolean.TRUE.equals(confirmed)) {
 						String userName = UserProvider.getCurrent().getUserName();
 
-						new BulkOperationHandler<ContactIndexDto>(Strings.messageFollowUpStatusChanged, Strings.messageFollowUpStatusChangedForSome)
-							.doBulkOperation(batch -> {
+						new BulkOperationHandler<ContactIndexDto>(
+							Strings.messageFollowUpStatusChanged,
+							null,
+							null,
+							null,
+							Strings.messageFollowUpStatusChangedForSome,
+							null,
+							null).doBulkOperation(batch -> {
 								for (ContactIndexDto contact : batch) {
 									if (contact.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
 										ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(contact.getUuid());
@@ -888,7 +900,7 @@ public class ContactController {
 								}
 
 								return batch.size();
-							}, new ArrayList<>(selectedRows), bulkOperationCallback(caseUuid, contactGrid, null));
+							}, new ArrayList<>(selectedRows), null, null, bulkOperationCallback(caseUuid, contactGrid, null));
 					}
 				});
 		}
