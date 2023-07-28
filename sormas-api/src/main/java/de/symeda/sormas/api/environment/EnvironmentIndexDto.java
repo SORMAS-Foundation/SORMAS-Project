@@ -3,9 +3,16 @@ package de.symeda.sormas.api.environment;
 import java.util.Date;
 
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizable;
+import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
+import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer;
+import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
+import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
 
-public class EnvironmentIndexDto extends AbstractUuidDto {
+public class EnvironmentIndexDto extends AbstractUuidDto implements Pseudonymizable {
 
 	public static final String I18N_PREFIX = "Environment";
 
@@ -28,13 +35,28 @@ public class EnvironmentIndexDto extends AbstractUuidDto {
 
 	private String region;
 	private String district;
+	@PersonalData
+	@SensitiveData
 	private String community;
+	@PersonalData
+	@SensitiveData
+	@Pseudonymizer(LatitudePseudonymizer.class)
 	private Double latitude;
+	@PersonalData
+	@SensitiveData
+	@Pseudonymizer(LongitudePseudonymizer.class)
 	private Double longitude;
+	@PersonalData()
+	@SensitiveData()
+	@Pseudonymizer(PostalCodePseudonymizer.class)
 	private String postalCode;
+	@PersonalData
+	@SensitiveData
 	private String city;
 	private Date reportDate;
 	private InvestigationStatus investigationStatus;
+	private boolean inJurisdiction;
+	private boolean pseudonymized;
 
 	public EnvironmentIndexDto(
 		String uuid,
@@ -49,7 +71,8 @@ public class EnvironmentIndexDto extends AbstractUuidDto {
 		String postalCode,
 		String city,
 		Date reportDate,
-		InvestigationStatus investigationStatus) {
+		InvestigationStatus investigationStatus,
+		boolean inJurisdiction) {
 
 		super(uuid);
 		this.externalId = externalId;
@@ -64,6 +87,7 @@ public class EnvironmentIndexDto extends AbstractUuidDto {
 		this.city = city;
 		this.reportDate = reportDate;
 		this.investigationStatus = investigationStatus;
+		this.inJurisdiction = inJurisdiction;
 	}
 
 	public EnvironmentIndexDto(String uuid) {
@@ -164,5 +188,25 @@ public class EnvironmentIndexDto extends AbstractUuidDto {
 
 	public void setInvestigationStatus(InvestigationStatus investigationStatus) {
 		this.investigationStatus = investigationStatus;
+	}
+
+	@Override
+	public boolean isPseudonymized() {
+		return pseudonymized;
+	}
+
+	@Override
+	public void setPseudonymized(boolean pseudonymized) {
+		this.pseudonymized = pseudonymized;
+	}
+
+	@Override
+	public boolean isInJurisdiction() {
+		return inJurisdiction;
+	}
+
+	@Override
+	public void setInJurisdiction(boolean inJurisdiction) {
+		this.inJurisdiction = inJurisdiction;
 	}
 }
