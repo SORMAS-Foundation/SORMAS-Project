@@ -294,6 +294,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 			|| DatabaseHelper.getSampleDao().isAnyModified()
 			|| DatabaseHelper.getSampleTestDao().isAnyModified()
 			|| DatabaseHelper.getAdditionalTestDao().isAnyModified()
+			|| DatabaseHelper.getEnvironmentDao().isAnyModified()
 			|| DatabaseHelper.getTaskDao().isAnyModified()
 			|| DatabaseHelper.getVisitDao().isAnyModified()
 			|| DatabaseHelper.getWeeklyReportDao().isAnyModified()
@@ -315,6 +316,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		new SampleDtoHelper().pushEntities(true, syncCallbacks);
 		new PathogenTestDtoHelper().pushEntities(true, syncCallbacks);
 		new AdditionalTestDtoHelper().pushEntities(true, syncCallbacks);
+		new EnvironmentDtoHelper().pushEntities(true, syncCallbacks);
 		new ContactDtoHelper().pushEntities(true, syncCallbacks);
 		new VisitDtoHelper().pushEntities(true, syncCallbacks);
 		new TaskDtoHelper().pushEntities(true, syncCallbacks);
@@ -732,19 +734,18 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 			}
 			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
 
-			if (DtoUserRightsHelper.isViewAllowed(Environment.class)) {
+			if (DtoUserRightsHelper.isViewAllowed(EnvironmentDto.class)) {
 				List<String> environmentUuids =
 					executeUuidCall(RetroProvider.getEnvironmentFacade().pullObsoleteUuidsSince(since != null ? since.getTime() : 0));
 				for (String environmentUuid : environmentUuids) {
 					DatabaseHelper.getEnvironmentDao().deleteEnvironmentAndAllDependingEntities(environmentUuid);
 				}
+				// Remove obsolete environments based on change date
+				List<Environment> obsoleteEnvironments = DatabaseHelper.getEnvironmentDao().queryForObsolete();
+				for (Environment obsoleteEnvironment : obsoleteEnvironments) {
+					DatabaseHelper.getEnvironmentDao().deleteEnvironmentAndAllDependingEntities(obsoleteEnvironment.getUuid());
+				}
 			}
-			// Remove obsolete environments based on change date
-			List<Environment> obsoleteEnvironments = DatabaseHelper.getEnvironmentDao().queryForObsolete();
-			for (Environment obsoleteEnvironment : obsoleteEnvironments) {
-				DatabaseHelper.getEnvironmentDao().deleteEnvironmentAndAllDependingEntities(obsoleteEnvironment.getUuid());
-			}
-
 			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
 
 			// Tasks
@@ -846,7 +847,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		List<String> sampleUuids = viewAllowed ? executeUuidCall(RetroProvider.getSampleFacade().pullUuids()) : new ArrayList<>();
 		DatabaseHelper.getSampleDao().deleteInvalid(sampleUuids, syncCallbacks);
 		//environments
-		viewAllowed = DtoUserRightsHelper.isViewAllowed(Environment.class);
+		viewAllowed = DtoUserRightsHelper.isViewAllowed(EnvironmentDto.class);
 		List<String> environmentUuids = viewAllowed ? executeUuidCall(RetroProvider.getEnvironmentFacade().pullUuids()) : new ArrayList<>();
 		DatabaseHelper.getEnvironmentDao().deleteInvalid(environmentUuids, syncCallbacks);
 		// event participants
