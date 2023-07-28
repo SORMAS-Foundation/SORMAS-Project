@@ -621,3 +621,12 @@ Scenario: Create and send laboratory request via Demis
     And I click next button while processing a DEMIS LabMessage
     And I click next button while processing a DEMIS LabMessage
     And I click on "save and open" button in new sample form with pathogen detection reporting process
+    Then I check if there is no displayed sample result on Edit case page
+    And I click on Display associated external messages button from Reports side component
+    And I check if external message window appears and close it
+    Then I click on the Messages button from navbar
+    And I filter by last created person via API in Messages Directory
+    And I verify that status for result 1 is set to processed in Message Directory page
+    And I select "Physician's report" type of message in Message Directory page
+    And I click on the APPLY FILTERS button
+    And I check that all displayed messages have "Physician's report" in grid Message Directory Type column

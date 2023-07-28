@@ -29,6 +29,7 @@ import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPa
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FIRST_TIME_FETCH_MESSAGE_POPUP;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FORWARDED_MESSAGE_COUNTER;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.GET_NEW_MESSAGES_POPUP;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.GRID_RESULTS_TYPE;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MARK_AS_FORWARDED_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MARK_AS_UNCLEAR_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGE_DELETE_BUTTON;
@@ -52,6 +53,7 @@ import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPa
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.RESET_FILTER_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.SEARCH_MESSAGE_INPUT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.TOTAL_MESSAGE_COUNTER;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.TYPE_OF_MESSAGE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.UNCLEAR_MESSAGE_COUNTER;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.UPDATE_CASE_DISEASE_VARIANT_CONFIRM_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.getProcessMessageButtonByIndex;
@@ -379,6 +381,19 @@ public class MessagesDirectorySteps implements En {
               diseaseVariant,
               "Disease variant is not empty");
           softly.assertAll();
+        });
+
+    And(
+        "^I select \"([^\"]*)\" type of message in Message Directory page$",
+        (String typeOfMessage) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(TYPE_OF_MESSAGE_COMBOBOX);
+          webDriverHelpers.selectFromCombobox(TYPE_OF_MESSAGE_COMBOBOX, typeOfMessage);
+        });
+
+    And(
+        "^I check that all displayed messages have \"([^\"]*)\" in grid Message Directory Type column$",
+        (String type) -> {
+          webDriverHelpers.waitUntilAListOfElementsHasText(GRID_RESULTS_TYPE, type);
         });
   }
 }

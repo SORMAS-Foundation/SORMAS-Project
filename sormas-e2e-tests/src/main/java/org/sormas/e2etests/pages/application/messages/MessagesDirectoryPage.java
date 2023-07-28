@@ -145,4 +145,6 @@ public class MessagesDirectoryPage {
   public static final By NEW_SAMPLE_FORM_SECOND_PATHOGEN_TEST_TYPE_INPUT =
           By.xpath("(//div[contains(@id, 'testType')]//input)[2]");
   public static final By NEXT_BUTTON = By.id("actionNext");
+  public static final By TYPE_OF_MESSAGE_COMBOBOX = By.cssSelector("[id='type'] [class='v-filterselect-button']");
+  public static final By GRID_RESULTS_TYPE = By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(3)");
 }

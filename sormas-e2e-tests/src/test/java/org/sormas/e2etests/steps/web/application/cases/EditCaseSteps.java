@@ -18,6 +18,55 @@
 
 package org.sormas.e2etests.steps.web.application.cases;
 
+import cucumber.api.java8.En;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.openqa.selenium.By;
+import org.sormas.e2etests.common.DataOperations;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.Case;
+import org.sormas.e2etests.entities.pojo.web.QuarantineOrder;
+import org.sormas.e2etests.entities.pojo.web.Vaccination;
+import org.sormas.e2etests.entities.pojo.web.epidemiologicalData.Exposure;
+import org.sormas.e2etests.entities.services.CaseDocumentService;
+import org.sormas.e2etests.entities.services.CaseService;
+import org.sormas.e2etests.enums.CaseClassification;
+import org.sormas.e2etests.enums.CaseOutcome;
+import org.sormas.e2etests.enums.YesNoUnknownOptions;
+import org.sormas.e2etests.enums.cases.epidemiologicalData.ExposureDetailsRole;
+import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfActivityExposure;
+import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
+import org.sormas.e2etests.helpers.AssertHelpers;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.helpers.files.FilesHelper;
+import org.sormas.e2etests.pages.application.NavBarPage;
+import org.sormas.e2etests.pages.application.cases.EditCasePage;
+import org.sormas.e2etests.pages.application.contacts.EditContactPage;
+import org.sormas.e2etests.pages.application.events.EditEventPage;
+import org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage;
+import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.web.application.contacts.EditContactSteps;
+import org.sormas.e2etests.steps.web.application.immunizations.EditImmunizationSteps;
+import org.sormas.e2etests.steps.web.application.samples.CreateNewSampleSteps;
+import org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps;
+import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
+
+import javax.inject.Inject;
+import java.io.FileInputStream;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+
 import static org.sormas.e2etests.enums.CaseOutcome.DECEASED;
 import static org.sormas.e2etests.enums.CaseOutcome.FACILITY_OTHER;
 import static org.sormas.e2etests.enums.CaseOutcome.INVESTIGATION_DISCARDED;
@@ -215,6 +264,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.RESPONSIB
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.RESUME_FOLLOW_UP_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REVOKE_CASE_POPUP_HEADER;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAHRE_SAMPLES_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAMPLES_CARD_DATE_OF_COLLECTED_SAMPLE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_AND_OPEN_HOSPITALIZATION_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPUP_CONTENT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SEND_TO_REPORTING_TOOL_BUTTON;
@@ -292,54 +342,6 @@ import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELET
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_SAMPLE_REASON_POPUP_FOR_DE;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static org.sormas.e2etests.steps.web.application.contacts.ContactDirectorySteps.exposureData;
-
-import cucumber.api.java8.En;
-import java.io.FileInputStream;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-import javax.inject.Inject;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.openxml4j.opc.OPCPackage;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
-import org.openqa.selenium.By;
-import org.sormas.e2etests.common.DataOperations;
-import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.entities.pojo.web.Case;
-import org.sormas.e2etests.entities.pojo.web.QuarantineOrder;
-import org.sormas.e2etests.entities.pojo.web.Vaccination;
-import org.sormas.e2etests.entities.pojo.web.epidemiologicalData.Exposure;
-import org.sormas.e2etests.entities.services.CaseDocumentService;
-import org.sormas.e2etests.entities.services.CaseService;
-import org.sormas.e2etests.enums.CaseClassification;
-import org.sormas.e2etests.enums.CaseOutcome;
-import org.sormas.e2etests.enums.YesNoUnknownOptions;
-import org.sormas.e2etests.enums.cases.epidemiologicalData.ExposureDetailsRole;
-import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfActivityExposure;
-import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
-import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
-import org.sormas.e2etests.helpers.AssertHelpers;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.helpers.files.FilesHelper;
-import org.sormas.e2etests.pages.application.NavBarPage;
-import org.sormas.e2etests.pages.application.cases.EditCasePage;
-import org.sormas.e2etests.pages.application.contacts.EditContactPage;
-import org.sormas.e2etests.pages.application.events.EditEventPage;
-import org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage;
-import org.sormas.e2etests.state.ApiState;
-import org.sormas.e2etests.steps.web.application.contacts.EditContactSteps;
-import org.sormas.e2etests.steps.web.application.immunizations.EditImmunizationSteps;
-import org.sormas.e2etests.steps.web.application.samples.CreateNewSampleSteps;
-import org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps;
-import org.testng.Assert;
-import org.testng.asserts.SoftAssert;
 
 @Slf4j
 public class EditCaseSteps implements En {
@@ -2937,6 +2939,15 @@ public class EditCaseSteps implements En {
         (String infectionOption) -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(INFECTION_SETTINGS_INPUT);
           webDriverHelpers.fillAndSubmitInWebElement(INFECTION_SETTINGS_INPUT, infectionOption);
+        });
+
+    Then(
+        "^I check if there is no displayed sample result on Edit case page$",
+        () -> {
+          softly.assertFalse(
+              webDriverHelpers.isElementPresent(SAMPLES_CARD_DATE_OF_COLLECTED_SAMPLE),
+              "Element is present!");
+          softly.assertAll();
         });
   }
 
