@@ -1025,6 +1025,7 @@ public class CaseController {
 			CaseBulkEditData updatedBulkEditData = form.getValue();
 
 			boolean diseaseChange = form.getDiseaseCheckBox().getValue();
+			boolean diseaseVariantChange = form.getDiseaseVariantCheckBox().getValue();
 			boolean classificationChange = form.getClassificationCheckBox().getValue();
 			boolean investigationStatusChange = form.getInvestigationStatusCheckBox().getValue();
 			boolean outcomeChange = form.getOutcomeCheckBox().getValue();
@@ -1046,6 +1047,7 @@ public class CaseController {
 								selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
 								updatedBulkEditData,
 								diseaseChange,
+								diseaseVariantChange,
 								classificationChange,
 								investigationStatusChange,
 								outcomeChange,
@@ -1062,6 +1064,7 @@ public class CaseController {
 							selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
 							updatedBulkEditData,
 							diseaseChange,
+							diseaseVariantChange,
 							classificationChange,
 							investigationStatusChange,
 							outcomeChange,
