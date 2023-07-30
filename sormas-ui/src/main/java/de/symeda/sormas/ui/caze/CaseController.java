@@ -1660,11 +1660,10 @@ public class CaseController {
 		return titleLayout;
 	}
 
-	public void sendCasesToExternalSurveillanceTool(Collection<? extends CaseIndexDto> selectedCases, Runnable reloadCallback) {
-		List<String> selectedUuids = selectedCases.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList());
+	public <T extends CaseIndexDto> void sendCasesToExternalSurveillanceTool(Collection<T> selectedCases, AbstractCaseGrid<?> caseGrid) {
 
 		// Show an error when at least one selected case is not a CORONAVIRUS case
-		Optional<? extends CaseIndexDto> nonCoronavirusCase = selectedCases.stream().filter(c -> c.getDisease() != Disease.CORONAVIRUS).findFirst();
+		Optional<T> nonCoronavirusCase = selectedCases.stream().filter(c -> c.getDisease() != Disease.CORONAVIRUS).findFirst();
 		if (nonCoronavirusCase.isPresent()) {
 			Notification.show(
 				String.format(
@@ -1677,11 +1676,11 @@ public class CaseController {
 		}
 
 		// Show an error when at least one selected case is not owned by this server because ownership has been handed over
+		List<String> selectedUuids = selectedCases.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList());
 		List<String> notSharableUuids = FacadeProvider.getCaseFacade().getUuidsNotShareableWithExternalReportingTools(selectedUuids);
 		if (CollectionUtils.isNotEmpty(notSharableUuids)) {
 
-			List<String> uuidsWithoutNotShareable =
-				selectedUuids.stream().filter(uuid -> !notSharableUuids.contains(uuid)).collect(Collectors.toList());
+			List<T> withoutNotShareable = selectedCases.stream().filter(c -> !notSharableUuids.contains(c.getUuid())).collect(Collectors.toList());
 
 			TextArea notShareableListComponent = new TextArea("", new ArrayList<>(notSharableUuids).toString());
 			notShareableListComponent.setWidthFull();
@@ -1690,11 +1689,11 @@ public class CaseController {
 				String.format(
 					I18nProperties.getString(Strings.errorExternalSurveillanceToolCasesNotSharable),
 					notSharableUuids.size(),
-					selectedUuids.size()),
+					selectedCases.size()),
 				ContentMode.HTML);
 			notSharableLabel.addStyleName(CssStyles.LABEL_WHITE_SPACE_NORMAL);
 
-			if (existShareableCases(selectedUuids.size(), notSharableUuids.size())) {
+			if (existShareableCases(selectedCases.size(), notSharableUuids.size())) {
 				VaadinUiUtil.showPopupWindow(
 					new VerticalLayout(notSharableLabel, notShareableListComponent),
 					I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send));
@@ -1704,18 +1703,19 @@ public class CaseController {
 					new VerticalLayout(notSharableLabel, notShareableListComponent),
 					String.format(
 						I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_excludeAndSend),
-						uuidsWithoutNotShareable.size(),
-						selectedUuids.size()),
+						withoutNotShareable.size(),
+						selectedCases.size()),
 					I18nProperties.getCaption(Captions.actionCancel),
 					800,
 					(confirmed) -> {
 						if (confirmed) {
-							ExternalSurveillanceServiceGateway.sendCasesToExternalSurveillanceTool(uuidsWithoutNotShareable, reloadCallback, false);
+							ExternalSurveillanceServiceGateway
+								.sendCasesToExternalSurveillanceTool(withoutNotShareable, false, bulkOperationCallback(caseGrid, null));
 						}
 					});
 			}
 		} else {
-			ExternalSurveillanceServiceGateway.sendCasesToExternalSurveillanceTool(selectedUuids, reloadCallback, true);
+			ExternalSurveillanceServiceGateway.sendCasesToExternalSurveillanceTool(selectedCases, true, bulkOperationCallback(caseGrid, null));
 		}
 	}
 
