@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.common.base.Functions;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
@@ -45,6 +46,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -71,6 +73,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.uuid.HasUuid;
@@ -124,8 +127,8 @@ public class EventController {
 		return eventDto;
 	}
 
-	public EventDto createFromContactList(List<ContactReferenceDto> contactRefs) {
-		CommitDiscardWrapperComponent<EventDataForm> eventCreateComponent = getEventCreateComponentForContactList(contactRefs);
+	public EventDto createFromContactList(List<ContactReferenceDto> contactRefs, Consumer<List<ContactReferenceDto>> callback) {
+		CommitDiscardWrapperComponent<EventDataForm> eventCreateComponent = getEventCreateComponentForContactList(contactRefs, callback);
 		EventDto eventDto = eventCreateComponent.getWrappedComponent().getValue();
 		VaadinUiUtil.showModalPopupWindow(eventCreateComponent, I18nProperties.getString(Strings.headingCreateNewEvent));
 		return eventDto;
@@ -226,7 +229,7 @@ public class EventController {
 		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateEvent));
 	}
 
-	public void selectOrCreateEventForContactList(List<ContactReferenceDto> contactRefs) {
+	public void selectOrCreateEventForContactList(List<ContactReferenceDto> contactRefs, Consumer<List<ContactReferenceDto>> callback) {
 
 		if (contactRefs == null || contactRefs.isEmpty()) {
 			return;
@@ -246,9 +249,12 @@ public class EventController {
 			EventIndexDto selectedEvent = eventSelect.getValue();
 			if (selectedEvent != null) {
 				EventReferenceDto eventReferenceDto = new EventReferenceDto(selectedEvent.getUuid());
-				linkContactsToEvent(eventReferenceDto, contactDtos);
+				linkContactsToEvent(
+					eventReferenceDto,
+					contactDtos,
+					remaining -> callback.accept(remaining.stream().map(ContactDto::toReference).collect(Collectors.toList())));
 			} else {
-				createFromContactList(contactRefs);
+				createFromContactList(contactRefs, callback);
 				SormasUI.refreshView();
 			}
 		});
@@ -315,51 +321,46 @@ public class EventController {
 		NotificationHelper.showNotification(message, Type.HUMANIZED_MESSAGE, 10000);
 	}
 
-	private void linkContactsToEvent(EventReferenceDto eventReferenceDto, List<ContactDto> contacts) {
+	private void linkContactsToEvent(EventReferenceDto eventReferenceDto, List<ContactDto> contacts, Consumer<List<ContactDto>> callback) {
 
-		Map<String, ContactDto> contactByPersonUuid = new HashMap<>();
+		Map<String, ContactDto> contactByPersonUuid =
+			contacts.stream().collect(Collectors.toMap(c -> c.getPerson().getUuid(), Functions.identity(), (c1, c2) -> c1));
 
-		List<String> personUuids = contacts.stream().map(contactDataDto -> {
-			String personUuid = contactDataDto.getPerson().getUuid();
-			if (!contactByPersonUuid.containsKey(personUuid)) {
-				contactByPersonUuid.put(personUuid, contactDataDto);
-			}
-			return personUuid;
-		}).collect(Collectors.toList());
+		List<EventParticipantDto> byEventAndPersons = FacadeProvider.getEventParticipantFacade()
+			.getByEventAndPersons(eventReferenceDto.getUuid(), new ArrayList<>(contactByPersonUuid.keySet()));
 
-		FacadeProvider.getEventParticipantFacade()
-			.getByEventAndPersons(eventReferenceDto.getUuid(), personUuids)
-			.stream()
-			.forEach(eventParticipant -> contactByPersonUuid.remove(eventParticipant.getPerson().getUuid()));
+		List<ContactDto> alreadyLinkedContacts = new ArrayList<>();
 
-		Collection<ContactDto> remainingContacts = contactByPersonUuid.values();
-		int contactsAlreadyLinkedToEvent = contacts.size() - remainingContacts.size();
+		byEventAndPersons.forEach(eventParticipant -> {
+			String personUuid = eventParticipant.getPerson().getUuid();
+
+			alreadyLinkedContacts.add(contactByPersonUuid.get(personUuid));
+			contactByPersonUuid.remove(personUuid);
+		});
 
 		//Create EventParticipants for the remaining contacts
-		if (!remainingContacts.isEmpty()) {
-			List<String> remainingPersonUuids =
-				remainingContacts.stream().map(caseDataDto -> caseDataDto.getPerson().getUuid()).collect(Collectors.toList());
-			List<PersonDto> remainingPersons = FacadeProvider.getPersonFacade().getByUuids(remainingPersonUuids);
-			HashMap<String, PersonDto> personByUuid = new HashMap<>();
-			remainingPersons.stream().forEach(personDto -> personByUuid.put(personDto.getUuid(), personDto));
 
-			remainingContacts.stream().forEach(contactDataDto -> {
-				EventParticipantDto ep = EventParticipantDto.buildFromPerson(
-					personByUuid.get(contactDataDto.getPerson().getUuid()),
-					eventReferenceDto,
-					UserProvider.getCurrent().getUserReference());
-				FacadeProvider.getEventParticipantFacade().save(ep);
-			});
-		}
+		List<PersonDto> remainingPersons = FacadeProvider.getPersonFacade().getByUuids(new ArrayList<>(contactByPersonUuid.keySet()));
+		Map<String, PersonDto> personByUuid = remainingPersons.stream().collect(Collectors.toMap(EntityDto::getUuid, Functions.identity()));
 
-		String message = remainingContacts.isEmpty()
-			? I18nProperties.getString(Strings.messageAllContactsAlreadyInEvent)
-			: contactsAlreadyLinkedToEvent == 0
-				? I18nProperties.getString(Strings.messageAllContactsLinkedToEvent)
-				: String.format(I18nProperties.getString(Strings.messageCountContactsAlreadyInEvent), contactsAlreadyLinkedToEvent);
+		UserReferenceDto currentUser = UserProvider.getCurrent().getUserReference();
 
-		SormasUI.refreshView();
-		NotificationHelper.showNotification(message, Type.HUMANIZED_MESSAGE, 10000);
+		new BulkOperationHandler<ContactDto>(
+			Strings.messageAllContactsLinkedToEvent,
+			null,
+			Strings.headingSomeContactsAlreadyInEvent,
+			Strings.messageCountContactsAlreadyInEvent,
+			Strings.messageSomeContactsLinkedToEvent,
+			Strings.messageAllContactsAlreadyInEvent,
+			null).doBulkOperation(batch -> {
+				batch.forEach(contactDataDto -> {
+					EventParticipantDto ep =
+						EventParticipantDto.buildFromPerson(personByUuid.get(contactDataDto.getPerson().getUuid()), eventReferenceDto, currentUser);
+					FacadeProvider.getEventParticipantFacade().save(ep);
+				});
+
+				return batch.size();
+			}, new ArrayList<>(contacts), new ArrayList<>(contactByPersonUuid.values()), alreadyLinkedContacts, callback);
 	}
 
 	public void selectEvent(EventGroupReferenceDto eventGroupReference) {
@@ -710,10 +711,12 @@ public class EventController {
 		return editView;
 	}
 
-	public CommitDiscardWrapperComponent<EventDataForm> getEventCreateComponentForContactList(List<ContactReferenceDto> contactRefs) {
+	public CommitDiscardWrapperComponent<EventDataForm> getEventCreateComponentForContactList(
+		List<ContactReferenceDto> contactRefs,
+		Consumer<List<ContactReferenceDto>> callback) {
 
 		List<ContactDto> contactDtos =
-			FacadeProvider.getContactFacade().getByUuids(contactRefs.stream().map(c -> c.getUuid()).collect(Collectors.toList()));
+			FacadeProvider.getContactFacade().getByUuids(contactRefs.stream().map(ReferenceDto::getUuid).collect(Collectors.toList()));
 
 		EventDataForm eventCreateForm = new EventDataForm(true, false, true); // Valid because jurisdiction doesn't matter for entities that are about to be created
 		eventCreateForm.setValue(createNewEvent(contactDtos.stream().findFirst().get().getDisease()));
@@ -723,14 +726,16 @@ public class EventController {
 			UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE),
 			eventCreateForm.getFieldGroup());
 
-		List<ContactDto> finalContactDtos = contactDtos;
 		editView.addCommitListener(() -> {
 			if (!eventCreateForm.getFieldGroup().isModified()) {
 				EventDto dto = eventCreateForm.getValue();
 				FacadeProvider.getEventFacade().save(dto);
 				Notification.show(I18nProperties.getString(Strings.messageEventCreated), Type.WARNING_MESSAGE);
 
-				linkContactsToEvent(new EventReferenceDto(dto.getUuid()), finalContactDtos);
+				linkContactsToEvent(
+					new EventReferenceDto(dto.getUuid()),
+					contactDtos,
+					remaining -> callback.accept(remaining.stream().map(ContactDto::toReference).collect(Collectors.toList())));
 			}
 		});
 
@@ -1074,9 +1079,7 @@ public class EventController {
 		return titleLayout;
 	}
 
-	public void sendAllSelectedToExternalSurveillanceTool(Set<EventIndexDto> selectedRows, Runnable callback) {
-		List<String> selectedUuids = selectedRows.stream().map(EventIndexDto::getUuid).collect(Collectors.toList());
-
+	public void sendAllSelectedToExternalSurveillanceTool(Set<EventIndexDto> selectedRows, EventGrid eventGrid) {
 		// Show an error when at least one selected event is not a CLUSTER event
 		Optional<? extends EventIndexDto> nonClusterEvent = selectedRows.stream().filter(e -> e.getEventStatus() != EventStatus.CLUSTER).findFirst();
 		if (nonClusterEvent.isPresent()) {
@@ -1091,10 +1094,11 @@ public class EventController {
 		}
 
 		// Show an error when at least one selected event is not owned by this server because ownership has been handed over
+		List<String> selectedUuids = selectedRows.stream().map(EventIndexDto::getUuid).collect(Collectors.toList());
 		List<String> ownershipHandedOverUuids = FacadeProvider.getEventFacade().getEventUuidsWithOwnershipHandedOver(selectedUuids);
 		if (CollectionUtils.isNotEmpty(ownershipHandedOverUuids)) {
-			List<String> uuidsWithoutNotSharable =
-				selectedUuids.stream().filter(uuid -> !ownershipHandedOverUuids.contains(uuid)).collect(Collectors.toList());
+			List<EventIndexDto> withoutNotSharable =
+				selectedRows.stream().filter(e -> !ownershipHandedOverUuids.contains(e.getUuid())).collect(Collectors.toList());
 
 			TextArea notShareableListComponent = new TextArea("", new ArrayList<>(ownershipHandedOverUuids).toString());
 			notShareableListComponent.setWidthFull();
@@ -1108,17 +1112,22 @@ public class EventController {
 				new VerticalLayout(notSharableLabel, notShareableListComponent),
 				String.format(
 					I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_excludeAndSend),
-					uuidsWithoutNotSharable.size(),
-					selectedUuids.size()),
+					withoutNotSharable.size(),
+					selectedRows.size()),
 				I18nProperties.getCaption(Captions.actionCancel),
 				800,
 				(confirmed) -> {
 					if (confirmed) {
-						ExternalSurveillanceServiceGateway.sendEventsToExternalSurveillanceTool(selectedUuids, callback, false);
+						ExternalSurveillanceServiceGateway
+							.sendEventsToExternalSurveillanceTool(withoutNotSharable, false, bulkOperationCallback(eventGrid, null));
 					}
 				});
 		} else {
-			ExternalSurveillanceServiceGateway.sendEventsToExternalSurveillanceTool(selectedUuids, callback, true);
+			ExternalSurveillanceServiceGateway.sendEventsToExternalSurveillanceTool(selectedRows, true, bulkOperationCallback(eventGrid, null));
 		}
+	}
+
+	public void linkAllToGroup(Set<EventIndexDto> selectedItems, EventGrid eventGrid) {
+		ControllerProvider.getEventGroupController().linkAllToGroup(selectedItems, bulkOperationCallback(eventGrid, null));
 	}
 }

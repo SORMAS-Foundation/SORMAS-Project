@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
+
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.CheckBox;
@@ -47,6 +49,8 @@ import de.symeda.sormas.api.caze.CaseBulkEditData;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -72,6 +76,8 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 	private static final long serialVersionUID = 1L;
 
 	private static final String DISEASE_CHECKBOX = "diseaseCheckbox";
+
+	private static final String DISEASE_VARIANT_CHECKBOX = "diseaseVariantCheckbox";
 	private static final String CLASSIFICATION_CHECKBOX = "classificationCheckbox";
 	private static final String INVESTIGATION_STATUS_CHECKBOX = "investigationStatusCheckbox";
 	private static final String OUTCOME_CHECKBOX = "outcomeCheckbox";
@@ -85,14 +91,16 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 
 	//@formatter:off
     private static final String HTML_LAYOUT =
-            fluidRowLocsCss(VSPACE_4, DISEASE_CHECKBOX) +
+            		fluidRowLocsCss(VSPACE_4, DISEASE_CHECKBOX) +
                     fluidRow(
-                            fluidColumnLoc(6, 0, CaseDataDto.DISEASE),
+                            fluidColumnLoc(6, 0, CaseBulkEditData.DISEASE),
                             fluidColumn(6, 0, locs(
-                                    CaseDataDto.DISEASE_DETAILS,
-                                    CaseDataDto.PLAGUE_TYPE,
-                                    CaseDataDto.DENGUE_FEVER_TYPE,
-                                    CaseDataDto.RABIES_TYPE))) +
+									CaseBulkEditData.DISEASE_DETAILS,
+									CaseBulkEditData.PLAGUE_TYPE,
+									CaseBulkEditData.DENGUE_FEVER_TYPE,
+									CaseBulkEditData.RABIES_TYPE))) +
+                    fluidRowLocsCss(VSPACE_4, DISEASE_VARIANT_CHECKBOX) +
+					fluidRowLocs(CaseBulkEditData.DISEASE_VARIANT, CaseBulkEditData.DISEASE_VARIANT_DETAILS) +
                     fluidRowLocsCss(VSPACE_4, CLASSIFICATION_CHECKBOX) +
                     fluidRowLocs(CaseBulkEditData.CASE_CLASSIFICATION) +
                     fluidRowLocsCss(VSPACE_4, INVESTIGATION_STATUS_CHECKBOX) +
@@ -107,9 +115,9 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
                             CaseBulkEditData.COMMUNITY) +
                     fluidRowLocs(FACILITY_OR_HOME_LOC, TYPE_GROUP_LOC, CaseBulkEditData.FACILITY_TYPE) +
                     fluidRowLocs(WARNING_LAYOUT) +
-                    fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseBulkEditData.HEALTH_FACILITY_DETAILS) +
+                    fluidRowLocs(CaseBulkEditData.HEALTH_FACILITY, CaseBulkEditData.HEALTH_FACILITY_DETAILS) +
                     fluidRowLocs(SHARE_CHECKBOX) +
-                    fluidRowLocs(CaseDataDto.DONT_SHARE_WITH_REPORTING_TOOL) +
+                    fluidRowLocs(CaseBulkEditData.DONT_SHARE_WITH_REPORTING_TOOL) +
                     fluidRowLocs(DONT_SHARE_WARNING_LOC);
     //@formatter:on
 
@@ -118,6 +126,8 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 	private boolean initialized = false;
 
 	private CheckBox diseaseCheckBox;
+
+	private CheckBox diseaseVariantCheckBox;
 	private CheckBox classificationCheckBox;
 	private CheckBox investigationStatusCheckBox;
 	private CheckBox outcomeCheckBox;
@@ -148,38 +158,81 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 			return;
 		}
 
+		// Disease
 		diseaseCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkDisease));
 		getContent().addComponent(diseaseCheckBox, DISEASE_CHECKBOX);
-		ComboBox disease = addDiseaseField(CaseDataDto.DISEASE, false);
-		disease.setEnabled(false);
-		addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
-		addField(CaseDataDto.PLAGUE_TYPE, NullableOptionGroup.class);
-		addField(CaseDataDto.DENGUE_FEVER_TYPE, NullableOptionGroup.class);
-		addField(CaseDataDto.RABIES_TYPE, NullableOptionGroup.class);
+		ComboBox diseaseField = addDiseaseField(CaseBulkEditData.DISEASE, false);
+		diseaseField.setEnabled(false);
+		addField(CaseBulkEditData.DISEASE_DETAILS, TextField.class);
+		addField(CaseBulkEditData.PLAGUE_TYPE, NullableOptionGroup.class);
+		addField(CaseBulkEditData.DENGUE_FEVER_TYPE, NullableOptionGroup.class);
+		addField(CaseBulkEditData.RABIES_TYPE, NullableOptionGroup.class);
 
-		if (isVisibleAllowed(CaseDataDto.DISEASE_DETAILS)) {
-			FieldHelper
-				.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.DISEASE_DETAILS), CaseDataDto.DISEASE, Arrays.asList(Disease.OTHER), true);
-			FieldHelper
-				.setRequiredWhen(getFieldGroup(), CaseDataDto.DISEASE, Arrays.asList(CaseDataDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));
-		}
-		if (isVisibleAllowed(CaseDataDto.PLAGUE_TYPE)) {
-			FieldHelper
-				.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.PLAGUE_TYPE), CaseDataDto.DISEASE, Arrays.asList(Disease.PLAGUE), true);
-		}
-		if (isVisibleAllowed(CaseDataDto.DENGUE_FEVER_TYPE)) {
+		if (isVisibleAllowed(CaseBulkEditData.DISEASE_DETAILS)) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
-				Arrays.asList(CaseDataDto.DENGUE_FEVER_TYPE),
-				CaseDataDto.DISEASE,
+				Arrays.asList(CaseBulkEditData.DISEASE_DETAILS),
+				CaseBulkEditData.DISEASE,
+				Arrays.asList(Disease.OTHER),
+				true);
+			FieldHelper.setRequiredWhen(
+				getFieldGroup(),
+				CaseBulkEditData.DISEASE,
+				Arrays.asList(CaseBulkEditData.DISEASE_DETAILS),
+				Arrays.asList(Disease.OTHER));
+		}
+		if (isVisibleAllowed(CaseBulkEditData.PLAGUE_TYPE)) {
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				Arrays.asList(CaseBulkEditData.PLAGUE_TYPE),
+				CaseBulkEditData.DISEASE,
+				Arrays.asList(Disease.PLAGUE),
+				true);
+		}
+		if (isVisibleAllowed(CaseBulkEditData.DENGUE_FEVER_TYPE)) {
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				Arrays.asList(CaseBulkEditData.DENGUE_FEVER_TYPE),
+				CaseBulkEditData.DISEASE,
 				Arrays.asList(Disease.DENGUE),
 				true);
 		}
-		if (isVisibleAllowed(CaseDataDto.RABIES_TYPE)) {
-			FieldHelper
-				.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.RABIES_TYPE), CaseDataDto.DISEASE, Arrays.asList(Disease.RABIES), true);
+		if (isVisibleAllowed(CaseBulkEditData.RABIES_TYPE)) {
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				Arrays.asList(CaseBulkEditData.RABIES_TYPE),
+				CaseBulkEditData.DISEASE,
+				Arrays.asList(Disease.RABIES),
+				true);
 		}
 
+		// Disease variant
+		diseaseVariantCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkDiseaseVariant));
+		diseaseVariantCheckBox.setVisible(false);
+		getContent().addComponent(diseaseVariantCheckBox, DISEASE_VARIANT_CHECKBOX);
+
+		ComboBox diseaseVariantField = addField(CaseBulkEditData.DISEASE_VARIANT, ComboBox.class);
+		diseaseVariantField.setEnabled(false);
+		TextField diseaseVariantDetailsField = addField(CaseBulkEditData.DISEASE_VARIANT_DETAILS, TextField.class);
+		diseaseVariantDetailsField.setVisible(false);
+		diseaseVariantField.setNullSelectionAllowed(true);
+		diseaseVariantField.setVisible(false);
+
+		diseaseVariantField.addValueChangeListener(e -> {
+			DiseaseVariant diseaseVariant = (DiseaseVariant) e.getProperty().getValue();
+			diseaseVariantDetailsField.setVisible(diseaseVariant != null && diseaseVariant.matchPropertyValue(DiseaseVariant.HAS_DETAILS, true));
+		});
+		diseaseField.addValueChangeListener(
+			(ValueChangeListener) valueChangeEvent -> updateDiseaseVariantField(
+				diseaseVariantField,
+				(Disease) valueChangeEvent.getProperty().getValue()));
+
+		if (diseaseField.getValue() != null) {
+			Disease disease = (Disease) diseaseField.getValue();
+			updateDiseaseVariantField(diseaseVariantField, disease);
+		}
+
+		// Classification
 		classificationCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkCaseClassification));
 		getContent().addComponent(classificationCheckBox, CLASSIFICATION_CHECKBOX);
 		investigationStatusCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkInvestigationStatus));
@@ -243,7 +296,7 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 		facilityOrHome.setEnabled(false);
 		CssStyles.style(facilityOrHome, ValoTheme.OPTIONGROUP_HORIZONTAL);
 
-		healthFacilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
+		healthFacilityDetails = addField(CaseBulkEditData.HEALTH_FACILITY_DETAILS, TextField.class);
 		healthFacilityDetails.setVisible(false);
 
 		facilityTypeGroup = ComboBoxHelper.createComboBoxV7();
@@ -251,7 +304,7 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 		addCustomField(facilityTypeGroup, TYPE_GROUP_LOC, I18nProperties.getCaption(Captions.Facility_typeGroup));
 		facilityTypeGroup.addItems(FacilityTypeGroup.getAccomodationGroups());
 		facilityTypeGroup.setEnabled(false);
-		facilityType = addField(CaseDataDto.FACILITY_TYPE, ComboBox.class);
+		facilityType = addField(CaseBulkEditData.FACILITY_TYPE, ComboBox.class);
 		facilityType.setEnabled(false);
 		ComboBox facility = addInfrastructureField(CaseBulkEditData.HEALTH_FACILITY);
 		facility.setImmediate(true);
@@ -385,6 +438,12 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 		}
 
 		FieldHelper.setRequiredWhen(getFieldGroup(), diseaseCheckBox, Arrays.asList(CaseBulkEditData.DISEASE), Arrays.asList(true));
+		FieldHelper.addSoftRequiredStyleWhen(
+			getFieldGroup(),
+			diseaseVariantCheckBox,
+			Arrays.asList(CaseBulkEditData.DISEASE_VARIANT),
+			Arrays.asList(true),
+			null);
 		FieldHelper
 			.setRequiredWhen(getFieldGroup(), classificationCheckBox, Arrays.asList(CaseBulkEditData.CASE_CLASSIFICATION), Arrays.asList(true));
 		FieldHelper
@@ -413,7 +472,21 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 			false,
 			null);
 		diseaseCheckBox.addValueChangeListener(e -> {
-			disease.setEnabled((boolean) e.getProperty().getValue());
+			boolean checked = (boolean) e.getProperty().getValue();
+			diseaseField.setEnabled(checked);
+			if (!checked) {
+				diseaseField.setValue(null);
+			}
+
+			updateDiseaseVariantField(diseaseVariantField, null);
+		});
+		diseaseVariantCheckBox.addValueChangeListener(e -> {
+			boolean checked = (boolean) e.getProperty().getValue();
+			diseaseVariantField.setEnabled(checked);
+			if (!checked) {
+				diseaseVariantField.setValue(null);
+				diseaseVariantDetailsField.setValue(null);
+			}
 		});
 		classificationCheckBox.addValueChangeListener(e -> {
 			caseClassification.setEnabled((boolean) e.getProperty().getValue());
@@ -449,6 +522,10 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 
 	public CheckBox getDiseaseCheckBox() {
 		return diseaseCheckBox;
+	}
+
+	public CheckBox getDiseaseVariantCheckBox() {
+		return diseaseVariantCheckBox;
 	}
 
 	public CheckBox getClassificationCheckBox() {
@@ -510,6 +587,20 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 			tfFacilityDetails.setVisible(false);
 			tfFacilityDetails.setRequired(false);
 			tfFacilityDetails.clear();
+		}
+	}
+
+	private void updateDiseaseVariantField(ComboBox diseaseVariantField, Disease disease) {
+		List<DiseaseVariant> diseaseVariants =
+			FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
+		FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
+		boolean visible = disease != null && CollectionUtils.isNotEmpty(diseaseVariants);
+
+		diseaseVariantField.setVisible(visible);
+
+		diseaseVariantCheckBox.setVisible(visible);
+		if (!visible) {
+			diseaseVariantCheckBox.setValue(false);
 		}
 	}
 }

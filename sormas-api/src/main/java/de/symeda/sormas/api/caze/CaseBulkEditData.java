@@ -42,8 +42,9 @@ public class CaseBulkEditData extends EntityDto {
 	private static final long serialVersionUID = -4670022133882295863L;
 
 	public static final String DISEASE = "disease";
-	public static final String DISEASE_VARIANT = "diseaseVariant";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
+	public static final String DISEASE_VARIANT = "diseaseVariant";
+	public static final String DISEASE_VARIANT_DETAILS = "diseaseVariantDetails";
 	public static final String PLAGUE_TYPE = "plagueType";
 	public static final String DENGUE_FEVER_TYPE = "dengueFeverType";
 	public static final String RABIES_TYPE = "rabiesType";
@@ -60,9 +61,11 @@ public class CaseBulkEditData extends EntityDto {
 	public static final String DONT_SHARE_WITH_REPORTING_TOOL = "dontShareWithReportingTool";
 
 	private Disease disease;
-	private DiseaseVariant diseaseVariant;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String diseaseDetails;
+	private DiseaseVariant diseaseVariant;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String diseaseVariantDetails;
 	private PlagueType plagueType;
 	private DengueFeverType dengueFeverType;
 	private RabiesType rabiesType;
@@ -87,6 +90,14 @@ public class CaseBulkEditData extends EntityDto {
 		this.disease = disease;
 	}
 
+	public String getDiseaseDetails() {
+		return diseaseDetails;
+	}
+
+	public void setDiseaseDetails(String diseaseDetails) {
+		this.diseaseDetails = diseaseDetails;
+	}
+
 	public DiseaseVariant getDiseaseVariant() {
 		return diseaseVariant;
 	}
@@ -95,12 +106,12 @@ public class CaseBulkEditData extends EntityDto {
 		this.diseaseVariant = diseaseVariant;
 	}
 
-	public String getDiseaseDetails() {
-		return diseaseDetails;
+	public String getDiseaseVariantDetails() {
+		return diseaseVariantDetails;
 	}
 
-	public void setDiseaseDetails(String diseaseDetails) {
-		this.diseaseDetails = diseaseDetails;
+	public void setDiseaseVariantDetails(String diseaseVariantDetails) {
+		this.diseaseVariantDetails = diseaseVariantDetails;
 	}
 
 	public PlagueType getPlagueType() {

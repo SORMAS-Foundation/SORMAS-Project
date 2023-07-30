@@ -351,29 +351,30 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 	@Override
 	@RightsAllowed(UserRight._EVENTGROUP_LINK)
 	public void linkEventsToGroup(List<EventReferenceDto> eventReferences, EventGroupReferenceDto eventGroupReference) {
-		linkEventsToGroups(eventReferences, Collections.singletonList(eventGroupReference));
+		linkEventsToGroups(
+			eventReferences.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList()),
+			Collections.singletonList(eventGroupReference.getUuid()));
 	}
 
 	@Override
 	@RightsAllowed(UserRight._EVENTGROUP_LINK)
 	public void linkEventToGroups(EventReferenceDto eventReference, List<EventGroupReferenceDto> eventGroupReferences) {
-		linkEventsToGroups(Collections.singletonList(eventReference), eventGroupReferences);
+		linkEventsToGroups(
+			Collections.singletonList(eventReference.getUuid()),
+			eventGroupReferences.stream().map(EventGroupReferenceDto::getUuid).collect(Collectors.toList()));
 	}
 
 	@Override
 	@RightsAllowed(UserRight._EVENTGROUP_LINK)
-	public void linkEventsToGroups(List<EventReferenceDto> eventReferences, List<EventGroupReferenceDto> eventGroupReferences) {
-		User currentUser = userService.getCurrentUser();
-
-		if (CollectionUtils.isEmpty(eventReferences)) {
+	public void linkEventsToGroups(List<String> eventUuids, List<String> eventGroupUuids) {
+		if (CollectionUtils.isEmpty(eventGroupUuids) || CollectionUtils.isEmpty(eventUuids)) {
 			return;
 		}
 
-		List<String> eventUuids = eventReferences.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList());
 		List<Event> events = eventService.getByUuids(eventUuids);
-
-		List<String> eventGroupUuids = eventGroupReferences.stream().map(EventGroupReferenceDto::getUuid).collect(Collectors.toList());
 		List<EventGroup> eventGroups = eventGroupService.getByUuids(eventGroupUuids);
+
+		User currentUser = userService.getCurrentUser();
 
 		for (Event event : events) {
 			final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
@@ -508,8 +509,8 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 	@RightsAllowed(UserRight._EVENTGROUP_CREATE)
 	public void notifyEventEventGroupCreated(EventGroupReferenceDto eventGroupReference) {
 		notifyModificationOfEventGroup(
-			eventGroupReference,
-			Collections.emptyList(),
+			eventGroupReference.getUuid(),
+			Collections.emptySet(),
 			NotificationType.EVENT_GROUP_CREATED,
 			MessageSubject.EVENT_GROUP_CREATED,
 			MessageContents.CONTENT_EVENT_GROUP_CREATED);
@@ -519,8 +520,19 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 	@RightsAllowed(UserRight._EVENTGROUP_LINK)
 	public void notifyEventAddedToEventGroup(EventGroupReferenceDto eventGroupReference, List<EventReferenceDto> eventReferences) {
 		notifyModificationOfEventGroup(
-			eventGroupReference,
-			eventReferences,
+			eventGroupReference.getUuid(),
+			eventReferences.stream().map(EventReferenceDto::getUuid).collect(Collectors.toSet()),
+			NotificationType.EVENT_ADDED_TO_EVENT_GROUP,
+			MessageSubject.EVENT_ADDED_TO_EVENT_GROUP,
+			MessageContents.CONTENT_EVENT_ADDED_TO_EVENT_GROUP);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._EVENTGROUP_LINK)
+	public void notifyEventAddedToEventGroup(String eventGroupUuid, Set<String> eventUuids) {
+		notifyModificationOfEventGroup(
+			eventGroupUuid,
+			eventUuids,
 			NotificationType.EVENT_ADDED_TO_EVENT_GROUP,
 			MessageSubject.EVENT_ADDED_TO_EVENT_GROUP,
 			MessageContents.CONTENT_EVENT_ADDED_TO_EVENT_GROUP);
@@ -530,20 +542,20 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 	@RightsAllowed(UserRight._EVENTGROUP_LINK)
 	public void notifyEventRemovedFromEventGroup(EventGroupReferenceDto eventGroupReference, List<EventReferenceDto> eventReferences) {
 		notifyModificationOfEventGroup(
-			eventGroupReference,
-			eventReferences,
+			eventGroupReference.getUuid(),
+			eventReferences.stream().map(EventReferenceDto::getUuid).collect(Collectors.toSet()),
 			NotificationType.EVENT_REMOVED_FROM_EVENT_GROUP,
 			MessageSubject.EVENT_REMOVED_FROM_EVENT_GROUP,
 			MessageContents.CONTENT_EVENT_REMOVED_FROM_EVENT_GROUP);
 	}
 
 	private void notifyModificationOfEventGroup(
-		EventGroupReferenceDto eventGroupReference,
-		List<EventReferenceDto> impactedEventReferences,
+		String eventGroupUuid,
+		Set<String> impactedEventUuids,
 		NotificationType notificationType,
 		MessageSubject subject,
 		String contentTemplate) {
-		EventGroup eventGroup = eventGroupService.getByUuid(eventGroupReference.getUuid());
+		EventGroup eventGroup = eventGroupService.getByUuid(eventGroupUuid);
 		if (eventGroup == null) {
 			return;
 		}
@@ -553,10 +565,8 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 		try {
 			notificationService.sendNotifications(notificationType, subject, () -> {
 
-				final Set<String> allRemainingEventUuids = getEventReferencesByEventGroupUuid(eventGroupReference.getUuid()).stream()
-					.map(EventReferenceDto::getUuid)
-					.collect(Collectors.toSet());
-				final Set<String> impactedEventUuids = impactedEventReferences.stream().map(EventReferenceDto::getUuid).collect(Collectors.toSet());
+				final Set<String> allRemainingEventUuids =
+					getEventReferencesByEventGroupUuid(eventGroupUuid).stream().map(EventReferenceDto::getUuid).collect(Collectors.toSet());
 				final Map<String, User> responsibleUserByEventUuid =
 					userService.getResponsibleUsersByEventUuids(new ArrayList<>(Sets.union(allRemainingEventUuids, impactedEventUuids)));
 
@@ -566,7 +576,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 					Maps.filterKeys(responsibleUserByEventUuid, impactedEventUuids::contains);
 				final String message;
 
-				if (impactedEventReferences.isEmpty()) {
+				if (impactedEventUuids.isEmpty()) {
 					message = String.format(
 						I18nProperties.getString(contentTemplate),
 						eventGroup.getName(),
