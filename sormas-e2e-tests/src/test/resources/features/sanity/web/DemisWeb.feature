@@ -620,6 +620,7 @@ Scenario: Create and send laboratory request via Demis
     And I click next button while processing a DEMIS LabMessage
     And I click next button while processing a DEMIS LabMessage
     And I click next button while processing a DEMIS LabMessage
+    And I click next button while processing a DEMIS LabMessage
     And I click on "save and open" button in new sample form with pathogen detection reporting process
     Then I check if there is no displayed sample result on Edit case page
     And I click on Display associated external messages button from Reports side component
