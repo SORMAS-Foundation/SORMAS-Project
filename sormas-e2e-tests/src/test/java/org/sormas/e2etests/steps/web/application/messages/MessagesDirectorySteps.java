@@ -46,9 +46,11 @@ import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPa
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NO_NEW_REPORTS_POPUP;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.PATHOGEN_DETECTION_REPORTING_PROCESS_HEADER_DE;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_CONFIRM_BUTTON;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_WINDOW_BACK_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_WINDOW_CANCEL_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_WINDOW_DISCARD_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_WINDOW_SAVE_AND_OPEN_CASE_BUTTON;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_WINDOW_SAVE_AND_OPEN_PHYSICIAN_REPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_WINDOW_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.RESET_FILTER_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.SEARCH_MESSAGE_INPUT;
@@ -142,6 +144,29 @@ public class MessagesDirectorySteps implements En {
             case "discard":
               webDriverHelpers.waitUntilElementIsVisibleAndClickable(POPUP_WINDOW_DISCARD_BUTTON);
               webDriverHelpers.clickOnWebElementBySelector(POPUP_WINDOW_DISCARD_BUTTON);
+              break;
+            case "save":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(POPUP_WINDOW_SAVE_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(POPUP_WINDOW_SAVE_BUTTON);
+              break;
+          }
+        });
+
+    And(
+        "I click on {string} button in new physician report form while processing a message",
+        (String option) -> {
+          switch (option) {
+            case "save and open case":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(POPUP_WINDOW_SAVE_AND_OPEN_PHYSICIAN_REPORT_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(POPUP_WINDOW_SAVE_AND_OPEN_PHYSICIAN_REPORT_BUTTON);
+              break;
+            case "cancel":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(POPUP_WINDOW_CANCEL_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(POPUP_WINDOW_CANCEL_BUTTON);
+              break;
+            case "back":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(POPUP_WINDOW_BACK_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(POPUP_WINDOW_BACK_BUTTON);
               break;
             case "save":
               webDriverHelpers.waitUntilElementIsVisibleAndClickable(POPUP_WINDOW_SAVE_BUTTON);
