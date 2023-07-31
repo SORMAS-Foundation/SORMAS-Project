@@ -37,7 +37,7 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LAST
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PLACE_OF_STAY_DISTRICT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PLACE_OF_STAY_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISTRICT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REGION_COMBOBOX;
@@ -996,8 +996,8 @@ public class DemisSteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEXT_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(NEXT_BUTTON);
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CASE_SAVED_POPUP);
-          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CASE_SAVED_POPUP_DE);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP_DE);
         });
   }
 
