@@ -616,7 +616,7 @@ Scenario: Create and send laboratory request via Demis
     And I click on Verarbeiten button in Messages Directory
     And I pick a new person in Pick or create person popup during case creation for DE
     And I fill only mandatory fields to convert laboratory message into a case for DE
-    And I click on save button in the case popup
+    And I click on "save" button in new physician report form while processing a message
     And I click next button while processing a DEMIS LabMessage
     And I click next button while processing a DEMIS LabMessage
     And I click next button while processing a DEMIS LabMessage

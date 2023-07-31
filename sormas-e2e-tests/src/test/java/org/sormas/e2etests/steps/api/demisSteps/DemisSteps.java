@@ -994,6 +994,9 @@ public class DemisSteps implements En {
     And(
         "^I click next button while processing a DEMIS LabMessage$",
         () -> {
+          if (webDriverHelpers.isElementVisibleWithTimeout(CASE_SAVED_POPUP_DE, 5)) {
+                webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP_DE);
+          }
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEXT_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(NEXT_BUTTON);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(CASE_SAVED_POPUP_DE);
