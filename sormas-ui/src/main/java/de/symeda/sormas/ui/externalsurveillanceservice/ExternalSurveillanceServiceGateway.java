@@ -1,7 +1,11 @@
 package de.symeda.sormas.ui.externalsurveillanceservice;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -14,13 +18,16 @@ import com.vaadin.ui.Notification;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.share.ExternalShareInfoCriteria;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.DirtyStateComponent;
 import de.symeda.sormas.ui.utils.LayoutWithSidePanel;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -96,8 +103,8 @@ public class ExternalSurveillanceServiceGateway {
 				confirmationText,
 				gatewaySendCall,
 				I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntrySent),
-				SormasUI::refreshView,
-				true);
+				true,
+				SormasUI::refreshView);
 		} : null, gatewayDeleteCall != null ? () -> {
 			deleteInExternalSurveillanceTool(deletionText, gatewayDeleteCall, SormasUI::refreshView);
 		} : null, shareInfoCriteria, editComponent);
@@ -106,27 +113,70 @@ public class ExternalSurveillanceServiceGateway {
 		return shareComponent;
 	}
 
-	public static void sendCasesToExternalSurveillanceTool(List<String> uuids, Runnable callback, boolean shouldConfirm) {
+	public static <T extends CaseIndexDto> void sendCasesToExternalSurveillanceTool(
+		Collection<T> selectedCases,
+		boolean shouldConfirm,
+		Consumer<List<T>> callback) {
 		sendToExternalSurveillanceTool(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_confirmSendCases), () -> {
-			FacadeProvider.getExternalSurveillanceToolFacade().sendCases(uuids);
-		}, I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntriesSent), callback, shouldConfirm);
+			ArrayList<T> selectedCasesCpy = new ArrayList<>(selectedCases);
+			new BulkOperationHandler<T>(
+				Strings.ExternalSurveillanceToolGateway_notificationEntriesSent,
+				null,
+				null,
+				null,
+				Strings.ExternalSurveillanceToolGateway_notificationSomeEntriesSent,
+				null,
+				null).doBulkOperation(batch -> {
+					try {
+						FacadeProvider.getExternalSurveillanceToolFacade()
+							.sendCases(batch.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList()));
+					} catch (ExternalSurveillanceToolException e) {
+						return 0;
+					}
+
+					return batch.size();
+				}, selectedCasesCpy, null, null, callback);
+
+		}, null, shouldConfirm, null);
 	}
 
-	public static void sendEventsToExternalSurveillanceTool(List<String> uuids, Runnable callback, boolean shouldConfirm) {
+	public static void sendEventsToExternalSurveillanceTool(
+		Collection<EventIndexDto> selectedEvents,
+		boolean shouldConfirm,
+		Consumer<List<EventIndexDto>> callback) {
 		sendToExternalSurveillanceTool(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_confirmSendEvents), () -> {
-			FacadeProvider.getExternalSurveillanceToolFacade().sendEvents(uuids);
-		}, I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntriesSent), callback, shouldConfirm);
+			ArrayList<EventIndexDto> selectedEventsCpy = new ArrayList<>(selectedEvents);
+			new BulkOperationHandler<EventIndexDto>(
+				Strings.ExternalSurveillanceToolGateway_notificationEntriesSent,
+				null,
+				null,
+				null,
+				Strings.ExternalSurveillanceToolGateway_notificationSomeEntriesSent,
+				null,
+				null).doBulkOperation(batch -> {
+					try {
+						FacadeProvider.getExternalSurveillanceToolFacade()
+							.sendEvents(batch.stream().map(EventIndexDto::getUuid).collect(Collectors.toList()));
+					} catch (ExternalSurveillanceToolException e) {
+						return 0;
+					}
+
+					return batch.size();
+				}, selectedEventsCpy, null, null, callback);
+		}, null, shouldConfirm, null);
 	}
 
 	private static void sendToExternalSurveillanceTool(
 		String confirmationText,
 		GatewayCall gatewayCall,
 		String successMessage,
-		Runnable callback,
-		boolean shouldConfirm) {
+		boolean shouldConfirm,
+		Runnable callback) {
 		Runnable doSend = () -> {
 			handleGatewayCall(gatewayCall, successMessage);
-			callback.run();
+			if (callback != null) {
+				callback.run();
+			}
 		};
 		if (shouldConfirm) {
 			VaadinUiUtil.showConfirmationPopup(
@@ -145,7 +195,7 @@ public class ExternalSurveillanceServiceGateway {
 		}
 	}
 
-	private static void handleGatewayCall(GatewayCall gatewayCall, String successMessage) {
+	private static void handleGatewayCall(GatewayCall gatewayCall, @Nullable String successMessage) {
 
 		Notification.Type notificationType;
 		String notificationMessage;
@@ -153,8 +203,12 @@ public class ExternalSurveillanceServiceGateway {
 		try {
 			gatewayCall.call();
 
-			notificationType = Notification.Type.HUMANIZED_MESSAGE;
-			notificationMessage = successMessage;
+			if (successMessage != null) {
+				Notification.show(
+					I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_title),
+					successMessage,
+					Notification.Type.HUMANIZED_MESSAGE);
+			}
 		} catch (ExternalSurveillanceToolException e) {
 			if (StringUtils.isNotBlank(e.getErrorCode()) && "timeout_anticipated".equals(e.getErrorCode())) {
 				notificationType = Notification.Type.WARNING_MESSAGE;
@@ -162,9 +216,9 @@ public class ExternalSurveillanceServiceGateway {
 				notificationType = Notification.Type.ERROR_MESSAGE;
 			}
 			notificationMessage = e.getMessage();
-		}
 
-		Notification.show(I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_title), notificationMessage, notificationType);
+			Notification.show(I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_title), notificationMessage, notificationType);
+		}
 	}
 
 	public static void deleteInExternalSurveillanceTool(String deletionText, GatewayCall gatewayCall, Runnable callback) {

@@ -1,6 +1,31 @@
 package org.sormas.e2etests.steps.web.application.survnet;
 
+import static org.sormas.e2etests.helpers.SchemaValidator.XMLSchemaValidator.validateXMLSchema;
+import static org.sormas.e2etests.helpers.comparison.XMLComparison.compareXMLFiles;
+import static org.sormas.e2etests.helpers.comparison.XMLComparison.extractDiffNodes;
+import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_VERSION_LINK;
+import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSteps.CovidGenomeCopyNumber;
+import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSteps.CurrentCovidInfectionDoNotMatchValue;
+import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSteps.CurrentCovidInfectionIsKnownValue;
+import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSteps.IndividualTestedPositiveForCovidByPCR;
+import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSteps.PersonHadAnAsymptomaticCovidInfection;
+import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSteps.PersonHasOvercomeAcuteRespiratory;
+import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSteps.PersonTestedConclusivelyNegativeByPCR;
+import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSteps.PreviousCovidInfectionIsKnownValue;
+import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSteps.TheLastPositivePCRDetectionWasMoreThan3MonthsAgo;
+import static org.sormas.e2etests.steps.web.application.cases.CreateNewCaseSteps.survnetCase;
+import static org.sormas.e2etests.steps.web.application.cases.EditCaseSteps.externalUUID;
+import static org.sormas.e2etests.steps.web.application.cases.SymptomsTabSteps.symptoms;
+import static org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps.randomVaccinationName;
+import static org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps.vaccination;
+
 import cucumber.api.java8.En;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
@@ -14,22 +39,6 @@ import org.sormas.e2etests.steps.web.application.cases.CreateNewCaseSteps;
 import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
 import org.sormas.e2etests.steps.web.application.persons.EditPersonSteps;
 import org.testng.asserts.SoftAssert;
-
-import javax.inject.Inject;
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.sormas.e2etests.helpers.SchemaValidator.XMLSchemaValidator.validateXMLSchema;
-import static org.sormas.e2etests.helpers.comparison.XMLComparison.compareXMLFiles;
-import static org.sormas.e2etests.helpers.comparison.XMLComparison.extractDiffNodes;
-import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_VERSION_LINK;
-import static org.sormas.e2etests.steps.web.application.cases.EditCaseSteps.externalUUID;
-import static org.sormas.e2etests.steps.web.application.cases.SymptomsTabSteps.symptoms;
-import static org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps.randomVaccinationName;
-import static org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps.vaccination;
 
 @Slf4j
 public class SurvNetSteps implements En {
@@ -128,6 +137,102 @@ public class SurvNetSteps implements En {
           String expectedSex = CreateNewCaseSteps.survnetCase.getSex();
           softly.assertEquals(sex, expectedSex, "Sex is incorrect!");
           softly.assertAll();
+        });
+
+    And(
+        "I check if Reinfection option is set in SORMAS generated single XML file is correct",
+        () -> {
+          String reinfectionOptionFromUI = survnetCase.getReinfection();
+          String expectedReinfectionOption;
+
+          if (reinfectionOptionFromUI.equals("JA")) expectedReinfectionOption = "true";
+          else expectedReinfectionOption = "false";
+
+          softly.assertEquals(
+              getValueFromSpecificFieldByName(singleXmlFile, "Reinfection"),
+              expectedReinfectionOption,
+              "Reinfection option is not set!");
+          softly.assertAll();
+        });
+
+    And(
+        "I check that LabInfoAvailable is change in SORMAS generated single XML file is correct",
+        () -> {
+          softly.assertEquals(
+              getValueFromSpecificFieldByName(singleXmlFile, "LabInfoAvailable"),
+              "20",
+              "LabInfoAvailable has incorrect value");
+          softly.assertAll();
+        });
+
+    And(
+        "I check if Reinfection \"([^\"]*)\" checkbox value in SORMAS generated single XML file is correct",
+        (String reinfectionCheckbox) -> {
+          switch (reinfectionCheckbox) {
+            case "PREVIOUS COVID INFECTION IS KNOWN":
+              softly.assertEquals(
+                  getValueFromSpecificFieldByName(singleXmlFile, "ReinfectionDetailCVD01"),
+                  PreviousCovidInfectionIsKnownValue.toString(),
+                  "Previous covid infection is known value is incorrect");
+              softly.assertAll();
+              break;
+            case "CURRENT COVID INFECTION IS KNOWN":
+              softly.assertEquals(
+                  getValueFromSpecificFieldByName(singleXmlFile, "ReinfectionDetailCVD02"),
+                  CurrentCovidInfectionIsKnownValue.toString(),
+                  "Current covid infection is known value is incorrect");
+              softly.assertAll();
+              break;
+            case "CURRENT COVID INFECTION DO NOT MATCH":
+              softly.assertEquals(
+                  getValueFromSpecificFieldByName(singleXmlFile, "ReinfectionDetailCVD03"),
+                  CurrentCovidInfectionDoNotMatchValue.toString(),
+                  "Current covid infection do not match is incorrect");
+              softly.assertAll();
+              break;
+            case "PERSON HAS OVERCOME ACUTE RESPIRATORY":
+              softly.assertEquals(
+                  getValueFromSpecificFieldByName(singleXmlFile, "ReinfectionDetailCVD05"),
+                  PersonHasOvercomeAcuteRespiratory.toString(),
+                  "Person has overcome acute respiratory value is incorrect");
+              softly.assertAll();
+              break;
+            case "PERSON HAD AN ASYMPTOMATIC COVID INFECTION":
+              softly.assertEquals(
+                  getValueFromSpecificFieldByName(singleXmlFile, "ReinfectionDetailCVD06"),
+                  PersonHadAnAsymptomaticCovidInfection.toString(),
+                  "Person had an asymptomatic covid infection value is incorrect");
+              softly.assertAll();
+              break;
+            case "COVID GENOM COPY NUMBER":
+              softly.assertEquals(
+                  getValueFromSpecificFieldByName(singleXmlFile, "ReinfectionDetailCVD09"),
+                  CovidGenomeCopyNumber.toString(),
+                  "Covid genom copy number value is incorrect");
+              softly.assertAll();
+              break;
+            case "INDIVIDUAL TESTED POSITIVE FOR COVID BY PCR":
+              softly.assertEquals(
+                  getValueFromSpecificFieldByName(singleXmlFile, "ReinfectionDetailCVD10"),
+                  IndividualTestedPositiveForCovidByPCR.toString(),
+                  "Individual tested positive for covid by pcr value is incorrect");
+              softly.assertAll();
+              break;
+            case "PERSON TESTED CONCLUSIVELY NEGATIVE BY PRC":
+              softly.assertEquals(
+                  getValueFromSpecificFieldByName(singleXmlFile, "ReinfectionDetailCVD07"),
+                  PersonTestedConclusivelyNegativeByPCR.toString(),
+                  "Person tested conclusively negative by pcr value is incorrect");
+              softly.assertAll();
+              break;
+            case "THE LAST POSITIVE PCR DETECTION WAS MORE THAN 3 MONTHS AGO":
+              softly.assertEquals(
+                  getValueFromSpecificFieldByName(singleXmlFile, "ReinfectionDetailCVD08"),
+                  TheLastPositivePCRDetectionWasMoreThan3MonthsAgo.toString(),
+                  "The last positive pcr detection was more then 3 months ago value is incorrect");
+              softly.assertAll();
+              break;
+          }
         });
 
     And(
@@ -604,71 +709,92 @@ public class SurvNetSteps implements En {
           String mappedValue = null;
 
           switch (value) {
-              case"positive":
-                  mappedValue = "20";
-                  break;
-              case"negative":
-                  mappedValue = "0";
-                  break;
-            }
+            case "positive":
+              mappedValue = "20";
+              break;
+            case "negative":
+              mappedValue = "0";
+              break;
+          }
 
           switch (disease) {
-              case "diabetes":
-                  softly.assertEquals(
-                          getValueFromSpecificFieldByName(singleXmlFile, "Risk0005"),
-                          mappedValue,
-                          "Diabetes mapped value is incorrect!");
-                  softly.assertAll();
-                  break;
-              case "immunodeficiencyIncludingHiv":
-                  softly.assertEquals(
-                          getValueFromSpecificFieldByName(singleXmlFile, "Risk0008"),
-                          mappedValue,
-                          "Immunodeficiency mapped value is incorrect!");
-                  softly.assertAll();
-                  break;
-              case "chronicLiverDisease":
-                  softly.assertEquals(
-                          getValueFromSpecificFieldByName(singleXmlFile, "Risk0006"),
-                          mappedValue,
-                          "Liver disease mapped value is incorrect!");
-                  softly.assertAll();
-                  break;
-              case "malignancyChemotherapy":
-                  softly.assertEquals(
-                          getValueFromSpecificFieldByName(singleXmlFile, "Risk0011"),
-                          mappedValue,
-                          "Malignancy chemotherapy mapped value is incorrect!");
-                  softly.assertAll();
-                  break;
-              case "chronicPulmonaryDisease":
-                  softly.assertEquals(
-                          getValueFromSpecificFieldByName(singleXmlFile, "Risk0010"),
-                          mappedValue,
-                          "Chronic pulmonary disease mapped value is incorrect!");
-                  softly.assertAll();
-                  break;
-              case "chronicKidneyDisease":
-                  softly.assertEquals(
-                          getValueFromSpecificFieldByName(singleXmlFile, "Risk0009"),
-                          mappedValue,
-                          "Chronic kidney disease mapped value is incorrect!");
-                  softly.assertAll();
-                  break;
-              case "chronicNeurologicCondition":
-                  softly.assertEquals(
-                          getValueFromSpecificFieldByName(singleXmlFile, "Risk0007"),
-                          mappedValue,
-                          "Chronic neurologic condition mapped value is incorrect!");
-                  softly.assertAll();
-                  break;
-              case "cardiovascularDiseaseIncludingHypertension":
-                  softly.assertEquals(
-                          getValueFromSpecificFieldByName(singleXmlFile, "Risk0004"),
-                          mappedValue,
-                          "Cardiovascular disease mapped value is incorrect!");
-                  softly.assertAll();
-                  break;
+            case "diabetes":
+              softly.assertEquals(
+                  getValueFromSpecificFieldByName(singleXmlFile, "Risk0005"),
+                  mappedValue,
+                  "Diabetes mapped value is incorrect!");
+              softly.assertAll();
+              break;
+            case "immunodeficiencyIncludingHiv":
+              softly.assertEquals(
+                  getValueFromSpecificFieldByName(singleXmlFile, "Risk0008"),
+                  mappedValue,
+                  "Immunodeficiency mapped value is incorrect!");
+              softly.assertAll();
+              break;
+            case "chronicLiverDisease":
+              softly.assertEquals(
+                  getValueFromSpecificFieldByName(singleXmlFile, "Risk0006"),
+                  mappedValue,
+                  "Liver disease mapped value is incorrect!");
+              softly.assertAll();
+              break;
+            case "malignancyChemotherapy":
+              softly.assertEquals(
+                  getValueFromSpecificFieldByName(singleXmlFile, "Risk0011"),
+                  mappedValue,
+                  "Malignancy chemotherapy mapped value is incorrect!");
+              softly.assertAll();
+              break;
+            case "chronicPulmonaryDisease":
+              softly.assertEquals(
+                  getValueFromSpecificFieldByName(singleXmlFile, "Risk0010"),
+                  mappedValue,
+                  "Chronic pulmonary disease mapped value is incorrect!");
+              softly.assertAll();
+              break;
+            case "chronicKidneyDisease":
+              softly.assertEquals(
+                  getValueFromSpecificFieldByName(singleXmlFile, "Risk0009"),
+                  mappedValue,
+                  "Chronic kidney disease mapped value is incorrect!");
+              softly.assertAll();
+              break;
+            case "chronicNeurologicCondition":
+              softly.assertEquals(
+                  getValueFromSpecificFieldByName(singleXmlFile, "Risk0007"),
+                  mappedValue,
+                  "Chronic neurologic condition mapped value is incorrect!");
+              softly.assertAll();
+              break;
+            case "cardiovascularDiseaseIncludingHypertension":
+              softly.assertEquals(
+                  getValueFromSpecificFieldByName(singleXmlFile, "Risk0004"),
+                  mappedValue,
+                  "Cardiovascular disease mapped value is incorrect!");
+              softly.assertAll();
+              break;
+          }
+        });
+
+    Then(
+        "^I check if the infection setting \"([^\"]*)\" is correctly mapped in SORMAS generated single XML file$",
+        (String infectionOption) -> {
+          switch (infectionOption) {
+            case "Ambulant":
+              softly.assertEquals(
+                  getValueFromSpecificFieldByName(singleXmlFile, "P112Setting"),
+                  "1000",
+                  "Mapped value for Ambulance is incorrect");
+              softly.assertAll();
+              break;
+            case "Stationär":
+              softly.assertEquals(
+                  getValueFromSpecificFieldByName(singleXmlFile, "P112Setting"),
+                  "2000",
+                  "Mapped value for Stationär is incorrect ");
+              softly.assertAll();
+              break;
           }
         });
   }

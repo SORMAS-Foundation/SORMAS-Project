@@ -89,6 +89,7 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.POIN
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PRESENT_CONDITION_OF_PERSON_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PRIMARY_EMAIL_ADDRESS_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PRIMARY_PHONE_NUMBER_INPUT;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.REINFECTION_SPAN;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.RESPONSIBLE_COMMUNITY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.RESPONSIBLE_DISTRICT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.RESPONSIBLE_JURISDICTION_LABEL;
@@ -1581,6 +1582,22 @@ public class CreateNewCaseSteps implements En {
           fillLastName(survnetCase.getLastName());
           selectSex(survnetCase.getSex());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+        });
+
+    And(
+        "^I create a new case with mandatory data only with Reinfection option for Survnet DE$",
+        () -> {
+          survnetCase = caseService.buildCaseForSurvnetFeatureWithReinfection();
+          fillDateOfReport(survnetCase.getDateOfReport(), Locale.GERMAN);
+          selectResponsibleRegion(survnetCase.getResponsibleRegion());
+          selectResponsibleDistrict(survnetCase.getResponsibleDistrict());
+          selectReinfection(survnetCase.getReinfection());
+          selectPlaceOfStay(survnetCase.getPlaceOfStay());
+          fillFirstName(survnetCase.getFirstName());
+          fillLastName(survnetCase.getLastName());
+          selectSex(survnetCase.getSex());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
         });
 
@@ -1721,6 +1738,10 @@ public class CreateNewCaseSteps implements En {
 
   private void selectPlaceOfStay(String placeOfStay) {
     webDriverHelpers.clickWebElementByText(PLACE_OF_STAY, placeOfStay);
+  }
+
+  private void selectReinfection(String reinfection) {
+    webDriverHelpers.clickWebElementByText(REINFECTION_SPAN, reinfection);
   }
 
   private void fillPlaceDescription(String placeDescription) {

@@ -135,6 +135,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.IMMUNIZAT
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.IMMUNIZATION_CARD_IMMUNIZATION_UUID;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.IMMUNIZATION_CARD_MANAGEMENT_STATUS_LABEL;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.IMMUNIZATION_CARD_MEANS_OF_IMMUNIZATION_LABEL;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.INFECTION_SETTINGS_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.INFRASTRUCTURE_DATA_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.INTERNAL_TOKEN_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.INVESTIGATED_DATE_FIELD;
@@ -150,6 +151,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_SAMPL
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_SAMPLE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_TRAVEL_ENTRY_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.NOSOCOMIAL_OUTBRAKE_LABEL;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.OFFICIAL_QUARANTINE_ORDER_SENT_CHECKBOX_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.OFFICIAL_QUARANTINE_ORDER_SENT_CHECKBOX_LABEL;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.OUTCOME_OF_CASE_OPTIONS;
@@ -167,6 +169,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.POINT_OF_
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.POINT_OF_ENTRY_TEXT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.POPUPS_INPUTS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PREGNANCY_OPTIONS;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.PREVIOUS_INFECTION_DATE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PROHIBITION_TO_WORK_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_CHANGE_COMMENT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_COMBOBOX;
@@ -286,6 +289,7 @@ import static org.sormas.e2etests.pages.application.immunizations.EditImmunizati
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.EVENT_PARTICIPANTS_DATA_TAB;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SAMPLE_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_SAMPLE_REASON_POPUP;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_SAMPLE_REASON_POPUP_FOR_DE;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static org.sormas.e2etests.steps.web.application.contacts.ContactDirectorySteps.exposureData;
 
@@ -297,6 +301,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
@@ -471,6 +476,14 @@ public class EditCaseSteps implements En {
     And(
         "I navigate to case person tab",
         () -> webDriverHelpers.clickOnWebElementBySelector(CASE_PERSON_TAB));
+
+    And(
+        "^I set previous infection date (\\d+) days from report date to case in person tab$",
+        (Integer daysBeforeReportDate) -> {
+          webDriverHelpers.scrollToElement(PREVIOUS_INFECTION_DATE_INPUT);
+          LocalDate infectionDate = LocalDate.now().minusDays(daysBeforeReportDate);
+          fillPreviousInfectionDate(infectionDate, Locale.GERMAN);
+        });
 
     And(
         "I navigate to case tab",
@@ -1658,6 +1671,19 @@ public class EditCaseSteps implements En {
         });
 
     When(
+        "I delete the case for DE",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
+          webDriverHelpers.scrollToElement(DELETE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
+          webDriverHelpers.selectFromCombobox(
+              DELETE_SAMPLE_REASON_POPUP_FOR_DE,
+              "L\u00F6schen auf Anforderung der betroffenen Person nach DSGVO");
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_POPUP_YES_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CASE_APPLY_FILTERS_BUTTON);
+        });
+
+    When(
         "I navigate to epidemiological data tab in Edit case page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(EPIDEMIOLOGICAL_DATA_TAB);
@@ -1806,6 +1832,24 @@ public class EditCaseSteps implements En {
           softly.assertEquals(
               endOfProcessingDate,
               LocalDate.now().format(DATE_FORMATTER),
+              "End of processing date is invalid");
+          softly.assertAll();
+          webDriverHelpers.clickOnWebElementBySelector(ARCHIVE_RELATED_CONTACTS_CHECKBOX);
+          webDriverHelpers.clickOnWebElementBySelector(EditContactPage.DELETE_POPUP_YES_BUTTON);
+          TimeUnit.SECONDS.sleep(3); // wait for response after confirm
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I check the end of processing date in the archive popup and select Archive contacts checkbox for DE",
+        () -> {
+          String endOfProcessingDate;
+          endOfProcessingDate =
+              webDriverHelpers.getValueFromWebElement(END_OF_PROCESSING_DATE_POPUP_INPUT);
+
+          softly.assertEquals(
+              endOfProcessingDate,
+              LocalDate.now().format(DateTimeFormatter.ofPattern("d.MM.yyyy")),
               "End of processing date is invalid");
           softly.assertAll();
           webDriverHelpers.clickOnWebElementBySelector(ARCHIVE_RELATED_CONTACTS_CHECKBOX);
@@ -2157,6 +2201,13 @@ public class EditCaseSteps implements En {
 
     When(
         "I click on Delete button from case",
+        () -> {
+          webDriverHelpers.scrollToElement(DELETE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
+        });
+
+    When(
+        "I click on Restore button from case",
         () -> {
           webDriverHelpers.scrollToElement(DELETE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
@@ -2812,6 +2863,15 @@ public class EditCaseSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(REPORTING_TOOL_MESSAGE);
         });
 
+    When(
+        "I check that Reporting tool in Survnet box contain {string} entry",
+        (String entry) -> {
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(checkTextInReportingToolComponent(entry)),
+              "Element is not present");
+          softly.assertAll();
+        });
+
     And(
         "^I collect case external UUID from Edit Case page$",
         () -> {
@@ -2863,6 +2923,20 @@ public class EditCaseSteps implements En {
               expectedDiseaseVariant,
               "The disease variant is incorrectly");
           softly.assertAll();
+        });
+
+    And(
+        "^I click the Resulted from nosocomial outbreak checkbox on Edit Case page for DE$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NOSOCOMIAL_OUTBRAKE_LABEL);
+          webDriverHelpers.clickOnWebElementBySelector(NOSOCOMIAL_OUTBRAKE_LABEL);
+        });
+
+    And(
+        "^I select \"([^\"]*)\" from the infection settings on Edit Case page$",
+        (String infectionOption) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(INFECTION_SETTINGS_INPUT);
+          webDriverHelpers.fillAndSubmitInWebElement(INFECTION_SETTINGS_INPUT, infectionOption);
         });
   }
 
@@ -3219,6 +3293,13 @@ public class EditCaseSteps implements En {
     webDriverHelpers.fillInWebElement(REPORT_DATE_INPUT, DATE_FORMATTER.format(date));
   }
 
+  private void fillPreviousInfectionDate(LocalDate date, Locale locale) {
+    DateTimeFormatter formatter;
+    if (locale.equals(Locale.GERMAN)) formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    else formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+    webDriverHelpers.fillInWebElement(PREVIOUS_INFECTION_DATE_INPUT, formatter.format(date));
+  }
+
   private void fillDateOfReportDE(LocalDate date) {
     DateTimeFormatter formatter;
     formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
@@ -3380,5 +3461,12 @@ public class EditCaseSteps implements En {
 
   private void fillExtraComment(String extraComment) {
     webDriverHelpers.fillInAndLeaveWebElement(EditCasePage.EXTRA_COMMENT_TEXTAREA, extraComment);
+  }
+
+  public static By checkTextInReportingToolComponent(String text) {
+    return By.xpath(
+        String.format(
+            "//div[contains(@location,'externalSurvToolGateway')]//div[contains(text(), '%s')]",
+            text));
   }
 }
