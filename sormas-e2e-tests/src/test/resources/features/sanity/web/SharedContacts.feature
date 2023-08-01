@@ -333,12 +333,12 @@ Feature: Sharing contacts between environments tests
     And I click on the Contacts button from navbar
     Then I open the last created contact via API
     And I check if editable fields are read only for shared contact
-    And I check if handover card contains "Eigentümer: LK Fulda" information
+    And I check if handover card contains shared with "s2s_2" information
     And I check if handover card contains "Geteilt von: S2S USER" information
     And I check if handover card contains "shared with automated test" information
     Then I navigate to "s2s_2" environment
     Then I open the last created contact via API
-    And I check if handover card contains "Gesendet von LK Barnim" information
+    And I check if handover card contains shared with "s2s_1" information
     And I check if handover card contains "Geteilt von: S2S User" information
     And I check if handover card contains "shared with automated test" information
 
@@ -371,7 +371,7 @@ Feature: Sharing contacts between environments tests
     And I select organization to share with "s2s_2"
     And I fill comment in share popup for contact with random string
     Then I click on share button in s2s share popup and wait for share to finish
-    And I check if handover card contains "LK Fulda" information
+    And I check if handover card contains shared with "s2s_2" information
     And I check if handover card contains "Geteilt von: S2S USER" information
     Then I back to tab number 2
     And I refresh current page
