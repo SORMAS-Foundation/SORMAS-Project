@@ -949,6 +949,7 @@ public class DemisSteps implements En {
             case "save and open case":
               webDriverHelpers.waitUntilElementIsVisibleAndClickable(POPUP_WINDOW_SAVE_AND_OPEN_PHYSICIAN_REPORT_BUTTON);
               webDriverHelpers.clickOnWebElementBySelector(POPUP_WINDOW_SAVE_AND_OPEN_PHYSICIAN_REPORT_BUTTON);
+              webDriverHelpers.waitForPageLoadingSpinnerToDisappear(15);
               break;
             case "cancel":
               webDriverHelpers.waitUntilElementIsVisibleAndClickable(POPUP_WINDOW_CANCEL_BUTTON);
