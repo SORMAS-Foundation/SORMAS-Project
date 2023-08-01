@@ -965,6 +965,19 @@ public class DemisSteps implements En {
               break;
           }
         });
+
+    And(
+        "^I click next button while processing a DEMIS LabMessage$",
+        () -> {
+          if (webDriverHelpers.isElementVisibleWithTimeout(CASE_SAVED_POPUP_DE, 5)) {
+            webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP_DE);
+          }
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEXT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(NEXT_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CASE_SAVED_POPUP_DE);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP_DE);
+          TimeUnit.SECONDS.sleep(2);
+        });
   }
 
   private List<Map<String, String>> getTableRowsData() {

@@ -1,52 +1,6 @@
 package org.sormas.e2etests.steps.web.application.messages;
 
-import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.ACTION_CONFIRM_POPUP_BUTTON;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.ACTION_YES_BUTTON;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CLOSE_POPUP;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CREATE_NEW_CASE_POPUP_WINDOW_DE;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CREATE_NEW_SAMPLE_POPUP_WINDOW_DE;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FETCH_MESSAGES_BUTTON;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FETCH_MESSAGES_NULL_DATE;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FETCH_MESSAGES_NULL_TIME_COMBOBOX;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FIRST_RECORD_DISEASE_VARIANT;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FIRST_TIME_FETCH_MESSAGE_POPUP;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FORWARDED_MESSAGE_COUNTER;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.GET_NEW_MESSAGES_POPUP;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MARK_AS_FORWARDED_BUTTON;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MARK_AS_UNCLEAR_BUTTON;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGE_DELETE_BUTTON;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGE_DIRECTORY_HEADER_DE;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGE_UUID_TEXT;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_CASE_EMAIL_ADDRESS_INPUT;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_CASE_PHONE_NUMBER_INPUT;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_DATE_OF_REPORT_INPUT;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_SPECIMEN_CONDITION_INPUT;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_TESTED_DISEASE_INPUT;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_TEST_RESULT_INPUT;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_TEST_RESULT_VERIFIED_RADIOBUTTON;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_TEST_RESULT_VERIFIED_SELECTED_VALUE;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NO_NEW_REPORTS_POPUP;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.PATHOGEN_DETECTION_REPORTING_PROCESS_HEADER_DE;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_CONFIRM_BUTTON;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_WINDOW_CANCEL_BUTTON;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_WINDOW_DISCARD_BUTTON;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_WINDOW_SAVE_AND_OPEN_CASE_BUTTON;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_WINDOW_SAVE_BUTTON;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.RESET_FILTER_BUTTON;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.SEARCH_MESSAGE_INPUT;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.TOTAL_MESSAGE_COUNTER;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.UNCLEAR_MESSAGE_COUNTER;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.UPDATE_CASE_DISEASE_VARIANT_CONFIRM_BUTTON;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.getProcessMessageButtonByIndex;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.getProcessStatusByIndex;
-
 import cucumber.api.java8.En;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.interactions.Actions;
@@ -55,6 +9,16 @@ import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
+
+import javax.inject.Inject;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.ACTION_CONFIRM_POPUP_BUTTON;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.*;
 
 @Slf4j
 public class MessagesDirectorySteps implements En {
@@ -378,6 +342,19 @@ public class MessagesDirectorySteps implements En {
               diseaseVariant,
               "Disease variant is not empty");
           softly.assertAll();
+        });
+
+    And(
+        "^I select \"([^\"]*)\" type of message in Message Directory page$",
+        (String typeOfMessage) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(TYPE_OF_MESSAGE_COMBOBOX);
+          webDriverHelpers.selectFromCombobox(TYPE_OF_MESSAGE_COMBOBOX, typeOfMessage);
+        });
+
+    And(
+        "^I check that all displayed messages have \"([^\"]*)\" in grid Message Directory Type column$",
+        (String type) -> {
+          webDriverHelpers.waitUntilAListOfElementsHasText(GRID_RESULTS_TYPE, type);
         });
   }
 }
