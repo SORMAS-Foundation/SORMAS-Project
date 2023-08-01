@@ -631,6 +631,6 @@ Scenario: Create and send laboratory request via Demis
     Then I click on the Messages button from navbar
     And I filter by last created person via API in Messages Directory
     And I verify that status for result 1 is set to processed in Message Directory page
-    And I select "Physician's report" type of message in Message Directory page
+    And I select "Arztmeldung" type of message in Message Directory page
     And I click on the APPLY FILTERS button
-    And I check that all displayed messages have "Physician's report" in grid Message Directory Type column
+    And I check that all displayed messages have "Arztmeldung" in grid Message Directory Type column
