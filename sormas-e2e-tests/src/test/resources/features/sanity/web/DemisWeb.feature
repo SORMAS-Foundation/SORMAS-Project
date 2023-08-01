@@ -604,3 +604,29 @@ Scenario: Create and send laboratory request via Demis
     Then I click on the Messages button from navbar
     And I filter by last created person via API in Messages Directory
     And I verify that status for result 1 is set to processed in Message Directory page
+
+  @tmsLink=SORQA-1024 @env_d2s @LoginKeycloak
+  Scenario: Demis - Process a Physician Report
+    Given API : Login to DEMIS server
+    When I create and send Laboratory Notification for physician report
+    And I log in as a Admin User
+    And I click on the Messages button from navbar
+    And I click on fetch messages button
+    And I filter by last created person via API in Messages Directory
+    And I click on Verarbeiten button in Messages Directory
+    And I pick a new person in Pick or create person popup during case creation for DE
+    And I fill only mandatory fields to convert laboratory message into a case for DE
+    And I click on "save" button in new physician report form while processing a message
+    And I click next button while processing a DEMIS LabMessage
+    And I click next button while processing a DEMIS LabMessage
+    And I click next button while processing a DEMIS LabMessage
+    And I click on "save and open" button in new physician report form while processing a message
+    Then I check if there is no displayed sample result on Edit case page
+    And I click on Display associated external messages button from Reports side component
+    And I check if external message window appears and close it
+    Then I click on the Messages button from navbar
+    And I filter by last created person via API in Messages Directory
+    And I verify that status for result 1 is set to processed in Message Directory page
+    And I select "Physician's report" type of message in Message Directory page
+    And I click on the APPLY FILTERS button
+    And I check that all displayed messages have "Physician's report" in grid Message Directory Type column
