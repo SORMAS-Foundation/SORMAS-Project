@@ -9,9 +9,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.slf4j.LoggerFactory;
-
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.ContentMode;
@@ -32,7 +31,6 @@ import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.ui.utils.components.progress.BulkProgressLayout;
 import de.symeda.sormas.ui.utils.components.progress.BulkProgressUpdateInfo;
 import de.symeda.sormas.ui.utils.components.progress.ProgressResult;
-import org.slf4j.LoggerFactory;
 
 public class BulkOperationHandler<T extends HasUuid> {
 
@@ -71,14 +69,22 @@ public class BulkOperationHandler<T extends HasUuid> {
 		String allEntriesProcessedMessageProperty,
 		String ineligibleEntriesNotProcessedMessageProperty,
 		String headingSomeEntitiesNotProcessed,
+
+		//not added
 		String headingNoProcessedEntities,
+
 		String countEntriesNotProcessedMessageProperty,
+
+		//Not added
 		String countEntriesNotProcessedExternalReasonProperty,
 		String countEntriesNotProcessedSormasToSormasReasonProperty,
 		String countEntriesNotProcessedAccessDeniedReasonProperty,
+
 		String someEntriesProcessedMessageProperty,
 		String noEligibleEntityMessageProperty,
 		String infoBulkProcessFinishedWithSkipsProperty,
+
+		//Not added
 		String infoBulkProcessFinishedWithoutSuccess) {
 
 		this.allEntriesProcessedMessageProperty = allEntriesProcessedMessageProperty;
@@ -214,15 +220,15 @@ public class BulkOperationHandler<T extends HasUuid> {
 								bulkOperationDoneCallback);
 						}
 					});
-                } catch (Exception e) {
-                    LoggerFactory.getLogger(BulkOperationHandler.class).error("Error during bulk operation", e);
-                    bulkProgressLayout.finishProgress(ProgressResult.FAILURE, I18nProperties.getString(Strings.errorWasReported), () -> {
-                        window.close();
-                        bulkOperationDoneCallback.accept(selectedEntries);
-                    });
-                } finally {
-                    currentUI.setPollInterval(-1);
-                }
+				} catch (Exception e) {
+					LoggerFactory.getLogger(BulkOperationHandler.class).error("Error during bulk operation", e);
+					bulkProgressLayout.finishProgress(ProgressResult.FAILURE, I18nProperties.getString(Strings.errorWasReported), null, () -> {
+						window.close();
+						bulkOperationDoneCallback.accept(selectedEntries);
+					});
+				} finally {
+					currentUI.setPollInterval(-1);
+				}
 			});
 
 			bulkThread.start();
@@ -411,9 +417,7 @@ public class BulkOperationHandler<T extends HasUuid> {
 			ineligibleEntriesDescription = getErrorDescription(
 				selectedIneligibleEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
 				I18nProperties.getString(countEntriesNotProcessedMessageProperty),
-                    ineligibleEntriesNotProcessedMessageProperty != null
-                            ? I18nProperties.getString(ineligibleEntriesNotProcessedMessageProperty)
-                            : "");
+				ineligibleEntriesNotProcessedMessageProperty != null ? I18nProperties.getString(ineligibleEntriesNotProcessedMessageProperty) : "");
 		}
 
 		return ineligibleEntriesDescription;

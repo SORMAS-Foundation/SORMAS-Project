@@ -35,6 +35,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventGroupCriteria;
 import de.symeda.sormas.api.event.EventGroupDto;
@@ -68,8 +69,24 @@ public class EventGroupController {
 		Consumer<List<EventReferenceDto>> callback) {
 
 		String messageEventsLinkedToGroup = eventReferences.size() > 1 ? Strings.messageEventsLinkedToGroup : Strings.messageEventLinkedToGroup;
-		new BulkOperationHandler<EventReferenceDto>(messageEventsLinkedToGroup, null, null, null, Strings.messageSomeEventsLinkedToGroup, null, null)
-			.doBulkOperation(batch -> {
+		//TODO: check newly added message: headingNoProcessedEntities, countEntriesNotProcessedExternalReasonProperty,  countEntriesNotProcessedSormastoSormasReasonProperty, 
+		//countEntriesNotProcessedAccessDeniedReasonProperty, infoBulkProcessFinishedWithSkipsProperty
+		new BulkOperationHandler<EventReferenceDto>(
+			messageEventsLinkedToGroup,
+			null,
+			null,
+			null,
+			null,
+			null,
+			null,
+			null,
+			Strings.messageSomeEventsLinkedToGroup,
+			null,
+			null,
+			null).doBulkOperation(batch -> {
+				List<ProcessedEntity> processedEventGroups = new ArrayList<>();
+				//TODO: fill the items which are not eligible with a progressStatus (from below the below if)
+				//TODO: change the logic
 				FacadeProvider.getEventGroupFacade()
 					.linkEventsToGroups(
 						batch.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList()),
@@ -79,7 +96,7 @@ public class EventGroupController {
 						eventGroupReference.getUuid(),
 						batch.stream().map(EventReferenceDto::getUuid).collect(Collectors.toSet()));
 
-				return batch.size();
+				return processedEventGroups;
 			}, new ArrayList<>(eventReferences), null, null, callback);
 	}
 

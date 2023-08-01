@@ -45,6 +45,8 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.contact.ContactBulkEditData;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -71,6 +73,7 @@ import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -835,6 +838,9 @@ public class ContactController {
 					if (Boolean.TRUE.equals(confirmed)) {
 						String userName = UserProvider.getCurrent().getUserName();
 
+						//TODO: check newly added message: headingNoProcessedEntities, countEntriesNotProcessedExternalReasonProperty,  countEntriesNotProcessedSormastoSormasReasonProperty, 
+						//countEntriesNotProcessedAccessDeniedReasonProperty, infoBulkProcessFinishedWithSkipsProperty
+
 						new BulkOperationHandler<ContactIndexDto>(
 							Strings.messageFollowUpCanceled,
 							null,
@@ -842,18 +848,35 @@ public class ContactController {
 							null,
 							Strings.messageFollowUpCanceledForSome,
 							null,
+							null,
+							null,
+							null,
+							null,
+							null,
 							null).doBulkOperation(batch -> {
+								List<ProcessedEntity> processedContacts = new ArrayList<>();
+								//TODO: fill the items which are not eligible with a progressStatus (from below the below if)
+
 								for (ContactIndexDto contact : batch) {
 									if (!FollowUpStatus.NO_FOLLOW_UP.equals(contact.getFollowUpStatus())
 										&& !FollowUpStatus.CANCELED.equals(contact.getFollowUpStatus())) {
+
 										ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(contact.getUuid());
 										contactDto.setFollowUpStatus(FollowUpStatus.CANCELED);
 										contactDto.addToFollowUpComment(String.format(I18nProperties.getString(Strings.infoCanceledBy), userName));
-										FacadeProvider.getContactFacade().save(contactDto);
+										try {
+											FacadeProvider.getContactFacade().save(contactDto);
+											processedContacts.add(new ProcessedEntity(contact.getUuid(), ProcessedEntityStatus.SUCCESS));
+										} catch (Exception e) {
+											//TODO: analyze the save and add all type of exceptions
+										}
+
+									} else {
+										processedContacts.add(new ProcessedEntity(contact.getUuid(), ProcessedEntityStatus.NOT_ELIGIBLE));
 									}
 								}
 
-								return batch.size();
+								return processedContacts;
 							}, new ArrayList<>(selectedRows), null, null, bulkOperationCallback(caseUuid, contactGrid, null));
 					}
 				});
@@ -881,25 +904,51 @@ public class ContactController {
 					if (Boolean.TRUE.equals(confirmed)) {
 						String userName = UserProvider.getCurrent().getUserName();
 
+						//TODO: check newly added message: headingNoProcessedEntities, countEntriesNotProcessedExternalReasonProperty, 
+						// countEntriesNotProcessedSormastoSormasReasonProperty,countEntriesNotProcessedAccessDeniedReasonProperty, infoBulkProcessFinishedWithSkipsProperty
 						new BulkOperationHandler<ContactIndexDto>(
 							Strings.messageFollowUpStatusChanged,
 							null,
 							null,
 							null,
+							null,
+							null,
+							null,
+							null,
 							Strings.messageFollowUpStatusChangedForSome,
 							null,
+							null,
 							null).doBulkOperation(batch -> {
+								//TODO: fill the status for ineligible items
+								List<ProcessedEntity> processedContacts = new ArrayList<>();
+
 								for (ContactIndexDto contact : batch) {
 									if (contact.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
 										ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(contact.getUuid());
 										contactDto.setFollowUpStatus(FollowUpStatus.LOST);
 										contactDto
 											.addToFollowUpComment(String.format(I18nProperties.getString(Strings.infoLostToFollowUpBy), userName));
-										FacadeProvider.getContactFacade().save(contactDto);
+										try {
+											FacadeProvider.getContactFacade().save(contactDto);
+											processedContacts.add(new ProcessedEntity(contact.getUuid(), ProcessedEntityStatus.SUCCESS));
+										} catch (AccessDeniedException e) {
+											processedContacts
+												.add(new ProcessedEntity(contact.getUuid(), ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+											logger.error(
+												"The contact with uuid {} could not be saved due to an AccessDeniedException",
+												contact.getUuid(),
+												e);
+										} catch (Exception e) {
+											processedContacts.add(new ProcessedEntity(contact.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+											logger.error("The contact with uuid {} could not be saved due to an Exception", contact.getUuid(), e);
+										}
+									} else {
+										//TODO: check this part
+										processedContacts.add(new ProcessedEntity(contact.getUuid(), ProcessedEntityStatus.NOT_ELIGIBLE));
 									}
 								}
+								return processedContacts;
 
-								return batch.size();
 							}, new ArrayList<>(selectedRows), null, null, bulkOperationCallback(caseUuid, contactGrid, null));
 					}
 				});

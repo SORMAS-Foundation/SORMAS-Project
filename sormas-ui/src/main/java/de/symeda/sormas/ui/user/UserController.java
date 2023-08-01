@@ -46,6 +46,7 @@ import com.vaadin.v7.ui.ComboBox;
 import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -367,12 +368,29 @@ public class UserController {
 						return;
 					}
 
-					new BulkOperationHandler<UserDto>(Strings.messageUsersEnabled, null, null, null, Strings.messageSomeUsersEnabled, null, null)
-						.doBulkOperation(batch -> {
+					//TODO: check newly added message: headingNoProcessedEntities, countEntriesNotProcessedExternalReasonProperty,  countEntriesNotProcessedSormastoSormasReasonProperty, 
+					//countEntriesNotProcessedAccessDeniedReasonProperty, infoBulkProcessFinishedWithSkipsProperty
+					new BulkOperationHandler<UserDto>(
+						Strings.messageUsersEnabled,
+						null,
+						null,
+						null,
+						null,
+						null,
+						null,
+						null,
+						Strings.messageSomeUsersEnabled,
+						null,
+						null,
+						null).doBulkOperation(batch -> {
+
+							List<ProcessedEntity> processedUsers = new ArrayList<>();
+
+							//TODO: change the logic
 							List<String> uuids = batch.stream().map(UserDto::getUuid).collect(Collectors.toList());
 							FacadeProvider.getUserFacade().enableUsers(uuids);
 
-							return batch.size();
+							return processedUsers;
 						}, new ArrayList<>(selectedRows), null, null, remaining -> {
 							userGrid.reload();
 							if (CollectionUtils.isNotEmpty(remaining)) {
@@ -405,12 +423,28 @@ public class UserController {
 						return;
 					}
 
-					new BulkOperationHandler<UserDto>(Strings.messageUsersDisabled, null, null, null, Strings.messageSomeUsersDisabled, null, null)
-						.doBulkOperation(batch -> {
+					//TODO: check newly added message: headingNoProcessedEntities, countEntriesNotProcessedExternalReasonProperty,  countEntriesNotProcessedSormastoSormasReasonProperty, 
+					//countEntriesNotProcessedAccessDeniedReasonProperty, infoBulkProcessFinishedWithSkipsProperty
+					new BulkOperationHandler<UserDto>(
+						Strings.messageUsersDisabled,
+						null,
+						null,
+						null,
+						null,
+						null,
+						null,
+						null,
+						Strings.messageSomeUsersDisabled,
+						null,
+						null,
+						null).doBulkOperation(batch -> {
+
+							List<ProcessedEntity> processedUsers = new ArrayList<>();
+							//TODO: change the logic
 							List<String> uuids = batch.stream().map(UserDto::getUuid).collect(Collectors.toList());
 							FacadeProvider.getUserFacade().disableUsers(uuids);
 
-							return batch.size();
+							return processedUsers;
 						}, new ArrayList<>(selectedRows), null, null, remaining -> {
 							userGrid.reload();
 							if (CollectionUtils.isNotEmpty(remaining)) {

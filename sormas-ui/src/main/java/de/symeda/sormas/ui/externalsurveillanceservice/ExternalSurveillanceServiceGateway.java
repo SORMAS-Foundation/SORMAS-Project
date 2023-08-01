@@ -19,6 +19,7 @@ import com.vaadin.ui.Notification;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
@@ -119,22 +120,31 @@ public class ExternalSurveillanceServiceGateway {
 		Consumer<List<T>> callback) {
 		sendToExternalSurveillanceTool(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_confirmSendCases), () -> {
 			ArrayList<T> selectedCasesCpy = new ArrayList<>(selectedCases);
+			//TODO: check newly added message: headingNoProcessedEntities, countEntriesNotProcessedExternalReasonProperty,  countEntriesNotProcessedSormastoSormasReasonProperty, 
+			//countEntriesNotProcessedAccessDeniedReasonProperty, infoBulkProcessFinishedWithSkipsProperty
 			new BulkOperationHandler<T>(
 				Strings.ExternalSurveillanceToolGateway_notificationEntriesSent,
 				null,
 				null,
 				null,
+				null,
+				null,
+				null,
+				null,
 				Strings.ExternalSurveillanceToolGateway_notificationSomeEntriesSent,
 				null,
+				null,
 				null).doBulkOperation(batch -> {
+					List<ProcessedEntity> processedCases = new ArrayList<>();
 					try {
 						FacadeProvider.getExternalSurveillanceToolFacade()
 							.sendCases(batch.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList()));
 					} catch (ExternalSurveillanceToolException e) {
-						return 0;
+						//TODO: add all type of exceptions here
+						//return 0;
 					}
 
-					return batch.size();
+					return processedCases;
 				}, selectedCasesCpy, null, null, callback);
 
 		}, null, shouldConfirm, null);
@@ -151,17 +161,24 @@ public class ExternalSurveillanceServiceGateway {
 				null,
 				null,
 				null,
+				null,
+				null,
+				null,
+				null,
 				Strings.ExternalSurveillanceToolGateway_notificationSomeEntriesSent,
 				null,
+				null,
 				null).doBulkOperation(batch -> {
+					List<ProcessedEntity> processedEvents = new ArrayList<>();
 					try {
 						FacadeProvider.getExternalSurveillanceToolFacade()
 							.sendEvents(batch.stream().map(EventIndexDto::getUuid).collect(Collectors.toList()));
 					} catch (ExternalSurveillanceToolException e) {
-						return 0;
+						//TODO: add all type of exceptions here
+						//return 0;
 					}
 
-					return batch.size();
+					return processedEvents;
 				}, selectedEventsCpy, null, null, callback);
 		}, null, shouldConfirm, null);
 	}

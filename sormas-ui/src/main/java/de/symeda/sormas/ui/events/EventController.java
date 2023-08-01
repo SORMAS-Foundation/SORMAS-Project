@@ -52,6 +52,7 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
@@ -345,21 +346,33 @@ public class EventController {
 
 		UserReferenceDto currentUser = UserProvider.getCurrent().getUserReference();
 
+		//TODO: check newly added message: headingNoProcessedEntities, countEntriesNotProcessedExternalReasonProperty,  countEntriesNotProcessedSormastoSormasReasonProperty, 
+		//countEntriesNotProcessedAccessDeniedReasonProperty, infoBulkProcessFinishedWithSkipsProperty
+
 		new BulkOperationHandler<ContactDto>(
 			Strings.messageAllContactsLinkedToEvent,
 			null,
 			Strings.headingSomeContactsAlreadyInEvent,
+			null,
 			Strings.messageCountContactsAlreadyInEvent,
+			null,
+			null,
+			null,
 			Strings.messageSomeContactsLinkedToEvent,
 			Strings.messageAllContactsAlreadyInEvent,
+			null,
 			null).doBulkOperation(batch -> {
+				//TODO: fill the status for ineligible items
+				List<ProcessedEntity> processedContacts = new ArrayList<>();
+
+				//TODO: change the logic here
 				batch.forEach(contactDataDto -> {
 					EventParticipantDto ep =
 						EventParticipantDto.buildFromPerson(personByUuid.get(contactDataDto.getPerson().getUuid()), eventReferenceDto, currentUser);
 					FacadeProvider.getEventParticipantFacade().save(ep);
 				});
 
-				return batch.size();
+				return processedContacts;
 			}, new ArrayList<>(contacts), new ArrayList<>(contactByPersonUuid.values()), alreadyLinkedContacts, callback);
 	}
 
