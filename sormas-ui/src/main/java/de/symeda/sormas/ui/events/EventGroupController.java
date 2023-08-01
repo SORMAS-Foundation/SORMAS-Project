@@ -24,6 +24,9 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Alignment;
@@ -36,6 +39,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventGroupCriteria;
 import de.symeda.sormas.api.event.EventGroupDto;
@@ -49,6 +53,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
@@ -63,7 +68,9 @@ import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 
 public class EventGroupController {
 
-	private static void linkEventsToGroup(
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
+
+	private void linkEventsToGroup(
 		List<EventReferenceDto> eventReferences,
 		EventGroupReferenceDto eventGroupReference,
 		Consumer<List<EventReferenceDto>> callback) {
@@ -86,16 +93,26 @@ public class EventGroupController {
 			null).doBulkOperation(batch -> {
 				List<ProcessedEntity> processedEventGroups = new ArrayList<>();
 				//TODO: fill the items which are not eligible with a progressStatus (from below the below if)
-				//TODO: change the logic
-				FacadeProvider.getEventGroupFacade()
-					.linkEventsToGroups(
-						batch.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList()),
-						Collections.singletonList(eventGroupReference.getUuid()));
-				FacadeProvider.getEventGroupFacade()
-					.notifyEventAddedToEventGroup(
-						eventGroupReference.getUuid(),
-						batch.stream().map(EventReferenceDto::getUuid).collect(Collectors.toSet()));
+				try {
+					FacadeProvider.getEventGroupFacade()
+						.linkEventsToGroups(
+							batch.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList()),
+							Collections.singletonList(eventGroupReference.getUuid()));
 
+					FacadeProvider.getEventGroupFacade()
+						.notifyEventAddedToEventGroup(
+							eventGroupReference.getUuid(),
+							batch.stream().map(EventReferenceDto::getUuid).collect(Collectors.toSet()));
+					processedEventGroups.add(new ProcessedEntity(eventGroupReference.getUuid(), ProcessedEntityStatus.SUCCESS));
+				} catch (AccessDeniedException e) {
+					processedEventGroups.add(new ProcessedEntity(eventGroupReference.getUuid(), ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+					logger
+						.error("The event group with uuid {} could not be linked due to an AccessDeniedException", eventGroupReference.getUuid(), e);
+				} catch (Exception e) {
+					processedEventGroups.add(new ProcessedEntity(eventGroupReference.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+					logger
+						.error("The event group with uuid {} could not be linked due to an AccessDeniedException", eventGroupReference.getUuid(), e);
+				}
 				return processedEventGroups;
 			}, new ArrayList<>(eventReferences), null, null, callback);
 	}

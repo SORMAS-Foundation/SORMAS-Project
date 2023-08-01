@@ -855,7 +855,6 @@ public class ContactController {
 							null,
 							null).doBulkOperation(batch -> {
 								List<ProcessedEntity> processedContacts = new ArrayList<>();
-								//TODO: fill the items which are not eligible with a progressStatus (from below the below if)
 
 								for (ContactIndexDto contact : batch) {
 									if (!FollowUpStatus.NO_FOLLOW_UP.equals(contact.getFollowUpStatus())
@@ -867,10 +866,21 @@ public class ContactController {
 										try {
 											FacadeProvider.getContactFacade().save(contactDto);
 											processedContacts.add(new ProcessedEntity(contact.getUuid(), ProcessedEntityStatus.SUCCESS));
+										} catch (AccessDeniedException e) {
+											processedContacts
+												.add(new ProcessedEntity(contact.getUuid(), ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+											logger.error(
+												"The follow up of the contact with uuid {} could not be cancelled due to an AccessDeniedException",
+												contact.getUuid(),
+												e);
 										} catch (Exception e) {
 											//TODO: analyze the save and add all type of exceptions
+											processedContacts.add(new ProcessedEntity(contact.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+											logger.error(
+												"The follow up of the contact with uuid {} could not be cancelled due to an Exception",
+												contact.getUuid(),
+												e);
 										}
-
 									} else {
 										processedContacts.add(new ProcessedEntity(contact.getUuid(), ProcessedEntityStatus.NOT_ELIGIBLE));
 									}
@@ -919,7 +929,6 @@ public class ContactController {
 							null,
 							null,
 							null).doBulkOperation(batch -> {
-								//TODO: fill the status for ineligible items
 								List<ProcessedEntity> processedContacts = new ArrayList<>();
 
 								for (ContactIndexDto contact : batch) {
@@ -935,12 +944,15 @@ public class ContactController {
 											processedContacts
 												.add(new ProcessedEntity(contact.getUuid(), ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
 											logger.error(
-												"The contact with uuid {} could not be saved due to an AccessDeniedException",
+												"The follow up status of contact with uuid {} could not be set due to an AccessDeniedException",
 												contact.getUuid(),
 												e);
 										} catch (Exception e) {
 											processedContacts.add(new ProcessedEntity(contact.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
-											logger.error("The contact with uuid {} could not be saved due to an Exception", contact.getUuid(), e);
+											logger.error(
+												"TThe follow up status of contact with uuid {} could not be set due to an Exception",
+												contact.getUuid(),
+												e);
 										}
 									} else {
 										//TODO: check this part

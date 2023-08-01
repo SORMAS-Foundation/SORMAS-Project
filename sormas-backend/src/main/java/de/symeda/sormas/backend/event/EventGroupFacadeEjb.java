@@ -67,6 +67,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.FacadeHelper;
@@ -379,7 +380,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 		for (Event event : events) {
 			final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 			if (!eventFacade.isInJurisdictionOrOwned(event.getUuid()) && (jurisdictionLevel != JurisdictionLevel.NATION) && !currentUser.isAdmin()) {
-				throw new UnsupportedOperationException(
+				throw new AccessDeniedException(
 					"User " + currentUser.getUuid() + " is not allowed to link events from another region to an event group.");
 			}
 

@@ -31,6 +31,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Functions;
 import com.vaadin.navigator.Navigator;
@@ -53,6 +55,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
@@ -76,6 +79,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -97,6 +101,8 @@ import de.symeda.sormas.ui.utils.components.automaticdeletion.DeletionLabel;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 
 public class EventController {
+
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	public void registerViews(Navigator navigator) {
 		navigator.addView(EventsView.VIEW_NAME, EventsView.class);
@@ -362,17 +368,32 @@ public class EventController {
 			Strings.messageAllContactsAlreadyInEvent,
 			null,
 			null).doBulkOperation(batch -> {
-				//TODO: fill the status for ineligible items
-				List<ProcessedEntity> processedContacts = new ArrayList<>();
+				//TODO: check if contacts or events should be passed here
+				List<ProcessedEntity> processedEvents = new ArrayList<>();
 
-				//TODO: change the logic here
 				batch.forEach(contactDataDto -> {
 					EventParticipantDto ep =
 						EventParticipantDto.buildFromPerson(personByUuid.get(contactDataDto.getPerson().getUuid()), eventReferenceDto, currentUser);
-					FacadeProvider.getEventParticipantFacade().save(ep);
+					try {
+						FacadeProvider.getEventParticipantFacade().save(ep);
+						processedEvents.add(new ProcessedEntity(eventReferenceDto.getUuid(), ProcessedEntityStatus.SUCCESS));
+					} catch (AccessDeniedException e) {
+						processedEvents.add(new ProcessedEntity(eventReferenceDto.getUuid(), ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+						logger.error(
+							"The event participant of the event with uuid {} could not be linked due to an AccessDeniedException",
+							eventReferenceDto.getUuid(),
+							e);
+					} catch (Exception e) {
+						processedEvents.add(new ProcessedEntity(eventReferenceDto.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+						logger.error(
+							"The event participant of the event with uuid {} could not be linked due to an Exception",
+							eventReferenceDto.getUuid(),
+							e);
+					}
+
 				});
 
-				return processedContacts;
+				return processedEvents;
 			}, new ArrayList<>(contacts), new ArrayList<>(contactByPersonUuid.values()), alreadyLinkedContacts, callback);
 	}
 
