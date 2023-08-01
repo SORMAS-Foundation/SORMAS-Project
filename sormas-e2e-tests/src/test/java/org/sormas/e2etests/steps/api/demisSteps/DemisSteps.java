@@ -972,11 +972,11 @@ public class DemisSteps implements En {
           if (webDriverHelpers.isElementVisibleWithTimeout(CASE_SAVED_POPUP_DE, 5)) {
             webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP_DE);
           }
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEXT_BUTTON);
+          webDriverHelpers.scrollToElement(NEXT_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(NEXT_BUTTON);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(CASE_SAVED_POPUP_DE);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP_DE);
-          TimeUnit.SECONDS.sleep(2);
+          TimeUnit.SECONDS.sleep(5);
         });
   }
 
