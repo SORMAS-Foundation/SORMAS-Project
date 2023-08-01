@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.ACTION_CONFIRM_POPUP_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAMPLES_CARD_DATE_OF_COLLECTED_SAMPLE;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.*;
 
 @Slf4j
@@ -355,6 +356,16 @@ public class MessagesDirectorySteps implements En {
         "^I check that all displayed messages have \"([^\"]*)\" in grid Message Directory Type column$",
         (String type) -> {
           webDriverHelpers.waitUntilAListOfElementsHasText(GRID_RESULTS_TYPE, type);
+        });
+
+    Then(
+        "^I check if there is no displayed sample result on Edit case page$",
+        () -> {
+          softly.assertFalse(
+            webDriverHelpers.isElementPresent(SAMPLES_CARD_DATE_OF_COLLECTED_SAMPLE),
+            "Element is present!");
+          softly.assertAll();
+
         });
   }
 }
