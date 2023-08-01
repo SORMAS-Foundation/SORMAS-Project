@@ -127,7 +127,6 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERAL_C
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERAL_COMMENT_TEXT_AREA;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERATED_DOCUMENT_NAME;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERATED_DOCUMENT_NAME_DE;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.HAND_THE_OWNERSHIP_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.HOME_BASED_QUARANTINE_POSSIBLE_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.HOSPITALIZATION_TAB;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.IMMUNIZATION_CARD_IMMUNIZATION_PERIOD_LABEL;
@@ -221,10 +220,8 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.SEND_TO_R
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SEQUELAE_DETAILS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SEQUELAE_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SHARE_IMMUNIZATION_CHECKBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.SHARE_ORGANIZATION_POPUP_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SHARE_PENDING_WARNING_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SHARE_REPORTS_CHECKBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.SHARE_SORMAS_2_SORMAS_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SHOW_SAMPLE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SURVEILLANCE_OFFICER_FIELD_ABOVE_GENERAL_COMMENT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SYMPTOMS_TAB;
@@ -2604,21 +2601,6 @@ public class EditCaseSteps implements En {
           webDriverHelpers.selectFromCombobox(VACCINATION_STATUS_COMBOBOX, vaccinationStatus);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
-
-    When(
-        "I click on share case button",
-        () -> webDriverHelpers.clickOnWebElementBySelector(SHARE_SORMAS_2_SORMAS_BUTTON));
-
-    When(
-        "I select organization to share with {string}",
-        (String organization) -> {
-          String survnetOrganization = runningConfiguration.getSurvnetResponsible(organization);
-          webDriverHelpers.selectFromCombobox(
-              SHARE_ORGANIZATION_POPUP_COMBOBOX, survnetOrganization);
-        });
-    When(
-        "I click to hand over the ownership of the case in Share popup",
-        () -> webDriverHelpers.clickOnWebElementBySelector(HAND_THE_OWNERSHIP_CHECKBOX));
     When(
         "I click to share samples of the case in Share popup",
         () -> webDriverHelpers.clickOnWebElementBySelector(SAHRE_SAMPLES_CHECKBOX));
@@ -2786,12 +2768,6 @@ public class EditCaseSteps implements En {
         "I check if reject share case button in Edit Case is unavailable",
         () -> {
           softly.assertFalse(webDriverHelpers.isElementPresent(REJECT_SHARED_CASE_BUTTON));
-          softly.assertAll();
-        });
-    When(
-        "I check if share case button in Edit Case is unavailable",
-        () -> {
-          softly.assertFalse(webDriverHelpers.isElementPresent(SHARE_SORMAS_2_SORMAS_BUTTON));
           softly.assertAll();
         });
     When(
