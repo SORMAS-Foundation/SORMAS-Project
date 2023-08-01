@@ -617,9 +617,9 @@ Scenario: Create and send laboratory request via Demis
     And I pick a new person in Pick or create person popup during case creation for DE
     And I fill only mandatory fields to convert laboratory message into a case for DE
     And I click on "save" button in new physician report form while processing a message
-    And I click next button while processing a DEMIS LabMessage
-    And I click next button while processing a DEMIS LabMessage
-    And I click next button while processing a DEMIS LabMessage
+    And I click next button while processing a "hospitalization" in DEMIS LabMessage
+    And I click next button while processing a "clinical measurement" in DEMIS LabMessage
+    And I click next button while processing a "exposure investigation" in DEMIS LabMessage
     And I click on "save and open" button in new physician report form while processing a message
     Then I check if there is no displayed sample result on Edit case page
     And I click on Display associated external messages button from Reports side component

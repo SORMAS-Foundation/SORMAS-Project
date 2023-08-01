@@ -367,5 +367,32 @@ public class MessagesDirectorySteps implements En {
           softly.assertAll();
 
         });
+
+    And(
+        "I click next button while processing a {string} in DEMIS LabMessage",
+        (String option) -> {
+          if (webDriverHelpers.isElementVisibleWithTimeout(CASE_SAVED_POPUP_DE, 5)) {
+              webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP_DE);
+          }
+          switch(option) {
+              case "hospitalization":
+                  webDriverHelpers.waitUntilIdentifiedElementIsPresent(CURRENT_HOSPITALIZATION_HEADER);
+                  webDriverHelpers.scrollToElement(NEXT_BUTTON);
+                  webDriverHelpers.clickOnWebElementBySelector(NEXT_BUTTON);
+                  break;
+              case "clinical measurement":
+                  webDriverHelpers.waitUntilIdentifiedElementIsPresent(CLINICAL_MEASUREMENT_HEADER);
+                  webDriverHelpers.scrollToElement(NEXT_BUTTON);
+                  webDriverHelpers.clickOnWebElementBySelector(NEXT_BUTTON);
+                  break;
+              case "exposure investigation":
+                  webDriverHelpers.waitUntilIdentifiedElementIsPresent(EXPOSURE_INVESTIGATION_HEADER);
+                  webDriverHelpers.scrollToElement(NEXT_BUTTON);
+                  webDriverHelpers.clickOnWebElementBySelector(NEXT_BUTTON);
+                  webDriverHelpers.waitUntilIdentifiedElementIsPresent(ADD_VACCINATION_BUTTON);
+                  break;
+          }
+
+        });
   }
 }

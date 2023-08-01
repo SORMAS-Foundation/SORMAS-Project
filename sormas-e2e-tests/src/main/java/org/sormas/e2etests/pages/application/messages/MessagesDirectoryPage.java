@@ -154,4 +154,8 @@ public class MessagesDirectoryPage {
   public static final By CASE_SAVED_POPUP_DE = By.cssSelector(".warning .v-Notification-caption");
   public static final By TYPE_OF_MESSAGE_COMBOBOX = By.cssSelector("[id='type'] [class='v-filterselect-button']");
   public static final By GRID_RESULTS_TYPE = By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(3)");
+  public static final By CURRENT_HOSPITALIZATION_HEADER = By.cssSelector("[location='hospitalizationHeadingLoc'] div");
+  public static final By CLINICAL_MEASUREMENT_HEADER = By.cssSelector("[location='clinicalMeasurementsHeadingLoc'] div");
+  public static final By EXPOSURE_INVESTIGATION_HEADER = By.cssSelector("[location='locExposureInvestigationHeading'] div");
+  public static final By ADD_VACCINATION_BUTTON = By.id("physiciansReportCaseAddVaccination");
 }
