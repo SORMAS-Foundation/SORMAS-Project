@@ -22,6 +22,7 @@ This allows us to consider and process your contribution as quickly and smoothly
 * [Development Workflow](#development-workflow)
   * [Versioning](#versioning)
   * [Branches](#branches)
+  * [Dependency Management](#dependency-management)
 
 ## Submitting an Issue
 
@@ -226,3 +227,26 @@ Once the new version is merged to `master`/`master-<version`, the `release-`/`ho
 
 These kind of branches are manually created and maintained by developers who work on an issue. Such branches are used to create pull requests or to review the changes before merged into a permanent or supporting branch.
 * **feature-1234_short_description**: Any branch that is supposed to contribute to `development` or a `hotfix` branch.
+
+### Dependency Management
+
+Dependencies are managed in Maven POM files. For most dependencies the version is defined in [sormas-base/pom.xml](sormas-base/pom.xml). \
+[sormas-app](../sormas-app/app/build.gradle) and [sormas-e2e-tests](../sormas-e2e-tests/build.gradle) use Gradle instead.
+
+#### Automatic updates
+
+**Process**: At the beginning of each iteration, look over all [dependency update PRs](https://github.com/SORMAS-Foundation/SORMAS-Project/pulls?q=is%3Apr+is%3Aopen+label%3Adependencies) created by dependabot and process them according to the following rules:
+1. Always use "Rebase and merge" instead of creating a merge commit! If needed use the comment `@dependabot rebase` to rebase the PR to the latest development commit.
+2. If all CI checks are successful, minor and micro version updates can be merged
+3. For major version updates read the changelog to understand implications and possible migration steps of the update. \
+  Decide on you own wheter it is necessary to manually test the PR before merging.
+4. If CI checks are negative or migration steps are needed, decide whether the update is important enough to justify the effort of additional work. \
+If the PR is not needed, you can use `@dependabot ignore this major version` or `@dependabot ignore this minor version`.
+
+#### Payara
+All required dependencies provided by the Payara application server are set to "provided" in maven and may only be updated in combination with an update of the Payara version. \
+These dependencies have been added to the dependabot ignore list, so no dependency update PR is automatically created.
+
+#### Keycloak
+The Keycloak version in SORMAS-Project only defines the version of the Keycloak admin client library. When a new version of Keycloak is available this should be updated after the [Keycloak version is SORMAS-Docker](https://github.com/SORMAS-Foundation/SORMAS-Docker/blob/devops/keycloak/Dockerfile) has been updated. \
+This can be tested locally by building the updated Keycloak docker image and then using it in a  [container](https://github.com/SORMAS-Foundation/SORMAS-Project/tree/development/sormas-base/setup/keycloak) together with a local Payara instance.

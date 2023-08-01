@@ -143,4 +143,8 @@ public class MessagesDirectoryPage {
   public static final By CREATE_NEW_SAMPLE_CHECKBOX =
       By.xpath(
           "//span[@class= 'v-radiobutton v-select-option']//label[text()='Neue Probe erstellen']");
+  public static final By NEW_SAMPLE_FORM_FIRST_PATHOGEN_TEST_TYPE_INPUT =
+      By.xpath("(//div[contains(@id, 'testType')]//input)[1]");
+  public static final By NEW_SAMPLE_FORM_SECOND_PATHOGEN_TEST_TYPE_INPUT =
+      By.xpath("(//div[contains(@id, 'testType')]//input)[2]");
 }

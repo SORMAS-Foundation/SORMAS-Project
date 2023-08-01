@@ -46,6 +46,12 @@ public class EnvironmentResource extends EntityDtoResource<EnvironmentDto> {
 		return FacadeProvider.getEnvironmentFacade().getByUuid(uuid);
 	}
 
+	@GET
+	@Path("/obsolete/{since}")
+	public List<String> getObsoleteUuidsSince(@PathParam("since") long since) {
+		return FacadeProvider.getEnvironmentFacade().getObsoleteUuidsSince(new Date(since));
+	}
+
 	@Override
 	public UnaryOperator<EnvironmentDto> getSave() {
 		return FacadeProvider.getEnvironmentFacade()::save;
