@@ -306,6 +306,8 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 					NavigationHelper.goToEvents(getContext());
 				} else if (id == R.id.menu_item_samples) {
 					NavigationHelper.goToSamples(getContext());
+				} else if (id == R.id.menu_item_environments) {
+					NavigationHelper.goToEnvironments(getContext());
 				} else if (id == R.id.menu_item_immunizations) {
 					NavigationHelper.goToImmunizations(getContext());
 				} else if (id == R.id.menu_item_campaigns) {
@@ -410,6 +412,7 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 			MenuItem contactMenu = menuNav.findItem(R.id.menu_item_contacts);
 			MenuItem eventMenu = menuNav.findItem(R.id.menu_item_events);
 			MenuItem sampleMenu = menuNav.findItem(R.id.menu_item_samples);
+			MenuItem environmentMenu = menuNav.findItem(R.id.menu_item_environments);
 			MenuItem immunizationMenu = menuNav.findItem(R.id.menu_item_immunizations);
 			MenuItem reportMenu = menuNav.findItem(R.id.menu_item_reports);
 			MenuItem campaignMenu = menuNav.findItem(R.id.menu_item_campaigns);
@@ -437,6 +440,12 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 				sampleMenu.setVisible(
 					ConfigProvider.hasUserRight(UserRight.SAMPLE_VIEW)
 						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.SAMPLES_LAB));
+
+			if (environmentMenu != null) {
+				environmentMenu.setVisible(
+					ConfigProvider.hasUserRight(UserRight.ENVIRONMENT_VIEW)
+						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.ENVIRONMENT_MANAGEMENT));
+			}
 
 			if (immunizationMenu != null)
 				immunizationMenu.setVisible(

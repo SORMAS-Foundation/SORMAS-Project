@@ -394,6 +394,9 @@ public class EditCasePage {
   public static final By ERROR_REVOKE_DESCRIPTION_REQUEST_PROCESSED =
       By.xpath(
           "//*[contains(text(),'Die Freigabeanfrage konnte nicht gefunden werden. Sie wurde entweder vom Quellsystem zur\u00FCckgezogen oder von jemand anderem abgelehnt. Bitte laden Sie die Seite neu, um die neuesten \u00C4nderungen zu sehen.')]");
+  public static final By REPORTING_TOOLS_FOR_SURVNET_USER =
+      By.xpath(
+          "//div[contains(@location,'externalSurvToolGateway')]//div[contains(text(), 'Surv NETAUTO')]");
 
   public static By getPreExistingConditionCombobox_DE(String id) {
     return By.xpath(
@@ -451,4 +454,6 @@ public class EditCasePage {
           "//div[contains(@class, 'popupContent')]//div[contains(@class, 'v-window-outerheader')]//div[contains(text(), 'Meldung')]");
   public static final By WINDOW_CLOSE_BUTTON =
       By.xpath("//div[contains(@class, 'v-window-closebox')]");
+  public static final By NOSOCOMIAL_OUTBRAKE_LABEL = By.cssSelector("#nosocomialOutbreak label");
+  public static final By INFECTION_SETTINGS_INPUT = By.cssSelector("#infectionSetting input");
 }

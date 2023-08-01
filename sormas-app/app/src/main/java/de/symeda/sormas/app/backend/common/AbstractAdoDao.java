@@ -50,6 +50,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.environment.Environment;
 import de.symeda.sormas.app.backend.feature.FeatureConfiguration;
 import de.symeda.sormas.app.component.dialog.SynchronizationDialog;
 import de.symeda.sormas.app.util.MetaProperty;
@@ -676,7 +677,8 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 					|| parentProperty.equals(property.getName())
 					|| property.getReadMethod().isAnnotationPresent(JoinTableReference.class)
 					|| Case.COMPLETENESS.equals(property.getName())
-					|| FeatureConfiguration.PROPERTIES_MAP.equals(property.getName()))
+					|| FeatureConfiguration.PROPERTIES_MAP.equals(property.getName())
+					|| Environment.WATER_USE.equals(property.getName()))
 					continue;
 
 				// we now have to write the value from source into target and base

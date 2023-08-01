@@ -136,7 +136,9 @@ import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataHelper;
@@ -249,6 +251,7 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.contact.VisitSummaryExportDetails;
+import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb.CustomizableEnumFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.document.Document;
 import de.symeda.sormas.backend.document.DocumentService;
@@ -493,6 +496,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	private CaseService caseService;
 	@EJB
 	private UserRoleService userRoleService;
+	@EJB
+	private CustomizableEnumFacadeEjbLocal customizableEnumFacade;
 
 	@Resource
 	private ManagedScheduledExecutorService executorService;
@@ -1517,12 +1522,14 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return savedCoreAndPersonDto;
 	}
 
+	@Override
 	@RightsAllowed({
 		UserRight._CASE_EDIT })
 	public List<ProcessedEntity> saveBulkCase(
 		List<String> caseUuidList,
 		@Valid CaseBulkEditData updatedCaseBulkEditData,
 		boolean diseaseChange,
+		boolean diseaseVariantChange,
 		boolean classificationChange,
 		boolean investigationStatusChange,
 		boolean outcomeChange,
@@ -1541,6 +1548,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					updatedCaseBulkEditData,
 					caze,
 					diseaseChange,
+					diseaseVariantChange,
 					classificationChange,
 					investigationStatusChange,
 					outcomeChange,
@@ -1555,12 +1563,14 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return processedCases;
 	}
 
+	@Override
 	@RightsAllowed({
 		UserRight._CASE_EDIT })
 	public List<ProcessedEntity> saveBulkEditWithFacilities(
 		List<String> caseUuidList,
 		@Valid CaseBulkEditData updatedCaseBulkEditData,
 		boolean diseaseChange,
+		boolean diseaseVariantChange,
 		boolean classificationChange,
 		boolean investigationStatusChange,
 		boolean outcomeChange,
@@ -1585,6 +1595,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					updatedCaseBulkEditData,
 					caze,
 					diseaseChange,
+					diseaseVariantChange,
 					classificationChange,
 					investigationStatusChange,
 					outcomeChange,
@@ -1613,14 +1624,29 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		CaseBulkEditData updatedCaseBulkEditData,
 		Case existingCase,
 		boolean diseaseChange,
+		boolean diseaseVariantChange,
 		boolean classificationChange,
 		boolean investigationStatusChange,
 		boolean outcomeChange,
 		boolean surveillanceOfficerChange) {
 
 		if (diseaseChange) {
-			existingCase.setDisease(updatedCaseBulkEditData.getDisease());
-			existingCase.setDiseaseVariant(updatedCaseBulkEditData.getDiseaseVariant());
+			Disease newDisease = updatedCaseBulkEditData.getDisease();
+			existingCase.setDisease(newDisease);
+
+			if (!diseaseVariantChange
+				&& existingCase.getDiseaseVariant() != null
+				&& !customizableEnumFacade
+					.existsEnumValue(CustomizableEnumType.DISEASE_VARIANT, existingCase.getDiseaseVariant().getValue(), newDisease)) {
+				existingCase.setDiseaseVariant(null);
+				existingCase.setDiseaseVariantDetails(null);
+			} else if (diseaseVariantChange) {
+				DiseaseVariant diseaseVariant = updatedCaseBulkEditData.getDiseaseVariant();
+				existingCase.setDiseaseVariant(diseaseVariant);
+
+				existingCase.setDiseaseVariantDetails(diseaseVariant == null ? null : updatedCaseBulkEditData.getDiseaseVariantDetails());
+			}
+
 			existingCase.setDiseaseDetails(updatedCaseBulkEditData.getDiseaseDetails());
 			existingCase.setPlagueType(updatedCaseBulkEditData.getPlagueType());
 			existingCase.setDengueFeverType(updatedCaseBulkEditData.getDengueFeverType());

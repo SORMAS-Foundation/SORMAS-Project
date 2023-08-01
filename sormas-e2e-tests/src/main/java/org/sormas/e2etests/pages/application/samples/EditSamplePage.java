@@ -73,6 +73,9 @@ public class EditSamplePage {
   public static final By DELETE_SAMPLE_REASON_POPUP =
       By.xpath(
           "//div[@class='popupContent']//*[text()='Reason for deletion']/../following-sibling::div//div");
+  public static final By DELETE_SAMPLE_REASON_POPUP_FOR_DE =
+      By.xpath(
+          "//div[@class='popupContent']//*[text()='Grund des L\u00F6schens']/../following-sibling::div//div");
   public static final By EDIT_PATHOGEN_TEST =
       By.cssSelector(".v-align-right.v-slot.v-slot-compact.v-slot-link > div[role='button']");
   public static final By TESTED_DISEASE_VARIANT =
@@ -81,5 +84,7 @@ public class EditSamplePage {
       By.cssSelector("[class='popupContent'] [id='pcrTestSpecification'] input");
   public static final By SEE_SAMPLES_FOR_THIS_PERSON_BUTTON_DE =
       By.id("Proben f\u00FCr diese Person ansehen");
-  public static final By BACK_TO_CASE_DE_BUTTON = By.xpath("//div[@class='v-link v-widget v-caption v-link-v-caption']//span[contains(text(), 'Fall')]");
+  public static final By BACK_TO_CASE_DE_BUTTON =
+      By.xpath(
+          "//div[@class='v-link v-widget v-caption v-link-v-caption']//span[contains(text(), 'Fall')]");
 }

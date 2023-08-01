@@ -2716,6 +2716,27 @@ paths:
           description: default response
       tags:
       - Environment Controller
+  /environments/obsolete/{since}:
+    get:
+      operationId: getObsoleteUuidsSince_2
+      parameters:
+      - in: path
+        name: since
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        default:
+          content:
+            application/json; charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  type: string
+          description: default response
+      tags:
+      - Environment Controller
   /environments/push:
     post:
       description: A uuid will be generated for any entity that doesn't have one yet.
@@ -3055,7 +3076,7 @@ paths:
       - Event Participant Controller
   /eventparticipants/obsolete/{since}:
     get:
-      operationId: getObsoleteUuidsSince_2
+      operationId: getObsoleteUuidsSince_3
       parameters:
       - in: path
         name: since
@@ -3385,7 +3406,7 @@ paths:
       - Event Controller
   /events/obsolete/{since}:
     get:
-      operationId: getObsoleteUuidsSince_3
+      operationId: getObsoleteUuidsSince_4
       parameters:
       - in: path
         name: since
@@ -4030,7 +4051,7 @@ paths:
       - Immunization Controller
   /immunizations/obsolete/{since}:
     get:
-      operationId: getObsoleteUuidsSince_4
+      operationId: getObsoleteUuidsSince_5
       parameters:
       - in: path
         name: since
@@ -5577,7 +5598,7 @@ paths:
       - Sample Controller
   /samples/obsolete/{since}:
     get:
-      operationId: getObsoleteUuidsSince_5
+      operationId: getObsoleteUuidsSince_6
       parameters:
       - in: path
         name: since
@@ -6365,7 +6386,7 @@ paths:
       - Task Controller
   /tasks/obsolete/{since}:
     get:
-      operationId: getObsoleteUuidsSince_6
+      operationId: getObsoleteUuidsSince_7
       parameters:
       - in: path
         name: since
@@ -15959,10 +15980,8 @@ components:
           type: string
           maxLength: 255
           minLength: 0
-        personCountryIsoCode:
-          type: string
-          maxLength: 255
-          minLength: 0
+        personCountry:
+          $ref: '#/components/schemas/CountryReferenceDto'
         personEmail:
           type: string
           maxLength: 255

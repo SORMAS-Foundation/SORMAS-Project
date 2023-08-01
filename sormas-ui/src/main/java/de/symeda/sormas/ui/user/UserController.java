@@ -17,12 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.user;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -54,6 +56,7 @@ import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
@@ -344,9 +347,9 @@ public class UserController {
 		window.setCaption(I18nProperties.getCaption(Captions.syncUsers));
 	}
 
-	public void enableAllSelectedItems(Collection<UserDto> selectedRows, Runnable callback) {
+	public void enableAllSelectedItems(Collection<UserDto> selectedRows, UserGrid userGrid) {
 
-		if (selectedRows.size() == 0) {
+		if (selectedRows.isEmpty()) {
 			new Notification(
 				I18nProperties.getString(Strings.headingNoUsersSelected),
 				I18nProperties.getString(Strings.messageNoUsersSelected),
@@ -360,25 +363,31 @@ public class UserController {
 				I18nProperties.getString(Strings.no),
 				null,
 				confirmed -> {
-					if (!confirmed) {
+					if (Boolean.FALSE.equals(confirmed)) {
 						return;
 					}
 
-					List<String> uuids = selectedRows.stream().map(UserDto::getUuid).collect(Collectors.toList());
-					FacadeProvider.getUserFacade().enableUsers(uuids);
-					callback.run();
-					new Notification(
-						I18nProperties.getString(Strings.headingUsersEnabled),
-						I18nProperties.getString(Strings.messageUsersEnabled),
-						Notification.Type.HUMANIZED_MESSAGE,
-						false).show(Page.getCurrent());
+					new BulkOperationHandler<UserDto>(Strings.messageUsersEnabled, null, null, null, Strings.messageSomeUsersEnabled, null, null)
+						.doBulkOperation(batch -> {
+							List<String> uuids = batch.stream().map(UserDto::getUuid).collect(Collectors.toList());
+							FacadeProvider.getUserFacade().enableUsers(uuids);
+
+							return batch.size();
+						}, new ArrayList<>(selectedRows), null, null, remaining -> {
+							userGrid.reload();
+							if (CollectionUtils.isNotEmpty(remaining)) {
+								userGrid.asMultiSelect().selectItems(remaining.toArray(new UserDto[0]));
+							} else {
+								overview();
+							}
+						});
 				});
 		}
 	}
 
-	public void disableAllSelectedItems(Collection<UserDto> selectedRows, Runnable callback) {
+	public void disableAllSelectedItems(Collection<UserDto> selectedRows, UserGrid userGrid) {
 
-		if (selectedRows.size() == 0) {
+		if (selectedRows.isEmpty()) {
 			new Notification(
 				I18nProperties.getString(Strings.headingNoUsersSelected),
 				I18nProperties.getString(Strings.messageNoUsersSelected),
@@ -392,18 +401,24 @@ public class UserController {
 				I18nProperties.getString(Strings.no),
 				null,
 				confirmed -> {
-					if (!confirmed) {
+					if (Boolean.FALSE.equals(confirmed)) {
 						return;
 					}
 
-					List<String> uuids = selectedRows.stream().map(UserDto::getUuid).collect(Collectors.toList());
-					FacadeProvider.getUserFacade().disableUsers(uuids);
-					callback.run();
-					new Notification(
-						I18nProperties.getString(Strings.headingUsersDisabled),
-						I18nProperties.getString(Strings.messageUsersDisabled),
-						Notification.Type.HUMANIZED_MESSAGE,
-						false).show(Page.getCurrent());
+					new BulkOperationHandler<UserDto>(Strings.messageUsersDisabled, null, null, null, Strings.messageSomeUsersDisabled, null, null)
+						.doBulkOperation(batch -> {
+							List<String> uuids = batch.stream().map(UserDto::getUuid).collect(Collectors.toList());
+							FacadeProvider.getUserFacade().disableUsers(uuids);
+
+							return batch.size();
+						}, new ArrayList<>(selectedRows), null, null, remaining -> {
+							userGrid.reload();
+							if (CollectionUtils.isNotEmpty(remaining)) {
+								userGrid.asMultiSelect().selectItems(remaining.toArray(new UserDto[0]));
+							} else {
+								overview();
+							}
+						});
 				});
 		}
 	}

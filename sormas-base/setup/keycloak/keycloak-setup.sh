@@ -17,8 +17,6 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #*******************************************************************************
 
-
-
 rm -f keycloak_setup.log
 exec > >(tee -ia keycloak_setup.log)
 exec 2> >(tee -ia keycloak_setup.log)
@@ -41,6 +39,7 @@ else
 	ROOT_PREFIX=/c
 fi
 
+
 if [ -x "$(command -v docker)" ]; then
   echo "Found docker"
 else
@@ -50,11 +49,8 @@ fi
 
 echo "# Checking if the Payara server is up and running"
 
-# Update this variables to match your payara installation
+# Update these variables to match your payara installation
 # If the script is ran from the master server-setup.sh script, the variables will be filled automatically
-if [[ -z "$DB_PORT" ]]; then
- DB_PORT=5432
-fi
 if [[ -z "$PORT_BASE" ]]; then
  PORT_BASE=6080
  echo "Using default Payara PORT_BASE ${PORT_BASE}"
@@ -88,9 +84,7 @@ if [[ ! -d ${PAYARA_HOME} ]];then
 fi
 
 ${PAYARA_HOME}/bin/asadmin restart-domain --domaindir ${DOMAINS_HOME} ${DOMAIN_NAME}
-
 PAYARA_STATUS=$?
-
 if [[ 0 != $PAYARA_STATUS ]]; then
 	echo "ERROR: Cannot start payara. Status ${PAYARA_STATUS}"
 	exit 2
@@ -99,98 +93,58 @@ fi
 ASADMIN="${PAYARA_HOME}/bin/asadmin --port ${PORT_ADMIN}"
 
 # Keycloak settings
-KEYCLOAK_PORT=7080
-if [[ -z "$KEYCLOAK_HOSTNAME" ]]; then
-  KEYCLOAK_HOSTNAME="localhost:${KEYCLOAK_PORT}"
-  echo "Using default KEYCLOAK_HOSTNAME ${KEYCLOAK_HOSTNAME}"
+if [[ -z "$KEYCLOAK_PORT" ]]; then
+  export $(grep KEYCLOAK_PORT= < .env)
+fi
+echo "KEYCLOAK_PORT: ${KEYCLOAK_PORT}"
+if [[ -z "$KEYCLOAK_SORMAS_UI_SECRET" ]]; then
+  export $(grep KEYCLOAK_SORMAS_UI_SECRET= < .env)
+fi
+if [[ -z "$KEYCLOAK_SORMAS_REST_SECRET" ]]; then
+  export $(grep KEYCLOAK_SORMAS_REST_SECRET= < .env)
+fi
+if [[ -z "$KEYCLOAK_SORMAS_BACKEND_SECRET" ]]; then
+  export $(grep KEYCLOAK_SORMAS_BACKEND_SECRET= < .env)
 fi
 
-DB_HOST=localhost
+if [[ -z "$KEYCLOAK_HOST" ]]; then
+  export KEYCLOAK_HOST="localhost:${KEYCLOAK_PORT}"
+fi
+echo "KEYCLOAK_HOST: ${KEYCLOAK_HOST}"
 
-KEYCLOAK_DB_HOST=host.docker.internal
-KEYCLOAK_DB_PORT=5432
-KEYCLOAK_DB_NAME=keycloak
-KEYCLOAK_DB_USER=keycloak
-KEYCLOAK_DB_VENDOR=postgres
-KEYCLOAK_ADMIN_USER=admin
-KEYCLOAK_ADMIN_PASSWORD=password
-
-KEYCLOAK_SORMAS_UI_SECRET=changeit
-KEYCLOAK_SORMAS_REST_SECRET=changeit
-KEYCLOAK_SORMAS_BACKEND_SECRET=changeit
-
-echo "Keycloak port: ${KEYCLOAK_PORT}"
-
-echo "Preparing the local Keycloak DB"
-
-while [[ -z "${KEYCLOAK_DB_PASSWORD}" ]]; do
-	read -r -p "--- Enter a password for the new database user '${KEYCLOAK_DB_USER}': " KEYCLOAK_DB_PASSWORD
-done
-
-cat > setup.sql <<-EOF
-CREATE USER ${KEYCLOAK_DB_USER} WITH PASSWORD '${KEYCLOAK_DB_PASSWORD}' CREATEDB;
-CREATE DATABASE ${KEYCLOAK_DB_NAME} WITH OWNER = '${KEYCLOAK_DB_USER}' ENCODING = 'UTF8';
-EOF
-
-if [[ ${LINUX} = true ]]; then
-	# no host is specified as by default the postgres user has only local access
-	su postgres -c "psql -p ${DB_PORT} < setup.sql"
+if [[ -z "$DEV_SYSTEM" ]]; then
+  DEV_SYSTEM=true
+fi
+if [[ ${DEV_SYSTEM} = true ]]; then
+  KEYCLOAK_URL="http://${KEYCLOAK_HOST}"
 else
-  if [[ -z ${PSQL} ]]; then
-    PSQL_DEFAULT="${PROGRAMFILES//\\/\/}/PostgreSQL/10/"
-    echo "--- Enter the name install path of Postgres on your system (default: ${PSQL_DEFAULT}:"
-    read -r PSQL_DIR
-    if [[ -z "${PSQL_DIR}" ]]; then
-      PSQL_DIR="${PSQL_DEFAULT}"
-    fi
-    PSQL="${PSQL_DIR}/bin/psql.exe"
-	fi
-	if [[ -z ${DB_PG_PW} ]]; then
-	  while [[ -z "${DB_PG_PW}" ]]; do
-      read -r -p "--- Enter the password for the 'postgres' user of your database: " DB_PG_PW
-    done
-  fi
-	"${PSQL}" --no-password --file=setup.sql "postgresql://postgres:${DB_PG_PW}@${DB_HOST}:${DB_PORT}/postgres"
+  KEYCLOAK_URL="https://${KEYCLOAK_HOST}"
 fi
 
 read -p "--- Press [Enter] to continue..."
-echo "Running Keycloak as a docker image"
+echo "Running Keycloak and keycloak database docker containers"
 
-KEYCLOAK_DOCKER_CMD="-e KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN_USER} "
-KEYCLOAK_DOCKER_CMD+="-e KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD} "
-KEYCLOAK_DOCKER_CMD+="-e KC_DB_URL_HOST=${KEYCLOAK_DB_HOST} "
-KEYCLOAK_DOCKER_CMD+="-e KC_DB_PORT=${KEYCLOAK_DB_PORT} "
-KEYCLOAK_DOCKER_CMD+="-e KC_DB_USERNAME=${KEYCLOAK_DB_USER} "
-KEYCLOAK_DOCKER_CMD+="-e KC_DB_PASSWORD=${KEYCLOAK_DB_PASSWORD} "
-KEYCLOAK_DOCKER_CMD+="-e PROXY_ADDRESS_FORWARDING=true "
-KEYCLOAK_DOCKER_CMD+="-e KC_HOSTNAME=${KEYCLOAK_HOSTNAME} "
-KEYCLOAK_DOCKER_CMD+="-e SORMAS_SERVER_URL=${SORMAS_SERVER_URL} "
-KEYCLOAK_DOCKER_CMD+="-e KEYCLOAK_SORMAS_UI_SECRET=${KEYCLOAK_SORMAS_UI_SECRET} "
-KEYCLOAK_DOCKER_CMD+="-e KEYCLOAK_SORMAS_REST_SECRET=${KEYCLOAK_SORMAS_REST_SECRET} "
-KEYCLOAK_DOCKER_CMD+="-e KEYCLOAK_SORMAS_BACKEND_SECRET=${KEYCLOAK_SORMAS_BACKEND_SECRET} "
-KEYCLOAK_DOCKER_CMD+="-p ${KEYCLOAK_PORT}:8080 "
+docker compose up --detach
 
-KEYCLOAK_DOCKER_CMD+="hzibraunschweig/sormas-keycloak:latest"
-
-docker run -d --name sormas_keycloak ${KEYCLOAK_DOCKER_CMD}
 
 echo "Updating Payara with Keycloak configurations"
 
 ${ASADMIN} set-config-property --propertyName=payara.security.openid.clientId --propertyValue=sormas-ui --source=domain
 ${ASADMIN} set-config-property --propertyName=payara.security.openid.clientSecret --propertyValue=${KEYCLOAK_SORMAS_UI_SECRET} --source=domain
 ${ASADMIN} set-config-property --propertyName=payara.security.openid.scope --propertyValue=openid --source=domain
-${ASADMIN} set-config-property --propertyName=payara.security.openid.providerURI --propertyValue=http://localhost:${KEYCLOAK_PORT}/keycloak/realms/SORMAS --source=domain
+${ASADMIN} set-config-property --propertyName=payara.security.openid.providerURI --propertyValue=${KEYCLOAK_URL}/keycloak/realms/SORMAS --source=domain
 ${ASADMIN} set-config-property --propertyName=payara.security.openid.provider.notify.logout --propertyValue=true --source=domain
 ${ASADMIN} set-config-property --propertyName=payara.security.openid.logout.redirectURI --propertyValue=http://${SORMAS_SERVER_URL}/sormas-ui
-${ASADMIN} set-config-property --propertyName=sormas.rest.security.oidc.json --propertyValue="{\"realm\":\"SORMAS\",\"auth-server-url\":\"http://localhost:${KEYCLOAK_PORT}/keycloak\",\"ssl-required\":\"external\",\"resource\":\"sormas-rest\",\"credentials\":{\"secret\":\"${KEYCLOAK_SORMAS_REST_SECRET}\"},\"confidential-port\":0,\"principal-attribute\":\"preferred_username\",\"enable-basic-auth\":true}" --source=domain
-${ASADMIN} set-config-property --propertyName=sormas.backend.security.oidc.json --propertyValue="{\"realm\":\"SORMAS\",\"auth-server-url\":\"http://localhost:${KEYCLOAK_PORT}/keycloak\",\"ssl-required\":\"external\",\"resource\":\"sormas-backend\",\"credentials\":{\"secret\":\"${KEYCLOAK_SORMAS_BACKEND_SECRET}\"},\"confidential-port\":0}" --source=domain
+${ASADMIN} set-config-property --propertyName=sormas.rest.security.oidc.json --propertyValue="{\"realm\":\"SORMAS\",\"auth-server-url\":\"${KEYCLOAK_URL}/keycloak\",\"ssl-required\":\"external\",\"resource\":\"sormas-rest\",\"credentials\":{\"secret\":\"${KEYCLOAK_SORMAS_REST_SECRET}\"},\"confidential-port\":0,\"principal-attribute\":\"preferred_username\",\"enable-basic-auth\":true}" --source=domain
+${ASADMIN} set-config-property --propertyName=sormas.backend.security.oidc.json --propertyValue="{\"realm\":\"SORMAS\",\"auth-server-url\":\"${KEYCLOAK_URL}/keycloak\",\"ssl-required\":\"external\",\"resource\":\"sormas-backend\",\"credentials\":{\"secret\":\"${KEYCLOAK_SORMAS_BACKEND_SECRET}\"},\"confidential-port\":0}" --source=domain
 
 echo "Setup is done and Keycloak is starting up (in case of any error you can go again trough the keycloak_setup.sh script)"
-echo "You can start Keycloak by using the following command"
-echo "  docker run ${KEYCLOAK_DOCKER_CMD}"
+echo "You can start the Keycloak container pair by using the following command:"
+echo "  docker start keycloak-keycloak-postgres-1 keycloak-keycloak-1"
+echo "Or from within the current directory:"
+echo "  docker compose up"
 echo "Please make sure to perform the following steps:"
-echo "  - Update email settings in Keycloak Admin http://localhost:${KEYCLOAK_PORT}/keycloak"
-echo "  - Make sure the clients rootUrl are setup correctly"
-echo "  - Create an admin user in Keycloak which can be used to Sync other users"
+echo "  - Update email settings in Keycloak Admin ${KEYCLOAK_URL}/keycloak"
+echo "  - Make sure the clients rootUrl are setup correctly - on dev systems https will have to be replaced by http"
 echo "  - In order to user Keycloak with Payara set 'authentication.provider=KEYCLOAK' property in sormas.properties"
 read -p "--- Press [Enter] to continue..."

@@ -9,6 +9,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.slf4j.LoggerFactory;
+
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.server.Sizeable;
@@ -30,6 +32,7 @@ import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.ui.utils.components.progress.BulkProgressLayout;
 import de.symeda.sormas.ui.utils.components.progress.BulkProgressUpdateInfo;
 import de.symeda.sormas.ui.utils.components.progress.ProgressResult;
+import org.slf4j.LoggerFactory;
 
 public class BulkOperationHandler<T extends HasUuid> {
 
@@ -211,9 +214,15 @@ public class BulkOperationHandler<T extends HasUuid> {
 								bulkOperationDoneCallback);
 						}
 					});
-				} catch (InterruptedException e) {
-					throw new RuntimeException(e);
-				}
+                } catch (Exception e) {
+                    LoggerFactory.getLogger(BulkOperationHandler.class).error("Error during bulk operation", e);
+                    bulkProgressLayout.finishProgress(ProgressResult.FAILURE, I18nProperties.getString(Strings.errorWasReported), () -> {
+                        window.close();
+                        bulkOperationDoneCallback.accept(selectedEntries);
+                    });
+                } finally {
+                    currentUI.setPollInterval(-1);
+                }
 			});
 
 			bulkThread.start();
@@ -402,7 +411,9 @@ public class BulkOperationHandler<T extends HasUuid> {
 			ineligibleEntriesDescription = getErrorDescription(
 				selectedIneligibleEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
 				I18nProperties.getString(countEntriesNotProcessedMessageProperty),
-				I18nProperties.getString(ineligibleEntriesNotProcessedMessageProperty));
+                    ineligibleEntriesNotProcessedMessageProperty != null
+                            ? I18nProperties.getString(ineligibleEntriesNotProcessedMessageProperty)
+                            : "");
 		}
 
 		return ineligibleEntriesDescription;
