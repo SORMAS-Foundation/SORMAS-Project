@@ -158,6 +158,6 @@ public class MessagesDirectoryPage {
   public static final By CLINICAL_MEASUREMENT_HEADER = By.cssSelector("[location='clinicalMeasurementsHeadingLoc'] div");
   public static final By EXPOSURE_INVESTIGATION_HEADER = By.cssSelector("[location='locExposureInvestigationHeading'] div");
   public static final By ADD_VACCINATION_BUTTON = By.id("physiciansReportCaseAddVaccination");
-  public static final By DOWNLOAD_BUTTON = By.cssSelector(".component-wrap [role='button'] .v-icon");
+  public static final By DOWNLOAD_BUTTON = By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(15) div");
   public static final By GRID_MESSAGE_UUID_TITLE = By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(2) a");
 }
