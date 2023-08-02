@@ -1708,6 +1708,7 @@
 							<suppressionFile>${dependency-check.suppressionFile}</suppressionFile>
 						</suppressionFiles>
 						<assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+						<ossindexAnalyzerEnabled>false</ossindexAnalyzerEnabled>
 					</configuration>
 					<executions>
 						<execution>
