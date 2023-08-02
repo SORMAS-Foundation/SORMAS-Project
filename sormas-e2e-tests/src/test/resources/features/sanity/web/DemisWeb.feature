@@ -613,7 +613,7 @@ Scenario: Create and send laboratory request via Demis
     And I click on the Messages button from navbar
     And I click on fetch messages button
     And I filter by last created person via API in Messages Directory
-    And I collect message uuid
+    And I collect shortened message uuid from Message Directory page
     And I click on Verarbeiten button in Messages Directory
     And I pick a new person in Pick or create person popup during case creation for DE
     And I fill only mandatory fields to convert laboratory message into a case for DE

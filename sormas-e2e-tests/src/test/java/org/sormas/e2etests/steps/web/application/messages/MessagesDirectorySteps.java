@@ -27,6 +27,7 @@ import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPa
 public class MessagesDirectorySteps implements En {
 
   public static List<String> uuids = new ArrayList<>();
+  public static List<String> shortenedUUIDS = new ArrayList<>();
 
   @Inject
   public MessagesDirectorySteps(
@@ -406,11 +407,17 @@ public class MessagesDirectorySteps implements En {
     And(
         "I verify if lab message file is downloaded correctly",
         () -> {
-          String shortenedUUID = uuids.get(0);
+          String shortenedUUID = shortenedUUIDS.get(0);
           DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
           String file = "sormas_lab_message_" + shortenedUUID + "_" + formatter.format(LocalDate.now()) + ".pdf";
           FilesHelper.waitForFileToDownload(file, 40);
           FilesHelper.deleteFile(file);
         });
+
+    And(
+       "^I collect shortened message uuid from Message Directory page$",
+       () -> {
+         shortenedUUIDS.add(webDriverHelpers.getValueFromWebElement(GRID_MESSAGE_UUID_TITLE));
+      });
   }
 }
