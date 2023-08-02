@@ -417,7 +417,7 @@ public class MessagesDirectorySteps implements En {
     And(
        "^I collect shortened message uuid from Message Directory page$",
        () -> {
-         shortenedUUIDS.add(webDriverHelpers.getValueFromWebElement(GRID_MESSAGE_UUID_TITLE));
+         shortenedUUIDS.add(webDriverHelpers.getTextFromWebElement(GRID_MESSAGE_UUID_TITLE));
       });
   }
 }
