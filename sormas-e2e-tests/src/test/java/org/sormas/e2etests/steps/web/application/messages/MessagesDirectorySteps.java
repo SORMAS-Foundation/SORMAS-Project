@@ -6,11 +6,13 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.interactions.Actions;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.helpers.files.FilesHelper;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
 import javax.inject.Inject;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -392,7 +394,23 @@ public class MessagesDirectorySteps implements En {
                   webDriverHelpers.waitUntilIdentifiedElementIsPresent(ADD_VACCINATION_BUTTON);
                   break;
           }
+        });
 
+    And(
+        "^I download message from Message Directory page$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DOWNLOAD_BUTTON);
+          TimeUnit.SECONDS.sleep(5); // wait for download
+        });
+
+    And(
+        "I verify if lab message file is downloaded correctly",
+        () -> {
+          String shortenedUUID = uuids.get(0);
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+          String file = "sormas_lab_message_" + shortenedUUID + "_" + formatter.format(LocalDate.now()) + ".pdf";
+          FilesHelper.waitForFileToDownload(file, 40);
+          FilesHelper.deleteFile(file);
         });
   }
 }

@@ -158,4 +158,5 @@ public class MessagesDirectoryPage {
   public static final By CLINICAL_MEASUREMENT_HEADER = By.cssSelector("[location='clinicalMeasurementsHeadingLoc'] div");
   public static final By EXPOSURE_INVESTIGATION_HEADER = By.cssSelector("[location='locExposureInvestigationHeading'] div");
   public static final By ADD_VACCINATION_BUTTON = By.id("physiciansReportCaseAddVaccination");
+  public static final By DOWNLOAD_BUTTON = By.cssSelector(".component-wrap [role='button'] .v-icon");
 }
