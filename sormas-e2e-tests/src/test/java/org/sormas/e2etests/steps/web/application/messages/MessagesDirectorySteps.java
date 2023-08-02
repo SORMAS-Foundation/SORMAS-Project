@@ -408,7 +408,7 @@ public class MessagesDirectorySteps implements En {
         "I verify if lab message file is downloaded correctly",
         () -> {
           String shortenedUUID = shortenedUUIDS.get(0);
-          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
           String file = "sormas_lab_message_" + shortenedUUID + "_" + formatter.format(LocalDate.now()) + ".pdf";
           FilesHelper.waitForFileToDownload(file, 40);
           FilesHelper.deleteFile(file);
