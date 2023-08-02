@@ -25,7 +25,7 @@ public class EnvironmentResource extends EntityDtoResource<EnvironmentDto> {
 	@GET
 	@Path("/all/{since}")
 	public List<EnvironmentDto> getAllEnvironments(@PathParam("since") long since) {
-		return FacadeProvider.getEnvironmentFacade().getAllEnvironmentsAfter(new Date(since));
+		return FacadeProvider.getEnvironmentFacade().getAllAfter(new Date(since));
 	}
 
 	@POST
