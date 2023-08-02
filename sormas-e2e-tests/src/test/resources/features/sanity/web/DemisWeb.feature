@@ -633,6 +633,23 @@ Scenario: Create and send laboratory request via Demis
     And I verify that status for result 1 is set to processed in Message Directory page
     And I select "Arztmeldung" type of message in Message Directory page
     And I click on the APPLY FILTERS button
+    And I click on "Verarbeitet" quick filter above the messages in Message directory page
+    And I check that all displayed messages have "Arztmeldung" in grid Message Directory Type column
+    And I download message from Message Directory page
+    And I verify if lab message file is downloaded correctly
+
+  @tmsLink=SORQA-1024Test @env_d2s @LoginKeycloak
+  Scenario: Demis - Process a Physician Report[2]
+    Given API : Login to DEMIS server
+    When I create and send Laboratory Notification for physician report
+    And I log in as a Admin User
+    And I click on the Messages button from navbar
+    And I click on fetch messages button
+    And I filter by last created person via API in Messages Directory
+    And I collect shortened message uuid from Message Directory page
+    And I select "Arztmeldung" type of message in Message Directory page
+    And I click on the APPLY FILTERS button
+    And I click on "Unverarbeitet" quick filter above the messages in Message directory page
     And I check that all displayed messages have "Arztmeldung" in grid Message Directory Type column
     And I download message from Message Directory page
     And I verify if lab message file is downloaded correctly

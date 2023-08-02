@@ -160,6 +160,6 @@ public class MessagesDirectoryPage {
   public static final By ADD_VACCINATION_BUTTON = By.id("physiciansReportCaseAddVaccination");
   //  public static final By DOWNLOAD_BUTTON =
   //      By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(15) div div");
-  public static final By DOWNLOAD_BUTTON = By.xpath("//table/tbody/tr[1]/td[14]/div");
+  public static final By DOWNLOAD_BUTTON = By.xpath("//table/tbody/tr[1]/td[15]/div");
   public static final By GRID_MESSAGE_UUID_TITLE = By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(2) a");
 }
