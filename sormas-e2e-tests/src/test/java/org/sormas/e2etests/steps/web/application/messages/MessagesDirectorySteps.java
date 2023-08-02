@@ -368,7 +368,6 @@ public class MessagesDirectorySteps implements En {
             webDriverHelpers.isElementPresent(SAMPLES_CARD_LABORATORY),
             "Element is present!");
           softly.assertAll();
-
         });
 
     And(
@@ -377,7 +376,7 @@ public class MessagesDirectorySteps implements En {
           if (webDriverHelpers.isElementVisibleWithTimeout(CASE_SAVED_POPUP_DE, 5)) {
               webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP_DE);
           }
-          switch(option) {
+          switch (option) {
               case "hospitalization":
                   webDriverHelpers.waitUntilIdentifiedElementIsPresent(CURRENT_HOSPITALIZATION_HEADER);
                   webDriverHelpers.scrollToElement(NEXT_BUTTON);
@@ -400,6 +399,7 @@ public class MessagesDirectorySteps implements En {
     And(
         "^I download message from Message Directory page$",
         () -> {
+          webDriverHelpers.scrollToElement(DOWNLOAD_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(DOWNLOAD_BUTTON);
           TimeUnit.SECONDS.sleep(5); // wait for download
         });

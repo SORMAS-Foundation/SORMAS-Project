@@ -622,7 +622,6 @@ Scenario: Create and send laboratory request via Demis
     And I click next button while processing a "clinical measurement" in DEMIS LabMessage
     And I click next button while processing a "exposure investigation" in DEMIS LabMessage
     And I click on "save" button in new physician report form while processing a message
-#    And I click on "save and open" button in new physician report form while processing a message
     And I click on the Cases button from navbar
     And I search the case by last created person via Demis message
     Then I click on the first Case ID from Case Directory
@@ -635,10 +634,5 @@ Scenario: Create and send laboratory request via Demis
     And I select "Arztmeldung" type of message in Message Directory page
     And I click on the APPLY FILTERS button
     And I check that all displayed messages have "Arztmeldung" in grid Message Directory Type column
-#    When I create and send Laboratory Notification for physician report
-#    And I click on the Messages button from navbar
-#    And I click on fetch messages button
-#    And I filter by last created person via API in Messages Directory
-#    And I select "Arztmeldung" type of message in Message Directory page
     And I download message from Message Directory page
     And I verify if lab message file is downloaded correctly
