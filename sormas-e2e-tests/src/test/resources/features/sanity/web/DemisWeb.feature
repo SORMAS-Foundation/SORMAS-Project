@@ -638,7 +638,7 @@ Scenario: Create and send laboratory request via Demis
     And I click on the eye icon next for the first fetched message
     Then I check if there are any buttons from processed message in HTML message file
     And I close HTML message
-    And I download message from Message Directory page
+    And I download "processed" message from Message Directory page
     And I verify if lab message file is downloaded correctly
 
   @tmsLink=SORQA-1024 @env_d2s @LoginKeycloak
@@ -659,5 +659,5 @@ Scenario: Create and send laboratory request via Demis
     And I click on the eye icon next for the first fetched message
    Then I check if there are all needed buttons in HTML message file
     And I close HTML message
-    And I download message from Message Directory page
+    And I download "unprocessed" message from Message Directory page
     And I verify if lab message file is downloaded correctly

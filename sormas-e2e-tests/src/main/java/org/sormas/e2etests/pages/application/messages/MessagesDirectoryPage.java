@@ -163,7 +163,8 @@ public class MessagesDirectoryPage {
   public static final By EXPOSURE_INVESTIGATION_HEADER =
       By.cssSelector("[location='locExposureInvestigationHeading'] div");
   public static final By ADD_VACCINATION_BUTTON = By.id("physiciansReportCaseAddVaccination");
-  public static final By DOWNLOAD_BUTTON = By.xpath("//table/tbody/tr[1]/td[15]/div");
+  public static final By DOWNLOAD_PROCESSED_BUTTON = By.xpath("//table/tbody/tr[1]/td[15]/div");
+  public static final By DOWNLOAD_UNPROCESSED_BUTTON = By.xpath("//table/tbody/tr[1]/td[16]/div");
   public static final By GRID_MESSAGE_UUID_TITLE =
       By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(2) a");
   public static final By ASSIGN_BUTTON = By.xpath("//table/tbody/tr[1]/td[14]/div");

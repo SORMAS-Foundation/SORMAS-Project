@@ -396,10 +396,19 @@ public class MessagesDirectorySteps implements En {
         });
 
     And(
-        "^I download message from Message Directory page$",
-        () -> {
-          webDriverHelpers.scrollToElement(DOWNLOAD_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(DOWNLOAD_BUTTON);
+        "I download {string} message from Message Directory page",
+        (String message) -> {
+          switch (message) {
+            case "processed":
+              webDriverHelpers.scrollToElement(DOWNLOAD_PROCESSED_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(DOWNLOAD_PROCESSED_BUTTON);
+              break;
+            case "unprocessed":
+              webDriverHelpers.scrollToElement(DOWNLOAD_UNPROCESSED_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(DOWNLOAD_UNPROCESSED_BUTTON);
+              break;
+          }
+
           TimeUnit.SECONDS.sleep(5); // wait for download
         });
 
