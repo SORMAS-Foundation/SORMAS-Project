@@ -462,22 +462,22 @@ public class MessagesDirectorySteps implements En {
         });
 
     Then(
-        "^I check if there are any buttons in HTML message file$",
+        "^I check if there are any buttons from processed message in HTML message file$",
         () -> {
           webDriverHelpers.scrollToElement(HEADER_OF_ENTRY_LINK);
-          softly.assertTrue(
+          softly.assertFalse(
             webDriverHelpers.isElementPresent(MESSAGE_DELETE_BUTTON),
                   "Delete message is available!");
           softly.assertAll();
-          softly.assertTrue(
+          softly.assertFalse(
                   webDriverHelpers.isElementPresent(MARK_AS_UNCLEAR_BUTTON),
                  "Delete message is available!");
           softly.assertAll();
-          softly.assertTrue(
+          softly.assertFalse(
                   webDriverHelpers.isElementPresent(MARK_AS_FORWARDED_BUTTON),
                   "Delete message is available!");
           softly.assertAll();
-          softly.assertTrue(
+          softly.assertFalse(
                   webDriverHelpers.isElementPresent(SEND_TO_ANOTHER_ORGANIZATION_BUTTON),
                   "Delete message is available!");
           softly.assertAll();

@@ -636,7 +636,7 @@ Scenario: Create and send laboratory request via Demis
     And I click on "Verarbeitet" quick filter above the messages in Message directory page
     And I check that all displayed messages have "Arztmeldung" in grid Message Directory Type column
     And I click on the eye icon next for the first fetched message
-    Then I check if there are any buttons in HTML message file
+    Then I check if there are any buttons from processed message in HTML message file
     And I close HTML message
     And I download message from Message Directory page
     And I verify if lab message file is downloaded correctly
