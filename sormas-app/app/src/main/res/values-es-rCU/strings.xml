@@ -381,6 +381,7 @@
     <string name="heading_sample_read">Leer muestra</string>
     <string name="heading_sample_summary">Resumen de la muestra</string>
     <string name="heading_samples_list">Listado de muestras</string>
+    <string name="heading_environments_list">Listado de ambientes</string>
     <string name="heading_immunization_edit">Editar inmunización</string>
     <string name="heading_immunization_new">Nueva inmunización</string>
     <string name="heading_immunization_read">Leer inmunización</string>
@@ -501,6 +502,7 @@
     <string name="main_menu_events">Eventos</string>
     <string name="main_menu_reports">Informes</string>
     <string name="main_menu_samples">Muestras</string>
+    <string name="main_menu_environments">Ambientes</string>
     <string name="main_menu_immunizations">Inmunizaciones</string>
     <string name="main_menu_settings">Ajustes</string>
     <string name="main_menu_tasks">Tareas</string>
@@ -652,6 +654,7 @@
     <string name="value_treatment_date_time_unknown">Fecha del tratamiento N/D</string>
     <string name="value_type_unknown">Tipo N/D</string>
     <string name="value_uuid_unknown">ID N/D</string>
+    <string name="value_external_id_unknown">ExternalID N/A</string>
     <string name="value_visit_date_unknown">Fecha de la visita N/D</string>
     <string name="value_visit_remarks_unknown">Observaciones N/D</string>
     <string name="value_visit_time_unknown">Hora de la visita N/D</string>

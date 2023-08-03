@@ -1,5 +1,31 @@
 package org.sormas.e2etests.steps.api.demisSteps;
 
+import com.github.javafaker.Faker;
+import cucumber.api.java8.En;
+import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.sormas.e2etests.entities.pojo.web.Event;
+import org.sormas.e2etests.entities.services.EventService;
+import org.sormas.e2etests.entities.services.api.demis.DemisApiService;
+import org.sormas.e2etests.envconfig.dto.demis.DemisData;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.steps.BaseSteps;
+import org.sormas.e2etests.steps.web.application.messages.MessagesTableViewHeaders;
+import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
+
+import javax.inject.Inject;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.FIRST_NAME_INPUT;
@@ -11,6 +37,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISTRICT_
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPUP_CONTENT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RESPONSIBLE_DISTRICT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RESPONSIBLE_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.getContactFirstAndLastName;
@@ -27,6 +54,7 @@ import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.TI
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CHOOSE_OR_CREATE_EVENT_HEADER_DE;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.ALL_QUICK_FILTER_COUNTER;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.APPLY_FILTER_MESSAGE;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CASE_SAVED_POPUP_DE;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CHOOSE_OR_CREATE_ENTRY_HEADER;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CREATE_A_NEW_CASE_WITH_POSITIVE_TEST_CONTACT_HEADER_DE;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CREATE_A_NEW_CASE_WITH_POSITIVE_TEST_EVENT_PARTICIPANT_HEADER_DE;
@@ -55,10 +83,15 @@ import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPa
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_FORM_SECOND_PATHOGEN_DISEASE_VARIANT_INPUT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_FORM_SECOND_PATHOGEN_LABORATORY_NAME;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_FORM_SECOND_PATHOGEN_TEST_TYPE_INPUT;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEXT_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.PATIENT_BIRTHDAY_FROM_INPUT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.PATIENT_BIRTHDAY_TO_INPUT;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_CONFIRM_BUTTON;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_WINDOW_BACK_BUTTON;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_WINDOW_CANCEL_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_WINDOW_SAVE_AND_OPEN_CASE_BUTTON;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_WINDOW_SAVE_AND_OPEN_PHYSICIAN_REPORT_BUTTON;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_WINDOW_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.PROCESSED_QUICK_FILTER_BUTTON;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.PROCESSED_QUICK_FILTER_COUNTER;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.RELATED_FORWARDED_MESSAGE_HEADER;
@@ -76,35 +109,6 @@ import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.TYPE_OF_TEST_INPUT;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.PCR_TEST_SPECIFICATION_INPUT;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
-
-import com.github.javafaker.Faker;
-import cucumber.api.java8.En;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import javax.inject.Inject;
-import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
-import org.sormas.e2etests.entities.pojo.web.Event;
-import org.sormas.e2etests.entities.services.EventService;
-import org.sormas.e2etests.entities.services.api.demis.DemisApiService;
-import org.sormas.e2etests.envconfig.dto.demis.DemisData;
-import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.steps.BaseSteps;
-import org.sormas.e2etests.steps.web.application.messages.MessagesTableViewHeaders;
-import org.testng.Assert;
-import org.testng.asserts.SoftAssert;
 
 @Slf4j
 public class DemisSteps implements En {
@@ -987,6 +991,54 @@ public class DemisSteps implements En {
               softly.assertAll();
               break;
           }
+        });
+
+    When(
+        "^I create and send Laboratory Notification for physician report$",
+        () -> {
+          patientFirstName = faker.name().firstName();
+          patientLastName = faker.name().lastName();
+          String json = demisApiService.prepareLabNotificationFileForPhysicianReport(patientFirstName, patientLastName);
+
+          Assert.assertTrue(demisApiService.sendLabRequest(json, loginToken), "Failed to send laboratory request");
+
+        });
+
+    And(
+        "^I click on \"([^\"]*)\" button in new physician report form while processing a message$",
+        (String option) -> {
+          switch (option) {
+            case "save and open case":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(POPUP_WINDOW_SAVE_AND_OPEN_PHYSICIAN_REPORT_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(POPUP_WINDOW_SAVE_AND_OPEN_PHYSICIAN_REPORT_BUTTON);
+              webDriverHelpers.waitForPageLoadingSpinnerToDisappear(15);
+              break;
+            case "cancel":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(POPUP_WINDOW_CANCEL_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(POPUP_WINDOW_CANCEL_BUTTON);
+              break;
+            case "back":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(POPUP_WINDOW_BACK_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(POPUP_WINDOW_BACK_BUTTON);
+              break;
+            case "save":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(POPUP_WINDOW_SAVE_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(POPUP_WINDOW_SAVE_BUTTON);
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
+              break;
+          }
+        });
+
+    And(
+        "^I click next button while processing a DEMIS LabMessage$",
+        () -> {
+          if (webDriverHelpers.isElementVisibleWithTimeout(CASE_SAVED_POPUP_DE, 5)) {
+            webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP_DE);
+          }
+          webDriverHelpers.scrollToElement(NEXT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(NEXT_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CASE_SAVED_POPUP_DE);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP_DE);
         });
   }
 
