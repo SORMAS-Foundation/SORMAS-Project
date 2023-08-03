@@ -365,8 +365,7 @@ public class MessagesDirectorySteps implements En {
         "^I check if there is no displayed sample result on Edit case page$",
         () -> {
           softly.assertFalse(
-            webDriverHelpers.isElementPresent(SAMPLES_CARD_LABORATORY),
-            "Element is present!");
+              webDriverHelpers.isElementPresent(SAMPLES_CARD_LABORATORY), "Element is present!");
           softly.assertAll();
         });
 
@@ -374,25 +373,25 @@ public class MessagesDirectorySteps implements En {
         "I click next button while processing a {string} in DEMIS LabMessage",
         (String option) -> {
           if (webDriverHelpers.isElementVisibleWithTimeout(CASE_SAVED_POPUP_DE, 5)) {
-              webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP_DE);
+            webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP_DE);
           }
           switch (option) {
-              case "hospitalization":
-                  webDriverHelpers.waitUntilIdentifiedElementIsPresent(CURRENT_HOSPITALIZATION_HEADER);
-                  webDriverHelpers.scrollToElement(NEXT_BUTTON);
-                  webDriverHelpers.clickOnWebElementBySelector(NEXT_BUTTON);
-                  break;
-              case "clinical measurement":
-                  webDriverHelpers.waitUntilIdentifiedElementIsPresent(CLINICAL_MEASUREMENT_HEADER);
-                  webDriverHelpers.scrollToElement(NEXT_BUTTON);
-                  webDriverHelpers.clickOnWebElementBySelector(NEXT_BUTTON);
-                  break;
-              case "exposure investigation":
-                  webDriverHelpers.waitUntilIdentifiedElementIsPresent(EXPOSURE_INVESTIGATION_HEADER);
-                  webDriverHelpers.scrollToElement(NEXT_BUTTON);
-                  webDriverHelpers.clickOnWebElementBySelector(NEXT_BUTTON);
-                  webDriverHelpers.waitUntilIdentifiedElementIsPresent(ADD_VACCINATION_BUTTON);
-                  break;
+            case "hospitalization":
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(CURRENT_HOSPITALIZATION_HEADER);
+              webDriverHelpers.scrollToElement(NEXT_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(NEXT_BUTTON);
+              break;
+            case "clinical measurement":
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(CLINICAL_MEASUREMENT_HEADER);
+              webDriverHelpers.scrollToElement(NEXT_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(NEXT_BUTTON);
+              break;
+            case "exposure investigation":
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(EXPOSURE_INVESTIGATION_HEADER);
+              webDriverHelpers.scrollToElement(NEXT_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(NEXT_BUTTON);
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(ADD_VACCINATION_BUTTON);
+              break;
           }
         });
 
@@ -409,15 +408,79 @@ public class MessagesDirectorySteps implements En {
         () -> {
           String shortenedUUID = shortenedUUIDS.get(0);
           DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-          String file = "sormas_lab_message_" + shortenedUUID + "_" + formatter.format(LocalDate.now()) + ".pdf";
+          String file =
+              "sormas_lab_message_"
+                  + shortenedUUID
+                  + "_"
+                  + formatter.format(LocalDate.now())
+                  + ".pdf";
           FilesHelper.waitForFileToDownload(file, 40);
           FilesHelper.deleteFile(file);
         });
 
     And(
-       "^I collect shortened message uuid from Message Directory page$",
-       () -> {
-         shortenedUUIDS.add(webDriverHelpers.getTextFromWebElement(GRID_MESSAGE_UUID_TITLE));
-      });
+        "^I collect shortened message uuid from Message Directory page$",
+        () -> {
+          shortenedUUIDS.add(webDriverHelpers.getTextFromWebElement(GRID_MESSAGE_UUID_TITLE));
+        });
+
+    And(
+        "I assign the Assignee to the message on Message Directory page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ASSIGN_BUTTON);
+          webDriverHelpers.selectFromCombobox(EDIT_ASSIGNEE_FILTER_SELECT_BUTTON, "Ad MIN");
+          TimeUnit.SECONDS.sleep(5);
+          webDriverHelpers.clickOnWebElementBySelector(POPUP_WINDOW_SAVE_BUTTON);
+        });
+
+    And(
+        "^I check that \"([^\"]*)\" is assigned to the message on Message Directory page$",
+        (String assignee) -> {
+          webDriverHelpers.refreshCurrentPage();
+          softly.assertEquals(
+              webDriverHelpers.getTextFromPresentWebElement(ASSIGNEE_LABEL),
+              assignee,
+              "Incorrect value is assigned to the assignee");
+          softly.assertAll();
+        });
+
+    Then(
+        "^I check if there are all needed buttons in HTML message file$",
+        () -> {
+          webDriverHelpers.scrollToElement(MESSAGE_DELETE_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(MESSAGE_DELETE_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(MARK_AS_UNCLEAR_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(MARK_AS_FORWARDED_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(SEND_TO_ANOTHER_ORGANIZATION_BUTTON);
+        });
+
+    And(
+        "^I close HTML message$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CLOSE_POPUP);
+          webDriverHelpers.waitForPageLoaded();
+        });
+
+    Then(
+        "^I check if there are any buttons in HTML message file$",
+        () -> {
+          webDriverHelpers.scrollToElement(HEADER_OF_ENTRY_LINK);
+          softly.assertTrue(
+            webDriverHelpers.isElementPresent(MESSAGE_DELETE_BUTTON),
+                  "Delete message is available!");
+          softly.assertAll();
+          softly.assertTrue(
+                  webDriverHelpers.isElementPresent(MARK_AS_UNCLEAR_BUTTON),
+                 "Delete message is available!");
+          softly.assertAll();
+          softly.assertTrue(
+                  webDriverHelpers.isElementPresent(MARK_AS_FORWARDED_BUTTON),
+                  "Delete message is available!");
+          softly.assertAll();
+          softly.assertTrue(
+                  webDriverHelpers.isElementPresent(SEND_TO_ANOTHER_ORGANIZATION_BUTTON),
+                  "Delete message is available!");
+          softly.assertAll();
+        });
   }
 }

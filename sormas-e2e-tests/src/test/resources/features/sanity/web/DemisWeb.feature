@@ -606,7 +606,7 @@ Scenario: Create and send laboratory request via Demis
     And I verify that status for result 1 is set to processed in Message Directory page
 
   @tmsLink=SORQA-1024 @env_d2s @LoginKeycloak
-  Scenario: Demis - Process a Physician Report
+  Scenario: Demis - Process a Physician Report[1]
     Given API : Login to DEMIS server
     When I create and send Laboratory Notification for physician report
     And I log in as a Admin User
@@ -635,10 +635,13 @@ Scenario: Create and send laboratory request via Demis
     And I click on the APPLY FILTERS button
     And I click on "Verarbeitet" quick filter above the messages in Message directory page
     And I check that all displayed messages have "Arztmeldung" in grid Message Directory Type column
+    And I click on the eye icon next for the first fetched message
+    Then I check if there are any buttons in HTML message file
+    And I close HTML message
     And I download message from Message Directory page
     And I verify if lab message file is downloaded correctly
 
-  @tmsLink=SORQA-1024Test @env_d2s @LoginKeycloak
+  @tmsLink=SORQA-1024 @env_d2s @LoginKeycloak
   Scenario: Demis - Process a Physician Report[2]
     Given API : Login to DEMIS server
     When I create and send Laboratory Notification for physician report
@@ -651,5 +654,10 @@ Scenario: Create and send laboratory request via Demis
     And I click on the APPLY FILTERS button
     And I click on "Unverarbeitet" quick filter above the messages in Message directory page
     And I check that all displayed messages have "Arztmeldung" in grid Message Directory Type column
+    And I assign the Assignee to the message on Message Directory page
+    And I check that "Ad MIN" is assigned to the message on Message Directory page
+    And I click on the eye icon next for the first fetched message
+   Then I check if there are all needed buttons in HTML message file
+    And I close HTML message
     And I download message from Message Directory page
     And I verify if lab message file is downloaded correctly
