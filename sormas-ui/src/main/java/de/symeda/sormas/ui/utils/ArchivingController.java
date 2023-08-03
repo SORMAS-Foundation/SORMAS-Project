@@ -220,11 +220,13 @@ public class ArchivingController {
 		return new BulkOperationHandler<>(
 			forArchive ? archiveMessages.getMessageAllEntitiesArchived() : archiveMessages.getMessageAllEntitiesDearchived(),
 			null,
-			//TODO: add value to someEntriesNotProcessedExternalReason
+			forArchive ? archiveMessages.getHeadingSomeEntitiesNotArchived() : null,
+			forArchive ? archiveMessages.getHeadingEntitiesNotArchived() : null,
+
+			//forArchive ? archiveMessages.getMessageCountEntitiesNotArchived() : null,
 			null,
-			null,
-			null,
-			null,
+			forArchive ? archiveMessages.getMessageCountEntitiesNotArchivedExternalReason() : null,
+
 			null,
 			null,
 			forArchive ? archiveMessages.getMessageSomeEntitiesArchived() : archiveMessages.getMessageSomeEntitiesDearchived(),

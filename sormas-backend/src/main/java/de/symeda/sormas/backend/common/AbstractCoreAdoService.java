@@ -17,6 +17,7 @@ package de.symeda.sormas.backend.common;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -36,6 +37,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.EditPermissionType;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -143,7 +145,7 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends Quer
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public void archive(List<String> entityUuids) {
+	public List<ProcessedEntity> archive(List<String> entityUuids) {
 
 		IterableHelper.executeBatched(
 			entityUuids,
@@ -161,6 +163,8 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends Quer
 
 				em.createQuery(cu).executeUpdate();
 			}));
+
+		return new ArrayList<>();
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)

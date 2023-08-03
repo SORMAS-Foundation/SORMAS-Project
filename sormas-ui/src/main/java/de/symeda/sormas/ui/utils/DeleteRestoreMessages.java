@@ -17,7 +17,7 @@ public enum DeleteRestoreMessages {
 		Strings.messageCountCasesNotDeletedSormasToSormasReason,
 		Strings.messageCountCasesNotDeletedAccessDeniedReason,
 		null,
-		Strings.headingSomeCasesNotDeleted,
+		//TODO: change the next message and headingCasesNotDeleted to general ones as we have for archive
 		Strings.messageCountCasesNotDeleted,
 		Strings.headingCasesRestored,
 		Strings.messageCasesRestored,
@@ -39,7 +39,6 @@ public enum DeleteRestoreMessages {
 		Strings.messageCountContactsNotDeletedSormasToSormasReason,
 		Strings.messageCountEventsNotDeletedAccessDeniedReason,
 		Strings.messageEventsNotDeletedLinkedEntitiesReason,
-		Strings.headingSomeEventsNotDeleted,
 		Strings.messageCountEventsNotDeleted,
 		Strings.headingEventsRestored,
 		Strings.messageEventsRestored,
@@ -61,7 +60,6 @@ public enum DeleteRestoreMessages {
 		null,
 		Strings.messageCountEventParticipantsNotDeletedAccessDeniedReason,
 		null,
-		Strings.headingSomeEventParticipantsNotDeleted,
 		Strings.messageCountEventParticipantsNotDeleted,
 		Strings.headingEventParticipantsRestored,
 		Strings.messageEventParticipantsRestored,
@@ -83,7 +81,6 @@ public enum DeleteRestoreMessages {
 		Strings.messageCountContactsNotDeletedSormasToSormasReason,
 		Strings.messageCountContactsNotDeletedAccessDeniedReason,
 		null,
-		Strings.headingSomeContactsNotDeleted,
 		Strings.messageCountContactsNotDeleted,
 		Strings.headingContactsRestored,
 		Strings.messageContactsRestored,
@@ -105,7 +102,6 @@ public enum DeleteRestoreMessages {
 		null,
 		Strings.messageCountTravelEntriesNotDeletedAccessDeniedReason,
 		null,
-		Strings.headingSomeTravelEntriesNotDeleted,
 		Strings.messageCountTravelEntriesNotDeleted,
 		Strings.headingTravelEntriesRestored,
 		Strings.messageTravelEntriesRestored,
@@ -127,7 +123,6 @@ public enum DeleteRestoreMessages {
 		null,
 		Strings.messageCountVisitsNotDeletedAccessDeniedReason,
 		null,
-		Strings.headingSomeVisitsNotDeleted,
 		Strings.messageCountVisitsNotDeleted,
 		null,
 		null,
@@ -149,7 +144,6 @@ public enum DeleteRestoreMessages {
 		null,
 		Strings.messageCountTasksNotDeletedAccessDeniedReason,
 		null,
-		Strings.headingSomeTasksNotDeleted,
 		Strings.messageCountTasksNotDeleted,
 		null,
 		null,
@@ -171,7 +165,6 @@ public enum DeleteRestoreMessages {
 		null,
 		null,
 		null,
-		Strings.headingSomeExternalMessagesNotDeleted,
 		Strings.messageCountExternalMessagesNotDeleted,
 		null,
 		null,
@@ -193,7 +186,6 @@ public enum DeleteRestoreMessages {
 		null,
 		null,
 		null,
-		Strings.headingSomeSamplesNotDeleted,
 		Strings.messageCountSamplesNotDeleted,
 		Strings.headingSamplesRestored,
 		Strings.messageSamplesRestored,
@@ -215,7 +207,6 @@ public enum DeleteRestoreMessages {
 		null,
 		Strings.messageCountImmunizationsNotDeletedAccessDeniedReason,
 		null,
-		Strings.headingSomeImmunizationsNotDeleted,
 		Strings.messageCountImmunizationsNotDeleted,
 		Strings.headingImmunizationsRestored,
 		Strings.messageImmunizationsRestored,
@@ -237,7 +228,6 @@ public enum DeleteRestoreMessages {
 	private final String messageCountEntitiesNotDeletedSormasToSormasReason;
 	private final String messageCountEntitiesNotDeletedAccessDeniedReason;
 	private final String messageEntitiesNotDeletedLinkedEntitiesReason;
-	private final String headingSomeEntitiesNotDeleted;
 	private final String messageCountEntitiesNotDeleted;
 	private final String headingEntitiesRestored;
 	private final String messageEntitiesRestored;
@@ -245,6 +235,8 @@ public enum DeleteRestoreMessages {
 	private final String messageEntitiesNotRestored;
 	private final String headingSomeEntitiesNotRestored;
 	private final String messageCountEntitiesNotRestored;
+
+	private final String headingSomeEntitiesNotDeleted = Strings.headingSomeEntitiesNotDeleted;
 
 	DeleteRestoreMessages(
 		String entities,
@@ -260,7 +252,6 @@ public enum DeleteRestoreMessages {
 		String messageCountEntitiesNotDeletedSormasToSormasReason,
 		String messageCountEntitiesNotDeletedAccessDeniedReason,
 		String messageEntitiesNotDeletedLinkedEntitiesReason,
-		String headingSomeEntitiesNotDeleted,
 		String messageCountEntitiesNotDeleted,
 		String headingEntitiesRestored,
 		String messageEntitiesRestored,
@@ -282,7 +273,6 @@ public enum DeleteRestoreMessages {
 		this.messageCountEntitiesNotDeletedSormasToSormasReason = messageCountEntitiesNotDeletedSormasToSormasReason;
 		this.messageCountEntitiesNotDeletedAccessDeniedReason = messageCountEntitiesNotDeletedAccessDeniedReason;
 		this.messageEntitiesNotDeletedLinkedEntitiesReason = messageEntitiesNotDeletedLinkedEntitiesReason;
-		this.headingSomeEntitiesNotDeleted = headingSomeEntitiesNotDeleted;
 		this.messageCountEntitiesNotDeleted = messageCountEntitiesNotDeleted;
 		this.headingEntitiesRestored = headingEntitiesRestored;
 		this.messageEntitiesRestored = messageEntitiesRestored;

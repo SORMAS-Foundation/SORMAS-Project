@@ -188,8 +188,6 @@ public final class ArchiveHandlers {
 		@Override
 		public List<ProcessedEntity> archive(List<String> entityUuids) {
 			List<ProcessedEntity> processedEntities = entityFacade.archive(entityUuids);
-
-			//return entityUuids.size();
 			return processedEntities;
 		}
 
@@ -202,7 +200,6 @@ public final class ArchiveHandlers {
 		@Override
 		public List<ProcessedEntity> dearchive(List<String> entityUuids) {
 			List<ProcessedEntity> processedEntities = entityFacade.dearchive(entityUuids, dearchiveReasonField.getValue());
-			//return entityUuids.size();
 			return processedEntities;
 		}
 
@@ -267,10 +264,7 @@ public final class ArchiveHandlers {
 
 		@Override
 		public List<ProcessedEntity> archive(List<String> entityUuids) {
-			List<ProcessedEntity> processedEntities = entityFacade.archive(entityUuids, archiveWithContacts.getValue());
-
-			//return entityUuids.size();
-			return processedEntities;
+			return entityFacade.archive(entityUuids, archiveWithContacts.getValue());
 		}
 
 		@Override

@@ -2823,22 +2823,18 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	@RightsAllowed(UserRight._CASE_ARCHIVE)
-	public List<ProcessedEntity> archive(String entityUuid, Date endOfProcessingDate, boolean includeContacts) {
+	public void archive(String entityUuid, Date endOfProcessingDate, boolean includeContacts) {
 		super.archive(entityUuid, endOfProcessingDate);
 		if (includeContacts) {
 			List<String> caseContacts = contactService.getAllUuidsByCaseUuids(Collections.singletonList(entityUuid));
 			contactService.archive(caseContacts);
 		}
-		List<ProcessedEntity> processedEntities = new ArrayList<>();
-		return processedEntities;
 	}
 
 	@Override
 	@RightsAllowed(UserRight._CASE_ARCHIVE)
 	public List<ProcessedEntity> archive(List<String> entityUuids, boolean includeContacts) {
-		super.archive(entityUuids);
-
-		List<ProcessedEntity> processedEntities = new ArrayList<>();
+		List<ProcessedEntity> processedEntities = super.archive(entityUuids);
 		if (includeContacts) {
 			List<String> caseContacts = contactService.getAllUuidsByCaseUuids(entityUuids);
 			contactService.archive(caseContacts);

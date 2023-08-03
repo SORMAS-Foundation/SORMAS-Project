@@ -224,9 +224,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 
 	@DenyAll
 	public List<ProcessedEntity> archive(List<String> entityUuids) {
-		List<ProcessedEntity> processedEntities = new ArrayList<>();
-		service.archive(entityUuids);
-		return processedEntities;
+		return service.archive(entityUuids);
 	}
 
 	@DenyAll
