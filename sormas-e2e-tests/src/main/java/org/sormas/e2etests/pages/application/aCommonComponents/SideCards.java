@@ -22,6 +22,11 @@ import org.openqa.selenium.By;
 
 public class SideCards {
 
+  public static final By SHARE_SORMAS_2_SORMAS_BUTTON = By.cssSelector("#sormasToSormasShare");
+  public static final By SHARE_ORGANIZATION_POPUP_COMBOBOX =
+      By.cssSelector(".popupContent #organization div");
+  public static final By HAND_THE_OWNERSHIP_CHECKBOX =
+      By.cssSelector(".popupContent #handOverOwnership label");
   public static final By ADDED_SAMPLES_IN_SAMPLE_CARD =
       By.xpath("//*[@location='samples']//*[@class='v-slot v-slot-s-list']/div/div/div/div");
   public static final By EDIT_SAMPLE_BUTTON = By.xpath("//div[contains(@id, 'edit-sample')]");
@@ -58,6 +63,7 @@ public class SideCards {
           "//div[@location='sormasToSormas']//div[@class='v-slot v-slot-s-list-entry v-slot-s-list-entry-no-border']");
   public static final By SHARE_SORMAS_2_SORMAS_POPUP_BUTTON =
       By.cssSelector(".popupContent #commit");
+
   public static By getEditSampleButtonByNumber(Integer number) {
     return By.xpath(String.format("(//div[contains(@id, 'edit-sample')])[%x]", number));
   }

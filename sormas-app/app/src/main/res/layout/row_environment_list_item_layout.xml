@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ SORMAS® - Surveillance Outbreak Response Management & Analysis System
+  ~ Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <import type="de.symeda.sormas.app.util.ViewHelper" />
+
+        <variable
+            name="data"
+            type="de.symeda.sormas.app.backend.environment.Environment" />
+        <import type="de.symeda.sormas.api.caze.InvestigationStatus" />
+    </data>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="fill"
+        android:layout_weight="1"
+        android:background="@drawable/selector_list_activity_row_background"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+        android:paddingRight="@dimen/rowListItemHorizontalMargin"
+        >
+
+        <LinearLayout
+            android:id="@+id/row_item"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/background_list_activity_row"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/rowListItemVerticalPadding"
+            android:paddingBottom="@dimen/rowListItemVerticalPadding"
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/environment_uuid"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="@color/listActivityRowLeastText"
+                    android:textSize="@dimen/listActivityRowTertiaryTextSize"
+                    app:defaultValue='@{@string/value_uuid_unknown}'
+                    app:shortUuid="@{true}"
+                    app:value="@{data.uuid}"
+                    />
+
+                <ImageView
+                    android:layout_width="@dimen/separatorThickness"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginBottom="2dp"
+                    android:background="@color/listActivityRowTopCaptionSeparator" />
+
+                <TextView
+                    android:id="@+id/environment_externalId"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="@color/listActivityRowLeastText"
+                    android:textSize="@dimen/listActivityRowTertiaryTextSize"
+                    app:defaultValue='@{@string/value_external_id_unknown}'
+                    app:value="@{data.externalId}"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="fill"
+                android:gravity="fill"
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    >
+
+                    <!-- Environment Name -->
+                    <TextView
+                        android:id="@+id/environment_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="top"
+                        android:textColor="@color/row_entry_secondary_text"
+                        android:textSize="@dimen/row_entry_secondary_text_size"
+                        app:defaultValue='@{@string/value_not_available}'
+                        app:value="@{data.environmentName}"
+                        />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="fill"
+                android:gravity="fill"
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    >
+
+                    <!-- Environment Media -->
+                    <TextView
+                        android:id="@+id/environment_media"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_marginBottom="@dimen/listActivityRowSecondaryTextVerticalMargin"
+                        android:layout_weight="1"
+                        android:gravity="top"
+                        android:textColor="@color/row_entry_secondary_text"
+                        android:textSize="@dimen/row_entry_secondary_text_size"
+                        app:defaultValue='@{@string/value_not_available}'
+                        app:value="@{data.environmentMedia}"
+                        />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginRight="@dimen/listItemConentIndentRight"
+                android:orientation="horizontal"
+                >
+
+                <!-- Environment InvestigationStatus -->
+                <TextView
+                    android:id="@+id/environment_environmentInvestigationStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="sans-serif"
+                    android:gravity="left"
+                    android:textColor="@{InvestigationStatus.DONE==data.investigationStatus ? @color/green : InvestigationStatus.PENDING==data.investigationStatus ?  @color/orange : @color/listActivityRowPrimaryText}"
+                    android:textSize="@dimen/row_entry_secondary_text_size"
+                    app:value="@{data.investigationStatus}" />
+
+                <!-- Event Location -->
+                <TextView
+                    android:id="@+id/environment_environmentLocationLatLonLocation"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="sans-serif"
+                    android:textAlignment="textEnd"
+                    android:textColor="@color/listActivityRowLeastText"
+                    android:textSize="@dimen/listActivityRowTertiaryTextSize"
+                    app:defaultValue='@{@string/value_location_unknown}'
+                    app:value="@{ViewHelper.getLatLonLocation(data.location)}"
+                    />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</layout>

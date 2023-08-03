@@ -24,6 +24,7 @@ public final class CountryHelper {
 	public static final String COUNTRY_CODE_GERMANY = "de";
 	public static final String COUNTRY_CODE_FRANCE = "fr";
 	public static final String COUNTRY_CODE_SWITZERLAND = "ch";
+	public static final String COUNTRY_CODE_LUXEMBOURG = "lu";
 
 	public static boolean isCountry(String countryLocale, String country) {
 		// If the country locale is complete (e.g. de-DE), check the last (country) part; 

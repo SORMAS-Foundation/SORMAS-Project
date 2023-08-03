@@ -29,15 +29,15 @@
 
 		<!-- *** Other dependency versions *** -->
 		<slf4j.version>2.0.7</slf4j.version>
-		<logback.version>1.4.8</logback.version>
+		<logback.version>1.3.5</logback.version>
 		<vaadin.version.warning>TODO: Remove bootstrap.js in widgetset</vaadin.version.warning>
 		<vaadin.version>8.14.3</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<swagger.version>2.2.15</swagger.version>
 		<bouncycastle.version>1.70</bouncycastle.version>
 		<grpc.version>1.56.1</grpc.version>
-		<keycloak.version>21.0.1</keycloak.version>
-		<netty.version>4.1.94.Final</netty.version>
+		<keycloak.version>21.1.2</keycloak.version>
+		<netty.version>4.1.95.Final</netty.version>
 		<resteasy.version>5.0.7.Final</resteasy.version>
 		<kotlin-stdlib.version>1.9.0</kotlin-stdlib.version>
 		<xdocreport.version>2.0.4</xdocreport.version>
@@ -431,7 +431,7 @@
 			<dependency>
 				<groupId>com.googlecode.libphonenumber</groupId>
 				<artifactId>libphonenumber</artifactId>
-				<version>8.13.16</version>
+				<version>8.13.17</version>
 				<scope>provided</scope>
 			</dependency>
 
@@ -776,6 +776,13 @@
 						<!-- Payara module: jaxb-osgi -->
 					</exclusion>
 				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>org.geotools</groupId>
+				<artifactId>gt-shapefile</artifactId>
+				<version>29.2</version>
+				<scope>provided</scope>
 			</dependency>
 
 			<dependency>
@@ -1184,16 +1191,6 @@
 				<version>6.0.21</version>
 				<scope>compile</scope>
 				<!-- Kept as compile dependency to avoid version conflicts and classpath problems with sormas-demis-adapter -->
-			</dependency>
-
-			<dependency>
-				<groupId>org.geotools</groupId>
-				<artifactId>gt-shapefile</artifactId>
-				<version>28.2</version>
-				<!-- 
-				  Kept as compile dependency because Ant collect-serverlibs fails:
-				  sormas-base\build.xml:53: org.apache.maven.artifact.InvalidArtifactRTException: For artifact {org.osgi:org.osgi.annotation:null:jar}: The version cannot be empty.
-				-->
 			</dependency>
 
 			<!-- ** Vaadin ** -->
@@ -1711,6 +1708,7 @@
 							<suppressionFile>${dependency-check.suppressionFile}</suppressionFile>
 						</suppressionFiles>
 						<assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+						<ossindexAnalyzerEnabled>false</ossindexAnalyzerEnabled>
 					</configuration>
 					<executions>
 						<execution>

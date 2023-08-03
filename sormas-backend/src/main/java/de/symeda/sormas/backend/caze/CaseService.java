@@ -15,12 +15,14 @@
 package de.symeda.sormas.backend.caze;
 
 import java.sql.Timestamp;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -94,6 +96,7 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
@@ -153,6 +156,7 @@ import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
+import de.symeda.sormas.backend.share.ExternalShareInfoCountAndLatestDate;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
@@ -1129,8 +1133,8 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()) {
 			List<String> uuidsAllowedToBeShared = getEntityUuidsAllowedToBeShared(entityUuids);
 			if (!uuidsAllowedToBeShared.isEmpty()) {
-				List<String> sharedCaseUuids = externalShareInfoService.getSharedCaseUuidsWithoutDeletedStatus(uuidsAllowedToBeShared);
 
+				List<String> sharedCaseUuids = getSharedCaseUuids(uuidsAllowedToBeShared);
 				if (!sharedCaseUuids.isEmpty()) {
 					try {
 						externalSurveillanceToolGatewayFacade.sendCasesInternal(entityUuids, archived);
@@ -1140,6 +1144,26 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 				}
 			}
 		}
+	}
+
+	public List<String> getSharedCaseUuids(List<String> entityUuids) {
+		List<Long> caseIds = getCaseIds(entityUuids);
+		List<String> sharedCaseUuids = new ArrayList<>();
+		List<ExternalShareInfoCountAndLatestDate> caseShareInfos =
+			externalShareInfoService.getShareCountAndLatestDate(caseIds, ExternalShareInfo.CAZE);
+		caseShareInfos.forEach(shareInfo -> {
+			if (shareInfo.getLatestStatus() != ExternalShareStatus.DELETED) {
+				sharedCaseUuids.add(shareInfo.getAssociatedObjectUuid());
+			}
+		});
+
+		return sharedCaseUuids;
+	}
+
+	public List<Long> getCaseIds(List<String> entityUuids) {
+		List<Long> caseIds = new ArrayList<>();
+		entityUuids.forEach(uuid -> caseIds.add(this.getByUuid(uuid).getId()));
+		return caseIds;
 	}
 
 	public List<String> getEntityUuidsAllowedToBeShared(List<String> entityUuids) {
@@ -1241,7 +1265,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 	/**
 	 * @param cb
-	 * @param casePath
+	 * @param joins
 	 * @param date
 	 * @param includeExtendedChangeDateFilters
 	 *            additional change dates filters for: sample, pathogenTests, patient and location
@@ -2029,11 +2053,14 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 		TypedQuery<Object[]> typedQuery = em.createQuery(cq).setParameter("date_type", "epoch");
 		if (limit != null) {
-			typedQuery.setMaxResults(limit);
+			// Double the limit because the query result will contain each pair twice; since these duplicates will
+			// be removed, the final result list would only contain limit/2 entries otherwise
+			typedQuery.setMaxResults(limit * 2);
 		}
 
 		List<Object[]> foundIds = typedQuery.getResultList();
 		List<CaseMergeIndexDto[]> resultList = new ArrayList<>();
+		Set<AbstractMap.SimpleImmutableEntry<Long, Long>> resultIdsSet = new HashSet<>();
 
 		if (!foundIds.isEmpty()) {
 			CriteriaQuery<CaseMergeIndexDto> indexCasesCq = cb.createQuery(CaseMergeIndexDto.class);
@@ -2045,13 +2072,17 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 				em.createQuery(indexCasesCq).getResultStream().collect(Collectors.toMap(c -> c.getId(), Function.identity()));
 
 			for (Object[] idPair : foundIds) {
-				// Skip duplicate pairs
-				if (resultList.stream()
-					.anyMatch(
-						r -> (r[0].getId() == (long) idPair[0] && r[1].getId() == (long) idPair[1])
-							|| (r[0].getId() == (long) idPair[1] && r[1].getId() == (long) idPair[0]))) {
+				// Abort the operation if the limit has been reached
+				if (limit != null && resultIdsSet.size() >= limit) {
+					break;
+				}
+
+				// Skip duplicate pairs - duplications always happen in reverse order, i.e. if idPair[0]/idPair[1]
+				// is already in the result set in this order, the duplication would be added as idPair[1]/idPair[0]
+				if (resultIdsSet.contains(new AbstractMap.SimpleImmutableEntry<>(idPair[1], idPair[0]))) {
 					continue;
 				}
+
 				try {
 					// Cloning is necessary here to allow us to add the same CaseIndexDto to the grid multiple times
 					CaseMergeIndexDto parent = (CaseMergeIndexDto) indexCases.get(idPair[0]).clone();
@@ -2070,6 +2101,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 								child,
 								parent });
 					}
+					resultIdsSet.add(new AbstractMap.SimpleImmutableEntry<>((Long) idPair[0], (Long) idPair[1]));
 				} catch (CloneNotSupportedException e) {
 					throw new RuntimeException(e);
 				}

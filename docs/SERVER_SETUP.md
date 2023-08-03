@@ -88,7 +88,7 @@ Unzip the archive, copy/upload its contents to **/root/deploy/sormas/$(date +%F)
 
 ```bash
 sudo su
-mkdir /root/deploy/sormas
+mkdir -p /root/deploy/sormas
 cd /root/deploy/sormas
 SORMAS_VERSION=1.y.z
 wget https://github.com/sormas-foundation/SORMAS-Project/releases/download/v${SORMAS_VERSION}/sormas_${SORMAS_VERSION}.zip

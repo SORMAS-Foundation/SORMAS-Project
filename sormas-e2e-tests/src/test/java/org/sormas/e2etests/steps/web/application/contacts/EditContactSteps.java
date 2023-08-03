@@ -46,11 +46,9 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXPECTED_
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.FOLLOW_UP_COMMENT_FIELD;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERATED_DOCUMENT_NAME;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERATED_DOCUMENT_NAME_DE;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.HAND_THE_OWNERSHIP_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_IMMUNIZATION_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPUP_CONTENT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.SHARE_SORMAS_2_SORMAS_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UPLOAD_DOCUMENT_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.USER_INFORMATION;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
@@ -513,17 +511,10 @@ public class EditContactSteps implements En {
           TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
         });
-    When(
-        "I click to hand over the ownership of the contact in Share popup",
-        () -> webDriverHelpers.clickOnWebElementBySelector(HAND_THE_OWNERSHIP_CHECKBOX));
 
     When(
         "I click to accept potential duplicate in Shares Page",
         () -> webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM));
-
-    When(
-        "I click on share contact button",
-        () -> webDriverHelpers.clickOnWebElementBySelector(SHARE_SORMAS_2_SORMAS_BUTTON));
     When(
         "^I click on ([^\"]*) radio button Contact Person tab$",
         (String buttonName) ->

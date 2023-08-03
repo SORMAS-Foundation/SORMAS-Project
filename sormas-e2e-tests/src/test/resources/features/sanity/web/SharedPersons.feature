@@ -12,8 +12,8 @@ Feature: Sharing persons between environments tests
     Given I log in as a S2S
     Then I navigate to the last created case via the url
     And I collect uuid of the case
-    Then I click on share case button
-    And I click to hand over the ownership of the contact in Share popup
+    Then I click on share button
+    And I click to hand over the ownership in Share popup
     And I select organization to share with "s2s_2"
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
@@ -24,8 +24,8 @@ Feature: Sharing persons between environments tests
     When I back to tab number 1
     Then I navigate to "s2s_1" environment
     Then I open the last created contact via API
-    And I click on share contact button
-    And I click to hand over the ownership of the contact in Share popup
+    And I click on share button
+    And I click to hand over the ownership in Share popup
     And I select organization to share with "s2s_2"
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
@@ -53,8 +53,8 @@ Feature: Sharing persons between environments tests
     Given I log in as a S2S
     Then I navigate to the last created case via the url
     And I collect uuid of the case
-    Then I click on share case button
-    And I click to hand over the ownership of the contact in Share popup
+    Then I click on share button
+    And I click to hand over the ownership in Share popup
     And I select organization to share with "s2s_2"
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
@@ -81,7 +81,7 @@ Feature: Sharing persons between environments tests
     And I fill new case data for duplicates merge with for one person data for DE
     And I save a new case
     And I collect uuid of the case
-    Then I click on share case button
+    Then I click on share button
     And I select organization to share with "s2s_2"
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
@@ -140,7 +140,7 @@ Feature: Sharing persons between environments tests
     And I open the first found result in the CHOOSE SOURCE window for DE version
     Then I click SAVE button on Edit Contact Page
     Then I navigate to the last created case via the url
-    Then I click on share case button
+    Then I click on share button
     And I select organization to share with "s2s_2"
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
@@ -151,7 +151,7 @@ Feature: Sharing persons between environments tests
     When I back to tab number 1
     And I navigate to Contacts tab in Edit case page
     And I open a contact using the collected contact UUID
-    Then I click on share contact button
+    Then I click on share button
     And I select organization to share with "s2s_2"
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish

@@ -61,7 +61,7 @@ Feature: Tasks functionalities
     And I click on Bulk Actions combobox in Task Directory
     And I click on Delete button from Bulk Actions Combobox in Task Directory
     And I click yes on the CONFIRM REMOVAL popup from Task Directory page
-    And I check if popup message for deleting is "All selected tasks have been deleted"
+    And I check if popup message for deleting is "All selected eligible tasks have been deleted"
     And I check that number of displayed tasks results is 0
 
   @tmsLink=SORDEV-6080 @env_main

@@ -244,3 +244,130 @@ Feature: Survnet tests
     And I check if "vaccination date" in SORMAS generated XML file is correct
     And I check if Vaccine name in SORMAS generated XML file is correct
 
+  @tmsLink=SORQA-1033
+  Scenario: Check Re-Infection in case when sending from SORMAS to Meldesoftware
+    Given I log in as a Survnet
+    When I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with mandatory data only with Reinfection option for Survnet DE
+    And I navigate to case tab
+    Then I set previous infection date 20 days from report date to case in person tab
+    And I check all checkboxes with genome sequence in reinfection section in Edit case for DE version
+    And I check all checkboxes with Information on the preceding infection in reinfection section in Edit case for DE version
+    And I check all checkboxes with More information on the evaluation of reinfection in reinfection section in Edit case for DE version
+    And I check all checkboxes with Previous infection completed in reinfection section in Edit case for DE version
+    Then I click on save case button
+    And I collect values from all checkboxes from reinfection section in Edit case for DE version
+    And I click on Send to reporting tool button on Edit Case page
+    And I collect case external UUID from Edit Case page
+    Then I wait 50 seconds for system reaction
+    And I open SORMAS generated XML file for single case message
+    And I check if Reinfection option is set in SORMAS generated single XML file is correct
+    Then I check that LabInfoAvailable is change in SORMAS generated single XML file is correct
+    Then I check if Reinfection "PREVIOUS COVID INFECTION IS KNOWN" checkbox value in SORMAS generated single XML file is correct
+    Then I check if Reinfection "CURRENT COVID INFECTION IS KNOWN" checkbox value in SORMAS generated single XML file is correct
+    Then I check if Reinfection "CURRENT COVID INFECTION DO NOT MATCH" checkbox value in SORMAS generated single XML file is correct
+    Then I check if Reinfection "PERSON HAS OVERCOME ACUTE RESPIRATORY" checkbox value in SORMAS generated single XML file is correct
+    Then I check if Reinfection "PERSON HAD AN ASYMPTOMATIC COVID INFECTION" checkbox value in SORMAS generated single XML file is correct
+    Then I check if Reinfection "COVID GENOM COPY NUMBER" checkbox value in SORMAS generated single XML file is correct
+    Then I check if Reinfection "INDIVIDUAL TESTED POSITIVE FOR COVID BY PCR" checkbox value in SORMAS generated single XML file is correct
+    Then I check if Reinfection "PERSON TESTED CONCLUSIVELY NEGATIVE BY PRC" checkbox value in SORMAS generated single XML file is correct
+    Then I check if Reinfection "THE LAST POSITIVE PCR DETECTION WAS MORE THAN 3 MONTHS AGO" checkbox value in SORMAS generated single XML file is correct
+
+  @tmsLink=SORQA-1029
+  Scenario Outline: Pre-existing disease in case when sending from SORMAS to Meldesoftware
+    Given I log in as a Survnet
+    When I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with mandatory data only for Survnet DE
+    And I select the Pre-existing condition "diabetes" as <option> on Edit Case page
+    And I select the Pre-existing condition "immunodeficiencyIncludingHiv" as <option> on Edit Case page
+    And I select the Pre-existing condition "chronicLiverDisease" as <option> on Edit Case page
+    And I select the Pre-existing condition "malignancyChemotherapy" as <option> on Edit Case page
+    And I select the Pre-existing condition "chronicPulmonaryDisease" as <option> on Edit Case page
+    And I select the Pre-existing condition "chronicKidneyDisease" as <option> on Edit Case page
+    And I select the Pre-existing condition "chronicNeurologicCondition" as <option> on Edit Case page
+    And I select the Pre-existing condition "cardiovascularDiseaseIncludingHypertension" as <option> on Edit Case page
+    And I click on save button from Edit Case page
+    And I click on Send to reporting tool button on Edit Case page
+    And I collect case external UUID from Edit Case page
+    Then I wait 50 seconds for system reaction
+    And I open SORMAS generated XML file for single case message
+    And I check if the Pre-existing condition "diabetes" has <result> value mapped in SORMAS generated single XML file
+    And I check if the Pre-existing condition "immunodeficiencyIncludingHiv" has <result> value mapped in SORMAS generated single XML file
+    And I check if the Pre-existing condition "chronicLiverDisease" has <result> value mapped in SORMAS generated single XML file
+    And I check if the Pre-existing condition "malignancyChemotherapy" has <result> value mapped in SORMAS generated single XML file
+    And I check if the Pre-existing condition "chronicPulmonaryDisease" has <result> value mapped in SORMAS generated single XML file
+    And I check if the Pre-existing condition "chronicKidneyDisease" has <result> value mapped in SORMAS generated single XML file
+    And I check if the Pre-existing condition "chronicNeurologicCondition" has <result> value mapped in SORMAS generated single XML file
+    And I check if the Pre-existing condition "cardiovascularDiseaseIncludingHypertension" has <result> value mapped in SORMAS generated single XML file
+
+    Examples:
+      | option      | result       |
+      | "Ja"        |  "positive"  |
+      | "Nein"      |  "negative"  |
+      | "Unbekannt" |  "negative"  |
+
+  @tmsLink=SORQA-1029 @precon
+  Scenario: Pre-existing disease in case with 4 diseases when sending from SORMAS to Meldesoftware
+    Given I log in as a Survnet
+    When I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with mandatory data only for Survnet DE
+    And I select the Pre-existing condition "diabetes" as "ja" on Edit Case page
+    And I select the Pre-existing condition "immunodeficiencyIncludingHiv" as "ja" on Edit Case page
+    And I select the Pre-existing condition "chronicLiverDisease" as "ja" on Edit Case page
+    And I select the Pre-existing condition "malignancyChemotherapy" as "ja" on Edit Case page
+    And I click on save button from Edit Case page
+    And I click on Send to reporting tool button on Edit Case page
+    And I collect case external UUID from Edit Case page
+    Then I wait 50 seconds for system reaction
+    And I open SORMAS generated XML file for single case message
+    And I check if the Pre-existing condition "diabetes" has "positive" value mapped in SORMAS generated single XML file
+    And I check if the Pre-existing condition "immunodeficiencyIncludingHiv" has "positive" value mapped in SORMAS generated single XML file
+    And I check if the Pre-existing condition "chronicLiverDisease" has "positive" value mapped in SORMAS generated single XML file
+    And I check if the Pre-existing condition "malignancyChemotherapy" has "positive" value mapped in SORMAS generated single XML file
+
+  @tmsLink=SORQA-1032
+  Scenario Outline: Check "nosokomialen Ausbruch" in case when sending from SORMAS to Meldesoftware
+    Given I log in as a Survnet
+    When I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with mandatory data only for Survnet DE
+    And I click the Resulted from nosocomial outbreak checkbox on Edit Case page for DE
+    And I select <setting> from the infection settings on Edit Case page
+    And I click on save button from Edit Case page
+    And I click on Send to reporting tool button on Edit Case page
+    And I collect case external UUID from Edit Case page
+    Then I wait 50 seconds for system reaction
+    And I open SORMAS generated XML file for single case message
+    Then I check if the infection setting <setting> is correctly mapped in SORMAS generated single XML file
+
+    Examples:
+    | setting |
+    | "Ambulant" |
+    | "Stationär" |
+
+  @tmsLink=SORQA-1046
+  Scenario: Re-send Case from SORMAS to Meldesoftware
+    Given I log in as a Survnet
+    When I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with mandatory data only for Survnet DE
+    And I click on Send to reporting tool button on Edit Case page
+    Then I check that Reporting tool in Survnet box contain "gesendet am" entry
+    And I delete the case for DE
+    And I apply "Gelöschte Fälle" to combobox on Case Directory Page
+    Then I click on the APPLY FILTERS button
+    And I click on the first Case ID from Case Directory
+    Then I check that Reporting tool in Survnet box contain "gelöscht am" entry
+    Then I click on Restore button from case
+    And I apply "Aktive Fälle" to combobox on Case Directory Page
+    And I click on the first Case ID from Case Directory
+    And I click on Send to reporting tool button on Edit Case page
+    Then I click on the Archive case button
+    Then I check the end of processing date in the archive popup and select Archive contacts checkbox for DE
+    And I click on save case button
+    And I click on De-Archive case button
+    And I fill De-Archive case popup with test automation reason
+    And I validate the existence of "5" Reporting Tools entries in Survnet box

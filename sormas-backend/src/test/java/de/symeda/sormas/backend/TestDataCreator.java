@@ -17,6 +17,7 @@ package de.symeda.sormas.backend;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -57,7 +58,9 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.environment.EnvironmentDto;
@@ -136,6 +139,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
+import de.symeda.sormas.backend.customizableenum.CustomizableEnumValue;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.continent.Continent;
@@ -2076,17 +2080,18 @@ public class TestDataCreator {
 		return testReport;
 	}
 
-//	public DiseaseVariant createDiseaseVariant(String name, Disease disease) {
-//
-//		DiseaseVariant diseaseVariant = new DiseaseVariant();
-//		diseaseVariant.setUuid(DataHelper.createUuid());
-//		diseaseVariant.setName(name);
-//		diseaseVariant.setDisease(disease);
-//
-//		beanTest.getDiseaseVariantService().persist(diseaseVariant);
-//
-//		return diseaseVariant;
-//	}
+	public DiseaseVariant createDiseaseVariant(String name, Disease disease) {
+
+		CustomizableEnumValue diseaseVariant = new CustomizableEnumValue();
+		diseaseVariant.setDataType(CustomizableEnumType.DISEASE_VARIANT);
+		diseaseVariant.setValue("BF.1.2");
+		diseaseVariant.setDiseases(Collections.singletonList(disease));
+		diseaseVariant.setCaption(name + " variant");
+
+		beanTest.getCustomizableEnumValueService().ensurePersisted(diseaseVariant);
+
+		return beanTest.getCustomizableEnumFacade().getEnumValue(CustomizableEnumType.DISEASE_VARIANT, name);
+	}
 
 	public ExternalShareInfo createExternalShareInfo(
 		CaseReferenceDto caze,
