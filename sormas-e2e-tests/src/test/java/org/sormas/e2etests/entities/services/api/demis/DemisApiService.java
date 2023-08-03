@@ -19,7 +19,11 @@ package org.sormas.e2etests.entities.services.api.demis;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.*;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.sormas.e2etests.envconfig.dto.demis.DemisData;
