@@ -48,6 +48,8 @@ import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventCriteriaDateType;
@@ -60,6 +62,7 @@ import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
@@ -299,18 +302,34 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 	}
 
 	@Override
-	public void archive(List<String> entityUuids) {
+	public List<ProcessedEntity> archive(List<String> entityUuids) {
+		List<ProcessedEntity> processedEvents = new ArrayList<>();
+		List<String> sharedEventUuids = getSharedEventUuids(entityUuids);
+		try {
+			updateArchiveFlagInExternalSurveillanceToolForSharedEntities(sharedEventUuids, true);
+		} catch (ExternalSurveillanceToolRuntimeException e) {
+			processedEvents = buildProcessedEntities(sharedEventUuids, ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE);
+		} catch (AccessDeniedException e) {
+			processedEvents = buildProcessedEntities(sharedEventUuids, ProcessedEntityStatus.ACCESS_DENIED_FAILURE);
+		}
+
+		List<Event> eventsToBeProcessed = getEntitiesToBeProcessed(entityUuids, processedEvents);
+		List<String> eventUuidsToBeProcessed = eventsToBeProcessed.stream().map(event -> event.getUuid()).collect(Collectors.toList());
+
 		super.archive(entityUuids);
-		setArchiveInExternalSurveillanceToolForEntities(entityUuids, true);
+		processedEvents.addAll(buildProcessedEntities(eventUuidsToBeProcessed, ProcessedEntityStatus.SUCCESS));
+
+		return processedEvents;
 	}
 
 	@Override
 	public void dearchive(List<String> entityUuids, String dearchiveReason) {
 		super.dearchive(entityUuids, dearchiveReason);
-		setArchiveInExternalSurveillanceToolForEntities(entityUuids, false);
+		updateArchiveFlagInExternalSurveillanceToolForSharedEntities(entityUuids, false);
 	}
 
-	public void setArchiveInExternalSurveillanceToolForEntities(List<String> entityUuids, boolean archived) {
+	//TODO: check if can be added to Abstract Core Ado Service
+	public void updateArchiveFlagInExternalSurveillanceToolForSharedEntities(List<String> entityUuids, boolean archived) {
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()) {
 			List<String> sharedEventUuids = getSharedEventUuids(entityUuids);
 			if (!sharedEventUuids.isEmpty()) {
@@ -318,11 +337,15 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 					externalSurveillanceToolGatewayFacade.sendEventsInternal(sharedEventUuids, archived);
 				} catch (ExternalSurveillanceToolException e) {
 					throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+				} catch (AccessDeniedException e) {
+					//TODO: add message
+					throw new AccessDeniedException(e.getMessage());
 				}
 			}
 		}
 	}
 
+	//TODO: check if can be added to the service
 	public List<String> getSharedEventUuids(List<String> entityUuids) {
 		List<Long> eventIds = getEventIds(entityUuids);
 		List<String> sharedEventUuids = new ArrayList<>();
@@ -344,7 +367,7 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 	}
 
 	public void setArchiveInExternalSurveillanceToolForEntity(String eventUuid, boolean archived) {
-		setArchiveInExternalSurveillanceToolForEntities(Collections.singletonList(eventUuid), archived);
+		updateArchiveFlagInExternalSurveillanceToolForSharedEntities(Collections.singletonList(eventUuid), archived);
 	}
 
 	public List<String> getArchivedUuidsSince(Date since) {

@@ -187,8 +187,7 @@ public final class ArchiveHandlers {
 
 		@Override
 		public List<ProcessedEntity> archive(List<String> entityUuids) {
-			List<ProcessedEntity> processedEntities = entityFacade.archive(entityUuids);
-			return processedEntities;
+			return entityFacade.archive(entityUuids);
 		}
 
 		@Override

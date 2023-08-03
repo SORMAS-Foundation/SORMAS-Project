@@ -38,6 +38,7 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -208,6 +209,25 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends Quer
 	@Override
 	public boolean inJurisdictionOrOwned(ADO entity) {
 		return fulfillsCondition(entity, this::inJurisdictionOrOwned);
+	}
+
+	public List<ADO> getEntitiesToBeProcessed(List<String> entityUuids, List<ProcessedEntity> processedEntities) {
+		List<String> failedUuids = processedEntities.stream()
+			.filter(
+				entity -> entity.getProcessedEntityStatus().equals(ProcessedEntityStatus.ACCESS_DENIED_FAILURE)
+					|| entity.getProcessedEntityStatus().equals(ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE))
+			.map(entity -> entity.getEntityUuid())
+			.collect(Collectors.toList());
+
+		List<ADO> entities = getByUuids(entityUuids);
+		return entities.stream().filter(entity -> !failedUuids.contains(entity.getUuid())).collect(Collectors.toList());
+	}
+
+	public List<ProcessedEntity> buildProcessedEntities(List<String> entityUuids, ProcessedEntityStatus processedEntityStatus) {
+		List<ProcessedEntity> processedEntities = new ArrayList<>();
+		entityUuids.forEach(entityUuid -> processedEntities.add(new ProcessedEntity(entityUuid, processedEntityStatus)));
+
+		return processedEntities;
 	}
 
 	/**

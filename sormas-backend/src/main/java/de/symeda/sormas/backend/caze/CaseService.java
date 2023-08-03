@@ -1122,8 +1122,17 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 	@Override
 	public List<ProcessedEntity> archive(List<String> entityUuids) {
-		List<ProcessedEntity> processedCases = updateArchiveFlagInExternalSurveillanceToolForSharedEntities(entityUuids, true);
-		List<Case> casesToBeProcessed = getCasesToBeProcessed(entityUuids, processedCases);
+		List<ProcessedEntity> processedCases = new ArrayList<>();
+		List<String> sharedCaseUuids = getEligibleSharedUuids(entityUuids);
+		try {
+			updateArchiveFlagInExternalSurveillanceToolForSharedEntities(sharedCaseUuids, true);
+		} catch (ExternalSurveillanceToolRuntimeException e) {
+			processedCases = buildProcessedEntities(sharedCaseUuids, ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE);
+		} catch (AccessDeniedException e) {
+			processedCases = buildProcessedEntities(sharedCaseUuids, ProcessedEntityStatus.ACCESS_DENIED_FAILURE);
+		}
+
+		List<Case> casesToBeProcessed = getEntitiesToBeProcessed(entityUuids, processedCases);
 		List<String> caseUuidsToBeProcessed = casesToBeProcessed.stream().map(caze -> caze.getUuid()).collect(Collectors.toList());
 
 		super.archive(caseUuidsToBeProcessed);
@@ -1132,53 +1141,38 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		return processedCases;
 	}
 
-	public List<Case> getCasesToBeProcessed(List<String> entityUuids, List<ProcessedEntity> processedCases) {
-		List<String> failedUuids = processedCases.stream()
-			.filter(
-				entity -> entity.getProcessedEntityStatus().equals(ProcessedEntityStatus.ACCESS_DENIED_FAILURE)
-					|| entity.getProcessedEntityStatus().equals(ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE))
-			.map(entity -> entity.getEntityUuid())
-			.collect(Collectors.toList());
-
-		List<Case> cases = getByUuids(entityUuids);
-		return cases.stream().filter(caze -> !failedUuids.contains(caze.getUuid())).collect(Collectors.toList());
-	}
-
 	@Override
 	public void dearchive(List<String> entityUuids, String dearchiveReason) {
 		super.dearchive(entityUuids, dearchiveReason);
 		updateArchiveFlagInExternalSurveillanceToolForSharedEntities(entityUuids, false);
 	}
 
-	public List<ProcessedEntity> updateArchiveFlagInExternalSurveillanceToolForSharedEntities(List<String> entityUuids, boolean archived) {
-		List<ProcessedEntity> processedCases = new ArrayList<>();
-		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()) {
-			List<String> uuidsAllowedToBeShared = getEntityUuidsAllowedToBeShared(entityUuids);
-			if (!uuidsAllowedToBeShared.isEmpty()) {
+	public List<String> getEligibleSharedUuids(List<String> entityUuids) {
+		List<String> sharedCaseUuids = new ArrayList<>();
+		List<String> uuidsAllowedToBeShared = getEntityUuidsAllowedToBeShared(entityUuids);
+		if (!uuidsAllowedToBeShared.isEmpty()) {
+			sharedCaseUuids = getSharedCaseUuids(uuidsAllowedToBeShared);
+		}
 
-				List<String> sharedCaseUuids = getSharedCaseUuids(uuidsAllowedToBeShared);
+		return sharedCaseUuids;
+	}
+
+	public void updateArchiveFlagInExternalSurveillanceToolForSharedEntities(List<String> sharedCaseUuids, boolean archived) {
+		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()) {
 				if (!sharedCaseUuids.isEmpty()) {
 					try {
 						externalSurveillanceToolGatewayFacade.sendCasesInternal(sharedCaseUuids, archived);
 					} catch (ExternalSurveillanceToolException e) {
-						processedCases = buildProcessedEntities(sharedCaseUuids, ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE);
-						//TODO: add a catch for AccessDeniedException too ( add to the events too)
+						throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
 					} catch (AccessDeniedException e) {
-						processedCases = buildProcessedEntities(sharedCaseUuids, ProcessedEntityStatus.ACCESS_DENIED_FAILURE);
+						//TODO: add message
+						throw new AccessDeniedException(e.getMessage());
 					}
-				}
 			}
 		}
-		return processedCases;
 	}
 
-	public List<ProcessedEntity> buildProcessedEntities(List<String> sharedCaseUuids, ProcessedEntityStatus processedEntityStatus) {
-		List<ProcessedEntity> processedEntities = new ArrayList<>();
-		sharedCaseUuids.forEach(sharedCazeUuid -> processedEntities.add(new ProcessedEntity(sharedCazeUuid, processedEntityStatus)));
-
-		return processedEntities;
-	}
-
+	//TODO: check if other common methods (Case-Events) can be extracted to the service
 	public List<String> getSharedCaseUuids(List<String> entityUuids) {
 		List<Long> caseIds = getCaseIds(entityUuids);
 		List<String> sharedCaseUuids = new ArrayList<>();

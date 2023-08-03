@@ -1050,10 +1050,10 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	@Override
 	@RightsAllowed(UserRight._EVENT_ARCHIVE)
 	public List<ProcessedEntity> archive(List<String> eventUuids) {
-		super.archive(eventUuids);
+		List<ProcessedEntity> processedEntities = super.archive(eventUuids);
+
 		List<String> eventParticipantList = eventParticipantService.getAllUuidsByEventUuids(eventUuids);
 		eventParticipantService.archive(eventParticipantList);
-		List<ProcessedEntity> processedEntities = new ArrayList<>();
 		return processedEntities;
 	}
 
