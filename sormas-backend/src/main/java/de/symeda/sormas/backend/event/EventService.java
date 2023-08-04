@@ -298,38 +298,51 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 	@Override
 	public void archive(String entityUuid, Date endOfProcessingDate) {
 		super.archive(entityUuid, endOfProcessingDate);
-		setArchiveInExternalSurveillanceToolForEntity(entityUuid, true);
+		List<String> sharedEventUuids = getSharedEventUuids(Collections.singletonList(entityUuid));
+		updateArchiveFlagInExternalSurveillanceToolForSharedEvents(sharedEventUuids, true);
 	}
 
 	@Override
 	public List<ProcessedEntity> archive(List<String> entityUuids) {
 		List<ProcessedEntity> processedEvents = new ArrayList<>();
+		List<Event> eligibleEvents = getEligibleEventsForArchivingAndDearchiving(entityUuids, processedEvents, true);
+		List<String> eligibleEventUuids = eligibleEvents.stream().map(event -> event.getUuid()).collect(Collectors.toList());
+
+		super.archive(eligibleEventUuids);
+		processedEvents.addAll(buildProcessedEntities(eligibleEventUuids, ProcessedEntityStatus.SUCCESS));
+
+		return processedEvents;
+	}
+
+	@Override
+	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
+		List<ProcessedEntity> processedEvents = new ArrayList<>();
+		List<Event> eligibleEvents = getEligibleEventsForArchivingAndDearchiving(entityUuids, processedEvents, false);
+		List<String> eligibleEventUuids = eligibleEvents.stream().map(event -> event.getUuid()).collect(Collectors.toList());
+
+		super.dearchive(eligibleEventUuids, dearchiveReason);
+		processedEvents.addAll(buildProcessedEntities(eligibleEventUuids, ProcessedEntityStatus.SUCCESS));
+
+		return processedEvents;
+	}
+
+	public List<Event> getEligibleEventsForArchivingAndDearchiving(
+		List<String> entityUuids,
+		List<ProcessedEntity> processedEvents,
+		boolean archiving) {
 		List<String> sharedEventUuids = getSharedEventUuids(entityUuids);
 		try {
-			updateArchiveFlagInExternalSurveillanceToolForSharedEntities(sharedEventUuids, true);
+			updateArchiveFlagInExternalSurveillanceToolForSharedEvents(sharedEventUuids, archiving);
 		} catch (ExternalSurveillanceToolRuntimeException e) {
 			processedEvents = buildProcessedEntities(sharedEventUuids, ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE);
 		} catch (AccessDeniedException e) {
 			processedEvents = buildProcessedEntities(sharedEventUuids, ProcessedEntityStatus.ACCESS_DENIED_FAILURE);
 		}
 
-		List<Event> eventsToBeProcessed = getEntitiesToBeProcessed(entityUuids, processedEvents);
-		List<String> eventUuidsToBeProcessed = eventsToBeProcessed.stream().map(event -> event.getUuid()).collect(Collectors.toList());
-
-		super.archive(entityUuids);
-		processedEvents.addAll(buildProcessedEntities(eventUuidsToBeProcessed, ProcessedEntityStatus.SUCCESS));
-
-		return processedEvents;
+		return getEntitiesToBeProcessed(entityUuids, processedEvents);
 	}
 
-	@Override
-	public void dearchive(List<String> entityUuids, String dearchiveReason) {
-		super.dearchive(entityUuids, dearchiveReason);
-		updateArchiveFlagInExternalSurveillanceToolForSharedEntities(entityUuids, false);
-	}
-
-	//TODO: check if can be added to Abstract Core Ado Service
-	public void updateArchiveFlagInExternalSurveillanceToolForSharedEntities(List<String> entityUuids, boolean archived) {
+	public void updateArchiveFlagInExternalSurveillanceToolForSharedEvents(List<String> entityUuids, boolean archived) {
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()) {
 			List<String> sharedEventUuids = getSharedEventUuids(entityUuids);
 			if (!sharedEventUuids.isEmpty()) {
@@ -338,14 +351,12 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 				} catch (ExternalSurveillanceToolException e) {
 					throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
 				} catch (AccessDeniedException e) {
-					//TODO: add message
 					throw new AccessDeniedException(e.getMessage());
 				}
 			}
 		}
 	}
 
-	//TODO: check if can be added to the service
 	public List<String> getSharedEventUuids(List<String> entityUuids) {
 		List<Long> eventIds = getEventIds(entityUuids);
 		List<String> sharedEventUuids = new ArrayList<>();
@@ -364,10 +375,6 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 		List<Long> eventIds = new ArrayList<>();
 		entityUuids.forEach(uuid -> eventIds.add(this.getByUuid(uuid).getId()));
 		return eventIds;
-	}
-
-	public void setArchiveInExternalSurveillanceToolForEntity(String eventUuid, boolean archived) {
-		updateArchiveFlagInExternalSurveillanceToolForSharedEntities(Collections.singletonList(eventUuid), archived);
 	}
 
 	public List<String> getArchivedUuidsSince(Date since) {

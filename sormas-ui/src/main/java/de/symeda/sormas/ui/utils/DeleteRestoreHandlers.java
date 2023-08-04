@@ -83,10 +83,6 @@ public final class DeleteRestoreHandlers {
 		}
 
 		@Override
-		public void delete(String uuid, DeletionDetails deletionDetails) {
-		}
-
-		@Override
 		public List<ProcessedEntity> delete(List<String> uuids, DeletionDetails deletionDetails) {
 			return entityFacade.delete(uuids, deletionDetails);
 		}

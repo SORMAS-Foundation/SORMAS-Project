@@ -169,7 +169,7 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends Quer
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public void dearchive(List<String> entityUuids, String dearchiveReason) {
+	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
 
 		IterableHelper.executeBatched(entityUuids, ARCHIVE_BATCH_SIZE, batchedUuids -> {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -185,6 +185,8 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends Quer
 
 			em.createQuery(cu).executeUpdate();
 		});
+
+		return new ArrayList<>();
 	}
 
 	public EditPermissionType getEditPermissionType(ADO entity) {

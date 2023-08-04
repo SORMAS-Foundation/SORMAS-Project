@@ -2846,8 +2846,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@Override
 	@RightsAllowed(UserRight._CASE_ARCHIVE)
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason, boolean includeContacts) {
-		super.dearchive(entityUuids, dearchiveReason);
-		List<ProcessedEntity> processedEntities = new ArrayList<>();
+		List<ProcessedEntity> processedEntities = super.dearchive(entityUuids, dearchiveReason);
 
 		if (includeContacts) {
 			List<String> caseContacts = contactService.getAllUuidsByCaseUuids(entityUuids);

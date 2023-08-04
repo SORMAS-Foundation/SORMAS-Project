@@ -16,7 +16,6 @@
 package de.symeda.sormas.backend.common;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -229,9 +228,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 
 	@DenyAll
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
-		List<ProcessedEntity> processedEntities = new ArrayList<>();
-		service.dearchive(entityUuids, dearchiveReason);
-		return processedEntities;
+		return service.dearchive(entityUuids, dearchiveReason);
 	}
 
 	public Date calculateEndOfProcessingDate(String entityUuid) {

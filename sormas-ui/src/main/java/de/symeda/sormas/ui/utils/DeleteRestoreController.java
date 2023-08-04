@@ -180,8 +180,6 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 
 	public interface IDeleteRestoreHandler<T extends HasUuid> {
 
-		void delete(String uuid, DeletionDetails deletionDetails);
-
 		List<ProcessedEntity> delete(List<String> uuids, DeletionDetails deletionDetails);
 
 		List<ProcessedEntity> restore(List<String> uuids);

@@ -96,6 +96,7 @@ import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
+import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.deletionconfiguration.DeletionConfiguration;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventService;
@@ -251,7 +252,8 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 	}
 
 	@Test
-	public void testSetArchiveInExternalSurveillanceToolForCase_WithProperEntity_WithCaseAllowedToShare(WireMockRuntimeInfo wireMockRuntime) {
+	public void testUpdateArchiveFlagInExternalSurveillanceToolForForCase_WithProperEntity_WithCaseAllowedToShare(
+		WireMockRuntimeInfo wireMockRuntime) {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserReferenceDto user = creator.createUser(rdcf).toReference();
 		PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
@@ -265,16 +267,18 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 				.withRequestBody(containing("caseUuids"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
-		getCaseService().setArchiveInExternalSurveillanceToolForEntity(caze.getUuid(), true);
+		getCaseService().updateArchiveFlagInExternalSurveillanceToolForSharedCases(Collections.singletonList(caze.getUuid()), true);
 
 		wireMockRuntime.getWireMock().verify(exactly(1), postRequestedFor(urlEqualTo("/export")));
 	}
 
 	@Test
-	public void testSetArchiveInExternalSurveillanceToolForCase_WithProperEntity_WithoutCaseAllowedToShare(WireMockRuntimeInfo wireMockRuntime) {
+	public void testUpdateArchiveFlagInExternalSurveillanceToolForCase_WithProperEntity_WithoutCaseAllowedToShare(
+		WireMockRuntimeInfo wireMockRuntime) {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserReferenceDto user = creator.createUser(rdcf).toReference();
 		PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
+		CaseService caseService = getCaseService();
 
 		CaseDataDto caze = creator.createCase(user, person, rdcf, c -> c.setDontShareWithReportingTool(true));
 		Case case1 = getCaseService().getByUuid(caze.getUuid());
@@ -285,16 +289,18 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 				.withRequestBody(containing("caseUuids"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
-		getCaseService().setArchiveInExternalSurveillanceToolForEntity(caze.getUuid(), true);
+		List<String> sharedCaseUuids = caseService.getEligibleSharedUuids(Collections.singletonList(caze.getUuid()));
+		caseService.updateArchiveFlagInExternalSurveillanceToolForSharedCases(sharedCaseUuids, true);
 
 		wireMockRuntime.getWireMock().verify(exactly(0), postRequestedFor(urlEqualTo("/export")));
 	}
 
 	@Test
-	public void testSetArchiveInExternalSurveillanceToolForCase_WithoutProperEntity(WireMockRuntimeInfo wireMockRuntime) {
+	public void testUpdateArchiveFlagInExternalSurveillanceToolForCase_WithoutProperEntity(WireMockRuntimeInfo wireMockRuntime) {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserReferenceDto user = creator.createUser(rdcf).toReference();
 		PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
+		CaseService caseService = getCaseService();
 
 		CaseDataDto caze = creator.createCase(user, person, rdcf);
 
@@ -304,12 +310,14 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
 		//the case does not have an externalId set and after the filtering the sendCases will not be called
-		getCaseService().setArchiveInExternalSurveillanceToolForEntity(caze.getUuid(), true);
+		List<String> sharedCaseUuids = caseService.getEligibleSharedUuids(Collections.singletonList(caze.getUuid()));
+		getCaseService().updateArchiveFlagInExternalSurveillanceToolForSharedCases(sharedCaseUuids, true);
+
 		wireMockRuntime.getWireMock().verify(exactly(0), postRequestedFor(urlEqualTo("/export")));
 	}
 
 	@Test
-	public void testSetArchiveInExternalSurveillanceToolForCase_Exception() {
+	public void testUpdateArchiveFlagInExternalSurveillanceToolForCase_Exception() {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserReferenceDto user = creator.createUser(rdcf).toReference();
 		PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
@@ -325,11 +333,12 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 
 		assertThrows(
 			ExternalSurveillanceToolRuntimeException.class,
-			() -> getCaseService().setArchiveInExternalSurveillanceToolForEntity(caze.getUuid(), true));
+			() -> getCaseService().updateArchiveFlagInExternalSurveillanceToolForSharedCases(Collections.singletonList(caze.getUuid()), true));
+
 	}
 
 	@Test
-	public void testSetArchiveInExternalSurveillanceToolForEvent_WithProperEntity(WireMockRuntimeInfo wireMockRuntime) {
+	public void testUpdateArchiveFlagInExternalSurveillanceToolForEvent_WithProperEntity(WireMockRuntimeInfo wireMockRuntime) {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserReferenceDto user = creator.createUser(rdcf).toReference();
 
@@ -358,12 +367,14 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 				.withRequestBody(containing("eventUuids"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
-		eventService.setArchiveInExternalSurveillanceToolForEntity(event.getUuid(), false);
+		List<String> sharedEventUuids = eventService.getSharedEventUuids(Collections.singletonList(event.getUuid()));
+		eventService.updateArchiveFlagInExternalSurveillanceToolForSharedEvents(sharedEventUuids, false);
+
 		wireMockRuntime.getWireMock().verify(exactly(1), postRequestedFor(urlEqualTo("/export")));
 	}
 
 	@Test
-	public void testSetArchiveInExternalSurveillanceToolForEvent_Exception() {
+	public void testUpdateArchiveFlagInExternalSurveillanceToolForEvent_Exception() {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserReferenceDto user = creator.createUser(rdcf).toReference();
 
@@ -383,10 +394,9 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 			Disease.DENGUE,
 			rdcf);
 
-		Event event = getEventService().getByUuid(eventDto.getUuid());
-		getExternalShareInfoService().createAndPersistShareInfo(event, ExternalShareStatus.SHARED);
-
 		EventService eventService = getBean(EventService.class);
+		Event event = eventService.getByUuid(eventDto.getUuid());
+		getExternalShareInfoService().createAndPersistShareInfo(event, ExternalShareStatus.SHARED);
 
 		stubFor(
 			post(urlEqualTo("/export")).withRequestBody(containing(eventDto.getUuid()))
@@ -395,7 +405,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 
 		assertThrows(
 			ExternalSurveillanceToolRuntimeException.class,
-			() -> eventService.setArchiveInExternalSurveillanceToolForEntity(eventDto.getUuid(), true));
+			() -> eventService.updateArchiveFlagInExternalSurveillanceToolForSharedEvents(Collections.singletonList(eventDto.getUuid()), true));
 	}
 
 	@Test
