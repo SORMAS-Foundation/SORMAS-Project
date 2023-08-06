@@ -549,6 +549,7 @@ public interface Strings {
 	String headingEditVaccination = "headingEditVaccination";
 	String headingEditVisit = "headingEditVisit";
 	String headingEntitiesNotArchived = "headingEntitiesNotArchived";
+	String headingEntitiesNotDearchived = "headingEntitiesNotDearchived";
 	String headingEnvironmentalExposure = "headingEnvironmentalExposure";
 	String headingEpiCurve = "headingEpiCurve";
 	String headingEpiDataSourceCaseContacts = "headingEpiDataSourceCaseContacts";
@@ -739,6 +740,7 @@ public interface Strings {
 	String headingSomeContactsAlreadyInEvent = "headingSomeContactsAlreadyInEvent";
 	String headingSomeContactsNotRestored = "headingSomeContactsNotRestored";
 	String headingSomeEntitiesNotArchived = "headingSomeEntitiesNotArchived";
+	String headingSomeEntitiesNotDearchived = "headingSomeEntitiesNotDearchived";
 	String headingSomeEntitiesNotDeleted = "headingSomeEntitiesNotDeleted";
 	String headingSomeEventParticipantsNotRestored = "headingSomeEventParticipantsNotRestored";
 	String headingSomeEventsNotRestored = "headingSomeEventsNotRestored";
@@ -1111,6 +1113,7 @@ public interface Strings {
 	String messageCopyPassword = "messageCopyPassword";
 	String messageCountCasesAlreadyInEvent = "messageCountCasesAlreadyInEvent";
 	String messageCountCasesNotArchivedExternalReason = "messageCountCasesNotArchivedExternalReason";
+	String messageCountCasesNotDearchivedExternalReason = "messageCountCasesNotDearchivedExternalReason";
 	String messageCountCasesNotDeleted = "messageCountCasesNotDeleted";
 	String messageCountCasesNotDeletedAccessDeniedReason = "messageCountCasesNotDeletedAccessDeniedReason";
 	String messageCountCasesNotDeletedExternalReason = "messageCountCasesNotDeletedExternalReason";
@@ -1125,6 +1128,7 @@ public interface Strings {
 	String messageCountEventParticipantsNotDeletedAccessDeniedReason = "messageCountEventParticipantsNotDeletedAccessDeniedReason";
 	String messageCountEventParticipantsNotRestored = "messageCountEventParticipantsNotRestored";
 	String messageCountEventsNotArchivedExternalReason = "messageCountEventsNotArchivedExternalReason";
+	String messageCountEventsNotDearchivedExternalReason = "messageCountEventsNotDearchivedExternalReason";
 	String messageCountEventsNotDeleted = "messageCountEventsNotDeleted";
 	String messageCountEventsNotDeletedAccessDeniedReason = "messageCountEventsNotDeletedAccessDeniedReason";
 	String messageCountEventsNotDeletedExternalReason = "messageCountEventsNotDeletedExternalReason";

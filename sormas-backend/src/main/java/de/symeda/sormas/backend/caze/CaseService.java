@@ -1123,29 +1123,35 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 	@Override
 	public List<ProcessedEntity> archive(List<String> entityUuids) {
-		List<ProcessedEntity> processedCases = new ArrayList<>();
-		List<Case> eligibleCases = getEligibleCasesForArchivingAndDearchiving(entityUuids, processedCases, true);
-		List<String> eligibleCaseUuids = eligibleCases.stream().map(caze -> caze.getUuid()).collect(Collectors.toList());
+		List<ProcessedEntity> processedCases = preprocessCases(entityUuids, true);
+		List<Case> remainingCasesToBeProcessed = getEntitiesToBeProcessed(entityUuids, processedCases);
+		List<String> remainingUuidsToBeProcessed = remainingCasesToBeProcessed.stream().map(caze -> caze.getUuid()).collect(Collectors.toList());
 
-		super.archive(eligibleCaseUuids);
-		processedCases.addAll(buildProcessedEntities(eligibleCaseUuids, ProcessedEntityStatus.SUCCESS));
+		super.archive(remainingUuidsToBeProcessed);
+		if (remainingCasesToBeProcessed.size() > 0) {
+			processedCases.addAll(buildProcessedEntities(remainingUuidsToBeProcessed, ProcessedEntityStatus.SUCCESS));
+		}
 
 		return processedCases;
 	}
 
+	//TODO: test archive and dearchive, for bulk and single cases for Events with/without Survnet failure -> test the other entities too
 	@Override
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
-		List<ProcessedEntity> processedCases = new ArrayList<>();
-		List<Case> eligibleCases = getEligibleCasesForArchivingAndDearchiving(entityUuids, processedCases, false);
-		List<String> eligibleCaseUuids = eligibleCases.stream().map(caze -> caze.getUuid()).collect(Collectors.toList());
+		List<ProcessedEntity> processedCases = preprocessCases(entityUuids, false);
+		List<Case> remainingCasesToBeProcessed = getEntitiesToBeProcessed(entityUuids, processedCases);
+		List<String> remainingUuidsToBeProcessed = remainingCasesToBeProcessed.stream().map(caze -> caze.getUuid()).collect(Collectors.toList());
 
-		super.dearchive(eligibleCaseUuids, dearchiveReason);
-		processedCases.addAll(buildProcessedEntities(eligibleCaseUuids, ProcessedEntityStatus.SUCCESS));
+		super.dearchive(remainingUuidsToBeProcessed, dearchiveReason);
+		if (remainingCasesToBeProcessed.size() > 0) {
+			processedCases.addAll(buildProcessedEntities(remainingUuidsToBeProcessed, ProcessedEntityStatus.SUCCESS));
+		}
 
 		return processedCases;
 	}
 
-	public List<Case> getEligibleCasesForArchivingAndDearchiving(List<String> entityUuids, List<ProcessedEntity> processedCases, boolean archiving) {
+	public List<ProcessedEntity> preprocessCases(List<String> entityUuids, boolean archiving) {
+		List<ProcessedEntity> processedCases = new ArrayList<>();
 		List<String> sharedCaseUuids = getEligibleSharedUuids(entityUuids);
 		try {
 			updateArchiveFlagInExternalSurveillanceToolForSharedCases(sharedCaseUuids, archiving);
@@ -1154,8 +1160,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		} catch (AccessDeniedException e) {
 			processedCases = buildProcessedEntities(sharedCaseUuids, ProcessedEntityStatus.ACCESS_DENIED_FAILURE);
 		}
-
-		return getEntitiesToBeProcessed(entityUuids, processedCases);
+		return processedCases;
 	}
 
 	public List<String> getEligibleSharedUuids(List<String> entityUuids) {
