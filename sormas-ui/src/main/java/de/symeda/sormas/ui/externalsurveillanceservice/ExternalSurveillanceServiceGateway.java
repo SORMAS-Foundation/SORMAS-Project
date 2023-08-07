@@ -131,7 +131,7 @@ public class ExternalSurveillanceServiceGateway {
 						FacadeProvider.getExternalSurveillanceToolFacade()
 							.sendCases(batch.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList()));
 					} catch (ExternalSurveillanceToolException e) {
-						return 0;
+						throw new RuntimeException(e);
 					}
 
 					return batch.size();

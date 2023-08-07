@@ -1586,6 +1586,24 @@ public class CreateNewCaseSteps implements En {
         });
 
     And(
+        "^I create a new case with specific data using created facility for Survnet DE$",
+        () -> {
+          survnetCase = caseService.buildCaseWithFacilitiesForSurvnetFeature();
+          fillDateOfReport(survnetCase.getDateOfReport(), Locale.GERMAN);
+          selectResponsibleRegion(survnetCase.getResponsibleRegion());
+          selectResponsibleDistrict(survnetCase.getResponsibleDistrict());
+          selectPlaceOfStay(survnetCase.getPlaceOfStay());
+          selectFacilityCategory(survnetCase.getFacilityCategory());
+          selectFacilityType(survnetCase.getFacilityType());
+          selectFacility(survnetCase.getFacility());
+          fillFirstName(survnetCase.getFirstName());
+          fillLastName(survnetCase.getLastName());
+          selectSex(survnetCase.getSex());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+        });
+
+    And(
         "^I create a new case with mandatory data only with Reinfection option for Survnet DE$",
         () -> {
           survnetCase = caseService.buildCaseForSurvnetFeatureWithReinfection();
