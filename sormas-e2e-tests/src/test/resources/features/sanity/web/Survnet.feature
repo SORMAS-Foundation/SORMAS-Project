@@ -371,3 +371,47 @@ Feature: Survnet tests
     And I click on De-Archive case button
     And I fill De-Archive case popup with test automation reason
     And I validate the existence of "5" Reporting Tools entries in Survnet box
+
+  @tmsLink=SORQA-1051
+  Scenario: Check Current Hospitalization of case when sending from SORMAS to Meldesoftware
+    Given I log in as a Survnet
+    When I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    Then I create a new case with specific data using created facility for Survnet DE
+    And I navigate to Hospitalization tab in Cases
+    Then I complete all hospitalization fields for Current Hospitalization and save it for DE
+    And I navigate to case tab
+    And I click on Send to reporting tool button on Edit Case page
+    And I collect case external UUID from Edit Case page
+    Then I wait 50 seconds for system reaction
+    And I open SORMAS generated XML file for single case message
+    And I check if Current Hospitalization Was Patient Admitted has correct value mapped in SORMAS generated single XML file
+    And I check if Region from Current Hospitalization value in SORMAS generated XML file is correct
+    Then I check if "date of visit or admission" for Current Hospitalization in SORMAS generated XML file is correct
+    Then I check if "date of discharge or transfer" for Current Hospitalization in SORMAS generated XML file is correct
+    And I check reason for Current Hospitalization in SORMAS generated single XML file is correct
+    And I check if Stay in the intensive care unit value Current Hospitalization in SORMAS generated XML file is correct
+    Then I check if "start of the stay" for Current Hospitalization in SORMAS generated XML file is correct
+    Then I check if "end of the stay" for Current Hospitalization in SORMAS generated XML file is correct
+
+  @tmsLink=SORQA-1051
+  Scenario: Check Previous Hospitalization of case when sending from SORMAS to Meldesoftware
+    Given I log in as a Survnet
+    When I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    Then I create a new case with specific data using created facility for Survnet DE
+    And I navigate to Hospitalization tab in Cases
+    Then I add a previous hospitalization and save for DE
+    And I navigate to case tab
+    And I click on Send to reporting tool button on Edit Case page
+    And I collect case external UUID from Edit Case page
+    Then I wait 50 seconds for system reaction
+    And I open SORMAS generated XML file for single case message
+    And I check if Previous Hospitalization Was Patient Admitted has correct value mapped in SORMAS generated single XML file
+    And I check if Region from Previous Hospitalization value in SORMAS generated XML file is correct
+    And I check if "date of visit or admission" for Previous Hospitalization in SORMAS generated XML file is correct
+    And I check if "date of discharge or transfer" for Previous Hospitalization in SORMAS generated XML file is correct
+    Then I check reason for Previous Hospitalization in SORMAS generated single XML file is correct
+    And I check if Stay in the intensive care unit value for Previous Hospitalization in SORMAS generated XML file is correct
+    And I check if "start of the stay" for Previous Hospitalization in SORMAS generated XML file is correct
+    And I check if "end of the stay" for Previous Hospitalization in SORMAS generated XML file is correct
