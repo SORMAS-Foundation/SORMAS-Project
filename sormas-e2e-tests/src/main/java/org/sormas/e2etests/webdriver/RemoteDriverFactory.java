@@ -37,7 +37,7 @@ public class RemoteDriverFactory implements DriverFactory {
   private final DesiredCapabilities desiredCapabilities;
   private final DriverMetaData driverMetaData;
   private final String userDirectory = System.getProperty("user.dir");
-  private final String remoteDriverPath = "/usr/lib64/chromium-browser/chromedriver";
+  private final String remoteDriverPath = "C:\\Sormas\\chromedriver.exe";
 
   @Inject
   public RemoteDriverFactory(
@@ -60,7 +60,7 @@ public class RemoteDriverFactory implements DriverFactory {
     options.merge(desiredCapabilities);
     options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.IGNORE);
     options.addArguments("disable-infobars");
-    options.addArguments("--headless");
+    //    options.addArguments("--headless");
     options.addArguments("--no-sandbox");
     options.addArguments("--disable-browser-side-navigation");
     options.addArguments("--disable-gpu-sandbox");
@@ -69,6 +69,7 @@ public class RemoteDriverFactory implements DriverFactory {
     options.addArguments("--disable-new-content-rendering-timeout");
     options.addArguments("--disable-browser-side-navigation");
     options.addArguments("--disable-dev-shm-usage");
+    options.addArguments("--remote-allow-origins=*");
     options.addArguments("--allow-running-insecure-content");
     options.addArguments("enable-automation");
     options.addArguments("--ignore-certificate-errors");
