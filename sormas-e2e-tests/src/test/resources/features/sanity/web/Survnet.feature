@@ -415,3 +415,22 @@ Feature: Survnet tests
     And I check if Stay in the intensive care unit value for Previous Hospitalization in SORMAS generated XML file is correct
     And I check if "start of the stay" for Previous Hospitalization in SORMAS generated XML file is correct
     And I check if "end of the stay" for Previous Hospitalization in SORMAS generated XML file is correct
+
+  @tmsLink=SORQA-1052
+  Scenario: Check Epidemiology data "Expositionsuntersuchung" of case when sending from SORMAS to Meldesoftware
+    Given I log in as a Survnet
+    When I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with mandatory data only for Survnet DE
+    And I navigate to epidemiological data tab in Edit case page
+    And I click on Exposure details known with JA option
+    And I click on New Entry in Exposure Details Known in Cases directory
+    And I select Reisen option in Type of activity from Combobox in Exposure form
+    And I click on save button in Exposure for Epidemiological data tab in Cases
+    And I click on save button from Epidemiological Data
+    And I navigate to case tab
+    And I click on Send to reporting tool button on Edit Case page
+    And I collect case external UUID from Edit Case page
+    Then I wait 50 seconds for system reaction
+    And I open SORMAS generated XML file for single case message
+    Then I check if the exposure settings are correctly mapped in SORMAS generated single XML file
