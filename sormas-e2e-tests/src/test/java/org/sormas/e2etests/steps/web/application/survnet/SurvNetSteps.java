@@ -975,7 +975,7 @@ public class SurvNetSteps implements En {
     And(
         "^I check if Current Hospitalization Was Patient Admitted has correct value mapped in SORMAS generated single XML file$$",
         () -> {
-          String wasPatientHospitalized = survnetCase.getResponsibleRegion();
+          String wasPatientHospitalized = hospitalization.getWasPatientAdmittedAtTheFacilityAsAnInpatient();
           String StatusHospitalizationValue = null;
           switch (wasPatientHospitalized) {
             case "JA":
