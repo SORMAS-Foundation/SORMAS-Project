@@ -147,7 +147,6 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends Quer
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public List<ProcessedEntity> archive(List<String> entityUuids) {
-
 		IterableHelper.executeBatched(
 			entityUuids,
 			ARCHIVE_BATCH_SIZE,
@@ -165,12 +164,11 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends Quer
 				em.createQuery(cu).executeUpdate();
 			}));
 
-		return new ArrayList<>();
+		return buildProcessedEntities(entityUuids, true);
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
-
 		IterableHelper.executeBatched(entityUuids, ARCHIVE_BATCH_SIZE, batchedUuids -> {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaUpdate<ADO> cu = cb.createCriteriaUpdate(getElementClass());
@@ -186,7 +184,29 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends Quer
 			em.createQuery(cu).executeUpdate();
 		});
 
-		return new ArrayList<>();
+		return buildProcessedEntities(entityUuids, false);
+	}
+
+	public List<ProcessedEntity> buildProcessedEntities(List<String> entityUuids, boolean archiving) {
+		List<ProcessedEntity> processedEntities = new ArrayList<>();
+		List<ADO> adoList = getByUuids(entityUuids);
+		if (adoList != null) {
+			for (ADO ado : adoList) {
+				if (archiving) {
+					processedEntities.add(
+						new ProcessedEntity(
+							ado.getUuid(),
+							ado.isArchived() ? ProcessedEntityStatus.SUCCESS : ProcessedEntityStatus.INTERNAL_FAILURE));
+				} else {
+					processedEntities.add(
+						new ProcessedEntity(
+							ado.getUuid(),
+							!ado.isArchived() ? ProcessedEntityStatus.SUCCESS : ProcessedEntityStatus.INTERNAL_FAILURE));
+				}
+			}
+		}
+
+		return processedEntities;
 	}
 
 	public EditPermissionType getEditPermissionType(ADO entity) {
@@ -233,7 +253,8 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends Quer
 	}
 
 	/**
-	 * Used to fetch {@link AdoServiceWithUserFilterAndJurisdiction#getInJurisdictionIds(List)}/{@link AdoServiceWithUserFilterAndJurisdiction#inJurisdictionOrOwned(AbstractDomainObject)}
+	 * Used to fetch
+	 * {@link AdoServiceWithUserFilterAndJurisdiction#getInJurisdictionIds(List)}/{@link AdoServiceWithUserFilterAndJurisdiction#inJurisdictionOrOwned(AbstractDomainObject)}
 	 * (without {@link QueryContext} because there are no other conditions etc.).
 	 * 
 	 * @return A filter on entities within the users jurisdiction or owned by him.

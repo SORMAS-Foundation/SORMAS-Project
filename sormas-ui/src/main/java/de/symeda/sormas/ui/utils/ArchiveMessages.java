@@ -121,6 +121,7 @@ public enum ArchiveMessages {
 		null,
 		null),
 
+	//TODO: add for infrastructure data for accessDenied message the I18nProperties.getString(dearchivingNotPossibleMessageProperty) label
 	CONTINENT(Strings.headingConfirmArchiving,
 		Strings.confirmationArchiveContinent,
 		Strings.confirmationArchiveContinents,
@@ -259,11 +260,14 @@ public enum ArchiveMessages {
 	private final String messageAllEntitiesDearchived = Strings.messageAllEntitiesDearchived;
 	private final String messageSomeEntitiesDearchived = Strings.messageSomeEntitiesDearchived;
 
-	//TODO: check if is necessary to be added for each entity separately
 	private final String headingSomeEntitiesNotArchived = Strings.headingSomeEntitiesNotArchived;
 	private final String headingEntitiesNotArchived = Strings.headingEntitiesNotArchived;
 	private final String headingSomeEntitiesNotDearchived = Strings.headingSomeEntitiesNotDearchived;
 	private final String headingEntitiesNotDearchived = Strings.headingEntitiesNotDearchived;
+
+	//TODO: the next 2 messages could be added above to the infrastructure entities
+	private final String messageNoEligibleEntityForArchiving = Strings.messageNoEligibleEntityForArchiving;
+	private final String messageNoEligibleEntityForDearchiving = Strings.messageNoEligibleEntityForDearchiving;
 
 	//private final String messageCountEntitiesNotArchived;
 
@@ -380,5 +384,13 @@ public enum ArchiveMessages {
 
 	public String getHeadingEntitiesNotDearchived() {
 		return headingEntitiesNotDearchived;
+	}
+
+	public String getMessageNoEligibleEntityForArchiving() {
+		return messageNoEligibleEntityForArchiving;
+	}
+
+	public String getMessageNoEligibleEntityForDearchiving() {
+		return messageNoEligibleEntityForDearchiving;
 	}
 }

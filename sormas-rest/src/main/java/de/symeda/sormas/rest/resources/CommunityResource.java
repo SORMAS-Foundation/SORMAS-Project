@@ -77,7 +77,6 @@ public class CommunityResource extends EntityDtoResource<CommunityDto> {
 	@POST
 	@Path("/archive")
 	public List<ProcessedEntity> archive(@RequestBody List<String> uuids) {
-
 		List<ProcessedEntity> processedEntities = FacadeProvider.getCommunityFacade().archive(uuids);
 		return processedEntities;
 	}

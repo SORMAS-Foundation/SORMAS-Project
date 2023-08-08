@@ -229,7 +229,7 @@ public class ArchivingController {
 			null,
 			null,
 			forArchive ? archiveMessages.getMessageSomeEntitiesArchived() : archiveMessages.getMessageSomeEntitiesDearchived(),
-			null,
+			forArchive ? archiveMessages.getMessageNoEligibleEntityForArchiving() : archiveMessages.getMessageNoEligibleEntityForDearchiving(),
 			Strings.infoBulkProcessFinishedWithSkips,
 			Strings.infoBulkProcessFinishedWithoutSuccess);
 	}

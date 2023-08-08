@@ -1036,8 +1036,11 @@ public class TaskFacadeEjb implements TaskFacade {
 	@Override
 	@RightsAllowed(UserRight._TASK_ARCHIVE)
 	public List<ProcessedEntity> dearchive(String uuid) {
+		List<ProcessedEntity> processedTasks = new ArrayList<>();
 		dearchive(Collections.singletonList(uuid));
-		return null;
+		processedTasks.add(new ProcessedEntity(uuid, ProcessedEntityStatus.SUCCESS));
+
+		return processedTasks;
 	}
 
 	@Override
@@ -1045,8 +1048,8 @@ public class TaskFacadeEjb implements TaskFacade {
 	public List<ProcessedEntity> archive(List<String> taskUuids) {
 		List<ProcessedEntity> processedTasks = new ArrayList<>();
 		IterableHelper.executeBatched(taskUuids, ARCHIVE_BATCH_SIZE, e -> taskService.updateArchived(e, true));
-		//return taskUuids;
-		//TODO: change this logic
+		taskUuids.forEach(uuid -> processedTasks.add(new ProcessedEntity(uuid, ProcessedEntityStatus.SUCCESS)));
+
 		return processedTasks;
 	}
 
@@ -1055,8 +1058,8 @@ public class TaskFacadeEjb implements TaskFacade {
 	public List<ProcessedEntity> dearchive(List<String> taskUuids) {
 		List<ProcessedEntity> processedTasks = new ArrayList<>();
 		IterableHelper.executeBatched(taskUuids, ARCHIVE_BATCH_SIZE, e -> taskService.updateArchived(e, false));
-		//return taskUuids;
-		//TODO: change this logic
+		taskUuids.forEach(uuid -> processedTasks.add(new ProcessedEntity(uuid, ProcessedEntityStatus.SUCCESS)));
+
 		return processedTasks;
 	}
 

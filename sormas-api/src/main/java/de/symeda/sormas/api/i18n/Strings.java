@@ -1281,6 +1281,8 @@ public interface Strings {
 	String messageNoCsvFile = "messageNoCsvFile";
 	String messageNoDocumentTemplateUploadFile = "messageNoDocumentTemplateUploadFile";
 	String messageNoDocumentUploadFile = "messageNoDocumentUploadFile";
+	String messageNoEligibleEntityForArchiving = "messageNoEligibleEntityForArchiving";
+	String messageNoEligibleEntityForDearchiving = "messageNoEligibleEntityForDearchiving";
 	String messageNoEligibleEventForDeletionSelected = "messageNoEligibleEventForDeletionSelected";
 	String messageNoEndDate = "messageNoEndDate";
 	String messageNoEnvironmentsSelected = "messageNoEnvironmentsSelected";

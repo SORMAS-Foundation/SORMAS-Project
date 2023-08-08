@@ -201,6 +201,7 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 
 	@RightsAllowed(UserRight._INFRASTRUCTURE_ARCHIVE)
 	public List<ProcessedEntity> dearchive(String uuid) {
+		List<ProcessedEntity> processedEntity = new ArrayList<>();
 		checkInfraDataLocked();
 		if (hasArchivedParentInfrastructure(Collections.singletonList(uuid))) {
 			throw new AccessDeniedException(I18nProperties.getString(dearchivingNotPossibleMessageProperty));
@@ -211,33 +212,42 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 			ado.setArchived(false);
 			service.ensurePersisted(ado);
 		}
-		return null;
+
+		processedEntity.add(new ProcessedEntity(uuid, ProcessedEntityStatus.SUCCESS));
+		return processedEntity;
 	}
 
 	@RightsAllowed(UserRight._INFRASTRUCTURE_ARCHIVE)
 	public List<ProcessedEntity> archive(List<String> entityUuids) {
 		List<ProcessedEntity> processedEntities = new ArrayList<>();
-		List<String> archivedEntityUuids = new ArrayList<>();
 		entityUuids.forEach(entityUuid -> {
 			if (!isUsedInOtherInfrastructureData(Collections.singletonList(entityUuid))) {
-				archive(entityUuid);
-				archivedEntityUuids.add(entityUuid);
-				processedEntities.add(new ProcessedEntity(entityUuid, ProcessedEntityStatus.SUCCESS));
+				try {
+					archive(entityUuid);
+					processedEntities.add(new ProcessedEntity(entityUuid, ProcessedEntityStatus.SUCCESS));
+				} catch (AccessDeniedException e) {
+					processedEntities.add(new ProcessedEntity(entityUuid, ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+				}
+			} else {
+				processedEntities.add(new ProcessedEntity(entityUuid, ProcessedEntityStatus.NOT_ELIGIBLE));
 			}
 		});
-		//return archivedEntityUuids;
 		return processedEntities;
 	}
 
 	@RightsAllowed(UserRight._INFRASTRUCTURE_ARCHIVE)
 	public List<ProcessedEntity> dearchive(List<String> entityUuids) {
 		List<ProcessedEntity> processedEntities = new ArrayList<>();
-		List<String> dearchivedEntityUuids = new ArrayList<>();
 		entityUuids.forEach(entityUuid -> {
 			if (!hasArchivedParentInfrastructure(Arrays.asList(entityUuid))) {
-				dearchive(entityUuid);
-				dearchivedEntityUuids.add(entityUuid);
-				processedEntities.add(new ProcessedEntity(entityUuid, ProcessedEntityStatus.SUCCESS));
+				try {
+					dearchive(entityUuid);
+					processedEntities.add(new ProcessedEntity(entityUuid, ProcessedEntityStatus.SUCCESS));
+				} catch (AccessDeniedException e) {
+					processedEntities.add(new ProcessedEntity(entityUuid, ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+				}
+			} else {
+				processedEntities.add(new ProcessedEntity(entityUuid, ProcessedEntityStatus.NOT_ELIGIBLE));
 			}
 		});
 		return processedEntities;

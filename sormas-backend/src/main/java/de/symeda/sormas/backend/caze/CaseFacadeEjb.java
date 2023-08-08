@@ -2725,7 +2725,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			});
 		}
 
-		//if the cases with exceptions will not be sent back will be noted as skipped -> check if we can update the skipped indicator based on status
 		return processedCases;
 	}
 
