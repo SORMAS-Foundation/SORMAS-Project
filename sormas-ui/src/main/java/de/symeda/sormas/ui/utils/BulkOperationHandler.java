@@ -168,8 +168,7 @@ public class BulkOperationHandler<T extends HasUuid> {
 						}
 
 						//all the selected items were ineligible
-						if ((initialEligibleEntryCount == 0 || allTheProcessedEntitiesAreIneligible(entitiesToBeProcessed))
-							&& successfulEntryCount == 0) {
+						if (initialEligibleEntryCount == 0 && successfulEntryCount == 0) {
 							bulkProgressLayout.finishProgress(
 								ProgressResult.FAILURE,
 								I18nProperties.getString(Strings.infoBulkProcessNoEligibleEntries),
@@ -291,7 +290,7 @@ public class BulkOperationHandler<T extends HasUuid> {
 			}
 		}
 
-		if ((initialEligibleEntryCount == 0 || allTheProcessedEntitiesAreIneligible(processedEntities)) && successfulEntryCount == 0) {
+		if (initialEligibleEntryCount == 0 && successfulEntryCount == 0) {
 			//all the selected items were ineligible
 			NotificationHelper.showNotification(I18nProperties.getString(noEligibleEntityMessageProperty), Notification.Type.WARNING_MESSAGE, -1);
 			return;
@@ -348,13 +347,7 @@ public class BulkOperationHandler<T extends HasUuid> {
 					List<T> ineligibleEntitiesFromBatch = getInEligibleEntriesFromBatch(entitiesFromBatch, selectedEligibleEntities);
 					List<ProcessedEntity> processedEntitiesFromBatch = bulkOperationFunction.apply(eligibleEntitiesFromBatch);
 
-					//If the user does not have the proper rights to perform the action or there are no eligibleEntries, there will be no processed entities
-					/*
-					 * if (processedEntitiesFromBatch.size() == 0) {
-					 * break;
-					 * } else {
-					 */
-					if (ineligibleEntitiesFromBatch.size() > 0 || getIneligibleEntities(processedEntitiesFromBatch).size() > 0) {
+					if (ineligibleEntitiesFromBatch.size() > 0) {
 						ineligibleEntitiesFromBatch
 							.forEach(entity -> entitiesToBeProcessed.add(new ProcessedEntity(entity.getUuid(), ProcessedEntityStatus.NOT_ELIGIBLE)));
 					}
@@ -400,21 +393,6 @@ public class BulkOperationHandler<T extends HasUuid> {
 				}
 			});
 
-	}
-
-	public List<ProcessedEntity> getIneligibleEntities(List<ProcessedEntity> processedEntities) {
-		List<ProcessedEntity> ineligibleEntities = processedEntities.stream()
-			.filter(entity -> entity.getProcessedEntityStatus().equals(ProcessedEntityStatus.NOT_ELIGIBLE))
-			.collect(Collectors.toList());
-
-		return ineligibleEntities.size() > 0 ? ineligibleEntities : new ArrayList<>();
-	}
-
-	public boolean allTheProcessedEntitiesAreIneligible(List<ProcessedEntity> processedEntities) {
-		int ineligibleEntitiesSize =
-			(int) processedEntities.stream().filter(entity -> entity.getProcessedEntityStatus().equals(ProcessedEntityStatus.NOT_ELIGIBLE)).count();
-
-		return processedEntities.size() == ineligibleEntitiesSize;
 	}
 
 	public String buildDescription(String ineligibleEntriesDescription, List<ProcessedEntity> processedEntities) {
