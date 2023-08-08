@@ -785,7 +785,8 @@ public class CasesView extends AbstractView {
 									ControllerProvider.getCaseController().sendCasesToExternalSurveillanceTool(items, (AbstractCaseGrid<?>) grid);
 								});
 							},
-							FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()));
+							UserProvider.getCurrent().hasUserRight(UserRight.EXTERNAL_SURVEILLANCE_SHARE)
+								&& FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()));
 
 					if (isDocGenerationAllowed()) {
 						menuBarItems.add(

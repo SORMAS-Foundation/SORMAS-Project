@@ -597,7 +597,8 @@ public class EventsView extends AbstractView {
 						mi -> grid.bulkActionHandler(
 							items -> ControllerProvider.getEventController()
 								.sendAllSelectedToExternalSurveillanceTool(eventGrid.asMultiSelect().getSelectedItems(), eventGrid)),
-						FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()));
+						UserProvider.getCurrent().hasUserRight(UserRight.EXTERNAL_SURVEILLANCE_SHARE)
+							&& FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()));
 
 				if (isDocGenerationAllowed()) {
 					bulkActions.add(
