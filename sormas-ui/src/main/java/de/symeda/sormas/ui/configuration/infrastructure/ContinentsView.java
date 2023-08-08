@@ -242,7 +242,8 @@ public class ContinentsView extends AbstractConfigurationView {
 										grid::reload,
 										() -> navigateTo(criteria));
 							},
-							EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
+							UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_ARCHIVE)
+								&& EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
 						new MenuBarHelper.MenuBarItem(
 							I18nProperties.getCaption(Captions.actionDearchiveInfrastructure),
 							VaadinIcons.ARCHIVE,
@@ -253,7 +254,8 @@ public class ContinentsView extends AbstractConfigurationView {
 									grid,
 									grid::reload,
 									() -> navigateTo(criteria)),
-							EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
+							UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_ARCHIVE)
+								&& EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
 					bulkOperationsDropdown.setVisible(isBulkOperationsDropdownVisible());
 					actionButtonsLayout.addComponent(bulkOperationsDropdown);
