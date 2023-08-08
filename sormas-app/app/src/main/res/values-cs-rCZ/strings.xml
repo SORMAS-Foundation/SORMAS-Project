@@ -381,6 +381,7 @@
     <string name="heading_sample_read">Číst vzorek</string>
     <string name="heading_sample_summary">Shrnutí vzorku</string>
     <string name="heading_samples_list">Seznam vzorků</string>
+    <string name="heading_environments_list">Environment Listing</string>
     <string name="heading_immunization_edit">Upravit imunizaci</string>
     <string name="heading_immunization_new">Nová imunizace</string>
     <string name="heading_immunization_read">Číst imunizaci</string>
@@ -501,6 +502,7 @@
     <string name="main_menu_events">Události</string>
     <string name="main_menu_reports">Zprávy</string>
     <string name="main_menu_samples">Vzorky</string>
+    <string name="main_menu_environments">Environments</string>
     <string name="main_menu_immunizations">Imunizace</string>
     <string name="main_menu_settings">Nastavení</string>
     <string name="main_menu_tasks">Úkoly</string>
@@ -652,6 +654,7 @@
     <string name="value_treatment_date_time_unknown">Datum léčby N/A</string>
     <string name="value_type_unknown">Typ N/A</string>
     <string name="value_uuid_unknown">ID N/A</string>
+    <string name="value_external_id_unknown">ExternalID N/A</string>
     <string name="value_visit_date_unknown">Datum návštěvy N/A</string>
     <string name="value_visit_remarks_unknown">Poznámky N/A</string>
     <string name="value_visit_time_unknown">Čas návštěvy N/A</string>

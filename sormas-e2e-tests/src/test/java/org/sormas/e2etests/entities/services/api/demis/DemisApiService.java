@@ -17,13 +17,6 @@
  */
 package org.sormas.e2etests.entities.services.api.demis;
 
-import static org.sormas.e2etests.steps.BaseSteps.locale;
-
-import java.net.SocketTimeoutException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.UUID;
-import javax.inject.Inject;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.MediaType;
@@ -36,6 +29,14 @@ import org.json.simple.JSONValue;
 import org.sormas.e2etests.envconfig.dto.demis.DemisData;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.api.demis.okhttpclient.SormasOkHttpClient;
+
+import javax.inject.Inject;
+import java.net.SocketTimeoutException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.UUID;
+
+import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 @Slf4j
 public class DemisApiService {
@@ -287,6 +288,19 @@ public class DemisApiService {
     json = json.replace("<second_observation_UUID_to_change>", UUID.randomUUID().toString());
     return json;
   }
+
+  public String prepareLabNotificationFileForPhysicianReport(
+          String patientFirstName, String patientLastName) {
+    DemisData demisData = runningConfiguration.getDemisData(locale);
+    String file = "src/main/resources/demisJsonTemplates/labNotificationTemplatePhysicianReport.json";
+    String json = readFileAsString(file);
+    json = json.replace("<report_UUID_to_change>", UUID.randomUUID().toString());
+    json = json.replace("\"<postal_code_to_change>\"", "\"" + demisData.getPostalCode() + "\"");
+    json = json.replace("\"<last_name_to_change>\"", "\"" + patientLastName + "\"");
+    json = json.replace("\"<first_name_to_change>\"", "\"" + patientFirstName + "\"");
+    return json;
+  }
+
 
   /** Delete method once we start adding tests */
   @SneakyThrows

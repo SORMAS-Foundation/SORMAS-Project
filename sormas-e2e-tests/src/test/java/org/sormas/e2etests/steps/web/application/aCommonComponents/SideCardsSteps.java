@@ -18,18 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.aCommonComponents;
 
-import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.ADDED_SAMPLES_IN_SAMPLE_CARD;
-import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.EDIT_SAMPLE_BUTTON;
-import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.HANDOVER_SIDE_CARD;
-import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.LINKED_SHARED_ORGANIZATION_SELECTED_VALUE;
-import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.REPORTS_DISPLAY_ASSOCIATED_EXTERNAL_MESSAGES_BUTTON;
-import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.SAMPLES_DISPLAY_ASSOCIATED_LAB_MESSAGES_BUTTON;
-import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.SHARE_SORMAS_2_SORMAS_POPUP_BUTTON;
-import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.checkTextInHandoverSideComponent;
-import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.checkTextInImmunizationSideComponent;
-import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.checkTextInReportSideComponent;
-import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.checkTextInSampleSideComponent;
-import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.getEditSampleButtonByNumber;
+import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.*;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.NUMBER_OF_TESTS_IN_SAMPLES;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.ONE_TEST_IN_SAMPLES_DE;
 
@@ -40,8 +29,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.steps.BaseSteps;
+import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
 public class SideCardsSteps implements En {
@@ -56,7 +47,11 @@ public class SideCardsSteps implements En {
   @SneakyThrows
   @Inject
   public SideCardsSteps(
-      WebDriverHelpers webDriverHelpers, SoftAssert softly, BaseSteps baseSteps, Faker faker) {
+      WebDriverHelpers webDriverHelpers,
+      SoftAssert softly,
+      BaseSteps baseSteps,
+      Faker faker,
+      RunningConfiguration runningConfiguration) {
     this.webDriverHelpers = webDriverHelpers;
     this.faker = faker;
     this.baseSteps = baseSteps;
@@ -72,7 +67,40 @@ public class SideCardsSteps implements En {
                   + webDriverHelpers.getTextFromPresentWebElement(HANDOVER_SIDE_CARD));
           softly.assertAll();
         });
-
+    When(
+        "I check if handover card contains shared with {string} information",
+        (String environmentIdentifier) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(HANDOVER_SIDE_CARD);
+          TimeUnit.SECONDS.sleep(3);
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(
+                  checkTextInHandoverSideComponent(
+                      runningConfiguration.getSurvnetResponsible(environmentIdentifier))),
+              environmentIdentifier
+                  + " text is not present in handover component. Found only "
+                  + webDriverHelpers.getTextFromPresentWebElement(HANDOVER_SIDE_CARD));
+          softly.assertAll();
+        });
+    When(
+        "I click on share button",
+        () -> webDriverHelpers.clickOnWebElementBySelector(SHARE_SORMAS_2_SORMAS_BUTTON));
+    When(
+        "I check if share button is unavailable",
+        () -> {
+          Assert.assertFalse(
+              webDriverHelpers.isElementPresent(SHARE_SORMAS_2_SORMAS_BUTTON),
+              "Share button is displayed");
+        });
+    When(
+        "I select organization to share with {string}",
+        (String organization) -> {
+          String survnetOrganization = runningConfiguration.getSurvnetResponsible(organization);
+          webDriverHelpers.selectFromCombobox(
+              SHARE_ORGANIZATION_POPUP_COMBOBOX, survnetOrganization);
+        });
+    When(
+        "I click to hand over the ownership in Share popup",
+        () -> webDriverHelpers.clickOnWebElementBySelector(HAND_THE_OWNERSHIP_CHECKBOX));
     When(
         "I check if sample card has {string} information",
         (String information) -> {

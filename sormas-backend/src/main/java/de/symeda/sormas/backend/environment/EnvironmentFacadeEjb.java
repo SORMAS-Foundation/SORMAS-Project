@@ -371,11 +371,6 @@ public class EnvironmentFacadeEjb
 	}
 
 	@Override
-	public List<EnvironmentDto> getAllEnvironmentsAfter(Date date) {
-		return service.getAllAfter(date).stream().map(r -> toDto(r)).collect(Collectors.toList());
-	}
-
-	@Override
 	public List<String> getArchivedUuidsSince(Date since) {
 		return null;
 	}
