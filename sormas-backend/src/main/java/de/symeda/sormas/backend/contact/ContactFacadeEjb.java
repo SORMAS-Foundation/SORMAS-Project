@@ -650,13 +650,15 @@ public class ContactFacadeEjb
 	@Override
 	@RightsAllowed(UserRight._CONTACT_ARCHIVE)
 	public List<ProcessedEntity> archive(List<String> entityUuids) {
-		return super.archive(entityUuids);
+		super.archive(entityUuids);
+		return super.buildProcessedEntities(entityUuids, true);
 	}
 
 	@Override
 	@RightsAllowed(UserRight._CONTACT_ARCHIVE)
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
-		return super.dearchive(entityUuids, dearchiveReason);
+		super.dearchive(entityUuids, dearchiveReason);
+		return super.buildProcessedEntities(entityUuids, false);
 	}
 
 	@Override

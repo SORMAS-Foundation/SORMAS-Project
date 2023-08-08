@@ -60,6 +60,8 @@ public class BulkOperationHandler<T extends HasUuid> {
 	private final String countEntriesNotProcessedExternalReasonProperty;
 	private final String countEntriesNotProcessedSormasToSormasReasonProperty;
 	private final String countEntriesNotProcessedAccessDeniedReasonProperty;
+
+	//TODO: check this field, if is not used delete
 	private final String someEntriesProcessedMessageProperty;
 	private final String noEligibleEntityMessageProperty;
 	private final String infoBulkProcessFinishedWithSkipsProperty;

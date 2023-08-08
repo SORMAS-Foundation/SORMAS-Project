@@ -217,6 +217,11 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	protected abstract CoreEntityType getCoreEntityType();
 
 	@DenyAll
+	public List<ProcessedEntity> buildProcessedEntities(List<String> entityUuids, boolean archiving) {
+		return service.buildProcessedEntities(entityUuids, archiving);
+	}
+
+	@DenyAll
 	public void archive(String entityUuid, Date endOfProcessingDate) {
 		service.archive(entityUuid, endOfProcessingDate);
 	}

@@ -164,7 +164,7 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends Quer
 				em.createQuery(cu).executeUpdate();
 			}));
 
-		return buildProcessedEntities(entityUuids, true);
+		return new ArrayList<>();
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
@@ -184,7 +184,7 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends Quer
 			em.createQuery(cu).executeUpdate();
 		});
 
-		return buildProcessedEntities(entityUuids, false);
+		return new ArrayList<>();
 	}
 
 	public List<ProcessedEntity> buildProcessedEntities(List<String> entityUuids, boolean archiving) {

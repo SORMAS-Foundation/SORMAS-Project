@@ -42,5 +42,7 @@ public interface CoreFacade<DTO extends EntityDto, INDEX_DTO extends Serializabl
 
 	List<String> getArchivedUuidsSince(Date since);
 
+	List<ProcessedEntity> buildProcessedEntities(List<String> entityUuids, boolean archiving);
+
 	Date calculateEndOfProcessingDate(String entityUuids);
 }
