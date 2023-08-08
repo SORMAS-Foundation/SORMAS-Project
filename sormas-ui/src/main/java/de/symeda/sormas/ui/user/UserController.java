@@ -378,8 +378,8 @@ public class UserController {
 						null,
 						Strings.messageSomeUsersEnabled,
 						null,
-						null,
-						null).doBulkOperation(batch -> {
+						Strings.infoBulkProcessFinishedWithSkips,
+						Strings.infoBulkProcessFinishedWithoutSuccess).doBulkOperation(batch -> {
 
 							List<String> uuids = batch.stream().map(UserDto::getUuid).collect(Collectors.toList());
 							return FacadeProvider.getUserFacade().enableUsers(uuids);
@@ -426,8 +426,8 @@ public class UserController {
 						null,
 						Strings.messageSomeUsersDisabled,
 						null,
-						null,
-						null).doBulkOperation(batch -> {
+						Strings.infoBulkProcessFinishedWithSkips,
+						Strings.infoBulkProcessFinishedWithoutSuccess).doBulkOperation(batch -> {
 
 							List<String> uuids = batch.stream().map(UserDto::getUuid).collect(Collectors.toList());
 							return FacadeProvider.getUserFacade().disableUsers(uuids);
