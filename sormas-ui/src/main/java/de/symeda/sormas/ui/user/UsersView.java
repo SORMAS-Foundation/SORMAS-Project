@@ -256,11 +256,11 @@ public class UsersView extends AbstractUserView {
 					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionEnable), VaadinIcons.CHECK_SQUARE_O, selectedItem -> {
 						ControllerProvider.getUserController()
 						.enableAllSelectedItems(grid.asMultiSelect().getSelectedItems(), grid);
-					}, true),
+				}, UserProvider.getCurrent().hasUserRight(UserRight.USER_EDIT)),
 					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDisable), VaadinIcons.THIN_SQUARE, selectedItem -> {
 						ControllerProvider.getUserController()
 						.disableAllSelectedItems(grid.asMultiSelect().getSelectedItems(), grid);
-					}, true));
+				}, UserProvider.getCurrent().hasUserRight(UserRight.USER_EDIT)));
 
 			bulkOperationsDropdown.setVisible(ViewModelProviders.of(UsersView.class).get(ViewConfiguration.class).isInEagerMode());
 			actionButtonsLayout.addComponent(bulkOperationsDropdown);

@@ -61,6 +61,8 @@ import de.symeda.sormas.api.InfrastructureDataReferenceDto;
 import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -982,32 +984,36 @@ public class UserFacadeEjb implements UserFacade {
 
 	@Override
 	@RightsAllowed(UserRight._USER_EDIT)
-	public void enableUsers(List<String> userUuids) {
-		updateActiveState(userUuids, true);
+	public List<ProcessedEntity> enableUsers(List<String> userUuids) {
+		return updateActiveState(userUuids, true);
 	}
 
 	@Override
 	@RightsAllowed(UserRight._USER_EDIT)
-	public void disableUsers(List<String> userUuids) {
-		updateActiveState(userUuids, false);
+	public List<ProcessedEntity> disableUsers(List<String> userUuids) {
+		return updateActiveState(userUuids, false);
 	}
 
-	private void updateActiveState(List<String> userUuids, boolean active) {
+	private List<ProcessedEntity> updateActiveState(List<String> userUuids, boolean active) {
+		List<ProcessedEntity> processedEntities = new ArrayList<>();
 
 		List<User> users = userService.getByUuids(userUuids);
 		for (User user : users) {
-			User oldUser;
+			User oldUser = new User();
 			try {
 				oldUser = (User) BeanUtils.cloneBean(user);
 			} catch (Exception e) {
-				throw new IllegalArgumentException("Invalid bean access", e);
+				processedEntities.add(new ProcessedEntity(user.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
 			}
 
 			user.setActive(active);
 			userService.ensurePersisted(user);
 
 			userUpdateEvent.fire(new UserUpdateEvent(oldUser, user));
+			processedEntities.add(new ProcessedEntity(user.getUuid(), ProcessedEntityStatus.SUCCESS));
 		}
+
+		return processedEntities;
 	}
 
 	@Override

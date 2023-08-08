@@ -29,6 +29,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.InfrastructureDataReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -130,9 +131,9 @@ public interface UserFacade {
 
 	List<UserDto> getUsersWithDefaultPassword();
 
-	void enableUsers(List<String> userUuids);
+	List<ProcessedEntity> enableUsers(List<String> userUuids);
 
-	void disableUsers(List<String> userUuids);
+	List<ProcessedEntity> disableUsers(List<String> userUuids);
 
 	List<UserReferenceDto> getUsersHavingCaseInJurisdiction(CaseReferenceDto caseReferenceDto);
 

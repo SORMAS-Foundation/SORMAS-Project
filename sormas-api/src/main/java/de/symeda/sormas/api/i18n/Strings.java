@@ -747,6 +747,8 @@ public interface Strings {
 	String headingSomeImmunizationsNotRestored = "headingSomeImmunizationsNotRestored";
 	String headingSomeSamplesNotRestored = "headingSomeSamplesNotRestored";
 	String headingSomeTravelEntriesNotRestored = "headingSomeTravelEntriesNotRestored";
+	String headingSomeUsersNotDisabled = "headingSomeUsersNotDisabled";
+	String headingSomeUsersNotEnabled = "headingSomeUsersNotEnabled";
 	String headingSormasToSormasCanAcceptContactsWithoutCase = "headingSormasToSormasCanAcceptContactsWithoutCase";
 	String headingSormasToSormasCantShareContactWithoutCase = "headingSormasToSormasCantShareContactWithoutCase";
 	String headingSormasToSormasDuplicateDetection = "headingSormasToSormasDuplicateDetection";
@@ -779,6 +781,8 @@ public interface Strings {
 	String headingUploadSuccess = "headingUploadSuccess";
 	String headingUserData = "headingUserData";
 	String headingUserSettings = "headingUserSettings";
+	String headingUsersNotDisabled = "headingUsersNotDisabled";
+	String headingUsersNotEnabled = "headingUsersNotEnabled";
 	String headingVaccination = "headingVaccination";
 	String headingViewAdditionalTest = "headingViewAdditionalTest";
 	String headingViewClinicalVisit = "headingViewClinicalVisit";
@@ -1152,6 +1156,8 @@ public interface Strings {
 	String messageCountTravelEntriesNotDeleted = "messageCountTravelEntriesNotDeleted";
 	String messageCountTravelEntriesNotDeletedAccessDeniedReason = "messageCountTravelEntriesNotDeletedAccessDeniedReason";
 	String messageCountTravelEntriesNotRestored = "messageCountTravelEntriesNotRestored";
+	String messageCountUsersNotDisabled = "messageCountUsersNotDisabled";
+	String messageCountUsersNotEnabled = "messageCountUsersNotEnabled";
 	String messageCountVisitsNotDeleted = "messageCountVisitsNotDeleted";
 	String messageCountVisitsNotDeletedAccessDeniedReason = "messageCountVisitsNotDeletedAccessDeniedReason";
 	String messageCreateCollectionTask = "messageCreateCollectionTask";
