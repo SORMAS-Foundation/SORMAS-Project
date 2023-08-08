@@ -12505,4 +12505,20 @@ DO $$
 $$ LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment) VALUES (519, 'Add the ''See personal data inside jurisdiction'' user right to the default Environmental Surveillance User #12284');
+
+-- 2023-08-08 Add missing fields to external message entity #12390
+ALTER TABLE externalmessage ADD COLUMN casereportdate timestamp;
+ALTER TABLE externalmessage ADD COLUMN personexternalid text;
+ALTER TABLE externalmessage ADD COLUMN personnationalhealthid text;
+ALTER TABLE externalmessage ADD COLUMN personphonenumbertype varchar(255);
+ALTER TABLE externalmessage ADD COLUMN personcountry_id bigint;
+ALTER TABLE externalmessage_history ADD COLUMN casereportdate timestamp;
+ALTER TABLE externalmessage_history ADD COLUMN personexternalid text;
+ALTER TABLE externalmessage_history ADD COLUMN personnationalhealthid text;
+ALTER TABLE externalmessage_history ADD COLUMN personphonenumbertype varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN personcountry_id bigint;
+ALTER TABLE externalmessage ADD CONSTRAINT fk_externalmessage_personcountry_id FOREIGN KEY (personcountry_id) REFERENCES country(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (520, 'Add missing fields to external message entity #12390');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
