@@ -1124,6 +1124,8 @@ public interface Strings {
 	String messageCountContactsNotDeletedAccessDeniedReason = "messageCountContactsNotDeletedAccessDeniedReason";
 	String messageCountContactsNotDeletedSormasToSormasReason = "messageCountContactsNotDeletedSormasToSormasReason";
 	String messageCountContactsNotRestored = "messageCountContactsNotRestored";
+	String messageCountEntitiesNotArchivedAccessDeniedReason = "messageCountEntitiesNotArchivedAccessDeniedReason";
+	String messageCountEntitiesNotDearchivedAccessDeniedReason = "messageCountEntitiesNotDearchivedAccessDeniedReason";
 	String messageCountEventParticipantsNotDeleted = "messageCountEventParticipantsNotDeleted";
 	String messageCountEventParticipantsNotDeletedAccessDeniedReason = "messageCountEventParticipantsNotDeletedAccessDeniedReason";
 	String messageCountEventParticipantsNotRestored = "messageCountEventParticipantsNotRestored";
@@ -1281,8 +1283,6 @@ public interface Strings {
 	String messageNoCsvFile = "messageNoCsvFile";
 	String messageNoDocumentTemplateUploadFile = "messageNoDocumentTemplateUploadFile";
 	String messageNoDocumentUploadFile = "messageNoDocumentUploadFile";
-	String messageNoEligibleEntityForArchiving = "messageNoEligibleEntityForArchiving";
-	String messageNoEligibleEntityForDearchiving = "messageNoEligibleEntityForDearchiving";
 	String messageNoEligibleEventForDeletionSelected = "messageNoEligibleEventForDeletionSelected";
 	String messageNoEndDate = "messageNoEndDate";
 	String messageNoEnvironmentsSelected = "messageNoEnvironmentsSelected";

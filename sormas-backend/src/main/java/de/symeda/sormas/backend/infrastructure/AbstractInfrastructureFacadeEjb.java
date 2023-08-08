@@ -222,14 +222,10 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 		List<ProcessedEntity> processedEntities = new ArrayList<>();
 		entityUuids.forEach(entityUuid -> {
 			if (!isUsedInOtherInfrastructureData(Collections.singletonList(entityUuid))) {
-				try {
 					archive(entityUuid);
 					processedEntities.add(new ProcessedEntity(entityUuid, ProcessedEntityStatus.SUCCESS));
-				} catch (AccessDeniedException e) {
-					processedEntities.add(new ProcessedEntity(entityUuid, ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
-				}
 			} else {
-				processedEntities.add(new ProcessedEntity(entityUuid, ProcessedEntityStatus.NOT_ELIGIBLE));
+				processedEntities.add(new ProcessedEntity(entityUuid, ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
 			}
 		});
 		return processedEntities;
@@ -240,14 +236,10 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 		List<ProcessedEntity> processedEntities = new ArrayList<>();
 		entityUuids.forEach(entityUuid -> {
 			if (!hasArchivedParentInfrastructure(Arrays.asList(entityUuid))) {
-				try {
 					dearchive(entityUuid);
 					processedEntities.add(new ProcessedEntity(entityUuid, ProcessedEntityStatus.SUCCESS));
-				} catch (AccessDeniedException e) {
-					processedEntities.add(new ProcessedEntity(entityUuid, ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
-				}
 			} else {
-				processedEntities.add(new ProcessedEntity(entityUuid, ProcessedEntityStatus.NOT_ELIGIBLE));
+				processedEntities.add(new ProcessedEntity(entityUuid, ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
 			}
 		});
 		return processedEntities;

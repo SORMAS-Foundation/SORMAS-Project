@@ -15,7 +15,9 @@ public enum ArchiveMessages {
 		Strings.headingNoCasesSelected,
 		Strings.messageNoCasesSelected,
 		Strings.messageCountCasesNotArchivedExternalReason,
-		Strings.messageCountCasesNotDearchivedExternalReason),
+		Strings.messageCountCasesNotDearchivedExternalReason,
+		null,
+		null),
 
 	CONTACT(Strings.headingArchiveContact,
 		Strings.confirmationArchiveContact,
@@ -27,6 +29,8 @@ public enum ArchiveMessages {
 		Strings.messageContactDearchived,
 		Strings.headingNoContactsSelected,
 		Strings.messageNoContactsSelected,
+		null,
+		null,
 		null,
 		null),
 
@@ -41,6 +45,8 @@ public enum ArchiveMessages {
 		Strings.headingNoEnvironmentSelected,
 		Strings.messageNoEnvironmentsSelected,
 		null,
+		null,
+		null,
 		null),
 
 	EVENT(Strings.headingArchiveEvent,
@@ -54,7 +60,9 @@ public enum ArchiveMessages {
 		Strings.headingNoEventsSelected,
 		Strings.messageNoEventsSelected,
 		Strings.messageCountEventsNotArchivedExternalReason,
-		Strings.messageCountEventsNotDearchivedExternalReason),
+		Strings.messageCountEventsNotDearchivedExternalReason,
+		null,
+		null),
 
 	EVENT_PARTICIPANT(Strings.headingArchiveEventParticipant,
 		Strings.confirmationArchiveEventParticipant,
@@ -67,6 +75,8 @@ public enum ArchiveMessages {
 		Strings.headingNoEventParticipantsSelected,
 		Strings.messageNoEventParticipantsSelected,
 		null,
+		null,
+		null,
 		null),
 
 	IMMUNIZATION(Strings.headingArchiveImmunization,
@@ -77,6 +87,8 @@ public enum ArchiveMessages {
 		Strings.confirmationDearchiveImmunization,
 		null,
 		Strings.messageImmunizationDearchived,
+		null,
+		null,
 		null,
 		null,
 		null,
@@ -93,6 +105,8 @@ public enum ArchiveMessages {
 		Strings.headingNoTravelEntriesSelected,
 		Strings.messageNoTravelEntriesSelected,
 		null,
+		null,
+		null,
 		null),
 
 	CAMPAIGN(Strings.headingArchiveCampaign,
@@ -103,6 +117,8 @@ public enum ArchiveMessages {
 		Strings.confirmationDearchiveCampaign,
 		null,
 		Strings.messageCampaignDearchived,
+		null,
+		null,
 		null,
 		null,
 		null,
@@ -119,6 +135,8 @@ public enum ArchiveMessages {
 		Strings.headingNoTasksSelected,
 		Strings.messageNoTasksSelected,
 		null,
+		null,
+		null,
 		null),
 
 	//TODO: add for infrastructure data for accessDenied message the I18nProperties.getString(dearchivingNotPossibleMessageProperty) label
@@ -133,7 +151,9 @@ public enum ArchiveMessages {
 		Strings.headingNoRowsSelected,
 		Strings.messageNoRowsSelected,
 		null,
-		null),
+		null,
+		Strings.messageCountEntitiesNotArchivedAccessDeniedReason,
+		Strings.messageCountEntitiesNotDearchivedAccessDeniedReason),
 
 	SUBCONTINENT(Strings.headingConfirmArchiving,
 		Strings.confirmationArchiveSubcontinent,
@@ -146,7 +166,9 @@ public enum ArchiveMessages {
 		Strings.headingNoRowsSelected,
 		Strings.messageNoRowsSelected,
 		null,
-		null),
+		null,
+		Strings.messageCountEntitiesNotArchivedAccessDeniedReason,
+		Strings.messageCountEntitiesNotDearchivedAccessDeniedReason),
 
 	AREA(Strings.headingConfirmArchiving,
 		Strings.confirmationArchiveArea,
@@ -159,7 +181,9 @@ public enum ArchiveMessages {
 		Strings.headingNoRowsSelected,
 		Strings.messageNoRowsSelected,
 		null,
-		null),
+		null,
+		Strings.messageCountEntitiesNotArchivedAccessDeniedReason,
+		Strings.messageCountEntitiesNotDearchivedAccessDeniedReason),
 
 	COUNTRY(Strings.headingConfirmArchiving,
 		Strings.confirmationArchiveCountry,
@@ -172,7 +196,9 @@ public enum ArchiveMessages {
 		Strings.headingNoRowsSelected,
 		Strings.messageNoRowsSelected,
 		null,
-		null),
+		null,
+		Strings.messageCountEntitiesNotArchivedAccessDeniedReason,
+		Strings.messageCountEntitiesNotDearchivedAccessDeniedReason),
 
 	REGION(Strings.headingConfirmArchiving,
 		Strings.confirmationArchiveRegion,
@@ -185,7 +211,9 @@ public enum ArchiveMessages {
 		Strings.headingNoRowsSelected,
 		Strings.messageNoRowsSelected,
 		null,
-		null),
+		null,
+		Strings.messageCountEntitiesNotArchivedAccessDeniedReason,
+		Strings.messageCountEntitiesNotDearchivedAccessDeniedReason),
 
 	DISTRICT(Strings.headingConfirmArchiving,
 		Strings.confirmationArchiveDistrict,
@@ -198,7 +226,9 @@ public enum ArchiveMessages {
 		Strings.headingNoRowsSelected,
 		Strings.messageNoRowsSelected,
 		null,
-		null),
+		null,
+		Strings.messageCountEntitiesNotArchivedAccessDeniedReason,
+		Strings.messageCountEntitiesNotDearchivedAccessDeniedReason),
 
 	COMMUNITY(Strings.headingConfirmArchiving,
 		Strings.confirmationArchiveCommunity,
@@ -211,7 +241,9 @@ public enum ArchiveMessages {
 		Strings.headingNoRowsSelected,
 		Strings.messageNoRowsSelected,
 		null,
-		null),
+		null,
+		Strings.messageCountEntitiesNotArchivedAccessDeniedReason,
+		Strings.messageCountEntitiesNotDearchivedAccessDeniedReason),
 
 	FACILITY(Strings.headingConfirmArchiving,
 		Strings.confirmationArchiveFacility,
@@ -224,7 +256,9 @@ public enum ArchiveMessages {
 		Strings.headingNoRowsSelected,
 		Strings.messageNoRowsSelected,
 		null,
-		null),
+		null,
+		Strings.messageCountEntitiesNotArchivedAccessDeniedReason,
+		Strings.messageCountEntitiesNotDearchivedAccessDeniedReason),
 
 	POINT_OF_ENTRY(Strings.headingConfirmArchiving,
 		Strings.confirmationArchivePointOfEntry,
@@ -237,7 +271,9 @@ public enum ArchiveMessages {
 		Strings.headingNoRowsSelected,
 		Strings.messageNoRowsSelected,
 		null,
-		null);
+		null,
+		Strings.messageCountEntitiesNotArchivedAccessDeniedReason,
+		Strings.messageCountEntitiesNotDearchivedAccessDeniedReason);
 
 	private final String headingArchiveEntity;
 	private final String confirmationArchiveEntity;
@@ -252,6 +288,8 @@ public enum ArchiveMessages {
 	private final String messageNoEntitySelected;
 	private final String messageCountEntitiesNotArchivedExternalReason;
 	private final String messageCountEntitiesNotDearchivedExternalReason;
+	private final String messageCountEntitiesNotArchivedAccessDeniedReason;
+	private final String messageCountEntitiesNotDearchivedAccessDeniedReason;
 
 	private final String headingConfirmationArchiving = Strings.headingConfirmArchiving;
 	private final String headingConfirmationDearchiving = Strings.headingConfirmDearchiving;
@@ -265,12 +303,6 @@ public enum ArchiveMessages {
 	private final String headingSomeEntitiesNotDearchived = Strings.headingSomeEntitiesNotDearchived;
 	private final String headingEntitiesNotDearchived = Strings.headingEntitiesNotDearchived;
 
-	//TODO: the next 2 messages could be added above to the infrastructure entities
-	private final String messageNoEligibleEntityForArchiving = Strings.messageNoEligibleEntityForArchiving;
-	private final String messageNoEligibleEntityForDearchiving = Strings.messageNoEligibleEntityForDearchiving;
-
-	//private final String messageCountEntitiesNotArchived;
-
 	ArchiveMessages(
 		String headingArchiveEntity,
 		String confirmationArchiveEntity,
@@ -283,7 +315,9 @@ public enum ArchiveMessages {
 		String headingNoEntitySelected,
 		String messageNoEntitySelected,
 		String messageCountEntitiesNotArchivedExternalReason,
-		String messageCountEntitiesNotDearchivedExternalReason) {
+		String messageCountEntitiesNotDearchivedExternalReason,
+		String messageCountEntitiesNotArchivedAccessDeniedReason,
+		String messageCountEntitiesNotDearchivedAccessDeniedReason) {
 		this.headingArchiveEntity = headingArchiveEntity;
 		this.confirmationArchiveEntity = confirmationArchiveEntity;
 		this.confirmationArchiveEntities = confirmationArchiveEntities;
@@ -296,6 +330,8 @@ public enum ArchiveMessages {
 		this.messageNoEntitySelected = messageNoEntitySelected;
 		this.messageCountEntitiesNotArchivedExternalReason = messageCountEntitiesNotArchivedExternalReason;
 		this.messageCountEntitiesNotDearchivedExternalReason = messageCountEntitiesNotDearchivedExternalReason;
+		this.messageCountEntitiesNotArchivedAccessDeniedReason = messageCountEntitiesNotArchivedAccessDeniedReason;
+		this.messageCountEntitiesNotDearchivedAccessDeniedReason = messageCountEntitiesNotDearchivedAccessDeniedReason;
 	}
 
 	public String getHeadingArchiveEntity() {
@@ -346,6 +382,14 @@ public enum ArchiveMessages {
 		return messageCountEntitiesNotDearchivedExternalReason;
 	}
 
+	public String getMessageCountEntitiesNotArchivedAccessDeniedReason() {
+		return messageCountEntitiesNotArchivedAccessDeniedReason;
+	}
+
+	public String getMessageCountEntitiesNotDearchivedAccessDeniedReason() {
+		return messageCountEntitiesNotDearchivedAccessDeniedReason;
+	}
+
 	public String getHeadingConfirmationArchiving() {
 		return headingConfirmationArchiving;
 	}
@@ -386,11 +430,4 @@ public enum ArchiveMessages {
 		return headingEntitiesNotDearchived;
 	}
 
-	public String getMessageNoEligibleEntityForArchiving() {
-		return messageNoEligibleEntityForArchiving;
-	}
-
-	public String getMessageNoEligibleEntityForDearchiving() {
-		return messageNoEligibleEntityForDearchiving;
-	}
 }
