@@ -124,8 +124,6 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	List<CaseDataDto> getAllCasesOfPerson(String personUuid);
 
-	List<String> deleteCases(List<String> caseUuids, DeletionDetails deletionDetails);
-
 	void deleteWithContacts(String caseUuid, DeletionDetails deletionDetails);
 
 	Date getOldestCaseOnsetDate();
@@ -182,6 +180,7 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 		List<String> caseUuidList,
 		@Valid CaseBulkEditData updatedCaseBulkEditData,
 		boolean diseaseChange,
+		boolean diseaseVariantChange,
 		boolean classificationChange,
 		boolean investigationStatusChange,
 		boolean outcomeChange,
@@ -191,6 +190,7 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 		List<String> caseUuidList,
 		@Valid CaseBulkEditData updatedCaseBulkEditData,
 		boolean diseaseChange,
+		boolean diseaseVariantChange,
 		boolean classificationChange,
 		boolean investigationStatusChange,
 		boolean outcomeChange,

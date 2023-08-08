@@ -53,6 +53,8 @@ public class EditCasePage {
       By.xpath(
           "//div[@location='samples']//div[@class='v-button v-widget link v-button-link compact v-button-compact caption-overflow-label v-button-caption-overflow-label']");
   public static final By REPORT_DATE_INPUT = By.cssSelector("#reportDate input");
+  public static final By PREVIOUS_INFECTION_DATE_INPUT =
+      By.cssSelector("#previousInfectionDate input");
   public static final By CASE_CLASSIFICATION_COMBOBOX = By.cssSelector("#caseClassification div");
   public static final By CASE_CLASSIFICATION_SPAN =
       By.cssSelector("#caseClassification span input:checked+label");
@@ -364,13 +366,6 @@ public class EditCasePage {
       By.xpath("//div[@class='v-window-outerheader']");
   public static final By PLACE_OF_STAY_REGION_INPUT = By.cssSelector("#region input");
   public static final By PLACE_OF_STAY_DISTRICT_INPUT = By.cssSelector("#district input");
-
-  public static final By SHARE_SORMAS_2_SORMAS_BUTTON = By.cssSelector("#sormasToSormasShare");
-  public static final By SHARE_ORGANIZATION_POPUP_COMBOBOX =
-      By.cssSelector(".popupContent #organization div");
-  public static final By HAND_THE_OWNERSHIP_CHECKBOX =
-      By.cssSelector(".popupContent #handOverOwnership label");
-
   public static final By SAHRE_SAMPLES_CHECKBOX =
       By.cssSelector(".popupContent #withSamples label");
   public static final By SHARE_IMMUNIZATION_CHECKBOX =
@@ -392,6 +387,9 @@ public class EditCasePage {
   public static final By ERROR_REVOKE_DESCRIPTION_REQUEST_PROCESSED =
       By.xpath(
           "//*[contains(text(),'Die Freigabeanfrage konnte nicht gefunden werden. Sie wurde entweder vom Quellsystem zur\u00FCckgezogen oder von jemand anderem abgelehnt. Bitte laden Sie die Seite neu, um die neuesten \u00C4nderungen zu sehen.')]");
+  public static final By REPORTING_TOOLS_FOR_SURVNET_USER =
+      By.xpath(
+          "//div[contains(@location,'externalSurvToolGateway')]//div[contains(text(), 'Surv NETAUTO')]");
 
   public static By getPreExistingConditionCombobox_DE(String id) {
     return By.xpath(
@@ -405,6 +403,10 @@ public class EditCasePage {
         String.format(
             "//div[@id='%s']//input[@value='on' and @checked]/following-sibling::label[contains(text(),'%s')]",
             id, value));
+  }
+
+  public static By getPreExistingConditionComboboxToSelectValue_DE(String disease) {
+    return By.cssSelector(String.format("#%s [class='v-checkbox v-select-option']", disease));
   }
 
   public static By getEditTaskButtonByNumber(Integer number) {
@@ -445,4 +447,6 @@ public class EditCasePage {
           "//div[contains(@class, 'popupContent')]//div[contains(@class, 'v-window-outerheader')]//div[contains(text(), 'Meldung')]");
   public static final By WINDOW_CLOSE_BUTTON =
       By.xpath("//div[contains(@class, 'v-window-closebox')]");
+  public static final By NOSOCOMIAL_OUTBRAKE_LABEL = By.cssSelector("#nosocomialOutbreak label");
+  public static final By INFECTION_SETTINGS_INPUT = By.cssSelector("#infectionSetting input");
 }

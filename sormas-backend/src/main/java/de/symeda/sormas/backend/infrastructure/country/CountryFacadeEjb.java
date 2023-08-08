@@ -309,6 +309,12 @@ public class CountryFacadeEjb
 	}
 
 	@Override
+	public CountryReferenceDto getCountryByIsoCode(String isoCode) {
+		Country country = service.getByIsoCode(isoCode, false).orElse(null);
+		return country != null ? new CountryReferenceDto(country.getUuid(), isoCode) : null;
+	}
+
+	@Override
 	public boolean hasArchivedParentInfrastructure(Collection<String> countryUuids) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

@@ -25,7 +25,7 @@ public class EnvironmentResource extends EntityDtoResource<EnvironmentDto> {
 	@GET
 	@Path("/all/{since}")
 	public List<EnvironmentDto> getAllEnvironments(@PathParam("since") long since) {
-		return FacadeProvider.getEnvironmentFacade().getAllEnvironmentsAfter(new Date(since));
+		return FacadeProvider.getEnvironmentFacade().getAllAfter(new Date(since));
 	}
 
 	@POST
@@ -44,6 +44,12 @@ public class EnvironmentResource extends EntityDtoResource<EnvironmentDto> {
 	@Path("/{uuid}")
 	public EnvironmentDto getByUuid(@PathParam("uuid") String uuid) {
 		return FacadeProvider.getEnvironmentFacade().getByUuid(uuid);
+	}
+
+	@GET
+	@Path("/obsolete/{since}")
+	public List<String> getObsoleteUuidsSince(@PathParam("since") long since) {
+		return FacadeProvider.getEnvironmentFacade().getObsoleteUuidsSince(new Date(since));
 	}
 
 	@Override

@@ -56,6 +56,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.contact.AbstractContactGrid;
 import de.symeda.sormas.ui.contact.ContactGrid;
 import de.symeda.sormas.ui.contact.importer.CaseContactsImportLayout;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -254,15 +255,15 @@ public class CaseContactsView extends AbstractCaseView {
 				}),
 				new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkCancelFollowUp), VaadinIcons.CLOSE, selectedItem -> {
 					ControllerProvider.getContactController()
-						.cancelFollowUpOfAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
+						.cancelFollowUpOfAllSelectedItems(grid.asMultiSelect().getSelectedItems(), getCaseRef().getUuid(), grid);
 				}),
 				new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkLostToFollowUp), VaadinIcons.UNLINK, selectedItem -> {
 					ControllerProvider.getContactController()
-						.setAllSelectedItemsToLostToFollowUp(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
+						.setAllSelectedItemsToLostToFollowUp(grid.asMultiSelect().getSelectedItems(), getCaseRef().getUuid(), grid);
 				}),
 				new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
 					ControllerProvider.getContactController()
-						.deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
+						.deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), (AbstractContactGrid<?>) grid);
 				}));
 
 			statusFilterLayout.addComponent(bulkOperationsDropdown);

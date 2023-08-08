@@ -22,6 +22,7 @@ import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.time.LocalDate;
 import org.sormas.e2etests.entities.pojo.web.Vaccination;
+import org.sormas.e2etests.enums.immunizations.VaccineNameValues;
 
 public class VaccinationService {
   private final Faker faker;
@@ -36,6 +37,20 @@ public class VaccinationService {
         .vaccinationDate(LocalDate.now().minusDays(1))
         .vaccineName("COVID-19 Impfstoff Moderna (mRNA-Impfstoff)")
         .vaccineManufacturer("Moderna")
+        .vaccineType(faker.medical().medicineName())
+        .vaccinationInfoSource("Impfpass")
+        .vaccineDose(String.valueOf(faker.number().numberBetween(0, 3)))
+        .inn(String.valueOf(faker.idNumber()))
+        .uniiCode(String.valueOf(faker.idNumber()))
+        .batchNumber(String.valueOf(faker.idNumber()))
+        .atcCode(String.valueOf(faker.idNumber()))
+        .build();
+  }
+
+  public Vaccination buildGeneratedVaccinationSurvnetDE() {
+    return Vaccination.builder()
+        .vaccinationDate(LocalDate.now().minusDays(1))
+        .vaccineName(VaccineNameValues.getRandomVaccineName())
         .vaccineType(faker.medical().medicineName())
         .vaccinationInfoSource("Impfpass")
         .vaccineDose(String.valueOf(faker.number().numberBetween(0, 3)))

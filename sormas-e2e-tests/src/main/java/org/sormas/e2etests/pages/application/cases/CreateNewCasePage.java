@@ -53,6 +53,8 @@ public class CreateNewCasePage {
   public static final By EPID_NUMBER_INPUT = By.cssSelector(".popupContent #epidNumber");
   public static final By PLACE_OF_STAY =
       By.cssSelector(".popupContent div[location='facilityOrHomeLoc'] span.v-select-option label");
+  public static final By REINFECTION_SPAN =
+      By.cssSelector(".popupContent div[location='reInfection'] span.v-select-option label");
   public static final By PLACE_DESCRIPTION_INPUT =
       By.cssSelector(".popupContent #healthFacilityDetails");
   public static final By DATE_OF_BIRTH_YEAR_COMBOBOX =
@@ -141,4 +143,5 @@ public class CreateNewCasePage {
       By.xpath("//label[text()='W\u00E4hlen Sie eine passende Person']");
   public static final By SELECT_EXISTING_CASE_DE =
       By.xpath("//label[text()='Einen vorhandenen Fall w\u00E4hlen']");
+  public static final By CATEGORY_SAVED_POPUP = By.cssSelector(".v-Notification-caption");
 }

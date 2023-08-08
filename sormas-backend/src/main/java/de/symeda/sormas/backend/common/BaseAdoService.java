@@ -376,7 +376,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		return entityGraph;
 	}
 
-	public List<ADO> getByUuids(List<String> uuids) {
+	public List<ADO> getByUuids(Collection<String> uuids) {
 
 		if (uuids == null || uuids.isEmpty()) {
 			return null;

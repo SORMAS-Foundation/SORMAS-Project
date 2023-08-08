@@ -550,7 +550,7 @@ public class EventsView extends AbstractView {
 								I18nProperties.getCaption(Captions.bulkDelete),
 								VaadinIcons.TRASH,
 								mi -> grid.bulkActionHandler(
-									items -> ControllerProvider.getEventController().deleteAllSelectedItems(items, () -> navigateTo(eventCriteria)),
+									items -> ControllerProvider.getEventController().deleteAllSelectedItems(items, (EventGrid) grid),
 									true)));
 					} else {
 						bulkActions.add(
@@ -558,7 +558,7 @@ public class EventsView extends AbstractView {
 								I18nProperties.getCaption(Captions.bulkRestore),
 								VaadinIcons.ARROW_BACKWARD,
 								mi -> grid.bulkActionHandler(
-									items -> ControllerProvider.getEventController().restoreSelectedEvents(items, () -> navigateTo(eventCriteria)),
+									items -> ControllerProvider.getEventController().restoreSelectedEvents(items, (EventGrid) grid),
 									true)));
 					}
 				}
@@ -587,8 +587,8 @@ public class EventsView extends AbstractView {
 							I18nProperties.getCaption(Captions.actionGroupEvent),
 							VaadinIcons.FILE_TREE,
 							mi -> grid.bulkActionHandler(
-								items -> ControllerProvider.getEventGroupController()
-									.linkAllToGroup(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(eventCriteria)))));
+								items -> ControllerProvider.getEventController()
+									.linkAllToGroup(eventGrid.asMultiSelect().getSelectedItems(), eventGrid))));
 				}
 				bulkActions.add(
 					new MenuBarHelper.MenuBarItem(
@@ -596,9 +596,7 @@ public class EventsView extends AbstractView {
 						VaadinIcons.SHARE,
 						mi -> grid.bulkActionHandler(
 							items -> ControllerProvider.getEventController()
-								.sendAllSelectedToExternalSurveillanceTool(
-									eventGrid.asMultiSelect().getSelectedItems(),
-									() -> navigateTo(eventCriteria))),
+								.sendAllSelectedToExternalSurveillanceTool(eventGrid.asMultiSelect().getSelectedItems(), eventGrid)),
 						FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()));
 
 				if (isDocGenerationAllowed()) {

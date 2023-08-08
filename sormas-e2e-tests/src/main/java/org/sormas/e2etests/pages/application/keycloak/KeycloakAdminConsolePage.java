@@ -24,11 +24,11 @@ public class KeycloakAdminConsolePage {
   public static final By USER_ID =
       By.cssSelector("#options-menu-top-pagination > div.pf-c-options-menu > div > span > b");
   public static final By RESULT_IN_TABLE = By.cssSelector("table tbody tr");
-  public static final By ITEMS_PER_PAGE_BUTTON = By.cssSelector("#options-menu-bottom-toggle");
+  public static final By ITEMS_PER_PAGE_BUTTON = By.id("users:title-top-toggle");
   public static final By ONE_HUNDRED_PER_PAGE_BUTTON =
       By.xpath("//button[contains(text(), '100')]");
   public static final By NEXT_PAGE_BUTTON =
-      By.cssSelector("#options-menu-top-pagination > nav > div:nth-child(2) > button");
+      By.xpath("//*[@id='users:title-top-pagination']/nav/div[2]/button");
   public static final By USER_ENABLE_DISABLE_SWITCH = By.cssSelector("#userEnabled");
   public static final By USER_DISABLED = By.xpath("//span[contains(text(), 'Disabled')]");
   public static final By SEARCH_USER_INPUT = By.xpath("//input[@placeholder='Search user']");

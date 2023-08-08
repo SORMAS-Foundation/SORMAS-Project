@@ -1,23 +1,22 @@
 package de.symeda.sormas.app.backend.environment;
 
-import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
-import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_SMALL;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_TEXT;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
 import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
@@ -26,200 +25,207 @@ import de.symeda.sormas.api.environment.EnvironmentInfrastructureDetails;
 import de.symeda.sormas.api.environment.EnvironmentMedia;
 import de.symeda.sormas.api.environment.WaterType;
 import de.symeda.sormas.api.environment.WaterUse;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.user.User;
 
+@Entity(name = Environment.TABLE_NAME)
+@DatabaseTable(tableName = Environment.TABLE_NAME)
 public class Environment extends AbstractDomainObject {
 
-    public static final String TABLE_NAME = "environments";
-    public static final String I18N_PREFIX = "Environment";
+	public static final String TABLE_NAME = "environments";
+	public static final String I18N_PREFIX = "Environment";
 
-    public static final String REPORT_DATE = "reportDate";
-    public static final String REPORTING_USER = "reportingUser";
-    public static final String ENVIRONMENT_NAME = "environmentName";
-    public static final String DESCRIPTION = "description";
-    public static final String EXTERNAL_ID = "externalId";
-    public static final String RESPONSIBLE_USER = "responsibleUser";
-    public static final String INVESTIGATION_STATUS = "investigationStatus";
-    public static final String ENVIRONMENT_MEDIA = "environmentMedia";
-    public static final String WATER_TYPE = "waterType";
-    public static final String OTHER_WATER_TYPE = "otherWaterType";
-    public static final String INFRASTUCTURE_DETAILS = "infrastructureDetails";
-    public static final String OTHER_INFRASTRUCTUIRE_DETAILS = "otherInfrastructureDetails";
-    public static final String WATER_DRINKING_HOUSEHOLD = "waterUseDrinkingHousehold";
-    public static final String WATER_USE = "waterUse";
-    public static final String OTHER_WATER_USE = "otherWaterUse";
-    public static final String LOCATION = "location";
+	public static final String REPORT_DATE = "reportDate";
+	public static final String REPORTING_USER = "reportingUser";
+	public static final String ENVIRONMENT_NAME = "environmentName";
+	public static final String DESCRIPTION = "description";
+	public static final String EXTERNAL_ID = "externalId";
+	public static final String RESPONSIBLE_USER = "responsibleUser";
+	public static final String INVESTIGATION_STATUS = "investigationStatus";
+	public static final String ENVIRONMENT_MEDIA = "environmentMedia";
+	public static final String WATER_TYPE = "waterType";
+	public static final String OTHER_WATER_TYPE = "otherWaterType";
+	public static final String INFRASTUCTURE_DETAILS = "infrastructureDetails";
+	public static final String OTHER_INFRASTRUCTUIRE_DETAILS = "otherInfrastructureDetails";
+	public static final String WATER_DRINKING_HOUSEHOLD = "waterUseDrinkingHousehold";
+	public static final String WATER_USE = "wateruse";
+	public static final String OTHER_WATER_USE = "otherWaterUse";
+	public static final String LOCATION = "location";
 
-    @DatabaseField(dataType = DataType.DATE_LONG)
-    private Date reportDate;
-    @DatabaseField(foreign = true, foreignAutoRefresh = true, columnName = "reportingUser_id")
-    private User reportingUser;
-    @Column(length = CHARACTER_LIMIT_TEXT)
-    private String environmentName;
-    @Column(length = CHARACTER_LIMIT_TEXT)
-    private String description;
-    @Column(length = CHARACTER_LIMIT_DEFAULT)
-    private String externalId;
-    @DatabaseField(foreign = true, foreignAutoRefresh = true, columnName = "responsibleUser_id")
-    private User responsibleUser;
-    @Enumerated(EnumType.STRING)
-    private InvestigationStatus investigationStatus;
-    @Enumerated(EnumType.STRING)
-    private EnvironmentMedia environmentMedia;
-    @Enumerated(EnumType.STRING)
-    private WaterType waterType;
-    @Column(length = CHARACTER_LIMIT_TEXT)
-    private String otherWaterType;
-    @Enumerated(EnumType.STRING)
-    private EnvironmentInfrastructureDetails infrastructureDetails;
-    @Column(length = CHARACTER_LIMIT_TEXT)
-    private String otherInfrastructureDetails;
-    @Column(name = "waterUse", length = 1024)
-    private String waterUseJson;
-    private Map<WaterUse, Boolean> waterUse;
-    @Column(length = CHARACTER_LIMIT_TEXT)
-    private String otherWaterUse;
-    @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 2)
-    private Location location;
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date reportDate;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, columnName = "reportingUser_id")
+	private User reportingUser;
+	@Column(length = CHARACTER_LIMIT_TEXT)
+	private String environmentName;
+	@Column(length = CHARACTER_LIMIT_TEXT)
+	private String description;
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	private String externalId;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, columnName = "responsibleUser_id")
+	private User responsibleUser;
+	@Enumerated(EnumType.STRING)
+	private InvestigationStatus investigationStatus;
+	@Enumerated(EnumType.STRING)
+	private EnvironmentMedia environmentMedia;
+	@Enumerated(EnumType.STRING)
+	private WaterType waterType;
+	@Column(length = CHARACTER_LIMIT_TEXT)
+	private String otherWaterType;
+	@Enumerated(EnumType.STRING)
+	private EnvironmentInfrastructureDetails infrastructureDetails;
+	@Column(length = CHARACTER_LIMIT_TEXT)
+	private String otherInfrastructureDetails;
+	@Column(name = "waterUse", length = 1024)
+	private String waterUseJson;
+	private Map<WaterUse, Boolean> wateruse;
+	@Column(length = CHARACTER_LIMIT_TEXT)
+	private String otherWaterUse;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 2)
+	private Location location;
 
-    public Date getReportDate() {
-        return reportDate;
-    }
+	@Override
+	public String getI18nPrefix() {
+		return I18N_PREFIX;
+	}
 
-    public void setReportDate(Date reportDate) {
-        this.reportDate = reportDate;
-    }
+	public Date getReportDate() {
+		return reportDate;
+	}
 
-    public User getReportingUser() {
-        return reportingUser;
-    }
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
+	}
 
-    public void setReportingUser(User reportingUser) {
-        this.reportingUser = reportingUser;
-    }
+	public User getReportingUser() {
+		return reportingUser;
+	}
 
-    public String getEnvironmentName() {
-        return environmentName;
-    }
+	public void setReportingUser(User reportingUser) {
+		this.reportingUser = reportingUser;
+	}
 
-    public void setEnvironmentName(String environmentName) {
-        this.environmentName = environmentName;
-    }
+	public String getEnvironmentName() {
+		return environmentName;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public void setEnvironmentName(String environmentName) {
+		this.environmentName = environmentName;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public String getExternalId() {
-        return externalId;
-    }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    public void setExternalId(String externalId) {
-        this.externalId = externalId;
-    }
+	public String getExternalId() {
+		return externalId;
+	}
 
-    public User getResponsibleUser() {
-        return responsibleUser;
-    }
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
+	}
 
-    public void setResponsibleUser(User responsibleUser) {
-        this.responsibleUser = responsibleUser;
-    }
+	public User getResponsibleUser() {
+		return responsibleUser;
+	}
 
-    public InvestigationStatus getInvestigationStatus() {
-        return investigationStatus;
-    }
+	public void setResponsibleUser(User responsibleUser) {
+		this.responsibleUser = responsibleUser;
+	}
 
-    public void setInvestigationStatus(InvestigationStatus investigationStatus) {
-        this.investigationStatus = investigationStatus;
-    }
+	public InvestigationStatus getInvestigationStatus() {
+		return investigationStatus;
+	}
 
-    public EnvironmentMedia getEnvironmentMedia() {
-        return environmentMedia;
-    }
+	public void setInvestigationStatus(InvestigationStatus investigationStatus) {
+		this.investigationStatus = investigationStatus;
+	}
 
-    public void setEnvironmentMedia(EnvironmentMedia environmentMedia) {
-        this.environmentMedia = environmentMedia;
-    }
+	public EnvironmentMedia getEnvironmentMedia() {
+		return environmentMedia;
+	}
 
-    public WaterType getWaterType() {
-        return waterType;
-    }
+	public void setEnvironmentMedia(EnvironmentMedia environmentMedia) {
+		this.environmentMedia = environmentMedia;
+	}
 
-    public void setWaterType(WaterType waterType) {
-        this.waterType = waterType;
-    }
+	public WaterType getWaterType() {
+		return waterType;
+	}
 
-    public String getOtherWaterType() {
-        return otherWaterType;
-    }
+	public void setWaterType(WaterType waterType) {
+		this.waterType = waterType;
+	}
 
-    public void setOtherWaterType(String otherWaterType) {
-        this.otherWaterType = otherWaterType;
-    }
+	public String getOtherWaterType() {
+		return otherWaterType;
+	}
 
-    public EnvironmentInfrastructureDetails getInfrastructureDetails() {
-        return infrastructureDetails;
-    }
+	public void setOtherWaterType(String otherWaterType) {
+		this.otherWaterType = otherWaterType;
+	}
 
-    public void setInfrastructureDetails(EnvironmentInfrastructureDetails infrastructureDetails) {
-        this.infrastructureDetails = infrastructureDetails;
-    }
+	public EnvironmentInfrastructureDetails getInfrastructureDetails() {
+		return infrastructureDetails;
+	}
 
-    public String getOtherInfrastructureDetails() {
-        return otherInfrastructureDetails;
-    }
+	public void setInfrastructureDetails(EnvironmentInfrastructureDetails infrastructureDetails) {
+		this.infrastructureDetails = infrastructureDetails;
+	}
 
-    public void setOtherInfrastructureDetails(String otherInfrastructureDetails) {
-        this.otherInfrastructureDetails = otherInfrastructureDetails;
-    }
+	public String getOtherInfrastructureDetails() {
+		return otherInfrastructureDetails;
+	}
 
-    public String getWaterUseJson() {
-        return waterUseJson;
-    }
+	public void setOtherInfrastructureDetails(String otherInfrastructureDetails) {
+		this.otherInfrastructureDetails = otherInfrastructureDetails;
+	}
 
-    public void setWaterUseJson(String waterUseJson) {
-        this.waterUseJson = waterUseJson;
-        waterUse = null;
-    }
+	public String getWaterUseJson() {
+		return waterUseJson;
+	}
 
-    public Map<WaterUse, Boolean> getWaterUse() {
-        if (waterUse == null) {
+	public void setWaterUseJson(String waterUseJson) {
+		this.waterUseJson = waterUseJson;
+	}
+
+	public Map<WaterUse, Boolean> getWateruse() {
+        if (wateruse == null) {
             Gson gson = new Gson();
-            Type type = new TypeToken<Set<WaterUse>>() {
+            Type type = new TypeToken<Map<WaterUse, Boolean>>() {
             }.getType();
-            waterUse = gson.fromJson(waterUseJson, type);
-            if (waterUse == null) {
-                waterUse = new HashMap<>();
+            wateruse = gson.fromJson(waterUseJson, type);
+            if (wateruse == null) {
+                wateruse = new HashMap<>();
             }
         }
-        return waterUse;
-    }
+		return wateruse;
+	}
 
-    public void setWaterUse(Map<WaterUse, Boolean> waterUse) {
-        this.waterUse = waterUse;
-    }
+	public void setWateruse(Map<WaterUse, Boolean> wateruse) {
+		this.wateruse = wateruse;
+		Gson gson = new Gson();
+		waterUseJson = gson.toJson(wateruse);
+	}
 
-    public String getOtherWaterUse() {
-        return otherWaterUse;
-    }
+	public String getOtherWaterUse() {
+		return otherWaterUse;
+	}
 
-    public void setOtherWaterUse(String otherWaterUse) {
-        this.otherWaterUse = otherWaterUse;
-    }
+	public void setOtherWaterUse(String otherWaterUse) {
+		this.otherWaterUse = otherWaterUse;
+	}
 
-    public Location getLocation() {
-        return location;
-    }
+	public Location getLocation() {
+		return location;
+	}
 
-    public void setLocation(Location location) {
-        this.location = location;
-    }
+	public void setLocation(Location location) {
+		this.location = location;
+	}
 }

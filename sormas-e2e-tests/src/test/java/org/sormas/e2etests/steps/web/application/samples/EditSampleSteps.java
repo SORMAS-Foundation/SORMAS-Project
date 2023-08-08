@@ -19,8 +19,42 @@
 package org.sormas.e2etests.steps.web.application.samples;
 
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SAVE_EDIT_SAMPLE_BUTTON;
-import static org.sormas.e2etests.pages.application.samples.EditSamplePage.*;
-import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.*;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.ADDIITONAL_NEW_TEST_RESULT_BUTTON;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.BACK_TO_CASE_DE_BUTTON;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.COLLECTED_DATE_TIME_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.COLLECTED_DATE_TIME_INPUT;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.COMMENT_AREA_INPUT;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.CQ_CT_VALUE_INPUT;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DATE_SAMPLE_COLLECTED;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DATE_SAMPLE_RECEIVED;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_PATHOGEN_TEST_RESULT;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_SAMPLE_BUTTON;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_SAMPLE_REASON_POPUP;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.FIELD_SAMPLE_ID_INPUT;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.FOUR_FOLD_INCREASE_ANTIBODY_TITER;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.LABORATORY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.LABORATORY_INPUT;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.LABORATORY_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.LAB_SAMPLE_ID_INPUT;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.NEW_TEST_RESULT_DE;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.PATHOGEN_NEW_TEST_RESULT_BUTTON;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.PCR_TEST_SPECIFICATION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.REASON_FOR_SAMPLING_TESTING_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.REASON_FOR_SAMPLING_TESTING_INPUT;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.RECEIVED_OPTION_BUTTON;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.SAMPLE_DELETION_POPUP_YES_BUTTON;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.SAMPLE_TYPE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.SAMPLE_TYPE_INPUT;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.SAVE_SAMPLE_BUTTON;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.SEE_SAMPLES_FOR_THIS_PERSON_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.SPECIFY_TEST_DETAILS_INPUT;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.SPECIMEN_CONDITION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.SPECIMEN_CONDITION_INPUT;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.SPECIMEN_CONDITION_NOT_MANDATORY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.TYPING_ID_INPUT;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.UUID_FIELD;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_EDIT_PURPOSE_OPTIONS;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_SEARCH_INPUT;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
@@ -32,6 +66,7 @@ import org.openqa.selenium.By;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Sample;
 import org.sormas.e2etests.entities.services.SampleService;
+import org.sormas.e2etests.entities.services.api.demis.DemisApiService;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
@@ -275,6 +310,34 @@ public class EditSampleSteps implements En {
               laborDetails,
               "Laboratory details are incorrect");
           softly.assertAll();
+        });
+
+    Then(
+        "I check that lab sample id match {string} specimen id from Demis message on Edit Sample page",
+        (String specimen) -> {
+          switch (specimen) {
+            case "first":
+              softly.assertEquals(
+                  webDriverHelpers.getValueFromWebElement(LAB_SAMPLE_ID_INPUT),
+                  DemisApiService.specimenUUID,
+                  "Sample id is incorrect");
+              softly.assertAll();
+              break;
+            case "second":
+              softly.assertEquals(
+                  webDriverHelpers.getValueFromWebElement(LAB_SAMPLE_ID_INPUT),
+                  DemisApiService.secondSpecimenUUID,
+                  "Sample id is incorrect");
+              softly.assertAll();
+              break;
+          }
+        });
+
+    And(
+        "^I back to the case from Edit Sample page DE$",
+        () -> {
+          webDriverHelpers.scrollToElement(BACK_TO_CASE_DE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(BACK_TO_CASE_DE_BUTTON);
         });
   }
 

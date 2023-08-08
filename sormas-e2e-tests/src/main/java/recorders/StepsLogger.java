@@ -48,8 +48,8 @@ public class StepsLogger implements StepLifecycleListener {
   private static RemoteWebDriver driver;
   private static boolean isScreenshotEnabled = true;
   private static boolean takeScreenshotAfterStep = false;
-  private final String pngValue = "png";
-  private final String imageType = "image/png";
+  private final String jpgExtension = "jpg";
+  private final String imageType = "image/jpg";
 
   public static void setRemoteWebDriver(RemoteWebDriver remoteWebDriver) {
     driver = remoteWebDriver;
@@ -72,7 +72,7 @@ public class StepsLogger implements StepLifecycleListener {
     List<InputStream> uiWarnings = collectWarningElements();
     if (!uiWarnings.isEmpty()) {
       for (InputStream input : collectWarningElements()) {
-        Allure.getLifecycle().addAttachment("Warning element", imageType, pngValue, input);
+        Allure.getLifecycle().addAttachment("Warning element", imageType, jpgExtension, input);
       }
     }
     boolean logData = false;
@@ -101,30 +101,27 @@ public class StepsLogger implements StepLifecycleListener {
     }
   }
 
-  @Attachment(value = "After step screenshot", type = "image/png")
+  @Attachment(value = "After step screenshot", type = "image/jpg")
   public void takeScreenshot() {
     byte[] screenShot = driver.getScreenshotAs(OutputType.BYTES);
     Allure.getLifecycle()
         .addAttachment(
             "Screenshot at :"
                 + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MMM-yy hh:mm:ss")),
-            "image/png",
-            "png",
+            "image/jpg",
+            "jpg",
             screenShot);
   }
 
   @SneakyThrows
   private List<InputStream> collectWarningElements() {
-    List<WebElement> warningsList =
-        driver.findElements(
-            By.xpath(
-                "//*[contains(@class,'Notification error') or contains(@class,'filterselect-required') or contains(@class,'field-required') or contains(@class,'group-required')]"));
+    List<WebElement> warningsList = driver.findElements(By.xpath("//*[contains(@class,'error')]"));
     List<InputStream> attachments = new ArrayList<>();
-    String fileName = "warning_element%s.png";
+    String fileName = "warning_element%s.jpg";
     for (int i = 0; i < warningsList.size(); i++) {
-      String file = String.format(fileName, i) + "." + pngValue;
+      String file = String.format(fileName, i) + "." + jpgExtension;
       Screenshot screenshot = new AShot().takeScreenshot(driver, warningsList.get(i));
-      ImageIO.write(screenshot.getImage(), pngValue.toUpperCase(), new File("build\\" + file));
+      ImageIO.write(screenshot.getImage(), jpgExtension.toUpperCase(), new File("build\\" + file));
       attachments.add(new FileInputStream("build\\" + file));
     }
     return attachments;

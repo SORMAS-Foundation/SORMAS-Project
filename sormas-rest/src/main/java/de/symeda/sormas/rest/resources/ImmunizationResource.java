@@ -124,8 +124,7 @@ public class ImmunizationResource extends EntityDtoResource<ImmunizationDto> {
 	@POST
 	@Path("/delete")
 	public List<String> delete(List<String> uuids) {
-		return FacadeProvider.getImmunizationFacade()
-			.deleteImmunizations(uuids, new DeletionDetails(DeletionReason.OTHER_REASON, "Deleted via ReST call"));
+		return FacadeProvider.getImmunizationFacade().delete(uuids, new DeletionDetails(DeletionReason.OTHER_REASON, "Deleted via ReST call"));
 	}
 
 	@POST

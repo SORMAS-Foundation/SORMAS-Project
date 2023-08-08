@@ -90,9 +90,9 @@ import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CoreEntityRestoreMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DeletableUtils;
+import de.symeda.sormas.ui.utils.DeleteRestoreHandlers;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 import de.symeda.sormas.ui.utils.components.automaticdeletion.DeletionLabel;
@@ -765,13 +765,15 @@ public class ContactController {
 			List<ContactIndexDto> selectedContactsCpy = new ArrayList<>(selectedContacts);
 			BulkOperationHandler.<ContactIndexDto> forBulkEdit()
 				.doBulkOperation(
-				selectedEntries -> contactFacade.saveBulkContacts(
-					selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
-					updatedBulkEditData,
-					classificationChange,
-					contactOfficerChange),
-				selectedContactsCpy,
-				bulkOperationCallback(caseUuid, contactGrid, popupWindow));
+					selectedEntries -> contactFacade.saveBulkContacts(
+						selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
+						updatedBulkEditData,
+						classificationChange,
+						contactOfficerChange),
+					selectedContactsCpy,
+					null,
+					null,
+					bulkOperationCallback(caseUuid, contactGrid, popupWindow));
 		});
 
 		editView.addDiscardListener(popupWindow::close);
@@ -799,46 +801,24 @@ public class ContactController {
 		};
 	}
 
-	public void deleteAllSelectedItems(Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {
-		if (selectedRows.size() == 0) {
-			new Notification(
-				I18nProperties.getString(Strings.headingNoContactsSelected),
-				I18nProperties.getString(Strings.messageNoContactsSelected),
-				Type.WARNING_MESSAGE,
-				false).show(Page.getCurrent());
-		} else {
-			DeletableUtils.showDeleteWithReasonPopup(
-				String.format(
-					I18nProperties.getString(Strings.confirmationDeleteContacts),
-					selectedRows.size(),
-					getDeleteConfirmationDetails(selectedRows.stream().map(ContactIndexDto::getUuid).collect(Collectors.toList()))),
-				(deleteDetails) -> {
-					for (ContactIndexDto selectedRow : selectedRows) {
-						FacadeProvider.getContactFacade().delete(selectedRow.getUuid(), deleteDetails);
-					}
-					callback.run();
-					new Notification(
-						I18nProperties.getString(Strings.headingContactsDeleted),
-						I18nProperties.getString(Strings.messageContactsDeleted),
-						Type.HUMANIZED_MESSAGE,
-						false).show(Page.getCurrent());
-				});
+	public void deleteAllSelectedItems(Collection<? extends ContactIndexDto> selectedRows, AbstractContactGrid<?> contactGrid) {
 
-		}
-	}
-
-	public void restoreSelectedContacts(Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {
 		ControllerProvider.getDeleteRestoreController()
-			.restoreSelectedItems(
-				selectedRows.stream().map(ContactIndexDto::getUuid).collect(Collectors.toList()),
-				FacadeProvider.getContactFacade(),
-				CoreEntityRestoreMessages.CONTACT,
-				callback);
+			.deleteAllSelectedItems(selectedRows, null, null, DeleteRestoreHandlers.forContact(), bulkOperationCallback(null, contactGrid, null));
+
 	}
 
-	public void cancelFollowUpOfAllSelectedItems(Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {
+	public void restoreSelectedContacts(Collection<? extends ContactIndexDto> selectedRows, AbstractContactGrid<?> contactGrid) {
+		ControllerProvider.getDeleteRestoreController()
+			.restoreSelectedItems(selectedRows, DeleteRestoreHandlers.forContact(), bulkOperationCallback(null, contactGrid, null));
+	}
 
-		if (selectedRows.size() == 0) {
+	public void cancelFollowUpOfAllSelectedItems(
+		Collection<? extends ContactIndexDto> selectedRows,
+		String caseUuid,
+		AbstractContactGrid<?> contactGrid) {
+
+		if (selectedRows.isEmpty()) {
 			new Notification(
 				I18nProperties.getString(Strings.headingNoContactsSelected),
 				I18nProperties.getString(Strings.messageNoContactsSelected),
@@ -852,30 +832,39 @@ public class ContactController {
 				I18nProperties.getString(Strings.no),
 				640,
 				confirmed -> {
-					if (confirmed) {
-						for (ContactIndexDto contact : selectedRows) {
-							if (!FollowUpStatus.NO_FOLLOW_UP.equals(contact.getFollowUpStatus())
-								&& !FollowUpStatus.CANCELED.equals(contact.getFollowUpStatus())) {
-								ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(contact.getUuid());
-								contactDto.setFollowUpStatus(FollowUpStatus.CANCELED);
-								contactDto.addToFollowUpComment(
-									String.format(I18nProperties.getString(Strings.infoCanceledBy), UserProvider.getCurrent().getUserName()));
-								FacadeProvider.getContactFacade().save(contactDto);
-							}
-						}
-						callback.run();
-						new Notification(
-							I18nProperties.getString(Strings.headingFollowUpCanceled),
-							I18nProperties.getString(Strings.messageFollowUpCanceled),
-							Type.HUMANIZED_MESSAGE,
-							false).show(Page.getCurrent());
+					if (Boolean.TRUE.equals(confirmed)) {
+						String userName = UserProvider.getCurrent().getUserName();
+
+						new BulkOperationHandler<ContactIndexDto>(
+							Strings.messageFollowUpCanceled,
+							null,
+							null,
+							null,
+							Strings.messageFollowUpCanceledForSome,
+							null,
+							null).doBulkOperation(batch -> {
+								for (ContactIndexDto contact : batch) {
+									if (!FollowUpStatus.NO_FOLLOW_UP.equals(contact.getFollowUpStatus())
+										&& !FollowUpStatus.CANCELED.equals(contact.getFollowUpStatus())) {
+										ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(contact.getUuid());
+										contactDto.setFollowUpStatus(FollowUpStatus.CANCELED);
+										contactDto.addToFollowUpComment(String.format(I18nProperties.getString(Strings.infoCanceledBy), userName));
+										FacadeProvider.getContactFacade().save(contactDto);
+									}
+								}
+
+								return batch.size();
+							}, new ArrayList<>(selectedRows), null, null, bulkOperationCallback(caseUuid, contactGrid, null));
 					}
 				});
 		}
 	}
 
-	public void setAllSelectedItemsToLostToFollowUp(Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {
-		if (selectedRows.size() == 0) {
+	public void setAllSelectedItemsToLostToFollowUp(
+		Collection<? extends ContactIndexDto> selectedRows,
+		String caseUuid,
+		AbstractContactGrid<?> contactGrid) {
+		if (selectedRows.isEmpty()) {
 			new Notification(
 				I18nProperties.getString(Strings.headingNoContactsSelected),
 				I18nProperties.getString(Strings.messageNoContactsSelected),
@@ -889,22 +878,29 @@ public class ContactController {
 				I18nProperties.getString(Strings.no),
 				640,
 				confirmed -> {
-					if (confirmed) {
-						for (ContactIndexDto contact : selectedRows) {
-							if (contact.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
-								ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(contact.getUuid());
-								contactDto.setFollowUpStatus(FollowUpStatus.LOST);
-								contactDto.addToFollowUpComment(
-									String.format(I18nProperties.getString(Strings.infoLostToFollowUpBy), UserProvider.getCurrent().getUserName()));
-								FacadeProvider.getContactFacade().save(contactDto);
-							}
-						}
-						callback.run();
-						new Notification(
-							I18nProperties.getString(Strings.headingFollowUpStatusChanged),
-							I18nProperties.getString(Strings.messageFollowUpStatusChanged),
-							Type.HUMANIZED_MESSAGE,
-							false).show(Page.getCurrent());
+					if (Boolean.TRUE.equals(confirmed)) {
+						String userName = UserProvider.getCurrent().getUserName();
+
+						new BulkOperationHandler<ContactIndexDto>(
+							Strings.messageFollowUpStatusChanged,
+							null,
+							null,
+							null,
+							Strings.messageFollowUpStatusChangedForSome,
+							null,
+							null).doBulkOperation(batch -> {
+								for (ContactIndexDto contact : batch) {
+									if (contact.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
+										ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(contact.getUuid());
+										contactDto.setFollowUpStatus(FollowUpStatus.LOST);
+										contactDto
+											.addToFollowUpComment(String.format(I18nProperties.getString(Strings.infoLostToFollowUpBy), userName));
+										FacadeProvider.getContactFacade().save(contactDto);
+									}
+								}
+
+								return batch.size();
+							}, new ArrayList<>(selectedRows), null, null, bulkOperationCallback(caseUuid, contactGrid, null));
 					}
 				});
 		}
@@ -1005,5 +1001,30 @@ public class ContactController {
 		titleLayout.addMainRow(mainRowText.toString());
 
 		return titleLayout;
+	}
+
+	public void linkSelectedContactsToEvent(Collection<? extends ContactIndexDto> selectedRows, AbstractContactGrid<?> contactGrid) {
+		if (selectedRows.isEmpty()) {
+			new Notification(
+				I18nProperties.getString(Strings.headingNoContactsSelected),
+				I18nProperties.getString(Strings.messageNoContactsSelected),
+				Notification.Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
+			return;
+		}
+
+		if (!selectedRows.stream().allMatch(contact -> contact.getDisease().equals(selectedRows.stream().findAny().get().getDisease()))) {
+			new Notification(I18nProperties.getString(Strings.messageBulkContactsWithDifferentDiseasesSelected), Notification.Type.WARNING_MESSAGE)
+				.show(Page.getCurrent());
+			return;
+		}
+
+		ControllerProvider.getEventController()
+			.selectOrCreateEventForContactList(selectedRows.stream().map(ContactIndexDto::toReference).collect(Collectors.toList()), remaining -> {
+				bulkOperationCallback(null, contactGrid, null).accept(
+					selectedRows.stream()
+						.filter(s -> remaining.stream().anyMatch(r -> r.getUuid().equals(s.getUuid())))
+						.collect(Collectors.toList()));
+			});
 	}
 }

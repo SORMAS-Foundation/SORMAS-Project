@@ -211,7 +211,7 @@ public class CaseResource extends EntityDtoResource<CaseDataDto> {
 	@POST
 	@Path("/delete")
 	public List<String> delete(List<String> uuids) {
-		return FacadeProvider.getCaseFacade().deleteCases(uuids, new DeletionDetails(DeletionReason.OTHER_REASON, "Deleted via ReST call"));
+		return FacadeProvider.getCaseFacade().delete(uuids, new DeletionDetails(DeletionReason.OTHER_REASON, "Deleted via ReST call"));
 	}
 
 	@POST

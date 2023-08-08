@@ -10,7 +10,7 @@ info:
     name: GPL v3
     url: https://www.gnu.org/licenses/gpl-3.0.html
   title: SORMAS REST API
-  version: 1.86.0-SNAPSHOT
+  version: 1.87.0-SNAPSHOT
 servers:
 - url: /sormas-rest
 paths:
@@ -2716,6 +2716,27 @@ paths:
           description: default response
       tags:
       - Environment Controller
+  /environments/obsolete/{since}:
+    get:
+      operationId: getObsoleteUuidsSince_2
+      parameters:
+      - in: path
+        name: since
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        default:
+          content:
+            application/json; charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  type: string
+          description: default response
+      tags:
+      - Environment Controller
   /environments/push:
     post:
       description: A uuid will be generated for any entity that doesn't have one yet.
@@ -3055,7 +3076,7 @@ paths:
       - Event Participant Controller
   /eventparticipants/obsolete/{since}:
     get:
-      operationId: getObsoleteUuidsSince_2
+      operationId: getObsoleteUuidsSince_3
       parameters:
       - in: path
         name: since
@@ -3385,7 +3406,7 @@ paths:
       - Event Controller
   /events/obsolete/{since}:
     get:
-      operationId: getObsoleteUuidsSince_3
+      operationId: getObsoleteUuidsSince_4
       parameters:
       - in: path
         name: since
@@ -4030,7 +4051,7 @@ paths:
       - Immunization Controller
   /immunizations/obsolete/{since}:
     get:
-      operationId: getObsoleteUuidsSince_4
+      operationId: getObsoleteUuidsSince_5
       parameters:
       - in: path
         name: since
@@ -5577,7 +5598,7 @@ paths:
       - Sample Controller
   /samples/obsolete/{since}:
     get:
-      operationId: getObsoleteUuidsSince_5
+      operationId: getObsoleteUuidsSince_6
       parameters:
       - in: path
         name: since
@@ -6365,7 +6386,7 @@ paths:
       - Task Controller
   /tasks/obsolete/{since}:
     get:
-      operationId: getObsoleteUuidsSince_6
+      operationId: getObsoleteUuidsSince_7
       parameters:
       - in: path
         name: since
@@ -10673,8 +10694,16 @@ components:
       - $ref: '#/components/schemas/ClassificationCriteriaDto'
       - type: object
         properties:
+          classificationCriteria:
+            type: array
+            items:
+              $ref: '#/components/schemas/ClassificationCriteriaDto'
           criteriaName:
             type: string
+          subCriteria:
+            type: array
+            items:
+              $ref: '#/components/schemas/ClassificationCriteriaDto'
     ClassificationPathogenTestCriteriaDto:
       type: object
       allOf:
@@ -10805,11 +10834,19 @@ components:
       - $ref: '#/components/schemas/ClassificationCriteriaDto'
       - type: object
         properties:
+          classificationCriteria:
+            type: array
+            items:
+              $ref: '#/components/schemas/ClassificationCriteriaDto'
           criteriaName:
             type: string
           requiredAmount:
             type: integer
             format: int32
+          subCriteria:
+            type: array
+            items:
+              $ref: '#/components/schemas/ClassificationCriteriaDto'
     ClinicalCourseDto:
       type: object
       properties:
@@ -15943,10 +15980,8 @@ components:
           type: string
           maxLength: 255
           minLength: 0
-        personCountryIsoCode:
-          type: string
-          maxLength: 255
-          minLength: 0
+        personCountry:
+          $ref: '#/components/schemas/CountryReferenceDto'
         personEmail:
           type: string
           maxLength: 255
@@ -19277,6 +19312,24 @@ components:
         creationDate:
           type: string
           format: date-time
+        ctValueE:
+          type: number
+          format: float
+        ctValueN:
+          type: number
+          format: float
+        ctValueOrf1:
+          type: number
+          format: float
+        ctValueRdrp:
+          type: number
+          format: float
+        ctValueRdrpS:
+          type: number
+          format: float
+        ctValueS:
+          type: number
+          format: float
         deleted:
           type: boolean
         deletionReason:
@@ -19319,6 +19372,36 @@ components:
           - N501Y_MUTATION_DETECTION
         preliminary:
           type: boolean
+        prescriberAddress:
+          type: string
+          maxLength: 1000000
+          minLength: 0
+        prescriberCity:
+          type: string
+          maxLength: 1000000
+          minLength: 0
+        prescriberCountry:
+          $ref: '#/components/schemas/CountryReferenceDto'
+        prescriberFirstName:
+          type: string
+          maxLength: 1000000
+          minLength: 0
+        prescriberLastName:
+          type: string
+          maxLength: 1000000
+          minLength: 0
+        prescriberPhoneNumber:
+          type: string
+          maxLength: 1000000
+          minLength: 0
+        prescriberPhysicianCode:
+          type: string
+          maxLength: 1000000
+          minLength: 0
+        prescriberPostalCode:
+          type: string
+          maxLength: 1000000
+          minLength: 0
         pseudonymized:
           type: boolean
         reportDate:
@@ -23831,9 +23914,30 @@ components:
         changeDate:
           type: string
           format: date-time
+        cqValue:
+          type: number
+          format: float
         creationDate:
           type: string
           format: date-time
+        ctValueE:
+          type: number
+          format: float
+        ctValueN:
+          type: number
+          format: float
+        ctValueOrf1:
+          type: number
+          format: float
+        ctValueRdrp:
+          type: number
+          format: float
+        ctValueRdrpS:
+          type: number
+          format: float
+        ctValueS:
+          type: number
+          format: float
         dateOfResult:
           type: string
           format: date-time
@@ -23847,6 +23951,36 @@ components:
           minLength: 0
         preliminary:
           type: boolean
+        prescriberAddress:
+          type: string
+          maxLength: 1000000
+          minLength: 0
+        prescriberCity:
+          type: string
+          maxLength: 1000000
+          minLength: 0
+        prescriberCountry:
+          $ref: '#/components/schemas/CountryReferenceDto'
+        prescriberFirstName:
+          type: string
+          maxLength: 1000000
+          minLength: 0
+        prescriberLastName:
+          type: string
+          maxLength: 1000000
+          minLength: 0
+        prescriberPhoneNumber:
+          type: string
+          maxLength: 1000000
+          minLength: 0
+        prescriberPhysicianCode:
+          type: string
+          maxLength: 1000000
+          minLength: 0
+        prescriberPostalCode:
+          type: string
+          maxLength: 1000000
+          minLength: 0
         sampleReport:
           $ref: '#/components/schemas/SampleReportReferenceDto'
         testDateTime:

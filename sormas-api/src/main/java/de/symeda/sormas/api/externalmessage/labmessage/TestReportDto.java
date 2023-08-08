@@ -6,15 +6,19 @@ import java.util.List;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
+import de.symeda.sormas.api.utils.HideForCountriesExcept;
+import de.symeda.sormas.api.utils.SensitiveData;
 
 @DependingOnFeatureType(featureType = FeatureType.EXTERNAL_MESSAGES)
 public class TestReportDto extends EntityDto {
@@ -32,6 +36,21 @@ public class TestReportDto extends EntityDto {
 	public static final String TEST_RESULT = "testResult";
 	public static final String DATE_OF_RESULT = "dateOfResult";
 	public static final String TEST_PCR_TEST_SPECIFICATION = "testPcrTestSpecification";
+	public static final String CQ_VALUE = "cqValue";
+	public static final String CT_VALUE_E = "ctValueE";
+	public static final String CT_VALUE_N = "ctValueN";
+	public static final String CT_VALUE_RDRP = "ctValueRdrp";
+	public static final String CT_VALUE_S = "ctValueS";
+	public static final String CT_VALUE_ORF_1 = "ctValueOrf1";
+	public static final String CT_VALUE_RDRP_S = "ctValueRdrpS";
+	public static final String PRESCRIBER_PHYSICIAN_CODE = "prescriberPhysicianCode";
+	public static final String PRESCRIBER_FIRST_NAME = "prescriberFirstName";
+	public static final String PRESCRIBER_LAST_NAME = "prescriberLastName";
+	public static final String PRESCRIBER_PHONE_NUMBER = "prescriberPhoneNumber";
+	public static final String PRESCRIBER_ADDRESS = "prescriberAddress";
+	public static final String PRESCRIBER_POSTAL_CODE = "prescriberPostalCode";
+	public static final String PRESCRIBER_CITY = "prescriberCity";
+	public static final String PRESCRIBER_COUNTRY = "prescriberCountry";
 
 	@NotNull(message = Validations.requiredField)
 	private SampleReportReferenceDto sampleReport;
@@ -63,6 +82,51 @@ public class TestReportDto extends EntityDto {
 
 	private Boolean preliminary;
 	private PCRTestSpecification testPcrTestSpecification;
+
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private Float cqValue;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private Float ctValueE;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private Float ctValueN;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private Float ctValueRdrp;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private Float ctValueS;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private Float ctValueOrf1;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private Float ctValueRdrpS;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String prescriberPhysicianCode;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String prescriberFirstName;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String prescriberLastName;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String prescriberPhoneNumber;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String prescriberAddress;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String prescriberPostalCode;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String prescriberCity;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private CountryReferenceDto prescriberCountry;
 
 	public SampleReportReferenceDto getSampleReport() {
 		return sampleReport;
@@ -212,5 +276,125 @@ public class TestReportDto extends EntityDto {
 
 	public void setTestPcrTestSpecification(PCRTestSpecification testPcrTestSpecification) {
 		this.testPcrTestSpecification = testPcrTestSpecification;
+	}
+
+	public Float getCqValue() {
+		return cqValue;
+	}
+
+	public void setCqValue(Float cqValue) {
+		this.cqValue = cqValue;
+	}
+
+	public Float getCtValueE() {
+		return ctValueE;
+	}
+
+	public void setCtValueE(Float ctValueE) {
+		this.ctValueE = ctValueE;
+	}
+
+	public Float getCtValueN() {
+		return ctValueN;
+	}
+
+	public void setCtValueN(Float ctValueN) {
+		this.ctValueN = ctValueN;
+	}
+
+	public Float getCtValueRdrp() {
+		return ctValueRdrp;
+	}
+
+	public void setCtValueRdrp(Float ctValueRdrp) {
+		this.ctValueRdrp = ctValueRdrp;
+	}
+
+	public Float getCtValueS() {
+		return ctValueS;
+	}
+
+	public void setCtValueS(Float ctValueS) {
+		this.ctValueS = ctValueS;
+	}
+
+	public Float getCtValueOrf1() {
+		return ctValueOrf1;
+	}
+
+	public void setCtValueOrf1(Float ctValueOrf1) {
+		this.ctValueOrf1 = ctValueOrf1;
+	}
+
+	public Float getCtValueRdrpS() {
+		return ctValueRdrpS;
+	}
+
+	public void setCtValueRdrpS(Float ctValueRdrpS) {
+		this.ctValueRdrpS = ctValueRdrpS;
+	}
+
+	public String getPrescriberPhysicianCode() {
+		return prescriberPhysicianCode;
+	}
+
+	public void setPrescriberPhysicianCode(String prescriberPhysicianCode) {
+		this.prescriberPhysicianCode = prescriberPhysicianCode;
+	}
+
+	public String getPrescriberFirstName() {
+		return prescriberFirstName;
+	}
+
+	public void setPrescriberFirstName(String prescriberFirstName) {
+		this.prescriberFirstName = prescriberFirstName;
+	}
+
+	public String getPrescriberLastName() {
+		return prescriberLastName;
+	}
+
+	public void setPrescriberLastName(String prescriberLastName) {
+		this.prescriberLastName = prescriberLastName;
+	}
+
+	public String getPrescriberPhoneNumber() {
+		return prescriberPhoneNumber;
+	}
+
+	public void setPrescriberPhoneNumber(String prescriberPhoneNumber) {
+		this.prescriberPhoneNumber = prescriberPhoneNumber;
+	}
+
+	public String getPrescriberAddress() {
+		return prescriberAddress;
+	}
+
+	public void setPrescriberAddress(String prescriberAddress) {
+		this.prescriberAddress = prescriberAddress;
+	}
+
+	public String getPrescriberPostalCode() {
+		return prescriberPostalCode;
+	}
+
+	public void setPrescriberPostalCode(String prescriberPostalCode) {
+		this.prescriberPostalCode = prescriberPostalCode;
+	}
+
+	public String getPrescriberCity() {
+		return prescriberCity;
+	}
+
+	public void setPrescriberCity(String prescriberCity) {
+		this.prescriberCity = prescriberCity;
+	}
+
+	public CountryReferenceDto getPrescriberCountry() {
+		return prescriberCountry;
+	}
+
+	public void setPrescriberCountry(CountryReferenceDto prescriberCountry) {
+		this.prescriberCountry = prescriberCountry;
 	}
 }

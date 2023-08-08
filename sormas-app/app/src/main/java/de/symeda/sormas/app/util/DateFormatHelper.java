@@ -7,6 +7,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.app.backend.location.Location;
 
 public class DateFormatHelper {
 
@@ -46,5 +47,13 @@ public class DateFormatHelper {
 			intervalDate = String.format("%s - %s", formatedStartDate, formatedEndDate);
 		}
 		return intervalDate;
+	}
+
+	public static String getLatLonLocation(Location location){
+		if (location==null || location.getLatLonString().isEmpty()){
+			return null;
+		}else {
+			return "GPS: " + location.getLatLonString();
+		}
 	}
 }

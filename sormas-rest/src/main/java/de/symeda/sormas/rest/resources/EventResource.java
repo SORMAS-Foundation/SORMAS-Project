@@ -137,7 +137,7 @@ public class EventResource extends EntityDtoResource<EventDto> {
 	@POST
 	@Path("/delete")
 	public List<String> delete(List<String> uuids) {
-		return FacadeProvider.getEventFacade().deleteEvents(uuids, new DeletionDetails(DeletionReason.OTHER_REASON, "Deleted via ReST call"));
+		return FacadeProvider.getEventFacade().delete(uuids, new DeletionDetails(DeletionReason.OTHER_REASON, "Deleted via ReST call"));
 	}
 
 	@POST

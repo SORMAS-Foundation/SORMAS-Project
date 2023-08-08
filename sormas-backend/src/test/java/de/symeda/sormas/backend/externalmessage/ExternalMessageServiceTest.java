@@ -55,7 +55,7 @@ public class ExternalMessageServiceTest extends AbstractBeanTest {
 		ExternalMessageDto labMessage1Deleted = creator.createLabMessageWithTestReport(sampleReference1);
 		labMessage1Deleted.setChangeDate(new Date());
 		getExternalMessageFacade().save(labMessage1Deleted);
-		getExternalMessageFacade().deleteExternalMessage(labMessage1Deleted.getUuid());
+		getExternalMessageFacade().delete(labMessage1Deleted.getUuid());
 
 		SampleDto sample2 = creator.createSample(caze.toReference(), sampleDate, sampleDate, user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
 		SampleReferenceDto sampleReference2 = sample2.toReference();
@@ -181,7 +181,7 @@ public class ExternalMessageServiceTest extends AbstractBeanTest {
 
 		ExternalMessageDto labMessage = creator.createLabMessageWithTestReport(null);
 
-		getExternalMessageFacade().deleteExternalMessage(labMessage.getUuid());
+		getExternalMessageFacade().delete(labMessage.getUuid());
 
 		assertEquals(0, getExternalMessageService().count());
 		assertEquals(0, getSampleReportService().count());

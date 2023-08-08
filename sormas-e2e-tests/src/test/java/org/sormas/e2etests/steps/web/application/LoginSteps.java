@@ -142,7 +142,7 @@ public class LoginSteps implements En {
         "I back to tab number {int}",
         (Integer tabNo) -> {
           webDriverHelpers.switchToTheTabNumber(tabNo);
-          TimeUnit.SECONDS.sleep(2);
+          TimeUnit.SECONDS.sleep(5);
         });
     Then(
         "I login with last edited user",

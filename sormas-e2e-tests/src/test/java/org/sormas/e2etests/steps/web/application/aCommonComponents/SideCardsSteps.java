@@ -29,8 +29,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.steps.BaseSteps;
+import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
 public class SideCardsSteps implements En {
@@ -45,7 +47,11 @@ public class SideCardsSteps implements En {
   @SneakyThrows
   @Inject
   public SideCardsSteps(
-      WebDriverHelpers webDriverHelpers, SoftAssert softly, BaseSteps baseSteps, Faker faker) {
+      WebDriverHelpers webDriverHelpers,
+      SoftAssert softly,
+      BaseSteps baseSteps,
+      Faker faker,
+      RunningConfiguration runningConfiguration) {
     this.webDriverHelpers = webDriverHelpers;
     this.faker = faker;
     this.baseSteps = baseSteps;
@@ -61,7 +67,40 @@ public class SideCardsSteps implements En {
                   + webDriverHelpers.getTextFromPresentWebElement(HANDOVER_SIDE_CARD));
           softly.assertAll();
         });
-
+    When(
+        "I check if handover card contains shared with {string} information",
+        (String environmentIdentifier) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(HANDOVER_SIDE_CARD);
+          TimeUnit.SECONDS.sleep(3);
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(
+                  checkTextInHandoverSideComponent(
+                      runningConfiguration.getSurvnetResponsible(environmentIdentifier))),
+              environmentIdentifier
+                  + " text is not present in handover component. Found only "
+                  + webDriverHelpers.getTextFromPresentWebElement(HANDOVER_SIDE_CARD));
+          softly.assertAll();
+        });
+    When(
+        "I click on share button",
+        () -> webDriverHelpers.clickOnWebElementBySelector(SHARE_SORMAS_2_SORMAS_BUTTON));
+    When(
+        "I check if share button is unavailable",
+        () -> {
+          Assert.assertFalse(
+              webDriverHelpers.isElementPresent(SHARE_SORMAS_2_SORMAS_BUTTON),
+              "Share button is displayed");
+        });
+    When(
+        "I select organization to share with {string}",
+        (String organization) -> {
+          String survnetOrganization = runningConfiguration.getSurvnetResponsible(organization);
+          webDriverHelpers.selectFromCombobox(
+              SHARE_ORGANIZATION_POPUP_COMBOBOX, survnetOrganization);
+        });
+    When(
+        "I click to hand over the ownership in Share popup",
+        () -> webDriverHelpers.clickOnWebElementBySelector(HAND_THE_OWNERSHIP_CHECKBOX));
     When(
         "I check if sample card has {string} information",
         (String information) -> {
@@ -185,6 +224,13 @@ public class SideCardsSteps implements En {
         "I click on share button in s2s share popup",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SHARE_SORMAS_2_SORMAS_POPUP_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+        });
+
+    And(
+        "^I click on edit sample icon of the (\\d+) displayed sample on Edit Case page$",
+        (Integer sampleNumber) -> {
+          webDriverHelpers.clickOnWebElementBySelector(getEditSampleButtonByNumber(sampleNumber));
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
         });
   }
