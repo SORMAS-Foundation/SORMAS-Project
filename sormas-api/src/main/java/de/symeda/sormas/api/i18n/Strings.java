@@ -548,6 +548,7 @@ public interface Strings {
 	String headingEditUser = "headingEditUser";
 	String headingEditVaccination = "headingEditVaccination";
 	String headingEditVisit = "headingEditVisit";
+	String headingEntitiesFollowUpNotCancelled = "headingEntitiesFollowUpNotCancelled";
 	String headingEntitiesNotArchived = "headingEntitiesNotArchived";
 	String headingEntitiesNotDearchived = "headingEntitiesNotDearchived";
 	String headingEntitiesNotSent = "headingEntitiesNotSent";
@@ -740,6 +741,7 @@ public interface Strings {
 	String headingSomeCasesNotRestored = "headingSomeCasesNotRestored";
 	String headingSomeContactsAlreadyInEvent = "headingSomeContactsAlreadyInEvent";
 	String headingSomeContactsNotRestored = "headingSomeContactsNotRestored";
+	String headingSomeEntitiesFollowUpNotCancelled = "headingSomeEntitiesFollowUpNotCancelled";
 	String headingSomeEntitiesNotArchived = "headingSomeEntitiesNotArchived";
 	String headingSomeEntitiesNotDearchived = "headingSomeEntitiesNotDearchived";
 	String headingSomeEntitiesNotDeleted = "headingSomeEntitiesNotDeleted";
@@ -827,7 +829,7 @@ public interface Strings {
 	String infoBulkProcessFinishedWithIneligibleItems = "infoBulkProcessFinishedWithIneligibleItems";
 	String infoBulkProcessFinishedWithoutSuccess = "infoBulkProcessFinishedWithoutSuccess";
 	String infoBulkProcessFinishedWithSkips = "infoBulkProcessFinishedWithSkips";
-	String infoBulkProcessFinishedWithSkipsOutsideJurisdiction = "infoBulkProcessFinishedWithSkipsOutsideJurisdiction";
+	String infoBulkProcessFinishedWithSkipsOutsideJurisdictionOrNotEligible = "infoBulkProcessFinishedWithSkipsOutsideJurisdictionOrNotEligible";
 	String infoBulkProcessNoEligibleEntries = "infoBulkProcessNoEligibleEntries";
 	String infoBulkUnresponsiveWindowHint = "infoBulkUnresponsiveWindowHint";
 	String infoCalculateCompleteness = "infoCalculateCompleteness";
@@ -1129,6 +1131,8 @@ public interface Strings {
 	String messageCountContactsNotDeletedAccessDeniedReason = "messageCountContactsNotDeletedAccessDeniedReason";
 	String messageCountContactsNotDeletedSormasToSormasReason = "messageCountContactsNotDeletedSormasToSormasReason";
 	String messageCountContactsNotRestored = "messageCountContactsNotRestored";
+	String messageCountEntitiesFollowUpNotCancelled = "messageCountEntitiesFollowUpNotCancelled";
+	String messageCountEntitiesFollowUpNotCancelledAccessDeniedReason = "messageCountEntitiesFollowUpNotCancelledAccessDeniedReason";
 	String messageCountEntitiesNotArchivedAccessDeniedReason = "messageCountEntitiesNotArchivedAccessDeniedReason";
 	String messageCountEntitiesNotDearchivedAccessDeniedReason = "messageCountEntitiesNotDearchivedAccessDeniedReason";
 	String messageCountEntitiesNotSentAccessDeniedReason = "messageCountEntitiesNotSentAccessDeniedReason";
@@ -1178,6 +1182,7 @@ public interface Strings {
 	String messageDistrictsDearchived = "messageDistrictsDearchived";
 	String messageDontShareWithReportingToolWarning = "messageDontShareWithReportingToolWarning";
 	String messageEnterSms = "messageEnterSms";
+	String messageEntitiesFollowUpWithWrongStatusNotCancelled = "messageEntitiesFollowUpWithWrongStatusNotCancelled";
 	String messageEntityNotFound = "messageEntityNotFound";
 	String messageEntriesEdited = "messageEntriesEdited";
 	String messageEntriesEditedExceptArchived = "messageEntriesEditedExceptArchived";
@@ -1243,7 +1248,6 @@ public interface Strings {
 	String messageFacilityDearchivingNotPossible = "messageFacilityDearchivingNotPossible";
 	String messageFacilityMulitChanged = "messageFacilityMulitChanged";
 	String messageFollowUpCanceled = "messageFollowUpCanceled";
-	String messageFollowUpCanceledForSome = "messageFollowUpCanceledForSome";
 	String messageFollowUpStatusChanged = "messageFollowUpStatusChanged";
 	String messageFollowUpStatusChangedForSome = "messageFollowUpStatusChangedForSome";
 	String messageForwardedExternalMessageFound = "messageForwardedExternalMessageFound";
@@ -1292,6 +1296,7 @@ public interface Strings {
 	String messageNoCsvFile = "messageNoCsvFile";
 	String messageNoDocumentTemplateUploadFile = "messageNoDocumentTemplateUploadFile";
 	String messageNoDocumentUploadFile = "messageNoDocumentUploadFile";
+	String messageNoEligibleEntityForFollowUpCancellation = "messageNoEligibleEntityForFollowUpCancellation";
 	String messageNoEligibleEventForDeletionSelected = "messageNoEligibleEventForDeletionSelected";
 	String messageNoEndDate = "messageNoEndDate";
 	String messageNoEnvironmentsSelected = "messageNoEnvironmentsSelected";

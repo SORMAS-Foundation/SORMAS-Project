@@ -838,22 +838,30 @@ public class ContactController {
 					if (Boolean.TRUE.equals(confirmed)) {
 						String userName = UserProvider.getCurrent().getUserName();
 
-						//TODO: check newly added message: headingNoProcessedEntities, countEntriesNotProcessedExternalReasonProperty,  countEntriesNotProcessedSormastoSormasReasonProperty, 
-						//countEntriesNotProcessedAccessDeniedReasonProperty, infoBulkProcessFinishedWithSkipsProperty
+						//TODO: check newly added message: headingNoProcessedEntities, countEntriesNotProcessedAccessDeniedReasonProperty, infoBulkProcessFinishedWithSkipsProperty
+						Collection<? extends ContactIndexDto> ineligibleContacts = selectedRows.stream()
+							.filter(
+								row -> row.getFollowUpStatus().equals(FollowUpStatus.CANCELED)
+									|| row.getFollowUpStatus().equals(FollowUpStatus.NO_FOLLOW_UP))
+							.collect(Collectors.toList());
+
+						Collection<? extends ContactIndexDto> eligibleContacts = ineligibleContacts.size() > 0
+							? selectedRows.stream().filter(row -> !ineligibleContacts.contains(row)).collect(Collectors.toCollection(ArrayList::new))
+							: selectedRows;
 
 						new BulkOperationHandler<ContactIndexDto>(
 							Strings.messageFollowUpCanceled,
+							Strings.messageEntitiesFollowUpWithWrongStatusNotCancelled,
+							Strings.headingSomeEntitiesFollowUpNotCancelled,
+							Strings.headingEntitiesFollowUpNotCancelled,
+							Strings.messageCountEntitiesFollowUpNotCancelled,
 							null,
 							null,
+							Strings.messageCountEntitiesFollowUpNotCancelledAccessDeniedReason,
 							null,
-							Strings.messageFollowUpCanceledForSome,
-							null,
-							null,
-							null,
-							null,
-							null,
-							null,
-							null).doBulkOperation(batch -> {
+							Strings.messageNoEligibleEntityForFollowUpCancellation,
+							Strings.infoBulkProcessFinishedWithSkipsOutsideJurisdictionOrNotEligible,
+							Strings.infoBulkProcessFinishedWithoutSuccess).doBulkOperation(batch -> {
 								List<ProcessedEntity> processedContacts = new ArrayList<>();
 
 								for (ContactIndexDto contact : batch) {
@@ -873,21 +881,23 @@ public class ContactController {
 												"The follow up of the contact with uuid {} could not be cancelled due to an AccessDeniedException",
 												contact.getUuid(),
 												e);
+											//TODO: add to other controller where is missing
 										} catch (Exception e) {
-											//TODO: analyze the save and add all type of exceptions
 											processedContacts.add(new ProcessedEntity(contact.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
 											logger.error(
 												"The follow up of the contact with uuid {} could not be cancelled due to an Exception",
 												contact.getUuid(),
 												e);
 										}
-									} else {
-										processedContacts.add(new ProcessedEntity(contact.getUuid(), ProcessedEntityStatus.NOT_ELIGIBLE));
 									}
 								}
 
 								return processedContacts;
-							}, new ArrayList<>(selectedRows), null, null, bulkOperationCallback(caseUuid, contactGrid, null));
+							},
+								new ArrayList<>(selectedRows),
+								new ArrayList<>(eligibleContacts),
+								new ArrayList<>(ineligibleContacts),
+								bulkOperationCallback(caseUuid, contactGrid, null));
 					}
 				});
 		}

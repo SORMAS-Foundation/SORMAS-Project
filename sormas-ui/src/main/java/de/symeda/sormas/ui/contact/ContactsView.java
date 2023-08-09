@@ -525,14 +525,14 @@ public class ContactsView extends AbstractView {
 								mi -> grid.bulkActionHandler(
 									items -> ControllerProvider.getContactController()
 										.cancelFollowUpOfAllSelectedItems(items, null, (AbstractContactGrid<?>) grid)),
-								hasBulkOperationsRight),
+								hasBulkOperationsRight && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)),
 							new MenuBarHelper.MenuBarItem(
 								I18nProperties.getCaption(Captions.bulkLostToFollowUp),
 								VaadinIcons.UNLINK,
 								mi -> grid.bulkActionHandler(
 									items -> ControllerProvider.getContactController()
 										.setAllSelectedItemsToLostToFollowUp(items, null, (AbstractContactGrid<?>) grid)),
-								hasBulkOperationsRight),
+								hasBulkOperationsRight && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)),
 							criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED
 								? new MenuBarHelper.MenuBarItem(
 									I18nProperties.getCaption(Captions.bulkDelete),
