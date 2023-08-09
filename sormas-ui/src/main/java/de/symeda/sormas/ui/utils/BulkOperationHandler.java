@@ -404,7 +404,6 @@ public class BulkOperationHandler<T extends HasUuid> {
 			: failedProcessingDescription;
 	}
 
-	//TODO: check this for infrastructure archiving
 	public String buildIneligibleEntriesDescription(boolean areIneligibleEntriesSelected, List<T> selectedIneligibleEntries) {
 		String ineligibleEntriesDescription = StringUtils.EMPTY;
 		if (areIneligibleEntriesSelected) {

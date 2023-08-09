@@ -550,6 +550,7 @@ public interface Strings {
 	String headingEditVisit = "headingEditVisit";
 	String headingEntitiesNotArchived = "headingEntitiesNotArchived";
 	String headingEntitiesNotDearchived = "headingEntitiesNotDearchived";
+	String headingEntitiesNotSent = "headingEntitiesNotSent";
 	String headingEnvironmentalExposure = "headingEnvironmentalExposure";
 	String headingEpiCurve = "headingEpiCurve";
 	String headingEpiDataSourceCaseContacts = "headingEpiDataSourceCaseContacts";
@@ -1130,6 +1131,8 @@ public interface Strings {
 	String messageCountContactsNotRestored = "messageCountContactsNotRestored";
 	String messageCountEntitiesNotArchivedAccessDeniedReason = "messageCountEntitiesNotArchivedAccessDeniedReason";
 	String messageCountEntitiesNotDearchivedAccessDeniedReason = "messageCountEntitiesNotDearchivedAccessDeniedReason";
+	String messageCountEntitiesNotSentAccessDeniedReason = "messageCountEntitiesNotSentAccessDeniedReason";
+	String messageCountEntitiesNotSentExternalReason = "messageCountEntitiesNotSentExternalReason";
 	String messageCountEventParticipantsNotDeleted = "messageCountEventParticipantsNotDeleted";
 	String messageCountEventParticipantsNotDeletedAccessDeniedReason = "messageCountEventParticipantsNotDeletedAccessDeniedReason";
 	String messageCountEventParticipantsNotRestored = "messageCountEventParticipantsNotRestored";

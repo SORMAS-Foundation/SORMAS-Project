@@ -29,6 +29,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.share.ExternalShareInfoCriteria;
 import de.symeda.sormas.api.utils.AccessDeniedException;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.DirtyStateComponent;
@@ -122,32 +123,28 @@ public class ExternalSurveillanceServiceGateway {
 		Consumer<List<T>> callback) {
 		sendToExternalSurveillanceTool(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_confirmSendCases), () -> {
 			ArrayList<T> selectedCasesCpy = new ArrayList<>(selectedCases);
-			//TODO: check newly added message: headingNoProcessedEntities, countEntriesNotProcessedExternalReasonProperty,  countEntriesNotProcessedSormastoSormasReasonProperty, 
-			//countEntriesNotProcessedAccessDeniedReasonProperty, infoBulkProcessFinishedWithSkipsProperty
 			new BulkOperationHandler<T>(
 				Strings.ExternalSurveillanceToolGateway_notificationEntriesSent,
 				null,
 				null,
+				Strings.headingEntitiesNotSent,
 				null,
+				Strings.messageCountEntitiesNotSentExternalReason,
 				null,
-				null,
-				null,
-				null,
+				Strings.messageCountEntitiesNotSentAccessDeniedReason,
 				Strings.ExternalSurveillanceToolGateway_notificationSomeEntriesSent,
 				null,
 				null,
-				null).doBulkOperation(batch -> {
+				Strings.infoBulkProcessFinishedWithoutSuccess).doBulkOperation(batch -> {
 					List<ProcessedEntity> processedCases = new ArrayList<>();
 					try {
 						FacadeProvider.getExternalSurveillanceToolFacade()
 							.sendCases(batch.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList()));
+						processedCases.addAll(buildProcessedEntitiesListByStatus(batch, ProcessedEntityStatus.SUCCESS));
 					} catch (AccessDeniedException e) {
-						addProcessingStatusToEntities(batch, ProcessedEntityStatus.ACCESS_DENIED_FAILURE);
+						processedCases.addAll(buildProcessedEntitiesListByStatus(batch, ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
 					} catch (ExternalSurveillanceToolException e) {
-						//TODO: add all type of exceptions here
-						addProcessingStatusToEntities(batch, ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE);
-					} catch (Exception e) {
-						//TODO: if other exceptions should be added
+						processedCases.addAll(buildProcessedEntitiesListByStatus(batch, ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
 					}
 
 					return processedCases;
@@ -156,7 +153,7 @@ public class ExternalSurveillanceServiceGateway {
 		}, null, shouldConfirm, null);
 	}
 
-	public static <T extends CaseIndexDto> List<ProcessedEntity> addProcessingStatusToEntities(
+	public static <T extends PseudonymizableIndexDto> List<ProcessedEntity> buildProcessedEntitiesListByStatus(
 		Collection<T> entities,
 		ProcessedEntityStatus processedEntityStatus) {
 		List<ProcessedEntity> processedEntities = new ArrayList<>();
@@ -183,22 +180,24 @@ public class ExternalSurveillanceServiceGateway {
 				Strings.ExternalSurveillanceToolGateway_notificationEntriesSent,
 				null,
 				null,
+				Strings.headingEntitiesNotSent,
 				null,
+				Strings.messageCountEntitiesNotSentExternalReason,
 				null,
-				null,
-				null,
-				null,
+				Strings.messageCountEntitiesNotSentAccessDeniedReason,
 				Strings.ExternalSurveillanceToolGateway_notificationSomeEntriesSent,
 				null,
 				null,
-				null).doBulkOperation(batch -> {
+				Strings.infoBulkProcessFinishedWithoutSuccess).doBulkOperation(batch -> {
 					List<ProcessedEntity> processedEvents = new ArrayList<>();
 					try {
 						FacadeProvider.getExternalSurveillanceToolFacade()
 							.sendEvents(batch.stream().map(EventIndexDto::getUuid).collect(Collectors.toList()));
+						processedEvents.addAll(buildProcessedEntitiesListByStatus(batch, ProcessedEntityStatus.SUCCESS));
+					} catch (AccessDeniedException e) {
+						processedEvents.addAll(buildProcessedEntitiesListByStatus(batch, ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
 					} catch (ExternalSurveillanceToolException e) {
-						//TODO: add all type of exceptions here
-						//return 0;
+						processedEvents.addAll(buildProcessedEntitiesListByStatus(batch, ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
 					}
 
 					return processedEvents;
