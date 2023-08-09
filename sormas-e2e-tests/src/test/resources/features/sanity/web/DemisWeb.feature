@@ -664,6 +664,7 @@ Scenario: Create and send laboratory request via Demis
 
   @tmsLink=SORQA-1060 @env_d2s @LoginKeycloak
   Scenario: Demis - Actions on Messages directory[1]
+    Given API : Login to DEMIS server
     When I create and send Laboratory Notification for physician report
     And I log in as a Admin User
     And I click on the Messages button from navbar
@@ -717,6 +718,7 @@ Scenario: Create and send laboratory request via Demis
 
   @tmsLink=SORQA-1060 @env_d2s @LoginKeycloak
   Scenario: Demis - Actions on Messages directory[2]
+    Given API : Login to DEMIS server
     When I create and send Laboratory Notification for physician report
     And I log in as a Admin User
     And I click on the Messages button from navbar
