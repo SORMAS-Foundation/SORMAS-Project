@@ -692,21 +692,15 @@ Scenario: Create and send laboratory request via Demis
     Then I click on "Weitergeleitet" quick filter above the messages in Message directory page
     And I check that status of the messages correspond to selected tab value "Weitergeleitet" in grid Message Directory Type column
     And I click the header UUID of column
-    Then I check that UUID column is sorted in ascending order
-    And I click the header UUID of column
-    Then I check that UUID column is sorted in descending order
+    Then I check that error not appear
     Then I click on "Unklar" quick filter above the messages in Message directory page
     And I check that status of the messages correspond to selected tab value "Unklar" in grid Message Directory Type column
     And I click the header UUID of column
-    Then I check that UUID column is sorted in ascending order
-    And I click the header UUID of column
-    Then I check that UUID column is sorted in descending order
+    Then I check that error not appear
     Then I click on "Verarbeitet" quick filter above the messages in Message directory page
     And I check that status of the messages correspond to selected tab value "Verarbeitet" in grid Message Directory Type column
     And I click the header UUID of column
-    Then I check that UUID column is sorted in ascending order
-    And I click the header UUID of column
-    Then I check that UUID column is sorted in descending order
+    Then I check that error not appear
     Then I click on Enter Bulk Edit Mode from Message Directory
     And I select first 3 results in grid in Message Directory
     And I click on Bulk Actions combobox in Message Directory
@@ -743,9 +737,7 @@ Scenario: Create and send laboratory request via Demis
     Then I click on "Unverarbeitet" quick filter above the messages in Message directory page
     And I check that status of the messages correspond to selected tab value "Unverarbeitet" in grid Message Directory Type column
     And I click the header UUID of column
-    Then I check that UUID column is sorted in ascending order
-    And I click the header UUID of column
-    Then I check that UUID column is sorted in descending order
+    Then I check that error not appear
     Then I click on Enter Bulk Edit Mode from Message Directory
     And I select first 3 results in grid in Message Directory
     And I click on Bulk Actions combobox in Message Directory

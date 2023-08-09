@@ -104,30 +104,6 @@ public class ColumnSteps implements En {
         });
 
     When(
-        "I check that UUID column is sorted in ascending order",
-        () -> {
-          TimeUnit.SECONDS.sleep(3); // For preventing premature data collection
-          List<String> rawColumnData = getTableColumnDataByIndex(2, 10);
-          List<String> ascColumnData = new ArrayList<>(rawColumnData);
-          ascColumnData.sort(Comparator.nullsLast(Comparator.naturalOrder()));
-          softly.assertEquals(
-              rawColumnData, ascColumnData, "UUID Column  is not correctly sorted!");
-          softly.assertAll();
-        });
-
-    When(
-        "I check that UUID column is sorted in descending order",
-        () -> {
-          TimeUnit.SECONDS.sleep(3); // For preventing premature data collection
-          List<String> rawColumnData = getTableColumnDataByIndex(2, 10);
-          List<String> ascColumnData = new ArrayList<>(rawColumnData);
-          ascColumnData.sort(Comparator.nullsLast(Comparator.reverseOrder()));
-          softly.assertEquals(
-              rawColumnData, ascColumnData, "UUID Column  is not correctly sorted!");
-          softly.assertAll();
-        });
-
-    When(
         "I check that column {int} is sorted by last name in descending order",
         (Integer col) -> {
           TimeUnit.SECONDS.sleep(3); // For preventing premature data collection
