@@ -688,6 +688,7 @@ Scenario: Create and send laboratory request via Demis
     And I verify if lab message file is downloaded correctly
     And I assign the Assignee to the message on Message Directory page
     And I check that "Ad MIN" is assigned to the message on Message Directory page
+    And I click on the RESET FILTERS button for Messages
     Then I click on "Weitergeleitet" quick filter above the messages in Message directory page
     And I check that status of the messages correspond to selected tab value "Weitergeleitet" in grid Message Directory Type column
     And I click the header UUID of column
@@ -738,6 +739,7 @@ Scenario: Create and send laboratory request via Demis
     And I verify if lab message file is downloaded correctly
     And I assign the Assignee to the message on Message Directory page
     And I check that "Ad MIN" is assigned to the message on Message Directory page
+    And I click on the RESET FILTERS button for Messages
     Then I click on "Unverarbeitet" quick filter above the messages in Message directory page
     And I check that status of the messages correspond to selected tab value "Unverarbeitet" in grid Message Directory Type column
     And I click the header UUID of column
