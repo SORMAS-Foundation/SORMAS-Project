@@ -23,11 +23,13 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageType;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
+import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportService;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.country.CountryService;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -41,6 +43,8 @@ public class ExternalMessageFacadeEjbMappingTest {
 	private UserService userservice;
 	@Mock
 	private SurveillanceReportService surveillanceReportService;
+	@Mock
+	private CountryService countryService;
 	@InjectMocks
 	private ExternalMessageFacadeEjb sut;
 
@@ -56,6 +60,7 @@ public class ExternalMessageFacadeEjbMappingTest {
 		assignee.setUuid("12345");
 
 		when(sampleReportFacade.fromDto(eq(sampleReportDto), any(ExternalMessage.class), eq(false))).thenReturn(sampleReport);
+		when(countryService.getByReferenceDto(source.getPersonCountry())).thenReturn(null);
 		when(userservice.getByReferenceDto(assignee.toReference())).thenReturn(assignee);
 
 		source.addSampleReport(sampleReportDto);
@@ -84,6 +89,10 @@ public class ExternalMessageFacadeEjbMappingTest {
 		source.setExternalMessageDetails("Lab Message Details");
 		source.setAssignee(assignee.toReference());
 		source.setType(ExternalMessageType.LAB_MESSAGE);
+		source.setPersonPhoneNumberType(PhoneNumberType.MOBILE);
+		source.setPersonExternalId("11111");
+		source.setPersonNationalHealthId("22222");
+		source.setCaseReportDate(new Date());
 
 		ExternalMessage result = sut.fillOrBuildEntity(source, null, true);
 
@@ -111,6 +120,10 @@ public class ExternalMessageFacadeEjbMappingTest {
 		assertEquals(source.getExternalMessageDetails(), result.getExternalMessageDetails());
 		assertEquals(assignee.getUuid(), result.getAssignee().getUuid());
 		assertEquals(source.getType(), result.getType());
+		assertEquals(source.getPersonPhoneNumberType(), result.getPersonPhoneNumberType());
+		assertEquals(source.getPersonExternalId(), result.getPersonExternalId());
+		assertEquals(source.getPersonNationalHealthId(), result.getPersonNationalHealthId());
+		assertEquals(source.getCaseReportDate(), result.getCaseReportDate());
 	}
 
 	@Test
@@ -156,6 +169,10 @@ public class ExternalMessageFacadeEjbMappingTest {
 		source.setStatus(ExternalMessageStatus.PROCESSED);
 		source.setAssignee(assignee);
 		source.setType(ExternalMessageType.LAB_MESSAGE);
+		source.setPersonPhoneNumberType(PhoneNumberType.MOBILE);
+		source.setPersonExternalId("11111");
+		source.setPersonNationalHealthId("22222");
+		source.setCaseReportDate(new Date());
 
 		ExternalMessageDto result = sut.toDto(source);
 
@@ -183,5 +200,9 @@ public class ExternalMessageFacadeEjbMappingTest {
 		assertEquals(source.getExternalMessageDetails(), result.getExternalMessageDetails());
 		assertEquals(assignee.getUuid(), result.getAssignee().getUuid());
 		assertEquals(source.getType(), result.getType());
+		assertEquals(source.getPersonPhoneNumberType(), result.getPersonPhoneNumberType());
+		assertEquals(source.getPersonExternalId(), result.getPersonExternalId());
+		assertEquals(source.getPersonNationalHealthId(), result.getPersonNationalHealthId());
+		assertEquals(source.getCaseReportDate(), result.getCaseReportDate());
 	}
 }
