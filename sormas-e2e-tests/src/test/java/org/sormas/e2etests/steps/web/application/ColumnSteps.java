@@ -5,6 +5,7 @@ import static org.sormas.e2etests.pages.application.NavBarPage.ERROR_NOTIFICATIO
 import static org.sormas.e2etests.pages.application.NavBarPage.ERROR_NOTIFICATION_CAPTION_DE;
 import static org.sormas.e2etests.pages.application.NavBarPage.ERROR_NOTIFICATION_DESCRIPTION;
 import static org.sormas.e2etests.pages.application.NavBarPage.ERROR_NOTIFICATION_DESCRIPTION_DE;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.UUID_HEADER;
 
 import cucumber.api.java8.En;
 import java.nio.charset.StandardCharsets;
@@ -36,6 +37,13 @@ public class ColumnSteps implements En {
         (Integer col) -> {
           webDriverHelpers.clickOnWebElementBySelector(
               By.xpath("//thead//tr//th[" + col.toString() + "]"));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+        });
+
+    When(
+        "I click the header UUID of column",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(UUID_HEADER);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
         });
 
@@ -92,6 +100,30 @@ public class ColumnSteps implements En {
               rawColumnData,
               ascColumnData,
               "Column " + col.toString() + " is not correctly sorted!");
+          softly.assertAll();
+        });
+
+    When(
+        "I check that UUID column is sorted in ascending order",
+        () -> {
+          TimeUnit.SECONDS.sleep(3); // For preventing premature data collection
+          List<String> rawColumnData = getTableColumnDataByIndex(2, 10);
+          List<String> ascColumnData = new ArrayList<>(rawColumnData);
+          ascColumnData.sort(Comparator.nullsLast(Comparator.naturalOrder()));
+          softly.assertEquals(
+              rawColumnData, ascColumnData, "UUID Column  is not correctly sorted!");
+          softly.assertAll();
+        });
+
+    When(
+        "I check that UUID column is sorted in descending order",
+        () -> {
+          TimeUnit.SECONDS.sleep(3); // For preventing premature data collection
+          List<String> rawColumnData = getTableColumnDataByIndex(2, 10);
+          List<String> ascColumnData = new ArrayList<>(rawColumnData);
+          ascColumnData.sort(Comparator.nullsLast(Comparator.reverseOrder()));
+          softly.assertEquals(
+              rawColumnData, ascColumnData, "UUID Column  is not correctly sorted!");
           softly.assertAll();
         });
 
