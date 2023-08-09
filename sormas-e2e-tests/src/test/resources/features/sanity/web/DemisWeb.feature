@@ -686,6 +686,8 @@ Scenario: Create and send laboratory request via Demis
     And I close HTML message
     And I download "processed" message from Message Directory page
     And I verify if lab message file is downloaded correctly
+    And I assign the Assignee to the message on Message Directory page
+    And I check that "Ad MIN" is assigned to the message on Message Directory page
     Then I click on "Weitergeleitet" quick filter above the messages in Message directory page
     And I check that status of the messages correspond to selected tab value "Weitergeleitet" in grid Message Directory Type column
     And I click the header UUID of column
@@ -704,9 +706,6 @@ Scenario: Create and send laboratory request via Demis
     Then I check that UUID column is sorted in ascending order
     And I click the header UUID of column
     Then I check that UUID column is sorted in descending order
-    And I click on reset filters button from Message Directory
-    And I assign the Assignee to the message on Message Directory page
-    And I check that "Ad MIN" is assigned to the message on Message Directory page
     Then I click on Enter Bulk Edit Mode from Message Directory
     And I select first 3 results in grid in Message Directory
     And I click on Bulk Actions combobox in Message Directory
@@ -737,15 +736,14 @@ Scenario: Create and send laboratory request via Demis
     And I close HTML message
     And I download "unprocessed" message from Message Directory page
     And I verify if lab message file is downloaded correctly
+    And I assign the Assignee to the message on Message Directory page
+    And I check that "Ad MIN" is assigned to the message on Message Directory page
     Then I click on "Unverarbeitet" quick filter above the messages in Message directory page
     And I check that status of the messages correspond to selected tab value "Unverarbeitet" in grid Message Directory Type column
     And I click the header UUID of column
     Then I check that UUID column is sorted in ascending order
     And I click the header UUID of column
     Then I check that UUID column is sorted in descending order
-    And I click on reset filters button from Message Directory
-    And I assign the Assignee to the message on Message Directory page
-    And I check that "Ad MIN" is assigned to the message on Message Directory page
     Then I click on Enter Bulk Edit Mode from Message Directory
     And I select first 3 results in grid in Message Directory
     And I click on Bulk Actions combobox in Message Directory
