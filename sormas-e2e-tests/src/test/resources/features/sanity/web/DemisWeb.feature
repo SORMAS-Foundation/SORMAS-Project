@@ -679,6 +679,11 @@ Scenario: Create and send laboratory request via Demis
     And I click next button while processing a "clinical measurement" in DEMIS LabMessage
     And I click next button while processing a "exposure investigation" in DEMIS LabMessage
     And I click on "save" button in new physician report form while processing a message
+    Then I click on "Verarbeitet" quick filter above the messages in Message directory page
+    And I check that "Verarbeitet" quick filter button is selected in Message directory page
+    And I click on the eye icon next for the first fetched message
+    Then I check if there are any buttons from processed message in HTML message file
+    And I close HTML message
     And I download "processed" message from Message Directory page
     And I verify if lab message file is downloaded correctly
     Then I click on "Weitergeleitet" quick filter above the messages in Message directory page
@@ -723,6 +728,8 @@ Scenario: Create and send laboratory request via Demis
     And I log in as a Admin User
     And I click on the Messages button from navbar
     And I click on fetch messages button
+    And I filter by last created person via API in Messages Directory
+    And I collect shortened message uuid from Message Directory page
     Then I click on "Unverarbeitet" quick filter above the messages in Message directory page
     And I check that "Unverarbeitet" quick filter button is selected in Message directory page
     And I click on the eye icon next for the first fetched message
