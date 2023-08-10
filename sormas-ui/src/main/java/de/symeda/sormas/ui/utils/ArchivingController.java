@@ -214,7 +214,6 @@ public class ArchivingController {
 		}
 	}
 
-
 	private <T extends HasUuid> BulkOperationHandler<T> createBulkOperationHandler(IArchiveHandler<?> archiveHandler, boolean forArchive) {
 		ArchiveMessages archiveMessages = archiveHandler.getArchiveMessages();
 		return new BulkOperationHandler<>(
@@ -222,7 +221,7 @@ public class ArchivingController {
 			null,
 			forArchive ? archiveMessages.getHeadingSomeEntitiesNotArchived() : archiveMessages.getHeadingSomeEntitiesNotDearchived(),
 			forArchive ? archiveMessages.getHeadingEntitiesNotArchived() : archiveMessages.getHeadingEntitiesNotDearchived(),
-			null,
+			forArchive ? archiveMessages.getMessageCountEntitiesNotArchived() : archiveMessages.getMessageCountEntitiesNotDearchived(),
 			forArchive
 				? archiveMessages.getMessageCountEntitiesNotArchivedExternalReason()
 				: archiveMessages.getMessageCountEntitiesNotDearchivedExternalReason(),

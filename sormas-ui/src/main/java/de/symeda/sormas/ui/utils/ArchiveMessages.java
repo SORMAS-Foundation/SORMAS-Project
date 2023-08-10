@@ -296,7 +296,8 @@ public enum ArchiveMessages {
 	private final String messageSomeEntitiesArchived = Strings.messageSomeEntitiesArchived;
 	private final String messageAllEntitiesDearchived = Strings.messageAllEntitiesDearchived;
 	private final String messageSomeEntitiesDearchived = Strings.messageSomeEntitiesDearchived;
-
+	private final String messageCountEntitiesNotArchived = Strings.messageCountEntitiesNotArchived;
+	private final String messageCountEntitiesNotDearchived = Strings.messageCountEntitiesNotDearchived;
 	private final String headingSomeEntitiesNotArchived = Strings.headingSomeEntitiesNotArchived;
 	private final String headingEntitiesNotArchived = Strings.headingEntitiesNotArchived;
 	private final String headingSomeEntitiesNotDearchived = Strings.headingSomeEntitiesNotDearchived;
@@ -387,6 +388,14 @@ public enum ArchiveMessages {
 
 	public String getMessageCountEntitiesNotDearchivedAccessDeniedReason() {
 		return messageCountEntitiesNotDearchivedAccessDeniedReason;
+	}
+
+	public String getMessageCountEntitiesNotArchived() {
+		return messageCountEntitiesNotArchived;
+	}
+
+	public String getMessageCountEntitiesNotDearchived() {
+		return messageCountEntitiesNotDearchived;
 	}
 
 	public String getHeadingConfirmationArchiving() {

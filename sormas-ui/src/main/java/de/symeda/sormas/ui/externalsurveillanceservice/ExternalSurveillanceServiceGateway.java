@@ -145,6 +145,8 @@ public class ExternalSurveillanceServiceGateway {
 						processedCases.addAll(buildProcessedEntitiesListByStatus(batch, ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
 					} catch (ExternalSurveillanceToolException e) {
 						processedCases.addAll(buildProcessedEntitiesListByStatus(batch, ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
+					} catch (Exception e) {
+						processedCases.addAll(buildProcessedEntitiesListByStatus(batch, ProcessedEntityStatus.INTERNAL_FAILURE));
 					}
 
 					return processedCases;
@@ -163,8 +165,10 @@ public class ExternalSurveillanceServiceGateway {
 
 		if (processedEntityStatus.equals(ProcessedEntityStatus.ACCESS_DENIED_FAILURE)) {
 			logger.error("The selected entities could not be sent to the External Surveillance Tool due to an AccessDeniedException");
-		} else {
+		} else if (processedEntityStatus.equals(ProcessedEntityStatus.ACCESS_DENIED_FAILURE)) {
 			logger.error("The selected entities could not be sent to the External Surveillance Tool due to an ExternalSurveillanceToolException");
+		} else {
+			logger.error("The selected entities could not be sent to the External Surveillance Tool due to an Exception");
 		}
 
 		return processedEntities;
@@ -181,7 +185,7 @@ public class ExternalSurveillanceServiceGateway {
 				null,
 				null,
 				Strings.headingEntitiesNotSent,
-				null,
+				Strings.messageCountEntitiesNotSent,
 				Strings.messageCountEntitiesNotSentExternalReason,
 				null,
 				Strings.messageCountEntitiesNotSentAccessDeniedReason,
@@ -198,6 +202,8 @@ public class ExternalSurveillanceServiceGateway {
 						processedEvents.addAll(buildProcessedEntitiesListByStatus(batch, ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
 					} catch (ExternalSurveillanceToolException e) {
 						processedEvents.addAll(buildProcessedEntitiesListByStatus(batch, ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
+					} catch (Exception e) {
+						processedEvents.addAll(buildProcessedEntitiesListByStatus(batch, ProcessedEntityStatus.INTERNAL_FAILURE));
 					}
 
 					return processedEvents;

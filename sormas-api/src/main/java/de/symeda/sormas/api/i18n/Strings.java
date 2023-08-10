@@ -1133,8 +1133,11 @@ public interface Strings {
 	String messageCountContactsNotDeletedAccessDeniedReason = "messageCountContactsNotDeletedAccessDeniedReason";
 	String messageCountContactsNotDeletedSormasToSormasReason = "messageCountContactsNotDeletedSormasToSormasReason";
 	String messageCountContactsNotRestored = "messageCountContactsNotRestored";
+	String messageCountEntitiesNotArchived = "messageCountEntitiesNotArchived";
 	String messageCountEntitiesNotArchivedAccessDeniedReason = "messageCountEntitiesNotArchivedAccessDeniedReason";
+	String messageCountEntitiesNotDearchived = "messageCountEntitiesNotDearchived";
 	String messageCountEntitiesNotDearchivedAccessDeniedReason = "messageCountEntitiesNotDearchivedAccessDeniedReason";
+	String messageCountEntitiesNotSent = "messageCountEntitiesNotSent";
 	String messageCountEntitiesNotSentAccessDeniedReason = "messageCountEntitiesNotSentAccessDeniedReason";
 	String messageCountEntitiesNotSentExternalReason = "messageCountEntitiesNotSentExternalReason";
 	String messageCountEventParticipantsNotDeleted = "messageCountEventParticipantsNotDeleted";

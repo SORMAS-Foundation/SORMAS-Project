@@ -71,19 +71,14 @@ public class BulkOperationHandler<T extends HasUuid> {
 		String allEntriesProcessedMessageProperty,
 		String ineligibleEntriesNotProcessedMessageProperty,
 		String headingSomeEntitiesNotProcessed,
-		//not added
 		String headingNoProcessedEntities,
-
 		String countEntriesNotProcessedMessageProperty,
-		//Not added
 		String countEntriesNotProcessedExternalReasonProperty,
 		String countEntriesNotProcessedSormasToSormasReasonProperty,
 		String countEntriesNotProcessedAccessDeniedReasonProperty,
-
 		String someEntriesProcessedMessageProperty,
 		String noEligibleEntityMessageProperty,
 		String infoBulkProcessFinishedWithSkipsProperty,
-		//Not added
 		String infoBulkProcessFinishedWithoutSuccess) {
 
 		this.allEntriesProcessedMessageProperty = allEntriesProcessedMessageProperty;
