@@ -12529,4 +12529,20 @@ VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'PATHOGEN',
        (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'PATHOGEN', 'OTHER', 'Other', true, jsonb_build_object('hasDetails', true));
 
 INSERT INTO schema_version (version_number, comment) VALUES (520, 'Add a new customizable enum called Pathogen #11840');
+
+-- 2023-08-08 Add missing fields to external message entity #12390
+ALTER TABLE externalmessage ADD COLUMN casereportdate timestamp;
+ALTER TABLE externalmessage ADD COLUMN personexternalid text;
+ALTER TABLE externalmessage ADD COLUMN personnationalhealthid text;
+ALTER TABLE externalmessage ADD COLUMN personphonenumbertype varchar(255);
+ALTER TABLE externalmessage ADD COLUMN personcountry_id bigint;
+ALTER TABLE externalmessage_history ADD COLUMN casereportdate timestamp;
+ALTER TABLE externalmessage_history ADD COLUMN personexternalid text;
+ALTER TABLE externalmessage_history ADD COLUMN personnationalhealthid text;
+ALTER TABLE externalmessage_history ADD COLUMN personphonenumbertype varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN personcountry_id bigint;
+ALTER TABLE externalmessage ADD CONSTRAINT fk_externalmessage_personcountry_id FOREIGN KEY (personcountry_id) REFERENCES country(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (521, 'Add missing fields to external message entity #12390');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
