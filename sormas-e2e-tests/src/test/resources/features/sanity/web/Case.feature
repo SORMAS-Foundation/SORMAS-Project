@@ -1833,3 +1833,23 @@ Feature: Case end to end tests
     And I click on Create button in Document Templates box in Edit Case directory
     Then I select "ExampleDocumentTemplateCases.docx" Quarantine Order in Create Quarantine Order form in Edit Case directory
     And Sample name timestamp is correct in Create Quarantine Order form from Edit Case directory
+
+  @tmsLink=SORQA-1062 @env_main
+  Scenario: Sormas - Progress window for bulk delete and restore
+    Given I log in as a Admin User
+    Then I click on the Cases button from navbar
+    And I check that Relevance Status Filter is set to "Active cases" on Case Directory page
+    And I click on the More button on Case directory page
+    And I click Enter Bulk Edit Mode on Case directory page
+    And I click on "Yes" option in Enter bulk edit mode window
+    And I click on Bulk Actions combobox on Case Directory Page
+    Then I click on Delete button from Bulk Actions Combobox in Case Directory
+    And I check that warning message appears that no cases are selected
+#    And I click checkboxes to choose first 2 cases from Case Directory page
+    And I click checkboxes to choose bigger amount of cases like 2 cases from Case Directory page
+    And I click on Bulk Actions combobox on Case Directory Page
+    Then I click on Delete button from Bulk Actions Combobox in Case Directory
+    When I set Reason for deletion as "Deletion request by another authority"
+    And I click on Yes option in Confirm deletion popup
+    And I check if popup deletion message appeared for "en"
+    And I click checkboxes to choose bigger amount of cases like 41 cases from Case Directory page
