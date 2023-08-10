@@ -14883,7 +14883,7 @@
           },
           "dataType" : {
             "type" : "string",
-            "enum" : [ "DISEASE_VARIANT", "SPECIFIC_EVENT_RISK", "OCCUPATION_TYPE" ]
+            "enum" : [ "DISEASE_VARIANT", "SPECIFIC_EVENT_RISK", "OCCUPATION_TYPE", "PATHOGEN" ]
           },
           "defaultValue" : {
             "type" : "boolean"
