@@ -18,6 +18,60 @@
 
 package org.sormas.e2etests.steps.web.application.cases;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.javafaker.Faker;
+import com.google.common.truth.Truth;
+import com.opencsv.CSVParser;
+import com.opencsv.CSVParserBuilder;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.CSVWriter;
+import com.opencsv.exceptions.CsvException;
+import cucumber.api.java8.En;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.By;
+import org.sormas.e2etests.common.DataOperations;
+import org.sormas.e2etests.entities.pojo.csv.DetailedCaseCSV;
+import org.sormas.e2etests.entities.pojo.csv.DetailedCaseCSVSymptoms;
+import org.sormas.e2etests.enums.CaseOutcome;
+import org.sormas.e2etests.enums.DiseasesValues;
+import org.sormas.e2etests.enums.DistrictsValues;
+import org.sormas.e2etests.enums.FacilityCategory;
+import org.sormas.e2etests.enums.FollowUpStatus;
+import org.sormas.e2etests.enums.PresentCondition;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
+import org.sormas.e2etests.helpers.AssertHelpers;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.helpers.files.FilesHelper;
+import org.sormas.e2etests.pages.application.cases.EditCasePage;
+import org.sormas.e2etests.pages.application.contacts.EditContactPage;
+import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.BaseSteps;
+import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
+
+import javax.inject.Inject;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.DateFormatSymbols;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
+
 import static org.sormas.e2etests.entities.pojo.helpers.ShortUUIDGenerator.generateShortUUID;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ACTION_OKAY;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ACTION_RESET_POPUP;
@@ -29,6 +83,8 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_ACTIONS_VALUES;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_CREATE_QUARANTINE_ORDER;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_EDIT_INFORMATION;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_MODE_SUCCESS_IMAGE;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_OPERATION_PROGRESS_BAR;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CANCEL_POPUP;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASES_FROM_OTHER_INSTANCES_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASES_FROM_OTHER_JURISDICTIONS_CHECKBOX;
@@ -108,6 +164,9 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERS
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.POPUP_NOTIFICATION_CAPTION;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.POPUP_NOTIFICATION_DESCRIPTION;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.POTENTIAL_DUPLICATE_POPUP_DE;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PROGRESSBAR_TOTAL_NUMBER_OF_CASES_LABEL;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PROGRESSBAR_TOTAL_NUMBER_OF_SKIPPED_CASES_LABEL;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PROGRESSBAR_TOTAL_NUMBER_OF_SUCCESSFUL_CASES_LABEL;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.REJECT_SHARED_CASE_HEADER_DE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.REJECT_SHARED_CASE_POPUP_TEXT_AREA;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.RELEVANT_STATUS_INPUT;
@@ -118,7 +177,6 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SHAR
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SHOW_MORE_LESS_FILTERS;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.TOTAL_CASES_COUNTER;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX;
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getBulkModeCaseCheckboxByIndex;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getCaseResultsUuidLocator;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getCaseUUIDBasedOnRowInTable;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getCheckboxByIndex;
@@ -165,59 +223,6 @@ import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.IMPO
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.SELECT_ANOTHER_PERSON_DE;
 import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.BULK_DELETE_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.javafaker.Faker;
-import com.google.common.truth.Truth;
-import com.opencsv.CSVParser;
-import com.opencsv.CSVParserBuilder;
-import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderBuilder;
-import com.opencsv.CSVWriter;
-import com.opencsv.exceptions.CsvException;
-import cucumber.api.java8.En;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.DateFormatSymbols;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
-import javax.inject.Inject;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
-import org.sormas.e2etests.common.DataOperations;
-import org.sormas.e2etests.entities.pojo.csv.DetailedCaseCSV;
-import org.sormas.e2etests.entities.pojo.csv.DetailedCaseCSVSymptoms;
-import org.sormas.e2etests.enums.CaseOutcome;
-import org.sormas.e2etests.enums.DiseasesValues;
-import org.sormas.e2etests.enums.DistrictsValues;
-import org.sormas.e2etests.enums.FacilityCategory;
-import org.sormas.e2etests.enums.FollowUpStatus;
-import org.sormas.e2etests.enums.PresentCondition;
-import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
-import org.sormas.e2etests.helpers.AssertHelpers;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.helpers.files.FilesHelper;
-import org.sormas.e2etests.pages.application.cases.EditCasePage;
-import org.sormas.e2etests.pages.application.contacts.EditContactPage;
-import org.sormas.e2etests.state.ApiState;
-import org.sormas.e2etests.steps.BaseSteps;
-import org.testng.Assert;
-import org.testng.asserts.SoftAssert;
 
 @Slf4j
 public class CaseDirectorySteps implements En {
@@ -1549,18 +1554,7 @@ public class CaseDirectorySteps implements En {
         });
 
     And(
-        "^I click checkboxes to choose first (\\d+) cases from Case Directory page$",
-        (Integer numberOfCases) -> {
-          int i = 1;
-          while (i <= numberOfCases) {
-            webDriverHelpers.scrollToElement(getBulkModeCaseCheckboxByIndex(i));
-            webDriverHelpers.clickOnWebElementBySelector(getBulkModeCaseCheckboxByIndex(i));
-            i++;
-          }
-        });
-
-    And(
-        "I click checkboxes to choose bigger amount of cases like {int} cases from Case Directory page",
+        "I click checkboxes to choose first {int} cases from Case Directory page",
         (Integer numberOfCases) -> {
           listOfCheckedCases.clear();
           for (int i = 2; i <= numberOfCases + 1; i++) {
@@ -1599,6 +1593,58 @@ public class CaseDirectorySteps implements En {
               "Bulk action went wrong");
           softly.assertAll();
           webDriverHelpers.clickOnWebElementBySelector(POPUP_NOTIFICATION_CAPTION);
+        });
+
+    And(
+        "^I check that a bulk progress operation window appears on Case Directory page$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(BULK_OPERATION_PROGRESS_BAR);
+        });
+
+    And(
+        "^I check that total number of cases for bulk operation is (\\d+)$",
+        (Integer totalNumberOfCases) -> {
+          int lastIndexOfSlash =
+              webDriverHelpers
+                  .getTextFromWebElement(PROGRESSBAR_TOTAL_NUMBER_OF_CASES_LABEL)
+                  .lastIndexOf("/");
+          int lastIndexOfSpace =
+              webDriverHelpers
+                  .getTextFromWebElement(PROGRESSBAR_TOTAL_NUMBER_OF_CASES_LABEL)
+                  .lastIndexOf(" ");
+          System.out.println("slash: " + lastIndexOfSlash + " underscore: " + lastIndexOfSpace);
+          softly.assertEquals(
+              webDriverHelpers
+                  .getTextFromWebElement(PROGRESSBAR_TOTAL_NUMBER_OF_CASES_LABEL)
+                  .substring(lastIndexOfSlash + 1, lastIndexOfSpace),
+              totalNumberOfCases.toString(),
+              "Total number of cases is incorrect");
+          softly.assertAll();
+        });
+
+    And(
+        "^I wait until the bulk progress operation is done and check numbers of (\\d+) successful and (\\d+) skipped cases$",
+        (Integer successfulCases, Integer skippedCases) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              BULK_MODE_SUCCESS_IMAGE, 300);
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(
+                  PROGRESSBAR_TOTAL_NUMBER_OF_SUCCESSFUL_CASES_LABEL),
+              successfulCases + " Successful",
+              "Number of successful cases is incorrect");
+          softly.assertAll();
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(
+                  PROGRESSBAR_TOTAL_NUMBER_OF_SKIPPED_CASES_LABEL),
+              skippedCases + " Skipped",
+              "Number of skipped cases is incorrect");
+          softly.assertAll();
+        });
+
+    And(
+        "^I click on close progress operation window$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CLOSE_FORM_BUTTON);
         });
   }
 

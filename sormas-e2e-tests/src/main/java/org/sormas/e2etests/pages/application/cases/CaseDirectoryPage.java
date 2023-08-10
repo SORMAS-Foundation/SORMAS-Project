@@ -296,4 +296,14 @@ public class CaseDirectoryPage {
         String.format(
             "//label[contains(text(), 'Selects row number %d.')]/../../../td[2]/a", index));
   }
+
+  public static final By BULK_OPERATION_PROGRESS_BAR =
+      By.xpath("//div[contains(text(), 'Bulk operation progress')]");
+  public static final By PROGRESSBAR_TOTAL_NUMBER_OF_CASES_LABEL =
+      By.xpath("//div[contains(text(), 'Completed')]");
+  public static final By PROGRESSBAR_TOTAL_NUMBER_OF_SUCCESSFUL_CASES_LABEL =
+      By.xpath("//div[contains(text(), 'Successful')]");
+  public static final By PROGRESSBAR_TOTAL_NUMBER_OF_SKIPPED_CASES_LABEL =
+      By.xpath("//div[contains(text(), 'Skipped')]");
+  public static final By BULK_MODE_SUCCESS_IMAGE = By.cssSelector(".popupContent .v-image");
 }
