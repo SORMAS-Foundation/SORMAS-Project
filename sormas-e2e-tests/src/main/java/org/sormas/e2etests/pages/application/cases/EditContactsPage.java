@@ -51,6 +51,8 @@ public class EditContactsPage {
   public static final By EXTERNAL_TOKEN_CONTACT_INPUT = By.cssSelector("#externalToken");
   public static final By CASE_OR_EVENT_INFORMATION_CONTACT_TEXT_AREA =
       By.cssSelector("#caseOrEventInformation");
+  public static final By CONTACT_LINKED_TO_EVENT_POPUP =
+      By.xpath("//*[text()='All contacts have been linked to the selected event.']");
 
   public static By getContactByUUID(String uuid) {
     return By.xpath(String.format("//a[text()=\"%s\"]", uuid.substring(0, 6).toUpperCase()));
