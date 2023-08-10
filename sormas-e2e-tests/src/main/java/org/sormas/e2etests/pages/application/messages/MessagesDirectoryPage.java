@@ -14,6 +14,7 @@ public class MessagesDirectoryPage {
   public static final By MESSAGE_UUID_TEXT = By.id("uuid");
   public static final By MESSAGE_POPUP_HEADER =
       By.xpath("//div[@class='popupContent']//div[@class='v-window-header' and text()='Meldung']");
+  public static final By UUID_HEADER = By.xpath("//thead//tr//th[2]");
   public static final By SEARCH_MESSAGE_INPUT = By.id("searchFieldLike");
   public static final By VERARBEITEN_BUTTON = By.id("externalMessageProcess");
 
@@ -156,6 +157,8 @@ public class MessagesDirectoryPage {
       By.cssSelector("[id='type'] [class='v-filterselect-button']");
   public static final By GRID_RESULTS_TYPE =
       By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(3)");
+  public static final By STATUS_GRID_RESULTS_TYPE =
+      By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(13)");
   public static final By CURRENT_HOSPITALIZATION_HEADER =
       By.cssSelector("[location='hospitalizationHeadingLoc'] div");
   public static final By CLINICAL_MEASUREMENT_HEADER =
@@ -174,4 +177,8 @@ public class MessagesDirectoryPage {
   public static final By SEND_TO_ANOTHER_ORGANIZATION_BUTTON =
       By.id("sormasToSormasSendLabMessage");
   public static final By HEADER_OF_ENTRY_LINK = By.cssSelector(".HeaderOfEntry");
+  public static final By BULK_ACTIONS_MESSAGES_VALUES = By.id("actionEnterBulkEditMode");
+  public static final By BULK_ACTIONS_LEAVE_MESSAGES_VALUES = By.id("actionLeaveBulkEditMode");
+  public static final By BULK_ACTIONS_MESSAGES_DIRECTORY = By.id("bulkActions-2");
+  public static final By BULK_DELETE_MESSAGES_BUTTON = By.id("bulkActions-3");
 }
