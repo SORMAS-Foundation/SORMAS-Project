@@ -1048,6 +1048,7 @@ public interface Captions {
 	String Environment_environmentMedia = "Environment.environmentMedia";
 	String Environment_environmentName = "Environment.environmentName";
 	String Environment_externalId = "Environment.externalId";
+	String Environment_facilityDetails = "Environment.facilityDetails";
 	String Environment_infrastructureDetails = "Environment.infrastructureDetails";
 	String Environment_investigationStatus = "Environment.investigationStatus";
 	String Environment_location = "Environment.location";
