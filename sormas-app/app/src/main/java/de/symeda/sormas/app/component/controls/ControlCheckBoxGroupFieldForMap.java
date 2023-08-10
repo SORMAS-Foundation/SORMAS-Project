@@ -61,17 +61,6 @@ public class ControlCheckBoxGroupFieldForMap<T extends Enum<?>> extends ControlP
 		}
 	}
 
-	public void setReadOnly(boolean isReadOnly) {
-		int textColor = getResources().getColor(VisualState.NORMAL.getTextColor());
-		if (isReadOnly) {
-			checkBoxes.forEach((t, checkBox) -> {
-				checkBox.setEnabled(false);
-				checkBox.setTextColor(textColor);
-				checkBox.setButtonTintList(ColorStateList.valueOf(textColor));
-			});
-		}
-	}
-
 	private void addItem(int index, int lastIndex, Item<T> item) {
 		final CheckBox checkBox = createCheckBox(index, lastIndex, item);
 		checkBoxesFrame.addView(checkBox);
@@ -159,7 +148,12 @@ public class ControlCheckBoxGroupFieldForMap<T extends Enum<?>> extends ControlP
 
 	@Override
 	public void setEnabled(boolean enabled) {
-		// TODO: Implement; Probably replace elements with tags
+		int textColor = getResources().getColor(VisualState.NORMAL.getTextColor());
+		checkBoxes.forEach((t, checkBox) -> {
+			checkBox.setEnabled(enabled);
+			checkBox.setTextColor(textColor);
+			checkBox.setButtonTintList(ColorStateList.valueOf(textColor));
+		});
 	}
 
 	@Override
@@ -200,6 +194,5 @@ public class ControlCheckBoxGroupFieldForMap<T extends Enum<?>> extends ControlP
 
 	@Override
 	protected void changeVisualState(VisualState state) {
-		// TODO: Implement
 	}
 }

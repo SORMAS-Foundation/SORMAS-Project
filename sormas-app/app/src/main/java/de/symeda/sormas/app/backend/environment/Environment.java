@@ -20,6 +20,8 @@ import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import androidx.annotation.NonNull;
+
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.environment.EnvironmentInfrastructureDetails;
 import de.symeda.sormas.api.environment.EnvironmentMedia;
@@ -197,7 +199,7 @@ public class Environment extends AbstractDomainObject {
 
 	public Map<WaterUse, Boolean> getWateruse() {
 		if (wateruse == null) {
-			Gson gson = new GsonBuilder().enableComplexMapKeySerialization().registerTypeAdapter(WaterUse.class, new WaterUseSerializer()).create();
+			Gson gson = getGson();
 			Type type = new TypeToken<Map<WaterUse, Boolean>>() {
 			}.getType();
 			wateruse = gson.fromJson(waterUseJson, type);
@@ -210,11 +212,16 @@ public class Environment extends AbstractDomainObject {
 
 	public void setWateruse(Map<WaterUse, Boolean> wateruse) {
 		this.wateruse = wateruse;
-		Gson gson = new GsonBuilder().enableComplexMapKeySerialization().registerTypeAdapter(WaterUse.class, new WaterUseSerializer()).create();
+		Gson gson = getGson();
 		Type type = new TypeToken<Map<WaterUse, Boolean>>() {
 		}.getType();
 		String waterUseJson1 = gson.toJson(wateruse, type);
 		waterUseJson = waterUseJson1;
+	}
+
+	@NonNull
+	private static Gson getGson() {
+		return new GsonBuilder().enableComplexMapKeySerialization().registerTypeAdapter(WaterUse.class, new WaterUseSerializer()).create();
 	}
 
 	public String getOtherWaterUse() {

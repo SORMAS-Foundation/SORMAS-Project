@@ -1,8 +1,8 @@
 package de.symeda.sormas.app.backend.environment;
 
-import java.security.spec.EncodedKeySpec;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.j256.ormlite.dao.Dao;
@@ -16,6 +16,7 @@ import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.util.LocationService;
 
 public class EnvironmentDao extends AbstractAdoDao<Environment> {
@@ -32,6 +33,21 @@ public class EnvironmentDao extends AbstractAdoDao<Environment> {
 	@Override
 	public String getTableName() {
 		return Environment.TABLE_NAME;
+	}
+
+	@Override
+	public Date getLatestChangeDate() {
+		Date date = super.getLatestChangeDate();
+		if (date == null) {
+			return null;
+		}
+
+		Date locationDate = getLatestChangeDateJoin(Location.TABLE_NAME, Environment.LOCATION);
+		if (locationDate != null && locationDate.after(date)) {
+			date = locationDate;
+		}
+
+		return date;
 	}
 
 	public List<Environment> getAll() {
@@ -100,7 +116,6 @@ public class EnvironmentDao extends AbstractAdoDao<Environment> {
 
 	@Override
 	public Environment saveAndSnapshot(final Environment environment) throws DaoException {
-		// If a new environment is created, use the last available location to update its report latitude and longitude
 		if (environment.getId() == null) {
 			android.location.Location location = LocationService.instance().getLocation();
 			if (location != null) {

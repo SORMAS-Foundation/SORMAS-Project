@@ -33,7 +33,7 @@ public class EnvironmentReadFragment extends BaseReadFragment<FragmentEnvironmen
 	protected void onLayoutBinding(FragmentEnvironmentReadLayoutBinding contentBinding) {
 		contentBinding.setData(record);
 		contentBinding.environmentWaterUse.setEnumClass(WaterUse.class);
-		contentBinding.environmentWaterUse.setReadOnly(true);
+		contentBinding.environmentWaterUse.setEnabled(false);
 		contentBinding.environmentOtherWaterUse.setVisibility(Boolean.TRUE.equals(record.getWateruse().get(WaterUse.OTHER)) ? View.VISIBLE : GONE);
 	}
 
