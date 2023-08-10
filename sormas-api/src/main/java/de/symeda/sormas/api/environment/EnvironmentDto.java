@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.Map;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -42,16 +44,21 @@ public class EnvironmentDto extends PseudonymizableDto {
 	public static final String DELETION_REASON = "deletionReason";
 	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 
+	@NotNull
 	private Date reportDate;
+	@NotNull
 	private UserReferenceDto reportingUser;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@NotBlank
 	private String environmentName;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String description;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalId;
 	private UserReferenceDto responsibleUser;
+	@NotNull
 	private InvestigationStatus investigationStatus;
+	@NotNull
 	private EnvironmentMedia environmentMedia;
 	private WaterType waterType;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)

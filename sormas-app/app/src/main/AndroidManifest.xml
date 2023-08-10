@@ -430,6 +430,29 @@
             android:launchMode="singleTop">
         </activity>
 
+        <activity android:name=".environment.read.EnvironmentReadActivity"
+            android:theme="@style/ActivityWithOverflowMenuTheme"
+            android:parentActivityName=".environment.list.EnvironmentListActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity android:name=".environment.edit.EnvironmentEditActivity"
+            android:theme="@style/ActivityWithOverflowMenuTheme"
+            android:parentActivityName=".environment.read.EnvironmentReadActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity
+            android:name=".environment.edit.EnvironmentNewActivity"
+            android:theme="@style/ActivityWithOverflowMenuTheme"
+            android:parentActivityName=".environment.list.EnvironmentListActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
+        </activity>
+
+
         <!-- Only needed for androidTest - found no other way to manifest this -->
         <activity
             android:name=".TestBackendActivity" />
