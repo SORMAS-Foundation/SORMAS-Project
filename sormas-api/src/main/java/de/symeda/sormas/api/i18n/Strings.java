@@ -548,7 +548,6 @@ public interface Strings {
 	String headingEditUser = "headingEditUser";
 	String headingEditVaccination = "headingEditVaccination";
 	String headingEditVisit = "headingEditVisit";
-	String headingEntitiesFollowUpNotCancelled = "headingEntitiesFollowUpNotCancelled";
 	String headingEntitiesNotArchived = "headingEntitiesNotArchived";
 	String headingEntitiesNotDearchived = "headingEntitiesNotDearchived";
 	String headingEntitiesNotSent = "headingEntitiesNotSent";
@@ -590,6 +589,8 @@ public interface Strings {
 	String headingFetchExternalMessages = "headingFetchExternalMessages";
 	String headingFileExists = "headingFileExists";
 	String headingFilters = "headingFilters";
+	String headingFollowUpsNotCancelled = "headingFollowUpsNotCancelled";
+	String headingFollowUpsNotSetToLost = "headingFollowUpsNotSetToLost";
 	String headingFollowUpStatus = "headingFollowUpStatus";
 	String headingGenerateCases = "headingGenerateCases";
 	String headingGenerateContacts = "headingGenerateContacts";
@@ -741,12 +742,13 @@ public interface Strings {
 	String headingSomeCasesNotRestored = "headingSomeCasesNotRestored";
 	String headingSomeContactsAlreadyInEvent = "headingSomeContactsAlreadyInEvent";
 	String headingSomeContactsNotRestored = "headingSomeContactsNotRestored";
-	String headingSomeEntitiesFollowUpNotCancelled = "headingSomeEntitiesFollowUpNotCancelled";
 	String headingSomeEntitiesNotArchived = "headingSomeEntitiesNotArchived";
 	String headingSomeEntitiesNotDearchived = "headingSomeEntitiesNotDearchived";
 	String headingSomeEntitiesNotDeleted = "headingSomeEntitiesNotDeleted";
 	String headingSomeEventParticipantsNotRestored = "headingSomeEventParticipantsNotRestored";
 	String headingSomeEventsNotRestored = "headingSomeEventsNotRestored";
+	String headingSomeFollowUpsNotCancelled = "headingSomeFollowUpsNotCancelled";
+	String headingSomeFollowUpsNotSetToLost = "headingSomeFollowUpsNotSetToLost";
 	String headingSomeImmunizationsNotRestored = "headingSomeImmunizationsNotRestored";
 	String headingSomeSamplesNotRestored = "headingSomeSamplesNotRestored";
 	String headingSomeTravelEntriesNotRestored = "headingSomeTravelEntriesNotRestored";
@@ -1131,8 +1133,6 @@ public interface Strings {
 	String messageCountContactsNotDeletedAccessDeniedReason = "messageCountContactsNotDeletedAccessDeniedReason";
 	String messageCountContactsNotDeletedSormasToSormasReason = "messageCountContactsNotDeletedSormasToSormasReason";
 	String messageCountContactsNotRestored = "messageCountContactsNotRestored";
-	String messageCountEntitiesFollowUpNotCancelled = "messageCountEntitiesFollowUpNotCancelled";
-	String messageCountEntitiesFollowUpNotCancelledAccessDeniedReason = "messageCountEntitiesFollowUpNotCancelledAccessDeniedReason";
 	String messageCountEntitiesNotArchivedAccessDeniedReason = "messageCountEntitiesNotArchivedAccessDeniedReason";
 	String messageCountEntitiesNotDearchivedAccessDeniedReason = "messageCountEntitiesNotDearchivedAccessDeniedReason";
 	String messageCountEntitiesNotSentAccessDeniedReason = "messageCountEntitiesNotSentAccessDeniedReason";
@@ -1148,6 +1148,10 @@ public interface Strings {
 	String messageCountEventsNotDeletedSormasToSormasReason = "messageCountEventsNotDeletedSormasToSormasReason";
 	String messageCountEventsNotRestored = "messageCountEventsNotRestored";
 	String messageCountExternalMessagesNotDeleted = "messageCountExternalMessagesNotDeleted";
+	String messageCountFollowUpsNotCancelled = "messageCountFollowUpsNotCancelled";
+	String messageCountFollowUpsNotCancelledAccessDeniedReason = "messageCountFollowUpsNotCancelledAccessDeniedReason";
+	String messageCountFollowUpsNotSetToLost = "messageCountFollowUpsNotSetToLost";
+	String messageCountFollowUpsNotSetToLostAccessDeniedReason = "messageCountFollowUpsNotSetToLostAccessDeniedReason";
 	String messageCountImmunizationsNotDeleted = "messageCountImmunizationsNotDeleted";
 	String messageCountImmunizationsNotDeletedAccessDeniedReason = "messageCountImmunizationsNotDeletedAccessDeniedReason";
 	String messageCountImmunizationsNotRestored = "messageCountImmunizationsNotRestored";
@@ -1182,7 +1186,6 @@ public interface Strings {
 	String messageDistrictsDearchived = "messageDistrictsDearchived";
 	String messageDontShareWithReportingToolWarning = "messageDontShareWithReportingToolWarning";
 	String messageEnterSms = "messageEnterSms";
-	String messageEntitiesFollowUpWithWrongStatusNotCancelled = "messageEntitiesFollowUpWithWrongStatusNotCancelled";
 	String messageEntityNotFound = "messageEntityNotFound";
 	String messageEntriesEdited = "messageEntriesEdited";
 	String messageEntriesEditedExceptArchived = "messageEntriesEditedExceptArchived";
@@ -1249,7 +1252,8 @@ public interface Strings {
 	String messageFacilityMulitChanged = "messageFacilityMulitChanged";
 	String messageFollowUpCanceled = "messageFollowUpCanceled";
 	String messageFollowUpStatusChanged = "messageFollowUpStatusChanged";
-	String messageFollowUpStatusChangedForSome = "messageFollowUpStatusChangedForSome";
+	String messageFollowUpsWithWrongStatusNotCancelled = "messageFollowUpsWithWrongStatusNotCancelled";
+	String messageFollowUpsWithWrongStatusNotSetToLost = "messageFollowUpsWithWrongStatusNotSetToLost";
 	String messageForwardedExternalMessageFound = "messageForwardedExternalMessageFound";
 	String messageGdpr = "messageGdpr";
 	String messageGdprCheck = "messageGdprCheck";
@@ -1296,8 +1300,9 @@ public interface Strings {
 	String messageNoCsvFile = "messageNoCsvFile";
 	String messageNoDocumentTemplateUploadFile = "messageNoDocumentTemplateUploadFile";
 	String messageNoDocumentUploadFile = "messageNoDocumentUploadFile";
-	String messageNoEligibleEntityForFollowUpCancellation = "messageNoEligibleEntityForFollowUpCancellation";
 	String messageNoEligibleEventForDeletionSelected = "messageNoEligibleEventForDeletionSelected";
+	String messageNoEligibleFollowUpForCancellation = "messageNoEligibleFollowUpForCancellation";
+	String messageNoEligibleFollowUpForSettingToLost = "messageNoEligibleFollowUpForSettingToLost";
 	String messageNoEndDate = "messageNoEndDate";
 	String messageNoEnvironmentsSelected = "messageNoEnvironmentsSelected";
 	String messageNoEventFound = "messageNoEventFound";

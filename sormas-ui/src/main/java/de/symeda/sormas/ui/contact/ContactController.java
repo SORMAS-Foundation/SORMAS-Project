@@ -816,8 +816,8 @@ public class ContactController {
 			.restoreSelectedItems(selectedRows, DeleteRestoreHandlers.forContact(), bulkOperationCallback(null, contactGrid, null));
 	}
 
-	public void cancelFollowUpOfAllSelectedItems(
-		Collection<? extends ContactIndexDto> selectedRows,
+	public <T extends ContactIndexDto> void cancelFollowUpOfAllSelectedItems(
+		Collection<T> selectedRows,
 		String caseUuid,
 		AbstractContactGrid<?> contactGrid) {
 
@@ -838,28 +838,23 @@ public class ContactController {
 					if (Boolean.TRUE.equals(confirmed)) {
 						String userName = UserProvider.getCurrent().getUserName();
 
-						//TODO: check newly added message: headingNoProcessedEntities, countEntriesNotProcessedAccessDeniedReasonProperty, infoBulkProcessFinishedWithSkipsProperty
-						Collection<? extends ContactIndexDto> ineligibleContacts = selectedRows.stream()
-							.filter(
-								row -> row.getFollowUpStatus().equals(FollowUpStatus.CANCELED)
-									|| row.getFollowUpStatus().equals(FollowUpStatus.NO_FOLLOW_UP))
-							.collect(Collectors.toList());
-
-						Collection<? extends ContactIndexDto> eligibleContacts = ineligibleContacts.size() > 0
-							? selectedRows.stream().filter(row -> !ineligibleContacts.contains(row)).collect(Collectors.toCollection(ArrayList::new))
-							: selectedRows;
+						List<FollowUpStatus> ineligibleStatuses = new ArrayList<>();
+						ineligibleStatuses.add(FollowUpStatus.NO_FOLLOW_UP);
+						ineligibleStatuses.add(FollowUpStatus.CANCELED);
+						Collection<T> ineligibleContacts = getIneligibleContacts(selectedRows, ineligibleStatuses);
+						Collection<T> eligibleContacts = getEligibleContacts(selectedRows, ineligibleContacts);
 
 						new BulkOperationHandler<ContactIndexDto>(
 							Strings.messageFollowUpCanceled,
-							Strings.messageEntitiesFollowUpWithWrongStatusNotCancelled,
-							Strings.headingSomeEntitiesFollowUpNotCancelled,
-							Strings.headingEntitiesFollowUpNotCancelled,
-							Strings.messageCountEntitiesFollowUpNotCancelled,
+							Strings.messageFollowUpsWithWrongStatusNotCancelled,
+							Strings.headingSomeFollowUpsNotCancelled,
+							Strings.headingFollowUpsNotCancelled,
+							Strings.messageCountFollowUpsNotCancelled,
 							null,
 							null,
-							Strings.messageCountEntitiesFollowUpNotCancelledAccessDeniedReason,
+							Strings.messageCountFollowUpsNotCancelledAccessDeniedReason,
 							null,
-							Strings.messageNoEligibleEntityForFollowUpCancellation,
+							Strings.messageNoEligibleFollowUpForCancellation,
 							Strings.infoBulkProcessFinishedWithSkipsOutsideJurisdictionOrNotEligible,
 							Strings.infoBulkProcessFinishedWithoutSuccess).doBulkOperation(batch -> {
 								List<ProcessedEntity> processedContacts = new ArrayList<>();
@@ -867,31 +862,9 @@ public class ContactController {
 								for (ContactIndexDto contact : batch) {
 									if (!FollowUpStatus.NO_FOLLOW_UP.equals(contact.getFollowUpStatus())
 										&& !FollowUpStatus.CANCELED.equals(contact.getFollowUpStatus())) {
-
-										ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(contact.getUuid());
-										contactDto.setFollowUpStatus(FollowUpStatus.CANCELED);
-										contactDto.addToFollowUpComment(String.format(I18nProperties.getString(Strings.infoCanceledBy), userName));
-										try {
-											FacadeProvider.getContactFacade().save(contactDto);
-											processedContacts.add(new ProcessedEntity(contact.getUuid(), ProcessedEntityStatus.SUCCESS));
-										} catch (AccessDeniedException e) {
-											processedContacts
-												.add(new ProcessedEntity(contact.getUuid(), ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
-											logger.error(
-												"The follow up of the contact with uuid {} could not be cancelled due to an AccessDeniedException",
-												contact.getUuid(),
-												e);
-											//TODO: add to other controller where is missing
-										} catch (Exception e) {
-											processedContacts.add(new ProcessedEntity(contact.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
-											logger.error(
-												"The follow up of the contact with uuid {} could not be cancelled due to an Exception",
-												contact.getUuid(),
-												e);
-										}
+										processedContacts.add(processContact(contact, FollowUpStatus.CANCELED, Strings.infoCanceledBy, userName));
 									}
 								}
-
 								return processedContacts;
 							},
 								new ArrayList<>(selectedRows),
@@ -903,8 +876,8 @@ public class ContactController {
 		}
 	}
 
-	public void setAllSelectedItemsToLostToFollowUp(
-		Collection<? extends ContactIndexDto> selectedRows,
+	public <T extends ContactIndexDto> void setAllSelectedItemsToLostToFollowUp(
+		Collection<T> selectedRows,
 		String caseUuid,
 		AbstractContactGrid<?> contactGrid) {
 		if (selectedRows.isEmpty()) {
@@ -924,57 +897,69 @@ public class ContactController {
 					if (Boolean.TRUE.equals(confirmed)) {
 						String userName = UserProvider.getCurrent().getUserName();
 
-						//TODO: check newly added message: headingNoProcessedEntities, countEntriesNotProcessedExternalReasonProperty, 
-						// countEntriesNotProcessedSormastoSormasReasonProperty,countEntriesNotProcessedAccessDeniedReasonProperty, infoBulkProcessFinishedWithSkipsProperty
+						List<FollowUpStatus> ineligibleStatuses = new ArrayList<>();
+						ineligibleStatuses.add(FollowUpStatus.NO_FOLLOW_UP);
+						Collection<T> ineligibleContacts = getIneligibleContacts(selectedRows, ineligibleStatuses);
+						Collection<T> eligibleContacts = getEligibleContacts(selectedRows, ineligibleContacts);
+
 						new BulkOperationHandler<ContactIndexDto>(
 							Strings.messageFollowUpStatusChanged,
+							Strings.messageFollowUpsWithWrongStatusNotSetToLost,
+							Strings.headingSomeFollowUpsNotSetToLost,
+							Strings.headingFollowUpsNotSetToLost,
+							Strings.messageCountFollowUpsNotSetToLost,
 							null,
 							null,
+							Strings.messageCountFollowUpsNotSetToLostAccessDeniedReason,
 							null,
-							null,
-							null,
-							null,
-							null,
-							Strings.messageFollowUpStatusChangedForSome,
-							null,
-							null,
-							null).doBulkOperation(batch -> {
+							Strings.messageNoEligibleFollowUpForSettingToLost,
+							Strings.infoBulkProcessFinishedWithSkipsOutsideJurisdictionOrNotEligible,
+							Strings.infoBulkProcessFinishedWithoutSuccess).doBulkOperation(batch -> {
 								List<ProcessedEntity> processedContacts = new ArrayList<>();
 
 								for (ContactIndexDto contact : batch) {
 									if (contact.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
-										ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(contact.getUuid());
-										contactDto.setFollowUpStatus(FollowUpStatus.LOST);
-										contactDto
-											.addToFollowUpComment(String.format(I18nProperties.getString(Strings.infoLostToFollowUpBy), userName));
-										try {
-											FacadeProvider.getContactFacade().save(contactDto);
-											processedContacts.add(new ProcessedEntity(contact.getUuid(), ProcessedEntityStatus.SUCCESS));
-										} catch (AccessDeniedException e) {
-											processedContacts
-												.add(new ProcessedEntity(contact.getUuid(), ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
-											logger.error(
-												"The follow up status of contact with uuid {} could not be set due to an AccessDeniedException",
-												contact.getUuid(),
-												e);
-										} catch (Exception e) {
-											processedContacts.add(new ProcessedEntity(contact.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
-											logger.error(
-												"TThe follow up status of contact with uuid {} could not be set due to an Exception",
-												contact.getUuid(),
-												e);
-										}
-									} else {
-										//TODO: check this part
-										processedContacts.add(new ProcessedEntity(contact.getUuid(), ProcessedEntityStatus.NOT_ELIGIBLE));
+										processedContacts.add(processContact(contact, FollowUpStatus.LOST, Strings.infoLostToFollowUpBy, userName));
 									}
 								}
 								return processedContacts;
-
-							}, new ArrayList<>(selectedRows), null, null, bulkOperationCallback(caseUuid, contactGrid, null));
+							},
+								new ArrayList<>(selectedRows),
+								new ArrayList<>(eligibleContacts),
+								new ArrayList<>(ineligibleContacts),
+								bulkOperationCallback(caseUuid, contactGrid, null));
 					}
 				});
 		}
+	}
+
+	public ProcessedEntity processContact(ContactIndexDto contact, FollowUpStatus followUpStatus, String followUpComment, String userName) {
+
+		ProcessedEntity processedContact;
+		ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(contact.getUuid());
+		contactDto.setFollowUpStatus(followUpStatus);
+		contactDto.addToFollowUpComment(String.format(I18nProperties.getString(followUpComment), userName));
+		try {
+			FacadeProvider.getContactFacade().save(contactDto);
+			processedContact = new ProcessedEntity(contact.getUuid(), ProcessedEntityStatus.SUCCESS);
+		} catch (AccessDeniedException e) {
+			processedContact = new ProcessedEntity(contact.getUuid(), ProcessedEntityStatus.ACCESS_DENIED_FAILURE);
+			logger.error("The follow up status of contact with uuid {} could not be set due to an AccessDeniedException", contact.getUuid(), e);
+		} catch (Exception e) {
+			processedContact = new ProcessedEntity(contact.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE);
+			logger.error("The follow up status of contact with uuid {} could not be set due to an Exception", contact.getUuid(), e);
+		}
+		return processedContact;
+	}
+
+	public <T extends ContactIndexDto> Collection<T> getIneligibleContacts(Collection<T> selectedRows, List<FollowUpStatus> ineligibleStatuses) {
+		return selectedRows.stream().filter(row -> ineligibleStatuses.contains(row.getFollowUpStatus())).collect(Collectors.toList());
+	}
+
+	public <T extends ContactIndexDto> Collection<T> getEligibleContacts(Collection<T> selectedRows, Collection<T> ineligibleContacts) {
+		return ineligibleContacts.size() > 0
+			? selectedRows.stream().filter(row -> !ineligibleContacts.contains(row)).collect(Collectors.toCollection(ArrayList::new))
+			: selectedRows;
 	}
 
 	public void openSelectCaseForContactWindow(Disease disease, Consumer<CaseSelectionDto> selectedCaseCallback) {

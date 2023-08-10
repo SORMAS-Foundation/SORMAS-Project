@@ -139,7 +139,6 @@ public enum ArchiveMessages {
 		null,
 		null),
 
-	//TODO: add for infrastructure data for accessDenied message the I18nProperties.getString(dearchivingNotPossibleMessageProperty) label
 	CONTINENT(Strings.headingConfirmArchiving,
 		Strings.confirmationArchiveContinent,
 		Strings.confirmationArchiveContinents,
