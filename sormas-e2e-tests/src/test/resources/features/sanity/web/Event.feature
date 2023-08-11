@@ -226,7 +226,6 @@ Feature: Create events
   @tmsLink=SORDEV-5571 @env_main
   Scenario: Event group screen using Group Id in grid
     Given API: I create a new event
-
     And API: I check that POST call status code is 200
     Given I log in as a National User
     And I click on the Events button from navbar
@@ -236,6 +235,7 @@ Feature: Create events
     And I click on Link Event button on Edit Event Page
     And I click on first Event Group on the list in Link Event form
     And I click on SAVE button in Link Event to group form
+    And I click on successfully linked to this event group message popup in Link Event to group form
     And I click on the Events button from navbar
     And I click on Group Id in Events result on Event Directory Page
     And I click on Unlink Event button on Event Directory Page
@@ -243,7 +243,6 @@ Feature: Create events
   @tmsLink=SORDEV-5570 @env_main
   Scenario: Testing Event screen Impact
     Given API: I create a new event
-
     And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I open the last created event via api
