@@ -3856,6 +3856,51 @@
         "tags" : [ "Environment Controller" ]
       }
     },
+    "/environments/all/{since}/{size}/{lastSynchronizedUuid}" : {
+      "get" : {
+        "operationId" : "getAllEnvironments_1",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "since",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "in" : "path",
+          "name" : "size",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "in" : "path",
+          "name" : "lastSynchronizedUuid",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/EnvironmentDto"
+                  }
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "Environment Controller" ]
+      }
+    },
     "/environments/obsolete/{since}" : {
       "get" : {
         "operationId" : "getObsoleteUuidsSince_2",
@@ -15793,7 +15838,8 @@
               "type" : "boolean"
             }
           }
-        }
+        },
+        "required" : [ "environmentMedia", "environmentName", "investigationStatus", "reportDate", "reportingUser" ]
       },
       "EpiDataDto" : {
         "type" : "object",
