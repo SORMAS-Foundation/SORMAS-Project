@@ -106,7 +106,7 @@ public class BulkOperationHandler<T extends HasUuid> {
 			null,
 			Strings.messageCountEntitiesNotEditedAccessDeniedReason,
 			Strings.messageEntriesEditedExceptArchived,
-			null,
+			Strings.messageNoEligibleEntityForEditing,
 			Strings.infoBulkProcessFinishedWithSkips,
 			Strings.infoBulkProcessFinishedWithoutSuccess);
 	}

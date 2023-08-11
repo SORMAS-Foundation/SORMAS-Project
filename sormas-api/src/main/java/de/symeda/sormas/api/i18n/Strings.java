@@ -1308,6 +1308,7 @@ public interface Strings {
 	String messageNoCsvFile = "messageNoCsvFile";
 	String messageNoDocumentTemplateUploadFile = "messageNoDocumentTemplateUploadFile";
 	String messageNoDocumentUploadFile = "messageNoDocumentUploadFile";
+	String messageNoEligibleEntityForEditing = "messageNoEligibleEntityForEditing";
 	String messageNoEligibleEventForDeletionSelected = "messageNoEligibleEventForDeletionSelected";
 	String messageNoEligibleFollowUpForCancellation = "messageNoEligibleFollowUpForCancellation";
 	String messageNoEligibleFollowUpForSettingToLost = "messageNoEligibleFollowUpForSettingToLost";
