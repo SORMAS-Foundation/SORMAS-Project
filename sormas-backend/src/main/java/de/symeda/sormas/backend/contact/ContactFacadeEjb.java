@@ -2283,7 +2283,6 @@ public class ContactFacadeEjb
 
 		List<ProcessedEntity> processedEntities = new ArrayList();
 
-		int changedContacts = 0;
 		for (String contactUuid : contactUuidList) {
 			Contact contact = service.getByUuid(contactUuid);
 
@@ -2299,7 +2298,6 @@ public class ContactFacadeEjb
 
 				save(existingContactDto);
 				processedEntities.add(new ProcessedEntity(contactUuid, ProcessedEntityStatus.SUCCESS));
-				changedContacts++;
 			}
 		}
 		return processedEntities;

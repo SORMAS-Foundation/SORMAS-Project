@@ -1537,8 +1537,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		throws ValidationRuntimeException {
 
 		List<ProcessedEntity> processedCases = new ArrayList<>();
-
-		int changedCases = 0;
 		for (String caseUuid : caseUuidList) {
 			Case caze = service.getByUuid(caseUuid);
 
@@ -1555,10 +1553,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					surveillanceOfficerChange);
 				doSave(caze, true, existingCaseDto, true);
 				processedCases.add(new ProcessedEntity(caseUuid, ProcessedEntityStatus.SUCCESS));
-				changedCases++;
 			}
 		}
-		//return changedCases;
 
 		return processedCases;
 	}
@@ -1585,7 +1581,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			updatedCaseBulkEditData.getCommunity() != null ? communityService.getByUuid(updatedCaseBulkEditData.getCommunity().getUuid()) : null;
 		Facility newFacility = facilityService.getByUuid(updatedCaseBulkEditData.getHealthFacility().getUuid());
 
-		int changedCases = 0;
 		for (String caseUuid : caseUuidList) {
 			Case caze = service.getByUuid(caseUuid);
 
@@ -1607,16 +1602,16 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				caze.setFacilityType(updatedCaseBulkEditData.getFacilityType());
 				caze.setHealthFacility(newFacility);
 				caze.setHealthFacilityDetails(updatedCaseBulkEditData.getHealthFacilityDetails());
-				CaseLogic.handleHospitalization(toDto(caze), existingCaseDto, doTransfer);
-
-				doSave(caze, true, existingCaseDto, true);
-				processedCases.add(new ProcessedEntity(caseUuid, ProcessedEntityStatus.SUCCESS));
-
-				changedCases++;
+				try {
+					CaseLogic.handleHospitalization(toDto(caze), existingCaseDto, doTransfer);
+					doSave(caze, true, existingCaseDto, true);
+					processedCases.add(new ProcessedEntity(caseUuid, ProcessedEntityStatus.SUCCESS));
+				} catch (Exception e) {
+					processedCases.add(new ProcessedEntity(caseUuid, ProcessedEntityStatus.INTERNAL_FAILURE));
+				}
 			}
 		}
 
-		//return changedCases;
 		return processedCases;
 	}
 

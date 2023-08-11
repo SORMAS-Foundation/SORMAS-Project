@@ -550,6 +550,7 @@ public interface Strings {
 	String headingEditVisit = "headingEditVisit";
 	String headingEntitiesNotArchived = "headingEntitiesNotArchived";
 	String headingEntitiesNotDearchived = "headingEntitiesNotDearchived";
+	String headingEntitiesNotEdited = "headingEntitiesNotEdited";
 	String headingEntitiesNotSent = "headingEntitiesNotSent";
 	String headingEnvironmentalExposure = "headingEnvironmentalExposure";
 	String headingEpiCurve = "headingEpiCurve";
@@ -745,6 +746,7 @@ public interface Strings {
 	String headingSomeEntitiesNotArchived = "headingSomeEntitiesNotArchived";
 	String headingSomeEntitiesNotDearchived = "headingSomeEntitiesNotDearchived";
 	String headingSomeEntitiesNotDeleted = "headingSomeEntitiesNotDeleted";
+	String headingSomeEntitiesNotEdited = "headingSomeEntitiesNotEdited";
 	String headingSomeEventParticipantsNotRestored = "headingSomeEventParticipantsNotRestored";
 	String headingSomeEventsNotRestored = "headingSomeEventsNotRestored";
 	String headingSomeFollowUpsNotCancelled = "headingSomeFollowUpsNotCancelled";
@@ -1137,6 +1139,8 @@ public interface Strings {
 	String messageCountEntitiesNotArchivedAccessDeniedReason = "messageCountEntitiesNotArchivedAccessDeniedReason";
 	String messageCountEntitiesNotDearchived = "messageCountEntitiesNotDearchived";
 	String messageCountEntitiesNotDearchivedAccessDeniedReason = "messageCountEntitiesNotDearchivedAccessDeniedReason";
+	String messageCountEntitiesNotEdited = "messageCountEntitiesNotEdited";
+	String messageCountEntitiesNotEditedAccessDeniedReason = "messageCountEntitiesNotEditedAccessDeniedReason";
 	String messageCountEntitiesNotSent = "messageCountEntitiesNotSent";
 	String messageCountEntitiesNotSentAccessDeniedReason = "messageCountEntitiesNotSentAccessDeniedReason";
 	String messageCountEntitiesNotSentExternalReason = "messageCountEntitiesNotSentExternalReason";
@@ -1189,6 +1193,7 @@ public interface Strings {
 	String messageDistrictsDearchived = "messageDistrictsDearchived";
 	String messageDontShareWithReportingToolWarning = "messageDontShareWithReportingToolWarning";
 	String messageEnterSms = "messageEnterSms";
+	String messageEntitiesNotEditable = "messageEntitiesNotEditable";
 	String messageEntityNotFound = "messageEntityNotFound";
 	String messageEntriesEdited = "messageEntriesEdited";
 	String messageEntriesEditedExceptArchived = "messageEntriesEditedExceptArchived";

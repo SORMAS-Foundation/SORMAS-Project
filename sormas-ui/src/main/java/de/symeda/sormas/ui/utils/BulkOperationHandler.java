@@ -95,17 +95,16 @@ public class BulkOperationHandler<T extends HasUuid> {
 		this.infoBulkProcessFinishedWithoutSuccess = infoBulkProcessFinishedWithoutSuccess;
 	}
 
-	//TODO: check if the 4 newly added fields can have value for bulk edit
 	public static <E extends HasUuid> BulkOperationHandler<E> forBulkEdit() {
 		return new BulkOperationHandler<>(
 			Strings.messageEntriesEdited,
+			Strings.messageEntitiesNotEditable,
+			Strings.headingSomeEntitiesNotEdited,
+			Strings.headingEntitiesNotEdited,
+			Strings.messageCountEntitiesNotEdited,
 			null,
 			null,
-			null,
-			null,
-			null,
-			null,
-			null,
+			Strings.messageCountEntitiesNotEditedAccessDeniedReason,
 			Strings.messageEntriesEditedExceptArchived,
 			null,
 			Strings.infoBulkProcessFinishedWithSkips,

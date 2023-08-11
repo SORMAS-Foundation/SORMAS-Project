@@ -1005,6 +1005,9 @@ public class EventController {
 			boolean eventManagementStatusChange = form.getEventManagementStatusCheckbox().getValue();
 
 			List<EventIndexDto> selectedEventsCpy = new ArrayList<>(selectedEvents);
+			Collection<EventIndexDto> ineligibleEvents = eventFacade.getIneligibleEntitiesForEditing(selectedEvents);
+			Collection<EventIndexDto> eligibleEvents = eventFacade.getEligibleEntitiesForEditing(selectedEvents, ineligibleEvents);
+
 			BulkOperationHandler.<EventIndexDto> forBulkEdit()
 				.doBulkOperation(
 					selectedEntries -> eventFacade.saveBulkEvents(
@@ -1014,8 +1017,8 @@ public class EventController {
 						eventInvestigationStatusChange,
 						eventManagementStatusChange),
 					selectedEventsCpy,
-					null,
-					null,
+					new ArrayList<>(eligibleEvents),
+					new ArrayList<>(ineligibleEvents),
 					bulkOperationCallback(eventGrid, popupWindow));
 		});
 

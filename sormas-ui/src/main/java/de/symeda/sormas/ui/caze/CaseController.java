@@ -1034,6 +1034,9 @@ public class CaseController {
 
 			CaseFacade caseFacade = FacadeProvider.getCaseFacade();
 			List<T> selectedCasesCpy = new ArrayList<>(selectedCases);
+			Collection<T> ineligibleCases = caseFacade.getIneligibleEntitiesForEditing(selectedCases);
+			Collection<T> eligibleCases = caseFacade.getEligibleEntitiesForEditing(selectedCases, ineligibleCases);
+
 			if (facilityChange) {
 				VaadinUiUtil.showChooseOptionPopup(
 					I18nProperties.getCaption(Captions.caseInfrastructureDataChanged),
@@ -1054,8 +1057,8 @@ public class CaseController {
 								surveillanceOfficerChange,
 								e),
 							selectedCasesCpy,
-							null,
-							null,
+							new ArrayList<>(eligibleCases),
+							new ArrayList<>(ineligibleCases),
 							bulkOperationCallback(caseGrid, popupWindow)));
 			} else {
 				BulkOperationHandler.<T> forBulkEdit()
@@ -1070,8 +1073,8 @@ public class CaseController {
 							outcomeChange,
 							surveillanceOfficerChange),
 						selectedCasesCpy,
-						null,
-						null,
+						new ArrayList<>(eligibleCases),
+						new ArrayList<>(ineligibleCases),
 						bulkOperationCallback(caseGrid, popupWindow));
 			}
 		});

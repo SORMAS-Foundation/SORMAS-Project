@@ -723,8 +723,8 @@ public class ContactController {
 		return hasPendingRequest ? "<br/>" + I18nProperties.getString(Strings.messageDeleteWithPendingShareRequest) + "<br/>" : "";
 	}
 
-	public void showBulkContactDataEditComponent(
-		Collection<? extends ContactIndexDto> selectedContacts,
+	public <T extends ContactIndexDto> void showBulkContactDataEditComponent(
+		Collection<T> selectedContacts,
 		String caseUuid,
 		AbstractContactGrid<?> contactGrid) {
 		if (selectedContacts.size() == 0) {
@@ -766,6 +766,9 @@ public class ContactController {
 			boolean contactOfficerChange = district != null ? form.getContactOfficerCheckBox().getValue() : false;
 
 			List<ContactIndexDto> selectedContactsCpy = new ArrayList<>(selectedContacts);
+			Collection<T> ineligibleContacts = contactFacade.getIneligibleEntitiesForEditing(selectedContacts);
+			Collection<T> eligibleContacts = contactFacade.getEligibleEntitiesForEditing(selectedContacts, ineligibleContacts);
+
 			BulkOperationHandler.<ContactIndexDto> forBulkEdit()
 				.doBulkOperation(
 					selectedEntries -> contactFacade.saveBulkContacts(
@@ -774,8 +777,8 @@ public class ContactController {
 						classificationChange,
 						contactOfficerChange),
 					selectedContactsCpy,
-					null,
-					null,
+					new ArrayList<>(eligibleContacts),
+					new ArrayList<>(ineligibleContacts),
 					bulkOperationCallback(caseUuid, contactGrid, popupWindow));
 		});
 

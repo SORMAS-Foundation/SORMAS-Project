@@ -518,7 +518,7 @@ public class ContactsView extends AbstractView {
 								mi -> grid.bulkActionHandler(
 									items -> ControllerProvider.getContactController()
 										.showBulkContactDataEditComponent(items, null, (AbstractContactGrid<?>) grid)),
-								hasBulkOperationsRight),
+								hasBulkOperationsRight && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)),
 							new MenuBarHelper.MenuBarItem(
 								I18nProperties.getCaption(Captions.bulkCancelFollowUp),
 								VaadinIcons.CLOSE,

@@ -372,14 +372,11 @@ public class TaskFacadeEjb implements TaskFacade {
 		boolean taskStatusChange) {
 
 		List<ProcessedEntity> processedTasks = new ArrayList<>();
-
 		UserReferenceDto currentUser = userService.getCurrentUser().toReference();
 
-		int changedTasks = 0;
 		for (String taskUuid : taskUuidList) {
 			Task task = taskService.getByUuid(taskUuid);
 			TaskDto taskDto = toDto(task, createPseudonymizer());
-
 			if (priorityChange) {
 				taskDto.setPriority(updatedTempTask.getPriority());
 			}
@@ -390,12 +387,13 @@ public class TaskFacadeEjb implements TaskFacade {
 			if (taskStatusChange) {
 				taskDto.setTaskStatus(updatedTempTask.getTaskStatus());
 			}
-
-			saveTask(taskDto);
-			processedTasks.add(new ProcessedEntity(taskUuid, ProcessedEntityStatus.SUCCESS));
-			changedTasks++;
+			try {
+				saveTask(taskDto);
+				processedTasks.add(new ProcessedEntity(taskUuid, ProcessedEntityStatus.SUCCESS));
+			} catch (Exception e) {
+				processedTasks.add(new ProcessedEntity(taskUuid, ProcessedEntityStatus.INTERNAL_FAILURE));
+			}
 		}
-		//return changedTasks;
 		return processedTasks;
 	}
 

@@ -1499,7 +1499,6 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 		List<ProcessedEntity> processedEvents = new ArrayList();
 
-		int changedEvents = 0;
 		for (String eventUuid : eventUuidList) {
 			Event event = service.getByUuid(eventUuid);
 
@@ -1517,9 +1516,15 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 					eventDto.setEventManagementStatus(updatedTempEvent.getEventManagementStatus());
 				}
 
-				save(eventDto);
-				processedEvents.add(new ProcessedEntity(eventUuid, ProcessedEntityStatus.SUCCESS));
-				changedEvents++;
+				try {
+					save(eventDto);
+					processedEvents.add(new ProcessedEntity(eventUuid, ProcessedEntityStatus.SUCCESS));
+				} catch (AccessDeniedException e) {
+					processedEvents.add(new ProcessedEntity(eventUuid, ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+				} catch (Exception e) {
+					processedEvents.add(new ProcessedEntity(eventUuid, ProcessedEntityStatus.INTERNAL_FAILURE));
+				}
+
 			}
 		}
 		return processedEvents;
