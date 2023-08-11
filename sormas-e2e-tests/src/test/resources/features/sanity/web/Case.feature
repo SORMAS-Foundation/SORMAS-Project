@@ -1857,6 +1857,16 @@ Feature: Case end to end tests
     When I set Reason for deletion as "Deletion request by another authority"
     And I click on Yes option in Confirm deletion popup
     And I check that a bulk progress operation window appears on Case Directory page
-    And I check that total number of cases for bulk operation is 41
     And I wait until the bulk progress operation is done and check numbers of 41 successful and 0 skipped cases
+    And I check that total number of cases for bulk operation is 41
+    And I click on close progress operation window
+    And I set the Relevance Status Filter to "Deleted cases" on Case Directory page
+    And I check that Relevance Status Filter is set to "Deleted cases" on Case Directory page
+    And I click checkboxes to choose first 41 cases from Case Directory page
+    And I click on Bulk Actions combobox on Case Directory Page
+    Then I click on Restore button from Bulk Actions Combobox in Case Directory
+    And I check that Confirm Restoration popup appears and confirm popup
+    And I check that a bulk progress operation window appears on Case Directory page
+    And I wait until the bulk progress operation is done and check numbers of 41 successful and 0 skipped cases
+    And I check that total number of cases for bulk operation is 41
     And I click on close progress operation window

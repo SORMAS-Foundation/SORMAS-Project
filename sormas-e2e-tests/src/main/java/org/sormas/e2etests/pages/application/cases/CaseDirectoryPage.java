@@ -283,6 +283,8 @@ public class CaseDirectoryPage {
   public static By SEND_TO_REPORTING_TOOL_BUTTON = By.xpath("//span[contains(text(), 'Senden')]");
   public static final By RELEVANT_STATUS_INPUT =
       By.cssSelector("[id='relevanceStatus'] [class='v-filterselect-input']");
+
+  public static final By RELEVANT_STATUS_COMBOBOX = By.xpath("//div[@id='relevanceStatus']/div");
   public static final By POPUP_NOTIFICATION_DESCRIPTION =
       By.cssSelector(".v-Notification-description");
   public static final By POPUP_NOTIFICATION_CAPTION = By.cssSelector(".v-Notification-caption");
@@ -306,4 +308,7 @@ public class CaseDirectoryPage {
   public static final By PROGRESSBAR_TOTAL_NUMBER_OF_SKIPPED_CASES_LABEL =
       By.xpath("//div[contains(text(), 'Skipped')]");
   public static final By BULK_MODE_SUCCESS_IMAGE = By.cssSelector(".popupContent .v-image");
+  public static final By BULK_RESTORE_BUTTON = By.id("bulkActions-4");
+  public static final By CONFIRM_RESTORATION_WINDOWS_HEADER =
+      By.xpath("//div[contains(text(), 'Confirm restoration')]");
 }

@@ -85,6 +85,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_EDIT_INFORMATION;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_MODE_SUCCESS_IMAGE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_OPERATION_PROGRESS_BAR;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_RESTORE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CANCEL_POPUP;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASES_FROM_OTHER_INSTANCES_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASES_FROM_OTHER_JURISDICTIONS_CHECKBOX;
@@ -131,6 +132,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_YEAR_FILTER;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CLOSE_FORM_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONFIRM_POPUP;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONFIRM_RESTORATION_WINDOWS_HEADER;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CREATE_NEW_PERSON_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_FROM_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_TO_COMBOBOX;
@@ -169,6 +171,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PROG
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PROGRESSBAR_TOTAL_NUMBER_OF_SUCCESSFUL_CASES_LABEL;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.REJECT_SHARED_CASE_HEADER_DE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.REJECT_SHARED_CASE_POPUP_TEXT_AREA;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.RELEVANT_STATUS_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.RELEVANT_STATUS_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.RESULTS_GRID_HEADER;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SEARCH_BUTTON;
@@ -1645,6 +1648,26 @@ public class CaseDirectorySteps implements En {
         "^I click on close progress operation window$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CLOSE_FORM_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(90);
+        });
+
+    Then(
+        "^I click on Restore button from Bulk Actions Combobox in Case Directory$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(BULK_RESTORE_BUTTON);
+        });
+
+    And(
+        "^I check that Confirm Restoration popup appears and confirm popup$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CONFIRM_RESTORATION_WINDOWS_HEADER);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_POPUP);
+        });
+
+    And(
+        "^I set the Relevance Status Filter to \"([^\"]*)\" on Case Directory page$",
+        (String status) -> {
+          webDriverHelpers.selectFromCombobox(RELEVANT_STATUS_COMBOBOX, status);
         });
   }
 
