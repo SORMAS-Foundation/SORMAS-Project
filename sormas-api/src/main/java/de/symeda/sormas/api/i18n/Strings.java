@@ -380,7 +380,6 @@ public interface Strings {
 	String ExternalSurveillanceToolGateway_notificationEntrySent = "ExternalSurveillanceToolGateway.notificationEntrySent";
 	String ExternalSurveillanceToolGateway_notificationErrorDeleting = "ExternalSurveillanceToolGateway.notificationErrorDeleting";
 	String ExternalSurveillanceToolGateway_notificationErrorSending = "ExternalSurveillanceToolGateway.notificationErrorSending";
-	String ExternalSurveillanceToolGateway_notificationSomeEntriesSent = "ExternalSurveillanceToolGateway.notificationSomeEntriesSent";
 	String ExternalSurveillanceToolGateway_sharedAt = "ExternalSurveillanceToolGateway.sharedAt";
 	String ExternalSurveillanceToolGateway_unableToSend = "ExternalSurveillanceToolGateway.unableToSend";
 	String ExternalSurveillanceToolGateway_versionRequestError = "ExternalSurveillanceToolGateway.versionRequestError";
@@ -1196,7 +1195,6 @@ public interface Strings {
 	String messageEntitiesNotEditable = "messageEntitiesNotEditable";
 	String messageEntityNotFound = "messageEntityNotFound";
 	String messageEntriesEdited = "messageEntriesEdited";
-	String messageEntriesEditedExceptArchived = "messageEntriesEditedExceptArchived";
 	String messageEntryCreated = "messageEntryCreated";
 	String messageEnvironmentArchived = "messageEnvironmentArchived";
 	String messageEnvironmentCreated = "messageEnvironmentCreated";
@@ -1372,12 +1370,6 @@ public interface Strings {
 	String messageSamplesRestored = "messageSamplesRestored";
 	String messageSelectedPeriodTooLong = "messageSelectedPeriodTooLong";
 	String messageSetContactRegionAndDistrict = "messageSetContactRegionAndDistrict";
-	String messageSomeContactsLinkedToEvent = "messageSomeContactsLinkedToEvent";
-	String messageSomeEntitiesArchived = "messageSomeEntitiesArchived";
-	String messageSomeEntitiesDearchived = "messageSomeEntitiesDearchived";
-	String messageSomeEventsLinkedToGroup = "messageSomeEventsLinkedToGroup";
-	String messageSomeUsersDisabled = "messageSomeUsersDisabled";
-	String messageSomeUsersEnabled = "messageSomeUsersEnabled";
 	String messageSormasToSormasSimilarCaseFound = "messageSormasToSormasSimilarCaseFound";
 	String messageSormasToSormasSimilarCaseToContactFound = "messageSormasToSormasSimilarCaseToContactFound";
 	String messageSormasToSormasSimilarContactFound = "messageSormasToSormasSimilarContactFound";

@@ -60,9 +60,6 @@ public class BulkOperationHandler<T extends HasUuid> {
 	private final String countEntriesNotProcessedExternalReasonProperty;
 	private final String countEntriesNotProcessedSormasToSormasReasonProperty;
 	private final String countEntriesNotProcessedAccessDeniedReasonProperty;
-
-	//TODO: check this field, if is not used delete
-	private final String someEntriesProcessedMessageProperty;
 	private final String noEligibleEntityMessageProperty;
 	private final String infoBulkProcessFinishedWithSkipsProperty;
 	private final String infoBulkProcessFinishedWithoutSuccess;
@@ -76,7 +73,6 @@ public class BulkOperationHandler<T extends HasUuid> {
 		String countEntriesNotProcessedExternalReasonProperty,
 		String countEntriesNotProcessedSormasToSormasReasonProperty,
 		String countEntriesNotProcessedAccessDeniedReasonProperty,
-		String someEntriesProcessedMessageProperty,
 		String noEligibleEntityMessageProperty,
 		String infoBulkProcessFinishedWithSkipsProperty,
 		String infoBulkProcessFinishedWithoutSuccess) {
@@ -89,7 +85,6 @@ public class BulkOperationHandler<T extends HasUuid> {
 		this.countEntriesNotProcessedExternalReasonProperty = countEntriesNotProcessedExternalReasonProperty;
 		this.countEntriesNotProcessedSormasToSormasReasonProperty = countEntriesNotProcessedSormasToSormasReasonProperty;
 		this.countEntriesNotProcessedAccessDeniedReasonProperty = countEntriesNotProcessedAccessDeniedReasonProperty;
-		this.someEntriesProcessedMessageProperty = someEntriesProcessedMessageProperty;
 		this.noEligibleEntityMessageProperty = noEligibleEntityMessageProperty;
 		this.infoBulkProcessFinishedWithSkipsProperty = infoBulkProcessFinishedWithSkipsProperty;
 		this.infoBulkProcessFinishedWithoutSuccess = infoBulkProcessFinishedWithoutSuccess;
@@ -105,7 +100,6 @@ public class BulkOperationHandler<T extends HasUuid> {
 			null,
 			null,
 			Strings.messageCountEntitiesNotEditedAccessDeniedReason,
-			Strings.messageEntriesEditedExceptArchived,
 			Strings.messageNoEligibleEntityForEditing,
 			Strings.infoBulkProcessFinishedWithSkips,
 			Strings.infoBulkProcessFinishedWithoutSuccess);

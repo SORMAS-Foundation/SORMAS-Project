@@ -132,7 +132,6 @@ public class ExternalSurveillanceServiceGateway {
 				Strings.messageCountEntitiesNotSentExternalReason,
 				null,
 				Strings.messageCountEntitiesNotSentAccessDeniedReason,
-				Strings.ExternalSurveillanceToolGateway_notificationSomeEntriesSent,
 				null,
 				null,
 				Strings.infoBulkProcessFinishedWithoutSuccess).doBulkOperation(batch -> {
@@ -189,7 +188,6 @@ public class ExternalSurveillanceServiceGateway {
 				Strings.messageCountEntitiesNotSentExternalReason,
 				null,
 				Strings.messageCountEntitiesNotSentAccessDeniedReason,
-				Strings.ExternalSurveillanceToolGateway_notificationSomeEntriesSent,
 				null,
 				null,
 				Strings.infoBulkProcessFinishedWithoutSuccess).doBulkOperation(batch -> {

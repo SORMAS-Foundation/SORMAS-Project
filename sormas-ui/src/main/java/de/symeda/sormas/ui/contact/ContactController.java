@@ -856,7 +856,6 @@ public class ContactController {
 							null,
 							null,
 							Strings.messageCountFollowUpsNotCancelledAccessDeniedReason,
-							null,
 							Strings.messageNoEligibleFollowUpForCancellation,
 							Strings.infoBulkProcessFinishedWithSkipsOutsideJurisdictionOrNotEligible,
 							Strings.infoBulkProcessFinishedWithoutSuccess).doBulkOperation(batch -> {
@@ -914,7 +913,6 @@ public class ContactController {
 							null,
 							null,
 							Strings.messageCountFollowUpsNotSetToLostAccessDeniedReason,
-							null,
 							Strings.messageNoEligibleFollowUpForSettingToLost,
 							Strings.infoBulkProcessFinishedWithSkipsOutsideJurisdictionOrNotEligible,
 							Strings.infoBulkProcessFinishedWithoutSuccess).doBulkOperation(batch -> {

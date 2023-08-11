@@ -229,7 +229,6 @@ public class ArchivingController {
 			forArchive
 				? archiveMessages.getMessageCountEntitiesNotArchivedAccessDeniedReason()
 				: archiveMessages.getMessageCountEntitiesNotDearchivedAccessDeniedReason(),
-			forArchive ? archiveMessages.getMessageSomeEntitiesArchived() : archiveMessages.getMessageSomeEntitiesDearchived(),
 			null,
 			Strings.infoBulkProcessFinishedWithSkips,
 			Strings.infoBulkProcessFinishedWithoutSuccess);

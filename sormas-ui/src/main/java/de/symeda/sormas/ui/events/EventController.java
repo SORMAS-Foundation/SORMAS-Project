@@ -354,7 +354,7 @@ public class EventController {
 
 		//TODO: check newly added message: headingNoProcessedEntities, countEntriesNotProcessedExternalReasonProperty,  countEntriesNotProcessedSormastoSormasReasonProperty, 
 		//countEntriesNotProcessedAccessDeniedReasonProperty, infoBulkProcessFinishedWithSkipsProperty
-
+		//messageSomeContactsLinkedToEvent = Some of the selected contacts have been linked to the selected event.
 		new BulkOperationHandler<ContactDto>(
 			Strings.messageAllContactsLinkedToEvent,
 			null,
@@ -364,7 +364,6 @@ public class EventController {
 			null,
 			null,
 			null,
-			Strings.messageSomeContactsLinkedToEvent,
 			Strings.messageAllContactsAlreadyInEvent,
 			null,
 			null).doBulkOperation(batch -> {

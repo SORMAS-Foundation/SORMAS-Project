@@ -376,7 +376,6 @@ public class UserController {
 						null,
 						null,
 						null,
-						Strings.messageSomeUsersEnabled,
 						null,
 						Strings.infoBulkProcessFinishedWithSkips,
 						Strings.infoBulkProcessFinishedWithoutSuccess).doBulkOperation(batch -> {
@@ -424,7 +423,6 @@ public class UserController {
 						null,
 						null,
 						null,
-						Strings.messageSomeUsersDisabled,
 						null,
 						Strings.infoBulkProcessFinishedWithSkips,
 						Strings.infoBulkProcessFinishedWithoutSuccess).doBulkOperation(batch -> {

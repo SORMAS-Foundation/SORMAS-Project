@@ -78,6 +78,7 @@ public class EventGroupController {
 		String messageEventsLinkedToGroup = eventReferences.size() > 1 ? Strings.messageEventsLinkedToGroup : Strings.messageEventLinkedToGroup;
 		//TODO: check newly added message: headingNoProcessedEntities, countEntriesNotProcessedExternalReasonProperty,  countEntriesNotProcessedSormastoSormasReasonProperty, 
 		//countEntriesNotProcessedAccessDeniedReasonProperty, infoBulkProcessFinishedWithSkipsProperty
+		//messageSomeEventsLinkedToGroup = Some of the selected events have been successfully linked to this event group
 		new BulkOperationHandler<EventReferenceDto>(
 			messageEventsLinkedToGroup,
 			null,
@@ -87,7 +88,6 @@ public class EventGroupController {
 			null,
 			null,
 			null,
-			Strings.messageSomeEventsLinkedToGroup,
 			null,
 			null,
 			null).doBulkOperation(batch -> {
