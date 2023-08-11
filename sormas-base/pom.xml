@@ -5,7 +5,7 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.87.0-SNAPSHOT</version>
+	<version>1.88.0-SNAPSHOT</version>
 
 	<properties>
 		<maven.minimum.version>3.6.3</maven.minimum.version>
@@ -36,7 +36,7 @@
 		<swagger.version>2.2.15</swagger.version>
 		<bouncycastle.version>1.70</bouncycastle.version>
 		<grpc.version>1.56.1</grpc.version>
-		<keycloak.version>21.0.1</keycloak.version>
+		<keycloak.version>21.1.2</keycloak.version>
 		<netty.version>4.1.95.Final</netty.version>
 		<resteasy.version>5.0.7.Final</resteasy.version>
 		<kotlin-stdlib.version>1.9.0</kotlin-stdlib.version>
@@ -1708,6 +1708,7 @@
 							<suppressionFile>${dependency-check.suppressionFile}</suppressionFile>
 						</suppressionFiles>
 						<assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+						<ossindexAnalyzerEnabled>false</ossindexAnalyzerEnabled>
 					</configuration>
 					<executions>
 						<execution>

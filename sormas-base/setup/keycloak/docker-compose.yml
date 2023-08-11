@@ -10,6 +10,7 @@ services:
     restart: unless-stopped
     labels:
       - autoheal=true
+    #image: sormas-docker-keycloak:latest
     image: hzibraunschweig/sormas-keycloak:${SORMAS_DOCKER_VERSION}
     ports:
       - ${KEYCLOAK_PORT}:8080
@@ -21,7 +22,7 @@ services:
       - KC_DB_USERNAME=${KEYCLOAK_DB_USER}
       - KC_DB_PASSWORD=${KEYCLOAK_DB_PASSWORD}
       - PROXY_ADDRESS_FORWARDING=true
-      - SORMAS_HOST_URL=${SORMAS_HOST}
+      - SORMAS_SERVER_URL=${SORMAS_SERVER_URL}
       - KEYCLOAK_SORMAS_UI_SECRET=${KEYCLOAK_SORMAS_UI_SECRET}
       - KEYCLOAK_SORMAS_REST_SECRET=${KEYCLOAK_SORMAS_REST_SECRET}
       - KEYCLOAK_SORMAS_BACKEND_SECRET=${KEYCLOAK_SORMAS_BACKEND_SECRET}

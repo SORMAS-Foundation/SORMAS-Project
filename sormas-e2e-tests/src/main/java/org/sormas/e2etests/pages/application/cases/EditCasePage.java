@@ -366,13 +366,6 @@ public class EditCasePage {
       By.xpath("//div[@class='v-window-outerheader']");
   public static final By PLACE_OF_STAY_REGION_INPUT = By.cssSelector("#region input");
   public static final By PLACE_OF_STAY_DISTRICT_INPUT = By.cssSelector("#district input");
-
-  public static final By SHARE_SORMAS_2_SORMAS_BUTTON = By.cssSelector("#sormasToSormasShare");
-  public static final By SHARE_ORGANIZATION_POPUP_COMBOBOX =
-      By.cssSelector(".popupContent #organization div");
-  public static final By HAND_THE_OWNERSHIP_CHECKBOX =
-      By.cssSelector(".popupContent #handOverOwnership label");
-
   public static final By SAHRE_SAMPLES_CHECKBOX =
       By.cssSelector(".popupContent #withSamples label");
   public static final By SHARE_IMMUNIZATION_CHECKBOX =

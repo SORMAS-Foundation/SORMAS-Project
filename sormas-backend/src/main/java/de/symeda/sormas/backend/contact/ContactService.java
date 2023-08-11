@@ -15,6 +15,7 @@
 package de.symeda.sormas.backend.contact;
 
 import java.sql.Timestamp;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -1566,12 +1567,15 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 
 		TypedQuery<Object[]> query = em.createQuery(cq).setParameter("date_type", "epoch");
 		if (limit != null) {
-			query.setMaxResults(limit);
+			// Double the limit because the query result will contain each pair twice; since these duplicates will
+			// be removed, the final result list would only contain limit/2 entries otherwise
+			query.setMaxResults(limit * 2);
 		}
 
 		List<Object[]> foundIds = query.getResultList();
 
 		List<MergeContactIndexDto[]> resultList = new ArrayList<>();
+		Set<AbstractMap.SimpleImmutableEntry<Long, Long>> resultIdsSet = new HashSet<>();
 
 		if (!foundIds.isEmpty()) {
 			CriteriaQuery<MergeContactIndexDto> indexContactsCq = cb.createQuery(MergeContactIndexDto.class);
@@ -1583,13 +1587,12 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 				em.createQuery(indexContactsCq).getResultStream().collect(Collectors.toMap(c -> c.getId(), Function.identity()));
 
 			for (Object[] idPair : foundIds) {
-				// Skip duplicate pairs
-				if (resultList.stream()
-					.anyMatch(
-						r -> (r[0].getId() == (long) idPair[0] && r[1].getId() == (long) idPair[1])
-							|| (r[0].getId() == (long) idPair[1] && r[1].getId() == (long) idPair[0]))) {
+				// Skip duplicate pairs - duplications always happen in reverse order, i.e. if idPair[0]/idPair[1]
+				// is already in the result set in this order, the duplication would be added as idPair[1]/idPair[0]
+				if (resultIdsSet.contains(new AbstractMap.SimpleImmutableEntry<>(idPair[1], idPair[0]))) {
 					continue;
 				}
+
 				try {
 					// Cloning is necessary here to allow us to add the same CaseIndexDto to the grid multiple times
 					MergeContactIndexDto parent = (MergeContactIndexDto) indexContacts.get(idPair[0]).clone();
@@ -1608,6 +1611,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 								child,
 								parent });
 					}
+					resultIdsSet.add(new AbstractMap.SimpleImmutableEntry<>((Long) idPair[0], (Long) idPair[1]));
 				} catch (CloneNotSupportedException e) {
 					throw new RuntimeException(e);
 				}

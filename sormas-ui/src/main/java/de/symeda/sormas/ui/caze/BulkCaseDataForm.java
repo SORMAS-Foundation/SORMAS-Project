@@ -66,6 +66,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
+import de.symeda.sormas.ui.utils.ComboBoxWithPlaceholder;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
@@ -211,12 +212,14 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 		diseaseVariantCheckBox.setVisible(false);
 		getContent().addComponent(diseaseVariantCheckBox, DISEASE_VARIANT_CHECKBOX);
 
-		ComboBox diseaseVariantField = addField(CaseBulkEditData.DISEASE_VARIANT, ComboBox.class);
+		ComboBoxWithPlaceholder diseaseVariantField = addField(CaseBulkEditData.DISEASE_VARIANT, ComboBoxWithPlaceholder.class);
+		diseaseVariantField.setPlaceholder(I18nProperties.getCaption(Captions.caseNoDiseaseVariant));
+		diseaseVariantField.setNullSelectionAllowed(true);
 		diseaseVariantField.setEnabled(false);
+		diseaseVariantField.setVisible(false);
+
 		TextField diseaseVariantDetailsField = addField(CaseBulkEditData.DISEASE_VARIANT_DETAILS, TextField.class);
 		diseaseVariantDetailsField.setVisible(false);
-		diseaseVariantField.setNullSelectionAllowed(true);
-		diseaseVariantField.setVisible(false);
 
 		diseaseVariantField.addValueChangeListener(e -> {
 			DiseaseVariant diseaseVariant = (DiseaseVariant) e.getProperty().getValue();

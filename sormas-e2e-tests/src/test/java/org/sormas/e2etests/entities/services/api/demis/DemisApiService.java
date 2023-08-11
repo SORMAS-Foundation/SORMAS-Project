@@ -259,9 +259,10 @@ public class DemisApiService {
   }
 
   public String prepareLabNotificationFileWithOneExistingFacility(
-          String patientFirstName, String patientLastName) {
+      String patientFirstName, String patientLastName) {
     DemisData demisData = runningConfiguration.getDemisData(locale);
-    String file = "src/main/resources/demisJsonTemplates/labNotificationTemplateWithExistingFacility.json";
+    String file =
+        "src/main/resources/demisJsonTemplates/labNotificationTemplateWithExistingFacility.json";
     String json = readFileAsString(file);
     json = json.replace("<report_UUID_to_change>", UUID.randomUUID().toString());
     json = json.replace("\"<last_name_to_change>\"", "\"" + patientLastName + "\"");
@@ -273,9 +274,10 @@ public class DemisApiService {
   }
 
   public String prepareLabNotificationFileWithMultiplePathogenOneSample(
-          String patientFirstName, String patientLastName) {
+      String patientFirstName, String patientLastName) {
     DemisData demisData = runningConfiguration.getDemisData(locale);
-    String file = "src/main/resources/demisJsonTemplates/labNotificationTemplateMultiplePathogen.json";
+    String file =
+        "src/main/resources/demisJsonTemplates/labNotificationTemplateMultiplePathogen.json";
     String json = readFileAsString(file);
     json = json.replace("<report_UUID_to_change>", UUID.randomUUID().toString());
     json = json.replace("\"<postal_code_to_change>\"", "\"" + demisData.getPostalCode() + "\"");
@@ -286,6 +288,19 @@ public class DemisApiService {
     json = json.replace("<second_observation_UUID_to_change>", UUID.randomUUID().toString());
     return json;
   }
+
+  public String prepareLabNotificationFileForPhysicianReport(
+          String patientFirstName, String patientLastName) {
+    DemisData demisData = runningConfiguration.getDemisData(locale);
+    String file = "src/main/resources/demisJsonTemplates/labNotificationTemplatePhysicianReport.json";
+    String json = readFileAsString(file);
+    json = json.replace("<report_UUID_to_change>", UUID.randomUUID().toString());
+    json = json.replace("\"<postal_code_to_change>\"", "\"" + demisData.getPostalCode() + "\"");
+    json = json.replace("\"<last_name_to_change>\"", "\"" + patientLastName + "\"");
+    json = json.replace("\"<first_name_to_change>\"", "\"" + patientFirstName + "\"");
+    return json;
+  }
+
 
   /** Delete method once we start adding tests */
   @SneakyThrows

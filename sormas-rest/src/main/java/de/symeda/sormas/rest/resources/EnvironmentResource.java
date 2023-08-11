@@ -25,7 +25,16 @@ public class EnvironmentResource extends EntityDtoResource<EnvironmentDto> {
 	@GET
 	@Path("/all/{since}")
 	public List<EnvironmentDto> getAllEnvironments(@PathParam("since") long since) {
-		return FacadeProvider.getEnvironmentFacade().getAllEnvironmentsAfter(new Date(since));
+		return FacadeProvider.getEnvironmentFacade().getAllAfter(new Date(since));
+	}
+
+	@GET
+	@Path("/all/{since}/{size}/{lastSynchronizedUuid}")
+	public List<EnvironmentDto> getAllEnvironments(
+		@PathParam("since") long since,
+		@PathParam("size") int size,
+		@PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
+		return FacadeProvider.getEnvironmentFacade().getAllAfter(new Date(since), size, lastSynchronizedUuid);
 	}
 
 	@POST

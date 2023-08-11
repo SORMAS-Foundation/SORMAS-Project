@@ -24,6 +24,7 @@ import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
@@ -59,6 +60,9 @@ public class DtoViewAndEditRights {
 
 		viewRights.put(ContactDto.class.getSimpleName(), UserRight.CONTACT_VIEW);
 		editRights.put(ContactDto.class.getSimpleName(), UserRight.CONTACT_EDIT);
+
+		viewRights.put(EnvironmentDto.class.getSimpleName(), UserRight.ENVIRONMENT_VIEW);
+		editRights.put(EnvironmentDto.class.getSimpleName(), UserRight.ENVIRONMENT_EDIT);
 
 		viewRights.put(EventDto.class.getSimpleName(), UserRight.EVENT_VIEW);
 		editRights.put(EventDto.class.getSimpleName(), UserRight.EVENT_EDIT);

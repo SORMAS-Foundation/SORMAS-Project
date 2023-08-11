@@ -26,6 +26,11 @@ import static org.sormas.e2etests.helpers.SchemaValidator.XMLSchemaValidator.val
 import static org.sormas.e2etests.helpers.comparison.XMLComparison.compareXMLFiles;
 import static org.sormas.e2etests.helpers.comparison.XMLComparison.extractDiffNodes;
 import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_VERSION_LINK;
+import static org.sormas.e2etests.steps.web.application.cases.CreateNewCaseSteps.survnetCase;
+import static org.sormas.e2etests.steps.web.application.cases.EditCaseSteps.externalUUID;
+import static org.sormas.e2etests.steps.web.application.cases.SymptomsTabSteps.symptoms;
+import static org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps.randomVaccinationName;
+import static org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps.vaccination;
 import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSteps.CovidGenomeCopyNumber;
 import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSteps.CurrentCovidInfectionDoNotMatchValue;
 import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSteps.CurrentCovidInfectionIsKnownValue;
@@ -35,11 +40,9 @@ import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSte
 import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSteps.PersonTestedConclusivelyNegativeByPCR;
 import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSteps.PreviousCovidInfectionIsKnownValue;
 import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSteps.TheLastPositivePCRDetectionWasMoreThan3MonthsAgo;
-import static org.sormas.e2etests.steps.web.application.cases.CreateNewCaseSteps.survnetCase;
-import static org.sormas.e2etests.steps.web.application.cases.EditCaseSteps.externalUUID;
-import static org.sormas.e2etests.steps.web.application.cases.SymptomsTabSteps.symptoms;
-import static org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps.randomVaccinationName;
-import static org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps.vaccination;
+import static org.sormas.e2etests.steps.web.application.cases.HospitalizationTabSteps.*;
+import static org.sormas.e2etests.steps.web.application.cases.PreviousHospitalizationSteps.previousHospitalization;
+import static org.sormas.e2etests.steps.web.application.cases.PreviousHospitalizationSteps.reasonForPreviousHospitalization;
 
 @Slf4j
 public class SurvNetSteps implements En {
@@ -92,6 +95,86 @@ public class SurvNetSteps implements En {
         });
 
     Then(
+            "I check if {string} for Current Hospitalization in SORMAS generated XML file is correct",
+            (String typeOfDate) -> {
+              switch (typeOfDate) {
+                case "date of visit or admission":
+                  LocalDate expectedStayFromDate = hospitalization.getDateOfVisitOrAdmission();
+                  softly.assertEquals(
+                          getValueFromLowChildrenDateSpecificFieldByName(singleXmlFile, "StayFrom"),
+                          expectedStayFromDate,
+                          "Date of visit or admission is incorrect!");
+                  softly.assertAll();
+                  break;
+                case "date of discharge or transfer":
+                  LocalDate expectedStayUntilDate =
+                          hospitalization.getDateOfDischargeOrTransfer();
+                  softly.assertEquals(
+                          getValueFromLowChildrenDateSpecificFieldByName(singleXmlFile, "StayUntil"),
+                          expectedStayUntilDate,
+                          "Date of discharge or transfer is incorrect!");
+                  softly.assertAll();
+                  break;
+                case "start of the stay":
+                  LocalDate expectedStartOfTheStay = hospitalization.getStartOfStayDate();
+                  softly.assertEquals(
+                          getValueFromLowChildrenDateSpecificFieldByName(singleXmlFile, "ITSStayFrom"),
+                          expectedStartOfTheStay,
+                          "Start of the stay date is incorrect!");
+                  softly.assertAll();
+                  break;
+                case "end of the stay":
+                  LocalDate expectedEndOfTheStay = hospitalization.getEndOfStayDate();
+                  softly.assertEquals(
+                          getValueFromLowChildrenDateSpecificFieldByName(singleXmlFile, "ITSStayUntil"),
+                          expectedEndOfTheStay,
+                          "End of the stay date is incorrect!");
+                  softly.assertAll();
+                  break;
+              }
+            });
+
+    Then(
+        "I check if {string} for Previous Hospitalization in SORMAS generated XML file is correct",
+        (String typeOfDate) -> {
+          switch (typeOfDate) {
+            case "date of visit or admission":
+              LocalDate expectedStayFromDate = previousHospitalization.getDateOfVisitOrAdmission();
+              softly.assertEquals(
+                  getValueFromLowChildrenDateSpecificFieldByName(singleXmlFile, "StayFrom"),
+                  expectedStayFromDate,
+                  "Date of visit or admission is incorrect!");
+              softly.assertAll();
+              break;
+            case "date of discharge or transfer":
+              LocalDate expectedStayUntilDate =
+                  previousHospitalization.getDateOfDischargeOrTransfer();
+              softly.assertEquals(
+                  getValueFromLowChildrenDateSpecificFieldByName(singleXmlFile, "StayUntil"),
+                  expectedStayUntilDate,
+                  "Date of discharge or transfer is incorrect!");
+              softly.assertAll();
+              break;
+            case "start of the stay":
+              LocalDate expectedStartOfTheStay = previousHospitalization.getStartOfStayDate();
+              softly.assertEquals(
+                  getValueFromLowChildrenDateSpecificFieldByName(singleXmlFile, "ITSStayFrom"),
+                  expectedStartOfTheStay,
+                  "Start of the stay date is incorrect!");
+              softly.assertAll();
+              break;
+            case "end of the stay":
+              LocalDate expectedEndOfTheStay = previousHospitalization.getEndOfStayDate();
+              softly.assertEquals(
+                  getValueFromLowChildrenDateSpecificFieldByName(singleXmlFile, "ITSStayUntil"),
+                  expectedEndOfTheStay,
+                  "End of the stay date is incorrect!");
+              softly.assertAll();
+              break;
+          }
+        });
+
+    Then(
         "I check if Vaccine name in SORMAS generated XML file is correct",
         () -> {
           String vaccineNamefromXml = getValueFromSpecificFieldByName(singleXmlFile, "Vaccine");
@@ -137,6 +220,58 @@ public class SurvNetSteps implements En {
           String sex = getSexDE(singleXmlFile, 0);
           String expectedSex = CreateNewCaseSteps.survnetCase.getSex();
           softly.assertEquals(sex, expectedSex, "Sex is incorrect!");
+          softly.assertAll();
+        });
+
+    And(
+        "I check reason for Current Hospitalization in SORMAS generated single XML file is correct",
+        () -> {
+          String expectedReasonForHospitalizationValue = null;
+          switch (reasonForCurrentHospitalization) {
+            case "Anderer Grund":
+              expectedReasonForHospitalizationValue = "2";
+              break;
+            case "Gemeldete Krankheit":
+              expectedReasonForHospitalizationValue = "1";
+              break;
+            case "Isolation":
+              expectedReasonForHospitalizationValue = "4";
+              break;
+            case "Unbekannt":
+              expectedReasonForHospitalizationValue = "3";
+              break;
+          }
+
+          softly.assertEquals(
+              getValueFromLowChildrenSpecificFieldByName(singleXmlFile, "Reason"),
+              expectedReasonForHospitalizationValue,
+              "Reason is incorrect!");
+          softly.assertAll();
+        });
+
+    And(
+        "I check reason for Previous Hospitalization in SORMAS generated single XML file is correct",
+        () -> {
+          String expectedReasonForHospitalizationValue = null;
+          switch (reasonForPreviousHospitalization) {
+            case "Anderer Grund":
+              expectedReasonForHospitalizationValue = "2";
+              break;
+            case "Gemeldete Krankheit":
+              expectedReasonForHospitalizationValue = "1";
+              break;
+            case "Isolation":
+              expectedReasonForHospitalizationValue = "4";
+              break;
+            case "Unbekannt":
+              expectedReasonForHospitalizationValue = "3";
+              break;
+          }
+
+          softly.assertEquals(
+              getValueFromLowChildrenSpecificFieldByName(singleXmlFile, "Reason"),
+              expectedReasonForHospitalizationValue,
+              "Reason is incorrect!");
           softly.assertAll();
         });
 
@@ -601,6 +736,41 @@ public class SurvNetSteps implements En {
         });
 
     And(
+        "^I check if Stay in the intensive care unit value Current Hospitalization in SORMAS generated XML file is correct$",
+        () -> {
+          String expectedStayInTheIntensiveCareValue;
+          String StayInTheIntensiveCareValueUI = hospitalization.getStayInTheIntensiveCareUnit();
+
+          if (StayInTheIntensiveCareValueUI.equals("JA"))
+            expectedStayInTheIntensiveCareValue = "true";
+          else expectedStayInTheIntensiveCareValue = "false";
+
+          softly.assertEquals(
+              getValueFromLowChildrenSpecificFieldByName(singleXmlFile, "Intensivstation"),
+              expectedStayInTheIntensiveCareValue,
+              "Stay in the intensive care unit value is incorrect!");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check if Stay in the intensive care unit value for Previous Hospitalization in SORMAS generated XML file is correct$",
+        () -> {
+          String expectedStayInTheIntensiveCareValue;
+          String StayInTheIntensiveCareValueUI =
+              previousHospitalization.getStayInTheIntensiveCareUnit();
+
+          if (StayInTheIntensiveCareValueUI.equals("JA"))
+            expectedStayInTheIntensiveCareValue = "true";
+          else expectedStayInTheIntensiveCareValue = "false";
+
+          softly.assertEquals(
+              getValueFromLowChildrenSpecificFieldByName(singleXmlFile, "Intensivstation"),
+              expectedStayInTheIntensiveCareValue,
+              "Stay in the intensive care unit value is incorrect!");
+          softly.assertAll();
+        });
+
+    And(
         "^I open SORMAS generated XML file for single case message$",
         () -> {
           singleXmlFile =
@@ -710,72 +880,155 @@ public class SurvNetSteps implements En {
           String mappedValue = null;
 
           switch (value) {
-              case"positive":
-                  mappedValue = "20";
-                  break;
-              case"negative":
-                  mappedValue = "0";
-                  break;
-            }
+            case "positive":
+              mappedValue = "20";
+              break;
+            case "negative":
+              mappedValue = "0";
+              break;
+          }
 
           switch (disease) {
-              case "diabetes":
-                  softly.assertEquals(
-                          getValueFromSpecificFieldByName(singleXmlFile, "Risk0005"),
-                          mappedValue,
-                          "Diabetes mapped value is incorrect!");
-                  softly.assertAll();
-                  break;
-              case "immunodeficiencyIncludingHiv":
-                  softly.assertEquals(
-                          getValueFromSpecificFieldByName(singleXmlFile, "Risk0008"),
-                          mappedValue,
-                          "Immunodeficiency mapped value is incorrect!");
-                  softly.assertAll();
-                  break;
-              case "chronicLiverDisease":
-                  softly.assertEquals(
-                          getValueFromSpecificFieldByName(singleXmlFile, "Risk0006"),
-                          mappedValue,
-                          "Liver disease mapped value is incorrect!");
-                  softly.assertAll();
-                  break;
-              case "malignancyChemotherapy":
-                  softly.assertEquals(
-                          getValueFromSpecificFieldByName(singleXmlFile, "Risk0011"),
-                          mappedValue,
-                          "Malignancy chemotherapy mapped value is incorrect!");
-                  softly.assertAll();
-                  break;
-              case "chronicPulmonaryDisease":
-                  softly.assertEquals(
-                          getValueFromSpecificFieldByName(singleXmlFile, "Risk0010"),
-                          mappedValue,
-                          "Chronic pulmonary disease mapped value is incorrect!");
-                  softly.assertAll();
-                  break;
-              case "chronicKidneyDisease":
-                  softly.assertEquals(
-                          getValueFromSpecificFieldByName(singleXmlFile, "Risk0009"),
-                          mappedValue,
-                          "Chronic kidney disease mapped value is incorrect!");
-                  softly.assertAll();
-                  break;
-              case "chronicNeurologicCondition":
-                  softly.assertEquals(
-                          getValueFromSpecificFieldByName(singleXmlFile, "Risk0007"),
-                          mappedValue,
-                          "Chronic neurologic condition mapped value is incorrect!");
-                  softly.assertAll();
-                  break;
-              case "cardiovascularDiseaseIncludingHypertension":
-                  softly.assertEquals(
-                          getValueFromSpecificFieldByName(singleXmlFile, "Risk0004"),
-                          mappedValue,
-                          "Cardiovascular disease mapped value is incorrect!");
-                  softly.assertAll();
-                  break;
+            case "diabetes":
+              softly.assertEquals(
+                  getValueFromSpecificFieldByName(singleXmlFile, "Risk0005"),
+                  mappedValue,
+                  "Diabetes mapped value is incorrect!");
+              softly.assertAll();
+              break;
+            case "immunodeficiencyIncludingHiv":
+              softly.assertEquals(
+                  getValueFromSpecificFieldByName(singleXmlFile, "Risk0008"),
+                  mappedValue,
+                  "Immunodeficiency mapped value is incorrect!");
+              softly.assertAll();
+              break;
+            case "chronicLiverDisease":
+              softly.assertEquals(
+                  getValueFromSpecificFieldByName(singleXmlFile, "Risk0006"),
+                  mappedValue,
+                  "Liver disease mapped value is incorrect!");
+              softly.assertAll();
+              break;
+            case "malignancyChemotherapy":
+              softly.assertEquals(
+                  getValueFromSpecificFieldByName(singleXmlFile, "Risk0011"),
+                  mappedValue,
+                  "Malignancy chemotherapy mapped value is incorrect!");
+              softly.assertAll();
+              break;
+            case "chronicPulmonaryDisease":
+              softly.assertEquals(
+                  getValueFromSpecificFieldByName(singleXmlFile, "Risk0010"),
+                  mappedValue,
+                  "Chronic pulmonary disease mapped value is incorrect!");
+              softly.assertAll();
+              break;
+            case "chronicKidneyDisease":
+              softly.assertEquals(
+                  getValueFromSpecificFieldByName(singleXmlFile, "Risk0009"),
+                  mappedValue,
+                  "Chronic kidney disease mapped value is incorrect!");
+              softly.assertAll();
+              break;
+            case "chronicNeurologicCondition":
+              softly.assertEquals(
+                  getValueFromSpecificFieldByName(singleXmlFile, "Risk0007"),
+                  mappedValue,
+                  "Chronic neurologic condition mapped value is incorrect!");
+              softly.assertAll();
+              break;
+            case "cardiovascularDiseaseIncludingHypertension":
+              softly.assertEquals(
+                  getValueFromSpecificFieldByName(singleXmlFile, "Risk0004"),
+                  mappedValue,
+                  "Cardiovascular disease mapped value is incorrect!");
+              softly.assertAll();
+              break;
           }
+        });
+
+    And(
+        "^I check if Previous Hospitalization Was Patient Admitted has correct value mapped in SORMAS generated single XML file$$",
+        () -> {
+          String wasPatientHospitalized =
+              previousHospitalization.getWasPatientAdmittedAtTheFacilityAsAnInpatient();
+          String StatusHospitalizationValue = null;
+          switch (wasPatientHospitalized) {
+            case "JA":
+              StatusHospitalizationValue = "20";
+              break;
+            case "NEIN":
+              StatusHospitalizationValue = "0";
+              break;
+            case "UNBEKANNT":
+              StatusHospitalizationValue = "-1";
+              break;
+          }
+
+          softly.assertEquals(
+              getValueFromSpecificFieldByName(singleXmlFile, "StatusHospitalization"),
+              StatusHospitalizationValue,
+              "Status Hospital value for Current Hospitalization Was Patient Admitted is incorrect");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check if Current Hospitalization Was Patient Admitted has correct value mapped in SORMAS generated single XML file$$",
+        () -> {
+          String wasPatientHospitalized = hospitalization.getWasPatientAdmittedAtTheFacilityAsAnInpatient();
+          String StatusHospitalizationValue = null;
+          switch (wasPatientHospitalized) {
+            case "JA":
+              StatusHospitalizationValue = "20";
+              break;
+            case "NEIN":
+              StatusHospitalizationValue = "0";
+              break;
+            case "UNBEKANNT":
+              StatusHospitalizationValue = "-1";
+              break;
+          }
+
+          softly.assertEquals(
+              getValueFromSpecificFieldByName(singleXmlFile, "StatusHospitalization"),
+              StatusHospitalizationValue,
+              "Status Hospital value for Current Hospitalization Was Patient Admitted is incorrect");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check if Region from Previous Hospitalization value in SORMAS generated XML file is correct$",
+        () -> {
+          String regionUI = previousHospitalization.getRegion();
+          String expectedRegionUUID = null;
+          switch (regionUI) {
+            case "Berlin":
+              expectedRegionUUID = "11011001";
+              break;
+          }
+          softly.assertEquals(
+              getValueFromLowChildrenSpecificFieldByName(singleXmlFile, "Region"),
+              expectedRegionUUID,
+              "Region UUID is incorrect!");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check if Region from Current Hospitalization value in SORMAS generated XML file is correct$",
+        () -> {
+          String regionUI = survnetCase.getResponsibleRegion();
+          String expectedRegionUUID = null;
+          switch (regionUI) {
+            case "Berlin":
+              expectedRegionUUID = "11011001";
+              break;
+          }
+          softly.assertEquals(
+              getValueFromLowChildrenSpecificFieldByName(singleXmlFile, "Region"),
+              expectedRegionUUID,
+              "Region UUID is incorrect!");
+          softly.assertAll();
         });
 
     Then(
@@ -784,20 +1037,34 @@ public class SurvNetSteps implements En {
           switch (infectionOption) {
             case "Ambulant":
               softly.assertEquals(
-                      getValueFromSpecificFieldByName(singleXmlFile, "P112Setting"),
-                      "1000",
-                      "Mapped value for Ambulance is incorrect");
+                  getValueFromSpecificFieldByName(singleXmlFile, "P112Setting"),
+                  "1000",
+                  "Mapped value for Ambulance is incorrect");
               softly.assertAll();
               break;
             case "Stationär":
               softly.assertEquals(
-                      getValueFromSpecificFieldByName(singleXmlFile, "P112Setting"),
-                      "2000",
-                      "Mapped value for Stationär is incorrect ");
+                  getValueFromSpecificFieldByName(singleXmlFile, "P112Setting"),
+                  "2000",
+                  "Mapped value for Stationär is incorrect ");
               softly.assertAll();
               break;
           }
+        });
 
+    Then(
+        "^I check if the exposure settings are correctly mapped in SORMAS generated single XML file$",
+        () -> {
+          softly.assertEquals(
+                  getValueFromSpecificFieldByName(singleXmlFile, "StatusInfectionEnvironmentCVD"),
+                  "-1",
+                  "Status Infection Environment CVD is incorrect!");
+          softly.assertAll();
+          softly.assertEquals(
+                  getValueFromSpecificFieldByName(singleXmlFile, "StatusPlaceOfInf"),
+                  "20",
+                  "Status Place Of Inf is incorrect!");
+          softly.assertAll();
         });
   }
 
@@ -945,6 +1212,60 @@ public class SurvNetSteps implements En {
       }
     }
     return value;
+  }
+
+  private String getValueFromLowChildrenSpecificFieldByName(Document xmlFile, String name) {
+    Element rootElement = xmlFile.getRootElement();
+    Namespace ns = rootElement.getNamespace();
+    String value = null;
+
+    Element field =
+        xmlFile
+            .getRootElement()
+            .getChildren()
+            .get(0)
+            .getChildren("Group", ns)
+            .get(0)
+            .getChildren("Field", ns)
+            .stream()
+            .filter(e -> e.getAttributeValue("Name").equals(name))
+            .findFirst()
+            .orElse(null);
+
+    if (field != null) {
+      Attribute valueAttribute = field.getAttribute("Value");
+      if (valueAttribute != null) {
+        value = valueAttribute.getValue();
+      }
+    }
+    return value;
+  }
+
+  private LocalDate getValueFromLowChildrenDateSpecificFieldByName(Document xmlFile, String name) {
+    Element rootElement = xmlFile.getRootElement();
+    Namespace ns = rootElement.getNamespace();
+    String value = null;
+
+    Element field =
+        xmlFile
+            .getRootElement()
+            .getChildren()
+            .get(0)
+            .getChildren("Group", ns)
+            .get(0)
+            .getChildren("Field", ns)
+            .stream()
+            .filter(e -> e.getAttributeValue("Name").equals(name))
+            .findFirst()
+            .orElse(null);
+
+    if (field != null) {
+      Attribute valueAttribute = field.getAttribute("Value");
+      if (valueAttribute != null) {
+        value = valueAttribute.getValue().substring(0, 10);
+      }
+    }
+    return LocalDate.parse(value, DATE_FORMATTER);
   }
 
   private LocalDate getDateValueFromSpecificChildNodeFieldByName(Document xmlFile, String name) {

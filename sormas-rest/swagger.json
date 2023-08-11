@@ -7,7 +7,7 @@
       "url" : "https://www.gnu.org/licenses/gpl-3.0.html"
     },
     "title" : "SORMAS REST API",
-    "version" : "1.87.0-SNAPSHOT"
+    "version" : "1.88.0-SNAPSHOT"
   },
   "servers" : [ {
     "url" : "/sormas-rest"
@@ -14883,7 +14883,7 @@
           },
           "dataType" : {
             "type" : "string",
-            "enum" : [ "DISEASE_VARIANT", "SPECIFIC_EVENT_RISK", "OCCUPATION_TYPE" ]
+            "enum" : [ "DISEASE_VARIANT", "SPECIFIC_EVENT_RISK", "OCCUPATION_TYPE", "PATHOGEN" ]
           },
           "defaultValue" : {
             "type" : "boolean"

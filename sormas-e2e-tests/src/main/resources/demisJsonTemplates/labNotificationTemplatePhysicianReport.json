@@ -1,0 +1,474 @@
+{
+    "resourceType": "Bundle",
+    "id": "098f6bcd-4621-3373-8ade-4e832627b4f6",
+    "meta": {
+        "lastUpdated": "2021-03-04T12:00:00.000+01:00",
+        "profile": [
+            "https://demis.rki.de/fhir/StructureDefinition/NotificationBundleDisease"
+        ]
+    },
+    "identifier": {
+        "system": "https://demis.rki.de/fhir/NamingSystem/NotificationBundleId",
+        "value": "f6f4061a-1bdd-31c0-8d81-09b39f581270"
+    },
+    "type": "document",
+    "timestamp": "2021-03-04T12:00:00.000+01:00",
+    "entry": [
+        {
+            "fullUrl": "https://demis.rki.de/fhir/Composition/9f0a1336-3ac2-3a31-bfff-b8233c214452",
+            "resource": {
+                "resourceType": "Composition",
+                "id": "9f0a1336-3ac2-3a31-bfff-b8233c214452",
+                "meta": {
+                    "lastUpdated": "2021-03-04T12:00:00.000+01:00",
+                    "profile": [
+                        "https://demis.rki.de/fhir/StructureDefinition/NotificationDiseaseCVDD"
+                    ]
+                },
+                "identifier": {
+                    "system": "https://demis.rki.de/fhir/NamingSystem/NotificationId",
+                    "value": "<report_UUID_to_change>"
+                },
+                "status": "final",
+                "type": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "34782-3",
+                            "display": "Infectious disease Note"
+                        }
+                    ]
+                },
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://demis.rki.de/fhir/CodeSystem/notificationType",
+                                "code": "6.1_2",
+                                "display": "Meldung gemäß §6 Absatz 1, 2"
+                            }
+                        ]
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/ac163863-fefa-3ce2-8511-7a4150d6ad43"
+                },
+                "date": "2021-03-04T01:00:00+01:00",
+                "author": [
+                    {
+                        "reference": "PractitionerRole/6373194f-4d06-382a-a67d-e3c7da243c30"
+                    }
+                ],
+                "title": "Meldung gemäß §6 Absatz 1, 2 IfSG",
+                "section": [
+                    {
+                        "title": "Diagnose",
+                        "code": {
+                            "coding": [
+                                {
+                                    "system": "https://demis.rki.de/fhir/CodeSystem/sectionCode",
+                                    "code": "diagnosis",
+                                    "display": "Diagnose"
+                                }
+                            ]
+                        },
+                        "entry": [
+                            {
+                                "reference": "Condition/cc86fc62-11af-3411-8b5e-6b2202206ec4"
+                            }
+                        ]
+                    },
+                    {
+                        "title": "Meldetatbestandsübergreifende klinische und epidemiologische Angaben",
+                        "code": {
+                            "coding": [
+                                {
+                                    "system": "https://demis.rki.de/fhir/CodeSystem/sectionCode",
+                                    "code": "generalClinAndEpiInformation",
+                                    "display": "Meldetatbestandsübergreifende klinische und epidemiologische Angaben"
+                                }
+                            ]
+                        },
+                        "entry": [
+                            {
+                                "reference": "QuestionnaireResponse/2f0c6b36-6421-35a8-8ea1-0e013db39410"
+                            }
+                        ]
+                    },
+                    {
+                        "title": "Meldetatbestandsspezifische klinische und epidemiologische Angaben",
+                        "code": {
+                            "coding": [
+                                {
+                                    "system": "https://demis.rki.de/fhir/CodeSystem/sectionCode",
+                                    "code": "specificClinAndEpiInformation",
+                                    "display": "Meldetatbestandsspezifische klinische und epidemiologische Angaben"
+                                }
+                            ]
+                        },
+                        "entry": [
+                            {
+                                "reference": "QuestionnaireResponse/146e5ced-db63-36e0-b8d3-85fa94218d8b"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "https://demis.rki.de/fhir/Patient/ac163863-fefa-3ce2-8511-7a4150d6ad43",
+            "resource": {
+                "resourceType": "Patient",
+                "id": "ac163863-fefa-3ce2-8511-7a4150d6ad43",
+                "meta": {
+                    "profile": [
+                        "https://demis.rki.de/fhir/StructureDefinition/NotifiedPerson"
+                    ]
+                },
+                "name": [
+                    {
+                        "use": "official",
+                        "family": "<last_name_to_change>",
+                        "given": [
+                            "<first_name_to_change>"
+                        ]
+                    }
+                ],
+                "gender": "female",
+                "birthDate": "1991-12-30",
+                "address": [
+                    {
+                        "extension": [
+                            {
+                                "url": "https://demis.rki.de/fhir/StructureDefinition/AddressUse",
+                                "valueCoding": {
+                                    "system": "https://demis.rki.de/fhir/CodeSystem/addressUse",
+                                    "code": "primary"
+                                }
+                            }
+                        ],
+                        "line": [
+                            "Heerstr. 1"
+                        ],
+                        "city": "Hamburg",
+                        "postalCode": "<postal_code_to_change>",
+                        "country": "20422"
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "https://demis.rki.de/fhir/Condition/cc86fc62-11af-3411-8b5e-6b2202206ec4",
+            "resource": {
+                "resourceType": "Condition",
+                "id": "cc86fc62-11af-3411-8b5e-6b2202206ec4",
+                "meta": {
+                    "profile": [
+                        "https://demis.rki.de/fhir/StructureDefinition/DiseaseCVDD"
+                    ]
+                },
+                "verificationStatus": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+                            "code": "confirmed"
+                        }
+                    ]
+                },
+                "code": {
+                    "coding": [
+                        {
+                            "system": "https://demis.rki.de/fhir/CodeSystem/notificationDiseaseCategory",
+                            "code": "cvdd",
+                            "display": "Coronavirus-Krankheit-2019 (COVID-19)"
+                        }
+                    ]
+                },
+                "subject": {
+                    "reference": "Patient/ac163863-fefa-3ce2-8511-7a4150d6ad43"
+                },
+                "recordedDate": "2021-03-04"
+            }
+        },
+        {
+            "fullUrl": "https://demis.rki.de/fhir/Organization/7b1cb8d3-f4bb-3cf6-8c0e-01e6657a13ea",
+            "resource": {
+                "resourceType": "Organization",
+                "id": "7b1cb8d3-f4bb-3cf6-8c0e-01e6657a13ea",
+                "meta": {
+                    "profile": [
+                        "https://demis.rki.de/fhir/StructureDefinition/NotifierFacility"
+                    ]
+                },
+                "identifier": [
+                    {
+                        "system": "https://fhir.kbv.de/NamingSystem/KBV_NS_Base_BSNR",
+                        "value": "987654300"
+                    }
+                ],
+                "type": [
+                    {
+                        "coding": [
+                            {
+                                "system": "https://demis.rki.de/fhir/CodeSystem/organizationType",
+                                "code": "hospital"
+                            }
+                        ]
+                    }
+                ],
+                "name": "Sankt Gertrauden Krankenhaus",
+                "telecom": [
+                    {
+                        "system": "phone",
+                        "value": "309876543210",
+                        "use": "work"
+                    }
+                ],
+                "address": [
+                    {
+                        "line": [
+                            "Dingsweg 321"
+                        ],
+                        "city": "Hamburg",
+                        "postalCode": "<postal_code_to_change>",
+                        "country": "20422"
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "https://demis.rki.de/fhir/PractitionerRole/6373194f-4d06-382a-a67d-e3c7da243c30",
+            "resource": {
+                "resourceType": "PractitionerRole",
+                "id": "6373194f-4d06-382a-a67d-e3c7da243c30",
+                "meta": {
+                    "profile": [
+                        "https://demis.rki.de/fhir/StructureDefinition/NotifierRole"
+                    ]
+                },
+                "organization": {
+                    "reference": "Organization/7b1cb8d3-f4bb-3cf6-8c0e-01e6657a13ea"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://demis.rki.de/fhir/Encounter/cf424cfb-8809-3b51-8ab2-d8bf979cbe8d",
+            "resource": {
+                "resourceType": "Encounter",
+                "id": "cf424cfb-8809-3b51-8ab2-d8bf979cbe8d",
+                "meta": {
+                    "profile": [
+                        "https://demis.rki.de/fhir/StructureDefinition/Hospitalization"
+                    ]
+                },
+                "status": "in-progress",
+                "class": {
+                    "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+                    "code": "IMP",
+                    "display": "inpatient encounter"
+                },
+                "serviceType": {
+                    "coding": [
+                        {
+                            "system": "https://demis.rki.de/fhir/CodeSystem/hospitalizationServiceType",
+                            "code": "0800",
+                            "display": "Pneumologie"
+                        }
+                    ]
+                },
+                "subject": {
+                    "reference": "Patient/ac163863-fefa-3ce2-8511-7a4150d6ad43"
+                },
+                "period": {
+                    "start": "2021-03-04"
+                },
+                "serviceProvider": {
+                    "reference": "Organization/7b1cb8d3-f4bb-3cf6-8c0e-01e6657a13ea"
+                }
+            }
+        },
+        {
+            "fullUrl": "https://demis.rki.de/fhir/QuestionnaireResponse/2f0c6b36-6421-35a8-8ea1-0e013db39410",
+            "resource": {
+                "resourceType": "QuestionnaireResponse",
+                "id": "2f0c6b36-6421-35a8-8ea1-0e013db39410",
+                "meta": {
+                    "profile": [
+                        "https://demis.rki.de/fhir/StructureDefinition/DiseaseInformationCommon"
+                    ]
+                },
+                "questionnaire": "https://demis.rki.de/fhir/Questionnaire/DiseaseQuestionsCommon",
+                "status": "completed",
+                "subject": {
+                    "reference": "Patient/ac163863-fefa-3ce2-8511-7a4150d6ad43"
+                },
+                "item": [
+                    {
+                        "linkId": "isDead",
+                        "answer": [
+                            {
+                                "valueCoding": {
+                                    "system": "https://demis.rki.de/fhir/CodeSystem/yesOrNoAnswer",
+                                    "code": "no",
+                                    "display": "Nein"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "linkId": "militaryAffiliation",
+                        "answer": [
+                            {
+                                "valueCoding": {
+                                    "system": "http://terminology.hl7.org/CodeSystem/v3-NullFlavor",
+                                    "code": "NASK",
+                                    "display": "not asked"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "linkId": "labSpecimenTaken",
+                        "answer": [
+                            {
+                                "valueCoding": {
+                                    "system": "http://terminology.hl7.org/CodeSystem/v3-NullFlavor",
+                                    "code": "NASK",
+                                    "display": "not asked"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "linkId": "hospitalized",
+                        "answer": [
+                            {
+                                "valueCoding": {
+                                    "system": "https://demis.rki.de/fhir/CodeSystem/yesOrNoAnswer",
+                                    "code": "yes",
+                                    "display": "Ja"
+                                },
+                                "item": [
+                                    {
+                                        "linkId": "hospitalizedGroup",
+                                        "item": [
+                                            {
+                                                "linkId": "hospitalizedEncounter",
+                                                "answer": [
+                                                    {
+                                                        "valueReference": {
+                                                            "reference": "Encounter/cf424cfb-8809-3b51-8ab2-d8bf979cbe8d"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "linkId": "infectProtectFacility",
+                        "answer": [
+                            {
+                                "valueCoding": {
+                                    "system": "http://terminology.hl7.org/CodeSystem/v3-NullFlavor",
+                                    "code": "NASK",
+                                    "display": "not asked"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "linkId": "placeExposure",
+                        "answer": [
+                            {
+                                "valueCoding": {
+                                    "system": "http://terminology.hl7.org/CodeSystem/v3-NullFlavor",
+                                    "code": "NASK",
+                                    "display": "not asked"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "linkId": "organDonation",
+                        "answer": [
+                            {
+                                "valueCoding": {
+                                    "system": "http://terminology.hl7.org/CodeSystem/v3-NullFlavor",
+                                    "code": "NASK",
+                                    "display": "not asked"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "linkId": "additionalInformation",
+                        "answer": [
+                            {
+                                "valueString": "Die Meldungsgenerierung erfolgte automatisch über den Aufnahmedatensatz gem. §301 SGB V. Nicht alle erforderlichen Informationen konnten daher erhoben werden."
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "fullUrl": "https://demis.rki.de/fhir/QuestionnaireResponse/146e5ced-db63-36e0-b8d3-85fa94218d8b",
+            "resource": {
+                "resourceType": "QuestionnaireResponse",
+                "id": "146e5ced-db63-36e0-b8d3-85fa94218d8b",
+                "meta": {
+                    "profile": [
+                        "https://demis.rki.de/fhir/StructureDefinition/DiseaseInformationCVDD"
+                    ]
+                },
+                "questionnaire": "https://demis.rki.de/fhir/Questionnaire/DiseaseQuestionsCVDD",
+                "status": "completed",
+                "subject": {
+                    "reference": "Patient/ac163863-fefa-3ce2-8511-7a4150d6ad43"
+                },
+                "item": [
+                    {
+                        "linkId": "infectionSource",
+                        "answer": [
+                            {
+                                "valueCoding": {
+                                    "system": "http://terminology.hl7.org/CodeSystem/v3-NullFlavor",
+                                    "code": "NASK",
+                                    "display": "not asked"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "linkId": "infectionEnvironmentSetting",
+                        "answer": [
+                            {
+                                "valueCoding": {
+                                    "system": "http://terminology.hl7.org/CodeSystem/v3-NullFlavor",
+                                    "code": "NASK",
+                                    "display": "not asked"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "linkId": "immunization",
+                        "answer": [
+                            {
+                                "valueCoding": {
+                                    "system": "http://terminology.hl7.org/CodeSystem/v3-NullFlavor",
+                                    "code": "NASK",
+                                    "display": "not asked"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    ]
+}

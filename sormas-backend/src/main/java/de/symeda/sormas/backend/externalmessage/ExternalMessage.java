@@ -28,12 +28,14 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageType;
+import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.disease.DiseaseVariantConverter;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
+import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name = ExternalMessage.TABLE_NAME)
@@ -49,10 +51,13 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String DISEASE_VARIANT = "diseaseVariant";
 	public static final String DISEASE_VARIANT_DETAILS = "diseaseVariantDetails";
 	public static final String MESSAGE_DATE_TIME = "messageDateTime";
+	public static final String CASE_REPORT_DATE = "caseReportDate";
 	public static final String REPORTER_NAME = "reporterName";
 	public static final String REPORTER_EXTERNAL_IDS = "reporterExternalIds";
 	public static final String REPORTER_POSTAL_CODE = "reporterPostalCode";
 	public static final String REPORTER_CITY = "reporterCity";
+	public static final String PERSON_EXTERNAL_ID = "personExternalId";
+	public static final String PERSON_NATIONAL_HEALTH_ID = "personNationalHealthId";
 	public static final String PERSON_FIRST_NAME = "personFirstName";
 	public static final String PERSON_LAST_NAME = "personLastName";
 	public static final String PERSON_SEX = "personSex";
@@ -63,7 +68,9 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String PERSON_CITY = "personCity";
 	public static final String PERSON_STREET = "personStreet";
 	public static final String PERSON_HOUSE_NUMBER = "personHouseNumber";
+	public static final String PERSON_COUNTRY = "personCountry";
 	public static final String PERSON_PHONE = "personPhone";
+	public static final String PERSON_PHONE_NUMBER_TYPE = "personPhoneNumberType";
 	public static final String PERSON_EMAIL = "personEmail";
 	public static final String EXTERNAL_MESSAGE_DETAILS = "externalMessageDetails";
 	public static final String STATUS = "status";
@@ -79,11 +86,14 @@ public class ExternalMessage extends AbstractDomainObject {
 	private String diseaseVariantDetails;
 	private Date messageDateTime;
 
+	private Date caseReportDate;
 	private String reporterName;
 	private List<String> reporterExternalIds;
 	private String reporterPostalCode;
 	private String reporterCity;
 
+	private String personExternalId;
+	private String personNationalHealthId;
 	private String personFirstName;
 	private String personLastName;
 	private Sex personSex;
@@ -94,8 +104,10 @@ public class ExternalMessage extends AbstractDomainObject {
 	private String personPostalCode;
 	private String personCity;
 	private String personStreet;
+	private Country personCountry;
 	private String personHouseNumber;
 	private String personPhone;
+	private PhoneNumberType personPhoneNumberType;
 	private String personEmail;
 	private String externalMessageDetails;
 	//External messages related to each other should have the same reportId
@@ -155,6 +167,15 @@ public class ExternalMessage extends AbstractDomainObject {
 		this.messageDateTime = messageDateTime;
 	}
 
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getCaseReportDate() {
+		return caseReportDate;
+	}
+
+	public void setCaseReportDate(Date caseReportDate) {
+		this.caseReportDate = caseReportDate;
+	}
+
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getReporterName() {
 		return reporterName;
@@ -190,6 +211,23 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public void setReporterCity(String labCity) {
 		this.reporterCity = labCity;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getPersonExternalId() {
+		return personExternalId;
+	}
+
+	public void setPersonExternalId(String personExternalId) {
+		this.personExternalId = personExternalId;
+	}
+
+	public String getPersonNationalHealthId() {
+		return personNationalHealthId;
+	}
+
+	public void setPersonNationalHealthId(String personNationalHealthId) {
+		this.personNationalHealthId = personNationalHealthId;
 	}
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
@@ -290,6 +328,15 @@ public class ExternalMessage extends AbstractDomainObject {
 		this.personHouseNumber = personHouseNumber;
 	}
 
+	@OneToOne(fetch = FetchType.LAZY)
+	public Country getPersonCountry() {
+		return personCountry;
+	}
+
+	public void setPersonCountry(Country personCountry) {
+		this.personCountry = personCountry;
+	}
+
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getPersonPhone() {
 		return personPhone;
@@ -297,6 +344,15 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public void setPersonPhone(String personPhone) {
 		this.personPhone = personPhone;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public PhoneNumberType getPersonPhoneNumberType() {
+		return personPhoneNumberType;
+	}
+
+	public void setPersonPhoneNumberType(PhoneNumberType personPhoneNumberType) {
+		this.personPhoneNumberType = personPhoneNumberType;
 	}
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
