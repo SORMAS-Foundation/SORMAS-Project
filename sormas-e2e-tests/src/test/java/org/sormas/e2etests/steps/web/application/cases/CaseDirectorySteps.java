@@ -1500,7 +1500,6 @@ public class CaseDirectorySteps implements En {
               runningConfiguration.getEnvironmentUrlForMarket(instance)
                   + "/sormas-ui/#!cases/data/"
                   + CreateNewCaseSteps.casesUUID.get(0);
-          System.out.println("To jest web path: " + LAST_CREATED_CASE_URL);
           webDriverHelpers.accessWebSite(LAST_CREATED_CASE_URL);
         });
 
@@ -1569,12 +1568,6 @@ public class CaseDirectorySteps implements En {
             TimeUnit.SECONDS.sleep(1);
             listOfCheckedCases.add(
                 webDriverHelpers.getTextFromWebElement(getCaseUUIDBasedOnRowInTable(i)));
-            System.out.println(
-                "Iteration number: "
-                    + i
-                    + " "
-                    + webDriverHelpers.getTextFromWebElement(getCaseUUIDBasedOnRowInTable(i)));
-            System.out.println(listOfCheckedCases.size());
           }
         });
 
