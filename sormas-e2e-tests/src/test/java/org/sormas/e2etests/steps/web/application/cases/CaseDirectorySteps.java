@@ -1615,7 +1615,6 @@ public class CaseDirectorySteps implements En {
               webDriverHelpers
                   .getTextFromWebElement(PROGRESSBAR_TOTAL_NUMBER_OF_CASES_LABEL)
                   .lastIndexOf(" ");
-          System.out.println("slash: " + lastIndexOfSlash + " underscore: " + lastIndexOfSpace);
           softly.assertEquals(
               webDriverHelpers
                   .getTextFromWebElement(PROGRESSBAR_TOTAL_NUMBER_OF_CASES_LABEL)
