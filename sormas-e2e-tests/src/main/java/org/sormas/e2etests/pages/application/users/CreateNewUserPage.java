@@ -61,6 +61,7 @@ public class CreateNewUserPage {
   public static final By ENABLE_BULK_ACTIONS_VALUES = By.id("bulkActions-3");
   public static final By DISABLE_BULK_ACTIONS_VALUES = By.id("bulkActions-4");
   public static final By CONFIRM_POP_UP = By.id("actionConfirm");
+  public static final By CLOSE_POP_UP = By.id("actionClose");
   public static final By AMOUNT_OF_CHOSEN_USERS =
       By.xpath(
           "//div[@class='v-label v-widget v-label-undef-w bold v-label-bold vspace-top-none v-label-vspace-top-none align-right v-label-align-right']");
