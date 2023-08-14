@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.environment;
 
+import java.sql.Timestamp;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -16,6 +18,8 @@ import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
+import de.symeda.sormas.backend.common.ChangeDateBuilder;
+import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -103,6 +107,19 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 	@Override
 	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Environment> from) {
 		return cb.conjunction();
+	}
+
+	@Override
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Environment> eventPath, Timestamp date) {
+		return addChangeDates(new ChangeDateFilterBuilder(cb, date), toJoins(eventPath), false).build();
+	}
+
+	@Override
+	protected <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, EnvironmentJoins joins, boolean includeExtendedChangeDateFilters) {
+		final From<?, Environment> environmentFrom = joins.getRoot();
+		builder = super.addChangeDates(builder, joins, includeExtendedChangeDateFilters).add(environmentFrom, Environment.LOCATION);
+
+		return builder;
 	}
 
 	public Predicate buildCriteriaFilter(EnvironmentCriteria environmentCriteria, EnvironmentQueryContext environmentQueryContext) {

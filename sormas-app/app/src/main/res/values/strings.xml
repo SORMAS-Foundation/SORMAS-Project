@@ -75,6 +75,7 @@
     <string name="action_new_immunization">New Immunization</string>
     <string name="action_new_campaign_form_data">New Campaign Form Data</string>
     <string name="action_new_contact">New Contact</string>
+    <string name="action_new_environment">New Environment</string>
     <string name="action_new_event">New Event</string>
     <string name="action_new_sample">New Sample</string>
     <string name="action_new_task">New Task</string>
@@ -169,6 +170,7 @@
     <string name="caption_dropped">Dropped</string>
     <string name="caption_epi_week">Epi Week</string>
     <string name="caption_report">Report</string>
+    <string name="caption_environment_information">Environment Information</string>
     <string name="caption_event_description">Description</string>
     <string name="caption_event_location">Location</string>
     <string name="caption_event_period">Date of event</string>
@@ -391,8 +393,10 @@
     <string name="heading_sample_read">Read Sample</string>
     <string name="heading_sample_summary">Sample Summary</string>
     <string name="heading_samples_list">Sample Listing</string>
-    <string name="heading_environments_list">Environment Listing</string>
-
+    <string name="heading_environment_list">Environment Listing</string>
+    <string name="heading_environment_edit">Edit Environment</string>
+    <string name="heading_environment_new">New Environment</string>
+    <string name="heading_environment_read">Read Environment</string>
     <string name="heading_immunization_edit">Edit Immunization</string>
     <string name="heading_immunization_new">New Immunization</string>
     <string name="heading_immunization_read">Read Immunization</string>

@@ -38,20 +38,55 @@ import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 
 public class DataUtils {
 
+	/**
+	 * @deprecated use buildEnumItems instead
+	 */
+	@Deprecated
 	public static <E extends Enum<?>> List<Item> getEnumItems(Class<E> clazz) {
 		return getEnumItems(clazz, true);
 	}
 
+	/**
+	 * @deprecated use buildEnumItems instead
+	 */
+	@Deprecated
 	public static <E extends Enum<?>> List<Item> getEnumItems(Class<E> clazz, boolean withNull) {
 		return getEnumItems(clazz, withNull, null);
 	}
 
+	/**
+	 * @deprecated use buildEnumItems instead
+	 */
+	@Deprecated
 	public static <E extends Enum<?>> List<Item> getEnumItems(Class<E> clazz, boolean withNull, FieldVisibilityCheckers checkers) {
 		E[] enumConstants = clazz.getEnumConstants();
 		if (!clazz.isEnum()) {
 			throw new IllegalArgumentException(clazz.toString() + " is not an enum");
 		}
 		List<Item> list = new ArrayList<>();
+
+		if (withNull) {
+			list.add(new Item<E>("", null));
+		}
+
+		for (E enumConstant : enumConstants) {
+			boolean visible = true;
+			if (checkers != null) {
+				visible = checkers.isVisible(clazz, enumConstant.name());
+			}
+			if (visible) {
+				list.add(new Item<>(enumConstant.toString(), enumConstant));
+			}
+		}
+		return list;
+	}
+
+	public static <E extends Enum<?>> List<Item<E>> buildEnumItems(Class<E> clazz, boolean withNull, FieldVisibilityCheckers checkers) {
+		E[] enumConstants = clazz.getEnumConstants();
+		if (!clazz.isEnum()) {
+			throw new IllegalArgumentException(clazz.toString() + " is not an enum");
+		}
+		List<Item<E>> list = new ArrayList<>();
 
 		if (withNull) {
 			list.add(new Item<E>("", null));

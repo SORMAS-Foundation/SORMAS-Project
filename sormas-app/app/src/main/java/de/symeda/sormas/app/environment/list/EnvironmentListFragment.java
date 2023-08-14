@@ -12,6 +12,7 @@ import de.symeda.sormas.app.PagedBaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.environment.Environment;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
+import de.symeda.sormas.app.environment.read.EnvironmentReadActivity;
 
 public class EnvironmentListFragment extends PagedBaseListFragment<EnvironmentListAdapter> implements OnListItemClickListener {
 
@@ -28,7 +29,6 @@ public class EnvironmentListFragment extends PagedBaseListFragment<EnvironmentLi
 		View view = super.onCreateView(inflater, container, savedInstanceState);
 		linearLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
 		recyclerViewForList = view.findViewById(R.id.recyclerViewForList);
-
 		return view;
 	}
 
@@ -40,7 +40,7 @@ public class EnvironmentListFragment extends PagedBaseListFragment<EnvironmentLi
 	@Override
 	public void onListItemClick(View view, int position, Object item) {
 		Environment environment = (Environment) item;
-
+		EnvironmentReadActivity.startActivity(getContext(), environment.getUuid(), false);
 	}
 
 	@Override
