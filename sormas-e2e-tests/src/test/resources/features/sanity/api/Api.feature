@@ -195,8 +195,7 @@ Feature: Check basic POSTs RestApi endpoints
       | Admin User            |
       | National User         |
 
-#  @env_survnet @precon
-  @tmsLink=SORQA-9999mk @env_survnet
+  @env_survnet @precon
   Scenario: User permissions check for Survnet User
     Given API:I Login into Environment
     Then API: I get response with Survnet user permission rights
