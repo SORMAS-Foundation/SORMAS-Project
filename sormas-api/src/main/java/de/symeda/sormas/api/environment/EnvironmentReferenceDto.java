@@ -1,8 +1,12 @@
 package de.symeda.sormas.api.environment;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.utils.SensitiveData;
 
 public class EnvironmentReferenceDto extends ReferenceDto {
+
+	@SensitiveData
+	private String environmentName;
 
 	public EnvironmentReferenceDto() {
 
@@ -14,6 +18,11 @@ public class EnvironmentReferenceDto extends ReferenceDto {
 
 	public EnvironmentReferenceDto(String uuid, String environmentName) {
 		setUuid(uuid);
-		setCaption(environmentName);
+		this.environmentName = environmentName;
+	}
+
+	@Override
+	public String getCaption() {
+		return environmentName;
 	}
 }

@@ -245,6 +245,7 @@ public interface Validations {
 	String validFacilityType = "validFacilityType";
 	String validHealthConditions = "validHealthConditions";
 	String validImmunization = "validImmunization";
+	String validLaboratory = "validLaboratory";
 	String validLocation = "validLocation";
 	String validPerson = "validPerson";
 	String validPhoneNumber = "validPhoneNumber";

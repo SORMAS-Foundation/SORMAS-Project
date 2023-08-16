@@ -244,6 +244,7 @@ public interface Strings {
 	String entityDistricts = "entityDistricts";
 	String entityDocuments = "entityDocuments";
 	String entityEnvironment = "entityEnvironment";
+	String entityEnvironmentSample = "entityEnvironmentSample";
 	String entityEvent = "entityEvent";
 	String entityEventActions = "entityEventActions";
 	String entityEventGroup = "entityEventGroup";
@@ -305,6 +306,7 @@ public interface Strings {
 	String errorDocumentGenerationMultipleDiseasses = "errorDocumentGenerationMultipleDiseasses";
 	String errorEntityNotEditable = "errorEntityNotEditable";
 	String errorEntityOutdated = "errorEntityOutdated";
+	String errorEnvironmentSampleNotEditable = "errorEnvironmentSampleNotEditable";
 	String errorEventFromAnotherJurisdiction = "errorEventFromAnotherJurisdiction";
 	String errorEventNotEditable = "errorEventNotEditable";
 	String errorEventParticipantNotEditable = "errorEventParticipantNotEditable";
@@ -387,6 +389,7 @@ public interface Strings {
 	String fileName = "fileName";
 	String forCase = "forCase";
 	String forContact = "forContact";
+	String forEnvironment = "forEnvironment";
 	String forEventParticipant = "forEventParticipant";
 	String headingAccessDenied = "headingAccessDenied";
 	String headingActivityAsCase = "headingActivityAsCase";
@@ -1142,6 +1145,7 @@ public interface Strings {
 	String messageEnvironmentArchived = "messageEnvironmentArchived";
 	String messageEnvironmentCreated = "messageEnvironmentCreated";
 	String messageEnvironmentDearchived = "messageEnvironmentDearchived";
+	String messageEnvironmentSampleOutsideJurisdictionDeletionDenied = "messageEnvironmentSampleOutsideJurisdictionDeletionDenied";
 	String messageEnvironmentSaved = "messageEnvironmentSaved";
 	String messageEpiDataHint = "messageEpiDataHint";
 	String messageEpidNumberWarning = "messageEpidNumberWarning";

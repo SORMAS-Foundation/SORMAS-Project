@@ -12545,4 +12545,122 @@ ALTER TABLE externalmessage ADD CONSTRAINT fk_externalmessage_personcountry_id F
 
 INSERT INTO schema_version (version_number, comment) VALUES (521, 'Add missing fields to external message entity #12390');
 
+-- 2023-08-09 Create a new Environment Sample entity [web + mobile] #11721
+CREATE TABLE IF NOT EXISTS environmentsample
+(
+    id                          bigint       not null,
+    uuid                        varchar(36)  not null unique,
+    changedate                  timestamp    not null,
+    creationdate                timestamp    not null,
+    change_user_id              bigint,
+    environment_id              bigint       not null,
+    reportinguser_id            bigint       not null,
+    sampledatetime              timestamp    not null,
+    samplematerial              varchar(255) not null,
+    othersamplematerial         text,
+    samplevolume                float,
+    fieldsampleid               varchar(255),
+    turbidity                   int,
+    phvalue                     int,
+    sampletemperature           int,
+    chlorineresiduals           float,
+    laboratory_id               bigint       not null,
+    laboratorydetails           text,
+    requestedpathogentests      jsonb,
+    otherrequestedpathogentests text,
+    weatherconditions           jsonb,
+    heavyRain                   varchar(255),
+    dispatched                  boolean default false,
+    dispatchdate                timestamp,
+    dispatchdetails             text,
+    received                    boolean,
+    receivaldate                timestamp,
+    labsampleid                 text,
+    specimencondition           varchar(255),
+    location_id                 bigint       not null,
+    generalcomment              text,
+    deleted                     boolean default false,
+    deletionreason              varchar(255),
+    otherdeletionreason         text,
+    sys_period                  tstzrange    not null,
+    primary key (id)
+);
+
+ALTER TABLE environmentsample OWNER TO sormas_user;
+ALTER TABLE environmentsample ADD CONSTRAINT fk_change_user_id FOREIGN KEY (change_user_id) REFERENCES users (id);
+ALTER TABLE environmentsample ADD CONSTRAINT fk_environment_id FOREIGN KEY (environment_id) REFERENCES environments (id);
+ALTER TABLE environmentsample ADD CONSTRAINT fk_reportinguser_id FOREIGN KEY (reportinguser_id) REFERENCES users (id);
+ALTER TABLE environmentsample ADD CONSTRAINT fk_laboratory_id FOREIGN KEY (laboratory_id) REFERENCES facility (id);
+ALTER TABLE environmentsample ADD CONSTRAINT fk_location_id FOREIGN KEY (location_id) REFERENCES location (id);
+
+CREATE TABLE environmentsample_history (LIKE environmentsample);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE ON environmentsample
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'environmentsample_history', true);
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON environmentsample
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('environmentsample_history', 'id');
+ALTER TABLE environmentsample_history OWNER TO sormas_user;
+ALTER TABLE environmentsample ALTER COLUMN requestedpathogentests set DATA TYPE jsonb using requestedpathogentests::jsonb;
+ALTER TABLE environmentsample_history ALTER COLUMN requestedpathogentests set DATA TYPE jsonb using requestedpathogentests::jsonb;
+ALTER TABLE environmentsample ALTER COLUMN weatherconditions set DATA TYPE jsonb using weatherconditions::jsonb;
+ALTER TABLE environmentsample_history ALTER COLUMN weatherconditions set DATA TYPE jsonb using weatherconditions::jsonb;
+
+INSERT INTO userroles_userrights (userrole_id, userright)
+SELECT id, 'ENVIRONMENT_SAMPLE_VIEW'
+FROM public.userroles
+WHERE userroles.linkeddefaultuserrole in (
+                                          'ADMIN',
+                                          'LAB_USER',
+                                          'NATIONAL_OBSERVER',
+                                          'NATIONAL_USER',
+                                          'ENVIRONMENTAL_SURVEILLANCE_USER'
+    );
+SELECT id, 'ENVIRONMENT_SAMPLE_CREATE'
+FROM public.userroles
+WHERE userroles.linkeddefaultuserrole in (
+                                          'ADMIN',
+                                          'NATIONAL_USER',
+                                          'ENVIRONMENTAL_SURVEILLANCE_USER'
+    );
+SELECT id, 'ENVIRONMENT_SAMPLE_EDIT_DISPATCH'
+FROM public.userroles
+WHERE userroles.linkeddefaultuserrole in (
+                                          'ADMIN',
+                                          'LAB_USER',
+                                          'NATIONAL_USER',
+                                          'ENVIRONMENTAL_SURVEILLANCE_USER'
+    );
+SELECT id, 'ENVIRONMENT_SAMPLE_EDIT_RECEIVAL'
+FROM public.userroles
+WHERE userroles.linkeddefaultuserrole in (
+                                          'ADMIN',
+                                          'LAB_USER',
+                                          'NATIONAL_USER',
+                                          'ENVIRONMENTAL_SURVEILLANCE_USER'
+    );
+SELECT id, 'ENVIRONMENT_DELETE'
+FROM public.userroles
+WHERE userroles.linkeddefaultuserrole in (
+                                          'ADMIN',
+                                          'NATIONAL_USER',
+                                          'ENVIRONMENTAL_SURVEILLANCE_USER'
+    );
+SELECT id, 'ENVIRONMENT_IMPORT'
+FROM public.userroles
+WHERE userroles.linkeddefaultuserrole in (
+                                          'ADMIN',
+                                          'NATIONAL_USER',
+                                          'ENVIRONMENTAL_SURVEILLANCE_USER'
+    );
+SELECT id, 'ENVIRONMENT_EXPORT'
+FROM public.userroles
+WHERE userroles.linkeddefaultuserrole in (
+                                          'ADMIN',
+                                          'LAB_USER',
+                                          'NATIONAL_USER',
+                                          'ENVIRONMENTAL_SURVEILLANCE_USER'
+    );
+
+INSERT INTO schema_version (version_number, comment) VALUES (522, 'Create a new Environment Sample entity [web + mobile] #11721');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

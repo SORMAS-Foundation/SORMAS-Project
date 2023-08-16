@@ -14,6 +14,7 @@
 		<class>de.symeda.sormas.backend.contact.Contact</class>
 		<class>de.symeda.sormas.backend.epidata.EpiData</class>
 		<class>de.symeda.sormas.backend.environment.Environment</class>
+		<class>de.symeda.sormas.backend.environment.environmentsample.EnvironmentSample</class>
 		<class>de.symeda.sormas.backend.event.Event</class>
 		<class>de.symeda.sormas.backend.event.EventParticipant</class>
 		<class>de.symeda.sormas.backend.event.EventGroup</class>
