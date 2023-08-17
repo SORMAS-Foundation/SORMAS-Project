@@ -438,12 +438,12 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_IN_LINK_FORM);
         });
 
-      When(
-              "^I click on successfully linked to this event group message popup in Link Event to group form$",
-              () -> {
-                  webDriverHelpers.waitUntilElementIsVisibleAndClickable(NEW_GROUP_EVENT_CREATED_MESSAGE);
-                  webDriverHelpers.clickOnWebElementBySelector(NEW_GROUP_EVENT_CREATED_MESSAGE);
-              });
+    When(
+        "^I click on successfully linked to this event group message popup in Link Event to group form$",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NEW_GROUP_EVENT_CREATED_MESSAGE);
+          webDriverHelpers.clickOnWebElementBySelector(NEW_GROUP_EVENT_CREATED_MESSAGE);
+        });
 
     When(
         "^I click on Linked Group Id on Edit Event Page$",
