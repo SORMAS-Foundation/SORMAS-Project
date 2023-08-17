@@ -49,4 +49,9 @@ public class EnvironmentSampleDao extends AbstractAdoDao<EnvironmentSample> {
         // Delete case
         deleteCascade(sample);
     }
+
+    @Override
+    public void create(EnvironmentSample data) throws SQLException {
+        super.create(data);
+    }
 }

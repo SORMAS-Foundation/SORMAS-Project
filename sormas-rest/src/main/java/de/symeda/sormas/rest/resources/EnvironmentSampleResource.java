@@ -45,7 +45,7 @@ public class EnvironmentSampleResource extends EntityDtoResource<EnvironmentSamp
 
 	@GET
 	@Path("/all/{since}/{size}/{lastSynchronizedUuid}")
-	public List<EnvironmentSampleDto> getAllEnvironments(
+	public List<EnvironmentSampleDto> getAllAfter(
 		@PathParam("since") long since,
 		@PathParam("size") int size,
 		@PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {

@@ -34,6 +34,7 @@ import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.customizableenum.CustomizableEnumValueDao;
 import de.symeda.sormas.app.backend.environment.Environment;
 import de.symeda.sormas.app.backend.facility.Facility;
@@ -43,7 +44,7 @@ import de.symeda.sormas.app.util.EnumMapKeySerializer;
 
 @Entity(name = EnvironmentSample.TABLE_NAME)
 @DatabaseTable(tableName = EnvironmentSample.TABLE_NAME)
-public class EnvironmentSample extends AbstractDomainObject {
+public class EnvironmentSample extends PseudonymizableAdo {
     public static final String I18N_PREFIX = "EnvironmentSample";
 
     public static final String TABLE_NAME = "environmentsamples";

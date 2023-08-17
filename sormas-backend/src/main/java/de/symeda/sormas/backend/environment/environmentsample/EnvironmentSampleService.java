@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.backend.environment.environmentsample;
 
+import java.util.List;
+
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -60,6 +62,11 @@ public class EnvironmentSampleService extends AbstractDeletableAdoService<Enviro
 	@Override
 	public boolean inJurisdictionOrOwned(EnvironmentSample sample) {
 		return fulfillsCondition(sample, this::inJurisdictionOrOwned);
+	}
+
+	@Override
+	public List<Long> getInJurisdictionIds(List<EnvironmentSample> samples) {
+		return getIdList(samples, this::inJurisdictionOrOwned);
 	}
 
 	public Predicate buildCriteriaFilter(EnvironmentSampleCriteria criteria, EnvironmentSampleQueryContext queryContext) {
