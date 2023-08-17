@@ -1,7 +1,5 @@
 package de.symeda.sormas.backend;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 import de.symeda.sormas.api.EntityDto;
@@ -18,14 +16,8 @@ public class FacadeHelper {
 		AbstractDomainObject existingEntity,
 		UserService userService,
 		UserRight createRight,
-		UserRight editRight,
-		UserRight... additionalEditRights) {
-		// add editRight and additionalEditRights into a set to check if the user has any of the edit rights
-		Set<UserRight> editRights = new HashSet<>();
-		editRights.add(editRight);
-		editRights.addAll(Arrays.asList(additionalEditRights));
-
-		if (existingEntity == null && !userService.hasRight(createRight) || existingEntity != null && !userService.hasAnyRight(editRights)) {
+		UserRight editRight) {
+		if (existingEntity == null && !userService.hasRight(createRight) || existingEntity != null && !userService.hasRight(editRight)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorForbidden));
 		}
 	}

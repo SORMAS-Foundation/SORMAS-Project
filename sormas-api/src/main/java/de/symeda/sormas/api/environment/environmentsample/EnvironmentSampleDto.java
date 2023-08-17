@@ -46,6 +46,8 @@ public class EnvironmentSampleDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = 4199710123573825998L;
 
+	public static final long APPROXIMATE_JSON_SIZE_IN_BYTES = 2000;
+
 	@NotNull
 	private EnvironmentReferenceDto environment;
 	@NotNull
@@ -70,6 +72,7 @@ public class EnvironmentSampleDto extends PseudonymizableDto {
 	private Integer sampleTemperature;
 	@Min(value = 0, message = Validations.numberTooSmall)
 	private Float chlorineResiduals;
+	@NotNull
 	@SensitiveData
 	private FacilityReferenceDto laboratory;
 	@SensitiveData

@@ -27,6 +27,7 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumValueDto;
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.environment.EnvironmentDto;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.feature.FeatureConfigurationDto;
@@ -321,7 +322,8 @@ public class SynchronizationDialog extends AbstractDialog {
 		addEntityIfViewAllowed(EventParticipantDto.class, Strings.entityEventParticipants, allowedEntities);
 		addEntityIfViewAllowed(ImmunizationDto.class, Strings.entityImmunizations, allowedEntities);
 		addEntityIfViewAllowed(SampleDto.class, Strings.entitySamples, allowedEntities);
-		addEntityIfViewAllowed(EnvironmentDto.class, Strings.entityEnvironment, allowedEntities);
+		addEntityIfViewAllowed(EnvironmentDto.class, Strings.entityEnvironments, allowedEntities);
+		addEntityIfViewAllowed(EnvironmentSampleDto.class, Strings.entityEnvironmentSamples, allowedEntities);
 		addEntityIfViewAllowed(TaskDto.class, Strings.entityTasks, allowedEntities);
 		addEntityIfViewAllowed(OutbreakDto.class, Strings.entityOutbreaks, allowedEntities);
 		addEntityIfViewAllowed(AggregateReportDto.class, Strings.entityAggregateReports, allowedEntities);
@@ -337,7 +339,8 @@ public class SynchronizationDialog extends AbstractDialog {
 		addEntityIfEditAllowed(EventDto.class, Strings.entityEvents, allowedEntities);
 		addEntityIfEditAllowed(EventParticipantDto.class, Strings.entityEventParticipants, allowedEntities);
 		addEntityIfEditAllowed(SampleDto.class, Strings.entitySamples, allowedEntities);
-		addEntityIfEditAllowed(EnvironmentDto.class, Strings.entityEnvironment, allowedEntities);
+		addEntityIfEditAllowed(EnvironmentDto.class, Strings.entityEnvironments, allowedEntities);
+		addEntityIfEditAllowed(EnvironmentSampleDto.class, Strings.entityEnvironmentSamples, allowedEntities);
 		addEntityIfEditAllowed(PathogenTestDto.class, Strings.entityPathogenTests, allowedEntities);
 		addEntityIfEditAllowed(AdditionalTestDto.class, Strings.entityAdditionalTests, allowedEntities);
 		addEntityIfEditAllowed(ContactDto.class, Strings.entityContacts, allowedEntities);
@@ -370,7 +373,8 @@ public class SynchronizationDialog extends AbstractDialog {
 		addEntityIfViewAllowed(EventDto.class, Strings.entityEvents, allowedEntities);
 		addEntityIfViewAllowed(EventParticipantDto.class, Strings.entityEventParticipants, allowedEntities);
 		addEntityIfViewAllowed(SampleDto.class, Strings.entitySamples, allowedEntities);
-		addEntityIfViewAllowed(EnvironmentDto.class, Strings.entityEnvironment, allowedEntities);
+		addEntityIfViewAllowed(EnvironmentDto.class, Strings.entityEnvironments, allowedEntities);
+		addEntityIfViewAllowed(EnvironmentSampleDto.class, Strings.entityEnvironmentSamples, allowedEntities);
 		addEntityIfViewAllowed(PathogenTestDto.class, Strings.entityPathogenTests, allowedEntities);
 		addEntityIfViewAllowed(AdditionalTestDto.class, Strings.entityAdditionalTests, allowedEntities);
 		addEntityIfViewAllowed(ContactDto.class, Strings.entityContacts, allowedEntities);
@@ -396,7 +400,8 @@ public class SynchronizationDialog extends AbstractDialog {
 		addEntityIfViewOrEditAllowed(EventDto.class, Strings.entityEvents, allowedEntities);
 		addEntityIfViewOrEditAllowed(EventParticipantDto.class, Strings.entityEventParticipants, allowedEntities);
 		addEntityIfViewOrEditAllowed(SampleDto.class, Strings.entitySamples, allowedEntities);
-		addEntityIfViewOrEditAllowed(EnvironmentDto.class, Strings.entityEnvironment, allowedEntities);
+		addEntityIfViewOrEditAllowed(EnvironmentDto.class, Strings.entityEnvironments, allowedEntities);
+		addEntityIfViewOrEditAllowed(EnvironmentSampleDto.class, Strings.entityEnvironmentSamples, allowedEntities);
 		addEntityIfViewOrEditAllowed(PathogenTestDto.class, Strings.entityPathogenTests, allowedEntities);
 		addEntityIfViewOrEditAllowed(AdditionalTestDto.class, Strings.entityAdditionalTests, allowedEntities);
 		addEntityIfViewOrEditAllowed(ContactDto.class, Strings.entityContacts, allowedEntities);
@@ -424,8 +429,10 @@ public class SynchronizationDialog extends AbstractDialog {
 			addEntityIfViewAllowed(EventParticipantDto.class, Strings.entityEventParticipants, allowedEntities);
 		if (DtoFeatureConfigHelper.isFeatureConfigForSampleEnabled())
 			addEntityIfViewAllowed(SampleDto.class, Strings.entitySamples, allowedEntities);
-		if (DtoFeatureConfigHelper.isFeatureConfigForEnvironmentEnabled())
-			addEntityIfViewAllowed(EnvironmentDto.class, Strings.entityEnvironment, allowedEntities);
+		if (DtoFeatureConfigHelper.isFeatureConfigForEnvironmentEnabled()) {
+			addEntityIfViewAllowed(EnvironmentDto.class, Strings.entityEnvironments, allowedEntities);
+			addEntityIfViewAllowed(EnvironmentSampleDto.class, Strings.entityEnvironmentSamples, allowedEntities);
+		}
 		if (DtoFeatureConfigHelper.isFeatureConfigForSampleTestsEnabled())
 			addEntityIfViewAllowed(PathogenTestDto.class, Strings.entityPathogenTests, allowedEntities);
 		if (DtoFeatureConfigHelper.isFeatureConfigForAdditionalTestsEnabled())
@@ -463,7 +470,8 @@ public class SynchronizationDialog extends AbstractDialog {
 		addEntityIfViewAllowed(EventDto.class, Strings.entityEvents, allowedEntities);
 		addEntityIfViewAllowed(EventParticipantDto.class, Strings.entityEventParticipants, allowedEntities);
 		addEntityIfViewAllowed(SampleDto.class, Strings.entitySamples, allowedEntities);
-		addEntityIfViewAllowed(EnvironmentDto.class, Strings.entityEnvironment, allowedEntities);
+		addEntityIfViewAllowed(EnvironmentDto.class, Strings.entityEnvironments, allowedEntities);
+		addEntityIfViewAllowed(EnvironmentSampleDto.class, Strings.entityEnvironmentSamples, allowedEntities);
 		addEntityIfViewAllowed(PathogenTestDto.class, Strings.entityPathogenTests, allowedEntities);
 		addEntityIfViewAllowed(AdditionalTestDto.class, Strings.entityAdditionalTests, allowedEntities);
 		addEntityIfViewAllowed(ContactDto.class, Strings.entityContacts, allowedEntities);

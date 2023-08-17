@@ -12546,7 +12546,7 @@ ALTER TABLE externalmessage ADD CONSTRAINT fk_externalmessage_personcountry_id F
 INSERT INTO schema_version (version_number, comment) VALUES (521, 'Add missing fields to external message entity #12390');
 
 -- 2023-08-09 Create a new Environment Sample entity [web + mobile] #11721
-CREATE TABLE IF NOT EXISTS environmentsample
+CREATE TABLE IF NOT EXISTS environmentsamples
 (
     id                          bigint       not null,
     uuid                        varchar(36)  not null unique,
@@ -12569,7 +12569,7 @@ CREATE TABLE IF NOT EXISTS environmentsample
     requestedpathogentests      jsonb,
     otherrequestedpathogentests text,
     weatherconditions           jsonb,
-    heavyRain                   varchar(255),
+    heavyrain                   varchar(255),
     dispatched                  boolean default false,
     dispatchdate                timestamp,
     dispatchdetails             text,
@@ -12615,6 +12615,8 @@ WHERE userroles.linkeddefaultuserrole in (
                                           'NATIONAL_USER',
                                           'ENVIRONMENTAL_SURVEILLANCE_USER'
     );
+
+INSERT INTO userroles_userrights (userrole_id, userright)
 SELECT id, 'ENVIRONMENT_SAMPLE_CREATE'
 FROM public.userroles
 WHERE userroles.linkeddefaultuserrole in (
@@ -12622,6 +12624,18 @@ WHERE userroles.linkeddefaultuserrole in (
                                           'NATIONAL_USER',
                                           'ENVIRONMENTAL_SURVEILLANCE_USER'
     );
+
+INSERT INTO userroles_userrights (userrole_id, userright)
+SELECT id, 'ENVIRONMENT_SAMPLE_EDIT'
+FROM public.userroles
+WHERE userroles.linkeddefaultuserrole in (
+                                          'ADMIN',
+                                          'LAB_USER',
+                                          'NATIONAL_USER',
+                                          'ENVIRONMENTAL_SURVEILLANCE_USER'
+    );
+
+INSERT INTO userroles_userrights (userrole_id, userright)
 SELECT id, 'ENVIRONMENT_SAMPLE_EDIT_DISPATCH'
 FROM public.userroles
 WHERE userroles.linkeddefaultuserrole in (
@@ -12630,6 +12644,8 @@ WHERE userroles.linkeddefaultuserrole in (
                                           'NATIONAL_USER',
                                           'ENVIRONMENTAL_SURVEILLANCE_USER'
     );
+
+INSERT INTO userroles_userrights (userrole_id, userright)
 SELECT id, 'ENVIRONMENT_SAMPLE_EDIT_RECEIVAL'
 FROM public.userroles
 WHERE userroles.linkeddefaultuserrole in (
@@ -12638,21 +12654,27 @@ WHERE userroles.linkeddefaultuserrole in (
                                           'NATIONAL_USER',
                                           'ENVIRONMENTAL_SURVEILLANCE_USER'
     );
-SELECT id, 'ENVIRONMENT_DELETE'
+
+INSERT INTO userroles_userrights (userrole_id, userright)
+SELECT id, 'ENVIRONMENT_SAMPLE_DELETE'
 FROM public.userroles
 WHERE userroles.linkeddefaultuserrole in (
                                           'ADMIN',
                                           'NATIONAL_USER',
                                           'ENVIRONMENTAL_SURVEILLANCE_USER'
     );
-SELECT id, 'ENVIRONMENT_IMPORT'
+
+INSERT INTO userroles_userrights (userrole_id, userright)
+SELECT id, 'ENVIRONMENT_SAMPLE_IMPORT'
 FROM public.userroles
 WHERE userroles.linkeddefaultuserrole in (
                                           'ADMIN',
                                           'NATIONAL_USER',
                                           'ENVIRONMENTAL_SURVEILLANCE_USER'
     );
-SELECT id, 'ENVIRONMENT_EXPORT'
+
+INSERT INTO userroles_userrights (userrole_id, userright)
+SELECT id, 'ENVIRONMENT_SAMPLE_EXPORT'
 FROM public.userroles
 WHERE userroles.linkeddefaultuserrole in (
                                           'ADMIN',

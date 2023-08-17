@@ -270,7 +270,7 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 			"SurvNoSensitive",
 			JurisdictionLevel.DISTRICT,
 			UserRight.ENVIRONMENT_SAMPLE_VIEW,
-			UserRight.ENVIRONMENT_SAMPLE_EDIT_DISPATCH);
+			UserRight.ENVIRONMENT_SAMPLE_EDIT);
 		loginWith(noSensitiveUser);
 
 		EnvironmentSampleDto pseudonymizedSample = getEnvironmentSampleFacade().getByUuid(sample.getUuid());

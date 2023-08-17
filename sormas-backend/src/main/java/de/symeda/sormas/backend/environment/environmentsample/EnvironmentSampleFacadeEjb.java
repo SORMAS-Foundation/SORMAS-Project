@@ -30,6 +30,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,9 +92,8 @@ public class EnvironmentSampleFacadeEjb
 	@Override
 	@RightsAllowed({
 		UserRight._ENVIRONMENT_SAMPLE_CREATE,
-		UserRight._ENVIRONMENT_SAMPLE_EDIT_DISPATCH,
-		UserRight._ENVIRONMENT_SAMPLE_EDIT_RECEIVAL })
-	public EnvironmentSampleDto save(@Valid EnvironmentSampleDto dto) {
+		UserRight._ENVIRONMENT_SAMPLE_EDIT })
+	public EnvironmentSampleDto save(@Valid @NotNull EnvironmentSampleDto dto) {
 		EnvironmentSample existingSample = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 
 		validateUserRights(dto, existingSample);
@@ -149,12 +149,7 @@ public class EnvironmentSampleFacadeEjb
 	}
 
 	private void validateUserRights(EnvironmentSampleDto sample, EnvironmentSample existingSample) throws ValidationRuntimeException {
-		FacadeHelper.checkCreateAndEditRights(
-			existingSample,
-			userService,
-			UserRight.ENVIRONMENT_SAMPLE_CREATE,
-			UserRight.ENVIRONMENT_SAMPLE_EDIT_DISPATCH,
-			UserRight.ENVIRONMENT_SAMPLE_EDIT_RECEIVAL);
+		FacadeHelper.checkCreateAndEditRights(existingSample, userService, UserRight.ENVIRONMENT_SAMPLE_CREATE, UserRight.ENVIRONMENT_SAMPLE_EDIT);
 
 		if (existingSample != null) {
 			if (!isEditAllowed(existingSample)) {

@@ -24,6 +24,7 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -200,8 +201,8 @@ public class EnvironmentSample extends DeletableAdo {
 		this.laboratoryDetails = laboratoryDetails;
 	}
 
-	@Type(type = ModelConstants.HIBERNATE_TYPE_JSON)
 	@Column(columnDefinition = ModelConstants.COLUMN_DEFINITION_JSON)
+	@Convert(converter = RequestedPathogensConverter.class)
 	public Set<Pathogen> getRequestedPathogenTests() {
 		return requestedPathogenTests;
 	}
