@@ -188,7 +188,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 348;
+	public static final int DATABASE_VERSION = 349;
 
 	private static DatabaseHelper instance = null;
 
@@ -3103,6 +3103,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 						+ "snapshot, reportDate, reportingUser_id, environmentName, description, externalId, responsibleUser_id, investigationStatus, environmentMedia, "
 						+ "waterType, otherWaterType, infrastructureDetails, otherInfrastructureDetails, waterUse, otherWaterUse, location_id, id FROM tmp_environments");
 				getDao(Environment.class).executeRaw("DROP TABLE tmp_environments");
+
+			case 348:
+				currentVersion = 348;
+				getDao(Environment.class).executeRaw("ALTER TABLE environments ADD COLUMN pseudonymized boolean;");
 
 				// ATTENTION: break should only be done after last version
 				break;

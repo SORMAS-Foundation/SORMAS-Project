@@ -8,6 +8,8 @@ import android.view.View;
 import de.symeda.sormas.api.environment.WaterUse;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -19,7 +21,12 @@ public class EnvironmentReadFragment extends BaseReadFragment<FragmentEnvironmen
 	private Environment record;
 
 	public static EnvironmentReadFragment newInstance(Environment activityRootData) {
-		EnvironmentReadFragment environmentReadFragment = newInstance(EnvironmentReadFragment.class, null, activityRootData);
+		EnvironmentReadFragment environmentReadFragment = newInstanceWithFieldCheckers(
+			EnvironmentReadFragment.class,
+			null,
+			activityRootData,
+			FieldVisibilityCheckers.getNoop(),
+			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
 
 		return environmentReadFragment;
 	}

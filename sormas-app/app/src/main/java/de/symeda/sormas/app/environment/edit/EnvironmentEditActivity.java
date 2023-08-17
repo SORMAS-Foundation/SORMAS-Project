@@ -8,6 +8,7 @@ import java.util.List;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
@@ -15,7 +16,13 @@ import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.environment.Environment;
+import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.backend.region.District;
+import de.symeda.sormas.app.backend.region.Region;
+import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
@@ -23,6 +30,8 @@ import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.environment.EnvironmentSection;
+import de.symeda.sormas.app.util.Consumer;
+import de.symeda.sormas.app.util.NavigationHelper;
 
 public class EnvironmentEditActivity extends BaseEditActivity<Environment> {
 
@@ -72,8 +81,47 @@ public class EnvironmentEditActivity extends BaseEditActivity<Environment> {
 		return fragment;
 	}
 
+	private void confirmJurisdictionChange() {
+		final ConfirmationDialog confirmationDialog = new ConfirmationDialog(
+			this,
+			R.string.heading_environment_location_update,
+			R.string.confirmation_environment_location_change,
+			R.string.yes,
+			R.string.no);
+
+		confirmationDialog.setPositiveCallback(() -> {
+			saveData(parameter -> NavigationHelper.goToEnvironments(getContext()));
+		});
+		confirmationDialog.setNegativeCallback(() -> {
+		});
+		confirmationDialog.show();
+	}
+
 	@Override
 	public void saveData() {
+		final Environment changedEnvironment = getStoredRootEntity();
+		EnvironmentEditFragment fragment = (EnvironmentEditFragment) getActiveFragment();
+		User currentUser = ConfigProvider.getUser();
+		Location location = (Location) fragment.getContentBinding().environmentLocation.getValue();
+
+		final Region currentUserRegion = currentUser.getRegion();
+		final Region environmentRegion = location.getRegion();
+		final District currentUserDistrict = currentUser.getDistrict();
+		final District environmentDistrict = location.getDistrict();
+
+		boolean outsideJurisdiction = (!DataHelper.isSame(changedEnvironment.getReportingUser(), currentUser)
+			&& (currentUserRegion != null && !DataHelper.isSame(currentUserRegion, environmentRegion)
+				|| currentUserDistrict != null && !DataHelper.isSame(currentUserDistrict, environmentDistrict)));
+
+		if (outsideJurisdiction) {
+			confirmJurisdictionChange();
+			return;
+		}
+
+		saveData(parameter -> goToNextPage());
+	}
+
+	private void saveData(final Consumer<Environment> successCallback) {
 		if (saveTask != null) {
 			NotificationHelper.showNotification(this, WARNING, getString(R.string.message_already_saving));
 			return; // don't save multiple times
@@ -108,6 +156,7 @@ public class EnvironmentEditActivity extends BaseEditActivity<Environment> {
 				hidePreloader();
 				super.onPostExecute(taskResult);
 				if (taskResult.getResultStatus().isSuccess()) {
+					successCallback.accept(changedEnvironment);
 					finish();
 				} else {
 					onResume();
