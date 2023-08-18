@@ -7,18 +7,17 @@ Feature: User actions based on their rights
     And I click on the Users from navbar
     And I create 2 new users with National User via UI
     And I search after users that were created on the same period of time
-    When I memorize the total number of existing users
     And I click Enter Bulk Edit Mode on Users directory page
     And I click checkbox to choose first 2 User results
     And I click on Bulk Actions combobox on User Directory Page
     And I click on "Disable" from Bulk Actions combobox on User Directory Page
     And I pick "Inactive" value for Active filter in User Directory
-    And I check that total number of displayed users is 2
+    And I check that created users are displayed in results grid
     And I click checkbox to choose first 2 User results
     And I click on Bulk Actions combobox on User Directory Page
     And I click on "Enable" from Bulk Actions combobox on User Directory Page
     And I pick "Active" value for Active filter in User Directory
-    And I check that total number of displayed users equals the last saved count
+    And I check that created users are displayed in results grid
 
   @#7470 @env_main
   Scenario Outline: Validate that non-admin user <user> can't access users directory

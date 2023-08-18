@@ -33,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.entities.pojo.common.User;
 import org.sormas.e2etests.entities.services.UserService;
@@ -47,11 +48,11 @@ import org.testng.asserts.SoftAssert;
 public class CreateNewUserSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   public static User user;
+  public static List<User> createdUsers;
   public static User editUser;
   public static String userName;
   public static String userPass;
   private final BaseSteps baseSteps;
-  private static int usersCount;
   public static HashMap<String, String> userWithRegion = new HashMap<String, String>();
 
   @Inject
@@ -117,29 +118,12 @@ public class CreateNewUserSteps implements En {
         });
 
     And(
-        "I check that total number of displayed users is {int}",
-        (Integer numberOfUsers) -> {
-          String amountOfCheckboxes = webDriverHelpers.getTextFromWebElement(USERS_COUNTER);
-          Integer optionsRecords = Integer.parseInt(amountOfCheckboxes);
-          softly.assertEquals(numberOfUsers, optionsRecords, "Total number of users doesn't match");
-          softly.assertAll();
-        });
-
-    And(
-        "I check that total number of displayed users equals the last saved count",
+        "I check that created users are displayed in results grid",
         () -> {
-          int optionsRecords =
-              Integer.parseInt(webDriverHelpers.getTextFromWebElement(USERS_COUNTER));
-          softly.assertEquals(usersCount, optionsRecords, "Total number of users doesn't match");
-          softly.assertAll();
-        });
-
-    And(
-        "I memorize the total number of existing users",
-        () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(USERS_COUNTER);
-          String amountOfCheckboxes = webDriverHelpers.getTextFromWebElement(USERS_COUNTER);
-          usersCount = Integer.parseInt(amountOfCheckboxes);
+          By userNamesList = By.xpath("//tr/td[6]");
+          for (User user : createdUsers) {
+            webDriverHelpers.verifyListContainsText(userNamesList, user.getUserName());
+          }
         });
 
     When(
@@ -245,10 +229,12 @@ public class CreateNewUserSteps implements En {
     When(
         "I create {int} new users with National User via UI",
         (Integer users) -> {
+          createdUsers = new ArrayList<>();
           for (int i = 0; i < users; i++) {
             webDriverHelpers.clickWhileOtherButtonIsDisplayed(
                 NEW_USER_BUTTON, FIRST_NAME_OF_USER_INPUT);
             user = userService.buildGeneratedUserWithRole("National User");
+            createdUsers.add(user);
             fillFirstName(user.getFirstName());
             fillLastName(user.getLastName());
             fillEmailAddress(user.getEmailAddress());
