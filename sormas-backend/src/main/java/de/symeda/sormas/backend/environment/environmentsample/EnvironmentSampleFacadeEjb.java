@@ -48,6 +48,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.FacadeHelper;
@@ -156,7 +157,20 @@ public class EnvironmentSampleFacadeEjb
 				throw new AccessDeniedException(I18nProperties.getString(Strings.errorEnvironmentSampleNotEditable));
 			}
 
-			// TODO: Validate changed fields based on user right
+			if (!userService.hasRight(UserRight.ENVIRONMENT_SAMPLE_EDIT_DISPATCH)
+				&& (existingSample.isDispatched() != sample.isDispatched()
+					|| !DataHelper.equal(existingSample.getDispatchDate(), sample.getDispatchDate())
+					|| !DataHelper.equal(existingSample.getDispatchDetails(), sample.getDispatchDetails()))) {
+				throw new AccessDeniedException(I18nProperties.getString(Strings.errorEnvironmentSampleNoDispatchRight));
+			}
+
+			if (!userService.hasRight(UserRight.ENVIRONMENT_SAMPLE_EDIT_RECEIVAL)
+				&& (existingSample.isReceived() != sample.isReceived()
+					|| !DataHelper.equal(existingSample.getReceivalDate(), sample.getReceivalDate()))) {
+
+				throw new AccessDeniedException(I18nProperties.getString(Strings.errorEnvironmentSampleNoReceivalRight));
+
+			}
 		}
 	}
 

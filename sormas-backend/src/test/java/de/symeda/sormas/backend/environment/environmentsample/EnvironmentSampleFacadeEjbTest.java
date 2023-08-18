@@ -60,7 +60,7 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 	private EnvironmentDto environment;
 
 	private TestDataCreator.RDCF rdcf2;
-	private UserDto userOnDifferentJurisdiction;
+	private UserDto userInDifferentJurisdiction;
 
 	@Override
 	public void init() {
@@ -72,7 +72,7 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 		environment = creator.createEnvironment("Test env", EnvironmentMedia.WATER, reportingUser.toReference(), rdcf);
 
 		rdcf2 = creator.createRDCF();
-		userOnDifferentJurisdiction =
+		userInDifferentJurisdiction =
 			creator.createUser(rdcf2, "Env", "Surv2", creator.getUserRoleReference(DefaultUserRole.ENVIRONMENTAL_SURVEILLANCE_USER));
 
 	}
@@ -227,7 +227,7 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 		assertThat(sample.getReportingUser(), is(reportingUser.toReference()));
 		assertThat(sample.getEnvironment().getCaption(), is(environment.toReference().getCaption()));
 
-		loginWith(userOnDifferentJurisdiction);
+		loginWith(userInDifferentJurisdiction);
 
 		EnvironmentSampleDto returnedSample = getEnvironmentSampleFacade().getByUuid(sample.getUuid());
 
@@ -243,6 +243,39 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 		assertThat(returnedSample.getLaboratory(), is(nullValue()));
 		assertThat(returnedSample.getReportingUser(), is(nullValue()));
 		assertThat(returnedSample.getEnvironment().getCaption(), is(emptyString()));
+	}
+
+	@Test
+	public void testGetAllAfter() {
+		EnvironmentSampleDto sampleOwned =
+			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), s -> {
+				s.getLocation().setRegion(rdcf.region);
+				s.getLocation().setDistrict(rdcf.district);
+			});
+
+		EnvironmentSampleDto sampleWithEmptyLocation =
+			creator.createEnvironmentSample(environment.toReference(), userInDifferentJurisdiction.toReference(), lab.toReference(), null);
+
+		EnvironmentSampleDto sampleInJurisdiction =
+			creator.createEnvironmentSample(environment.toReference(), userInDifferentJurisdiction.toReference(), lab.toReference(), s -> {
+				s.getLocation().setRegion(rdcf.region);
+				s.getLocation().setDistrict(rdcf.district);
+			});
+
+		EnvironmentSampleDto sampleOutsideJurisdiction =
+			creator.createEnvironmentSample(environment.toReference(), userInDifferentJurisdiction.toReference(), lab.toReference(), s -> {
+				s.getLocation().setRegion(rdcf2.region);
+				s.getLocation().setDistrict(rdcf2.district);
+			});
+
+		loginWith(reportingUser);
+
+		List<EnvironmentSampleDto> all = getEnvironmentSampleFacade().getAllAfter(new Date(0));
+		// 3 samples in jurisdiction + 1 sample outside jurisdiction
+		assertThat(all, hasSize(3));
+		assertThat(all.stream().filter(s -> s.getUuid().equals(sampleOwned.getUuid())).findFirst().get().isPseudonymized(), is(false));
+		assertThat(all.stream().filter(s -> s.getUuid().equals(sampleWithEmptyLocation.getUuid())).findFirst().get().isPseudonymized(), is(false));
+		assertThat(all.stream().filter(s -> s.getUuid().equals(sampleInJurisdiction.getUuid())).findFirst().get().isPseudonymized(), is(false));
 	}
 
 	@Test
@@ -270,7 +303,8 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 			"SurvNoSensitive",
 			JurisdictionLevel.DISTRICT,
 			UserRight.ENVIRONMENT_SAMPLE_VIEW,
-			UserRight.ENVIRONMENT_SAMPLE_EDIT);
+			UserRight.ENVIRONMENT_SAMPLE_EDIT,
+			UserRight.ENVIRONMENT_SAMPLE_EDIT_DISPATCH);
 		loginWith(noSensitiveUser);
 
 		EnvironmentSampleDto pseudonymizedSample = getEnvironmentSampleFacade().getByUuid(sample.getUuid());
@@ -293,11 +327,56 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testUpdateDispatchStatusWithoutRight() {
+		EnvironmentSampleDto sample =
+			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), null);
+
+		UserDto noDispatchUser = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			null,
+			"District",
+			"NoSensitive",
+			"SurvNoSensitive",
+			JurisdictionLevel.DISTRICT,
+			UserRight.ENVIRONMENT_SAMPLE_VIEW,
+			UserRight.ENVIRONMENT_SAMPLE_EDIT);
+		loginWith(noDispatchUser);
+
+		sample.setDispatched(true);
+		sample.setDispatchDate(new Date());
+
+		assertThrows(AccessDeniedException.class, () -> getEnvironmentSampleFacade().save(sample));
+	}
+
+	@Test
+	public void testUpdateReceivalStatusWithoutRight() {
+		EnvironmentSampleDto sample =
+			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), null);
+
+		UserDto noDispatchUser = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			null,
+			"District",
+			"NoSensitive",
+			"SurvNoSensitive",
+			JurisdictionLevel.DISTRICT,
+			UserRight.ENVIRONMENT_SAMPLE_VIEW,
+			UserRight.ENVIRONMENT_SAMPLE_EDIT);
+		loginWith(noDispatchUser);
+
+		sample.setReceived(true);
+
+		assertThrows(AccessDeniedException.class, () -> getEnvironmentSampleFacade().save(sample));
+	}
+
+	@Test
 	public void testUpdateWithUserOutsideJurisdiction() {
 		EnvironmentSampleDto sample =
 			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), null);
 
-		loginWith(userOnDifferentJurisdiction);
+		loginWith(userInDifferentJurisdiction);
 
 		sample.setLabSampleId("Updated lab sample id");
 

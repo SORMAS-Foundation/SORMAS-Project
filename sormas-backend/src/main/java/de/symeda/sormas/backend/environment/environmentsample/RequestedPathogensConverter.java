@@ -34,6 +34,10 @@ public class RequestedPathogensConverter implements AttributeConverter<Set<Patho
 
 	@Override
 	public String convertToDatabaseColumn(Set<Pathogen> pathogens) {
+		if (pathogens == null) {
+			return null;
+		}
+
 		Set<String> pathogenValues = pathogens.stream().map(pathogenConverter::convertToDatabaseColumn).collect(Collectors.toSet());
 		try {
 			return objectMapper.writeValueAsString(pathogenValues);
@@ -43,11 +47,17 @@ public class RequestedPathogensConverter implements AttributeConverter<Set<Patho
 	}
 
 	@Override
-	public Set<Pathogen> convertToEntityAttribute(String s) {
+	public Set<Pathogen> convertToEntityAttribute(String pathogensJson) {
+		if (pathogensJson == null) {
+			return null;
+		}
+
 		try {
-			return Stream.of(objectMapper.readValue(s, String[].class)).map(pathogenConverter::convertToEntityAttribute).collect(Collectors.toSet());
+			return Stream.of(objectMapper.readValue(pathogensJson, String[].class))
+				.map(pathogenConverter::convertToEntityAttribute)
+				.collect(Collectors.toSet());
 		} catch (JsonProcessingException e) {
-			throw new IllegalArgumentException("Can't parse set of pathogens '" + s + "'", e);
+			throw new IllegalArgumentException("Can't parse set of pathogens '" + pathogensJson + "'", e);
 		}
 	}
 }

@@ -308,6 +308,8 @@ public interface Strings {
 	String errorDocumentGenerationMultipleDiseasses = "errorDocumentGenerationMultipleDiseasses";
 	String errorEntityNotEditable = "errorEntityNotEditable";
 	String errorEntityOutdated = "errorEntityOutdated";
+	String errorEnvironmentSampleNoDispatchRight = "errorEnvironmentSampleNoDispatchRight";
+	String errorEnvironmentSampleNoReceivalRight = "errorEnvironmentSampleNoReceivalRight";
 	String errorEnvironmentSampleNotEditable = "errorEnvironmentSampleNotEditable";
 	String errorEventFromAnotherJurisdiction = "errorEventFromAnotherJurisdiction";
 	String errorEventNotEditable = "errorEventNotEditable";
