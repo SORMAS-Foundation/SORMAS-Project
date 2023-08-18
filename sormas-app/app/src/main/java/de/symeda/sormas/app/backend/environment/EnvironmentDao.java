@@ -17,6 +17,7 @@ import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.util.LocationService;
 
 public class EnvironmentDao extends AbstractAdoDao<Environment> {
@@ -99,6 +100,11 @@ public class EnvironmentDao extends AbstractAdoDao<Environment> {
 		Environment environment = super.build();
 		environment.setReportingUser(ConfigProvider.getUser());
 		environment.setInvestigationStatus(InvestigationStatus.PENDING);
+
+		User user = ConfigProvider.getUser();
+		environment.getLocation().setRegion(user.getRegion());
+		environment.getLocation().setDistrict(user.getDistrict());
+		environment.getLocation().setCommunity(user.getCommunity());
 		return environment;
 	}
 
