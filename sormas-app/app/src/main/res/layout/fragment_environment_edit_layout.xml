@@ -103,6 +103,13 @@
                 app:dependencyParentValue="@{EnvironmentMedia.WATER}"
                 app:value="@={data.infrastructureDetails}" />
 
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/environment_otherInfrastructureDetails"
+                style="@style/ControlSingleColumnStyle"
+                app:dependencyParentField="@{environmentInfrastructureDetails}"
+                app:dependencyParentValue="@{EnvironmentInfrastructureDetails.OTHER}"
+                app:value="@={data.otherInfrastructureDetails}" />
+
             <LinearLayout
                 android:id="@+id/use_of_water_layout"
                 android:layout_width="match_parent"
