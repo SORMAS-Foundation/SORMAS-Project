@@ -3099,7 +3099,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
                                 + "laboratory_id BIGINT, laboratoryDetails text, requestedPathogenTests text, otherRequestedPathogenTests text, "
                                 + "weatherConditions text, heavyRain varchar(255), dispatched boolean, dispatchDate TIMESTAMP, dispatchDetails text, "
                                 + "received boolean, receivalDate TIMESTAMP, labSampleId text, specimenCondition varchar(255), location_id BIGINT NOT NULL, generalComment text, "
-								+ "pseudonymized boolean"
+								+ "pseudonymized boolean, "
                                 + "UNIQUE(snapshot, uuid));");
 
                     // ATTENTION: break should only be done after last version
