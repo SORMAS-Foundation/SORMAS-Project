@@ -205,11 +205,6 @@ public class JurisdictionHelper {
 			return null;
 		}
 
-		Location environmentLocation = environment.getLocation();
-		if (environmentLocation == null) {
-			return null;
-		}
-
 		EnvironmentJurisdictionDto environmentJurisdiction = new EnvironmentJurisdictionDto();
 
 		if (environment.getReportingUser() != null) {
@@ -220,16 +215,19 @@ public class JurisdictionHelper {
 			environmentJurisdiction.setResponsibleUserUuid(environment.getResponsibleUser().getUuid());
 		}
 
-		if (environmentLocation.getRegion() != null) {
-			environmentJurisdiction.setRegionUuid(environmentLocation.getRegion().getUuid());
-		}
+		Location environmentLocation = environment.getLocation();
+		if (environmentLocation != null) {
+			if (environmentLocation.getRegion() != null) {
+				environmentJurisdiction.setRegionUuid(environmentLocation.getRegion().getUuid());
+			}
 
-		if (environmentLocation.getDistrict() != null) {
-			environmentJurisdiction.setDistrictUuid(environmentLocation.getDistrict().getUuid());
-		}
+			if (environmentLocation.getDistrict() != null) {
+				environmentJurisdiction.setDistrictUuid(environmentLocation.getDistrict().getUuid());
+			}
 
-		if (environmentLocation.getCommunity() != null) {
-			environmentJurisdiction.setCommunityUuid(environmentLocation.getCommunity().getUuid());
+			if (environmentLocation.getCommunity() != null) {
+				environmentJurisdiction.setCommunityUuid(environmentLocation.getCommunity().getUuid());
+			}
 		}
 
 		return environmentJurisdiction;
