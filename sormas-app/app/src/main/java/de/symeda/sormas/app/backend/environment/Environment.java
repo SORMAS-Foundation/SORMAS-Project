@@ -27,14 +27,14 @@ import de.symeda.sormas.api.environment.EnvironmentInfrastructureDetails;
 import de.symeda.sormas.api.environment.EnvironmentMedia;
 import de.symeda.sormas.api.environment.WaterType;
 import de.symeda.sormas.api.environment.WaterUse;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.util.WaterUseSerializer;
 
 @Entity(name = Environment.TABLE_NAME)
 @DatabaseTable(tableName = Environment.TABLE_NAME)
-public class Environment extends AbstractDomainObject {
+public class Environment extends PseudonymizableAdo {
 
 	public static final String TABLE_NAME = "environments";
 	public static final String I18N_PREFIX = "Environment";
