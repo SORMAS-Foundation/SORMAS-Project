@@ -81,4 +81,9 @@ public class CreateNewUserPage {
   public static final By USER_ROLE_COMBOBOX = By.cssSelector("[id='userRoles'] div");
   public static final By REGION_FILTER_COMBOBOX = By.cssSelector("#region div");
   public static final By TABLE_USER_NAME = By.xpath("//table//td[5]");
+
+  public static By getTableRowByIndex(int index) {
+    return By.xpath(
+        String.format("//label[text()='Selects row number %s.']//parent::span/input", index));
+  }
 }

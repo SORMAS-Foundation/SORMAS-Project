@@ -80,7 +80,7 @@ public class CreateNewUserSteps implements En {
         "I click checkbox to choose first {int} User results",
         (Integer index) -> {
           for (int i = 2; i <= index + 1; i++) {
-            webDriverHelpers.clickOnWebElementBySelector(abc(i));
+            webDriverHelpers.clickOnWebElementBySelector(getTableRowByIndex(i));
           }
         });
 
@@ -105,14 +105,10 @@ public class CreateNewUserSteps implements En {
             case "Enable":
               webDriverHelpers.clickOnWebElementBySelector(ENABLE_BULK_ACTIONS_VALUES);
               webDriverHelpers.clickOnWebElementBySelector(CONFIRM_POP_UP);
-              webDriverHelpers.waitUntilElementIsVisibleAndClickable(CLOSE_POP_UP);
-              webDriverHelpers.clickOnWebElementBySelector(CLOSE_POP_UP);
               break;
             case "Disable":
               webDriverHelpers.clickOnWebElementBySelector(DISABLE_BULK_ACTIONS_VALUES);
               webDriverHelpers.clickOnWebElementBySelector(CONFIRM_POP_UP);
-              webDriverHelpers.waitUntilElementIsVisibleAndClickable(CLOSE_POP_UP);
-              webDriverHelpers.clickOnWebElementBySelector(CLOSE_POP_UP);
               break;
           }
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
