@@ -68,6 +68,10 @@ public class CreateNewUserPage {
   public static final By AMOUNT_ACTIVE_INACTIVE_USERS =
       By.xpath(
           "//div[@class='v-label v-widget bold v-label-bold vspace-top-none v-label-vspace-top-none align-right v-label-align-right v-label-undef-w']");
+  public static final By ENABLE_DISABLE_CONFIRMATION_POPUP =
+      By.xpath("//div[@class='popupContent']/div[@class='gwt-HTML']");
+  public static final By USERS_COUNTER =
+      By.xpath("//div[text()='No. of users:']//following::div/div[contains(@class,'bold')]");
   public static final By ACTIVE_USER_COMBOBOX =
       By.cssSelector("[id='active'] [class='v-filterselect-button']");
   public static final By SURVEILLANCE_REGION =
@@ -77,4 +81,9 @@ public class CreateNewUserPage {
   public static final By USER_ROLE_COMBOBOX = By.cssSelector("[id='userRoles'] div");
   public static final By REGION_FILTER_COMBOBOX = By.cssSelector("#region div");
   public static final By TABLE_USER_NAME = By.xpath("//table//td[5]");
+
+  public static By getTableRowByIndex(int index) {
+    return By.xpath(
+        String.format("//label[text()='Selects row number %s.']//parent::span/input", index));
+  }
 }

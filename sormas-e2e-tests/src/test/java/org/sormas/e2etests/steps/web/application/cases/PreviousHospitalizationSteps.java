@@ -49,9 +49,11 @@ public class PreviousHospitalizationSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(NEW_ENTRY_LINK);
           previousHospitalization =
               previousHospitalizationService.generatePreviousHospitalization();
-          fillDateOfVisitOrAdmission(previousHospitalization.getDateOfVisitOrAdmission(), Locale.ENGLISH);
+          fillDateOfVisitOrAdmission(
+              previousHospitalization.getDateOfVisitOrAdmission(), Locale.ENGLISH);
           selectReasonForHospitalization(previousHospitalization.getReasonForHospitalization());
-          fillDateOfDischargeOrTransfer(previousHospitalization.getDateOfDischargeOrTransfer(), Locale.ENGLISH);
+          fillDateOfDischargeOrTransfer(
+              previousHospitalization.getDateOfDischargeOrTransfer(), Locale.ENGLISH);
           selectStayInTheIntensiveCareUnit(previousHospitalization.getStayInTheIntensiveCareUnit());
           selectRegion(previousHospitalization.getRegion());
           selectDistrict(previousHospitalization.getDistrict());
@@ -64,7 +66,8 @@ public class PreviousHospitalizationSteps implements En {
           fillSpecifyReason(previousHospitalization.getSpecifyReason());
           fillDescription(previousHospitalization.getDescription());
           fillFacilityNameDescription(previousHospitalization.getFacilityNameDescription());
-          selectWasPatientAdmittedAtTheFacilityAsAnInpatient(previousHospitalization.getIsolation());
+          selectWasPatientAdmittedAtTheFacilityAsAnInpatient(
+              previousHospitalization.getIsolation());
           webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NEW_ENTRY_LINK);
         });
