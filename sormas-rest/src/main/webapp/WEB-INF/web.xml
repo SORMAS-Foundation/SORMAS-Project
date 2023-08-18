@@ -689,6 +689,38 @@
 	</security-role>
 
 	<security-role>
+		<role-name>ENVIRONMENT_SAMPLE_VIEW</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>ENVIRONMENT_SAMPLE_CREATE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>ENVIRONMENT_SAMPLE_EDIT</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>ENVIRONMENT_SAMPLE_EDIT_DISPATCH</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>ENVIRONMENT_SAMPLE_EDIT_RECEIVAL</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>ENVIRONMENT_SAMPLE_DELETE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>ENVIRONMENT_SAMPLE_IMPORT</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>ENVIRONMENT_SAMPLE_EXPORT</role-name>
+	</security-role>
+
+	<security-role>
 		<role-name>DOCUMENT_VIEW</role-name>
 	</security-role>
 

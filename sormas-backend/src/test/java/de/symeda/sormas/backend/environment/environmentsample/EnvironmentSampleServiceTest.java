@@ -19,7 +19,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import org.apache.commons.lang3.NotImplementedException;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.environment.EnvironmentDto;
@@ -164,17 +164,17 @@ public class EnvironmentSampleServiceTest extends AbstractBeanTest {
 
 		// hospital informant is not yet supported
 		loginWith(hospInfUser);
-		Assert.assertThrows(
-			"Facility is not supported for environment samples",
+		Assertions.assertThrowsExactly(
 			NotImplementedException.class,
-			() -> getEnvironmentSampleService().inJurisdictionOrOwned(sampleEmptyLocationALL));
+			() -> getEnvironmentSampleService().inJurisdictionOrOwned(sampleEmptyLocationALL),
+			"Facility is not supported for environment samples");
 
 		// point of entry informant is not yet supported
 		loginWith(poeInfUser);
-		Assert.assertThrows(
-			"Point of entry is not supported for environment samples",
+		Assertions.assertThrowsExactly(
 			NotImplementedException.class,
-			() -> getEnvironmentSampleService().inJurisdictionOrOwned(sampleEmptyLocationALL));
+			() -> getEnvironmentSampleService().inJurisdictionOrOwned(sampleEmptyLocationALL),
+			"Point of entry is not supported for environment samples");
 
 		// lab user from same lab should have access to all samples
 		loginWith(labUser);
