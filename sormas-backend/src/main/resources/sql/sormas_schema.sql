@@ -12586,24 +12586,24 @@ CREATE TABLE IF NOT EXISTS environmentsamples
     primary key (id)
 );
 
-ALTER TABLE environmentsample OWNER TO sormas_user;
-ALTER TABLE environmentsample ADD CONSTRAINT fk_change_user_id FOREIGN KEY (change_user_id) REFERENCES users (id);
-ALTER TABLE environmentsample ADD CONSTRAINT fk_environment_id FOREIGN KEY (environment_id) REFERENCES environments (id);
-ALTER TABLE environmentsample ADD CONSTRAINT fk_reportinguser_id FOREIGN KEY (reportinguser_id) REFERENCES users (id);
-ALTER TABLE environmentsample ADD CONSTRAINT fk_laboratory_id FOREIGN KEY (laboratory_id) REFERENCES facility (id);
-ALTER TABLE environmentsample ADD CONSTRAINT fk_location_id FOREIGN KEY (location_id) REFERENCES location (id);
+ALTER TABLE environmentsamples OWNER TO sormas_user;
+ALTER TABLE environmentsamples ADD CONSTRAINT fk_change_user_id FOREIGN KEY (change_user_id) REFERENCES users (id);
+ALTER TABLE environmentsamples ADD CONSTRAINT fk_environment_id FOREIGN KEY (environment_id) REFERENCES environments (id);
+ALTER TABLE environmentsamples ADD CONSTRAINT fk_reportinguser_id FOREIGN KEY (reportinguser_id) REFERENCES users (id);
+ALTER TABLE environmentsamples ADD CONSTRAINT fk_laboratory_id FOREIGN KEY (laboratory_id) REFERENCES facility (id);
+ALTER TABLE environmentsamples ADD CONSTRAINT fk_location_id FOREIGN KEY (location_id) REFERENCES location (id);
 
-CREATE TABLE environmentsample_history (LIKE environmentsample);
-CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE ON environmentsample
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'environmentsample_history', true);
+CREATE TABLE environmentsamples_history (LIKE environmentsamples);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE ON environmentsamples
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'environmentsamples_history', true);
 CREATE TRIGGER delete_history_trigger
-    AFTER DELETE ON environmentsample
-    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('environmentsample_history', 'id');
-ALTER TABLE environmentsample_history OWNER TO sormas_user;
-ALTER TABLE environmentsample ALTER COLUMN requestedpathogentests set DATA TYPE jsonb using requestedpathogentests::jsonb;
-ALTER TABLE environmentsample_history ALTER COLUMN requestedpathogentests set DATA TYPE jsonb using requestedpathogentests::jsonb;
-ALTER TABLE environmentsample ALTER COLUMN weatherconditions set DATA TYPE jsonb using weatherconditions::jsonb;
-ALTER TABLE environmentsample_history ALTER COLUMN weatherconditions set DATA TYPE jsonb using weatherconditions::jsonb;
+    AFTER DELETE ON environmentsamples
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('environmentsamples_history', 'id');
+ALTER TABLE environmentsamples_history OWNER TO sormas_user;
+ALTER TABLE environmentsamples ALTER COLUMN requestedpathogentests set DATA TYPE jsonb using requestedpathogentests::jsonb;
+ALTER TABLE environmentsamples_history ALTER COLUMN requestedpathogentests set DATA TYPE jsonb using requestedpathogentests::jsonb;
+ALTER TABLE environmentsamples ALTER COLUMN weatherconditions set DATA TYPE jsonb using weatherconditions::jsonb;
+ALTER TABLE environmentsamples_history ALTER COLUMN weatherconditions set DATA TYPE jsonb using weatherconditions::jsonb;
 
 INSERT INTO userroles_userrights (userrole_id, userright)
 SELECT id, 'ENVIRONMENT_SAMPLE_VIEW'
