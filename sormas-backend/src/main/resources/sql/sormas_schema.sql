@@ -12545,4 +12545,10 @@ ALTER TABLE externalmessage ADD CONSTRAINT fk_externalmessage_personcountry_id F
 
 INSERT INTO schema_version (version_number, comment) VALUES (521, 'Add missing fields to external message entity #12390');
 
+ALTER TABLE task ADD COLUMN environment_id bigint;
+ALTER TABLE task ADD CONSTRAINT fk_task_environment_id FOREIGN KEY (environment_id) REFERENCES environments (id);
+ALTER TABLE task_history ADD COLUMN environment_id bigint;
+
+INSERT INTO schema_version (version_number, comment) VALUES (522, 'Add tasks to environments #11780');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

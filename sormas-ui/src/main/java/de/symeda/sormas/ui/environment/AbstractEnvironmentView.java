@@ -11,7 +11,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.utils.AbstractEditAllowedDetailView;
-import de.symeda.sormas.ui.utils.DirtyStateComponent;
 
 public abstract class AbstractEnvironmentView extends AbstractEditAllowedDetailView<EnvironmentReferenceDto> {
 
@@ -64,6 +63,10 @@ public abstract class AbstractEnvironmentView extends AbstractEditAllowedDetailV
 		menu.addView(EnvironmentDataView.VIEW_NAME, I18nProperties.getCaption(EnvironmentDto.I18N_PREFIX), params);
 
 		setMainHeaderComponent(ControllerProvider.getEnvironmentController().getEnvironmentViewTitleLayout(getReference().getUuid()));
+	}
+
+	public EnvironmentReferenceDto getEnvironmentRef() {
+		return getReference();
 	}
 
 }

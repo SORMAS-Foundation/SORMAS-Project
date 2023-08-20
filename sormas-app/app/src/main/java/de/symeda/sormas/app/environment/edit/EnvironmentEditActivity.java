@@ -8,6 +8,7 @@ import java.util.List;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseActivity;
@@ -30,6 +31,7 @@ import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.environment.EnvironmentSection;
+import de.symeda.sormas.app.task.edit.TaskNewActivity;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.NavigationHelper;
 
@@ -71,14 +73,44 @@ public class EnvironmentEditActivity extends BaseEditActivity<Environment> {
 	public List<PageMenuItem> getPageMenuData() {
 		List<PageMenuItem> menuItems = PageMenuItem.fromEnum(EnvironmentSection.values(), getContext());
 
+		// Sections must be removed in reverse order
+		if (DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.TASK_MANAGEMENT)) {
+			menuItems.set(EnvironmentSection.TASKS.ordinal(), null);
+		}
+
 		return menuItems;
 	}
 
 	@Override
 	protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Environment activityRootData) {
+		EnvironmentSection section = EnvironmentSection.fromOrdinal(menuItem.getPosition());
 		BaseEditFragment fragment;
-		fragment = EnvironmentEditFragment.newInstance(activityRootData);
+
+		switch (section) {
+		case ENVIRONMENT_INFO:
+			fragment = EnvironmentEditFragment.newInstance(activityRootData);
+			break;
+		case TASKS:
+			fragment = EnvironmentEditTaskListFragment.newInstance(activityRootData);
+			break;
+		default:
+			throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
+		}
+
 		return fragment;
+	}
+
+	@Override
+	public void goToNewView() {
+		EnvironmentSection section = EnvironmentSection.fromOrdinal(getActivePage().getPosition());
+
+		switch (section) {
+		case TASKS:
+			TaskNewActivity.startActivityFromEnvironment(getContext(), getRootUuid());
+			break;
+		default:
+			throw new IllegalArgumentException(DataHelper.toStringNullable(section));
+		}
 	}
 
 	private void confirmJurisdictionChange() {

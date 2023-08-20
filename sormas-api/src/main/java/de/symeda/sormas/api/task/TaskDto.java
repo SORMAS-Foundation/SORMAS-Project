@@ -29,6 +29,7 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
@@ -87,6 +88,10 @@ public class TaskDto extends EntityDto {
 	@EmbeddedSensitiveData
 	private TravelEntryReferenceDto travelEntry;
 
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
+	private EnvironmentReferenceDto environment;
+
 	@NotNull(message = Validations.requiredField)
 	private TaskType taskType;
 	private TaskPriority priority;
@@ -138,6 +143,9 @@ public class TaskDto extends EntityDto {
 			break;
 		case TRAVEL_ENTRY:
 			task.setTravelEntry((TravelEntryReferenceDto) entityRef);
+			break;
+		case ENVIRONMENT:
+			task.setEnvironment((EnvironmentReferenceDto) entityRef);
 			break;
 		}
 		return task;
@@ -304,6 +312,8 @@ public class TaskDto extends EntityDto {
 			return getContact();
 		case EVENT:
 			return getEvent();
+		case ENVIRONMENT:
+			return getEnvironment();
 		case GENERAL:
 			return null;
 		case TRAVEL_ENTRY:
@@ -327,5 +337,13 @@ public class TaskDto extends EntityDto {
 
 	public void setTravelEntry(TravelEntryReferenceDto travelEntry) {
 		this.travelEntry = travelEntry;
+	}
+
+	public EnvironmentReferenceDto getEnvironment() {
+		return environment;
+	}
+
+	public void setEnvironment(EnvironmentReferenceDto environment) {
+		this.environment = environment;
 	}
 }
