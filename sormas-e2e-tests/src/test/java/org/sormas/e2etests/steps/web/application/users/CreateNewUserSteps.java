@@ -19,12 +19,7 @@
 package org.sormas.e2etests.steps.web.application.users;
 
 import static org.sormas.e2etests.pages.application.NavBarPage.ACTION_CONFIRM_GDPR_POPUP_DE;
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALL_RESULTS_CHECKBOX;
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_ACTIONS;
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DETAILED_COLUMN_HEADERS;
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DETAILED_TABLE_DATA;
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DETAILED_TABLE_ROWS;
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ENTER_BULK_EDIT_MODE;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.LOGOUT_BUTTON;
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.*;
 import static org.sormas.e2etests.pages.application.users.UserManagementPage.FIRST_EDIT_BUTTON_FROM_LIST;
@@ -37,6 +32,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
+import lombok.SneakyThrows;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.entities.pojo.common.User;
 import org.sormas.e2etests.entities.services.UserService;
@@ -51,11 +48,11 @@ import org.testng.asserts.SoftAssert;
 public class CreateNewUserSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   public static User user;
+  public static List<User> createdUsers;
   public static User editUser;
   public static String userName;
   public static String userPass;
   private final BaseSteps baseSteps;
-  private static int amountOfRecords;
   public static HashMap<String, String> userWithRegion = new HashMap<String, String>();
 
   @Inject
@@ -69,13 +66,11 @@ public class CreateNewUserSteps implements En {
     this.baseSteps = baseSteps;
 
     When(
-        "^I pick and count amount a users that was created on the same period of time$",
+        "^I search after users that were created on the same period of time$",
         () -> {
           String userNameFromEditUser = user.getUserName().substring(0, 19);
           webDriverHelpers.fillInWebElement(USER_INPUT_SEARCH, userNameFromEditUser);
           TimeUnit.SECONDS.sleep(5); // wait for page loaded
-          String amountOfUsers = webDriverHelpers.getTextFromWebElement(AMOUNT_OF_CHOSEN_USERS);
-          amountOfRecords = Integer.parseInt(amountOfUsers);
         });
 
     When(
@@ -83,14 +78,18 @@ public class CreateNewUserSteps implements En {
         () -> webDriverHelpers.clickOnWebElementBySelector(ENTER_BULK_EDIT_MODE));
 
     When(
-        "I click checkbox to choose all User results",
-        () -> webDriverHelpers.clickOnWebElementBySelector(ALL_RESULTS_CHECKBOX));
+        "I click checkbox to choose first {int} User results",
+        (Integer index) -> {
+          for (int i = 2; i <= index + 1; i++) {
+            webDriverHelpers.clickOnWebElementBySelector(getTableRowByIndex(i));
+          }
+        });
 
     When(
         "I pick {string} value for Active filter in User Directory",
         (String activeValue) -> {
           webDriverHelpers.selectFromCombobox(ACTIVE_USER_COMBOBOX, activeValue);
-          TimeUnit.SECONDS.sleep(3); // waiting for all users to pick
+          TimeUnit.SECONDS.sleep(5); // waiting for all users to pick
         });
 
     When(
@@ -113,19 +112,18 @@ public class CreateNewUserSteps implements En {
               webDriverHelpers.clickOnWebElementBySelector(CONFIRM_POP_UP);
               break;
           }
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              ENABLE_DISABLE_CONFIRMATION_POPUP);
+          webDriverHelpers.clickOnWebElementBySelector(ENABLE_DISABLE_CONFIRMATION_POPUP);
         });
 
     And(
-        "I check that all Users are changed Active field value to opposite",
+        "I check that created users are displayed in results grid",
         () -> {
-          String amountOfCheckboxes =
-              webDriverHelpers.getTextFromWebElement(AMOUNT_ACTIVE_INACTIVE_USERS);
-          Integer optionsRecords = Integer.parseInt(amountOfCheckboxes);
-          softly.assertEquals(
-              Integer.valueOf(amountOfRecords),
-              optionsRecords,
-              "Not all Active fields value are changed");
-          softly.assertAll();
+          By userNamesList = By.xpath("//tr/td[6]");
+          for (User user : createdUsers) {
+            webDriverHelpers.verifyListContainsText(userNamesList, user.getUserName());
+          }
         });
 
     When(
@@ -231,10 +229,12 @@ public class CreateNewUserSteps implements En {
     When(
         "I create {int} new users with National User via UI",
         (Integer users) -> {
+          createdUsers = new ArrayList<>();
           for (int i = 0; i < users; i++) {
             webDriverHelpers.clickWhileOtherButtonIsDisplayed(
                 NEW_USER_BUTTON, FIRST_NAME_OF_USER_INPUT);
             user = userService.buildGeneratedUserWithRole("National User");
+            createdUsers.add(user);
             fillFirstName(user.getFirstName());
             fillLastName(user.getLastName());
             fillEmailAddress(user.getEmailAddress());
@@ -714,9 +714,11 @@ public class CreateNewUserSteps implements En {
     webDriverHelpers.clickWebElementByText(USER_ROLE_CHECKBOX, role);
   }
 
+  @SneakyThrows
   private void closeNewPasswordPopUp() {
     webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CLOSE_DIALOG_BUTTON, 15);
     webDriverHelpers.clickOnWebElementBySelector(CLOSE_DIALOG_BUTTON);
+    TimeUnit.SECONDS.sleep(1);
   }
 
   private void selectLimitedDisease(String limitedDisease) {

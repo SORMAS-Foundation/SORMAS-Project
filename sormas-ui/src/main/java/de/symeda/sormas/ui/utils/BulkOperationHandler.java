@@ -8,6 +8,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Label;
@@ -116,7 +118,9 @@ public class BulkOperationHandler<T extends HasUuid> {
 					String description = getErrorDescription(
 						selectedIneligibleEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
 						I18nProperties.getString(countEntriesNotProcessedMessageProperty),
-						I18nProperties.getString(ineligibleEntriesNotProcessedMessageProperty));
+						ineligibleEntriesNotProcessedMessageProperty != null
+							? I18nProperties.getString(ineligibleEntriesNotProcessedMessageProperty)
+							: "");
 
 					Window response =
 						VaadinUiUtil.showSimplePopupWindow(I18nProperties.getString(headingSomeEntitiesNotProcessed), description, ContentMode.HTML);
@@ -197,8 +201,14 @@ public class BulkOperationHandler<T extends HasUuid> {
 						}
 
 					});
-				} catch (InterruptedException e) {
-					throw new RuntimeException(e);
+				} catch (Exception e) {
+					LoggerFactory.getLogger(BulkOperationHandler.class).error("Error during bulk operation", e);
+					bulkProgressLayout.finishProgress(ProgressResult.FAILURE, I18nProperties.getString(Strings.errorWasReported), () -> {
+						window.close();
+						bulkOperationDoneCallback.accept(selectedEntries);
+					});
+				} finally {
+					currentUI.setPollInterval(-1);
 				}
 			});
 

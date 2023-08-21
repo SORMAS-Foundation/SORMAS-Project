@@ -1,6 +1,8 @@
 package org.sormas.e2etests.entities.services;
 
+import static org.sormas.e2etests.enums.ReasonForHospitalization.getRandomReasonForHospitalizationDE;
 import static org.sormas.e2etests.enums.YesNoUnknownOptions.YES;
+import static org.sormas.e2etests.enums.YesNoUnknownOptionsDE.JA;
 
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
@@ -29,6 +31,24 @@ public class HospitalizationService {
         .wasThePatientHospitalizedPreviously(YES.toString())
         .wasPatientAdmittedAtTheFacilityAsAnInpatient(YES.toString())
         .leftAgainstMedicalAdvice(YES.toString())
+        .description("Additional description.")
+        .build();
+  }
+
+  public Hospitalization generateCurrentHospitalizationForDE() {
+    return Hospitalization.builder()
+        .wasPatientAdmittedAtTheFacilityAsAnInpatient(JA.toString())
+        .dateOfVisitOrAdmission(LocalDate.now().minusDays(3))
+        .dateOfDischargeOrTransfer(LocalDate.now().minusDays(1))
+        .reasonForHospitalization(getRandomReasonForHospitalizationDE())
+        .specifyReason("Exotic disease")
+        .stayInTheIntensiveCareUnit(JA.toString())
+        .startOfStayDate(LocalDate.now().minusDays(2))
+        .endOfStayDate(LocalDate.now().minusDays(1))
+        .isolation(JA.toString())
+        .dateOfIsolation(LocalDate.now().minusDays(6))
+        .wasThePatientHospitalizedPreviously(JA.toString())
+        .leftAgainstMedicalAdvice(JA.toString())
         .description("Additional description.")
         .build();
   }

@@ -13,26 +13,26 @@ Feature: Sharing contacts between environments tests
     And I fill a new contact form for DE version with mandatory data with "Baden-Württemberg" as a region and "LK Alb-Donau-Kreis" as a disctrict
     And I click on SAVE new contact button
     And I copy url of current contact
-    And I click on share contact button
+    And I click on share button
     Then I check if popup with "Kontakt kann nicht geteilt werden" title appears
     And I click on okay button
     And I click on the CHOOSE SOURCE CASE button from CONTACT page
     Then I search for the last case uuid created via Api in the CHOOSE SOURCE Contact window
     And I open the first found result in the CHOOSE SOURCE window for DE version
     Then I click SAVE button on Edit Contact Page
-    And I click on share contact button
+    And I click on share button
     And I select organization to share with "s2s_2"
     Then I check if warning information with related to the associated case not being shared appears in share contact popup
     And I click on discard button
     Then I open the Case Contacts tab
     And I navigate to case tab
-    Then I click on share case button
+    Then I click on share button
     And I select organization to share with "s2s_2"
     And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to Contacts tab in Edit case page
     And I open the first contact from contacts list
-    And I click on share contact button
+    And I click on share button
     And I select organization to share with "s2s_2"
     And I fill comment in share popup for contact with random string
     Then I click on share button in s2s share popup and wait for share to finish
@@ -66,7 +66,7 @@ Feature: Sharing contacts between environments tests
     And I save a new case
     And I collect uuid of the case
     Then I back to contact by url
-    And I click on share contact button
+    And I click on share button
     Then I check if popup with "Kontakt kann nicht geteilt werden" header appears
     And I click on okay button
     Then I click on the CHOOSE SOURCE CASE button from CONTACT page
@@ -75,16 +75,16 @@ Feature: Sharing contacts between environments tests
     Then I click SAVE button on Edit Contact Page
     Then I open the Case Contacts tab
     Then I navigate to case tab
-    Then I click on share case button
+    Then I click on share button
     And I select organization to share with "s2s_2"
-    And I click to hand over the ownership of the case in Share popup
+    And I click to hand over the ownership in Share popup
     And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I open the Case Contacts tab
     And I click on the first Contact ID from Contacts Directory in Contacts in Case
-    And I click on share contact button
+    And I click on share button
     And I select organization to share with "s2s_2"
-    And I click to hand over the ownership of the contact in Share popup
+    And I click to hand over the ownership in Share popup
     And I fill comment in share popup for contact with random string
     Then I click on share button in s2s share popup
     And I check if popup with error with handover header displays
@@ -100,7 +100,7 @@ Feature: Sharing contacts between environments tests
     Given I log in as a S2S
     Then I navigate to the last created case via the url
     And I collect uuid of the case
-    Then I click on share case button
+    Then I click on share button
     And I select organization to share with "s2s_2"
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
@@ -110,8 +110,8 @@ Feature: Sharing contacts between environments tests
     Then I accept first entity from table in Shares Page
     Then I navigate to "s2s_1" environment
     Then I open the last created contact via API
-    Then I click on share contact button
-    And I click to hand over the ownership of the contact in Share popup
+    Then I click on share button
+    And I click to hand over the ownership in Share popup
     And I select organization to share with "s2s_2"
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
@@ -145,7 +145,7 @@ Feature: Sharing contacts between environments tests
     Given I log in as a S2S
     Then I navigate to the last created case via the url
     And I collect uuid of the case
-    Then I click on share case button
+    Then I click on share button
     And I select organization to share with "s2s_2"
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
@@ -155,8 +155,8 @@ Feature: Sharing contacts between environments tests
     Then I accept first entity from table in Shares Page
     Then I navigate to "s2s_1" environment
     Then I open the last created contact via API
-    Then I click on share contact button
-    And I click to hand over the ownership of the contact in Share popup
+    Then I click on share button
+    And I click to hand over the ownership in Share popup
     And I select organization to share with "s2s_2"
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
@@ -187,7 +187,7 @@ Feature: Sharing contacts between environments tests
     Given I log in as a S2S
     Then I navigate to the last created case via the url
     And I collect uuid of the case
-    Then I click on share case button
+    Then I click on share button
     And I select organization to share with "s2s_2"
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
@@ -197,7 +197,7 @@ Feature: Sharing contacts between environments tests
     Then I accept first entity from table in Shares Page
     Then I navigate to "s2s_1" environment
     Then I open the last created contact via API
-    Then I click on share contact button
+    Then I click on share button
     And I select organization to share with "s2s_2"
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
@@ -229,7 +229,7 @@ Feature: Sharing contacts between environments tests
     Given I log in as a S2S
     Then I navigate to the last created case via the url
     And I collect uuid of the case
-    Then I click on share case button
+    Then I click on share button
     And I select organization to share with "s2s_2"
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
@@ -239,7 +239,7 @@ Feature: Sharing contacts between environments tests
     Then I accept first entity from table in Shares Page
     Then I navigate to "s2s_1" environment
     Then I open the last created contact via API
-    Then I click on share contact button
+    Then I click on share button
     And I select organization to share with "s2s_2"
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
@@ -271,7 +271,7 @@ Feature: Sharing contacts between environments tests
     And API: I check that POST call status code is 200
     Given I log in as a S2S
     Then I navigate to the last created case via the url
-    Then I click on share case button
+    Then I click on share button
     And I select organization to share with "s2s_2"
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
@@ -281,9 +281,9 @@ Feature: Sharing contacts between environments tests
     Then I accept first entity from table in Shares Page
     Then I navigate to "s2s_1" environment
     Then I open the last created contact via API
-    Then I click on share contact button
+    Then I click on share button
     And I select organization to share with "s2s_2"
-    And I click to hand over the ownership of the contact in Share popup
+    And I click to hand over the ownership in Share popup
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
     Then I click on Delete button from contact
@@ -305,9 +305,9 @@ Feature: Sharing contacts between environments tests
     Given I log in as a S2S
     Then I navigate to the last created case via the url
     And I collect uuid of the case
-    Then I click on share case button
+    Then I click on share button
     And I select organization to share with "s2s_2"
-    And I click to hand over the ownership of the case in Share popup
+    And I click to hand over the ownership in Share popup
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment
@@ -316,8 +316,8 @@ Feature: Sharing contacts between environments tests
     Then I accept first entity from table in Shares Page
     Then I navigate to "s2s_1" environment
     Then I open the last created contact via API
-    Then I click on share contact button
-    And I click to hand over the ownership of the contact in Share popup
+    Then I click on share button
+    And I click to hand over the ownership in Share popup
     And I select organization to share with "s2s_2"
     And I fill comment in share popup with "shared with automated test"
     Then I click on share button in s2s share popup and wait for share to finish
@@ -333,12 +333,12 @@ Feature: Sharing contacts between environments tests
     And I click on the Contacts button from navbar
     Then I open the last created contact via API
     And I check if editable fields are read only for shared contact
-    And I check if handover card contains "Eigentümer: LK Fulda" information
+    And I check if handover card contains shared with "s2s_2" information
     And I check if handover card contains "Geteilt von: S2S USER" information
     And I check if handover card contains "shared with automated test" information
     Then I navigate to "s2s_2" environment
     Then I open the last created contact via API
-    And I check if handover card contains "Gesendet von LK Barnim" information
+    And I check if handover card contains shared with "s2s_1" information
     And I check if handover card contains "Geteilt von: S2S User" information
     And I check if handover card contains "shared with automated test" information
 
@@ -353,9 +353,9 @@ Feature: Sharing contacts between environments tests
     Given I log in as a S2S
     Then I navigate to the last created case via the url
     And I collect uuid of the case
-    Then I click on share case button
+    Then I click on share button
     And I select organization to share with "s2s_2"
-    And I click to hand over the ownership of the case in Share popup
+    And I click to hand over the ownership in Share popup
     And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_2" environment in new driver tab
@@ -366,12 +366,12 @@ Feature: Sharing contacts between environments tests
     Then I back to tab number 1
     Then I open the last created contact via API from "s2s_1"
     And I collect uuid of the contact
-    Then I click on share contact button
-    And I click to hand over the ownership of the contact in Share popup
+    Then I click on share button
+    And I click to hand over the ownership in Share popup
     And I select organization to share with "s2s_2"
     And I fill comment in share popup for contact with random string
     Then I click on share button in s2s share popup and wait for share to finish
-    And I check if handover card contains "LK Fulda" information
+    And I check if handover card contains shared with "s2s_2" information
     And I check if handover card contains "Geteilt von: S2S USER" information
     Then I back to tab number 2
     And I refresh current page

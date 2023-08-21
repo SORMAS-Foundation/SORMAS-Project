@@ -381,6 +381,7 @@
     <string name="heading_sample_read">Probe lesen</string>
     <string name="heading_sample_summary">Probe-Zusammenfassung</string>
     <string name="heading_samples_list">Proben-Liste</string>
+    <string name="heading_environments_list">Environment Listing</string>
     <string name="heading_immunization_edit">Immunisierung bearbeiten</string>
     <string name="heading_immunization_new">Neue Immunisierung</string>
     <string name="heading_immunization_read">Immunisierung lesen</string>
@@ -501,6 +502,7 @@
     <string name="main_menu_events">Ereignisse</string>
     <string name="main_menu_reports">Meldungen</string>
     <string name="main_menu_samples">Proben</string>
+    <string name="main_menu_environments">Environments</string>
     <string name="main_menu_immunizations">Immunisierungen</string>
     <string name="main_menu_settings">Einstellungen</string>
     <string name="main_menu_tasks">Aufgaben</string>
@@ -652,6 +654,7 @@
     <string name="value_treatment_date_time_unknown">Behandlungsdatum N/A</string>
     <string name="value_type_unknown">Typ N/A</string>
     <string name="value_uuid_unknown">ID N/A</string>
+    <string name="value_external_id_unknown">ExternalID N/A</string>
     <string name="value_visit_date_unknown">Anrufsdatum N/A</string>
     <string name="value_visit_remarks_unknown">Anmerkungen N/A</string>
     <string name="value_visit_time_unknown">Anrufszeit N/A</string>

@@ -380,6 +380,7 @@ public interface Strings {
 	String ExternalSurveillanceToolGateway_notificationEntrySent = "ExternalSurveillanceToolGateway.notificationEntrySent";
 	String ExternalSurveillanceToolGateway_notificationErrorDeleting = "ExternalSurveillanceToolGateway.notificationErrorDeleting";
 	String ExternalSurveillanceToolGateway_notificationErrorSending = "ExternalSurveillanceToolGateway.notificationErrorSending";
+	String ExternalSurveillanceToolGateway_notificationSomeEntriesSent = "ExternalSurveillanceToolGateway.notificationSomeEntriesSent";
 	String ExternalSurveillanceToolGateway_sharedAt = "ExternalSurveillanceToolGateway.sharedAt";
 	String ExternalSurveillanceToolGateway_unableToSend = "ExternalSurveillanceToolGateway.unableToSend";
 	String ExternalSurveillanceToolGateway_versionRequestError = "ExternalSurveillanceToolGateway.versionRequestError";
@@ -544,6 +545,7 @@ public interface Strings {
 	String headingEditVaccination = "headingEditVaccination";
 	String headingEditVisit = "headingEditVisit";
 	String headingEnvironmentalExposure = "headingEnvironmentalExposure";
+	String headingEnvironmentJurisdictionUpdated = "headingEnvironmentJurisdictionUpdated";
 	String headingEpiCurve = "headingEpiCurve";
 	String headingEpiDataSourceCaseContacts = "headingEpiDataSourceCaseContacts";
 	String headingErrorReportNotAvailable = "headingErrorReportNotAvailable";
@@ -576,9 +578,7 @@ public interface Strings {
 	String headingFetchExternalMessages = "headingFetchExternalMessages";
 	String headingFileExists = "headingFileExists";
 	String headingFilters = "headingFilters";
-	String headingFollowUpCanceled = "headingFollowUpCanceled";
 	String headingFollowUpStatus = "headingFollowUpStatus";
-	String headingFollowUpStatusChanged = "headingFollowUpStatusChanged";
 	String headingGenerateCases = "headingGenerateCases";
 	String headingGenerateContacts = "headingGenerateContacts";
 	String headingHealthConditions = "headingHealthConditions";
@@ -723,6 +723,7 @@ public interface Strings {
 	String headingSimilarImmunization = "headingSimilarImmunization";
 	String headingSomeCasesNotDeleted = "headingSomeCasesNotDeleted";
 	String headingSomeCasesNotRestored = "headingSomeCasesNotRestored";
+	String headingSomeContactsAlreadyInEvent = "headingSomeContactsAlreadyInEvent";
 	String headingSomeContactsNotDeleted = "headingSomeContactsNotDeleted";
 	String headingSomeContactsNotRestored = "headingSomeContactsNotRestored";
 	String headingSomeEventParticipantsNotDeleted = "headingSomeEventParticipantsNotDeleted";
@@ -765,8 +766,6 @@ public interface Strings {
 	String headingUpdatePersonContactDetails = "headingUpdatePersonContactDetails";
 	String headingUploadSuccess = "headingUploadSuccess";
 	String headingUserData = "headingUserData";
-	String headingUsersDisabled = "headingUsersDisabled";
-	String headingUsersEnabled = "headingUsersEnabled";
 	String headingUserSettings = "headingUserSettings";
 	String headingVaccination = "headingVaccination";
 	String headingViewAdditionalTest = "headingViewAdditionalTest";
@@ -1144,6 +1143,7 @@ public interface Strings {
 	String messageEnvironmentArchived = "messageEnvironmentArchived";
 	String messageEnvironmentCreated = "messageEnvironmentCreated";
 	String messageEnvironmentDearchived = "messageEnvironmentDearchived";
+	String messageEnvironmentJurisdictionUpdated = "messageEnvironmentJurisdictionUpdated";
 	String messageEnvironmentSaved = "messageEnvironmentSaved";
 	String messageEpiDataHint = "messageEpiDataHint";
 	String messageEpidNumberWarning = "messageEpidNumberWarning";
@@ -1176,6 +1176,7 @@ public interface Strings {
 	String messageEventParticipationUnlinked = "messageEventParticipationUnlinked";
 	String messageEventSaved = "messageEventSaved";
 	String messageEventsDeleted = "messageEventsDeleted";
+	String messageEventsLinkedToGroup = "messageEventsLinkedToGroup";
 	String messageEventsNotDeleted = "messageEventsNotDeleted";
 	String messageEventsNotDeletedExternalReason = "messageEventsNotDeletedExternalReason";
 	String messageEventsNotDeletedLinkedEntitiesReason = "messageEventsNotDeletedLinkedEntitiesReason";
@@ -1202,7 +1203,9 @@ public interface Strings {
 	String messageFacilityDearchivingNotPossible = "messageFacilityDearchivingNotPossible";
 	String messageFacilityMulitChanged = "messageFacilityMulitChanged";
 	String messageFollowUpCanceled = "messageFollowUpCanceled";
+	String messageFollowUpCanceledForSome = "messageFollowUpCanceledForSome";
 	String messageFollowUpStatusChanged = "messageFollowUpStatusChanged";
+	String messageFollowUpStatusChangedForSome = "messageFollowUpStatusChangedForSome";
 	String messageForwardedExternalMessageFound = "messageForwardedExternalMessageFound";
 	String messageGdpr = "messageGdpr";
 	String messageGdprCheck = "messageGdprCheck";
@@ -1310,8 +1313,12 @@ public interface Strings {
 	String messageSamplesRestored = "messageSamplesRestored";
 	String messageSelectedPeriodTooLong = "messageSelectedPeriodTooLong";
 	String messageSetContactRegionAndDistrict = "messageSetContactRegionAndDistrict";
+	String messageSomeContactsLinkedToEvent = "messageSomeContactsLinkedToEvent";
 	String messageSomeEntitiesArchived = "messageSomeEntitiesArchived";
 	String messageSomeEntitiesDearchived = "messageSomeEntitiesDearchived";
+	String messageSomeEventsLinkedToGroup = "messageSomeEventsLinkedToGroup";
+	String messageSomeUsersDisabled = "messageSomeUsersDisabled";
+	String messageSomeUsersEnabled = "messageSomeUsersEnabled";
 	String messageSormasToSormasSimilarCaseFound = "messageSormasToSormasSimilarCaseFound";
 	String messageSormasToSormasSimilarCaseToContactFound = "messageSormasToSormasSimilarCaseToContactFound";
 	String messageSormasToSormasSimilarContactFound = "messageSormasToSormasSimilarContactFound";

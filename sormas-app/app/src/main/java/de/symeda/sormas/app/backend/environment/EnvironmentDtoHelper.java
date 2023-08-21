@@ -34,7 +34,7 @@ public class EnvironmentDtoHelper extends AdoDtoHelper<Environment, EnvironmentD
 
 	@Override
 	protected Call<List<EnvironmentDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid) throws NoConnectionException {
-		return RetroProvider.getEnvironmentFacade().pullAllSince(since);
+		return RetroProvider.getEnvironmentFacade().pullAllSince(since, size, lastSynchronizedUuid);
 	}
 
 	@Override

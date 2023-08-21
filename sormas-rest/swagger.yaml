@@ -10,7 +10,7 @@ info:
     name: GPL v3
     url: https://www.gnu.org/licenses/gpl-3.0.html
   title: SORMAS REST API
-  version: 1.87.0-SNAPSHOT
+  version: 1.88.0-SNAPSHOT
 servers:
 - url: /sormas-rest
 paths:
@@ -2705,6 +2705,38 @@ paths:
         schema:
           type: integer
           format: int64
+      responses:
+        default:
+          content:
+            application/json; charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EnvironmentDto'
+          description: default response
+      tags:
+      - Environment Controller
+  /environments/all/{since}/{size}/{lastSynchronizedUuid}:
+    get:
+      operationId: getAllEnvironments_1
+      parameters:
+      - in: path
+        name: since
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - in: path
+        name: size
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - in: path
+        name: lastSynchronizedUuid
+        required: true
+        schema:
+          type: string
       responses:
         default:
           content:
@@ -12819,6 +12851,7 @@ components:
           - DISEASE_VARIANT
           - SPECIFIC_EVENT_RISK
           - OCCUPATION_TYPE
+          - PATHOGEN
         defaultValue:
           type: boolean
         description:
@@ -13907,6 +13940,12 @@ components:
           type: object
           additionalProperties:
             type: boolean
+      required:
+      - environmentMedia
+      - environmentName
+      - investigationStatus
+      - reportDate
+      - reportingUser
     EpiDataDto:
       type: object
       properties:

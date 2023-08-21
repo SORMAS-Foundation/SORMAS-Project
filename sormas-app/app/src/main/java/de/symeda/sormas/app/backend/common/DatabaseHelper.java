@@ -188,7 +188,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 345;
+	public static final int DATABASE_VERSION = 349;
 
 	private static DatabaseHelper instance = null;
 
@@ -3055,17 +3055,58 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			case 344:
 				currentVersion = 344;
 				getDao(Environment.class).executeRaw(
-					"CREATE TABLE environments(id integer primary key autoincrement, uuid VARCHAR(36) NOT NULL UNIQUE, "
+					"CREATE TABLE environments(id integer primary key autoincrement, uuid VARCHAR(36) NOT NULL, "
 						+ "changeDate TIMESTAMP NOT NULL, creationDate TIMESTAMP NOT NULL, lastOpenedDate TIMESTAMP, localChangeDate TIMESTAMP NOT NULL, modified INTEGER, "
-						+ "snapshot INTEGER, reportDate TIMESTAMP NOT NULL, reportingUser_id BIGINT REFERENCES users(id), environmentName text, description text, "
+						+ "snapshot INTEGER, reportDate TIMESTAMP, reportingUser_id BIGINT REFERENCES users(id), environmentName text, description text, "
 						+ "externalId varchar(255), responsibleUser_id BIGINT REFERENCES users(id), investigationStatus varchar(255), environmentMedia varchar(255), "
 						+ "waterType varchar(255), otherWaterType text, infrastructureDetails varchar(255), otherInfrastructureDetails text, waterUse text, "
 						+ "otherWaterUse text, location_id BIGINT, UNIQUE(snapshot, uuid));");
 
 			case 345:
 				currentVersion = 345;
-				getDao(EnvironmentDao.class).executeRaw("ALTER TABLE environments  uuid VARCHAR(36) NOT NULL UNIQUE");
-				getDao(EnvironmentDao.class).executeRaw("ALTER TABLE environments reportDate TIMESTAMP NOT NULL");
+				getDao(Environment.class).executeRaw("ALTER TABLE environments RENAME TO tmp_environments;");
+				getDao(Environment.class).executeRaw(
+					"CREATE TABLE environments(id integer primary key autoincrement, uuid VARCHAR(36) NOT NULL UNIQUE, "
+						+ "changeDate TIMESTAMP NOT NULL, creationDate TIMESTAMP NOT NULL, lastOpenedDate TIMESTAMP, localChangeDate TIMESTAMP NOT NULL, modified INTEGER, "
+						+ "snapshot INTEGER, reportDate TIMESTAMP NOT NULL, reportingUser_id BIGINT REFERENCES users(id), environmentName text, description text, "
+						+ "externalId varchar(255), responsibleUser_id BIGINT REFERENCES users(id), investigationStatus varchar(255), environmentMedia varchar(255), "
+						+ "waterType varchar(255), otherWaterType text, infrastructureDetails varchar(255), otherInfrastructureDetails text, waterUse text, "
+						+ "otherWaterUse text, location_id BIGINT, UNIQUE(snapshot, uuid));");
+				getDao(Environment.class).executeRaw(
+					"INSERT INTO environments (uuid, changeDate, creationDate, lastOpenedDate, localChangeDate, modified, "
+						+ "snapshot, reportDate, reportingUser_id, environmentName, description, externalId, responsibleUser_id, investigationStatus, environmentMedia, "
+						+ "waterType, otherWaterType, infrastructureDetails, otherInfrastructureDetails, waterUse, otherWaterUse, location_id, id) "
+						+ "SELECT uuid, changeDate, creationDate, lastOpenedDate, localChangeDate, modified, "
+						+ "snapshot, reportDate, reportingUser_id, environmentName, description, externalId, responsibleUser_id, investigationStatus, environmentMedia, "
+						+ "waterType, otherWaterType, infrastructureDetails, otherInfrastructureDetails, waterUse, otherWaterUse, location_id, id FROM tmp_environments");
+				getDao(Environment.class).executeRaw("DROP TABLE tmp_environments");
+
+			case 346:
+				currentVersion = 346;
+				getDao(FeatureConfiguration.class).executeRaw("DELETE FROM featureConfiguration WHERE featureType = 'DASHBOARD';");
+
+			case 347:
+				currentVersion = 347;
+				getDao(Environment.class).executeRaw("ALTER TABLE environments RENAME TO tmp_environments;");
+				getDao(Environment.class).executeRaw(
+					"CREATE TABLE environments(id integer primary key autoincrement, uuid VARCHAR(36) NOT NULL, "
+						+ "changeDate TIMESTAMP NOT NULL, creationDate TIMESTAMP NOT NULL, lastOpenedDate TIMESTAMP, localChangeDate TIMESTAMP NOT NULL, modified INTEGER, "
+						+ "snapshot INTEGER, reportDate TIMESTAMP NOT NULL, reportingUser_id BIGINT REFERENCES users(id), environmentName text, description text, "
+						+ "externalId varchar(255), responsibleUser_id BIGINT REFERENCES users(id), investigationStatus varchar(255), environmentMedia varchar(255), "
+						+ "waterType varchar(255), otherWaterType text, infrastructureDetails varchar(255), otherInfrastructureDetails text, waterUse text, "
+						+ "otherWaterUse text, location_id BIGINT, UNIQUE(snapshot, uuid));");
+				getDao(Environment.class).executeRaw(
+					"INSERT INTO environments (uuid, changeDate, creationDate, lastOpenedDate, localChangeDate, modified, "
+						+ "snapshot, reportDate, reportingUser_id, environmentName, description, externalId, responsibleUser_id, investigationStatus, environmentMedia, "
+						+ "waterType, otherWaterType, infrastructureDetails, otherInfrastructureDetails, waterUse, otherWaterUse, location_id, id) "
+						+ "SELECT uuid, changeDate, creationDate, lastOpenedDate, localChangeDate, modified, "
+						+ "snapshot, reportDate, reportingUser_id, environmentName, description, externalId, responsibleUser_id, investigationStatus, environmentMedia, "
+						+ "waterType, otherWaterType, infrastructureDetails, otherInfrastructureDetails, waterUse, otherWaterUse, location_id, id FROM tmp_environments");
+				getDao(Environment.class).executeRaw("DROP TABLE tmp_environments");
+
+			case 348:
+				currentVersion = 348;
+				getDao(Environment.class).executeRaw("ALTER TABLE environments ADD COLUMN pseudonymized boolean;");
 
 				// ATTENTION: break should only be done after last version
 				break;

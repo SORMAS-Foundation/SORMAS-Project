@@ -31,19 +31,10 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SHOW
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_CARD_INFO_ICON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_CARD_INFO_POPUP_TEXT;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.CONTACT_LINKED_TO_EVENT_POPUP;
 import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.FIRST_CONTACT_ID;
-import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_MANAGEMENT_STATUS_CHECK;
-import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_PARTICIPANTS_TAB;
-import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_ARCHIVED_EVENT_PARTICIPANT;
-import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_EVENT_PARTICIPANT;
-import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_EVENT_PARTICIPANT_AFTER_IMPORT;
-import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_EVENT_PARTICIPANT_FROM_LIST;
-import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_PERSON_ID_IN_EVENT_PARTICIPANT_TAB;
-import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_RESULT_IN_EVENT_PARTICIPANT_TABLE;
-import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_TASK_BUTTON;
-import static org.sormas.e2etests.pages.application.events.EditEventPage.UUID_EDIT_EVENT;
-import static org.sormas.e2etests.pages.application.events.EditEventPage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.*;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.APPLY_FILTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BASIC_EVENT_EXPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BASIC_EXPORT_PARTICIPANT_BUTTON;
@@ -447,6 +438,22 @@ public class EventDirectorySteps implements En {
               SAVE_BUTTON_IN_LINK_FORM);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_IN_LINK_FORM);
         });
+
+    When(
+        "^I click on successfully linked to this event group message popup in Link Event to group form$",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NEW_GROUP_EVENT_CREATED_MESSAGE);
+          webDriverHelpers.clickOnWebElementBySelector(NEW_GROUP_EVENT_CREATED_MESSAGE);
+        });
+
+    When(
+        "^I click on success popup message for contact that linked to selected event$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              CONTACT_LINKED_TO_EVENT_POPUP);
+          webDriverHelpers.clickOnWebElementBySelector(CONTACT_LINKED_TO_EVENT_POPUP);
+        });
+
     When(
         "^I click on Linked Group Id on Edit Event Page$",
         () -> webDriverHelpers.clickOnWebElementBySelector(LINKED_EVENT_GROUP_ID));
