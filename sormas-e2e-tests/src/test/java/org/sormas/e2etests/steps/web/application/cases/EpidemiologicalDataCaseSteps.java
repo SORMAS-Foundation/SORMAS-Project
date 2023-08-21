@@ -1,67 +1,7 @@
 package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_CONTINENT_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_COUNTRY_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_DESCRIPTION;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_DETAILS_KNOWN_OPTIONS;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_DETAILS_NEW_ENTRY_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_DISCARD_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_DONE_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_END_OF_ACTIVITY_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_START_OF_ACTIVITY_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_SUBCONTINENT_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_TYPE_OF_ACTIVITY_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.BLUE_ERROR_EXCLAMATION_MARK_EXPOSURE_POPUP;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.BLUE_ERROR_EXCLAMATION_MARK_EXPOSURE_POPUP_TEXT;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CONTACTS_WITH_SOURCE_CASE_BOX;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CONTACT_TO_BODY_FLUIDS_OPTONS;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CONTACT_WITH_SOURCE_CASE_KNOWN;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CONTINENT_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CONTINENT_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.COUNTRY_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.DATE_EXPOSURE_TABLE;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.DISCARD_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.DONE_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EDIT_SAVED_ACTIVITY_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EDIT_SAVED_EXPOSURE_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EDIT_SOURCE_CONTACTS_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EDIT_TRAVEL_ENTRY_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.END_OF_EXPOSURE_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EPIDEMIOLOGICAL_DATA_ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EXPOSURE_ACTION_CANCEL;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EXPOSURE_ACTION_CONFIRM;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EXPOSURE_CHOOSE_CASE_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EXPOSURE_DESCRIPTION_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EXPOSURE_DETAILS_KNOWN_OPTIONS;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EXPOSURE_DETAILS_NEW_ENTRY_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EXPOSURE_DETAILS_ROLE_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EXPOSURE_PROBABLE_INFECTION_ENVIRONMENT_CHECKBOX;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.FACILITY_CATEGORY_POPUP_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.FACILITY_TYPE_POPUP_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.HANDLING_SAMPLES_OPTIONS;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.INDOORS_OPTIONS;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.LONG_FACE_TO_FACE_CONTACT_OPTIONS;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.NEW_CONTACT_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.OPEN_SAVED_ACTIVITY_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.OPEN_SAVED_EXPOSURE_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.OTHER_PROTECTIVE_MEASURES_OPTIONS;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.OUTDOORS_OPTIONS;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.PERCUTANEOUS_OPTIONS;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.RESIDING_OR_TRAVELING_DETAILS_KNOWN_OPTIONS;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.RESIDING_OR_WORKING_DETAILS_KNOWN_OPTIONS;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.RISK_AREA_OPTIONS;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.SAVE_BUTTON_EPIDEMIOLOGICAL_DATA;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.SHORT_DISTANCE_OPTIONS;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.START_OF_EXPOSURE_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.SUBCONTINENT_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.SUBCONTINENT_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.TYPE_OF_ACTIVITY_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.TYPE_OF_ACTIVITY_EXPOSURES;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.TYPE_OF_PLACE_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.WEARING_MASK_OPTIONS;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.WEARING_PPE_OPTIONS;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.getExposureTableData;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.*;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.RESPONSIBLE_DISTRICT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.RESPONSIBLE_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON;
@@ -195,6 +135,12 @@ public class EpidemiologicalDataCaseSteps implements En {
         "I click on Exposure details known with ([^\"]*) option",
         (String option) -> {
           webDriverHelpers.clickWebElementByText(EXPOSURE_DETAILS_KNOWN_OPTIONS, option);
+        });
+
+    When(
+        "I click on Care...In facility ([^\"]*) option",
+        (String option) -> {
+          webDriverHelpers.clickWebElementByText(CARE_IN_FACILITY_OPTIONS, option);
         });
 
     When(
@@ -339,6 +285,21 @@ public class EpidemiologicalDataCaseSteps implements En {
         "I click on New Entry in Exposure Details Known in Cases directory",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(EXPOSURE_DETAILS_NEW_ENTRY_BUTTON);
+        });
+
+    When(
+        "I click on New Entry in Care...In Facility in Cases directory",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              EXPOSURE_DETAILS_NEW_ENTRY_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(EXPOSURE_DETAILS_NEW_ENTRY_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NEW_ENTRY_POPUP);
+        });
+
+    When(
+        "I select {string} option in Art der Aktivitat from Combobox in Care In facility form",
+        (String typeOfactivity) -> {
+          webDriverHelpers.selectFromCombobox(CARE_WORK_IN_FACILITY_COMBOBOX, typeOfactivity);
         });
 
     When(

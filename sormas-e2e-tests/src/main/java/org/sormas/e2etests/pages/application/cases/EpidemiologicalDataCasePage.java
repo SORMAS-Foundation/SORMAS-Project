@@ -23,11 +23,15 @@ import org.openqa.selenium.By;
 public class EpidemiologicalDataCasePage {
   public static final By EXPOSURE_DETAILS_KNOWN_OPTIONS =
       By.cssSelector("#exposureDetailsKnown .v-select-option");
+  public static final By CARE_IN_FACILITY_OPTIONS =
+      By.cssSelector("#activityAsCaseDetailsKnown .v-select-option");
   public static final By EXPOSURE_DETAILS_NEW_ENTRY_BUTTON = By.cssSelector("#actionNewEntry");
   public static final By START_OF_EXPOSURE_INPUT = By.cssSelector(".v-window #startDate input");
   public static final By END_OF_EXPOSURE_INPUT = By.cssSelector(".v-window #endDate input");
   public static final By EXPOSURE_DESCRIPTION_INPUT = By.cssSelector(".v-window #description");
   public static final By TYPE_OF_ACTIVITY_COMBOBOX = By.cssSelector(".v-window #exposureType div");
+  public static final By CARE_WORK_IN_FACILITY_COMBOBOX =
+      By.cssSelector(".v-window #activityAsCaseType div");
   public static final By EXPOSURE_DETAILS_ROLE_COMBOBOX =
       By.cssSelector(".v-window div#exposureRole div");
   public static final By ACTIVITY_AS_CASE_OPTIONS =

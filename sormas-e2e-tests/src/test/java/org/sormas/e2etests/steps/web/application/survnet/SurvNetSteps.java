@@ -776,6 +776,7 @@ public class SurvNetSteps implements En {
                   "/srv/dockerdata/jenkins_new/sormas-files/case_"
                       + externalUUID.get(0).substring(1, 37)
                       + ".xml");
+          log.info("Opened XML -> {}", singleXmlFile);
         });
 
     And(
