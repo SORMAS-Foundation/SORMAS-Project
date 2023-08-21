@@ -125,10 +125,6 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
 						: record.getEvent() != null ? record.getEvent().getDisease() : null),
 			TaskType.class);
 
-		if (TaskContext.ENVIRONMENT.equals(record.getTaskContext())) {
-			DataUtils.toItems(TaskType.getTaskTypes(record.getTaskContext()));
-		}
-
 		priorityList = DataUtils.getEnumItems(TaskPriority.class, true);
 		assigneeList = DataUtils.toItems(DatabaseHelper.getUserDao().getAllInJurisdiction(), true);
 	}

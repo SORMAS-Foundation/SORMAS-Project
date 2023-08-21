@@ -1419,7 +1419,6 @@ public interface Strings {
 	String notificationTaskAssociatedContactLink = "notificationTaskAssociatedContactLink";
 	String notificationTaskAssociatedEventLink = "notificationTaskAssociatedEventLink";
 	String notificationTaskAssociatedTravelEntryLink = "notificationTaskAssociatedTravelEntryLink";
-	String notificationTaskAssociatedEnvironmentLink = "notificationTaskAssociatedEnvironmentLink";
 	String notificationTaskDueGeneral = "notificationTaskDueGeneral";
 	String notificationTaskDueSpecific = "notificationTaskDueSpecific";
 	String notificationTaskGeneralUpdatedAssigneeUserSource = "notificationTaskGeneralUpdatedAssigneeUserSource";
