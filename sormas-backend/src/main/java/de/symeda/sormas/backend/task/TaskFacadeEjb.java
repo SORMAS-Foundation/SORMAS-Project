@@ -55,6 +55,7 @@ import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -94,6 +95,9 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.environment.Environment;
+import de.symeda.sormas.backend.environment.EnvironmentFacadeEjb;
+import de.symeda.sormas.backend.environment.EnvironmentService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventService;
@@ -150,6 +154,8 @@ public class TaskFacadeEjb implements TaskFacade {
 	@EJB
 	private TravelEntryFacadeEjb.TravelEntryFacadeEjbLocal travelEntryFacade;
 	@EJB
+	private EnvironmentService environmentService;
+	@EJB
 	private NotificationService notificationService;
 
 	public Task fillOrBuildEntity(TaskDto source, Task target, boolean checkChangeDate) {
@@ -193,30 +199,42 @@ public class TaskFacadeEjb implements TaskFacade {
 				target.setContact(null);
 				target.setEvent(null);
 				target.setTravelEntry(null);
+				target.setEnvironment(null);
 				break;
 			case CONTACT:
 				target.setCaze(null);
 				target.setContact(contactService.getByReferenceDto(source.getContact()));
 				target.setEvent(null);
 				target.setTravelEntry(null);
+				target.setEnvironment(null);
 				break;
 			case EVENT:
 				target.setCaze(null);
 				target.setContact(null);
 				target.setEvent(eventService.getByReferenceDto(source.getEvent()));
 				target.setTravelEntry(null);
+				target.setEnvironment(null);
 				break;
 			case TRAVEL_ENTRY:
 				target.setCaze(null);
 				target.setContact(null);
 				target.setEvent(null);
 				target.setTravelEntry(travelEntryService.getByReferenceDto(source.getTravelEntry()));
+				target.setEnvironment(null);
+				break;
+			case ENVIRONMENT:
+				target.setCaze(null);
+				target.setContact(null);
+				target.setEvent(null);
+				target.setTravelEntry(null);
+				target.setEnvironment(environmentService.getByReferenceDto(source.getEnvironment()));
 				break;
 			case GENERAL:
 				target.setCaze(null);
 				target.setContact(null);
 				target.setEvent(null);
 				target.setTravelEntry(null);
+				target.setEnvironment(null);
 				break;
 			default:
 				throw new UnsupportedOperationException(source.getTaskContext() + " is not implemented");
@@ -269,6 +287,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		} else {
 			target.setTravelEntry(null);
 		}
+		target.setEnvironment(EnvironmentFacadeEjb.toReferenceDto(source.getEnvironment()));
 
 		target.setClosedLat(source.getClosedLat());
 		target.setClosedLon(source.getClosedLon());
@@ -539,6 +558,8 @@ public class TaskFacadeEjb implements TaskFacade {
 					joins.getTravelEntry().get(TravelEntry.EXTERNAL_ID),
 					joins.getTravelEntryPerson().get(Person.FIRST_NAME),
 					joins.getTravelEntryPerson().get(Person.LAST_NAME),
+					joins.getEnvironment().get(Environment.UUID),
+					joins.getEnvironment().get(Environment.ENVIRONMENT_NAME),
 					task.get(Task.TASK_TYPE),
 					task.get(Task.PRIORITY),
 					task.get(Task.DUE_DATE),
@@ -621,6 +642,14 @@ public class TaskFacadeEjb implements TaskFacade {
 							TravelEntryReferenceDto.class,
 							t.getTravelEntry(),
 							taskJurisdictionFlagsDto.getTravelEntryInJurisdiction(),
+							null);
+					}
+
+					if (t.getEnvironment() != null) {
+						emptyValuePseudonymizer.pseudonymizeDto(
+							EnvironmentReferenceDto.class,
+							t.getEnvironment(),
+							taskJurisdictionFlagsDto.getEventInJurisdiction(),
 							null);
 					}
 				}, true);

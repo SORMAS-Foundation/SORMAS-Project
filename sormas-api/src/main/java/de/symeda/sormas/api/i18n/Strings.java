@@ -552,6 +552,7 @@ public interface Strings {
 	String headingEditVaccination = "headingEditVaccination";
 	String headingEditVisit = "headingEditVisit";
 	String headingEnvironmentalExposure = "headingEnvironmentalExposure";
+	String headingEnvironmentJurisdictionUpdated = "headingEnvironmentJurisdictionUpdated";
 	String headingEpiCurve = "headingEpiCurve";
 	String headingEpiDataSourceCaseContacts = "headingEpiDataSourceCaseContacts";
 	String headingErrorReportNotAvailable = "headingErrorReportNotAvailable";
@@ -1149,6 +1150,7 @@ public interface Strings {
 	String messageEnvironmentArchived = "messageEnvironmentArchived";
 	String messageEnvironmentCreated = "messageEnvironmentCreated";
 	String messageEnvironmentDearchived = "messageEnvironmentDearchived";
+	String messageEnvironmentJurisdictionUpdated = "messageEnvironmentJurisdictionUpdated";
 	String messageEnvironmentSampleOutsideJurisdictionDeletionDenied = "messageEnvironmentSampleOutsideJurisdictionDeletionDenied";
 	String messageEnvironmentSaved = "messageEnvironmentSaved";
 	String messageEpiDataHint = "messageEpiDataHint";
@@ -1423,6 +1425,7 @@ public interface Strings {
 	String notificationSmsSent = "notificationSmsSent";
 	String notificationTaskAssociatedCaseLink = "notificationTaskAssociatedCaseLink";
 	String notificationTaskAssociatedContactLink = "notificationTaskAssociatedContactLink";
+	String notificationTaskAssociatedEnvironmentLink = "notificationTaskAssociatedEnvironmentLink";
 	String notificationTaskAssociatedEventLink = "notificationTaskAssociatedEventLink";
 	String notificationTaskAssociatedTravelEntryLink = "notificationTaskAssociatedTravelEntryLink";
 	String notificationTaskDueGeneral = "notificationTaskDueGeneral";

@@ -22,6 +22,7 @@ import java.util.List;
 import android.view.View;
 
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
@@ -62,6 +63,10 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
 
 	public static TaskEditFragment newInstanceFromEvent(Task activityRootData, String eventUuid) {
 		return newInstance(TaskEditFragment.class, TaskNewActivity.buildBundleWithEvent(eventUuid).get(), activityRootData);
+	}
+
+	public static TaskEditFragment newInstanceFromEnvironment(Task activityRootData, String environmentUuid) {
+		return newInstance(TaskEditFragment.class, TaskNewActivity.buildBundleWithEnvironment(environmentUuid).get(), activityRootData);
 	}
 
 	private void setUpControlListeners(FragmentTaskEditLayoutBinding contentBinding) {
@@ -119,6 +124,7 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
 						? record.getContact().getDisease()
 						: record.getEvent() != null ? record.getEvent().getDisease() : null),
 			TaskType.class);
+
 		priorityList = DataUtils.getEnumItems(TaskPriority.class, true);
 		assigneeList = DataUtils.toItems(DatabaseHelper.getUserDao().getAllInJurisdiction(), true);
 	}

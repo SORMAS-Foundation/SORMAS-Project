@@ -156,6 +156,8 @@ public class CaseDirectoryPage {
   public static final By LEAVE_BULK_EDIT_MODE = By.id("actionLeaveBulkEditMode");
   public static final By ALL_RESULTS_CHECKBOX =
       By.xpath("//th[@role='columnheader']//input[@type='checkbox']/../..");
+  public static final By ALL_RESULTS_CHECKBOXES_LIST =
+      By.xpath("//table[@role='grid']//input[@tabindex='0']");
   public static final By NEW_EVENT_CHECKBOX =
       By.xpath("//div[@class='v-select-optiongroup v-widget']/span");
   public static final By FIRST_RESULT_IN_GRID =

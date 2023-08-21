@@ -52,5 +52,4 @@ public class HospitalizationService {
         .description("Additional description.")
         .build();
   }
-
 }

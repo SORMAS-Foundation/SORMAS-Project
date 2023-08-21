@@ -13,6 +13,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.environment.Environment;
+import de.symeda.sormas.app.backend.environment.EnvironmentEditAuthorization;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.environment.EnvironmentSection;
 import de.symeda.sormas.app.environment.edit.EnvironmentEditActivity;
@@ -61,6 +62,9 @@ public class EnvironmentReadActivity extends BaseReadActivity<Environment> {
 		case ENVIRONMENT_INFO:
 			fragment = EnvironmentReadFragment.newInstance(activityRootData);
 			break;
+		case TASKS:
+			fragment = EnvironmentReadTaskListFragment.newInstance(activityRootData);
+			break;
 		default:
 			throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
 		}
@@ -81,8 +85,8 @@ public class EnvironmentReadActivity extends BaseReadActivity<Environment> {
 		final MenuItem editMenu = getEditMenu();
 
 		if (editMenu != null) {
-			if (ConfigProvider.hasUserRight(
-				UserRight.ENVIRONMENT_EDIT) /* && ImmunizationEditAuthorization.isImmunizationEditAllowed(selectedEnvironment) */) {
+			if (ConfigProvider.hasUserRight(UserRight.ENVIRONMENT_EDIT)
+				&& EnvironmentEditAuthorization.isEnvironmentEditAllowed(selectedEnvironment)) {
 				editMenu.setVisible(true);
 			} else {
 				editMenu.setVisible(false);

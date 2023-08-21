@@ -1,8 +1,11 @@
 package de.symeda.sormas.api.environment;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.SensitiveData;
 
+@DependingOnFeatureType(featureType = FeatureType.ENVIRONMENT_MANAGEMENT)
 public class EnvironmentReferenceDto extends ReferenceDto {
 
 	@SensitiveData
