@@ -141,7 +141,7 @@ public class EnvironmentSampleServiceTest extends AbstractBeanTest {
 		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleEmptyLocationEnvFilledLocation), is(true));
 		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleFilledLocationEnvFilledLocation), is(true));
 
-		// surveillance supervisor from different district should have access to all samples
+		// surveillance supervisor from different district should have no access to all samples
 		loginWith(survSupUserOtherRdcf);
 		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleEmptyLocationALL), is(false));
 		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(samploRdcf1EnvEmptyLocation), is(false));
@@ -155,7 +155,7 @@ public class EnvironmentSampleServiceTest extends AbstractBeanTest {
 		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleEmptyLocationEnvFilledLocation), is(true));
 		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleFilledLocationEnvFilledLocation), is(true));
 
-		// community officer from different district should have access to all samples
+		// community officer from different district should have no access to all samples
 		loginWith(commOffUserOtherRdcf);
 		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleEmptyLocationALL), is(false));
 		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(samploRdcf1EnvEmptyLocation), is(false));
