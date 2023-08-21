@@ -3118,7 +3118,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             case 350:
                 currentVersion = 350;
                 getDao(EnvironmentSample.class).executeRaw(
-                        "CREATE TABLE environmentsamples(id integer primary key autoincrement, uuid VARCHAR(36) NOT NULL, changeDate TIMESTAMP NOT NULL, "
+                        "CREATE TABLE environmentSamples(id integer primary key autoincrement, uuid VARCHAR(36) NOT NULL, changeDate TIMESTAMP NOT NULL, "
                                 + "creationDate TIMESTAMP NOT NULL, lastOpenedDate TIMESTAMP, localChangeDate TIMESTAMP NOT NULL, modified INTEGER, snapshot INTEGER, "
                                 + "environment_id BIGINT NOT NULL, reportingUser_id BIGINT NOT NULL, sampleDateTime TIMESTAMP NOT NULL, sampleMaterial varchar(255) NOT NULL, otherSampleMaterial text, "
                                 + "sampleVolume float, fieldSampleId varchar(255), turbidity int, phValue int, sampleTemperature int, chlorineResiduals float, "

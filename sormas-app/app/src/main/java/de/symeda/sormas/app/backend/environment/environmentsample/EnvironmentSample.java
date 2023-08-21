@@ -47,7 +47,7 @@ import de.symeda.sormas.app.util.EnumMapKeySerializer;
 public class EnvironmentSample extends PseudonymizableAdo {
     public static final String I18N_PREFIX = "EnvironmentSample";
 
-    public static final String TABLE_NAME = "environmentsamples";
+    public static final String TABLE_NAME = "environmentSamples";
 
     public static final String REQUESTED_PATHOGEN_TESTS = "requestedPathogenTests";
     public static final String WEATHER_CONDITIONS = "weatherConditions";

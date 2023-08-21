@@ -12579,7 +12579,7 @@ CREATE TABLE IF NOT EXISTS environmentsamples
     dispatched                  boolean default false,
     dispatchdate                timestamp,
     dispatchdetails             text,
-    received                    boolean,
+    received                    boolean default false,
     receivaldate                timestamp,
     labsampleid                 text,
     specimencondition           varchar(255),

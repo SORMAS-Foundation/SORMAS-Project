@@ -109,7 +109,7 @@ public class EnvironmentDtoHelper extends AdoDtoHelper<Environment, EnvironmentD
 	}
 
 	public static EnvironmentReferenceDto toReferenceDto(Environment environment) {
-		if (ado == null) {
+		if (environment == null) {
 			return null;
 		}
 
