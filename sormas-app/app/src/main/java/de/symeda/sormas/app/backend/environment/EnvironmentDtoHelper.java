@@ -4,6 +4,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.environment.EnvironmentDto;
+import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.location.Location;
@@ -105,5 +106,14 @@ public class EnvironmentDtoHelper extends AdoDtoHelper<Environment, EnvironmentD
 	@Override
 	protected long getApproximateJsonSizeInBytes() {
 		return EnvironmentDto.APPROXIMATE_JSON_SIZE_IN_BYTES;
+	}
+
+	public static EnvironmentReferenceDto toReferenceDto(Environment ado) {
+		if (ado == null) {
+			return null;
+		}
+		EnvironmentReferenceDto dto = new EnvironmentReferenceDto(ado.getUuid());
+
+		return dto;
 	}
 }

@@ -1417,6 +1417,7 @@ public interface Strings {
 	String notificationSmsSent = "notificationSmsSent";
 	String notificationTaskAssociatedCaseLink = "notificationTaskAssociatedCaseLink";
 	String notificationTaskAssociatedContactLink = "notificationTaskAssociatedContactLink";
+	String notificationTaskAssociatedEnvironmentLink = "notificationTaskAssociatedEnvironmentLink";
 	String notificationTaskAssociatedEventLink = "notificationTaskAssociatedEventLink";
 	String notificationTaskAssociatedTravelEntryLink = "notificationTaskAssociatedTravelEntryLink";
 	String notificationTaskDueGeneral = "notificationTaskDueGeneral";

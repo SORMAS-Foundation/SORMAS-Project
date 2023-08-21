@@ -36,6 +36,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.environment.Environment;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.user.User;
 
@@ -59,6 +60,7 @@ public class Task extends AbstractDomainObject {
 	public static final String DUE_DATE = "dueDate";
 	public static final String SUGGESTED_START = "suggestedStart";
 	public static final String EVENT = "event";
+	public static final String ENVIRONMENT = "environment";
 	public static final String PERCEIVED_START = "perceivedStart";
 	public static final String STATUS_CHANGE_DATE = "statusChangeDate";
 	public static final String TASK_CONTEXT = "taskContext";
@@ -76,6 +78,9 @@ public class Task extends AbstractDomainObject {
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 4)
 	private Event event;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 4)
+	private Environment environment;
 
 	@Enumerated(EnumType.STRING)
 	private TaskType taskType;
@@ -166,6 +171,14 @@ public class Task extends AbstractDomainObject {
 
 	public void setEvent(Event event) {
 		this.event = event;
+	}
+
+	public Environment getEnvironment() {
+		return environment;
+	}
+
+	public void setEnvironment(Environment environment) {
+		this.environment = environment;
 	}
 
 	public TaskType getTaskType() {

@@ -25,6 +25,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
@@ -54,6 +55,7 @@ public class TaskIndexDto extends PseudonymizableIndexDto {
 	public static final String CONTACT = "contact";
 	public static final String EVENT = "event";
 	public static final String TRAVEL_ENTRY = "travelEntry";
+	public static final String ENVIRONMENT = "environment";
 	public static final String CREATOR_COMMENT = "creatorComment";
 	public static final String CREATOR_USER = "creatorUser";
 	public static final String PRIORITY = "priority";
@@ -87,6 +89,10 @@ public class TaskIndexDto extends PseudonymizableIndexDto {
 	@EmbeddedSensitiveData
 	@Pseudonymizer(EmptyValuePseudonymizer.class)
 	private TravelEntryReferenceDto travelEntry;
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
+	@Pseudonymizer(EmptyValuePseudonymizer.class)
+	private EnvironmentReferenceDto environment;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
@@ -112,14 +118,15 @@ public class TaskIndexDto extends PseudonymizableIndexDto {
 	public TaskIndexDto(String uuid, TaskContext taskContext, String caseUuid, String caseFirstName, String caseLastName,
 			String eventUuid, String eventTitle, Disease eventDisease, String eventDiseaseDetails, EventStatus eventStatus, EventInvestigationStatus eventInvestigationStatus, Date eventDate,
 			String contactUuid, String contactFirstName, String contactLastName, String contactCaseFirstName, String contactCaseLastName,
-			String travelEntryUuid, String travelEntryExternalId, String travelEntryFirstName, String travelEntryLastName,
+			String travelEntryUuid, String travelEntryExternalId, String travelEntryFirstName, String travelEntryLastName, String environmentUuid, String environmentName,
 			TaskType taskType, TaskPriority priority, Date dueDate, Date suggestedStart, TaskStatus taskStatus, Disease disease,
 			String creatorUserUuid, String creatorUserFirstName, String creatorUserLastName, String creatorComment,
 			String assigneeUserUuid, String assigneeUserFirstName, String assigneeUserLastName, String assigneeReply,
 			String assignedByUserUuid, String assignedByUserFirstName, String assignedByUsedLastName,
 			String regionUuid, String regionName, String districtUuid, String districtName, String communityUuid, String communityName,
 			String facilityUuid, String facilityName, String pointOfEntryUuid, String pointOfEntryName,
-			boolean isInJurisdiction, boolean isCaseInJurisdiction, boolean isContactInJurisdiction,  boolean isContactCaseInJurisdiction, boolean isEventInJurisdiction, boolean isTravelEntryInJurisdiction) {
+			boolean isInJurisdiction, boolean isCaseInJurisdiction, boolean isContactInJurisdiction,  boolean isContactCaseInJurisdiction, 
+						boolean isEventInJurisdiction, boolean isTravelEntryInJurisdiction, boolean isEnvironmentInJurisdiction) {
 	//@formatter:on
 
 		super(uuid);
@@ -143,6 +150,10 @@ public class TaskIndexDto extends PseudonymizableIndexDto {
 
 		if (travelEntryUuid != null) {
 			this.travelEntry = new TravelEntryReferenceDto(travelEntryUuid, travelEntryExternalId, travelEntryFirstName, travelEntryLastName);
+		}
+
+		if (environmentUuid != null) {
+			this.environment = new EnvironmentReferenceDto(environmentUuid, environmentName);
 		}
 
 		this.taskType = taskType;
@@ -179,7 +190,8 @@ public class TaskIndexDto extends PseudonymizableIndexDto {
 			isContactInJurisdiction,
 			isContactCaseInJurisdiction,
 			isEventInJurisdiction,
-			isTravelEntryInJurisdiction);
+			isTravelEntryInJurisdiction,
+			isEnvironmentInJurisdiction);
 
 	}
 
@@ -221,6 +233,14 @@ public class TaskIndexDto extends PseudonymizableIndexDto {
 
 	public void setTravelEntry(TravelEntryReferenceDto travelEntry) {
 		this.travelEntry = travelEntry;
+	}
+
+	public EnvironmentReferenceDto getEnvironment() {
+		return environment;
+	}
+
+	public void setEnvironment(EnvironmentReferenceDto environment) {
+		this.environment = environment;
 	}
 
 	public TaskType getTaskType() {
@@ -313,6 +333,8 @@ public class TaskIndexDto extends PseudonymizableIndexDto {
 			return getEvent();
 		case TRAVEL_ENTRY:
 			return getTravelEntry();
+		case ENVIRONMENT:
+			return getEnvironment();
 		case GENERAL:
 			return null;
 		default:

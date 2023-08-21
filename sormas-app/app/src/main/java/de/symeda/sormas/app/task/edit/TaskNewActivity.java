@@ -39,6 +39,7 @@ import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.environment.Environment;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
@@ -59,6 +60,8 @@ public class TaskNewActivity extends BaseEditActivity<Task> {
 	private String contactUuid;
 	private String eventUuid;
 
+	private String environmentUuid;
+
 	public static void startActivity(Context fromActivity) {
 		BaseEditActivity.startActivity(fromActivity, TaskNewActivity.class, buildBundle());
 	}
@@ -73,6 +76,10 @@ public class TaskNewActivity extends BaseEditActivity<Task> {
 
 	public static void startActivityFromEvent(Context fromActivity, String eventUuid) {
 		BaseEditActivity.startActivity(fromActivity, TaskNewActivity.class, buildBundleWithEvent(eventUuid));
+	}
+
+	public static void startActivityFromEnvironment(Context fromActivity, String environmentUuid) {
+		BaseEditActivity.startActivity(fromActivity, TaskNewActivity.class, buildBundleWithEnvironment(environmentUuid));
 	}
 
 	public static Bundler buildBundle() {
@@ -91,6 +98,10 @@ public class TaskNewActivity extends BaseEditActivity<Task> {
 		return BaseEditActivity.buildBundle(null).setEventUuid(eventUuid);
 	}
 
+	public static Bundler buildBundleWithEnvironment(String environmentUuid) {
+		return BaseEditActivity.buildBundle(null).setEnvironmentUuid(environmentUuid);
+	}
+
 	@Override
 	protected void onCreateInner(Bundle savedInstanceState) {
 		super.onCreateInner(savedInstanceState);
@@ -98,6 +109,7 @@ public class TaskNewActivity extends BaseEditActivity<Task> {
 		caseUuid = bundler.getCaseUuid();
 		contactUuid = bundler.getContactUuid();
 		eventUuid = bundler.getEventUuid();
+		environmentUuid = bundler.getEnvironmentUuid();
 	}
 
 	@Override
@@ -107,6 +119,7 @@ public class TaskNewActivity extends BaseEditActivity<Task> {
 		bundler.setCaseUuid(caseUuid);
 		bundler.setContactUuid(contactUuid);
 		bundler.setEventUuid(eventUuid);
+		bundler.setEnvironmentUuid(environmentUuid);
 	}
 
 	@Override
@@ -132,6 +145,9 @@ public class TaskNewActivity extends BaseEditActivity<Task> {
 		} else if (!DataHelper.isNullOrEmpty(eventUuid)) {
 			Event _event = DatabaseHelper.getEventDao().queryUuid(eventUuid);
 			_task = DatabaseHelper.getTaskDao().build(_event);
+		} else if (!DataHelper.isNullOrEmpty(environmentUuid)) {
+			Environment _environment = DatabaseHelper.getEnvironmentDao().queryUuid(environmentUuid);
+			_task = DatabaseHelper.getTaskDao().build(_environment);
 		} else {
 			_task = DatabaseHelper.getTaskDao().build();
 		}
@@ -156,6 +172,8 @@ public class TaskNewActivity extends BaseEditActivity<Task> {
 			fragment = TaskEditFragment.newInstanceFromContact(activityRootData, contactUuid);
 		} else if (eventUuid != null) {
 			fragment = TaskEditFragment.newInstanceFromEvent(activityRootData, eventUuid);
+		} else if (environmentUuid != null) {
+			fragment = TaskEditFragment.newInstanceFromEnvironment(activityRootData, environmentUuid);
 		} else {
 			fragment = TaskEditFragment.newInstance(activityRootData);
 		}

@@ -172,6 +172,7 @@
     <string name="caption_epi_week">Epi Week</string>
     <string name="caption_report">Report</string>
     <string name="caption_environment_information">Environment Information</string>
+    <string name="caption_environment_tasks">Environment Tasks</string>
     <string name="caption_event_description">Description</string>
     <string name="caption_event_location">Location</string>
     <string name="caption_event_period">Date of event</string>

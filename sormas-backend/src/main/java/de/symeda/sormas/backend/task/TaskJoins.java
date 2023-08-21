@@ -26,6 +26,8 @@ import de.symeda.sormas.backend.caze.CaseJoins;
 import de.symeda.sormas.backend.common.QueryJoins;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactJoins;
+import de.symeda.sormas.backend.environment.Environment;
+import de.symeda.sormas.backend.environment.EnvironmentJoins;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventJoins;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -48,12 +50,14 @@ public class TaskJoins extends QueryJoins<Task> {
 	private Join<Task, User> assignee;
 	private Join<Task, User> assignedBy;
 	private Join<Task, TravelEntry> travelEntry;
+	private Join<Task, Environment> environment;
 	private Join<Task, User> taskObservers;
 
 	private CaseJoins caseJoins;
 	private ContactJoins contactJoins;
 	private EventJoins eventJoins;
 	private TravelEntryJoins travelEntryJoins;
+	private EnvironmentJoins environmentJoins;
 
 	public TaskJoins(From<?, Task> root) {
 		super(root);
@@ -117,6 +121,46 @@ public class TaskJoins extends QueryJoins<Task> {
 
 	public Join<TravelEntry, Person> getTravelEntryPerson() {
 		return getTravelEntryJoins().getPerson();
+	}
+
+	public Join<Task, Environment> getEnvironment() {
+		return getOrCreate(environment, Task.ENVIRONMENT, JoinType.LEFT, this::setEnvironment);
+	}
+
+	public void setEnvironment(Join<Task, Environment> environment) {
+		this.environment = environment;
+	}
+
+	public EnvironmentJoins getEnvironmentJoins() {
+		return getOrCreate(environmentJoins, () -> new EnvironmentJoins(getEnvironment()), this::setEnvironmentJoins);
+	}
+
+	public void setEnvironmentJoins(EnvironmentJoins environmentJoins) {
+		this.environmentJoins = environmentJoins;
+	}
+
+	public Join<Environment, User> getEnvironmentReportingUser() {
+		return getEnvironmentJoins().getReportingUser();
+	}
+
+	public Join<Environment, User> getEnvironmentResponsibleUser() {
+		return getEnvironmentJoins().getResponsibleUser();
+	}
+
+	public Join<Environment, Location> getEnvironmentLocation() {
+		return getEnvironmentJoins().getLocation();
+	}
+
+	public Join<Location, Region> getEnvironmentRegion() {
+		return getEnvironmentJoins().getRegion();
+	}
+
+	public Join<Location, District> getEnvironmentDistrict() {
+		return getEnvironmentJoins().getDistrict();
+	}
+
+	public Join<Location, Community> getEnvironmentCommunity() {
+		return getEnvironmentJoins().getCommunity();
 	}
 
 	public Join<Event, User> getEventReportingUser() {
