@@ -462,6 +462,7 @@ public interface Strings {
 	String headingContactsInQuarantine = "headingContactsInQuarantine";
 	String headingContactsLostToFollowUp = "headingContactsLostToFollowUp";
 	String headingContactsNotDeleted = "headingContactsNotDeleted";
+	String headingContactsNotLinked = "headingContactsNotLinked";
 	String headingContactsNotRestored = "headingContactsNotRestored";
 	String headingContactsPerCase = "headingContactsPerCase";
 	String headingContactsPlacedInQuarantine = "headingContactsPlacedInQuarantine";
@@ -1130,6 +1131,7 @@ public interface Strings {
 	String messageCountContactsNotDeleted = "messageCountContactsNotDeleted";
 	String messageCountContactsNotDeletedAccessDeniedReason = "messageCountContactsNotDeletedAccessDeniedReason";
 	String messageCountContactsNotDeletedSormasToSormasReason = "messageCountContactsNotDeletedSormasToSormasReason";
+	String messageCountContactsNotLinkableAccessDeniedReason = "messageCountContactsNotLinkableAccessDeniedReason";
 	String messageCountContactsNotRestored = "messageCountContactsNotRestored";
 	String messageCountEntitiesNotArchived = "messageCountEntitiesNotArchived";
 	String messageCountEntitiesNotArchivedAccessDeniedReason = "messageCountEntitiesNotArchivedAccessDeniedReason";

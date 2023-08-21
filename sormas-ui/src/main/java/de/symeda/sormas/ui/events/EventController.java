@@ -352,47 +352,41 @@ public class EventController {
 
 		UserReferenceDto currentUser = UserProvider.getCurrent().getUserReference();
 
-		//TODO: check newly added message: headingNoProcessedEntities, countEntriesNotProcessedExternalReasonProperty,  countEntriesNotProcessedSormastoSormasReasonProperty, 
-		//countEntriesNotProcessedAccessDeniedReasonProperty, infoBulkProcessFinishedWithSkipsProperty
-		//messageSomeContactsLinkedToEvent = Some of the selected contacts have been linked to the selected event.
 		new BulkOperationHandler<ContactDto>(
 			Strings.messageAllContactsLinkedToEvent,
 			null,
 			Strings.headingSomeContactsAlreadyInEvent,
-			null,
+			Strings.headingContactsNotLinked,
 			Strings.messageCountContactsAlreadyInEvent,
 			null,
 			null,
-			null,
+			Strings.messageCountContactsNotLinkableAccessDeniedReason,
 			Strings.messageAllContactsAlreadyInEvent,
-			null,
-			null).doBulkOperation(batch -> {
-				//TODO: check if contacts or events should be passed here
-				List<ProcessedEntity> processedEvents = new ArrayList<>();
-
+			Strings.infoBulkProcessFinishedWithSkipsOutsideJurisdictionOrNotEligible,
+			Strings.infoBulkProcessFinishedWithoutSuccess).doBulkOperation(batch -> {
+				List<ProcessedEntity> processedContacts = new ArrayList<>();
 				batch.forEach(contactDataDto -> {
 					EventParticipantDto ep =
 						EventParticipantDto.buildFromPerson(personByUuid.get(contactDataDto.getPerson().getUuid()), eventReferenceDto, currentUser);
 					try {
 						FacadeProvider.getEventParticipantFacade().save(ep);
-						processedEvents.add(new ProcessedEntity(eventReferenceDto.getUuid(), ProcessedEntityStatus.SUCCESS));
+						processedContacts.add(new ProcessedEntity(contactDataDto.getUuid(), ProcessedEntityStatus.SUCCESS));
 					} catch (AccessDeniedException e) {
-						processedEvents.add(new ProcessedEntity(eventReferenceDto.getUuid(), ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+						processedContacts.add(new ProcessedEntity(contactDataDto.getUuid(), ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
 						logger.error(
-							"The event participant of the event with uuid {} could not be linked due to an AccessDeniedException",
-							eventReferenceDto.getUuid(),
+							"The event participant for contact with uuid {} could not be saved due to an AccessDeniedException",
+							contactDataDto.getUuid(),
 							e);
 					} catch (Exception e) {
-						processedEvents.add(new ProcessedEntity(eventReferenceDto.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+						processedContacts.add(new ProcessedEntity(contactDataDto.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
 						logger.error(
-							"The event participant of the event with uuid {} could not be linked due to an Exception",
-							eventReferenceDto.getUuid(),
+							"The event participant for contact with uuid {} could not be saved due to an Exception",
+							contactDataDto.getUuid(),
 							e);
 					}
-
 				});
 
-				return processedEvents;
+				return processedContacts;
 			}, new ArrayList<>(contacts), new ArrayList<>(contactByPersonUuid.values()), alreadyLinkedContacts, callback);
 	}
 
