@@ -15841,6 +15841,19 @@
         },
         "required" : [ "environmentMedia", "environmentName", "investigationStatus", "reportDate", "reportingUser" ]
       },
+      "EnvironmentReferenceDto" : {
+        "type" : "object",
+        "properties" : {
+          "caption" : {
+            "type" : "string"
+          },
+          "uuid" : {
+            "type" : "string",
+            "pattern" : "^[0-9a-zA-Z-]*$"
+          }
+        },
+        "required" : [ "uuid" ]
+      },
       "EpiDataDto" : {
         "type" : "object",
         "properties" : {
@@ -23528,7 +23541,7 @@
         "properties" : {
           "taskContext" : {
             "type" : "string",
-            "enum" : [ "CASE", "CONTACT", "EVENT", "GENERAL", "TRAVEL_ENTRY" ]
+            "enum" : [ "CASE", "CONTACT", "EVENT", "GENERAL", "TRAVEL_ENTRY", "ENVIRONMENT" ]
           },
           "uuid" : {
             "type" : "string"
@@ -23574,6 +23587,9 @@
             "type" : "string",
             "format" : "date-time"
           },
+          "environment" : {
+            "$ref" : "#/components/schemas/EnvironmentReferenceDto"
+          },
           "event" : {
             "$ref" : "#/components/schemas/EventReferenceDto"
           },
@@ -23611,7 +23627,7 @@
           },
           "taskContext" : {
             "type" : "string",
-            "enum" : [ "CASE", "CONTACT", "EVENT", "GENERAL", "TRAVEL_ENTRY" ]
+            "enum" : [ "CASE", "CONTACT", "EVENT", "GENERAL", "TRAVEL_ENTRY", "ENVIRONMENT" ]
           },
           "taskStatus" : {
             "type" : "string",
@@ -23619,7 +23635,7 @@
           },
           "taskType" : {
             "type" : "string",
-            "enum" : [ "ACTIVE_SEARCH_FOR_OTHER_CASES", "CASE_ISOLATION", "CASE_INVESTIGATION", "CASE_MANAGEMENT", "CASE_BURIAL", "CONTACT_TRACING", "CONTACT_MANAGEMENT", "SOURCECASE_TRACING", "SAMPLE_COLLECTION", "CONTACT_INVESTIGATION", "CONTACT_FOLLOW_UP", "ANIMAL_TESTING", "EVENT_INVESTIGATION", "EVENT_CONTINUE_INVESTIGATION", "EVENT_REQUEST_ADDITIONAL_INFORMATION", "TREATMENT_CENTER_ESTABLISHMENT", "ENVIRONMENTAL_HEALTH_ACTIVITIES", "DECONTAMINATION_DISINFECTION_ACTIVITIES", "QUARANTINE_PLACE", "QUARANTINE_MANAGEMENT", "QUARANTINE_ORDER_SEND", "VACCINATION_ACTIVITIES", "ANIMAL_DEPOPULATION", "OTHER", "DAILY_REPORT_GENERATION", "SURVEILLANCE_REPORT_GENERATION", "WEEKLY_REPORT_GENERATION" ]
+            "enum" : [ "ACTIVE_SEARCH_FOR_OTHER_CASES", "CASE_ISOLATION", "CASE_INVESTIGATION", "CASE_MANAGEMENT", "CASE_BURIAL", "CONTACT_TRACING", "CONTACT_MANAGEMENT", "SOURCECASE_TRACING", "SAMPLE_COLLECTION", "CONTACT_INVESTIGATION", "CONTACT_FOLLOW_UP", "ANIMAL_TESTING", "EVENT_INVESTIGATION", "EVENT_CONTINUE_INVESTIGATION", "EVENT_REQUEST_ADDITIONAL_INFORMATION", "TREATMENT_CENTER_ESTABLISHMENT", "ENVIRONMENTAL_HEALTH_ACTIVITIES", "DECONTAMINATION_DISINFECTION_ACTIVITIES", "QUARANTINE_PLACE", "QUARANTINE_MANAGEMENT", "QUARANTINE_ORDER_SEND", "VACCINATION_ACTIVITIES", "ANIMAL_DEPOPULATION", "OTHER", "DAILY_REPORT_GENERATION", "SURVEILLANCE_REPORT_GENERATION", "WEEKLY_REPORT_GENERATION", "ENVIRONMENT_INVESTIGATION" ]
           },
           "travelEntry" : {
             "$ref" : "#/components/schemas/TravelEntryReferenceDto"
@@ -23685,6 +23701,9 @@
             "type" : "string",
             "format" : "date-time"
           },
+          "environment" : {
+            "$ref" : "#/components/schemas/EnvironmentReferenceDto"
+          },
           "event" : {
             "$ref" : "#/components/schemas/EventReferenceDto"
           },
@@ -23713,7 +23732,7 @@
           },
           "taskContext" : {
             "type" : "string",
-            "enum" : [ "CASE", "CONTACT", "EVENT", "GENERAL", "TRAVEL_ENTRY" ]
+            "enum" : [ "CASE", "CONTACT", "EVENT", "GENERAL", "TRAVEL_ENTRY", "ENVIRONMENT" ]
           },
           "taskStatus" : {
             "type" : "string",
@@ -23721,7 +23740,7 @@
           },
           "taskType" : {
             "type" : "string",
-            "enum" : [ "ACTIVE_SEARCH_FOR_OTHER_CASES", "CASE_ISOLATION", "CASE_INVESTIGATION", "CASE_MANAGEMENT", "CASE_BURIAL", "CONTACT_TRACING", "CONTACT_MANAGEMENT", "SOURCECASE_TRACING", "SAMPLE_COLLECTION", "CONTACT_INVESTIGATION", "CONTACT_FOLLOW_UP", "ANIMAL_TESTING", "EVENT_INVESTIGATION", "EVENT_CONTINUE_INVESTIGATION", "EVENT_REQUEST_ADDITIONAL_INFORMATION", "TREATMENT_CENTER_ESTABLISHMENT", "ENVIRONMENTAL_HEALTH_ACTIVITIES", "DECONTAMINATION_DISINFECTION_ACTIVITIES", "QUARANTINE_PLACE", "QUARANTINE_MANAGEMENT", "QUARANTINE_ORDER_SEND", "VACCINATION_ACTIVITIES", "ANIMAL_DEPOPULATION", "OTHER", "DAILY_REPORT_GENERATION", "SURVEILLANCE_REPORT_GENERATION", "WEEKLY_REPORT_GENERATION" ]
+            "enum" : [ "ACTIVE_SEARCH_FOR_OTHER_CASES", "CASE_ISOLATION", "CASE_INVESTIGATION", "CASE_MANAGEMENT", "CASE_BURIAL", "CONTACT_TRACING", "CONTACT_MANAGEMENT", "SOURCECASE_TRACING", "SAMPLE_COLLECTION", "CONTACT_INVESTIGATION", "CONTACT_FOLLOW_UP", "ANIMAL_TESTING", "EVENT_INVESTIGATION", "EVENT_CONTINUE_INVESTIGATION", "EVENT_REQUEST_ADDITIONAL_INFORMATION", "TREATMENT_CENTER_ESTABLISHMENT", "ENVIRONMENTAL_HEALTH_ACTIVITIES", "DECONTAMINATION_DISINFECTION_ACTIVITIES", "QUARANTINE_PLACE", "QUARANTINE_MANAGEMENT", "QUARANTINE_ORDER_SEND", "VACCINATION_ACTIVITIES", "ANIMAL_DEPOPULATION", "OTHER", "DAILY_REPORT_GENERATION", "SURVEILLANCE_REPORT_GENERATION", "WEEKLY_REPORT_GENERATION", "ENVIRONMENT_INVESTIGATION" ]
           },
           "travelEntry" : {
             "$ref" : "#/components/schemas/TravelEntryReferenceDto"
@@ -23779,6 +23798,9 @@
             "type" : "string",
             "format" : "date-time"
           },
+          "environment" : {
+            "$ref" : "#/components/schemas/EnvironmentReferenceDto"
+          },
           "event" : {
             "$ref" : "#/components/schemas/EventReferenceDto"
           },
@@ -23807,7 +23829,7 @@
           },
           "taskContext" : {
             "type" : "string",
-            "enum" : [ "CASE", "CONTACT", "EVENT", "GENERAL", "TRAVEL_ENTRY" ]
+            "enum" : [ "CASE", "CONTACT", "EVENT", "GENERAL", "TRAVEL_ENTRY", "ENVIRONMENT" ]
           },
           "taskJurisdictionFlagsDto" : {
             "$ref" : "#/components/schemas/TaskJurisdictionFlagsDto"
@@ -23818,7 +23840,7 @@
           },
           "taskType" : {
             "type" : "string",
-            "enum" : [ "ACTIVE_SEARCH_FOR_OTHER_CASES", "CASE_ISOLATION", "CASE_INVESTIGATION", "CASE_MANAGEMENT", "CASE_BURIAL", "CONTACT_TRACING", "CONTACT_MANAGEMENT", "SOURCECASE_TRACING", "SAMPLE_COLLECTION", "CONTACT_INVESTIGATION", "CONTACT_FOLLOW_UP", "ANIMAL_TESTING", "EVENT_INVESTIGATION", "EVENT_CONTINUE_INVESTIGATION", "EVENT_REQUEST_ADDITIONAL_INFORMATION", "TREATMENT_CENTER_ESTABLISHMENT", "ENVIRONMENTAL_HEALTH_ACTIVITIES", "DECONTAMINATION_DISINFECTION_ACTIVITIES", "QUARANTINE_PLACE", "QUARANTINE_MANAGEMENT", "QUARANTINE_ORDER_SEND", "VACCINATION_ACTIVITIES", "ANIMAL_DEPOPULATION", "OTHER", "DAILY_REPORT_GENERATION", "SURVEILLANCE_REPORT_GENERATION", "WEEKLY_REPORT_GENERATION" ]
+            "enum" : [ "ACTIVE_SEARCH_FOR_OTHER_CASES", "CASE_ISOLATION", "CASE_INVESTIGATION", "CASE_MANAGEMENT", "CASE_BURIAL", "CONTACT_TRACING", "CONTACT_MANAGEMENT", "SOURCECASE_TRACING", "SAMPLE_COLLECTION", "CONTACT_INVESTIGATION", "CONTACT_FOLLOW_UP", "ANIMAL_TESTING", "EVENT_INVESTIGATION", "EVENT_CONTINUE_INVESTIGATION", "EVENT_REQUEST_ADDITIONAL_INFORMATION", "TREATMENT_CENTER_ESTABLISHMENT", "ENVIRONMENTAL_HEALTH_ACTIVITIES", "DECONTAMINATION_DISINFECTION_ACTIVITIES", "QUARANTINE_PLACE", "QUARANTINE_MANAGEMENT", "QUARANTINE_ORDER_SEND", "VACCINATION_ACTIVITIES", "ANIMAL_DEPOPULATION", "OTHER", "DAILY_REPORT_GENERATION", "SURVEILLANCE_REPORT_GENERATION", "WEEKLY_REPORT_GENERATION", "ENVIRONMENT_INVESTIGATION" ]
           },
           "travelEntry" : {
             "$ref" : "#/components/schemas/TravelEntryReferenceDto"
@@ -23841,6 +23863,9 @@
             "type" : "boolean"
           },
           "contactInJurisdiction" : {
+            "type" : "boolean"
+          },
+          "environmentInJurisdiction" : {
             "type" : "boolean"
           },
           "eventInJurisdiction" : {

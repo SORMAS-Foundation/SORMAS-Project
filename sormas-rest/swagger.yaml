@@ -13946,6 +13946,16 @@ components:
       - investigationStatus
       - reportDate
       - reportingUser
+    EnvironmentReferenceDto:
+      type: object
+      properties:
+        caption:
+          type: string
+        uuid:
+          type: string
+          pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     EpiDataDto:
       type: object
       properties:
@@ -23530,6 +23540,7 @@ components:
           - EVENT
           - GENERAL
           - TRAVEL_ENTRY
+          - ENVIRONMENT
         uuid:
           type: string
     TaskCriteria:
@@ -23562,6 +23573,8 @@ components:
         dueDateTo:
           type: string
           format: date-time
+        environment:
+          $ref: '#/components/schemas/EnvironmentReferenceDto'
         event:
           $ref: '#/components/schemas/EventReferenceDto'
         excludeAssigneeUser:
@@ -23599,6 +23612,7 @@ components:
           - EVENT
           - GENERAL
           - TRAVEL_ENTRY
+          - ENVIRONMENT
         taskStatus:
           type: string
           enum:
@@ -23637,6 +23651,7 @@ components:
           - DAILY_REPORT_GENERATION
           - SURVEILLANCE_REPORT_GENERATION
           - WEEKLY_REPORT_GENERATION
+          - ENVIRONMENT_INVESTIGATION
         travelEntry:
           $ref: '#/components/schemas/TravelEntryReferenceDto'
     TaskDto:
@@ -23684,6 +23699,8 @@ components:
         dueDate:
           type: string
           format: date-time
+        environment:
+          $ref: '#/components/schemas/EnvironmentReferenceDto'
         event:
           $ref: '#/components/schemas/EventReferenceDto'
         observerUsers:
@@ -23714,6 +23731,7 @@ components:
           - EVENT
           - GENERAL
           - TRAVEL_ENTRY
+          - ENVIRONMENT
         taskStatus:
           type: string
           enum:
@@ -23752,6 +23770,7 @@ components:
           - DAILY_REPORT_GENERATION
           - SURVEILLANCE_REPORT_GENERATION
           - WEEKLY_REPORT_GENERATION
+          - ENVIRONMENT_INVESTIGATION
         travelEntry:
           $ref: '#/components/schemas/TravelEntryReferenceDto'
         uuid:
@@ -23856,6 +23875,8 @@ components:
         dueDate:
           type: string
           format: date-time
+        environment:
+          $ref: '#/components/schemas/EnvironmentReferenceDto'
         event:
           $ref: '#/components/schemas/EventReferenceDto'
         facility:
@@ -23885,6 +23906,7 @@ components:
           - EVENT
           - GENERAL
           - TRAVEL_ENTRY
+          - ENVIRONMENT
         taskJurisdictionFlagsDto:
           $ref: '#/components/schemas/TaskJurisdictionFlagsDto'
         taskStatus:
@@ -23925,6 +23947,7 @@ components:
           - DAILY_REPORT_GENERATION
           - SURVEILLANCE_REPORT_GENERATION
           - WEEKLY_REPORT_GENERATION
+          - ENVIRONMENT_INVESTIGATION
         travelEntry:
           $ref: '#/components/schemas/TravelEntryReferenceDto'
         uuid:
@@ -23940,6 +23963,8 @@ components:
         contactCaseInJurisdiction:
           type: boolean
         contactInJurisdiction:
+          type: boolean
+        environmentInJurisdiction:
           type: boolean
         eventInJurisdiction:
           type: boolean
