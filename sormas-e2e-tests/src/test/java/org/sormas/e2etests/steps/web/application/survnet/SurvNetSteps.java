@@ -1,27 +1,5 @@
 package org.sormas.e2etests.steps.web.application.survnet;
 
-import cucumber.api.java8.En;
-import lombok.extern.slf4j.Slf4j;
-import org.jdom2.Attribute;
-import org.jdom2.DataConversionException;
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.Namespace;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.helpers.parsers.XMLParser;
-import org.sormas.e2etests.pages.application.NavBarPage;
-import org.sormas.e2etests.steps.web.application.cases.CreateNewCaseSteps;
-import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
-import org.sormas.e2etests.steps.web.application.persons.EditPersonSteps;
-import org.testng.asserts.SoftAssert;
-
-import javax.inject.Inject;
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.sormas.e2etests.helpers.SchemaValidator.XMLSchemaValidator.validateXMLSchema;
 import static org.sormas.e2etests.helpers.comparison.XMLComparison.compareXMLFiles;
 import static org.sormas.e2etests.helpers.comparison.XMLComparison.extractDiffNodes;
