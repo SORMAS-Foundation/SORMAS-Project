@@ -15,15 +15,6 @@
 
 package de.symeda.sormas.app.backend.user;
 
-import android.util.Log;
-
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.stmt.DeleteBuilder;
-import com.j256.ormlite.stmt.QueryBuilder;
-import com.j256.ormlite.stmt.Where;
-
-import org.apache.commons.collections4.CollectionUtils;
-
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,6 +22,15 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
+
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.DeleteBuilder;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
+
+import android.util.Log;
 
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRight;
@@ -208,14 +208,14 @@ public class UserDao extends AbstractAdoDao<User> {
 		return getRandomUser(getUsersWithJurisdictionLevel(JurisdictionLevel.DISTRICT, null, district, Arrays.asList(userRights)));
 	}
 
-	private List<User> getUsersWithJurisdictionLevel(
+	public List<User> getUsersWithJurisdictionLevel(
 		JurisdictionLevel jurisdictionLevel,
 		Region region,
 		District district,
 		Collection<UserRight> userRights) {
 
 		try {
-			QueryBuilder<User, Long> builder = queryBuilder();
+			QueryBuilder<User, Long> builder = queryBuilder().distinct();
 			Where<User, Long> where = builder.where();
 
 			where.eq(User.JURISDICTION_LEVEL, jurisdictionLevel);

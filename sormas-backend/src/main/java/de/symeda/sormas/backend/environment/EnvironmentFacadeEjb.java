@@ -34,6 +34,7 @@ import de.symeda.sormas.api.environment.EnvironmentFacade;
 import de.symeda.sormas.api.environment.EnvironmentIndexDto;
 import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
@@ -51,6 +52,7 @@ import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
@@ -147,13 +149,17 @@ public class EnvironmentFacadeEjb
 				location.get(Location.POSTAL_CODE),
 				location.get(Location.CITY),
 				environment.get(Environment.REPORT_DATE),
-				environment.get(Environment.INVESTIGATION_STATUS));
+				environment.get(Environment.INVESTIGATION_STATUS),
+				JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(environmentQueryContext)));
 
 			cq.where(environment.get(Environment.ID).in(batchedIds));
 			sortBy(sortProperties, environmentQueryContext);
 
 			environments.addAll(QueryHelper.getResultList(em, cq, null, null));
 		});
+
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		pseudonymizer.pseudonymizeDtoCollection(EnvironmentIndexDto.class, environments, EnvironmentIndexDto::isInJurisdiction, null);
 
 		return environments;
 	}
@@ -237,7 +243,7 @@ public class EnvironmentFacadeEjb
 
 	@Override
 	public void validate(EnvironmentDto dto) throws ValidationRuntimeException {
-
+		// no validations yet
 	}
 
 	@Override

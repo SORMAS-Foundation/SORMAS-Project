@@ -248,6 +248,7 @@ Feature: Contacts end to end tests
     And I click on New Event option in Link to Event Form
     And I click on SAVE button in Link Event to group form
     And I create a new event with status CLUSTER
+    And I click on success popup message for contact that linked to selected event
     And I navigate to the last created Event page via URL
     And I check that number of displayed Event Participants is 1
 
@@ -271,6 +272,7 @@ Feature: Contacts end to end tests
     And I fill Event Id filter in Link to Event form with last created via API Event uuid
     And I click first result in grid on Link to Event form
     And I click on SAVE button in Link Event to group form
+    And I click on success popup message for contact that linked to selected event
     And I navigate to the last created through API Event page via URL
     And I check that number of displayed Event Participants is 1
 

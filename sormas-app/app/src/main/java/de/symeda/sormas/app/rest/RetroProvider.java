@@ -15,13 +15,10 @@
 
 package de.symeda.sormas.app.rest;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkCapabilities;
-import android.net.NetworkInfo;
-import android.util.Log;
-
-import androidx.fragment.app.FragmentActivity;
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -30,10 +27,13 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializer;
 
-import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
+import android.util.Log;
+
+import androidx.fragment.app.FragmentActivity;
 
 import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationAllSymptomsCriteriaDto;
@@ -52,6 +52,7 @@ import de.symeda.sormas.api.caze.classification.ClassificationPersonAgeBetweenYe
 import de.symeda.sormas.api.caze.classification.ClassificationSymptomsCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationVaccinationDateNotInStartDateRangeDto;
 import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteriaDto;
+import de.symeda.sormas.api.environment.WaterUse;
 import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
@@ -67,6 +68,7 @@ import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.util.AppUpdateController;
 import de.symeda.sormas.app.util.BiConsumer;
 import de.symeda.sormas.app.util.Consumer;
+import de.symeda.sormas.app.util.WaterUseSerializer;
 import okhttp3.Credentials;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -230,7 +232,11 @@ public final class RetroProvider {
 				return JsonNull.INSTANCE;
 			}
 			return new JsonPrimitive(src.getTime());
-		}).registerTypeAdapterFactory(classificationCriteriaFactory).create();
+		})
+			.enableComplexMapKeySerialization()
+			.registerTypeAdapter(WaterUse.class, new WaterUseSerializer())
+			.registerTypeAdapterFactory(classificationCriteriaFactory)
+			.create();
 	}
 
 	public static int getLastConnectionId() {

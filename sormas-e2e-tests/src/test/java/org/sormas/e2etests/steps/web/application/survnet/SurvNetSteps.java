@@ -1,6 +1,34 @@
 package org.sormas.e2etests.steps.web.application.survnet;
 
+import static org.sormas.e2etests.helpers.SchemaValidator.XMLSchemaValidator.validateXMLSchema;
+import static org.sormas.e2etests.helpers.comparison.XMLComparison.compareXMLFiles;
+import static org.sormas.e2etests.helpers.comparison.XMLComparison.extractDiffNodes;
+import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_VERSION_LINK;
+import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSteps.CovidGenomeCopyNumber;
+import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSteps.CurrentCovidInfectionDoNotMatchValue;
+import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSteps.CurrentCovidInfectionIsKnownValue;
+import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSteps.IndividualTestedPositiveForCovidByPCR;
+import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSteps.PersonHadAnAsymptomaticCovidInfection;
+import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSteps.PersonHasOvercomeAcuteRespiratory;
+import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSteps.PersonTestedConclusivelyNegativeByPCR;
+import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSteps.PreviousCovidInfectionIsKnownValue;
+import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSteps.TheLastPositivePCRDetectionWasMoreThan3MonthsAgo;
+import static org.sormas.e2etests.steps.web.application.cases.CreateNewCaseSteps.survnetCase;
+import static org.sormas.e2etests.steps.web.application.cases.EditCaseSteps.externalUUID;
+import static org.sormas.e2etests.steps.web.application.cases.HospitalizationTabSteps.*;
+import static org.sormas.e2etests.steps.web.application.cases.PreviousHospitalizationSteps.previousHospitalization;
+import static org.sormas.e2etests.steps.web.application.cases.PreviousHospitalizationSteps.reasonForPreviousHospitalization;
+import static org.sormas.e2etests.steps.web.application.cases.SymptomsTabSteps.symptoms;
+import static org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps.randomVaccinationName;
+import static org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps.vaccination;
+
 import cucumber.api.java8.En;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
@@ -14,35 +42,6 @@ import org.sormas.e2etests.steps.web.application.cases.CreateNewCaseSteps;
 import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
 import org.sormas.e2etests.steps.web.application.persons.EditPersonSteps;
 import org.testng.asserts.SoftAssert;
-
-import javax.inject.Inject;
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.sormas.e2etests.helpers.SchemaValidator.XMLSchemaValidator.validateXMLSchema;
-import static org.sormas.e2etests.helpers.comparison.XMLComparison.compareXMLFiles;
-import static org.sormas.e2etests.helpers.comparison.XMLComparison.extractDiffNodes;
-import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_VERSION_LINK;
-import static org.sormas.e2etests.steps.web.application.cases.CreateNewCaseSteps.survnetCase;
-import static org.sormas.e2etests.steps.web.application.cases.EditCaseSteps.externalUUID;
-import static org.sormas.e2etests.steps.web.application.cases.SymptomsTabSteps.symptoms;
-import static org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps.randomVaccinationName;
-import static org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps.vaccination;
-import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSteps.CovidGenomeCopyNumber;
-import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSteps.CurrentCovidInfectionDoNotMatchValue;
-import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSteps.CurrentCovidInfectionIsKnownValue;
-import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSteps.IndividualTestedPositiveForCovidByPCR;
-import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSteps.PersonHadAnAsymptomaticCovidInfection;
-import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSteps.PersonHasOvercomeAcuteRespiratory;
-import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSteps.PersonTestedConclusivelyNegativeByPCR;
-import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSteps.PreviousCovidInfectionIsKnownValue;
-import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSteps.TheLastPositivePCRDetectionWasMoreThan3MonthsAgo;
-import static org.sormas.e2etests.steps.web.application.cases.HospitalizationTabSteps.*;
-import static org.sormas.e2etests.steps.web.application.cases.PreviousHospitalizationSteps.previousHospitalization;
-import static org.sormas.e2etests.steps.web.application.cases.PreviousHospitalizationSteps.reasonForPreviousHospitalization;
 
 @Slf4j
 public class SurvNetSteps implements En {
@@ -95,44 +94,43 @@ public class SurvNetSteps implements En {
         });
 
     Then(
-            "I check if {string} for Current Hospitalization in SORMAS generated XML file is correct",
-            (String typeOfDate) -> {
-              switch (typeOfDate) {
-                case "date of visit or admission":
-                  LocalDate expectedStayFromDate = hospitalization.getDateOfVisitOrAdmission();
-                  softly.assertEquals(
-                          getValueFromLowChildrenDateSpecificFieldByName(singleXmlFile, "StayFrom"),
-                          expectedStayFromDate,
-                          "Date of visit or admission is incorrect!");
-                  softly.assertAll();
-                  break;
-                case "date of discharge or transfer":
-                  LocalDate expectedStayUntilDate =
-                          hospitalization.getDateOfDischargeOrTransfer();
-                  softly.assertEquals(
-                          getValueFromLowChildrenDateSpecificFieldByName(singleXmlFile, "StayUntil"),
-                          expectedStayUntilDate,
-                          "Date of discharge or transfer is incorrect!");
-                  softly.assertAll();
-                  break;
-                case "start of the stay":
-                  LocalDate expectedStartOfTheStay = hospitalization.getStartOfStayDate();
-                  softly.assertEquals(
-                          getValueFromLowChildrenDateSpecificFieldByName(singleXmlFile, "ITSStayFrom"),
-                          expectedStartOfTheStay,
-                          "Start of the stay date is incorrect!");
-                  softly.assertAll();
-                  break;
-                case "end of the stay":
-                  LocalDate expectedEndOfTheStay = hospitalization.getEndOfStayDate();
-                  softly.assertEquals(
-                          getValueFromLowChildrenDateSpecificFieldByName(singleXmlFile, "ITSStayUntil"),
-                          expectedEndOfTheStay,
-                          "End of the stay date is incorrect!");
-                  softly.assertAll();
-                  break;
-              }
-            });
+        "I check if {string} for Current Hospitalization in SORMAS generated XML file is correct",
+        (String typeOfDate) -> {
+          switch (typeOfDate) {
+            case "date of visit or admission":
+              LocalDate expectedStayFromDate = hospitalization.getDateOfVisitOrAdmission();
+              softly.assertEquals(
+                  getValueFromLowChildrenDateSpecificFieldByName(singleXmlFile, "StayFrom"),
+                  expectedStayFromDate,
+                  "Date of visit or admission is incorrect!");
+              softly.assertAll();
+              break;
+            case "date of discharge or transfer":
+              LocalDate expectedStayUntilDate = hospitalization.getDateOfDischargeOrTransfer();
+              softly.assertEquals(
+                  getValueFromLowChildrenDateSpecificFieldByName(singleXmlFile, "StayUntil"),
+                  expectedStayUntilDate,
+                  "Date of discharge or transfer is incorrect!");
+              softly.assertAll();
+              break;
+            case "start of the stay":
+              LocalDate expectedStartOfTheStay = hospitalization.getStartOfStayDate();
+              softly.assertEquals(
+                  getValueFromLowChildrenDateSpecificFieldByName(singleXmlFile, "ITSStayFrom"),
+                  expectedStartOfTheStay,
+                  "Start of the stay date is incorrect!");
+              softly.assertAll();
+              break;
+            case "end of the stay":
+              LocalDate expectedEndOfTheStay = hospitalization.getEndOfStayDate();
+              softly.assertEquals(
+                  getValueFromLowChildrenDateSpecificFieldByName(singleXmlFile, "ITSStayUntil"),
+                  expectedEndOfTheStay,
+                  "End of the stay date is incorrect!");
+              softly.assertAll();
+              break;
+          }
+        });
 
     Then(
         "I check if {string} for Previous Hospitalization in SORMAS generated XML file is correct",
@@ -976,7 +974,8 @@ public class SurvNetSteps implements En {
     And(
         "^I check if Current Hospitalization Was Patient Admitted has correct value mapped in SORMAS generated single XML file$$",
         () -> {
-          String wasPatientHospitalized = hospitalization.getWasPatientAdmittedAtTheFacilityAsAnInpatient();
+          String wasPatientHospitalized =
+              hospitalization.getWasPatientAdmittedAtTheFacilityAsAnInpatient();
           String StatusHospitalizationValue = null;
           switch (wasPatientHospitalized) {
             case "JA":
@@ -1056,14 +1055,14 @@ public class SurvNetSteps implements En {
         "^I check if the exposure settings are correctly mapped in SORMAS generated single XML file$",
         () -> {
           softly.assertEquals(
-                  getValueFromSpecificFieldByName(singleXmlFile, "StatusInfectionEnvironmentCVD"),
-                  "-1",
-                  "Status Infection Environment CVD is incorrect!");
+              getValueFromSpecificFieldByName(singleXmlFile, "StatusInfectionEnvironmentCVD"),
+              "-1",
+              "Status Infection Environment CVD is incorrect!");
           softly.assertAll();
           softly.assertEquals(
-                  getValueFromSpecificFieldByName(singleXmlFile, "StatusPlaceOfInf"),
-                  "20",
-                  "Status Place Of Inf is incorrect!");
+              getValueFromSpecificFieldByName(singleXmlFile, "StatusPlaceOfInf"),
+              "20",
+              "Status Place Of Inf is incorrect!");
           softly.assertAll();
         });
   }

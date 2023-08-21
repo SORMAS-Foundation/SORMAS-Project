@@ -1,5 +1,8 @@
 package de.symeda.sormas.backend.environment;
 
+import java.sql.Timestamp;
+
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -9,6 +12,7 @@ import javax.persistence.criteria.Predicate;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.environment.EnvironmentCriteria;
@@ -16,6 +20,8 @@ import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
+import de.symeda.sormas.backend.common.ChangeDateBuilder;
+import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -23,10 +29,14 @@ import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
 @LocalBean
 public class EnvironmentService extends AbstractCoreAdoService<Environment, EnvironmentJoins> {
+
+	@EJB
+	private UserService userService;
 
 	public EnvironmentService() {
 		super(Environment.class);
@@ -47,7 +57,6 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 		Predicate filter = null;
 
 		@SuppressWarnings("rawtypes")
-		final CriteriaQuery cq = queryContext.getQuery();
 		final CriteriaBuilder cb = queryContext.getCriteriaBuilder();
 		final EnvironmentJoins environmentJoins = queryContext.getJoins();
 		final From<?, Environment> environmentJoin = queryContext.getRoot();
@@ -102,7 +111,24 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 
 	@Override
 	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Environment> from) {
-		return cb.conjunction();
+		return inJurisdictionOrOwned(new EnvironmentQueryContext(cb, query, from));
+	}
+
+	public Predicate inJurisdictionOrOwned(EnvironmentQueryContext qc) {
+		return EnvironmentJurisdictionPredicateValidator.of(qc, userService.getCurrentUser()).inJurisdictionOrOwned();
+	}
+
+	@Override
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Environment> eventPath, Timestamp date) {
+		return addChangeDates(new ChangeDateFilterBuilder(cb, date), toJoins(eventPath), false).build();
+	}
+
+	@Override
+	protected <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, EnvironmentJoins joins, boolean includeExtendedChangeDateFilters) {
+		final From<?, Environment> environmentFrom = joins.getRoot();
+		builder = super.addChangeDates(builder, joins, includeExtendedChangeDateFilters).add(environmentFrom, Environment.LOCATION);
+
+		return builder;
 	}
 
 	public Predicate buildCriteriaFilter(EnvironmentCriteria environmentCriteria, EnvironmentQueryContext environmentQueryContext) {
@@ -222,5 +248,14 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 		}
 
 		return filter;
+	}
+
+	@Override
+	public EditPermissionType getEditPermissionType(Environment environment) {
+		if (!inJurisdictionOrOwned(environment)) {
+			return EditPermissionType.OUTSIDE_JURISDICTION;
+		}
+
+		return super.getEditPermissionType(environment);
 	}
 }

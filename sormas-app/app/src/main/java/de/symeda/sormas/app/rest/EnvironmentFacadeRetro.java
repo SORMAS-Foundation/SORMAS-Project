@@ -4,6 +4,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.environment.EnvironmentDto;
+import de.symeda.sormas.api.event.EventDto;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -14,6 +15,9 @@ public interface EnvironmentFacadeRetro {
 
 	@GET("environments/all/{since}")
 	Call<List<EnvironmentDto>> pullAllSince(@Path("since") long since);
+
+	@GET("environments/all/{since}/{size}/{lastSynchronizedUuid}")
+	Call<List<EnvironmentDto>> pullAllSince(@Path("since") long since, @Path("size") int size, @Path("lastSynchronizedUuid") String lastSynchronizedUuid);
 
 	@POST("environments/query")
 	Call<List<EnvironmentDto>> pullByUuids(@Body List<String> uuids);

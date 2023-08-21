@@ -657,7 +657,98 @@ Scenario: Create and send laboratory request via Demis
     And I assign the Assignee to the message on Message Directory page
     And I check that "Ad MIN" is assigned to the message on Message Directory page
     And I click on the eye icon next for the first fetched message
-   Then I check if there are all needed buttons in HTML message file
+    Then I check if there are all needed buttons in HTML message file
     And I close HTML message
     And I download "unprocessed" message from Message Directory page
     And I verify if lab message file is downloaded correctly
+
+  @tmsLink=SORQA-1060 @env_d2s @LoginKeycloak
+  Scenario: Demis - Actions on Messages directory[1]
+    Given API : Login to DEMIS server
+    When I create and send Laboratory Notification for physician report
+    And I log in as a Admin User
+    And I click on the Messages button from navbar
+    And I click on fetch messages button
+    And I filter by last created person via API in Messages Directory
+    And I collect shortened message uuid from Message Directory page
+    And I click on Verarbeiten button in Messages Directory
+    And I pick a new person in Pick or create person popup during case creation for DE
+    And I fill only mandatory fields to convert laboratory message into a case for DE
+    And I click on "save" button in new physician report form while processing a message
+    And I click next button while processing a "hospitalization" in DEMIS LabMessage
+    And I click next button while processing a "clinical measurement" in DEMIS LabMessage
+    And I click next button while processing a "exposure investigation" in DEMIS LabMessage
+    And I click on "save" button in new physician report form while processing a message
+    Then I click on "Verarbeitet" quick filter above the messages in Message directory page
+    And I check that "Verarbeitet" quick filter button is selected in Message directory page
+    And I click on the eye icon next for the first fetched message
+    Then I check if there are any buttons from processed message in HTML message file
+    And I close HTML message
+    And I download "processed" message from Message Directory page
+    And I verify if lab message file is downloaded correctly
+    And I assign the Assignee to the message on Message Directory page
+    And I check that "Ad MIN" is assigned to the message on Message Directory page
+    And I click on the RESET FILTERS button for Messages
+    Then I click on "Weitergeleitet" quick filter above the messages in Message directory page
+    And I check that status of the messages correspond to selected tab value "Weitergeleitet" in grid Message Directory Type column
+    And I click the header UUID of column
+    Then I check that error not appear
+    Then I click on "Unklar" quick filter above the messages in Message directory page
+    And I check that status of the messages correspond to selected tab value "Unklar" in grid Message Directory Type column
+    And I click the header UUID of column
+    Then I check that error not appear
+    Then I click on "Verarbeitet" quick filter above the messages in Message directory page
+    And I check that status of the messages correspond to selected tab value "Verarbeitet" in grid Message Directory Type column
+    And I click the header UUID of column
+    Then I check that error not appear
+    Then I click on Enter Bulk Edit Mode from Message Directory
+    And I select first 3 results in grid in Message Directory
+    And I click on Bulk Actions combobox in Message Directory
+    Then I click on Delete button from Bulk Actions Combobox in Message Directory
+    And I check if popup message for deleting is "Only unprocessed messages can be deleted" in Message Directory for DE
+    And I click on Leave Bulk Edit Mode from Message Directory
+    Then I click on "Alle" quick filter above the messages in Message directory page
+    And I select "Arztmeldung" type of message in Message Directory page
+    And I click on the APPLY FILTERS button
+    And I check that all displayed messages have "Arztmeldung" in grid Message Directory Type column
+    And I select "Labormeldung" type of message in Message Directory page
+    And I click on the APPLY FILTERS button
+    And I check that all displayed messages have "Labormeldung" in grid Message Directory Type column
+
+  @tmsLink=SORQA-1060 @env_d2s @LoginKeycloak
+  Scenario: Demis - Actions on Messages directory[2]
+    Given API : Login to DEMIS server
+    When I create and send Laboratory Notification for physician report
+    And I log in as a Admin User
+    And I click on the Messages button from navbar
+    And I click on fetch messages button
+    And I filter by last created person via API in Messages Directory
+    And I collect shortened message uuid from Message Directory page
+    Then I click on "Unverarbeitet" quick filter above the messages in Message directory page
+    And I check that "Unverarbeitet" quick filter button is selected in Message directory page
+    And I click on the eye icon next for the first fetched message
+    Then I check if there are all needed buttons in HTML message file
+    And I close HTML message
+    And I download "unprocessed" message from Message Directory page
+    And I verify if lab message file is downloaded correctly
+    And I assign the Assignee to the message on Message Directory page
+    And I check that "Ad MIN" is assigned to the message on Message Directory page
+    And I click on the RESET FILTERS button for Messages
+    Then I click on "Unverarbeitet" quick filter above the messages in Message directory page
+    And I check that status of the messages correspond to selected tab value "Unverarbeitet" in grid Message Directory Type column
+    And I click the header UUID of column
+    Then I check that error not appear
+    Then I click on Enter Bulk Edit Mode from Message Directory
+    And I select first 3 results in grid in Message Directory
+    And I click on Bulk Actions combobox in Message Directory
+    Then I click on Delete button from Bulk Actions Combobox in Message Directory
+    And I click yes on the CONFIRM REMOVAL popup from Message Directory page
+    And I check if popup message for deleting is "All selected eligible messages have been deleted" in Message Directory for DE
+    And I click on Leave Bulk Edit Mode from Message Directory
+    Then I click on "Alle" quick filter above the messages in Message directory page
+    And I select "Arztmeldung" type of message in Message Directory page
+    And I click on the APPLY FILTERS button
+    And I check that all displayed messages have "Arztmeldung" in grid Message Directory Type column
+    And I select "Labormeldung" type of message in Message Directory page
+    And I click on the APPLY FILTERS button
+    And I check that all displayed messages have "Labormeldung" in grid Message Directory Type column

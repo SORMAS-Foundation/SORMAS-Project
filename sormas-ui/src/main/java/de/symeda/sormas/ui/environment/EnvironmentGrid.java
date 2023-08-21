@@ -26,6 +26,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
@@ -68,8 +69,9 @@ public class EnvironmentGrid extends FilteredGrid<EnvironmentIndexDto, Environme
 		((Column<EnvironmentIndexDto, Date>) getColumn(EnvironmentIndexDto.REPORT_DATE))
 			.setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 
-		for (Column<?, ?> column : getColumns()) {
+		for (Column<EnvironmentIndexDto, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.findPrefixCaption(column.getId(), EnvironmentIndexDto.I18N_PREFIX, LocationDto.I18N_PREFIX));
+			column.setStyleGenerator(FieldAccessColumnStyleGenerator.getDefault(EnvironmentIndexDto.class, column.getId()));
 		}
 
 		addItemClickListener(

@@ -12505,4 +12505,44 @@ DO $$
 $$ LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment) VALUES (519, 'Add the ''See personal data inside jurisdiction'' user right to the default Environmental Surveillance User #12284');
+
+-- 2023-08-08 Add a new customizable enum called Pathogen #11840
+INSERT INTO customizableenumvalue(id, uuid, changedate, creationdate, datatype, value, caption, defaultvalue, properties)
+VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'PATHOGEN', 'CAMPYLOBACTER_JEJUNI', 'Campylobacter jejuni', true, jsonb_build_object('hasDetails', false)),
+       (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'PATHOGEN', 'ESCHERICHIA_COLI', 'Escherichia coli', true, jsonb_build_object('hasDetails', false)),
+       (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'PATHOGEN', 'SALMONELLA_SPP', 'Salmonella spp.', true, jsonb_build_object('hasDetails', false)),
+       (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'PATHOGEN', 'SHIGELLA_SPP', 'Shigella spp.', true, jsonb_build_object('hasDetails', false)),
+       (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'PATHOGEN', 'VIBRIO_CHOLERAE', 'Vibrio cholerae', true, jsonb_build_object('hasDetails', false)),
+       (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'PATHOGEN', 'YERSINIA_SPP', 'Yersinia spp.', true, jsonb_build_object('hasDetails', false)),
+       (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'PATHOGEN', 'SARS_COV_2', 'SARS-CoV-2', true, jsonb_build_object('hasDetails', false)),
+       (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'PATHOGEN', 'ADENOVIRUS', 'Adenovirus', true, jsonb_build_object('hasDetails', false)),
+       (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'PATHOGEN', 'ASTROVIRUS', 'Astrovirus', true, jsonb_build_object('hasDetails', false)),
+       (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'PATHOGEN', 'COXSACKIE_VIRUS', 'Coxsackie virus', true, jsonb_build_object('hasDetails', false)),
+       (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'PATHOGEN', 'ECHOVIRUS', 'Echovirus', true, jsonb_build_object('hasDetails', false)),
+       (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'PATHOGEN', 'HEPATITIS_A_VIRUS', 'Hepatitis A virus', true, jsonb_build_object('hasDetails', false)),
+       (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'PATHOGEN', 'HEPATITIS_E_VIRUS', 'Hepatitis E virus', true, jsonb_build_object('hasDetails', false)),
+       (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'PATHOGEN', 'HUMAN_CALICIVIRUS', 'Human calicivirus', true, jsonb_build_object('hasDetails', false)),
+       (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'PATHOGEN', 'POLIO_VIRUS', 'Polio virus', true, jsonb_build_object('hasDetails', false)),
+       (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'PATHOGEN', 'REOVIRUS', 'Reovirus', true, jsonb_build_object('hasDetails', false)),
+       (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'PATHOGEN', 'ROTAVIRUS', 'Rotavirus', true, jsonb_build_object('hasDetails', false)),
+       (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'PATHOGEN', 'TT_HEPATITIS', 'TT hepatitis', true, jsonb_build_object('hasDetails', false)),
+       (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'PATHOGEN', 'OTHER', 'Other', true, jsonb_build_object('hasDetails', true));
+
+INSERT INTO schema_version (version_number, comment) VALUES (520, 'Add a new customizable enum called Pathogen #11840');
+
+-- 2023-08-08 Add missing fields to external message entity #12390
+ALTER TABLE externalmessage ADD COLUMN casereportdate timestamp;
+ALTER TABLE externalmessage ADD COLUMN personexternalid text;
+ALTER TABLE externalmessage ADD COLUMN personnationalhealthid text;
+ALTER TABLE externalmessage ADD COLUMN personphonenumbertype varchar(255);
+ALTER TABLE externalmessage ADD COLUMN personcountry_id bigint;
+ALTER TABLE externalmessage_history ADD COLUMN casereportdate timestamp;
+ALTER TABLE externalmessage_history ADD COLUMN personexternalid text;
+ALTER TABLE externalmessage_history ADD COLUMN personnationalhealthid text;
+ALTER TABLE externalmessage_history ADD COLUMN personphonenumbertype varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN personcountry_id bigint;
+ALTER TABLE externalmessage ADD CONSTRAINT fk_externalmessage_personcountry_id FOREIGN KEY (personcountry_id) REFERENCES country(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (521, 'Add missing fields to external message entity #12390');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
