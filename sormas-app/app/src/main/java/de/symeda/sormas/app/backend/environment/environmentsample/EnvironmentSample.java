@@ -1,7 +1,5 @@
 package de.symeda.sormas.app.backend.environment.environmentsample;
 
-import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
-import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_TEXT;
 
 import com.google.gson.Gson;
@@ -32,7 +30,6 @@ import de.symeda.sormas.api.environment.environmentsample.Pathogen;
 import de.symeda.sormas.api.environment.environmentsample.WeatherCondition;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.customizableenum.CustomizableEnumValueDao;
@@ -61,11 +58,11 @@ public class EnvironmentSample extends PseudonymizableAdo {
     private Date sampleDateTime;
     @Enumerated(EnumType.STRING)
     private EnvironmentSampleMaterial sampleMaterial;
-    @Column(length = CHARACTER_LIMIT_DEFAULT)
+    @Column(length = CHARACTER_LIMIT_TEXT)
     private String otherSampleMaterial;
     @Column
     private Float sampleVolume;
-    @Column(length = CHARACTER_LIMIT_DEFAULT)
+    @Column(length = CHARACTER_LIMIT_TEXT)
     private String fieldSampleId;
     @Column
     private Integer turbidity;
@@ -77,14 +74,14 @@ public class EnvironmentSample extends PseudonymizableAdo {
     private Float chlorineResiduals;
     @DatabaseField(foreign = true, foreignAutoRefresh = true, columnName = "laboratory_id")
     private Facility laboratory;
-    @Column(length = CHARACTER_LIMIT_DEFAULT)
+    @Column(length = CHARACTER_LIMIT_TEXT)
     private String laboratoryDetails;
-    @Column(name = "requestedPathogenTests", length = CHARACTER_LIMIT_BIG)
+    @Column(name = "requestedPathogenTests", length = CHARACTER_LIMIT_TEXT)
     private String requestedPathogenTestsJson;
     private Set<Pathogen> requestedPathogenTests;
-    @Column(length = CHARACTER_LIMIT_DEFAULT)
+    @Column(length = CHARACTER_LIMIT_TEXT)
     private String otherRequestedPathogenTests;
-    @Column(name = "weatherConditions", length = CHARACTER_LIMIT_BIG)
+    @Column(name = "weatherConditions", length = CHARACTER_LIMIT_TEXT)
     private String weatherConditionsJson;
     private Map<WeatherCondition, Boolean> weatherConditions;
     @Enumerated
@@ -93,13 +90,13 @@ public class EnvironmentSample extends PseudonymizableAdo {
     private boolean dispatched;
     @DatabaseField(dataType = DataType.DATE_LONG)
     private Date dispatchDate;
-    @Column(length = CHARACTER_LIMIT_DEFAULT)
+    @Column(length = CHARACTER_LIMIT_TEXT)
     private String dispatchDetails;
     @Column
     private boolean received;
     @DatabaseField(dataType = DataType.DATE_LONG)
     private Date receivalDate;
-    @Column(length = CHARACTER_LIMIT_DEFAULT)
+    @Column(length = CHARACTER_LIMIT_TEXT)
     private String labSampleId;
     @Enumerated
     private SpecimenCondition specimenCondition;

@@ -57,12 +57,12 @@ public class EnvironmentSampleDto extends PseudonymizableDto {
 	@NotNull
 	private EnvironmentSampleMaterial sampleMaterial;
 	@SensitiveData
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherSampleMaterial;
 	@Min(value = 0, message = Validations.numberTooSmall)
 	private Float sampleVolume;
 	@SensitiveData
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String fieldSampleId;
 	@Min(value = 0, message = Validations.numberTooSmall)
 	private Integer turbidity;
@@ -76,23 +76,23 @@ public class EnvironmentSampleDto extends PseudonymizableDto {
 	@SensitiveData
 	private FacilityReferenceDto laboratory;
 	@SensitiveData
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String laboratoryDetails;
 	private Set<Pathogen> requestedPathogenTests;
 	@SensitiveData
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherRequestedPathogenTests;
 	private Map<WeatherCondition, Boolean> weatherConditions;
 	private YesNoUnknown heavyRain;
 	private boolean dispatched;
 	private Date dispatchDate;
 	@SensitiveData
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String dispatchDetails;
 	private boolean received;
 	private Date receivalDate;
 	@SensitiveData
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String labSampleId;
 	private SpecimenCondition specimenCondition;
 	@Valid

@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.backend.environment.environmentsample;
 
-import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_TEXT;
 
 import java.util.Date;
@@ -120,7 +119,7 @@ public class EnvironmentSample extends DeletableAdo {
 		this.sampleMaterial = sampleMaterial;
 	}
 
-	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_TEXT)
 	public String getOtherSampleMaterial() {
 		return otherSampleMaterial;
 	}
@@ -138,7 +137,7 @@ public class EnvironmentSample extends DeletableAdo {
 		this.sampleVolume = sampleVolume;
 	}
 
-	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_TEXT)
 	public String getFieldSampleId() {
 		return fieldSampleId;
 	}
@@ -192,7 +191,7 @@ public class EnvironmentSample extends DeletableAdo {
 		this.laboratory = laboratory;
 	}
 
-	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_TEXT)
 	public String getLaboratoryDetails() {
 		return laboratoryDetails;
 	}
@@ -211,7 +210,7 @@ public class EnvironmentSample extends DeletableAdo {
 		this.requestedPathogenTests = requestedPathogenTests;
 	}
 
-	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_TEXT)
 	public String getOtherRequestedPathogenTests() {
 		return otherRequestedPathogenTests;
 	}
@@ -257,7 +256,7 @@ public class EnvironmentSample extends DeletableAdo {
 		this.dispatchDate = dispatchDate;
 	}
 
-	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_TEXT)
 	public String getDispatchDetails() {
 		return dispatchDetails;
 	}
@@ -284,7 +283,7 @@ public class EnvironmentSample extends DeletableAdo {
 		this.receivalDate = receivalDate;
 	}
 
-	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_TEXT)
 	public String getLabSampleId() {
 		return labSampleId;
 	}
