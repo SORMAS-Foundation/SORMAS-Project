@@ -20,7 +20,7 @@ public class EnvironmentDtoHelper extends AdoDtoHelper<Environment, EnvironmentD
 	private LocationDtoHelper locationHelper;
 
 	public EnvironmentDtoHelper() {
-		this.locationHelper = new LocationDtoHelper();;
+		this.locationHelper = new LocationDtoHelper();
 	}
 
 	@Override
