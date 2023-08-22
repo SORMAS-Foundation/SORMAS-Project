@@ -403,8 +403,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 		}
 
 		// Check that the event group is not already related to this event
-		List<EventGroup> filteredEventGroups = eventGroups != null ? eventGroups : Collections.emptyList();
-		filteredEventGroups = getFilteredEventGroups(event, filteredEventGroups);
+		List<EventGroup> filteredEventGroups = getFilteredEventGroups(event, eventGroups);
 
 		if (!filteredEventGroups.isEmpty()) {
 			List<EventGroup> groups = new ArrayList<>();

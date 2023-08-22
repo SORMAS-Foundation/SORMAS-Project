@@ -569,8 +569,8 @@ public interface Strings {
 	String headingEventParticipantsNotRestored = "headingEventParticipantsNotRestored";
 	String headingEventParticipantsRestored = "headingEventParticipantsRestored";
 	String headingEventsDeleted = "headingEventsDeleted";
-	String headingEventsNotLinked = "headingEventsNotLinked";
 	String headingEventsNotDeleted = "headingEventsNotDeleted";
+	String headingEventsNotLinked = "headingEventsNotLinked";
 	String headingEventsNotRestored = "headingEventsNotRestored";
 	String headingEventsRestored = "headingEventsRestored";
 	String headingExplanationOfTerms = "headingExplanationOfTerms";

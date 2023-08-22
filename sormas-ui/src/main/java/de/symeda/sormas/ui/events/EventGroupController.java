@@ -98,11 +98,18 @@ public class EventGroupController {
 			Strings.infoBulkProcessFinishedWithoutSuccess).doBulkOperation(batch -> {
 
 				List<String> eligibleEventUuids = eligibleEventReferences.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList());
-				List<ProcessedEntity> processedEvents = FacadeProvider.getEventGroupFacade().linkEventsToGroups(eligibleEventUuids, eventGroupUuids);
+				List<String> eligibleEventUuidsFromBatch = batch.stream()
+					.filter(eventReference -> eligibleEventUuids.contains(eventReference.getUuid()))
+					.map(EventReferenceDto::getUuid)
+					.collect(Collectors.toList());
+				eligibleEventReferences.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList());
+
+				List<ProcessedEntity> processedEvents =
+					FacadeProvider.getEventGroupFacade().linkEventsToGroups(eligibleEventUuidsFromBatch, eventGroupUuids);
 				FacadeProvider.getEventGroupFacade()
 					.notifyEventAddedToEventGroup(
 						eventGroupReference.getUuid(),
-						batch.stream().map(EventReferenceDto::getUuid).collect(Collectors.toSet()));
+						eligibleEventReferences.stream().map(EventReferenceDto::getUuid).collect(Collectors.toSet()));
 				return processedEvents;
 			}, new ArrayList<>(eventReferences), new ArrayList<>(eligibleEventReferences), new ArrayList<>(alreadyLinkedEventsToGroup), callback);
 	}
