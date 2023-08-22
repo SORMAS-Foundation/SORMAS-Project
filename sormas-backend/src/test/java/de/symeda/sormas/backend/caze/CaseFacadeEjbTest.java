@@ -94,6 +94,7 @@ import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -2821,7 +2822,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals("test reason", getCaseFacade().getByUuid(caze.getUuid()).getOtherDeletionReason());
 	}
 
-	//TODO: fix this one
 	@Test
 	public void testDeleteCasesOutsideJurisdiction() {
 
@@ -2839,10 +2839,15 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		loginWith(surveillanceOfficer);
 
-		List<ProcessedEntity> deleteUuids = getCaseFacade().delete(caseUuidList, new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
+		List<ProcessedEntity> processedEntities =
+			getCaseFacade().delete(caseUuidList, new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
+		List<String> deletedUuids = processedEntities.stream()
+			.filter(processedEntity -> processedEntity.getProcessedEntityStatus().equals(ProcessedEntityStatus.SUCCESS))
+			.map(ProcessedEntity::getEntityUuid)
+			.collect(Collectors.toList());
 
-		assertEquals(1, deleteUuids.size());
-		assertEquals(caze1.getUuid(), deleteUuids.get(0).getEntityUuid());
+		assertEquals(1, deletedUuids.size());
+		assertEquals(caze1.getUuid(), deletedUuids.get(0));
 
 		loginWith(nationalUser);
 		getCaseFacade().delete(caseUuidList, new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));

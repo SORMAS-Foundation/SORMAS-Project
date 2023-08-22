@@ -16,7 +16,6 @@ public enum DeleteRestoreMessages {
 		Strings.messageCountCasesNotDeletedSormasToSormasReason,
 		Strings.messageCountCasesNotDeletedAccessDeniedReason,
 		null,
-		//TODO: change the next message and headingCasesNotDeleted to general ones as we have for archive
 		Strings.messageCountCasesNotDeleted,
 		Strings.headingCasesRestored,
 		Strings.messageCasesRestored,

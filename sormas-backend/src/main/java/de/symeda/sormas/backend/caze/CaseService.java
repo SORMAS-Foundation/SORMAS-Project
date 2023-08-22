@@ -1135,7 +1135,6 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		return processedCases;
 	}
 
-	//TODO: test archive and dearchive, for bulk and single cases for Events with/without Survnet failure -> test the other entities too
 	@Override
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
 		List<ProcessedEntity> processedCases = preprocessCases(entityUuids, false);

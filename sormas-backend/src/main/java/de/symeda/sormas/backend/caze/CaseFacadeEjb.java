@@ -2762,28 +2762,17 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	private void deleteCase(Case caze, DeletionDetails deletionDetails)
 		throws ExternalSurveillanceToolRuntimeException, SormasToSormasRuntimeException, AccessDeniedException {
 
-		//TODO: test this one
 		if (!caseService.inJurisdictionOrOwned(caze)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.messageCaseOutsideJurisdictionDeletionDenied));
 		}
 		externalJournalService.handleExternalJournalPersonUpdateAsync(caze.getPerson().toReference());
 
-		//just for testing
 		try {
-			if (caze.getUuid().equals("FHUY7T-TDIBAJ-BCOUS4-XFNJDPOQ")) {
-				throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasRequestProcessed);
-			}
+			sormasToSormasFacade.revokePendingShareRequests(caze.getSormasToSormasShares(), true);
 		} catch (SormasToSormasException e) {
 			throw new SormasToSormasRuntimeException(e);
 		}
 
-		/*
-		 * try {
-		 * sormasToSormasFacade.revokePendingShareRequests(caze.getSormasToSormasShares(), true);
-		 * } catch (SormasToSormasException e) {
-		 * throw new SormasToSormasRuntimeException(e);
-		 * }
-		 */
 		service.delete(caze, deletionDetails);
 	}
 
