@@ -20,7 +20,7 @@ public class EnvironmentDtoHelper extends AdoDtoHelper<Environment, EnvironmentD
 	private LocationDtoHelper locationHelper;
 
 	public EnvironmentDtoHelper() {
-		this.locationHelper = new LocationDtoHelper();;
+		this.locationHelper = new LocationDtoHelper();
 	}
 
 	@Override
@@ -108,12 +108,11 @@ public class EnvironmentDtoHelper extends AdoDtoHelper<Environment, EnvironmentD
 		return EnvironmentDto.APPROXIMATE_JSON_SIZE_IN_BYTES;
 	}
 
-	public static EnvironmentReferenceDto toReferenceDto(Environment ado) {
-		if (ado == null) {
+	public static EnvironmentReferenceDto toReferenceDto(Environment environment) {
+		if (environment == null) {
 			return null;
 		}
-		EnvironmentReferenceDto dto = new EnvironmentReferenceDto(ado.getUuid());
 
-		return dto;
+		return new EnvironmentReferenceDto(environment.getUuid(), environment.getEnvironmentName());
 	}
 }
