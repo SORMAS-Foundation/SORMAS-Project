@@ -10,16 +10,19 @@ import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
+@DependingOnFeatureType(featureType = FeatureType.ENVIRONMENT_MANAGEMENT)
 public class EnvironmentDto extends PseudonymizableDto {
 
 	public static final long APPROXIMATE_JSON_SIZE_IN_BYTES = 2638;
@@ -239,5 +242,9 @@ public class EnvironmentDto extends PseudonymizableDto {
 
 	public void setOtherDeletionReason(String otherDeletionReason) {
 		this.otherDeletionReason = otherDeletionReason;
+	}
+
+	public EnvironmentReferenceDto toReference() {
+		return new EnvironmentReferenceDto(getUuid(), getEnvironmentName());
 	}
 }

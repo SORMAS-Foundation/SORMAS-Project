@@ -25,6 +25,7 @@ import com.tngtech.archunit.core.importer.ClassFileImporter;
 import de.symeda.sormas.api.importexport.DatabaseTable;
 import de.symeda.sormas.backend.common.messaging.ManualMessageLog;
 import de.symeda.sormas.backend.environment.Environment;
+import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSample;
 import de.symeda.sormas.backend.immunization.entity.DirectoryImmunization;
 import de.symeda.sormas.backend.systemevent.SystemEvent;
 import de.symeda.sormas.backend.user.UserReference;
@@ -60,7 +61,8 @@ public class DatabaseExportServiceTest {
 		LastVaccineType.class,
 		SystemEvent.class,
 		FirstVaccinationDate.class,
-		Environment.class);
+		Environment.class,
+		EnvironmentSample.class);
 
 	@Test
 	public void test_all_entities_have_export_configuration() {

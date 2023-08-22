@@ -53,6 +53,7 @@ import de.symeda.sormas.api.caze.classification.ClassificationSymptomsCriteriaDt
 import de.symeda.sormas.api.caze.classification.ClassificationVaccinationDateNotInStartDateRangeDto;
 import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteriaDto;
 import de.symeda.sormas.api.environment.WaterUse;
+import de.symeda.sormas.api.environment.environmentsample.WeatherCondition;
 import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
@@ -68,7 +69,7 @@ import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.util.AppUpdateController;
 import de.symeda.sormas.app.util.BiConsumer;
 import de.symeda.sormas.app.util.Consumer;
-import de.symeda.sormas.app.util.WaterUseSerializer;
+import de.symeda.sormas.app.util.EnumMapKeySerializer;
 import okhttp3.Credentials;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -130,6 +131,7 @@ public final class RetroProvider {
 	private FeatureConfigurationFacadeRetro featureConfigurationFacadeRetro;
 	private AggregateReportFacadeRetro aggregateReportFacadeRetro;
 	private EnvironmentFacadeRetro environmentFacadeRetro;
+	private EnvironmentSampleFacadeRetro environmentSampleFacadeRetro;
 
 	private RetroProvider(Context context) throws ServerConnectionException, ServerCommunicationException, ApiVersionException {
 
@@ -234,7 +236,8 @@ public final class RetroProvider {
 			return new JsonPrimitive(src.getTime());
 		})
 			.enableComplexMapKeySerialization()
-			.registerTypeAdapter(WaterUse.class, new WaterUseSerializer())
+			.registerTypeAdapter(WaterUse.class, new EnumMapKeySerializer<>(WaterUse.class))
+			.registerTypeAdapter(WeatherCondition.class, new EnumMapKeySerializer<>(WeatherCondition.class))
 			.registerTypeAdapterFactory(classificationCriteriaFactory)
 			.create();
 	}
@@ -995,6 +998,19 @@ public final class RetroProvider {
 			}
 		}
 		return instance.environmentFacadeRetro;
+	}
+
+	public static EnvironmentSampleFacadeRetro getEnvironmentSampleFacade() throws NoConnectionException {
+		if (instance == null)
+			throw new NoConnectionException();
+		if (instance.environmentSampleFacadeRetro == null) {
+			synchronized ((RetroProvider.class)) {
+				if (instance.environmentSampleFacadeRetro == null) {
+					instance.environmentSampleFacadeRetro = instance.retrofit.create(EnvironmentSampleFacadeRetro.class);
+				}
+			}
+		}
+		return instance.environmentSampleFacadeRetro;
 	}
 
 	public static void throwException(Response<?> response) throws ServerConnectionException, ServerCommunicationException {

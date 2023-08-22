@@ -244,6 +244,9 @@ public interface Strings {
 	String entityDistricts = "entityDistricts";
 	String entityDocuments = "entityDocuments";
 	String entityEnvironment = "entityEnvironment";
+	String entityEnvironments = "entityEnvironments";
+	String entityEnvironmentSample = "entityEnvironmentSample";
+	String entityEnvironmentSamples = "entityEnvironmentSamples";
 	String entityEvent = "entityEvent";
 	String entityEventActions = "entityEventActions";
 	String entityEventGroup = "entityEventGroup";
@@ -305,6 +308,9 @@ public interface Strings {
 	String errorDocumentGenerationMultipleDiseasses = "errorDocumentGenerationMultipleDiseasses";
 	String errorEntityNotEditable = "errorEntityNotEditable";
 	String errorEntityOutdated = "errorEntityOutdated";
+	String errorEnvironmentSampleNoDispatchRight = "errorEnvironmentSampleNoDispatchRight";
+	String errorEnvironmentSampleNoReceivalRight = "errorEnvironmentSampleNoReceivalRight";
+	String errorEnvironmentSampleNotEditable = "errorEnvironmentSampleNotEditable";
 	String errorEventFromAnotherJurisdiction = "errorEventFromAnotherJurisdiction";
 	String errorEventNotEditable = "errorEventNotEditable";
 	String errorEventParticipantNotEditable = "errorEventParticipantNotEditable";
@@ -386,6 +392,7 @@ public interface Strings {
 	String fileName = "fileName";
 	String forCase = "forCase";
 	String forContact = "forContact";
+	String forEnvironment = "forEnvironment";
 	String forEventParticipant = "forEventParticipant";
 	String headingAccessDenied = "headingAccessDenied";
 	String headingActivityAsCase = "headingActivityAsCase";
@@ -1204,6 +1211,7 @@ public interface Strings {
 	String messageEnvironmentCreated = "messageEnvironmentCreated";
 	String messageEnvironmentDearchived = "messageEnvironmentDearchived";
 	String messageEnvironmentJurisdictionUpdated = "messageEnvironmentJurisdictionUpdated";
+	String messageEnvironmentSampleOutsideJurisdictionDeletionDenied = "messageEnvironmentSampleOutsideJurisdictionDeletionDenied";
 	String messageEnvironmentSaved = "messageEnvironmentSaved";
 	String messageEpiDataHint = "messageEpiDataHint";
 	String messageEpidNumberWarning = "messageEpidNumberWarning";
@@ -1460,6 +1468,7 @@ public interface Strings {
 	String notificationSmsSent = "notificationSmsSent";
 	String notificationTaskAssociatedCaseLink = "notificationTaskAssociatedCaseLink";
 	String notificationTaskAssociatedContactLink = "notificationTaskAssociatedContactLink";
+	String notificationTaskAssociatedEnvironmentLink = "notificationTaskAssociatedEnvironmentLink";
 	String notificationTaskAssociatedEventLink = "notificationTaskAssociatedEventLink";
 	String notificationTaskAssociatedTravelEntryLink = "notificationTaskAssociatedTravelEntryLink";
 	String notificationTaskDueGeneral = "notificationTaskDueGeneral";

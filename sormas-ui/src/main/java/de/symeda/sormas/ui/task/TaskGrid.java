@@ -193,6 +193,9 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 		case TRAVEL_ENTRY:
 			ControllerProvider.getTravelEntryController().navigateToTravelEntry(task.getTravelEntry().getUuid());
 			return;
+		case ENVIRONMENT:
+			ControllerProvider.getEnvironmentController().navigateToEnvironment(task.getEnvironment().getUuid());
+			return;
 		case GENERAL:
 			return;
 		default:

@@ -37,6 +37,7 @@ import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.environment.Environment;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.util.LocationService;
 
@@ -90,6 +91,14 @@ public class TaskDao extends AbstractAdoDao<Task> {
 		Task task = build();
 		task.setTaskContext(TaskContext.EVENT);
 		task.setEvent(associatedEvent);
+
+		return task;
+	}
+
+	public Task build(Environment associatedEnvironment) {
+		Task task = build();
+		task.setTaskContext(TaskContext.ENVIRONMENT);
+		task.setEnvironment(associatedEnvironment);
 
 		return task;
 	}
@@ -280,6 +289,24 @@ public class TaskDao extends AbstractAdoDao<Task> {
 		}
 	}
 
+	public List<Task> queryByEnvironment(Environment environment) {
+		if (environment.isSnapshot()) {
+			throw new IllegalArgumentException("Does not support snapshot entities");
+		}
+		try {
+			return queryBuilder().orderBy(Task.PRIORITY, true)
+				.orderBy(Task.DUE_DATE, true)
+				.where()
+				.eq(Task.ENVIRONMENT + "_id", environment)
+				.and()
+				.eq(AbstractDomainObject.SNAPSHOT, false)
+				.query();
+		} catch (SQLException e) {
+			android.util.Log.e(getTableName(), "Could not perform queryByEnvironment on Task");
+			throw new RuntimeException(e);
+		}
+	}
+
 	public long countByCriteria(TaskCriteria criteria) {
 		try {
 			return buildQueryBuilder(criteria).countOf();
@@ -308,6 +335,8 @@ public class TaskDao extends AbstractAdoDao<Task> {
 			where.and().eq(Task.CONTACT + "_id", criteria.getAssociatedContact());
 		} else if (criteria.getAssociatedEvent() != null) {
 			where.and().eq(Task.EVENT + "_id", criteria.getAssociatedEvent());
+		} else if (criteria.getAssociatedEnvironment() != null) {
+			where.and().eq(Task.ENVIRONMENT + "_id", criteria.getAssociatedEnvironment());
 		} else {
 			if (criteria.getTaskStatus() != null) {
 				where.and().eq(Task.TASK_STATUS, criteria.getTaskStatus());

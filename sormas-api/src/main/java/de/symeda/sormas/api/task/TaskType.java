@@ -40,7 +40,7 @@ public enum TaskType {
 	CONTACT_TRACING(TaskContext.CASE),
 	CONTACT_MANAGEMENT(TaskContext.CONTACT),
 	SOURCECASE_TRACING(TaskContext.CONTACT),
-	SAMPLE_COLLECTION(TaskContext.CASE, TaskContext.CONTACT),
+	SAMPLE_COLLECTION(TaskContext.CASE, TaskContext.CONTACT, TaskContext.ENVIRONMENT),
 	CONTACT_INVESTIGATION(TaskContext.CONTACT),
 	CONTACT_FOLLOW_UP(TaskContext.CONTACT),
 	@Diseases(value = {
@@ -53,7 +53,7 @@ public enum TaskType {
 	@Diseases(value = {
 		Disease.CORONAVIRUS }, hide = true)
 	ENVIRONMENTAL_HEALTH_ACTIVITIES(TaskContext.CASE, TaskContext.EVENT),
-	DECONTAMINATION_DISINFECTION_ACTIVITIES(TaskContext.CASE, TaskContext.EVENT),
+	DECONTAMINATION_DISINFECTION_ACTIVITIES(TaskContext.CASE, TaskContext.EVENT, TaskContext.ENVIRONMENT),
 	QUARANTINE_PLACE(TaskContext.EVENT, TaskContext.CASE),
 	QUARANTINE_MANAGEMENT(TaskContext.CASE, TaskContext.CONTACT),
 	QUARANTINE_ORDER_SEND(TaskContext.CASE, TaskContext.CONTACT),
@@ -61,10 +61,11 @@ public enum TaskType {
 	@Diseases(value = {
 		Disease.CORONAVIRUS }, hide = true)
 	ANIMAL_DEPOPULATION(TaskContext.EVENT, TaskContext.CASE),
-	OTHER(true, TaskContext.CASE, TaskContext.CONTACT, TaskContext.EVENT, TaskContext.GENERAL, TaskContext.TRAVEL_ENTRY),
+	OTHER(true, TaskContext.CASE, TaskContext.CONTACT, TaskContext.EVENT, TaskContext.GENERAL, TaskContext.TRAVEL_ENTRY, TaskContext.ENVIRONMENT),
 	DAILY_REPORT_GENERATION(TaskContext.GENERAL),
 	SURVEILLANCE_REPORT_GENERATION(TaskContext.GENERAL),
-	WEEKLY_REPORT_GENERATION(TaskContext.GENERAL);
+	WEEKLY_REPORT_GENERATION(TaskContext.GENERAL),
+	ENVIRONMENT_INVESTIGATION(TaskContext.ENVIRONMENT);
 
 	private final boolean creatorCommentRequired;
 	private final TaskContext[] taskContexts;
