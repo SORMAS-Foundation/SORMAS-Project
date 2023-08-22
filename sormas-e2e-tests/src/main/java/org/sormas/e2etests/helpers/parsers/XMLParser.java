@@ -31,4 +31,9 @@ public class XMLParser {
     SAXBuilder saxBuilder = new SAXBuilder();
     return saxBuilder.build(file);
   }
+
+  @SneakyThrows
+  public static void printDocumentContent(Document document) {
+    System.out.println(document.getDocument().getContent().get(0).getValue());
+  }
 }
