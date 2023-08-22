@@ -336,7 +336,8 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 		String infrastructureUuid,
 		JurisdictionLevel jurisdictionLevel,
 		JurisdictionLevel allowedJurisdictionLevel,
-		Disease limitedDisease) {
+		Disease limitedDisease,
+		UserRight... userRights) {
 
 		if (jurisdictionLevel.getOrder() < allowedJurisdictionLevel.getOrder()) {
 			return Collections.emptyList();
@@ -406,6 +407,8 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 				cb.or(cb.isNull(userRoot.get(User.LIMITED_DISEASE)), cb.equal(userRoot.get(User.LIMITED_DISEASE), limitedDisease));
 			filter = CriteriaBuilderHelper.and(cb, filter, restrictOtherLimitedDiseaseUsers);
 		}
+
+		filter = CriteriaBuilderHelper.and(cb, filter, buildUserRightsFilter(userRoot, Arrays.asList(userRights)));
 
 		cq.where(filter);
 		cq.distinct(true);

@@ -6,7 +6,6 @@ import static de.symeda.sormas.ui.utils.CssStyles.style;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.vaadin.ui.Label;
@@ -19,7 +18,9 @@ import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
@@ -72,18 +73,46 @@ public class EnvironmentCreateForm extends AbstractEditForm<EnvironmentDto> {
 		LocationEditForm locationForm = addField(EnvironmentDto.LOCATION, LocationEditForm.class);
 		locationForm.setCaption(null);
 
+		ComboBox regionField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.REGION);
 		ComboBox districtField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.DISTRICT);
 
 		ComboBox responsibleUserField = addField(EnvironmentDto.RESPONSIBLE_USER, ComboBox.class);
 		responsibleUserField.setNullSelectionAllowed(true);
+		List<UserReferenceDto> responsibleUsers = FacadeProvider.getUserFacade()
+			.getUserRefsByInfrastructure(null, JurisdictionLevel.NATION, JurisdictionLevel.NATION, null, UserRight.ENVIRONMENT_EDIT);
+		FieldHelper.updateItems(responsibleUserField, responsibleUsers);
+
+		regionField.addValueChangeListener(e -> {
+			List<UserReferenceDto> filteredResponsibleUsers;
+			RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
+			if (region == null) {
+				filteredResponsibleUsers = FacadeProvider.getUserFacade()
+					.getUserRefsByInfrastructure(null, JurisdictionLevel.NATION, JurisdictionLevel.NATION, null, UserRight.ENVIRONMENT_EDIT);
+			} else {
+				filteredResponsibleUsers = FacadeProvider.getUserFacade()
+					.getUserRefsByInfrastructure(region, JurisdictionLevel.REGION, JurisdictionLevel.NATION, null, UserRight.ENVIRONMENT_EDIT);
+			}
+
+			FieldHelper.updateItems(responsibleUserField, filteredResponsibleUsers);
+		});
 
 		districtField.addValueChangeListener(e -> {
 			DistrictReferenceDto district = (DistrictReferenceDto) districtField.getValue();
-			List<UserReferenceDto> districtEnvironmentResponsibles = new ArrayList<>();
+			List<UserReferenceDto> filteredResponsibleUsers;
 			if (district != null) {
-				districtEnvironmentResponsibles = FacadeProvider.getUserFacade().getUserRefsByDistrict(district, true, UserRight.ENVIRONMENT_EDIT);
+				filteredResponsibleUsers = FacadeProvider.getUserFacade()
+					.getUserRefsByInfrastructure(district, JurisdictionLevel.DISTRICT, JurisdictionLevel.NATION, null, UserRight.ENVIRONMENT_EDIT);
+			} else {
+				RegionReferenceDto region = (RegionReferenceDto) regionField.getValue();
+				if (region != null) {
+					filteredResponsibleUsers = FacadeProvider.getUserFacade()
+						.getUserRefsByInfrastructure(region, JurisdictionLevel.REGION, JurisdictionLevel.NATION, null, UserRight.ENVIRONMENT_EDIT);
+				} else {
+					filteredResponsibleUsers = FacadeProvider.getUserFacade()
+						.getUserRefsByInfrastructure(null, JurisdictionLevel.NATION, JurisdictionLevel.NATION, null, UserRight.ENVIRONMENT_EDIT);
+				}
 			}
-			FieldHelper.updateItems(responsibleUserField, districtEnvironmentResponsibles);
+			FieldHelper.updateItems(responsibleUserField, filteredResponsibleUsers);
 		});
 
 		setRequired(true, EnvironmentDto.REPORT_DATE, EnvironmentDto.ENVIRONMENT_MEDIA, EnvironmentDto.ENVIRONMENT_NAME);
