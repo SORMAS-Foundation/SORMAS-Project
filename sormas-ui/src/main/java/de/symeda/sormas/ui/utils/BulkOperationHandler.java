@@ -269,15 +269,9 @@ public class BulkOperationHandler<T extends HasUuid> {
 			processedEntities =
 				areIneligibleEntriesSelected ? bulkOperationFunction.apply(selectedEligibleEntries) : bulkOperationFunction.apply(selectedEntries);
 
-			//If the user does not have the proper rights to perform the action, there will be no processed entities
-			if (processedEntities.size() == 0) {
-				NotificationHelper.showNotification(I18nProperties.getString(Strings.errorForbidden), Notification.Type.WARNING_MESSAGE, -1);
-				return;
-			} else {
-				successfulEntryCount = (int) processedEntities.stream()
-					.filter(processedEntity -> processedEntity.getProcessedEntityStatus().equals(ProcessedEntityStatus.SUCCESS))
-					.count();
-			}
+			successfulEntryCount = (int) processedEntities.stream()
+				.filter(processedEntity -> processedEntity.getProcessedEntityStatus().equals(ProcessedEntityStatus.SUCCESS))
+				.count();
 		}
 
 		if (initialEligibleEntryCount == 0 && successfulEntryCount == 0) {

@@ -569,6 +569,7 @@ public interface Strings {
 	String headingEventParticipantsNotRestored = "headingEventParticipantsNotRestored";
 	String headingEventParticipantsRestored = "headingEventParticipantsRestored";
 	String headingEventsDeleted = "headingEventsDeleted";
+	String headingEventsNotLinked = "headingEventsNotLinked";
 	String headingEventsNotDeleted = "headingEventsNotDeleted";
 	String headingEventsNotRestored = "headingEventsNotRestored";
 	String headingEventsRestored = "headingEventsRestored";
@@ -749,6 +750,7 @@ public interface Strings {
 	String headingSomeEntitiesNotDeleted = "headingSomeEntitiesNotDeleted";
 	String headingSomeEntitiesNotEdited = "headingSomeEntitiesNotEdited";
 	String headingSomeEventParticipantsNotRestored = "headingSomeEventParticipantsNotRestored";
+	String headingSomeEventsNotLinked = "headingSomeEventsNotLinked";
 	String headingSomeEventsNotRestored = "headingSomeEventsNotRestored";
 	String headingSomeFollowUpsNotCancelled = "headingSomeFollowUpsNotCancelled";
 	String headingSomeFollowUpsNotSetToLost = "headingSomeFollowUpsNotSetToLost";
@@ -1039,6 +1041,7 @@ public interface Strings {
 	String messageAllContactsLinkedToEvent = "messageAllContactsLinkedToEvent";
 	String messageAllEntitiesArchived = "messageAllEntitiesArchived";
 	String messageAllEntitiesDearchived = "messageAllEntitiesDearchived";
+	String messageAllEventsAlreadyLinkedToGroup = "messageAllEventsAlreadyLinkedToGroup";
 	String messageAlreadyEventParticipant = "messageAlreadyEventParticipant";
 	String messageAnimalContactsHint = "messageAnimalContactsHint";
 	String messageArchiveUndoneReasonMandatory = "messageArchiveUndoneReasonMandatory";
@@ -1151,6 +1154,8 @@ public interface Strings {
 	String messageCountEventsNotDeletedAccessDeniedReason = "messageCountEventsNotDeletedAccessDeniedReason";
 	String messageCountEventsNotDeletedExternalReason = "messageCountEventsNotDeletedExternalReason";
 	String messageCountEventsNotDeletedSormasToSormasReason = "messageCountEventsNotDeletedSormasToSormasReason";
+	String messageCountEventsNotLinked = "messageCountEventsNotLinked";
+	String messageCountEventsNotLinkedAccessDeniedReason = "messageCountEventsNotLinkedAccessDeniedReason";
 	String messageCountEventsNotRestored = "messageCountEventsNotRestored";
 	String messageCountExternalMessagesNotDeleted = "messageCountExternalMessagesNotDeleted";
 	String messageCountFollowUpsNotCancelled = "messageCountFollowUpsNotCancelled";

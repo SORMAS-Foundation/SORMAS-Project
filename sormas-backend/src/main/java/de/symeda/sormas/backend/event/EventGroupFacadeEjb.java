@@ -55,6 +55,8 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.event.EventGroupCriteria;
 import de.symeda.sormas.api.event.EventGroupDto;
 import de.symeda.sormas.api.event.EventGroupFacade;
@@ -367,9 +369,9 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 
 	@Override
 	@RightsAllowed(UserRight._EVENTGROUP_LINK)
-	public void linkEventsToGroups(List<String> eventUuids, List<String> eventGroupUuids) {
+	public List<ProcessedEntity> linkEventsToGroups(List<String> eventUuids, List<String> eventGroupUuids) {
 		if (CollectionUtils.isEmpty(eventGroupUuids) || CollectionUtils.isEmpty(eventUuids)) {
-			return;
+			return new ArrayList<>();
 		}
 
 		List<Event> events = eventService.getByUuids(eventUuids);
@@ -377,30 +379,34 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 
 		User currentUser = userService.getCurrentUser();
 
+		List<ProcessedEntity> processedEvents = new ArrayList<>();
 		for (Event event : events) {
-			final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-			if (!eventFacade.isInJurisdictionOrOwned(event.getUuid()) && (jurisdictionLevel != JurisdictionLevel.NATION) && !currentUser.isAdmin()) {
-				throw new AccessDeniedException(
-					"User " + currentUser.getUuid() + " is not allowed to link events from another region to an event group.");
+			try {
+				linkEventToGroup(event, currentUser, eventGroups);
+				processedEvents.add(new ProcessedEntity(event.getUuid(), ProcessedEntityStatus.SUCCESS));
+			} catch (AccessDeniedException e) {
+				processedEvents.add(new ProcessedEntity(event.getUuid(), ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+				logger.error("The event with uuid {} could not be linked due to an AccessDeniedException", event.getUuid(), e);
+			} catch (Exception e) {
+				processedEvents.add(new ProcessedEntity(event.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+				logger.error("The event with uuid {} could not be linked due to an AccessDeniedException", event.getUuid(), e);
 			}
+		}
+		return processedEvents;
+	}
 
-			// Check that the event group is not already related to this event
-			List<EventGroup> filteredEventGroups = eventGroups;
-			if (eventGroups == null) {
-				filteredEventGroups = Collections.emptyList();
-			}
+	public void linkEventToGroup(Event event, User currentUser, List<EventGroup> eventGroups) {
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		if (!eventFacade.isInJurisdictionOrOwned(event.getUuid()) && (jurisdictionLevel != JurisdictionLevel.NATION) && !currentUser.isAdmin()) {
+			throw new AccessDeniedException(
+				"User " + currentUser.getUuid() + " is not allowed to link events from another region to an event group.");
+		}
 
-			if (event.getEventGroups() != null) {
-				Set<String> alreadyRelatedUuids = event.getEventGroups().stream().map(EventGroup::getUuid).collect(Collectors.toSet());
-				filteredEventGroups = filteredEventGroups.stream()
-					.filter(eventGroup -> !alreadyRelatedUuids.contains(eventGroup.getUuid()))
-					.collect(Collectors.toList());
-			}
+		// Check that the event group is not already related to this event
+		List<EventGroup> filteredEventGroups = eventGroups != null ? eventGroups : Collections.emptyList();
+		filteredEventGroups = getFilteredEventGroups(event, filteredEventGroups);
 
-			if (filteredEventGroups.isEmpty()) {
-				continue;
-			}
-
+		if (!filteredEventGroups.isEmpty()) {
 			List<EventGroup> groups = new ArrayList<>();
 			if (event.getEventGroups() != null) {
 				groups.addAll(event.getEventGroups());
@@ -410,6 +416,45 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 
 			eventService.ensurePersisted(event);
 		}
+	}
+
+	public List<EventReferenceDto> getEligibleEventUuidsToBeLinkedToGroup(List<String> eventUuids, List<String> ineligibleEventUuids) {
+		List<String> eligibleEventUuids = ineligibleEventUuids.size() > 0
+			? eventUuids.stream().filter(uuid -> !ineligibleEventUuids.contains(uuid)).collect(Collectors.toCollection(ArrayList::new))
+			: eventUuids;
+
+		List<EventReferenceDto> eligibleEventReferences = new ArrayList<>();
+		eligibleEventUuids.forEach(uuid -> eligibleEventReferences.add(new EventReferenceDto(uuid)));
+
+		return eligibleEventReferences;
+	}
+
+	public List<EventReferenceDto> getIneligibleEventUuidsToBeLinkedToGroup(List<String> eventUuids, List<String> eventGroupUuids) {
+		List<Event> events = eventService.getByUuids(eventUuids);
+		List<EventGroup> eventGroups = eventGroupService.getByUuids(eventGroupUuids);
+
+		List<EventGroup> filteredEventGroups;
+		List<EventReferenceDto> inEligibleEventReferences = new ArrayList<>();
+		for (Event event : events) {
+			filteredEventGroups = getFilteredEventGroups(event, eventGroups);
+			if (filteredEventGroups.isEmpty()) {
+				inEligibleEventReferences.add(new EventReferenceDto(event.getUuid()));
+			}
+		}
+		return inEligibleEventReferences;
+	}
+
+	public List<EventGroup> getFilteredEventGroups(Event event, List<EventGroup> eventGroups) {
+		List<EventGroup> filteredEventGroups = eventGroups != null ? eventGroups : Collections.emptyList();
+
+		// Check that the event group is not already related to this event
+		if (event.getEventGroups() != null) {
+			Set<String> alreadyRelatedUuids = event.getEventGroups().stream().map(EventGroup::getUuid).collect(Collectors.toSet());
+			filteredEventGroups =
+				filteredEventGroups.stream().filter(eventGroup -> !alreadyRelatedUuids.contains(eventGroup.getUuid())).collect(Collectors.toList());
+		}
+
+		return filteredEventGroups;
 	}
 
 	@Override
