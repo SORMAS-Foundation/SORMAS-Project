@@ -61,6 +61,7 @@ import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -332,7 +333,6 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(FollowUpStatus.CANCELED, contact.getFollowUpStatus());
 	}
 
-	//TODO: fix this tests
 	@Test
 	public void testDeleteContactsOutsideJurisdiction() {
 		RDCF rdcf = creator.createRDCF();
@@ -363,10 +363,15 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 		UserDto user = creator.createSurveillanceOfficer(rdcf1);
 		loginWith(user);
-		List<ProcessedEntity> deleteUuids =
+		List<ProcessedEntity> processedEntities =
 			getContactFacade().delete(contactUuidList, new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
-		assertEquals(1, deleteUuids.size());
-		assertEquals(contact1.getUuid(), deleteUuids.get(0).getEntityUuid());
+		List<String> deletedUuids = processedEntities.stream()
+			.filter(processedEntity -> processedEntity.getProcessedEntityStatus().equals(ProcessedEntityStatus.SUCCESS))
+			.map(ProcessedEntity::getEntityUuid)
+			.collect(Collectors.toList());
+
+		assertEquals(1, deletedUuids.size());
+		assertEquals(contact1.getUuid(), deletedUuids.get(0));
 
 		loginWith(creatorUser);
 		getContactFacade().delete(contactUuidList, new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));

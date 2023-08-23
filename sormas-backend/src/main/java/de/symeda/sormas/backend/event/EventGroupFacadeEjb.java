@@ -395,6 +395,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 		return processedEvents;
 	}
 
+	@RightsAllowed(UserRight._EVENTGROUP_LINK)
 	public void linkEventToGroup(Event event, User currentUser, List<EventGroup> eventGroups) {
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if (!eventFacade.isInJurisdictionOrOwned(event.getUuid()) && (jurisdictionLevel != JurisdictionLevel.NATION) && !currentUser.isAdmin()) {
