@@ -108,7 +108,8 @@ public interface UserFacade {
 		InfrastructureDataReferenceDto infrastructure,
 		JurisdictionLevel jurisdictionLevel,
 		JurisdictionLevel allowedJurisdictionLevel,
-		Disease limitedDisease);
+		Disease limitedDisease,
+		UserRight... userRights);
 
 	List<UserReferenceDto> getAllUserRefs(boolean includeInactive);
 
