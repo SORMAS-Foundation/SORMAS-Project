@@ -2,14 +2,16 @@ package de.symeda.sormas.ui.utils;
 
 import com.vaadin.server.Sizeable;
 
-public class FieldConfiguration {
+public final class FieldConfiguration {
 
-	private String propertyId;
+	private final String propertyId;
 	private Float width;
 	private Sizeable.Unit widthUnit;
 	private String caption;
 	private String description;
 	private String style;
+
+	private String validationMessageProperty;
 
 	private FieldConfiguration(String propertyId) {
 		this.propertyId = propertyId;
@@ -39,6 +41,13 @@ public class FieldConfiguration {
 		return style;
 	}
 
+	public static FieldConfiguration withConversionError(String propertyId, String validationMessageProperty) {
+		FieldConfiguration configuration = new FieldConfiguration(propertyId);
+		configuration.validationMessageProperty = validationMessageProperty;
+
+		return configuration;
+	}
+
 	public static FieldConfiguration withCaptionAndPixelSized(String propertyId, String caption, float width) {
 		FieldConfiguration configuration = pixelSized(propertyId, width);
 
@@ -64,4 +73,9 @@ public class FieldConfiguration {
 
 		return configuration;
 	}
+
+	public String getValidationMessageProperty() {
+		return validationMessageProperty;
+	}
+
 }
