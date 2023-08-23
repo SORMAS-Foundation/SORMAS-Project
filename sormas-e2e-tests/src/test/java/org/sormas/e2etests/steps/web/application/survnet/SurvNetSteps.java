@@ -23,6 +23,8 @@ import static org.sormas.e2etests.steps.web.application.vaccination.CreateNewVac
 import static org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps.vaccination;
 
 import cucumber.api.java8.En;
+
+import java.io.File;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
@@ -776,6 +778,12 @@ public class SurvNetSteps implements En {
                   "/srv/dockerdata/jenkins_new/sormas-files/case_"
                       + externalUUID.get(0).substring(1, 37)
                       + ".xml");
+          System.out.println("Printing files from dockerdata");
+          File folder = new File("/srv/dockerdata/jenkins_new/sormas-files");
+          File[] listOfFiles = folder.listFiles();
+          for(File file : listOfFiles){
+            System.out.println(file.getName());
+          }
           log.info("Print Opened XML");
        XMLParser.printDocumentContent(singleXmlFile);
         });
