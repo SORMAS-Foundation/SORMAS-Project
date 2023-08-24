@@ -36,6 +36,7 @@ import de.symeda.sormas.api.campaign.CampaignFacade;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.environment.EnvironmentDto;
@@ -314,12 +315,15 @@ public final class ArchiveHandlers {
 
 		@Override
 		public List<ProcessedEntity> dearchive(String entityUuid) {
+			List<ProcessedEntity> processedEntities = new ArrayList<>();
+
 			try {
-				super.dearchive(entityUuid);
+				processedEntities = super.dearchive(entityUuid);
 			} catch (AccessDeniedException e) {
+				processedEntities.add(new ProcessedEntity(entityUuid, ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
 				Notification.show(e.getMessage(), Notification.Type.WARNING_MESSAGE);
 			}
-			return new ArrayList<>();
+			return processedEntities;
 		}
 
 		@Override
