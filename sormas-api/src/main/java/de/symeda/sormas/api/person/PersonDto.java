@@ -607,6 +607,26 @@ public class PersonDto extends PseudonymizableDto {
 	}
 
 	@JsonIgnore
+	public PhoneNumberType getPhoneNumberType() {
+		for (PersonContactDetailDto contactDetailDto : getPersonContactDetails()) {
+			if (contactDetailDto.getPersonContactDetailType() == PersonContactDetailType.PHONE && contactDetailDto.isPrimaryContact()) {
+				return contactDetailDto.getPhoneNumberType();
+			}
+		}
+		return null;
+	}
+
+	@JsonIgnore
+	public void setPhoneNumberType(PhoneNumberType phoneNumberType) {
+		for (PersonContactDetailDto contactDetailDto : getPersonContactDetails()) {
+			if (contactDetailDto.getPersonContactDetailType() == PersonContactDetailType.PHONE && contactDetailDto.isPrimaryContact()) {
+				contactDetailDto.setPhoneNumberType(phoneNumberType);
+				break;
+			}
+		}
+	}
+
+	@JsonIgnore
 	public List<String> getAllPhoneNumbers() {
 		ArrayList<String> result = new ArrayList<>();
 		for (PersonContactDetailDto pcd : getPersonContactDetails()) {
