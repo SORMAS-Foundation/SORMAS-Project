@@ -382,7 +382,7 @@ public class UserController {
 
 							List<String> uuids = batch.stream().map(UserDto::getUuid).collect(Collectors.toList());
 							return FacadeProvider.getUserFacade().enableUsers(uuids);
-						}, new ArrayList<>(selectedRows), null, null, remaining -> {
+						}, new ArrayList<>(selectedRows), remaining -> {
 							userGrid.reload();
 							if (CollectionUtils.isNotEmpty(remaining)) {
 								userGrid.asMultiSelect().selectItems(remaining.toArray(new UserDto[0]));
@@ -429,7 +429,7 @@ public class UserController {
 
 							List<String> uuids = batch.stream().map(UserDto::getUuid).collect(Collectors.toList());
 							return FacadeProvider.getUserFacade().disableUsers(uuids);
-						}, new ArrayList<>(selectedRows), null, null, remaining -> {
+						}, new ArrayList<>(selectedRows), remaining -> {
 							userGrid.reload();
 							if (CollectionUtils.isNotEmpty(remaining)) {
 								userGrid.asMultiSelect().selectItems(remaining.toArray(new UserDto[0]));

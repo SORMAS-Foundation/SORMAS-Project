@@ -51,13 +51,10 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 			confirmed -> {
 				if (Boolean.TRUE.equals(confirmed)) {
 					List<T> selectedEntitiesCpy = new ArrayList<>(entities);
-					List<T> selectedEligibleEntitiesCpy = new ArrayList<>(entities);
 					this.<T> createBulkOperationHandler(deleteHandler, false)
 						.doBulkOperation(
 							selectedEntries -> deleteHandler.restore(selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList())),
 							selectedEntitiesCpy,
-							selectedEligibleEntitiesCpy,
-							null,
 							batchCallback);
 				}
 			});
@@ -65,8 +62,6 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 
 	public <T extends HasUuid> void deleteAllSelectedItems(
 		Collection<T> entities,
-		Collection<T> eligibleEntities,
-		Collection<T> ineligibleEntities,
 		IDeleteRestoreHandler<?> deleteHandler,
 		Consumer<List<T>> batchCallback) {
 
@@ -105,8 +100,6 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 					deleteHandler.clearOtherReason();
 
 					List<T> selectedEntitiesCpy = new ArrayList<>(entities);
-					List<T> selectedEligibleEntitiesCpy = eligibleEntities != null ? new ArrayList<>(eligibleEntities) : new ArrayList<>(entities);
-					List<T> selectedIneligibleEntitiesCpy = ineligibleEntities != null ? new ArrayList<>(ineligibleEntities) : null;
 					this.<T> createBulkOperationHandler(deleteHandler, true)
 						.doBulkOperation(
 							selectedEntries -> deleteHandler.delete(
@@ -115,8 +108,6 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 									deleteHandler.getDeleteReasonComboBox().getValue(),
 									deleteHandler.getOtherDeletionReason().getValue())),
 							selectedEntitiesCpy,
-							selectedEligibleEntitiesCpy,
-							selectedIneligibleEntitiesCpy,
 							batchCallback);
 				}
 

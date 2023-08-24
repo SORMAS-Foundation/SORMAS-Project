@@ -54,6 +54,8 @@ import javax.validation.ValidationException;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
@@ -140,6 +142,8 @@ public class UserFacadeEjb implements UserFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
 	private CurrentUserService currentUserService;
@@ -999,18 +1003,17 @@ public class UserFacadeEjb implements UserFacade {
 
 		List<User> users = userService.getByUuids(userUuids);
 		for (User user : users) {
-			User oldUser = new User();
 			try {
-				oldUser = (User) BeanUtils.cloneBean(user);
+				User oldUser = (User) BeanUtils.cloneBean(user);
+				user.setActive(active);
+				userService.ensurePersisted(user);
+
+				userUpdateEvent.fire(new UserUpdateEvent(oldUser, user));
+				processedEntities.add(new ProcessedEntity(user.getUuid(), ProcessedEntityStatus.SUCCESS));
 			} catch (Exception e) {
 				processedEntities.add(new ProcessedEntity(user.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+				logger.error("The event with uuid {} could not be restored due to an Exception", user.getUuid(), e);
 			}
-
-			user.setActive(active);
-			userService.ensurePersisted(user);
-
-			userUpdateEvent.fire(new UserUpdateEvent(oldUser, user));
-			processedEntities.add(new ProcessedEntity(user.getUuid(), ProcessedEntityStatus.SUCCESS));
 		}
 
 		return processedEntities;

@@ -31,7 +31,6 @@ import javax.persistence.Query;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.http.HttpStatus;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,6 +49,8 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
@@ -60,7 +61,6 @@ import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonAddressType;
@@ -170,11 +170,10 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 				.withRequestBody(containing("VXAERX-5RCKFA-G5DVXH-DPHPCAFB"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
-		try {
+		List<ProcessedEntity> processedCases =
 			getExternalSurveillanceToolGatewayFacade().sendCases(Arrays.asList("XRJOEJ-P2OY5E-CA5MYT-LSVCCGVY", "test-not-found"));
-		} catch (ExternalSurveillanceToolException e) {
-			assertThat(e.getMessage(), Matchers.is(I18nProperties.getString("ExternalSurveillanceToolGateway.notificationErrorSending")));
-		}
+		assertEquals(processedCases.get(0).getProcessedEntityStatus(), ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE);
+
 	}
 
 	@Test
@@ -267,7 +266,9 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 				.withRequestBody(containing("caseUuids"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
-		getCaseService().updateArchiveFlagInExternalSurveillanceToolForSharedCases(Collections.singletonList(caze.getUuid()), true);
+		//getCaseService().updateArchiveFlagInExternalSurveillanceTool(Collections.singletonList(caze.getUuid()), true);
+
+		getCaseService().archive(caze.getUuid(), new Date());
 
 		wireMockRuntime.getWireMock().verify(exactly(1), postRequestedFor(urlEqualTo("/export")));
 	}
@@ -289,8 +290,10 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 				.withRequestBody(containing("caseUuids"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
-		List<String> sharedCaseUuids = caseService.getEligibleSharedUuids(Collections.singletonList(caze.getUuid()));
-		caseService.updateArchiveFlagInExternalSurveillanceToolForSharedCases(sharedCaseUuids, true);
+		List<String> sharedCaseUuids = caseService.getEligibleUuidsForSharingWithExternalSurveillanceTool(Collections.singletonList(caze.getUuid()));
+		//caseService.updateArchiveFlagInExternalSurveillanceTool(sharedCaseUuids, true);
+
+		caseService.archive(caze.getUuid(), new Date());
 
 		wireMockRuntime.getWireMock().verify(exactly(0), postRequestedFor(urlEqualTo("/export")));
 	}
@@ -310,8 +313,10 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
 		//the case does not have an externalId set and after the filtering the sendCases will not be called
-		List<String> sharedCaseUuids = caseService.getEligibleSharedUuids(Collections.singletonList(caze.getUuid()));
-		getCaseService().updateArchiveFlagInExternalSurveillanceToolForSharedCases(sharedCaseUuids, true);
+		List<String> sharedCaseUuids = caseService.getEligibleUuidsForSharingWithExternalSurveillanceTool(Collections.singletonList(caze.getUuid()));
+		//getCaseService().updateArchiveFlagInExternalSurveillanceTool(sharedCaseUuids, true);
+
+		getCaseService().archive(caze.getUuid(), new Date());
 
 		wireMockRuntime.getWireMock().verify(exactly(0), postRequestedFor(urlEqualTo("/export")));
 	}
@@ -331,9 +336,13 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 				.withRequestBody(containing("caseUuids"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_BAD_REQUEST)));
 
-		assertThrows(
-			ExternalSurveillanceToolRuntimeException.class,
-			() -> getCaseService().updateArchiveFlagInExternalSurveillanceToolForSharedCases(Collections.singletonList(caze.getUuid()), true));
+		/*
+		 * assertThrows(
+		 * ExternalSurveillanceToolRuntimeException.class,
+		 * () -> getCaseService().updateArchiveFlagInExternalSurveillanceTool(Collections.singletonList(caze.getUuid()), true));
+		 */
+
+		assertThrows(ExternalSurveillanceToolRuntimeException.class, () -> getCaseService().archive(caze.getUuid(), new Date()));
 
 	}
 

@@ -766,8 +766,6 @@ public class ContactController {
 			boolean contactOfficerChange = district != null ? form.getContactOfficerCheckBox().getValue() : false;
 
 			List<ContactIndexDto> selectedContactsCpy = new ArrayList<>(selectedContacts);
-			Collection<T> ineligibleContacts = contactFacade.getIneligibleEntitiesForEditing(selectedContacts);
-			Collection<T> eligibleContacts = contactFacade.getEligibleEntitiesForEditing(selectedContacts, ineligibleContacts);
 
 			BulkOperationHandler.<ContactIndexDto> forBulkEdit()
 				.doBulkOperation(
@@ -777,8 +775,6 @@ public class ContactController {
 						classificationChange,
 						contactOfficerChange),
 					selectedContactsCpy,
-					new ArrayList<>(eligibleContacts),
-					new ArrayList<>(ineligibleContacts),
 					bulkOperationCallback(caseUuid, contactGrid, popupWindow));
 		});
 
@@ -810,7 +806,7 @@ public class ContactController {
 	public void deleteAllSelectedItems(Collection<? extends ContactIndexDto> selectedRows, AbstractContactGrid<?> contactGrid) {
 
 		ControllerProvider.getDeleteRestoreController()
-			.deleteAllSelectedItems(selectedRows, null, null, DeleteRestoreHandlers.forContact(), bulkOperationCallback(null, contactGrid, null));
+			.deleteAllSelectedItems(selectedRows, DeleteRestoreHandlers.forContact(), bulkOperationCallback(null, contactGrid, null));
 
 	}
 
@@ -841,22 +837,16 @@ public class ContactController {
 					if (Boolean.TRUE.equals(confirmed)) {
 						String userName = UserProvider.getCurrent().getUserName();
 
-						List<FollowUpStatus> ineligibleStatuses = new ArrayList<>();
-						ineligibleStatuses.add(FollowUpStatus.NO_FOLLOW_UP);
-						ineligibleStatuses.add(FollowUpStatus.CANCELED);
-						Collection<T> ineligibleContacts = getIneligibleContacts(selectedRows, ineligibleStatuses);
-						Collection<T> eligibleContacts = getEligibleContacts(selectedRows, ineligibleContacts);
-
 						new BulkOperationHandler<ContactIndexDto>(
 							Strings.messageFollowUpCanceled,
-							Strings.messageFollowUpsWithWrongStatusNotCancelled,
-							Strings.headingSomeFollowUpsNotCancelled,
-							Strings.headingFollowUpsNotCancelled,
-							Strings.messageCountFollowUpsNotCancelled,
+							Strings.messageVisitsWithWrongStatusNotCancelled,
+							Strings.headingSomeVisitsNotCancelled,
+							Strings.headingVisitsNotCancelled,
+							Strings.messageCountVisitsNotCancelled,
 							null,
 							null,
-							Strings.messageCountFollowUpsNotCancelledAccessDeniedReason,
-							Strings.messageNoEligibleFollowUpForCancellation,
+							Strings.messageCountVisitsNotCancelledAccessDeniedReason,
+							Strings.messageNoEligibleVisitForCancellation,
 							Strings.infoBulkProcessFinishedWithSkipsOutsideJurisdictionOrNotEligible,
 							Strings.infoBulkProcessFinishedWithoutSuccess).doBulkOperation(batch -> {
 								List<ProcessedEntity> processedContacts = new ArrayList<>();
@@ -864,15 +854,13 @@ public class ContactController {
 								for (ContactIndexDto contact : batch) {
 									if (!FollowUpStatus.NO_FOLLOW_UP.equals(contact.getFollowUpStatus())
 										&& !FollowUpStatus.CANCELED.equals(contact.getFollowUpStatus())) {
-										processedContacts.add(processContact(contact, FollowUpStatus.CANCELED, Strings.infoCanceledBy, userName));
+										processedContacts.add(setFollowUpStatus(contact, FollowUpStatus.CANCELED, Strings.infoCanceledBy, userName));
+									} else {
+										processedContacts.add(new ProcessedEntity(contact.getUuid(), ProcessedEntityStatus.NOT_ELIGIBLE));
 									}
 								}
 								return processedContacts;
-							},
-								new ArrayList<>(selectedRows),
-								new ArrayList<>(eligibleContacts),
-								new ArrayList<>(ineligibleContacts),
-								bulkOperationCallback(caseUuid, contactGrid, null));
+							}, new ArrayList<>(selectedRows), bulkOperationCallback(caseUuid, contactGrid, null));
 					}
 				});
 		}
@@ -899,42 +887,36 @@ public class ContactController {
 					if (Boolean.TRUE.equals(confirmed)) {
 						String userName = UserProvider.getCurrent().getUserName();
 
-						List<FollowUpStatus> ineligibleStatuses = new ArrayList<>();
-						ineligibleStatuses.add(FollowUpStatus.NO_FOLLOW_UP);
-						Collection<T> ineligibleContacts = getIneligibleContacts(selectedRows, ineligibleStatuses);
-						Collection<T> eligibleContacts = getEligibleContacts(selectedRows, ineligibleContacts);
-
 						new BulkOperationHandler<ContactIndexDto>(
 							Strings.messageFollowUpStatusChanged,
-							Strings.messageFollowUpsWithWrongStatusNotSetToLost,
-							Strings.headingSomeFollowUpsNotSetToLost,
-							Strings.headingFollowUpsNotSetToLost,
-							Strings.messageCountFollowUpsNotSetToLost,
+							Strings.messageVisitsWithWrongStatusNotSetToLost,
+							Strings.headingSomeVisitsNotSetToLost,
+							Strings.headingVisitsNotSetToLost,
+							Strings.messageCountVisitsNotSetToLost,
 							null,
 							null,
-							Strings.messageCountFollowUpsNotSetToLostAccessDeniedReason,
-							Strings.messageNoEligibleFollowUpForSettingToLost,
+							Strings.messageCountVisitsNotSetToLostAccessDeniedReason,
+							Strings.messageNoEligibleVisitForSettingToLost,
 							Strings.infoBulkProcessFinishedWithSkipsOutsideJurisdictionOrNotEligible,
 							Strings.infoBulkProcessFinishedWithoutSuccess).doBulkOperation(batch -> {
 								List<ProcessedEntity> processedContacts = new ArrayList<>();
 
 								for (ContactIndexDto contact : batch) {
 									if (contact.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
-										processedContacts.add(processContact(contact, FollowUpStatus.LOST, Strings.infoLostToFollowUpBy, userName));
+										processedContacts
+											.add(setFollowUpStatus(contact, FollowUpStatus.LOST, Strings.infoLostToFollowUpBy, userName));
+									} else {
+										processedContacts.add(new ProcessedEntity(contact.getUuid(), ProcessedEntityStatus.NOT_ELIGIBLE));
 									}
 								}
 								return processedContacts;
-							},
-								new ArrayList<>(selectedRows),
-								new ArrayList<>(eligibleContacts),
-								new ArrayList<>(ineligibleContacts),
-								bulkOperationCallback(caseUuid, contactGrid, null));
+							}, new ArrayList<>(selectedRows), bulkOperationCallback(caseUuid, contactGrid, null));
 					}
 				});
 		}
 	}
 
-	public ProcessedEntity processContact(ContactIndexDto contact, FollowUpStatus followUpStatus, String followUpComment, String userName) {
+	public ProcessedEntity setFollowUpStatus(ContactIndexDto contact, FollowUpStatus followUpStatus, String followUpComment, String userName) {
 
 		ProcessedEntity processedContact;
 		ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(contact.getUuid());
@@ -951,16 +933,6 @@ public class ContactController {
 			logger.error("The follow up status of contact with uuid {} could not be set due to an Exception", contact.getUuid(), e);
 		}
 		return processedContact;
-	}
-
-	public <T extends ContactIndexDto> Collection<T> getIneligibleContacts(Collection<T> selectedRows, List<FollowUpStatus> ineligibleStatuses) {
-		return selectedRows.stream().filter(row -> ineligibleStatuses.contains(row.getFollowUpStatus())).collect(Collectors.toList());
-	}
-
-	public <T extends ContactIndexDto> Collection<T> getEligibleContacts(Collection<T> selectedRows, Collection<T> ineligibleContacts) {
-		return ineligibleContacts.size() > 0
-			? selectedRows.stream().filter(row -> !ineligibleContacts.contains(row)).collect(Collectors.toCollection(ArrayList::new))
-			: selectedRows;
 	}
 
 	public void openSelectCaseForContactWindow(Disease disease, Consumer<CaseSelectionDto> selectedCaseCallback) {

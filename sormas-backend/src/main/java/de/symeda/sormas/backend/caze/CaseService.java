@@ -1127,8 +1127,8 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		List<Case> remainingCasesToBeProcessed = getEntitiesToBeProcessed(entityUuids, processedCases);
 		List<String> remainingUuidsToBeProcessed = remainingCasesToBeProcessed.stream().map(caze -> caze.getUuid()).collect(Collectors.toList());
 
-		super.archive(remainingUuidsToBeProcessed);
-		if (remainingCasesToBeProcessed.size() > 0) {
+		if (remainingUuidsToBeProcessed.size() > 0) {
+			super.archive(remainingUuidsToBeProcessed);
 			processedCases.addAll(buildProcessedEntities(remainingUuidsToBeProcessed, ProcessedEntityStatus.SUCCESS));
 		}
 
@@ -1141,15 +1141,15 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		List<Case> remainingCasesToBeProcessed = getEntitiesToBeProcessed(entityUuids, processedCases);
 		List<String> remainingUuidsToBeProcessed = remainingCasesToBeProcessed.stream().map(caze -> caze.getUuid()).collect(Collectors.toList());
 
-		super.dearchive(remainingUuidsToBeProcessed, dearchiveReason);
-		if (remainingCasesToBeProcessed.size() > 0) {
+		if (remainingUuidsToBeProcessed.size() > 0) {
+			super.dearchive(remainingUuidsToBeProcessed, dearchiveReason);
 			processedCases.addAll(buildProcessedEntities(remainingUuidsToBeProcessed, ProcessedEntityStatus.SUCCESS));
 		}
 
 		return processedCases;
 	}
 
-	public List<ProcessedEntity> preprocessCases(List<String> entityUuids, boolean archiving) {
+	private List<ProcessedEntity> preprocessCasesForArchiving(List<String> entityUuids, boolean archiving) {
 		List<ProcessedEntity> processedCases = new ArrayList<>();
 		List<String> sharedCaseUuids = getEligibleSharedUuids(entityUuids);
 		try {

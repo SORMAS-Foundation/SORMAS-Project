@@ -16,14 +16,12 @@
 package de.symeda.sormas.api;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
-import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
 public interface CoreFacade<DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends ReferenceDto, CRITERIA extends BaseCriteria>
 	extends BaseFacade<DTO, INDEX_DTO, REF_DTO, CRITERIA>, EditPermissionFacade, DeletableFacade {
@@ -44,11 +42,6 @@ public interface CoreFacade<DTO extends EntityDto, INDEX_DTO extends Serializabl
 
 	List<String> getArchivedUuidsSince(Date since);
 
-	List<ProcessedEntity> buildProcessedEntities(List<String> entityUuids, boolean archiving);
-
 	Date calculateEndOfProcessingDate(String entityUuids);
 
-	<T extends PseudonymizableIndexDto> Collection<T> getIneligibleEntitiesForEditing(Collection<T> selectedEntities);
-
-	<T extends PseudonymizableIndexDto> Collection<T> getEligibleEntitiesForEditing(Collection<T> selectedCases, Collection<T> ineligibleCases);
 }

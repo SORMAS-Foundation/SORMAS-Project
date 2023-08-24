@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.externalsurveillancetool;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -36,6 +37,8 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
@@ -78,8 +81,19 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 
 	@Override
 	@RightsAllowed(UserRight._EXTERNAL_SURVEILLANCE_SHARE)
-	public void sendCases(List<String> caseUuids) throws ExternalSurveillanceToolException {
-		doSendCases(caseUuids, false);
+	public List<ProcessedEntity> sendCases(List<String> caseUuids) {
+		List<ProcessedEntity> processedCases = new ArrayList<>();
+		try {
+			doSendCases(caseUuids, false);
+			processedCases.addAll(buildProcessedEntitiesListByStatus(caseUuids, ProcessedEntityStatus.SUCCESS));
+		} catch (AccessDeniedException e) {
+			processedCases.addAll(buildProcessedEntitiesListByStatus(caseUuids, ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+		} catch (ExternalSurveillanceToolException e) {
+			processedCases.addAll(buildProcessedEntitiesListByStatus(caseUuids, ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
+		} catch (Exception e) {
+			processedCases.addAll(buildProcessedEntitiesListByStatus(caseUuids, ProcessedEntityStatus.INTERNAL_FAILURE));
+		}
+		return processedCases;
 	}
 
 	@RightsAllowed(UserRight._CASE_ARCHIVE)
@@ -101,13 +115,33 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 
 	@Override
 	@RightsAllowed(UserRight._EXTERNAL_SURVEILLANCE_SHARE)
-	public void sendEvents(List<String> eventUuids) throws ExternalSurveillanceToolException {
-		doSendEvents(eventUuids, false);
+	public List<ProcessedEntity> sendEvents(List<String> eventUuids) {
+		List<ProcessedEntity> processedEvents = new ArrayList<>();
+		try {
+			doSendEvents(eventUuids, false);
+			processedEvents.addAll(buildProcessedEntitiesListByStatus(eventUuids, ProcessedEntityStatus.SUCCESS));
+		} catch (AccessDeniedException e) {
+			processedEvents.addAll(buildProcessedEntitiesListByStatus(eventUuids, ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+		} catch (ExternalSurveillanceToolException e) {
+			processedEvents.addAll(buildProcessedEntitiesListByStatus(eventUuids, ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
+		} catch (Exception e) {
+			processedEvents.addAll(buildProcessedEntitiesListByStatus(eventUuids, ProcessedEntityStatus.INTERNAL_FAILURE));
+		}
+		return processedEvents;
 	}
 
 	@RightsAllowed(UserRight._EVENT_ARCHIVE)
 	public void sendEventsInternal(List<String> eventUuids, boolean archived) throws ExternalSurveillanceToolException {
 		doSendEvents(eventUuids, archived);
+	}
+
+	private List<ProcessedEntity> buildProcessedEntitiesListByStatus(List<String> uuids, ProcessedEntityStatus processedEntityStatus) {
+		List<ProcessedEntity> processedEntities = new ArrayList<>();
+
+		//if for one entity occurs a type of exception (AccessDenied or ExternalSurveillanceTool) that exception will occur for the whole batch
+		uuids.forEach(uuid -> processedEntities.add(new ProcessedEntity(uuid, processedEntityStatus)));
+
+		return processedEntities;
 	}
 
 	private void doSendEvents(List<String> eventUuids, boolean archived) throws ExternalSurveillanceToolException {
@@ -126,12 +160,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 		String serviceUrl = configFacade.getExternalSurveillanceToolGatewayUrl().trim();
 
 		Invocation.Builder request =
-			ClientBuilder.newBuilder()
-			.connectTimeout(30, TimeUnit.SECONDS)
-			.build()
-			.target(serviceUrl)
-			.path("export")
-			.request();
+			ClientBuilder.newBuilder().connectTimeout(30, TimeUnit.SECONDS).build().target(serviceUrl).path("export").request();
 
 		Response response;
 		try {

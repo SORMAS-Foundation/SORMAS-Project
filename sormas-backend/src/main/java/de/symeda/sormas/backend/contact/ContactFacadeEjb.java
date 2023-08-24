@@ -566,29 +566,31 @@ public class ContactFacadeEjb
 
 		if (contactsToBeDeleted != null) {
 			contactsToBeDeleted.forEach(contactToBeDeleted -> {
-				if (!contactToBeDeleted.isDeleted()) {
-					try {
+				try {
+					if (!contactToBeDeleted.isDeleted()) {
 						deleteContact(contactToBeDeleted, deletionDetails);
 						processedContacts.add(new ProcessedEntity(contactToBeDeleted.getUuid(), ProcessedEntityStatus.SUCCESS));
-					} catch (ExternalSurveillanceToolRuntimeException e) {
-						processedContacts.add(new ProcessedEntity(contactToBeDeleted.getUuid(), ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
-						logger.error(
-							"The contact with uuid {} could not be deleted due to a ExternalSurveillanceToolRuntimeException",
-							contactToBeDeleted.getUuid(),
-							e);
-					} catch (SormasToSormasRuntimeException e) {
-						processedContacts.add(new ProcessedEntity(contactToBeDeleted.getUuid(), ProcessedEntityStatus.SORMAS_TO_SORMAS_FAILURE));
-						logger.error(
-							"The contact with uuid {} could not be deleted due to a SormasToSormasRuntimeException",
-							contactToBeDeleted.getUuid(),
-							e);
-					} catch (AccessDeniedException e) {
-						processedContacts.add(new ProcessedEntity(contactToBeDeleted.getUuid(), ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
-						logger.error("The contact with uuid {} could not be deleted due to a AccessDeniedException", contactToBeDeleted.getUuid(), e);
-					} catch (Exception e) {
-						processedContacts.add(new ProcessedEntity(contactToBeDeleted.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
-						logger.error("The contact with uuid {} could not be deleted", contactToBeDeleted.getUuid(), e);
+					} else {
+						processedContacts.add(new ProcessedEntity(contactToBeDeleted.getUuid(), ProcessedEntityStatus.NOT_ELIGIBLE));
 					}
+				} catch (ExternalSurveillanceToolRuntimeException e) {
+					processedContacts.add(new ProcessedEntity(contactToBeDeleted.getUuid(), ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
+					logger.error(
+						"The contact with uuid {} could not be deleted due to a ExternalSurveillanceToolRuntimeException",
+						contactToBeDeleted.getUuid(),
+						e);
+				} catch (SormasToSormasRuntimeException e) {
+					processedContacts.add(new ProcessedEntity(contactToBeDeleted.getUuid(), ProcessedEntityStatus.SORMAS_TO_SORMAS_FAILURE));
+					logger.error(
+						"The contact with uuid {} could not be deleted due to a SormasToSormasRuntimeException",
+						contactToBeDeleted.getUuid(),
+						e);
+				} catch (AccessDeniedException e) {
+					processedContacts.add(new ProcessedEntity(contactToBeDeleted.getUuid(), ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+					logger.error("The contact with uuid {} could not be deleted due to a AccessDeniedException", contactToBeDeleted.getUuid(), e);
+				} catch (Exception e) {
+					processedContacts.add(new ProcessedEntity(contactToBeDeleted.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+					logger.error("The contact with uuid {} could not be deleted", contactToBeDeleted.getUuid(), e);
 				}
 			});
 		}
@@ -650,15 +652,13 @@ public class ContactFacadeEjb
 	@Override
 	@RightsAllowed(UserRight._CONTACT_ARCHIVE)
 	public List<ProcessedEntity> archive(List<String> entityUuids) {
-		super.archive(entityUuids);
-		return super.buildProcessedEntities(entityUuids, true);
+		return super.archive(entityUuids);
 	}
 
 	@Override
 	@RightsAllowed(UserRight._CONTACT_ARCHIVE)
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
-		super.dearchive(entityUuids, dearchiveReason);
-		return super.buildProcessedEntities(entityUuids, false);
+		return super.dearchive(entityUuids, dearchiveReason);
 	}
 
 	@Override
@@ -2282,22 +2282,31 @@ public class ContactFacadeEjb
 		throws ValidationRuntimeException {
 
 		List<ProcessedEntity> processedEntities = new ArrayList();
-
 		for (String contactUuid : contactUuidList) {
 			Contact contact = service.getByUuid(contactUuid);
 
-			if (service.isEditAllowed(contact)) {
-				ContactDto existingContactDto = toDto(contact);
-				if (classificationChange) {
-					existingContactDto.setContactClassification(updatedContactBulkEditData.getContactClassification());
-				}
-				// Setting the contact officer is only allowed if all selected contacts are in the same district
-				if (contactOfficerChange) {
-					existingContactDto.setContactOfficer(updatedContactBulkEditData.getContactOfficer());
-				}
+			try {
+				if (service.isEditAllowed(contact)) {
+					ContactDto existingContactDto = toDto(contact);
+					if (classificationChange) {
+						existingContactDto.setContactClassification(updatedContactBulkEditData.getContactClassification());
+					}
+					// Setting the contact officer is only allowed if all selected contacts are in the same district
+					if (contactOfficerChange) {
+						existingContactDto.setContactOfficer(updatedContactBulkEditData.getContactOfficer());
+					}
 
-				save(existingContactDto);
-				processedEntities.add(new ProcessedEntity(contactUuid, ProcessedEntityStatus.SUCCESS));
+					save(existingContactDto);
+					processedEntities.add(new ProcessedEntity(contactUuid, ProcessedEntityStatus.SUCCESS));
+				} else {
+					processedEntities.add(new ProcessedEntity(contactUuid, ProcessedEntityStatus.NOT_ELIGIBLE));
+				}
+			} catch (AccessDeniedException e) {
+				processedEntities.add(new ProcessedEntity(contactUuid, ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+				logger.error("The contact with uuid {} could not be saved due to an AccessDeniedException", contactUuid, e);
+			} catch (Exception e) {
+				processedEntities.add(new ProcessedEntity(contactUuid, ProcessedEntityStatus.INTERNAL_FAILURE));
+				logger.error("The contact with uuid {} could not be saved due to an Exception", contactUuid, e);
 			}
 		}
 		return processedEntities;

@@ -136,6 +136,7 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends Quer
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public List<ProcessedEntity> archive(List<String> entityUuids) {
+		List<ProcessedEntity> processedEntities = new ArrayList<>();
 		IterableHelper.executeBatched(
 			entityUuids,
 			ARCHIVE_BATCH_SIZE,
@@ -153,11 +154,14 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends Quer
 				em.createQuery(cu).executeUpdate();
 			}));
 
-		return new ArrayList<>();
+		entityUuids.forEach(uuid -> processedEntities.add(new ProcessedEntity(uuid, ProcessedEntityStatus.SUCCESS)));
+
+		return processedEntities;
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
+		List<ProcessedEntity> processedEntities = new ArrayList<>();
 		IterableHelper.executeBatched(entityUuids, ARCHIVE_BATCH_SIZE, batchedUuids -> {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaUpdate<ADO> cu = cb.createCriteriaUpdate(getElementClass());
@@ -172,28 +176,7 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends Quer
 
 			em.createQuery(cu).executeUpdate();
 		});
-
-		return new ArrayList<>();
-	}
-
-	public List<ProcessedEntity> buildProcessedEntities(List<String> entityUuids, boolean archiving) {
-		List<ProcessedEntity> processedEntities = new ArrayList<>();
-		List<ADO> adoList = getByUuids(entityUuids);
-		if (adoList != null) {
-			for (ADO ado : adoList) {
-				if (archiving) {
-					processedEntities.add(
-						new ProcessedEntity(
-							ado.getUuid(),
-							ado.isArchived() ? ProcessedEntityStatus.SUCCESS : ProcessedEntityStatus.INTERNAL_FAILURE));
-				} else {
-					processedEntities.add(
-						new ProcessedEntity(
-							ado.getUuid(),
-							!ado.isArchived() ? ProcessedEntityStatus.SUCCESS : ProcessedEntityStatus.INTERNAL_FAILURE));
-				}
-			}
-		}
+		entityUuids.forEach(uuid -> processedEntities.add(new ProcessedEntity(uuid, ProcessedEntityStatus.SUCCESS)));
 
 		return processedEntities;
 	}

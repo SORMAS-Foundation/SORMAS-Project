@@ -599,8 +599,6 @@ public interface Strings {
 	String headingFetchExternalMessages = "headingFetchExternalMessages";
 	String headingFileExists = "headingFileExists";
 	String headingFilters = "headingFilters";
-	String headingFollowUpsNotCancelled = "headingFollowUpsNotCancelled";
-	String headingFollowUpsNotSetToLost = "headingFollowUpsNotSetToLost";
 	String headingFollowUpStatus = "headingFollowUpStatus";
 	String headingGenerateCases = "headingGenerateCases";
 	String headingGenerateContacts = "headingGenerateContacts";
@@ -759,13 +757,13 @@ public interface Strings {
 	String headingSomeEventParticipantsNotRestored = "headingSomeEventParticipantsNotRestored";
 	String headingSomeEventsNotLinked = "headingSomeEventsNotLinked";
 	String headingSomeEventsNotRestored = "headingSomeEventsNotRestored";
-	String headingSomeFollowUpsNotCancelled = "headingSomeFollowUpsNotCancelled";
-	String headingSomeFollowUpsNotSetToLost = "headingSomeFollowUpsNotSetToLost";
 	String headingSomeImmunizationsNotRestored = "headingSomeImmunizationsNotRestored";
 	String headingSomeSamplesNotRestored = "headingSomeSamplesNotRestored";
 	String headingSomeTravelEntriesNotRestored = "headingSomeTravelEntriesNotRestored";
 	String headingSomeUsersNotDisabled = "headingSomeUsersNotDisabled";
 	String headingSomeUsersNotEnabled = "headingSomeUsersNotEnabled";
+	String headingSomeVisitsNotCancelled = "headingSomeVisitsNotCancelled";
+	String headingSomeVisitsNotSetToLost = "headingSomeVisitsNotSetToLost";
 	String headingSormasToSormasCanAcceptContactsWithoutCase = "headingSormasToSormasCanAcceptContactsWithoutCase";
 	String headingSormasToSormasCantShareContactWithoutCase = "headingSormasToSormasCantShareContactWithoutCase";
 	String headingSormasToSormasDuplicateDetection = "headingSormasToSormasDuplicateDetection";
@@ -813,7 +811,9 @@ public interface Strings {
 	String headingViewVisit = "headingViewVisit";
 	String headingVisits = "headingVisits";
 	String headingVisitsDeleted = "headingVisitsDeleted";
+	String headingVisitsNotCancelled = "headingVisitsNotCancelled";
 	String headingVisitsNotDeleted = "headingVisitsNotDeleted";
+	String headingVisitsNotSetToLost = "headingVisitsNotSetToLost";
 	String headingVisualization = "headingVisualization";
 	String headingWaterUse = "headingWaterUse";
 	String headingWrongFileType = "headingWrongFileType";
@@ -1165,10 +1165,6 @@ public interface Strings {
 	String messageCountEventsNotLinkedAccessDeniedReason = "messageCountEventsNotLinkedAccessDeniedReason";
 	String messageCountEventsNotRestored = "messageCountEventsNotRestored";
 	String messageCountExternalMessagesNotDeleted = "messageCountExternalMessagesNotDeleted";
-	String messageCountFollowUpsNotCancelled = "messageCountFollowUpsNotCancelled";
-	String messageCountFollowUpsNotCancelledAccessDeniedReason = "messageCountFollowUpsNotCancelledAccessDeniedReason";
-	String messageCountFollowUpsNotSetToLost = "messageCountFollowUpsNotSetToLost";
-	String messageCountFollowUpsNotSetToLostAccessDeniedReason = "messageCountFollowUpsNotSetToLostAccessDeniedReason";
 	String messageCountImmunizationsNotDeleted = "messageCountImmunizationsNotDeleted";
 	String messageCountImmunizationsNotDeletedAccessDeniedReason = "messageCountImmunizationsNotDeletedAccessDeniedReason";
 	String messageCountImmunizationsNotRestored = "messageCountImmunizationsNotRestored";
@@ -1186,8 +1182,12 @@ public interface Strings {
 	String messageCountTravelEntriesNotRestored = "messageCountTravelEntriesNotRestored";
 	String messageCountUsersNotDisabled = "messageCountUsersNotDisabled";
 	String messageCountUsersNotEnabled = "messageCountUsersNotEnabled";
+	String messageCountVisitsNotCancelled = "messageCountVisitsNotCancelled";
+	String messageCountVisitsNotCancelledAccessDeniedReason = "messageCountVisitsNotCancelledAccessDeniedReason";
 	String messageCountVisitsNotDeleted = "messageCountVisitsNotDeleted";
 	String messageCountVisitsNotDeletedAccessDeniedReason = "messageCountVisitsNotDeletedAccessDeniedReason";
+	String messageCountVisitsNotSetToLost = "messageCountVisitsNotSetToLost";
+	String messageCountVisitsNotSetToLostAccessDeniedReason = "messageCountVisitsNotSetToLostAccessDeniedReason";
 	String messageCreateCollectionTask = "messageCreateCollectionTask";
 	String messageDatabaseExportFailed = "messageDatabaseExportFailed";
 	String messageDeleteImmunizationVaccinations = "messageDeleteImmunizationVaccinations";
@@ -1266,8 +1266,6 @@ public interface Strings {
 	String messageFacilityMulitChanged = "messageFacilityMulitChanged";
 	String messageFollowUpCanceled = "messageFollowUpCanceled";
 	String messageFollowUpStatusChanged = "messageFollowUpStatusChanged";
-	String messageFollowUpsWithWrongStatusNotCancelled = "messageFollowUpsWithWrongStatusNotCancelled";
-	String messageFollowUpsWithWrongStatusNotSetToLost = "messageFollowUpsWithWrongStatusNotSetToLost";
 	String messageForwardedExternalMessageFound = "messageForwardedExternalMessageFound";
 	String messageGdpr = "messageGdpr";
 	String messageGdprCheck = "messageGdprCheck";
@@ -1314,8 +1312,8 @@ public interface Strings {
 	String messageNoDocumentUploadFile = "messageNoDocumentUploadFile";
 	String messageNoEligibleEntityForEditing = "messageNoEligibleEntityForEditing";
 	String messageNoEligibleEventForDeletionSelected = "messageNoEligibleEventForDeletionSelected";
-	String messageNoEligibleFollowUpForCancellation = "messageNoEligibleFollowUpForCancellation";
-	String messageNoEligibleFollowUpForSettingToLost = "messageNoEligibleFollowUpForSettingToLost";
+	String messageNoEligibleVisitForCancellation = "messageNoEligibleVisitForCancellation";
+	String messageNoEligibleVisitForSettingToLost = "messageNoEligibleVisitForSettingToLost";
 	String messageNoEndDate = "messageNoEndDate";
 	String messageNoEnvironmentsSelected = "messageNoEnvironmentsSelected";
 	String messageNoEventFound = "messageNoEventFound";
@@ -1434,6 +1432,8 @@ public interface Strings {
 	String messageVaccinationNotRelevantForEventParticipant = "messageVaccinationNotRelevantForEventParticipant";
 	String messageVaccinationOutsideJurisdictionDeletionDenied = "messageVaccinationOutsideJurisdictionDeletionDenied";
 	String messageVisitsDeleted = "messageVisitsDeleted";
+	String messageVisitsWithWrongStatusNotCancelled = "messageVisitsWithWrongStatusNotCancelled";
+	String messageVisitsWithWrongStatusNotSetToLost = "messageVisitsWithWrongStatusNotSetToLost";
 	String messageWrongFileType = "messageWrongFileType";
 	String messageWrongTemplateFileType = "messageWrongTemplateFileType";
 	String min = "min";

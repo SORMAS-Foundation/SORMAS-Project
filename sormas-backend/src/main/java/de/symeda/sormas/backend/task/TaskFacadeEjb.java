@@ -394,19 +394,22 @@ public class TaskFacadeEjb implements TaskFacade {
 		UserReferenceDto currentUser = userService.getCurrentUser().toReference();
 
 		for (String taskUuid : taskUuidList) {
-			Task task = taskService.getByUuid(taskUuid);
-			TaskDto taskDto = toDto(task, createPseudonymizer());
-			if (priorityChange) {
-				taskDto.setPriority(updatedTempTask.getPriority());
-			}
-			if (assigneeChange) {
-				taskDto.setAssigneeUser(updatedTempTask.getAssigneeUser());
-				taskDto.setAssignedByUser(currentUser);
-			}
-			if (taskStatusChange) {
-				taskDto.setTaskStatus(updatedTempTask.getTaskStatus());
-			}
+
 			try {
+				Task task = taskService.getByUuid(taskUuid);
+				TaskDto taskDto = toDto(task, createPseudonymizer());
+
+				if (priorityChange) {
+					taskDto.setPriority(updatedTempTask.getPriority());
+				}
+				if (assigneeChange) {
+					taskDto.setAssigneeUser(updatedTempTask.getAssigneeUser());
+					taskDto.setAssignedByUser(currentUser);
+				}
+				if (taskStatusChange) {
+					taskDto.setTaskStatus(updatedTempTask.getTaskStatus());
+				}
+
 				saveTask(taskDto);
 				processedTasks.add(new ProcessedEntity(taskUuid, ProcessedEntityStatus.SUCCESS));
 			} catch (Exception e) {
@@ -1074,8 +1077,7 @@ public class TaskFacadeEjb implements TaskFacade {
 	@RightsAllowed(UserRight._TASK_ARCHIVE)
 	public List<ProcessedEntity> archive(List<String> taskUuids) {
 		List<ProcessedEntity> processedTasks = new ArrayList<>();
-		IterableHelper.executeBatched(taskUuids, ARCHIVE_BATCH_SIZE, e -> taskService.updateArchived(e, true));
-		taskUuids.forEach(uuid -> processedTasks.add(new ProcessedEntity(uuid, ProcessedEntityStatus.SUCCESS)));
+		IterableHelper.executeBatched(taskUuids, ARCHIVE_BATCH_SIZE, e -> processedTasks.addAll(taskService.updateArchived(e, true)));
 
 		return processedTasks;
 	}
@@ -1084,8 +1086,7 @@ public class TaskFacadeEjb implements TaskFacade {
 	@RightsAllowed(UserRight._TASK_ARCHIVE)
 	public List<ProcessedEntity> dearchive(List<String> taskUuids) {
 		List<ProcessedEntity> processedTasks = new ArrayList<>();
-		IterableHelper.executeBatched(taskUuids, ARCHIVE_BATCH_SIZE, e -> taskService.updateArchived(e, false));
-		taskUuids.forEach(uuid -> processedTasks.add(new ProcessedEntity(uuid, ProcessedEntityStatus.SUCCESS)));
+		IterableHelper.executeBatched(taskUuids, ARCHIVE_BATCH_SIZE, e -> processedTasks.addAll(taskService.updateArchived(e, false)));
 
 		return processedTasks;
 	}

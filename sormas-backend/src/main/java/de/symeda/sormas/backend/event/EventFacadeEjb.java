@@ -172,6 +172,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	@EJB
 	private SormasToSormasEventFacadeEjbLocal sormasToSormasEventFacade;
 	@EJB
+	private EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal eventParticipantFacade;
+	@EJB
 	private EventService eventService;
 	@EJB
 	private EventParticipantService eventParticipantService;
@@ -326,6 +328,11 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		deleteEvent(event, deletionDetails);
 	}
 
+	private boolean isEligibleEvent(Event event) {
+		return eventParticipantFacade.getAllActiveEventParticipantsByEvent(event.getUuid()).size() == 0;
+
+	}
+
 	private void deleteEvent(Event event, DeletionDetails deletionDetails)
 		throws ExternalSurveillanceToolRuntimeException, SormasToSormasRuntimeException, AccessDeniedException {
 
@@ -350,7 +357,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		List<Event> eventsToBeDeleted = service.getByUuids(uuids);
 		if (eventsToBeDeleted != null) {
 			eventsToBeDeleted.forEach(eventToBeDeleted -> {
-				if (!eventToBeDeleted.isDeleted()) {
+				if (!eventToBeDeleted.isDeleted() && isEligibleEvent(eventToBeDeleted)) {
 					try {
 						deleteEvent(eventToBeDeleted, deletionDetails);
 						processedEvents.add(new ProcessedEntity(eventToBeDeleted.getUuid(), ProcessedEntityStatus.SUCCESS));
@@ -373,6 +380,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 						processedEvents.add(new ProcessedEntity(eventToBeDeleted.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
 						logger.error("The event with uuid {} could not be deleted due to an Exception", eventToBeDeleted.getUuid(), e);
 					}
+				} else {
+					processedEvents.add(new ProcessedEntity(eventToBeDeleted.getUuid(), ProcessedEntityStatus.NOT_ELIGIBLE));
 				}
 			});
 		}
@@ -1502,33 +1511,31 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		for (String eventUuid : eventUuidList) {
 			Event event = service.getByUuid(eventUuid);
 
-			if (service.isEditAllowed(event)) {
-				EventDto eventDto = toDto(event);
-				if (eventStatusChange) {
-					eventDto.setEventStatus(updatedTempEvent.getEventStatus());
-				}
+			try {
+				if (service.isEditAllowed(event)) {
+					EventDto eventDto = toDto(event);
+					if (eventStatusChange) {
+						eventDto.setEventStatus(updatedTempEvent.getEventStatus());
+					}
+					if (eventInvestigationStatusChange) {
+						eventDto.setEventInvestigationStatus(updatedTempEvent.getEventInvestigationStatus());
+					}
+					if (eventManagementStatusChange) {
+						eventDto.setEventManagementStatus(updatedTempEvent.getEventManagementStatus());
+					}
 
-				if (eventInvestigationStatusChange) {
-					eventDto.setEventInvestigationStatus(updatedTempEvent.getEventInvestigationStatus());
-				}
-
-				if (eventManagementStatusChange) {
-					eventDto.setEventManagementStatus(updatedTempEvent.getEventManagementStatus());
-				}
-
-				try {
 					save(eventDto);
 					processedEvents.add(new ProcessedEntity(eventUuid, ProcessedEntityStatus.SUCCESS));
-				} catch (AccessDeniedException e) {
-					processedEvents.add(new ProcessedEntity(eventUuid, ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
-				} catch (Exception e) {
-					processedEvents.add(new ProcessedEntity(eventUuid, ProcessedEntityStatus.INTERNAL_FAILURE));
+				} else {
+					processedEvents.add(new ProcessedEntity(eventUuid, ProcessedEntityStatus.NOT_ELIGIBLE));
 				}
-
+			} catch (AccessDeniedException e) {
+				processedEvents.add(new ProcessedEntity(eventUuid, ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+			} catch (Exception e) {
+				processedEvents.add(new ProcessedEntity(eventUuid, ProcessedEntityStatus.INTERNAL_FAILURE));
 			}
 		}
 		return processedEvents;
-
 	}
 
 	@Override

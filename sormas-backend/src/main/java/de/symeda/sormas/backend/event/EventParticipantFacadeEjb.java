@@ -519,23 +519,27 @@ public class EventParticipantFacadeEjb
 
 		if (eventParticipantsToBeDeleted != null) {
 			eventParticipantsToBeDeleted.forEach(eventParticipantToBeDeleted -> {
-				if (!eventParticipantToBeDeleted.isDeleted()) {
-					try {
+
+				try {
+					if (!eventParticipantToBeDeleted.isDeleted()) {
 						delete(eventParticipantToBeDeleted.getUuid(), deletionDetails);
 						processedEventParticipants.add(new ProcessedEntity(eventParticipantToBeDeleted.getUuid(), ProcessedEntityStatus.SUCCESS));
-					} catch (AccessDeniedException e) {
+					} else {
 						processedEventParticipants
-							.add(new ProcessedEntity(eventParticipantToBeDeleted.getUuid(), ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
-						logger.error(
-							"The event participant with uuid {} could not be deleted due to a AccessDeniedException",
-							eventParticipantToBeDeleted.getUuid(),
-							e);
-					} catch (Exception e) {
-						processedEventParticipants
-							.add(new ProcessedEntity(eventParticipantToBeDeleted.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
-						logger.error(
-							"The event participant with uuid:" + eventParticipantToBeDeleted.getUuid() + "could not be deleted due to an Exception");
+							.add(new ProcessedEntity(eventParticipantToBeDeleted.getUuid(), ProcessedEntityStatus.NOT_ELIGIBLE));
 					}
+				} catch (AccessDeniedException e) {
+					processedEventParticipants
+						.add(new ProcessedEntity(eventParticipantToBeDeleted.getUuid(), ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+					logger.error(
+						"The event participant with uuid {} could not be deleted due to a AccessDeniedException",
+						eventParticipantToBeDeleted.getUuid(),
+						e);
+				} catch (Exception e) {
+					processedEventParticipants
+						.add(new ProcessedEntity(eventParticipantToBeDeleted.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+					logger.error(
+						"The event participant with uuid:" + eventParticipantToBeDeleted.getUuid() + "could not be deleted due to an Exception");
 				}
 			});
 		}

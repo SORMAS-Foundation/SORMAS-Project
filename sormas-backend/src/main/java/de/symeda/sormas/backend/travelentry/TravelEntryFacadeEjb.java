@@ -472,15 +472,13 @@ public class TravelEntryFacadeEjb
 	@Override
 	@RightsAllowed(UserRight._TRAVEL_ENTRY_ARCHIVE)
 	public List<ProcessedEntity> archive(List<String> entityUuids) {
-		super.archive(entityUuids);
-		return super.buildProcessedEntities(entityUuids, true);
+		return super.archive(entityUuids);
 	}
 
 	@Override
 	@RightsAllowed(UserRight._TRAVEL_ENTRY_ARCHIVE)
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
-		super.dearchive(entityUuids, dearchiveReason);
-		return super.buildProcessedEntities(entityUuids, false);
+		return super.dearchive(entityUuids, dearchiveReason);
 	}
 
 	@Override

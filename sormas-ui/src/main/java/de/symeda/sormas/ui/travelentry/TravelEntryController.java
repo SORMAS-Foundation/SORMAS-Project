@@ -219,8 +219,6 @@ public class TravelEntryController {
 		ControllerProvider.getDeleteRestoreController()
 			.deleteAllSelectedItems(
 				selectedRows,
-				null,
-				null,
 				DeleteRestoreHandlers.forTravelEntry(),
 				bulkOperationCallback(travelEntryGrid, noEntriesRemainingCallback, null));
 

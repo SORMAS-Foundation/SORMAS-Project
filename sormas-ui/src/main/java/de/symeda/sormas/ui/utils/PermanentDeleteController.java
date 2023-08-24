@@ -63,8 +63,6 @@ public class PermanentDeleteController<F extends PermanentlyDeletableFacade> {
 						.doBulkOperation(
 							selectedEntries -> deleteHandler.delete(selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList())),
 							selectedEntitiesCpy,
-							null,
-							null,
 							batchCallback);
 				}
 

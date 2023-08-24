@@ -1539,20 +1539,26 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		List<ProcessedEntity> processedCases = new ArrayList<>();
 		for (String caseUuid : caseUuidList) {
 			Case caze = service.getByUuid(caseUuid);
-
-			if (service.isEditAllowed(caze)) {
-				CaseDataDto existingCaseDto = toDto(caze);
-				updateCaseWithBulkData(
-					updatedCaseBulkEditData,
-					caze,
-					diseaseChange,
-					diseaseVariantChange,
-					classificationChange,
-					investigationStatusChange,
-					outcomeChange,
-					surveillanceOfficerChange);
-				doSave(caze, true, existingCaseDto, true);
-				processedCases.add(new ProcessedEntity(caseUuid, ProcessedEntityStatus.SUCCESS));
+			try {
+				if (service.isEditAllowed(caze)) {
+					CaseDataDto existingCaseDto = toDto(caze);
+					updateCaseWithBulkData(
+						updatedCaseBulkEditData,
+						caze,
+						diseaseChange,
+						diseaseVariantChange,
+						classificationChange,
+						investigationStatusChange,
+						outcomeChange,
+						surveillanceOfficerChange);
+					doSave(caze, true, existingCaseDto, true);
+					processedCases.add(new ProcessedEntity(caseUuid, ProcessedEntityStatus.SUCCESS));
+				} else {
+					processedCases.add(new ProcessedEntity(caseUuid, ProcessedEntityStatus.NOT_ELIGIBLE));
+				}
+			} catch (Exception e) {
+				processedCases.add(new ProcessedEntity(caseUuid, ProcessedEntityStatus.INTERNAL_FAILURE));
+				logger.error("The case with uuid {} could not be saved due to an Exception", caseUuid, e);
 			}
 		}
 
@@ -1584,31 +1590,35 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		for (String caseUuid : caseUuidList) {
 			Case caze = service.getByUuid(caseUuid);
 
-			if (service.isEditAllowed(caze)) {
-				CaseDataDto existingCaseDto = toDto(caze);
-				updateCaseWithBulkData(
-					updatedCaseBulkEditData,
-					caze,
-					diseaseChange,
-					diseaseVariantChange,
-					classificationChange,
-					investigationStatusChange,
-					outcomeChange,
-					surveillanceOfficerChange);
+			try {
+				if (service.isEditAllowed(caze)) {
+					CaseDataDto existingCaseDto = toDto(caze);
+					updateCaseWithBulkData(
+						updatedCaseBulkEditData,
+						caze,
+						diseaseChange,
+						diseaseVariantChange,
+						classificationChange,
+						investigationStatusChange,
+						outcomeChange,
+						surveillanceOfficerChange);
 
-				caze.setRegion(newRegion);
-				caze.setDistrict(newDistrict);
-				caze.setCommunity(newCommunity);
-				caze.setFacilityType(updatedCaseBulkEditData.getFacilityType());
-				caze.setHealthFacility(newFacility);
-				caze.setHealthFacilityDetails(updatedCaseBulkEditData.getHealthFacilityDetails());
-				try {
+					caze.setRegion(newRegion);
+					caze.setDistrict(newDistrict);
+					caze.setCommunity(newCommunity);
+					caze.setFacilityType(updatedCaseBulkEditData.getFacilityType());
+					caze.setHealthFacility(newFacility);
+					caze.setHealthFacilityDetails(updatedCaseBulkEditData.getHealthFacilityDetails());
+
 					CaseLogic.handleHospitalization(toDto(caze), existingCaseDto, doTransfer);
 					doSave(caze, true, existingCaseDto, true);
 					processedCases.add(new ProcessedEntity(caseUuid, ProcessedEntityStatus.SUCCESS));
-				} catch (Exception e) {
-					processedCases.add(new ProcessedEntity(caseUuid, ProcessedEntityStatus.INTERNAL_FAILURE));
+				} else {
+					processedCases.add(new ProcessedEntity(caseUuid, ProcessedEntityStatus.NOT_ELIGIBLE));
 				}
+			} catch (Exception e) {
+				processedCases.add(new ProcessedEntity(caseUuid, ProcessedEntityStatus.INTERNAL_FAILURE));
+				logger.error("The case with uuid {} could not be saved", caseUuid, e);
 			}
 		}
 
@@ -2693,10 +2703,14 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		if (casesToBeDeleted != null) {
 			casesToBeDeleted.forEach(caseToBeDeleted -> {
-				if (!caseToBeDeleted.isDeleted()) {
+
 					try {
+					if (!caseToBeDeleted.isDeleted()) {
 						deleteCase(caseToBeDeleted, deletionDetails);
 						processedCases.add(new ProcessedEntity(caseToBeDeleted.getUuid(), ProcessedEntityStatus.SUCCESS));
+					} else {
+						processedCases.add(new ProcessedEntity(caseToBeDeleted.getUuid(), ProcessedEntityStatus.NOT_ELIGIBLE));
+					}
 					} catch (ExternalSurveillanceToolRuntimeException e) {
 						processedCases.add(new ProcessedEntity(caseToBeDeleted.getUuid(), ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
 						logger.error(
@@ -2716,7 +2730,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 						processedCases.add(new ProcessedEntity(caseToBeDeleted.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
 						logger.error("The case with uuid {} could not be deleted due to an Exception", caseToBeDeleted.getUuid(), e);
 					}
-				}
 			});
 		}
 

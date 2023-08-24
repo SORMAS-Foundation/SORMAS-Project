@@ -206,8 +206,6 @@ public class ArchivingController {
 								selectedEntries -> archiveHandler
 									.archive(selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList())),
 								selectedCasesCpy,
-								null,
-								null,
 								batchCallback);
 					}
 				});
@@ -275,8 +273,6 @@ public class ArchivingController {
 								selectedEntries -> archiveHandler
 									.dearchive(selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList())),
 								selectedCasesCpy,
-								null,
-								null,
 								batchCallback);
 					}
 					return true;

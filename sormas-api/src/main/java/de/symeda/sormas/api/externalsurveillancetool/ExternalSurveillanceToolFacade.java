@@ -20,6 +20,7 @@ import java.util.List;
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.event.EventDto;
 
 /**
@@ -36,9 +37,9 @@ public interface ExternalSurveillanceToolFacade {
 	 * @param caseUuids
 	 * @return http response code of the gateway
 	 */
-	void sendCases(List<String> caseUuids) throws ExternalSurveillanceToolException;
+	List<ProcessedEntity> sendCases(List<String> caseUuids);
 
-	void sendEvents(List<String> eventUuids) throws ExternalSurveillanceToolException;
+	List<ProcessedEntity> sendEvents(List<String> eventUuids);
 
 	void createCaseShareInfo(List<String> caseUuids);
 

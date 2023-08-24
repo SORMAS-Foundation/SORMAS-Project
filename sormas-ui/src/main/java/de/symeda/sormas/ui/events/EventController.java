@@ -365,29 +365,36 @@ public class EventController {
 			Strings.infoBulkProcessFinishedWithSkipsOutsideJurisdictionOrNotEligible,
 			Strings.infoBulkProcessFinishedWithoutSuccess).doBulkOperation(batch -> {
 				List<ProcessedEntity> processedContacts = new ArrayList<>();
+
 				batch.forEach(contactDataDto -> {
-					EventParticipantDto ep =
-						EventParticipantDto.buildFromPerson(personByUuid.get(contactDataDto.getPerson().getUuid()), eventReferenceDto, currentUser);
 					try {
-						FacadeProvider.getEventParticipantFacade().save(ep);
-						processedContacts.add(new ProcessedEntity(contactDataDto.getUuid(), ProcessedEntityStatus.SUCCESS));
+						if (!alreadyLinkedContacts.contains(contactDataDto)) {
+
+							EventParticipantDto ep = EventParticipantDto
+								.buildFromPerson(personByUuid.get(contactDataDto.getPerson().getUuid()), eventReferenceDto, currentUser);
+
+							FacadeProvider.getEventParticipantFacade().save(ep);
+							processedContacts.add(new ProcessedEntity(contactDataDto.getUuid(), ProcessedEntityStatus.SUCCESS));
+						} else {
+							processedContacts.add(new ProcessedEntity(contactDataDto.getUuid(), ProcessedEntityStatus.NOT_ELIGIBLE));
+						}
 					} catch (AccessDeniedException e) {
 						processedContacts.add(new ProcessedEntity(contactDataDto.getUuid(), ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
 						logger.error(
-							"The event participant for contact with uuid {} could not be saved due to an AccessDeniedException",
+							"The event participant for contact with uuid {} could not be linked due to an AccessDeniedException",
 							contactDataDto.getUuid(),
 							e);
 					} catch (Exception e) {
 						processedContacts.add(new ProcessedEntity(contactDataDto.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
 						logger.error(
-							"The event participant for contact with uuid {} could not be saved due to an Exception",
+							"The event participant for contact with uuid {} could not be linked due to an Exception",
 							contactDataDto.getUuid(),
 							e);
 					}
 				});
 
 				return processedContacts;
-			}, new ArrayList<>(contacts), new ArrayList<>(contactByPersonUuid.values()), alreadyLinkedContacts, callback);
+			}, new ArrayList<>(contacts), callback);
 	}
 
 	public void selectEvent(EventGroupReferenceDto eventGroupReference) {
@@ -998,8 +1005,6 @@ public class EventController {
 			boolean eventManagementStatusChange = form.getEventManagementStatusCheckbox().getValue();
 
 			List<EventIndexDto> selectedEventsCpy = new ArrayList<>(selectedEvents);
-			Collection<EventIndexDto> ineligibleEvents = eventFacade.getIneligibleEntitiesForEditing(selectedEvents);
-			Collection<EventIndexDto> eligibleEvents = eventFacade.getEligibleEntitiesForEditing(selectedEvents, ineligibleEvents);
 
 			BulkOperationHandler.<EventIndexDto> forBulkEdit()
 				.doBulkOperation(
@@ -1010,8 +1015,6 @@ public class EventController {
 						eventInvestigationStatusChange,
 						eventManagementStatusChange),
 					selectedEventsCpy,
-					new ArrayList<>(eligibleEvents),
-					new ArrayList<>(ineligibleEvents),
 					bulkOperationCallback(eventGrid, popupWindow));
 		});
 
@@ -1042,27 +1045,8 @@ public class EventController {
 	}
 
 	public void deleteAllSelectedItems(Collection<EventIndexDto> selectedRows, EventGrid eventGrid) {
-
-		Collection<EventIndexDto> ineligibleEvents = new ArrayList<>();
-		selectedRows.stream().forEach(row -> {
-			List<EventParticipantDto> eventParticipantList =
-				FacadeProvider.getEventParticipantFacade().getAllActiveEventParticipantsByEvent(row.getUuid());
-			if (eventParticipantList.size() > 0) {
-				ineligibleEvents.add(row);
-			}
-		});
-
-		Collection<EventIndexDto> eligibleEvents = ineligibleEvents.size() > 0
-			? selectedRows.stream().filter(row -> !ineligibleEvents.contains(row)).collect(Collectors.toCollection(ArrayList::new))
-			: selectedRows;
-
 		ControllerProvider.getDeleteRestoreController()
-			.deleteAllSelectedItems(
-				selectedRows,
-				eligibleEvents,
-				ineligibleEvents,
-				DeleteRestoreHandlers.forEvent(),
-				bulkOperationCallback(eventGrid, null));
+			.deleteAllSelectedItems(selectedRows, DeleteRestoreHandlers.forEvent(), bulkOperationCallback(eventGrid, null));
 	}
 
 	public void restoreSelectedEvents(Collection<EventIndexDto> selectedRows, EventGrid eventGrid) {

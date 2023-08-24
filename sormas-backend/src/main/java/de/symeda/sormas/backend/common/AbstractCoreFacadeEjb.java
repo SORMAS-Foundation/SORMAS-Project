@@ -16,12 +16,9 @@
 package de.symeda.sormas.backend.common;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.annotation.security.DenyAll;
 import javax.ejb.TransactionAttribute;
@@ -49,7 +46,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
-import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.backend.deletionconfiguration.DeletionConfiguration;
 import de.symeda.sormas.backend.deletionconfiguration.DeletionConfigurationService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
@@ -221,11 +217,6 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	protected abstract CoreEntityType getCoreEntityType();
 
 	@DenyAll
-	public List<ProcessedEntity> buildProcessedEntities(List<String> entityUuids, boolean archiving) {
-		return service.buildProcessedEntities(entityUuids, archiving);
-	}
-
-	@DenyAll
 	public void archive(String entityUuid, Date endOfProcessingDate) {
 		service.archive(entityUuid, endOfProcessingDate);
 	}
@@ -252,18 +243,6 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	@Override
 	public boolean isEditAllowed(String uuid) {
 		return service.isEditAllowed(service.getByUuid(uuid));
-	}
-
-	public <T extends PseudonymizableIndexDto> Collection<T> getIneligibleEntitiesForEditing(Collection<T> selectedEntities) {
-		return selectedEntities.stream().filter(entity -> !this.isEditAllowed(entity.getUuid())).collect(Collectors.toList());
-	}
-
-	public <T extends PseudonymizableIndexDto> Collection<T> getEligibleEntitiesForEditing(
-		Collection<T> selectedCases,
-		Collection<T> ineligibleCases) {
-		return ineligibleCases.size() > 0
-			? selectedCases.stream().filter(row -> !ineligibleCases.contains(row)).collect(Collectors.toCollection(ArrayList::new))
-			: selectedCases;
 	}
 
 }

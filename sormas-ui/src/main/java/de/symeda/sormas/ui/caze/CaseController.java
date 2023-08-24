@@ -1034,8 +1034,6 @@ public class CaseController {
 
 			CaseFacade caseFacade = FacadeProvider.getCaseFacade();
 			List<T> selectedCasesCpy = new ArrayList<>(selectedCases);
-			Collection<T> ineligibleCases = caseFacade.getIneligibleEntitiesForEditing(selectedCases);
-			Collection<T> eligibleCases = caseFacade.getEligibleEntitiesForEditing(selectedCases, ineligibleCases);
 
 			if (facilityChange) {
 				VaadinUiUtil.showChooseOptionPopup(
@@ -1057,8 +1055,6 @@ public class CaseController {
 								surveillanceOfficerChange,
 								e),
 							selectedCasesCpy,
-							new ArrayList<>(eligibleCases),
-							new ArrayList<>(ineligibleCases),
 							bulkOperationCallback(caseGrid, popupWindow)));
 			} else {
 				BulkOperationHandler.<T> forBulkEdit()
@@ -1073,8 +1069,6 @@ public class CaseController {
 							outcomeChange,
 							surveillanceOfficerChange),
 						selectedCasesCpy,
-						new ArrayList<>(eligibleCases),
-						new ArrayList<>(ineligibleCases),
 						bulkOperationCallback(caseGrid, popupWindow));
 			}
 		});
@@ -1557,8 +1551,7 @@ public class CaseController {
 	public void deleteAllSelectedItems(Collection<? extends CaseIndexDto> selectedRows, AbstractCaseGrid<?> caseGrid) {
 
 		ControllerProvider.getDeleteRestoreController()
-			.deleteAllSelectedItems(selectedRows, null, null, DeleteRestoreHandlers.forCase(), bulkOperationCallback(caseGrid, null));
-
+			.deleteAllSelectedItems(selectedRows, DeleteRestoreHandlers.forCase(), bulkOperationCallback(caseGrid, null));
 	}
 
 	public void restoreSelectedCases(Collection<? extends CaseIndexDto> selectedRows, AbstractCaseGrid<?> caseGrid) {
