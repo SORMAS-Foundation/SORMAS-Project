@@ -38,11 +38,11 @@ public class BulkOperationHandler<T extends HasUuid> {
 	 * Amount of DTOs that are forwarded to the backend in one single call
 	 * when displaying a progress layout.
 	 */
-	public static final int BULK_ACTION_BATCH_SIZE = 5;
+	public static final int BULK_ACTION_BATCH_SIZE = 20;
 	/**
 	 * Amount of DTOs that have to be selected for the progress layout to be displayed.
 	 */
-	public static final int BULK_ACTION_PROGRESS_THRESHOLD = 10;
+	public static final int BULK_ACTION_PROGRESS_THRESHOLD = 40;
 	private boolean cancelAfterCurrentBatch;
 	private boolean cancelButtonClicked;
 	private final Lock cancelLock = new ReentrantLock();
