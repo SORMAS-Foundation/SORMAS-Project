@@ -321,13 +321,6 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		};
 		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.SEROTYPE, serotypeVisibilityDependencies, true);
 
-		FieldHelper.setVisibleWhen(
-			getFieldGroup(),
-			PathogenTestDto.CQ_VALUE,
-			PathogenTestDto.TEST_TYPE,
-			Arrays.asList(PathogenTestType.CQ_VALUE_DETECTION),
-			true);
-
 		Consumer<Disease> updateDiseaseVariantField = disease -> {
 			List<DiseaseVariant> diseaseVariants =
 				FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
