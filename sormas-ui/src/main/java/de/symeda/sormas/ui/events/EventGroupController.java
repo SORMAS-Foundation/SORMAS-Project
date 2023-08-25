@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.events;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -78,10 +79,13 @@ public class EventGroupController {
 
 		List<EventReferenceDto> alreadyLinkedEventsToGroup =
 			FacadeProvider.getEventGroupFacade().getIneligibleEventUuidsToBeLinkedToGroup(eventUuids, eventGroupUuids);
+
 		List<EventReferenceDto> eligibleEventReferences = FacadeProvider.getEventGroupFacade()
 			.getEligibleEventUuidsToBeLinkedToGroup(
 				eventUuids,
 				alreadyLinkedEventsToGroup.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList()));
+
+		List<String> eligibleEventUuids = eligibleEventReferences.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList());
 
 		String messageEventsLinkedToGroup = eventReferences.size() > 1 ? Strings.messageEventsLinkedToGroup : Strings.messageEventLinkedToGroup;
 		new BulkOperationHandler<EventReferenceDto>(
@@ -97,21 +101,19 @@ public class EventGroupController {
 			Strings.infoBulkProcessFinishedWithSkipsOutsideJurisdictionOrNotEligible,
 			Strings.infoBulkProcessFinishedWithoutSuccess).doBulkOperation(batch -> {
 
-				List<String> eligibleEventUuids = eligibleEventReferences.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList());
 				List<String> eligibleEventUuidsFromBatch = batch.stream()
 					.filter(eventReference -> eligibleEventUuids.contains(eventReference.getUuid()))
 					.map(EventReferenceDto::getUuid)
 					.collect(Collectors.toList());
-				eligibleEventReferences.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList());
 
 				List<ProcessedEntity> processedEvents =
 					FacadeProvider.getEventGroupFacade().linkEventsToGroups(eligibleEventUuidsFromBatch, eventGroupUuids);
+
 				FacadeProvider.getEventGroupFacade()
-					.notifyEventAddedToEventGroup(
-						eventGroupReference.getUuid(),
-						eligibleEventReferences.stream().map(EventReferenceDto::getUuid).collect(Collectors.toSet()));
+					.notifyEventAddedToEventGroup(eventGroupReference.getUuid(), new HashSet<>(eligibleEventUuidsFromBatch));
+
 				return processedEvents;
-			}, new ArrayList<>(eventReferences), new ArrayList<>(eligibleEventReferences), new ArrayList<>(alreadyLinkedEventsToGroup), callback);
+			}, new ArrayList<>(eventReferences), callback);
 	}
 
 	public void create(EventReferenceDto eventReference) {
