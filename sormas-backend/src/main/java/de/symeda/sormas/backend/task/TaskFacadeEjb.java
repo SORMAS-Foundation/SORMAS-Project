@@ -414,6 +414,7 @@ public class TaskFacadeEjb implements TaskFacade {
 				processedTasks.add(new ProcessedEntity(taskUuid, ProcessedEntityStatus.SUCCESS));
 			} catch (Exception e) {
 				processedTasks.add(new ProcessedEntity(taskUuid, ProcessedEntityStatus.INTERNAL_FAILURE));
+				logger.error("The task with uuid {} could not be saved due to an Exception", taskUuid, e);
 			}
 		}
 		return processedTasks;

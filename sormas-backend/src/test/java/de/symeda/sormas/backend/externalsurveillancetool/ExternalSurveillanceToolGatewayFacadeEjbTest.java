@@ -377,7 +377,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
 		List<String> sharedEventUuids = eventService.getSharedEventUuids(Collections.singletonList(event.getUuid()));
-		eventService.updateArchiveFlagInExternalSurveillanceToolForSharedEvents(sharedEventUuids, false);
+		eventService.updateArchiveFlagInExternalSurveillanceTool(sharedEventUuids, false);
 
 		wireMockRuntime.getWireMock().verify(exactly(1), postRequestedFor(urlEqualTo("/export")));
 	}
@@ -414,7 +414,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 
 		assertThrows(
 			ExternalSurveillanceToolRuntimeException.class,
-			() -> eventService.updateArchiveFlagInExternalSurveillanceToolForSharedEvents(Collections.singletonList(eventDto.getUuid()), true));
+			() -> eventService.updateArchiveFlagInExternalSurveillanceTool(Collections.singletonList(eventDto.getUuid()), true));
 	}
 
 	@Test

@@ -62,7 +62,6 @@ import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
-import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
@@ -297,61 +296,55 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 
 	@Override
 	public void archive(String entityUuid, Date endOfProcessingDate) {
-		super.archive(entityUuid, endOfProcessingDate);
-		List<String> sharedEventUuids = getSharedEventUuids(Collections.singletonList(entityUuid));
-		updateArchiveFlagInExternalSurveillanceToolForSharedEvents(sharedEventUuids, true);
+		List<ProcessedEntity> processedEvents = updateArchiveFlagInExternalSurveillanceTool(Collections.singletonList(entityUuid), true);
+		List<String> remainingUuidsToBeProcessed = getEntitiesToBeProcessed(Collections.singletonList(entityUuid), processedEvents).stream()
+			.map(event -> event.getUuid())
+			.collect(Collectors.toList());
+
+		if (remainingUuidsToBeProcessed.size() > 0) {
+			super.archive(entityUuid, endOfProcessingDate);
+		}
 	}
 
 	@Override
 	public List<ProcessedEntity> archive(List<String> entityUuids) {
-		List<ProcessedEntity> processedEvents = preprocessEvents(entityUuids, true);
-		List<Event> remainingEventsToBeProcessed = getEntitiesToBeProcessed(entityUuids, processedEvents);
-		List<String> remainingUuidsToBeProcessed = remainingEventsToBeProcessed.stream().map(event -> event.getUuid()).collect(Collectors.toList());
+		List<ProcessedEntity> processedEvents = updateArchiveFlagInExternalSurveillanceTool(entityUuids, true);
 
-		super.archive(remainingUuidsToBeProcessed);
-		processedEvents.addAll(buildProcessedEntities(remainingUuidsToBeProcessed, ProcessedEntityStatus.SUCCESS));
+		List<String> remainingUuidsToBeProcessed =
+			getEntitiesToBeProcessed(entityUuids, processedEvents).stream().map(event -> event.getUuid()).collect(Collectors.toList());
+
+		if (remainingUuidsToBeProcessed.size() > 0) {
+			super.archive(remainingUuidsToBeProcessed);
+			processedEvents.addAll(buildProcessedEntities(remainingUuidsToBeProcessed, ProcessedEntityStatus.SUCCESS));
+		}
 
 		return processedEvents;
 	}
 
 	@Override
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
-		List<ProcessedEntity> processedEvents = preprocessEvents(entityUuids, false);
-		List<Event> remainingEventsToBeProcessed = getEntitiesToBeProcessed(entityUuids, processedEvents);
-		List<String> remainingUuidsToBeProcessed = remainingEventsToBeProcessed.stream().map(event -> event.getUuid()).collect(Collectors.toList());
+		List<ProcessedEntity> processedEvents = updateArchiveFlagInExternalSurveillanceTool(entityUuids, false);
 
-		super.dearchive(remainingUuidsToBeProcessed, dearchiveReason);
-		processedEvents.addAll(buildProcessedEntities(remainingUuidsToBeProcessed, ProcessedEntityStatus.SUCCESS));
+		List<String> remainingUuidsToBeProcessed =
+			getEntitiesToBeProcessed(entityUuids, processedEvents).stream().map(event -> event.getUuid()).collect(Collectors.toList());
+
+		if (remainingUuidsToBeProcessed.size() > 0) {
+			super.dearchive(remainingUuidsToBeProcessed, dearchiveReason);
+			processedEvents.addAll(buildProcessedEntities(remainingUuidsToBeProcessed, ProcessedEntityStatus.SUCCESS));
+		}
 
 		return processedEvents;
 	}
 
-	public List<ProcessedEntity> preprocessEvents(List<String> entityUuids, boolean archiving) {
-		List<ProcessedEntity> processedEvents = new ArrayList<>();
+	public List<ProcessedEntity> updateArchiveFlagInExternalSurveillanceTool(List<String> entityUuids, boolean archived) {
+		List<ProcessedEntity> processedEntities = new ArrayList<>();
+
 		List<String> sharedEventUuids = getSharedEventUuids(entityUuids);
-		try {
-			updateArchiveFlagInExternalSurveillanceToolForSharedEvents(sharedEventUuids, archiving);
-		} catch (ExternalSurveillanceToolRuntimeException e) {
-			processedEvents = buildProcessedEntities(sharedEventUuids, ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE);
-		} catch (AccessDeniedException e) {
-			processedEvents = buildProcessedEntities(sharedEventUuids, ProcessedEntityStatus.ACCESS_DENIED_FAILURE);
+		if (!sharedEventUuids.isEmpty()) {
+			processedEntities = externalSurveillanceToolGatewayFacade.sendEventsInternal(sharedEventUuids, archived);
 		}
-		return processedEvents;
-	}
 
-	public void updateArchiveFlagInExternalSurveillanceToolForSharedEvents(List<String> entityUuids, boolean archived) {
-		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()) {
-			List<String> sharedEventUuids = getSharedEventUuids(entityUuids);
-			if (!sharedEventUuids.isEmpty()) {
-				try {
-					externalSurveillanceToolGatewayFacade.sendEventsInternal(sharedEventUuids, archived);
-				} catch (ExternalSurveillanceToolException e) {
-					throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
-				} catch (AccessDeniedException e) {
-					throw new AccessDeniedException(e.getMessage());
-				}
-			}
-		}
+		return processedEntities;
 	}
 
 	public List<String> getSharedEventUuids(List<String> entityUuids) {

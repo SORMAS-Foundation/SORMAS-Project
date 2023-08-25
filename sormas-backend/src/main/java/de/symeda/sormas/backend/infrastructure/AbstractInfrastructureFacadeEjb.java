@@ -234,10 +234,10 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	@RightsAllowed(UserRight._INFRASTRUCTURE_ARCHIVE)
 	public List<ProcessedEntity> dearchive(List<String> entityUuids) {
 		List<ProcessedEntity> processedEntities = new ArrayList<>();
+
 		entityUuids.forEach(entityUuid -> {
 			if (!hasArchivedParentInfrastructure(Arrays.asList(entityUuid))) {
-					dearchive(entityUuid);
-					processedEntities.add(new ProcessedEntity(entityUuid, ProcessedEntityStatus.SUCCESS));
+				processedEntities.addAll(dearchive(entityUuid));
 			} else {
 				processedEntities.add(new ProcessedEntity(entityUuid, ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
 			}

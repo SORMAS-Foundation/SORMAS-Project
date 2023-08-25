@@ -105,7 +105,6 @@ import de.symeda.sormas.api.therapy.PrescriptionCriteria;
 import de.symeda.sormas.api.therapy.TherapyReferenceDto;
 import de.symeda.sormas.api.therapy.TreatmentCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
-import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -186,7 +185,6 @@ import de.symeda.sormas.backend.vaccination.Vaccination;
 import de.symeda.sormas.backend.vaccination.VaccinationService;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
-import de.symeda.sormas.backend.visit.VisitService;
 
 @Stateless
 @LocalBean
@@ -200,8 +198,6 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 	private ContactService contactService;
 	@EJB
 	private SampleService sampleService;
-	@EJB
-	private VisitService visitService;
 	@EJB
 	private EpiDataService epiDataService;
 	@EJB
@@ -1116,16 +1112,21 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 	@Override
 	public void archive(String entityUuid, Date endOfProcessingDate) {
-		super.archive(entityUuid, endOfProcessingDate);
-		List<String> sharedCaseUuids = getEligibleSharedUuids(Collections.singletonList(entityUuid));
-		updateArchiveFlagInExternalSurveillanceToolForSharedCases(sharedCaseUuids, true);
+		List<ProcessedEntity> processedCases = updateArchiveFlagInExternalSurveillanceTool(Collections.singletonList(entityUuid), true);
+		List<String> remainingUuidsToBeProcessed = getEntitiesToBeProcessed(Collections.singletonList(entityUuid), processedCases).stream()
+			.map(caze -> caze.getUuid())
+			.collect(Collectors.toList());
+		if (remainingUuidsToBeProcessed.size() > 0) {
+			super.archive(entityUuid, endOfProcessingDate);
+		}
 	}
 
 	@Override
 	public List<ProcessedEntity> archive(List<String> entityUuids) {
-		List<ProcessedEntity> processedCases = preprocessCases(entityUuids, true);
-		List<Case> remainingCasesToBeProcessed = getEntitiesToBeProcessed(entityUuids, processedCases);
-		List<String> remainingUuidsToBeProcessed = remainingCasesToBeProcessed.stream().map(caze -> caze.getUuid()).collect(Collectors.toList());
+		List<ProcessedEntity> processedCases = updateArchiveFlagInExternalSurveillanceTool(entityUuids, true);
+
+		List<String> remainingUuidsToBeProcessed =
+			getEntitiesToBeProcessed(entityUuids, processedCases).stream().map(caze -> caze.getUuid()).collect(Collectors.toList());
 
 		if (remainingUuidsToBeProcessed.size() > 0) {
 			super.archive(remainingUuidsToBeProcessed);
@@ -1137,9 +1138,10 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 	@Override
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
-		List<ProcessedEntity> processedCases = preprocessCases(entityUuids, false);
-		List<Case> remainingCasesToBeProcessed = getEntitiesToBeProcessed(entityUuids, processedCases);
-		List<String> remainingUuidsToBeProcessed = remainingCasesToBeProcessed.stream().map(caze -> caze.getUuid()).collect(Collectors.toList());
+		List<ProcessedEntity> processedCases = updateArchiveFlagInExternalSurveillanceTool(entityUuids, false);
+
+		List<String> remainingUuidsToBeProcessed =
+			getEntitiesToBeProcessed(entityUuids, processedCases).stream().map(caze -> caze.getUuid()).collect(Collectors.toList());
 
 		if (remainingUuidsToBeProcessed.size() > 0) {
 			super.dearchive(remainingUuidsToBeProcessed, dearchiveReason);
@@ -1149,20 +1151,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		return processedCases;
 	}
 
-	private List<ProcessedEntity> preprocessCasesForArchiving(List<String> entityUuids, boolean archiving) {
-		List<ProcessedEntity> processedCases = new ArrayList<>();
-		List<String> sharedCaseUuids = getEligibleSharedUuids(entityUuids);
-		try {
-			updateArchiveFlagInExternalSurveillanceToolForSharedCases(sharedCaseUuids, archiving);
-		} catch (ExternalSurveillanceToolRuntimeException e) {
-			processedCases = buildProcessedEntities(sharedCaseUuids, ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE);
-		} catch (AccessDeniedException e) {
-			processedCases = buildProcessedEntities(sharedCaseUuids, ProcessedEntityStatus.ACCESS_DENIED_FAILURE);
-		}
-		return processedCases;
-	}
-
-	public List<String> getEligibleSharedUuids(List<String> entityUuids) {
+	public List<String> getEligibleUuidsForSharingWithExternalSurveillanceTool(List<String> entityUuids) {
 		List<String> sharedCaseUuids = new ArrayList<>();
 		List<String> uuidsAllowedToBeShared = getEntityUuidsAllowedToBeShared(entityUuids);
 		if (!uuidsAllowedToBeShared.isEmpty()) {
@@ -1172,18 +1161,15 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		return sharedCaseUuids;
 	}
 
-	public void updateArchiveFlagInExternalSurveillanceToolForSharedCases(List<String> sharedCaseUuids, boolean archived) {
-		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()) {
-			if (!sharedCaseUuids.isEmpty()) {
-				try {
-					externalSurveillanceToolGatewayFacade.sendCasesInternal(sharedCaseUuids, archived);
-				} catch (ExternalSurveillanceToolException e) {
-					throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
-				} catch (AccessDeniedException e) {
-					throw new AccessDeniedException(e.getMessage());
-				}
-			}
+	private List<ProcessedEntity> updateArchiveFlagInExternalSurveillanceTool(List<String> entityUuids, boolean archived) {
+		List<ProcessedEntity> processedEntities = new ArrayList<>();
+
+		List<String> sharedCaseUuids = getEligibleUuidsForSharingWithExternalSurveillanceTool(entityUuids);
+		if (!sharedCaseUuids.isEmpty()) {
+			processedEntities = externalSurveillanceToolGatewayFacade.sendCasesInternal(sharedCaseUuids, archived);
 		}
+
+		return processedEntities;
 	}
 
 	public List<String> getSharedCaseUuids(List<String> entityUuids) {
