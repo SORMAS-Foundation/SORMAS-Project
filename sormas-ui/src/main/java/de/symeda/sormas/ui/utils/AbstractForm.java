@@ -179,6 +179,11 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		if (configuration.getStyle() != null) {
 			CssStyles.style(field, configuration.getStyle());
 		}
+
+		if (configuration.getValidationMessageProperty() != null) {
+			((com.vaadin.v7.ui.TextField) field)
+				.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, field.getCaption()));
+		}
 	}
 
 	@SuppressWarnings("rawtypes")
