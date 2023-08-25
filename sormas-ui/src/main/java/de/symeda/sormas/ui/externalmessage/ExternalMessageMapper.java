@@ -76,7 +76,18 @@ public class ExternalMessageMapper {
 					externalMessage.getPersonPresentCondition(),
 					PersonDto.PRESENT_CONDITION),
 				Mapping.of(person::setPhone, person.getPhone(), externalMessage.getPersonPhone(), PersonDto.PERSON_CONTACT_DETAILS),
-				Mapping.of(person::setEmailAddress, person.getEmailAddress(), externalMessage.getPersonEmail(), PersonDto.PERSON_CONTACT_DETAILS)));
+				Mapping.of(
+					person::setPhoneNumberType,
+					person.getPhoneNumberType(),
+					externalMessage.getPersonPhoneNumberType(),
+					PersonDto.PERSON_CONTACT_DETAILS),
+				Mapping.of(person::setEmailAddress, person.getEmailAddress(), externalMessage.getPersonEmail(), PersonDto.PERSON_CONTACT_DETAILS),
+				Mapping.of(person::setExternalId, person.getExternalId(), externalMessage.getPersonExternalId(), PersonDto.EXTERNAL_ID),
+				Mapping.of(
+					person::setNationalHealthId,
+					person.getNationalHealthId(),
+					externalMessage.getPersonNationalHealthId(),
+					PersonDto.NATIONAL_HEALTH_ID)));
 
 		if (person.getBirthdateYYYY() != null) {
 			DataHelper.Pair<Integer, ApproximateAgeType> ageAndAgeType = ApproximateAgeType.ApproximateAgeHelper
@@ -112,7 +123,8 @@ public class ExternalMessageMapper {
 					externalMessage.getPersonPostalCode(),
 					PersonDto.ADDRESS,
 					LocationDto.POSTAL_CODE),
-				Mapping.of(location::setCity, location.getCity(), externalMessage.getPersonCity(), PersonDto.ADDRESS, LocationDto.CITY)));
+				Mapping.of(location::setCity, location.getCity(), externalMessage.getPersonCity(), PersonDto.ADDRESS, LocationDto.CITY),
+				Mapping.of(location::setCountry, location.getCountry(), externalMessage.getPersonCountry(), PersonDto.ADDRESS, LocationDto.COUNTRY)));
 	}
 
 	public List<String[]> mapFirstSampleReportToSample(SampleDto sample) {
@@ -238,7 +250,66 @@ public class ExternalMessageMapper {
 							pathogenTest::setPcrTestSpecification,
 							pathogenTest.getPcrTestSpecification(),
 							sourceTestReport.getTestPcrTestSpecification(),
-							PathogenTestDto.PCR_TEST_SPECIFICATION))));
+							PathogenTestDto.PCR_TEST_SPECIFICATION),
+						Mapping.of(pathogenTest::setCqValue, pathogenTest.getCqValue(), sourceTestReport.getCqValue(), PathogenTestDto.CQ_VALUE),
+						Mapping.of(pathogenTest::setCtValueE, pathogenTest.getCtValueE(), sourceTestReport.getCtValueE(), PathogenTestDto.CT_VALUE_E),
+						Mapping.of(pathogenTest::setCtValueN, pathogenTest.getCtValueN(), sourceTestReport.getCtValueN(), PathogenTestDto.CT_VALUE_N),
+						Mapping.of(
+							pathogenTest::setCtValueRdrp,
+							pathogenTest.getCtValueRdrp(),
+							sourceTestReport.getCtValueRdrp(),
+							PathogenTestDto.CT_VALUE_RDRP),
+						Mapping.of(pathogenTest::setCtValueS, pathogenTest.getCtValueS(), sourceTestReport.getCtValueS(), PathogenTestDto.CT_VALUE_S),
+						Mapping.of(
+							pathogenTest::setCtValueOrf1,
+							pathogenTest.getCtValueOrf1(),
+							sourceTestReport.getCtValueOrf1(),
+							PathogenTestDto.CT_VALUE_ORF_1),
+						Mapping.of(
+							pathogenTest::setCtValueRdrpS,
+							pathogenTest.getCtValueRdrpS(),
+							sourceTestReport.getCtValueRdrpS(),
+							PathogenTestDto.CT_VALUE_RDRP_S),
+						Mapping.of(
+							pathogenTest::setPrescriberPhysicianCode,
+							pathogenTest.getPrescriberPhysicianCode(),
+							sourceTestReport.getPrescriberPhysicianCode(),
+							PathogenTestDto.PRESCRIBER_PHYSICIAN_CODE),
+						Mapping.of(
+							pathogenTest::setPrescriberFirstName,
+							pathogenTest.getPrescriberFirstName(),
+							sourceTestReport.getPrescriberFirstName(),
+							PathogenTestDto.PRESCRIBER_FIRST_NAME),
+						Mapping.of(
+							pathogenTest::setPrescriberLastName,
+							pathogenTest.getPrescriberLastName(),
+							sourceTestReport.getPrescriberLastName(),
+							PathogenTestDto.PRESCRIBER_LAST_NAME),
+						Mapping.of(
+							pathogenTest::setPrescriberPhoneNumber,
+							pathogenTest.getPrescriberPhoneNumber(),
+							sourceTestReport.getPrescriberPhoneNumber(),
+							PathogenTestDto.PRESCRIBER_PHONE_NUMBER),
+						Mapping.of(
+							pathogenTest::setPrescriberAddress,
+							pathogenTest.getPrescriberAddress(),
+							sourceTestReport.getPrescriberAddress(),
+							PathogenTestDto.PRESCRIBER_ADDRESS),
+						Mapping.of(
+							pathogenTest::setPrescriberPostalCode,
+							pathogenTest.getPrescriberPostalCode(),
+							sourceTestReport.getPrescriberPostalCode(),
+							PathogenTestDto.PRESCRIBER_POSTAL_CODE),
+						Mapping.of(
+							pathogenTest::setPrescriberCity,
+							pathogenTest.getPrescriberCity(),
+							sourceTestReport.getPrescriberCity(),
+							PathogenTestDto.PRESCRIBER_CITY),
+						Mapping.of(
+							pathogenTest::setPrescriberCountry,
+							pathogenTest.getPrescriberCountry(),
+							sourceTestReport.getPrescriberCountry(),
+							PathogenTestDto.PRESCRIBER_COUNTRY))));
 		}
 
 		changedFields.addAll(
