@@ -18,6 +18,7 @@ package de.symeda.sormas.rest.resources;
 import java.util.Date;
 import java.util.List;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -77,16 +78,14 @@ public class CountryResource extends EntityDtoResource<CountryDto> {
 
 	@POST
 	@Path("/archive")
-	public List<ProcessedEntity> archive(@RequestBody List<String> uuids) {
-		List<ProcessedEntity> processedEntities = FacadeProvider.getCountryFacade().archive(uuids);
-		return processedEntities;
+	public List<String> archive(@RequestBody List<String> uuids) {
+		return FacadeProvider.getCountryFacade().archive(uuids).stream().map(ProcessedEntity::getEntityUuid).collect(Collectors.toList());
 	}
 
 	@POST
 	@Path("/dearchive")
-	public List<ProcessedEntity> dearchive(@RequestBody List<String> uuids) {
-		List<ProcessedEntity> processedEntities = FacadeProvider.getCountryFacade().dearchive(uuids);
-		return processedEntities;
+	public List<String> dearchive(@RequestBody List<String> uuids) {
+		return FacadeProvider.getCountryFacade().dearchive(uuids).stream().map(ProcessedEntity::getEntityUuid).collect(Collectors.toList());
 	}
 
 	@Override

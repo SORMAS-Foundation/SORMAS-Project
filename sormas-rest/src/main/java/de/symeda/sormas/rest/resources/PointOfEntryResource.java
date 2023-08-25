@@ -18,6 +18,7 @@ package de.symeda.sormas.rest.resources;
 import java.util.Date;
 import java.util.List;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -76,14 +77,14 @@ public class PointOfEntryResource extends EntityDtoResource<PointOfEntryDto> {
 
 	@POST
 	@Path("/archive")
-	public List<ProcessedEntity> archive(@RequestBody List<String> uuids) {
-		return FacadeProvider.getPointOfEntryFacade().archive(uuids);
+	public List<String> archive(@RequestBody List<String> uuids) {
+		return FacadeProvider.getPointOfEntryFacade().archive(uuids).stream().map(ProcessedEntity::getEntityUuid).collect(Collectors.toList());
 	}
 
 	@POST
 	@Path("/dearchive")
-	public List<ProcessedEntity> dearchive(@RequestBody List<String> uuids) {
-		return FacadeProvider.getPointOfEntryFacade().dearchive(uuids);
+	public List<String> dearchive(@RequestBody List<String> uuids) {
+		return FacadeProvider.getPointOfEntryFacade().dearchive(uuids).stream().map(ProcessedEntity::getEntityUuid).collect(Collectors.toList());
 	}
 
 	@Override

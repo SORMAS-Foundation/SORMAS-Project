@@ -18,6 +18,7 @@ package de.symeda.sormas.rest.resources;
 import java.util.Date;
 import java.util.List;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -137,8 +138,12 @@ public class EventResource extends EntityDtoResource<EventDto> {
 
 	@POST
 	@Path("/delete")
-	public List<ProcessedEntity> delete(List<String> uuids) {
-		return FacadeProvider.getEventFacade().delete(uuids, new DeletionDetails(DeletionReason.OTHER_REASON, "Deleted via ReST call"));
+	public List<String> delete(List<String> uuids) {
+		return FacadeProvider.getEventFacade()
+			.delete(uuids, new DeletionDetails(DeletionReason.OTHER_REASON, "Deleted via ReST call"))
+			.stream()
+			.map(ProcessedEntity::getEntityUuid)
+			.collect(Collectors.toList());
 	}
 
 	@POST

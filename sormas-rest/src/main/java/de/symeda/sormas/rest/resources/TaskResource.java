@@ -18,6 +18,7 @@ package de.symeda.sormas.rest.resources;
 import java.util.Date;
 import java.util.List;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -108,8 +109,8 @@ public class TaskResource extends EntityDtoResource<TaskDto> {
 
 	@POST
 	@Path("/delete")
-	public List<ProcessedEntity> delete(List<String> uuids) {
-		return FacadeProvider.getTaskFacade().delete(uuids);
+	public List<String> delete(List<String> uuids) {
+		return FacadeProvider.getTaskFacade().delete(uuids).stream().map(ProcessedEntity::getEntityUuid).collect(Collectors.toList());
 	}
 
 	@Override

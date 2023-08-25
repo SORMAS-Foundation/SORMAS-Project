@@ -18,6 +18,7 @@ package de.symeda.sormas.rest.resources;
 import java.util.Date;
 import java.util.List;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -124,8 +125,12 @@ public class ImmunizationResource extends EntityDtoResource<ImmunizationDto> {
 
 	@POST
 	@Path("/delete")
-	public List<ProcessedEntity> delete(List<String> uuids) {
-		return FacadeProvider.getImmunizationFacade().delete(uuids, new DeletionDetails(DeletionReason.OTHER_REASON, "Deleted via ReST call"));
+	public List<String> delete(List<String> uuids) {
+		return FacadeProvider.getImmunizationFacade()
+			.delete(uuids, new DeletionDetails(DeletionReason.OTHER_REASON, "Deleted via ReST call"))
+			.stream()
+			.map(ProcessedEntity::getEntityUuid)
+			.collect(Collectors.toList());
 	}
 
 	@POST

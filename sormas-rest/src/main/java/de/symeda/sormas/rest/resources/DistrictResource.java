@@ -18,6 +18,7 @@ package de.symeda.sormas.rest.resources;
 import java.util.Date;
 import java.util.List;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -77,14 +78,14 @@ public class DistrictResource extends EntityDtoResource<DistrictDto> {
 
 	@POST
 	@Path("/archive")
-	public List<ProcessedEntity> archive(@RequestBody List<String> uuids) {
-		return FacadeProvider.getDistrictFacade().archive(uuids);
+	public List<String> archive(@RequestBody List<String> uuids) {
+		return FacadeProvider.getDistrictFacade().archive(uuids).stream().map(ProcessedEntity::getEntityUuid).collect(Collectors.toList());
 	}
 
 	@POST
 	@Path("/dearchive")
-	public List<ProcessedEntity> dearchive(@RequestBody List<String> uuids) {
-		return FacadeProvider.getDistrictFacade().dearchive(uuids);
+	public List<String> dearchive(@RequestBody List<String> uuids) {
+		return FacadeProvider.getDistrictFacade().dearchive(uuids).stream().map(ProcessedEntity::getEntityUuid).collect(Collectors.toList());
 	}
 
 	@Override
