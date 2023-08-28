@@ -16024,6 +16024,9 @@
           "caption" : {
             "type" : "string"
           },
+          "environmentName" : {
+            "type" : "string"
+          },
           "uuid" : {
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
