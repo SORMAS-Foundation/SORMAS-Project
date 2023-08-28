@@ -28,4 +28,12 @@ public class EnvironmentReferenceDto extends ReferenceDto {
 	public String getCaption() {
 		return environmentName;
 	}
+
+	public String getEnvironmentName() {
+		return environmentName;
+	}
+
+	public void setEnvironmentName(String environmentName) {
+		this.environmentName = environmentName;
+	}
 }
