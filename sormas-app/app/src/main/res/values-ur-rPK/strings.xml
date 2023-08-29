@@ -54,6 +54,7 @@
     <string name="action_edit">ترمیم کریں</string>
     <string name="action_edit_case">کیس میں ترمیم کریں</string>
     <string name="action_edit_contact">رابطہ شدہ  شخص کی معلومات میں ترمیم کریں</string>
+    <string name="action_edit_environment">Edit Environment</string>
     <string name="action_edit_event">تقریب میں ترمیم کریں</string>
     <string name="action_edit_sample">نمونہ میں ترمیم کریں</string>
     <string name="action_forgot_PIN">پن بھول گئے؟</string>
@@ -71,6 +72,7 @@
     <string name="action_new_immunization">نئی امیونائزیشن</string>
     <string name="action_new_campaign_form_data">مہم کا نیا  ڈیٹا فارم </string>
     <string name="action_new_contact">نیا رابطہ شدہ شخص</string>
+    <string name="action_new_environment">New Environment</string>
     <string name="action_new_event">نئی تقریب</string>
     <string name="action_new_sample">نیا نمونہ</string>
     <string name="action_new_task">نیا کام</string>
@@ -164,6 +166,8 @@
     <string name="caption_dropped">چھوڑ دیا</string>
     <string name="caption_epi_week">EPI ہفتہ</string>
     <string name="caption_report">رپورٹ</string>
+    <string name="caption_environment_information">Environment Information</string>
+    <string name="caption_environment_tasks">Environment Tasks</string>
     <string name="caption_event_description">تفصیل</string>
     <string name="caption_event_location">پتہ</string>
     <string name="caption_event_period">تقریب کی تاریخ</string>
@@ -274,6 +278,7 @@
     <string name="confirmation_extend_quarantine">کیا آپ واقعی قرنطینہ میں توسیع کرنا چاہتے ہیں؟</string>
     <string name="confirmation_reduce_quarantine">کیا آپ واقعی قرنطینہ کو کم کرنا چاہتے ہیں؟</string>
     <string name="confirmation_extend_followup">کیا آپ بھی چاہیں گے کہ فالو اپ کی مدت اسی کے مطابق بڑھائی جائے؟</string>
+    <string name="confirmation_environment_location_change">Changing the location of this environment could make you lose access to its details and/or disallow you to edit in the future. Are you sure you want to proceed?</string>
     <string name="description_epi_week">EPI ہفتہ</string>
     <string name="description_first_name">پہلا نام</string>
     <string name="description_last_name">آخری نام</string>
@@ -381,7 +386,11 @@
     <string name="heading_sample_read">نمونہ پڑھیں</string>
     <string name="heading_sample_summary">نمونہ کا خلاصہ</string>
     <string name="heading_samples_list">نمونہ کی فہرست</string>
-    <string name="heading_environments_list">ماحولیات کی فہرست</string>
+    <string name="heading_environment_list">Environment Listing</string>
+    <string name="heading_environment_edit">Edit Environment</string>
+    <string name="heading_environment_new">New Environment</string>
+    <string name="heading_environment_read">Read Environment</string>
+    <string name="heading_environment_location_update">Environment location update</string>
     <string name="heading_immunization_edit">امیونائزیشن میں ترمیم کریں</string>
     <string name="heading_immunization_new">نئی امیونائزیشن</string>
     <string name="heading_immunization_read">امیونائزیشن پڑھیں</string>

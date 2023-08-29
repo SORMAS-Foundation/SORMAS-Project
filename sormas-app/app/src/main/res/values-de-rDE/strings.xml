@@ -54,6 +54,7 @@
     <string name="action_edit">Bearbeiten</string>
     <string name="action_edit_case">Fall bearbeiten</string>
     <string name="action_edit_contact">Kontakt bearbeiten</string>
+    <string name="action_edit_environment">Edit Environment</string>
     <string name="action_edit_event">Ereignis bearbeiten</string>
     <string name="action_edit_sample">Probe bearbeiten</string>
     <string name="action_forgot_PIN">PIN vergessen?</string>
@@ -71,6 +72,7 @@
     <string name="action_new_immunization">Neue Immunisierung</string>
     <string name="action_new_campaign_form_data">Neue Kampagnen-Formulardaten</string>
     <string name="action_new_contact">Neuer Kontakt</string>
+    <string name="action_new_environment">New Environment</string>
     <string name="action_new_event">Neues Ereignis</string>
     <string name="action_new_sample">Neue Probe</string>
     <string name="action_new_task">Neue Aufgabe</string>
@@ -164,6 +166,8 @@
     <string name="caption_dropped">Gelöscht</string>
     <string name="caption_epi_week">Epi Woche</string>
     <string name="caption_report">Bericht</string>
+    <string name="caption_environment_information">Environment Information</string>
+    <string name="caption_environment_tasks">Environment Tasks</string>
     <string name="caption_event_description">Beschreibung</string>
     <string name="caption_event_location">Ort</string>
     <string name="caption_event_period">Datum des Ereignisses</string>
@@ -274,6 +278,7 @@
     <string name="confirmation_extend_quarantine">Sind Sie sicher, dass sie die Quarantäne verlängern wollen?</string>
     <string name="confirmation_reduce_quarantine">Sind Sie sicher, dass sie die Quarantäne verkürzen wollen?</string>
     <string name="confirmation_extend_followup">Möchten Sie auch, dass der Nachverfolgungszeitraum entsprechend verlängert wird?</string>
+    <string name="confirmation_environment_location_change">Changing the location of this environment could make you lose access to its details and/or disallow you to edit in the future. Are you sure you want to proceed?</string>
     <string name="description_epi_week">Epi Woche</string>
     <string name="description_first_name">Vorname</string>
     <string name="description_last_name">Nachname</string>
@@ -381,7 +386,11 @@
     <string name="heading_sample_read">Probe lesen</string>
     <string name="heading_sample_summary">Probe-Zusammenfassung</string>
     <string name="heading_samples_list">Proben-Liste</string>
-    <string name="heading_environments_list">Environment Listing</string>
+    <string name="heading_environment_list">Environment Listing</string>
+    <string name="heading_environment_edit">Edit Environment</string>
+    <string name="heading_environment_new">New Environment</string>
+    <string name="heading_environment_read">Read Environment</string>
+    <string name="heading_environment_location_update">Environment location update</string>
     <string name="heading_immunization_edit">Immunisierung bearbeiten</string>
     <string name="heading_immunization_new">Neue Immunisierung</string>
     <string name="heading_immunization_read">Immunisierung lesen</string>
