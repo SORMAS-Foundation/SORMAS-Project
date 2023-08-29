@@ -54,6 +54,7 @@
     <string name="action_edit">Modifica</string>
     <string name="action_edit_case">Modifica Caso</string>
     <string name="action_edit_contact">Modifica contatto</string>
+    <string name="action_edit_environment">Edit Environment</string>
     <string name="action_edit_event">Modifica evento</string>
     <string name="action_edit_sample">Modifica campione</string>
     <string name="action_forgot_PIN">PIN dimenticato?</string>
@@ -71,6 +72,7 @@
     <string name="action_new_immunization">New Immunization</string>
     <string name="action_new_campaign_form_data">New Campaign Form Data</string>
     <string name="action_new_contact">Nuovo contatto</string>
+    <string name="action_new_environment">New Environment</string>
     <string name="action_new_event">Nuovo Evento</string>
     <string name="action_new_sample">Nuovo campione</string>
     <string name="action_new_task">Nuovo incarico</string>
@@ -164,6 +166,8 @@
     <string name="caption_dropped">Scartato</string>
     <string name="caption_epi_week">Settimana Epi</string>
     <string name="caption_report">Report</string>
+    <string name="caption_environment_information">Environment Information</string>
+    <string name="caption_environment_tasks">Environment Tasks</string>
     <string name="caption_event_description">Description</string>
     <string name="caption_event_location">Location</string>
     <string name="caption_event_period">Date of event</string>
@@ -274,6 +278,7 @@
     <string name="confirmation_extend_quarantine">Are you sure you want to extend the quarantine?</string>
     <string name="confirmation_reduce_quarantine">Are you sure you want to reduce the quarantine?</string>
     <string name="confirmation_extend_followup">Would you also want the follow-up period to be extended accordingly?</string>
+    <string name="confirmation_environment_location_change">Changing the location of this environment could make you lose access to its details and/or disallow you to edit in the future. Are you sure you want to proceed?</string>
     <string name="description_epi_week">Settimana Epi</string>
     <string name="description_first_name">Nome</string>
     <string name="description_last_name">Cognome</string>
@@ -381,7 +386,11 @@
     <string name="heading_sample_read">Lettura Campione</string>
     <string name="heading_sample_summary">Riepilogo Campione</string>
     <string name="heading_samples_list">Elenco Campioni</string>
-    <string name="heading_environments_list">Environment Listing</string>
+    <string name="heading_environment_list">Environment Listing</string>
+    <string name="heading_environment_edit">Edit Environment</string>
+    <string name="heading_environment_new">New Environment</string>
+    <string name="heading_environment_read">Read Environment</string>
+    <string name="heading_environment_location_update">Environment location update</string>
     <string name="heading_immunization_edit">Edit Immunization</string>
     <string name="heading_immunization_new">New Immunization</string>
     <string name="heading_immunization_read">Read Immunization</string>
