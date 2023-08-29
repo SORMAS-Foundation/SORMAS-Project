@@ -122,7 +122,7 @@ jobs:
           script: ./gradlew connectedAndroidTest
 
       - name: mobsfscan
-        uses: MobSF/mobsfscan@0.2.0
+        uses: MobSF/mobsfscan@0.3.3
         with:
           args: '. --sarif --output mobsf-results.sarif || true'
 
