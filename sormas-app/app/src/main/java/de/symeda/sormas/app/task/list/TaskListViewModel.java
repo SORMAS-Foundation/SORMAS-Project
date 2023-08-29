@@ -31,6 +31,7 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.environment.Environment;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskCriteria;
@@ -60,6 +61,14 @@ public class TaskListViewModel extends ViewModel {
 		taskDataFactory = new TaskDataFactory();
 		TaskCriteria taskCriteria = new TaskCriteria();
 		taskCriteria.associatedEvent(event);
+		taskDataFactory.setTaskCriteria(taskCriteria);
+		initializeList();
+	}
+
+	public void initializeViewModel(Environment environment) {
+		taskDataFactory = new TaskDataFactory();
+		TaskCriteria taskCriteria = new TaskCriteria();
+		taskCriteria.associatedEnvironment(environment);
 		taskDataFactory.setTaskCriteria(taskCriteria);
 		initializeList();
 	}

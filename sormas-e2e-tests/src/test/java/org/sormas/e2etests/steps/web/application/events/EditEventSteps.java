@@ -1036,6 +1036,8 @@ public class EditEventSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(FIRST_GROUP_ID);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_FOR_POPUP_WINDOWS);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EVENT_DATA_SAVED_MESSAGE);
+          webDriverHelpers.clickOnWebElementBySelector(EVENT_DATA_SAVED_MESSAGE);
         });
 
     When(
@@ -1320,6 +1322,7 @@ public class EditEventSteps implements En {
           fillGroupEventName(groupEvent.getName());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_FOR_POPUP_WINDOWS);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(NEW_GROUP_EVENT_CREATED_MESSAGE);
+          webDriverHelpers.clickOnWebElementBySelector(NEW_GROUP_EVENT_CREATED_MESSAGE);
         });
 
     When(

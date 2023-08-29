@@ -3,35 +3,38 @@ package de.symeda.sormas.app.backend.environment;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_TEXT;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
-
 import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
+import androidx.annotation.NonNull;
+
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.environment.EnvironmentInfrastructureDetails;
 import de.symeda.sormas.api.environment.EnvironmentMedia;
 import de.symeda.sormas.api.environment.WaterType;
 import de.symeda.sormas.api.environment.WaterUse;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.util.EnumMapKeySerializer;
 
 @Entity(name = Environment.TABLE_NAME)
 @DatabaseTable(tableName = Environment.TABLE_NAME)
-public class Environment extends AbstractDomainObject {
+public class Environment extends PseudonymizableAdo {
 
 	public static final String TABLE_NAME = "environments";
 	public static final String I18N_PREFIX = "Environment";
@@ -195,22 +198,30 @@ public class Environment extends AbstractDomainObject {
 	}
 
 	public Map<WaterUse, Boolean> getWateruse() {
-        if (wateruse == null) {
-            Gson gson = new Gson();
-            Type type = new TypeToken<Map<WaterUse, Boolean>>() {
-            }.getType();
-            wateruse = gson.fromJson(waterUseJson, type);
-            if (wateruse == null) {
-                wateruse = new HashMap<>();
-            }
-        }
+		if (wateruse == null) {
+			Gson gson = getGson();
+			Type type = new TypeToken<Map<WaterUse, Boolean>>() {
+			}.getType();
+			wateruse = gson.fromJson(waterUseJson, type);
+			if (wateruse == null) {
+				wateruse = new HashMap<>();
+			}
+		}
 		return wateruse;
 	}
 
 	public void setWateruse(Map<WaterUse, Boolean> wateruse) {
 		this.wateruse = wateruse;
-		Gson gson = new Gson();
-		waterUseJson = gson.toJson(wateruse);
+		Gson gson = getGson();
+		Type type = new TypeToken<Map<WaterUse, Boolean>>() {
+		}.getType();
+		String waterUseJson1 = gson.toJson(wateruse, type);
+		waterUseJson = waterUseJson1;
+	}
+
+	@NonNull
+	private static Gson getGson() {
+		return new GsonBuilder().enableComplexMapKeySerialization().registerTypeAdapter(WaterUse.class, new EnumMapKeySerializer<>(WaterUse.class)).create();
 	}
 
 	public String getOtherWaterUse() {

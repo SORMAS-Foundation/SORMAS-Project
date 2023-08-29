@@ -215,8 +215,6 @@ public class SideCardsSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SHARE_SORMAS_2_SORMAS_POPUP_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
-          // TODO Workaround before SORQA-565 will be fixed
-          webDriverHelpers.refreshCurrentPage();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               LINKED_SHARED_ORGANIZATION_SELECTED_VALUE, 60);
         });

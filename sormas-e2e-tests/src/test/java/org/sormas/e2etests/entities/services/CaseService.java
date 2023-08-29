@@ -598,6 +598,24 @@ public class CaseService {
         .build();
   }
 
+  public Case buildCaseWithFacilitiesForSurvnetFeature() {
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
+
+    return Case.builder()
+        .dateOfReport(LocalDate.now())
+        .responsibleRegion("Berlin")
+        .responsibleDistrict("SK Berlin Mitte")
+        .placeOfStay("EINRICHTUNG")
+        .facilityCategory("Medizinische Einrichtung")
+        .facilityType("Krankenhaus")
+        .facility("Andere Einrichtung")
+        .firstName(firstName)
+        .lastName(lastName)
+        .sex(GenderValues.getRandomGenderDE())
+        .build();
+  }
+
   @SneakyThrows
   public Case buildCaseForSurvnetFeatureWithReinfection() {
     firstName = faker.name().firstName();

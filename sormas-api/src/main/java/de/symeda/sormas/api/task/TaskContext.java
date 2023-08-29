@@ -33,7 +33,9 @@ public enum TaskContext {
 	EVENT(FeatureType.TASK_GENERATION_EVENT_SURVEILLANCE, "events", Strings.notificationTaskAssociatedEventLink),
 	GENERAL(FeatureType.TASK_GENERATION_GENERAL, null, null),
 	@DependingOnUserRight(UserRight.TRAVEL_ENTRY_VIEW)
-	TRAVEL_ENTRY(FeatureType.TRAVEL_ENTRIES, "travelEntries", Strings.notificationTaskAssociatedTravelEntryLink);
+	TRAVEL_ENTRY(FeatureType.TRAVEL_ENTRIES, "travelEntries", Strings.notificationTaskAssociatedTravelEntryLink),
+	@DependingOnUserRight(UserRight.ENVIRONMENT_VIEW)
+	ENVIRONMENT(FeatureType.ENVIRONMENT_MANAGEMENT, "environments", Strings.notificationTaskAssociatedEnvironmentLink);
 
 	private final FeatureType featureType;
 	private final String urlPattern;

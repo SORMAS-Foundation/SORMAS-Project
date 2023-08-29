@@ -4,6 +4,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.environment.EnvironmentDto;
+import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.location.Location;
@@ -19,7 +20,7 @@ public class EnvironmentDtoHelper extends AdoDtoHelper<Environment, EnvironmentD
 	private LocationDtoHelper locationHelper;
 
 	public EnvironmentDtoHelper() {
-		this.locationHelper = new LocationDtoHelper();;
+		this.locationHelper = new LocationDtoHelper();
 	}
 
 	@Override
@@ -34,7 +35,7 @@ public class EnvironmentDtoHelper extends AdoDtoHelper<Environment, EnvironmentD
 
 	@Override
 	protected Call<List<EnvironmentDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid) throws NoConnectionException {
-		return RetroProvider.getEnvironmentFacade().pullAllSince(since);
+		return RetroProvider.getEnvironmentFacade().pullAllSince(since, size, lastSynchronizedUuid);
 	}
 
 	@Override
@@ -105,5 +106,13 @@ public class EnvironmentDtoHelper extends AdoDtoHelper<Environment, EnvironmentD
 	@Override
 	protected long getApproximateJsonSizeInBytes() {
 		return EnvironmentDto.APPROXIMATE_JSON_SIZE_IN_BYTES;
+	}
+
+	public static EnvironmentReferenceDto toReferenceDto(Environment environment) {
+		if (environment == null) {
+			return null;
+		}
+
+		return new EnvironmentReferenceDto(environment.getUuid(), environment.getEnvironmentName());
 	}
 }

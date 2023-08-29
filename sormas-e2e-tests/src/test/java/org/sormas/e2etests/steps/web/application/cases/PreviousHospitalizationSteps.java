@@ -1,12 +1,23 @@
 package org.sormas.e2etests.steps.web.application.cases;
 
-import static org.sormas.e2etests.pages.application.cases.HospitalizationTabPage.FIRST_PREVIOUS_HOSPITALIZATION_ENTRY;
-import static org.sormas.e2etests.pages.application.cases.HospitalizationTabPage.NEW_ENTRY_LINK;
+import static org.sormas.e2etests.enums.YesNoUnknownOptionsDE.JA;
+import static org.sormas.e2etests.pages.application.cases.HospitalizationTabPage.*;
 import static org.sormas.e2etests.pages.application.cases.PreviousHospitalizationPage.*;
+import static org.sormas.e2etests.pages.application.cases.PreviousHospitalizationPage.DATE_OF_DISCHARGE_OR_TRANSFER_INPUT;
+import static org.sormas.e2etests.pages.application.cases.PreviousHospitalizationPage.DATE_OF_VISIT_OR_ADMISSION_INPUT;
+import static org.sormas.e2etests.pages.application.cases.PreviousHospitalizationPage.DESCRIPTION_INPUT;
+import static org.sormas.e2etests.pages.application.cases.PreviousHospitalizationPage.END_OF_STAY_DATE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.PreviousHospitalizationPage.ISOLATION_OPTIONS;
+import static org.sormas.e2etests.pages.application.cases.PreviousHospitalizationPage.REASON_FOR_HOSPITALIZATION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.PreviousHospitalizationPage.SPECIFY_REASON_INPUT;
+import static org.sormas.e2etests.pages.application.cases.PreviousHospitalizationPage.START_OF_STAY_DATE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.PreviousHospitalizationPage.STAY_IN_THE_INTENSIVE_CARE_UNIT_OPTIONS;
+import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import javax.inject.Inject;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Hospitalization;
@@ -21,6 +32,7 @@ public class PreviousHospitalizationSteps implements En {
   public static PreviousHospitalization previousHospitalization;
   private static Hospitalization createdHospitalization;
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
+  public static String reasonForPreviousHospitalization;
 
   @Inject
   public PreviousHospitalizationSteps(
@@ -37,18 +49,20 @@ public class PreviousHospitalizationSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(NEW_ENTRY_LINK);
           previousHospitalization =
               previousHospitalizationService.generatePreviousHospitalization();
-          fillDateOfVisitOrAdmission(previousHospitalization.getDateOfVisitOrAdmission());
+          fillDateOfVisitOrAdmission(
+              previousHospitalization.getDateOfVisitOrAdmission(), Locale.ENGLISH);
           selectReasonForHospitalization(previousHospitalization.getReasonForHospitalization());
-          fillDateOfDischargeOrTransfer(previousHospitalization.getDateOfDischargeOrTransfer());
+          fillDateOfDischargeOrTransfer(
+              previousHospitalization.getDateOfDischargeOrTransfer(), Locale.ENGLISH);
           selectStayInTheIntensiveCareUnit(previousHospitalization.getStayInTheIntensiveCareUnit());
           selectRegion(previousHospitalization.getRegion());
           selectDistrict(previousHospitalization.getDistrict());
           selectCommunity(previousHospitalization.getCommunity());
           selectHospital(previousHospitalization.getHospital());
-          fillStartOfStayDate(previousHospitalization.getStartOfStayDate());
+          fillStartOfStayDate(previousHospitalization.getStartOfStayDate(), Locale.ENGLISH);
           selectIsolation(previousHospitalization.getIsolation());
-          fillDateOfIsolation(previousHospitalization.getDateOfIsolation());
-          fillEndOfStayDate(previousHospitalization.getEndOfStayDate());
+          fillDateOfIsolation(previousHospitalization.getDateOfIsolation(), Locale.ENGLISH);
+          fillEndOfStayDate(previousHospitalization.getEndOfStayDate(), Locale.ENGLISH);
           fillSpecifyReason(previousHospitalization.getSpecifyReason());
           fillDescription(previousHospitalization.getDescription());
           fillFacilityNameDescription(previousHospitalization.getFacilityNameDescription());
@@ -56,6 +70,40 @@ public class PreviousHospitalizationSteps implements En {
               previousHospitalization.getIsolation());
           webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NEW_ENTRY_LINK);
+        });
+
+    When(
+        "I add a previous hospitalization and save for DE",
+        () -> {
+          webDriverHelpers.clickWebElementByText(
+              WAS_THE_PATIENT_HOSPITALIZED_PREVIOUSLY_OPTIONS, JA.toString());
+          webDriverHelpers.clickOnWebElementBySelector(NEW_ENTRY_LINK);
+          previousHospitalization =
+              previousHospitalizationService.generatePreviousHospitalizationDE();
+          fillDateOfVisitOrAdmission(
+              previousHospitalization.getDateOfVisitOrAdmission(), Locale.GERMAN);
+          reasonForPreviousHospitalization = previousHospitalization.getReasonForHospitalization();
+          selectReasonForHospitalization(reasonForPreviousHospitalization);
+          fillDateOfDischargeOrTransfer(
+              previousHospitalization.getDateOfDischargeOrTransfer(), Locale.GERMAN);
+          selectStayInTheIntensiveCareUnit(previousHospitalization.getStayInTheIntensiveCareUnit());
+          selectRegion(previousHospitalization.getRegion());
+          selectDistrict(previousHospitalization.getDistrict());
+          selectCommunity(previousHospitalization.getCommunity());
+          selectHospital(previousHospitalization.getHospital());
+          fillFacilityNameDescription(previousHospitalization.getFacilityNameDescription());
+          fillStartOfStayDate(previousHospitalization.getStartOfStayDate(), Locale.GERMAN);
+          selectIsolation(previousHospitalization.getIsolation());
+          fillDateOfIsolation(previousHospitalization.getDateOfIsolation(), Locale.GERMAN);
+          fillEndOfStayDate(previousHospitalization.getEndOfStayDate(), Locale.GERMAN);
+          fillDescription(previousHospitalization.getDescription());
+          selectWasPatientAdmittedAtTheFacilityAsAnInpatient(
+              previousHospitalization.getIsolation());
+          webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NEW_ENTRY_LINK);
+
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SUCCESSFUL_SAVE_POPUP);
         });
 
     When(
@@ -146,14 +194,18 @@ public class PreviousHospitalizationSteps implements En {
         });
   }
 
-  private void fillDateOfVisitOrAdmission(LocalDate date) {
-    webDriverHelpers.fillInWebElement(
-        DATE_OF_VISIT_OR_ADMISSION_INPUT, DATE_FORMATTER.format(date));
+  private void fillDateOfVisitOrAdmission(LocalDate date, Locale locale) {
+    DateTimeFormatter formatter;
+    if (locale.equals(Locale.GERMAN)) formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    else formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+    webDriverHelpers.fillInWebElement(DATE_OF_VISIT_OR_ADMISSION_INPUT, formatter.format(date));
   }
 
-  private void fillDateOfDischargeOrTransfer(LocalDate date) {
-    webDriverHelpers.fillInWebElement(
-        DATE_OF_DISCHARGE_OR_TRANSFER_INPUT, DATE_FORMATTER.format(date));
+  private void fillDateOfDischargeOrTransfer(LocalDate date, Locale locale) {
+    DateTimeFormatter formatter;
+    if (locale.equals(Locale.GERMAN)) formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    else formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+    webDriverHelpers.fillInWebElement(DATE_OF_DISCHARGE_OR_TRANSFER_INPUT, formatter.format(date));
   }
 
   private void selectReasonForHospitalization(String reason) {
@@ -168,20 +220,29 @@ public class PreviousHospitalizationSteps implements En {
     webDriverHelpers.clickWebElementByText(STAY_IN_THE_INTENSIVE_CARE_UNIT_OPTIONS, option);
   }
 
-  private void fillStartOfStayDate(LocalDate date) {
-    webDriverHelpers.fillInWebElement(START_OF_STAY_DATE_INPUT, DATE_FORMATTER.format(date));
+  private void fillStartOfStayDate(LocalDate date, Locale locale) {
+    DateTimeFormatter formatter;
+    if (locale.equals(Locale.GERMAN)) formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    else formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+    webDriverHelpers.fillInWebElement(START_OF_STAY_DATE_INPUT, formatter.format(date));
   }
 
-  private void fillEndOfStayDate(LocalDate date) {
-    webDriverHelpers.fillInWebElement(END_OF_STAY_DATE_INPUT, DATE_FORMATTER.format(date));
+  private void fillEndOfStayDate(LocalDate date, Locale locale) {
+    DateTimeFormatter formatter;
+    if (locale.equals(Locale.GERMAN)) formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    else formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+    webDriverHelpers.fillInWebElement(END_OF_STAY_DATE_INPUT, formatter.format(date));
   }
 
   private void selectIsolation(String option) {
     webDriverHelpers.clickWebElementByText(ISOLATION_OPTIONS, option);
   }
 
-  private void fillDateOfIsolation(LocalDate date) {
-    webDriverHelpers.fillInWebElement(DATE_OF_ISOLATION, DATE_FORMATTER.format(date));
+  private void fillDateOfIsolation(LocalDate date, Locale locale) {
+    DateTimeFormatter formatter;
+    if (locale.equals(Locale.GERMAN)) formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    else formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+    webDriverHelpers.fillInWebElement(DATE_OF_ISOLATION, formatter.format(date));
   }
 
   private void selectRegion(String option) {

@@ -70,6 +70,7 @@ import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.dashboard.sample.SampleDashboardFacadeEjb;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb.DocumentFacadeEjbLocal;
 import de.symeda.sormas.backend.environment.EnvironmentFacadeEjb;
+import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSampleFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
@@ -204,6 +205,8 @@ public final class FacadeProviderMock extends FacadeProvider {
 			return (P) beanTest.getBean(SampleDashboardFacadeEjb.SampleDashboardFacadeEjbLocal.class);
 		} else if (EnvironmentFacade.class == clazz) {
 			return (P) beanTest.getBean(EnvironmentFacadeEjb.EnvironmentFacadeEjbLocal.class);
+		} else if (EnvironmentSampleFacadeEjb.class == clazz) {
+			return (P) beanTest.getBean(EnvironmentSampleFacadeEjb.EnvironmentSampleFacadeEjbLocal.class);
 		}
 
 		return null;

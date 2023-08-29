@@ -7,7 +7,7 @@
       "url" : "https://www.gnu.org/licenses/gpl-3.0.html"
     },
     "title" : "SORMAS REST API",
-    "version" : "1.87.0-SNAPSHOT"
+    "version" : "1.88.0-SNAPSHOT"
   },
   "servers" : [ {
     "url" : "/sormas-rest"
@@ -3856,6 +3856,51 @@
         "tags" : [ "Environment Controller" ]
       }
     },
+    "/environments/all/{since}/{size}/{lastSynchronizedUuid}" : {
+      "get" : {
+        "operationId" : "getAllEnvironments_1",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "since",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "in" : "path",
+          "name" : "size",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "in" : "path",
+          "name" : "lastSynchronizedUuid",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/EnvironmentDto"
+                  }
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "Environment Controller" ]
+      }
+    },
     "/environments/obsolete/{since}" : {
       "get" : {
         "operationId" : "getObsoleteUuidsSince_2",
@@ -4014,6 +4059,183 @@
         "tags" : [ "Environment Controller" ]
       }
     },
+    "/environmentsamples/all/{since}/{size}/{lastSynchronizedUuid}" : {
+      "get" : {
+        "operationId" : "getAllAfter",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "since",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "in" : "path",
+          "name" : "size",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "in" : "path",
+          "name" : "lastSynchronizedUuid",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/EnvironmentSampleDto"
+                  }
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "Environment Sample Controller" ]
+      }
+    },
+    "/environmentsamples/obsolete/{since}" : {
+      "get" : {
+        "operationId" : "getObsoleteUuidsSince_3",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "since",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "string"
+                  }
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "Environment Sample Controller" ]
+      }
+    },
+    "/environmentsamples/push" : {
+      "post" : {
+        "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
+        "operationId" : "postEntityDtos_12",
+        "requestBody" : {
+          "content" : {
+            "application/json; charset=UTF-8" : {
+              "schema" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/EnvironmentSampleDto"
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "207" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "Array of responses, matching the posted array of entities. Provides an HTML status code for every entity and an optional body (e.g. a string with an error message)."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PostResponse"
+                  }
+                }
+              }
+            },
+            "description" : "When the request body has one or no entry. The status code of the response entry matches the response code and may have an optional body (e.g. a string with an error message)."
+          }
+        },
+        "summary" : "Create or update one or multiple entities.",
+        "tags" : [ "Entity Dto Controller" ]
+      }
+    },
+    "/environmentsamples/query" : {
+      "post" : {
+        "operationId" : "getByUuids_17",
+        "requestBody" : {
+          "content" : {
+            "application/json; charset=UTF-8" : {
+              "schema" : {
+                "type" : "array",
+                "items" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/EnvironmentSampleDto"
+                  }
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "Environment Sample Controller" ]
+      }
+    },
+    "/environmentsamples/uuids" : {
+      "get" : {
+        "operationId" : "getAllUuids_14",
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "string"
+                  }
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "Environment Sample Controller" ]
+      }
+    },
     "/eventGroups/indexList" : {
       "post" : {
         "operationId" : "getIndexList_9",
@@ -4050,7 +4272,7 @@
     "/eventGroups/push" : {
       "post" : {
         "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
-        "operationId" : "postEntityDtos_12",
+        "operationId" : "postEntityDtos_13",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -4361,7 +4583,7 @@
     },
     "/eventparticipants/obsolete/{since}" : {
       "get" : {
-        "operationId" : "getObsoleteUuidsSince_3",
+        "operationId" : "getObsoleteUuidsSince_4",
         "parameters" : [ {
           "in" : "path",
           "name" : "since",
@@ -4392,7 +4614,7 @@
     "/eventparticipants/push" : {
       "post" : {
         "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
-        "operationId" : "postEntityDtos_13",
+        "operationId" : "postEntityDtos_14",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -4439,7 +4661,7 @@
     },
     "/eventparticipants/query" : {
       "post" : {
-        "operationId" : "getByUuids_17",
+        "operationId" : "getByUuids_18",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -4845,7 +5067,7 @@
     },
     "/events/obsolete/{since}" : {
       "get" : {
-        "operationId" : "getObsoleteUuidsSince_4",
+        "operationId" : "getObsoleteUuidsSince_5",
         "parameters" : [ {
           "in" : "path",
           "name" : "since",
@@ -4876,7 +5098,7 @@
     "/events/push" : {
       "post" : {
         "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
-        "operationId" : "postEntityDtos_14",
+        "operationId" : "postEntityDtos_15",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -4923,7 +5145,7 @@
     },
     "/events/query" : {
       "post" : {
-        "operationId" : "getByUuids_18",
+        "operationId" : "getByUuids_19",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -5187,7 +5409,7 @@
     "/facilities/push" : {
       "post" : {
         "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
-        "operationId" : "postEntityDtos_16",
+        "operationId" : "postEntityDtos_17",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -5234,7 +5456,7 @@
     },
     "/facilities/query" : {
       "post" : {
-        "operationId" : "getByUuids_19",
+        "operationId" : "getByUuids_20",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -5304,7 +5526,7 @@
     },
     "/facilities/uuids" : {
       "get" : {
-        "operationId" : "getAllUuids_14",
+        "operationId" : "getAllUuids_15",
         "responses" : {
           "default" : {
             "content" : {
@@ -5385,7 +5607,7 @@
     },
     "/featureconfigurations/query" : {
       "post" : {
-        "operationId" : "getByUuids_20",
+        "operationId" : "getByUuids_21",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -5418,7 +5640,7 @@
     },
     "/featureconfigurations/uuids" : {
       "get" : {
-        "operationId" : "getAllUuids_15",
+        "operationId" : "getAllUuids_16",
         "responses" : {
           "default" : {
             "content" : {
@@ -5439,7 +5661,7 @@
     },
     "/immunizations/all/{since}" : {
       "get" : {
-        "operationId" : "getAllAfter",
+        "operationId" : "getAllAfter_1",
         "parameters" : [ {
           "in" : "path",
           "name" : "since",
@@ -5469,7 +5691,7 @@
     },
     "/immunizations/all/{since}/{size}/{lastSynchronizedUuid}" : {
       "get" : {
-        "operationId" : "getAllAfter_1",
+        "operationId" : "getAllAfter_2",
         "parameters" : [ {
           "in" : "path",
           "name" : "since",
@@ -5693,7 +5915,7 @@
     },
     "/immunizations/obsolete/{since}" : {
       "get" : {
-        "operationId" : "getObsoleteUuidsSince_5",
+        "operationId" : "getObsoleteUuidsSince_6",
         "parameters" : [ {
           "in" : "path",
           "name" : "since",
@@ -5724,7 +5946,7 @@
     "/immunizations/push" : {
       "post" : {
         "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
-        "operationId" : "postEntityDtos_17",
+        "operationId" : "postEntityDtos_18",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -5771,7 +5993,7 @@
     },
     "/immunizations/query" : {
       "post" : {
-        "operationId" : "getByUuids_21",
+        "operationId" : "getByUuids_22",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -5837,7 +6059,7 @@
     },
     "/immunizations/uuids" : {
       "get" : {
-        "operationId" : "getAllUuids_16",
+        "operationId" : "getAllUuids_17",
         "responses" : {
           "default" : {
             "content" : {
@@ -6398,7 +6620,7 @@
     "/outbreaks/push" : {
       "post" : {
         "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
-        "operationId" : "postEntityDtos_18",
+        "operationId" : "postEntityDtos_19",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -6605,7 +6827,7 @@
     "/pathogentests/push" : {
       "post" : {
         "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
-        "operationId" : "postEntityDtos_19",
+        "operationId" : "postEntityDtos_20",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -6652,7 +6874,7 @@
     },
     "/pathogentests/query" : {
       "post" : {
-        "operationId" : "getByUuids_22",
+        "operationId" : "getByUuids_23",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -6874,7 +7096,7 @@
     "/persons/push" : {
       "post" : {
         "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
-        "operationId" : "postEntityDtos_20",
+        "operationId" : "postEntityDtos_21",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -6921,7 +7143,7 @@
     },
     "/persons/query" : {
       "post" : {
-        "operationId" : "getByUuids_23",
+        "operationId" : "getByUuids_24",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -7008,7 +7230,7 @@
     },
     "/persons/uuids" : {
       "get" : {
-        "operationId" : "getAllUuids_17",
+        "operationId" : "getAllUuids_18",
         "responses" : {
           "default" : {
             "content" : {
@@ -7161,7 +7383,7 @@
     "/pointsofentry/push" : {
       "post" : {
         "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
-        "operationId" : "postEntityDtos_21",
+        "operationId" : "postEntityDtos_22",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -7208,7 +7430,7 @@
     },
     "/pointsofentry/query" : {
       "post" : {
-        "operationId" : "getByUuids_24",
+        "operationId" : "getByUuids_25",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -7241,7 +7463,7 @@
     },
     "/pointsofentry/uuids" : {
       "get" : {
-        "operationId" : "getAllUuids_18",
+        "operationId" : "getAllUuids_19",
         "responses" : {
           "default" : {
             "content" : {
@@ -7359,7 +7581,7 @@
     "/prescriptions/push" : {
       "post" : {
         "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
-        "operationId" : "postEntityDtos_22",
+        "operationId" : "postEntityDtos_23",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -7406,7 +7628,7 @@
     },
     "/prescriptions/query" : {
       "post" : {
-        "operationId" : "getByUuids_25",
+        "operationId" : "getByUuids_26",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -7566,7 +7788,7 @@
     "/regions/push" : {
       "post" : {
         "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
-        "operationId" : "postEntityDtos_23",
+        "operationId" : "postEntityDtos_24",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -7613,7 +7835,7 @@
     },
     "/regions/query" : {
       "post" : {
-        "operationId" : "getByUuids_26",
+        "operationId" : "getByUuids_27",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -7646,7 +7868,7 @@
     },
     "/regions/uuids" : {
       "get" : {
-        "operationId" : "getAllUuids_19",
+        "operationId" : "getAllUuids_20",
         "responses" : {
           "default" : {
             "content" : {
@@ -7838,7 +8060,7 @@
     },
     "/samples/obsolete/{since}" : {
       "get" : {
-        "operationId" : "getObsoleteUuidsSince_6",
+        "operationId" : "getObsoleteUuidsSince_7",
         "parameters" : [ {
           "in" : "path",
           "name" : "since",
@@ -7869,7 +8091,7 @@
     "/samples/push" : {
       "post" : {
         "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
-        "operationId" : "postEntityDtos_24",
+        "operationId" : "postEntityDtos_25",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -7916,7 +8138,7 @@
     },
     "/samples/query" : {
       "post" : {
-        "operationId" : "getByUuids_27",
+        "operationId" : "getByUuids_28",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -8645,7 +8867,7 @@
     "/subcontinents/push" : {
       "post" : {
         "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
-        "operationId" : "postEntityDtos_25",
+        "operationId" : "postEntityDtos_26",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -8692,7 +8914,7 @@
     },
     "/subcontinents/query" : {
       "post" : {
-        "operationId" : "getByUuids_28",
+        "operationId" : "getByUuids_29",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -8725,7 +8947,7 @@
     },
     "/subcontinents/uuids" : {
       "get" : {
-        "operationId" : "getAllUuids_20",
+        "operationId" : "getAllUuids_21",
         "responses" : {
           "default" : {
             "content" : {
@@ -8747,7 +8969,7 @@
     "/surveillancereports/push" : {
       "post" : {
         "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
-        "operationId" : "postEntityDtos_26",
+        "operationId" : "postEntityDtos_27",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -8998,7 +9220,7 @@
     },
     "/tasks/obsolete/{since}" : {
       "get" : {
-        "operationId" : "getObsoleteUuidsSince_7",
+        "operationId" : "getObsoleteUuidsSince_8",
         "parameters" : [ {
           "in" : "path",
           "name" : "since",
@@ -9029,7 +9251,7 @@
     "/tasks/push" : {
       "post" : {
         "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
-        "operationId" : "postEntityDtos_27",
+        "operationId" : "postEntityDtos_28",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -9076,7 +9298,7 @@
     },
     "/tasks/query" : {
       "post" : {
-        "operationId" : "getByUuids_29",
+        "operationId" : "getByUuids_30",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -9190,7 +9412,7 @@
     "/travelentries/push" : {
       "post" : {
         "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
-        "operationId" : "postEntityDtos_28",
+        "operationId" : "postEntityDtos_29",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -9380,7 +9602,7 @@
     "/treatments/push" : {
       "post" : {
         "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
-        "operationId" : "postEntityDtos_29",
+        "operationId" : "postEntityDtos_30",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -9427,7 +9649,7 @@
     },
     "/treatments/query" : {
       "post" : {
-        "operationId" : "getByUuids_30",
+        "operationId" : "getByUuids_31",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -9541,7 +9763,7 @@
     },
     "/userroles/uuids" : {
       "get" : {
-        "operationId" : "getAllUuids_22",
+        "operationId" : "getAllUuids_23",
         "responses" : {
           "default" : {
             "content" : {
@@ -9625,7 +9847,7 @@
     },
     "/users/query" : {
       "post" : {
-        "operationId" : "getByUuids_31",
+        "operationId" : "getByUuids_32",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -9667,7 +9889,7 @@
                   "type" : "array",
                   "items" : {
                     "type" : "string",
-                    "enum" : [ "CASE_VIEW", "CASE_CREATE", "CASE_EDIT", "CASE_ARCHIVE", "CASE_DELETE", "CASE_IMPORT", "CASE_EXPORT", "CASE_INVESTIGATE", "CASE_CLASSIFY", "CASE_CHANGE_DISEASE", "CASE_CHANGE_EPID_NUMBER", "CASE_TRANSFER", "CASE_REFER_FROM_POE", "CASE_MERGE", "CASE_SHARE", "CASE_RESPONSIBLE", "IMMUNIZATION_VIEW", "IMMUNIZATION_CREATE", "IMMUNIZATION_EDIT", "IMMUNIZATION_ARCHIVE", "IMMUNIZATION_DELETE", "PERSON_VIEW", "PERSON_EDIT", "PERSON_DELETE", "PERSON_EXPORT", "PERSON_CONTACT_DETAILS_DELETE", "PERSON_MERGE", "SAMPLE_VIEW", "SAMPLE_CREATE", "SAMPLE_EDIT", "SAMPLE_DELETE", "SAMPLE_EXPORT", "SAMPLE_TRANSFER", "SAMPLE_EDIT_NOT_OWNED", "PERFORM_BULK_OPERATIONS_CASE_SAMPLES", "PATHOGEN_TEST_CREATE", "PATHOGEN_TEST_EDIT", "PATHOGEN_TEST_DELETE", "ADDITIONAL_TEST_VIEW", "ADDITIONAL_TEST_CREATE", "ADDITIONAL_TEST_EDIT", "ADDITIONAL_TEST_DELETE", "CONTACT_VIEW", "CONTACT_CREATE", "CONTACT_EDIT", "CONTACT_ARCHIVE", "CONTACT_DELETE", "CONTACT_IMPORT", "CONTACT_EXPORT", "CONTACT_CONVERT", "CONTACT_REASSIGN_CASE", "CONTACT_MERGE", "CONTACT_RESPONSIBLE", "VISIT_CREATE", "VISIT_EDIT", "VISIT_DELETE", "VISIT_EXPORT", "TASK_VIEW", "TASK_CREATE", "TASK_EDIT", "TASK_DELETE", "TASK_EXPORT", "TASK_ASSIGN", "TASK_ARCHIVE", "ACTION_CREATE", "ACTION_DELETE", "ACTION_EDIT", "EVENT_VIEW", "EVENT_CREATE", "EVENT_EDIT", "EVENT_ARCHIVE", "EVENT_DELETE", "EVENT_IMPORT", "EVENT_EXPORT", "PERFORM_BULK_OPERATIONS_EVENT", "EVENT_RESPONSIBLE", "EVENTPARTICIPANT_VIEW", "EVENTPARTICIPANT_CREATE", "EVENTPARTICIPANT_EDIT", "EVENTPARTICIPANT_ARCHIVE", "EVENTPARTICIPANT_DELETE", "EVENTPARTICIPANT_IMPORT", "PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT", "EVENTGROUP_CREATE", "EVENTGROUP_EDIT", "EVENTGROUP_ARCHIVE", "EVENTGROUP_DELETE", "EVENTGROUP_LINK", "USER_VIEW", "USER_CREATE", "USER_EDIT", "USER_ROLE_VIEW", "USER_ROLE_EDIT", "USER_ROLE_DELETE", "STATISTICS_ACCESS", "STATISTICS_EXPORT", "INFRASTRUCTURE_VIEW", "INFRASTRUCTURE_CREATE", "INFRASTRUCTURE_EDIT", "INFRASTRUCTURE_ARCHIVE", "INFRASTRUCTURE_IMPORT", "INFRASTRUCTURE_EXPORT", "POPULATION_MANAGE", "DASHBOARD_SURVEILLANCE_VIEW", "DASHBOARD_CONTACT_VIEW", "DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS", "DASHBOARD_CAMPAIGNS_VIEW", "DASHBOARD_SAMPLES_VIEW", "CASE_CLINICIAN_VIEW", "THERAPY_VIEW", "PRESCRIPTION_CREATE", "PRESCRIPTION_EDIT", "PRESCRIPTION_DELETE", "TREATMENT_CREATE", "TREATMENT_EDIT", "TREATMENT_DELETE", "CLINICAL_COURSE_VIEW", "CLINICAL_COURSE_EDIT", "CLINICAL_VISIT_CREATE", "CLINICAL_VISIT_EDIT", "CLINICAL_VISIT_DELETE", "PORT_HEALTH_INFO_VIEW", "PORT_HEALTH_INFO_EDIT", "WEEKLYREPORT_VIEW", "WEEKLYREPORT_CREATE", "AGGREGATE_REPORT_VIEW", "AGGREGATE_REPORT_EDIT", "AGGREGATE_REPORT_EXPORT", "SEE_PERSONAL_DATA_IN_JURISDICTION", "SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION", "SEE_SENSITIVE_DATA_IN_JURISDICTION", "SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION", "CAMPAIGN_VIEW", "CAMPAIGN_EDIT", "CAMPAIGN_ARCHIVE", "CAMPAIGN_DELETE", "CAMPAIGN_FORM_DATA_VIEW", "CAMPAIGN_FORM_DATA_EDIT", "CAMPAIGN_FORM_DATA_ARCHIVE", "CAMPAIGN_FORM_DATA_DELETE", "CAMPAIGN_FORM_DATA_EXPORT", "TRAVEL_ENTRY_MANAGEMENT_ACCESS", "TRAVEL_ENTRY_VIEW", "TRAVEL_ENTRY_CREATE", "TRAVEL_ENTRY_EDIT", "TRAVEL_ENTRY_ARCHIVE", "TRAVEL_ENTRY_DELETE", "ENVIRONMENT_VIEW", "ENVIRONMENT_CREATE", "ENVIRONMENT_EDIT", "ENVIRONMENT_ARCHIVE", "ENVIRONMENT_DELETE", "ENVIRONMENT_IMPORT", "ENVIRONMENT_EXPORT", "DOCUMENT_VIEW", "DOCUMENT_UPLOAD", "DOCUMENT_DELETE", "PERFORM_BULK_OPERATIONS", "PERFORM_BULK_OPERATIONS_PSEUDONYM", "QUARANTINE_ORDER_CREATE", "SORMAS_REST", "SORMAS_UI", "DATABASE_EXPORT_ACCESS", "EXPORT_DATA_PROTECTION_DATA", "BAG_EXPORT", "SEND_MANUAL_EXTERNAL_MESSAGES", "MANAGE_EXTERNAL_SYMPTOM_JOURNAL", "EXTERNAL_VISITS", "SORMAS_TO_SORMAS_CLIENT", "SORMAS_TO_SORMAS_SHARE", "SORMAS_TO_SORMAS_PROCESS", "EXTERNAL_SURVEILLANCE_SHARE", "EXTERNAL_SURVEILLANCE_DELETE", "EXTERNAL_MESSAGE_VIEW", "EXTERNAL_MESSAGE_PROCESS", "EXTERNAL_MESSAGE_PUSH", "EXTERNAL_MESSAGE_DELETE", "PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES", "OUTBREAK_VIEW", "OUTBREAK_EDIT", "MANAGE_PUBLIC_EXPORT_CONFIGURATION", "DOCUMENT_TEMPLATE_MANAGEMENT", "LINE_LISTING_CONFIGURE", "DEV_MODE" ]
+                    "enum" : [ "CASE_VIEW", "CASE_CREATE", "CASE_EDIT", "CASE_ARCHIVE", "CASE_DELETE", "CASE_IMPORT", "CASE_EXPORT", "CASE_INVESTIGATE", "CASE_CLASSIFY", "CASE_CHANGE_DISEASE", "CASE_CHANGE_EPID_NUMBER", "CASE_TRANSFER", "CASE_REFER_FROM_POE", "CASE_MERGE", "CASE_SHARE", "CASE_RESPONSIBLE", "IMMUNIZATION_VIEW", "IMMUNIZATION_CREATE", "IMMUNIZATION_EDIT", "IMMUNIZATION_ARCHIVE", "IMMUNIZATION_DELETE", "PERSON_VIEW", "PERSON_EDIT", "PERSON_DELETE", "PERSON_EXPORT", "PERSON_CONTACT_DETAILS_DELETE", "PERSON_MERGE", "SAMPLE_VIEW", "SAMPLE_CREATE", "SAMPLE_EDIT", "SAMPLE_DELETE", "SAMPLE_EXPORT", "SAMPLE_TRANSFER", "SAMPLE_EDIT_NOT_OWNED", "PERFORM_BULK_OPERATIONS_CASE_SAMPLES", "PATHOGEN_TEST_CREATE", "PATHOGEN_TEST_EDIT", "PATHOGEN_TEST_DELETE", "ADDITIONAL_TEST_VIEW", "ADDITIONAL_TEST_CREATE", "ADDITIONAL_TEST_EDIT", "ADDITIONAL_TEST_DELETE", "CONTACT_VIEW", "CONTACT_CREATE", "CONTACT_EDIT", "CONTACT_ARCHIVE", "CONTACT_DELETE", "CONTACT_IMPORT", "CONTACT_EXPORT", "CONTACT_CONVERT", "CONTACT_REASSIGN_CASE", "CONTACT_MERGE", "CONTACT_RESPONSIBLE", "VISIT_CREATE", "VISIT_EDIT", "VISIT_DELETE", "VISIT_EXPORT", "TASK_VIEW", "TASK_CREATE", "TASK_EDIT", "TASK_DELETE", "TASK_EXPORT", "TASK_ASSIGN", "TASK_ARCHIVE", "ACTION_CREATE", "ACTION_DELETE", "ACTION_EDIT", "EVENT_VIEW", "EVENT_CREATE", "EVENT_EDIT", "EVENT_ARCHIVE", "EVENT_DELETE", "EVENT_IMPORT", "EVENT_EXPORT", "PERFORM_BULK_OPERATIONS_EVENT", "EVENT_RESPONSIBLE", "EVENTPARTICIPANT_VIEW", "EVENTPARTICIPANT_CREATE", "EVENTPARTICIPANT_EDIT", "EVENTPARTICIPANT_ARCHIVE", "EVENTPARTICIPANT_DELETE", "EVENTPARTICIPANT_IMPORT", "PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT", "EVENTGROUP_CREATE", "EVENTGROUP_EDIT", "EVENTGROUP_ARCHIVE", "EVENTGROUP_DELETE", "EVENTGROUP_LINK", "USER_VIEW", "USER_CREATE", "USER_EDIT", "USER_ROLE_VIEW", "USER_ROLE_EDIT", "USER_ROLE_DELETE", "STATISTICS_ACCESS", "STATISTICS_EXPORT", "INFRASTRUCTURE_VIEW", "INFRASTRUCTURE_CREATE", "INFRASTRUCTURE_EDIT", "INFRASTRUCTURE_ARCHIVE", "INFRASTRUCTURE_IMPORT", "INFRASTRUCTURE_EXPORT", "POPULATION_MANAGE", "DASHBOARD_SURVEILLANCE_VIEW", "DASHBOARD_CONTACT_VIEW", "DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS", "DASHBOARD_CAMPAIGNS_VIEW", "DASHBOARD_SAMPLES_VIEW", "CASE_CLINICIAN_VIEW", "THERAPY_VIEW", "PRESCRIPTION_CREATE", "PRESCRIPTION_EDIT", "PRESCRIPTION_DELETE", "TREATMENT_CREATE", "TREATMENT_EDIT", "TREATMENT_DELETE", "CLINICAL_COURSE_VIEW", "CLINICAL_COURSE_EDIT", "CLINICAL_VISIT_CREATE", "CLINICAL_VISIT_EDIT", "CLINICAL_VISIT_DELETE", "PORT_HEALTH_INFO_VIEW", "PORT_HEALTH_INFO_EDIT", "WEEKLYREPORT_VIEW", "WEEKLYREPORT_CREATE", "AGGREGATE_REPORT_VIEW", "AGGREGATE_REPORT_EDIT", "AGGREGATE_REPORT_EXPORT", "SEE_PERSONAL_DATA_IN_JURISDICTION", "SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION", "SEE_SENSITIVE_DATA_IN_JURISDICTION", "SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION", "CAMPAIGN_VIEW", "CAMPAIGN_EDIT", "CAMPAIGN_ARCHIVE", "CAMPAIGN_DELETE", "CAMPAIGN_FORM_DATA_VIEW", "CAMPAIGN_FORM_DATA_EDIT", "CAMPAIGN_FORM_DATA_ARCHIVE", "CAMPAIGN_FORM_DATA_DELETE", "CAMPAIGN_FORM_DATA_EXPORT", "TRAVEL_ENTRY_MANAGEMENT_ACCESS", "TRAVEL_ENTRY_VIEW", "TRAVEL_ENTRY_CREATE", "TRAVEL_ENTRY_EDIT", "TRAVEL_ENTRY_ARCHIVE", "TRAVEL_ENTRY_DELETE", "ENVIRONMENT_VIEW", "ENVIRONMENT_CREATE", "ENVIRONMENT_EDIT", "ENVIRONMENT_ARCHIVE", "ENVIRONMENT_DELETE", "ENVIRONMENT_IMPORT", "ENVIRONMENT_EXPORT", "ENVIRONMENT_SAMPLE_VIEW", "ENVIRONMENT_SAMPLE_CREATE", "ENVIRONMENT_SAMPLE_EDIT", "ENVIRONMENT_SAMPLE_EDIT_DISPATCH", "ENVIRONMENT_SAMPLE_EDIT_RECEIVAL", "ENVIRONMENT_SAMPLE_DELETE", "ENVIRONMENT_SAMPLE_IMPORT", "ENVIRONMENT_SAMPLE_EXPORT", "DOCUMENT_VIEW", "DOCUMENT_UPLOAD", "DOCUMENT_DELETE", "PERFORM_BULK_OPERATIONS", "PERFORM_BULK_OPERATIONS_PSEUDONYM", "QUARANTINE_ORDER_CREATE", "SORMAS_REST", "SORMAS_UI", "DATABASE_EXPORT_ACCESS", "EXPORT_DATA_PROTECTION_DATA", "BAG_EXPORT", "SEND_MANUAL_EXTERNAL_MESSAGES", "MANAGE_EXTERNAL_SYMPTOM_JOURNAL", "EXTERNAL_VISITS", "SORMAS_TO_SORMAS_CLIENT", "SORMAS_TO_SORMAS_SHARE", "SORMAS_TO_SORMAS_PROCESS", "EXTERNAL_SURVEILLANCE_SHARE", "EXTERNAL_SURVEILLANCE_DELETE", "EXTERNAL_MESSAGE_VIEW", "EXTERNAL_MESSAGE_PROCESS", "EXTERNAL_MESSAGE_PUSH", "EXTERNAL_MESSAGE_DELETE", "PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES", "OUTBREAK_VIEW", "OUTBREAK_EDIT", "MANAGE_PUBLIC_EXPORT_CONFIGURATION", "DOCUMENT_TEMPLATE_MANAGEMENT", "LINE_LISTING_CONFIGURE", "DEV_MODE" ]
                   }
                 }
               }
@@ -9697,7 +9919,7 @@
                   "type" : "array",
                   "items" : {
                     "type" : "string",
-                    "enum" : [ "CASE_VIEW", "CASE_CREATE", "CASE_EDIT", "CASE_ARCHIVE", "CASE_DELETE", "CASE_IMPORT", "CASE_EXPORT", "CASE_INVESTIGATE", "CASE_CLASSIFY", "CASE_CHANGE_DISEASE", "CASE_CHANGE_EPID_NUMBER", "CASE_TRANSFER", "CASE_REFER_FROM_POE", "CASE_MERGE", "CASE_SHARE", "CASE_RESPONSIBLE", "IMMUNIZATION_VIEW", "IMMUNIZATION_CREATE", "IMMUNIZATION_EDIT", "IMMUNIZATION_ARCHIVE", "IMMUNIZATION_DELETE", "PERSON_VIEW", "PERSON_EDIT", "PERSON_DELETE", "PERSON_EXPORT", "PERSON_CONTACT_DETAILS_DELETE", "PERSON_MERGE", "SAMPLE_VIEW", "SAMPLE_CREATE", "SAMPLE_EDIT", "SAMPLE_DELETE", "SAMPLE_EXPORT", "SAMPLE_TRANSFER", "SAMPLE_EDIT_NOT_OWNED", "PERFORM_BULK_OPERATIONS_CASE_SAMPLES", "PATHOGEN_TEST_CREATE", "PATHOGEN_TEST_EDIT", "PATHOGEN_TEST_DELETE", "ADDITIONAL_TEST_VIEW", "ADDITIONAL_TEST_CREATE", "ADDITIONAL_TEST_EDIT", "ADDITIONAL_TEST_DELETE", "CONTACT_VIEW", "CONTACT_CREATE", "CONTACT_EDIT", "CONTACT_ARCHIVE", "CONTACT_DELETE", "CONTACT_IMPORT", "CONTACT_EXPORT", "CONTACT_CONVERT", "CONTACT_REASSIGN_CASE", "CONTACT_MERGE", "CONTACT_RESPONSIBLE", "VISIT_CREATE", "VISIT_EDIT", "VISIT_DELETE", "VISIT_EXPORT", "TASK_VIEW", "TASK_CREATE", "TASK_EDIT", "TASK_DELETE", "TASK_EXPORT", "TASK_ASSIGN", "TASK_ARCHIVE", "ACTION_CREATE", "ACTION_DELETE", "ACTION_EDIT", "EVENT_VIEW", "EVENT_CREATE", "EVENT_EDIT", "EVENT_ARCHIVE", "EVENT_DELETE", "EVENT_IMPORT", "EVENT_EXPORT", "PERFORM_BULK_OPERATIONS_EVENT", "EVENT_RESPONSIBLE", "EVENTPARTICIPANT_VIEW", "EVENTPARTICIPANT_CREATE", "EVENTPARTICIPANT_EDIT", "EVENTPARTICIPANT_ARCHIVE", "EVENTPARTICIPANT_DELETE", "EVENTPARTICIPANT_IMPORT", "PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT", "EVENTGROUP_CREATE", "EVENTGROUP_EDIT", "EVENTGROUP_ARCHIVE", "EVENTGROUP_DELETE", "EVENTGROUP_LINK", "USER_VIEW", "USER_CREATE", "USER_EDIT", "USER_ROLE_VIEW", "USER_ROLE_EDIT", "USER_ROLE_DELETE", "STATISTICS_ACCESS", "STATISTICS_EXPORT", "INFRASTRUCTURE_VIEW", "INFRASTRUCTURE_CREATE", "INFRASTRUCTURE_EDIT", "INFRASTRUCTURE_ARCHIVE", "INFRASTRUCTURE_IMPORT", "INFRASTRUCTURE_EXPORT", "POPULATION_MANAGE", "DASHBOARD_SURVEILLANCE_VIEW", "DASHBOARD_CONTACT_VIEW", "DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS", "DASHBOARD_CAMPAIGNS_VIEW", "DASHBOARD_SAMPLES_VIEW", "CASE_CLINICIAN_VIEW", "THERAPY_VIEW", "PRESCRIPTION_CREATE", "PRESCRIPTION_EDIT", "PRESCRIPTION_DELETE", "TREATMENT_CREATE", "TREATMENT_EDIT", "TREATMENT_DELETE", "CLINICAL_COURSE_VIEW", "CLINICAL_COURSE_EDIT", "CLINICAL_VISIT_CREATE", "CLINICAL_VISIT_EDIT", "CLINICAL_VISIT_DELETE", "PORT_HEALTH_INFO_VIEW", "PORT_HEALTH_INFO_EDIT", "WEEKLYREPORT_VIEW", "WEEKLYREPORT_CREATE", "AGGREGATE_REPORT_VIEW", "AGGREGATE_REPORT_EDIT", "AGGREGATE_REPORT_EXPORT", "SEE_PERSONAL_DATA_IN_JURISDICTION", "SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION", "SEE_SENSITIVE_DATA_IN_JURISDICTION", "SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION", "CAMPAIGN_VIEW", "CAMPAIGN_EDIT", "CAMPAIGN_ARCHIVE", "CAMPAIGN_DELETE", "CAMPAIGN_FORM_DATA_VIEW", "CAMPAIGN_FORM_DATA_EDIT", "CAMPAIGN_FORM_DATA_ARCHIVE", "CAMPAIGN_FORM_DATA_DELETE", "CAMPAIGN_FORM_DATA_EXPORT", "TRAVEL_ENTRY_MANAGEMENT_ACCESS", "TRAVEL_ENTRY_VIEW", "TRAVEL_ENTRY_CREATE", "TRAVEL_ENTRY_EDIT", "TRAVEL_ENTRY_ARCHIVE", "TRAVEL_ENTRY_DELETE", "ENVIRONMENT_VIEW", "ENVIRONMENT_CREATE", "ENVIRONMENT_EDIT", "ENVIRONMENT_ARCHIVE", "ENVIRONMENT_DELETE", "ENVIRONMENT_IMPORT", "ENVIRONMENT_EXPORT", "DOCUMENT_VIEW", "DOCUMENT_UPLOAD", "DOCUMENT_DELETE", "PERFORM_BULK_OPERATIONS", "PERFORM_BULK_OPERATIONS_PSEUDONYM", "QUARANTINE_ORDER_CREATE", "SORMAS_REST", "SORMAS_UI", "DATABASE_EXPORT_ACCESS", "EXPORT_DATA_PROTECTION_DATA", "BAG_EXPORT", "SEND_MANUAL_EXTERNAL_MESSAGES", "MANAGE_EXTERNAL_SYMPTOM_JOURNAL", "EXTERNAL_VISITS", "SORMAS_TO_SORMAS_CLIENT", "SORMAS_TO_SORMAS_SHARE", "SORMAS_TO_SORMAS_PROCESS", "EXTERNAL_SURVEILLANCE_SHARE", "EXTERNAL_SURVEILLANCE_DELETE", "EXTERNAL_MESSAGE_VIEW", "EXTERNAL_MESSAGE_PROCESS", "EXTERNAL_MESSAGE_PUSH", "EXTERNAL_MESSAGE_DELETE", "PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES", "OUTBREAK_VIEW", "OUTBREAK_EDIT", "MANAGE_PUBLIC_EXPORT_CONFIGURATION", "DOCUMENT_TEMPLATE_MANAGEMENT", "LINE_LISTING_CONFIGURE", "DEV_MODE" ]
+                    "enum" : [ "CASE_VIEW", "CASE_CREATE", "CASE_EDIT", "CASE_ARCHIVE", "CASE_DELETE", "CASE_IMPORT", "CASE_EXPORT", "CASE_INVESTIGATE", "CASE_CLASSIFY", "CASE_CHANGE_DISEASE", "CASE_CHANGE_EPID_NUMBER", "CASE_TRANSFER", "CASE_REFER_FROM_POE", "CASE_MERGE", "CASE_SHARE", "CASE_RESPONSIBLE", "IMMUNIZATION_VIEW", "IMMUNIZATION_CREATE", "IMMUNIZATION_EDIT", "IMMUNIZATION_ARCHIVE", "IMMUNIZATION_DELETE", "PERSON_VIEW", "PERSON_EDIT", "PERSON_DELETE", "PERSON_EXPORT", "PERSON_CONTACT_DETAILS_DELETE", "PERSON_MERGE", "SAMPLE_VIEW", "SAMPLE_CREATE", "SAMPLE_EDIT", "SAMPLE_DELETE", "SAMPLE_EXPORT", "SAMPLE_TRANSFER", "SAMPLE_EDIT_NOT_OWNED", "PERFORM_BULK_OPERATIONS_CASE_SAMPLES", "PATHOGEN_TEST_CREATE", "PATHOGEN_TEST_EDIT", "PATHOGEN_TEST_DELETE", "ADDITIONAL_TEST_VIEW", "ADDITIONAL_TEST_CREATE", "ADDITIONAL_TEST_EDIT", "ADDITIONAL_TEST_DELETE", "CONTACT_VIEW", "CONTACT_CREATE", "CONTACT_EDIT", "CONTACT_ARCHIVE", "CONTACT_DELETE", "CONTACT_IMPORT", "CONTACT_EXPORT", "CONTACT_CONVERT", "CONTACT_REASSIGN_CASE", "CONTACT_MERGE", "CONTACT_RESPONSIBLE", "VISIT_CREATE", "VISIT_EDIT", "VISIT_DELETE", "VISIT_EXPORT", "TASK_VIEW", "TASK_CREATE", "TASK_EDIT", "TASK_DELETE", "TASK_EXPORT", "TASK_ASSIGN", "TASK_ARCHIVE", "ACTION_CREATE", "ACTION_DELETE", "ACTION_EDIT", "EVENT_VIEW", "EVENT_CREATE", "EVENT_EDIT", "EVENT_ARCHIVE", "EVENT_DELETE", "EVENT_IMPORT", "EVENT_EXPORT", "PERFORM_BULK_OPERATIONS_EVENT", "EVENT_RESPONSIBLE", "EVENTPARTICIPANT_VIEW", "EVENTPARTICIPANT_CREATE", "EVENTPARTICIPANT_EDIT", "EVENTPARTICIPANT_ARCHIVE", "EVENTPARTICIPANT_DELETE", "EVENTPARTICIPANT_IMPORT", "PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT", "EVENTGROUP_CREATE", "EVENTGROUP_EDIT", "EVENTGROUP_ARCHIVE", "EVENTGROUP_DELETE", "EVENTGROUP_LINK", "USER_VIEW", "USER_CREATE", "USER_EDIT", "USER_ROLE_VIEW", "USER_ROLE_EDIT", "USER_ROLE_DELETE", "STATISTICS_ACCESS", "STATISTICS_EXPORT", "INFRASTRUCTURE_VIEW", "INFRASTRUCTURE_CREATE", "INFRASTRUCTURE_EDIT", "INFRASTRUCTURE_ARCHIVE", "INFRASTRUCTURE_IMPORT", "INFRASTRUCTURE_EXPORT", "POPULATION_MANAGE", "DASHBOARD_SURVEILLANCE_VIEW", "DASHBOARD_CONTACT_VIEW", "DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS", "DASHBOARD_CAMPAIGNS_VIEW", "DASHBOARD_SAMPLES_VIEW", "CASE_CLINICIAN_VIEW", "THERAPY_VIEW", "PRESCRIPTION_CREATE", "PRESCRIPTION_EDIT", "PRESCRIPTION_DELETE", "TREATMENT_CREATE", "TREATMENT_EDIT", "TREATMENT_DELETE", "CLINICAL_COURSE_VIEW", "CLINICAL_COURSE_EDIT", "CLINICAL_VISIT_CREATE", "CLINICAL_VISIT_EDIT", "CLINICAL_VISIT_DELETE", "PORT_HEALTH_INFO_VIEW", "PORT_HEALTH_INFO_EDIT", "WEEKLYREPORT_VIEW", "WEEKLYREPORT_CREATE", "AGGREGATE_REPORT_VIEW", "AGGREGATE_REPORT_EDIT", "AGGREGATE_REPORT_EXPORT", "SEE_PERSONAL_DATA_IN_JURISDICTION", "SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION", "SEE_SENSITIVE_DATA_IN_JURISDICTION", "SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION", "CAMPAIGN_VIEW", "CAMPAIGN_EDIT", "CAMPAIGN_ARCHIVE", "CAMPAIGN_DELETE", "CAMPAIGN_FORM_DATA_VIEW", "CAMPAIGN_FORM_DATA_EDIT", "CAMPAIGN_FORM_DATA_ARCHIVE", "CAMPAIGN_FORM_DATA_DELETE", "CAMPAIGN_FORM_DATA_EXPORT", "TRAVEL_ENTRY_MANAGEMENT_ACCESS", "TRAVEL_ENTRY_VIEW", "TRAVEL_ENTRY_CREATE", "TRAVEL_ENTRY_EDIT", "TRAVEL_ENTRY_ARCHIVE", "TRAVEL_ENTRY_DELETE", "ENVIRONMENT_VIEW", "ENVIRONMENT_CREATE", "ENVIRONMENT_EDIT", "ENVIRONMENT_ARCHIVE", "ENVIRONMENT_DELETE", "ENVIRONMENT_IMPORT", "ENVIRONMENT_EXPORT", "ENVIRONMENT_SAMPLE_VIEW", "ENVIRONMENT_SAMPLE_CREATE", "ENVIRONMENT_SAMPLE_EDIT", "ENVIRONMENT_SAMPLE_EDIT_DISPATCH", "ENVIRONMENT_SAMPLE_EDIT_RECEIVAL", "ENVIRONMENT_SAMPLE_DELETE", "ENVIRONMENT_SAMPLE_IMPORT", "ENVIRONMENT_SAMPLE_EXPORT", "DOCUMENT_VIEW", "DOCUMENT_UPLOAD", "DOCUMENT_DELETE", "PERFORM_BULK_OPERATIONS", "PERFORM_BULK_OPERATIONS_PSEUDONYM", "QUARANTINE_ORDER_CREATE", "SORMAS_REST", "SORMAS_UI", "DATABASE_EXPORT_ACCESS", "EXPORT_DATA_PROTECTION_DATA", "BAG_EXPORT", "SEND_MANUAL_EXTERNAL_MESSAGES", "MANAGE_EXTERNAL_SYMPTOM_JOURNAL", "EXTERNAL_VISITS", "SORMAS_TO_SORMAS_CLIENT", "SORMAS_TO_SORMAS_SHARE", "SORMAS_TO_SORMAS_PROCESS", "EXTERNAL_SURVEILLANCE_SHARE", "EXTERNAL_SURVEILLANCE_DELETE", "EXTERNAL_MESSAGE_VIEW", "EXTERNAL_MESSAGE_PROCESS", "EXTERNAL_MESSAGE_PUSH", "EXTERNAL_MESSAGE_DELETE", "PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES", "OUTBREAK_VIEW", "OUTBREAK_EDIT", "MANAGE_PUBLIC_EXPORT_CONFIGURATION", "DOCUMENT_TEMPLATE_MANAGEMENT", "LINE_LISTING_CONFIGURE", "DEV_MODE" ]
                   }
                 }
               }
@@ -9731,7 +9953,7 @@
     },
     "/users/uuids" : {
       "get" : {
-        "operationId" : "getAllUuids_21",
+        "operationId" : "getAllUuids_22",
         "responses" : {
           "default" : {
             "content" : {
@@ -9779,7 +10001,7 @@
     "/visits-external" : {
       "post" : {
         "description" : "Upload visits with all symptom and disease related data to SORMAS.",
-        "operationId" : "postEntityDtos_15",
+        "operationId" : "postEntityDtos_16",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -10082,7 +10304,7 @@
     "/visits/push" : {
       "post" : {
         "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
-        "operationId" : "postEntityDtos_30",
+        "operationId" : "postEntityDtos_31",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -10129,7 +10351,7 @@
     },
     "/visits/query" : {
       "post" : {
-        "operationId" : "getByUuids_32",
+        "operationId" : "getByUuids_33",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -10259,7 +10481,7 @@
     "/weeklyreports/push" : {
       "post" : {
         "description" : "A uuid will be generated for any entity that doesn't have one yet. Posting entities without uuid multiple times will also create them multiple times.",
-        "operationId" : "postEntityDtos_31",
+        "operationId" : "postEntityDtos_32",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -10306,7 +10528,7 @@
     },
     "/weeklyreports/query" : {
       "post" : {
-        "operationId" : "getByUuids_33",
+        "operationId" : "getByUuids_34",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -10339,7 +10561,7 @@
     },
     "/weeklyreports/uuids" : {
       "get" : {
-        "operationId" : "getAllUuids_23",
+        "operationId" : "getAllUuids_24",
         "responses" : {
           "default" : {
             "content" : {
@@ -14883,7 +15105,7 @@
           },
           "dataType" : {
             "type" : "string",
-            "enum" : [ "DISEASE_VARIANT", "SPECIFIC_EVENT_RISK", "OCCUPATION_TYPE" ]
+            "enum" : [ "DISEASE_VARIANT", "SPECIFIC_EVENT_RISK", "OCCUPATION_TYPE", "PATHOGEN" ]
           },
           "defaultValue" : {
             "type" : "boolean"
@@ -15793,7 +16015,165 @@
               "type" : "boolean"
             }
           }
-        }
+        },
+        "required" : [ "environmentMedia", "environmentName", "investigationStatus", "reportDate", "reportingUser" ]
+      },
+      "EnvironmentReferenceDto" : {
+        "type" : "object",
+        "properties" : {
+          "caption" : {
+            "type" : "string"
+          },
+          "environmentName" : {
+            "type" : "string"
+          },
+          "uuid" : {
+            "type" : "string",
+            "pattern" : "^[0-9a-zA-Z-]*$"
+          }
+        },
+        "required" : [ "uuid" ]
+      },
+      "EnvironmentSampleDto" : {
+        "type" : "object",
+        "properties" : {
+          "changeDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "chlorineResiduals" : {
+            "type" : "number",
+            "format" : "float",
+            "minimum" : 0
+          },
+          "creationDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "dispatchDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "dispatchDetails" : {
+            "type" : "string",
+            "maxLength" : 1000000,
+            "minLength" : 0
+          },
+          "dispatched" : {
+            "type" : "boolean"
+          },
+          "environment" : {
+            "$ref" : "#/components/schemas/EnvironmentReferenceDto"
+          },
+          "fieldSampleId" : {
+            "type" : "string",
+            "maxLength" : 1000000,
+            "minLength" : 0
+          },
+          "generalComment" : {
+            "type" : "string",
+            "maxLength" : 1000000,
+            "minLength" : 0
+          },
+          "heavyRain" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
+          "inJurisdiction" : {
+            "type" : "boolean"
+          },
+          "labSampleId" : {
+            "type" : "string",
+            "maxLength" : 1000000,
+            "minLength" : 0
+          },
+          "laboratory" : {
+            "$ref" : "#/components/schemas/FacilityReferenceDto"
+          },
+          "laboratoryDetails" : {
+            "type" : "string",
+            "maxLength" : 1000000,
+            "minLength" : 0
+          },
+          "location" : {
+            "$ref" : "#/components/schemas/LocationDto"
+          },
+          "otherRequestedPathogenTests" : {
+            "type" : "string",
+            "maxLength" : 1000000,
+            "minLength" : 0
+          },
+          "otherSampleMaterial" : {
+            "type" : "string",
+            "maxLength" : 1000000,
+            "minLength" : 0
+          },
+          "phValue" : {
+            "type" : "integer",
+            "format" : "int32",
+            "maximum" : 14,
+            "minimum" : 0
+          },
+          "pseudonymized" : {
+            "type" : "boolean"
+          },
+          "receivalDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "received" : {
+            "type" : "boolean"
+          },
+          "reportingUser" : {
+            "$ref" : "#/components/schemas/UserReferenceDto"
+          },
+          "requestedPathogenTests" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Pathogen"
+            },
+            "uniqueItems" : true
+          },
+          "sampleDateTime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "sampleMaterial" : {
+            "type" : "string",
+            "enum" : [ "WATER", "SOIL", "AIR", "VECTORS", "OTHER" ]
+          },
+          "sampleTemperature" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "sampleVolume" : {
+            "type" : "number",
+            "format" : "float",
+            "minimum" : 0
+          },
+          "specimenCondition" : {
+            "type" : "string",
+            "enum" : [ "ADEQUATE", "NOT_ADEQUATE" ]
+          },
+          "turbidity" : {
+            "type" : "integer",
+            "format" : "int32",
+            "minimum" : 0
+          },
+          "uuid" : {
+            "type" : "string",
+            "maxLength" : 36,
+            "minLength" : 20,
+            "pattern" : "^[0-9a-zA-Z-]*$"
+          },
+          "weatherConditions" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "boolean"
+            }
+          }
+        },
+        "required" : [ "environment", "laboratory", "reportingUser", "sampleDateTime", "sampleMaterial" ]
       },
       "EpiDataDto" : {
         "type" : "object",
@@ -19994,6 +20374,27 @@
           }
         }
       },
+      "Pathogen" : {
+        "type" : "object",
+        "properties" : {
+          "caption" : {
+            "type" : "string"
+          },
+          "hasDetails" : {
+            "type" : "boolean"
+          },
+          "properties" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "object"
+            },
+            "writeOnly" : true
+          },
+          "value" : {
+            "type" : "string"
+          }
+        }
+      },
       "PathogenTestCriteria" : {
         "type" : "object",
         "properties" : {
@@ -23482,7 +23883,7 @@
         "properties" : {
           "taskContext" : {
             "type" : "string",
-            "enum" : [ "CASE", "CONTACT", "EVENT", "GENERAL", "TRAVEL_ENTRY" ]
+            "enum" : [ "CASE", "CONTACT", "EVENT", "GENERAL", "TRAVEL_ENTRY", "ENVIRONMENT" ]
           },
           "uuid" : {
             "type" : "string"
@@ -23528,6 +23929,9 @@
             "type" : "string",
             "format" : "date-time"
           },
+          "environment" : {
+            "$ref" : "#/components/schemas/EnvironmentReferenceDto"
+          },
           "event" : {
             "$ref" : "#/components/schemas/EventReferenceDto"
           },
@@ -23565,7 +23969,7 @@
           },
           "taskContext" : {
             "type" : "string",
-            "enum" : [ "CASE", "CONTACT", "EVENT", "GENERAL", "TRAVEL_ENTRY" ]
+            "enum" : [ "CASE", "CONTACT", "EVENT", "GENERAL", "TRAVEL_ENTRY", "ENVIRONMENT" ]
           },
           "taskStatus" : {
             "type" : "string",
@@ -23573,7 +23977,7 @@
           },
           "taskType" : {
             "type" : "string",
-            "enum" : [ "ACTIVE_SEARCH_FOR_OTHER_CASES", "CASE_ISOLATION", "CASE_INVESTIGATION", "CASE_MANAGEMENT", "CASE_BURIAL", "CONTACT_TRACING", "CONTACT_MANAGEMENT", "SOURCECASE_TRACING", "SAMPLE_COLLECTION", "CONTACT_INVESTIGATION", "CONTACT_FOLLOW_UP", "ANIMAL_TESTING", "EVENT_INVESTIGATION", "EVENT_CONTINUE_INVESTIGATION", "EVENT_REQUEST_ADDITIONAL_INFORMATION", "TREATMENT_CENTER_ESTABLISHMENT", "ENVIRONMENTAL_HEALTH_ACTIVITIES", "DECONTAMINATION_DISINFECTION_ACTIVITIES", "QUARANTINE_PLACE", "QUARANTINE_MANAGEMENT", "QUARANTINE_ORDER_SEND", "VACCINATION_ACTIVITIES", "ANIMAL_DEPOPULATION", "OTHER", "DAILY_REPORT_GENERATION", "SURVEILLANCE_REPORT_GENERATION", "WEEKLY_REPORT_GENERATION" ]
+            "enum" : [ "ACTIVE_SEARCH_FOR_OTHER_CASES", "CASE_ISOLATION", "CASE_INVESTIGATION", "CASE_MANAGEMENT", "CASE_BURIAL", "CONTACT_TRACING", "CONTACT_MANAGEMENT", "SOURCECASE_TRACING", "SAMPLE_COLLECTION", "CONTACT_INVESTIGATION", "CONTACT_FOLLOW_UP", "ANIMAL_TESTING", "EVENT_INVESTIGATION", "EVENT_CONTINUE_INVESTIGATION", "EVENT_REQUEST_ADDITIONAL_INFORMATION", "TREATMENT_CENTER_ESTABLISHMENT", "ENVIRONMENTAL_HEALTH_ACTIVITIES", "DECONTAMINATION_DISINFECTION_ACTIVITIES", "QUARANTINE_PLACE", "QUARANTINE_MANAGEMENT", "QUARANTINE_ORDER_SEND", "VACCINATION_ACTIVITIES", "ANIMAL_DEPOPULATION", "OTHER", "DAILY_REPORT_GENERATION", "SURVEILLANCE_REPORT_GENERATION", "WEEKLY_REPORT_GENERATION", "ENVIRONMENT_INVESTIGATION" ]
           },
           "travelEntry" : {
             "$ref" : "#/components/schemas/TravelEntryReferenceDto"
@@ -23639,6 +24043,9 @@
             "type" : "string",
             "format" : "date-time"
           },
+          "environment" : {
+            "$ref" : "#/components/schemas/EnvironmentReferenceDto"
+          },
           "event" : {
             "$ref" : "#/components/schemas/EventReferenceDto"
           },
@@ -23667,7 +24074,7 @@
           },
           "taskContext" : {
             "type" : "string",
-            "enum" : [ "CASE", "CONTACT", "EVENT", "GENERAL", "TRAVEL_ENTRY" ]
+            "enum" : [ "CASE", "CONTACT", "EVENT", "GENERAL", "TRAVEL_ENTRY", "ENVIRONMENT" ]
           },
           "taskStatus" : {
             "type" : "string",
@@ -23675,7 +24082,7 @@
           },
           "taskType" : {
             "type" : "string",
-            "enum" : [ "ACTIVE_SEARCH_FOR_OTHER_CASES", "CASE_ISOLATION", "CASE_INVESTIGATION", "CASE_MANAGEMENT", "CASE_BURIAL", "CONTACT_TRACING", "CONTACT_MANAGEMENT", "SOURCECASE_TRACING", "SAMPLE_COLLECTION", "CONTACT_INVESTIGATION", "CONTACT_FOLLOW_UP", "ANIMAL_TESTING", "EVENT_INVESTIGATION", "EVENT_CONTINUE_INVESTIGATION", "EVENT_REQUEST_ADDITIONAL_INFORMATION", "TREATMENT_CENTER_ESTABLISHMENT", "ENVIRONMENTAL_HEALTH_ACTIVITIES", "DECONTAMINATION_DISINFECTION_ACTIVITIES", "QUARANTINE_PLACE", "QUARANTINE_MANAGEMENT", "QUARANTINE_ORDER_SEND", "VACCINATION_ACTIVITIES", "ANIMAL_DEPOPULATION", "OTHER", "DAILY_REPORT_GENERATION", "SURVEILLANCE_REPORT_GENERATION", "WEEKLY_REPORT_GENERATION" ]
+            "enum" : [ "ACTIVE_SEARCH_FOR_OTHER_CASES", "CASE_ISOLATION", "CASE_INVESTIGATION", "CASE_MANAGEMENT", "CASE_BURIAL", "CONTACT_TRACING", "CONTACT_MANAGEMENT", "SOURCECASE_TRACING", "SAMPLE_COLLECTION", "CONTACT_INVESTIGATION", "CONTACT_FOLLOW_UP", "ANIMAL_TESTING", "EVENT_INVESTIGATION", "EVENT_CONTINUE_INVESTIGATION", "EVENT_REQUEST_ADDITIONAL_INFORMATION", "TREATMENT_CENTER_ESTABLISHMENT", "ENVIRONMENTAL_HEALTH_ACTIVITIES", "DECONTAMINATION_DISINFECTION_ACTIVITIES", "QUARANTINE_PLACE", "QUARANTINE_MANAGEMENT", "QUARANTINE_ORDER_SEND", "VACCINATION_ACTIVITIES", "ANIMAL_DEPOPULATION", "OTHER", "DAILY_REPORT_GENERATION", "SURVEILLANCE_REPORT_GENERATION", "WEEKLY_REPORT_GENERATION", "ENVIRONMENT_INVESTIGATION" ]
           },
           "travelEntry" : {
             "$ref" : "#/components/schemas/TravelEntryReferenceDto"
@@ -23733,6 +24140,9 @@
             "type" : "string",
             "format" : "date-time"
           },
+          "environment" : {
+            "$ref" : "#/components/schemas/EnvironmentReferenceDto"
+          },
           "event" : {
             "$ref" : "#/components/schemas/EventReferenceDto"
           },
@@ -23761,7 +24171,7 @@
           },
           "taskContext" : {
             "type" : "string",
-            "enum" : [ "CASE", "CONTACT", "EVENT", "GENERAL", "TRAVEL_ENTRY" ]
+            "enum" : [ "CASE", "CONTACT", "EVENT", "GENERAL", "TRAVEL_ENTRY", "ENVIRONMENT" ]
           },
           "taskJurisdictionFlagsDto" : {
             "$ref" : "#/components/schemas/TaskJurisdictionFlagsDto"
@@ -23772,7 +24182,7 @@
           },
           "taskType" : {
             "type" : "string",
-            "enum" : [ "ACTIVE_SEARCH_FOR_OTHER_CASES", "CASE_ISOLATION", "CASE_INVESTIGATION", "CASE_MANAGEMENT", "CASE_BURIAL", "CONTACT_TRACING", "CONTACT_MANAGEMENT", "SOURCECASE_TRACING", "SAMPLE_COLLECTION", "CONTACT_INVESTIGATION", "CONTACT_FOLLOW_UP", "ANIMAL_TESTING", "EVENT_INVESTIGATION", "EVENT_CONTINUE_INVESTIGATION", "EVENT_REQUEST_ADDITIONAL_INFORMATION", "TREATMENT_CENTER_ESTABLISHMENT", "ENVIRONMENTAL_HEALTH_ACTIVITIES", "DECONTAMINATION_DISINFECTION_ACTIVITIES", "QUARANTINE_PLACE", "QUARANTINE_MANAGEMENT", "QUARANTINE_ORDER_SEND", "VACCINATION_ACTIVITIES", "ANIMAL_DEPOPULATION", "OTHER", "DAILY_REPORT_GENERATION", "SURVEILLANCE_REPORT_GENERATION", "WEEKLY_REPORT_GENERATION" ]
+            "enum" : [ "ACTIVE_SEARCH_FOR_OTHER_CASES", "CASE_ISOLATION", "CASE_INVESTIGATION", "CASE_MANAGEMENT", "CASE_BURIAL", "CONTACT_TRACING", "CONTACT_MANAGEMENT", "SOURCECASE_TRACING", "SAMPLE_COLLECTION", "CONTACT_INVESTIGATION", "CONTACT_FOLLOW_UP", "ANIMAL_TESTING", "EVENT_INVESTIGATION", "EVENT_CONTINUE_INVESTIGATION", "EVENT_REQUEST_ADDITIONAL_INFORMATION", "TREATMENT_CENTER_ESTABLISHMENT", "ENVIRONMENTAL_HEALTH_ACTIVITIES", "DECONTAMINATION_DISINFECTION_ACTIVITIES", "QUARANTINE_PLACE", "QUARANTINE_MANAGEMENT", "QUARANTINE_ORDER_SEND", "VACCINATION_ACTIVITIES", "ANIMAL_DEPOPULATION", "OTHER", "DAILY_REPORT_GENERATION", "SURVEILLANCE_REPORT_GENERATION", "WEEKLY_REPORT_GENERATION", "ENVIRONMENT_INVESTIGATION" ]
           },
           "travelEntry" : {
             "$ref" : "#/components/schemas/TravelEntryReferenceDto"
@@ -23795,6 +24205,9 @@
             "type" : "boolean"
           },
           "contactInJurisdiction" : {
+            "type" : "boolean"
+          },
+          "environmentInJurisdiction" : {
             "type" : "boolean"
           },
           "eventInJurisdiction" : {
@@ -24685,7 +25098,7 @@
             "type" : "array",
             "items" : {
               "type" : "string",
-              "enum" : [ "CASE_VIEW", "CASE_CREATE", "CASE_EDIT", "CASE_ARCHIVE", "CASE_DELETE", "CASE_IMPORT", "CASE_EXPORT", "CASE_INVESTIGATE", "CASE_CLASSIFY", "CASE_CHANGE_DISEASE", "CASE_CHANGE_EPID_NUMBER", "CASE_TRANSFER", "CASE_REFER_FROM_POE", "CASE_MERGE", "CASE_SHARE", "CASE_RESPONSIBLE", "IMMUNIZATION_VIEW", "IMMUNIZATION_CREATE", "IMMUNIZATION_EDIT", "IMMUNIZATION_ARCHIVE", "IMMUNIZATION_DELETE", "PERSON_VIEW", "PERSON_EDIT", "PERSON_DELETE", "PERSON_EXPORT", "PERSON_CONTACT_DETAILS_DELETE", "PERSON_MERGE", "SAMPLE_VIEW", "SAMPLE_CREATE", "SAMPLE_EDIT", "SAMPLE_DELETE", "SAMPLE_EXPORT", "SAMPLE_TRANSFER", "SAMPLE_EDIT_NOT_OWNED", "PERFORM_BULK_OPERATIONS_CASE_SAMPLES", "PATHOGEN_TEST_CREATE", "PATHOGEN_TEST_EDIT", "PATHOGEN_TEST_DELETE", "ADDITIONAL_TEST_VIEW", "ADDITIONAL_TEST_CREATE", "ADDITIONAL_TEST_EDIT", "ADDITIONAL_TEST_DELETE", "CONTACT_VIEW", "CONTACT_CREATE", "CONTACT_EDIT", "CONTACT_ARCHIVE", "CONTACT_DELETE", "CONTACT_IMPORT", "CONTACT_EXPORT", "CONTACT_CONVERT", "CONTACT_REASSIGN_CASE", "CONTACT_MERGE", "CONTACT_RESPONSIBLE", "VISIT_CREATE", "VISIT_EDIT", "VISIT_DELETE", "VISIT_EXPORT", "TASK_VIEW", "TASK_CREATE", "TASK_EDIT", "TASK_DELETE", "TASK_EXPORT", "TASK_ASSIGN", "TASK_ARCHIVE", "ACTION_CREATE", "ACTION_DELETE", "ACTION_EDIT", "EVENT_VIEW", "EVENT_CREATE", "EVENT_EDIT", "EVENT_ARCHIVE", "EVENT_DELETE", "EVENT_IMPORT", "EVENT_EXPORT", "PERFORM_BULK_OPERATIONS_EVENT", "EVENT_RESPONSIBLE", "EVENTPARTICIPANT_VIEW", "EVENTPARTICIPANT_CREATE", "EVENTPARTICIPANT_EDIT", "EVENTPARTICIPANT_ARCHIVE", "EVENTPARTICIPANT_DELETE", "EVENTPARTICIPANT_IMPORT", "PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT", "EVENTGROUP_CREATE", "EVENTGROUP_EDIT", "EVENTGROUP_ARCHIVE", "EVENTGROUP_DELETE", "EVENTGROUP_LINK", "USER_VIEW", "USER_CREATE", "USER_EDIT", "USER_ROLE_VIEW", "USER_ROLE_EDIT", "USER_ROLE_DELETE", "STATISTICS_ACCESS", "STATISTICS_EXPORT", "INFRASTRUCTURE_VIEW", "INFRASTRUCTURE_CREATE", "INFRASTRUCTURE_EDIT", "INFRASTRUCTURE_ARCHIVE", "INFRASTRUCTURE_IMPORT", "INFRASTRUCTURE_EXPORT", "POPULATION_MANAGE", "DASHBOARD_SURVEILLANCE_VIEW", "DASHBOARD_CONTACT_VIEW", "DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS", "DASHBOARD_CAMPAIGNS_VIEW", "DASHBOARD_SAMPLES_VIEW", "CASE_CLINICIAN_VIEW", "THERAPY_VIEW", "PRESCRIPTION_CREATE", "PRESCRIPTION_EDIT", "PRESCRIPTION_DELETE", "TREATMENT_CREATE", "TREATMENT_EDIT", "TREATMENT_DELETE", "CLINICAL_COURSE_VIEW", "CLINICAL_COURSE_EDIT", "CLINICAL_VISIT_CREATE", "CLINICAL_VISIT_EDIT", "CLINICAL_VISIT_DELETE", "PORT_HEALTH_INFO_VIEW", "PORT_HEALTH_INFO_EDIT", "WEEKLYREPORT_VIEW", "WEEKLYREPORT_CREATE", "AGGREGATE_REPORT_VIEW", "AGGREGATE_REPORT_EDIT", "AGGREGATE_REPORT_EXPORT", "SEE_PERSONAL_DATA_IN_JURISDICTION", "SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION", "SEE_SENSITIVE_DATA_IN_JURISDICTION", "SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION", "CAMPAIGN_VIEW", "CAMPAIGN_EDIT", "CAMPAIGN_ARCHIVE", "CAMPAIGN_DELETE", "CAMPAIGN_FORM_DATA_VIEW", "CAMPAIGN_FORM_DATA_EDIT", "CAMPAIGN_FORM_DATA_ARCHIVE", "CAMPAIGN_FORM_DATA_DELETE", "CAMPAIGN_FORM_DATA_EXPORT", "TRAVEL_ENTRY_MANAGEMENT_ACCESS", "TRAVEL_ENTRY_VIEW", "TRAVEL_ENTRY_CREATE", "TRAVEL_ENTRY_EDIT", "TRAVEL_ENTRY_ARCHIVE", "TRAVEL_ENTRY_DELETE", "ENVIRONMENT_VIEW", "ENVIRONMENT_CREATE", "ENVIRONMENT_EDIT", "ENVIRONMENT_ARCHIVE", "ENVIRONMENT_DELETE", "ENVIRONMENT_IMPORT", "ENVIRONMENT_EXPORT", "DOCUMENT_VIEW", "DOCUMENT_UPLOAD", "DOCUMENT_DELETE", "PERFORM_BULK_OPERATIONS", "PERFORM_BULK_OPERATIONS_PSEUDONYM", "QUARANTINE_ORDER_CREATE", "SORMAS_REST", "SORMAS_UI", "DATABASE_EXPORT_ACCESS", "EXPORT_DATA_PROTECTION_DATA", "BAG_EXPORT", "SEND_MANUAL_EXTERNAL_MESSAGES", "MANAGE_EXTERNAL_SYMPTOM_JOURNAL", "EXTERNAL_VISITS", "SORMAS_TO_SORMAS_CLIENT", "SORMAS_TO_SORMAS_SHARE", "SORMAS_TO_SORMAS_PROCESS", "EXTERNAL_SURVEILLANCE_SHARE", "EXTERNAL_SURVEILLANCE_DELETE", "EXTERNAL_MESSAGE_VIEW", "EXTERNAL_MESSAGE_PROCESS", "EXTERNAL_MESSAGE_PUSH", "EXTERNAL_MESSAGE_DELETE", "PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES", "OUTBREAK_VIEW", "OUTBREAK_EDIT", "MANAGE_PUBLIC_EXPORT_CONFIGURATION", "DOCUMENT_TEMPLATE_MANAGEMENT", "LINE_LISTING_CONFIGURE", "DEV_MODE" ]
+              "enum" : [ "CASE_VIEW", "CASE_CREATE", "CASE_EDIT", "CASE_ARCHIVE", "CASE_DELETE", "CASE_IMPORT", "CASE_EXPORT", "CASE_INVESTIGATE", "CASE_CLASSIFY", "CASE_CHANGE_DISEASE", "CASE_CHANGE_EPID_NUMBER", "CASE_TRANSFER", "CASE_REFER_FROM_POE", "CASE_MERGE", "CASE_SHARE", "CASE_RESPONSIBLE", "IMMUNIZATION_VIEW", "IMMUNIZATION_CREATE", "IMMUNIZATION_EDIT", "IMMUNIZATION_ARCHIVE", "IMMUNIZATION_DELETE", "PERSON_VIEW", "PERSON_EDIT", "PERSON_DELETE", "PERSON_EXPORT", "PERSON_CONTACT_DETAILS_DELETE", "PERSON_MERGE", "SAMPLE_VIEW", "SAMPLE_CREATE", "SAMPLE_EDIT", "SAMPLE_DELETE", "SAMPLE_EXPORT", "SAMPLE_TRANSFER", "SAMPLE_EDIT_NOT_OWNED", "PERFORM_BULK_OPERATIONS_CASE_SAMPLES", "PATHOGEN_TEST_CREATE", "PATHOGEN_TEST_EDIT", "PATHOGEN_TEST_DELETE", "ADDITIONAL_TEST_VIEW", "ADDITIONAL_TEST_CREATE", "ADDITIONAL_TEST_EDIT", "ADDITIONAL_TEST_DELETE", "CONTACT_VIEW", "CONTACT_CREATE", "CONTACT_EDIT", "CONTACT_ARCHIVE", "CONTACT_DELETE", "CONTACT_IMPORT", "CONTACT_EXPORT", "CONTACT_CONVERT", "CONTACT_REASSIGN_CASE", "CONTACT_MERGE", "CONTACT_RESPONSIBLE", "VISIT_CREATE", "VISIT_EDIT", "VISIT_DELETE", "VISIT_EXPORT", "TASK_VIEW", "TASK_CREATE", "TASK_EDIT", "TASK_DELETE", "TASK_EXPORT", "TASK_ASSIGN", "TASK_ARCHIVE", "ACTION_CREATE", "ACTION_DELETE", "ACTION_EDIT", "EVENT_VIEW", "EVENT_CREATE", "EVENT_EDIT", "EVENT_ARCHIVE", "EVENT_DELETE", "EVENT_IMPORT", "EVENT_EXPORT", "PERFORM_BULK_OPERATIONS_EVENT", "EVENT_RESPONSIBLE", "EVENTPARTICIPANT_VIEW", "EVENTPARTICIPANT_CREATE", "EVENTPARTICIPANT_EDIT", "EVENTPARTICIPANT_ARCHIVE", "EVENTPARTICIPANT_DELETE", "EVENTPARTICIPANT_IMPORT", "PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT", "EVENTGROUP_CREATE", "EVENTGROUP_EDIT", "EVENTGROUP_ARCHIVE", "EVENTGROUP_DELETE", "EVENTGROUP_LINK", "USER_VIEW", "USER_CREATE", "USER_EDIT", "USER_ROLE_VIEW", "USER_ROLE_EDIT", "USER_ROLE_DELETE", "STATISTICS_ACCESS", "STATISTICS_EXPORT", "INFRASTRUCTURE_VIEW", "INFRASTRUCTURE_CREATE", "INFRASTRUCTURE_EDIT", "INFRASTRUCTURE_ARCHIVE", "INFRASTRUCTURE_IMPORT", "INFRASTRUCTURE_EXPORT", "POPULATION_MANAGE", "DASHBOARD_SURVEILLANCE_VIEW", "DASHBOARD_CONTACT_VIEW", "DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS", "DASHBOARD_CAMPAIGNS_VIEW", "DASHBOARD_SAMPLES_VIEW", "CASE_CLINICIAN_VIEW", "THERAPY_VIEW", "PRESCRIPTION_CREATE", "PRESCRIPTION_EDIT", "PRESCRIPTION_DELETE", "TREATMENT_CREATE", "TREATMENT_EDIT", "TREATMENT_DELETE", "CLINICAL_COURSE_VIEW", "CLINICAL_COURSE_EDIT", "CLINICAL_VISIT_CREATE", "CLINICAL_VISIT_EDIT", "CLINICAL_VISIT_DELETE", "PORT_HEALTH_INFO_VIEW", "PORT_HEALTH_INFO_EDIT", "WEEKLYREPORT_VIEW", "WEEKLYREPORT_CREATE", "AGGREGATE_REPORT_VIEW", "AGGREGATE_REPORT_EDIT", "AGGREGATE_REPORT_EXPORT", "SEE_PERSONAL_DATA_IN_JURISDICTION", "SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION", "SEE_SENSITIVE_DATA_IN_JURISDICTION", "SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION", "CAMPAIGN_VIEW", "CAMPAIGN_EDIT", "CAMPAIGN_ARCHIVE", "CAMPAIGN_DELETE", "CAMPAIGN_FORM_DATA_VIEW", "CAMPAIGN_FORM_DATA_EDIT", "CAMPAIGN_FORM_DATA_ARCHIVE", "CAMPAIGN_FORM_DATA_DELETE", "CAMPAIGN_FORM_DATA_EXPORT", "TRAVEL_ENTRY_MANAGEMENT_ACCESS", "TRAVEL_ENTRY_VIEW", "TRAVEL_ENTRY_CREATE", "TRAVEL_ENTRY_EDIT", "TRAVEL_ENTRY_ARCHIVE", "TRAVEL_ENTRY_DELETE", "ENVIRONMENT_VIEW", "ENVIRONMENT_CREATE", "ENVIRONMENT_EDIT", "ENVIRONMENT_ARCHIVE", "ENVIRONMENT_DELETE", "ENVIRONMENT_IMPORT", "ENVIRONMENT_EXPORT", "ENVIRONMENT_SAMPLE_VIEW", "ENVIRONMENT_SAMPLE_CREATE", "ENVIRONMENT_SAMPLE_EDIT", "ENVIRONMENT_SAMPLE_EDIT_DISPATCH", "ENVIRONMENT_SAMPLE_EDIT_RECEIVAL", "ENVIRONMENT_SAMPLE_DELETE", "ENVIRONMENT_SAMPLE_IMPORT", "ENVIRONMENT_SAMPLE_EXPORT", "DOCUMENT_VIEW", "DOCUMENT_UPLOAD", "DOCUMENT_DELETE", "PERFORM_BULK_OPERATIONS", "PERFORM_BULK_OPERATIONS_PSEUDONYM", "QUARANTINE_ORDER_CREATE", "SORMAS_REST", "SORMAS_UI", "DATABASE_EXPORT_ACCESS", "EXPORT_DATA_PROTECTION_DATA", "BAG_EXPORT", "SEND_MANUAL_EXTERNAL_MESSAGES", "MANAGE_EXTERNAL_SYMPTOM_JOURNAL", "EXTERNAL_VISITS", "SORMAS_TO_SORMAS_CLIENT", "SORMAS_TO_SORMAS_SHARE", "SORMAS_TO_SORMAS_PROCESS", "EXTERNAL_SURVEILLANCE_SHARE", "EXTERNAL_SURVEILLANCE_DELETE", "EXTERNAL_MESSAGE_VIEW", "EXTERNAL_MESSAGE_PROCESS", "EXTERNAL_MESSAGE_PUSH", "EXTERNAL_MESSAGE_DELETE", "PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES", "OUTBREAK_VIEW", "OUTBREAK_EDIT", "MANAGE_PUBLIC_EXPORT_CONFIGURATION", "DOCUMENT_TEMPLATE_MANAGEMENT", "LINE_LISTING_CONFIGURE", "DEV_MODE" ]
             },
             "uniqueItems" : true
           },

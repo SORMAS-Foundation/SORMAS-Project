@@ -21,6 +21,7 @@ import de.symeda.sormas.api.task.TaskAssignee;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.environment.Environment;
 import de.symeda.sormas.app.backend.event.Event;
 
 public class TaskCriteria implements Serializable {
@@ -30,6 +31,8 @@ public class TaskCriteria implements Serializable {
 	private Case associatedCase;
 	private Contact associatedContact;
 	private Event associatedEvent;
+
+	private Environment associatedEnvironment;
 
 	public TaskCriteria taskStatus(TaskStatus taskStatus) {
 		this.taskStatus = taskStatus;
@@ -74,5 +77,14 @@ public class TaskCriteria implements Serializable {
 
 	public Event getAssociatedEvent() {
 		return associatedEvent;
+	}
+
+	public Environment getAssociatedEnvironment() {
+		return associatedEnvironment;
+	}
+
+	public TaskCriteria associatedEnvironment(Environment associatedEnvironment) {
+		this.associatedEnvironment = associatedEnvironment;
+		return this;
 	}
 }

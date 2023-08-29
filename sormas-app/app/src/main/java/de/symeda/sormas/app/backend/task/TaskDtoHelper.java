@@ -25,6 +25,8 @@ import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactDtoHelper;
+import de.symeda.sormas.app.backend.environment.Environment;
+import de.symeda.sormas.app.backend.environment.EnvironmentDtoHelper;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
@@ -49,7 +51,7 @@ public class TaskDtoHelper extends AdoDtoHelper<Task, TaskDto> {
 	}
 
 	@Override
-	protected Call<List<TaskDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+	protected Call<List<TaskDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid) throws NoConnectionException {
 		return RetroProvider.getTaskFacade().pullAllSince(since, size, lastSynchronizedUuid);
 	}
 
@@ -70,6 +72,7 @@ public class TaskDtoHelper extends AdoDtoHelper<Task, TaskDto> {
 		target.setCaze(DatabaseHelper.getCaseDao().getByReferenceDto(source.getCaze()));
 		target.setContact(DatabaseHelper.getContactDao().getByReferenceDto(source.getContact()));
 		target.setEvent(DatabaseHelper.getEventDao().getByReferenceDto(source.getEvent()));
+		target.setEnvironment(DatabaseHelper.getEnvironmentDao().getByReferenceDto(source.getEnvironment()));
 
 		target.setTaskType(source.getTaskType());
 		target.setTaskStatus(source.getTaskStatus());
@@ -112,6 +115,13 @@ public class TaskDtoHelper extends AdoDtoHelper<Task, TaskDto> {
 		} else {
 			target.setEvent(null);
 		}
+		if (source.getEnvironment() != null) {
+			Environment environment = DatabaseHelper.getEnvironmentDao().queryForId(source.getEnvironment().getId());
+			target.setEnvironment(EnvironmentDtoHelper.toReferenceDto(environment));
+		} else {
+			target.setEnvironment(null);
+		}
+
 		target.setTaskType(source.getTaskType());
 		target.setTaskStatus(source.getTaskStatus());
 		target.setDueDate(source.getDueDate());
@@ -147,8 +157,8 @@ public class TaskDtoHelper extends AdoDtoHelper<Task, TaskDto> {
 		target.setClosedLatLonAccuracy(source.getClosedLatLonAccuracy());
 	}
 
-    @Override
-    protected long getApproximateJsonSizeInBytes() {
-        return TaskDto.APPROXIMATE_JSON_SIZE_IN_BYTES;
-    }
+	@Override
+	protected long getApproximateJsonSizeInBytes() {
+		return TaskDto.APPROXIMATE_JSON_SIZE_IN_BYTES;
+	}
 }

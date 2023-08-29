@@ -9,6 +9,8 @@ import de.symeda.sormas.app.backend.caze.ResponsibleJurisdictionDto;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactJurisdictionDto;
+import de.symeda.sormas.app.backend.environment.Environment;
+import de.symeda.sormas.app.backend.environment.EnvironmentJurisdictionDto;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventJurisdictionDto;
 import de.symeda.sormas.app.backend.event.EventParticipant;
@@ -196,6 +198,39 @@ public class JurisdictionHelper {
 		}
 
 		return jurisdiction;
+	}
+
+	public static EnvironmentJurisdictionDto createEnvironmentJurisdictionDto(Environment environment) {
+		if (environment == null) {
+			return null;
+		}
+
+		EnvironmentJurisdictionDto environmentJurisdiction = new EnvironmentJurisdictionDto();
+
+		if (environment.getReportingUser() != null) {
+			environmentJurisdiction.setReportingUserUuid(environment.getReportingUser().getUuid());
+		}
+
+		if (environment.getResponsibleUser() != null) {
+			environmentJurisdiction.setResponsibleUserUuid(environment.getResponsibleUser().getUuid());
+		}
+
+		Location environmentLocation = environment.getLocation();
+		if (environmentLocation != null) {
+			if (environmentLocation.getRegion() != null) {
+				environmentJurisdiction.setRegionUuid(environmentLocation.getRegion().getUuid());
+			}
+
+			if (environmentLocation.getDistrict() != null) {
+				environmentJurisdiction.setDistrictUuid(environmentLocation.getDistrict().getUuid());
+			}
+
+			if (environmentLocation.getCommunity() != null) {
+				environmentJurisdiction.setCommunityUuid(environmentLocation.getCommunity().getUuid());
+			}
+		}
+
+		return environmentJurisdiction;
 	}
 
 	public static TaskJurisdictionDto createTaskJurisdictionDto(Task task) {

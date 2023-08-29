@@ -358,7 +358,8 @@ public class UserFacadeEjb implements UserFacade {
 		InfrastructureDataReferenceDto infrastructure,
 		JurisdictionLevel jurisdictionLevel,
 		JurisdictionLevel allowedJurisdictionLevel,
-		Disease limitedDisease) {
+		Disease limitedDisease,
+		UserRight... userRights) {
 
 		if (jurisdictionLevel.getOrder() < allowedJurisdictionLevel.getOrder()) {
 			return Collections.emptyList();
@@ -369,7 +370,8 @@ public class UserFacadeEjb implements UserFacade {
 				infrastructure != null ? infrastructure.getUuid() : null,
 				jurisdictionLevel,
 				allowedJurisdictionLevel,
-				limitedDisease)
+				limitedDisease,
+				userRights)
 			.stream()
 			.map(UserFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());

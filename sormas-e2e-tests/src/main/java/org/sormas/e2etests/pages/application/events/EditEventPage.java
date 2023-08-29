@@ -70,7 +70,8 @@ public class EditEventPage {
   public static final By GROUP_EVENT_UUID =
       By.xpath("//*[contains(text(),'Group id')]/../following-sibling::input[1]");
   public static final By NEW_GROUP_EVENT_CREATED_MESSAGE =
-      By.xpath("//*[contains(text(),'New event group created')]");
+      By.xpath(
+          "//*[contains(text(),'The selected event was successfully linked to this event group')]");
   public static final By CREATE_DOCUMENT_BUTTON = By.cssSelector("[id='Create']");
   public static final By EVENT_HANDOUT_COMBOBOX =
       By.cssSelector(".popupContent div[role='combobox'] div");

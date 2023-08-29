@@ -523,7 +523,9 @@ public class WebDriverHelpers {
                   .collect(Collectors.toList());
           Assert.assertTrue(
               webElementsTexts.contains(value),
-              String.format("The element: %s did not contain text: %s", selector, value));
+              String.format(
+                  "The element: %s values %s doesn't contain text: %s",
+                  selector, webElementsTexts, value));
         },
         FLUENT_WAIT_TIMEOUT_SECONDS);
   }

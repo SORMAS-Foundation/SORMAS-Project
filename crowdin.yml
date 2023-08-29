@@ -2,8 +2,6 @@ files:
   - source: /sormas-api/src/main/resources/*.properties
     ignore:
       - /sormas-api/src/main/resources/*_*.properties
-    translation: >-
-      /sormas-api/src/main/resources/%file_name%_%locale%.%file_extension%
+    translation: /sormas-api/src/main/resources/%file_name%_%locale%.%file_extension%
   - source: /sormas-app/app/src/main/res/values/strings*.xml
-    translation: >-
-      /sormas-app/app/src/main/res/values-%android_code%/%original_file_name%
+    translation: /sormas-app/app/src/main/res/values-%android_code%/%original_file_name%

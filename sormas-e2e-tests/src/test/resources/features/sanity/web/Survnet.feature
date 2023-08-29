@@ -73,6 +73,7 @@ Feature: Survnet tests
     When I select 2 last created UI result in grid in Case Directory for Bulk Action
     And I click on Bulk Actions combobox on Case Directory Page
     And I click Send to reporting tool button on Case Directory page
+    Then I check if popup send message appeared for "de"
     And I click Leave Bulk Edit Mode on Case directory page
     And I filter with first Case ID
     And I click on the first Case ID from Case Directory
@@ -371,3 +372,66 @@ Feature: Survnet tests
     And I click on De-Archive case button
     And I fill De-Archive case popup with test automation reason
     And I validate the existence of "5" Reporting Tools entries in Survnet box
+
+  @tmsLink=SORQA-1051
+  Scenario: Check Current Hospitalization of case when sending from SORMAS to Meldesoftware
+    Given I log in as a Survnet
+    When I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    Then I create a new case with specific data using created facility for Survnet DE
+    And I navigate to Hospitalization tab in Cases
+    Then I complete all hospitalization fields for Current Hospitalization and save it for DE
+    And I navigate to case tab
+    And I click on Send to reporting tool button on Edit Case page
+    And I collect case external UUID from Edit Case page
+    Then I wait 50 seconds for system reaction
+    And I open SORMAS generated XML file for single case message
+    And I check if Current Hospitalization Was Patient Admitted has correct value mapped in SORMAS generated single XML file
+    And I check if Region from Current Hospitalization value in SORMAS generated XML file is correct
+    Then I check if "date of visit or admission" for Current Hospitalization in SORMAS generated XML file is correct
+    Then I check if "date of discharge or transfer" for Current Hospitalization in SORMAS generated XML file is correct
+    And I check reason for Current Hospitalization in SORMAS generated single XML file is correct
+    And I check if Stay in the intensive care unit value Current Hospitalization in SORMAS generated XML file is correct
+    Then I check if "start of the stay" for Current Hospitalization in SORMAS generated XML file is correct
+    Then I check if "end of the stay" for Current Hospitalization in SORMAS generated XML file is correct
+
+  @tmsLink=SORQA-1051
+  Scenario: Check Previous Hospitalization of case when sending from SORMAS to Meldesoftware
+    Given I log in as a Survnet
+    When I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    Then I create a new case with specific data using created facility for Survnet DE
+    And I navigate to Hospitalization tab in Cases
+    Then I add a previous hospitalization and save for DE
+    And I navigate to case tab
+    And I click on Send to reporting tool button on Edit Case page
+    And I collect case external UUID from Edit Case page
+    Then I wait 50 seconds for system reaction
+    And I open SORMAS generated XML file for single case message
+    And I check if Previous Hospitalization Was Patient Admitted has correct value mapped in SORMAS generated single XML file
+    And I check if Region from Previous Hospitalization value in SORMAS generated XML file is correct
+    And I check if "date of visit or admission" for Previous Hospitalization in SORMAS generated XML file is correct
+    And I check if "date of discharge or transfer" for Previous Hospitalization in SORMAS generated XML file is correct
+    Then I check reason for Previous Hospitalization in SORMAS generated single XML file is correct
+    And I check if Stay in the intensive care unit value for Previous Hospitalization in SORMAS generated XML file is correct
+    And I check if "start of the stay" for Previous Hospitalization in SORMAS generated XML file is correct
+    And I check if "end of the stay" for Previous Hospitalization in SORMAS generated XML file is correct
+
+  @tmsLink=SORQA-1052
+  Scenario: Check Epidemiology data "Expositionsuntersuchung" of case when sending from SORMAS to Meldesoftware
+    Given I log in as a Survnet
+    When I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with mandatory data only for Survnet DE
+    And I navigate to epidemiological data tab in Edit case page
+    And I click on Exposure details known with JA option
+    And I click on New Entry in Exposure Details Known in Cases directory
+    And I select Reisen option in Type of activity from Combobox in Exposure form
+    And I click on save button in Exposure for Epidemiological data tab in Cases
+    And I click on save button from Epidemiological Data
+    And I navigate to case tab
+    And I click on Send to reporting tool button on Edit Case page
+    And I collect case external UUID from Edit Case page
+    Then I wait 50 seconds for system reaction
+    And I open SORMAS generated XML file for single case message
+    Then I check if the exposure settings are correctly mapped in SORMAS generated single XML file

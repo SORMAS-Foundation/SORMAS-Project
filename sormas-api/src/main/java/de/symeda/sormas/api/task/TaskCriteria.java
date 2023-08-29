@@ -23,6 +23,7 @@ import java.util.Date;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
@@ -67,6 +68,7 @@ public class TaskCriteria extends BaseCriteria implements Serializable {
 	private String creatorUserLike;
 	private String assignedByUserLike;
 	private TravelEntryReferenceDto travelEntry;
+	private EnvironmentReferenceDto environment;
 	private boolean excludeLimitedSyncRestrictions;
 
 	public TaskStatus getTaskStatus() {
@@ -150,7 +152,7 @@ public class TaskCriteria extends BaseCriteria implements Serializable {
 	}
 
 	public boolean hasContextCriteria() {
-		return getCaze() != null || getEvent() != null || getContact() != null || getTravelEntry() != null;
+		return getCaze() != null || getEvent() != null || getContact() != null || getTravelEntry() != null || getEnvironment() != null;
 	}
 
 	public TaskCriteria dueDateBetween(Date dueDateFrom, Date dueDateTo) {
@@ -341,6 +343,15 @@ public class TaskCriteria extends BaseCriteria implements Serializable {
 
 	public TaskCriteria travelEntry(TravelEntryReferenceDto travelEntry) {
 		this.travelEntry = travelEntry;
+		return this;
+	}
+
+	public EnvironmentReferenceDto getEnvironment() {
+		return environment;
+	}
+
+	public TaskCriteria environment(EnvironmentReferenceDto environment) {
+		this.environment = environment;
 		return this;
 	}
 

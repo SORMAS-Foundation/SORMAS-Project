@@ -26,6 +26,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -60,6 +61,9 @@ public class TaskList extends PaginationList<TaskIndexDto> {
 			break;
 		case TRAVEL_ENTRY:
 			taskCriteria.travelEntry((TravelEntryReferenceDto) entityRef);
+			break;
+		case ENVIRONMENT:
+			taskCriteria.environment((EnvironmentReferenceDto) entityRef);
 			break;
 		default:
 			throw new IndexOutOfBoundsException(context.toString());
