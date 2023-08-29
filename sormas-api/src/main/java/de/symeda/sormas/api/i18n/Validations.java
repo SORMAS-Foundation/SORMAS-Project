@@ -101,6 +101,8 @@ public interface Validations {
 	String importEntryDoesNotExistDbOrDistrict = "importEntryDoesNotExistDbOrDistrict";
 	String importEntryDoesNotExistDbOrRegion = "importEntryDoesNotExistDbOrRegion";
 	String importEntryRegionNotInUsersJurisdiction = "importEntryRegionNotInUsersJurisdiction";
+	String importEnvironmentPropertyTypeNotAllowed = "importEnvironmentPropertyTypeNotAllowed";
+	String importEnvironmentUnexpectedError = "importEnvironmentUnexpectedError";
 	String importErrorCustomizableEnumValue = "importErrorCustomizableEnumValue";
 	String importErrorInColumn = "importErrorInColumn";
 	String importEventParticipantsPropertyTypeNotAllowed = "importEventParticipantsPropertyTypeNotAllowed";
@@ -110,6 +112,7 @@ public interface Validations {
 	String importFacilityNotUniqueInDistrict = "importFacilityNotUniqueInDistrict";
 	String importIncompleteContent = "importIncompleteContent";
 	String importInvalidDate = "importInvalidDate";
+	String importInvalidWaterUseValue = "importInvalidWaterUseValue";
 	String importLabNotUnique = "importLabNotUnique";
 	String importLaboratoryAlreadyExists = "importLaboratoryAlreadyExists";
 	String importLineTooLong = "importLineTooLong";

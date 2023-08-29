@@ -133,6 +133,10 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 
 	public Predicate buildCriteriaFilter(EnvironmentCriteria environmentCriteria, EnvironmentQueryContext environmentQueryContext) {
 
+		if (environmentCriteria == null) {
+			return null;
+		}
+
 		CriteriaBuilder cb = environmentQueryContext.getCriteriaBuilder();
 		From<?, Environment> from = environmentQueryContext.getRoot();
 		final EnvironmentJoins joins = environmentQueryContext.getJoins();

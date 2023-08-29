@@ -1001,6 +1001,12 @@ public class StartupShutdownService {
 		} catch (IOException e) {
 			logger.error("Could not create event participant import template .csv file.");
 		}
+
+		try {
+			importFacade.generateEnvironmentImportTemplateFile(featureConfigurations);
+		} catch (IOException e) {
+			logger.error("Could not create environment import template .csv file.");
+		}
 	}
 
 	private void createMissingDiseaseConfigurations() {

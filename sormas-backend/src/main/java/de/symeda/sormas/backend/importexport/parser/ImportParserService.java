@@ -31,18 +31,22 @@ import de.symeda.sormas.api.importexport.ImportErrorException;
 import de.symeda.sormas.api.importexport.format.ImportExportFormat;
 import de.symeda.sormas.api.importexport.format.ImportFormat;
 import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
+import de.symeda.sormas.api.infrastructure.continent.ContinentReferenceDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.common.EnumService;
 import de.symeda.sormas.backend.infrastructure.area.AreaFacadeEjb.AreaFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.continent.ContinentFacadeEjb.ContinentFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
+import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentFacadeEjb.SubcontinentFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 
 @Stateless
@@ -50,6 +54,10 @@ public class ImportParserService {
 
 	@EJB
 	private EnumService enumService;
+	@EJB
+	private ContinentFacadeEjbLocal continentFacade;
+	@EJB
+	private SubcontinentFacadeEjbLocal subcontinentFacade;
 	@EJB
 	private CountryFacadeEjbLocal countryFacade;
 	@EJB
@@ -72,6 +80,8 @@ public class ImportParserService {
 			.withParser(Float.class, (v, clazz, path) -> Float.parseFloat(v))
 			.withParser(Boolean.class, (v, clazz, path) -> DataHelper.parseBoolean(v))
 			.withParser(boolean.class, (v, clazz, path) -> DataHelper.parseBoolean(v))
+			.withParser(ContinentReferenceDto.class, this::parseContinent)
+			.withParser(SubcontinentReferenceDto.class, this::parseSubContinent)
 			.withParser(CountryReferenceDto.class, this::parseCountry)
 			.withParser(AreaReferenceDto.class, this::parseArea)
 			.withParser(RegionReferenceDto.class, this::parseRegion)
@@ -187,6 +197,28 @@ public class ImportParserService {
 						path,
 						DateHelper.getAllowedDateFormats(I18nProperties.getUserLanguage().getDateFormat())));
 			}
+		}
+	}
+
+	private ContinentReferenceDto parseContinent(String entry, Class<ContinentReferenceDto> clazz, String path) throws ImportErrorException {
+		List<ContinentReferenceDto> continents = continentFacade.getByDefaultName(entry, false);
+		if (continents.isEmpty()) {
+			throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, path));
+		} else if (continents.size() > 1) {
+			throw new ImportErrorException(I18nProperties.getValidationError(Validations.importSubcontinentNotUnique, entry, path));
+		} else {
+			return continents.get(0);
+		}
+	}
+
+	private SubcontinentReferenceDto parseSubContinent(String entry, Class<SubcontinentReferenceDto> clazz, String path) throws ImportErrorException {
+		List<SubcontinentReferenceDto> subcontinents = subcontinentFacade.getByDefaultName(entry, false);
+		if (subcontinents.isEmpty()) {
+			throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, path));
+		} else if (subcontinents.size() > 1) {
+			throw new ImportErrorException(I18nProperties.getValidationError(Validations.importSubcontinentNotUnique, entry, path));
+		} else {
+			return subcontinents.get(0);
 		}
 	}
 

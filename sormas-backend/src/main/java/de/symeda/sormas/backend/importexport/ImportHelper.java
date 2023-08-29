@@ -18,7 +18,6 @@ package de.symeda.sormas.backend.importexport;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -70,11 +69,11 @@ public class ImportHelper {
 		}
 	}
 
-	public static RegionReferenceDto getRegionBasedOnDistrict(String propertyName, EventDto event, Object currentElement) {
+	public static RegionReferenceDto getRegionBasedOnDistrict(String propertyName, LocationDto associatedLocation, Object currentElement) {
 		if (!(currentElement instanceof LocationDto)) {
 			throw new IllegalArgumentException("currentElement is not a LocationDto: " + currentElement.getClass());
 		}
-		return event.getEventLocation().getRegion();
+		return associatedLocation.getRegion();
 	}
 
 	public static RegionReferenceDto getRegionBasedOnDistrict(
@@ -123,11 +122,11 @@ public class ImportHelper {
 		}
 	}
 
-	public static DistrictReferenceDto getDistrictBasedOnCommunity(String propertyName, EventDto event, Object currentElement) {
+	public static DistrictReferenceDto getDistrictBasedOnCommunity(String propertyName, LocationDto associatedLocation, Object currentElement) {
 		if (!(currentElement instanceof LocationDto)) {
 			throw new IllegalArgumentException("currentElement is not a LocationDto: " + currentElement.getClass());
 		}
-		return event.getEventLocation().getDistrict();
+		return associatedLocation.getDistrict();
 	}
 
 	public static DistrictReferenceDto getDistrictBasedOnCommunity(
@@ -181,9 +180,13 @@ public class ImportHelper {
 
 	public static DataHelper.Pair<DistrictReferenceDto, CommunityReferenceDto> getDistrictAndCommunityBasedOnFacility(
 		String propertyName,
-		EventDto event,
+		LocationDto associatedLocation,
 		Object currentElement) {
-		return DataHelper.Pair.createPair(event.getEventLocation().getDistrict(), event.getEventLocation().getCommunity());
+		if (!(currentElement instanceof LocationDto)) {
+			throw new IllegalArgumentException("currentElement is not a LocationDto: " + currentElement.getClass());
+		}
+
+		return DataHelper.Pair.createPair(associatedLocation.getDistrict(), associatedLocation.getCommunity());
 	}
 
 	public static DataHelper.Pair<DistrictReferenceDto, CommunityReferenceDto> getDistrictAndCommunityBasedOnFacility(
