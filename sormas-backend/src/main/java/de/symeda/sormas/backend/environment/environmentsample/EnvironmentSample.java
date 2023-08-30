@@ -23,7 +23,6 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -33,6 +32,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleMaterial;
 import de.symeda.sormas.api.environment.environmentsample.Pathogen;
@@ -47,6 +47,7 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 @Entity(name = "environmentsamples")
+@TypeDef(name = RequestedPathogensTestsDataType.TYPE_NAME, typeClass = RequestedPathogensTestsDataType.class)
 public class EnvironmentSample extends DeletableAdo {
 
 	public static final String ENVIRONMENT = "environment";
@@ -200,8 +201,8 @@ public class EnvironmentSample extends DeletableAdo {
 		this.laboratoryDetails = laboratoryDetails;
 	}
 
-	@Column(columnDefinition = ModelConstants.COLUMN_DEFINITION_JSON)
-	@Convert(converter = RequestedPathogensConverter.class)
+	@Type(type = RequestedPathogensTestsDataType.TYPE_NAME)
+	@Column(columnDefinition = "jsonb")
 	public Set<Pathogen> getRequestedPathogenTests() {
 		return requestedPathogenTests;
 	}

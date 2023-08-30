@@ -93,4 +93,9 @@ public abstract class CustomizableEnum implements Serializable {
 	public int hashCode() {
 		return Objects.hash(value);
 	}
+
+	protected void copyTo(CustomizableEnum customizableEnum) {
+		customizableEnum.value = value;
+		customizableEnum.caption = caption;
+	}
 }

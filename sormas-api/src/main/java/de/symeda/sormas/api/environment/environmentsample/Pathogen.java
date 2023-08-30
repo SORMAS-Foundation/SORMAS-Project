@@ -61,4 +61,13 @@ public class Pathogen extends CustomizableEnum implements Serializable {
 	public boolean isHasDetails() {
 		return hasDetails;
 	}
+
+	public Pathogen deepCopy() {
+		Pathogen pathogen = new Pathogen();
+
+		copyTo(pathogen);
+		pathogen.hasDetails = hasDetails;
+
+		return pathogen;
+	}
 }
