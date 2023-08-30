@@ -20,7 +20,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -73,18 +72,26 @@ public class RequestedPathogensTestsDataType implements UserType {
 	@Override
 	public Object nullSafeGet(ResultSet rs, String[] names, SharedSessionContractImplementor session, Object owner)
 		throws HibernateException, SQLException {
-		PGobject o = (PGobject) rs.getObject(names[0]);
-		if (o != null && o.getValue() != null) {
-			try {
-				return Stream.of(objectMapper.readValue(o.getValue(), String[].class))
-					.map(pathogenConverter::convertToEntityAttribute)
-					.collect(Collectors.toSet());
-			} catch (JsonProcessingException e) {
-				throw new IllegalArgumentException("The value [" + o.getValue() + "] cannot be converted to a set of pathogens", e);
-			}
+		Object object = rs.getObject(names[0]);
+
+		if (!(object instanceof PGobject)) {
+			// only Postgres support right now
+			return null;
 		}
 
-		return new HashSet<>();
+		String value = ((PGobject) object).getValue();
+
+		if (value == null) {
+			return null;
+		}
+
+		try {
+			return Stream.of(objectMapper.readValue(value, String[].class))
+				.map(pathogenConverter::convertToEntityAttribute)
+				.collect(Collectors.toSet());
+		} catch (JsonProcessingException e) {
+			throw new IllegalArgumentException("The value [" + value + "] cannot be converted to a set of pathogens", e);
+		}
 	}
 
 	@Override
