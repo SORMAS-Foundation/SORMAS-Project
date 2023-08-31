@@ -53,7 +53,9 @@ public class EnvironmentSample extends DeletableAdo {
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String LABORATORY = "laboratory";
 	public static final String LOCATION = "location";
+
 	private static final long serialVersionUID = 7237701234186874155L;
+
 	private Environment environment;
 	private User reportingUser;
 	private Date sampleDateTime;
