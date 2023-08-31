@@ -169,7 +169,7 @@ Feature: Check basic POSTs RestApi endpoints
     Then API: I create a new travel entry with creation date 14 days ago
     And API: I check that POST call status code is 200
 
-  @tmsLink=SORDEV-9788mk @env_main @precon
+  @env_main @precon
   Scenario Outline: User permissions check <user>
     Given API:I Login into Environment
     Then API: I get response with <user> user permission rights
@@ -182,7 +182,7 @@ Feature: Check basic POSTs RestApi endpoints
       | Admin User            |
       | National User         |
 
-  @tmsLink=SORDEV-9788mk @env_de @precon
+  @env_de @precon
   Scenario Outline: User permissions check <user> DE version
     Given API:I Login into Environment
     Then API: I get response with <user> user permission rights
@@ -195,7 +195,7 @@ Feature: Check basic POSTs RestApi endpoints
       | Admin User            |
       | National User         |
 
-  @tmsLink=SORDEV-9788mk @env_survnet @precon
+  @env_survnet @precon
   Scenario: User permissions check for Survnet User
     Given API:I Login into Environment
     Then API: I get response with Survnet user permission rights
@@ -203,7 +203,7 @@ Feature: Check basic POSTs RestApi endpoints
     And I prepare collection of Survnet rights based on json files
     And I check that user rights are complete
 
-  @tmsLink=SORDEV-9788mk @env_s2s_1 @precon
+  @env_s2s_1 @precon
   Scenario: User permissions check for SormasToSormas User
     Given API:I Login into Environment
     Then API: I get response with S2S user permission rights
