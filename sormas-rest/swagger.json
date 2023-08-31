@@ -23883,7 +23883,7 @@
         "properties" : {
           "taskContext" : {
             "type" : "string",
-            "enum" : [ "CASE", "CONTACT", "EVENT", "GENERAL", "TRAVEL_ENTRY", "ENVIRONMENT" ]
+            "enum" : [ "CASE", "CONTACT", "EVENT", "TRAVEL_ENTRY", "ENVIRONMENT", "GENERAL" ]
           },
           "uuid" : {
             "type" : "string"
@@ -23969,7 +23969,7 @@
           },
           "taskContext" : {
             "type" : "string",
-            "enum" : [ "CASE", "CONTACT", "EVENT", "GENERAL", "TRAVEL_ENTRY", "ENVIRONMENT" ]
+            "enum" : [ "CASE", "CONTACT", "EVENT", "TRAVEL_ENTRY", "ENVIRONMENT", "GENERAL" ]
           },
           "taskStatus" : {
             "type" : "string",
@@ -24074,7 +24074,7 @@
           },
           "taskContext" : {
             "type" : "string",
-            "enum" : [ "CASE", "CONTACT", "EVENT", "GENERAL", "TRAVEL_ENTRY", "ENVIRONMENT" ]
+            "enum" : [ "CASE", "CONTACT", "EVENT", "TRAVEL_ENTRY", "ENVIRONMENT", "GENERAL" ]
           },
           "taskStatus" : {
             "type" : "string",
@@ -24171,7 +24171,7 @@
           },
           "taskContext" : {
             "type" : "string",
-            "enum" : [ "CASE", "CONTACT", "EVENT", "GENERAL", "TRAVEL_ENTRY", "ENVIRONMENT" ]
+            "enum" : [ "CASE", "CONTACT", "EVENT", "TRAVEL_ENTRY", "ENVIRONMENT", "GENERAL" ]
           },
           "taskJurisdictionFlagsDto" : {
             "$ref" : "#/components/schemas/TaskJurisdictionFlagsDto"
