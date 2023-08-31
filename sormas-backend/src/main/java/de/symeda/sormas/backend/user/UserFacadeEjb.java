@@ -62,6 +62,7 @@ import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -101,6 +102,10 @@ import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.environment.Environment;
+import de.symeda.sormas.backend.environment.EnvironmentJoins;
+import de.symeda.sormas.backend.environment.EnvironmentJurisdictionPredicateValidator;
+import de.symeda.sormas.backend.environment.EnvironmentQueryContext;
 import de.symeda.sormas.backend.event.EventJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.event.EventQueryContext;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -530,6 +535,26 @@ public class UserFacadeEjb implements UserFacade {
 							cb.isNull(userRoot.get(User.LIMITED_DISEASE)),
 							cb.equal(userRoot.get(User.LIMITED_DISEASE), travelEntryRoot.get(TravelEntry.DISEASE)))));
 			return travelEntrySubquery;
+		});
+	}
+
+	@Override
+	@PermitAll
+	public List<UserReferenceDto> getUsersHavingEnvironmentInJurisdiction(EnvironmentReferenceDto environmentReferenceDto) {
+
+		return getUsersHavingEntityInJurisdiction((cb, cq, userRoot) -> {
+
+			final Subquery<Environment> environmentSubquery = cq.subquery(Environment.class);
+			final Root<Environment> environmentRoot = environmentSubquery.from(Environment.class);
+			final EnvironmentJurisdictionPredicateValidator environmentJurisdictionPredicateValidator =
+				EnvironmentJurisdictionPredicateValidator.of(new EnvironmentQueryContext(cb, cq, new EnvironmentJoins(environmentRoot)), userRoot);
+
+			environmentSubquery.select(environmentRoot)
+				.where(
+					cb.and(
+						cb.equal(environmentRoot.get(AbstractDomainObject.UUID), environmentReferenceDto.getUuid()),
+						cb.isTrue(environmentJurisdictionPredicateValidator.inJurisdictionOrOwned())));
+			return environmentSubquery;
 		});
 	}
 
