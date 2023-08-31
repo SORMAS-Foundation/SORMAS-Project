@@ -1047,7 +1047,7 @@ public class CreateNewCaseSteps implements En {
     When(
         "^I check that ([^\"]*) is not visible in Person search popup$",
         (String option) -> {
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           String selector =
               "//div[@class='popupContent']//div[contains(@class,'v-grid-column-header-content') and text()=\"%s\"]";
           Boolean elementVisible = true;

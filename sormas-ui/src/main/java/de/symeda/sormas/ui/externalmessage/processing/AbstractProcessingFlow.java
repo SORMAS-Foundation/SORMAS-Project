@@ -115,7 +115,8 @@ public abstract class AbstractProcessingFlow {
 		caseDto.setDiseaseVariant(externalMessageDto.getDiseaseVariant());
 		caseDto.setDiseaseVariantDetails(externalMessageDto.getDiseaseVariantDetails());
 		caseDto.setReportingUser(user.toReference());
-		caseDto.setReportDate(externalMessageDto.getMessageDateTime());
+		caseDto.setReportDate(
+			externalMessageDto.getCaseReportDate() != null ? externalMessageDto.getCaseReportDate() : externalMessageDto.getMessageDateTime());
 		return caseDto;
 	}
 

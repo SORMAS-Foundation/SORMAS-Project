@@ -73,6 +73,7 @@ Feature: Survnet tests
     When I select 2 last created UI result in grid in Case Directory for Bulk Action
     And I click on Bulk Actions combobox on Case Directory Page
     And I click Send to reporting tool button on Case Directory page
+    Then I check if popup send message appeared for "de"
     And I click Leave Bulk Edit Mode on Case directory page
     And I filter with first Case ID
     And I click on the first Case ID from Case Directory

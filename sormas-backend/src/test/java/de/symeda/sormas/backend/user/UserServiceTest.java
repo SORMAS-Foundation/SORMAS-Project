@@ -208,16 +208,24 @@ public class UserServiceTest extends AbstractBeanTest {
 		poeSup1.setPointOfEntry(rdcf1.pointOfEntry);
 		getUserFacade().saveUser(poeSup1, false);
 
+		UserDto envSurv1 = creator.createUser(
+			rdcf1.region.getUuid(),
+			rdcf1.district.getUuid(),
+			null,
+			"ES",
+			"1",
+			creator.getUserRoleReference(DefaultUserRole.ENVIRONMENTAL_SURVEILLANCE_USER));
+
 		assertThat(
 			getUserService().getUserRefsByInfrastructure(rdcf1.district.getUuid(), JurisdictionLevel.DISTRICT, JurisdictionLevel.DISTRICT, null),
-			hasSize(2));
+			hasSize(3));
 		assertThat(
 			getUserService().getUserRefsByInfrastructure(rdcf1.region.getUuid(), JurisdictionLevel.REGION, JurisdictionLevel.REGION, null),
 			hasSize(1));
 		assertThat(
 			getUserService()
 				.getUserRefsByInfrastructure(rdcf1.facility.getUuid(), JurisdictionLevel.HEALTH_FACILITY, JurisdictionLevel.DISTRICT, null),
-			hasSize(4));
+			hasSize(5));
 		assertThat(
 			getUserService().getUserRefsByInfrastructure(rdcf2.district.getUuid(), JurisdictionLevel.DISTRICT, JurisdictionLevel.DISTRICT, null),
 			hasSize(1));
@@ -230,7 +238,7 @@ public class UserServiceTest extends AbstractBeanTest {
 			hasSize(1));
 		assertThat(
 			getUserService().getUserRefsByInfrastructure(rdcf1.community.getUuid(), JurisdictionLevel.COMMUNITY, JurisdictionLevel.REGION, null),
-			hasSize(4));
+			hasSize(5));
 		assertThat(getUserService().getUserRefsByInfrastructure(null, JurisdictionLevel.NATION, JurisdictionLevel.NATION, null), hasSize(1));
 		assertThat(
 			getUserService().getUserRefsByInfrastructure(rdcf1.region.getUuid(), JurisdictionLevel.REGION, JurisdictionLevel.NATION, null),
@@ -243,7 +251,15 @@ public class UserServiceTest extends AbstractBeanTest {
 		assertThat(
 			getUserService()
 				.getUserRefsByInfrastructure(rdcf1.community.getUuid(), JurisdictionLevel.COMMUNITY, JurisdictionLevel.REGION, Disease.CHOLERA),
-			hasSize(3));
+			hasSize(4));
 
+		assertThat(
+			getUserService().getUserRefsByInfrastructure(
+				rdcf1.district.getUuid(),
+				JurisdictionLevel.DISTRICT,
+				JurisdictionLevel.NATION,
+				null,
+				UserRight.ENVIRONMENT_EDIT),
+			hasSize(2));
 	}
 }

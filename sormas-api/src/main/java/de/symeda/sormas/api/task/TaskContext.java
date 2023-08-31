@@ -31,9 +31,11 @@ public enum TaskContext {
 	CONTACT(FeatureType.TASK_GENERATION_CONTACT_TRACING, "contacts", Strings.notificationTaskAssociatedContactLink),
 	@DependingOnUserRight(UserRight.EVENT_VIEW)
 	EVENT(FeatureType.TASK_GENERATION_EVENT_SURVEILLANCE, "events", Strings.notificationTaskAssociatedEventLink),
-	GENERAL(FeatureType.TASK_GENERATION_GENERAL, null, null),
 	@DependingOnUserRight(UserRight.TRAVEL_ENTRY_VIEW)
-	TRAVEL_ENTRY(FeatureType.TRAVEL_ENTRIES, "travelEntries", Strings.notificationTaskAssociatedTravelEntryLink);
+	TRAVEL_ENTRY(FeatureType.TRAVEL_ENTRIES, "travelEntries", Strings.notificationTaskAssociatedTravelEntryLink),
+	@DependingOnUserRight(UserRight.ENVIRONMENT_VIEW)
+	ENVIRONMENT(FeatureType.ENVIRONMENT_MANAGEMENT, "environments", Strings.notificationTaskAssociatedEnvironmentLink),
+	GENERAL(FeatureType.TASK_GENERATION_GENERAL, null, null);
 
 	private final FeatureType featureType;
 	private final String urlPattern;

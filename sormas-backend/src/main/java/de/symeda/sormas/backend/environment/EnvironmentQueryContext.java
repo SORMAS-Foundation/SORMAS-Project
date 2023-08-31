@@ -13,6 +13,10 @@ public class EnvironmentQueryContext extends QueryContext<Environment, Environme
 		super(cb, query, root, new EnvironmentJoins(root));
 	}
 
+	public EnvironmentQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, EnvironmentJoins joins) {
+		super(cb, query, joins.getRoot(), joins);
+	}
+
 	@Override
 	protected Expression<?> createExpression(String name) {
 		return null;

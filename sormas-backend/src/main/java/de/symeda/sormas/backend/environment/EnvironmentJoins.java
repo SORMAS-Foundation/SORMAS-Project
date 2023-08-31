@@ -15,6 +15,7 @@ import de.symeda.sormas.backend.user.User;
 public class EnvironmentJoins extends QueryJoins<Environment> {
 
 	private Join<Environment, Location> location;
+	private Join<Environment, User> reportingUser;
 	private Join<Environment, User> responsibleUser;
 	private LocationJoins locationJoins;
 
@@ -48,6 +49,14 @@ public class EnvironmentJoins extends QueryJoins<Environment> {
 
 	public Join<Location, Community> getCommunity() {
 		return getLocationJoins().getCommunity();
+	}
+
+	public Join<Environment, User> getReportingUser() {
+		return getOrCreate(reportingUser, Environment.REPORTING_USER, JoinType.LEFT, this::setReportingUser);
+	}
+
+	public void setReportingUser(Join<Environment, User> reportingUser) {
+		this.reportingUser = reportingUser;
 	}
 
 	public Join<Environment, User> getResponsibleUser() {

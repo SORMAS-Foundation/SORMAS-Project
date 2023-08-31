@@ -56,10 +56,12 @@ public class HospitalizationTabSteps implements En {
         "I complete all hospitalization fields and save",
         () -> {
           hospitalization = hospitalizationService.generateHospitalization();
-          selectPatientAdmittedAtTheFacility(hospitalization.getWasPatientAdmittedAtTheFacilityAsAnInpatient());
+          selectPatientAdmittedAtTheFacility(
+              hospitalization.getWasPatientAdmittedAtTheFacilityAsAnInpatient());
           fillDateOfVisitOrAdmission(hospitalization.getDateOfVisitOrAdmission(), Locale.ENGLISH);
           selectReasonForHospitalization(hospitalization.getReasonForHospitalization());
-          fillDateOfDischargeOrTransfer(hospitalization.getDateOfDischargeOrTransfer(), Locale.ENGLISH);
+          fillDateOfDischargeOrTransfer(
+              hospitalization.getDateOfDischargeOrTransfer(), Locale.ENGLISH);
           selectStayInTheIntensiveCareUnit(hospitalization.getStayInTheIntensiveCareUnit());
           fillStartOfStayDate(hospitalization.getStartOfStayDate(), Locale.ENGLISH);
           fillEndOfStayDate(hospitalization.getEndOfStayDate(), Locale.ENGLISH);

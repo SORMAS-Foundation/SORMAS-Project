@@ -12,6 +12,11 @@
 		<param-value>true</param-value>
 	</context-param>
 
+	<session-config>
+		<!-- minutes -->
+		<session-timeout>30</session-timeout>
+	</session-config>
+
 	<security-role>
 		<role-name>CASE_CREATE</role-name>
 	</security-role>
@@ -690,6 +695,38 @@
 
 	<security-role>
 		<role-name>ENVIRONMENT_EXPORT</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>ENVIRONMENT_SAMPLE_VIEW</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>ENVIRONMENT_SAMPLE_CREATE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>ENVIRONMENT_SAMPLE_EDIT</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>ENVIRONMENT_SAMPLE_EDIT_DISPATCH</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>ENVIRONMENT_SAMPLE_EDIT_RECEIVAL</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>ENVIRONMENT_SAMPLE_DELETE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>ENVIRONMENT_SAMPLE_IMPORT</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>ENVIRONMENT_SAMPLE_EXPORT</role-name>
 	</security-role>
 
 	<security-role>

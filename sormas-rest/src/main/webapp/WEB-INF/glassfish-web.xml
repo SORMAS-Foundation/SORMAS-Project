@@ -856,6 +856,46 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>ENVIRONMENT_SAMPLE_VIEW</role-name>
+        <group-name>ENVIRONMENT_SAMPLE_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ENVIRONMENT_SAMPLE_CREATE</role-name>
+        <group-name>ENVIRONMENT_SAMPLE_CREATE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ENVIRONMENT_SAMPLE_EDIT</role-name>
+        <group-name>ENVIRONMENT_SAMPLE_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ENVIRONMENT_SAMPLE_EDIT_DISPATCH</role-name>
+        <group-name>ENVIRONMENT_SAMPLE_EDIT_DISPATCH</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ENVIRONMENT_SAMPLE_EDIT_RECEIVAL</role-name>
+        <group-name>ENVIRONMENT_SAMPLE_EDIT_RECEIVAL</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ENVIRONMENT_SAMPLE_DELETE</role-name>
+        <group-name>ENVIRONMENT_SAMPLE_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ENVIRONMENT_SAMPLE_IMPORT</role-name>
+        <group-name>ENVIRONMENT_SAMPLE_IMPORT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ENVIRONMENT_SAMPLE_EXPORT</role-name>
+        <group-name>ENVIRONMENT_SAMPLE_EXPORT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>DOCUMENT_VIEW</role-name>
         <group-name>DOCUMENT_VIEW</group-name>
     </security-role-mapping>

@@ -16,6 +16,7 @@
 package de.symeda.sormas.ui.environment;
 
 import com.vaadin.navigator.Navigator;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -24,6 +25,9 @@ import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
 import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -88,6 +92,13 @@ public class EnvironmentController {
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 
+	private static void saveEnvironment(EnvironmentDto environment) {
+		FacadeProvider.getEnvironmentFacade().save(environment);
+
+		Notification.show(I18nProperties.getString(Strings.messageEnvironmentSaved), Notification.Type.WARNING_MESSAGE);
+		SormasUI.refreshView();
+	}
+
 	public CommitDiscardWrapperComponent<EnvironmentDataForm> getEnvironmentDataEditComponent(
 		String environmentUuid,
 		UserRight editUserRight,
@@ -110,10 +121,31 @@ public class EnvironmentController {
 			if (!environmentDataForm.getFieldGroup().isModified()) {
 				EnvironmentDto dto = environmentDataForm.getValue();
 
-				FacadeProvider.getEnvironmentFacade().save(dto);
+				final UserDto user = UserProvider.getCurrent().getUser();
+				final RegionReferenceDto userRegion = user.getRegion();
+				final DistrictReferenceDto userDistrict = user.getDistrict();
+				final RegionReferenceDto environmentRegion = dto.getLocation().getRegion();
+				final DistrictReferenceDto environmentDistrict = dto.getLocation().getDistrict();
+				final boolean outsideJurisdiction = (!DataHelper.isSame(dto.getReportingUser(), user)
+					&& (userRegion != null && !DataHelper.isSame(userRegion, environmentRegion)
+						|| userDistrict != null && !DataHelper.isSame(userDistrict, environmentDistrict)));
 
-				Notification.show(I18nProperties.getString(Strings.messageEnvironmentSaved), Notification.Type.WARNING_MESSAGE);
-				SormasUI.refreshView();
+				if (outsideJurisdiction) {
+					VaadinUiUtil.showConfirmationPopup(
+						I18nProperties.getString(Strings.headingEnvironmentJurisdictionUpdated),
+						new Label(I18nProperties.getString(Strings.messageEnvironmentJurisdictionUpdated)),
+						I18nProperties.getString(Strings.yes),
+						I18nProperties.getString(Strings.no),
+						500,
+						confirmed -> {
+							if (Boolean.TRUE.equals(confirmed)) {
+								saveEnvironment(dto);
+							}
+						});
+				} else {
+					saveEnvironment(dto);
+				}
+
 			}
 		});
 

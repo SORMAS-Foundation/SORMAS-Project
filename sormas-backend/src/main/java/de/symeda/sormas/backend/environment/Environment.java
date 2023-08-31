@@ -12,6 +12,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
@@ -68,6 +69,7 @@ public class Environment extends CoreAdo {
 	private Location location;
 
 	@Temporal(TemporalType.TIMESTAMP)
+	@Column(nullable = false)
 	public Date getReportDate() {
 		return reportDate;
 	}
@@ -77,6 +79,7 @@ public class Environment extends CoreAdo {
 	}
 
 	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+	@JoinColumn(nullable = false)
 	public User getReportingUser() {
 		return reportingUser;
 	}
@@ -85,7 +88,7 @@ public class Environment extends CoreAdo {
 		this.reportingUser = reportingUser;
 	}
 
-	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT, nullable = false)
 	public String getEnvironmentName() {
 		return environmentName;
 	}
@@ -122,6 +125,7 @@ public class Environment extends CoreAdo {
 	}
 
 	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
 	public InvestigationStatus getInvestigationStatus() {
 		return investigationStatus;
 	}
@@ -131,6 +135,7 @@ public class Environment extends CoreAdo {
 	}
 
 	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
 	public EnvironmentMedia getEnvironmentMedia() {
 		return environmentMedia;
 	}

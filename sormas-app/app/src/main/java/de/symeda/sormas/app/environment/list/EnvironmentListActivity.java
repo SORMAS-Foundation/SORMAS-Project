@@ -4,6 +4,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.View;
 
 import androidx.databinding.DataBindingUtil;
@@ -11,15 +12,18 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.PagedBaseListActivity;
 import de.symeda.sormas.app.PagedBaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.environment.Environment;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.databinding.FilterEnvironmentListLayoutBinding;
+import de.symeda.sormas.app.environment.edit.EnvironmentNewActivity;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
 
@@ -86,7 +90,18 @@ public class EnvironmentListActivity extends PagedBaseListActivity {
 
 	@Override
 	protected int getActivityTitle() {
-		return R.string.heading_environments_list;
+		return R.string.heading_environment_list;
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		if (getIntent().getBooleanExtra("refreshOnResume", false)) {
+			showPreloader();
+			if (model.getEnvironmentList().getValue() != null) {
+				model.getEnvironmentList().getValue().getDataSource().invalidate();
+			}
+		}
 	}
 
 	@Override
@@ -125,5 +140,22 @@ public class EnvironmentListActivity extends PagedBaseListActivity {
 	@Override
 	protected PagedBaseListFragment buildListFragment(PageMenuItem menuItem) {
 		return EnvironmentListFragment.newInstance();
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		getNewMenu().setTitle(R.string.action_new_environment);
+		return true;
+	}
+
+	@Override
+	public void goToNewView() {
+		EnvironmentNewActivity.startActivity(getContext());
+	}
+
+	@Override
+	public boolean isEntryCreateAllowed() {
+		return ConfigProvider.hasUserRight(UserRight.ENVIRONMENT_CREATE);
 	}
 }

@@ -15,13 +15,10 @@
 
 package de.symeda.sormas.app.rest;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkCapabilities;
-import android.net.NetworkInfo;
-import android.util.Log;
-
-import androidx.fragment.app.FragmentActivity;
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -30,10 +27,13 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializer;
 
-import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
+import android.util.Log;
+
+import androidx.fragment.app.FragmentActivity;
 
 import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationAllSymptomsCriteriaDto;
@@ -52,6 +52,8 @@ import de.symeda.sormas.api.caze.classification.ClassificationPersonAgeBetweenYe
 import de.symeda.sormas.api.caze.classification.ClassificationSymptomsCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationVaccinationDateNotInStartDateRangeDto;
 import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteriaDto;
+import de.symeda.sormas.api.environment.WaterUse;
+import de.symeda.sormas.api.environment.environmentsample.WeatherCondition;
 import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
@@ -67,6 +69,7 @@ import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.util.AppUpdateController;
 import de.symeda.sormas.app.util.BiConsumer;
 import de.symeda.sormas.app.util.Consumer;
+import de.symeda.sormas.app.util.EnumMapKeySerializer;
 import okhttp3.Credentials;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -128,6 +131,7 @@ public final class RetroProvider {
 	private FeatureConfigurationFacadeRetro featureConfigurationFacadeRetro;
 	private AggregateReportFacadeRetro aggregateReportFacadeRetro;
 	private EnvironmentFacadeRetro environmentFacadeRetro;
+	private EnvironmentSampleFacadeRetro environmentSampleFacadeRetro;
 
 	private RetroProvider(Context context) throws ServerConnectionException, ServerCommunicationException, ApiVersionException {
 
@@ -230,7 +234,12 @@ public final class RetroProvider {
 				return JsonNull.INSTANCE;
 			}
 			return new JsonPrimitive(src.getTime());
-		}).registerTypeAdapterFactory(classificationCriteriaFactory).create();
+		})
+			.enableComplexMapKeySerialization()
+			.registerTypeAdapter(WaterUse.class, new EnumMapKeySerializer<>(WaterUse.class))
+			.registerTypeAdapter(WeatherCondition.class, new EnumMapKeySerializer<>(WeatherCondition.class))
+			.registerTypeAdapterFactory(classificationCriteriaFactory)
+			.create();
 	}
 
 	public static int getLastConnectionId() {
@@ -989,6 +998,19 @@ public final class RetroProvider {
 			}
 		}
 		return instance.environmentFacadeRetro;
+	}
+
+	public static EnvironmentSampleFacadeRetro getEnvironmentSampleFacade() throws NoConnectionException {
+		if (instance == null)
+			throw new NoConnectionException();
+		if (instance.environmentSampleFacadeRetro == null) {
+			synchronized ((RetroProvider.class)) {
+				if (instance.environmentSampleFacadeRetro == null) {
+					instance.environmentSampleFacadeRetro = instance.retrofit.create(EnvironmentSampleFacadeRetro.class);
+				}
+			}
+		}
+		return instance.environmentSampleFacadeRetro;
 	}
 
 	public static void throwException(Response<?> response) throws ServerConnectionException, ServerCommunicationException {

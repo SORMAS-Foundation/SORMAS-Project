@@ -1,6 +1,21 @@
 package org.sormas.e2etests.steps.web.application.messages;
 
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.LEAVE_BULK_EDIT_MODE;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.ACTION_CONFIRM_POPUP_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAMPLES_CARD_LABORATORY;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.NOTIFICATION_CAPTION_MESSAGE_POPUP;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.POPUP_YES_BUTTON;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.*;
+import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.getCheckboxByIndex;
+
 import cucumber.api.java8.En;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.interactions.Actions;
@@ -10,71 +25,6 @@ import org.sormas.e2etests.helpers.files.FilesHelper;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
-
-import javax.inject.Inject;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.ACTION_CONFIRM_POPUP_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAMPLES_CARD_LABORATORY;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.ACTION_YES_BUTTON;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.ADD_VACCINATION_BUTTON;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.ASSIGNEE_LABEL;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.ASSIGN_BUTTON;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CASE_SAVED_POPUP_DE;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CLINICAL_MEASUREMENT_HEADER;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CLOSE_POPUP;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CREATE_NEW_CASE_POPUP_WINDOW_DE;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CREATE_NEW_SAMPLE_POPUP_WINDOW_DE;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.CURRENT_HOSPITALIZATION_HEADER;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.DOWNLOAD_PROCESSED_BUTTON;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.DOWNLOAD_UNPROCESSED_BUTTON;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.EDIT_ASSIGNEE_FILTER_SELECT_BUTTON;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.EXPOSURE_INVESTIGATION_HEADER;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FETCH_MESSAGES_BUTTON;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FETCH_MESSAGES_NULL_DATE;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FETCH_MESSAGES_NULL_TIME_COMBOBOX;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FIRST_RECORD_DISEASE_VARIANT;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FIRST_TIME_FETCH_MESSAGE_POPUP;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.FORWARDED_MESSAGE_COUNTER;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.GET_NEW_MESSAGES_POPUP;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.GRID_MESSAGE_UUID_TITLE;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.GRID_RESULTS_TYPE;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.HEADER_OF_ENTRY_LINK;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MARK_AS_FORWARDED_BUTTON;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MARK_AS_UNCLEAR_BUTTON;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGE_DELETE_BUTTON;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGE_DIRECTORY_HEADER_DE;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.MESSAGE_UUID_TEXT;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_CASE_EMAIL_ADDRESS_INPUT;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_CASE_PHONE_NUMBER_INPUT;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_DATE_OF_REPORT_INPUT;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_SPECIMEN_CONDITION_INPUT;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_TESTED_DISEASE_INPUT;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_TEST_RESULT_INPUT;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_TEST_RESULT_VERIFIED_RADIOBUTTON;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEW_SAMPLE_TEST_RESULT_VERIFIED_SELECTED_VALUE;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NEXT_BUTTON;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.NO_NEW_REPORTS_POPUP;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.PATHOGEN_DETECTION_REPORTING_PROCESS_HEADER_DE;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_CONFIRM_BUTTON;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_WINDOW_CANCEL_BUTTON;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_WINDOW_DISCARD_BUTTON;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_WINDOW_SAVE_AND_OPEN_CASE_BUTTON;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_WINDOW_SAVE_BUTTON;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.RESET_FILTER_BUTTON;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.SEARCH_MESSAGE_INPUT;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.SEND_TO_ANOTHER_ORGANIZATION_BUTTON;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.TOTAL_MESSAGE_COUNTER;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.TYPE_OF_MESSAGE_COMBOBOX;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.UNCLEAR_MESSAGE_COUNTER;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.UPDATE_CASE_DISEASE_VARIANT_CONFIRM_BUTTON;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.getProcessMessageButtonByIndex;
-import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.getProcessStatusByIndex;
 
 @Slf4j
 public class MessagesDirectorySteps implements En {
@@ -414,6 +364,12 @@ public class MessagesDirectorySteps implements En {
           webDriverHelpers.waitUntilAListOfElementsHasText(GRID_RESULTS_TYPE, type);
         });
 
+    And(
+        "^I check that status of the messages correspond to selected tab value \"([^\"]*)\" in grid Message Directory Type column$",
+        (String type) -> {
+          webDriverHelpers.waitUntilAListOfElementsHasText(STATUS_GRID_RESULTS_TYPE, type);
+        });
+
     Then(
         "^I check if there is no displayed sample result on Edit case page$",
         () -> {
@@ -506,6 +462,56 @@ public class MessagesDirectorySteps implements En {
           softly.assertAll();
         });
 
+    And(
+        "I click on Leave Bulk Edit Mode from Message Directory",
+        () -> webDriverHelpers.clickOnWebElementBySelector(BULK_ACTIONS_LEAVE_MESSAGES_VALUES));
+
+    And(
+        "I click on Enter Bulk Edit Mode from Message Directory",
+        () -> webDriverHelpers.clickOnWebElementBySelector(BULK_ACTIONS_MESSAGES_VALUES));
+
+    And(
+        "I click on Bulk Actions combobox in Message Directory",
+        () -> webDriverHelpers.clickOnWebElementBySelector(BULK_ACTIONS_MESSAGES_DIRECTORY));
+
+    And(
+        "I click on Delete button from Bulk Actions Combobox in Message Directory",
+        () -> webDriverHelpers.clickOnWebElementBySelector(BULK_DELETE_MESSAGES_BUTTON));
+
+    When(
+        "I click yes on the CONFIRM REMOVAL popup from Message Directory page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(POPUP_YES_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "^I select first (\\d+) results in grid in Message Directory$",
+        (Integer number) -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              LEAVE_BULK_EDIT_MODE, 50);
+          for (int i = 2; i <= number + 1; i++) {
+            webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+                getCheckboxByIndex(String.valueOf(i)));
+            webDriverHelpers.scrollToElement(getCheckboxByIndex(String.valueOf(i)));
+            webDriverHelpers.clickOnWebElementBySelector(getCheckboxByIndex(String.valueOf(i)));
+          }
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I check if popup message for deleting is {string} in Message Directory for DE",
+        (String expectedText) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NOTIFICATION_CAPTION_MESSAGE_POPUP);
+          softly.assertEquals(
+              webDriverHelpers.getTextFromPresentWebElement(NOTIFICATION_CAPTION_MESSAGE_POPUP),
+              expectedText,
+              "Bulk action went wrong");
+          softly.assertAll();
+          webDriverHelpers.clickOnWebElementBySelector(NOTIFICATION_CAPTION_MESSAGE_POPUP);
+        });
+
     Then(
         "^I check if there are all needed buttons in HTML message file$",
         () -> {
@@ -528,20 +534,20 @@ public class MessagesDirectorySteps implements En {
         () -> {
           webDriverHelpers.scrollToElement(HEADER_OF_ENTRY_LINK);
           softly.assertFalse(
-            webDriverHelpers.isElementPresent(MESSAGE_DELETE_BUTTON),
-                  "Delete message is available!");
+              webDriverHelpers.isElementPresent(MESSAGE_DELETE_BUTTON),
+              "Delete message is available!");
           softly.assertAll();
           softly.assertFalse(
-                  webDriverHelpers.isElementPresent(MARK_AS_UNCLEAR_BUTTON),
-                 "Delete message is available!");
+              webDriverHelpers.isElementPresent(MARK_AS_UNCLEAR_BUTTON),
+              "Delete message is available!");
           softly.assertAll();
           softly.assertFalse(
-                  webDriverHelpers.isElementPresent(MARK_AS_FORWARDED_BUTTON),
-                  "Delete message is available!");
+              webDriverHelpers.isElementPresent(MARK_AS_FORWARDED_BUTTON),
+              "Delete message is available!");
           softly.assertAll();
           softly.assertFalse(
-                  webDriverHelpers.isElementPresent(SEND_TO_ANOTHER_ORGANIZATION_BUTTON),
-                  "Delete message is available!");
+              webDriverHelpers.isElementPresent(SEND_TO_ANOTHER_ORGANIZATION_BUTTON),
+              "Delete message is available!");
           softly.assertAll();
         });
   }
