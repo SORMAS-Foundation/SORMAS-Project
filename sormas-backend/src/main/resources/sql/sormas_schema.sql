@@ -12699,4 +12699,11 @@ ALTER TABLE environmentsamples_history ADD COLUMN requestedpathogentests text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (524, 'Change requested pathogen tests column type #11721');
 
+-- 2023-09-01 Add person facility to external messages #12366
+ALTER TABLE externalmessage ADD COLUMN personfacility_id bigint;
+ALTER TABLE externalmessage_history ADD COLUMN personfacility_id bigint;
+ALTER TABLE externalmessage ADD CONSTRAINT fk_externalmessage_personfacility_id FOREIGN KEY (personfacility_id) REFERENCES facility(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (525, 'Add person facility to external messages #12366');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

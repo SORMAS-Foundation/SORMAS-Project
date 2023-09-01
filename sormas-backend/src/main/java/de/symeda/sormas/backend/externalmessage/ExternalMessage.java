@@ -36,6 +36,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.disease.DiseaseVariantConverter;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
 import de.symeda.sormas.backend.infrastructure.country.Country;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name = ExternalMessage.TABLE_NAME)
@@ -69,6 +70,7 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String PERSON_STREET = "personStreet";
 	public static final String PERSON_HOUSE_NUMBER = "personHouseNumber";
 	public static final String PERSON_COUNTRY = "personCountry";
+	public static final String PERSON_FACILITY = "personFacility";
 	public static final String PERSON_PHONE = "personPhone";
 	public static final String PERSON_PHONE_NUMBER_TYPE = "personPhoneNumberType";
 	public static final String PERSON_EMAIL = "personEmail";
@@ -105,6 +107,7 @@ public class ExternalMessage extends AbstractDomainObject {
 	private String personCity;
 	private String personStreet;
 	private Country personCountry;
+	private Facility personFacility;
 	private String personHouseNumber;
 	private String personPhone;
 	private PhoneNumberType personPhoneNumberType;
@@ -335,6 +338,15 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public void setPersonCountry(Country personCountry) {
 		this.personCountry = personCountry;
+	}
+
+	@OneToOne(fetch = FetchType.LAZY)
+	public Facility getPersonFacility() {
+		return personFacility;
+	}
+
+	public void setPersonFacility(Facility personFacility) {
+		this.personFacility = personFacility;
 	}
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)

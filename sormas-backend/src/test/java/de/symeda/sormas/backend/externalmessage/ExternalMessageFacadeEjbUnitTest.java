@@ -41,6 +41,7 @@ import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportService;
 import de.symeda.sormas.backend.infrastructure.country.CountryService;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
 import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
 
@@ -55,6 +56,8 @@ public class ExternalMessageFacadeEjbUnitTest {
 	private SurveillanceReportService surveillanceReportService;
 	@Mock
 	private CountryService countryService;
+	@Mock
+	private FacilityService facilityService;
 	@Mock
 	private SystemEventFacadeEjb.SystemEventFacadeEjbLocal systemEventFacade;
 
@@ -148,6 +151,7 @@ public class ExternalMessageFacadeEjbUnitTest {
 
 		when(externalMessageService.getByUuid(testUuid)).thenReturn(externalMessage);
 		when(countryService.getByReferenceDto(null)).thenReturn(null);
+		when(facilityService.getByReferenceDto(null)).thenReturn(null);
 		sut.save(externalMessageDto);
 
 		verify(externalMessageService).ensurePersisted(externalMessage);
