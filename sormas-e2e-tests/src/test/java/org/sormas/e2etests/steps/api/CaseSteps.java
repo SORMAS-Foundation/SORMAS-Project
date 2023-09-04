@@ -62,6 +62,16 @@ public class CaseSteps implements En {
         });
 
     When(
+        "API: I create a new case Point Of Entry type with {string} region and {string} district",
+        (String region, String district) -> {
+          Case caze =
+              caseApiService.buildGeneratedCaseTypePointOfEntry(
+                  apiState.getLastCreatedPerson(), region, district);
+          caseHelper.createCase(caze);
+          apiState.setCreatedCase(caze);
+        });
+
+    When(
         "API: I create a new case classified as {string}",
         (String caseClassification) -> {
           Case caze =

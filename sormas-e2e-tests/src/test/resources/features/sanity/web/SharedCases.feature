@@ -1198,3 +1198,27 @@ Feature: Sharing cases between environments tests
     And I click on "accept" shared case button with copied case description
     Then I check if Share request not found popup message appeared for DE
     And I click on okay button
+
+  @tmsLink=SORQA-1063 @env_s2s_1
+  Scenario: S2S - Share a Case type POINT OF ENTRY
+    Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    And API: I check that POST call status code is 200
+    And API: I create a new case Point Of Entry type with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
+    And API: I check that POST call status code is 200
+    Given I log in as a S2S
+    Then I navigate to the last created case via the url
+    Then I collect uuid of the case
+    And I refer case from Point Of Entry with Place of Stay EINRICHTUNG
+    And I click on save button from Edit Case page
+    Then I click on share button
+    And I select organization to share with "s2s_2"
+    And I click to hand over the ownership in Share popup
+    And I fill comment in share popup for case with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_2" environment in new driver tab
+    Given I log in as a S2S
+    And I click on the Shares button from navbar
+    Then I accept first entity from table in Shares Page
+    And I click on the Cases button from navbar
+    And I select first created case for person from Cases list
+    Then I check that Point Of Entry and Place Of Stay EINRICHTUNG information is correctly display on Edit case page
