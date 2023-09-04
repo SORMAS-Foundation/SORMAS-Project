@@ -54,6 +54,7 @@
     <string name="action_edit">Upravit</string>
     <string name="action_edit_case">Upravit případ</string>
     <string name="action_edit_contact">Upravit kontakt</string>
+    <string name="action_edit_environment">Edit Environment</string>
     <string name="action_edit_event">Upravit Udalost</string>
     <string name="action_edit_sample">Upravit vzorek</string>
     <string name="action_forgot_PIN">Zapomenutý PIN?</string>
@@ -71,6 +72,7 @@
     <string name="action_new_immunization">Nová imunizace</string>
     <string name="action_new_campaign_form_data">Nová data formuláře kampaně</string>
     <string name="action_new_contact">Nový kontakt</string>
+    <string name="action_new_environment">New Environment</string>
     <string name="action_new_event">Nová udalost</string>
     <string name="action_new_sample">Nový vzorek</string>
     <string name="action_new_task">Nový úkol</string>
@@ -164,6 +166,8 @@
     <string name="caption_dropped">Zahozeno</string>
     <string name="caption_epi_week">Epi týden</string>
     <string name="caption_report">Zpráva</string>
+    <string name="caption_environment_information">Environment Information</string>
+    <string name="caption_environment_tasks">Environment Tasks</string>
     <string name="caption_event_description">Popis</string>
     <string name="caption_event_location">Poloha</string>
     <string name="caption_event_period">Datum události</string>
@@ -274,6 +278,7 @@
     <string name="confirmation_extend_quarantine">Opravdu chcete rozšířit karanténu?</string>
     <string name="confirmation_reduce_quarantine">Opravdu chcete omezit karanténu?</string>
     <string name="confirmation_extend_followup">Chtěli byste také, aby bylo období následných kroků odpovídajícím způsobem prodlouženo?</string>
+    <string name="confirmation_environment_location_change">Changing the location of this environment could make you lose access to its details and/or disallow you to edit in the future. Are you sure you want to proceed?</string>
     <string name="description_epi_week">Epi týden</string>
     <string name="description_first_name">Jméno</string>
     <string name="description_last_name">Příjmení</string>
@@ -381,7 +386,11 @@
     <string name="heading_sample_read">Číst vzorek</string>
     <string name="heading_sample_summary">Shrnutí vzorku</string>
     <string name="heading_samples_list">Seznam vzorků</string>
-    <string name="heading_environments_list">Environment Listing</string>
+    <string name="heading_environment_list">Environment Listing</string>
+    <string name="heading_environment_edit">Edit Environment</string>
+    <string name="heading_environment_new">New Environment</string>
+    <string name="heading_environment_read">Read Environment</string>
+    <string name="heading_environment_location_update">Environment location update</string>
     <string name="heading_immunization_edit">Upravit imunizaci</string>
     <string name="heading_immunization_new">Nová imunizace</string>
     <string name="heading_immunization_read">Číst imunizaci</string>

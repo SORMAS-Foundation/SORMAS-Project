@@ -12691,4 +12691,12 @@ WHERE userroles.linkeddefaultuserrole in (
 
 INSERT INTO schema_version (version_number, comment) VALUES (523, 'Create a new Environment Sample entity [web + mobile] #11721');
 
+-- 2023-08-31 Change requested pathogen tests column type #11721
+ALTER TABLE environmentsamples DROP COLUMN requestedpathogentests;
+ALTER TABLE environmentsamples_history DROP COLUMN requestedpathogentests;
+ALTER TABLE environmentsamples ADD COLUMN requestedpathogentests text;
+ALTER TABLE environmentsamples_history ADD COLUMN requestedpathogentests text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (524, 'Change requested pathogen tests column type #11721');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

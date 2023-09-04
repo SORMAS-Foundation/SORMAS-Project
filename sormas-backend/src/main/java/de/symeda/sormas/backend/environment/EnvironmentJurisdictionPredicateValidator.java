@@ -40,6 +40,15 @@ public final class EnvironmentJurisdictionPredicateValidator extends PredicateJu
 		return new EnvironmentJurisdictionPredicateValidator(queryContext.getCriteriaBuilder(), user, null, queryContext.getJoins());
 	}
 
+	private EnvironmentJurisdictionPredicateValidator(EnvironmentQueryContext qc, Path userPath) {
+		super(qc.getCriteriaBuilder(), null, userPath, null);
+		this.joins = qc.getJoins();
+	}
+
+	public static EnvironmentJurisdictionPredicateValidator of(EnvironmentQueryContext qc, Path userPath) {
+		return new EnvironmentJurisdictionPredicateValidator(qc, userPath);
+	}
+
 	@Override
 	public Predicate isRootInJurisdictionOrOwned() {
 

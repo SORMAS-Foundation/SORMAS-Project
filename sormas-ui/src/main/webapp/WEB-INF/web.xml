@@ -12,6 +12,11 @@
 		<param-value>true</param-value>
 	</context-param>
 
+	<session-config>
+		<!-- minutes -->
+		<session-timeout>30</session-timeout>
+	</session-config>
+
 	<security-role>
 		<role-name>CASE_CREATE</role-name>
 	</security-role>

@@ -31,6 +31,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
@@ -109,7 +110,8 @@ public interface UserFacade {
 		InfrastructureDataReferenceDto infrastructure,
 		JurisdictionLevel jurisdictionLevel,
 		JurisdictionLevel allowedJurisdictionLevel,
-		Disease limitedDisease);
+		Disease limitedDisease,
+		UserRight... userRights);
 
 	List<UserReferenceDto> getAllUserRefs(boolean includeInactive);
 
@@ -142,6 +144,8 @@ public interface UserFacade {
 	List<UserReferenceDto> getUsersHavingEventInJurisdiction(EventReferenceDto event);
 
 	List<UserReferenceDto> getUsersHavingTravelEntryInJurisdiction(TravelEntryReferenceDto travelEntryReferenceDto);
+
+	List<UserReferenceDto> getUsersHavingEnvironmentInJurisdiction(EnvironmentReferenceDto environmentReferenceDto);
 
 	List<UserReferenceWithTaskNumbersDto> getAssignableUsersWithTaskNumbers(@NotNull TaskContextIndexCriteria taskContextIndexCriteria);
 

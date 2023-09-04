@@ -1,6 +1,6 @@
 package org.sormas.e2etests.entities.services;
 
-import static org.sormas.e2etests.enums.ReasonForHospitalization.getRandomReasonForHospitalizationDE;
+import static org.sormas.e2etests.enums.ReasonForHospitalization.OTHERREASON;
 import static org.sormas.e2etests.enums.YesNoUnknownOptions.YES;
 import static org.sormas.e2etests.enums.YesNoUnknownOptionsDE.JA;
 
@@ -40,7 +40,7 @@ public class HospitalizationService {
         .wasPatientAdmittedAtTheFacilityAsAnInpatient(JA.toString())
         .dateOfVisitOrAdmission(LocalDate.now().minusDays(3))
         .dateOfDischargeOrTransfer(LocalDate.now().minusDays(1))
-        .reasonForHospitalization(getRandomReasonForHospitalizationDE())
+        .reasonForHospitalization(OTHERREASON.getReasonForHospitalizationDE())
         .specifyReason("Exotic disease")
         .stayInTheIntensiveCareUnit(JA.toString())
         .startOfStayDate(LocalDate.now().minusDays(2))

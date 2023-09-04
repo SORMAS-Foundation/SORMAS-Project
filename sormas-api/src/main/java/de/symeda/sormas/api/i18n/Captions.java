@@ -1721,6 +1721,7 @@ public interface Captions {
 	String PathogenTest_otherDeletionReason = "PathogenTest.otherDeletionReason";
 	String PathogenTest_pcrTestSpecification = "PathogenTest.pcrTestSpecification";
 	String PathogenTest_preliminary = "PathogenTest.preliminary";
+	String PathogenTest_prescriber = "PathogenTest.prescriber";
 	String PathogenTest_prescriberAddress = "PathogenTest.prescriberAddress";
 	String PathogenTest_prescriberCity = "PathogenTest.prescriberCity";
 	String PathogenTest_prescriberCountry = "PathogenTest.prescriberCountry";
@@ -2410,6 +2411,7 @@ public interface Captions {
 	String Task_creatorUser = "Task.creatorUser";
 	String Task_district = "Task.district";
 	String Task_dueDate = "Task.dueDate";
+	String Task_environment = "Task.environment";
 	String Task_event = "Task.event";
 	String Task_observerUsers = "Task.observerUsers";
 	String Task_perceivedStart = "Task.perceivedStart";
