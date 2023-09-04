@@ -299,6 +299,13 @@ public class EditCasePage {
       By.cssSelector(".popupContent #region div[role='button'");
   public static final By REFER_CASE_FROM_POINT_OF_ENTRY_DISTRICT =
       By.cssSelector(".popupContent #district div[role='button'");
+  public static final By REFER_CASE_FROM_POINT_OF_ENTRY_FACILITY_CATEGORY =
+      By.cssSelector(".popupContent #typeGroup div[role='button'");
+  public static final By REFER_CASE_FROM_POINT_OF_ENTRY_FACILITY_TYPE =
+      By.cssSelector(".popupContent #type div[role='button'");
+  public static final By REFER_CASE_FROM_POINT_OF_ENTRY_HEALTH_FACILITY =
+      By.cssSelector(".popupContent #healthFacility div[role='button'");
+
   public static final By REFER_CASE_FROM_POINT_OF_ENTRY_SAVE_BUTTON =
       By.cssSelector(".popupContent #commit");
   public static final By CASE_ORIGIN = By.cssSelector("#caseOrigin input");
