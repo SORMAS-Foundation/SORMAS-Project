@@ -331,7 +331,7 @@ public class ExternalMessage extends AbstractDomainObject {
 		this.personHouseNumber = personHouseNumber;
 	}
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	public Country getPersonCountry() {
 		return personCountry;
 	}
@@ -340,7 +340,7 @@ public class ExternalMessage extends AbstractDomainObject {
 		this.personCountry = personCountry;
 	}
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	public Facility getPersonFacility() {
 		return personFacility;
 	}
