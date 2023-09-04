@@ -46,6 +46,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONF
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONTACTS_DATA_TAB;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.EPIDEMIOLOGICAL_DATA_TAB;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_NO_POPUP_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CONFIRM;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ADD_A_PARTICIPANT_HEADER_DE;
@@ -2015,7 +2016,7 @@ public class EditCaseSteps implements En {
         });
 
     And(
-        "^I refer case from Point Of Entry$",
+        "I refer case from Point Of Entry with Place of Stay ZUHAUSE",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(REFER_CASE_FROM_POINT_OF_ENTRY);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
@@ -2029,7 +2030,27 @@ public class EditCaseSteps implements En {
         });
 
     And(
-        "^I check that Point Of Entry and Place Of Stay information is correctly display on Edit case page$",
+        "I refer case from Point Of Entry with Place of Stay EINRICHTUNG",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(REFER_CASE_FROM_POINT_OF_ENTRY);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              REFER_CASE_FROM_POINT_OF_ENTRY_POPUP_DE);
+          webDriverHelpers.selectFromCombobox(REFER_CASE_FROM_POINT_OF_ENTRY_REGION, "Brandenburg");
+          webDriverHelpers.selectFromCombobox(REFER_CASE_FROM_POINT_OF_ENTRY_DISTRICT, "LK Barnim");
+          webDriverHelpers.clickWebElementByText(PLACE_OF_STAY_OPTIONS, "EINRICHTUNG");
+          webDriverHelpers.selectFromCombobox(
+              REFER_CASE_FROM_POINT_OF_ENTRY_FACILITY_CATEGORY, "Medizinische Einrichtung");
+          webDriverHelpers.selectFromCombobox(
+              REFER_CASE_FROM_POINT_OF_ENTRY_FACILITY_TYPE, "Krankenhaus");
+          webDriverHelpers.selectFromCombobox(
+              REFER_CASE_FROM_POINT_OF_ENTRY_HEALTH_FACILITY, "share");
+
+          webDriverHelpers.clickOnWebElementBySelector(REFER_CASE_FROM_POINT_OF_ENTRY_SAVE_BUTTON);
+        });
+
+    And(
+        "^I check that Point Of Entry and Place Of Stay ZUHAUSE information is correctly display on Edit case page$",
         () -> {
           String referenceReadOnlyAttribute =
               webDriverHelpers.getAttributeFromWebElement(POINT_OF_ENTRY_TEXT, "readonly");
@@ -2061,6 +2082,44 @@ public class EditCaseSteps implements En {
           softly.assertEquals(
               webDriverHelpers.getValueFromWebElement(POINT_OF_ENTRY_DETAILS),
               "Narita",
+              "Point of entry details are not correct");
+
+          softly.assertAll();
+        });
+
+    And(
+        "^I check that Point Of Entry and Place Of Stay EINRICHTUNG information is correctly display on Edit case page$",
+        () -> {
+          String referenceReadOnlyAttribute =
+              webDriverHelpers.getAttributeFromWebElement(POINT_OF_ENTRY_TEXT, "readonly");
+          softly.assertNotNull(
+              referenceReadOnlyAttribute,
+              "The case reference definition shouldn't be editable, but it is!");
+
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                  PLACE_OF_STAY_SELECTED_VALUE),
+              "EINRICHTUNG",
+              "Place of stay is not correct");
+
+          softly.assertEquals(
+              webDriverHelpers.getValueFromCombobox(PLACE_OF_STAY_REGION_COMBOBOX),
+              "Brandenburg",
+              "Place of stay region is not correct");
+
+          softly.assertEquals(
+              webDriverHelpers.getValueFromCombobox(PLACE_OF_STAY_DISTRICT_COMBOBOX),
+              "LK Barnim",
+              "Place of stay district is not correct");
+
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(POINT_OF_ENTRY_TEXT),
+              "Anderer Flughafen",
+              "Point of entry is not correct");
+
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(POINT_OF_ENTRY_DETAILS),
+              "other",
               "Point of entry details are not correct");
 
           softly.assertAll();
