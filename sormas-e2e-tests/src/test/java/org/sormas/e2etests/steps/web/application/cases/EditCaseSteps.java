@@ -243,6 +243,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.getEditTa
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.getPreExistingConditionComboboxToSelectValue_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.getPreExistingConditionComboboxWithValue_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.getPreExistingConditionCombobox_DE;
+import static org.sormas.e2etests.pages.application.cases.EditCasePersonPage.DATE_OF_DEATH_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CONTACT_TO_BODY_FLUIDS_OPTONS;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CONTACT_TO_CASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CONTINENT_COMBOBOX;
@@ -284,6 +285,7 @@ import static org.sormas.e2etests.pages.application.immunizations.EditImmunizati
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.getReasonForDeletionDetailsFieldLabel;
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.getVaccinationByIndex;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.EVENT_PARTICIPANTS_DATA_TAB;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PRESENT_CONDITION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SAMPLE_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_SAMPLE_REASON_POPUP;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_SAMPLE_REASON_POPUP_FOR_DE;
@@ -353,6 +355,7 @@ public class EditCaseSteps implements En {
   public static final String userDirPath = System.getProperty("user.dir");
   public static String caseUuid;
   public static List<String> externalUUID = new ArrayList<>();
+  public static LocalDate dateOfDeath;
 
   @SneakyThrows
   @Inject
@@ -473,6 +476,26 @@ public class EditCaseSteps implements En {
     And(
         "I navigate to case person tab",
         () -> webDriverHelpers.clickOnWebElementBySelector(CASE_PERSON_TAB));
+
+    And(
+        "I set the present condition of person value to \"([^\"]*)\" on Case Person page",
+        (String presentCondition) -> {
+          webDriverHelpers.selectFromCombobox(PRESENT_CONDITION_COMBOBOX, presentCondition);
+        });
+
+    And(
+        "I click on Save button on Case Person page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+        });
+
+    And(
+        "^I set the Date of death to (\\d+) days ago$",
+        (Integer dateOfDeathAgo) -> {
+          dateOfDeath = LocalDate.now().minusDays(dateOfDeathAgo);
+          System.out.print(dateOfDeath);
+          fillDateOfDeath(dateOfDeath, Locale.GERMAN);
+        });
 
     And(
         "^I set previous infection date (\\d+) days from report date to case in person tab$",
@@ -3206,6 +3229,13 @@ public class EditCaseSteps implements En {
   private LocalDate getDateOfReportDE() {
     String dateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE_INPUT);
     return LocalDate.parse(dateOfReport, DATE_FORMATTER_DE);
+  }
+
+  private void fillDateOfDeath(LocalDate date, Locale locale) {
+    DateTimeFormatter formatter;
+    if (locale.equals(Locale.GERMAN)) formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    else formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+    webDriverHelpers.fillInWebElement(DATE_OF_DEATH_INPUT, formatter.format(date));
   }
 
   private LocalDate getDateReceivedAtDistrictLevel() {
