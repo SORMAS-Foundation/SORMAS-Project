@@ -137,7 +137,7 @@ dependencies {
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'me.dm7.barcodescanner:zxing:1.9.13'
     implementation 'io.crowdcode.sormas.lbds:lbds-android-messaging:1.4.8'
-    implementation 'org.slf4j:slf4j-api:2.0.7'
+    implementation 'org.slf4j:slf4j-api:2.0.9'
     // Align versions of all Kotlin components
     implementation platform("org.jetbrains.kotlin:kotlin-bom:1.9.0")
     testImplementation 'junit:junit:4.13.2'
